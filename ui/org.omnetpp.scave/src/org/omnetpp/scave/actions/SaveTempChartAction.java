@@ -14,8 +14,6 @@ import org.eclipse.ui.ISharedImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
-//import org.omnetpp.scave.editors.ui.ChartPage;
-import org.omnetpp.scave.editors.ui.FormEditorPage;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ScaveModelPackage;
 
@@ -41,6 +39,7 @@ public class SaveTempChartAction extends AbstractScaveAction {
             chart.setTemporary(false);
             Command command = AddCommand.create(scaveEditor.getEditingDomain(), scaveEditor.getAnalysis().getCharts(), ScaveModelPackage.eINSTANCE.getCharts_Items(), chart, -1);
             scaveEditor.executeCommand(command);
+            scaveEditor.getActiveChartScriptEditor().updateActions();
             scaveEditor.showAnalysisItem(chart);
 
 //TODO offer dialog to simplify input filters
@@ -103,13 +102,6 @@ public class SaveTempChartAction extends AbstractScaveAction {
     }
 
     private Chart getActiveTemporaryChart(ScaveEditor scaveEditor) {
-        /*
-        FormEditorPage page = editor.getActiveEditorPage();
-        if (page != null && page instanceof ChartPage) {
-            Chart chart = ((ChartPage)page).getChart();
-            if (chart != null && chart.isTemporary())
-                return chart;
-        }*/
         ChartScriptEditor editor = scaveEditor.getActiveChartScriptEditor();
         if (editor != null) {
             Chart chart = editor.getChart();

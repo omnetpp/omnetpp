@@ -96,6 +96,9 @@ public class ChartScriptEditor extends PyEdit {
     IMarker errorMarker;
     MarkerAnnotation errorMarkerAnnotation;
 
+    SaveTempChartAction saveTempChartAction;
+    GotoChartDefinitionAction gotoChartDefinitionAction;
+
     ExportAction exportAction = new ExportAction();
 
     InteractAction interactAction = new InteractAction();
@@ -152,10 +155,14 @@ public class ChartScriptEditor extends PyEdit {
                 formEditor = new FormEditorPage(obj, SWT.NONE, scaveEditor);
                 Composite content = formEditor.getContent();
 
-                if (chart.isTemporary())
-                    formEditor.addToToolbar(new SaveTempChartAction());
-                else
-                    formEditor.addToToolbar(new GotoChartDefinitionAction());
+                saveTempChartAction = new SaveTempChartAction();
+                gotoChartDefinitionAction = new GotoChartDefinitionAction();
+
+                formEditor.addToToolbar(saveTempChartAction);
+                formEditor.addToToolbar(gotoChartDefinitionAction);
+
+                formEditor.setToolbarActionVisible(saveTempChartAction, chart.isTemporary());
+                formEditor.setToolbarActionVisible(gotoChartDefinitionAction, !chart.isTemporary());
 
                 formEditor.addSeparatorToToolbar();
 
@@ -510,7 +517,13 @@ public class ChartScriptEditor extends PyEdit {
         panAction.setChecked(action.equalsIgnoreCase("pan"));
     }
 
-    void updateActions() {
+    public void updateActions() {
+        formEditor.setToolbarActionVisible(saveTempChartAction, chart.isTemporary());
+        formEditor.setToolbarActionVisible(gotoChartDefinitionAction, !chart.isTemporary());
+
+        saveTempChartAction.updateEnabled();
+        gotoChartDefinitionAction.updateEnabled();
+
         zoomInHorizAction.updateEnabled();
         zoomOutHorizAction.updateEnabled();
         zoomInVertAction.updateEnabled();

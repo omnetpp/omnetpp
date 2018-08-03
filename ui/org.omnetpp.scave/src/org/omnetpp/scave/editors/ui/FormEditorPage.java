@@ -137,7 +137,7 @@ public class FormEditorPage extends Composite {
         toolbarManager.update(true);
     }
 
-    protected void setToolbarActionVisible(IAction action, boolean visible) {
+    public void setToolbarActionVisible(IAction action, boolean visible) {
         IContributionItem item = findActionOnToolbar(action);
         item.setVisible(visible);
         toolbarManager.update(true);
