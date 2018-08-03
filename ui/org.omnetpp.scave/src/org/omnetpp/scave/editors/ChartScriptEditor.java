@@ -5,6 +5,8 @@ import java.io.IOException;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -48,6 +50,7 @@ import org.omnetpp.scave.actions.RefreshChartAction;
 import org.omnetpp.scave.actions.SaveTempChartAction;
 import org.omnetpp.scave.actions.ToggleShowSourceAction;
 import org.omnetpp.scave.actions.ZoomChartAction;
+import org.omnetpp.scave.charting.ChartUpdater;
 import org.omnetpp.scave.editors.ui.FormEditorPage;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.MatplotlibChart;
@@ -335,6 +338,16 @@ public class ChartScriptEditor extends PyEdit {
                         }
                     });
 
+
+                    ChartUpdater chartUpdater = new ChartUpdater(chart, ChartScriptEditor.this, nativeChartViewer.getChartViewer(), scaveEditor.getResultFileManager());
+
+                    chart.eAdapters().add(new EContentAdapter() {
+                        @Override
+                        public void notifyChanged(Notification notification) {
+                            super.notifyChanged(notification);
+                            chartUpdater.updateChart(notification);
+                        }
+                    });
 
                     IMenuManager zoomSubmenuManager = new MenuManager("Zoom", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_ZOOM), null);
                     zoomSubmenuManager.add(zoomInHorizAction);

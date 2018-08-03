@@ -93,9 +93,11 @@ public class ChartUpdater {
                 Property property;
                 switch (notification.getEventType()) {
                 case Notification.ADD:
+                case Notification.SET:
                     property = (Property)notification.getNewValue();
                     setChartProperty(property.getName(), property.getValue());
                     break;
+                case Notification.UNSET:
                 case Notification.REMOVE:
                     property = (Property)notification.getOldValue();
                     setChartProperty(property.getName(), null);
