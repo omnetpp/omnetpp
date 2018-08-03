@@ -99,9 +99,9 @@ public class LargeGraphics {
     }
 
     public static void drawPolyline(Graphics graphics, long points[]) {
-        System.out.println("Before: " + Arrays.toString(points));
+        //System.out.println("Before: " + Arrays.toString(points));
         points = SutherlandHodgman.clipPolygon(points, false, MIN_COORDINATE, MIN_COORDINATE, MAX_COORDINATE, MAX_COORDINATE);
-        System.out.println("After: " + Arrays.toString(points));
+        //System.out.println("After: " + Arrays.toString(points));
         if (points != null)
             graphics.drawPolyline(toIntCoordinates(points));
     }
