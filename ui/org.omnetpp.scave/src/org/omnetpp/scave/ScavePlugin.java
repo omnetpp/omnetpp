@@ -7,7 +7,10 @@
 
 package org.omnetpp.scave;
 
+import java.util.HashSet;
+
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -16,6 +19,9 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+import org.python.pydev.ast.interpreter_managers.InterpreterManagersAPI;
+import org.python.pydev.core.IInterpreterInfo;
+import org.python.pydev.core.IInterpreterManager;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -42,6 +48,30 @@ public class ScavePlugin extends AbstractUIPlugin {
     public void start(BundleContext context) throws Exception {
         super.start(context);
         PLUGIN_ID = getBundle().getSymbolicName();
+
+        // This is here to configure a default Python interpreter for PyDev if there are none.
+        // Without a configured interpreter, PyDev places an error marker into every project that
+        // has a PyDev nature. We tried doing this by setting a default value for the
+        // PYTHON_INTERPRETER_PATH ("INTERPRETER_PATH_NEW") preference variable of org.python.pydev
+        // in the plugin_customization.ini file of org.omnetpp.main, but that did not have an effect,
+        // because PyDev reads this variable only from the INSTANCE preference scope, and does not fall
+        // back to the CONFIGURATION scope, where we set it. If it did, that would be a better solution.
+        //
+        // This way, the error marker still appears until the Scave plugin is loaded (for example, when
+        // an .anf file is opened), but it then goes away as a result of the following lines.
+        //
+        // If a .py file is opened first, while the Scave plugin is not loaded, the autoconfiguration
+        // dialogs of PyDev will pop up, and let the user configure an interpreter.
+        //
+        // We do not use anything from this interpreter configuration at the moment, we just need it
+        // to make the error marker disappear, and let PyDev be happy.
+        IInterpreterManager manager = InterpreterManagersAPI.getPythonInterpreterManager();
+        if (manager.getInterpreterInfos().length == 0) {
+            IInterpreterInfo info = manager.createInterpreterInfo("/usr/bin/python3", new NullProgressMonitor(), false);
+            info.setName("Default Python 3");
+            manager.setInfos(new IInterpreterInfo[] { info }, new HashSet<String>(), new NullProgressMonitor());
+        }
+
     }
 
     /*
