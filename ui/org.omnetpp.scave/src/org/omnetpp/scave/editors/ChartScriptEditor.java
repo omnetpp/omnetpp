@@ -405,25 +405,27 @@ public class ChartScriptEditor extends PyEdit {
             public void documentChanged(DocumentEvent event) {
                 ++documentChangeCounter;
 
-                if (autoUpdateEnabled) {
-                    Display.getDefault().timerExec(1000, new Runnable() {
-                        int savedChangeCounter = documentChangeCounter;
+                System.out.println("doc counter is: " + documentChangeCounter);
+                Display.getDefault().timerExec(1000, new Runnable() {
+                    int savedChangeCounter = documentChangeCounter;
 
-                        @Override
-                        public void run() {
-                            if (documentChangeCounter == savedChangeCounter) {
 
-                                if (!getDocument().get().equals(chart.getScript())) {
-                                    SetCommand cmd = (SetCommand) SetCommand.create(scaveEditor.getEditingDomain(), chart,
-                                            chart.eClass().getEStructuralFeature("script"), event.getDocument().get());
-                                    scaveEditor.getEditingDomain().getCommandStack().execute(cmd);
-                                }
+                    @Override
+                    public void run() {
+                        System.out.println("doc counter is: " + documentChangeCounter + " saved counter is: " + savedChangeCounter);
 
-                                runChartScript();
+                        if (documentChangeCounter == savedChangeCounter) {
+                            if (!getDocument().get().equals(chart.getScript())) {
+                                SetCommand cmd = (SetCommand) SetCommand.create(scaveEditor.getEditingDomain(), chart,
+                                        chart.eClass().getEStructuralFeature("script"), event.getDocument().get());
+                                scaveEditor.getEditingDomain().getCommandStack().execute(cmd);
                             }
+
+                            if (autoUpdateEnabled)
+                                runChartScript();
                         }
-                    });
-                }
+                    }
+                });
             }
 
             @Override
