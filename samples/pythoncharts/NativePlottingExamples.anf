@@ -43,7 +43,7 @@
     <items xsi:type="scave:MatplotlibChart" name="importing 1" script="import simplechart"/>
     <items xsi:type="scave:MatplotlibChart" name="importing 2" script="import charts&#xA;charts.chart_function()"/>
     <items xsi:type="scave:BarChart" name="importing 3" script="import charts&#xA;charts.chart_function_native(results, chart)"/>
-    <items xsi:type="scave:MatplotlibChart" name="importing 4" script="from charts import scripts&#xA;&#xA;&#xA;import seaborn as sbs&#xA;sbs.set()&#xA;scripts[chart.getName()]()"/>
+    <items xsi:type="scave:MatplotlibChart" name="importing 4" script="from charts import scripts&#xA;&#xA;scripts[chart.getName()]()"/>
     <items xsi:type="scave:BarChart" name="importing 5" script="from charts import scripts&#xA;&#xA;scripts[chart.getName()](results, chart)"/>
   </charts>
 </scave:Analysis>
