@@ -72,6 +72,24 @@ public class ScavePlugin extends AbstractUIPlugin {
             manager.setInfos(new IInterpreterInfo[] { info }, new HashSet<String>(), new NullProgressMonitor());
         }
 
+        /*
+        IInterpreterManager manager = InterpreterManagersAPI.getPythonInterpreterManager();
+        if (manager.getInterpreterInfos().length == 0) {
+            //IInterpreterInfo info = manager.createInterpreterInfo("/usr/bin/python3", new NullProgressMonitor(), false);
+            //info.setName("Default Python 3");
+            // IInterpreterInfo[] infos = new IInterpreterInfo[] { info };
+
+            IInterpreterInfo[] infos = manager.getInterpretersFromPersistedString("<xml><name>Python 3</name><version>3</version><executable>/usr/bin/python3</executable></xml>");
+            manager.setInfos(infos, new HashSet<String>(), new NullProgressMonitor());
+        }
+
+        IInterpreterManager manager = InterpreterManagersAPI.getPythonInterpreterManager();
+        if (manager.getInterpreterInfos().length == 0) {
+            AutoConfigMaker m = new AutoConfigMaker(IInterpreterProviderFactory.InterpreterType.PYTHON, true, null, null);
+            m.autoConfigSingleApply(null);
+        }
+        */
+
     }
 
     /*
