@@ -24,5 +24,6 @@ else
     export PATH=$omnetpp_root/bin:$PATH
     export HOSTNAME
     export HOST
+    export QT_SELECT=5 # on systems with qtchooser, switch to Qt5
 fi
 
