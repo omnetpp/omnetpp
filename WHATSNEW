@@ -6,7 +6,7 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
-OMNeT++ 6.0pre1pandas (Aug 2018)
+OMNeT++ 6.0pre2 (Aug 2018)
 ----------------------------
 
 This is a preview release demonstrating our completely revamped charting
