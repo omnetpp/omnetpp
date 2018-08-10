@@ -1,0 +1,25 @@
+<!DOCTYPE analysis [
+
+<!ELEMENT analysis (inputs,charts)>
+<!ATTLIST analysis version CDATA #REQUIRED>
+
+<!ELEMENT inputs (input*)>
+<!ELEMENT charts (chart*)>
+
+<!ELEMENT input EMPTY>
+<!ATTLIST input pattern CDATA #REQUIRED>
+
+<!ELEMENT chart (property*)>
+<!ATTLIST chart
+    type CDATA #REQUIRED
+    name CDATA #REQUIRED
+    script CDATA #REQUIRED
+>
+
+<!ELEMENT property EMPTY>
+<!ATTLIST property
+    name CDATA #REQUIRED
+    value CDATA #REQUIRED
+>
+
+]>
