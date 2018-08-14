@@ -147,10 +147,6 @@ public class NativeChartViewer {
                     return;
                 }
 
-                proc.dispose();
-
-                for (MatplotlibChartViewer.IStateChangeListener l : stateChangeListeners)
-                    l.pythonProcessLivenessChanged(false);
 
                 if (runAfterDone != null)
                     runAfterDone.run();
@@ -169,6 +165,11 @@ public class NativeChartViewer {
 
                     chartView.setStatusText("");
                     chartView.update();
+
+                    proc.dispose();
+
+                    for (MatplotlibChartViewer.IStateChangeListener l : stateChangeListeners)
+                        l.pythonProcessLivenessChanged(false);
                 });
             });
         }
