@@ -1582,9 +1582,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
             try {
                 ScaveEditorMemento memento = new ScaveEditorMemento(file);
                 String editorPageId = getPageId(editor);
-                System.out.println("looking for: " + editorPageId);
                 for (IMemento pageMemento : memento.getChildren(PAGE)) {
-                    System.out.println("pageid:" + pageMemento.getString(PAGE_ID));
                     String pageId = pageMemento.getString(PAGE_ID);
                     if (pageId != null && pageId.equals(editorPageId))
                         return pageMemento;
@@ -2034,7 +2032,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
 
             @Override
             public boolean isAdapterForType(Object type) {
-                System.out.println("IS ADAPTER FOR TYPE: " + type);
+                // System.out.println("IS ADAPTER FOR TYPE: " + type);
                 return false;
             }
 
@@ -2045,14 +2043,14 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
             }
         });
 
-        String pageTitle = ((chart.getName() != null && !chart.getName().equals("")) ? chart.getName() : "<unnamed>");
+        String pageTitle = "Chart: " + editor.getChartName();
         int index = addClosablePage(editor, input, pageTitle);
 
         IMemento editorMemento = getMementoFor(editor);
         if (editorMemento != null)
             editor.restoreState(editorMemento);
         else {
-            System.out.println("NO MEMENTO FOR YOU");
+            // System.out.println("NO MEMENTO FOR YOU");
         }
 
         setActivePage(index);
