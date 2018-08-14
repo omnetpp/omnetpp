@@ -16,9 +16,9 @@ import Gateway
 try:
     import numpy as np
     import matplotlib as mpl
-    
+
     mpl.use('module://backend_SWTAgg')
-        
+
     import pandas as pd
     import scave as scave
     import matplotlib.pyplot as plt
@@ -39,7 +39,6 @@ except ImportError:
 
 # optionally import scipy as well?
 
-
 # adding some modules as implicit imports for chart scripts
 # the print function is replaced so it will flush after each line
 execContext = {
@@ -53,8 +52,10 @@ execContext = {
     "print": print
 }
 
+
 def listToBytes(l):
     return np.array(np.array(l), dtype=np.dtype('>f8')).tobytes()
+
 
 def to_label(x):
     if isinstance(x, str):
@@ -66,12 +67,12 @@ def to_label(x):
     else:
         return str(x)
 
+
 class OppAccessor(object):
 
     def __init__(self, entry_point):
         self.entry_point = entry_point
-    
-        
+
     def _plotScalars_lists(self, row_label, labels, values):
         Gateway.chart_plotter.plotScalars(pl.dumps(
             {
@@ -80,7 +81,7 @@ class OppAccessor(object):
                 "values": listToBytes(values)
             }
         ))
-    
+
     def _plotScalars_DF_simple(self, df):
         Gateway.chart_plotter.plotScalars(pl.dumps(
             {
@@ -89,10 +90,10 @@ class OppAccessor(object):
                 "values": listToBytes(df.values.flatten('F'))
             }
         ))
-        
+
     def _plotScalars_DF_scave(self, df):
         self._plotScalars_DF_simple(scave.pivotScalars(df))
-    
+
     def plotScalars(self, df_or_values, labels=None, row_label=None):
         """
         This method only does dynamic dispatching based on its first argument.
@@ -106,8 +107,7 @@ class OppAccessor(object):
                 self._plotScalars_DF_simple(df)
         else:
             self._plotScalars_lists(row_label, labels, df_or_values)
-            
-    
+
     def plotVector(self, label, xs, ys):
         Gateway.chart_plotter.plotVectors(pl.dumps([
             {
@@ -117,7 +117,7 @@ class OppAccessor(object):
                 "ys": listToBytes(ys)
             }
         ]))
-    
+
     def _plotVectors_tuplelist(self, vectors):
         """ vectors is a list of (label, xs, ys) tuples """
         Gateway.chart_plotter.plotVectors(pl.dumps([
@@ -129,14 +129,14 @@ class OppAccessor(object):
             }
             for v in vectors
         ]))
-    
+
     def _plotVectors_DF_simple(self, df):
         xs = None
         if "time" in df:
             xs = listToBytes(df["time"])
         else:
             xs = listToBytes(range(len(df[df.columns[0]])))
-         
+
         Gateway.chart_plotter.plotVectors(pl.dumps([
             {
                 "title": column,
@@ -146,7 +146,7 @@ class OppAccessor(object):
             }
             for column in df if column != "time"
         ]))
-    
+
     def _plotVectors_DF_scave(self, df):
         Gateway.chart_plotter.plotVectors(pl.dumps([
             {
@@ -170,7 +170,7 @@ class OppAccessor(object):
                 self._plotVectors_DF_simple(df)
         else:
             self._plotVectors_tuplelist(df_or_list)
-    
+
     def _plotPoints_DF(self, df):
         Gateway.chart_plotter.plotVectors(pl.dumps([
             {
@@ -181,7 +181,7 @@ class OppAccessor(object):
             }
             for row in df.itertuples()
         ]))
-    
+
     def _plotPoints_tuplelist(self, points):
         """ points is a list of (label, x, y) tuples """
         Gateway.chart_plotter.plotVectors(pl.dumps([
@@ -193,7 +193,7 @@ class OppAccessor(object):
             }
             for point in points
         ]))
-        
+
     """  
     # TODO: scatter charts: same as vector, just with implicit "Dots" Line Type?
     def plotPoints(self, df_or_points):
@@ -202,7 +202,7 @@ class OppAccessor(object):
         else:
             self._plotPoints_tuplelist(df_or_points)
     """
-    
+
     def plotScatter(self, df, xdata, iso_column):
 
         names = set(df["name"].values)
@@ -250,7 +250,7 @@ class OppAccessor(object):
                 "values": listToBytes(values)
             }
         ]))
-    
+
     def plotHistograms(self, df):
         for row in df.itertuples(index=False):
             if row[1] == "histogram":
@@ -274,33 +274,33 @@ class OppAccessor(object):
                     }
                 ]))
 
-
     def setProperty(self, key, value):
         Gateway.chart_plotter.setChartProperty(key, value)
-    
+
     def setProperties(self, *vargs, **kwargs):
         for a in vargs:
             for k, v in a.items():
-                Gateway.chart_plotter.setChartProperty(k, v) # TODO: could be optimized
+                Gateway.chart_plotter.setChartProperty(k, v)  # TODO: could be optimized
         for k, v in kwargs.items():
             Gateway.chart_plotter.setChartProperty(k, v)
-    
+
     def getProperties(self):
         return Gateway.properties_provider.getChartProperties()
-    
+
     def getProperty(self, key):
-        return Gateway.properties_provider.getChartProperties()["key"] # TODO: could be optimized
-    
+        return Gateway.properties_provider.getChartProperties()["key"]  # TODO: could be optimized
+
     def getDefaultProperties(self):
         return Gateway.properties_provider.getDefaultChartProperties()
-    
+
     def getName(self):
         return Gateway.properties_provider.getChartName()
-    
+
     """
     def getChartContents(self):
         return self.entry_point.getChartContents()
-    """ 
+    """
+
 
 class PythonEntryPoint(object):
 
@@ -313,7 +313,7 @@ class PythonEntryPoint(object):
     def setResultsProvider(self, results_provider):
         global execContext
         Gateway.results_provider = results_provider
-        
+
         execContext["chart"] = OppAccessor(Gateway.results_provider)
 
     def setChartPropertiesProvider(self, properties_provider):
@@ -339,13 +339,13 @@ if __name__ == "__main__":
         # We don't actually expect any input, this is just a simple way to wait
         # for the parent process (Java) to die.
         pass
-    
+
     # print("Python process exiting...")
 
     Gateway.gateway.close(False, True)
     Gateway.gateway.shutdown_callback_server()
     Gateway.gateway.shutdown()
-    
+
     sys.exit()
     # it should never come to this, but just to make sure:
     os._exit(1)
