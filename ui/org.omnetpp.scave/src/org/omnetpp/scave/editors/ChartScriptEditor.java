@@ -471,41 +471,49 @@ public class ChartScriptEditor extends PyEdit {
 
     private void annotatePythonException(Py4JException e) {
         String msg = e.getMessage();
-
         // System.out.println("msg: " + msg);
 
-        String[] parts = msg.split("File \"<string>\", line ", 2);
-        //System.out.println(parts[0]);
-        String[] parts2 = parts[1].split("(,|\n)", 2);
-
-        int line = Integer.parseInt(parts2[0]);
-
-        // String[] parts3 = parts[1].split("(in <module>)?\n", 2);
-        // String msg2 = parts3[1];
+        String problemMessage = null;
 
         IDocument doc = getDocument();
 
         int offset = 0;
         int length = doc.getLength();
+        int line = 0;
+
+        String[] parts = msg.split("File \"<string>\", line ", 2);
+        //System.out.println(parts[0]);
+
+        if (parts.length == 0)
+            problemMessage = "Unknown error.";
+        else if (parts.length == 1)
+            problemMessage = parts[0].trim();
+        else {
+            String[] parts2 = parts[1].split("(,|\n)", 2);
+
+            line = Integer.parseInt(parts2[0]);
+
+            // String[] parts3 = parts[1].split("(in <module>)?\n", 2);
+            // String msg2 = parts3[1];
+
+            try {
+                offset = doc.getLineOffset(line - 1);
+                length = doc.getLineLength(line - 1);
+            }
+            catch (BadLocationException exc) {
+                // ignore
+            }
+
+            if (msg.contains("py4j.protocol.Py4JJavaError")) {
+                problemMessage = StringUtils.substringAfter(msg, "py4j.protocol.Py4JJavaError: ");
+                problemMessage = StringUtils.substringAfterLast(problemMessage, ": ");
+                problemMessage = StringUtils.substringBefore(problemMessage, "\n");
+            } else
+                problemMessage = StringUtils.substringAfterLast(msg.trim(), "\n");
+        }
 
         try {
-            offset = doc.getLineOffset(line - 1);
-            length = doc.getLineLength(line - 1);
-        }
-        catch (BadLocationException exc) {
-            // ignore
-        }
-
-        String problemMessage = null;
-
-        if (msg.contains("py4j.protocol.Py4JJavaError")) {
-            problemMessage = StringUtils.substringAfter(msg, "py4j.protocol.Py4JJavaError: ");
-            problemMessage = StringUtils.substringAfterLast(problemMessage, ": ");
-            problemMessage = StringUtils.substringBefore(problemMessage, "\n");
-        } else
-            problemMessage = StringUtils.substringAfterLast(msg.trim(), "\n");
-
-        try {
+            documentProvider.annotationModel.removeAnnotation(errorMarkerAnnotation);
             if (errorMarker != null)
                 errorMarker.delete();
 
@@ -516,10 +524,7 @@ public class ChartScriptEditor extends PyEdit {
             errorMarker.setAttribute(IMarker.LINE_NUMBER, line);
 
             errorMarkerAnnotation = new MarkerAnnotation(errorMarker);
-
-            documentProvider.annotationModel.removeAnnotation(errorMarkerAnnotation);
             documentProvider.annotationModel.addAnnotation(errorMarkerAnnotation, new Position(offset, length));
-
         }
         catch (CoreException e1) {
         }
