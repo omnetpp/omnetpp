@@ -203,6 +203,41 @@ class OppAccessor(object):
             self._plotPoints_tuplelist(df_or_points)
     """
     
+    def plotScatter(self, df, xdata, iso_column):
+
+        names = set(df["name"].values)
+        names.discard(None)
+        names.discard(xdata)
+        names.discard(iso_column)
+
+        df = scave.pivotScalars(df, index=xdata, columns=iso_column, values="value")
+
+        renaming = dict()
+
+        if iso_column:
+            for c in list(df.columns):
+                renaming[c] = iso_column + "=" + str(c)
+
+        df = df.reset_index()
+
+        renaming[xdata] = "time"
+
+        df = df.rename(renaming, axis="columns")
+
+        xs = listToBytes(df["time"])
+
+        Gateway.chart_plotter.plotVectors(pl.dumps([
+            {
+                "title": column,
+                "key": column,
+                "xs": xs,
+                "ys": listToBytes(df[column])
+            }
+            for column in df if column != "time"
+        ]))
+
+        return list(names)
+
     def plotHistogram(self, label, edges, values, count=-1, lowest=math.nan, highest=math.nan):
         Gateway.chart_plotter.plotHistograms(pl.dumps([
             {
