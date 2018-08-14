@@ -575,9 +575,19 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
 
             Node rootNode = nl.item(0);
 
-            if ("scave:Analysis".equals(rootNode.getNodeName()))
-                loadLegacyAnalysis(rootNode);
-            else if ("analysis".equals(rootNode.getNodeName()))
+            if ("scave:Analysis".equals(rootNode.getNodeName())) {
+                NodeList toplevelNodes = rootNode.getChildNodes();
+                boolean isTransitional = false;
+                for (int i = 0; i < toplevelNodes.getLength(); ++i)
+                    if ("charts".equals(toplevelNodes.item(i).getNodeName())) {
+                        isTransitional = true;
+                        break;
+                    }
+                if (isTransitional)
+                    loadTransitionalAnalysis(rootNode);
+                else
+                    loadLegacyAnalysis(rootNode);
+            } else if ("analysis".equals(rootNode.getNodeName()))
                 loadNewAnalysis(rootNode);
             else
                 throw new RuntimeException("Invalid top level node: " + rootNode.getNodeName());
@@ -707,20 +717,107 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
 
 
     class DataOp {
-        String type;
+        String op;
         String filter;
-        DataOp(String type, String filter) {
-            this.type = type;
+        String type;
+
+        DataOp(String op, String filter, String type) {
+            this.op = op;
             this.filter = filter;
+            this.type = type;
         }
     }
 
+    private void loadTransitionalAnalysis(Node rootNode) {
+        NodeList topLevelNodes = rootNode.getChildNodes();
+
+        for (int i = 0; i < topLevelNodes.getLength(); ++i) {
+            Node node = topLevelNodes.item(i);
+
+            if ("inputs".equals(node.getNodeName())) {
+                NodeList inputNodes = node.getChildNodes();
+                for (int j = 0; j < inputNodes.getLength(); ++j) {
+                    Node inputNode = inputNodes.item(j);
+                    if ("inputs".equals(inputNode.getNodeName())) {
+                        InputFile input = factory.createInputFile();
+
+                        Node patternNode = inputNode.getAttributes().getNamedItem("name");
+
+                        input.setName(patternNode.getNodeValue());
+
+                        analysis.getInputs().getInputs().add(input);
+                    } else if ("#text".equals(inputNode.getNodeName())) {
+                        if (!inputNode.getNodeValue().trim().isEmpty())
+                            throw new RuntimeException("unexpected text content: " + inputNode.getNodeValue());
+                    } else {
+                        throw new RuntimeException("invalid child node: " + inputNode.getNodeName());
+                    }
+                }
+            }
+            else if ("charts".equals(node.getNodeName())) {
+                NodeList chartNodes = node.getChildNodes();
+
+                for (int j = 0; j < chartNodes.getLength(); ++j) {
+                    Node chartNode = chartNodes.item(j);
+
+                    if ("items".equals(chartNode.getNodeName())) {
+
+                        Node typeNode = chartNode.getAttributes().getNamedItem("xsi:type");
+
+                        String chartType = typeNode.getNodeValue();
+
+                        Chart chart;
+                        if ("scave:MatplotlibChart".equals(chartType))
+                            chart = factory.createMatplotlibChart();
+                        else if ("scave:BarChart".equals(chartType))
+                            chart = factory.createBarChart();
+                        else if ("scave:LineChart".equals(chartType))
+                            chart = factory.createLineChart();
+                        else if ("scave:HistogramChart".equals(chartType))
+                            chart = factory.createHistogramChart();
+                        else {
+                            throw new RuntimeException("unknown chart type: " + chartType);
+                        }
+
+                        chart.setName(chartNode.getAttributes().getNamedItem("name").getNodeValue());
+                        chart.setScript(chartNode.getAttributes().getNamedItem("script").getNodeValue());
+
+                        NodeList props = chartNode.getChildNodes();
+
+                        for (int k = 0; k < props.getLength(); ++k) {
+                            Node propNode = props.item(k);
+                            if ("properties".equals(propNode.getNodeName())) {
+                                Property prop = factory.createProperty();
+                                prop.setName(propNode.getAttributes().getNamedItem("name").getNodeValue());
+                                prop.setValue(propNode.getAttributes().getNamedItem("value").getNodeValue());
+                                chart.getProperties().add(prop);
+                            }
+                        }
+
+                        analysis.getCharts().getItems().add(chart);
+                    }
+                    else if ("#text".equals(chartNode.getNodeName())) {
+                        if (!chartNode.getNodeValue().trim().isEmpty())
+                            throw new RuntimeException("unexpected text content: " + chartNode.getNodeValue());
+                    } else {
+                        throw new RuntimeException("invalid child node: " + chartNode.getNodeName());
+                    }
+                }
+            }
+            else if ("#text".equals(node.getNodeName())) {
+                if (!node.getNodeValue().trim().isEmpty())
+                    throw new RuntimeException("unexpected text content: " + node.getNodeValue());
+            }
+            else {
+                throw new RuntimeException("invalid child node: " + node.getNodeName());
+            }
+        }
+    }
 
     private void loadLegacyAnalysis(Node rootNode) {
         NodeList topLevelNodes = rootNode.getChildNodes();
 
         // TODO: load transitional models?
-
 
         for (int i = 0; i < topLevelNodes.getLength(); ++i) {
             Node node = topLevelNodes.item(i);
@@ -752,30 +849,36 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
                     Node datasetNode = datasetNodes.item(j);
 
                     if ("datasets".equals(datasetNode.getNodeName())) {
-
                         Node nameNode = datasetNode.getAttributes().getNamedItem("name");
 
                         String datasetName = nameNode.getNodeValue();
-
-                        NodeList itemNodes = node.getChildNodes();
+                        NodeList itemNodes = datasetNode.getChildNodes();
 
                         ArrayList<DataOp> ops = new ArrayList<DataOp>();
 
                         for (int k = 0; k < itemNodes.getLength(); k++) {
                             Node itemNode = itemNodes.item(k);
                             if ("items".equals(itemNode.getNodeName())) {
-                                Node typeNode = itemNode.getAttributes().getNamedItem("xsi:type");
+                                Node chartTypeNode = itemNode.getAttributes().getNamedItem("xsi:type");
 
-                                String itemType = typeNode.getNodeValue();
+                                String itemType = chartTypeNode.getNodeValue();
 
-                                // this is null for charts
+                                // these are null for charts
                                 Node filterNode = itemNode.getAttributes().getNamedItem("filterPattern");
+                                Node opTypeNode = itemNode.getAttributes().getNamedItem("type");
+                                String opType = "SCALAR";
+                                if (opTypeNode != null)
+                                    opType = opTypeNode.getNodeValue();
 
-                                Chart chart;
                                 if ("scave:Add".equals(itemType))
-                                    ops.add(new DataOp("Add", filterNode.getNodeValue()));
-                                else if ("scave:HistogramChart".equals(itemType))
+                                    ops.add(new DataOp("Add", filterNode.getNodeValue(), opType));
+                                else if (("scave:HistogramChart".equals(itemType)) || ("scave:ScatterChart".equals(itemType)))
                                     analysis.getCharts().getItems().add(makeLegacyChart(ops, datasetName, itemNode, itemType));
+                            } else if ("#text".equals(itemNode.getNodeName())) {
+                                if (!itemNode.getNodeValue().trim().isEmpty())
+                                    throw new RuntimeException("unexpected text content: " + itemNode.getNodeValue());
+                            } else {
+                                throw new RuntimeException("invalid child node: " + itemNode.getNodeName());
                             }
                         }
                     }
@@ -800,34 +903,106 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         }
     }
 
+    private String makeHistogramChartScript(Chart chart, Node chartNode, ArrayList<DataOp> ops) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("df = pd.DataFrame()\n\n");
+
+        for (DataOp o : ops)
+            sb.append("df = results.getHistograms(\"\"\"" + o.filter + "\"\"\")\n");
+        sb.append("\n");
+
+        sb.append("chart.plotHistograms(df)\n\n");
+
+        sb.append("chart.setProperty('Graph.Title', chart.getName())\n");
+        sb.append("\n");
+
+        sb.append("chart.setProperties(chart.getProperties())\n");
+
+        return sb.toString();
+    }
+
+
+    private String makeScatterChartScript(Chart chart, Node chartNode, ArrayList<DataOp> ops) {
+        StringBuilder sb = new StringBuilder();
+
+        String aggrFilter = "";
+        for (DataOp o : ops)
+            if (aggrFilter.isEmpty())
+                aggrFilter = "(" + o.filter + ")";
+            else
+                aggrFilter = aggrFilter + "\n  OR (" + o.filter + ")";
+        sb.append("filter_string = \"\"\"" + aggrFilter + "\"\"\"\n\n");
+        sb.append("df = results.getScalars(filter_string)\n");
+        sb.append("\n");
+
+        // sb.append("pd.set_option('display.width', 180)\n");
+        // sb.append("pd.set_option('display.max_colwidth', 100)\n");
+
+        Node xDataNode = chartNode.getAttributes().getNamedItem("xDataPattern");
+
+        if (xDataNode == null)
+            throw new RuntimeException("");
+
+        String xdata = StringUtils.substringBefore(StringUtils.substringAfter(xDataNode.getNodeValue(), "name("), ")");
+
+        String iso_column = null;
+
+        NodeList children = chartNode.getChildNodes();
+        for (int i = 0; i < children.getLength(); ++i) {
+            Node child = children.item(i);
+            if ("isoDataPattern".equals(child.getNodeName())) {
+                if (iso_column == null)
+                    iso_column = child.getTextContent();
+                else {
+                    System.out.println("Warning: More than one isoDataPattern.");
+                    break;
+                }
+            }
+        }
+
+        sb.append("xdata = '" + xdata + "'\n");
+        sb.append("iso_column = " + (iso_column == null ? "None" : ("'" + iso_column.replace("(*)", "") + "'")));
+        sb.append("\n\n");
+
+        sb.append("names = chart.plotScatter(df, xdata=xdata, iso_column=iso_column)\n");
+
+        sb.append("\n");
+        sb.append("chart.setProperty('Y.Axis.Title', ', '.join(names))\n");
+        sb.append("chart.setProperty('X.Axis.Title', '" + xdata + "')\n");
+        sb.append("chart.setProperty('Graph.Title', chart.getName())\n");
+        sb.append("\n");
+
+        sb.append("chart.setProperties(chart.getProperties())\n");
+
+        return sb.toString();
+    }
+
     private Chart makeLegacyChart(ArrayList<DataOp> ops, String datasetName, Node chartNode, String chartType) {
         Chart chart = null;
 
-        if ("scave:HistogramChart".equals(chartType))
+        if ("scave:HistogramChart".equals(chartType)) {
             chart = factory.createHistogramChart();
-        else if ("scave:ScatterChart".equals(chartType))
-            return factory.createHistogramChart();
-        else
+            chart.setScript(makeHistogramChartScript(chart, chartNode, ops));
+        } else if ("scave:ScatterChart".equals(chartType)) {
+            chart = factory.createScatterChart();
+            chart.setScript(makeScatterChartScript(chart, chartNode, ops));
+        } else
             throw new RuntimeException("unknown chart type: " + chartType);
 
         chart.setName(chartNode.getAttributes().getNamedItem("name").getNodeValue());
-
-
-        chart.setScript("print('hi, im a chart');");
-
 
         NodeList props = chartNode.getChildNodes();
 
         for (int k = 0; k < props.getLength(); ++k) {
             Node propNode = props.item(k);
-            if ("property".equals(propNode.getNodeName())) {
+            if ("properties".equals(propNode.getNodeName())) {
                 Property prop = factory.createProperty();
                 prop.setName(propNode.getAttributes().getNamedItem("name").getNodeValue());
                 prop.setValue(propNode.getAttributes().getNamedItem("value").getNodeValue());
                 chart.getProperties().add(prop);
             }
         }
-
 
         return chart;
     }
