@@ -221,7 +221,7 @@ public class ChartScriptEditor extends PyEdit {
                     formEditor.addToToolbar(new ClosePageAction());
                 }
 
-                formEditor.setFormTitle(getChartName());
+                formEditor.setFormTitle("Chart: " + getChartName());
                 GridLayout layout = new GridLayout(1, true);
                 layout.marginWidth = 0;
                 layout.marginHeight = 0;
@@ -405,14 +405,14 @@ public class ChartScriptEditor extends PyEdit {
             public void documentChanged(DocumentEvent event) {
                 ++documentChangeCounter;
 
-                System.out.println("doc counter is: " + documentChangeCounter);
+                // System.out.println("doc counter is: " + documentChangeCounter);
                 Display.getDefault().timerExec(1000, new Runnable() {
                     int savedChangeCounter = documentChangeCounter;
 
 
                     @Override
                     public void run() {
-                        System.out.println("doc counter is: " + documentChangeCounter + " saved counter is: " + savedChangeCounter);
+                        // System.out.println("doc counter is: " + documentChangeCounter + " saved counter is: " + savedChangeCounter);
 
                         if (documentChangeCounter == savedChangeCounter) {
                             if (!getDocument().get().equals(chart.getScript())) {
@@ -618,7 +618,7 @@ public class ChartScriptEditor extends PyEdit {
     }
 
     public String getChartName() {
-        return chart.getName() == null ? "<unnamed>" : chart.getName();
+        return (chart.getName() == null || chart.getName().isEmpty()) ? "<unnamed>" : chart.getName();
     }
 
     @Override
