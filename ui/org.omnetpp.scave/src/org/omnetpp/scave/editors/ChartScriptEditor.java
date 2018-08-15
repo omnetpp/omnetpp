@@ -406,7 +406,7 @@ public class ChartScriptEditor extends PyEdit {
                 ++documentChangeCounter;
 
                 // System.out.println("doc counter is: " + documentChangeCounter);
-                Display.getDefault().timerExec(1000, new Runnable() {
+                Display.getDefault().timerExec(1500, new Runnable() { // TODO: make this delay configurable?
                     int savedChangeCounter = documentChangeCounter;
 
 
