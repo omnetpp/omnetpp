@@ -9,6 +9,8 @@ public class PythonProcess {
     public PythonOutputMonitoringThread outputMonitoringThread;
     public PythonCallerThread pythonCallerThread;
 
+    IPythonEntryPoint entryPoint = null;
+
     public PythonProcess(Process process, ClientServer clientServer) {
         this.process = process;
         this.clientServer = clientServer;
@@ -23,7 +25,9 @@ public class PythonProcess {
     }
 
     public IPythonEntryPoint getEntryPoint() {
-        IPythonEntryPoint entryPoint = null;
+        if (entryPoint != null)
+            return entryPoint;
+
         System.out.println("getting entry point...");
         int tries = 0;
         boolean ok = false;
@@ -34,7 +38,7 @@ public class PythonProcess {
                 System.out.println("checking the entry point...");
                 ++tries;
                 ok = entryPoint.check();
-                System.out.println("we have the entry point!");
+                System.out.println("we have the entry point? " + ok);
             }
             catch (Exception e) {
                 System.out.println("can't connect yet, trying again in a bit...");
@@ -47,6 +51,12 @@ public class PythonProcess {
                 }
             }
         }
+
+        if (!ok) {
+            entryPoint = null;
+            System.out.println("Couldn't get the entry point to the Python process... :(");
+        }
+
         return entryPoint;
     }
 
