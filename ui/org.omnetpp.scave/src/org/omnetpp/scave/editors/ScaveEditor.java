@@ -181,7 +181,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
 
     private Map<EObject,Control> closablePages = new LinkedHashMap<EObject,Control>();
 
-    PythonProcessPool processPool = new PythonProcessPool();
+    PythonProcessPool processPool = new PythonProcessPool(2);
 
 
     /**
