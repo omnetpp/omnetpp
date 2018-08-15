@@ -87,7 +87,9 @@ public class ChartUpdater {
         if (notifier instanceof Chart && notifier == chart) {
             switch (notification.getFeatureID(Chart.class)) {
             case ScaveModelPackage.CHART__SCRIPT:
-                scheduleDatasetUpdate();
+                // this is already done by the change notification through the Document
+                // in the PyDev editor, no need to do it twice.
+                //scheduleDatasetUpdate();
                 break;
             case ScaveModelPackage.CHART__PROPERTIES:
                 Property property;
