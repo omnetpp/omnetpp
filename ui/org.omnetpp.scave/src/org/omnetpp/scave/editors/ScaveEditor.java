@@ -872,8 +872,10 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
 
                                 if ("scave:Add".equals(itemType))
                                     ops.add(new DataOp("Add", filterNode.getNodeValue(), opType));
-                                else if (("scave:HistogramChart".equals(itemType)) || ("scave:ScatterChart".equals(itemType)))
+                                else if ("scave:HistogramChart".equals(itemType) || "scave:ScatterChart".equals(itemType) || "scave:LineChart".equals(itemType))
                                     analysis.getCharts().getItems().add(makeLegacyChart(ops, datasetName, itemNode, itemType));
+                                else
+                                    System.out.println("UNIMPLEMENTED ITEM TYPE: " + itemType);
                             } else if ("#text".equals(itemNode.getNodeName())) {
                                 if (!itemNode.getNodeValue().trim().isEmpty())
                                     throw new RuntimeException("unexpected text content: " + itemNode.getNodeValue());
@@ -903,13 +905,23 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         }
     }
 
+    private String makeFilterString(ArrayList<DataOp> ops) {
+        String aggrFilter = "";
+        for (DataOp o : ops)
+            if (aggrFilter.isEmpty())
+                aggrFilter = "(" + o.filter + ")";
+            else
+                aggrFilter = aggrFilter + "\n  OR (" + o.filter + ")";
+        return aggrFilter;
+    }
+
     private String makeHistogramChartScript(Chart chart, Node chartNode, ArrayList<DataOp> ops) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("df = pd.DataFrame()\n\n");
+        String filter = makeFilterString(ops);
 
-        for (DataOp o : ops)
-            sb.append("df = results.getHistograms(\"\"\"" + o.filter + "\"\"\")\n");
+        sb.append("df = results.getHistograms(\"\"\"" + filter + "\"\"\")\n");
+
         sb.append("\n");
 
         sb.append("chart.plotHistograms(df)\n\n");
@@ -926,13 +938,9 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
     private String makeScatterChartScript(Chart chart, Node chartNode, ArrayList<DataOp> ops) {
         StringBuilder sb = new StringBuilder();
 
-        String aggrFilter = "";
-        for (DataOp o : ops)
-            if (aggrFilter.isEmpty())
-                aggrFilter = "(" + o.filter + ")";
-            else
-                aggrFilter = aggrFilter + "\n  OR (" + o.filter + ")";
-        sb.append("filter_string = \"\"\"" + aggrFilter + "\"\"\"\n\n");
+        String filter = makeFilterString(ops);
+
+        sb.append("filter_string = \"\"\"" + filter + "\"\"\"\n\n");
         sb.append("df = results.getScalars(filter_string)\n");
         sb.append("\n");
 
@@ -942,7 +950,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         Node xDataNode = chartNode.getAttributes().getNamedItem("xDataPattern");
 
         if (xDataNode == null)
-            throw new RuntimeException("");
+            throw new RuntimeException("No xDataPattern in scatter chart " + chart.getName());
 
         String xdata = StringUtils.substringBefore(StringUtils.substringAfter(xDataNode.getNodeValue(), "name("), ")");
 
@@ -978,6 +986,31 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         return sb.toString();
     }
 
+    private String makeLineChartScript(Chart chart, Node chartNode, ArrayList<DataOp> ops) {
+        StringBuilder sb = new StringBuilder();
+
+        String filter = makeFilterString(ops);
+
+        sb.append("filter_string = \"\"\"" + filter + "\"\"\"\n\n");
+
+        sb.append("df = results.getVectors(filter_string)\n");
+        sb.append("\n");
+
+        // sb.append("pd.set_option('display.width', 180)\n");
+        // sb.append("pd.set_option('display.max_colwidth', 100)\n");
+
+        sb.append("chart.plotVectors(df)\n");
+
+        sb.append("\n");
+        sb.append("chart.setProperty('X.Axis.Title', 'Time')\n");
+        sb.append("chart.setProperty('Graph.Title', chart.getName())\n");
+        sb.append("\n");
+
+        sb.append("chart.setProperties(chart.getProperties())\n");
+
+        return sb.toString();
+    }
+
     private Chart makeLegacyChart(ArrayList<DataOp> ops, String datasetName, Node chartNode, String chartType) {
         Chart chart = null;
 
@@ -987,6 +1020,9 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         } else if ("scave:ScatterChart".equals(chartType)) {
             chart = factory.createScatterChart();
             chart.setScript(makeScatterChartScript(chart, chartNode, ops));
+        } else if ("scave:LineChart".equals(chartType)) {
+            chart = factory.createLineChart();
+            chart.setScript(makeLineChartScript(chart, chartNode, ops));
         } else
             throw new RuntimeException("unknown chart type: " + chartType);
 
@@ -1006,6 +1042,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
 
         return chart;
     }
+
 
     protected Resource createTempResource() {
         IFileEditorInput modelFile = (IFileEditorInput)getEditorInput();
