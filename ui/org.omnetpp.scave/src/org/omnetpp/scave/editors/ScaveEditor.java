@@ -918,16 +918,15 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
     private String makeHistogramChartScript(Chart chart, Node chartNode, ArrayList<DataOp> ops) {
         StringBuilder sb = new StringBuilder();
 
+        sb.append("import results\n\n");
+
         String filter = makeFilterString(ops);
 
-        sb.append("df = results.getHistograms(\"\"\"" + filter + "\"\"\")\n");
-
-        sb.append("\n");
+        sb.append("df = results.getHistograms(\"\"\"" + filter + "\"\"\")\n\n");
 
         sb.append("chart.plotHistograms(df)\n\n");
 
-        sb.append("chart.setProperty('Graph.Title', chart.getName())\n");
-        sb.append("\n");
+        sb.append("chart.setProperty('Graph.Title', chart.getName())\n\n");
 
         sb.append("chart.setProperties(chart.getProperties())\n");
 
@@ -940,9 +939,10 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
 
         String filter = makeFilterString(ops);
 
+        sb.append("import results\n\n");
+
         sb.append("filter_string = \"\"\"" + filter + "\"\"\"\n\n");
-        sb.append("df = results.getScalars(filter_string)\n");
-        sb.append("\n");
+        sb.append("df = results.getScalars(filter_string)\n\n");
 
         // sb.append("pd.set_option('display.width', 180)\n");
         // sb.append("pd.set_option('display.max_colwidth', 100)\n");
@@ -973,13 +973,11 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         sb.append("iso_column = " + (iso_column == null ? "None" : ("'" + iso_column.replace("(*)", "") + "'")));
         sb.append("\n\n");
 
-        sb.append("names = chart.plotScatter(df, xdata=xdata, iso_column=iso_column)\n");
+        sb.append("names = chart.plotScatter(df, xdata=xdata, iso_column=iso_column)\n\n");
 
-        sb.append("\n");
         sb.append("chart.setProperty('Y.Axis.Title', ', '.join(names))\n");
         sb.append("chart.setProperty('X.Axis.Title', '" + xdata + "')\n");
-        sb.append("chart.setProperty('Graph.Title', chart.getName())\n");
-        sb.append("\n");
+        sb.append("chart.setProperty('Graph.Title', chart.getName())\n\n");
 
         sb.append("chart.setProperties(chart.getProperties())\n");
 
@@ -991,20 +989,19 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
 
         String filter = makeFilterString(ops);
 
+        sb.append("import results\n\n");
+
         sb.append("filter_string = \"\"\"" + filter + "\"\"\"\n\n");
 
-        sb.append("df = results.getVectors(filter_string)\n");
-        sb.append("\n");
+        sb.append("df = results.getVectors(filter_string)\n\n");
 
         // sb.append("pd.set_option('display.width', 180)\n");
         // sb.append("pd.set_option('display.max_colwidth', 100)\n");
 
-        sb.append("chart.plotVectors(df)\n");
+        sb.append("chart.plotVectors(df)\n\n");
 
-        sb.append("\n");
         sb.append("chart.setProperty('X.Axis.Title', 'Time')\n");
-        sb.append("chart.setProperty('Graph.Title', chart.getName())\n");
-        sb.append("\n");
+        sb.append("chart.setProperty('Graph.Title', chart.getName())\n\n");
 
         sb.append("chart.setProperties(chart.getProperties())\n");
 

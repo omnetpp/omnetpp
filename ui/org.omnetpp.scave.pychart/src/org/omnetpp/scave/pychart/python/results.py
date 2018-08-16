@@ -1,15 +1,78 @@
 import pandas as pd
 import numpy as np
+import pickle
+import time
 
 import Gateway
-import pickle as pickle
-
 from TimeAndGuard import TimeAndGuard
 
 import functools
 print = functools.partial(print, flush=True)
 
-import time
+
+def transform_results(df):
+    # print(df)
+
+    runattrs = df[df.type == "runattr"][["run", "attrname", "attrvalue"]]
+    params = df[df.type == "param"][["run", "attrname", "attrvalue"]]
+    itervars = df[df.type == "itervar"][["run", "attrname", "attrvalue"]]
+
+    # print(runattrs)
+    # print(params)
+    # print(itervars)
+
+    # we only keep the effective (first in the .sca file) parameter assignments, sorry...
+    params.drop_duplicates(subset=["run", "attrname"], inplace=True)
+
+    runattrs_pivot = runattrs.pivot(index="run", columns="attrname", values="attrvalue")
+    params_pivot = params.pivot(index="run", columns="attrname", values="attrvalue")
+    itervars_pivot = itervars.pivot(index="run", columns="attrname", values="attrvalue")
+
+    runattrs_pivot.columns = pd.MultiIndex.from_product([['runattr'], runattrs_pivot.columns])
+    params_pivot.columns = pd.MultiIndex.from_product([['param'], params_pivot.columns])
+    itervars_pivot.columns = pd.MultiIndex.from_product([['itervar'], itervars_pivot.columns])
+
+    # print(runattrs_pivot)
+    # print(params_pivot)
+    # print(itervars_pivot)
+
+    # the stuff recorded as scalars with _runattrs_ as module is redundant, since we include the runattrs anyways
+    scalars = df[(df.type == "scalar") & (df.module != '_runattrs_')][["run", "module", "name", "value"]]
+    scalars.set_index(['run', 'module', 'name'], inplace=True)
+    scalars.columns = pd.MultiIndex.from_product([['result'], scalars.columns])
+
+    # print(scalars)
+
+    attrs = df[df.type == "attr"][["run", "module", "name", "attrname", "attrvalue"]]
+
+    # print(attrs)
+
+    # we know that the attrname values are unique for every run-module-name index, but pandas doesn't, so it will
+    # give us a series of 1 element length to aggregate. we will simply return the single element of that series
+    attrs_pivot = attrs.pivot_table(index=["run", "module", "name"], columns="attrname", values="attrvalue", aggfunc=lambda s: s[s.first_valid_index()])
+    attrs_pivot.columns = pd.MultiIndex.from_product([['attr'], attrs_pivot.columns])
+
+    # print(attrs)
+
+    joined = scalars
+    joined = joined.join(attrs_pivot)
+    joined = joined.join(itervars_pivot, on='run')
+    joined = joined.join(params_pivot, on='run')
+    joined = joined.join(runattrs_pivot, on='run')
+
+    # print(joined)
+    joined.reset_index(inplace=True)
+    joined.set_index([('runattr', 'experiment'), ('runattr', 'measurement'), ('runattr', 'replication'), ('module', ""), ('name', "")], inplace=True)
+    #joined.sort_index(inplace=True)
+    #joined.index.names = ["experiment", "measurement", "replication", "module", "name"]
+
+    # joined.rename({'':'runid'}, axis="columns", level=1, inplace=True)
+    # joined.rename({'run':'runattr'}, axis="columns", level=0, inplace=True)
+
+    # print(joined.columns)
+    # print(joined)
+
+    return joined
 
 
 def getScalars(filter):

@@ -11,6 +11,8 @@ print = functools.partial(print, flush=True)
 from TimeAndGuard import TimeAndGuard
 import traceback
 
+import results
+
 import Gateway
 
 try:
@@ -20,7 +22,6 @@ try:
     mpl.use('module://backend_SWTAgg')
 
     import pandas as pd
-    import scave as scave
     import matplotlib.pyplot as plt
 
 except ImportError as e:
@@ -44,7 +45,6 @@ except ImportError:
 execContext = {
     "np": np,
     "pd": pd,
-    "results": scave,
     "mpl": mpl,
     "plt" : plt,
     "ppl": ppl,
@@ -92,7 +92,7 @@ class OppAccessor(object):
         ))
 
     def _plotScalars_DF_scave(self, df):
-        self._plotScalars_DF_simple(scave.pivotScalars(df))
+        self._plotScalars_DF_simple(results.pivotScalars(df))
 
     def plotScalars(self, df_or_values, labels=None, row_label=None):
         """
@@ -210,7 +210,7 @@ class OppAccessor(object):
         names.discard(xdata)
         names.discard(iso_column)
 
-        df = scave.pivotScalars(df, index=xdata, columns=iso_column, values="value")
+        df = results.pivotScalars(df, index=xdata, columns=iso_column, values="value")
 
         renaming = dict()
 

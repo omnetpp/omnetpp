@@ -7,6 +7,9 @@
 
 package org.omnetpp.scave;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.HashSet;
 
 import org.eclipse.core.runtime.IStatus;
@@ -18,7 +21,9 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.omnetpp.scave.pychart.PythonProcessPool;
 import org.osgi.framework.BundleContext;
+import org.python.pydev.ast.interpreter_managers.InterpreterInfo;
 import org.python.pydev.ast.interpreter_managers.InterpreterManagersAPI;
 import org.python.pydev.core.IInterpreterInfo;
 import org.python.pydev.core.IInterpreterManager;
@@ -49,6 +54,11 @@ public class ScavePlugin extends AbstractUIPlugin {
         super.start(context);
         PLUGIN_ID = getBundle().getSymbolicName();
 
+        ensurePyDevInterpreterConfigured();
+    }
+
+    public void ensurePyDevInterpreterConfigured() {
+
         // This is here to configure a default Python interpreter for PyDev if there are none.
         // Without a configured interpreter, PyDev places an error marker into every project that
         // has a PyDev nature. We tried doing this by setting a default value for the
@@ -69,6 +79,40 @@ public class ScavePlugin extends AbstractUIPlugin {
         if (manager.getInterpreterInfos().length == 0) {
             IInterpreterInfo info = manager.createInterpreterInfo("/usr/bin/python3", new NullProgressMonitor(), false);
             info.setName("Default Python 3");
+
+            String location = "NULL";
+            try {
+                location = new File(
+                        PythonProcessPool.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()
+                                + "src/org/omnetpp/scave/pychart/python").getAbsolutePath();
+            }
+            catch (URISyntaxException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            String location2 = location.replaceAll("/src/org/omnetpp/scave/pychart/python$",
+                    "/org/omnetpp/scave/pychart/python");
+
+            try {
+                File f1 = new File(location);
+                if (f1.exists()) {
+                    location = f1.getCanonicalPath();
+                    ((InterpreterInfo) info).libs.add(location);
+                    ((InterpreterInfo) info).addPredefinedCompletionsPath(location);
+                }
+
+                File f2 = new File(location2);
+                if (f2.exists()) {
+                    location2 = f2.getCanonicalPath();
+                    ((InterpreterInfo) info).libs.add(location2);
+                    ((InterpreterInfo) info).addPredefinedCompletionsPath(location2);
+                }
+            }
+            catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
             manager.setInfos(new IInterpreterInfo[] { info }, new HashSet<String>(), new NullProgressMonitor());
         }
 
@@ -91,7 +135,6 @@ public class ScavePlugin extends AbstractUIPlugin {
         */
 
     }
-
     /*
      * (non-Javadoc)
      * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
