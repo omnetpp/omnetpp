@@ -223,7 +223,15 @@ class OppAccessor(object):
         renaming[xdata] = "time"
 
         df = df.rename(renaming, axis="columns")
-
+        
+        df.dropna(inplace=True)
+        
+        df["time"] = pd.to_numeric(df["time"])
+        
+        df.sort_values(by="time", inplace=True)
+        
+        print(df)
+        
         xs = listToBytes(df["time"])
 
         Gateway.chart_plotter.plotVectors(pl.dumps([
