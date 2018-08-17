@@ -888,7 +888,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
 
                                 if ("scave:Add".equals(itemType))
                                     ops.add(new DataOp("Add", filterNode.getNodeValue(), opType));
-                                else if ("scave:HistogramChart".equals(itemType) || "scave:ScatterChart".equals(itemType) || "scave:LineChart".equals(itemType))
+                                else if ("scave:BarChart".equals(itemType) || "scave:HistogramChart".equals(itemType) || "scave:ScatterChart".equals(itemType) || "scave:LineChart".equals(itemType))
                                     analysis.getCharts().getItems().add(makeLegacyChart(ops, datasetName, itemNode, itemType));
                                 else
                                     System.out.println("UNIMPLEMENTED ITEM TYPE: " + itemType);
@@ -1024,10 +1024,36 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         return sb.toString();
     }
 
+    private String makeBarChartScript(Chart chart, Node chartNode, ArrayList<DataOp> ops) {
+        StringBuilder sb = new StringBuilder();
+
+        String filter = makeFilterString(ops);
+
+        sb.append("import results\n\n");
+
+        sb.append("filter_string = \"\"\"" + filter + "\"\"\"\n\n");
+
+        sb.append("df = results.getScalars(filter_string)\n\n");
+
+        // sb.append("pd.set_option('display.width', 180)\n");
+        // sb.append("pd.set_option('display.max_colwidth', 100)\n");
+
+        sb.append("chart.plotScalars(df)\n\n");
+
+        sb.append("chart.setProperty('Graph.Title', chart.getName())\n\n");
+
+        sb.append("chart.setProperties(chart.getProperties())\n");
+
+        return sb.toString();
+    }
+
     private Chart makeLegacyChart(ArrayList<DataOp> ops, String datasetName, Node chartNode, String chartType) {
         Chart chart = null;
 
-        if ("scave:HistogramChart".equals(chartType)) {
+        if ("scave:BarChart".equals(chartType)) {
+            chart = factory.createBarChart();
+            chart.setScript(makeBarChartScript(chart, chartNode, ops));
+        } else if ("scave:HistogramChart".equals(chartType)) {
             chart = factory.createHistogramChart();
             chart.setScript(makeHistogramChartScript(chart, chartNode, ops));
         } else if ("scave:ScatterChart".equals(chartType)) {
