@@ -1,0 +1,74 @@
+%description:
+class name specified in @class property and inherited module in another namespace
+
+%file: test1.ned
+
+@namespace(@TESTNAME@_ns1);
+
+simple Test1
+{
+    @class("Test");
+}
+
+%file: test2.ned
+
+@namespace(@TESTNAME@_ns2);
+
+import test1.ned;
+
+simple Test2 extends Test1
+{
+}
+
+%file: test.ned
+
+import test1.ned;
+import test2.ned;
+
+module Test
+{
+    @isNetwork(true);
+  submodules:
+    test1: Test1;
+    test2: Test2;
+}
+
+%file: test.cc
+
+#include <string.h>
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@_ns1 {
+
+class Test : public cSimpleModule
+{
+  public:
+    Test() : cSimpleModule(16384) { }
+    virtual void activity() override;
+};
+
+Define_Module(Test);
+
+void Test::activity()
+{
+    EV << getFullPath() << "::activity() called\n";
+}
+
+}; //namespace
+
+%inifile: omnetpp.ini
+network = Test
+cmdenv-express-mode = false
+check-signals = true
+
+%contains: stdout
+
+Running simulation...
+** Event #1  t=0   Test.test1 (Test1, id=2)
+Test.test1::activity() called
+** Event #2  t=0   Test.test2 (Test2, id=3)
+Test.test2::activity() called
+
+<!> No more events
