@@ -1,0 +1,76 @@
+%description:
+Namespace lookup of class names in @signal type attr
+
+%file: test.msg
+
+namespace @TESTNAME@_ns1;
+
+message Foo {} // @TESTNAME@_ns1::Foo
+
+%file: test1.ned
+
+@namespace(@TESTNAME@_ns1);
+
+simple Test1 extends testlib.SignalSource
+{
+    @signal[m0](type="Foo"); // should be understood as @TESTNAME@_ns1::Foo
+    @signal[m1](type="@TESTNAME@_ns1::Foo"); // ditto
+    @signal[m2](type="string");
+}
+
+%file: test2.ned
+
+@namespace(@TESTNAME@_ns2);
+
+import test1.ned;
+
+simple Test2 extends Test1
+{
+}
+
+%file: test.ned
+
+import test1.ned;
+import test2.ned;
+
+module Test
+{
+    @isNetwork(true);
+  submodules:
+    test1: Test1;
+    test2: Test2;
+}
+
+%inifile: omnetpp.ini
+network = Test
+cmdenv-express-mode = false
+check-signals = true
+
+*.test1.script = xml("<root>\
+       <e at='init' name='m0' type='@TESTNAME@_ns1::Foo' value='test1'/> \
+       <e at='init' name='m1' type='@TESTNAME@_ns1::Foo' value='test1'/> \
+       <e at='init' name='m2' type='string' value='test1'/> \
+    </root>")
+
+*.test2.script = xml("<root>\
+       <e at='init' name='m0' type='@TESTNAME@_ns1::Foo' value='test2'/> \
+       <e at='init' name='m1' type='@TESTNAME@_ns1::Foo' value='test2'/> \
+       <e at='init' name='m2' type='string' value='test2'/> \
+    </root>")
+
+%contains: stdout
+Initializing module Test.test1, stage 0
+t=0s: emit "m0" type=@TESTNAME@_ns1::Foo value=test1
+t=0s: emit "m1" type=@TESTNAME@_ns1::Foo value=test1
+t=0s: emit "m2" type=string value=test1
+
+%contains: stdout
+Initializing module Test.test2, stage 0
+t=0s: emit "m0" type=@TESTNAME@_ns1::Foo value=test2
+t=0s: emit "m1" type=@TESTNAME@_ns1::Foo value=test2
+t=0s: emit "m2" type=string value=test2
+
+%contains: stdout
+emitted 3 signals with 0 errors
+emitted 3 signals with 0 errors
+
