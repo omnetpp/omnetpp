@@ -7,8 +7,11 @@
 
 package org.omnetpp.scave.editors;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,6 +26,13 @@ import java.util.concurrent.Callable;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -47,7 +57,6 @@ import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.eclipse.emf.common.ui.MarkerHelper;
 import org.eclipse.emf.common.util.BasicDiagnostic;
 import org.eclipse.emf.common.util.Diagnostic;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -147,11 +156,16 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.AnalysisItem;
+import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
+import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
+import org.omnetpp.scave.model.LineChart;
+import org.omnetpp.scave.model.MatplotlibChart;
 import org.omnetpp.scave.model.Property;
+import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.IScaveEditorContext;
@@ -160,6 +174,7 @@ import org.omnetpp.scave.model2.provider.ScaveModelItemProviderAdapterFactory;
 import org.omnetpp.scave.pychart.PythonProcessPool;
 import org.omnetpp.scave.python.MatplotlibChartViewer;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -674,11 +689,12 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
                             chart = factory.createBarChart();
                         else if ("LineChart".equals(chartType))
                             chart = factory.createLineChart();
+                        else if ("ScatterChart".equals(chartType))
+                            chart = factory.createScatterChart();
                         else if ("HistogramChart".equals(chartType))
                             chart = factory.createHistogramChart();
-                        else {
+                        else
                             throw new RuntimeException("unknown chart type: " + chartType);
-                        }
 
                         chart.setName(chartNode.getAttributes().getNamedItem("name").getNodeValue());
                         chart.setScript(chartNode.getAttributes().getNamedItem("script").getNodeValue());
@@ -2044,32 +2060,97 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         return ((BasicCommandStack)editingDomain.getCommandStack()).isSaveNeeded();
     }
 
+    // yoinked from https://stackoverflow.com/a/1292458
+    private InputStream nodeToInputStream(Node node) throws TransformerException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        Result outputTarget = new StreamResult(outputStream);
+        Transformer t = TransformerFactory.newInstance().newTransformer();
+        t.setOutputProperty(OutputKeys.INDENT, "yes");
+        // holy heck, what is this string... taken from https://stackoverflow.com/a/1384816
+        t.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+        t.transform(new DOMSource(node), outputTarget);
+        return new ByteArrayInputStream(outputStream.toByteArray());
+    }
+
     /**
      * This is for implementing {@link IEditorPart} and simply saves the model file.
      */
     public void doSave(IProgressMonitor progressMonitor) {
         // Save only resources that have actually changed.
         //
-        final Map<Object, Object> saveOptions = new HashMap<Object, Object>();
-        saveOptions.put(Resource.OPTION_SAVE_ONLY_IF_CHANGED, Resource.OPTION_SAVE_ONLY_IF_CHANGED_MEMORY_BUFFER);
-        saveOptions.put(Resource.OPTION_LINE_DELIMITER, Resource.OPTION_LINE_DELIMITER_UNSPECIFIED);
 
         // Do the work within an operation because this is a long running activity that modifies the workbench.
         WorkspaceModifyOperation operation =
             new WorkspaceModifyOperation() {
                 // This is the method that gets invoked when the operation runs.
                 public void execute(IProgressMonitor monitor) {
-                    // Save the resources to the file system.
-                    EList<Resource> resources = editingDomain.getResourceSet().getResources();
-                    Assert.isTrue(resources.size() == 1);
-                    Resource resource = resources.get(0);
-                    if (!editingDomain.isReadOnly(resource)) {
-                        try {
-                            resource.save(saveOptions);
+                    IFileEditorInput modelFile = (IFileEditorInput)getEditorInput();
+                    DocumentBuilder db;
+                    try {
+                        db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+
+                        Document d = db.newDocument();
+
+                        Element anal = d.createElement("analysis");
+                        anal.setAttribute("version", "2");
+                        d.appendChild(anal);
+
+                        Element inputs = d.createElement("inputs");
+                        anal.appendChild(inputs);
+
+                        Element charts = d.createElement("charts");
+                        anal.appendChild(charts);
+
+                        for (InputFile i : analysis.getInputs().getInputs()) {
+                            Element elem = d.createElement("input");
+                            inputs.appendChild(elem);
+                            elem.setAttribute("pattern", i.getName());
                         }
-                        catch (Exception e) {
-                            ScavePlugin.logError("Could not save resource", e);
+
+                        for (AnalysisItem a : analysis.getCharts().getItems()) {
+                            if (a instanceof Chart) {
+                                Chart chart = (Chart)a;
+                                Element elem = d.createElement("chart");
+                                charts.appendChild(elem);
+
+                                elem.setAttribute("name", chart.getName());
+                                elem.setAttribute("script", chart.getScript());
+
+                                String type = null;
+
+                                if (chart instanceof BarChart)
+                                    type = "BarChart";
+                                else if (chart instanceof LineChart)
+                                    type = "LineChart";
+                                else if (chart instanceof ScatterChart)
+                                    type = "ScatterChart";
+                                else if (chart instanceof HistogramChart)
+                                    type = "HistogramChart";
+                                else if (chart instanceof MatplotlibChart)
+                                    type = "MatplotlibChart";
+                                else
+                                    throw new RuntimeException("Unexpected chart type.");
+
+                                elem.setAttribute("type", type);
+
+                                for (Property p : chart.getProperties()) {
+                                    Element e = d.createElement("property");
+                                    e.setAttribute("name", p.getName());
+                                    e.setAttribute("value", p.getValue());
+                                    elem.appendChild(e);
+                                }
+                            }
+                            else {
+                                System.out.println("Analysis item '" + a.getName() + "' is not a chart, ignored (dropped) upon saving");
+                            }
                         }
+
+                        InputStream is = nodeToInputStream(d);
+                        modelFile.getFile().setContents(is, true, true, null);
+                    }
+                    catch (ParserConfigurationException | TransformerException | CoreException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
                     }
                 }
             };
