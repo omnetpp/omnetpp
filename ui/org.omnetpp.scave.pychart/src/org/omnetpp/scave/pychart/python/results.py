@@ -77,6 +77,8 @@ def transform_results(df):
         attrs_pivot.columns = pd.MultiIndex.from_product([['attr'], attrs_pivot.columns])
 
         # print(attrs_pivot)
+    else:
+        attrs_pivot = pd.DataFrame()
 
     joined = pd.DataFrame()
 
