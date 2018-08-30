@@ -257,6 +257,10 @@ static const char *buildOptions = ""
     " WITH_OSG"
     #endif
 
+    #ifdef WITH_OSGEARTH
+    " WITH_OSGEARTH"
+    #endif
+
     #ifdef WITH_AKAROA
     " WITH_AKAROA"
     #endif
