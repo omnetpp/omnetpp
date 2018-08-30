@@ -985,6 +985,9 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
             }
         }
 
+        if (iso_column != null)
+            iso_column = StringUtils.substringBefore(StringUtils.substringAfter(iso_column, "name("), ")");
+
         sb.append("xdata = '" + xdata + "'\n");
         sb.append("iso_column = " + (iso_column == null ? "None" : ("'" + iso_column.replace("(*)", "") + "'")));
         sb.append("\n\n");
