@@ -22,8 +22,9 @@ export WITH_PARSIM=yes
 export SHARED_LIBS=yes
 export WITH_QTENV=yes
 export WITH_OSG=yes
+export WITH_OSGEARTH=yes
 export WITH_SYSTEMC=no
-export PREFER_CLANG=no
+export PREFER_CLANG=yes
 export MPI_LIBS=
 export LIBXML_LIBS=
 export EXPAT_LIBS=
@@ -41,13 +42,13 @@ if [ `uname -s` = Darwin ]; then
     export PLATFORM=macosx
 fi
 
-# default toolchain is gcc
+# default toolchain is clang
 if [ "$TOOLCHAIN" = "" ]; then
-    export TOOLCHAIN=gcc
+    export TOOLCHAIN=clang
 fi
 
-if [ "$TOOLCHAIN" = "clang" ]; then
-    export PREFER_CLANG=yes
+if [ "$TOOLCHAIN" = "gcc" ]; then
+    export PREFER_CLANG=no
 fi
 
 export MAKE_PROG=make
@@ -94,6 +95,7 @@ compile_gcc() {
     $TWEAKCONFIG setoradd configure.user WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
     $TWEAKCONFIG setoradd configure.user WITH_QTENV  "$WITH_QTENV" || failure $CFG
     $TWEAKCONFIG setoradd configure.user WITH_OSG  "$WITH_OSG" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user WITH_OSGEARTH  "$WITH_OSGEARTH" || failure $CFG
     $TWEAKCONFIG setoradd configure.user SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
     $TWEAKCONFIG setoradd configure.user MPI_LIBS  "$MPI_LIBS" || failure $CFG
     $TWEAKCONFIG setoradd configure.user LIBXML_LIBS  "$LIBXML_LIBS" || failure $CFG
@@ -110,6 +112,7 @@ compile_gcc() {
     $TWEAKCONFIG assert Makefile.inc SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
     $TWEAKCONFIG assert Makefile.inc WITH_QTENV  "$WITH_QTENV" || failure $CFG
     $TWEAKCONFIG assert Makefile.inc WITH_OSG  "$WITH_OSG" || failure $CFG
+    $TWEAKCONFIG assert Makefile.inc WITH_OSGEARTH  "$WITH_OSGEARTH" || failure $CFG
     $TWEAKCONFIG assert Makefile.inc WITH_SYSTEMC  "$WITH_SYSTEMC" || failure $CFG
 
     echo "    Building..."
@@ -126,6 +129,7 @@ compile_vc() {
     $TWEAKCONFIG setoradd configuser.vc WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
     $TWEAKCONFIG setoradd configuser.vc WITH_QTENV  "$WITH_QTENV" || failure $CFG
     $TWEAKCONFIG setoradd configuser.vc WITH_OSG  "$WITH_OSG" || failure $CFG
+    $TWEAKCONFIG setoradd configuser.vc WITH_OSGEARTH  "$WITH_OSGEARTH" || failure $CFG
     $TWEAKCONFIG setoradd configuser.vc SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
     $TWEAKCONFIG setoradd configuser.vc WITH_SYSTEMC  "$WITH_SYSTEMC" || failure $CFG
 
@@ -148,6 +152,7 @@ compile_clang() {
     $TWEAKCONFIG setoradd configure.user WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
     $TWEAKCONFIG setoradd configure.user WITH_QTENV  "$WITH_QTENV" || failure $CFG
     $TWEAKCONFIG setoradd configure.user WITH_OSG  "$WITH_OSG" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user WITH_OSGEARTH  "$WITH_OSGEARTH" || failure $CFG
     $TWEAKCONFIG setoradd configure.user SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
     $TWEAKCONFIG setoradd configure.user MPI_LIBS  "$MPI_LIBS" || failure $CFG
     $TWEAKCONFIG setoradd configure.user LIBXML_LIBS  "$LIBXML_LIBS" || failure $CFG
@@ -165,6 +170,7 @@ compile_clang() {
     $TWEAKCONFIG assert Makefile.inc SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
     $TWEAKCONFIG assert Makefile.inc WITH_QTENV  "$WITH_QTENV" || failure $CFG
     $TWEAKCONFIG assert Makefile.inc WITH_OSG  "$WITH_OSG" || failure $CFG
+    $TWEAKCONFIG assert Makefile.inc WITH_OSGEARTH  "$WITH_OSGEARTH" || failure $CFG
     $TWEAKCONFIG assert Makefile.inc WITH_SYSTEMC  "$WITH_SYSTEMC" || failure $CFG
 
     echo "    Building..."
@@ -235,9 +241,27 @@ fi
 (TEST_PROG="opp_run -v" contains "XMLPARSER=libxml" yes)
 (TEST_PROG="opp_run -v" contains "WITH_NETBUILDER" yes)
 (TEST_PROG="opp_run -v" contains "large-file-support=yes" yes)
+(TEST_PROG="opp_run -v" contains "WITH_OSG" yes)
+(TEST_PROG="opp_run -v" contains "WITH_OSGEARTH" yes)
 (runtest core 1)
 (runtest common 0)
 (runtest envir 1)
+(runtest makemake 0)
+
+#########################################
+# check building without OSGEARTH
+CFG=without_osgearth
+(WITH_OSG=yes WITH_OSGEARTH=no compile)
+(TEST_PROG="opp_run -v" contains "WITH_OSG" yes)
+(TEST_PROG="opp_run -v" contains "WITH_OSGEARTH" no)
+(runtest makemake 0)
+
+#########################################
+# check building without OSG and OSGEARTH
+CFG=without_osg
+(WITH_OSG=no WITH_OSGEARTH=no compile)
+(TEST_PROG="opp_run -v" contains "WITH_OSG" no)
+(TEST_PROG="opp_run -v" contains "WITH_OSGEARTH" no)
 (runtest makemake 0)
 
 ########################################
@@ -261,10 +285,10 @@ CFG=default_static
 (TEST_PROG="samples/aloha/aloha -v" contains "XMLPARSER=libxml" yes)
 (TEST_PROG="samples/aloha/aloha -v" contains "WITH_NETBUILDER" yes)
 (TEST_PROG="samples/aloha/aloha -v" contains "WITH_OSG" yes)
-
+(TEST_PROG="samples/aloha/aloha -v" contains "WITH_OSGEARTH" yes)
 
 ########################################
-# Test MPI only on linux where MPI libs are available
+# Test MPI/parsim only on linux where MPI libs are available
 # On Mac and Windows the user must install MPI libs manually.
 if [ "$PLATFORM" = "linux" ]; then
   ########################################
@@ -281,25 +305,19 @@ if [ "$PLATFORM" = "linux" ]; then
   contains cParsimPartition yes
   contains cMPICommunications no
   (runtest makemake 0)
+
+  ########################################
+  # test if disabling both parsim works
+  CFG=no_parsim
+  (WITH_PARSIM=no compile)
+  contains cParsimPartition no
+  contains cMPICommunications no
+  (runtest makemake 0)
 fi
-
-
-#########################################
-# extra tests for rare configurations
-if [ "$EXTRA_TESTS" != "yes" ]; then
-    exit
-fi
-
-#########################################
-# check building without OSG
-CFG=without_osg
-(WITH_OSG=no WITH_OSGEARTH=no compile)
-(TEST_PROG="opp_run contains "WITH_OSG" no)
-(runtest makemake 0)
 
 ########################################
 #
-# The rest is tested only on GCC, because with Visual C++
+# The rest is tested only on GCC and CLANG, because with Visual C++
 # the libs should be configured by hand (no configure process)
 # in configuser.vc file. If we change those libs in this test
 # (i.e. set it to a fake value) those lib settings will be
@@ -308,18 +326,12 @@ CFG=without_osg
 # We don't want to permanently ruin the installation.
 #
 
-if test "$TOOLCHAIN" = "gcc"; then
+if [ "$TOOLCHAIN" = "gcc" -o "$TOOLCHAIN" = "clang"]; then
 
   ########################################
   CFG=no_libxml
   (LIBXML_LIBS=-lbubu compile)
-  (TEST_PROG="opp_run -v" contains "XMLPARSER=libxml" no)
-  (runtest makemake 0)
-
-  ########################################
-  CFG=no_expat
-  (EXPAT_LIBS=-lbubu compile)
-  (TEST_PROG="opp_run -v" contains "XMLPARSER=expat" no)
+  (TEST_PROG="opp_run -v" contains "XMLPARSER=expat" yes)
   (runtest makemake 0)
 
   ########################################
