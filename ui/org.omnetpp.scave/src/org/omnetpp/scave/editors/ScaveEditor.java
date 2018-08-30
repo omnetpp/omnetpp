@@ -744,6 +744,16 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         }
     }
 
+    class DataFilter {
+        String type;
+        String filter;
+
+        DataFilter(String type, String filter) {
+            this.type = type;
+            this.filter = filter;
+        }
+    }
+
     private void loadTransitionalAnalysis(Node rootNode) {
         NodeList topLevelNodes = rootNode.getChildNodes();
 
@@ -921,22 +931,30 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         }
     }
 
-    private String makeFilterString(ArrayList<DataOp> ops) {
-        String aggrFilter = "";
+    private String makeFilterString(ArrayList<DataOp> ops, ArrayList<DataFilter> filters) {
+        String opsExpr = "";
         for (DataOp o : ops)
-            if (aggrFilter.isEmpty())
-                aggrFilter = "(" + o.filter + ")";
-            else
-                aggrFilter = aggrFilter + "\n  OR (" + o.filter + ")";
-        return aggrFilter;
+            if (opsExpr.isEmpty())
+                opsExpr = "(" + o.filter + ")";
+            else // TODO: take operation kind into account
+                opsExpr = opsExpr + "\n  OR (" + o.filter + ")";
+
+        String filtersExpr = "";
+        for (DataFilter f : filters)
+            if (filtersExpr.isEmpty())
+                filtersExpr = "(" + f.filter + ")";
+            else // TODO: take filter type into account
+                filtersExpr = filtersExpr + "\n  OR (" + f.filter + ")";
+
+        return "(" + opsExpr + ") AND (" + filtersExpr + ")";
     }
 
-    private String makeHistogramChartScript(Chart chart, Node chartNode, ArrayList<DataOp> ops) {
+    private String makeHistogramChartScript(Chart chart, Node chartNode, ArrayList<DataOp> ops, ArrayList<DataFilter> filters) {
         StringBuilder sb = new StringBuilder();
 
         sb.append("import results\n\n");
 
-        String filter = makeFilterString(ops);
+        String filter = makeFilterString(ops, filters);
 
         sb.append("df = results.getHistograms(\"\"\"" + filter + "\"\"\")\n\n");
 
@@ -950,10 +968,10 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
     }
 
 
-    private String makeScatterChartScript(Chart chart, Node chartNode, ArrayList<DataOp> ops) {
+    private String makeScatterChartScript(Chart chart, Node chartNode, ArrayList<DataOp> ops, ArrayList<DataFilter> filters) {
         StringBuilder sb = new StringBuilder();
 
-        String filter = makeFilterString(ops);
+        String filter = makeFilterString(ops, filters);
 
         sb.append("import results\n\n");
 
@@ -1003,10 +1021,10 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         return sb.toString();
     }
 
-    private String makeLineChartScript(Chart chart, Node chartNode, ArrayList<DataOp> ops) {
+    private String makeLineChartScript(Chart chart, Node chartNode, ArrayList<DataOp> ops, ArrayList<DataFilter> filters) {
         StringBuilder sb = new StringBuilder();
 
-        String filter = makeFilterString(ops);
+        String filter = makeFilterString(ops, filters);
 
         sb.append("import results\n\n");
 
@@ -1027,10 +1045,10 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         return sb.toString();
     }
 
-    private String makeBarChartScript(Chart chart, Node chartNode, ArrayList<DataOp> ops) {
+    private String makeBarChartScript(Chart chart, Node chartNode, ArrayList<DataOp> ops, ArrayList<DataFilter> filters) {
         StringBuilder sb = new StringBuilder();
 
-        String filter = makeFilterString(ops);
+        String filter = makeFilterString(ops, filters);
 
         sb.append("import results\n\n");
 
@@ -1053,22 +1071,20 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
     private Chart makeLegacyChart(ArrayList<DataOp> ops, String datasetName, Node chartNode, String chartType) {
         Chart chart = null;
 
-        if ("scave:BarChart".equals(chartType)) {
+        if ("scave:BarChart".equals(chartType))
             chart = factory.createBarChart();
-            chart.setScript(makeBarChartScript(chart, chartNode, ops));
-        } else if ("scave:HistogramChart".equals(chartType)) {
+        else if ("scave:HistogramChart".equals(chartType))
             chart = factory.createHistogramChart();
-            chart.setScript(makeHistogramChartScript(chart, chartNode, ops));
-        } else if ("scave:ScatterChart".equals(chartType)) {
+        else if ("scave:ScatterChart".equals(chartType))
             chart = factory.createScatterChart();
-            chart.setScript(makeScatterChartScript(chart, chartNode, ops));
-        } else if ("scave:LineChart".equals(chartType)) {
+        else if ("scave:LineChart".equals(chartType))
             chart = factory.createLineChart();
-            chart.setScript(makeLineChartScript(chart, chartNode, ops));
-        } else
+        else
             throw new RuntimeException("unknown chart type: " + chartType);
 
         chart.setName(chartNode.getAttributes().getNamedItem("name").getNodeValue());
+
+        ArrayList<DataFilter> filters = new ArrayList<DataFilter>();
 
         NodeList props = chartNode.getChildNodes();
 
@@ -1079,8 +1095,23 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
                 prop.setName(propNode.getAttributes().getNamedItem("name").getNodeValue());
                 prop.setValue(propNode.getAttributes().getNamedItem("value").getNodeValue());
                 chart.getProperties().add(prop);
+            } else if ("filters".equals(propNode.getNodeName())) {
+                filters.add(new DataFilter(propNode.getAttributes().getNamedItem("xsi:type").getNodeValue(), propNode.getAttributes().getNamedItem("filterPattern").getNodeValue()));
             }
         }
+
+
+        if ("scave:BarChart".equals(chartType))
+            chart.setScript(makeBarChartScript(chart, chartNode, ops, filters));
+        else if ("scave:HistogramChart".equals(chartType))
+            chart.setScript(makeHistogramChartScript(chart, chartNode, ops, filters));
+        else if ("scave:ScatterChart".equals(chartType))
+            chart.setScript(makeScatterChartScript(chart, chartNode, ops, filters));
+        else if ("scave:LineChart".equals(chartType))
+            chart.setScript(makeLineChartScript(chart, chartNode, ops, filters));
+        else
+            throw new RuntimeException("unknown chart type: " + chartType);
+
 
         return chart;
     }
