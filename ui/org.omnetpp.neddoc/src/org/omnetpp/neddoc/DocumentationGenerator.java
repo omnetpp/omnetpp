@@ -325,7 +325,7 @@ public class DocumentationGenerator {
                     generateDoxy();
                     collectDoxyMap();
                     generateCSS();
-                    generateTreeJavaScript();
+                    generateJavaScript();
                     generateRedirectPage();
                     generateHTMLFrame();
                     generateNavigationTree();
@@ -720,7 +720,7 @@ public class DocumentationGenerator {
             FileUtils.copy(new FileInputStream(customCssPath.toPortableString()), getOutputFile("style.css"));
     }
 
-    protected void generateTreeJavaScript() throws Exception {
+    protected void generateJavaScript() throws Exception {
         generateFileFromResource("tree.js");
     }
 
@@ -730,12 +730,12 @@ public class DocumentationGenerator {
         final IPath reversePath = getReversePath(remainingPath);
 
         FileUtils.writeTextFile(getOutputFile(reversePath.append("index.html").toPortableString()),
-                "<html>\r\n" +
-                "   <head>\r\n" +
-                "      <title>Redirect Page</title>\r\n" +
-                "      <meta http-equiv=\"refresh\" content=\"0;url=" + remainingPath.append("index.html").toPortableString() + "\"></head>\r\n" +
-                "      <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\r\n" +
-                "   <body/>\r\n" +
+                "<html>\n" +
+                "   <head>\n" +
+                "      <title>Redirect Page</title>\n" +
+                "      <meta http-equiv=\"refresh\" content=\"0;url=" + remainingPath.append("index.html").toPortableString() + "\"></head>\n" +
+                "      <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n" +
+                "   <body/>\n" +
                 "</html>",
                 "UTF-8"
         );
@@ -743,31 +743,54 @@ public class DocumentationGenerator {
 
     protected void generateHTMLFrame() throws Exception {
         // note: index.html accepts the "p=<url>" URL parameter, and loads that page into the contents frame
-        FileUtils.writeTextFile(getOutputFile("index.html"),
-                "<html>\r\n" +
-                "   <head>\r\n" +
-                "      <title>Model documentation -- generated from NED files</title>\r\n" +
-                "      <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\r\n" +
-                "      <script language=\"JavaScript\">\r\n" +
-                "         <!--\r\n" +
-                "         url = window.location.toString();\r\n" +
-                "         pos = url.lastIndexOf(\"p=\");\r\n" +
-                "         startpage = (pos==-1) ? \"overview.html\" : url.substring(pos+2);\r\n" +
-                "         //-->\r\n" +
-                "      </script>\r\n" +
-                "   </head>\r\n" +
-                "   <frameset cols=\"25%,75%\" onload=\"document.getElementById('mainframe').src = startpage;\">\r\n" +
-                "      <frame src=\"navigation.html\" name=\"componentsframe\"/>\r\n" +
-                "      <frame src=\"overview.html\" name=\"mainframe\" id=\"mainframe\"/>\r\n" +
-                "   </frameset>\r\n" +
-                "   <noframes>\r\n" +
-                "      <h2>Frame Alert</h2>\r\n" +
-                "      <p>This document is designed to be viewed using HTML frames. If you see this message,\r\n" +
-                "      you are using a non-frame-capable browser.</p>\r\n" +
-                "   </noframes>\r\n" +
-                "</html>\r\n",
-                "UTF-8"
-                );
+        generateFileFromResource("frame.tmpl", "index.html");
+    }
+
+    protected void withGeneratingHTMLFile(String fileName, final String content) throws Exception {
+        withGeneratingHTMLFile(fileName, new Runnable() {
+            public void run() throws Exception {
+                out(content);
+            }
+        });
+    }
+
+    protected void withGeneratingHTMLFile(String fileName, Runnable content) throws Exception {
+        // default onload script: if page is not under the index.html frameset, load it via index.html so that the tree gets displayed
+        String onload = "if (top.frames['componentsframe'] == undefined) { s = window.location.toString(); window.location = 'index.html?p=' + s.substring(s.lastIndexOf('/')+1); }";
+        withGeneratingHTMLFile(fileName, null, onload, true, content);
+    }
+
+    protected void withGeneratingHTMLFile(String fileName, String header, String onload, boolean copyrightFooter, Runnable content) throws Exception {
+        FileOutputStream oldCurrentOutputStream = currentOutputStream;
+
+        File file = getOutputFile(fileName);
+        currentOutputStream = new FileOutputStream(file);
+
+        out("<html>\r\n" +
+            "   <head>\r\n" +
+            "      <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\r\n" +
+            "      <link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" />\r\n");
+
+        if (header != null)
+            out(header);
+
+        out("   </head>\r\n" +
+            "   <body onload=\"" + (onload == null ? "" : onload) + "\">\r\n");
+
+        content.run();
+
+        if (copyrightFooter && APPLY_CC) {
+            String atag = "<a href=\"http://creativecommons.org/licenses/by-sa/3.0\" target=\"_top\">";
+            out("   <hr><p class=\"footer\">"+atag+"<img src=\"by-sa.png\"></a>" +
+                " This documentation is released under the "+atag+"Creative Commons license</a></p>\r\n");
+        }
+
+        out("   </body>\r\n" +
+            "</html>\r\n");
+
+        currentOutputStream.close();
+
+        currentOutputStream = oldCurrentOutputStream;
     }
 
     protected void generateProjectIndexReference(IProject project) throws IOException, CoreException {
@@ -2195,53 +2218,6 @@ public class DocumentationGenerator {
     protected String colorToHexString(int number) {
         return ((number < 16) ? "0" : "") + Integer.toHexString(number);
 
-    }
-
-    protected void withGeneratingHTMLFile(String fileName, final String content) throws Exception {
-        withGeneratingHTMLFile(fileName, new Runnable() {
-            public void run() throws Exception {
-                out(content);
-            }
-        });
-    }
-
-    protected void withGeneratingHTMLFile(String fileName, Runnable content) throws Exception {
-        // default onload script: if page is not under the index.html frameset, load it via index.html so that the tree gets displayed
-        String onload = "if (top.frames['componentsframe'] == undefined) { s = window.location.toString(); window.location = 'index.html?p=' + s.substring(s.lastIndexOf('/')+1); }";
-        withGeneratingHTMLFile(fileName, null, onload, true, content);
-    }
-
-    protected void withGeneratingHTMLFile(String fileName, String header, String onload, boolean copyrightFooter, Runnable content) throws Exception {
-        FileOutputStream oldCurrentOutputStream = currentOutputStream;
-
-        File file = getOutputFile(fileName);
-        currentOutputStream = new FileOutputStream(file);
-
-        out("<html>\r\n" +
-            "   <head>\r\n" +
-            "      <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\r\n" +
-            "      <link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" />\r\n");
-
-        if (header != null)
-            out(header);
-
-        out("   </head>\r\n" +
-            "   <body onload=\"" + (onload == null ? "" : onload) + "\">\r\n");
-
-        content.run();
-
-        if (copyrightFooter && APPLY_CC) {
-            String atag = "<a href=\"http://creativecommons.org/licenses/by-sa/3.0\" target=\"_top\">";
-            out("   <hr><p class=\"footer\">"+atag+"<img src=\"by-sa.png\"></a>" +
-                " This documentation is released under the "+atag+"Creative Commons license</a></p>\r\n");
-        }
-
-        out("   </body>\r\n" +
-            "</html>\r\n");
-
-        currentOutputStream.close();
-
-        currentOutputStream = oldCurrentOutputStream;
     }
 
     protected void generateDotOuput(DotGraph dot, File outputFile, String format) throws IOException {
