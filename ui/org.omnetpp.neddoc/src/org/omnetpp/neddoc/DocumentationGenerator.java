@@ -324,8 +324,8 @@ public class DocumentationGenerator {
                     collectCaches();
                     generateDoxy();
                     collectDoxyMap();
-                    generateCSS();
-                    generateJavaScript();
+                    copyCSS();
+                    copyJavaScript();
                     generateRedirectPage();
                     generateHTMLFrame();
                     generateNavigationTree();
@@ -702,26 +702,33 @@ public class DocumentationGenerator {
         });
     }
 
-    protected void generateFileFromResource(String resourceName) throws Exception {
-        generateFileFromResource(resourceName, resourceName);
+    protected void copyFileFromResource(String resourceName) throws Exception {
+        copyFileFromResource(resourceName, resourceName);
     }
 
-    protected void generateFileFromResource(final String resourcePath, String fileName) throws Exception {
+    protected void copyFileFromResource(final String resourcePath, String fileName) throws Exception {
         InputStream stream = getClass().getResourceAsStream("templates/" + resourcePath);
         if (stream == null)
             throw new RuntimeException("Resource not found: " + resourcePath);
         FileUtils.copy(stream, getOutputFile(fileName));
     }
 
-    protected void generateCSS() throws Exception {
+    protected String readTextFromResource(final String resourcePath) throws Exception {
+        InputStream stream = getClass().getResourceAsStream("templates/" + resourcePath);
+        if (stream == null)
+            throw new RuntimeException("Resource not found: " + resourcePath);
+        return  new String(FileUtils.readBinaryFile(stream));
+    }
+
+    protected void copyCSS() throws Exception {
         if (customCssPath == null)
-            generateFileFromResource("style.css");
+            copyFileFromResource("style.css");
         else
             FileUtils.copy(new FileInputStream(customCssPath.toPortableString()), getOutputFile("style.css"));
     }
 
-    protected void generateJavaScript() throws Exception {
-        generateFileFromResource("tree.js");
+    protected void copyJavaScript() throws Exception {
+        copyFileFromResource("tree.js");
     }
 
     protected void generateRedirectPage() throws Exception {
@@ -743,53 +750,58 @@ public class DocumentationGenerator {
 
     protected void generateHTMLFrame() throws Exception {
         // note: index.html accepts the "p=<url>" URL parameter, and loads that page into the contents frame
-        generateFileFromResource("frame.tmpl", "index.html");
+        copyFileFromResource("frame.tmpl", "index.html");
     }
 
-    protected void withGeneratingHTMLFile(String fileName, final String content) throws Exception {
-        withGeneratingHTMLFile(fileName, new Runnable() {
+    protected void withPageTemplate(String fileName, final String content) throws Exception {
+        withPageTemplate(fileName, new Runnable() {
             public void run() throws Exception {
                 out(content);
             }
         });
     }
 
-    protected void withGeneratingHTMLFile(String fileName, Runnable content) throws Exception {
-        // default onload script: if page is not under the index.html frameset, load it via index.html so that the tree gets displayed
-        String onload = "if (top.frames['componentsframe'] == undefined) { s = window.location.toString(); window.location = 'index.html?p=' + s.substring(s.lastIndexOf('/')+1); }";
-        withGeneratingHTMLFile(fileName, null, onload, true, content);
-    }
-
-    protected void withGeneratingHTMLFile(String fileName, String header, String onload, boolean copyrightFooter, Runnable content) throws Exception {
+    protected void withPageTemplate(String fileName, Runnable content) throws Exception {
         FileOutputStream oldCurrentOutputStream = currentOutputStream;
 
         File file = getOutputFile(fileName);
         currentOutputStream = new FileOutputStream(file);
 
-        out("<html>\r\n" +
-            "   <head>\r\n" +
-            "      <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\r\n" +
-            "      <link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" />\r\n");
+        String splitPage[] = readTextFromResource("page.tmpl").split("@content@");
+        if (splitPage.length != 2)
+            throw new RuntimeException("page.tmpl must contain exactly one @content@ placeholder ");
 
-        if (header != null)
-            out(header);
-
-        out("   </head>\r\n" +
-            "   <body onload=\"" + (onload == null ? "" : onload) + "\">\r\n");
-
+        out(splitPage[0]);
         content.run();
 
-        if (copyrightFooter && APPLY_CC) {
+        if (APPLY_CC) {
             String atag = "<a href=\"http://creativecommons.org/licenses/by-sa/3.0\" target=\"_top\">";
             out("   <hr><p class=\"footer\">"+atag+"<img src=\"by-sa.png\"></a>" +
                 " This documentation is released under the "+atag+"Creative Commons license</a></p>\r\n");
         }
 
-        out("   </body>\r\n" +
-            "</html>\r\n");
+        out(splitPage[1]);
 
         currentOutputStream.close();
+        currentOutputStream = oldCurrentOutputStream;
+    }
 
+    protected void withNavigationTemplate(String fileName, Runnable content) throws Exception {
+        FileOutputStream oldCurrentOutputStream = currentOutputStream;
+
+        File file = getOutputFile(fileName);
+        currentOutputStream = new FileOutputStream(file);
+
+        String splitNavigation[] = readTextFromResource("navigation.tmpl").split("@content@");
+        if (splitNavigation.length != 2)
+            throw new RuntimeException("navigation.tmpl must contain exactly one @content@ placeholder ");
+
+        out(splitNavigation[0]);
+        content.run();
+
+        out(splitNavigation[1]);
+
+        currentOutputStream.close();
         currentOutputStream = oldCurrentOutputStream;
     }
 
@@ -845,9 +857,8 @@ public class DocumentationGenerator {
 
             generateNavigationTreeIcons();
 
-            withGeneratingHTMLFile("navigation.html", "<script type=\"text/javascript\" src=\"tree.js\"></script>", "setupTree('navigation', [])", false, new Runnable() {
+            withNavigationTemplate("navigation.html", new Runnable() {
                 public void run() throws Exception {
-                    out("<div id=\"navigation\" class=\"navigation\" style=\"display: block;\">");
                     out("<h3>" + project.getName() + "</h3>");
 
                     generateOverview();
@@ -878,7 +889,6 @@ public class DocumentationGenerator {
                     generateFileIndex();
                     generateCppIndex();
 
-                    out("</div>");
                 }
             });
         }
@@ -888,19 +898,19 @@ public class DocumentationGenerator {
     }
 
     protected void generateNavigationTreeIcons() throws Exception {
-        generateFileFromResource("icons/ftv2blank.png", "ftv2blank.png");
-        generateFileFromResource("icons/ftv2doc.png", "ftv2doc.png");
-        generateFileFromResource("icons/ftv2folderclosed.png", "ftv2folderclosed.png");
-        generateFileFromResource("icons/ftv2folderopen.png", "ftv2folderopen.png");
-        generateFileFromResource("icons/ftv2lastnode.png", "ftv2lastnode.png");
-        generateFileFromResource("icons/ftv2link.png", "ftv2link.png");
-        generateFileFromResource("icons/ftv2mlastnode.png", "ftv2mlastnode.png");
-        generateFileFromResource("icons/ftv2mnode.png", "ftv2mnode.png");
-        generateFileFromResource("icons/ftv2node.png", "ftv2node.png");
-        generateFileFromResource("icons/ftv2plastnode.png", "ftv2plastnode.png");
-        generateFileFromResource("icons/ftv2pnode.png", "ftv2pnode.png");
-        generateFileFromResource("icons/ftv2vertline.png", "ftv2vertline.png");
-        generateFileFromResource("icons/by-sa.png", "by-sa.png");
+        copyFileFromResource("icons/ftv2blank.png", "ftv2blank.png");
+        copyFileFromResource("icons/ftv2doc.png", "ftv2doc.png");
+        copyFileFromResource("icons/ftv2folderclosed.png", "ftv2folderclosed.png");
+        copyFileFromResource("icons/ftv2folderopen.png", "ftv2folderopen.png");
+        copyFileFromResource("icons/ftv2lastnode.png", "ftv2lastnode.png");
+        copyFileFromResource("icons/ftv2link.png", "ftv2link.png");
+        copyFileFromResource("icons/ftv2mlastnode.png", "ftv2mlastnode.png");
+        copyFileFromResource("icons/ftv2mnode.png", "ftv2mnode.png");
+        copyFileFromResource("icons/ftv2node.png", "ftv2node.png");
+        copyFileFromResource("icons/ftv2plastnode.png", "ftv2plastnode.png");
+        copyFileFromResource("icons/ftv2pnode.png", "ftv2pnode.png");
+        copyFileFromResource("icons/ftv2vertline.png", "ftv2vertline.png");
+        copyFileFromResource("icons/by-sa.png", "by-sa.png");
     }
 
     protected void withGeneratingNavigationMenuContainer(String title, Runnable content) throws Exception {
@@ -971,7 +981,7 @@ public class DocumentationGenerator {
         public boolean visit(PageType pageType, String file, String title, String content) throws Exception {
             if (pageType == PageType.TITLE_PAGE && content.length() > 0) {
                     titlePageFound[0] = true;
-                    withGeneratingHTMLFile("overview.html",
+                    withPageTemplate("overview.html",
                         processHTMLContent("comment", content + "<hr/>\r\n" + "<p>Generated by neddoc.</p>\r\n"));
                     return false;
                 }
@@ -981,7 +991,7 @@ public class DocumentationGenerator {
         });
         // generate default if @titlepage not found
         if (!titlePageFound[0])
-            withGeneratingHTMLFile("overview.html",
+            withPageTemplate("overview.html",
                 "<center><h1>OMNeT++ Model Documentation</h1></center>\r\n" +
                 "<center><i>Generated from NED and MSG files</i></center>\r\n" +
                 "<p>This documentation has been generated from NED and MSG files.</p>\r\n" +
@@ -1013,7 +1023,7 @@ public class DocumentationGenerator {
                         public boolean visit(PageType pageType, String file, String title, String content) throws Exception {
                             if (pageType == PageType.PAGE) {
                                 generateNavigationMenuItem(title, file);
-                                withGeneratingHTMLFile(file,
+                                withPageTemplate(file,
                                         "<h2>" + title + "</h2>" + processHTMLContent("comment", content));
 
                             }
@@ -1183,7 +1193,7 @@ public class DocumentationGenerator {
 
     protected void generatePackagePages() throws Exception {
         for (final String packageName : packageNames) {
-            withGeneratingHTMLFile(packageName + "-package.html", new Runnable() {
+            withPageTemplate(packageName + "-package.html", new Runnable() {
                 public void run() throws Exception {
                     out("<h2>Package " + packageName + "</h2>\r\n");
 
@@ -1206,7 +1216,7 @@ public class DocumentationGenerator {
             monitor.beginTask("Generating file pages...", files.size());
 
             for (final IFile file : files) {
-                withGeneratingHTMLFile(getOutputFileName(file), new Runnable() {
+                withPageTemplate(getOutputFileName(file), new Runnable() {
                     public void run() throws IOException, CoreException {
                         monitor.subTask(file.getFullPath().toString());
                         String fileType = nedResources.isNedFile(file) ? "NED" : msgResources.isMsgFile(file) ? "Msg" : "";
@@ -1243,7 +1253,7 @@ public class DocumentationGenerator {
             monitor.beginTask("Generating NED type pages...", typeElements.size());
 
             for (final ITypeElement typeElement : typeElements) {
-                withGeneratingHTMLFile(getOutputFileName(typeElement), new Runnable() {
+                withPageTemplate(getOutputFileName(typeElement), new Runnable() {
                     public void run() throws Exception {
                         boolean isNedTypeElement = typeElement instanceof INedTypeElement;
                         boolean isMsgTypeElement = typeElement instanceof IMsgTypeElement;
@@ -1883,7 +1893,7 @@ public class DocumentationGenerator {
             }
 
             if (generateFullUsageDiagrams) {
-                withGeneratingHTMLFile("full-ned-usage-diagram.html", new Runnable() {
+                withPageTemplate("full-ned-usage-diagram.html", new Runnable() {
                     public void run() throws Exception {
                         out("<h2 class=\"comptitle\">Full NED Usage Diagram</h2>\r\n" +
                             "<p>The following diagram shows usage relationships between simple and compound modules, module interfaces, networks, channels and channel interfaces.\r\n" +
@@ -1895,7 +1905,7 @@ public class DocumentationGenerator {
             }
 
             if (generateFullInheritanceDiagrams) {
-                withGeneratingHTMLFile("full-ned-inheritance-diagram.html", new Runnable() {
+                withPageTemplate("full-ned-inheritance-diagram.html", new Runnable() {
                     public void run() throws Exception {
                         out("<h2 class=\"comptitle\">Full NED Inheritance Diagram</h2>\r\n" +
                             "<p>The following diagram shows the inheritance hierarchy between simple and compound modules, module interfaces, networks, channels and channel interfaces.\r\n" +
@@ -1907,7 +1917,7 @@ public class DocumentationGenerator {
             }
 
             if (generateFullUsageDiagrams) {
-                withGeneratingHTMLFile("full-msg-usage-diagram.html", new Runnable() {
+                withPageTemplate("full-msg-usage-diagram.html", new Runnable() {
                     public void run() throws Exception {
                         out("<h2 class=\"comptitle\">Full MSG Usage Diagram</h2>\r\n" +
                             "<p>The following diagram shows usage relationships between messages, packets, classes and structs.\r\n" +
@@ -1919,7 +1929,7 @@ public class DocumentationGenerator {
             }
 
             if (generateFullInheritanceDiagrams) {
-                withGeneratingHTMLFile("full-msg-inheritance-diagram.html", new Runnable() {
+                withPageTemplate("full-msg-inheritance-diagram.html", new Runnable() {
                     public void run() throws Exception {
                         out("<h2 class=\"comptitle\">Full MSG Inheritance Diagram</h2>\r\n" +
                             "<p>The following diagram shows the inheritance hierarchy between messages, packets, classes and structs.\r\n" +
