@@ -220,6 +220,7 @@ public class DocumentationGenerator {
     protected IPath neddocRelativeRootPath;
     protected IPath customCssPath;
     protected IProject project;
+    protected String template = "old";
     protected INedResources nedResources;
     protected MsgResources msgResources;
     protected IProgressMonitor monitor;
@@ -707,14 +708,14 @@ public class DocumentationGenerator {
     }
 
     protected void copyFileFromResource(final String resourcePath, String fileName) throws Exception {
-        InputStream stream = getClass().getResourceAsStream("templates/" + resourcePath);
+        InputStream stream = getClass().getResourceAsStream("templates/" + template +"/" + resourcePath);
         if (stream == null)
             throw new RuntimeException("Resource not found: " + resourcePath);
         FileUtils.copy(stream, getOutputFile(fileName));
     }
 
     protected String readTextFromResource(final String resourcePath) throws Exception {
-        InputStream stream = getClass().getResourceAsStream("templates/" + resourcePath);
+        InputStream stream = getClass().getResourceAsStream("templates/" + template + "/" + resourcePath);
         if (stream == null)
             throw new RuntimeException("Resource not found: " + resourcePath);
         return  new String(FileUtils.readBinaryFile(stream));
