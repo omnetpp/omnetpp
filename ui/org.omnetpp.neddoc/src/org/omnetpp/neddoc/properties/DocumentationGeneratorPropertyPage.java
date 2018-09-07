@@ -288,13 +288,12 @@ public class DocumentationGeneratorPropertyPage
             content = replaceDoxygenConfigurationEntry(content, "EXTRACT_PRIVATE", "YES");
             content = replaceDoxygenConfigurationEntry(content, "QUIET", "YES");
             content = replaceDoxygenConfigurationEntry(content, "RECURSIVE", "YES");
-            content = replaceDoxygenConfigurationEntry(content, "EXCLUDE_PATTERNS", "*_m.cc *_n.cc");
+            content = replaceDoxygenConfigurationEntry(content, "EXCLUDE_PATTERNS", "*_m.cc *_n.cc *.d");
             content = replaceDoxygenConfigurationEntry(content, "INLINE_SOURCES", "YES");
             content = replaceDoxygenConfigurationEntry(content, "REFERENCES_RELATION", "NO");
             content = replaceDoxygenConfigurationEntry(content, "VERBATIM_HEADERS", "NO");
             content = replaceDoxygenConfigurationEntry(content, "HTML_OUTPUT", ".");
-            content = replaceDoxygenConfigurationEntry(content, "HTML_STYLESHEET", "AUTO");
-            content = replaceDoxygenConfigurationEntry(content, "GENERATE_TREEVIEW", "YES");
+            content = replaceDoxygenConfigurationEntry(content, "GENERATE_TREEVIEW", "NO");
             content = replaceDoxygenConfigurationEntry(content, "GENERATE_LATEX", "NO");
             content = replaceDoxygenConfigurationEntry(content, "GENERATE_TAGFILE", "AUTO");
             content = replaceDoxygenConfigurationEntry(content, "TEMPLATE_RELATIONS", "YES");

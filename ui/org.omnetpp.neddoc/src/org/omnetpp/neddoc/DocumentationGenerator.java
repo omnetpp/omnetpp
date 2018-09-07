@@ -637,16 +637,21 @@ public class DocumentationGenerator {
                     // these options must be always overwritten
                     IPath fullPath = getFullDoxyPath().makeRelativeTo(new Path(project.getLocation().toString()));
                     content = DocumentationGeneratorPropertyPage.replaceDoxygenConfigurationEntry(content, "OUTPUT_DIRECTORY", fullPath.toString());
-                    content = DocumentationGeneratorPropertyPage.replaceDoxygenConfigurationEntry(content, "HTML_STYLESHEET", fullPath.append("opp.css").toString());
+                    content = DocumentationGeneratorPropertyPage.replaceDoxygenConfigurationEntry(content, "HTML_HEADER", fullPath.append("../../doxy-header.tmpl").toString());
                     content = DocumentationGeneratorPropertyPage.replaceDoxygenConfigurationEntry(content, "GENERATE_TAGFILE", fullPath.append("doxytags.xml").toString());
                     content = DocumentationGeneratorPropertyPage.replaceDoxygenConfigurationEntry(content, "SOURCE_BROWSER", (generateCppSourceListings ? "YES" : "NO"));
                     File modifiedDoxyConfigFile = documentationRootPath.append("temp-doxy.cfg").toFile();
+                    File headerTemplateFile = documentationRootPath.append("doxy-header.tmpl").toFile();
 
                     try {
+                        String header = readTextFromResource("doxy-header.tmpl");
+                        FileUtils.writeTextFile(headerTemplateFile, header, null);
+
                         FileUtils.writeTextFile(modifiedDoxyConfigFile, content, null);
                         ProcessUtils.exec(doxyExecutablePath, new String[] {modifiedDoxyConfigFile.toString()}, project.getLocation().toString(), monitor);
                     }
                     finally {
+                        headerTemplateFile.delete();
                         modifiedDoxyConfigFile.delete();
                     }
                 }
