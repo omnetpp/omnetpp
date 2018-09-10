@@ -335,6 +335,8 @@ public class DocumentationGenerator {
                     generateFilePages();
                     generateTypePages();
                     generateFullDiagrams();
+                    generateNedTagFile();
+                    generateMsgTagFile();
 
                     return Status.OK_STATUS;
                 }
@@ -1195,6 +1197,48 @@ public class DocumentationGenerator {
                 }
             });
         }
+    }
+
+    protected void generateNedTagFile() throws Exception {
+
+        FileOutputStream oldCurrentOutputStream = currentOutputStream;
+        currentOutputStream = new FileOutputStream(getOutputFile("nedtags.xml"));
+
+        out("<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>\n");
+        out("<tagfile>\n");
+        for (ITypeElement typeElement : typeElements)
+            if (typeElement instanceof INedTypeElement){
+                INedTypeElement e = (INedTypeElement)typeElement;
+                out("  <compound kind=\"class\">\n");
+                String pkgname = getPackageName(e);
+                out("    <name>"+ (("default".equals(pkgname)) ? "" : pkgname+".") +e.getName()+"</name>\n");
+                out("    <filename>"+getOutputFileName(e)+"</filename>\n");
+                out("  </compound>\n");
+            }
+        out("</tagfile>\n");
+
+        currentOutputStream.close();
+        currentOutputStream = oldCurrentOutputStream;
+    }
+
+    protected void generateMsgTagFile() throws Exception {
+
+        FileOutputStream oldCurrentOutputStream = currentOutputStream;
+        currentOutputStream = new FileOutputStream(getOutputFile("msgtags.xml"));
+
+        out("<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>\n");
+        out("<tagfile>\n");
+        for (ITypeElement typeElement : typeElements)
+            if (typeElement instanceof IMsgTypeElement){
+                out("  <compound kind=\"class\">\n");
+                out("    <name>"+ typeElement.getName()+"</name>\n");
+                out("    <filename>"+getOutputFileName(typeElement)+"</filename>\n");
+                out("  </compound>\n");
+            }
+        out("</tagfile>\n");
+
+        currentOutputStream.close();
+        currentOutputStream = oldCurrentOutputStream;
     }
 
     protected void generatePackagePages() throws Exception {
