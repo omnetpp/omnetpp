@@ -220,7 +220,7 @@ public class DocumentationGenerator {
     protected IPath neddocRelativeRootPath;
     protected IPath customCssPath;
     protected IProject project;
-    protected String template = "old";
+    protected String template = "doxy";
     protected INedResources nedResources;
     protected MsgResources msgResources;
     protected IProgressMonitor monitor;
@@ -328,7 +328,6 @@ public class DocumentationGenerator {
                     copyCSS();
                     copyJavaScript();
                     generateRedirectPage();
-                    generateHTMLFrame();
                     generateNavigationTree();
                     generateNedTypeFigures();
                     generatePackagePages();
@@ -730,13 +729,21 @@ public class DocumentationGenerator {
 
     protected void copyCSS() throws Exception {
         if (customCssPath == null)
-            copyFileFromResource("style.css");
+            copyFileFromResource("doxygen.css");
         else
             FileUtils.copy(new FileInputStream(customCssPath.toPortableString()), getOutputFile("style.css"));
+        copyFileFromResource("navtree.css");
+        copyFileFromResource("tabs.css");
+        copyFileFromResource("search.css");
     }
 
     protected void copyJavaScript() throws Exception {
-        copyFileFromResource("tree.js");
+        copyFileFromResource("dynsections.js");
+        copyFileFromResource("jquery.js");
+        copyFileFromResource("menu.js");
+        copyFileFromResource("navtree.js");
+        copyFileFromResource("resize.js");
+        copyFileFromResource("search.js");
     }
 
     protected void generateRedirectPage() throws Exception {
@@ -754,11 +761,6 @@ public class DocumentationGenerator {
                 "</html>",
                 "UTF-8"
         );
-    }
-
-    protected void generateHTMLFrame() throws Exception {
-        // note: index.html accepts the "p=<url>" URL parameter, and loads that page into the contents frame
-        copyFileFromResource("frame.tmpl", "index.html");
     }
 
     protected void withPageTemplate(String fileName, final String content) throws Exception {
@@ -906,19 +908,18 @@ public class DocumentationGenerator {
     }
 
     protected void generateNavigationTreeIcons() throws Exception {
-        copyFileFromResource("icons/ftv2blank.png", "ftv2blank.png");
-        copyFileFromResource("icons/ftv2doc.png", "ftv2doc.png");
-        copyFileFromResource("icons/ftv2folderclosed.png", "ftv2folderclosed.png");
-        copyFileFromResource("icons/ftv2folderopen.png", "ftv2folderopen.png");
-        copyFileFromResource("icons/ftv2lastnode.png", "ftv2lastnode.png");
-        copyFileFromResource("icons/ftv2link.png", "ftv2link.png");
-        copyFileFromResource("icons/ftv2mlastnode.png", "ftv2mlastnode.png");
-        copyFileFromResource("icons/ftv2mnode.png", "ftv2mnode.png");
-        copyFileFromResource("icons/ftv2node.png", "ftv2node.png");
-        copyFileFromResource("icons/ftv2plastnode.png", "ftv2plastnode.png");
-        copyFileFromResource("icons/ftv2pnode.png", "ftv2pnode.png");
-        copyFileFromResource("icons/ftv2vertline.png", "ftv2vertline.png");
-        copyFileFromResource("icons/by-sa.png", "by-sa.png");
+        copyFileFromResource("bc_s.png");
+        copyFileFromResource("nav_h.png");
+        copyFileFromResource("splitbar.png");
+        copyFileFromResource("sync_on.png");
+        copyFileFromResource("sync_off.png");
+        copyFileFromResource("tab_a.png");
+        copyFileFromResource("tab_b.png");
+        copyFileFromResource("tab_s.png");
+        copyFileFromResource("search_l.png");
+        copyFileFromResource("search_m.png");
+        copyFileFromResource("search_r.png");
+        copyFileFromResource("by-sa.png");
     }
 
     protected void withGeneratingNavigationMenuContainer(String title, Runnable content) throws Exception {
