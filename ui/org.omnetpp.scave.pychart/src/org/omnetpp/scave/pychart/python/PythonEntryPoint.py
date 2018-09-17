@@ -24,6 +24,11 @@ try:
     import pandas as pd
     import matplotlib.pyplot as plt
 
+    pd.set_option("display.width", 500)
+    pd.set_option("display.max_columns", 20)
+    pd.set_option("display.max_colwidth", 50)
+    pd.set_option("display.max_rows", 100)
+
 except ImportError as e:
     print("can't import " + e.name)
     sys.exit(1)
@@ -223,15 +228,15 @@ class OppAccessor(object):
         renaming[xdata] = "time"
 
         df = df.rename(renaming, axis="columns")
-        
+
         df.dropna(inplace=True)
-        
+
         df["time"] = pd.to_numeric(df["time"])
-        
+
         df.sort_values(by="time", inplace=True)
-        
+
         print(df)
-        
+
         xs = listToBytes(df["time"])
 
         Gateway.chart_plotter.plotVectors(pl.dumps([

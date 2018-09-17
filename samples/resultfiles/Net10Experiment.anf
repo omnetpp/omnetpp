@@ -1,19 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
-  <inputs>
-    <inputs name="/resultfiles/routing2/Net10Experiment-*.vec"/>
-    <inputs name="/resultfiles/routing2/Net10Experiment-*.sca"/>
-  </inputs>
-  <datasets>
-    <datasets name="X">
-      <items xsi:type="scave:Add" filterPattern="name(endToEndDelay:mean) and module(*.rte[1].app) "/>
-      <items xsi:type="scave:Add" filterPattern="name(iaMean) "/>
-      <items xsi:type="scave:ScatterChart" name="CutThrough vs Store and Forward" xDataPattern="module(_runattrs_) AND name(iaMean)">
-        <isoDataPattern>cutThrough(*)</isoDataPattern>
-      </items>
-    </datasets>
-  </datasets>
-  <chartSheets>
-    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.2"/>
-  </chartSheets>
-</scave:Analysis>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<analysis version="2">
+    <inputs>
+        <input pattern="/resultfiles/routing2/Net10Experiment-*.vec"/>
+        <input pattern="/resultfiles/routing2/Net10Experiment-*.sca"/>
+    </inputs>
+    <charts>
+        <chart name="CutThrough vs Store and Forward" script="import results&#10;&#10;filter_string = &quot;&quot;&quot;((name(endToEndDelay:mean) and module(*.rte[1].app) )&#10;  OR (name(iaMean) )) &quot;&quot;&quot;&#10;&#10;df = results.getScalars(filter_string)&#10;&#10;xdata = 'iaMean'&#10;iso_column = None&#10;&#10;names = chart.plotScatter(df, xdata=xdata, iso_column=iso_column)&#10;&#10;chart.setProperty('Y.Axis.Title', ', '.join(names))&#10;chart.setProperty('X.Axis.Title', 'iaMean')&#10;chart.setProperty('Graph.Title', chart.getName())&#10;&#10;chart.setProperties(chart.getProperties())&#10;" type="ScatterChart"/>
+    </charts>
+</analysis>

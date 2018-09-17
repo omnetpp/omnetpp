@@ -19,6 +19,7 @@ import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItemField;
+import org.omnetpp.scave.engine.RunAttribute;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model2.ScaveModelUtil;
@@ -59,15 +60,16 @@ public class CreateTempChartAction extends AbstractScaveAction {
             @Override
             public Chart call() {
                 //String[] filterFields = new String[] { ResultItemField.FILE, RunAttribute.CONFIGNAME, RunAttribute.RUNNUMBER };
-                String[] filterFields = new String[] { ResultItemField.FILE, ResultItemField.RUN, ResultItemField.MODULE, ResultItemField.NAME };
+                String[] filterFields = new String[] { RunAttribute.EXPERIMENT, RunAttribute.MEASUREMENT, RunAttribute.REPLICATION,
+                        ResultItemField.MODULE, ResultItemField.NAME };
 
                 String typeName = type.getName();
                 typeName = typeName.substring(0, 1).toUpperCase() + typeName.substring(1) + "s";
 
 
-
                 StringBuilder inputBuilder = new StringBuilder();
 
+                inputBuilder.append("import results\n\n");
                 inputBuilder.append("# This expression selects the results (you might be able to logically simplify it)\n");
                 inputBuilder.append("filter_expression = \"\"\"\n" + ScaveModelUtil.getIDListAsChartInput(idList, filterFields, manager) + "\"\"\"\n\n");
 

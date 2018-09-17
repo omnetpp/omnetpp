@@ -70,7 +70,7 @@ public class CreateTempMatplotlibChartAction extends AbstractScaveAction {
         String typeName = type.getName();
         typeName = typeName.substring(0, 1).toUpperCase() + typeName.substring(1) + "s";
 
-        StringBuilder sb = new StringBuilder("df = results.get" + typeName + "(\"\"\"\n");
+        StringBuilder sb = new StringBuilder("import results\n\ndf = results.get" + typeName + "(\"\"\"\n");
 
         sb.append(ScaveModelUtil.getIDListAsChartInput(ids, filterFields, manager));
 
