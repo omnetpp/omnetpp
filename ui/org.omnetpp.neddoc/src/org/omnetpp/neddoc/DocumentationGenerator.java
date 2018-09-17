@@ -734,16 +734,13 @@ public class DocumentationGenerator {
             FileUtils.copy(new FileInputStream(customCssPath.toPortableString()), getOutputFile("style.css"));
         copyFileFromResource("navtree.css");
         copyFileFromResource("tabs.css");
-        copyFileFromResource("search.css");
     }
 
     protected void copyJavaScript() throws Exception {
         copyFileFromResource("dynsections.js");
         copyFileFromResource("jquery.js");
-        copyFileFromResource("menu.js");
         copyFileFromResource("navtree.js");
         copyFileFromResource("resize.js");
-        copyFileFromResource("search.js");
     }
 
     protected void generateRedirectPage() throws Exception {
@@ -802,9 +799,9 @@ public class DocumentationGenerator {
         File file = getOutputFile(fileName);
         currentOutputStream = new FileOutputStream(file);
 
-        String splitNavigation[] = readTextFromResource("navigation.tmpl").split("@content@");
+        String splitNavigation[] = readTextFromResource("navtree.tmpl").split("@content@");
         if (splitNavigation.length != 2)
-            throw new RuntimeException("navigation.tmpl must contain exactly one @content@ placeholder ");
+            throw new RuntimeException("navtree.tmpl must contain exactly one @content@ placeholder ");
 
         out(splitNavigation[0]);
         content.run();
@@ -842,7 +839,7 @@ public class DocumentationGenerator {
 
     protected void generatePackageIndex() throws Exception {
         if (packageNames.size() != 0)
-            withGeneratingNavigationMenuContainer("packages", new Runnable() {
+            withGeneratingNavigationMenuContainer("Packages", new Runnable() {
                 public void run() throws Exception {
                     for (String packageName : packageNames) {
                         generateNavigationMenuItem(packageName, packageName + "-package.html");
@@ -853,7 +850,7 @@ public class DocumentationGenerator {
 
     protected void generateFileIndex() throws Exception {
         if (files.size() != 0)
-            withGeneratingNavigationMenuContainer("files", new Runnable() {
+            withGeneratingNavigationMenuContainer("Files", new Runnable() {
                 public void run() throws Exception {
                     for (IFile file : files)
                         generateNavigationMenuItem(file.getProjectRelativePath().toPortableString(), getOutputFileName(file));
@@ -867,12 +864,14 @@ public class DocumentationGenerator {
 
             generateNavigationTreeIcons();
 
-            withNavigationTemplate("navigation.html", new Runnable() {
+            withNavigationTemplate("navtreedata.js", new Runnable() {
                 public void run() throws Exception {
-                    out("<h3>" + project.getName() + "</h3>");
+                    out("[\n");
+                    out("  [\"" + project.getName() + "\",\"overview.html\", [\n");
 
                     generateOverview();
                     generateSelectedTopics();
+
                     generateDiagrams();
                     generateProjectIndex();
                     generatePackageIndex();
@@ -899,6 +898,11 @@ public class DocumentationGenerator {
                     generateFileIndex();
                     generateCppIndex();
 
+                    out("  ] ]\n");
+                    out("];\n");
+                    out("var NAVTREEINDEX = [\n");
+                    // TODO add all files
+                    out("];\n");
                 }
             });
         }
@@ -916,27 +920,13 @@ public class DocumentationGenerator {
         copyFileFromResource("tab_a.png");
         copyFileFromResource("tab_b.png");
         copyFileFromResource("tab_s.png");
-        copyFileFromResource("search_l.png");
-        copyFileFromResource("search_m.png");
-        copyFileFromResource("search_r.png");
         copyFileFromResource("by-sa.png");
     }
 
     protected void withGeneratingNavigationMenuContainer(String title, Runnable content) throws Exception {
-        String folderId = "folder" + treeFolderIndex++;
-
-        // NOTE: don't put whitespace between img elements
-        // the image for the tree node will be initialized from javascript because we can't easily tell if this is the last node or not
-        out("<p>" +
-            "<img src=\"\" alt=\"\" width=\"16\" height=\"22\" onclick=\"toggleFolder('" + folderId +"', this)\"/>" +
-            "<img src=\"ftv2folderclosed.png\" alt=\"\" width=\"20\" height=\"20\" onclick=\"toggleFolder('" + folderId +"', this)\"/>\r\n" +
-            "<span class=\"indextitle\">" + WordUtils.capitalize(title) + "</span>\r\n" +
-            "</p>\r\n" +
-            "<div id=\"" + folderId + "\">");
-
+        out("    [\""+title+"\", null, [\n");
         content.run();
-
-        out("</div>\r\n");
+        out("    ] ],\n");
     }
 
     protected void generateNavigationMenuItem(String title, String url) throws IOException {
@@ -948,18 +938,7 @@ public class DocumentationGenerator {
     }
 
     protected void generateNavigationMenuItem(String title, String url, String target, int level) throws IOException {
-        Assert.isTrue(0 <= level && level <= 1);
-        // NOTE: don't put whitespace between img elements
-        out("<p>");
-
-        if (level == 1)
-            out("<img src=\"ftv2vertline.png\" alt=\"\" width=\"16\" height=\"22\"/>");
-
-        // the image for the tree node will be initialized from javascript because we can't easily tell if this is the last node or not
-        out("<img src=\"\" alt=\"\" width=\"16\" height=\"22\"/>" +
-            "<img src=\"ftv2doc.png\" alt=\"\" width=\"20\" height=\"20\"/>\r\n" +
-            "<a href=\"" + url + "\" target=\"" + target + "\">" + title + "</a>\r\n" +
-            "</p>\r\n");
+        out(String.format("%1$"+(4+level*2)+"s", "")+"[\""+title+"\", \""+url+"\", null],\n");
     }
 
     protected void generateCppMenuItem(String title, String url) throws IOException {
@@ -1134,7 +1113,7 @@ public class DocumentationGenerator {
         }
 
         if (found && (generateFullUsageDiagrams || generateFullInheritanceDiagrams)) {
-            withGeneratingNavigationMenuContainer("diagrams", new Runnable() {
+            withGeneratingNavigationMenuContainer("Diagrams", new Runnable() {
                 public void run() throws Exception {
                     for (ITypeElement typeElement : typeElements) {
                         if (typeElement instanceof INedTypeElement) {
