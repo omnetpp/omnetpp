@@ -96,6 +96,7 @@ typedef int pid_t;
 #define _WIN32_WINNT 0x0400  // needed for the Fiber API
 #endif
 #define WIN32_LEAN_AND_MEAN
+#define NOGDI
 #include <windows.h>
 #undef min
 #undef max
