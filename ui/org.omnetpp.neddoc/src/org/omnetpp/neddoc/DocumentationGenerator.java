@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TreeMap;
 import java.util.concurrent.CancellationException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -239,7 +240,8 @@ public class DocumentationGenerator {
     protected Pattern possibleTypeReferencesPattern;
 
     protected ArrayList<String> packageNames;
-    protected int treeFolderIndex = 0;
+    protected int level0Index = 0;
+    protected TreeMap<String, ArrayList> navigationItemIndex;
 
     static Image createImage(String base64Data) {
         return new Image(Display.getDefault(), new ImageData(new ByteArrayInputStream(Base64.decode(base64Data.getBytes()))));
@@ -347,11 +349,10 @@ public class DocumentationGenerator {
                 }
                 catch (final IllegalStateException e) {
                     if (e.getMessage() != null) {
-                        DisplayUtils.runNowOrSyncInUIThread(new java.lang.Runnable() {
-                            public void run() {
+                        DisplayUtils.runNowOrSyncInUIThread(() -> {
                                 MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error during generating NED documentation", e.getMessage());
                             }
-                        });
+                        );
                     }
 
                     return Status.CANCEL_STATUS;
@@ -418,6 +419,8 @@ public class DocumentationGenerator {
         try {
             monitor.beginTask("Collecting data...", 6);
 
+            navigationItemIndex = new TreeMap<String, ArrayList>();
+            level0Index = 0;
             collectFiles();
             collectTypes();
             collectPackageNames();
@@ -625,12 +628,11 @@ public class DocumentationGenerator {
                 File doxyConfigFile = absoluteDoxyConfigFilePath.toFile();
 
                 if (!doxyConfigFile.exists()) {
-                    DisplayUtils.runNowOrSyncInUIThread(new java.lang.Runnable() {
-                        public void run() {
+                    DisplayUtils.runNowOrSyncInUIThread(() -> {
                             if (MessageDialog.openQuestion(null, "Missing configuration file", "Doxygen configuration file does not exist: " + absoluteDoxyConfigFilePath + "\n\nDo you want to create a default one?"))
                                 DocumentationGeneratorPropertyPage.generateDefaultDoxyConfigurationFile(project, doxyExecutablePath, absoluteDoxyConfigFilePath.toString());
                         }
-                    });
+                    );
                 }
 
                 if (doxyConfigFile.exists()) {
@@ -760,15 +762,14 @@ public class DocumentationGenerator {
         );
     }
 
-    protected void withPageTemplate(String fileName, final String content) throws Exception {
-        withPageTemplate(fileName, new Runnable() {
-            public void run() throws Exception {
+    protected void generatePage(String fileName, final String content) throws Exception {
+        generatePage(fileName, () -> {
                 out(content);
             }
-        });
+        );
     }
 
-    protected void withPageTemplate(String fileName, Runnable content) throws Exception {
+    protected void generatePage(String fileName, Runnable content) throws Exception {
         FileOutputStream oldCurrentOutputStream = currentOutputStream;
 
         File file = getOutputFile(fileName);
@@ -793,7 +794,7 @@ public class DocumentationGenerator {
         currentOutputStream = oldCurrentOutputStream;
     }
 
-    protected void withNavigationTemplate(String fileName, Runnable content) throws Exception {
+    protected void generateNavigationTree(String fileName, Runnable content) throws Exception {
         FileOutputStream oldCurrentOutputStream = currentOutputStream;
 
         File file = getOutputFile(fileName);
@@ -805,27 +806,25 @@ public class DocumentationGenerator {
 
         out(splitNavigation[0]);
         content.run();
-
         out(splitNavigation[1]);
 
         currentOutputStream.close();
         currentOutputStream = oldCurrentOutputStream;
     }
 
-    protected void generateProjectIndexReference(IProject project) throws IOException, CoreException {
+    protected void generateProjectIndexReference(IProject project) throws Exception {
         String projectName = project.getName();
         IPath indexPath = new Path("..").append(neddocRelativeRootPath).append(projectName).append(DocumentationGeneratorPropertyPage.getNeddocPath(project)).append("index.html");
-        generateNavigationMenuItem(projectName, indexPath.toPortableString(), "_top");
+        generateNavigationMenuItem(1, projectName, indexPath.toPortableString(), null);
     }
 
     protected void generateProjectIndexReferences(String title, final IProject[] projects) throws Exception {
         if (projects.length != 0)
-            withGeneratingNavigationMenuContainer(title, new Runnable() {
-                public void run() throws Exception {
+            generateNavigationMenuItem(1, title, null, () -> {
                     for (IProject referencedProject : projects)
                         generateProjectIndexReference(referencedProject);
                 }
-            });
+            );
     }
 
     protected void generateProjectIndex() throws Exception {
@@ -839,23 +838,21 @@ public class DocumentationGenerator {
 
     protected void generatePackageIndex() throws Exception {
         if (packageNames.size() != 0)
-            withGeneratingNavigationMenuContainer("Packages", new Runnable() {
-                public void run() throws Exception {
+            generateNavigationMenuItem(1, "Packages", null, () -> {
                     for (String packageName : packageNames) {
-                        generateNavigationMenuItem(packageName, packageName + "-package.html");
+                        generateNavigationMenuItem(2, packageName, packageName + "-package.html", null);
                     }
                 }
-            });
+            );
     }
 
     protected void generateFileIndex() throws Exception {
         if (files.size() != 0)
-            withGeneratingNavigationMenuContainer("Files", new Runnable() {
-                public void run() throws Exception {
+            generateNavigationMenuItem(1, "Files", null, () -> {
                     for (IFile file : files)
-                        generateNavigationMenuItem(file.getProjectRelativePath().toPortableString(), getOutputFileName(file));
+                        generateNavigationMenuItem(2, file.getProjectRelativePath().toPortableString(), getOutputFileName(file), null);
                 }
-            });
+            );
     }
 
     protected void generateNavigationTree() throws Exception {
@@ -864,47 +861,41 @@ public class DocumentationGenerator {
 
             generateNavigationTreeIcons();
 
-            withNavigationTemplate("navtreedata.js", new Runnable() {
-                public void run() throws Exception {
-                    out("[\n");
-                    out("  [\"" + project.getName() + "\",\"overview.html\", [\n");
+            generateNavigationTree("navtreedata.js", () -> {
+                    generateNavigationMenuItem(0, project.getName(), "overview.html", () -> {
 
-                    generateOverview();
-                    generateSelectedTopics();
+                        generateOverview();
+                        generateSelectedTopics();
 
-                    generateDiagrams();
-                    generateProjectIndex();
-                    generatePackageIndex();
+                        generateDiagrams();
+                        generateProjectIndex();
+                        generatePackageIndex();
 
-                    generateTypeIndex("simple modules", SimpleModuleElementEx.class);
-                    generateTypeIndex("compound modules", new IPredicate() {
-                        public boolean matches(Object object) {
-                            return object instanceof CompoundModuleElementEx && !((CompoundModuleElementEx)object).isNetwork();
-                    }});
-                    generateTypeIndex("networks", new IPredicate() {
-                        public boolean matches(Object object) {
-                            return object instanceof CompoundModuleElementEx && ((CompoundModuleElementEx)object).isNetwork();
-                    }});
-                    generateTypeIndex("all modules", IModuleTypeElement.class);
-                    generateTypeIndex("channels", ChannelElementEx.class);
-                    generateTypeIndex("channel interfaces", ChannelInterfaceElementEx.class);
-                    generateTypeIndex("module interfaces", ModuleInterfaceElementEx.class);
-                    generateTypeIndex("messages", MessageElementEx.class);
-                    generateTypeIndex("packets", PacketElementEx.class);
-                    generateTypeIndex("classes", ClassElementEx.class);
-                    generateTypeIndex("structs", StructElementEx.class);
-                    generateTypeIndex("enums", EnumElementEx.class);
+                        generateTypeIndex("simple modules", SimpleModuleElementEx.class);
+                        generateTypeIndex("compound modules", object -> {
+                                return object instanceof CompoundModuleElementEx && !((CompoundModuleElementEx)object).isNetwork();
+                            });
+                        generateTypeIndex("networks", object -> {
+                                return object instanceof CompoundModuleElementEx && ((CompoundModuleElementEx)object).isNetwork();
+                            });
+                        generateTypeIndex("all modules", IModuleTypeElement.class);
+                        generateTypeIndex("channels", ChannelElementEx.class);
+                        generateTypeIndex("channel interfaces", ChannelInterfaceElementEx.class);
+                        generateTypeIndex("module interfaces", ModuleInterfaceElementEx.class);
+                        generateTypeIndex("messages", MessageElementEx.class);
+                        generateTypeIndex("packets", PacketElementEx.class);
+                        generateTypeIndex("classes", ClassElementEx.class);
+                        generateTypeIndex("structs", StructElementEx.class);
+                        generateTypeIndex("enums", EnumElementEx.class);
 
-                    generateFileIndex();
-                    generateCppIndex();
-
-                    out("  ] ]\n");
-                    out("];\n");
-                    out("var NAVTREEINDEX = [\n");
-                    // TODO add all files
-                    out("];\n");
+                        generateFileIndex();
+                        generateCppIndex();
+                    });
                 }
-            });
+            );
+            // out("\nvar NAVTREEINDEX = [");
+            // TODO add all files
+            // out("\n];");
         }
         finally {
             monitor.done();
@@ -923,33 +914,27 @@ public class DocumentationGenerator {
         copyFileFromResource("by-sa.png");
     }
 
-    protected void withGeneratingNavigationMenuContainer(String title, Runnable content) throws Exception {
-        out("    [\""+title+"\", null, [\n");
-        content.run();
-        out("    ] ],\n");
+    protected void generateNavigationMenuItem(int level, String title, String url, Runnable content) throws Exception {
+        String indent = String.format("%1$"+(2+level*2)+"s", "");
+        out("\n"+indent+"['" + title + "', " + (url==null ? "null" : "'"+url+"'") + ", ");
+        if (content != null) {
+            out("[");
+            content.run();
+            out("\n"+indent+"] ],");
+        } else {
+            out("null");
+            out("],");
+        }
     }
 
-    protected void generateNavigationMenuItem(String title, String url) throws IOException {
-        generateNavigationMenuItem(title, url, "mainframe");
-    }
-
-    protected void generateNavigationMenuItem(String title, String url, String target) throws IOException {
-        generateNavigationMenuItem(title, url, target, 1);
-    }
-
-    protected void generateNavigationMenuItem(String title, String url, String target, int level) throws IOException {
-        out(String.format("%1$"+(4+level*2)+"s", "")+"[\""+title+"\", \""+url+"\", null],\n");
-    }
-
-    protected void generateCppMenuItem(String title, String url) throws IOException {
+    protected void generateCppMenuItem(String title, String url) throws Exception {
         if (project.getFile(rootRelativeDoxyPath.append(url)).getLocation().toFile().exists())
-            generateNavigationMenuItem(title, neddocRelativeRootPath.append(rootRelativeDoxyPath).append(url).toPortableString());
+            generateNavigationMenuItem(2, title, neddocRelativeRootPath.append(rootRelativeDoxyPath).append(url).toPortableString(), null);
     }
 
     private void generateCppIndex() throws Exception {
         if (isCppProject(project) && generateDoxy)
-            withGeneratingNavigationMenuContainer("C++", new Runnable() {
-                public void run() throws Exception {
+            generateNavigationMenuItem(1, "C++", null, () -> {
                     generateCppMenuItem("Main Page", "main.html");
                     generateCppMenuItem("File List", "files.html");
                     generateCppMenuItem("Class List", "annotated.html");
@@ -959,17 +944,17 @@ public class DocumentationGenerator {
                     generateCppMenuItem("File Members", "globals.html");
                     generateCppMenuItem("Namespace Members", "namespacemembers.html");
                 }
-            });
+            );
     }
 
     protected void generateOverview() throws Exception {
-        generateNavigationMenuItem("Overview", "overview.html", "mainframe", 0);
+        generateNavigationMenuItem(1, "Overview", "overview.html", null);
         final boolean[] titlePageFound = new boolean[1];
         mapPageMatchers(new IPageMatcherVisitor() {
         public boolean visit(PageType pageType, String file, String title, String content) throws Exception {
             if (pageType == PageType.TITLE_PAGE && content.length() > 0) {
                     titlePageFound[0] = true;
-                    withPageTemplate("overview.html",
+                    generatePage("overview.html",
                         processHTMLContent("comment", content + "<hr/>\r\n" + "<p>Generated by neddoc.</p>\r\n"));
                     return false;
                 }
@@ -979,7 +964,7 @@ public class DocumentationGenerator {
         });
         // generate default if @titlepage not found
         if (!titlePageFound[0])
-            withPageTemplate("overview.html",
+            generatePage("overview.html",
                 "<center><h1>OMNeT++ Model Documentation</h1></center>\r\n" +
                 "<center><i>Generated from NED and MSG files</i></center>\r\n" +
                 "<p>This documentation has been generated from NED and MSG files.</p>\r\n" +
@@ -1005,24 +990,23 @@ public class DocumentationGenerator {
             }
         });
         if (pageFound[0]) {
-            withGeneratingNavigationMenuContainer("selected topics", new Runnable() {
-                public void run() throws Exception {
+            generateNavigationMenuItem(1, "Selected Topics", null, () -> {
                     mapPageMatchers(new IPageMatcherVisitor() {
                         public boolean visit(PageType pageType, String file, String title, String content) throws Exception {
                             if (pageType == PageType.PAGE) {
-                                generateNavigationMenuItem(title, file);
-                                withPageTemplate(file,
+                                generateNavigationMenuItem(2, title, file, null);
+                                generatePage(file,
                                         "<h2>" + title + "</h2>" + processHTMLContent("comment", content));
 
                             }
                             else if (pageType == PageType.EXTERNAL_PAGE) {
-                                generateNavigationMenuItem(title, file);
+                                generateNavigationMenuItem(2, title, file, null);
                             }
                             return true;
                         }
                     });
                 }
-            });
+            );
         }
     }
 
@@ -1113,15 +1097,14 @@ public class DocumentationGenerator {
         }
 
         if (found && (generateFullUsageDiagrams || generateFullInheritanceDiagrams)) {
-            withGeneratingNavigationMenuContainer("Diagrams", new Runnable() {
-                public void run() throws Exception {
+            generateNavigationMenuItem(1, "Diagrams", null, () -> {
                     for (ITypeElement typeElement : typeElements) {
                         if (typeElement instanceof INedTypeElement) {
                             if (generateFullUsageDiagrams)
-                                generateNavigationMenuItem("Full NED Usage Diagram", "full-ned-usage-diagram.html");
+                                generateNavigationMenuItem(2, "Full NED Usage Diagram", "full-ned-usage-diagram.html", null);
 
                             if (generateFullInheritanceDiagrams)
-                                generateNavigationMenuItem("Full NED Inheritance Diagram", "full-ned-inheritance-diagram.html");
+                                generateNavigationMenuItem(2, "Full NED Inheritance Diagram", "full-ned-inheritance-diagram.html", null);
 
                             break;
                         }
@@ -1130,36 +1113,35 @@ public class DocumentationGenerator {
                     for (ITypeElement typeElement : typeElements) {
                         if (typeElement instanceof IMsgTypeElement) {
                             if (generateFullUsageDiagrams)
-                                generateNavigationMenuItem("Full MSG Usage Diagram", "full-msg-usage-diagram.html");
+                                generateNavigationMenuItem(2, "Full MSG Usage Diagram", "full-msg-usage-diagram.html", null);
 
                             if (generateFullInheritanceDiagrams)
-                                generateNavigationMenuItem("Full MSG Inheritance Diagram", "full-msg-inheritance-diagram.html");
+                                generateNavigationMenuItem(2, "Full MSG Inheritance Diagram", "full-msg-inheritance-diagram.html", null);
 
                             break;
                         }
                     }
                 }
-            });
+            );
         }
     }
 
-    protected void generatePageReference(String fileName, String title) throws IOException {
+    protected void generatePageReference(String fileName, String title) throws Exception {
         if (title == null || title.equals(""))
             title = fileName;
 
-        generateNavigationMenuItem(title, fileName);
+        generateNavigationMenuItem(2, title, fileName, null);
     }
 
     protected void generateTypeIndexEntry(ITypeElement typeElement) throws Exception {
-        generateNavigationMenuItem(typeElement.getName(), getOutputFileName(typeElement));
+        generateNavigationMenuItem(2, typeElement.getName(), getOutputFileName(typeElement), null);
     }
 
     protected void generateTypeIndex(String title, final Class<?> clazz) throws Exception {
-        generateTypeIndex(title, new IPredicate() {
-            public boolean matches(Object object) {
+        generateTypeIndex(title, object -> {
                 return clazz.isInstance(object);
             }
-        });
+        );
     }
 
     protected void generateTypeIndex(String title, IPredicate predicate) throws Exception {
@@ -1170,12 +1152,11 @@ public class DocumentationGenerator {
                 selectedElements.add(typeElement);
 
         if (selectedElements.size() != 0) {
-            withGeneratingNavigationMenuContainer(WordUtils.capitalize(title), new Runnable() {
-                public void run() throws Exception {
+            generateNavigationMenuItem(1, WordUtils.capitalize(title), null, () -> {
                     for (ITypeElement typeElement : selectedElements)
                         generateTypeIndexEntry(typeElement);
                 }
-            });
+            );
         }
     }
 
@@ -1223,8 +1204,7 @@ public class DocumentationGenerator {
 
     protected void generatePackagePages() throws Exception {
         for (final String packageName : packageNames) {
-            withPageTemplate(packageName + "-package.html", new Runnable() {
-                public void run() throws Exception {
+            generatePage(packageName + "-package.html", () -> {
                     out("<h2>Package " + packageName + "</h2>\r\n");
 
                     out("<table class=\"typestable\">\r\n");
@@ -1237,7 +1217,7 @@ public class DocumentationGenerator {
 
                     out("</table>\r\n");
                 }
-            });
+            );
         }
     }
 
@@ -1246,8 +1226,7 @@ public class DocumentationGenerator {
             monitor.beginTask("Generating file pages...", files.size());
 
             for (final IFile file : files) {
-                withPageTemplate(getOutputFileName(file), new Runnable() {
-                    public void run() throws IOException, CoreException {
+                generatePage(getOutputFileName(file), () -> {
                         monitor.subTask(file.getFullPath().toString());
                         String fileType = nedResources.isNedFile(file) ? "NED" : msgResources.isMsgFile(file) ? "Msg" : "";
 
@@ -1270,7 +1249,7 @@ public class DocumentationGenerator {
                         generateSourceContent(file);
                         monitor.worked(1);
                     }
-                });
+                );
             }
         }
         finally {
@@ -1283,8 +1262,7 @@ public class DocumentationGenerator {
             monitor.beginTask("Generating NED type pages...", typeElements.size());
 
             for (final ITypeElement typeElement : typeElements) {
-                withPageTemplate(getOutputFileName(typeElement), new Runnable() {
-                    public void run() throws Exception {
+                generatePage(getOutputFileName(typeElement), () -> {
                         boolean isNedTypeElement = typeElement instanceof INedTypeElement;
                         boolean isMsgTypeElement = typeElement instanceof IMsgTypeElement;
 
@@ -1346,7 +1324,7 @@ public class DocumentationGenerator {
 
                         monitor.worked(1);
                     }
-                });
+                );
             }
         }
         finally {
@@ -1874,8 +1852,7 @@ public class DocumentationGenerator {
     protected void generateTypeDiagram(final INedTypeElement typeElement) throws IOException {
         if (generateNedTypeFigures && !nedResources.isBuiltInDeclaration(typeElement.getNedTypeInfo())) {
             out("<img src=\"" + getOutputFileName(typeElement, "type", ".png") + "\" ismap=\"yes\" usemap=\"#type-diagram\"/>");
-            DisplayUtils.runNowOrSyncInUIThread(new java.lang.Runnable() {
-                public void run() {
+            DisplayUtils.runNowOrSyncInUIThread(() -> {
                     try {
                         NedFileElementEx modelRoot = typeElement.getContainingNedFileElement();
                         ScrollingGraphicalViewer viewer = NedFigureProvider.createNedViewer(modelRoot);
@@ -1905,7 +1882,7 @@ public class DocumentationGenerator {
                         throw new RuntimeException(e);
                     }
                 }
-            });
+            );
         }
     }
 
@@ -1923,50 +1900,46 @@ public class DocumentationGenerator {
             }
 
             if (generateFullUsageDiagrams) {
-                withPageTemplate("full-ned-usage-diagram.html", new Runnable() {
-                    public void run() throws Exception {
+                generatePage("full-ned-usage-diagram.html", () -> {
                         out("<h2 class=\"comptitle\">Full NED Usage Diagram</h2>\r\n" +
                             "<p>The following diagram shows usage relationships between simple and compound modules, module interfaces, networks, channels and channel interfaces.\r\n" +
                             "Unresolved types are missing from the diagram.</p>\r\n");
                         generateUsageDiagram(nedTypeElements, "full-ned-usage-diagram.png", "full-ned-usage-diagram.map");
                     }
-                });
+                );
                 monitor.worked(1);
             }
 
             if (generateFullInheritanceDiagrams) {
-                withPageTemplate("full-ned-inheritance-diagram.html", new Runnable() {
-                    public void run() throws Exception {
+                generatePage("full-ned-inheritance-diagram.html", () -> {
                         out("<h2 class=\"comptitle\">Full NED Inheritance Diagram</h2>\r\n" +
                             "<p>The following diagram shows the inheritance hierarchy between simple and compound modules, module interfaces, networks, channels and channel interfaces.\r\n" +
                             "Unresolved types are missing from the diagram.</p>\r\n");
                         generateInheritanceDiagram(nedTypeElements, "full-ned-inheritance-diagram.png", "full-ned-inheritance-diagram.map");
                     }
-                });
+                );
                 monitor.worked(1);
             }
 
             if (generateFullUsageDiagrams) {
-                withPageTemplate("full-msg-usage-diagram.html", new Runnable() {
-                    public void run() throws Exception {
+                generatePage("full-msg-usage-diagram.html", () -> {
                         out("<h2 class=\"comptitle\">Full MSG Usage Diagram</h2>\r\n" +
                             "<p>The following diagram shows usage relationships between messages, packets, classes and structs.\r\n" +
                             "Unresolved types are missing from the diagram.</p>\r\n");
                         generateUsageDiagram(msgTypeElements, "full-msg-usage-diagram.png", "full-msg-usage-diagram.map");
                     }
-                });
+                );
                 monitor.worked(1);
             }
 
             if (generateFullInheritanceDiagrams) {
-                withPageTemplate("full-msg-inheritance-diagram.html", new Runnable() {
-                    public void run() throws Exception {
+                generatePage("full-msg-inheritance-diagram.html", () -> {
                         out("<h2 class=\"comptitle\">Full MSG Inheritance Diagram</h2>\r\n" +
                             "<p>The following diagram shows the inheritance hierarchy between messages, packets, classes and structs.\r\n" +
                             "Unresolved types are missing from the diagram.</p>\r\n");
                         generateInheritanceDiagram(msgTypeElements, "full-msg-inheritance-diagram.png", "full-msg-inheritance-diagram.map");
                     }
-                });
+                );
                 monitor.worked(1);
             }
         }
