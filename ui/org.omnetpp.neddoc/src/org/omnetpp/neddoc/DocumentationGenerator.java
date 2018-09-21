@@ -240,7 +240,9 @@ public class DocumentationGenerator {
     protected Pattern possibleTypeReferencesPattern;
 
     protected ArrayList<String> packageNames;
-    protected int level0Index = 0;
+    protected int level1Index = 0;
+    protected int level2Index = 0;
+    protected int previousLevel = 0;
     protected TreeMap<String, ArrayList> navigationItemIndex;
 
     static Image createImage(String base64Data) {
@@ -327,9 +329,11 @@ public class DocumentationGenerator {
                     collectCaches();
                     generateDoxy();
                     collectDoxyMap();
+                    copyIcons();
                     copyCSS();
                     copyJavaScript();
-                    generateNavigationTree();
+                    generateNavTreeData();
+                    generateNavTreeIndex();
                     generateNedTypeFigures();
                     generatePackagePages();
                     generateFilePages();
@@ -419,7 +423,8 @@ public class DocumentationGenerator {
             monitor.beginTask("Collecting data...", 6);
 
             navigationItemIndex = new TreeMap<String, ArrayList>();
-            level0Index = 0;
+            level1Index = 0;
+            level2Index = 0;
             collectFiles();
             collectTypes();
             collectPackageNames();
@@ -837,11 +842,9 @@ public class DocumentationGenerator {
             );
     }
 
-    protected void generateNavigationTree() throws Exception {
+    protected void generateNavTreeData() throws Exception {
         try {
             monitor.beginTask("Generating navigation tree...", IProgressMonitor.UNKNOWN);
-
-            generateNavigationTreeIcons();
 
             generateNavigationTree("navtreedata.js", () -> {
                     generateNavigationMenuItem(0, project.getName(), "index.html", () -> {
@@ -884,7 +887,23 @@ public class DocumentationGenerator {
         }
     }
 
-    protected void generateNavigationTreeIcons() throws Exception {
+    protected void generateNavTreeIndex() throws Exception {
+        FileOutputStream oldCurrentOutputStream = currentOutputStream;
+
+        File file = getOutputFile("navtreeindex0.js");
+        currentOutputStream = new FileOutputStream(file);
+
+        out("var NAVTREEINDEX0 = {\n");
+        for (Map.Entry<String,ArrayList> entry : navigationItemIndex.entrySet()) {
+            out("'"+entry.getKey()+"':"+entry.getValue()+",\n");
+        }
+        out("};");
+
+        currentOutputStream.close();
+        currentOutputStream = oldCurrentOutputStream;
+    }
+
+    protected void copyIcons() throws Exception {
         copyFileFromResource("bc_s.png");
         copyFileFromResource("nav_h.png");
         copyFileFromResource("splitbar.png");
@@ -897,6 +916,13 @@ public class DocumentationGenerator {
     }
 
     protected void generateNavigationMenuItem(int level, String title, String url, Runnable content) throws Exception {
+        // reset the index if we are now deeper in the level hierarch than the last item
+        if (previousLevel == 0 && level == 1)
+            level1Index = 0;
+        if (previousLevel == 1 && level == 2)
+            level2Index = 0;
+
+        // dump the menu item
         String indent = String.format("%1$"+(2+level*2)+"s", "");
         out("\n"+indent+"['" + title + "', " + (url==null ? "null" : "'"+url+"'") + ", ");
         if (content != null) {
@@ -907,6 +933,24 @@ public class DocumentationGenerator {
             out("null");
             out("],");
         }
+
+        // add index entry with the current breadcrumb
+        if (level >= 1 && url != null) {
+            ArrayList<Integer> breadcrumb = new ArrayList<>();
+            breadcrumb.add(0, level1Index);
+            if (level >= 2)
+                breadcrumb.add(1, level2Index);
+            if (!navigationItemIndex.containsKey(url))
+                navigationItemIndex.put(url, breadcrumb);
+        }
+
+        // increase the breadcrumb counters for the next item
+        if (level == 1)
+            level1Index++;
+        if (level == 2)
+            level2Index++;
+
+        previousLevel = level;
     }
 
     protected void generateCppMenuItem(String title, String url) throws Exception {
