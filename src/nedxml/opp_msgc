@@ -1,2 +1,2 @@
 #!/bin/sh
-$(dirname $0)/opp_msgtool $*
+$(dirname $0)/opp_msgtool "$@"

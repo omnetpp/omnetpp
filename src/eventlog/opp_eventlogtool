@@ -1,2 +1,2 @@
 #!/bin/sh
-$(dirname $0)/eventlogtool $*
+$(dirname $0)/eventlogtool "$@"
