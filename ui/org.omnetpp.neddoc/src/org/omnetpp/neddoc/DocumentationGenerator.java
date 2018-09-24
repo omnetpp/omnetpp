@@ -1930,7 +1930,7 @@ public class DocumentationGenerator {
                         out("<h2 class=\"comptitle\">Full NED Usage Diagram</h2>\r\n" +
                             "<p>The following diagram shows usage relationships between simple and compound modules, module interfaces, networks, channels and channel interfaces.\r\n" +
                             "Unresolved types are missing from the diagram.</p>\r\n");
-                        generateUsageDiagram(nedTypeElements, "full-ned-usage-diagram.png", "full-ned-usage-diagram.map");
+                        generateUsageDiagram(nedTypeElements, "full-ned-usage-diagram.svg");
                     }
                 );
                 monitor.worked(1);
@@ -1941,7 +1941,7 @@ public class DocumentationGenerator {
                         out("<h2 class=\"comptitle\">Full NED Inheritance Diagram</h2>\r\n" +
                             "<p>The following diagram shows the inheritance hierarchy between simple and compound modules, module interfaces, networks, channels and channel interfaces.\r\n" +
                             "Unresolved types are missing from the diagram.</p>\r\n");
-                        generateInheritanceDiagram(nedTypeElements, "full-ned-inheritance-diagram.png", "full-ned-inheritance-diagram.map");
+                        generateInheritanceDiagram(nedTypeElements, "full-ned-inheritance-diagram.svg");
                     }
                 );
                 monitor.worked(1);
@@ -1952,7 +1952,7 @@ public class DocumentationGenerator {
                         out("<h2 class=\"comptitle\">Full MSG Usage Diagram</h2>\r\n" +
                             "<p>The following diagram shows usage relationships between messages, packets, classes and structs.\r\n" +
                             "Unresolved types are missing from the diagram.</p>\r\n");
-                        generateUsageDiagram(msgTypeElements, "full-msg-usage-diagram.png", "full-msg-usage-diagram.map");
+                        generateUsageDiagram(msgTypeElements, "full-msg-usage-diagram.svg");
                     }
                 );
                 monitor.worked(1);
@@ -1963,7 +1963,7 @@ public class DocumentationGenerator {
                         out("<h2 class=\"comptitle\">Full MSG Inheritance Diagram</h2>\r\n" +
                             "<p>The following diagram shows the inheritance hierarchy between messages, packets, classes and structs.\r\n" +
                             "Unresolved types are missing from the diagram.</p>\r\n");
-                        generateInheritanceDiagram(msgTypeElements, "full-msg-inheritance-diagram.png", "full-msg-inheritance-diagram.map");
+                        generateInheritanceDiagram(msgTypeElements, "full-msg-inheritance-diagram.svg");
                     }
                 );
                 monitor.worked(1);
@@ -1988,11 +1988,11 @@ public class DocumentationGenerator {
                 out(" Click <a href=\"full-" + diagramType + "-usage-diagram.html\">here</a> to see the full picture.");
             out("</p>\r\n");
 
-            generateUsageDiagram(typeElements, getOutputFileName(typeElement, "usage", ".png"), getOutputFileName(typeElement, "usage", ".map"));
+            generateUsageDiagram(typeElements, getOutputFileName(typeElement, "usage", ".svg"));
         }
     }
 
-    protected void generateUsageDiagram(List<? extends ITypeElement> typeElements, String imageFileName, String cmapFileName) throws IOException {
+    protected void generateUsageDiagram(List<? extends ITypeElement> typeElements, String imageFileName) throws IOException {
         if (generatePerTypeUsageDiagrams || generateFullUsageDiagrams) {
             DotGraph dot = new DotGraph();
 
@@ -2019,13 +2019,9 @@ public class DocumentationGenerator {
 
             dot.append("}");
 
-            generateDotOuput(dot, getOutputFile(imageFileName), "png");
-            generateDotOuput(dot, getOutputFile(cmapFileName), "cmap");
-            if (APPLY_CC)
-                watermark(getOutputFile(imageFileName).toString());
+            generateDotOuput(dot, getOutputFile(imageFileName), "svg");
 
-            out("<img src=\"" + imageFileName + "\" ismap=\"yes\" usemap=\"#usage-diagram\"/>");
-            out("<map name=\"usage-diagram\">" + FileUtils.readTextFile(getOutputFile(cmapFileName), null) + "</map>\r\n");
+            out("<object type=\"image/svg+xml\" data=\"" + imageFileName + "\"></object>");
         }
     }
 
@@ -2043,11 +2039,11 @@ public class DocumentationGenerator {
                 out(" Click <a href=\"full-" + diagramType + "-inheritance-diagram.html\">here</a> to see the full picture.");
             out("</p>\r\n");
 
-            generateInheritanceDiagram(typeElements, getOutputFileName(typeElement, "inheritance", ".png"), getOutputFileName(typeElement, "inheritance", ".map"));
+            generateInheritanceDiagram(typeElements, getOutputFileName(typeElement, "inheritance", ".svg"));
         }
     }
 
-    protected void generateInheritanceDiagram(List<? extends ITypeElement> typeElements, String imageFileName, String cmapFileName) throws IOException {
+    protected void generateInheritanceDiagram(List<? extends ITypeElement> typeElements, String imageFileName) throws IOException {
         if (generatePerTypeInheritanceDiagrams || generateFullInheritanceDiagrams) {
             DotGraph dot = new DotGraph();
 
@@ -2106,13 +2102,9 @@ public class DocumentationGenerator {
 
             dot.append("}");
 
-            generateDotOuput(dot, getOutputFile(imageFileName), "png");
-            generateDotOuput(dot, getOutputFile(cmapFileName), "cmap");
-            if (APPLY_CC)
-                watermark(getOutputFile(imageFileName).toString());
+            generateDotOuput(dot, getOutputFile(imageFileName), "svg");
 
-            out("<img src=\"" + imageFileName + "\" ismap=\"yes\" usemap=\"#inheritance-diagram\"/>");
-            out("<map name=\"inheritance-diagram\">" + FileUtils.readTextFile(getOutputFile(cmapFileName), null) + "</map>\r\n");
+            out("<object type=\"image/svg+xml\" data=\"" + imageFileName + "\"></object>");
         }
     }
 
@@ -2264,7 +2256,7 @@ public class DocumentationGenerator {
             throw new IllegalStateException("The GraphViz Dot executable path is invalid, set it using Window/Preferences...\nThe currently set path is: " + dotExecutablePath);
 
         // dot has a width/height limit of 32768 pixels, see bug #149.
-        ProcessUtils.exec(dotExecutablePath, new String[] {"-T" + format, "-Gsize=300,300", "-Gdpi=96" ,"-o", outputFile.toString()}, ".", dot.toString(), 10, monitor);
+        ProcessUtils.exec(dotExecutablePath, new String[] {"-T" + format, "-o", outputFile.toString()}, ".", dot.toString(), 10, monitor);
     }
 
     protected String getParamTypeAsString(ParamElementEx param) {
@@ -2507,7 +2499,7 @@ public class DocumentationGenerator {
                 String name = typeElement.getName();
                 append("\"" + name + "\" ");
 
-                append("[URL=\"" + getOutputFileName(typeElement) + "\",");
+                append("[URL=\"" + getOutputFileName(typeElement) + "\", target=\"_parent\"");
 
                 String color = "#ff0000";
                 if (typeElement instanceof CompoundModuleElementEx && ((CompoundModuleElementEx)typeElement).isNetwork())
