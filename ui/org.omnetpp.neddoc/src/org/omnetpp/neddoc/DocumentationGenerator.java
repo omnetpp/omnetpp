@@ -820,7 +820,7 @@ public class DocumentationGenerator {
     }
 
     protected void generatePackageReference(String packageName) throws IOException {
-        out("<b>Package:</b> " + packageName);
+        out("<b>Package:</b> <a href=\"" + packageName + "-package.html\">" + packageName + "</a>");
     }
 
     protected void generatePackageIndex() throws Exception {
@@ -853,28 +853,26 @@ public class DocumentationGenerator {
                         generateSelectedTopics();
 
                         generateDiagrams();
-                        generateProjectIndex();
                         generatePackageIndex();
 
-                        generateTypeIndex("simple modules", SimpleModuleElementEx.class);
-                        generateTypeIndex("compound modules", object -> {
-                                return object instanceof CompoundModuleElementEx && !((CompoundModuleElementEx)object).isNetwork();
-                            });
                         generateTypeIndex("networks", object -> {
                                 return object instanceof CompoundModuleElementEx && ((CompoundModuleElementEx)object).isNetwork();
                             });
-                        generateTypeIndex("all modules", IModuleTypeElement.class);
+                        generateTypeIndex("modules", object -> {
+                            return object instanceof IModuleTypeElement && !((IModuleTypeElement)object).isNetwork();
+                        });
                         generateTypeIndex("channels", ChannelElementEx.class);
                         generateTypeIndex("channel interfaces", ChannelInterfaceElementEx.class);
                         generateTypeIndex("module interfaces", ModuleInterfaceElementEx.class);
                         generateTypeIndex("messages", MessageElementEx.class);
-                        generateTypeIndex("packets", PacketElementEx.class);
+                                                generateTypeIndex("packets", PacketElementEx.class);
                         generateTypeIndex("classes", ClassElementEx.class);
                         generateTypeIndex("structs", StructElementEx.class);
                         generateTypeIndex("enums", EnumElementEx.class);
 
                         generateFileIndex();
                         generateCppIndex();
+                        generateProjectIndex();
                     });
                 }
             );
@@ -1292,7 +1290,9 @@ public class DocumentationGenerator {
                         boolean isNedTypeElement = typeElement instanceof INedTypeElement;
                         boolean isMsgTypeElement = typeElement instanceof IMsgTypeElement;
 
-                        out("<h2 class=\"comptitle\">" + WordUtils.capitalize(typeElement.getReadableTagName()) + " <i>" + typeElement.getName() + "</i></h2>\r\n");
+                        out("<h2 class=\"comptitle\">" + typeElement.getName() + "</h2>\n");
+
+                        out("<b>Type: </b>" + WordUtils.capitalize(typeElement.getReadableTagName()) + "<br/>\n");
 
                         if (isNedTypeElement) {
                             generatePackageReference(getPackageName((INedTypeElement)typeElement));
