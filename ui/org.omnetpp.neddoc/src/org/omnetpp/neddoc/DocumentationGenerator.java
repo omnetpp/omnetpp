@@ -738,9 +738,7 @@ public class DocumentationGenerator {
             copyFileFromResource("style.css");
         else
             FileUtils.copy(new FileInputStream(customCssPath.toPortableString()), getOutputFile("style.css"));
-        copyFileFromResource("doxygen.css");
         copyFileFromResource("navtree.css");
-        copyFileFromResource("tabs.css");
     }
 
     protected void copyJavaScript() throws Exception {
@@ -908,9 +906,6 @@ public class DocumentationGenerator {
         copyFileFromResource("splitbar.png");
         copyFileFromResource("sync_on.png");
         copyFileFromResource("sync_off.png");
-        copyFileFromResource("tab_a.png");
-        copyFileFromResource("tab_b.png");
-        copyFileFromResource("tab_s.png");
         copyFileFromResource("by-sa.png");
     }
 

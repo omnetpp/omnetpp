@@ -1,4 +1,44 @@
-body,td,th,p,ul,ol,li,h1,h2,h3,h4 {font-family:arial,sans-serif }
+body, table, div, p, dl {
+    font: 400 14px/22px Roboto,sans-serif;
+}
+
+body {
+    background-color: white;
+    color: black;
+    margin: 0;
+}
+div.contents {
+    margin-top: 10px;
+    margin-left: 12px;
+    margin-right: 8px;
+}
+.contents a:visited {
+    color: #4665A2;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+a {
+    color: #3D578C;
+    font-weight: normal;
+    text-decoration: none;
+}
+.arrow {
+    color: #9CAFD4;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: pointer;
+    font-size: 80%;
+    display: inline-block;
+    width: 16px;
+    height: 22px;
+}
+
+body,td,th,p,ul,ol,li,h1,h2,h3,h4 {font-family:Roboto,sans-serif }
 body,td,th,p,ul,ol,li { font-size:10pt }
 h1 { font-size:18pt; text-align:center }
 pre.comment { font-size:10pt; padding-left:5pt }
