@@ -735,9 +735,10 @@ public class DocumentationGenerator {
 
     protected void copyCSS() throws Exception {
         if (customCssPath == null)
-            copyFileFromResource("doxygen.css");
+            copyFileFromResource("style.css");
         else
             FileUtils.copy(new FileInputStream(customCssPath.toPortableString()), getOutputFile("style.css"));
+        copyFileFromResource("doxygen.css");
         copyFileFromResource("navtree.css");
         copyFileFromResource("tabs.css");
     }
