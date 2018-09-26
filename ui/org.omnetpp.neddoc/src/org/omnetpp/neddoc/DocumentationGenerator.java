@@ -240,8 +240,7 @@ public class DocumentationGenerator {
     protected Pattern possibleTypeReferencesPattern;
 
     protected ArrayList<String> packageNames;
-    protected int level1Index = 0;
-    protected int level2Index = 0;
+    protected int levelIndex[] = {0, 0, 0, 0};  // navigation level indexes for generating bredcrumbs (note that the 0th element is not used)
     protected int previousLevel = 0;
     protected TreeMap<String, ArrayList> navigationItemIndex;
 
@@ -423,8 +422,8 @@ public class DocumentationGenerator {
             monitor.beginTask("Collecting data...", 6);
 
             navigationItemIndex = new TreeMap<String, ArrayList>();
-            level1Index = 0;
-            level2Index = 0;
+            for (int i = 0; i<levelIndex.length; i++)
+                levelIndex[i] = 0;
             collectFiles();
             collectTypes();
             collectPackageNames();
@@ -814,8 +813,8 @@ public class DocumentationGenerator {
     }
 
     protected void generateProjectIndex() throws Exception {
-        generateProjectIndexReferences("Referenced projects", project.getReferencedProjects());
-        generateProjectIndexReferences("Referencing projects", project.getReferencingProjects());
+        generateProjectIndexReferences("Referenced Projects", project.getReferencedProjects());
+        generateProjectIndexReferences("Referencing Projects", project.getReferencingProjects());
     }
 
     protected void generatePackageReference(String packageName) throws IOException {
@@ -854,34 +853,36 @@ public class DocumentationGenerator {
                         generateDiagrams();
                         generatePackageIndex();
 
-                        generateTypeIndex("networks", object -> {
+                        generateTypeIndex(1, "networks", object -> {
                                 return object instanceof CompoundModuleElementEx && ((CompoundModuleElementEx)object).isNetwork();
                             });
-                        generateTypeIndex("modules", object -> {
+                        generateTypeIndex(1, "modules", object -> {
                             return object instanceof IModuleTypeElement && !((IModuleTypeElement)object).isNetwork();
                         });
-                        generateTypeIndex("channels", ChannelElementEx.class);
-                        generateTypeIndex("channel interfaces", ChannelInterfaceElementEx.class);
-                        generateTypeIndex("module interfaces", ModuleInterfaceElementEx.class);
-                        generateTypeIndex("messages", MessageElementEx.class);
-                                                generateTypeIndex("packets", PacketElementEx.class);
-                        generateTypeIndex("classes", ClassElementEx.class);
-                        generateTypeIndex("structs", StructElementEx.class);
-                        generateTypeIndex("enums", EnumElementEx.class);
-
+                        generateTypeIndex(1, "module interfaces", ModuleInterfaceElementEx.class);
+                        generateTypeIndex(1, "channels", ChannelElementEx.class);
+                        generateTypeIndex(1, "channel interfaces", ChannelInterfaceElementEx.class);
+                        generateMsgIndex();
                         generateFileIndex();
                         generateCppIndex();
                         generateProjectIndex();
                     });
                 }
             );
-            // out("\nvar NAVTREEINDEX = [");
-            // TODO add all files
-            // out("\n];");
         }
         finally {
             monitor.done();
         }
+    }
+
+    private void generateMsgIndex() throws Exception {
+        generateNavigationMenuItem(1, "Message Definitions", null, () -> {
+                generateTypeIndex(2, "messages", MessageElementEx.class);
+                generateTypeIndex(2, "packets", PacketElementEx.class);
+                generateTypeIndex(2, "classes", ClassElementEx.class);
+                generateTypeIndex(2, "structs", StructElementEx.class);
+                generateTypeIndex(2, "enums", EnumElementEx.class);
+        });
     }
 
     protected void generateNavTreeIndex() throws Exception {
@@ -910,11 +911,9 @@ public class DocumentationGenerator {
     }
 
     protected void generateNavigationMenuItem(int level, String title, String url, Runnable content) throws Exception {
-        // reset the index if we are now deeper in the level hierarch than the last item
-        if (previousLevel == 0 && level == 1)
-            level1Index = 0;
-        if (previousLevel == 1 && level == 2)
-            level2Index = 0;
+        // reset the index for the current level if we are now deeper in the level hierarchy than last time
+        if (previousLevel < level)
+            levelIndex[level] = 0;
 
         // dump the menu item
         String indent = String.format("%1$"+(2+level*2)+"s", "");
@@ -928,22 +927,16 @@ public class DocumentationGenerator {
             out("],");
         }
 
-        // add index entry with the current breadcrumb
-        if (level >= 1 && url != null) {
+        // add index entry with the current breadcrumb (if not already present)
+        if (level >= 1 && url != null && !navigationItemIndex.containsKey(url)) {
             ArrayList<Integer> breadcrumb = new ArrayList<>();
-            breadcrumb.add(0, level1Index);
-            if (level >= 2)
-                breadcrumb.add(1, level2Index);
-            if (!navigationItemIndex.containsKey(url))
-                navigationItemIndex.put(url, breadcrumb);
+            for (int i=1; i<=level; i++)
+                breadcrumb.add(i-1, levelIndex[i]);
+            navigationItemIndex.put(url, breadcrumb);
         }
 
         // increase the breadcrumb counters for the next item
-        if (level == 1)
-            level1Index++;
-        if (level == 2)
-            level2Index++;
-
+        levelIndex[level]++;
         previousLevel = level;
     }
 
@@ -1153,18 +1146,18 @@ public class DocumentationGenerator {
         generateNavigationMenuItem(2, title, fileName, null);
     }
 
-    protected void generateTypeIndexEntry(ITypeElement typeElement) throws Exception {
-        generateNavigationMenuItem(2, typeElement.getName(), getOutputFileName(typeElement), null);
+    protected void generateTypeIndexEntry(int level, ITypeElement typeElement) throws Exception {
+        generateNavigationMenuItem(level, typeElement.getName(), getOutputFileName(typeElement), null);
     }
 
-    protected void generateTypeIndex(String title, final Class<?> clazz) throws Exception {
-        generateTypeIndex(title, object -> {
+    protected void generateTypeIndex(int level, String title, final Class<?> clazz) throws Exception {
+        generateTypeIndex(level, title, object -> {
                 return clazz.isInstance(object);
             }
         );
     }
 
-    protected void generateTypeIndex(String title, IPredicate predicate) throws Exception {
+    protected void generateTypeIndex(int level, String title, IPredicate predicate) throws Exception {
         final ArrayList<ITypeElement> selectedElements = new ArrayList<ITypeElement>();
 
         for (ITypeElement typeElement : typeElements)
@@ -1172,9 +1165,9 @@ public class DocumentationGenerator {
                 selectedElements.add(typeElement);
 
         if (selectedElements.size() != 0) {
-            generateNavigationMenuItem(1, WordUtils.capitalize(title), null, () -> {
+            generateNavigationMenuItem(level, WordUtils.capitalize(title), null, () -> {
                     for (ITypeElement typeElement : selectedElements)
-                        generateTypeIndexEntry(typeElement);
+                        generateTypeIndexEntry(level+1, typeElement);
                 }
             );
         }
