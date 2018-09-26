@@ -1971,7 +1971,7 @@ public class DocumentationGenerator {
     }
 
     protected void generateUsageDiagram(ITypeElement typeElement) throws IOException {
-        if (generatePerTypeUsageDiagrams) {
+        if (generatePerTypeUsageDiagrams && typeElement.getLocalUsedTypes().size()>0) {
             ArrayList<ITypeElement> typeElements = new ArrayList<ITypeElement>();
             typeElements.add(typeElement);
 
@@ -2022,7 +2022,12 @@ public class DocumentationGenerator {
     }
 
     protected void generateInheritanceDiagram(ITypeElement typeElement) throws IOException {
-        if (generatePerTypeInheritanceDiagrams) {
+        // check if we have to generate the diagram at all. (i.e. it has a supertype or implements at least one interface)
+        boolean hasBaseType = typeElement.getSuperType()!=null ||
+                        ((typeElement instanceof INedTypeElement) &&
+                        ((INedTypeElement)typeElement).getNedTypeInfo().getLocalInterfaces().size()>0);
+
+        if (generatePerTypeInheritanceDiagrams && hasBaseType) {
             ArrayList<ITypeElement> typeElements = new ArrayList<ITypeElement>();
             typeElements.add(typeElement);
 
