@@ -334,7 +334,7 @@ public class DocumentationGenerator {
                     generateNavTreeData();
                     generateNavTreeIndex();
                     generateNedTypeFigures();
-                    generatePackagePages();
+                    generatePackagesPage();
                     generateFilePages();
                     generateTypePages();
                     generateFullDiagrams();
@@ -818,14 +818,19 @@ public class DocumentationGenerator {
     }
 
     protected void generatePackageReference(String packageName) throws IOException {
-        out("<b>Package:</b> <a href=\"" + packageName + "-package.html\">" + packageName + "</a>");
+        out("<b>Package:</b> <a href=\"packages.html#" + packageName.replace('.', '_') + "\">" + packageName + "</a>");
     }
 
     protected void generatePackageIndex() throws Exception {
         if (packageNames.size() != 0)
-            generateNavigationMenuItem(1, "Packages", null, () -> {
+            generateNavigationMenuItem(1, "Packages", "packages.html", () -> {
                     for (String packageName : packageNames) {
-                        generateNavigationMenuItem(2, packageName, packageName + "-package.html", null);
+                        generateTypeIndex(2, packageName, "packages.html#"+packageName.replace('.', '_'), (object) -> {
+                            if (object instanceof INedTypeElement)
+                                return getPackageName((INedTypeElement)object).equals(packageName);
+
+                            return false;
+                        });
                     }
                 }
             );
@@ -853,15 +858,15 @@ public class DocumentationGenerator {
                         generateDiagrams();
                         generatePackageIndex();
 
-                        generateTypeIndex(1, "networks", object -> {
+                        generateTypeIndex(1, "Networks", null, object -> {
                                 return object instanceof CompoundModuleElementEx && ((CompoundModuleElementEx)object).isNetwork();
                             });
-                        generateTypeIndex(1, "modules", object -> {
+                        generateTypeIndex(1, "Modules", null, object -> {
                             return object instanceof IModuleTypeElement && !((IModuleTypeElement)object).isNetwork();
                         });
-                        generateTypeIndex(1, "module interfaces", ModuleInterfaceElementEx.class);
-                        generateTypeIndex(1, "channels", ChannelElementEx.class);
-                        generateTypeIndex(1, "channel interfaces", ChannelInterfaceElementEx.class);
+                        generateTypeIndex(1, "Module Interfaces", ModuleInterfaceElementEx.class);
+                        generateTypeIndex(1, "Channels", ChannelElementEx.class);
+                        generateTypeIndex(1, "Channel Interfaces", ChannelInterfaceElementEx.class);
                         generateMsgIndex();
                         generateFileIndex();
                         generateCppIndex();
@@ -877,11 +882,11 @@ public class DocumentationGenerator {
 
     private void generateMsgIndex() throws Exception {
         generateNavigationMenuItem(1, "Message Definitions", null, () -> {
-                generateTypeIndex(2, "messages", MessageElementEx.class);
-                generateTypeIndex(2, "packets", PacketElementEx.class);
-                generateTypeIndex(2, "classes", ClassElementEx.class);
-                generateTypeIndex(2, "structs", StructElementEx.class);
-                generateTypeIndex(2, "enums", EnumElementEx.class);
+                generateTypeIndex(2, "Messages", MessageElementEx.class);
+                generateTypeIndex(2, "Packets", PacketElementEx.class);
+                generateTypeIndex(2, "Classes", ClassElementEx.class);
+                generateTypeIndex(2, "Structs", StructElementEx.class);
+                generateTypeIndex(2, "Enums", EnumElementEx.class);
         });
     }
 
@@ -917,7 +922,7 @@ public class DocumentationGenerator {
 
         // dump the menu item
         String indent = String.format("%1$"+(2+level*2)+"s", "");
-        out("\n"+indent+"['" + title + "', " + (url==null ? "null" : "'"+url+"'") + ", ");
+        out("\n"+indent+"[`" + title + "`, " + (url==null ? "null" : "`"+url+"`") + ", ");
         if (content != null) {
             out("[");
             content.run();
@@ -1151,13 +1156,13 @@ public class DocumentationGenerator {
     }
 
     protected void generateTypeIndex(int level, String title, final Class<?> clazz) throws Exception {
-        generateTypeIndex(level, title, object -> {
+        generateTypeIndex(level, title, null, object -> {
                 return clazz.isInstance(object);
             }
         );
     }
 
-    protected void generateTypeIndex(int level, String title, IPredicate predicate) throws Exception {
+    protected void generateTypeIndex(int level, String title, String url, IPredicate predicate) throws Exception {
         final ArrayList<ITypeElement> selectedElements = new ArrayList<ITypeElement>();
 
         for (ITypeElement typeElement : typeElements)
@@ -1165,7 +1170,7 @@ public class DocumentationGenerator {
                 selectedElements.add(typeElement);
 
         if (selectedElements.size() != 0) {
-            generateNavigationMenuItem(level, WordUtils.capitalize(title), null, () -> {
+            generateNavigationMenuItem(level, title, url, () -> {
                     for (ITypeElement typeElement : selectedElements)
                         generateTypeIndexEntry(level+1, typeElement);
                 }
@@ -1215,23 +1220,24 @@ public class DocumentationGenerator {
         currentOutputStream = oldCurrentOutputStream;
     }
 
-    protected void generatePackagePages() throws Exception {
-        for (final String packageName : packageNames) {
-            generatePage(packageName + "-package.html", () -> {
-                    out("<h2>Package " + packageName + "</h2>\n");
+    protected void generatePackagesPage() throws Exception {
+        generatePage("packages.html", () -> {
+            out("<h2>Packages</h2>\n");
+            for (final String packageName : packageNames) {
+                        out("<h2 id=\"" + packageName.replace('.', '_') + "\">" + packageName + "</h2>\n");
 
-                    out("<table class=\"typestable\">\n");
-                    generateTypesTableHead();
+                        out("<table class=\"typestable\">\n");
+                        generateTypesTableHead();
 
-                    for (ITypeElement typeElement : typeElements)
-                        if (typeElement instanceof INedTypeElement)
-                            if (packageName.equals(getPackageName((INedTypeElement)typeElement)))
-                                generateTypeReferenceLine(typeElement);
+                        for (ITypeElement typeElement : typeElements)
+                            if (typeElement instanceof INedTypeElement)
+                                if (packageName.equals(getPackageName((INedTypeElement)typeElement)))
+                                    generateTypeReferenceLine(typeElement);
 
-                    out("</table>\n");
-                }
-            );
-        }
+                        out("</table>\n");
+                    }
+            }
+        );
     }
 
     protected void generateFilePages() throws Exception {
