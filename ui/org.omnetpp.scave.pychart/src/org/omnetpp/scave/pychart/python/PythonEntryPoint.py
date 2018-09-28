@@ -99,6 +99,16 @@ class OppAccessor(object):
     def _plotScalars_DF_scave(self, df):
         self._plotScalars_DF_simple(results.pivotScalars(df))
 
+    def _plotScalars_DF_2(self, df):
+        names = df.index.get_level_values('name').tolist()
+        modules = df.index.get_level_values('module').tolist()
+
+        paths = list(map(lambda t: '.'.join(t), zip(names, modules)))
+
+        values = df[('result', 'value')]
+
+        self._plotScalars_lists(None, paths, values)
+
     def plotScalars(self, df_or_values, labels=None, row_label=None):
         """
         This method only does dynamic dispatching based on its first argument.
@@ -108,6 +118,8 @@ class OppAccessor(object):
             df = df_or_values
             if "value" in df.columns and "type" in df.columns and "module" in df.columns and "name" in df.columns:
                 self._plotScalars_DF_scave(df)
+            elif "experiment" in df.index.names and "measurement" in df.index.names and "replication" in df.index.names and "module" in df.index.names and "name" in df.index.names:
+                self._plotScalars_DF_2(df)
             else:
                 self._plotScalars_DF_simple(df)
         else:
@@ -163,6 +175,17 @@ class OppAccessor(object):
             for row in df.itertuples(index=False) if row.type == "vector"
         ]))
 
+    def _plotVectors_DF_2(self, df):
+        Gateway.chart_plotter.plotVectors(pl.dumps([
+            {
+                "title": row[('attr', 'title')],
+                "key": index[3] + ":" + index[4],
+                "xs": listToBytes(row[('result', 'vectime')]),
+                "ys": listToBytes(row[('result', 'vecvalue')])
+            }
+            for index, row in df.iterrows()
+        ]))
+
     def plotVectors(self, df_or_list):
         """
         TODO: styling in-place?
@@ -171,6 +194,8 @@ class OppAccessor(object):
             df = df_or_list
             if "vectime" in df.columns and "vecvalue" in df.columns and "type" in df.columns and "module" in df.columns and "name" in df.columns:
                 self._plotVectors_DF_scave(df)
+            elif "experiment" in df.index.names and "measurement" in df.index.names and "replication" in df.index.names and "module" in df.index.names and "name" in df.index.names:
+                self._plotVectors_DF_2(df)
             else:
                 self._plotVectors_DF_simple(df)
         else:
