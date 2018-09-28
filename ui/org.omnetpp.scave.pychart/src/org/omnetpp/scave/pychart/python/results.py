@@ -37,7 +37,7 @@ def transform_results(df):
     # print(itervars_pivot)
 
     # the stuff recorded as scalars with _runattrs_ as module is redundant, since we include the runattrs anyways
-    scalars = df[(df.type == "scalar") & (df.module != '_runattrs_')]
+    scalars = df[df.type == "scalar"]
     if not scalars.empty:
         scalars = scalars[["run", "module", "name", "value"]]
         scalars.set_index(['run', 'module', 'name'], inplace=True)
