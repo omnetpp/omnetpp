@@ -18,6 +18,8 @@ public class GeneratorConfiguration {
     private static final String GENERATE_PER_TYPE_INHERITANCE_DIAGRAMS = "GeneratePerTypeInheritanceDiagrams";
     private static final String GENERATE_FULL_INHERITANCE_DIAGRAMS = "GenerateFullInheritanceDiagrams";
     private static final String GENERATE_NED_SOURCE_LISTINGS = "GenerateNedSourceListings";
+    private static final String GENERATE_FILE_LISTINGS = "GenerateFileListings";
+    private static final String GENERATE_MSG_DEFINITIONS = "GenerateMsgDefinitions";
     private static final String GENERATE_EXPLICIT_LINKS_ONLY = "GenerateExplicitLinks";
     private static final String GENERATE_EXCLUDED_DIRS = "GenerateExcludedPackages";
     private static final String GENERATE_DOXY = "GenerateDoxy";
@@ -31,7 +33,9 @@ public class GeneratorConfiguration {
     public boolean generateFullUsageDiagrams = false;
     public boolean generatePerTypeInheritanceDiagrams = true;
     public boolean generateFullInheritanceDiagrams = false;
+    public boolean generateMsgDefinitions = true;
     public boolean nedSourceListings = true;
+    public boolean generateFileListings = true;
     public boolean generateExplicitLinksOnly = false;
     public String excludedDirs;
 
@@ -47,6 +51,8 @@ public class GeneratorConfiguration {
         settings.put(GENERATE_PER_TYPE_INHERITANCE_DIAGRAMS, generatePerTypeInheritanceDiagrams);
         settings.put(GENERATE_FULL_INHERITANCE_DIAGRAMS, generateFullInheritanceDiagrams);
         settings.put(GENERATE_NED_SOURCE_LISTINGS, nedSourceListings);
+        settings.put(GENERATE_FILE_LISTINGS, generateFileListings);
+        settings.put(GENERATE_MSG_DEFINITIONS, generateMsgDefinitions);
         settings.put(GENERATE_EXPLICIT_LINKS_ONLY, generateExplicitLinksOnly);
         settings.put(GENERATE_EXCLUDED_DIRS, excludedDirs);
 
@@ -69,6 +75,10 @@ public class GeneratorConfiguration {
             generateFullInheritanceDiagrams = settings.getBoolean(GENERATE_FULL_INHERITANCE_DIAGRAMS);
         if (settings.get(GENERATE_NED_SOURCE_LISTINGS) != null)
             nedSourceListings = settings.getBoolean(GENERATE_NED_SOURCE_LISTINGS);
+        if (settings.get(GENERATE_FILE_LISTINGS) != null)
+            generateFileListings = settings.getBoolean(GENERATE_FILE_LISTINGS);
+        if (settings.get(GENERATE_MSG_DEFINITIONS) != null)
+            generateMsgDefinitions = settings.getBoolean(GENERATE_MSG_DEFINITIONS);
         if (settings.get(GENERATE_EXPLICIT_LINKS_ONLY) != null)
             generateExplicitLinksOnly = settings.getBoolean(GENERATE_EXPLICIT_LINKS_ONLY);
 

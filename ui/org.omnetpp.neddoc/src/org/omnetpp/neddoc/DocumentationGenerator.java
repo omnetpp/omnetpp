@@ -207,6 +207,8 @@ public class DocumentationGenerator {
     protected boolean generateFullUsageDiagrams = false;
     protected boolean generateFullInheritanceDiagrams = false;
     protected boolean generateNedSourceListings = true;
+    protected boolean generateMsgDefinitions = true;
+    protected boolean generateFileListings = true;
     protected boolean generateExplicitLinksOnly = false;  // true: tilde notation; false: autolinking
     protected boolean generateDoxy = true;
     protected boolean generateCppSourceListings = false;
@@ -285,6 +287,14 @@ public class DocumentationGenerator {
         this.generateNedSourceListings = generateNedSourceListings;
     }
 
+    public void setGenerateMsgDefinitions(boolean generateMsgDefinitions) {
+        this.generateMsgDefinitions = generateMsgDefinitions;
+    }
+
+    public void setGenerateFileListings(boolean generateFileListings) {
+        this.generateFileListings = generateFileListings;
+    }
+
     public void setGenerateExplicitLinksOnly(boolean generateExplicitLinksOnly) {
         this.generateExplicitLinksOnly = generateExplicitLinksOnly;
     }
@@ -348,11 +358,13 @@ public class DocumentationGenerator {
                     generateNavTreeIndex();
                     generateNedTypeFigures();
                     generatePackagesPage();
-                    generateFilePages();
+                    if (generateFileListings)
+                        generateFilePages();
                     generateTypePages();
                     generateFullDiagrams();
                     generateNedTagFile();
-                    generateMsgTagFile();
+                    if (generateMsgDefinitions)
+                        generateMsgTagFile();
 
                     return Status.OK_STATUS;
                 }
@@ -885,8 +897,10 @@ public class DocumentationGenerator {
                         generateTypeIndex(1, "Module Interfaces", ModuleInterfaceElementEx.class);
                         generateTypeIndex(1, "Channels", ChannelElementEx.class);
                         generateTypeIndex(1, "Channel Interfaces", ChannelInterfaceElementEx.class);
-                        generateMsgIndex();
-                        generateFileIndex();
+                        if (generateMsgDefinitions)
+                            generateMsgIndex();
+                        if (generateFileListings)
+                            generateFileIndex();
                         generateCppIndex();
                         generateProjectIndex();
                     });
@@ -1768,7 +1782,10 @@ public class DocumentationGenerator {
     }
 
     protected void generateFileReference(IFile file) throws IOException {
-        out("<b>File: <a href=\"" + getOutputFileName(file) + "\">" + file.getProjectRelativePath() + "</a></b>");
+        if (generateFileListings)
+            out("<b>File:</b> <a href=\"" + getOutputFileName(file) + "\">" + file.getProjectRelativePath() + "</a>");
+        else
+            out("<b>File:</b> " + file.getProjectRelativePath());
     }
 
     protected void generateKnownSubtypesTable(ITypeElement typeElement) throws IOException {

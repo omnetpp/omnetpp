@@ -72,6 +72,8 @@ public class GeneratorConfigurationDialog
     private Button generateFullInheritanceDiagrams;
     private Button generateFullUsageDiagrams;
     private Button generateSourceContent;
+    private Button generateMsgDefinitions;
+    private Button generateFileListings;
     private Button enableAutomaticHyperlinking;
 
     private Button generateDoxy;
@@ -241,7 +243,9 @@ public class GeneratorConfigurationDialog
         generateFullInheritanceDiagrams.setEnabled(dotAvailable);
         generateFullUsageDiagrams.setEnabled(dotAvailable);
 
-        generateSourceContent = createCheckbox(group, "Source listings (NED, MSG)", configuration.nedSourceListings);
+        generateMsgDefinitions = createCheckbox(group, "Message Definitions", configuration.generateMsgDefinitions);
+        generateSourceContent = createCheckbox(group, "Source on NED and MSG type pages", configuration.nedSourceListings);
+        generateFileListings = createCheckbox(group, "NED and MSG source file listings", configuration.generateFileListings);
 
         enableAutomaticHyperlinking = createCheckbox(group, "Automatic hyperlinking of NED and message type names", !configuration.generateExplicitLinksOnly);
         Label label = new Label(group, SWT.NONE);
@@ -261,7 +265,7 @@ public class GeneratorConfigurationDialog
         label = new Label(group, SWT.NONE);
         label.setText("   Note: Doxygen configuration file locations can be configured in the Project Properties dialog");
 
-        doxySourceBrowser = createCheckbox(group, "Source listings (C++)", configuration.cppSourceListings);
+        doxySourceBrowser = createCheckbox(group, "C++ source file listings", configuration.cppSourceListings);
         doxySourceBrowser.setEnabled(doxygenAvailable);
 
         label = new Label(group, SWT.NONE);
@@ -351,6 +355,8 @@ public class GeneratorConfigurationDialog
         configuration.generateFullUsageDiagrams = generateFullUsageDiagrams.getSelection();
         configuration.generateFullInheritanceDiagrams = generateFullInheritanceDiagrams.getSelection();
         configuration.nedSourceListings = generateSourceContent.getSelection();
+        configuration.generateFileListings = generateFileListings.getSelection();
+        configuration.generateMsgDefinitions = generateMsgDefinitions.getSelection();
         configuration.generateExplicitLinksOnly = !enableAutomaticHyperlinking.getSelection();
         configuration.excludedDirs = excludedDirs.getText();
 
@@ -391,6 +397,8 @@ public class GeneratorConfigurationDialog
             generator.setGeneratePerTypeInheritanceDiagrams(configuration.generatePerTypeInheritanceDiagrams);
             generator.setGenerateFullInheritanceDiagrams(configuration.generateFullInheritanceDiagrams);
             generator.setGenerateNedSourceListings(configuration.nedSourceListings);
+            generator.setGenerateFileListings(configuration.generateFileListings);
+            generator.setGenerateMsgDefinitions(configuration.generateMsgDefinitions);
             generator.setGenerateExplicitLinksOnly(configuration.generateExplicitLinksOnly);
             generator.setGenerateDoxy(configuration.generateDoxy);
             generator.setGenerateCppSourceListings(configuration.cppSourceListings);
