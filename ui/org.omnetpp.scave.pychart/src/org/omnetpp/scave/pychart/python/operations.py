@@ -5,6 +5,8 @@ import pandas as pd
 def apply(dataframe, operation, *args, **kwargs):
     if operation == vector_aggregator:
         return vector_aggregator(dataframe, *args)
+    elif operation == vector_merger:
+        return vector_merger(dataframe)
     else:
         condition = kwargs.pop('condition', None)
         clone = dataframe.copy()
@@ -15,6 +17,8 @@ def apply(dataframe, operation, *args, **kwargs):
 def compute(dataframe, operation, *args, **kwargs):
     if operation == vector_aggregator:
         return dataframe.append(vector_aggregator(dataframe, *args))
+    elif operation == vector_merger:
+        return dataframe.append(vector_merger(dataframe))
     else:
         condition = kwargs.pop('condition', None)
         clone = dataframe.copy()
@@ -30,10 +34,10 @@ def vector_aggregator(df, function='average'):
     # the number of rows in the DataFrame
     n = len(df.index)
     indices = [0] * n
-    
-    # the length of the longest of all vectors
+
+    # the sum of all vector lengths
     capacity = vectimes.apply(len).sum()
-    print(capacity)
+    # print(capacity)
     # these are uninitialized, and might be oversized, but always large enough
     out_times = np.empty(capacity)
     out_values = np.empty(capacity)
@@ -92,6 +96,57 @@ def vector_aggregator(df, function='average'):
     return out_times, out_values
 
 
+def vector_merger(df):
+    vectimes = df[('result', 'vectime')]
+    vecvalues = df[('result', 'vecvalue')]
+
+    # the number of rows in the DataFrame
+    n = len(df.index)
+    indices = [0] * n
+
+    # the sum of all vector lengths
+    capacity = vectimes.apply(len).sum()
+    # these are uninitialized
+    out_times = np.empty(capacity)
+    out_values = np.empty(capacity)
+    out_index = 0
+
+    while True:
+        current_time = 0
+        times = []
+        for i in range(n):
+            if len(vectimes[i]) > indices[i]:
+                times.append(vectimes[i][indices[i]])
+
+        if times:
+            current_time = np.min(times)
+        else:
+            break
+
+        values_now = []
+
+        for i in range(n):
+            while len(vectimes[i]) > indices[i]:
+                time = vectimes[i][indices[i]]
+                value = vecvalues[i][indices[i]]
+
+                if time == current_time:
+                    values_now.append(value)
+                    indices[i] += 1
+                else:
+                    break
+
+        for v in values_now:
+            out_times[out_index] = current_time
+            out_values[out_index] = v
+
+            out_index += 1
+            # ASSERT out_index < len(out_values)
+
+    out_times = np.resize(out_times, out_index)
+    out_values = np.resize(out_values, out_index)
+
+    return out_times, out_values
 
 
 def vector_mean(r):
@@ -173,10 +228,10 @@ def vector_diffquot(r):
     return r
 
 
-def vector_divide_by(r, c):
+def vector_divide_by(r, a):
     v = r[('result', 'vecvalue')]
-    r[('result', 'vecvalue')] = v / c
-    r[('attr', 'title')] = r[('attr', 'title')] + " / " + str(c)
+    r[('result', 'vecvalue')] = v / a
+    r[('attr', 'title')] = r[('attr', 'title')] + " / " + str(a)
     return r
 
 
@@ -200,13 +255,10 @@ def vector_expression(r, expr):
     return r
 
 
-def vector_integrate(r, interpolation):
-    t = r[('result', 'vectime')]
-    v = r[('result', 'vecvalue')]
-    
+def _integrate_helper(t, v, interpolation):
     dt = np.concatenate([np.array([0]), t[1:] - t[:-1]])
     vprev = np.concatenate([np.array([0]), v[:-1]])
-    
+
     if interpolation == 'sample-hold':
         increments = dt * vprev
     elif interpolation == 'backward-sample-hold':
@@ -215,8 +267,146 @@ def vector_integrate(r, interpolation):
         increments = dt * (v + vprev) / 2
     else:
         raise Exception("unknown interpolation")
-    
-    r[('result', 'vecvalue')] = np.cumsum(increments)
-    
-    r[('attr', 'title')] = r[('attr', 'title')] + " integrated " + interpolation    
+
+    return np.cumsum(increments)
+
+
+def vector_integrate(r, interpolation):
+    t = r[('result', 'vectime')]
+    v = r[('result', 'vecvalue')]
+
+    r[('result', 'vecvalue')] = _integrate_helper(t, v, interpolation)
+
+    r[('attr', 'title')] = r[('attr', 'title')] + " integrated " + interpolation
+    return r
+
+
+def vector_lineartrend(r, a):
+    t = r[('result', 'vectime')]
+    v = r[('result', 'vecvalue')]
+
+    r[('result', 'vecvalue')] = v + a * t
+
+    r[('attr', 'title')] = r[('attr', 'title')] + " + " + str(a) + " * t"
+    return r
+
+
+def vector_modulo(r, a):
+    v = r[('result', 'vecvalue')]
+    r[('result', 'vecvalue')] = np.fmod(v, a)
+    r[('attr', 'title')] = r[('attr', 'title')] + " mod " + str(a)
+    return r
+
+
+def vector_movingavg(r, alpha):
+    v = r[('result', 'vecvalue')]
+    s = pd.Series(v, dtype=np.dtype('f8'))
+    r[('result', 'vecvalue')] = s.ewm(alpha=alpha).mean()
+    r[('attr', 'title')] = r[('attr', 'title')] + " mean " + str(alpha)
+    return r
+
+
+def vector_multiply_by(r, a):
+    v = r[('result', 'vecvalue')]
+    r[('result', 'vecvalue')] = v * a
+    r[('attr', 'title')] = r[('attr', 'title')] + " * " + str(a)
+    return r
+
+
+def vector_removerepeats(r):
+    t = r[('result', 'vectime')]
+    v = r[('result', 'vecvalue')]
+
+    is_repeating = v[:-1] == v[1:]
+    not_repeating = np.concatenate([[1], 1 - is_repeating])
+
+    r[('result', 'vecvalue')] = np.compress(not_repeating, v)
+    r[('result', 'vectime')] = np.compress(not_repeating, t)
+
+    r[('attr', 'title')] = r[('attr', 'title')] + " removerepeats"
+    return r
+
+
+def vector_slidingwinavg(r, window_size):
+    v = r[('result', 'vecvalue')]
+    s = pd.Series(v, dtype=np.dtype('f8'))
+    r[('result', 'vecvalue')] = s.rolling(window_size).mean()
+    r[('attr', 'title')] = r[('attr', 'title')] + " windowmean " + str(window_size)
+    return r
+
+
+def vector_subtractfirstval(r):
+    v = r[('result', 'vecvalue')]
+    r[('result', 'vecvalue')] = v - v[0]
+    r[('attr', 'title')] = r[('attr', 'title')] + " - v[0]"
+    return r
+
+
+def vector_timeavg(r, interpolation):
+    t = r[('result', 'vectime')]
+    v = r[('result', 'vecvalue')]
+
+    integrated = _integrate_helper(t, v, interpolation)
+
+    r[('result', 'vecvalue')] = integrated / t
+    r[('attr', 'title')] = r[('attr', 'title')] + " timeavg"
+    return r
+
+
+def vector_timediff(r):
+    t = r[('result', 'vectime')]
+
+    r[('result', 'vecvalue')] = np.concatenate([np.array([0]), t[1:] - t[:-1]])
+
+    r[('attr', 'title')] = r[('attr', 'title')] + " timediff"
+    return r
+
+
+def vector_timeshift(r, dt):
+    t = r[('result', 'vectime')]
+
+    r[('result', 'vectime')] = t + dt
+
+    r[('attr', 'title')] = r[('attr', 'title')] + " shifted by " + str(dt)
+    return r
+
+
+def vector_timetoserial(r):
+    t = r[('result', 'vectime')]
+
+    r[('result', 'vectime')] = np.arange(0, len(t))
+
+    r[('attr', 'title')] = r[('attr', 'title')] + " timetoserial"
+    return r
+
+
+def vector_timewinavg(r, window_size=1):
+    t = r[('result', 'vectime')]
+    v = r[('result', 'vecvalue')]
+
+    t2 = t / window_size
+    bucket = np.floor(t2)
+
+    grouped = pd.Series(v, dtype=np.dtype('f8')).groupby(bucket).mean()
+
+    r[('result', 'vectime')] = grouped.index.values * window_size
+    r[('result', 'vecvalue')] = grouped.values
+
+    r[('attr', 'title')] = r[('attr', 'title')] + " timewinavg"
+    return r
+
+
+def vector_winavg(r, window_size=10):
+    t = r[('result', 'vectime')]
+    v = r[('result', 'vecvalue')]
+
+    t2 = np.arange(0, len(t)) / window_size
+    bucket = np.floor(t2)
+
+    grouped = pd.Series(v, dtype=np.dtype('f8')).groupby(bucket).mean()
+
+    r[('result', 'vectime')] = t[::window_size]
+    r[('result', 'vecvalue')] = grouped.values
+
+    r[('attr', 'title')] = r[('attr', 'title')] + " timewinavg"
     return r
