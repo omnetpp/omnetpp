@@ -19,6 +19,7 @@ public class GeneratorConfiguration {
     private static final String GENERATE_FULL_INHERITANCE_DIAGRAMS = "GenerateFullInheritanceDiagrams";
     private static final String GENERATE_NED_SOURCE_LISTINGS = "GenerateNedSourceListings";
     private static final String GENERATE_EXPLICIT_LINKS_ONLY = "GenerateExplicitLinks";
+    private static final String GENERATE_EXCLUDED_DIRS = "GenerateExcludedPackages";
     private static final String GENERATE_DOXY = "GenerateDoxy";
     private static final String DOXY_SOURCE_BROWSER = "DoxySourceBrowser";
     private static final String OUTPUT_DIRECTORY_PATH = "OutputDirectoryPath";
@@ -32,6 +33,7 @@ public class GeneratorConfiguration {
     public boolean generateFullInheritanceDiagrams = false;
     public boolean nedSourceListings = true;
     public boolean generateExplicitLinksOnly = false;
+    public String excludedDirs;
 
     public boolean generateDoxy = true;
     public boolean cppSourceListings = false;
@@ -46,6 +48,7 @@ public class GeneratorConfiguration {
         settings.put(GENERATE_FULL_INHERITANCE_DIAGRAMS, generateFullInheritanceDiagrams);
         settings.put(GENERATE_NED_SOURCE_LISTINGS, nedSourceListings);
         settings.put(GENERATE_EXPLICIT_LINKS_ONLY, generateExplicitLinksOnly);
+        settings.put(GENERATE_EXCLUDED_DIRS, excludedDirs);
 
         settings.put(GENERATE_DOXY, generateDoxy);
         settings.put(DOXY_SOURCE_BROWSER, cppSourceListings);
@@ -73,6 +76,10 @@ public class GeneratorConfiguration {
             generateDoxy = settings.getBoolean(GENERATE_DOXY);
         if (settings.get(DOXY_SOURCE_BROWSER) != null)
             cppSourceListings = settings.getBoolean(DOXY_SOURCE_BROWSER);
+
+        excludedDirs = settings.get(GENERATE_EXCLUDED_DIRS);
+        if (StringUtils.isEmpty(excludedDirs))
+            excludedDirs = null;
 
         outputDirectoryPath = settings.get(OUTPUT_DIRECTORY_PATH);
         if (StringUtils.isEmpty(outputDirectoryPath))

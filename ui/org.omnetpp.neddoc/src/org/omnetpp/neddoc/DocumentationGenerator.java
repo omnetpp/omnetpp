@@ -27,6 +27,7 @@ import java.util.TreeMap;
 import java.util.concurrent.CancellationException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPathConstants;
@@ -209,6 +210,7 @@ public class DocumentationGenerator {
     protected boolean generateExplicitLinksOnly = false;  // true: tilde notation; false: autolinking
     protected boolean generateDoxy = true;
     protected boolean generateCppSourceListings = false;
+    protected String excludedDirsRegexPattern;
 
     // path vars
     protected String dotExecutablePath;
@@ -228,8 +230,8 @@ public class DocumentationGenerator {
 
     protected FileOutputStream currentOutputStream;
 
-    protected ArrayList<IFile> files = new ArrayList<IFile>();
-    protected ArrayList<ITypeElement> typeElements = new ArrayList<ITypeElement>();
+    protected List<IFile> files = new ArrayList<IFile>();
+    protected List<ITypeElement> typeElements = new ArrayList<ITypeElement>();
     protected Map<ITypeElement, ArrayList<ITypeElement>> subtypesMap = new HashMap<ITypeElement, ArrayList<ITypeElement>>();
     protected Map<INedTypeElement, ArrayList<INedTypeElement>> implementorsMap = new HashMap<INedTypeElement, ArrayList<INedTypeElement>>();
     protected Map<ITypeElement, ArrayList<ITypeElement>> usersMap = new HashMap<ITypeElement, ArrayList<ITypeElement>>();
@@ -289,6 +291,17 @@ public class DocumentationGenerator {
 
     public void setGenerateDoxy(boolean generateDoxy) {
         this.generateDoxy = generateDoxy;
+    }
+
+    public void setExcudedDirs(String excludedDirs) {
+        // create a regex from the * and ** globs,
+        // escape single . chars
+        // use ¤ char as a temporary char instead of *
+        // , is treated as a path separator
+        this.excludedDirsRegexPattern = excludedDirs.replace(".", "\\.")
+                .replace("**", ".¤?").replace("*", "[^/]*").replace(".¤?", ".*?")
+                .replaceAll("\\s*,\\s*", ".*?|");
+        this.excludedDirsRegexPattern += ".*?";
     }
 
     public void setGenerateCppSourceListings(boolean generateCppSourceListings) {
@@ -442,6 +455,11 @@ public class DocumentationGenerator {
         files = new ArrayList<IFile>();
         files.addAll(nedResources.getNedFiles(project));
         files.addAll(msgResources.getMsgFiles(project));
+        files = files.stream().filter(f -> {
+            String relPath = "/"+f.getProjectRelativePath().removeLastSegments(1).addTrailingSeparator().toString();
+            return !relPath.matches(excludedDirsRegexPattern);
+
+        }).collect(Collectors.toList());
         Collections.sort(files, new Comparator<IFile>() {
             public int compare(IFile o1, IFile o2) {
                 return o1.toString().compareToIgnoreCase(o2.toString());

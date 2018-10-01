@@ -29,7 +29,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -78,6 +77,7 @@ public class GeneratorConfigurationDialog
     private Button generateDoxy;
     private Button doxySourceBrowser;
 
+    private Text excludedDirs;
     private Text outputDirectoryPath;
 
     private Button browseButton;
@@ -225,7 +225,7 @@ public class GeneratorConfigurationDialog
 
     private void createContentOptions(Composite container) {
         Group group = new Group(container, SWT.NONE);
-        group.setLayout(new RowLayout(SWT.VERTICAL));
+        group.setLayout(new GridLayout(1, false));
         group.setText("Generate");
         group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1));
 
@@ -246,6 +246,13 @@ public class GeneratorConfigurationDialog
         enableAutomaticHyperlinking = createCheckbox(group, "Automatic hyperlinking of NED and message type names", !configuration.generateExplicitLinksOnly);
         Label label = new Label(group, SWT.NONE);
         label.setText("   Note: when turned off, use the tilde notation for names to be hyperlinked: ~Sink, ~TCP.");
+
+        Label excLabel = new Label(group, SWT.NONE);
+        excLabel.setText("Excluded directories (e.g. '**/examples,/samples,/project/*/test' etc.):");
+        excludedDirs = new Text(group, SWT.BORDER);
+        excludedDirs.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        if (configuration.excludedDirs != null)
+            excludedDirs.setText(configuration.excludedDirs);
 
         boolean doxygenAvailable = OmnetppPreferencePage.isDoxygenAvailable();
         generateDoxy = createCheckbox(group, "C++ documentation (requires Doxygen)", configuration.generateDoxy && doxygenAvailable);
@@ -345,6 +352,7 @@ public class GeneratorConfigurationDialog
         configuration.generateFullInheritanceDiagrams = generateFullInheritanceDiagrams.getSelection();
         configuration.nedSourceListings = generateSourceContent.getSelection();
         configuration.generateExplicitLinksOnly = !enableAutomaticHyperlinking.getSelection();
+        configuration.excludedDirs = excludedDirs.getText();
 
         configuration.generateDoxy = generateDoxy.getSelection();
         configuration.cppSourceListings = doxySourceBrowser.getSelection();
@@ -386,6 +394,7 @@ public class GeneratorConfigurationDialog
             generator.setGenerateExplicitLinksOnly(configuration.generateExplicitLinksOnly);
             generator.setGenerateDoxy(configuration.generateDoxy);
             generator.setGenerateCppSourceListings(configuration.cppSourceListings);
+            generator.setExcudedDirs(configuration.excludedDirs);
             generators.add(generator);
         }
 
