@@ -186,6 +186,20 @@ class OppAccessor(object):
             for index, row in df.iterrows()
         ]))
 
+        for index, row in df.iterrows():
+            if ('attr', 'interpolationmode') in row:
+                interp = row[('attr', 'interpolationmode')]
+                key = index[3] + ":" + index[4]
+
+                if interp == "none":
+                    self.setProperty("Line.Type/" + key, "Dots")
+                elif interp == "linear":
+                    self.setProperty("Line.Type/" + key, "Linear")
+                elif interp == "sample-hold":
+                    self.setProperty("Line.Type/" + key, "SampleHold")
+                elif interp == "backward-sample-hold":
+                    self.setProperty("Line.Type/" + key, "BackwardSampleHold")
+
     def plotVectors(self, df_or_list):
         """
         TODO: styling in-place?
