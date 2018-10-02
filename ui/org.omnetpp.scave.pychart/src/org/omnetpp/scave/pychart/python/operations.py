@@ -92,8 +92,13 @@ def vector_aggregator(df, function='average'):
         
     out_times = np.resize(out_times, out_index)
     out_values = np.resize(out_values, out_index)
-    
-    return out_times, out_values
+
+    index = pd.MultiIndex.from_tuples([('Computed', '', '#0', 'various', 'various')], names=['experiment', 'measurement', 'replication', 'module', 'name'])
+    cols = pd.MultiIndex(levels=[['result', 'attr'], ['vectime', 'vecvalue', 'title', 'unit']],
+                          labels=[[0, 0, 1, 1], [0, 1, 2, 3]])
+
+    result = pd.DataFrame([(out_times, out_values, 'aggregated', 'various')], index=index, columns=cols)
+    return result
 
 
 def vector_merger(df):
@@ -146,7 +151,12 @@ def vector_merger(df):
     out_times = np.resize(out_times, out_index)
     out_values = np.resize(out_values, out_index)
 
-    return out_times, out_values
+    index = pd.MultiIndex.from_tuples([('Computed', '', '#0', 'various', 'various')], names=['experiment', 'measurement', 'replication', 'module', 'name'])
+    cols = pd.MultiIndex(levels=[['result', 'attr'], ['vectime', 'vecvalue', 'title', 'unit']],
+                          labels=[[0, 0, 1, 1], [0, 1, 2, 3]])
+
+    result = pd.DataFrame([(out_times, out_values, 'merged', 'various')], index=index, columns=cols)
+    return result
 
 
 def vector_mean(r):
