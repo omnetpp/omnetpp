@@ -76,10 +76,15 @@ public class CreateTempChartAction extends AbstractScaveAction {
                 inputBuilder.append("# The data is returned as a Pandas DataFrame\n");
                 inputBuilder.append("df = results.get" + typeName + "(filter_expression)\n\n");
 
+                inputBuilder.append("# Which we turn into a more usable format\n");
+                inputBuilder.append("df = results.transform_results(df)\n\n");
+
+                /*
                 if (type == ResultType.SCALAR_LITERAL) {
                     inputBuilder.append("# The scalars are transformed into a much simpler format\n");
                     inputBuilder.append("df = results.pivotScalars(df, columns=[\"module\"], index=[\"name\", \"measurement\"])\n\n");
                 }
+                */
 
                 inputBuilder.append("# You can perform any transformations on the data here\n\n");
 
