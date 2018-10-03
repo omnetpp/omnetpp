@@ -179,7 +179,7 @@ class OppAccessor(object):
         Gateway.chart_plotter.plotVectors(pl.dumps([
             {
                 "title": row[('attr', 'title')],
-                "key": index[3] + ":" + index[4],
+                "key": "-".join(row.name) + row[('attr', 'title')],
                 "xs": listToBytes(row[('result', 'vectime')]),
                 "ys": listToBytes(row[('result', 'vecvalue')])
             }
@@ -189,7 +189,7 @@ class OppAccessor(object):
         for index, row in df.iterrows():
             if ('attr', 'interpolationmode') in row:
                 interp = row[('attr', 'interpolationmode')]
-                key = index[3] + ":" + index[4]
+                key = "-".join(row.name) + row[('attr', 'title')]
 
                 if interp == "none":
                     self.setProperty("Line.Type/" + key, "Dots")
