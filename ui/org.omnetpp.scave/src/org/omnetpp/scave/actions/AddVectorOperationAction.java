@@ -14,11 +14,11 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
 
-public class ApplyAction extends AbstractScaveAction {
+public class AddVectorOperationAction extends AbstractScaveAction {
     String codeFragment;
     String marker = "# You can perform any transformations on the data here";
 
-    public ApplyAction(String name, String codeFragment) {
+    public AddVectorOperationAction(String name, String codeFragment) {
         this.codeFragment = codeFragment;
 
         setText(name);
