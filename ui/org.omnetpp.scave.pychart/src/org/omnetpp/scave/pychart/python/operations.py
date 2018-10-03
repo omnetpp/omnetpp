@@ -303,7 +303,7 @@ def vector_lineartrend(r, a):
 
 def vector_modulo(r, a):
     v = r[('result', 'vecvalue')]
-    r[('result', 'vecvalue')] = np.fmod(v, a)
+    r[('result', 'vecvalue')] = np.remainder(v, a)
     r[('attr', 'title')] = r[('attr', 'title')] + " mod " + str(a)
     return r
 
