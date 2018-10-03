@@ -42,6 +42,7 @@ import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.actions.ApplyAction;
 import org.omnetpp.scave.actions.ChartMouseModeAction;
 import org.omnetpp.scave.actions.ClosePageAction;
 import org.omnetpp.scave.actions.CopyChartToClipboardAction;
@@ -54,6 +55,7 @@ import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.charting.ChartUpdater;
 import org.omnetpp.scave.editors.ui.FormEditorPage;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.MatplotlibChart;
 import org.omnetpp.scave.pychart.PlotWidget;
 import org.omnetpp.scave.pychart.PythonOutputMonitoringThread.IOutputListener;
@@ -358,13 +360,45 @@ public class ChartScriptEditor extends PyEdit {
                     zoomSubmenuManager.add(new Separator());
                     zoomSubmenuManager.add(zoomToFitAction);
 
+                    IMenuManager applySubmenuManager = new MenuManager("Apply...", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_APPLY), null);
+                    applySubmenuManager.add(new ApplyAction("Aggregator", "df = ops.apply(df, ops.vector_aggregator, 'average') # Possible parameter values: 'sum', 'average', 'count', 'maximum', 'minimum'"));
+                    applySubmenuManager.add(new ApplyAction("Merger", "df = ops.apply(df, ops.vector_merger)"));
+                    applySubmenuManager.add(new ApplyAction("Mean", "df = ops.apply(df, ops.vector_mean)"));
+                    applySubmenuManager.add(new ApplyAction("Sum", "df = ops.apply(df, ops.vector_sum)"));
+                    applySubmenuManager.add(new ApplyAction("Add constant", "df = ops.apply(df, ops.vector_add, 100) # Feel free to change the constant right here"));
+                    applySubmenuManager.add(new ApplyAction("Compare with threshold", "df = ops.apply(df, ops.vector_compare, threshold=9000, less=-1, equal=0, greater=1) # The last three parameters are all optional"));
+                    applySubmenuManager.add(new ApplyAction("Crop in time", "df = ops.apply(df, ops.vector_crop, from_time=10, to_time=100) # The time values are in seconds, feel free to change them"));
+                    applySubmenuManager.add(new ApplyAction("Difference", "df = ops.apply(df, ops.vector_difference) # The difference of each value compared to the previous"));
+                    applySubmenuManager.add(new ApplyAction("Difference quotient", "df = ops.apply(df, ops.vector_diffquot) # The difference quotient at each value"));
+                    applySubmenuManager.add(new ApplyAction("Divide by constant", "df = ops.apply(df, ops.vector_divide_by, 1000) # Feel free to change the constant right here"));
+                    applySubmenuManager.add(new ApplyAction("Divide by time", "df = ops.apply(df, ops.vector_divtime)"));
+                    applySubmenuManager.add(new ApplyAction("Expression", "df = ops.apply(df, ops.vector_expression, 'y + (t - tprev) * 100') # The following identifiers are available: t, y, tprev, yprev"));
+                    applySubmenuManager.add(new ApplyAction("Integrate", "df = ops.apply(df, ops.vector_integrate, interpolation='linear') # Possible parameter values: 'sample-hold', 'backward-sample-hold', 'linear'"));
+                    applySubmenuManager.add(new ApplyAction("Linear trend", "df = ops.apply(df, ops.vector_lineartrend, 0.5) # Add a linear trend to the values, with the given steepness"));
+                    applySubmenuManager.add(new ApplyAction("Modulo", "df = ops.apply(df, ops.vector_modulo, 256.0) # Floating point remainder with the given divisor"));
+                    applySubmenuManager.add(new ApplyAction("Moving average", "df = ops.apply(df, ops.vector_movingavg, alpha=0.1) # Moving average using the given smoothing constant in range (0.0, 1.0]"));
+                    applySubmenuManager.add(new ApplyAction("Multiply by constant", "df = ops.apply(df, ops.vector_multiply_by, 2) # You can change the multiplier constant"));
+                    applySubmenuManager.add(new ApplyAction("Remove repeating values", "df = ops.apply(df, ops.vector_removerepeats) # Removes consequtive equal values"));
+                    applySubmenuManager.add(new ApplyAction("Sliding window average", "df = ops.apply(df, ops.vector_slidingwinavg, window_size=10) # The average of the last window_size values"));
+                    applySubmenuManager.add(new ApplyAction("Subtract first value", "df = ops.apply(df, ops.vector_subtractfirstval) # Subtracts the first value from all values"));
+                    applySubmenuManager.add(new ApplyAction("Time average", "df = ops.apply(df, ops.vector_timeavg, interpolation='linear') # Average over time (integral divided by time), possible parameter values: 'sample-hold', 'backward-sample-hold', 'linear'"));
+                    applySubmenuManager.add(new ApplyAction("Time difference", "df = ops.apply(df, ops.vector_timediff) # The elapsed time (delta) since the previous value"));
+                    applySubmenuManager.add(new ApplyAction("Time shift", "df = ops.apply(df, ops.vector_timeshift, dt=100) # Shifts all values with the given time delta (in seconds)"));
+                    applySubmenuManager.add(new ApplyAction("Time to serial", "df = ops.apply(df, ops.vector_timetoserial) # Replaces all times with a serial number: 0, 1, 2, ..."));
+                    applySubmenuManager.add(new ApplyAction("Time window average", "df = ops.apply(df, ops.vector_timewinavg, window_size=0.1) # Average of all values in every window_size long interval (in seconds)"));
+                    applySubmenuManager.add(new ApplyAction("Window average", "df = ops.apply(df, ops.vector_winavg, window_size=10) # Average of every window_size long batch of values"));
+
 
                     MenuManager manager = new MenuManager();
 
                     manager.add(new GotoChartDefinitionAction());
                     manager.add(toggleShowSourceAction);
                     manager.add(new EditAction());
-                    manager.add(new Separator());
+
+                    if (chart instanceof LineChart) {
+                        manager.add(new Separator());
+                        manager.add(applySubmenuManager);
+                    }
 
                     manager.add(new Separator());
                     manager.add(zoomSubmenuManager);
