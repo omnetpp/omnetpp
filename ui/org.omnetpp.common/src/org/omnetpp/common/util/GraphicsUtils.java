@@ -9,7 +9,6 @@ import org.eclipse.gmf.runtime.draw2d.ui.render.awt.internal.svg.export.Graphics
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
-import org.omnetpp.common.IConstants;
 
 @SuppressWarnings("restriction")
 public class GraphicsUtils {

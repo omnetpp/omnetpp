@@ -56,16 +56,13 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
@@ -89,7 +86,7 @@ import org.omnetpp.ned.core.MsgResources;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.export.ExportDiagramFilesOperation;
 import org.omnetpp.ned.editor.export.NedFigureProvider;
-import org.omnetpp.ned.editor.export.PNGDiagramExporter;
+import org.omnetpp.ned.editor.export.SVGDiagramExporter;
 import org.omnetpp.ned.editor.graph.figures.CompoundModuleTypeFigure;
 import org.omnetpp.ned.editor.graph.parts.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.parts.NedEditPart;
@@ -1831,7 +1828,7 @@ public class DocumentationGenerator {
 
             final ExportDiagramFilesOperation exportOperation =
                 new ExportDiagramFilesOperation(nedFiles,
-                    new PNGDiagramExporter() {
+                    new SVGDiagramExporter() {
                         public String getName() {
                             return "NED Figure Provider";
                         }
@@ -1861,13 +1858,11 @@ public class DocumentationGenerator {
                     for (INedTypeElement typeElement : typeElements) {
                         String fileName = file.getName().replaceAll(".ned", "");
                         String imageName = NedFigureProvider.getFigureName(typeElements, typeElement, fileName);
-                        File sourceImageFile = file.getParent().getFile(new Path(imageName + ".png")).getLocation().toFile();
+                        File sourceImageFile = file.getParent().getFile(new Path(imageName + ".svg")).getLocation().toFile();
 
                         if (sourceImageFile.exists()) {
-                            IPath destinationImagePath = getFullNeddocPath().append(getOutputFileName(typeElement, "type", ".png"));
+                            IPath destinationImagePath = getFullNeddocPath().append(getOutputFileName(typeElement, "type", ".svg"));
                             sourceImageFile.renameTo(destinationImagePath.toFile());
-                            if (APPLY_CC)
-                                watermark(destinationImagePath.toString());
                         }
                         else
                             throw new RuntimeException("Cannot generate image for " + typeElement.getNedTypeInfo().getFullyQualifiedName());
@@ -1882,32 +1877,9 @@ public class DocumentationGenerator {
         }
     }
 
-    protected void watermark(String imagePath) {
-        // load the image
-        ImageDescriptor desc = ImageDescriptor.createFromFile(null, imagePath);
-        Image image = desc.createImage();
-        int width = image.getBounds().width;
-        int height = image.getBounds().height;
-
-        // draw cc image on it
-        GC gc = new GC(image);
-        gc.setAlpha(20);
-        if (width >= 50 && height >= 50)
-            gc.drawImage(CC20_IMAGE, width-22, height-22);
-        else if (width >= 24 && height >= 24)
-            gc.drawImage(CC16_IMAGE, width-16, height-16);
-        gc.dispose();
-
-        // save it back
-        ImageLoader loader = new ImageLoader();
-        loader.data = new ImageData[] { image.getImageData() };
-        loader.save(imagePath, SWT.IMAGE_PNG);
-        image.dispose();
-    }
-
     protected void generateTypeDiagram(final INedTypeElement typeElement) throws IOException {
         if (generateNedTypeFigures && !nedResources.isBuiltInDeclaration(typeElement.getNedTypeInfo())) {
-            out("<img src=\"" + getOutputFileName(typeElement, "type", ".png") + "\" ismap=\"yes\" usemap=\"#type-diagram\"/>");
+            out("<img src=\"" + getOutputFileName(typeElement, "type", ".svg") + "\" ismap=\"yes\" usemap=\"#type-diagram\"/>");
             DisplayUtils.runNowOrSyncInUIThread(() -> {
                     try {
                         NedFileElementEx modelRoot = typeElement.getContainingNedFileElement();
