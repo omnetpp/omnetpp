@@ -1,16 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
-  <inputs>
-    <inputs name="/resultfiles/PureAloha2-*.vec"/>
-    <inputs name="/resultfiles/PureAloha2-*.sca"/>
-  </inputs>
-  <charts>
-    <items xsi:type="scave:LineChart" name="Chart2" script="ADD vectors WHERE run(PureAloha2-0-20170320-11:14:54-11186) AND module(Aloha.server) AND name(serverChannelState:vector)&#xA;ADD vectors WHERE run(PureAloha2-0-20170320-11:14:54-11186) AND module(Aloha.host[6]) AND name(radioState:vector)&#xA;">
-      <properties name="Graph.Title" value="PureAloha2  #0"/>
-    </items>
-    <items xsi:type="scave:LineChart"/>
-    <items xsi:type="scave:PythonChart" name="pychart" script="import pandas as pd&#xA;import omnetpp as opp&#xA;&#xA;vectors = opp.getVectors(&quot;*&quot;)&#xA;&#xA;df = pd.DataFrame(vectors)&#xA;&#xA;for i,r in df.iterrows():&#xA;    plt.plot(r[&quot;valuesX&quot;],r[&quot;valuesY&quot;], drawstyle='steps-post', label=r[&quot;moduleName&quot;] + &quot;:&quot; + r[&quot;name&quot;])&#xA;plt.legend(loc=2)&#xA;plt.grid()&#xA;plt.show()">
-      <properties name="Legend.Display" value="false"/>
-    </items>
-  </charts>
-</scave:Analysis>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<analysis version="2">
+    <inputs>
+        <input pattern="/resultfiles/PureAloha2-*.vec"/>
+        <input pattern="/resultfiles/PureAloha2-*.sca"/>
+    </inputs>
+    <charts>
+        <chart name="Chart2" script="ADD vectors WHERE run(PureAloha2-0-20170320-11:14:54-11186) AND module(Aloha.server) AND name(serverChannelState:vector)&#10;ADD vectors WHERE run(PureAloha2-0-20170320-11:14:54-11186) AND module(Aloha.host[6]) AND name(radioState:vector)&#10;" type="LineChart">
+            <property name="Graph.Title" value="PureAloha2  #0"/>
+        </chart>
+        <chart name="Chart7" script="import results&#10;&#10;# This expression selects the results (you might be able to logically simplify it)&#10;filter_expression = &quot;&quot;&quot;&#10;ADD scalars WHERE attr:experiment(PureAloha2) AND attr:replication(#0) AND module(Aloha.server) AND name(collisionLength:mean)&#10;ADD scalars WHERE attr:experiment(PureAloha2) AND attr:replication(#0) AND module(Aloha.server) AND name(collisionLength:sum)&#10;ADD scalars WHERE attr:experiment(PureAloha2) AND attr:replication(#0) AND module(Aloha.server) AND name(collisionLength:max)&#10;ADD scalars WHERE attr:experiment(PureAloha2) AND attr:replication(#0) AND module(Aloha.server) AND name(channelUtilization:last)&#10;&quot;&quot;&quot;&#10;&#10;# The data is returned as a Pandas DataFrame&#10;df = results.getScalars(filter_expression)&#10;&#10;df = results.transform_results(df)&#10;&#10;print(df)&#10;&#10;# The scalars are transformed into a much simpler format&#10;# df = results.pivotScalars(df, columns=[&quot;module&quot;], index=[&quot;name&quot;, &quot;measurement&quot;])&#10;&#10;# You can perform any transformations on the data here&#10;&#10;# Finally, the results are plotted&#10;# chart.plotScalars(df)&#10;" type="BarChart">
+            <property name="Graph.Title" value="Aloha.server"/>
+        </chart>
+    </charts>
+</analysis>
