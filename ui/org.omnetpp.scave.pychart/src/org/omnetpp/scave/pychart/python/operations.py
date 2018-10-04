@@ -26,11 +26,10 @@ def compute(dataframe, operation, *args, **kwargs):
         return dataframe.append(clone)
 
 
-
 def vector_aggregator(df, function='average'):
     vectimes = df[('result', 'vectime')]
     vecvalues = df[('result', 'vecvalue')]
-    
+
     # the number of rows in the DataFrame
     n = len(df.index)
     indices = [0] * n
@@ -42,35 +41,35 @@ def vector_aggregator(df, function='average'):
     out_times = np.empty(capacity)
     out_values = np.empty(capacity)
     out_index = 0
-    
+
     while True:
         current_time = 0
         times = []
         for i in range(n):
             if len(vectimes[i]) > indices[i]:
                 times.append(vectimes[i][indices[i]])
-        
+
         if times:
             current_time = np.min(times)
         else:
             break
-    
+
         values_now = []
-        
+
         for i in range(n):
             while len(vectimes[i]) > indices[i]:
                 time = vectimes[i][indices[i]]
                 value = vecvalues[i][indices[i]]
-                
+
                 if time == current_time:
                     values_now.append(value)
                     indices[i] += 1
                 else:
                     break
-    
+
         if values_now:
             outval = 0
-            
+
             if function == 'sum':
                 outval = np.sum(values_now)
             elif function == 'average':
@@ -83,13 +82,13 @@ def vector_aggregator(df, function='average'):
                 outval = np.min(values_now)
             else:
                 raise Exception("unknown aggregation function")
-            
+
             out_times[out_index] = current_time
             out_values[out_index] = outval
-            
+
             out_index += 1
             # ASSERT out_index < len(out_values)
-        
+
     out_times = np.resize(out_times, out_index)
     out_values = np.resize(out_values, out_index)
 
@@ -181,45 +180,45 @@ def vector_add(r, c):
 
 def vector_compare(r, threshold, less=None, equal=None, greater=None):
     v = r[('result', 'vecvalue')]
-    
+
     if less is not None:
         less_mask = v < threshold
         v = np.where(less_mask, less, v)
-    
+
     if equal is not None:
         equal_mask = v == threshold
         v = np.where(equal_mask, equal, v)
-    
+
     if greater is not None:
         greater_mask = v > threshold
         v = np.where(greater_mask, greater, v)
-    
+
     r[('result', 'vecvalue')] = v
-    
+
     r[('attr', 'title')] = r[('attr', 'title')] + " compared to " + str(threshold)
-    
+
     return r
 
 
 def vector_crop(r, from_time, to_time):
     t = r[('result', 'vectime')]
     v = r[('result', 'vecvalue')]
-    
+
     from_index = np.searchsorted(t, from_time, 'left')
     to_index = np.searchsorted(t, to_time, 'right')
-    
+
     r[('result', 'vectime')] = t[from_index:to_index]
     r[('result', 'vecvalue')] = v[from_index:to_index]
-    
+
     r[('attr', 'title')] = r[('attr', 'title')] + " from {}s to {}s".format(from_time, to_time)
     return r
 
 
 def vector_difference(r):
     v = r[('result', 'vecvalue')]
-    
+
     r[('result', 'vecvalue')] = v - np.concatenate([np.array([0]), v[:-1]])
-    
+
     r[('attr', 'title')] = "Difference of " + r[('attr', 'title')]
     return r
 
@@ -227,13 +226,13 @@ def vector_difference(r):
 def vector_diffquot(r):
     t = r[('result', 'vectime')]
     v = r[('result', 'vecvalue')]
-    
+
     dt = t[1:] - t[:-1]
     dv = v[1:] - v[:-1]
-    
+
     r[('result', 'vecvalue')] = dv / dt
     r[('result', 'vectime')] = t[:-1]
-    
+
     r[('attr', 'title')] = "Difference quotient of " + r[('attr', 'title')]
     return r
 
@@ -252,15 +251,16 @@ def vector_divtime(r):
     r[('attr', 'title')] = r[('attr', 'title')] + " / t "
     return r
 
+
 def vector_expression(r, expr):
     t = r[('result', 'vectime')]
     y = r[('result', 'vecvalue')]
-    
+
     tprev = np.concatenate([np.array([0]), t[:-1]])
     yprev = np.concatenate([np.array([0]), y[:-1]])
-    
-    r[('result', 'vecvalue')] = eval(expr) # TODO - sanitize expr
-    
+
+    r[('result', 'vecvalue')] = eval(expr)  # TODO - sanitize expr
+
     r[('attr', 'title')] = r[('attr', 'title')] + ": " + expr
     return r
 

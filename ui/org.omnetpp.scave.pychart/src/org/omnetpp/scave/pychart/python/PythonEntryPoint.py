@@ -238,7 +238,7 @@ class OppAccessor(object):
             for point in points
         ]))
 
-    """  
+    """
     # TODO: scatter charts: same as vector, just with implicit "Dots" Line Type?
     def plotPoints(self, df_or_points):
         if isinstance(df_or_points, pd.DataFrame):
