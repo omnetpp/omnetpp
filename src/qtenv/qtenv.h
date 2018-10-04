@@ -210,9 +210,6 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       // These will be saved into the .qtenvrc in the working directory, all others into the one in the home of the user.
       bool isLocalPrefKey(const QString& key);
 
-      void storeOptsInPrefs();
-      void restoreOptsFromPrefs();
-
    public:
       Qtenv();
       virtual ~Qtenv();
@@ -283,6 +280,9 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       void setPref(const QString &key, const QVariant &value);
       QVariant getPref(const QString &key, const QVariant &defaultValue = QVariant());
       QStringList getKeysInPrefGroup(const QString &prefGroup);
+
+      void storeOptsInPrefs();
+      void restoreOptsFromPrefs();
 
   signals:
       void fontChanged();
