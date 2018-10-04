@@ -79,8 +79,6 @@ class QTENV_API MessageAnimator
 
     void clearMessages();
 
-    void updateNextEventMarkers();
-
     // Simple utility function to deduplicate the delivery functions.
     void addDeliveryAnimation(cMessage *msg, cModule *showIn, DeliveryAnimation *anim);
 
@@ -100,6 +98,7 @@ public:
     // DisplayUpdateController can query what the animations requested using this:
     double getAnimationSpeed();
 
+    void updateNextEventMarkers();
     void updateAnimations();
     void redrawMessages();
     void skipCurrentHoldingAnims();

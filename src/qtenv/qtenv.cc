@@ -1311,6 +1311,7 @@ void Qtenv::refreshInspectors()
     for (auto it : inspectors)
         it->refresh();
 
+    messageAnimator->updateNextEventMarkers();
     messageAnimator->redrawMessages();
 
     // clear the change flags on all inspected canvases
