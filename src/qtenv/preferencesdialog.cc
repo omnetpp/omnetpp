@@ -226,6 +226,8 @@ void PreferencesDialog::accept()
 
     getQtenv()->setPref("preferences-dialog-page", ui->tabWidget->currentIndex());
 
+    getQtenv()->storeOptsInPrefs();
+
     QDialog::accept();
 }
 
