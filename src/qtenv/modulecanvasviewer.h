@@ -169,6 +169,7 @@ public:
     QPointF getSubmodCoords(cModule *mod); // gets the coords from the layouter! might return (NAN,NAN) if not yet layouted
     // also accepts the inspected module, returns the whole rectangle for it
     QRectF getSubmodRect(cModule *mod);
+    QRectF getModuleRect(bool includeBorder);
     QLineF getConnectionLine(cGate *gate);
 
     void clear();

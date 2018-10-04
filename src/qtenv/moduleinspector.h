@@ -159,6 +159,8 @@ public:
     QPointF getSubmodCoords(cModule *mod);
     QRectF getSubmodRect(cModule *mod);
     QLineF getConnectionLine(cGate *gate);
+
+    QRect getModuleRect(bool includeBorder, int margin);
 };
 
 } // namespace qtenv

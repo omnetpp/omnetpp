@@ -548,6 +548,11 @@ QRectF ModuleCanvasViewer::getSubmodRect(cModule *mod)
     return getQtenv()->getModuleLayouter()->getModuleRectangle(mod, zoomFactor, imageSizeFactor);
 }
 
+QRectF ModuleCanvasViewer::getModuleRect(bool includeBorder)
+{
+    return includeBorder ? compoundModuleItem->boundingRect() : compoundModuleItem->getArea();
+}
+
 QLineF ModuleCanvasViewer::getConnectionLine(cGate *gate)
 {
     ASSERT(gate->getOwnerModule() == object || gate->getOwnerModule()->getParentModule() == object);

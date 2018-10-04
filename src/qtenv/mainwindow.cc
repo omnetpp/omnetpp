@@ -47,6 +47,7 @@
 #include "fileeditor.h"
 #include "animationcontrollerdialog.h"
 #include "displayupdatecontroller.h"
+#include "videorecordingdialog.h"
 #include "qtutil.h"
 
 #include <QCheckBox>
@@ -1349,27 +1350,18 @@ void MainWindow::on_actionRecordVideo_toggled(bool checked)
         QString configRun = env->getConfigEx()->getActiveConfigName();
         configRun += "#" + QString::number(env->getConfigEx()->getActiveRunNumber());
 
-        QString base = "frames/" + configRun + "_";
+        VideoRecordingDialog dialog(this, configRun);
 
-        if (!env->getPref("videorecording-dontshowdialog", false).toBool()) {
-            QMessageBox mb (QMessageBox::Information, "Video Recording",
-                "Video recording is performed by exporting a series of numbered PNG images, starting with '" + base + "0000.png'.<br/>" +
-                "To encode them into a high quality video file, something like the following command can be used, provided that ffmpeg and x264 is installed on your system:<br/><br/>"
-                "<code>ffmpeg -r " + QString::number(duc->getVideoFps()) + " -f image2  -i \"" + base + "%04d.png\" -vcodec libx264 -crf 0 -preset veryslow -qp 0 -pix_fmt yuv444p \"" + configRun + ".mkv\"</code><br/><br/>"
-                "Before continuing, make sure there is ample disk space available, especially if you plan to record a long video, since the output is lossless, therefore can grow quite large.<br/><br/>"
-                "Also the main Qtenv window will be resized to have its width and height both divisible by 4 to ensure compatibility with certain codecs.",
-                QMessageBox::Ok, this);
-            auto cb = new QCheckBox("Don't show again");
-            mb.setCheckBox(cb);
-            mb.exec();
+        dialog.exec();
 
-            if (cb->checkState() == Qt::Checked)
-                env->setPref("videorecording-dontshowdialog", true);
+        if (dialog.result() == QDialog::Accepted) {
+            setFixedSize(width() / 2 * 2, height() / 2 * 2);
+            QString base = "frames/" + configRun + "_";
+            duc->setFilenameBase(base.toUtf8());
+            duc->startVideoRecording();
         }
-
-        setFixedSize(width() / 4 * 4, height() / 4 * 4);
-        duc->setFilenameBase(base.toUtf8());
-        duc->startVideoRecording();
+        else
+            ui->actionRecordVideo->setChecked(false);
     } else {
         setFixedSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
         duc->stopVideoRecording();
