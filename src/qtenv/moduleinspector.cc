@@ -524,6 +524,19 @@ QLineF ModuleInspector::getConnectionLine(cGate *gate)
     return canvasViewer->getConnectionLine(gate);
 }
 
+QRect ModuleInspector::getModuleRect(bool includeBorder, int margin)
+{
+    if (stackedLayout->currentWidget() == canvasViewer) {
+        QRectF rectInScene = canvasViewer->getModuleRect(includeBorder);
+        QRect mappedRect = canvasViewer->mapFromScene(rectInScene).boundingRect().adjusted(1, 1, -1, -1); // adjust because of AA
+        mappedRect.adjust(-margin, -margin, margin, margin);
+        return mappedRect;
+    }
+    else {
+        return rect();
+    }
+}
+
 void ModuleInspector::submoduleCreated(cModule *newmodule)
 {
     canvasViewer->setNeedsRedraw(); // could be optimized by remembering what needs to be drawn, but this is simpler

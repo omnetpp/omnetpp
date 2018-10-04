@@ -118,7 +118,8 @@ SOURCES += mainwindow.cc \
     genericobjecttreenodes.cc \
     highlighteritemdelegate.cc \
     iosgviewer.cc \
-    messageprintertagsdialog.cc
+    messageprintertagsdialog.cc \
+    videorecordingdialog.cc
 
 HEADERS += mainwindow.h \
     arrow.h \
@@ -187,7 +188,8 @@ HEADERS += mainwindow.h \
     genericobjecttreenodes.h \
     highlighteritemdelegate.h \
     iosgviewer.h \
-    messageprintertagsdialog.h
+    messageprintertagsdialog.h \
+    videorecordingdialog.h
 
 # include path is relative to the current build directory (e.g. out/src/gcc-debug/qtenv)
 INCLUDEPATH += ../../../../src ../../../../include 
@@ -209,7 +211,8 @@ FORMS += mainwindow.ui \
     findobjectsdialog.ui \
     outputvectorinspectorconfigdialog.ui \
     histograminspectorconfigdialog.ui \
-    messageprintertagsdialog.ui
+    messageprintertagsdialog.ui \
+    videorecordingdialog.ui
 
 RESOURCES += \
     icons.qrc
