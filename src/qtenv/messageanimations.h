@@ -22,14 +22,13 @@
 #include <QString>
 #include <QLineF>
 #include "omnetpp/simtime_t.h"
+#include "omnetpp/cgate.h"
+#include "omnetpp/cmodule.h"
 #include "qtenvdefs.h"
 
 namespace omnetpp {
 
 class cMessage;
-class cComponent;
-class cModule;
-class cGate;
 
 namespace qtenv {
 
@@ -143,6 +142,8 @@ public:
     // Only needed for debugging.
     virtual QString str() const = 0;
 
+    virtual int getSourceModuleId() { return -1; }
+
     virtual ~Animation();
 };
 
@@ -196,7 +197,9 @@ public:
 
     QString str() const override;
 
-    virtual ~AnimationSequence();
+    int getSourceModuleId() override { return parts.empty() ? -1 : parts[0]->getSourceModuleId(); }
+
+    ~AnimationSequence() override;
 };
 
 class QTENV_API MethodcallAnimation : public Animation
@@ -239,12 +242,12 @@ public:
 
     bool isEmpty() const override;
     bool willAnimate(cMessage *msg) override { return body.willAnimate(msg); }
-    void messageDuplicated(cMessage *msg, cMessage *dup) { body.messageDuplicated(msg, dup); }
+    void messageDuplicated(cMessage *msg, cMessage *dup) override { body.messageDuplicated(msg, dup); }
     void removeMessagePointer(cMessage *msg) override { body.removeMessagePointer(msg); }
 
     QString str() const override;
 
-    ~MethodcallAnimation();
+    ~MethodcallAnimation() override;
 };
 
 class QTENV_API MessageAnimation : public Animation {
@@ -281,7 +284,7 @@ public:
     // call this from subclasses!
     void removeFromInspector(Inspector *insp) override;
 
-    ~MessageAnimation();
+    ~MessageAnimation() override;
 };
 
 // TODO: animate discarsion
@@ -311,6 +314,8 @@ public:
     void updateInInspector(Inspector *insp) override;
 
     QString str() const override;
+
+    int getSourceModuleId() override { return gate->getOwnerModule()->getId(); }
 };
 
 class QTENV_API SendDirectAnimation : public MessageAnimation
@@ -336,7 +341,9 @@ public:
 
     QString str() const override;
 
-    ~SendDirectAnimation();
+    int getSourceModuleId() override { return srcModuleId; }
+
+    ~SendDirectAnimation() override;
 };
 
 class QTENV_API DeliveryAnimation : public MessageAnimation {
@@ -359,6 +366,8 @@ public:
     void updateInInspector(Inspector *insp) override;
 
     QString str() const override;
+
+    int getSourceModuleId() override { return gate->getOwnerModule()->getId(); }
 };
 
 } // namespace qtenv
