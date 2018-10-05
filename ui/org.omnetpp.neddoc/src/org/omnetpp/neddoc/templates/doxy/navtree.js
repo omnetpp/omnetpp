@@ -1,6 +1,6 @@
 var navTreeSubIndices = new Array();
-var arrowDown = '&#9660;';
-var arrowRight = '&#9658;';
+var arrowDown = 'arrow_drop_down';
+var arrowRight = 'arrow_right';
 
 function getData(varName)
 {
@@ -96,8 +96,8 @@ function createIndent(o,domNode,node,level)
   var n = node;
   while (n.parentNode) { level++; n=n.parentNode; }
   if (node.childrenData) {
-    var imgNode = document.createElement("span");
-    imgNode.className = 'arrow';
+    var imgNode = document.createElement("i");
+    imgNode.className = 'material-icons';
     imgNode.style.paddingLeft=(16*level).toString()+'px';
     imgNode.innerHTML=arrowRight;
     node.plus_img = imgNode;
@@ -314,11 +314,13 @@ function selectAndHighlight(hash,n)
     $(n.itemDiv).addClass('selected');
     $(n.itemDiv).attr('id','selected');
   }
+/*
   if ($('#nav-tree-contents .item:first').hasClass('selected')) {
-    $('#nav-sync').css('top','30px');
+    $('#nav-sync').css('top','24px');
   } else {
-    $('#nav-sync').css('top','5px');
+    $('#nav-sync').css('top','4px');
   }
+*/
   showRoot();
 }
 
@@ -436,12 +438,12 @@ function navTo(o,root,hash,relpath)
 
 function showSyncOff(n,relpath)
 {
-    n.html('<img src="'+relpath+'sync_off.png" title="'+SYNCOFFMSG+'"/>');
+    n.html('<i class="material-icons" title="'+SYNCOFFMSG+'">link_off</i>');
 }
 
 function showSyncOn(n,relpath)
 {
-    n.html('<img src="'+relpath+'sync_on.png" title="'+SYNCONMSG+'"/>');
+    n.html('<i class="material-icons" title="'+SYNCONMSG+'">link</i>');
 }
 
 function toggleSyncButton(relpath)
@@ -473,8 +475,8 @@ function initNavTree(toroot,relpath)
   o.node.relpath = relpath;
   o.node.expanded = false;
   o.node.isLast = true;
-  o.node.plus_img = document.createElement("span");
-  o.node.plus_img.className = 'arrow';
+  o.node.plus_img = document.createElement("i");
+  o.node.plus_img.className = 'material-icons';
   o.node.plus_img.innerHTML = arrowRight;
 
   if (localStorageSupported()) {

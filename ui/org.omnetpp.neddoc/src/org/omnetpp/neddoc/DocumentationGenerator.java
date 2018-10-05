@@ -764,14 +764,16 @@ public class DocumentationGenerator {
             copyFileFromResource("style.css");
         else
             FileUtils.copy(new FileInputStream(customCssPath.toPortableString()), getOutputFile("style.css"));
-        copyFileFromResource("navtree.css");
+        copyFileFromResource("material.blue-light_blue.min.css");
+        copyFileFromResource("material-icons.css");
+
     }
 
     protected void copyJavaScript() throws Exception {
         copyFileFromResource("dynsections.js");
         copyFileFromResource("jquery.js");
         copyFileFromResource("navtree.js");
-        copyFileFromResource("resize.js");
+        copyFileFromResource("material.min.js");
     }
 
     protected void generatePage(String fileName, final String content) throws Exception {
@@ -796,7 +798,7 @@ public class DocumentationGenerator {
 
         if (APPLY_CC) {
             String atag = "<a href=\"http://creativecommons.org/licenses/by-sa/3.0\" target=\"_top\">";
-            out("   <hr><p class=\"footer\">"+atag+"<img src=\"by-sa.png\"></a>" +
+            out("   <hr><p class=\"footer\">"+atag+"<img src=\"by-sa.svg\"></a>" +
                 " This documentation is released under the "+atag+"Creative Commons license</a></p>\n");
         }
 
@@ -845,7 +847,7 @@ public class DocumentationGenerator {
     }
 
     protected void generatePackageReference(String packageName) throws IOException {
-        out("<b>Package:</b> <a href=\"packages.html#" + packageName.replace('.', '_') + "\">" + packageName + "</a>");
+        out("Package: <a class=\"reference-ned\" href=\"packages.html#" + packageName.replace('.', '_') + "\">" + packageName + "</a>");
     }
 
     protected void generatePackageIndex() throws Exception {
@@ -936,12 +938,8 @@ public class DocumentationGenerator {
     }
 
     protected void copyIcons() throws Exception {
-        copyFileFromResource("bc_s.png");
-        copyFileFromResource("nav_h.png");
-        copyFileFromResource("splitbar.png");
-        copyFileFromResource("sync_on.png");
-        copyFileFromResource("sync_off.png");
-        copyFileFromResource("by-sa.png");
+        copyFileFromResource("by-sa.svg");
+        copyFileFromResource("material-icons.woff2");
     }
 
     protected void generateNavigationMenuItem(int level, String title, String url, Runnable content) throws Exception {
@@ -1012,7 +1010,7 @@ public class DocumentationGenerator {
         // generate default if @titlepage not found
         if (!titlePageFound[0])
             generatePage("index.html",
-                "<center><h1>OMNeT++ Model Documentation</h1></center>\n" +
+                "<center><h1 class=\"mdl-color-text--primary\">OMNeT++ Model Documentation</h1></center>\n" +
                 "<center><i>Generated from NED and MSG files</i></center>\n" +
                 "<p>This documentation has been generated from NED and MSG files.</p>\n" +
                 "<p>Use the links in the left frame to navigate around.</p>\n" +
@@ -1043,7 +1041,7 @@ public class DocumentationGenerator {
                             if (pageType == PageType.PAGE) {
                                 generateNavigationMenuItem(2, title, file, null);
                                 generatePage(file,
-                                        "<h2>" + title + "</h2>" + processHTMLContent("comment", content));
+                                        "<h2 class=\"mdl-color-text--primary\">" + title + "</h2>" + processHTMLContent("comment", content));
 
                             }
                             else if (pageType == PageType.EXTERNAL_PAGE) {
@@ -1251,9 +1249,9 @@ public class DocumentationGenerator {
 
     protected void generatePackagesPage() throws Exception {
         generatePage("packages.html", () -> {
-            out("<h2>Packages</h2>\n");
+            out("<h2 class=\"mdl-color-text--primary comptitle\">Packages</h2>\n");
             for (final String packageName : packageNames) {
-                        out("<h2 id=\"" + packageName.replace('.', '_') + "\">" + packageName + "</h2>\n");
+                        out("<h2 class=\"mdl-color-text--primary subtitle\" id=\"" + packageName.replace('.', '_') + "\">" + packageName + "</h2>\n");
 
                         out("<table class=\"typestable\">\n");
                         generateTypesTableHead();
@@ -1278,7 +1276,7 @@ public class DocumentationGenerator {
                         monitor.subTask(file.getFullPath().toString());
                         String fileType = nedResources.isNedFile(file) ? "NED" : msgResources.isMsgFile(file) ? "Msg" : "";
 
-                        out("<h2 class=\"comptitle\">" + fileType + " File <i>" + file.getProjectRelativePath() + "</i></h2>\n");
+                        out("<h2 class=\"mdl-color-text--primary comptitle\" >" + fileType + " File <i>" + file.getProjectRelativePath() + "</i></h2>\n");
 
                         INedFileElement fileElement = msgResources.isMsgFile(file) ?
                                 msgResources.getMsgFileElement(file) : nedResources.getNedFileElement(file);
@@ -1314,20 +1312,29 @@ public class DocumentationGenerator {
                         boolean isNedTypeElement = typeElement instanceof INedTypeElement;
                         boolean isMsgTypeElement = typeElement instanceof IMsgTypeElement;
 
-                        out("<h2 class=\"comptitle\">" + typeElement.getName() + "</h2>\n");
-
-                        out("<b>Type: </b>" + WordUtils.capitalize(typeElement.getReadableTagName()) + "<br/>\n");
-
                         if (isNedTypeElement) {
                             generatePackageReference(getPackageName((INedTypeElement)typeElement));
                             out("<br/>");
                         }
+                        out("<h2 class=\"mdl-color-text--primary comptitle\" style=\"float: left;\">" + typeElement.getName() + "</h2>\n");
 
-                        if (typeElement instanceof INedTypeElement && nedResources.isBuiltInDeclaration(((INedTypeElement)typeElement).getNedTypeInfo()))
-                            generateBuiltinTypeReference();
-                        else
-                            generateFileReference(getNedOrMsgFile(typeElement));
-                        out("<br/>");
+                        // show a colored type label
+                        String typeLabel = typeElement.getReadableTagName();
+                        String color = "#dedede";
+                        if ("simple module".equals(typeLabel))
+                            color = "#ff000040";
+                        else if ("compound module".equals(typeLabel))
+                            color = "#00ff0040";
+                        else if ("network".equals(typeLabel))
+                            color = "#2196f340";
+                        else if ("channel".equals(typeLabel))
+                            color = "#ffca0080";
+                        else if (typeLabel.contains("interface"))
+                            color = "#00e5ff40";
+
+                        out("<span class=\"mdl-chip\" style=\"float: right; margin-top: 6pt; background-color: "+color+";\">\n" +
+                                "    <span class=\"mdl-chip__text\">"+ typeElement.getReadableTagName() +"</span>\n" +
+                                "</span><div style=\"clear: both;\"/>");
 
                         if (typeElement instanceof SimpleModuleElementEx || typeElement instanceof IMsgTypeElement)
                             generateNedTypeCppDefinitionReference(typeElement);
@@ -1369,8 +1376,16 @@ public class DocumentationGenerator {
                             generatePropertiesTable(msgTypeElement);
                         }
 
-                        if (generateNedSourceListings)
+                        if (generateNedSourceListings) {
                             generateSourceContent(typeElement);
+
+                            if (typeElement instanceof INedTypeElement && nedResources.isBuiltInDeclaration(((INedTypeElement)typeElement).getNedTypeInfo()))
+                                generateBuiltinTypeReference();
+                            else
+                                generateFileReference(getNedOrMsgFile(typeElement));
+                            out("<br/>");
+                        }
+
 
                         monitor.worked(1);
                     }
@@ -1386,7 +1401,7 @@ public class DocumentationGenerator {
         Map<String, FieldElement> fields = msgTypeElement.getMsgTypeInfo().getFields();
         Map<String, FieldElement> localFields = msgTypeElement.getMsgTypeInfo().getLocalFields();
         if (fields.size() != 0) {
-            out("<h3 class=\"subtitle\">Fields:</h3>\n" +
+            out("<h3 class=\"mdl-color-text--primary subtitle\">Fields</h3>\n" +
                 "<table class=\"fieldstable\">\n" +
                 "   <tr>\n" +
                 "      <th class=\"name\">Name</th>\n" +
@@ -1424,7 +1439,7 @@ public class DocumentationGenerator {
         Map<String, Map<String, PropertyElementEx>> properties = typeElement.getProperties();
 
         if (properties.size() != 0) {
-            out("<h3 class=\"subtitle\">Properties:</h3>\n" +
+            out("<h3 class=\"mdl-color-text--primary subtitle\">Properties</h3>\n" +
                 "<table class=\"propertiestable\">\n" +
                 "   <tr>\n" +
                 "      <th class=\"name\">Name</th>\n" +
@@ -1479,7 +1494,7 @@ public class DocumentationGenerator {
             }
 
             if (compoundModules.size() != 0) {
-                out("<h3 class=\"subtitle\">Used in compound modules:</h3>\n");
+                out("<h3 class=\"mdl-color-text--primary subtitle\">Used in compound modules</h3>\n");
 
                 out("<table class=\"typestable\">\n");
                 generateTypesTableHead();
@@ -1491,7 +1506,7 @@ public class DocumentationGenerator {
             }
 
             if (networks.size() != 0) {
-                out("<h3 class=\"subtitle\">Networks:</h3>\n");
+                out("<h3 class=\"mdl-color-text--primary subtitle\">Used in</h3>\n");
 
                 out("<table class=\"typestable\">\n");
                 generateTypesTableHead();
@@ -1510,7 +1525,7 @@ public class DocumentationGenerator {
         Map<String, ParamElementEx> paramsAssignments = typeElement.getParamAssignments();
 
         if (!paramsDeclarations.isEmpty()) {
-            out("<h3 class=\"subtitle\">Parameters:</h3>\n" +
+            out("<h3 class=\"mdl-color-text--primary subtitle\">Parameters</h3>\n" +
                 "<table class=\"paramstable\">\n" +
                 "   <tr>\n" +
                 "      <th class=\"name\">Name</th>\n" +
@@ -1543,7 +1558,7 @@ public class DocumentationGenerator {
     protected void generateSignalsTable(INedTypeElement typeElement) throws IOException {
         Map<String, PropertyElementEx> propertyMap = typeElement.getProperties().get("signal");
         if (propertyMap != null) {
-            out("<h3 class=\"subtitle\">Signals:</h3>\n" +
+            out("<h3 class=\"mdl-color-text--primary subtitle\">Signals</h3>\n" +
                     "<table class=\"signalstable\">\n" +
                     "   <tr>\n" +
                     "      <th class=\"name\">Name</th>\n" +
@@ -1568,7 +1583,7 @@ public class DocumentationGenerator {
     protected void generateStatisticsTable(INedTypeElement typeElement) throws IOException {
         Map<String, PropertyElementEx> propertyMap = typeElement.getProperties().get("statistic");
         if (propertyMap != null) {
-            out("<h3 class=\"subtitle\">Statistics:</h3>\n" +
+            out("<h3 class=\"mdl-color-text--primary subtitle\">Statistics</h3>\n" +
                     "<table class=\"statisticstable\">\n" +
                     "   <tr>\n" +
                     "      <th class=\"name\">Name</th>\n" +
@@ -1598,7 +1613,7 @@ public class DocumentationGenerator {
         collectUnassignedParameters(null, typeElement.getNedTypeInfo().getSubmodules(), params);
 
         if (params.size() != 0) {
-            out("<h3 class=\"subtitle\">Unassigned submodule parameters:</h3>\n" +
+            out("<h3 class=\"mdl-color-text--primary subtitle\">Unassigned submodule parameters</h3>\n" +
                 "<table class=\"deepparamstable\">\n" +
                 "   <tr>\n" +
                 "      <th class=\"name\">Name</th>\n" +
@@ -1664,7 +1679,7 @@ public class DocumentationGenerator {
         Map<String, GateElementEx> gatesSizes = module.getGateSizes();
 
         if (!gateDeclarations.isEmpty()) {
-            out("<h3 class=\"subtitle\">Gates:</h3>\n" +
+            out("<h3 class=\"mdl-color-text--primary subtitle\">Gates</h3>\n" +
                 "<table class=\"gatestable\">\n" +
                 "   <tr>\n" +
                 "      <th class=\"name\">Name</th>\n" +
@@ -1720,7 +1735,7 @@ public class DocumentationGenerator {
     }
 
     protected void generateTypeReference(ITypeElement typeElement) throws IOException {
-        out("<a href=\"" + getOutputFileName(typeElement) + "\">" + typeElement.getName() + "</a>");
+        out("<a class=\"reference-ned\" href=\"" + getOutputFileName(typeElement) + "\">" + typeElement.getName() + "</a>");
     }
 
     protected void generateTypeType(ITypeElement typeElement) throws IOException {
@@ -1769,25 +1784,25 @@ public class DocumentationGenerator {
 
     protected void generateCppReference(String cppClassName, String label) throws IOException {
         if (doxyMap.containsKey(cppClassName))
-            out("<a href=\"" + getRelativePath(rootRelativeNeddocPath, rootRelativeDoxyPath).append(doxyMap.get(cppClassName)) + "\" target=\"mainframe\">" + label + "</a>");
+            out("<a class=\"reference-cpp\" href=\"" + getRelativePath(rootRelativeNeddocPath, rootRelativeDoxyPath).append(doxyMap.get(cppClassName)) + "\" target=\"mainframe\">" + label + "</a>");
         else
             out(label);
     }
 
     protected void generateBuiltinTypeReference() throws IOException {
-        out("<b>Built-in type</b>");
+        out("File: Built-in type");
     }
 
     protected void generateFileReference(IFile file) throws IOException {
         if (generateFileListings)
-            out("<b>File:</b> <a href=\"" + getOutputFileName(file) + "\">" + file.getProjectRelativePath() + "</a>");
+            out("File: <a href=\"" + getOutputFileName(file) + "\">" + file.getProjectRelativePath() + "</a>");
         else
-            out("<b>File:</b> " + file.getProjectRelativePath());
+            out("File: " + file.getProjectRelativePath());
     }
 
     protected void generateKnownSubtypesTable(ITypeElement typeElement) throws IOException {
         if (subtypesMap.containsKey(typeElement)) {
-            out("<h3 class=\"subtitle\">Known subclasses:</h3>\n");
+            out("<h3 class=\"mdl-color-text--primary subtitle\">Known subclasses</h3>\n");
 
             out("<table class=\"typestable\">\n");
             generateTypesTableHead();
@@ -1801,7 +1816,7 @@ public class DocumentationGenerator {
 
     protected void generateExtendsTable(ITypeElement typeElement) throws IOException {
         if (typeElement.getFirstExtends() != null) {
-            out("<h3 class=\"subtitle\">Extends:</h3>\n");
+            out("<h3 class=\"mdl-color-text--primary subtitle\">Extends</h3>\n");
 
             out("<table class=\"typestable\">\n");
             generateTypesTableHead();
@@ -1929,7 +1944,7 @@ public class DocumentationGenerator {
 
             if (generateFullUsageDiagrams) {
                 generatePage("full-ned-usage-diagram.html", () -> {
-                        out("<h2 class=\"comptitle\">Full NED Usage Diagram</h2>\n" +
+                        out("<h2 class=\"mdl-color-text--primary comptitle\">Full NED Usage Diagram</h2>\n" +
                             "<p>The following diagram shows usage relationships between simple and compound modules, module interfaces, networks, channels and channel interfaces.\n" +
                             "Unresolved types are missing from the diagram.</p>\n");
                         generateUsageDiagram(nedTypeElements, "full-ned-usage-diagram.svg");
@@ -1940,7 +1955,7 @@ public class DocumentationGenerator {
 
             if (generateFullInheritanceDiagrams) {
                 generatePage("full-ned-inheritance-diagram.html", () -> {
-                        out("<h2 class=\"comptitle\">Full NED Inheritance Diagram</h2>\n" +
+                        out("<h2 class=\"mdl-color-text--primary comptitle\">Full NED Inheritance Diagram</h2>\n" +
                             "<p>The following diagram shows the inheritance hierarchy between simple and compound modules, module interfaces, networks, channels and channel interfaces.\n" +
                             "Unresolved types are missing from the diagram.</p>\n");
                         generateInheritanceDiagram(nedTypeElements, "full-ned-inheritance-diagram.svg");
@@ -1951,7 +1966,7 @@ public class DocumentationGenerator {
 
             if (generateFullUsageDiagrams) {
                 generatePage("full-msg-usage-diagram.html", () -> {
-                        out("<h2 class=\"comptitle\">Full MSG Usage Diagram</h2>\n" +
+                        out("<h2 class=\"mdl-color-text--primary comptitle\">Full MSG Usage Diagram</h2>\n" +
                             "<p>The following diagram shows usage relationships between messages, packets, classes and structs.\n" +
                             "Unresolved types are missing from the diagram.</p>\n");
                         generateUsageDiagram(msgTypeElements, "full-msg-usage-diagram.svg");
@@ -1962,7 +1977,7 @@ public class DocumentationGenerator {
 
             if (generateFullInheritanceDiagrams) {
                 generatePage("full-msg-inheritance-diagram.html", () -> {
-                        out("<h2 class=\"comptitle\">Full MSG Inheritance Diagram</h2>\n" +
+                        out("<h2 class=\"mdl-color-text--primary comptitle\">Full MSG Inheritance Diagram</h2>\n" +
                             "<p>The following diagram shows the inheritance hierarchy between messages, packets, classes and structs.\n" +
                             "Unresolved types are missing from the diagram.</p>\n");
                         generateInheritanceDiagram(msgTypeElements, "full-msg-inheritance-diagram.svg");
@@ -1983,7 +1998,7 @@ public class DocumentationGenerator {
 
             String diagramType = typeElement instanceof INedTypeElement ? "ned" : "msg";
 
-            out("<h3 class=\"subtitle\">Usage diagram:</h3>\n" +
+            out("<h3 class=\"mdl-color-text--primary subtitle\">Usage diagram</h3>\n" +
                 "<p>The following diagram shows usage relationships between types.\n" +
                 "Unresolved types are missing from the diagram.");
             if (generateFullUsageDiagrams)
@@ -1999,6 +2014,7 @@ public class DocumentationGenerator {
             DotGraph dot = new DotGraph();
 
             dot.append("digraph opp {\n" +
+                       "   graph [bgcolor=\"#ffffff00\"] " +
                        "   node [fontsize=10,fontname=Helvetica,shape=box,height=.25,style=filled];\n");
 
             for (ITypeElement typeElement : typeElements) {
@@ -2039,7 +2055,7 @@ public class DocumentationGenerator {
 
             String diagramType = typeElement instanceof INedTypeElement ? "ned" : "msg";
 
-            out("<h3 class=\"subtitle\">Inheritance diagram:</h3>\n" +
+            out("<h3 class=\"mdl-color-text--primary subtitle\">Inheritance diagram</h3>\n" +
                 "<p>The following diagram shows inheritance relationships for this type.\n" +
                 "Unresolved types are missing from the diagram.");
             if (generateFullInheritanceDiagrams)
@@ -2055,6 +2071,7 @@ public class DocumentationGenerator {
             DotGraph dot = new DotGraph();
 
             dot.append("digraph opp {\n" +
+                       "   graph [bgcolor=\"#ffffff00\"] " +
                        "   node [fontsize=10,fontname=Helvetica,shape=box,height=.25,style=filled];\n" +
                        "   edge [arrowhead=none,arrowtail=empty];\n");
 
@@ -2124,7 +2141,7 @@ public class DocumentationGenerator {
     }
 
     protected void generateSourceContent(String source, boolean nedSource) throws IOException {
-        out("<h3 class=\"subtitle\">Source code:</h3>\n" +
+        out("<h3 class=\"mdl-color-text--primary subtitle\">Source code</h3>\n" +
             "<pre class=\"src\">");
 
         org.eclipse.jface.text.Document document = new org.eclipse.jface.text.Document(source);
