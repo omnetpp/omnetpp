@@ -296,14 +296,29 @@ void MessageAnimator::updateAnimations()
 
     if (getQtenv()->getPref("concurrent-anim", false).toBool()) {
         bool first = true;
+
+        // This is the ID of the source module of the first animation.
+        // (The real source, the message sender, not just the "line" source.)
+        // -1 if not known or not available
+        int broadcastingModuleId = -1;
+
         // If the next animation is a methodcall, we only advance that.
         // If it is a holding messagesend, then we animate all holding
-        // messagesends at the beginnig of the animations "list" together.
+        // messagesends at the beginning of the animations "list" together.
         for (auto& p : animations)
             if (p->isHolding()) {
                 bool isMethodcall = dynamic_cast<MethodcallAnimation *>(p);
                 if (isMethodcall && !first)
                     break;
+
+                int srcId = p->getSourceModuleId();
+
+                if (first)
+                    broadcastingModuleId = srcId;
+                else // Do not animate any other messages concurrently that originated somewhere else.
+                    if (broadcastingModuleId == -1 || broadcastingModuleId != srcId)
+                        break;
+
                 if (!p->advance()) {
                     delete p;
                     p = nullptr;
