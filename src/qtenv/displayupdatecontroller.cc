@@ -286,6 +286,11 @@ bool DisplayUpdateController::renderUntilNextEvent(bool onlyHold)
 
         if (holdTime > 0 || msgAnim->isHoldActive()) { // we are on a hold, simTime is paused
             renderFrame(true);
+            lastRecordedFrame = simTime();
+
+            // TODO: make this a bit more correct (consider when the hold ends before the next frame, etc...)
+            currentTimes.animationTime += frameDelta;
+            currentTimes.realTime = stopwatch.getElapsedSeconds();
         }
         else {
             if (onlyHold)
@@ -300,6 +305,7 @@ bool DisplayUpdateController::renderUntilNextEvent(bool onlyHold)
                     double timeSinceUpdate = stopwatch.getElapsedSecondsNoLoss() - lastGuiUpdateAt;
                     if (timeSinceFrame > (1.0/minFrameRate)) {
                         lastRecordedFrame = simTime();
+                        currentTimes.realTime = stopwatch.getElapsedSeconds();
                         renderFrame(true);
                     }
                     else if (timeSinceUpdate > (1.0/minGuiUpdateRate)) {
@@ -308,6 +314,7 @@ bool DisplayUpdateController::renderUntilNextEvent(bool onlyHold)
                     }
                 } else {
                     lastRecordedFrame = simTime();
+                    currentTimes.realTime = stopwatch.getElapsedSeconds();
                     renderFrame(true);
                 }
                 return true; // to get the old behaviour back
@@ -320,6 +327,7 @@ bool DisplayUpdateController::renderUntilNextEvent(bool onlyHold)
                 // there was a skip. most likely the recording was disabled for a while,
                 // or has just been enabled for the first time
                 lastRecordedFrame = simTime();
+                currentTimes.realTime = stopwatch.getElapsedSeconds();
                 renderFrame(true);
             }
 
@@ -339,8 +347,9 @@ bool DisplayUpdateController::renderUntilNextEvent(bool onlyHold)
             else {
                 ASSERT(nextFrame >= simTime()); // this became a bit redundant, but can't hurt
                 sim->setSimTime(nextFrame);
-                renderFrame(true);
                 lastRecordedFrame = nextFrame;
+                currentTimes.realTime = stopwatch.getElapsedSeconds();
+                renderFrame(true);
             }
         }
     }
