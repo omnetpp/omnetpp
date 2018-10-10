@@ -1900,7 +1900,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
             setActivePage(activePage);
     }
 
-    private void saveState() {
+    public void saveState() {
         try {
             IFile file = getInputFile();
             if (file != null) {

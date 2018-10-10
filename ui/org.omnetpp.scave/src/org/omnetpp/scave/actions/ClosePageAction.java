@@ -29,6 +29,7 @@ public class ClosePageAction extends AbstractScaveAction {
     @Override
     protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
         int page = scaveEditor.getActivePage();
+        scaveEditor.saveState();
         scaveEditor.removePage(page);
     }
 
