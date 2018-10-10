@@ -772,5 +772,6 @@ public class ChartScriptEditor extends PyEdit {
 
     public void pageActivated() {
         scaveEditor.setSelection(new StructuredSelection(chart));
+        console.activate();
     }
 }
