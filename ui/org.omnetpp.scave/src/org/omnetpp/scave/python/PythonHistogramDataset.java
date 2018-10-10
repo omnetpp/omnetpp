@@ -77,6 +77,11 @@ public class PythonHistogramDataset implements IHistogramDataset {
     }
 
     @Override
+    public String getSeriesTitle(int series) {
+        return histograms.get(series).title;
+    }
+
+    @Override
     public boolean isIntegerType(int series) {
         return false;
     }

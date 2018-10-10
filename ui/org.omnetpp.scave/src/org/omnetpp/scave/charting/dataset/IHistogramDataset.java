@@ -22,6 +22,7 @@ public interface IHistogramDataset extends IDataset {
      * @return name of the histogram
      */
     String getSeriesKey(int series);
+    String getSeriesTitle(int series);
 
     /**
      * Returns true if integers are collected by the histogram.
@@ -105,6 +106,10 @@ public interface IHistogramDataset extends IDataset {
         }
 
         public String getSeriesKey(int series) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        public String getSeriesTitle(int series) {
             throw new IndexOutOfBoundsException();
         }
 

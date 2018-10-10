@@ -73,6 +73,10 @@ public class HistogramDataset implements IHistogramDataset {
         return histograms[series].key;
     }
 
+    public String getSeriesTitle(int series) {
+        return histograms[series].key;
+    }
+
     public boolean isIntegerType(int series) {
         return histograms[series].isIntegerType;
     }

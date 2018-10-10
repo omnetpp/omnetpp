@@ -237,7 +237,7 @@ class HistogramPlot {
         IHistogramDataset dataset = canvas.getDataset();
         IChartSymbol symbol = new SquareSymbol();
         for (int series = 0; series < dataset.getSeriesCount(); ++series) {
-            legend.addItem(getHistogramColor(series), dataset.getSeriesKey(series), symbol, false);
+            legend.addItem(getHistogramColor(series), dataset.getSeriesTitle(series), symbol, false);
         }
     }
 
@@ -250,12 +250,12 @@ class HistogramPlot {
         for (int i = 0; i < seriesAndIndeces.length; i+=2) {
             int series = seriesAndIndeces[i];
             int index = seriesAndIndeces[i+1];
-            String key = dataset.getSeriesKey(series);
+            String title = dataset.getSeriesTitle(series);
             double lowerBound = dataset.getCellLowerBound(series, index);
             double upperBound = dataset.getCellUpperBound(series, index);
             double value = getCellValue(series, index);
             boolean isIntegerType = dataset.isIntegerType(series);
-            result.append(key + "<br>");
+            result.append(title + "<br>");
             result.append("[" + toIntegerAwareString(lowerBound, isIntegerType) + ", ");
             if (isIntegerType)
                 result.append(toIntegerAwareString(upperBound - 1, isIntegerType) + "]");
