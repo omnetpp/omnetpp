@@ -303,7 +303,7 @@ class OppAccessor(object):
             }
         ]))
 
-    def plotHistograms(self, df):
+    def _plotHistograms_DF(self, df):
         for row in df.itertuples(index=False):
             if row[1] == "histogram":
 
@@ -325,6 +325,26 @@ class OppAccessor(object):
                         "values": values
                     }
                 ]))
+
+    def _plotHistograms_DF_2(self, df):
+        Gateway.chart_plotter.plotHistograms(pl.dumps([
+            {
+                "title": row[('attr', 'title')],  # row[2] + ":" + row[3],
+                "key": "-".join(row.name) + row[('attr', 'title')],  # row[2] + ":" + row[3],
+                "count": int(row[('result', 'count')]),
+                "min": float(row[('result', 'min')]),
+                "max": float(row[('result', 'max')]),
+                "edges": listToBytes(list(row[('result', 'binedges')]) + [float('inf')]),
+                "values": listToBytes(row[('result', 'binvalues')])
+            }
+            for index, row in df.iterrows()
+        ]))
+
+    def plotHistograms(self, df):
+        if "experiment" in df.index.names and "measurement" in df.index.names and "replication" in df.index.names and "module" in df.index.names and "name" in df.index.names:
+            self._plotHistograms_DF_2(df)
+        else:
+            self._plotHistograms_DF(df)
 
     def setProperty(self, key, value):
         Gateway.chart_plotter.setChartProperty(key, value)
