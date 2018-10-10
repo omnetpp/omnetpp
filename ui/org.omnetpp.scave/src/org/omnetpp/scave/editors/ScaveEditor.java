@@ -1312,24 +1312,9 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         return null;
     }
 
-    /**
-     * Returns the edited resource.
-     */
-    public Resource getResource() {
-        return editingDomain.getResourceSet().getResources().get(0);
-    }
-
-    /**
-     * Utility method: Returns the Analysis object from the resource.
-     */
     public Analysis getAnalysis() {
-        /*Resource resource = getResource();
-        System.out.println("RESOURCE IS: " + resource.getClass().getCanonicalName());
-        Analysis analysis = (Analysis)resource.getContents().get(0);
-        */
         return analysis;
     }
-
 
     public File getAnfFileDirectory() {
         IEditorInput input = getEditorInput();
@@ -1784,6 +1769,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
             return "BrowseData";
         else if (page.equals(chartsPage))
             return "Charts";
+        /*
         else {
             for (Map.Entry<EObject, Control> entry : closablePages.entrySet()) {
                 EObject object = entry.getKey();
@@ -1794,13 +1780,12 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
                     return uri != null ? uri : null;
                 }
             }
-        }
+        }*/
         return null;
     }
 
     private String getPageId(ChartScriptEditor chartScriptEditor) {
-        Resource resource = chartScriptEditor.chart.eResource();
-        return resource != null ? resource.getURIFragment(chartScriptEditor.chart) : null;
+        return Integer.toString(analysis.getCharts().getItems().indexOf(chartScriptEditor.chart));
     }
 
     FormEditorPage restorePage(String pageId) {
@@ -1828,15 +1813,8 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
             return null;
 
         EObject object = null;
-        String uri = null;
-        Resource resource = null;
-        uri = pageId;
-        resource = getResource();
 
-        try {
-            if (resource != null && uri != null)
-                object = resource.getEObject(uri);
-        } catch (Exception e) {}
+        object = analysis.getCharts().getItems().get(Integer.parseInt(pageId));
 
         if (object != null) {
             open(object);
