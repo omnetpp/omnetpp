@@ -34,6 +34,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.eclipse.core.internal.resources.Marker;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -1402,6 +1403,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
             if (activePage.gotoObject(object))
                 return;
         }
+
         int activePageIndex = -1;
         for (int pageIndex = getPageCount()-1; pageIndex >= 0; --pageIndex) {
             FormEditorPage page = getEditorPage(pageIndex);
@@ -1970,6 +1972,24 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
                 if (object instanceof EObject && chartsPage != null) {
                     gotoObject(object);
                     setSelectionToViewer(Collections.singleton(editingDomain.getWrapper(object)));
+                }
+            }
+
+            String sourceId = marker.getAttribute(IMarker.SOURCE_ID).toString();
+            boolean sourceIdIsInteger = sourceId != null && sourceId.matches("[\\d]+");
+
+            if (marker.getType().equals(IMarker.PROBLEM) && sourceIdIsInteger) {
+                int chartIndex = Integer.parseInt(sourceId);
+
+                Chart chart = (Chart)analysis.getCharts().getItems().get(chartIndex);
+
+                IEditorPart[] parts = findEditors(new ChartScriptEditorInput(chart));
+
+                for (IEditorPart part : parts) {
+                    ChartScriptEditor scriptEditor = (ChartScriptEditor)part;
+                    setActiveEditor(scriptEditor);
+                    scriptEditor.gotoMarker(marker);
+                    break;
                 }
             }
             else {

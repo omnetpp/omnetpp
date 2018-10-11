@@ -49,4 +49,9 @@ class ChartScriptEditorInput implements IEditorInput {
         return "tooltip";
     }
 
+    @Override
+    public boolean equals(Object other) {
+        return other != null && other instanceof ChartScriptEditorInput && ((ChartScriptEditorInput)other).chart == chart;
+    }
+
 }

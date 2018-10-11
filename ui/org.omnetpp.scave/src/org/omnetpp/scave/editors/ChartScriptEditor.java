@@ -588,6 +588,7 @@ public class ChartScriptEditor extends PyEdit {
             errorMarker.setAttribute(IMarker.TRANSIENT, true);
             errorMarker.setAttribute(IMarker.MESSAGE, problemMessage);
             errorMarker.setAttribute(IMarker.LINE_NUMBER, line);
+            errorMarker.setAttribute(IMarker.SOURCE_ID, Integer.toString(scaveEditor.getAnalysis().getCharts().getItems().indexOf(chart)));
 
             errorMarkerAnnotation = new MarkerAnnotation(errorMarker);
             documentProvider.annotationModel.addAnnotation(errorMarkerAnnotation, new Position(offset, length));
@@ -641,6 +642,12 @@ public class ChartScriptEditor extends PyEdit {
 
         Position pos = documentProvider.annotationModel.getPosition(errorMarkerAnnotation);
         getSourceViewer().revealRange(pos.offset, pos.length);
+    }
+
+    public void gotoErrorAnnotation() {
+        revealErrorAnnotation();
+        Position pos = documentProvider.annotationModel.getPosition(errorMarkerAnnotation);
+        getSourceViewer().setSelectedRange(pos.offset, 0);
     }
 
     public boolean isSourceShown() {
@@ -773,5 +780,10 @@ public class ChartScriptEditor extends PyEdit {
     public void pageActivated() {
         scaveEditor.setSelection(new StructuredSelection(chart));
         console.activate();
+    }
+
+    public void gotoMarker(IMarker marker) {
+        Assert.isTrue(this.errorMarker.equals(marker));
+        gotoErrorAnnotation();
     }
 }
