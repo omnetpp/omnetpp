@@ -55,6 +55,7 @@ public class PythonProcess {
         if (!ok) {
             entryPoint = null;
             System.out.println("Couldn't get the entry point to the Python process... :(");
+            System.out.println("Python said:" + outputMonitoringThread.outputSoFar);
         }
 
         return entryPoint;
