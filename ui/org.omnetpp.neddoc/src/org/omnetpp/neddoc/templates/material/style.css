@@ -10,23 +10,16 @@ body, table, div, p, dl {
     font-size: 1.1rem;
 }
 
-div.contents {
-    margin-top: 10px;
-    margin-left: 12px;
-    margin-right: 8px;
+#doc-content {
+    overflow:auto;
+    display:block;
+    padding:0px;
+    margin: 12px;
+    -webkit-overflow-scrolling : touch; /* iOS 5+ */
 }
 
-a {
-    color: #3D578C;
-    font-weight: normal;
-    text-decoration: none;
-}
-
-a:hover {
-    text-decoration: underline;
-}
-
-.drawer { background-color: white; }
+a { color: #3D578C; font-weight: normal; text-decoration: none; }
+a:hover { text-decoration: underline; }
 
 img { border:none }
 
@@ -63,6 +56,7 @@ pre.src {
     border-radius: 4px;
     border-color:#a0a0a0;
     line-height: 1.3em;
+    overflow-x: auto;
 }
 .src-keyword { font-weight:bold }
 .src-comment { font-style:italic; color:#404040 }
@@ -94,13 +88,8 @@ pre.src {
 .reference-msg { color: purple; }
 
 /************************ styles for navigation tree **********************/
-#doc-content {
-    overflow:auto;
-    display:block;
-    padding:0px;
-    margin:0px;
-    -webkit-overflow-scrolling : touch; /* iOS 5+ */
-  }
+
+.drawer { background-color: white; overflow: hidden; }
 
 .arrow {
     color: #9CAFD4;
@@ -112,7 +101,7 @@ pre.src {
     cursor: pointer;
     font-size: 80%;
     display: inline-block;
-    width: 16px;
+    width: 24px;
     height: 20px;
 }
 
@@ -121,16 +110,20 @@ pre.src {
     display:block;
     position: absolute;
     left: 0px;
-    width: 100%;
     padding-top: 0px;
+    width: 100%;
+    height: 100%;
 }
 
 #nav-tree {
-    margin: 6px;
-    padding: 0px;
-    overflow:auto;
     -webkit-overflow-scrolling : touch; /* iOS 5+ */
+    overflow: auto; /* nav-tree MUST be scrollable for auto-reveal to work */
+    height: 100%;
 }
+
+#nav-tree::-webkit-scrollbar, pre.src::-webkit-scrollbar { width: 4px; height: 4px; }
+#nav-tree::-webkit-scrollbar-track, pre.src::-webkit-scrollbar-track { background:#00000020; }
+#nav-tree::-webkit-scrollbar-thumb, pre.src::-webkit-scrollbar-thumb { background: #00000040; }
 
 #nav-tree .children_ul {
     margin:0;
@@ -202,7 +195,6 @@ pre.src {
 #nav-sync {
     position:absolute;
     cursor: pointer;
-    top: 4px;
     right: 8px;
     z-index: 0;
 }

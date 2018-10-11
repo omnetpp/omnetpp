@@ -222,7 +222,7 @@ public class DocumentationGenerator {
     protected IPath neddocRelativeRootPath;
     protected IPath customCssPath;
     protected IProject project;
-    protected String template = "doxy";
+    protected String template = "material";
     protected INedResources nedResources;
     protected MsgResources msgResources;
     protected IProgressMonitor monitor;
@@ -770,7 +770,6 @@ public class DocumentationGenerator {
     }
 
     protected void copyJavaScript() throws Exception {
-        copyFileFromResource("dynsections.js");
         copyFileFromResource("jquery.js");
         copyFileFromResource("navtree.js");
         copyFileFromResource("material.min.js");

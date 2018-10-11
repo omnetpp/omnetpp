@@ -98,7 +98,7 @@ function createIndent(o,domNode,node,level)
   if (node.childrenData) {
     var imgNode = document.createElement("i");
     imgNode.className = 'material-icons';
-    imgNode.style.paddingLeft=(16*level).toString()+'px';
+    imgNode.style.paddingLeft=(12*level).toString()+'px';
     imgNode.innerHTML=arrowRight;
     node.plus_img = imgNode;
     node.expandToggle = document.createElement("a");
@@ -117,7 +117,7 @@ function createIndent(o,domNode,node,level)
   } else {
     var span = document.createElement("span");
     span.className = 'arrow';
-    span.style.width   = 16*(level+1)+'px';
+    span.style.width   = (24+12*level)+'px';
     span.innerHTML = '&#160;';
     domNode.appendChild(span);
   }
@@ -239,6 +239,7 @@ function showRoot()
   var headerHeight = $("#top").height();
   var footerHeight = $("#nav-path").height();
   var windowHeight = $(window).height() - headerHeight - footerHeight;
+
   (function (){ // retry until we can scroll to the selected item
     try {
       var navtree=$('#nav-tree');
