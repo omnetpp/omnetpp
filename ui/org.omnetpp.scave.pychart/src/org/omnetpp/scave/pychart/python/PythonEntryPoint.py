@@ -17,14 +17,10 @@ import chart
 import Gateway
 
 try:
-    import numpy as np
     import matplotlib as mpl
-
     mpl.use('module://backend_SWTAgg')
 
     import pandas as pd
-    import matplotlib.pyplot as plt
-
     pd.set_option("display.width", 500)
     pd.set_option("display.max_columns", 20)
     pd.set_option("display.max_colwidth", 50)
@@ -34,27 +30,8 @@ except ImportError as e:
     print("can't import " + e.name)
     sys.exit(1)
 
-try:
-    import prettyplotlib as ppl
-except ImportError:
-    ppl = None
-
-try:
-    import seaborn as sbs
-except ImportError:
-    sbs = None
-
-# optionally import scipy as well?
-
-# adding some modules as implicit imports for chart scripts
 # the print function is replaced so it will flush after each line
 execContext = {
-    "np": np,
-    "pd": pd,
-    "mpl": mpl,
-    "plt" : plt,
-    "ppl": ppl,
-    "sbs": sbs,
     "print": print
 }
 
