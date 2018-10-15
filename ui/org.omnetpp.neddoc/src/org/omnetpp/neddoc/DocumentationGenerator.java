@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -152,35 +152,6 @@ import org.w3c.dom.NodeList;
  */
 @SuppressWarnings("restriction")
 public class DocumentationGenerator {
-    // Watermark images. We don't load them from the jar file -- that would
-    // make them a little too easy to get rid of.  --Andras
-    private static final Image CC16_IMAGE = createImage(
-            "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAA" +
-            "AARnQU1BAACxjwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAA" +
-            "OpgAABdwnLpRPAAAAAlwSFlzAAAOwwAADsMBx2+oZAAAABh0RVh0U29mdHdhcmUA" +
-            "UGFpbnQuTkVUIHYzLjM2qefiJQAAAVRJREFUOE+1ks8rRFEUx8ePaMSKEBmlsbKy" +
-            "YGHB3oKY/4CaPRuUlY0ov1JsbITmD6CwmIxomlLTbBQlMsjGjo2ifL46T7fpvXkr" +
-            "tz6de8/5vvPOvedEIv+wKsk5AjtwZmg/CoqVXZ1Ec/ABBzALM7AP73AF8aAM7QQe" +
-            "4QRafETN+A7hFbr8kujDDNSUqbGa2DFcQIWr6+fwBd3mbLJSPZGqi1msA/sJg26C" +
-            "BQ5pc4xj36AAezBtZd9i501zil10E+jBNsxxjp2DKmiEFxiDeqgzzTo25SbY5bBl" +
-            "Dt1x1cTD2DtIQhsMmGbTqvvLoVbl7dSHvYFnmAL1vwj3kDDNJda7zq9LvdUjDrll" +
-            "Bex78X9DT2l8G8eDlRqUR925Li3fE0fZaHRVrkbZ7bP2eg9dIwsNQX+oJbAC6vMT" +
-            "HIGmT0nlWwP9KHS1opiEZViCCfAb79BEoYIfHho+6oefKLwAAAAASUVORK5CYII=");
-    private static final Image CC20_IMAGE = createImage(
-            "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAA" +
-            "AARnQU1BAACxjwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAA" +
-            "OpgAABdwnLpRPAAAAAlwSFlzAAAOwwAADsMBx2+oZAAAABh0RVh0U29mdHdhcmUA" +
-            "UGFpbnQuTkVUIHYzLjM2qefiJQAAAcRJREFUOE+9lEso5XEUx5E8IjXIBjGxmZFx" +
-            "JY+yMhvZ6E5iSmMzZeOxGGSpPHayp2xs2GClmUlkJaVEYkGjbGi8kijk+fnWubdf" +
-            "13XvRTn16fzu93fO+T3u+f2jot7ZslnvO3QYDXhpL7YiMv7CPTwEIG0WSiKt+pPA" +
-            "aziBfiiDNEiFUuiFY7iB9nBFG21XC/iMEMHpdgLtvuW5uFwmLmAJEsOtzHwczNlp" +
-            "PgeLH0W8grwIivlCMm0TE4E5CQjnMGYT0XaUGbwWygfF6P5+wxDoTmXDcAlJbtFy" +
-            "fug+6k3UvdxBH6joiCWe4rtgGVot1mu5lW7Bbyb6WuEPv1csIMb8Hl67lfk0jYst" +
-            "t84tWGtihYnT+B1LVMtkwT+YsvmP+BQbq5V0Ou3UbwUmNptSjVefLcI2jINei5pa" +
-            "uz+Abov9Ybket6COoCPNO+IXxr9A9xprehW+E746cZOMj5wY/1SPrVTjrhRmrFd0" +
-            "C4PB4pIRdU+H8CmCojnE7MI++FroSVohit6w0FdG/Rho0rzwH85ALRfS9Iw2Qf/c" +
-            "BgxAk6GPxbrNbeH1VYrI4olqgzVwP2Ear9qcXs6rTPfjsd18eFWFtyQ9Ar+WYlGW" +
-            "Qvp8AAAAAElFTkSuQmCC");
     private static final boolean APPLY_CC = !IConstants.IS_COMMERCIAL;
 
     private static final Pattern pageSeparatorPattern = Pattern.compile("(?m)^//[ \t]*(@page|@titlepage)(.*?)$");
@@ -231,13 +202,13 @@ public class DocumentationGenerator {
 
     protected List<IFile> files = new ArrayList<IFile>();
     protected List<ITypeElement> typeElements = new ArrayList<ITypeElement>();
-    protected Map<ITypeElement, ArrayList<ITypeElement>> subtypesMap = new HashMap<ITypeElement, ArrayList<ITypeElement>>();
-    protected Map<INedTypeElement, ArrayList<INedTypeElement>> implementorsMap = new HashMap<INedTypeElement, ArrayList<INedTypeElement>>();
-    protected Map<ITypeElement, ArrayList<ITypeElement>> usersMap = new HashMap<ITypeElement, ArrayList<ITypeElement>>();
-    protected Map<String, List<ITypeElement>> typeNamesMap = new HashMap<String, List<ITypeElement>>();
-    protected Map<String, String> doxyMap = new HashMap<String, String>();
-    protected Map<INedElement, String> commentCache = new HashMap<INedElement, String>();
-    protected Map<File, String> includedFileCache = new HashMap<File,String>();
+    protected Map<ITypeElement, ArrayList<ITypeElement>> subtypesMap = new LinkedHashMap<ITypeElement, ArrayList<ITypeElement>>();
+    protected Map<INedTypeElement, ArrayList<INedTypeElement>> implementorsMap = new LinkedHashMap<INedTypeElement, ArrayList<INedTypeElement>>();
+    protected Map<ITypeElement, ArrayList<ITypeElement>> usersMap = new LinkedHashMap<ITypeElement, ArrayList<ITypeElement>>();
+    protected Map<String, List<ITypeElement>> typeNamesMap = new LinkedHashMap<String, List<ITypeElement>>();
+    protected Map<String, String> doxyMap = new LinkedHashMap<String, String>();
+    protected Map<INedElement, String> commentCache = new LinkedHashMap<INedElement, String>();
+    protected Map<File, String> includedFileCache = new LinkedHashMap<File,String>();
     protected Pattern possibleTypeReferencesPattern;
 
     protected ArrayList<String> packageNames;
@@ -348,9 +319,7 @@ public class DocumentationGenerator {
                     collectCaches();
                     generateDoxy();
                     collectDoxyMap();
-                    copyIcons();
-                    copyCSS();
-                    copyJavaScript();
+                    copyStaticResources(customCssPath);
                     generateNavTreeData();
                     generateNavTreeIndex();
                     generateNedTypeFigures();
@@ -507,7 +476,7 @@ public class DocumentationGenerator {
 
     protected void collectPackageNames() {
         monitor.subTask("Collecting package names");
-        Set<String> packageNames = new HashSet<String>();
+        Set<String> packageNames = new LinkedHashSet<String>();
 
         for (ITypeElement typeElement : typeElements)
             if (typeElement instanceof INedTypeElement)
@@ -697,6 +666,43 @@ public class DocumentationGenerator {
         }
     }
 
+    protected String readTextFromResource(final String resourcePath) throws Exception {
+        InputStream stream = getClass().getResourceAsStream("templates/" + template + "/" + resourcePath);
+        if (stream == null)
+            throw new RuntimeException("Resource not found: " + resourcePath);
+        return  new String(FileUtils.readBinaryFile(stream));
+    }
+
+    protected void generatePage(String pageName, String title, final String content) throws Exception {
+        generatePage(pageName, title, () -> {
+                out(content);
+            }
+        );
+    }
+
+    protected void generatePage(String pageName, String title, Runnable content) throws Exception {
+        FileOutputStream oldCurrentOutputStream = currentOutputStream;
+
+        File file = getOutputFile(addExtension(pageName));
+        currentOutputStream = new FileOutputStream(file);
+
+        String splitPage[] = readTextFromResource("page.tmpl").replace("@title@", title).split("@content@");
+        if (splitPage.length != 2)
+            throw new RuntimeException("page.tmpl must contain exactly one @content@ placeholder ");
+
+        out(splitPage[0]);
+        content.run();
+
+        if (APPLY_CC)
+            out(ccFooterString());
+
+
+        out(splitPage[1]);
+
+        currentOutputStream.close();
+        currentOutputStream = oldCurrentOutputStream;
+    }
+
     protected String processHTMLContent(String clazz, String comment) {
         return NedCommentFormatter.makeHtmlDocu(comment, clazz.equals("briefcomment"), generateExplicitLinksOnly, new INeddocProcessor() {
             public String process(String comment) {
@@ -720,17 +726,17 @@ public class DocumentationGenerator {
                     prefix = prefix.substring(0, prefix.length() / 2);
 
                     if (typeElements == null) {
-                        return prefix + "<span class=\"error\" title=\"Unresolved link\">" + identifier + "</span>";
+                        return prefix + spanTag(identifier, "error", null);
                     }
                     else if (typeElements.size() == 1) {
-                        return prefix + "<a href=\"" + getOutputFileName(typeElements.get(0)) + "\">" + typeElements.get(0).getName() + "</a>"; // use simple name in hyperlink
+                        return prefix + refTag(typeElements.get(0).getName(), addExtension(getOutputBaseFileName(typeElements.get(0))), null); // use simple name in hyperlink
                     }
                     else {
                         // several types with the same simple name
                         String replacement = prefix + typeElements.get(0).getName() + "(";
                         int i = 1;
                         for (ITypeElement typeElement : typeElements)
-                            replacement += "<a href=\"" + getOutputFileName(typeElement) + "\">" + (i++) + "</a>" + ",";
+                            replacement += refTag(String.valueOf(i++), addExtension(getOutputBaseFileName(typeElement)), null) + ",";
                         replacement = replacement.substring(0, replacement.length()-1) + ")";
                         return replacement;
                     }
@@ -739,72 +745,6 @@ public class DocumentationGenerator {
                     return null;
             }
         });
-    }
-
-    protected void copyFileFromResource(String resourceName) throws Exception {
-        copyFileFromResource(resourceName, resourceName);
-    }
-
-    protected void copyFileFromResource(final String resourcePath, String fileName) throws Exception {
-        InputStream stream = getClass().getResourceAsStream("templates/" + template +"/" + resourcePath);
-        if (stream == null)
-            throw new RuntimeException("Resource not found: " + resourcePath);
-        FileUtils.copy(stream, getOutputFile(fileName));
-    }
-
-    protected String readTextFromResource(final String resourcePath) throws Exception {
-        InputStream stream = getClass().getResourceAsStream("templates/" + template + "/" + resourcePath);
-        if (stream == null)
-            throw new RuntimeException("Resource not found: " + resourcePath);
-        return  new String(FileUtils.readBinaryFile(stream));
-    }
-
-    protected void copyCSS() throws Exception {
-        if (customCssPath == null)
-            copyFileFromResource("style.css");
-        else
-            FileUtils.copy(new FileInputStream(customCssPath.toPortableString()), getOutputFile("style.css"));
-        copyFileFromResource("material.blue-light_blue.min.css");
-        copyFileFromResource("material-icons.css");
-
-    }
-
-    protected void copyJavaScript() throws Exception {
-        copyFileFromResource("jquery.js");
-        copyFileFromResource("navtree.js");
-        copyFileFromResource("material.min.js");
-    }
-
-    protected void generatePage(String fileName, String title, final String content) throws Exception {
-        generatePage(fileName, title, () -> {
-                out(content);
-            }
-        );
-    }
-
-    protected void generatePage(String fileName, String title, Runnable content) throws Exception {
-        FileOutputStream oldCurrentOutputStream = currentOutputStream;
-
-        File file = getOutputFile(fileName);
-        currentOutputStream = new FileOutputStream(file);
-
-        String splitPage[] = readTextFromResource("page.tmpl").replace("@title@", title).split("@content@");
-        if (splitPage.length != 2)
-            throw new RuntimeException("page.tmpl must contain exactly one @content@ placeholder ");
-
-        out(splitPage[0]);
-        content.run();
-
-        if (APPLY_CC) {
-            String atag = "<a href=\"http://creativecommons.org/licenses/by-sa/3.0\" target=\"_top\">";
-            out("   <hr><p class=\"footer\">"+atag+"<img src=\"by-sa.svg\"></a>" +
-                " This documentation is released under the "+atag+"Creative Commons license</a></p>\n");
-        }
-
-        out(splitPage[1]);
-
-        currentOutputStream.close();
-        currentOutputStream = oldCurrentOutputStream;
     }
 
     protected void generateNavigationTree(String fileName, Runnable content) throws Exception {
@@ -827,7 +767,7 @@ public class DocumentationGenerator {
 
     protected void generateProjectIndexReference(IProject project) throws Exception {
         String projectName = project.getName();
-        IPath indexPath = new Path("..").append(neddocRelativeRootPath).append(projectName).append(DocumentationGeneratorPropertyPage.getNeddocPath(project)).append("index.html");
+        IPath indexPath = new Path("..").append(neddocRelativeRootPath).append(projectName).append(DocumentationGeneratorPropertyPage.getNeddocPath(project)).append(addExtension("index"));
         generateNavigationMenuItem(1, projectName, indexPath.toPortableString(), null);
     }
 
@@ -845,15 +785,15 @@ public class DocumentationGenerator {
         generateProjectIndexReferences("Referencing Projects", project.getReferencingProjects());
     }
 
-    protected void generatePackageReference(String packageName) throws IOException {
-        out("Package: <a class=\"reference-ned\" href=\"packages.html#" + packageName.replace('.', '_') + "\">" + packageName + "</a>");
+    protected String packageReferenceString(String packageName) throws IOException {
+        return "Package: " + refTag(packageName, addExtension("packages") + "#" + packageName.replace('.', '_'), "reference-ned");
     }
 
     protected void generatePackageIndex() throws Exception {
         if (packageNames.size() != 0)
-            generateNavigationMenuItem(1, "Packages", "packages.html", () -> {
+            generateNavigationMenuItem(1, "Packages", addExtension("packages"), () -> {
                     for (String packageName : packageNames) {
-                        generateTypeIndex(2, packageName, "packages.html#"+packageName.replace('.', '_'), (object) -> {
+                        generateTypeIndex(2, packageName, addExtension("packages")+"#"+packageName.replace('.', '_'), (object) -> {
                             if (object instanceof INedTypeElement)
                                 return getPackageName((INedTypeElement)object).equals(packageName);
 
@@ -868,7 +808,7 @@ public class DocumentationGenerator {
         if (files.size() != 0)
             generateNavigationMenuItem(1, "Files", null, () -> {
                     for (IFile file : files)
-                        generateNavigationMenuItem(2, file.getProjectRelativePath().toPortableString(), getOutputFileName(file), null);
+                        generateNavigationMenuItem(2, file.getProjectRelativePath().toPortableString(), addExtension(getOutputBaseNameForFile(file)), null);
                 }
             );
     }
@@ -878,7 +818,7 @@ public class DocumentationGenerator {
             monitor.beginTask("Generating navigation tree...", IProgressMonitor.UNKNOWN);
 
             generateNavigationTree("navtreedata.js", () -> {
-                    generateNavigationMenuItem(0, project.getName(), "index.html", () -> {
+                    generateNavigationMenuItem(0, project.getName(), addExtension("index"), () -> {
 
                         generateOverview();
                         generateSelectedTopics();
@@ -936,11 +876,6 @@ public class DocumentationGenerator {
         currentOutputStream = oldCurrentOutputStream;
     }
 
-    protected void copyIcons() throws Exception {
-        copyFileFromResource("by-sa.svg");
-        copyFileFromResource("material-icons.woff2");
-    }
-
     protected void generateNavigationMenuItem(int level, String title, String url, Runnable content) throws Exception {
         // reset the index for the current level if we are now deeper in the level hierarchy than last time
         if (previousLevel < level)
@@ -979,27 +914,27 @@ public class DocumentationGenerator {
     private void generateCppIndex() throws Exception {
         if (isCppProject(project) && generateDoxy)
             generateNavigationMenuItem(1, "C++", null, () -> {
-                    generateCppMenuItem("Main Page", "main.html");
-                    generateCppMenuItem("File List", "files.html");
-                    generateCppMenuItem("Class List", "annotated.html");
-                    generateCppMenuItem("Class Hierarchy", "hierarchy.html");
-                    generateCppMenuItem("Class Members", "functions.html");
-                    generateCppMenuItem("Namespace List", "namespaces.html");
-                    generateCppMenuItem("File Members", "globals.html");
-                    generateCppMenuItem("Namespace Members", "namespacemembers.html");
+                    generateCppMenuItem("Main Page", addExtension("main"));
+                    generateCppMenuItem("File List", addExtension("files"));
+                    generateCppMenuItem("Class List", addExtension("annotated"));
+                    generateCppMenuItem("Class Hierarchy", addExtension("hierarchy"));
+                    generateCppMenuItem("Class Members", addExtension("functions"));
+                    generateCppMenuItem("Namespace List", addExtension("namespaces"));
+                    generateCppMenuItem("File Members", addExtension("globals"));
+                    generateCppMenuItem("Namespace Members", addExtension("namespacemembers"));
                 }
             );
     }
 
     protected void generateOverview() throws Exception {
-        generateNavigationMenuItem(1, "Overview", "index.html", null);
+        generateNavigationMenuItem(1, "Overview", addExtension("index"), null);
         final boolean[] titlePageFound = new boolean[1];
         mapPageMatchers(new IPageMatcherVisitor() {
         public boolean visit(PageType pageType, String file, String title, String content) throws Exception {
             if (pageType == PageType.TITLE_PAGE && content.length() > 0) {
                     titlePageFound[0] = true;
-                    generatePage("index.html", "Overview",
-                        processHTMLContent("comment", content + "<hr/>\n" + "<p>Generated by neddoc.</p>\n"));
+                    generatePage("index", "Overview",
+                        processHTMLContent("comment", content ));
                     return false;
                 }
                 else
@@ -1008,16 +943,7 @@ public class DocumentationGenerator {
         });
         // generate default if @titlepage not found
         if (!titlePageFound[0])
-            generatePage("index.html", "Overview",
-                "<center><h1 class=\"mdl-color-text--primary\">OMNeT++ Model Documentation</h1></center>\n" +
-                "<center><i>Generated from NED and MSG files</i></center>\n" +
-                "<p>This documentation has been generated from NED and MSG files.</p>\n" +
-                "<p>Use the links in the left frame to navigate around.</p>\n" +
-                "<p>Hint for model developers: if you don\'t like this page, try creating\n" +
-                "a <tt>package.ned</tt> file with the <tt>@titlepage</tt> directive\n" +
-                "embedded in a comment.</p>\n" +
-                "<hr/>\n" +
-                "<p>Generated by neddoc.</p>\n");
+            generatePage("index", "Overview", defaultOverviewString());
     }
 
     protected void generateSelectedTopics() throws Exception {
@@ -1040,7 +966,7 @@ public class DocumentationGenerator {
                             if (pageType == PageType.PAGE) {
                                 generateNavigationMenuItem(2, title, file, null);
                                 generatePage(file, title,
-                                        "<h2 class=\"mdl-color-text--primary\">" + title + "</h2>" + processHTMLContent("comment", content));
+                                        sectionTag("title", null) + processHTMLContent("comment", content));
 
                             }
                             else if (pageType == PageType.EXTERNAL_PAGE) {
@@ -1178,7 +1104,7 @@ public class DocumentationGenerator {
     }
 
     protected void generateTypeIndexEntry(int level, ITypeElement typeElement) throws Exception {
-        generateNavigationMenuItem(level, typeElement.getName(), getOutputFileName(typeElement), null);
+        generateNavigationMenuItem(level, typeElement.getName(), addExtension(getOutputBaseFileName(typeElement)), null);
     }
 
     protected void generateTypeIndex(int level, String title, final Class<?> clazz) throws Exception {
@@ -1217,7 +1143,7 @@ public class DocumentationGenerator {
                 out("  <compound kind=\"class\">\n");
                 String pkgname = getPackageName(e);
                 out("    <name>"+ (("default".equals(pkgname)) ? "" : pkgname+".") +e.getName()+"</name>\n");
-                out("    <filename>"+getOutputFileName(e)+"</filename>\n");
+                out("    <filename>"+addExtension(getOutputBaseFileName(e))+"</filename>\n");
                 out("  </compound>\n");
             }
         out("</tagfile>\n");
@@ -1237,7 +1163,7 @@ public class DocumentationGenerator {
             if (typeElement instanceof IMsgTypeElement){
                 out("  <compound kind=\"class\">\n");
                 out("    <name>"+ typeElement.getName()+"</name>\n");
-                out("    <filename>"+getOutputFileName(typeElement)+"</filename>\n");
+                out("    <filename>"+addExtension(getOutputBaseFileName(typeElement))+"</filename>\n");
                 out("  </compound>\n");
             }
         out("</tagfile>\n");
@@ -1247,12 +1173,13 @@ public class DocumentationGenerator {
     }
 
     protected void generatePackagesPage() throws Exception {
-        generatePage("packages.html", "Packages", () -> {
-            out("<h2 class=\"mdl-color-text--primary comptitle\">Packages</h2>\n");
+        generatePage("packages", "Packages", () -> {
+            out(sectionTag("Packages", "comptitle"));
             for (final String packageName : packageNames) {
-                        out("<h2 class=\"mdl-color-text--primary subtitle\" id=\"" + packageName.replace('.', '_') + "\">" + packageName + "</h2>\n");
+                        out(anchorTag(packageName.replace('.', '_')));
+                        out(sectionTag(packageName, "subtitle"));
 
-                        out("<table class=\"typestable\">\n");
+                        out(tableHeaderTag("typestable"));
                         generateTypesTableHead();
 
                         for (ITypeElement typeElement : typeElements)
@@ -1260,7 +1187,7 @@ public class DocumentationGenerator {
                                 if (packageName.equals(getPackageName((INedTypeElement)typeElement)))
                                     generateTypeReferenceLine(typeElement);
 
-                        out("</table>\n");
+                        out(tableTrailerTag());
                     }
             }
         );
@@ -1271,24 +1198,24 @@ public class DocumentationGenerator {
             monitor.beginTask("Generating file pages...", files.size());
 
             for (final IFile file : files) {
-                generatePage(getOutputFileName(file), file.getName(), () -> {
+                generatePage(getOutputBaseNameForFile(file), file.getName(), () -> {
                         monitor.subTask(file.getFullPath().toString());
                         String fileType = nedResources.isNedFile(file) ? "NED" : msgResources.isMsgFile(file) ? "Msg" : "";
 
-                        out("<h2 class=\"mdl-color-text--primary comptitle\" >" + fileType + " File <i>" + file.getProjectRelativePath() + "</i></h2>\n");
+                        out(sectionTag(fileType + " File " + file.getProjectRelativePath(), "comptitle"));
 
                         INedFileElement fileElement = msgResources.isMsgFile(file) ?
                                 msgResources.getMsgFileElement(file) : nedResources.getNedFileElement(file);
                         List<? extends ITypeElement> typeElements = fileElement.getTopLevelTypeNodes();
 
                         if (!typeElements.isEmpty()) {
-                            out("<table class=\"typestable\">\n");
+                            out(tableHeaderTag("typestable"));
                             generateTypesTableHead();
 
                             for (ITypeElement typeElement : typeElements)
                                 generateTypeReferenceLine(typeElement);
 
-                            out("</table>\n");
+                            out(tableTrailerTag());
                         }
 
                         generateSourceContent(file);
@@ -1307,40 +1234,21 @@ public class DocumentationGenerator {
             monitor.beginTask("Generating NED type pages...", typeElements.size());
 
             for (final ITypeElement typeElement : typeElements) {
-                generatePage(getOutputFileName(typeElement), typeElement.getName(), () -> {
+                generatePage(getOutputBaseFileName(typeElement), typeElement.getName(), () -> {
                         boolean isNedTypeElement = typeElement instanceof INedTypeElement;
                         boolean isMsgTypeElement = typeElement instanceof IMsgTypeElement;
 
-                        if (isNedTypeElement) {
-                            generatePackageReference(getPackageName((INedTypeElement)typeElement));
-                            out("<br/>");
-                        }
-                        out("<h2 class=\"mdl-color-text--primary comptitle\" style=\"float: left;\">" + typeElement.getName() + "</h2>\n");
+                        if (isNedTypeElement)
+                            out(pTag(packageReferenceString(getPackageName((INedTypeElement)typeElement))));
 
-                        // show a colored type label
-                        String typeLabel = typeElement.getReadableTagName();
-                        String color = "#dedede";
-                        if ("simple module".equals(typeLabel))
-                            color = "#ff000040";
-                        else if ("compound module".equals(typeLabel))
-                            color = "#00ff0040";
-                        else if ("network".equals(typeLabel))
-                            color = "#2196f340";
-                        else if ("channel".equals(typeLabel))
-                            color = "#ffca0080";
-                        else if (typeLabel.contains("interface"))
-                            color = "#00e5ff40";
-
-                        out("<span class=\"mdl-chip\" style=\"float: right; margin-top: 6pt; background-color: "+color+";\">\n" +
-                                "    <span class=\"mdl-chip__text\">"+ typeElement.getReadableTagName() +"</span>\n" +
-                                "</span><div style=\"clear: both;\"/>");
+                        out(typeSectionTag(typeElement));
 
                         if (typeElement instanceof SimpleModuleElementEx || typeElement instanceof IMsgTypeElement)
                             generateNedTypeCppDefinitionReference(typeElement);
 
                         String comment = getExpandedComment(typeElement);
                         if (comment == null)
-                            out("<p>(no description)</p>");
+                            out(pTag("(no description)"));
                         else
                             out(processHTMLContent("comment", comment));
 
@@ -1382,7 +1290,6 @@ public class DocumentationGenerator {
                                 generateBuiltinTypeReference();
                             else
                                 generateFileReference(getNedOrMsgFile(typeElement));
-                            out("<br/>");
                         }
 
 
@@ -1400,37 +1307,24 @@ public class DocumentationGenerator {
         Map<String, FieldElement> fields = msgTypeElement.getMsgTypeInfo().getFields();
         Map<String, FieldElement> localFields = msgTypeElement.getMsgTypeInfo().getLocalFields();
         if (fields.size() != 0) {
-            out("<h3 class=\"mdl-color-text--primary subtitle\">Fields</h3>\n" +
-                "<table class=\"fieldstable\">\n" +
-                "   <tr>\n" +
-                "      <th class=\"name\">Name</th>\n" +
-                "      <th class=\"type\">Type</th>\n" +
-                "      <th class=\"description\">Description</th>\n" +
-                "   </tr>\n");
+            out(subSectionTag("Fields", "subtitle") +
+                tableHeaderTag("fieldstable") +
+                tableHeaderRowTag("Name","name", "Type","type", "Description","description"));
+
             for (String name : fields.keySet())
             {
                 FieldElement field = fields.get(name);
-                String trClass = localFields.containsKey(name) ? "local" : "inherited";
-                out("<tr class=\"" + trClass + "\">\n" +
-                    "   <td>" + name + "</td>\n" +
-                    "   <td>\n" +
-                    "      <i>\n");
                 String dataType = field.getDataType();
                 IMsgTypeElement fieldTypeElement = msgResources.lookupMsgType(dataType);
-                if (fieldTypeElement != null)
-                    generateTypeReference(fieldTypeElement);
-                else
-                    out(dataType);
+
+                String trClass = localFields.containsKey(name) ? "local" : "inherited";
+                String type = (fieldTypeElement != null) ? typeReferenceString(fieldTypeElement) : dataType;
                 if (field.getIsVector())
-                    out("[" + field.getVectorSize() + "]"); // note: no whitespace between type name and "["
-                out("</i>\n" +
-                    "   </td>\n" +
-                    "   <td>");
-                generateTableComment(getExpandedComment(field));
-                out("</td>\n" +
-                    "</tr>\n");
+                    type += "[" + field.getVectorSize() + "]"; // note: no whitespace between type name and "["
+
+                out(tableDataRowTag(trClass, name, type, tableCommentString(getExpandedComment(field))));
             }
-            out("</table>\n");
+            out(tableTrailerTag());
         }
     }
 
@@ -1438,42 +1332,31 @@ public class DocumentationGenerator {
         Map<String, Map<String, PropertyElementEx>> properties = typeElement.getProperties();
 
         if (properties.size() != 0) {
-            out("<h3 class=\"mdl-color-text--primary subtitle\">Properties</h3>\n" +
-                "<table class=\"propertiestable\">\n" +
-                "   <tr>\n" +
-                "      <th class=\"name\">Name</th>\n" +
-                "      <th class=\"value\">Value</th>\n" +
-                "      <th class=\"description\">Description</th>\n" +
-                "   </tr>\n");
+            out(subSectionTag("Properties", "subtitle")+
+                tableHeaderTag("propertiestable") +
+                tableHeaderRowTag("Name","name", "Value","value", "Description","description"));
 
             for (String name : properties.keySet())
             {
                 PropertyElementEx property = properties.get(name).get(PropertyElementEx.DEFAULT_PROPERTY_INDEX);
 
-                if (property != null) {
-                    out("<tr>\n" +
-                        "   <td>" + name + "</td>\n" +
-                        "   <td><i>");
-                    generatePropertyLiteralValues(property);
-                    out("</i></td>\n" +
-                        "   <td>");
-                    generateTableComment(getExpandedComment(property));
-                    out("</td>\n" +
-                        "</tr>\n");
-                }
+                if (property != null)
+                    out(tableDataRowTag(null, name, propertyLiteralValuesString(property), tableCommentString(getExpandedComment(property))));
             }
 
-            out("</table>\n");
+            out(tableTrailerTag());
         }
     }
 
-    protected void generatePropertyLiteralValues(PropertyElementEx property) throws IOException {
+    protected String propertyLiteralValuesString(PropertyElementEx property) {
+        String result = "";
         for (PropertyKeyElement key = property.getFirstPropertyKeyChild(); key != null; key = key.getNextPropertyKeySibling()) {
-            out(key.getFirstLiteralChild().getValue());
+            result += key.getFirstLiteralChild().getValue();
 
             if (key.getNextPropertyKeySibling() != null)
-                out(",");
+                result += ",";
         }
+        return result;
     }
 
     protected void generateUsedInTables(INedTypeElement typeElement) throws IOException {
@@ -1493,27 +1376,27 @@ public class DocumentationGenerator {
             }
 
             if (compoundModules.size() != 0) {
-                out("<h3 class=\"mdl-color-text--primary subtitle\">Used in compound modules</h3>\n");
+                out(subSectionTag("Used in compound modules", "subtitle"));
 
-                out("<table class=\"typestable\">\n");
+                out(tableHeaderTag("typestable"));
                 generateTypesTableHead();
 
                 for (INedTypeElement userElement : compoundModules)
                     generateTypeReferenceLine(userElement);
 
-                out("</table>\n");
+                out(tableTrailerTag());
             }
 
             if (networks.size() != 0) {
-                out("<h3 class=\"mdl-color-text--primary subtitle\">Used in</h3>\n");
+                out(subSectionTag("Used in", "subtitle"));
 
-                out("<table class=\"typestable\">\n");
+                out(tableHeaderTag("typestable"));
                 generateTypesTableHead();
 
                 for (INedTypeElement userElement : networks)
                     generateTypeReferenceLine(userElement);
 
-                out("</table>\n");
+                out(tableTrailerTag());
             }
         }
     }
@@ -1524,86 +1407,63 @@ public class DocumentationGenerator {
         Map<String, ParamElementEx> paramsAssignments = typeElement.getParamAssignments();
 
         if (!paramsDeclarations.isEmpty()) {
-            out("<h3 class=\"mdl-color-text--primary subtitle\">Parameters</h3>\n" +
-                "<table class=\"paramstable\">\n" +
-                "   <tr>\n" +
-                "      <th class=\"name\">Name</th>\n" +
-                "      <th class=\"type\">Type</th>\n" +
-                "      <th class=\"defaultvalue\">Default value</th>\n" +
-                "      <th class=\"description\">Description</th>\n" +
-                "   </tr>\n");
+            out(subSectionTag("Parameters", "subtitle")+
+                tableHeaderTag("paramstable") +
+                tableHeaderRowTag("Name","name", "Type","type", "Default value","defaultvalue", "Description","description"));
 
             for (String name : paramsDeclarations.keySet()) {
                 ParamElementEx paramDeclaration = paramsDeclarations.get(name);
                 ParamElementEx paramAssignment = paramsAssignments.get(name);
                 String trClass = localParamsDeclarations.containsKey(name) ? "local" : "inherited";
 
-                out("<tr class=\"" + trClass + "\">\n" +
-                    "   <td>" + name + "</td>\n" +
-                    "   <td>\n" +
-                    "      <i>" + getParamTypeAsString(paramDeclaration) + "</i>\n" +
-                    "   </td>\n" +
-                    "   <td>" + (paramAssignment == null ? "" : paramAssignment.getValue()) + "</td>\n" +
-                    "   <td>");
-                generateTableComment(getExpandedComment(paramDeclaration));
-                out("   </td>\n" +
-                    "</tr>\n");
+                out(tableDataRowTag(trClass,
+                        name,
+                        getParamTypeAsString(paramDeclaration),
+                        (paramAssignment == null ? "" : paramAssignment.getValue()),
+                        tableCommentString(getExpandedComment(paramDeclaration))));
             }
 
-            out("</table>\n");
+            out(tableTrailerTag());
         }
     }
 
     protected void generateSignalsTable(INedTypeElement typeElement) throws IOException {
         Map<String, PropertyElementEx> propertyMap = typeElement.getProperties().get("signal");
         if (propertyMap != null) {
-            out("<h3 class=\"mdl-color-text--primary subtitle\">Signals</h3>\n" +
-                    "<table class=\"signalstable\">\n" +
-                    "   <tr>\n" +
-                    "      <th class=\"name\">Name</th>\n" +
-                    "      <th class=\"type\">Type</th>\n" +
-                    "      <th class=\"unit\">Unit</th>\n" +
-                    "   </tr>\n");
+            out(subSectionTag("Signals", "subtitle")+
+                    tableHeaderTag("signalstable") +
+                    tableHeaderRowTag("Name","name", "Type","type", "Unit","unit"));
             for (String name : propertyMap.keySet()) {
                 PropertyElementEx propertyElement = propertyMap.get(name);
-                out("<tr class=\"local\">\n" +
-                    "   <td>" + name + "</td>\n" +
-                    "   <td><i>\n");
                 String cppType = getPropertyElementValue(propertyElement, "type");
-                generateCppReference(cppType, cppType);
-                out("   </i></td>\n" +
-                    "   <td>" + getPropertyElementValue(propertyElement, "unit") + "</td>\n");
-                out("</tr>\n");
+                out(tableDataRowTag("local",
+                        name,
+                        cppReferenceString(cppType, cppType),
+                        getPropertyElementValue(propertyElement, "unit")));
             }
-            out("</table>\n");
+            out(tableTrailerTag());
         }
     }
 
     protected void generateStatisticsTable(INedTypeElement typeElement) throws IOException {
         Map<String, PropertyElementEx> propertyMap = typeElement.getProperties().get("statistic");
         if (propertyMap != null) {
-            out("<h3 class=\"mdl-color-text--primary subtitle\">Statistics</h3>\n" +
-                    "<table class=\"statisticstable\">\n" +
-                    "   <tr>\n" +
-                    "      <th class=\"name\">Name</th>\n" +
-                    "      <th class=\"title\">Title</th>\n" +
-                    "      <th class=\"source\">Source</th>\n" +
-                    "      <th class=\"record\">Record</th>\n" +
-                    "      <th class=\"unit\">Unit</th>\n" +
-                    "      <th class=\"interpolationmode\">Interpolation Mode</th>\n" +
-                    "   </tr>\n");
+            out(subSectionTag("Statistics", "subtitle")+
+                    tableHeaderTag("statisticstable") +
+                    tableHeaderRowTag("Name","name", "Title","title", "Source","source",
+                            "Record","record", "Unit","unit", "Interpolation Mode","interpolationmode"));
+
             for (String name : propertyMap.keySet()) {
                 PropertyElementEx propertyElement = propertyMap.get(name);
-                out("<tr class=\"local\">\n" +
-                    "   <td>" + name + "</td>\n" +
-                    "   <td>" + getPropertyElementValue(propertyElement, "title") + "</td>\n" +
-                    "   <td>" + getPropertyElementValue(propertyElement, "source") + "</td>\n" +
-                    "   <td>" + getPropertyElementValue(propertyElement, "record") + "</td>\n" +
-                    "   <td>" + getPropertyElementValue(propertyElement, "unit") + "</td>\n" +
-                    "   <td>" + getPropertyElementValue(propertyElement, "interpolationmode") + "</td>\n");
-                out("</tr>\n");
+                out(tableDataRowTag("local", name,
+                        getPropertyElementValue(propertyElement, "title"),
+                        getPropertyElementValue(propertyElement, "source"),
+                        getPropertyElementValue(propertyElement, "record"),
+                        getPropertyElementValue(propertyElement, "unit"),
+                        getPropertyElementValue(propertyElement, "interpolationmode")));
+
             }
-            out("</table>\n");
+            out(tableTrailerTag());
         }
     }
 
@@ -1612,30 +1472,20 @@ public class DocumentationGenerator {
         collectUnassignedParameters(null, typeElement.getNedTypeInfo().getSubmodules(), params);
 
         if (params.size() != 0) {
-            out("<h3 class=\"mdl-color-text--primary subtitle\">Unassigned submodule parameters</h3>\n" +
-                "<table class=\"deepparamstable\">\n" +
-                "   <tr>\n" +
-                "      <th class=\"name\">Name</th>\n" +
-                "      <th class=\"type\">Type</th>\n" +
-                "      <th class=\"defaultvalue\">Default value</th>\n" +
-                "      <th class=\"description\">Description</th>\n" +
-                "   </tr>\n");
+            out(subSectionTag("Unassigned submodule parameters", "subtitle")+
+                tableHeaderTag("deepparamstable") +
+                tableHeaderRowTag("Name","name", "Type","type", "Default value","defaultvalue", "Description","description"));
+
             for (ArrayList<Object> tuple : params) {
                 ParamElementEx paramDeclaration = (ParamElementEx)tuple.get(1);
                 ParamElementEx paramAssignment = (ParamElementEx)tuple.get(2);
 
-                out("<tr>\n" +
-                        "   <td>" + (String)tuple.get(0) + "</td>\n" +
-                        "   <td>\n" +
-                        "      <i>" + getParamTypeAsString(paramDeclaration) + "</i>\n" +
-                        "   </td>\n" +
-                        "   <td>" + (paramAssignment == null ? "" : paramAssignment.getValue()) + "</td>\n" +
-                        "   <td>");
-                    generateTableComment(getExpandedComment(paramDeclaration));
-                    out("   </td>\n" +
-                        "</tr>\n");
+                out(tableDataRowTag(null, (String)tuple.get(0),
+                        getParamTypeAsString(paramDeclaration),
+                        (paramAssignment == null ? "" : paramAssignment.getValue()),
+                        tableCommentString(getExpandedComment(paramDeclaration))));
             }
-            out("</table>\n");
+            out(tableTrailerTag());
         }
     }
 
@@ -1644,7 +1494,7 @@ public class DocumentationGenerator {
             INedTypeElement typeElement = submodule.getEffectiveTypeRef();
 
             if (typeElement != null) {
-                String newPrefix = (prefix == null ? "" : prefix + ".") + "<a href=\"" + getOutputFileName(typeElement) + "\">" + submodule.getName() + "</a>";
+                String newPrefix = (prefix == null ? "" : prefix + ".") + refTag(submodule.getName(), addExtension(getOutputBaseFileName(typeElement)), null);
 
                 if (typeElement instanceof CompoundModuleElementEx)
                     collectUnassignedParameters(newPrefix, typeElement.getNedTypeInfo().getSubmodules(), params);
@@ -1678,90 +1528,60 @@ public class DocumentationGenerator {
         Map<String, GateElementEx> gatesSizes = module.getGateSizes();
 
         if (!gateDeclarations.isEmpty()) {
-            out("<h3 class=\"mdl-color-text--primary subtitle\">Gates</h3>\n" +
-                "<table class=\"gatestable\">\n" +
-                "   <tr>\n" +
-                "      <th class=\"name\">Name</th>\n" +
-                "      <th class=\"type\">Direction</th>\n" +
-                "      <th class=\"gatesize\">Size</th>\n" +
-                "      <th class=\"description\">Description</th>\n" +
-                "   </tr>\n");
+            out(subSectionTag("Gates", "subtitle")+
+                tableHeaderTag("gatestable") +
+                tableHeaderRowTag("Name","name", "Direction","type", "Size","gatesize", "Description","description"));
 
             for (String name : gateDeclarations.keySet()) {
                 GateElementEx gateDeclaration = gateDeclarations.get(name);
                 GateElementEx gateSize = gatesSizes.get(name);
                 String trClass = localGateDeclarations.containsKey(name) ? "local" : "inherited";
 
-                out("<tr class=\"" + trClass + "\">\n" +
-                    "   <td>" + name + (gateDeclaration.getIsVector() ? " [ ]" : "") + "</xsl:if></td>\n" +
-                    "   <td><i>" + gateDeclaration.getAttribute(GateElementEx.ATT_TYPE) + "</i></td>\n" +
-                    "   <td>" + (gateSize != null && gateSize.getIsVector() ? gateSize.getVectorSize() : "") + "</td>" +
-                    "   <td>");
-                generateTableComment(getExpandedComment(gateDeclaration));
-                out("</td>\n" +
-                    "</tr>\n");
+                out(tableDataRowTag(trClass,
+                        name + (gateDeclaration.getIsVector() ? " [ ]" : ""),
+                        gateDeclaration.getAttribute(GateElementEx.ATT_TYPE),
+                        (gateSize != null && gateSize.getIsVector() ? gateSize.getVectorSize() : ""),
+                        tableCommentString(getExpandedComment(gateDeclaration))));
             }
 
-            out("</table>\n");
+            out(tableTrailerTag());
         }
     }
 
-    protected void generateTableComment(String comment) throws IOException {
-        if (comment != null)
-            out(processHTMLContent("comment", comment));
+    protected String tableCommentString(String comment) {
+        return (comment != null) ? processHTMLContent("comment", comment) : "";
     }
 
     protected void generateTypesTableHead() throws IOException {
-        out("   <tr>\n" +
-            "      <th class=\"name\">Name</th>\n" +
-            "      <th class=\"type\">Type</th>\n" +
-            "      <th class=\"description\">Description</th>\n" +
-            "   </tr>\n");
+        out(tableHeaderRowTag("Name","name", "Type","type", "Description","description"));
     }
 
     protected void generateTypeReferenceLine(ITypeElement typeElement) throws IOException {
-        out("<tr>\n" +
-            "   <td>\n");
-        generateTypeReference(typeElement); out("\n");
-        out("   </td>\n" +
-                "   <td>\n");
-        generateTypeType(typeElement); out("\n");
-        out("   </td>\n" +
-            "   <td>\n");
-        generateTypeComment(typeElement); out("\n");
-        out("   </td>\n" +
-            "</tr>\n");
+        out(tableDataRowTag(null,
+                typeReferenceString(typeElement),
+                typeTypeString(typeElement),
+                typeCommentString(typeElement)));
     }
 
-    protected void generateTypeReference(ITypeElement typeElement) throws IOException {
-        out("<a class=\"reference-ned\" href=\"" + getOutputFileName(typeElement) + "\">" + typeElement.getName() + "</a>");
+    protected String typeReferenceString(ITypeElement typeElement) throws IOException {
+        return refTag(typeElement.getName(), addExtension(getOutputBaseFileName(typeElement)), "reference-ned");
     }
 
-    protected void generateTypeType(ITypeElement typeElement) throws IOException {
-        out("<i>" + typeElement.getReadableTagName().replaceAll(" ", "&nbsp;") + "</i>");
+    protected String typeTypeString(ITypeElement typeElement) {
+        return iTag(typeElement.getReadableTagName().replaceAll(" ", "&nbsp;"));
     }
 
-    protected void generateTypeComment(ITypeElement typeElement) throws IOException {
+    protected String typeCommentString(ITypeElement typeElement) throws IOException {
         String comment = getExpandedComment(typeElement);
         if (comment != null)
-            out(processHTMLContent("briefcomment", comment));
+            return processHTMLContent("briefcomment", comment);
         else
-            out("<i>(no description)</i>");
+            return iTag("(no description)");
     }
 
     protected void generateUnresolvedTypeReferenceLine(String name) throws IOException {
-        out("<tr>\n" +
-            "   <td>\n");
-        generateUnresolvedTypeReference(name);
-        out("   </td>\n" +
-            "   <td>\n" +
-            "      <i>(unknown -- not in documented files)</i>\n" +
-            "   </td>\n" +
-            "</tr>\n");
-    }
-
-    protected void generateUnresolvedTypeReference(String name) throws IOException {
-        out(name);
+        out(tableDataRowTag(null,
+                name, iTag("(unknown -- not in documented files)"),""));
     }
 
     protected void generateNedTypeCppDefinitionReference(ITypeElement typeElement) throws IOException {
@@ -1774,18 +1594,15 @@ public class DocumentationGenerator {
         else
             throw new RuntimeException("Unknown type element: " + typeElement);
 
-        if (doxyMap.containsKey(cppClassName)) {
-            out("<p>");
-            generateCppReference(cppClassName, "<b>C++ definition</b>");
-            out("</p>\n");
-        }
+        if (doxyMap.containsKey(cppClassName))
+            out(pTag(cppReferenceString(cppClassName, "C++ definition")));
     }
 
-    protected void generateCppReference(String cppClassName, String label) throws IOException {
+    protected String cppReferenceString(String cppClassName, String label) throws IOException {
         if (doxyMap.containsKey(cppClassName))
-            out("<a class=\"reference-cpp\" href=\"" + getRelativePath(rootRelativeNeddocPath, rootRelativeDoxyPath).append(doxyMap.get(cppClassName)) + "\" target=\"mainframe\">" + label + "</a>");
+            return refTag(label, getRelativePath(rootRelativeNeddocPath, rootRelativeDoxyPath).append(doxyMap.get(cppClassName)).toString(), "reference-cpp");
         else
-            out(label);
+            return label;
     }
 
     protected void generateBuiltinTypeReference() throws IOException {
@@ -1794,30 +1611,30 @@ public class DocumentationGenerator {
 
     protected void generateFileReference(IFile file) throws IOException {
         if (generateFileListings)
-            out("File: <a href=\"" + getOutputFileName(file) + "\">" + file.getProjectRelativePath() + "</a>");
+            out("File: " + refTag(file.getProjectRelativePath().toString(), addExtension(getOutputBaseNameForFile(file)), null));
         else
             out("File: " + file.getProjectRelativePath());
     }
 
     protected void generateKnownSubtypesTable(ITypeElement typeElement) throws IOException {
         if (subtypesMap.containsKey(typeElement)) {
-            out("<h3 class=\"mdl-color-text--primary subtitle\">Known subclasses</h3>\n");
+            out(subSectionTag("Known subclasses", "subtitle"));
 
-            out("<table class=\"typestable\">\n");
+            out(tableHeaderTag("typestable"));
             generateTypesTableHead();
 
             for (ITypeElement subtype : subtypesMap.get(typeElement))
                 generateTypeReferenceLine(subtype);
 
-            out("</table>\n");
+            out(tableTrailerTag());
         }
     }
 
     protected void generateExtendsTable(ITypeElement typeElement) throws IOException {
         if (typeElement.getFirstExtends() != null) {
-            out("<h3 class=\"mdl-color-text--primary subtitle\">Extends</h3>\n");
+            out(subSectionTag("Extends", "subtitle"));
 
-            out("<table class=\"typestable\">\n");
+            out(tableHeaderTag("typestable"));
             generateTypesTableHead();
 
             if (typeElement instanceof IInterfaceTypeElement)
@@ -1832,7 +1649,7 @@ public class DocumentationGenerator {
                     generateUnresolvedTypeReferenceLine(typeElement.getFirstExtends());
             }
 
-            out("</table>\n");
+            out(tableTrailerTag());
         }
     }
 
@@ -1893,14 +1710,14 @@ public class DocumentationGenerator {
 
     protected void generateTypeDiagram(final INedTypeElement typeElement) throws IOException {
         if (generateNedTypeFigures && !nedResources.isBuiltInDeclaration(typeElement.getNedTypeInfo())) {
-            out("<img src=\"" + getOutputFileName(typeElement, "type", ".svg") + "\" ismap=\"yes\" usemap=\"#type-diagram\"/>");
+            out(typeImageTag(typeElement));
             DisplayUtils.runNowOrSyncInUIThread(() -> {
                     try {
                         NedFileElementEx modelRoot = typeElement.getContainingNedFileElement();
                         ScrollingGraphicalViewer viewer = NedFigureProvider.createNedViewer(modelRoot);
                         NedEditPart editPart = (NedEditPart)viewer.getEditPartRegistry().get(typeElement);
 
-                        out("<map name=\"type-diagram\">\n");
+                        out(typeImageMapHeaderTag());
 
                         if (editPart instanceof CompoundModuleEditPart) {
                             CompoundModuleEditPart compoundModuleEditPart = (CompoundModuleEditPart)editPart;
@@ -1918,7 +1735,7 @@ public class DocumentationGenerator {
                             outMapReference(nedTypeEditPart.getModel(), nedTypeEditPart.getFigure());
                         }
 
-                        out("</map>\n");
+                        out(typeImageMapTrailerTag());
                     }
                     catch (IOException e) {
                         throw new RuntimeException(e);
@@ -1942,10 +1759,10 @@ public class DocumentationGenerator {
             }
 
             if (generateFullUsageDiagrams) {
-                generatePage("full-ned-usage-diagram.html", "Full NED Usage Diagram", () -> {
-                        out("<h2 class=\"mdl-color-text--primary comptitle\">Full NED Usage Diagram</h2>\n" +
-                            "<p>The following diagram shows usage relationships between simple and compound modules, module interfaces, networks, channels and channel interfaces.\n" +
-                            "Unresolved types are missing from the diagram.</p>\n");
+                generatePage("full-ned-usage-diagram", "Full NED Usage Diagram", () -> {
+                        out(sectionTag("Full NED Usage Diagram", "comptitle")+
+                            pTag("The following diagram shows usage relationships between simple and compound modules, module interfaces, networks, channels and channel interfaces.\n" +
+                            "Unresolved types are missing from the diagram."));
                         generateUsageDiagram(nedTypeElements, "full-ned-usage-diagram.svg");
                     }
                 );
@@ -1953,10 +1770,10 @@ public class DocumentationGenerator {
             }
 
             if (generateFullInheritanceDiagrams) {
-                generatePage("full-ned-inheritance-diagram.html", "Full NED Inheritance Diagram", () -> {
-                        out("<h2 class=\"mdl-color-text--primary comptitle\">Full NED Inheritance Diagram</h2>\n" +
-                            "<p>The following diagram shows the inheritance hierarchy between simple and compound modules, module interfaces, networks, channels and channel interfaces.\n" +
-                            "Unresolved types are missing from the diagram.</p>\n");
+                generatePage("full-ned-inheritance-diagram", "Full NED Inheritance Diagram", () -> {
+                        out(sectionTag("Full NED Inheritance Diagram", "comptitle")+
+                            pTag("The following diagram shows the inheritance hierarchy between simple and compound modules, module interfaces, networks, channels and channel interfaces.\n" +
+                            "Unresolved types are missing from the diagram."));
                         generateInheritanceDiagram(nedTypeElements, "full-ned-inheritance-diagram.svg");
                     }
                 );
@@ -1964,10 +1781,10 @@ public class DocumentationGenerator {
             }
 
             if (generateFullUsageDiagrams) {
-                generatePage("full-msg-usage-diagram.html", "Full MSG Usage Diagram", () -> {
-                        out("<h2 class=\"mdl-color-text--primary comptitle\">Full MSG Usage Diagram</h2>\n" +
-                            "<p>The following diagram shows usage relationships between messages, packets, classes and structs.\n" +
-                            "Unresolved types are missing from the diagram.</p>\n");
+                generatePage("full-msg-usage-diagram", "Full MSG Usage Diagram", () -> {
+                        out(sectionTag("Full MSG Usage Diagram", "comptitle")+
+                            pTag("The following diagram shows usage relationships between messages, packets, classes and structs.\n" +
+                            "Unresolved types are missing from the diagram."));
                         generateUsageDiagram(msgTypeElements, "full-msg-usage-diagram.svg");
                     }
                 );
@@ -1975,10 +1792,10 @@ public class DocumentationGenerator {
             }
 
             if (generateFullInheritanceDiagrams) {
-                generatePage("full-msg-inheritance-diagram.html", "Full MSG Inheritance Diagram", () -> {
-                        out("<h2 class=\"mdl-color-text--primary comptitle\">Full MSG Inheritance Diagram</h2>\n" +
-                            "<p>The following diagram shows the inheritance hierarchy between messages, packets, classes and structs.\n" +
-                            "Unresolved types are missing from the diagram.</p>\n");
+                generatePage("full-msg-inheritance-diagram", "Full MSG Inheritance Diagram", () -> {
+                        out(sectionTag("Full MSG Inheritance Diagram", "comptitle")+
+                            pTag("The following diagram shows the inheritance hierarchy between messages, packets, classes and structs.\n" +
+                            "Unresolved types are missing from the diagram."));
                         generateInheritanceDiagram(msgTypeElements, "full-msg-inheritance-diagram.svg");
                     }
                 );
@@ -1996,13 +1813,12 @@ public class DocumentationGenerator {
             typeElements.add(typeElement);
 
             String diagramType = typeElement instanceof INedTypeElement ? "ned" : "msg";
+            String fullRef = !generateFullUsageDiagrams ?
+                    "" : " Click " + refTag("here", addExtension("full-"+diagramType+"-usage-diagram"), null) + " to see the full picture.";
 
-            out("<h3 class=\"mdl-color-text--primary subtitle\">Usage diagram</h3>\n" +
-                "<p>The following diagram shows usage relationships between types.\n" +
-                "Unresolved types are missing from the diagram.");
-            if (generateFullUsageDiagrams)
-                out(" Click <a href=\"full-" + diagramType + "-usage-diagram.html\">here</a> to see the full picture.");
-            out("</p>\n");
+            out(subSectionTag("Usage diagram", "subtitle")+
+                pTag("The following diagram shows usage relationships between types.\n" +
+                "Unresolved types are missing from the diagram."+fullRef));
 
             generateUsageDiagram(typeElements, getOutputFileName(typeElement, "usage", ".svg"));
         }
@@ -2038,7 +1854,7 @@ public class DocumentationGenerator {
 
             generateDotOuput(dot, getOutputFile(imageFileName), "svg");
 
-            out("<object type=\"image/svg+xml\" data=\"" + imageFileName + "\"></object>");
+            out(svgObjectTag(imageFileName));
         }
     }
 
@@ -2053,13 +1869,12 @@ public class DocumentationGenerator {
             typeElements.add(typeElement);
 
             String diagramType = typeElement instanceof INedTypeElement ? "ned" : "msg";
+            String fullRef = !generateFullInheritanceDiagrams ?
+                    "" : " Click "+ refTag("here", addExtension("full-"+diagramType+"-inheritance-diagram"), null) + " to see the full picture.";
 
-            out("<h3 class=\"mdl-color-text--primary subtitle\">Inheritance diagram</h3>\n" +
-                "<p>The following diagram shows inheritance relationships for this type.\n" +
-                "Unresolved types are missing from the diagram.");
-            if (generateFullInheritanceDiagrams)
-                out(" Click <a href=\"full-" + diagramType + "-inheritance-diagram.html\">here</a> to see the full picture.");
-            out("</p>\n");
+            out(subSectionTag("Inheritance diagram", "subtitle")+
+                pTag("The following diagram shows inheritance relationships for this type.\n" +
+                "Unresolved types are missing from the diagram."+fullRef));
 
             generateInheritanceDiagram(typeElements, getOutputFileName(typeElement, "inheritance", ".svg"));
         }
@@ -2127,7 +1942,7 @@ public class DocumentationGenerator {
 
             generateDotOuput(dot, getOutputFile(imageFileName), "svg");
 
-            out("<object type=\"image/svg+xml\" data=\"" + imageFileName + "\"></object>");
+            out(svgObjectTag(imageFileName));
         }
     }
 
@@ -2140,8 +1955,8 @@ public class DocumentationGenerator {
     }
 
     protected void generateSourceContent(String source, boolean nedSource) throws IOException {
-        out("<h3 class=\"mdl-color-text--primary subtitle\">Source code</h3>\n" +
-            "<pre class=\"src\">");
+        out(subSectionTag("Source code", "subtitle"));
+        out(sourceHeaderTag());
 
         org.eclipse.jface.text.Document document = new org.eclipse.jface.text.Document(source);
         ITokenScanner partitioner = nedSource ? new NedSyntaxHighlightPartitionScanner() : new MsgSyntaxHighlightPartitionScanner();
@@ -2197,7 +2012,7 @@ public class DocumentationGenerator {
             }
         }
 
-        out("</pre>\n");
+        out(sourceTrailerTag());
     }
 
     protected void generateSourcePartition(ITokenScanner scanner, String source) throws IOException {
@@ -2211,7 +2026,7 @@ public class DocumentationGenerator {
 
             if (token.isEOF()) {
                 if (buffer.length() != 0)
-                    generateHTMLSpan(buffer.toString(), (TextAttribute)bufferTokenData);
+                    out(spanTag(StringEscapeUtils.escapeHtml4(buffer.toString()), null, (TextAttribute)bufferTokenData));
 
                 break;
             }
@@ -2219,7 +2034,7 @@ public class DocumentationGenerator {
             Object data = token.getData();
 
             if (bufferTokenData != data && buffer.length() != 0) {
-                generateHTMLSpan(buffer.toString(), (TextAttribute)bufferTokenData);
+                out(spanTag(StringEscapeUtils.escapeHtml4(buffer.toString()), null, (TextAttribute)bufferTokenData));
                 buffer = new StringBuffer();
                 bufferTokenData = null;
             }
@@ -2229,49 +2044,6 @@ public class DocumentationGenerator {
             buffer.append(source.substring(offset, offset + length));
             bufferTokenData = data;
         }
-    }
-
-    protected void generateHTMLSpan(String source, TextAttribute textAttribute) throws IOException {
-        out("<span style=\"");
-        if (textAttribute != null)
-            generateHTMLStyle(textAttribute);
-        out("\">");
-        out(StringEscapeUtils.escapeHtml4(source));
-        out("</span>");
-    }
-
-    protected void generateHTMLStyle(TextAttribute textAttribute) throws IOException {
-        Color foregroundColor = textAttribute.getForeground();
-        Color backgroundColor = textAttribute.getBackground();
-
-        if (backgroundColor != null) {
-            out("background-color: ");
-            generateHTMLColor(backgroundColor);
-            out("; ");
-        }
-
-        if (foregroundColor != null) {
-            out("color: ");
-            generateHTMLColor(foregroundColor);
-            out("; ");
-        }
-
-        int style = textAttribute.getStyle();
-
-        if ((style & SWT.ITALIC) != 0)
-            out("font-style: italic; ");
-
-        if ((style & SWT.BOLD) != 0)
-            out("font-weight: bold; ");
-    }
-
-    protected void generateHTMLColor(Color color) throws IOException {
-        out("#" + colorToHexString(color.getRed()) + colorToHexString(color.getGreen()) + colorToHexString(color.getBlue()));
-    }
-
-    protected String colorToHexString(int number) {
-        return ((number < 16) ? "0" : "") + Integer.toHexString(number);
-
     }
 
     protected void generateDotOuput(DotGraph dot, File outputFile, String format) throws IOException {
@@ -2397,17 +2169,13 @@ public class DocumentationGenerator {
                 Assert.isTrue(f != null);
             }
         }
-        outMapReference(model, bounds);
+        outMapReferenceElement(model, bounds);
     }
 
-    protected void outMapReference(INedTypeElement typeElement, Rectangle bounds) throws IOException {
-        outMapReference(typeElement, bounds.x, bounds.y, bounds.x + bounds.width, bounds.y + bounds.height);
-    }
-
-    protected void outMapReference(INedTypeElement typeElement, int x1, int y1, int x2, int y2) throws IOException {
+    protected void outMapReferenceElement(INedTypeElement typeElement, Rectangle bounds) throws IOException {
         String name = typeElement.getName();
-        String url = getOutputFileName(typeElement);
-        out("<area shape=\"rect\" href=\"" + url + "\" title=\"" + name + "\" alt=\"" + name + "\" coords=\"" + x1 + "," + y1 + "," + x2 + "," + y2 + "\">\n");
+        String url = addExtension(getOutputBaseFileName(typeElement));
+        out("<area shape=\"rect\" href=\"" + url + "\" title=\"" + name + "\" alt=\"" + name + "\" coords=\"" + bounds.x + "," + bounds.y + "," + (bounds.x + bounds.width) + "," + (bounds.y + bounds.height) + "\">\n");
     }
 
     protected IPath getOutputFilePath(IFile file) {
@@ -2427,12 +2195,12 @@ public class DocumentationGenerator {
         return new Path("");
     }
 
-    protected String getOutputFileName(IFile file) {
-        return getOutputFilePath(file).append(file.getProjectRelativePath().toString().replace("/", "-")) + ".html";
+    protected String getOutputBaseNameForFile(IFile file) {
+        return getOutputFilePath(file).append(file.getProjectRelativePath().toString().replace("/", "-")).toString();
     }
 
-    protected String getOutputFileName(ITypeElement typeElement) {
-        return getOutputFileName(typeElement, null, null);
+    protected String getOutputBaseFileName(ITypeElement typeElement) {
+        return getOutputFileName(typeElement, null, "");
     }
 
     protected String getOutputFileName(ITypeElement typeElement, String discriminator, String extension) {
@@ -2451,8 +2219,6 @@ public class DocumentationGenerator {
 
         if (extension != null)
             fileName += extension;
-        else
-            fileName += ".html";
 
         return getOutputFilePath(typeElement).append(fileName).toString();
     }
@@ -2503,9 +2269,9 @@ public class DocumentationGenerator {
     protected class DotGraph {
         StringBuffer buffer = new StringBuffer();
 
-        Set<ITypeElement> nodes = new HashSet<ITypeElement>();
+        Set<ITypeElement> nodes = new LinkedHashSet<ITypeElement>();
 
-        Set<Pair<ITypeElement, ITypeElement>> edges = new HashSet<Pair<ITypeElement, ITypeElement>>();
+        Set<Pair<ITypeElement, ITypeElement>> edges = new LinkedHashSet<Pair<ITypeElement, ITypeElement>>();
 
         public void append(String text) {
             buffer.append(text);
@@ -2522,7 +2288,7 @@ public class DocumentationGenerator {
                 String name = typeElement.getName();
                 append("\"" + name + "\" ");
 
-                append("[URL=\"" + getOutputFileName(typeElement) + "\", target=\"_parent\"");
+                append("[URL=\"" + addExtension(getOutputBaseFileName(typeElement)) + "\", target=\"_parent\"");
 
                 String color = "#ff0000";
                 if (typeElement instanceof CompoundModuleElementEx && ((CompoundModuleElementEx)typeElement).isNetwork())
@@ -2575,4 +2341,233 @@ public class DocumentationGenerator {
             return buffer.toString();
         }
     }
+
+    /*** render methods ****************************************************************************/
+
+    protected String addExtension(String fileName) {
+        return fileName + ".html";
+    }
+
+    protected String defaultOverviewString() {
+        return  "<center><h1 class=\"mdl-color-text--primary\">OMNeT++ Model Documentation</h1></center>\n" +
+                "<center><i>Generated from NED and MSG files</i></center>\n" +
+                "<p>This documentation has been generated from NED and MSG files.</p>\n" +
+                "<p>Use the links in the left frame to navigate around.</p>\n" +
+                "<p>Hint for model developers: if you don\'t like this page, try creating\n" +
+                "a <tt>package.ned</tt> file with the <tt>@titlepage</tt> directive\n" +
+                "embedded in a comment.</p>\n"+
+                "<hr/>\n" +
+                "<p>Generated by neddoc.</p>";
+    }
+
+    protected String ccFooterString() {
+        String atag = "<a href=\"http://creativecommons.org/licenses/by-sa/3.0\" target=\"_top\">";
+        return "\n<hr><p class=\"footer\">"+atag+"<img src=\"by-sa.svg\"></a>" +
+               " This documentation is released under the "+atag+"Creative Commons license</a></p>\n";
+    }
+
+    protected String svgObjectTag(String imageFileName) {
+        return "<object type=\"image/svg+xml\" data=\"" + imageFileName + "\"></object>\n";
+    }
+
+    protected String typeImageTag(ITypeElement typeElement) {
+        return "<img src=\"" + getOutputFileName(typeElement, "type", ".svg") + "\" ismap=\"yes\" usemap=\"#type-diagram\"/>";
+    }
+    protected String typeImageMapHeaderTag() {
+        return "<map name=\"type-diagram\">\n";
+    }
+    protected String typeImageMapTrailerTag() {
+        return "</map>\n";
+    }
+
+    protected String titleTag(String text, String clazz) {
+        String result = "<h1";
+        clazz = (clazz == null) ? "" : " "+clazz;
+        result += " class=\"mdl-color-text--primary"+clazz+"\"";
+        result += ">" + text + "</h1>\n";
+        return result;
+    }
+
+    protected String typeSectionTag(ITypeElement typeElement) {
+        String result = "<h2 class=\"mdl-color-text--primary comptitle\" style=\"float: left;\">" + typeElement.getName() + "</h2>\n";
+
+        // show a colored type label
+        String typeLabel = typeElement.getReadableTagName();
+        String color = "#dedede";
+        if ("simple module".equals(typeLabel))
+            color = "#ff000040";
+        else if ("compound module".equals(typeLabel))
+            color = "#00ff0040";
+        else if ("network".equals(typeLabel))
+            color = "#2196f340";
+        else if ("channel".equals(typeLabel))
+            color = "#ffca0080";
+        else if (typeLabel.contains("interface"))
+            color = "#00e5ff40";
+
+        result += "<span class=\"mdl-chip\" style=\"float: right; margin-top: 6pt; background-color: "+color+";\">\n" +
+                  "    <span class=\"mdl-chip__text\">"+ typeElement.getReadableTagName() +"</span>\n" +
+                  "</span><div style=\"clear: both;\"/>\n";
+        return result;
+    }
+
+    protected String sectionTag(String text, String clazz) {
+        String result = "<h2";
+        clazz = (clazz == null) ? "" : " "+clazz;
+        result += " class=\"mdl-color-text--primary"+clazz+"\"";
+        result += ">" + text + "</h2>\n";
+        return result;
+    }
+
+    protected String subSectionTag(String text, String clazz) {
+        String result = "<h3";
+        clazz = (clazz == null) ? "" : " "+clazz;
+        result += " class=\"mdl-color-text--primary"+clazz+"\"";
+        result += ">" + text + "</h3>\n";
+        return result;
+    }
+
+    protected String sourceHeaderTag() {
+        return "<pre class=\"src\">\n";
+    }
+
+    protected String sourceTrailerTag() {
+        return "</pre>\n";
+    }
+
+    protected String tableHeaderTag(String clazz) {
+        String result = "<table";
+        if (clazz != null)
+            result += " class=\""+clazz+"\"";
+        result += ">\n";
+        return result;
+    }
+
+    protected String tableTrailerTag() {
+        return "</table>\n";
+    }
+
+    // even number of parameters using: description, class pairs
+    protected String tableHeaderRowTag(String ...columns) {
+        String result = "   <tr>\n";
+        int i = 0;
+        while( i< columns.length) {
+            result += "      <th";
+            if (columns[i+1] != null)
+                result += " class=\""+columns[i+1]+"\"";
+            result += ">"+columns[i]+"</th>\n";
+            i += 2;
+        }
+        result += "   </tr>\n";
+        return result;
+    }
+
+    protected String tableDataRowTag(String clazz, String ...cells) {
+        String result = "   <tr";
+        if (clazz != null)
+            result += " class=\""+clazz+"\"";
+        result += ">\n";
+
+        for (String a : cells)
+            result += "      <td>"+a+"</td>\n";
+        result += "   </tr>\n";
+        return result;
+    }
+
+    protected String anchorTag(String id) {
+        return "<span id=\"" + id+ "\"> </span>\n";
+    }
+
+    protected String refTag(String text, String ref, String clazz) {
+        String result = "<a";
+        if (clazz != null)
+            result += " class=\""+clazz+"\"";
+        result += " href=\""+ref+"\">" + text + "</a>";
+        return result;
+    }
+
+    protected String pTag(String text) {
+        return "<p>" + text + "</p>\n";
+    }
+
+    protected String iTag(String text) {
+        return "<i>" + text + "</i>";
+    }
+
+    protected String bTag(String text) {
+        return "<b>" + text + "</b>";
+    }
+
+    protected String spanTag(String text, String clazz, TextAttribute textAttribute) {
+        String result = "<span";
+        if (clazz != null)
+            result += " class=\""+clazz+"\"";
+        if (textAttribute != null)
+            result += " style=\""+styleString(textAttribute);
+        result += "\">" + text + "</span>";
+        return result;
+    }
+
+    protected String styleString(TextAttribute textAttribute) {
+        Color foregroundColor = textAttribute.getForeground();
+        Color backgroundColor = textAttribute.getBackground();
+        String result = "";
+
+        if (backgroundColor != null) {
+            result += "background-color: ";
+            result += colorString(backgroundColor) + "; ";
+        }
+
+        if (foregroundColor != null) {
+            result += "color: ";
+            result += colorString(foregroundColor) + "; ";
+        }
+
+        int style = textAttribute.getStyle();
+
+        if ((style & SWT.ITALIC) != 0)
+            result += "font-style: italic; ";
+
+        if ((style & SWT.BOLD) != 0)
+            result += "font-weight: bold; ";
+
+        return result;
+    }
+
+    protected String colorString(Color color) {
+        return "#" + colorToHexString(color.getRed()) + colorToHexString(color.getGreen()) + colorToHexString(color.getBlue());
+    }
+
+    protected String colorToHexString(int number) {
+        return ((number < 16) ? "0" : "") + Integer.toHexString(number);
+    }
+
+    protected void copyStaticResources(IPath cssPath) throws Exception {
+        if (cssPath == null)
+            copyFileFromResource("style.css");
+        else
+            FileUtils.copy(new FileInputStream(cssPath.toPortableString()), getOutputFile("style.css"));
+
+        copyFileFromResource("material.blue-light_blue.min.css");
+        copyFileFromResource("material-icons.css");
+        copyFileFromResource("by-sa.svg");
+        copyFileFromResource("material-icons.woff2");
+        copyFileFromResource("jquery.js");
+        copyFileFromResource("navtree.js");
+        copyFileFromResource("material.min.js");
+    }
+
+
+    protected void copyFileFromResource(String resourceName) throws Exception {
+        copyFileFromResource(resourceName, resourceName);
+    }
+
+    protected void copyFileFromResource(final String resourcePath, String fileName) throws Exception {
+        InputStream stream = getClass().getResourceAsStream("templates/" + template +"/" + resourcePath);
+        if (stream == null)
+            throw new RuntimeException("Resource not found: " + resourcePath);
+        FileUtils.copy(stream, getOutputFile(fileName));
+    }
+
+
 }
