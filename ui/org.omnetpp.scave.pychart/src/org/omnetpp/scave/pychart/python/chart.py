@@ -1,7 +1,9 @@
 import numpy as np
+import pandas as pd
 import math
 import Gateway
 import pickle as pl
+import results
 
 
 def _list_to_bytes(l):
@@ -47,7 +49,7 @@ def _plotScalars_DF_2(df):
     names = df.index.get_level_values('name').tolist()
     modules = df.index.get_level_values('module').tolist()
 
-    paths = list(map(lambda t: '.'.join(t), zip(names, modules)))
+    paths = list(map(lambda t: '.'.join(t), zip(modules, names)))
 
     values = df[('result', 'value')]
 
