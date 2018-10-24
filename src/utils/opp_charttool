@@ -1,0 +1,66 @@
+#!/bin/env python3
+
+import os
+import sys
+import json
+import argparse
+import xml.etree.ElementTree as ET
+
+def error(message):
+    print("ERROR: " + message)
+    sys.exit(1)
+
+class Chart:
+    def __init__(self, type=str(), name=str(), script=str(), properties=dict()):
+        self.type = type
+        self.name = name
+        self.script = script
+        self.properties = properties
+
+class Analysis:
+    def __init__(self, inputs=list(), charts=list()):
+        self.inputs = inputs
+        self.charts = charts
+
+def load_anf_file(anf_file_name):
+    analysis = ET.parse(anf_file_name).getroot()
+
+    version = analysis.get('version')
+
+    if version != "2":
+        error("Unsupported analysis file version: \"{}\" (only \"2\" is supported).".format(version))
+
+    inputs = [i.get('pattern') for i in analysis.findall("inputs/input")]
+
+    charts = [
+            Chart(c.get('type'), c.get('name'), c.get('script'),
+                { p.get('name') : p.get('value') for p in c.findall('property') })
+            for c in analysis.findall("charts/chart")]
+
+    return Analysis(inputs, charts)
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(description='Tool for working with OMNeT++ analysis files.')
+    parser.add_argument('anf_file', type=str, nargs=1, help='The Analysis (.anf) file')
+
+    args = parser.parse_args()
+
+    analysis = load_anf_file(args.anf_file[0])
+
+    print(json.dumps(analysis, default=lambda obj: vars(
+        obj), indent=4, separators=(',', ': ')))
+
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    import results
+
+    results.inputs = analysis.inputs
+    # results.wd = "/home/attila/projects/omnetpp/samples" # os.path.dirname(os.path.abspath(args.anf_file[0]))
+
+    script = analysis.charts[-3].script
+
+    print(script)
+    exec(script)
+    plt.show()
