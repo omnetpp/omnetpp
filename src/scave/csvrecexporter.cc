@@ -178,12 +178,15 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
     bool haveHistograms = (itemTypes & ResultFileManager::HISTOGRAM) != 0;
     bool haveVectors = (itemTypes & ResultFileManager::VECTOR) != 0;
 
+    bool haveScalarColumns = haveScalars || !omitBlankColumns;
     bool haveStatisticColumns = haveStatistics || !omitBlankColumns;
     bool haveHistogramColumns = haveHistograms || !omitBlankColumns;
     bool haveVectorColumns = haveVectors || !omitBlankColumns;
 
-    std::vector<std::string> commonAndScalarColumnNames = {"run", "type", "module", "name", "attrname", "attrvalue", "value"}; // note: 'value' is scalar value
-    std::vector<std::string> statisticColumnNames, histogramColumnNames, vectorColumnNames;
+    std::vector<std::string> commonColumnNames = {"run", "type", "module", "name", "attrname", "attrvalue"};
+    std::vector<std::string> scalarColumnNames, statisticColumnNames, histogramColumnNames, vectorColumnNames;
+    if (haveScalarColumns)
+        scalarColumnNames = {"value"};
     if (haveStatisticColumns)
         statisticColumnNames = {"count", "sumweights", "mean", "stddev", "min", "max"};
     if (haveHistogramColumns)
@@ -191,7 +194,8 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
     if (haveVectorColumns)
         vectorColumnNames = {"vectime", "vecvalue"};
 
-    std::vector<std::string> allColumnNames = commonAndScalarColumnNames;
+    std::vector<std::string> allColumnNames = commonColumnNames;
+    addAll(allColumnNames, scalarColumnNames);
     addAll(allColumnNames, statisticColumnNames);
     addAll(allColumnNames, histogramColumnNames);
     addAll(allColumnNames, vectorColumnNames);
@@ -237,7 +241,8 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
             bool isHistogram = ResultFileManager::getTypeOf(id) == ResultFileManager::HISTOGRAM;
             const StatisticsResult& statistic = manager->getStatistics(id);
             writeResultItemBase(statistic, isHistogram ? "histogram" : "statistic", numColumns);
-            csv.writeBlank(); // skip 'value'
+            for (size_t i = 0; i < scalarColumnNames.size(); i++)
+                csv.writeBlank(); // skip intermediate columns ("value")
             const Statistics& stat = statistic.getStatistics();
             csv.writeInt(stat.getCount());
             if (stat.isWeighted())
@@ -274,8 +279,7 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
         for (int i = 0; i < numVectors; ++i) {
             const VectorResult& vector = manager->getVector(vectorIDs.get(i));
             writeResultItemBase(vector, "vector", numColumns);
-            csv.writeBlank(); // skip 'value'
-            for (size_t i = 0; i < statisticColumnNames.size() + histogramColumnNames.size(); i++)
+            for (size_t i = 0; i < scalarColumnNames.size() + statisticColumnNames.size() + histogramColumnNames.size(); i++)
                 csv.writeBlank(); // skip intermediate columns
             XYArray *data = xyArrays[i];
             writeXAsString(data);
