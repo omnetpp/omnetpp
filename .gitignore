@@ -20,6 +20,7 @@
 *.manifest
 *.vci
 *.pyc
+.ccls-cache
 */__pycache__/*
 *.gdb_history
 *.last-copts
