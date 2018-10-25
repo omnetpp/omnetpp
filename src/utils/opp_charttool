@@ -2,9 +2,25 @@
 
 import os
 import sys
-import json
 import argparse
 import xml.etree.ElementTree as ET
+import matplotlib.pyplot as plt
+
+
+_real_show = plt.show
+
+def _fake_show(*args, **kwargs):
+    global _show_called
+    _real_show(*args, **kwargs)
+    _show_called = True
+
+plt.show = _fake_show
+
+
+import numpy as np
+import pandas as pd
+import results
+import chart
 
 def error(message):
     print("ERROR: " + message)
@@ -48,19 +64,29 @@ if __name__ == "__main__":
 
     analysis = load_anf_file(args.anf_file[0])
 
-    print(json.dumps(analysis, default=lambda obj: vars(
-        obj), indent=4, separators=(',', ': ')))
+    if False:
+        import json
+        print(json.dumps(analysis, default=lambda obj: vars(
+            obj), indent=4, separators=(',', ': ')))
 
-    import numpy as np
-    import matplotlib.pyplot as plt
-
-    import results
 
     results.inputs = analysis.inputs
     # results.wd = "/home/attila/projects/omnetpp/samples" # os.path.dirname(os.path.abspath(args.anf_file[0]))
 
-    script = analysis.charts[-3].script
+    chart_index = 16
+
+    chart.name = analysis.charts[chart_index].name
+    chart.properties = analysis.charts[chart_index].properties
+
+    script = analysis.charts[chart_index].script
+
+    global _show_called
+    _show_called = False
 
     print(script)
     exec(script)
-    plt.show()
+
+    if not _show_called:
+        print("calling explicit plt.show()")
+        plt.show()
+
