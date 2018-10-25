@@ -9,7 +9,7 @@ inputs = list()
 
 
 
-
+# TODO - DEDUPLICATE THIS - IT WAS COPIED FROM THE IDE MODULE
 def transform_results(df):
     # print(df)
 
@@ -120,7 +120,7 @@ def transform_results(df):
 
     return joined
 
-
+# TODO - DEDUPLICATE THIS - IT WAS COPIED FROM THE IDE MODULE
 def filter_metadata(df, attrs=[], itervars=[], params=[], runattrs=[], droplevel=True):
     keys = [k for k in list(df.columns) if k[0] == 'result']
 
@@ -139,7 +139,7 @@ def filter_metadata(df, attrs=[], itervars=[], params=[], runattrs=[], droplevel
     return df
 
 
-
+# TODO - DEDUPLICATE THIS - IT WAS COPIED FROM THE IDE MODULE
 def pivotScalars1(df):
     attrs = df[df.type.isin(["runattr", "itervar"])][["run", "attrname", "attrvalue"]]
 
@@ -155,6 +155,7 @@ def pivotScalars1(df):
     return df
 
 
+# TODO - DEDUPLICATE THIS - IT WAS COPIED FROM THE IDE MODULE
 # @TimeAndGuard(measureTime=False)
 def pivotScalars(df, columns=["module"], index=["name"], values=None):
 
@@ -172,105 +173,48 @@ def pivotScalars(df, columns=["module"], index=["name"], values=None):
     return df
 
 
-
-def parse_if_number(s):
+def _parse_if_number(s):
     try: return float(s)
     except: return True if s=="true" else False if s=="false" else s if s else None
 
-def parse_ndarray(s):
+def _parse_ndarray(s):
     return np.fromstring(s, sep=' ') if s else None
 
 
-def getVectors(filter_expression):
+def _get_results(filter_expression, file_extension, result_type):
     # print("wd: " + wd + " inputs " + ", ".join(inputs))
 
     inputfiles = [glob.glob(wd + i) for i in inputs]
 
     # flattening the list of lists and making it unique
-    inputfiles = list(set([item for sublist in inputfiles for item in sublist if item.endswith('.vec')]))
+    inputfiles = list(set([item for sublist in inputfiles for item in sublist if item.endswith(file_extension)]))
     # print(inputfiles)
 
-    output = subprocess.check_output(["opp_scavetool", "x", *inputfiles, '-f', filter_expression, "-F", "CSV-R", "-o", "-"], cwd=wd)
+    output = subprocess.check_output(["opp_scavetool", "x", *inputfiles, '-T', result_type, '-f', filter_expression, "-F", "CSV-R", "-o", "-"], cwd=wd)
     # print(output.decode('utf-8'))
 
+    # TODO: stream the output through subprocess.PIPE ?
     df = pd.read_csv(io.BytesIO(output), converters = {
-        'attrvalue': parse_if_number,
-        'binedges': parse_ndarray,
-        'binvalues': parse_ndarray,
-        'vectime': parse_ndarray,
-        'vecvalue': parse_ndarray
+        'value': _parse_if_number,
+        'attrvalue': _parse_if_number,
+        'binedges': _parse_ndarray,
+        'binvalues': _parse_ndarray,
+        'vectime': _parse_ndarray,
+        'vecvalue': _parse_ndarray
     })
     # print(df)
 
     return df
 
+
+def getVectors(filter_expression):
+    return _get_results(filter_expression, '.vec', 'v')
 
 def getScalars(filter_expression):
-    # print("wd: " + wd + " inputs " + ", ".join(inputs))
-
-    inputfiles = [glob.glob(wd + i) for i in inputs]
-
-    # flattening the list of lists and making it unique
-    inputfiles = list(set([item for sublist in inputfiles for item in sublist if item.endswith('.sca')]))
-    # print(inputfiles)
-
-    output = subprocess.check_output(["opp_scavetool", "x", *inputfiles, '-T', 's', '-f', filter_expression, "-F", "CSV-R", "-o", "-"], cwd=wd)
-    # print(output.decode('utf-8'))
-
-    df = pd.read_csv(io.BytesIO(output), converters = {
-        'attrvalue': parse_if_number,
-        'binedges': parse_ndarray,
-        'binvalues': parse_ndarray,
-        'vectime': parse_ndarray,
-        'vecvalue': parse_ndarray
-    })
-    # print(df)
-
-    return df
-
+    return _get_results(filter_expression, '.sca', 's')
 
 def getStatistics(filter_expression):
-    # print("wd: " + wd + " inputs " + ", ".join(inputs))
-
-    inputfiles = [glob.glob(wd + i) for i in inputs]
-
-    # flattening the list of lists and making it unique
-    inputfiles = list(set([item for sublist in inputfiles for item in sublist if item.endswith('.sca')]))
-    # print(inputfiles)
-
-    output = subprocess.check_output(["opp_scavetool", "x", *inputfiles, '-T', 't', '-f', filter_expression, "-F", "CSV-R", "-o", "-"], cwd=wd)
-    # print(output.decode('utf-8'))
-
-    df = pd.read_csv(io.BytesIO(output), converters = {
-        'attrvalue': parse_if_number,
-        'binedges': parse_ndarray,
-        'binvalues': parse_ndarray,
-        'vectime': parse_ndarray,
-        'vecvalue': parse_ndarray
-    })
-    # print(df)
-
-    return df
-
+    return _get_results(filter_expression, '.sca', 't')
 
 def getHistograms(filter_expression):
-    # print("wd: " + wd + " inputs " + ", ".join(inputs))
-
-    inputfiles = [glob.glob(wd + i) for i in inputs]
-
-    # flattening the list of lists and making it unique
-    inputfiles = list(set([item for sublist in inputfiles for item in sublist if item.endswith('.sca')]))
-    # print(inputfiles)
-
-    output = subprocess.check_output(["opp_scavetool", "x", *inputfiles, '-T', 'h', '-f', filter_expression, "-F", "CSV-R", "-o", "-"], cwd=wd)
-    # print(output.decode('utf-8'))
-
-    df = pd.read_csv(io.BytesIO(output), converters = {
-        'attrvalue': parse_if_number,
-        'binedges': parse_ndarray,
-        'binvalues': parse_ndarray,
-        'vectime': parse_ndarray,
-        'vecvalue': parse_ndarray
-    })
-
-    return df
+    return _get_results(filter_expression, '.sca', 'h')

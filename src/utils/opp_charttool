@@ -55,38 +55,70 @@ def load_anf_file(anf_file_name):
 
     return Analysis(inputs, charts)
 
-if __name__ == "__main__":
+def run_chart(c):
 
-    parser = argparse.ArgumentParser(description='Tool for working with OMNeT++ analysis files.')
-    parser.add_argument('anf_file', type=str, nargs=1, help='The Analysis (.anf) file')
+    chart.name = c.name
+    chart.properties = c.properties
 
-    args = parser.parse_args()
-
-    analysis = load_anf_file(args.anf_file[0])
-
-    if False:
-        import json
-        print(json.dumps(analysis, default=lambda obj: vars(
-            obj), indent=4, separators=(',', ': ')))
-
-
-    results.inputs = analysis.inputs
-    # results.wd = "/home/attila/projects/omnetpp/samples" # os.path.dirname(os.path.abspath(args.anf_file[0]))
-
-    chart_index = 16
-
-    chart.name = analysis.charts[chart_index].name
-    chart.properties = analysis.charts[chart_index].properties
-
-    script = analysis.charts[chart_index].script
+    script = c.script
 
     global _show_called
     _show_called = False
 
-    print(script)
+    # print(script)
     exec(script)
 
     if not _show_called:
-        print("calling explicit plt.show()")
+        # print("calling explicit plt.show()")
         plt.show()
 
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(description='Tool for working with OMNeT++ analysis files.')
+    parser.add_argument('anf_file', type=str, nargs=1, help='The Analysis (.anf) file')
+    parser.add_argument('-i', metavar='chart_index', type=int, nargs=1, help='The index of the chart to run')
+    parser.add_argument('-n', metavar='chart_name', type=str, nargs=1, help='The name of the chart to run')
+
+    args = parser.parse_args()
+
+    if args.i and args.n:
+        error("Do not use -i and -n together.")
+
+
+    analysis = load_anf_file(args.anf_file[0])
+
+    if False: # debug output
+        import json
+        print(json.dumps(analysis, default=lambda obj: vars(
+            obj), indent=4, separators=(',', ': ')))
+
+    if not args.i and not args.n:
+        print("{} contains the following {} charts:".format(args.anf_file[0], len(analysis.charts)))
+        for i, c in enumerate(analysis.charts):
+            print('{}.\t"{}"\t({})'.format(i, c.name, c.type))
+
+        print("\nAnd has the following {} inputs:".format(len(analysis.inputs)))
+        for i, inp in enumerate(analysis.inputs):
+            print('\t"{}"'.format(inp))
+    elif args.i:
+
+        results.inputs = analysis.inputs
+        # results.wd = "/home/attila/projects/omnetpp/samples" # os.path.dirname(os.path.abspath(args.anf_file[0]))
+
+        run_chart(analysis.charts[args.i[0]])
+    elif args.n:
+
+        ch = None
+        for c in analysis.charts:
+            if c.name == args.n[0]:
+                ch = c
+                break
+
+        if ch:
+            results.inputs = analysis.inputs
+            # results.wd = "/home/attila/projects/omnetpp/samples" # os.path.dirname(os.path.abspath(args.anf_file[0]))
+
+            run_chart(ch)
+        else:
+            error("No chart named {}".format(args.n[0]))
