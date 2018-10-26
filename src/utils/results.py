@@ -1,13 +1,10 @@
+import os
 import io
-import glob
 import subprocess
 import numpy as np
 import pandas as pd
 
-wd = "."
-inputs = list()
-
-
+inputfiles = list()
 
 # TODO - DEDUPLICATE THIS - IT WAS COPIED FROM THE IDE MODULE
 def transform_results(df):
@@ -182,15 +179,9 @@ def _parse_ndarray(s):
 
 
 def _get_results(filter_expression, file_extension, result_type):
-    # print("wd: " + wd + " inputs " + ", ".join(inputs))
 
-    inputfiles = [glob.glob(wd + i) for i in inputs]
-
-    # flattening the list of lists and making it unique
-    inputfiles = list(set([item for sublist in inputfiles for item in sublist if item.endswith(file_extension)]))
-    # print(inputfiles)
-
-    output = subprocess.check_output(["opp_scavetool", "x", *inputfiles, '-T', result_type, '-f', filter_expression, "-F", "CSV-R", "-o", "-"], cwd=wd)
+    output = subprocess.check_output(["opp_scavetool", "x", *[i for i in inputfiles if i.endswith(file_extension)],
+        '-T', result_type, '-f', filter_expression, "-F", "CSV-R", "-o", "-"])
     # print(output.decode('utf-8'))
 
     # TODO: stream the output through subprocess.PIPE ?

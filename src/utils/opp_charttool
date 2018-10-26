@@ -2,7 +2,9 @@
 
 import os
 import sys
+import glob
 import argparse
+import subprocess
 import xml.etree.ElementTree as ET
 import matplotlib.pyplot as plt
 
@@ -58,6 +60,12 @@ def load_anf_file(anf_file_name):
 
     return Analysis(inputs, charts)
 
+def get_opp_root():
+    try:
+        out = subprocess.check_output("opp_configfilepath")
+    except:
+        error("Could not determine OMNeT++ directory (try \". setenv\" in this shell).")
+    return os.path.abspath(os.path.dirname(out.decode('utf-8')))
 
 def print_analysis_info(anf_file, analysis):
     print('\nThe "{}" file contains {} charts:\n'.format(anf_file, len(analysis.charts)))
@@ -69,7 +77,15 @@ def print_analysis_info(anf_file, analysis):
         print('\t"{}"'.format(inp))
 
 
-def run_chart(c):
+def run_chart(wd, c):
+
+    # print("changing to " + wd)
+    os.chdir(wd)
+    # print(sys.path)
+    sys.path = [wd,
+        get_opp_root() + "/ui/org.omnetpp.scave.pychart/src/org/omnetpp/scave/pychart/python/",
+        get_opp_root() + "/ui/org.omnetpp.scave.pychart/org/omnetpp/scave/pychart/python/"
+    ] + sys.path
 
     chart.name = c.name
     chart.properties = c.properties
@@ -93,28 +109,36 @@ if __name__ == "__main__":
     parser.add_argument('anf_file', type=str, nargs=1, help='The Analysis (.anf) file')
     parser.add_argument('-i', metavar='chart_index', type=int, nargs=1, help='The index of the chart to run (conflicts with -n)')
     parser.add_argument('-n', metavar='chart_name', type=str, nargs=1, help='The name of the chart to run (conflicts with -i, the first chart is selected when ambiguous)')
+    parser.add_argument('-w', metavar='workspace_directory', type=str, nargs=1, default='.', help='The workspace directory, the input patterns are relative to this')
 
     args = parser.parse_args()
 
     if args.i and args.n:
         error("Do not use -i and -n together.")
 
+    anf_file = args.anf_file[0]
+    anf_dir = os.path.dirname(os.path.abspath(anf_file))
 
-    analysis = load_anf_file(args.anf_file[0])
+    analysis = load_anf_file(anf_file)
 
     if False: # debug output
         import json
         print(json.dumps(analysis, default=lambda obj: vars(
             obj), indent=4, separators=(',', ': ')))
 
+    inputfiles = [glob.glob(args.w[0] + "/" + i) for i in analysis.inputs]
 
-        # results.wd = "/home/attila/projects/omnetpp/samples" # os.path.dirname(os.path.abspath(args.anf_file[0]))
-    results.inputs = analysis.inputs
+    # flattening the list of lists, turning them into absolute paths (script will cwd) and making it unique
+    inputfiles = list(set([os.path.abspath(item) for sublist in inputfiles for item in sublist]))
+    # print(inputfiles)
+
+    results.inputfiles = inputfiles
+    results.wd = args.w[0]
 
     if not args.i and not args.n:
-        print_analysis_info(args.anf_file[0], analysis)
+        print_analysis_info(anf_file, analysis)
     elif args.i:
-        run_chart(analysis.charts[args.i[0]])
+        run_chart(anf_dir, analysis.charts[args.i[0]])
     elif args.n:
 
         ch = None
@@ -124,6 +148,6 @@ if __name__ == "__main__":
                 break
 
         if ch:
-            run_chart(ch)
+            run_chart(anf_dir, ch)
         else:
             error('No chart named "{}".'.format(args.n[0]))
