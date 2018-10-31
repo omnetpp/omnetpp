@@ -7,10 +7,10 @@
         <input pattern="/resultfiles/routing/*.sca"/>
     </inputs>
     <charts>
-        <chart name="scalars simple 1" script="chart.plotScalars([10, 13, 18, 20])" type="BarChart">
+        <chart name="scalars simple 1" script="import chart&#10;&#10;chart.plotScalars([10, 13, 18, 20])" type="BarChart">
             <property name="Legend.Display" value="false"/>
         </chart>
-        <chart name="scalars simple 2" script="chart.plotScalars([10, 13, 18],&#10;                  labels=[&quot;a little&quot;, &quot;a bit more&quot;, &quot;quite a lot&quot;],&#10;                  row_label=&quot;amount of milk&quot;)&#10;&#10;print(&quot;Hello&quot;)" type="BarChart">
+        <chart name="scalars simple 2" script="import chart&#10;&#10;chart.plotScalars([10, 13, 18],&#10;                  labels=[&quot;a little&quot;, &quot;a bit more&quot;, &quot;quite a lot&quot;],&#10;                  row_label=&quot;amount of milk&quot;)&#10;&#10;print(&quot;Hello&quot;)" type="BarChart">
             <property name="Axis.Title.Font" value="Arial-regular-16"/>
             <property name="Label.Font" value="Arial-regular-16"/>
             <property name="Legend.Font" value="Arial-regular-16"/>
@@ -30,9 +30,9 @@
         <chart name="vectors dataframe 3" script="import results&#10;&#10;df = results.getVectors(&quot;name(hopCount:vector)&quot;)&#10;&#10;chart.plotVectors(df)" type="LineChart"/>
         <chart name="vectors dataframe 4" script="import results&#10;&#10;&#10;df = results.getVectors(&quot;name(rxBytes:vector) OR name(txBytes:vector)&quot;)&#10;&#10;# df.vecvalue = df.vecvalue.apply(np.cumsum)&#10;&#10;print(df)&#10;&#10;chart.plotVectors(df)" type="LineChart"/>
         <chart name="histograms simple 1" script="import chart&#10;&#10;chart.plotHistogram(label=&quot;IQ&quot;, edges=[80, 90, 100, 110, 120, 130], values=[2, 3, 7, 6, 4])" type="HistogramChart"/>
-        <chart name="histograms simple 2" script="&#10;&#10;chart.plotHistogram(&quot;A&quot;, [80, 90, 105, 118, 130], [2, 3, 7, 4])&#10;&#10;&#10;&#10;&#10;&#10;&#10;&#10;&#10;&#10;&#10;&#10;&#10;&#10;&#10;&#10;chart.plotHistogram(&quot;B&quot;, [83, 97, 101, 110, 124, 137], [0.6, 0.8, 1.5, 1.1, 0.9])" type="HistogramChart"/>
-        <chart name="histograms simple 3" script="samples = np.random.normal(loc=42, scale=6.28, size=1000000)&#10;&#10;values, edges = np.histogram(samples, bins=64)&#10;&#10;print(edges)&#10;print(values)&#10;&#10;chart.plotHistogram(&quot;bell&quot;, edges, values)" type="HistogramChart"/>
-        <chart name="histograms dataframe 1" script="df = results.getHistograms(&quot;name(collisionLength:histogram)&quot;)&#10;&#10;chart.plotHistograms(df)" type="HistogramChart"/>
+        <chart name="histograms simple 2" script="import chart&#10;&#10;chart.plotHistogram(&quot;A&quot;, [80, 90, 105, 118, 130], [2, 3, 7, 4])&#10;&#10;chart.plotHistogram(&quot;B&quot;, [83, 97, 101, 110, 124, 137], [0.6, 0.8, 1.5, 1.1, 0.9])" type="HistogramChart"/>
+        <chart name="histograms simple 3" script="import numpy as np&#10;import chart&#10;&#10;samples = np.random.normal(loc=42, scale=6.28, size=1000000)&#10;&#10;values, edges = np.histogram(samples, bins=64)&#10;&#10;print(edges)&#10;print(values)&#10;&#10;chart.plotHistogram(&quot;bell&quot;, edges, values)" type="HistogramChart"/>
+        <chart name="histograms dataframe 1" script="import results&#10;import chart&#10;&#10;df = results.getHistograms(&quot;name(collisionLength:histogram)&quot;)&#10;&#10;print(df.columns)&#10;chart.plotHistograms(df)" type="HistogramChart"/>
         <chart name="styling 1" script="df = pd.DataFrame(&#10;    [[10, 30],&#10;     [12, 34]],&#10;    columns=[&quot;X&quot;, &quot;Y&quot;],&#10;    index=[&quot;alpha&quot;, &quot;beta&quot;])&#10;&#10;print(df)&#10;&#10;chart.plotScalars(df)&#10;&#10;&#10;chart.setProperty(&quot;Graph.Title&quot;, &quot;This is a nice chart!&quot;)&#10;chart.setProperty(&quot;Plot.BackgroundColor&quot;, &quot;lightgreen&quot;)&#10;chart.setProperty(&quot;Legend.Font&quot;, &quot;Arial-bold-18&quot;)" type="BarChart">
             <property name="Graph.Title" value="Even though we have a title set here, this will be overridden by the script"/>
             <property name="Legend.Font" value="Arial-italic-12"/>
