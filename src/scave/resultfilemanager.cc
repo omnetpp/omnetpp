@@ -1297,7 +1297,7 @@ inline bool strdictLess(const std::string& first, const std::string& second)
 
 struct StrDictCompare
 {
-    bool operator()(const std::string& first, const std::string& second)
+    bool operator()(const std::string& first, const std::string& second) const
     {
         return strdictLess(first, second);
     }
