@@ -91,7 +91,7 @@ while (<FILE>)
       }
       elsif ($fieldType eq "eventnumber_t")
       {
-         $fieldPrintfType = "%\" EVENTNUMBER_PRINTF_FORMAT \"d";
+         $fieldPrintfType = "%\" EVENTNUMBER_PRINTF_FORMAT \"";
          $fieldDefault = "-1";
       }
       elsif ($fieldType eq "simtime_t")
