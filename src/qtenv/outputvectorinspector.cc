@@ -109,9 +109,11 @@ OutputVectorInspector::OutputVectorInspector(QWidget *parent, bool isTopLevel, I
 
 OutputVectorInspector::~OutputVectorInspector()
 {
-    // cancel installed callback in inspected outvector
-    cOutVector *ov = static_cast<cOutVector *>(object);
-    ov->setCallback(nullptr, nullptr);
+    if (object) {
+        // cancel installed callback in inspected outvector
+        cOutVector *ov = static_cast<cOutVector *>(object);
+        ov->setCallback(nullptr, nullptr);
+    }
 }
 
 void OutputVectorInspector::doSetObject(cObject *obj)
@@ -123,9 +125,11 @@ void OutputVectorInspector::doSetObject(cObject *obj)
 
     Inspector::doSetObject(obj);
 
-    // make inspected output vector to call us back when it gets data to write out
-    cOutVector *ov = static_cast<cOutVector *>(object);
-    ov->setCallback(record_in_insp, (void *)this);
+    if (object) {
+        // make inspected output vector to call us back when it gets data to write out
+        cOutVector *ov = static_cast<cOutVector *>(object);
+        ov->setCallback(record_in_insp, (void *)this);
+    }
 }
 
 void OutputVectorInspector::refresh()
