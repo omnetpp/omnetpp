@@ -60,7 +60,7 @@ EventLogEntry *EventLogEntry::parseEntry(EventLog *eventLog, Event *event, int e
     catch (opp_runtime_error& e) {
         const char *fileName = eventLog->getFileReader()->getFileName();
         if (event && event->getEventEntry())
-            throw opp_runtime_error("Error parsing elog file %s at line %d of event #%" EVENTNUMBER_PRINTF_FORMAT "D near file offset %" PRId64 ":\n%s", fileName, entryIndex, event->getEventNumber(), offset, e.what());
+            throw opp_runtime_error("Error parsing elog file %s at line %d of event #%" EVENTNUMBER_PRINTF_FORMAT " near file offset %" PRId64 ":\n%s", fileName, entryIndex, event->getEventNumber(), offset, e.what());
         else
             throw opp_runtime_error("Error parsing elog file %s near file offset %" PRId64 ":\n%s", fileName, offset, e.what());
     }

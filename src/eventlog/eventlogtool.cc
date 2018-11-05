@@ -212,7 +212,7 @@ void offsets(Options options)
             file_offset_t offset = eventLogIndex.getOffsetForEventNumber(*it);
 
             if (options.verbose)
-                fprintf(stdout, "# Event #%" EVENTNUMBER_PRINTF_FORMAT "d --> file offset %" PRId64 " (0x%" PRId64 "x)\n", *it, offset, offset);
+                fprintf(stdout, "# Event #%" EVENTNUMBER_PRINTF_FORMAT " --> file offset %" PRId64 " (0x%" PRId64 "x)\n", *it, offset, offset);
 
             if (offset != -1 && options.verbose) {
                 fileReader->seekTo(offset);
@@ -244,7 +244,7 @@ void events(Options options)
             IEvent *event = eventLog.getEventForBeginOffset(*it);
 
             if (options.verbose)
-                fprintf(stdout, "# Event #%" EVENTNUMBER_PRINTF_FORMAT "d found at file offset %" PRId64 " (0x%" PRId64 "x)\n", event->getEventNumber(), *it, *it);
+                fprintf(stdout, "# Event #%" EVENTNUMBER_PRINTF_FORMAT " found at file offset %" PRId64 " (0x%" PRId64 "x)\n", event->getEventNumber(), *it, *it);
 
             event->print(options.outputFile);
         }
@@ -273,7 +273,7 @@ void ranges(Options options)
         IEvent *nextEvent = event->getNextEvent();
 
         if (!nextEvent || event->getEventNumber() != nextEvent->getEventNumber() - 1) {
-            fprintf(stdout, "#%" EVENTNUMBER_PRINTF_FORMAT "d -> #%" EVENTNUMBER_PRINTF_FORMAT "d\n", rangeFirstEvent->getEventNumber(), event->getEventNumber());
+            fprintf(stdout, "#%" EVENTNUMBER_PRINTF_FORMAT " -> #%" EVENTNUMBER_PRINTF_FORMAT "\n", rangeFirstEvent->getEventNumber(), event->getEventNumber());
             rangeFirstEvent = nextEvent;
         }
 
@@ -289,7 +289,7 @@ void ranges(Options options)
 void echo(Options options)
 {
     if (options.verbose)
-        fprintf(stdout, "# Echoing events from log file %s from event number #%" EVENTNUMBER_PRINTF_FORMAT "d to event number #%" EVENTNUMBER_PRINTF_FORMAT "d\n", options.inputFileName, options.getFirstEventNumber(), options.getLastEventNumber());
+        fprintf(stdout, "# Echoing events from log file %s from event number #%" EVENTNUMBER_PRINTF_FORMAT " to event number #%" EVENTNUMBER_PRINTF_FORMAT "\n", options.inputFileName, options.getFirstEventNumber(), options.getLastEventNumber());
 
     FileReader *fileReader = new FileReader(options.inputFileName);
     IEventLog *eventLog = options.createEventLog(fileReader);
@@ -299,7 +299,7 @@ void echo(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Echoing of %" EVENTNUMBER_PRINTF_FORMAT "d events, %" PRId64 " lines and %" PRId64 " bytes from log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Echoing of %" EVENTNUMBER_PRINTF_FORMAT " events, %" PRId64 " lines and %" PRId64 " bytes from log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 
     options.deleteEventLog(eventLog);
 }
@@ -326,7 +326,7 @@ void filter(Options options)
     eventnumber_t tracedEventNumber = options.eventNumbers.empty() ? -1 : options.eventNumbers.at(0);
 
     if (options.verbose)
-        fprintf(stdout, "# Filtering events from log file %s for traced event number #%" EVENTNUMBER_PRINTF_FORMAT "d from event number #%" EVENTNUMBER_PRINTF_FORMAT "d to event number #%" EVENTNUMBER_PRINTF_FORMAT "d\n",
+        fprintf(stdout, "# Filtering events from log file %s for traced event number #%" EVENTNUMBER_PRINTF_FORMAT " from event number #%" EVENTNUMBER_PRINTF_FORMAT " to event number #%" EVENTNUMBER_PRINTF_FORMAT "\n",
                 options.inputFileName, tracedEventNumber, options.getFirstEventNumber(), options.getLastEventNumber());
 
     FileReader *fileReader = new FileReader(options.inputFileName);
@@ -337,7 +337,7 @@ void filter(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Filtering of %" EVENTNUMBER_PRINTF_FORMAT "d events, %" PRId64 " lines and %" PRId64 " bytes from log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Filtering of %" EVENTNUMBER_PRINTF_FORMAT " events, %" PRId64 " lines and %" PRId64 " bytes from log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 
     options.deleteEventLog(eventLog);
 }
