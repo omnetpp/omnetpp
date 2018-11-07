@@ -69,8 +69,9 @@ public class PythonProcessPool {
         }
 
         String location2 = location.replaceAll("/src/org/omnetpp/scave/pychart/python$", "/org/omnetpp/scave/pychart/python");
+        String location3 = location.replaceAll("/src/org/omnetpp/scave/pychart/python$", "/python");
 
-        String pythonPath = location + File.pathSeparator + location2;
+        String pythonPath = location + File.pathSeparator + location2 + File.pathSeparator + location3;
 
         ProcessBuilder pb = new ProcessBuilder()
                 .command("python3", "-m", "PythonEntryPoint", Integer.toString(javaPort))
