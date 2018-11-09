@@ -80,25 +80,24 @@ public class ScavePlugin extends AbstractUIPlugin {
             IInterpreterInfo info = manager.createInterpreterInfo("/usr/bin/python3", new NullProgressMonitor(), false);
             info.setName("Default Python 3");
 
-            String location = "NULL";
+            String locationBase = "NULL";
             try {
-                location = new File(
-                        PythonProcessPool.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()
-                                + "src/org/omnetpp/scave/pychart/python").getAbsolutePath();
+                locationBase = new File(PythonProcessPool.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getAbsolutePath();
             }
             catch (URISyntaxException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            String location2 = location.replaceAll("/src/org/omnetpp/scave/pychart/python$",
-                    "/org/omnetpp/scave/pychart/python");
+
+            String location1 = locationBase + File.separator + "src/org/omnetpp/scave/pychart/python"; // during development
+            String location2 = locationBase + File.separator + "org/omnetpp/scave/pychart/python"; // in release builds
 
             try {
-                File f1 = new File(location);
+                File f1 = new File(location1);
                 if (f1.exists()) {
-                    location = f1.getCanonicalPath();
-                    ((InterpreterInfo) info).libs.add(location);
-                    ((InterpreterInfo) info).addPredefinedCompletionsPath(location);
+                    location1 = f1.getCanonicalPath();
+                    ((InterpreterInfo) info).libs.add(location1);
+                    ((InterpreterInfo) info).addPredefinedCompletionsPath(location1);
                 }
 
                 File f2 = new File(location2);

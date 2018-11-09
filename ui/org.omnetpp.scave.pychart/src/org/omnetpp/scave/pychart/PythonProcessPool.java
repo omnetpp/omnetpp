@@ -59,19 +59,20 @@ public class PythonProcessPool {
         // This only worked with the internal test app, and not when used from within the IDE.
         //String location = PythonProcessPool.class.getResource("python").getPath();
 
-        String location = "NULL";
+        String locationBase = "NULL";
         try {
-            location = new File(PythonProcessPool.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath() + "src/org/omnetpp/scave/pychart/python").getAbsolutePath();
+            locationBase = new File(PythonProcessPool.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getAbsolutePath();
         }
         catch (URISyntaxException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
-        String location2 = location.replaceAll("/src/org/omnetpp/scave/pychart/python$", "/org/omnetpp/scave/pychart/python");
-        String location3 = location.replaceAll("/src/org/omnetpp/scave/pychart/python$", "/python");
+        String location1 = locationBase + File.separator + "src/org/omnetpp/scave/pychart/python"; // during development
+        String location2 = locationBase + File.separator + "org/omnetpp/scave/pychart/python"; // in release builds
+        String location3 = locationBase + File.separator + "python"; // for Py4J
 
-        String pythonPath = location + File.pathSeparator + location2 + File.pathSeparator + location3;
+        String pythonPath = location1 + File.pathSeparator + location2 + File.pathSeparator + location3;
 
         ProcessBuilder pb = new ProcessBuilder()
                 .command("python3", "-m", "PythonEntryPoint", Integer.toString(javaPort))
