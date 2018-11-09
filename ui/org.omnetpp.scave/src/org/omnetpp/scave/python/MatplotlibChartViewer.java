@@ -91,7 +91,7 @@ public class MatplotlibChartViewer {
         this.processPool = processPool;
 
         proc = null;
-        plotWidget = new PlotWidget(parent, SWT.NONE, proc, null);
+        plotWidget = new PlotWidget(parent, SWT.DOUBLE_BUFFERED, proc, null);
     }
 
     public void runPythonScript(String script, File workingDir, Runnable runAfterDone, IPy4JExceptionHandler runAfterError) {

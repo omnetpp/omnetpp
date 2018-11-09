@@ -79,11 +79,11 @@ public class NativeChartViewer {
         proc = null;
 
         if (chart instanceof BarChart)
-            chartView = new ScalarChartViewer(parent, SWT.NONE);
+            chartView = new ScalarChartViewer(parent, SWT.DOUBLE_BUFFERED);
         else if (chart instanceof LineChart || chart instanceof ScatterChart)
-            chartView = new VectorChartViewer(parent, SWT.NONE);
+            chartView = new VectorChartViewer(parent, SWT.DOUBLE_BUFFERED);
         else if (chart instanceof HistogramChart)
-            chartView = new HistogramChartViewer(parent, SWT.NONE);
+            chartView = new HistogramChartViewer(parent, SWT.DOUBLE_BUFFERED);
     }
 
 
