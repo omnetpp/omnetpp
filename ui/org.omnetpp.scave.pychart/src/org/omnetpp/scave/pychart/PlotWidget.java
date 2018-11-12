@@ -224,6 +224,9 @@ public class PlotWidget extends Canvas implements IPlotWidget {
                 PaletteData palette = new PaletteData(0xFF000000, 0xFF0000, 0xFF00);
                 ImageData imageData = new ImageData(w, h, 32, palette, 1, m_pixels);
 
+                if (image != null)
+                    image.dispose();
+
                 // this is actually the slowest part... consider using BufferedImage or
                 // something like that?
                 image = new Image(getDisplay(), imageData);
