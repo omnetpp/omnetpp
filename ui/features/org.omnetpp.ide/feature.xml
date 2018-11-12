@@ -18,7 +18,7 @@
       <import feature="org.eclipse.gef" version="3.11.0.201606061308" match="compatible"/>
       <import feature="org.eclipse.gmf.runtime.thirdparty" version="1.12.0.201806010809" match="compatible"/>
       <import feature="org.eclipse.platform" version="4.8.0.v20180611-0656" match="compatible"/>
-      <import feature="org.python.pydev.feature" version="6.4.3.201807050139" match="compatible"/>
+      <import feature="org.python.pydev.feature" version="7.0.3" match="compatible"/>
    </requires>
 
    <plugin
