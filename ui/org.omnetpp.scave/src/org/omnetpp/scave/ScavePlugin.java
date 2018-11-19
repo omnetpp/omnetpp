@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashSet;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
@@ -89,7 +90,7 @@ public class ScavePlugin extends AbstractUIPlugin {
         IInterpreterManager manager = InterpreterManagersAPI.getPythonInterpreterManager();
         if (manager.getInterpreterInfos().length == 0) {
 
-            String pythonExecutable = findExecutableOnPath("python3");
+            String pythonExecutable = findExecutableOnPath(SystemUtils.IS_OS_WINDOWS ? "python3.exe" : "python3");
             System.out.println("found python3: " + pythonExecutable);
 
             IInterpreterInfo info = manager.createInterpreterInfo(pythonExecutable, new NullProgressMonitor(), false);
@@ -128,6 +129,9 @@ public class ScavePlugin extends AbstractUIPlugin {
             }
 
             manager.setInfos(new IInterpreterInfo[] { info }, new HashSet<String>(), new NullProgressMonitor());
+        }
+        else {
+            System.out.println("At least one Python interpreter is configured for PyDev, let's leave it at that, assuming it's fine.");
         }
 
         /*
