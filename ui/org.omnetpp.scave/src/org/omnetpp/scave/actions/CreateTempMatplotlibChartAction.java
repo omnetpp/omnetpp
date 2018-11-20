@@ -73,12 +73,15 @@ public class CreateTempMatplotlibChartAction extends AbstractScaveAction {
         StringBuilder sb = new StringBuilder("import numpy as np\n" +
                 "import pandas as pd\n" +
                 "import matplotlib.pyplot as plt\n" +
-                "from omnetpp.scave import results, chart\n\n" +
+                "from omnetpp.scave import results, chart\n" +
+                "from omnetpp.scave import vectorops as ops\n\n" +
                 "df = results.get_" + typeName + "(\"\"\"\n");
 
         sb.append(ScaveModelUtil.getIDListAsChartInput(ids, filterFields, manager));
 
         sb.append("\n\"\"\")\n");
+
+        sb.append("\n# You can perform any transformations on the data here\n\n");
 
         if (type.getName().equals("vector")) {
             sb.append("df = df[df.type == 'vector']\n");
