@@ -90,7 +90,7 @@ public class ScriptEngine {
         try {
             ResultSet resultSet = new ResultSet();
             for (ScriptCommand command : script) {
-                System.out.println("DOING SCRIPT COMMAND: " + command);
+                Debug.println("DOING SCRIPT COMMAND: " + command);
                 long startTime = System.currentTimeMillis();
                 if (command instanceof AddCommand) {
                     AddCommand addCommand = (AddCommand)command;
@@ -126,7 +126,7 @@ public class ScriptEngine {
                 else {
                     throw new RuntimeException("Unknown command " + command.toString());
                 }
-                System.out.println(command.getClass().getSimpleName() + " took " + (System.currentTimeMillis()-startTime) + "ms");
+                Debug.println(command.getClass().getSimpleName() + " took " + (System.currentTimeMillis()-startTime) + "ms");
             }
 
             return resultSet;
@@ -159,7 +159,7 @@ public class ScriptEngine {
             }
         }
 
-        System.out.println("DatasetManager.getIDListFromDataset(): FILTER MATCHED " + result.size() + " ITEMS OF " + pool.size());
+        Debug.println("DatasetManager.getIDListFromDataset(): FILTER MATCHED " + result.size() + " ITEMS OF " + pool.size());
         return result;
     }
 
@@ -174,7 +174,7 @@ public class ScriptEngine {
         }
 
         IDList result = StringUtils.isBlank(filter) ? pool : manager.filterIDList(pool, filter);
-        System.out.println("DatasetManager.getIDListFromDataset(): FILTER MATCHED " + result.size() + " ITEMS OF " + pool.size());
+        Debug.println("DatasetManager.getIDListFromDataset(): FILTER MATCHED " + result.size() + " ITEMS OF " + pool.size());
         return result;
     }
 
@@ -237,7 +237,7 @@ public class ScriptEngine {
                 vectors[i] = new XYVector(arrays[i]);
         }
 
-        System.out.println("getDataOfVectors() took " + (System.currentTimeMillis()-startTime) + "ms");
+        Debug.println("getDataOfVectors() took " + (System.currentTimeMillis()-startTime) + "ms");
 
         return vectors;
     }

@@ -12,7 +12,8 @@ Bundle-Activator: org.omnetpp.scave.pychart.PyChartPlugin
 Bundle-Vendor: OpenSim Ltd.
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.workbench,
- org.eclipse.jface
+ org.eclipse.jface,
+ org.omnetpp.common.core
 Export-Package: 
  net.razorvine.examples,
  net.razorvine.pickle,

@@ -1,7 +1,7 @@
 package org.omnetpp.scave.pychart;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
-
+import org.omnetpp.common.Debug;
 import py4j.Py4JException;
 
 public class PythonCallerThread extends Thread {
@@ -35,7 +35,7 @@ public class PythonCallerThread extends Thread {
             try {
                 wrapped.run();
             } catch (Exception e) {
-                e.printStackTrace();
+                PyChartPlugin.logError(e);
             }
             finally {
                 done = true;
@@ -110,6 +110,6 @@ public class PythonCallerThread extends Thread {
                 }
             }
         }
-        System.out.println("Python executor thread exiting.");
+        Debug.println("Python executor thread exiting.");
     }
 }

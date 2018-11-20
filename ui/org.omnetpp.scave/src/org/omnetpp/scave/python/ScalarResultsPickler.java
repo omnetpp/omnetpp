@@ -3,6 +3,7 @@ package org.omnetpp.scave.python;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.omnetpp.common.Debug;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ScalarResult;
@@ -41,7 +42,7 @@ public class ScalarResultsPickler implements IObjectPickler {
             IDList scalars = resultManager.getAllScalars();
             scalars = resultManager.filterIDList(scalars, filter);
 
-            System.out.println("pickling " + scalars.size() + " scalars");
+            Debug.println("pickling " + scalars.size() + " scalars");
 
             ResultPicklingUtils.pickleRunsOfResults(resultManager, scalars, pickler, out);
 

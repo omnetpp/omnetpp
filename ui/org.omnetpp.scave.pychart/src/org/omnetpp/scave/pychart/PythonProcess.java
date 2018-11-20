@@ -1,5 +1,7 @@
 package org.omnetpp.scave.pychart;
 
+import org.omnetpp.common.Debug;
+
 import py4j.ClientServer;
 
 public class PythonProcess {
@@ -28,34 +30,33 @@ public class PythonProcess {
         if (entryPoint != null)
             return entryPoint;
 
-        System.out.println("getting entry point...");
+        Debug.println("getting entry point...");
         int tries = 0;
         boolean ok = false;
         while (!ok && tries < 5) {
             try {
                 entryPoint = (IPythonEntryPoint) clientServer
                         .getPythonServerEntryPoint(new Class[] { IPythonEntryPoint.class });
-                System.out.println("checking the entry point...");
+                Debug.println("checking the entry point...");
                 ++tries;
                 ok = entryPoint.check();
-                System.out.println("we have the entry point? " + ok);
+                Debug.println("we have the entry point? " + ok);
             }
             catch (Exception e) {
-                System.out.println("can't connect yet, trying again in a bit...");
+                Debug.println("can't connect yet, trying again in a bit...");
                 try {
                     Thread.sleep(500);
                 }
                 catch (InterruptedException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
+                    PyChartPlugin.logError(e1);
                 }
             }
         }
 
         if (!ok) {
             entryPoint = null;
-            System.out.println("Couldn't get the entry point to the Python process... :(");
-            System.out.println("Python said:" + outputMonitoringThread.outputSoFar);
+            Debug.println("Couldn't get the entry point to the Python process... :(");
+            Debug.println("Python said:" + outputMonitoringThread.outputSoFar);
         }
 
         return entryPoint;

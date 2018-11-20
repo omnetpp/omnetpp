@@ -3,6 +3,7 @@ package org.omnetpp.scave.python;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.omnetpp.common.Debug;
 import org.omnetpp.scave.engine.Histogram;
 import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
@@ -52,7 +53,7 @@ public class HistogramResultsPickler implements IObjectPickler {
             IDList histograms = resultManager.getAllHistograms();
 
             histograms = resultManager.filterIDList(histograms, filter);
-            System.out.println("pickling " + histograms.size() + " histograms");
+            Debug.println("pickling " + histograms.size() + " histograms");
 
             ResultPicklingUtils.pickleRunsOfResults(resultManager, histograms, pickler, out);
 

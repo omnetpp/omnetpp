@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.contentassist.ContentProposalEx;
 import org.omnetpp.common.contentassist.IContentProposalEx;
 import org.omnetpp.scave.computed.VectorOperation;
@@ -25,7 +26,7 @@ import org.omnetpp.scave.script.IScriptConstants;
 public class ScriptContentProposalProvider implements IContentProposalProvider, IScriptConstants {
     protected FilterContentProposalProvider filterContentProposalProvider = new FilterContentProposalProvider();
     protected static final boolean debug = true;
-    private static final String SP = " "; 
+    private static final String SP = " ";
 
     public IContentProposal[] getProposals(String contents, int position) {
         List<IContentProposal> proposals = new ArrayList<IContentProposal>();
@@ -37,9 +38,9 @@ public class ScriptContentProposalProvider implements IContentProposalProvider, 
             int filterStartPos = contents.indexOf(_WHERE_, lineStartPos) + _WHERE_.length();
             Assert.isTrue(filterStartPos != -1);
             int lineEndPos = contents.indexOf('\n', position);
-            if (lineEndPos == -1) 
+            if (lineEndPos == -1)
                 lineEndPos = contents.length();
-            String filter = contents.substring(filterStartPos, lineEndPos); 
+            String filter = contents.substring(filterStartPos, lineEndPos);
             IContentProposalEx[] filterProposals = filterContentProposalProvider.getProposals(filter, position - filterStartPos);
             for (IContentProposal p : filterProposals) {
                 ContentProposalEx pp = (ContentProposalEx)p;
@@ -130,7 +131,7 @@ public class ScriptContentProposalProvider implements IContentProposalProvider, 
     protected void collectFilteredProposals(List<IContentProposal> result, ContentProposalEx[] proposals, String prefix, int startIndex, int endIndex, int decorators) {
         if (proposals != null) {
             for (ContentProposalEx proposal : proposals) {
-                System.out.println("prefix=" + prefix + "  proposal=" + proposal.getContent());
+                Debug.println("prefix=" + prefix + "  proposal=" + proposal.getContent());
                 if (StringUtils.startsWithIgnoreCase(proposal.getContent(), prefix)) {
                     proposal.setStartIndex(startIndex);
                     proposal.setEndIndex(endIndex);
@@ -140,5 +141,5 @@ public class ScriptContentProposalProvider implements IContentProposalProvider, 
             }
         }
     }
-    
+
 }

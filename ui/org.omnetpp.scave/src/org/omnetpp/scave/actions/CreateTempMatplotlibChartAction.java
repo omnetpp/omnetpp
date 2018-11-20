@@ -108,7 +108,6 @@ public class CreateTempMatplotlibChartAction extends AbstractScaveAction {
 
         //sb.append("cursor = mpl.widgets.Cursor(plt.gca(), useblit=True, color='red', linewidth=2)\n");
 
-        // System.out.println(sb.toString());
         return sb.toString();
     }
 

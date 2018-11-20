@@ -22,6 +22,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.omnetpp.common.Debug;
+import org.omnetpp.scave.pychart.PyChartPlugin;
 import org.omnetpp.scave.pychart.PythonProcessPool;
 import org.osgi.framework.BundleContext;
 import org.python.pydev.ast.interpreter_managers.InterpreterInfo;
@@ -91,7 +93,7 @@ public class ScavePlugin extends AbstractUIPlugin {
         if (manager.getInterpreterInfos().length == 0) {
 
             String pythonExecutable = findExecutableOnPath(SystemUtils.IS_OS_WINDOWS ? "python3.exe" : "python3");
-            System.out.println("found python3: " + pythonExecutable);
+            Debug.println("found python3: " + pythonExecutable);
 
             IInterpreterInfo info = manager.createInterpreterInfo(pythonExecutable, new NullProgressMonitor(), false);
             info.setName("Default Python 3");
@@ -101,8 +103,7 @@ public class ScavePlugin extends AbstractUIPlugin {
                 locationBase = new File(PythonProcessPool.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getAbsolutePath();
             }
             catch (URISyntaxException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logError(e);
             }
             String location = locationBase + File.separator + "python"; // in release builds
 
@@ -115,14 +116,13 @@ public class ScavePlugin extends AbstractUIPlugin {
                 }
             }
             catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logError(e);
             }
 
             manager.setInfos(new IInterpreterInfo[] { info }, new HashSet<String>(), new NullProgressMonitor());
         }
         else {
-            System.out.println("At least one Python interpreter is configured for PyDev, let's leave it at that, assuming it's fine.");
+            Debug.println("At least one Python interpreter is configured for PyDev, let's leave it at that, assuming it's fine.");
         }
 
         /*

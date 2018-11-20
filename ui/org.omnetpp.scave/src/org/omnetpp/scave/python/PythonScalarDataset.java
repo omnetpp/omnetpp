@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.dataset.IScalarDataset;
 
 import net.razorvine.pickle.PickleException;
@@ -37,8 +38,7 @@ public class PythonScalarDataset implements IScalarDataset {
                 columns.add(Arrays.copyOfRange(doubleValues, i * numRows, (i + 1) * numRows));
         }
         catch (PickleException | IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            ScavePlugin.logError(e);
         }
     }
 

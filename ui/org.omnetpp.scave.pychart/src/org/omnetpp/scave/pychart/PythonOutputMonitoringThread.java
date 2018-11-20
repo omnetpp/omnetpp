@@ -45,8 +45,7 @@ public class PythonOutputMonitoringThread extends Thread {
             }
         }
         catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            PyChartPlugin.logError(e);
         }
         // TODO: notify PythonProcess of Process death?
     }

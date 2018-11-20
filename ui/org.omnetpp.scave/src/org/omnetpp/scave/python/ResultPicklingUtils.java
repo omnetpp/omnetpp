@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.engine.ILock;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.OrderedKeyValueList;
@@ -140,7 +141,7 @@ public class ResultPicklingUtils {
         byte[] scalarsPickle = p.dumps(resultManager);
         long endNanos = System.nanoTime();
 
-        System.out.println("pickling scalars took " + (endNanos - startNanos) / 1000000.0 + " ms, size is "
+        Debug.println("pickling scalars took " + (endNanos - startNanos) / 1000000.0 + " ms, size is "
                 + scalarsPickle.length + " bytes");
 
         l.unlock();
@@ -159,7 +160,7 @@ public class ResultPicklingUtils {
         byte[] vectorsPickle = p.dumps(resultManager);
         long endNanos = System.nanoTime();
 
-        System.out.println("pickling vectors took " + (endNanos - startNanos) / 1000000.0 + " ms, size is "
+        Debug.println("pickling vectors took " + (endNanos - startNanos) / 1000000.0 + " ms, size is "
                 + vectorsPickle.length + " bytes");
 
         l.unlock();
@@ -178,7 +179,7 @@ public class ResultPicklingUtils {
         byte[] vectorsPickle = p.dumps(resultManager);
         long endNanos = System.nanoTime();
 
-        System.out.println("pickling statistics took " + (endNanos - startNanos) / 1000000.0 + " ms, size is "
+        Debug.println("pickling statistics took " + (endNanos - startNanos) / 1000000.0 + " ms, size is "
                 + vectorsPickle.length + " bytes");
 
         l.unlock();
@@ -197,7 +198,7 @@ public class ResultPicklingUtils {
         byte[] vectorsPickle = p.dumps(resultManager);
         long endNanos = System.nanoTime();
 
-        System.out.println("pickling histograms took " + (endNanos - startNanos) / 1000000.0 + " ms, size is "
+        Debug.println("pickling histograms took " + (endNanos - startNanos) / 1000000.0 + " ms, size is "
                 + vectorsPickle.length + " bytes");
 
         l.unlock();

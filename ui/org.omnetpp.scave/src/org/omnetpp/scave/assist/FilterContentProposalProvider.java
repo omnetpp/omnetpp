@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.contentassist.ContentProposalEx;
 import org.omnetpp.common.contentassist.IContentProposalEx;
 import org.omnetpp.common.util.MatchExpressionContentProposalProvider;
@@ -179,6 +180,6 @@ public class FilterContentProposalProvider extends MatchExpressionContentProposa
                 collectFilteredProposals(proposals, patternProposals.get(FilterUtil.getDefaultField()), "", position, position, spaceBefore | ContentProposalEx.DEC_QUOTE);
             }
         }
-        System.out.println(proposals);
+        Debug.println(proposals.toString());
     }
 }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.dataset.IHistogramDataset;
 
 import net.razorvine.pickle.PickleException;
@@ -56,8 +57,7 @@ public class PythonHistogramDataset implements IHistogramDataset {
 
         }
         catch (PickleException | IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            ScavePlugin.logError(e);
         }
     }
 

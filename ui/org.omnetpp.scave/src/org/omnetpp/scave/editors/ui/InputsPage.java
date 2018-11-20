@@ -36,6 +36,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.part.FileEditorInput;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.actions.CollapseSubtreeAction;
@@ -192,7 +193,7 @@ public class InputsPage extends FormEditorPage {
 
     @Override
     public void selectionChanged(ISelection selection) {
-        System.out.println(selection);
+        Debug.println(selection.toString());
         //TODO if selection contains InputFiles, select them in the tree?
     }
 

@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ui.ResultItemNamePatternField;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.LineChart;
@@ -45,7 +46,7 @@ public class LineChartEditForm extends BaseLineChartEditForm {
         try {
             updateDataset(getChart().getLineNameFormat());
         } catch (Exception e) {
-            e.printStackTrace(); //TODO handle better -- this is likely a syntax error in the "Inputs" script
+            ScavePlugin.logError(e); //TODO handle better -- this is likely a syntax error in the "Inputs" script
         }
     }
 

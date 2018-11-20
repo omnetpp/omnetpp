@@ -6,6 +6,8 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Map;
 
+import org.omnetpp.common.Debug;
+
 import py4j.ClientServer;
 
 public class PythonProcessPool {
@@ -33,7 +35,7 @@ public class PythonProcessPool {
                         errorMessage = e.getMessage();
                         threadExit = true;
                     }
-                    System.out.println("We have " + availableProcesses.size() + " processes.");
+                    Debug.println("We have " + availableProcesses.size() + " processes.");
                 }
                 try {
                     Thread.sleep(1000);
@@ -49,12 +51,12 @@ public class PythonProcessPool {
     }
 
     private PythonProcess createProcess() throws IOException {
-        System.out.println("connecting...");
+        Debug.println("connecting...");
         ClientServer clientServer = new ClientServer.ClientServerBuilder().javaPort(0).pythonPort(0).readTimeout(1000)
                 .build();
 
         int javaPort = clientServer.getJavaServer().getListeningPort();
-        System.out.println("listening port in Java: " + javaPort);
+        Debug.println("listening port in Java: " + javaPort);
 
         // This only worked with the internal test app, and not when used from within the IDE.
         //String location = PythonProcessPool.class.getResource("python").getPath();
@@ -64,8 +66,7 @@ public class PythonProcessPool {
             locationBase = new File(PythonProcessPool.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getAbsolutePath();
         }
         catch (URISyntaxException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            PyChartPlugin.logError(e);
         }
 
         String location = locationBase + File.separator + "python";
@@ -82,7 +83,7 @@ public class PythonProcessPool {
         else
             env.put("PYTHONPATH", location);
 
-        System.out.println("starting python process... with path " + env.get("PYTHONPATH"));
+        Debug.println("starting python process... with path " + env.get("PYTHONPATH"));
 
         Process process = pb.start();
 

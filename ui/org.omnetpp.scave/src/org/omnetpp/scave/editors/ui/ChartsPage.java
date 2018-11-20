@@ -27,6 +27,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.common.ui.IconGridViewer;
 import org.omnetpp.common.util.StringUtils;
@@ -176,7 +177,7 @@ public class ChartsPage extends FormEditorPage {
             @Override
             public void drop(Object[] draggedElements, Point p) {
                 Object insertionPoint = viewer.getElementAtOrAfter(p.x, p.y);
-                System.out.println("DRAGGED BEFORE: " + insertionPoint);
+                Debug.println("DRAGGED BEFORE: " + insertionPoint);
                 if (insertionPoint == null ||!ArrayUtils.contains(draggedElements, insertionPoint)) {
                     Charts charts = scaveEditor.getAnalysis().getCharts();
                     int index = insertionPoint == null ? charts.getItems().size() : charts.getItems().indexOf(insertionPoint);

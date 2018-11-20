@@ -138,6 +138,7 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheet;
 import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetSorter;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.ui.MultiPageEditorPartExt;
 import org.omnetpp.common.util.DetailedPartInitException;
 import org.omnetpp.common.util.ReflectionUtils;
@@ -899,7 +900,8 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
                                 else if ("scave:BarChart".equals(itemType) || "scave:HistogramChart".equals(itemType) || "scave:ScatterChart".equals(itemType) || "scave:LineChart".equals(itemType))
                                     analysis.getCharts().getItems().add(makeLegacyChart(ops, datasetName, itemNode, itemType));
                                 else
-                                    System.out.println("UNIMPLEMENTED ITEM TYPE: " + itemType);
+                                    // TODO: handle better
+                                    Debug.println("UNIMPLEMENTED ITEM TYPE: " + itemType);
                             } else if ("#text".equals(itemNode.getNodeName())) {
                                 if (!itemNode.getNodeValue().trim().isEmpty())
                                     throw new RuntimeException("unexpected text content: " + itemNode.getNodeValue());
@@ -995,7 +997,8 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
                 if (iso_column == null)
                     iso_column = child.getTextContent();
                 else {
-                    System.out.println("Warning: More than one isoDataPattern.");
+                    // TODO: handle better
+                    Debug.println("Warning: More than one isoDataPattern.");
                     break;
                 }
             }
@@ -2184,7 +2187,8 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
                                 }
                             }
                             else {
-                                System.out.println("Analysis item '" + a.getName() + "' is not a chart, ignored (dropped) upon saving");
+                                // TODO: handle better
+                                Debug.println("Analysis item '" + a.getName() + "' is not a chart, ignored (dropped) upon saving");
                             }
                         }
 
@@ -2192,8 +2196,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
                         modelFile.getFile().setContents(is, true, true, null);
                     }
                     catch (ParserConfigurationException | TransformerException | CoreException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        ScavePlugin.logError(e);
                     }
                 }
             };
@@ -2365,7 +2368,6 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
 
             @Override
             public boolean isAdapterForType(Object type) {
-                // System.out.println("IS ADAPTER FOR TYPE: " + type);
                 return false;
             }
 
@@ -2382,9 +2384,6 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         IMemento editorMemento = getMementoFor(editor);
         if (editorMemento != null)
             editor.restoreState(editorMemento);
-        else {
-            // System.out.println("NO MEMENTO FOR YOU");
-        }
 
         setActivePage(index);
 

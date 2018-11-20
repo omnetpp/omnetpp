@@ -255,8 +255,7 @@ public class ChartScriptEditor extends PyEdit {
                             consoleStream.write(output);
                         }
                         catch (IOException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
+                            ScavePlugin.logError(e);
                         }
                     });
                 };
@@ -471,15 +470,11 @@ public class ChartScriptEditor extends PyEdit {
             public void documentChanged(DocumentEvent event) {
                 ++documentChangeCounter;
 
-                // System.out.println("doc counter is: " + documentChangeCounter);
                 Display.getDefault().timerExec(1500, new Runnable() { // TODO: make this delay configurable?
                     int savedChangeCounter = documentChangeCounter;
 
-
                     @Override
                     public void run() {
-                        // System.out.println("doc counter is: " + documentChangeCounter + " saved counter is: " + savedChangeCounter);
-
                         if (documentChangeCounter == savedChangeCounter) {
                             if (!getDocument().get().equals(chart.getScript())) {
                                 SetCommand cmd = (SetCommand) SetCommand.create(scaveEditor.getEditingDomain(), chart,
@@ -509,8 +504,7 @@ public class ChartScriptEditor extends PyEdit {
                     errorMarker.delete();
             }
             catch (CoreException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
+                ScavePlugin.logError(e1);
             }
             errorMarker = null;
 
@@ -537,7 +531,6 @@ public class ChartScriptEditor extends PyEdit {
 
     private void annotatePythonException(Py4JException e) {
         String msg = e.getMessage();
-        // System.out.println("msg: " + msg);
 
         String problemMessage = null;
 
@@ -548,7 +541,6 @@ public class ChartScriptEditor extends PyEdit {
         int line = 0;
 
         String[] parts = msg.split("File \"<string>\", line ", 2);
-        //System.out.println(parts[0]);
 
         if (parts.length == 0)
             problemMessage = "Unknown error.";
@@ -558,9 +550,6 @@ public class ChartScriptEditor extends PyEdit {
             String[] parts2 = parts[1].split("(,|\n)", 2);
 
             line = Integer.parseInt(parts2[0]);
-
-            // String[] parts3 = parts[1].split("(in <module>)?\n", 2);
-            // String msg2 = parts3[1];
 
             try {
                 offset = doc.getLineOffset(line - 1);

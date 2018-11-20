@@ -16,8 +16,7 @@ class ChartScriptEditorInput implements IEditorInput {
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {
-        // System.out.println("getAdapter: " + adapter.getName());
-        return null; // ScaveEditor.this.getEditorInput().getAdapter(adapter);
+        return null;
     }
 
     @Override
