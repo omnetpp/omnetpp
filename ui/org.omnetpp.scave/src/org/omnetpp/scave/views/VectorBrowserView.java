@@ -12,6 +12,7 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.IInputValidator;
@@ -27,6 +28,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.TableColumn;
@@ -38,6 +40,7 @@ import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog;
 import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.common.virtualtable.VirtualTable;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.VectorResultContentProvider;
@@ -263,57 +266,29 @@ public class VectorBrowserView extends ViewWithMessagePart {
         }
 
         // recompute computed files if needed
-//TODO
-//        final ResultFileManager manager = selectedVector.getResultFileManager();
-//        final ResultItemRef finalSelectedVector = selectedVector;
-//        final int finalDataPointIndex = dataPointIndex;
-//        ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
-//            public Object call() throws Exception {
-//                final VectorResult vector = (VectorResult)finalSelectedVector.resolve();
-//                if (vector == null || !vector.isComputed() || !(vector.getComputation() instanceof ProcessingOp)) {
-//                    setViewerInputOrMessage(finalSelectedVector, finalDataPointIndex, Status.OK_STATUS);
-//                    return null;
-//                }
-//
-//                ProcessingOp operation =  (ProcessingOp)vector.getComputation();
-//                ResultItemRef origInput = (ResultItemRef)viewer.getInput();
-//                VectorResult origVector = origInput != null ? (VectorResult)origInput.resolve() : null;
-//                ComputedResultFileUpdater updater = ComputedResultFileUpdater.instance();
-//                if (origVector != null && operation == origVector.getComputation() &&
-//                        updater.isComputedFileUpToDate(operation, manager)) {
-//                    setViewerInputOrMessage(finalSelectedVector, finalDataPointIndex, Status.OK_STATUS);
-//                    return null;
-//                }
-//
-//                setViewerInput((IDListSelection)null);
-//                showMessage("Computing vectors...");
-//
-//                updater.ensureComputedFile(operation, manager,
-//                    new ComputedResultFileUpdater.CompletionCallback() {
-//                        public void completed(final CompletionEvent event) {
-//                            runInUIThread(new Runnable() {
-//                                public void run() {
-//                                    ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
-//                                        public Object call() {
-//                                            setViewerInputOrMessage(finalSelectedVector, finalDataPointIndex, event.getStatus());
-//                                            return null;
-//                                        }
-//                                    });
-//                                }
-//                            });
-//                        }
-//                    });
-//                return null;
-//            }
-//        });
+
+        final ResultFileManager manager = selectedVector.getResultFileManager();
+        final ResultItemRef finalSelectedVector = selectedVector;
+        final int finalDataPointIndex = dataPointIndex;
+
+        runInUIThread(new Runnable() {
+            public void run() {
+                ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+                    public Object call() {
+                        setViewerInputOrMessage(finalSelectedVector, finalDataPointIndex, new Status(IStatus.OK, ScavePlugin.PLUGIN_ID, ""));
+                        return null;
+                    }
+                });
+            }
+        });
     }
 
-//    private static void runInUIThread(Runnable runnable) {
-//        if (Display.getCurrent() == null)
-//            Display.getDefault().asyncExec(runnable);
-//        else
-//            runnable.run();
-//    }
+    private static void runInUIThread(Runnable runnable) {
+        if (Display.getCurrent() == null)
+            Display.getDefault().asyncExec(runnable);
+        else
+            runnable.run();
+    }
 
     public void setViewerInputOrMessage(ResultItemRef input, int serial, IStatus status) {
         final int severity = status.getSeverity();
