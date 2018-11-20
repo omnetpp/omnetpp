@@ -697,7 +697,12 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
                             throw new RuntimeException("unknown chart type: " + chartType);
 
                         chart.setName(chartNode.getAttributes().getNamedItem("name").getNodeValue());
-                        chart.setScript(chartNode.getAttributes().getNamedItem("script").getNodeValue());
+
+                        Node scriptAttrNode = chartNode.getAttributes().getNamedItem("script");
+                        if (scriptAttrNode != null)
+                            chart.setScript(scriptAttrNode.getNodeValue());
+                        else
+                            chart.setScript(chartNode.getTextContent());
 
                         NodeList props = chartNode.getChildNodes();
 
@@ -2161,7 +2166,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
                                 charts.appendChild(elem);
 
                                 elem.setAttribute("name", chart.getName());
-                                elem.setAttribute("script", chart.getScript());
+                                elem.setTextContent(chart.getScript());
 
                                 String type = null;
 
