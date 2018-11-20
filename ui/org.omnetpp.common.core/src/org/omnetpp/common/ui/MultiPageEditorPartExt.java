@@ -80,6 +80,11 @@ public abstract class MultiPageEditorPartExt extends MultiPageEditorPart {
         });
     }
 
+    public boolean isClosablePage(int page) {
+        CTabItem item = ((CTabFolder)getControl(page).getParent()).getItem(page);
+        return item.getShowClose();
+    }
+
     public boolean isClosablePage(Control control) {
         if (control == null)
             return false;

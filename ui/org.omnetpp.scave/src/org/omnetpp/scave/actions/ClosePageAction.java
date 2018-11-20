@@ -35,7 +35,6 @@ public class ClosePageAction extends AbstractScaveAction {
 
     @Override
     protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-        int page = editor.getActivePage();
-        return true; // editor.isClosablePage(editor.getEditorPage(page);
+        return editor.isClosablePage(editor.getActivePage());
     }
 }
