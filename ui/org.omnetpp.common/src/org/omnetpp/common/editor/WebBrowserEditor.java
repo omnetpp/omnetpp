@@ -34,6 +34,7 @@ import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.ISetSelectionTarget;
 import org.omnetpp.common.CommonPlugin;
+import org.omnetpp.common.Debug;
 
 /**
  * This class extends the standard Eclipse HTML editor with various actions
@@ -124,6 +125,12 @@ public class WebBrowserEditor extends org.eclipse.ui.internal.browser.WebBrowser
     @Override
     public void createPartControl(Composite parent) {
         super.createPartControl(parent);
+
+        if (webBrowser == null || webBrowser.getBrowser() == null) {
+            Debug.print("Web browser missing in WebBrowserEditor.");
+            return;
+        }
+
         webBrowser.getBrowser().addLocationListener(new LocationListener() {
             @Override
             public void changing(LocationEvent event) {
