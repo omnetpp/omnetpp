@@ -583,6 +583,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
 
         try {
             DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            modelFile.getFile().refreshLocal(1, null);
             Document d = db.parse(modelFile.getFile().getContents());
 
             NodeList nl = d.getChildNodes();
