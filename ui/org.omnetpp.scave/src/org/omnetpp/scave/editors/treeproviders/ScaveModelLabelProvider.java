@@ -29,6 +29,7 @@ import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.LineChart;
+import org.omnetpp.scave.model.MatplotlibChart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model2.ScaveModelUtil;
@@ -85,6 +86,10 @@ public class ScaveModelLabelProvider extends LabelProvider implements IColorProv
         else if (element instanceof ScatterChart) {
             Chart o = (Chart) element;
             return "scatter chart "+defaultIfEmpty(o.getName(), "<unnamed>");
+        }
+        else if (element instanceof MatplotlibChart) {
+            Chart o = (Chart) element;
+            return "python chart "+defaultIfEmpty(o.getName(), "<unnamed>");
         }
         else if (element instanceof Chart) {
             throw new IllegalArgumentException("unrecognized chart type");

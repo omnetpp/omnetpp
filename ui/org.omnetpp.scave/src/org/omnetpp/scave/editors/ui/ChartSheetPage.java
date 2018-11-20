@@ -58,7 +58,7 @@ import org.omnetpp.scave.model.ScaveModelPackage;
 //TODO chart context menu: replace "Go to ChartSheet Definition" with "Go to Chart Definition"
 //TODO chart context menu: add "Remove From Chart Sheet"
 //TODO dblclick on chart: after closing, mouse dragging mode sticks
-public class ChartSheetPage extends ScaveEditorPage {
+public class ChartSheetPage extends FormEditorPage {
 
     private ChartSheet chartSheet; // the underlying model
 

@@ -51,7 +51,7 @@ import org.omnetpp.scave.model.ResultType;
 //TODO remove page description; display "empty-table message" instead (stacklayout?)
 //TODO save filter bar sash positions
 //TODO focus issue (currently a toolbar icon gets the focus by default?)
-public class BrowseDataPage extends ScaveEditorPage {
+public class BrowseDataPage extends FormEditorPage {
 
     // UI elements
     private Label label;

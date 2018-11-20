@@ -14,7 +14,7 @@ import org.eclipse.ui.ISharedImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ui.ChartSheetPage;
-import org.omnetpp.scave.editors.ui.ScaveEditorPage;
+import org.omnetpp.scave.editors.ui.FormEditorPage;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.ScaveModelPackage;
 
@@ -48,7 +48,7 @@ public class SaveTempChartSheetAction extends AbstractScaveAction {
     }
 
     private ChartSheet getActiveTemporaryChartSheet(ScaveEditor editor) {
-        ScaveEditorPage page = editor.getActiveEditorPage();
+        FormEditorPage page = editor.getActiveEditorPage();
         if (page != null && page instanceof ChartSheetPage) {
             ChartSheet chartsheet = ((ChartSheetPage)page).getChartSheet();
             if (chartsheet != null && chartsheet.isTemporary())

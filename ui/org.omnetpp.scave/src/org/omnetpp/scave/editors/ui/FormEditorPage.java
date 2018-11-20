@@ -21,7 +21,6 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetAdapter;
@@ -32,7 +31,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -41,18 +39,18 @@ import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.charting.ChartCanvas;
+import org.omnetpp.scave.charting.ChartViewer;
 import org.omnetpp.scave.editors.ScaveEditor;
 
 /**
- * Common functionality of Scave multi-page editor pages.
+ * Common functionality of Scave multi-page editor pages with title and toolbar.
  * @author andras
  */
-public class ScaveEditorPage extends Composite {
+public class FormEditorPage extends Composite {
     //private static final Color PALETTE_BG_COLOR = new Color(null, 234, 240, 252);
     //private static final Color BUTTONS_BG_COLOR = new Color(null, 239, 244, 253);
-    private static final Color PALETTE_BG_COLOR = new Color(null, 241, 245, 253);
-    private static final Color BUTTONS_BG_COLOR = new Color(null, 249, 251, 254);
+    //private static final Color PALETTE_BG_COLOR = new Color(null, 241, 245, 253);
+    //private static final Color BUTTONS_BG_COLOR = new Color(null, 249, 251, 254);
 
     protected ScaveEditor scaveEditor = null;  // backreference to the containing editor
 
@@ -64,7 +62,7 @@ public class ScaveEditorPage extends Composite {
 
     protected FocusManager focusManager = null;
 
-    public ScaveEditorPage(Composite parent, int style, ScaveEditor scaveEditor) {
+    public FormEditorPage(Composite parent, int style, ScaveEditor scaveEditor) {
         super(parent, style);
         setLayout(new GridLayout(2, false));
         formTitle = new Label(this, SWT.NONE);
@@ -73,7 +71,7 @@ public class ScaveEditorPage extends Composite {
         content = new Composite(this, SWT.NONE);
         content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         ((GridData)content.getLayoutData()).horizontalSpan = 2;
-        
+
         this.scaveEditor = scaveEditor;
         this.toolbarManager = new ToolBarManager(toolbar);
     }
@@ -134,7 +132,7 @@ public class ScaveEditorPage extends Composite {
     public void updatePage(Notification notification) {
     }
 
-    protected void addToToolbar(IAction action) {
+    public void addToToolbar(IAction action) {
         toolbarManager.add(new ActionContributionItem(action));
         toolbarManager.update(true);
     }
@@ -144,7 +142,7 @@ public class ScaveEditorPage extends Composite {
         item.setVisible(visible);
         toolbarManager.update(true);
     }
-    
+
     private IContributionItem findActionOnToolbar(IAction action) {
         for (IContributionItem item : toolbarManager.getItems())
             if (item instanceof ActionContributionItem && ((ActionContributionItem)item).getAction() == action)
@@ -152,7 +150,7 @@ public class ScaveEditorPage extends Composite {
         return null;
     }
 
-    protected void addSeparatorToToolbar() {
+    public void addSeparatorToToolbar() {
         toolbarManager.add(new Separator());
         toolbarManager.update(true);
     }
@@ -238,7 +236,7 @@ public class ScaveEditorPage extends Composite {
     /**
      * Returns the active chart on this page.
      */
-    public ChartCanvas getActiveChartCanvas() {
+    public ChartViewer getActiveChartViewer() {
         return null;
     }
 

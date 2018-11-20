@@ -58,7 +58,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  */
 //TODO ChartDefinitionsPage? ChartListPage?
 //TODO add "Rename" to context menu
-public class ChartsPage extends ScaveEditorPage {
+public class ChartsPage extends FormEditorPage {
     private IconGridViewer viewer;
 
     /**

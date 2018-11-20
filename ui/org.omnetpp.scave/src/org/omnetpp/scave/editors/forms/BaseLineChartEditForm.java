@@ -62,7 +62,7 @@ import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ILinePlot;
-import org.omnetpp.scave.charting.VectorChart;
+import org.omnetpp.scave.charting.VectorChartViewer;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset.InterpolationMode;
 import org.omnetpp.scave.charting.dataset.RandomXYDataset;
@@ -627,7 +627,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
                 lineType = lineProps.getLineProperties(null).getLineType();
             if (lineType == null) {
                 lineType = line.interpolationMode != null ?
-                            VectorChart.getLineTypeForInterpolationMode(line.interpolationMode) :
+                            VectorChartViewer.getLineTypeForInterpolationMode(line.interpolationMode) :
                             LineType.Linear;
             }
 

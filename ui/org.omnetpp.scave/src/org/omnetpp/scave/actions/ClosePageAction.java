@@ -11,7 +11,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.editors.ui.ScaveEditorPage;
+import org.omnetpp.scave.editors.ui.FormEditorPage;
 
 /**
  * Close the current editor page.
@@ -28,13 +28,13 @@ public class ClosePageAction extends AbstractScaveAction {
 
     @Override
     protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
-        ScaveEditorPage page = scaveEditor.getActiveEditorPage();
+        int page = scaveEditor.getActivePage();
         scaveEditor.removePage(page);
     }
 
     @Override
     protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-        ScaveEditorPage page = editor.getActiveEditorPage();
-        return editor.isClosablePage(page);
+        int page = editor.getActivePage();
+        return true; // editor.isClosablePage(editor.getEditorPage(page);
     }
 }

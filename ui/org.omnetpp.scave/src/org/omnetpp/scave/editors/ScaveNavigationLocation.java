@@ -12,7 +12,7 @@ import org.eclipse.ui.IMemento;
 import org.eclipse.ui.INavigationLocation;
 import org.eclipse.ui.NavigationLocation;
 import org.eclipse.ui.XMLMemento;
-import org.omnetpp.scave.editors.ui.ScaveEditorPage;
+import org.omnetpp.scave.editors.ui.FormEditorPage;
 
 /**
  * INavigationLocation implementation for the ScaveEditor.
@@ -45,7 +45,7 @@ public class ScaveNavigationLocation extends NavigationLocation {
         super(editor);
 
         if (!empty) {
-            ScaveEditorPage page = editor.getActiveEditorPage();
+            FormEditorPage page = editor.getActiveEditorPage();
             timestamp = System.currentTimeMillis();
             text = editor.getTitle();
             if (page != null && page.getPageTitle() != null)
@@ -84,7 +84,7 @@ public class ScaveNavigationLocation extends NavigationLocation {
         ScaveEditor editor = getScaveEditor();
         if (editor != null) {
             if (pageId != null) {
-                ScaveEditorPage page = editor.restorePage(pageId);
+                FormEditorPage page = editor.restorePage(pageId);
                 if (page != null && pageMemento != null) {
                     page.restoreState(pageMemento);
                 }

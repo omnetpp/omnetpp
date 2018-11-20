@@ -133,8 +133,8 @@ import org.omnetpp.scave.editors.ui.BrowseDataPage;
 import org.omnetpp.scave.editors.ui.ChartPage;
 import org.omnetpp.scave.editors.ui.ChartSheetPage;
 import org.omnetpp.scave.editors.ui.ChartsPage;
+import org.omnetpp.scave.editors.ui.FormEditorPage;
 import org.omnetpp.scave.editors.ui.InputsPage;
-import org.omnetpp.scave.editors.ui.ScaveEditorPage;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Analysis;
@@ -163,7 +163,8 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
     private InputsPage inputsPage;
     private BrowseDataPage browseDataPage;
     private ChartsPage chartsPage;
-    private Map<EObject,ScaveEditorPage> closablePages = new LinkedHashMap<EObject,ScaveEditorPage>();
+
+    private Map<EObject,Control> closablePages = new LinkedHashMap<EObject,Control>();
 
     /**
      * This keeps track of the editing domain that is used to track all changes to the model.
@@ -696,23 +697,34 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
     /**
      * Adds a fixed (non-closable) editor page at the last position
      */
-    public int addScaveEditorPage(ScaveEditorPage page) {
+    public int addFixedPage(FormEditorPage page) {
         int index = addPage(page);
         setPageText(index, page.getPageTitle());
+        return index;
+    }
+
+    public int addClosablePage(IEditorPart editor, IEditorInput input, String pageTitle) throws PartInitException {
+        int index = getPageCount();
+        addClosablePage(index, editor, input);
+        setPageText(index, pageTitle);
         return index;
     }
 
     /**
      * Adds a closable editor page at the last position
      */
-    public int addClosableScaveEditorPage(ScaveEditorPage page) {
+    public int addClosablePage(Control page, String pageTitle) {
         int index = getPageCount();
         addClosablePage(index, page);
-        setPageText(index, page.getPageTitle());
+        setPageText(index, pageTitle);
         return index;
     }
 
-    public ScaveEditorPage getActiveEditorPage() {
+    public int addClosablePage(FormEditorPage page) {
+        return addClosablePage(page, page.getPageTitle());
+    }
+
+    public FormEditorPage getActiveEditorPage() {
         int i = getActivePage();
         if (i >= 0)
             return getEditorPage(i);
@@ -720,17 +732,43 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
             return null;
     }
 
-    public ScaveEditorPage getEditorPage(int pageIndex) {
-        Control page = getControl(pageIndex);
-        if (page instanceof ScaveEditorPage)
-            return (ScaveEditorPage)page;
-        else
-            return null;
+    public ChartScriptEditor getActiveChartScriptEditor() {
+        int i = getActivePage();
+        if (i >= 0) {
+            IEditorPart editor = getEditor(i);
+            if (editor instanceof ChartScriptEditor)
+                return (ChartScriptEditor)editor;
+        }
+
+        return null;
     }
 
-    public ChartCanvas getActiveChartCanvas() {
-        ScaveEditorPage activePage = getActiveEditorPage();
-        return activePage != null ? activePage.getActiveChartCanvas() : null;
+    public FormEditorPage getEditorPage(int pageIndex) {
+        Control page = getControl(pageIndex);
+        if (page instanceof FormEditorPage)
+            return (FormEditorPage)page;
+        return null;
+    }
+
+    public ChartViewer getActiveChartViewer() {
+        FormEditorPage activePage = getActiveEditorPage();
+        if (activePage != null)
+            return activePage.getActiveChartViewer();
+        ChartScriptEditor activeEditor = getActiveChartScriptEditor();
+
+        if (activeEditor != null)
+            return activeEditor.getNativeChartViewer() != null ? activeEditor.getNativeChartViewer().getChartViewer() : null;
+
+        return null;
+    }
+
+    public MatplotlibChartViewer getActiveMatplotlibChartViewer() {
+        ChartScriptEditor activeEditor = getActiveChartScriptEditor();
+
+        if (activeEditor != null)
+            return activeEditor.getMatplotlibChartViewer();
+
+        return null;
     }
 
     /**
@@ -752,7 +790,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
     /**
      * Opens a new editor page for the object, or switches to it if already opened.
      */
-    public ScaveEditorPage open(Object object) {
+    public FormEditorPage open(Object object) {
         if (object instanceof Chart)
             return openChart((Chart)object);
         else
@@ -763,11 +801,11 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
      * Opens the given chart on a new editor page, or switches to it
      * if already opened.
      */
-    public ScaveEditorPage openChart(Chart chart) {
+    public FormEditorPage openChart(Chart chart) {
         return openClosablePage(chart);
     }
 
-    public ScaveEditorPage openChartsheet(ChartSheet chartsheet) {
+    public FormEditorPage openChartsheet(ChartSheet chartsheet) {
         return openClosablePage(chartsheet);
     }
 
@@ -775,7 +813,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
      * Opens the given <code>object</code> (dataset/chart/chartsheet), or
      * switches to it if already opened.
      */
-    private ScaveEditorPage openClosablePage(EObject object) {
+    private FormEditorPage openClosablePage(EObject object) {
         int pageIndex = getOrCreateClosablePage(object);
         setActivePage(pageIndex);
         return getEditorPage(pageIndex);
@@ -804,7 +842,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         showPage(getChartsPage());
     }
 
-    public void showPage(ScaveEditorPage page) {
+    public void showPage(FormEditorPage page) {
         int pageIndex = findPage(page);
         if (pageIndex >= 0)
             setActivePage(pageIndex);
@@ -822,14 +860,14 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
                 return;
         }
 
-        ScaveEditorPage activePage = getActiveEditorPage();
+        FormEditorPage activePage = getActiveEditorPage();
         if (activePage != null) {
             if (activePage.gotoObject(object))
                 return;
         }
         int activePageIndex = -1;
         for (int pageIndex = getPageCount()-1; pageIndex >= 0; --pageIndex) {
-            ScaveEditorPage page = getEditorPage(pageIndex);
+            FormEditorPage page = getEditorPage(pageIndex);
             if (page != null && page.gotoObject(object)) {
                 activePageIndex = pageIndex;
                 break;
@@ -841,7 +879,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
     }
 
 
-    public void setPageTitle(ScaveEditorPage page, String title) {
+    public void setPageTitle(FormEditorPage page, String title) {
         int pageIndex = findPage(page);
         if (pageIndex >= 0)
             setPageText(pageIndex, title);
@@ -849,17 +887,17 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
 
     private void createInputsPage() {
         inputsPage = new InputsPage(getContainer(), this);
-        addScaveEditorPage(inputsPage);
+        addFixedPage(inputsPage);
     }
 
     private void createBrowseDataPage() {
         browseDataPage = new BrowseDataPage(getContainer(), this);
-        addScaveEditorPage(browseDataPage);
+        addFixedPage(browseDataPage);
     }
 
     private void createChartsPage() {
         chartsPage = new ChartsPage(getContainer(), this);
-        addScaveEditorPage(chartsPage);
+        addFixedPage(chartsPage);
     }
 
     /**
@@ -868,7 +906,8 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
      * Their tabs contain a small (x), so the user can also close them.
      */
     private int createClosablePage(EObject object) {
-        ScaveEditorPage page;
+        FormEditorPage page = null;
+
         if (object instanceof Chart)
             page = new ChartPage(getContainer(), this, (Chart)object);
         else if (object instanceof ChartSheet)
@@ -886,9 +925,9 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         Assert.isTrue(closablePages.containsValue(control));
 
         // remove it from the map
-        Iterator<Map.Entry<EObject,ScaveEditorPage>> entries = closablePages.entrySet().iterator();
+        Iterator<Map.Entry<EObject,Control>> entries = closablePages.entrySet().iterator();
         while (entries.hasNext()) {
-            Map.Entry<EObject, ScaveEditorPage> entry = entries.next();
+            Map.Entry<EObject, Control> entry = entries.next();
             if (control.equals(entry.getValue()))
                 entries.remove();
         }
@@ -898,8 +937,8 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
      * Returns the page displaying {@code object}.
      * The {@code object} expected to be a Dataset, Chart or ChartSheet.
      */
-    protected ScaveEditorPage getClosableEditorPage(EObject object) {
-        return closablePages.get(object);
+    protected FormEditorPage getClosableEditorPage(EObject object) {
+        return (FormEditorPage)closablePages.get(object);
     }
 
     /**
@@ -1154,7 +1193,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
     /*
      * PageId
      */
-    String getPageId(ScaveEditorPage page) {
+    String getPageId(FormEditorPage page) {
         if (page == null)
             return null;
         else if (page.equals(inputsPage))
@@ -1164,9 +1203,9 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         else if (page.equals(chartsPage))
             return "Charts";
         else {
-            for (Map.Entry<EObject, ScaveEditorPage> entry : closablePages.entrySet()) {
+            for (Map.Entry<EObject, Control> entry : closablePages.entrySet()) {
                 EObject object = entry.getKey();
-                ScaveEditorPage editorPage = entry.getValue();
+                Control editorPage = entry.getValue();
                 if (page.equals(editorPage)) {
                     Resource resource = object.eResource();
                     String uri = resource != null ? resource.getURIFragment(object) : null;
@@ -1299,7 +1338,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
 
     public void pageChangedByUser(int newPageIndex) {
         Control page = getControl(newPageIndex);
-        if (page instanceof ScaveEditorPage) {
+        if (page instanceof FormEditorPage) {
             markNavigationLocation();
         }
     }
