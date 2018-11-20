@@ -15,7 +15,6 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.LineChart;
@@ -38,7 +37,7 @@ public class ScaveObjectEditFormFactory {
     }
 
     /**
-     * Returns true if this factory can create an edit form for this object 
+     * Returns true if this factory can create an edit form for this object
      */
     public boolean canCreateForm(EObject object) {
         if (object instanceof AnalysisItem || object instanceof InputFile || object instanceof Property)
@@ -71,8 +70,6 @@ public class ScaveObjectEditFormFactory {
         // matplotlibchart doesn't have a specialized EditForm at the moment, simply uses ChartEditForm
         else if (object instanceof Chart)
             return new ChartEditForm((Chart)object, formParameters, manager);
-        else if (object instanceof ChartSheet)
-            return new ChartSheetEditForm((ChartSheet)object, parent);
         else if (object instanceof InputFile)
             return new InputFileEditForm((InputFile)object, parent);
         else if (object instanceof Property)

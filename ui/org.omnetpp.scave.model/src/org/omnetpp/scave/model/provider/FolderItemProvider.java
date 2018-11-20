@@ -169,16 +169,6 @@ public class FolderItemProvider extends AnalysisItemItemProvider {
         newChildDescriptors.add
             (createChildParameter
                 (ScaveModelPackage.Literals.FOLDER__ITEMS,
-                 ScaveModelFactory.eINSTANCE.createDataset()));
-
-        newChildDescriptors.add
-            (createChildParameter
-                (ScaveModelPackage.Literals.FOLDER__ITEMS,
-                 ScaveModelFactory.eINSTANCE.createChartSheet()));
-
-        newChildDescriptors.add
-            (createChildParameter
-                (ScaveModelPackage.Literals.FOLDER__ITEMS,
                  ScaveModelFactory.eINSTANCE.createFolder()));
 
         newChildDescriptors.add

@@ -16,12 +16,10 @@ import org.eclipse.ui.views.properties.IPropertySourceProvider;
 import org.omnetpp.common.properties.PropertySource;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.scave.charting.properties.ChartProperties;
-import org.omnetpp.scave.charting.properties.ChartSheetProperties;
 import org.omnetpp.scave.charting.properties.MatplotlibChartProperties;
 import org.omnetpp.scave.charting.properties.VectorChartProperties;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.MatplotlibChart;
 import org.omnetpp.scave.model2.ChartLine;
 import org.omnetpp.scave.model2.ResultFilePayload;
@@ -53,8 +51,6 @@ public class ScavePropertySourceProvider implements IPropertySourceProvider {
             return MatplotlibChartProperties.createPropertySource((MatplotlibChart)object, manager);
         else if (object instanceof Chart)
             return ChartProperties.createPropertySource((Chart)object, manager);
-        else if (object instanceof ChartSheet)
-            return ChartSheetProperties.createPropertySource((ChartSheet)object, delegate.getPropertySource(object));
         else if (object instanceof PropertySource)
             return (PropertySource)object;
         else if (object instanceof ChartLine) {

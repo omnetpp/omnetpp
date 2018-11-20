@@ -68,7 +68,6 @@ public class OmnetppPerspectiveFactory implements IPerspectiveFactory {
         layout.addShowViewShortcut(IConstants.MODULEPARAMETERS_VIEW_ID);
         layout.addShowViewShortcut(IConstants.MODULEHIERARCHY_VIEW_ID);
         layout.addShowViewShortcut(IConstants.NEDINHERITANCE_VIEW_ID);
-        layout.addShowViewShortcut(IConstants.DATASET_VIEW_ID);
         layout.addShowViewShortcut(IConstants.VECTORBROWSER_VIEW_ID);
         layout.addShowViewShortcut(IConstants.SEQUENCECHART_VIEW_ID);
         layout.addShowViewShortcut(IConstants.EVENTLOG_VIEW_ID);

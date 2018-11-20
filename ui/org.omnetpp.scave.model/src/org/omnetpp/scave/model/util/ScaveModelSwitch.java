@@ -141,20 +141,6 @@ public class ScaveModelSwitch<T> extends Switch<T> {
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
-            case ScaveModelPackage.DATASET: {
-                Dataset dataset = (Dataset)theEObject;
-                T result = caseDataset(dataset);
-                if (result == null) result = caseAnalysisItem(dataset);
-                if (result == null) result = defaultCase(theEObject);
-                return result;
-            }
-            case ScaveModelPackage.CHART_SHEET: {
-                ChartSheet chartSheet = (ChartSheet)theEObject;
-                T result = caseChartSheet(chartSheet);
-                if (result == null) result = caseAnalysisItem(chartSheet);
-                if (result == null) result = defaultCase(theEObject);
-                return result;
-            }
             case ScaveModelPackage.FOLDER: {
                 Folder folder = (Folder)theEObject;
                 T result = caseFolder(folder);
@@ -336,36 +322,6 @@ public class ScaveModelSwitch<T> extends Switch<T> {
      * @generated
      */
     public T caseScatterChart(ScatterChart object) {
-        return null;
-    }
-
-    /**
-     * Returns the result of interpreting the object as an instance of '<em>Dataset</em>'.
-     * <!-- begin-user-doc -->
-     * This implementation returns null;
-     * returning a non-null result will terminate the switch.
-     * <!-- end-user-doc -->
-     * @param object the target of the switch.
-     * @return the result of interpreting the object as an instance of '<em>Dataset</em>'.
-     * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-     * @generated
-     */
-    public T caseDataset(Dataset object) {
-        return null;
-    }
-
-    /**
-     * Returns the result of interpreting the object as an instance of '<em>Chart Sheet</em>'.
-     * <!-- begin-user-doc -->
-     * This implementation returns null;
-     * returning a non-null result will terminate the switch.
-     * <!-- end-user-doc -->
-     * @param object the target of the switch.
-     * @return the result of interpreting the object as an instance of '<em>Chart Sheet</em>'.
-     * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-     * @generated
-     */
-    public T caseChartSheet(ChartSheet object) {
         return null;
     }
 

@@ -103,24 +103,6 @@ public interface ScaveModelFactory extends EFactory {
     ScatterChart createScatterChart();
 
     /**
-     * Returns a new object of class '<em>Dataset</em>'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return a new object of class '<em>Dataset</em>'.
-     * @generated
-     */
-    Dataset createDataset();
-
-    /**
-     * Returns a new object of class '<em>Chart Sheet</em>'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return a new object of class '<em>Chart Sheet</em>'.
-     * @generated
-     */
-    ChartSheet createChartSheet();
-
-    /**
      * Returns a new object of class '<em>Folder</em>'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->

@@ -34,7 +34,6 @@ import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.NewBarChartAction;
-import org.omnetpp.scave.actions.NewChartSheetAction;
 import org.omnetpp.scave.actions.NewHistogramChartAction;
 import org.omnetpp.scave.actions.NewLineChartAction;
 import org.omnetpp.scave.actions.NewMatplotlibChartAction;
@@ -44,9 +43,7 @@ import org.omnetpp.scave.editors.ScaveEditorContributor;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.BarChart;
-import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.Charts;
-import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.Folder;
 import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.LineChart;
@@ -94,7 +91,6 @@ public class ChartsPage extends FormEditorPage {
         addToToolbar(new NewHistogramChartAction(withEditDialog));
         // TODO: maybe add a separator here, too?
         addToToolbar(new NewMatplotlibChartAction(withEditDialog));
-        //addToToolbar(new NewChartSheetAction(withEditDialog));
         addSeparatorToToolbar();
         addToToolbar(contributor.getEditAction());
         addToToolbar(contributor.getRemoveAction());
@@ -139,7 +135,7 @@ public class ChartsPage extends FormEditorPage {
             return;
         viewer.refresh();
     }
-    
+
     protected void configureViewer(IconGridViewer modelViewer) {
 //        ILabelProvider labelProvider =
 //            new DecoratingLabelProvider(
@@ -159,24 +155,16 @@ public class ChartsPage extends FormEditorPage {
                     return ScavePlugin.getImage(ScaveImages.IMG_OBJ_HISTOGRAMCHART);
                 if (element instanceof MatplotlibChart)
                     return ScavePlugin.getImage(ScaveImages.IMG_OBJ_MATPLOTLIBCHART);
-                else if (element instanceof Dataset)
-                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_DATASET);
                 else if (element instanceof Folder)
                     return ScavePlugin.getImage(ScaveImages.IMG_OBJ_FOLDER);
-                else if (element instanceof ChartSheet)
-                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_CHARTSHEET);
                 else
                     return null;
             }
 
             @Override
             public String getText(Object element) {
-                if (element instanceof AnalysisItem) {
-                    String text = StringUtils.defaultIfBlank(((AnalysisItem) element).getName(), "<unnamed>");
-                    if (element instanceof ChartSheet)
-                        text += " (" + ((ChartSheet)element).getCharts().size() + ")";
-                    return text;
-                }
+                if (element instanceof AnalysisItem)
+                    return StringUtils.defaultIfBlank(((AnalysisItem) element).getName(), "<unnamed>");
                 return element == null ? "" : element.toString();
             }
         };
@@ -187,22 +175,15 @@ public class ChartsPage extends FormEditorPage {
         viewer.addDropListener(new IconGridViewer.IDropListener() {
             @Override
             public void drop(Object[] draggedElements, Point p) {
-                Object target = viewer.getElementAt(p.x, p.y);
-                if (target instanceof ChartSheet) {
-                    ChartSheet chartSheet = (ChartSheet)target;
-                    ScaveModelUtil.addElementsToChartSheet(scaveEditor.getEditingDomain(), draggedElements, chartSheet);
-                    viewer.setSelection(new StructuredSelection(chartSheet));
+                Object insertionPoint = viewer.getElementAtOrAfter(p.x, p.y);
+                System.out.println("DRAGGED BEFORE: " + insertionPoint);
+                if (insertionPoint == null ||!ArrayUtils.contains(draggedElements, insertionPoint)) {
+                    Charts charts = scaveEditor.getAnalysis().getCharts();
+                    int index = insertionPoint == null ? charts.getItems().size() : charts.getItems().indexOf(insertionPoint);
+                    ScaveModelUtil.moveElements(scaveEditor.getEditingDomain(), charts, draggedElements, index);
+                    viewer.refresh();
                 }
-                else {
-                    Object insertionPoint = viewer.getElementAtOrAfter(p.x, p.y);
-                    System.out.println("DRAGGED BEFORE: " + insertionPoint);
-                    if (insertionPoint == null ||!ArrayUtils.contains(draggedElements, insertionPoint)) {
-                        Charts charts = scaveEditor.getAnalysis().getCharts();
-                        int index = insertionPoint == null ? charts.getItems().size() : charts.getItems().indexOf(insertionPoint);
-                        ScaveModelUtil.moveElements(scaveEditor.getEditingDomain(), charts, draggedElements, index);
-                        viewer.refresh();
-                    }
-                }
+
             }
         });
 
@@ -236,9 +217,9 @@ public class ChartsPage extends FormEditorPage {
                 scaveEditor.getActionBarContributor().populateContextMenu(menuManager);
             }
         };
-        
+
         UIUtils.createContextMenuFor(modelViewer.getCanvas(), true, menuListener);
-        
+
         // on double-click, open (the dataset or chart), or bring up the Properties dialog
         modelViewer.addDoubleClickListener(new IDoubleClickListener() {
             @Override
@@ -269,7 +250,7 @@ public class ChartsPage extends FormEditorPage {
 //            }
 //        });
     }
-    
+
 }
 
 

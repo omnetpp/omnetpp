@@ -181,16 +181,6 @@ public class ChartsItemProvider
         newChildDescriptors.add
             (createChildParameter
                 (ScaveModelPackage.Literals.CHARTS__ITEMS,
-                 ScaveModelFactory.eINSTANCE.createDataset()));
-
-        newChildDescriptors.add
-            (createChildParameter
-                (ScaveModelPackage.Literals.CHARTS__ITEMS,
-                 ScaveModelFactory.eINSTANCE.createChartSheet()));
-
-        newChildDescriptors.add
-            (createChildParameter
-                (ScaveModelPackage.Literals.CHARTS__ITEMS,
                  ScaveModelFactory.eINSTANCE.createFolder()));
 
         newChildDescriptors.add

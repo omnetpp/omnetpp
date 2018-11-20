@@ -279,52 +279,6 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
     }
 
     /**
-     * This keeps track of the one adapter used for all {@link org.omnetpp.scave.model.Dataset} instances.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    protected DatasetItemProvider datasetItemProvider;
-
-    /**
-     * This creates an adapter for a {@link org.omnetpp.scave.model.Dataset}.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    @Override
-    public Adapter createDatasetAdapter() {
-        if (datasetItemProvider == null) {
-            datasetItemProvider = new DatasetItemProvider(this);
-        }
-
-        return datasetItemProvider;
-    }
-
-    /**
-     * This keeps track of the one adapter used for all {@link org.omnetpp.scave.model.ChartSheet} instances.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    protected ChartSheetItemProvider chartSheetItemProvider;
-
-    /**
-     * This creates an adapter for a {@link org.omnetpp.scave.model.ChartSheet}.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    @Override
-    public Adapter createChartSheetAdapter() {
-        if (chartSheetItemProvider == null) {
-            chartSheetItemProvider = new ChartSheetItemProvider(this);
-        }
-
-        return chartSheetItemProvider;
-    }
-
-    /**
      * This keeps track of the one adapter used for all {@link org.omnetpp.scave.model.Folder} instances.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -478,8 +432,6 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
         if (lineChartItemProvider != null) lineChartItemProvider.dispose();
         if (histogramChartItemProvider != null) histogramChartItemProvider.dispose();
         if (scatterChartItemProvider != null) scatterChartItemProvider.dispose();
-        if (datasetItemProvider != null) datasetItemProvider.dispose();
-        if (chartSheetItemProvider != null) chartSheetItemProvider.dispose();
         if (folderItemProvider != null) folderItemProvider.dispose();
         if (matplotlibChartItemProvider != null) matplotlibChartItemProvider.dispose();
     }

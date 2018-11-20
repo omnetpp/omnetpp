@@ -62,7 +62,6 @@ import org.omnetpp.scave.actions.ExportChartsAction;
 import org.omnetpp.scave.actions.ExportDataAction;
 import org.omnetpp.scave.actions.ExportToSVGAction;
 import org.omnetpp.scave.actions.GotoChartDefinitionAction;
-import org.omnetpp.scave.actions.GotoChartSheetDefinitionAction;
 import org.omnetpp.scave.actions.IScaveAction;
 import org.omnetpp.scave.actions.NewBarChartAction;
 import org.omnetpp.scave.actions.NewHistogramChartAction;
@@ -73,7 +72,6 @@ import org.omnetpp.scave.actions.OpenChartAction;
 import org.omnetpp.scave.actions.RefreshChartAction;
 import org.omnetpp.scave.actions.RemoveAction;
 import org.omnetpp.scave.actions.SaveTempChartAction;
-import org.omnetpp.scave.actions.SaveTempChartSheetAction;
 import org.omnetpp.scave.actions.SelectAllAction;
 import org.omnetpp.scave.actions.ShowOutputVectorViewAction;
 import org.omnetpp.scave.actions.ZoomChartAction;
@@ -110,7 +108,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     private SelectAllAction selectAllAction;
     private ExportChartsAction exportChartsAction;
 
-    // ChartPage/ChartSheetPage actions
+    // ChartPage actions
     private ZoomChartAction hzoomInAction;
     private ZoomChartAction hzoomOutAction;
     private ZoomChartAction vzoomInAction;
@@ -121,7 +119,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     private CopyChartToClipboardAction copyChartToClipboardAction;
     private RefreshChartAction refreshChartAction;
     private GotoChartDefinitionAction gotoChartDefinitionAction;
-    private GotoChartSheetDefinitionAction gotoChartSheetDefinitionAction;
 
     // BrowseDataPage actions
     private CopyToClipboardAction copyToClipboardAction;
@@ -129,7 +126,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     private CreateTempChartAction createTempChartAction;
     private CreateTempMatplotlibChartAction createTempMatplotlibChartAction;
     private SaveTempChartAction saveTempChartAction;
-    private SaveTempChartSheetAction saveTempChartSheetAction;
     private ShowOutputVectorViewAction showOutputVectorViewAction;
     private Map<String,ExportDataAction> exportActions;
 
@@ -203,7 +199,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         registerAction(page, copyChartToClipboardAction = new CopyChartToClipboardAction());
         registerAction(page, refreshChartAction = new RefreshChartAction());
         registerAction(page, gotoChartDefinitionAction = new GotoChartDefinitionAction());
-        registerAction(page, gotoChartSheetDefinitionAction = new GotoChartSheetDefinitionAction());
 
         // BrowseDataPage actions
         exportActions = new HashMap<>();
@@ -217,7 +212,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         registerAction(page, createTempChartAction = new CreateTempChartAction());
         registerAction(page, createTempMatplotlibChartAction = new CreateTempMatplotlibChartAction());
         registerAction(page, saveTempChartAction = new SaveTempChartAction());
-        registerAction(page, saveTempChartSheetAction = new SaveTempChartSheetAction());
         registerAction(page, showOutputVectorViewAction = new ShowOutputVectorViewAction());
 
         registerAction(page, killAction = new KillPythonProcessAction());
@@ -294,10 +288,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         return gotoChartDefinitionAction;
     }
 
-    public GotoChartSheetDefinitionAction getGotoChartSheetDefinitionAction() {
-        return gotoChartSheetDefinitionAction;
-    }
-
     public CopyChartToClipboardAction  getCopyChartToClipboardAction() {
         return copyChartToClipboardAction;
     }
@@ -326,9 +316,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         return saveTempChartAction;
     }
 
-    public SaveTempChartSheetAction getSaveTempChartSheetAction() {
-        return saveTempChartSheetAction;
-    }
     public ShowOutputVectorViewAction getShowOutputVectorViewAction() {
         return showOutputVectorViewAction;
     }
@@ -430,8 +417,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         submenuManager.add(new NewScatterChartAction(false));
         submenuManager.add(new NewHistogramChartAction(false));
         submenuManager.add(new NewMatplotlibChartAction(false));
-        //submenuManager.add(new NewDatasetAction(false));
-        //submenuManager.add(new NewChartSheetAction(false));
         menuManager.insertBefore("edit", submenuManager);
         menuManager.insertBefore("edit", openAction);
         menuManager.insertBefore("edit", editAction);

@@ -15,12 +15,6 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
         defaultValueLiteral=""/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EEnum" name="ResultType">
-    <eLiterals name="scalar" value="1" literal="SCALAR"/>
-    <eLiterals name="vector" value="2" literal="VECTOR"/>
-    <eLiterals name="statistics" value="3" literal="STATISTICS"/>
-    <eLiterals name="histogram" value="4" literal="HISTOGRAM"/>
-  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Charts">
     <eStructuralFeatures xsi:type="ecore:EReference" name="items" upperBound="-1"
         eType="#//AnalysisItem" containment="true"/>
@@ -59,17 +53,6 @@
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="averageReplications" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
         defaultValueLiteral="true"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Dataset" eSuperTypes="#//AnalysisItem">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="input" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="ChartSheet" eSuperTypes="#//AnalysisItem">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="charts" upperBound="-1"
-        eType="#//Chart"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="temporary" lowerBound="1"
-        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" defaultValueLiteral="false"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="properties" upperBound="-1"
-        eType="#//Property" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Folder" eSuperTypes="#//AnalysisItem">
     <eStructuralFeatures xsi:type="ecore:EReference" name="items" upperBound="-1"

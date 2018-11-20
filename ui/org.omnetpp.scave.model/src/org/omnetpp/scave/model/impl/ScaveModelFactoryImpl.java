@@ -66,42 +66,10 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
             case ScaveModelPackage.LINE_CHART: return createLineChart();
             case ScaveModelPackage.HISTOGRAM_CHART: return createHistogramChart();
             case ScaveModelPackage.SCATTER_CHART: return createScatterChart();
-            case ScaveModelPackage.DATASET: return createDataset();
-            case ScaveModelPackage.CHART_SHEET: return createChartSheet();
             case ScaveModelPackage.FOLDER: return createFolder();
             case ScaveModelPackage.MATPLOTLIB_CHART: return createMatplotlibChart();
             default:
                 throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
-        }
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    @Override
-    public Object createFromString(EDataType eDataType, String initialValue) {
-        switch (eDataType.getClassifierID()) {
-            case ScaveModelPackage.RESULT_TYPE:
-                return createResultTypeFromString(eDataType, initialValue);
-            default:
-                throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
-        }
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    @Override
-    public String convertToString(EDataType eDataType, Object instanceValue) {
-        switch (eDataType.getClassifierID()) {
-            case ScaveModelPackage.RESULT_TYPE:
-                return convertResultTypeToString(eDataType, instanceValue);
-            default:
-                throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
         }
     }
 
@@ -200,26 +168,6 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
      * <!-- end-user-doc -->
      * @generated
      */
-    public Dataset createDataset() {
-        DatasetImpl dataset = new DatasetImpl();
-        return dataset;
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public ChartSheet createChartSheet() {
-        ChartSheetImpl chartSheet = new ChartSheetImpl();
-        return chartSheet;
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
     public Folder createFolder() {
         FolderImpl folder = new FolderImpl();
         return folder;
@@ -233,26 +181,6 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
     public MatplotlibChart createMatplotlibChart() {
         MatplotlibChartImpl matplotlibChart = new MatplotlibChartImpl();
         return matplotlibChart;
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public ResultType createResultTypeFromString(EDataType eDataType, String initialValue) {
-        ResultType result = ResultType.get(initialValue);
-        if (result == null) throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
-        return result;
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public String convertResultTypeToString(EDataType eDataType, Object instanceValue) {
-        return instanceValue == null ? null : instanceValue.toString();
     }
 
     /**

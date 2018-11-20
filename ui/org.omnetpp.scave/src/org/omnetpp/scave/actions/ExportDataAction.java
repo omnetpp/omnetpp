@@ -18,7 +18,6 @@ import org.omnetpp.scave.engine.ExporterFactory;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.wizard.ScaveExportWizard;
 
 /**
@@ -68,7 +67,7 @@ public class ExportDataAction extends AbstractScaveAction {
         }
         if (selection instanceof IStructuredSelection) {
             Object firstElement = selection.getFirstElement();
-            return firstElement instanceof Chart || firstElement instanceof Dataset;
+            return firstElement instanceof Chart;
         }
         return false;
     }

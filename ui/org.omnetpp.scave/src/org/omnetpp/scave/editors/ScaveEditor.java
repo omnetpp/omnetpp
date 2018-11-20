@@ -34,7 +34,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.eclipse.core.internal.resources.Marker;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -149,7 +148,6 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartViewer;
 import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelProvider;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
-import org.omnetpp.scave.editors.ui.ChartSheetPage;
 import org.omnetpp.scave.editors.ui.ChartsPage;
 import org.omnetpp.scave.editors.ui.FormEditorPage;
 import org.omnetpp.scave.editors.ui.InputsPage;
@@ -159,7 +157,6 @@ import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
@@ -1343,10 +1340,6 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         return openClosablePage(chart);
     }
 
-    public FormEditorPage openChartsheet(ChartSheet chartsheet) {
-        return openClosablePage(chartsheet);
-    }
-
     /**
      * Opens the given <code>object</code> (dataset/chart/chartsheet), or
      * switches to it if already opened.
@@ -1441,12 +1434,10 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
 
     /**
      * Creates a closable page. These pages are closed automatically when the
-     * displayed object (chart/dataset/chart sheet) is removed from the model.
+     * displayed object (chart) is removed from the model.
      * Their tabs contain a small (x), so the user can also close them.
      */
     private int createClosablePage(EObject object) {
-        FormEditorPage page = null;
-
         if (object instanceof Chart)
             try {
                 int index = openChartScriptEditor((Chart)object);
@@ -1454,17 +1445,11 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
                 return index;
             }
             catch (PartInitException e) {
-                e.printStackTrace();
+                ScavePlugin.logError(e);
                 return -1;
             }
-        else if (object instanceof ChartSheet)
-            page = new ChartSheetPage(getContainer(), this, (ChartSheet)object);
         else
             throw new IllegalArgumentException("Cannot create editor page for " + object);
-
-        int pageIndex = addClosablePage(page);
-        closablePages.put(object, page);
-        return pageIndex;
     }
 
     @Override
@@ -1482,7 +1467,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
 
     /**
      * Returns the page displaying {@code object}.
-     * The {@code object} expected to be a Dataset, Chart or ChartSheet.
+     * The {@code object} expected to be a Chart.
      */
     protected FormEditorPage getClosableEditorPage(EObject object) {
         return (FormEditorPage)closablePages.get(object);

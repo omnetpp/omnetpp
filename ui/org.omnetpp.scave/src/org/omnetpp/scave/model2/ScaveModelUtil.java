@@ -59,7 +59,6 @@ import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.Charts;
 import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.InputFile;
@@ -127,12 +126,6 @@ public class ScaveModelUtil {
         MatplotlibChart chart = factory.createMatplotlibChart();
         chart.setName(name);
         return chart;
-    }
-
-    public static ChartSheet createChartSheet(String name) {
-        ChartSheet chartsheet = factory.createChartSheet();
-        chartsheet.setName(name);
-        return chartsheet;
     }
 
     //TODO obsolete
@@ -225,16 +218,6 @@ public class ScaveModelUtil {
             names[i++] = value.getName();
         }
         return names;
-    }
-
-    public static void addElementsToChartSheet(EditingDomain domain, Object[] elements, ChartSheet chartsheet) {
-        ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
-        List<Chart> charts = new ArrayList<>();
-        for (Object element: elements)
-            if (element instanceof Chart)
-                charts.add((Chart)element);
-        Command command = AddCommand.create(domain, chartsheet, pkg.getChartSheet_Charts(), charts);
-        domain.getCommandStack().execute(command);
     }
 
     public static void moveElements(EditingDomain domain, Charts charts, Object[] elements, int index) {

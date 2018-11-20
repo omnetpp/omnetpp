@@ -599,98 +599,6 @@ public interface ScaveModelPackage extends EPackage {
     int SCATTER_CHART_FEATURE_COUNT = CHART_FEATURE_COUNT + 3;
 
     /**
-     * The meta object id for the '{@link org.omnetpp.scave.model.impl.DatasetImpl <em>Dataset</em>}' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see org.omnetpp.scave.model.impl.DatasetImpl
-     * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getDataset()
-     * @generated
-     */
-    int DATASET = 11;
-
-    /**
-     * The feature id for the '<em><b>Name</b></em>' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     * @ordered
-     */
-    int DATASET__NAME = ANALYSIS_ITEM__NAME;
-
-    /**
-     * The feature id for the '<em><b>Input</b></em>' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     * @ordered
-     */
-    int DATASET__INPUT = ANALYSIS_ITEM_FEATURE_COUNT + 0;
-
-    /**
-     * The number of structural features of the '<em>Dataset</em>' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     * @ordered
-     */
-    int DATASET_FEATURE_COUNT = ANALYSIS_ITEM_FEATURE_COUNT + 1;
-
-    /**
-     * The meta object id for the '{@link org.omnetpp.scave.model.impl.ChartSheetImpl <em>Chart Sheet</em>}' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see org.omnetpp.scave.model.impl.ChartSheetImpl
-     * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getChartSheet()
-     * @generated
-     */
-    int CHART_SHEET = 12;
-
-    /**
-     * The feature id for the '<em><b>Name</b></em>' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     * @ordered
-     */
-    int CHART_SHEET__NAME = ANALYSIS_ITEM__NAME;
-
-    /**
-     * The feature id for the '<em><b>Charts</b></em>' reference list.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     * @ordered
-     */
-    int CHART_SHEET__CHARTS = ANALYSIS_ITEM_FEATURE_COUNT + 0;
-
-    /**
-     * The feature id for the '<em><b>Temporary</b></em>' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     * @ordered
-     */
-    int CHART_SHEET__TEMPORARY = ANALYSIS_ITEM_FEATURE_COUNT + 1;
-
-    /**
-     * The feature id for the '<em><b>Properties</b></em>' containment reference list.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     * @ordered
-     */
-    int CHART_SHEET__PROPERTIES = ANALYSIS_ITEM_FEATURE_COUNT + 2;
-
-    /**
-     * The number of structural features of the '<em>Chart Sheet</em>' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     * @ordered
-     */
-    int CHART_SHEET_FEATURE_COUNT = ANALYSIS_ITEM_FEATURE_COUNT + 3;
-
-    /**
      * The meta object id for the '{@link org.omnetpp.scave.model.impl.FolderImpl <em>Folder</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -698,7 +606,7 @@ public interface ScaveModelPackage extends EPackage {
      * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getFolder()
      * @generated
      */
-    int FOLDER = 13;
+    int FOLDER = 11;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -735,7 +643,7 @@ public interface ScaveModelPackage extends EPackage {
      * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getMatplotlibChart()
      * @generated
      */
-    int MATPLOTLIB_CHART = 14;
+    int MATPLOTLIB_CHART = 12;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -781,17 +689,6 @@ public interface ScaveModelPackage extends EPackage {
      * @ordered
      */
     int MATPLOTLIB_CHART_FEATURE_COUNT = CHART_FEATURE_COUNT + 0;
-
-    /**
-     * The meta object id for the '{@link org.omnetpp.scave.model.ResultType <em>Result Type</em>}' enum.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see org.omnetpp.scave.model.ResultType
-     * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getResultType()
-     * @generated
-     */
-    int RESULT_TYPE = 15;
-
 
     /**
      * Returns the meta object for class '{@link org.omnetpp.scave.model.Analysis <em>Analysis</em>}'.
@@ -1124,70 +1021,6 @@ public interface ScaveModelPackage extends EPackage {
     EAttribute getScatterChart_AverageReplications();
 
     /**
-     * Returns the meta object for class '{@link org.omnetpp.scave.model.Dataset <em>Dataset</em>}'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return the meta object for class '<em>Dataset</em>'.
-     * @see org.omnetpp.scave.model.Dataset
-     * @generated
-     */
-    EClass getDataset();
-
-    /**
-     * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.Dataset#getInput <em>Input</em>}'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return the meta object for the attribute '<em>Input</em>'.
-     * @see org.omnetpp.scave.model.Dataset#getInput()
-     * @see #getDataset()
-     * @generated
-     */
-    EAttribute getDataset_Input();
-
-    /**
-     * Returns the meta object for class '{@link org.omnetpp.scave.model.ChartSheet <em>Chart Sheet</em>}'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return the meta object for class '<em>Chart Sheet</em>'.
-     * @see org.omnetpp.scave.model.ChartSheet
-     * @generated
-     */
-    EClass getChartSheet();
-
-    /**
-     * Returns the meta object for the reference list '{@link org.omnetpp.scave.model.ChartSheet#getCharts <em>Charts</em>}'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return the meta object for the reference list '<em>Charts</em>'.
-     * @see org.omnetpp.scave.model.ChartSheet#getCharts()
-     * @see #getChartSheet()
-     * @generated
-     */
-    EReference getChartSheet_Charts();
-
-    /**
-     * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.ChartSheet#isTemporary <em>Temporary</em>}'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return the meta object for the attribute '<em>Temporary</em>'.
-     * @see org.omnetpp.scave.model.ChartSheet#isTemporary()
-     * @see #getChartSheet()
-     * @generated
-     */
-    EAttribute getChartSheet_Temporary();
-
-    /**
-     * Returns the meta object for the containment reference list '{@link org.omnetpp.scave.model.ChartSheet#getProperties <em>Properties</em>}'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return the meta object for the containment reference list '<em>Properties</em>'.
-     * @see org.omnetpp.scave.model.ChartSheet#getProperties()
-     * @see #getChartSheet()
-     * @generated
-     */
-    EReference getChartSheet_Properties();
-
-    /**
      * Returns the meta object for class '{@link org.omnetpp.scave.model.Folder <em>Folder</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -1217,16 +1050,6 @@ public interface ScaveModelPackage extends EPackage {
      * @generated
      */
     EClass getMatplotlibChart();
-
-    /**
-     * Returns the meta object for enum '{@link org.omnetpp.scave.model.ResultType <em>Result Type</em>}'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return the meta object for enum '<em>Result Type</em>'.
-     * @see org.omnetpp.scave.model.ResultType
-     * @generated
-     */
-    EEnum getResultType();
 
     /**
      * Returns the factory that creates the instances of the model.
@@ -1521,58 +1344,6 @@ public interface ScaveModelPackage extends EPackage {
         EAttribute SCATTER_CHART__AVERAGE_REPLICATIONS = eINSTANCE.getScatterChart_AverageReplications();
 
         /**
-         * The meta object literal for the '{@link org.omnetpp.scave.model.impl.DatasetImpl <em>Dataset</em>}' class.
-         * <!-- begin-user-doc -->
-         * <!-- end-user-doc -->
-         * @see org.omnetpp.scave.model.impl.DatasetImpl
-         * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getDataset()
-         * @generated
-         */
-        EClass DATASET = eINSTANCE.getDataset();
-
-        /**
-         * The meta object literal for the '<em><b>Input</b></em>' attribute feature.
-         * <!-- begin-user-doc -->
-         * <!-- end-user-doc -->
-         * @generated
-         */
-        EAttribute DATASET__INPUT = eINSTANCE.getDataset_Input();
-
-        /**
-         * The meta object literal for the '{@link org.omnetpp.scave.model.impl.ChartSheetImpl <em>Chart Sheet</em>}' class.
-         * <!-- begin-user-doc -->
-         * <!-- end-user-doc -->
-         * @see org.omnetpp.scave.model.impl.ChartSheetImpl
-         * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getChartSheet()
-         * @generated
-         */
-        EClass CHART_SHEET = eINSTANCE.getChartSheet();
-
-        /**
-         * The meta object literal for the '<em><b>Charts</b></em>' reference list feature.
-         * <!-- begin-user-doc -->
-         * <!-- end-user-doc -->
-         * @generated
-         */
-        EReference CHART_SHEET__CHARTS = eINSTANCE.getChartSheet_Charts();
-
-        /**
-         * The meta object literal for the '<em><b>Temporary</b></em>' attribute feature.
-         * <!-- begin-user-doc -->
-         * <!-- end-user-doc -->
-         * @generated
-         */
-        EAttribute CHART_SHEET__TEMPORARY = eINSTANCE.getChartSheet_Temporary();
-
-        /**
-         * The meta object literal for the '<em><b>Properties</b></em>' containment reference list feature.
-         * <!-- begin-user-doc -->
-         * <!-- end-user-doc -->
-         * @generated
-         */
-        EReference CHART_SHEET__PROPERTIES = eINSTANCE.getChartSheet_Properties();
-
-        /**
          * The meta object literal for the '{@link org.omnetpp.scave.model.impl.FolderImpl <em>Folder</em>}' class.
          * <!-- begin-user-doc -->
          * <!-- end-user-doc -->
@@ -1599,16 +1370,6 @@ public interface ScaveModelPackage extends EPackage {
          * @generated
          */
         EClass MATPLOTLIB_CHART = eINSTANCE.getMatplotlibChart();
-
-        /**
-         * The meta object literal for the '{@link org.omnetpp.scave.model.ResultType <em>Result Type</em>}' enum.
-         * <!-- begin-user-doc -->
-         * <!-- end-user-doc -->
-         * @see org.omnetpp.scave.model.ResultType
-         * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getResultType()
-         * @generated
-         */
-        EEnum RESULT_TYPE = eINSTANCE.getResultType();
 
     }
 
