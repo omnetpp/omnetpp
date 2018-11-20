@@ -57,7 +57,18 @@ public class ScavePlugin extends AbstractUIPlugin {
         ensurePyDevInterpreterConfigured();
     }
 
-    public void ensurePyDevInterpreterConfigured() {
+    // source: https://stackoverflow.com/a/32827512/635587
+    public static String findExecutableOnPath(String name) {
+        for (String dirname : System.getenv("PATH").split(File.pathSeparator)) {
+            File file = new File(dirname, name);
+            if (file.isFile() && file.canExecute()) {
+                return file.getAbsolutePath();
+            }
+        }
+        throw new AssertionError("should have found the executable");
+    }
+
+    static public void ensurePyDevInterpreterConfigured() {
 
         // This is here to configure a default Python interpreter for PyDev if there are none.
         // Without a configured interpreter, PyDev places an error marker into every project that
@@ -77,7 +88,11 @@ public class ScavePlugin extends AbstractUIPlugin {
         // to make the error marker disappear, and let PyDev be happy.
         IInterpreterManager manager = InterpreterManagersAPI.getPythonInterpreterManager();
         if (manager.getInterpreterInfos().length == 0) {
-            IInterpreterInfo info = manager.createInterpreterInfo("/usr/bin/python3", new NullProgressMonitor(), false);
+
+            String pythonExecutable = findExecutableOnPath("python3");
+            System.out.println("found python3: " + pythonExecutable);
+
+            IInterpreterInfo info = manager.createInterpreterInfo(pythonExecutable, new NullProgressMonitor(), false);
             info.setName("Default Python 3");
 
             String locationBase = "NULL";
