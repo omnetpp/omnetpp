@@ -80,25 +80,20 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg
 
 from matplotlib.backend_bases import cursors
 
-import time
 import os
+import sys
+import time
+import traceback
+import numpy as np  # mostly for RLE
 
-
-import Gateway
-
-from TimeAndGuard import TimeAndGuard, for_all_methods
+from omnetpp.internal import Gateway
+from omnetpp.internal.TimeAndGuard import TimeAndGuard, for_all_methods
 
 import functools
 print = functools.partial(print, flush=True)
 
-import numpy as np  # mostly for RLE
-
-import sys
-import traceback
-
 # autoConvert doesn't seem to work with containers returned from Python
 from py4j.java_collections import MapConverter, ListConverter
-
 
 ########################################################################
 #
@@ -107,6 +102,7 @@ from py4j.java_collections import MapConverter, ListConverter
 #
 ########################################################################
 
+
 def draw_if_interactive():
     """
     For image backends - is not required
@@ -114,9 +110,10 @@ def draw_if_interactive():
     interactive python mode
     """
 
-    #for manager in Gcf.get_all_fig_managers():
+    # for manager in Gcf.get_all_fig_managers():
     #    # do something to display the GUI
     #    manager.canvas.draw()
+
 
 def show():
     """
@@ -126,7 +123,7 @@ def show():
     be a do nothing func.  See the GTK backend for an example of how to handle
     interactive versus batch mode
     """
-    #for manager in Gcf.get_all_fig_managers():
+    # for manager in Gcf.get_all_fig_managers():
     #    # do something to display the GUI
     #    manager.canvas.draw()
     #
@@ -155,7 +152,6 @@ def new_figure_manager_given_figure(num, figure):
     return manager
 
 
-
 class NavigationToolbar2SWT(NavigationToolbar2):
 
     def __init__(self, canvas):
@@ -163,12 +159,11 @@ class NavigationToolbar2SWT(NavigationToolbar2):
         self.widget = canvas.widget
         NavigationToolbar2.__init__(self, canvas)
 
-
     def _init_toolbar(self):
         # self.basedir = os.path.join(matplotlib.rcParams['datapath'], 'images')
 
         descs = []
-        
+
         for text, tooltip_text, image_file, method_name in self.toolitems:
             desc = Gateway.gateway.jvm.org.omnetpp.scave.pychart.ActionDescription(
                 text, tooltip_text, image_file, method_name)
@@ -212,6 +207,7 @@ class FigureManagerSWT(FigureManagerBase):
     Not implementing most of the methods, because we don't let
     matplotlib control anything about the widget (size, title, etc.).
     """
+
     def __init__(self, canvas, num):
         self.canvas = canvas
         self.toolbar = NavigationToolbar2SWT(canvas)
@@ -348,7 +344,6 @@ class FigureCanvasSWT(FigureCanvasBase):
         return self.get_default_filetype()
 
 
-
 class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
     """
     The canvas the figure renders into.  Calls the draw and print fig
@@ -378,13 +373,11 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
 
         self.draw_idle()
 
-
     class Java:
         implements = ["org.omnetpp.scave.pychart.IPyFigureCanvas"]
 
     def setUseRle(self, enabled):
         self.useRle = enabled
-
 
     def setHalfResDynamic(self, enabled):
         self.halfResDynamic = enabled
@@ -393,7 +386,6 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
         # TODO: make this asynchronous, and group consequent calls to just one redraw
         if (self.draw_enabled):
             self.draw()
-
 
     def blit(self, bbox=None):
         # TODO: use RLE? halfres? any other optimizations?
@@ -416,7 +408,6 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
         FigureCanvasAgg.print_figure(self, *args, **kwargs)
         self.draw()
 
-
     def dynamic_update(self):
         if self.halfResDynamic:
             width, height = self.get_width_height()
@@ -438,15 +429,14 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
 
         w, h = self.get_width_height()
 
-        #print("rasterizing with Agg at " + str(w) + "x" + str(h) + " and halfRes? " + str(half) + " ...")
+        # print("rasterizing with Agg at " + str(w) + "x" + str(h) + " and halfRes? " + str(half) + " ...")
         startTime = time.perf_counter()
         FigureCanvasAgg.draw(self)
         endTime = time.perf_counter()
-        #print("rasterizing with Agg took " + str((endTime - startTime) * 1000.0) + " ms")
+        # print("rasterizing with Agg took " + str((endTime - startTime) * 1000.0) + " ms")
 
         pixelBuffer = self.buffer_rgba()
         bytes = pixelBuffer
-
 
         # doing the rle coding in 4byte units, so all colors will be compressed
         # well, not only those where r = b = g = a (those are rare)
@@ -468,10 +458,9 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
             bytes = rleInts.view(dtype=np.int8).tobytes()
 
             rleEnd = time.perf_counter()
-            #print("RLE encoding took " + str((rleEnd - rleStart) * 1000) + " ms.")
+            # print("RLE encoding took " + str((rleEnd - rleStart) * 1000) + " ms.")
 
         self.widget.setPixels(bytes, w, h, self.useRle, half)
-
 
 
 FigureCanvas = FigureCanvasSWTAgg

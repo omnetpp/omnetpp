@@ -22,6 +22,7 @@ else
       export QT_PLUGIN_PATH=$omnetpp_root/tools/macosx/plugins
     fi
     export PATH=$omnetpp_root/bin:$PATH
+    export PYTHONPATH=$omnetpp_root/python:$PYTHONPATH
     export HOSTNAME
     export HOST
     export QT_SELECT=5 # on systems with qtchooser, switch to Qt5

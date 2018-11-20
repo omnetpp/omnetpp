@@ -1,24 +1,22 @@
 import time
 import sys
 import os
-
-import pickle as pl
 import math
+import traceback
+import pickle as pl
 
 import functools
 print = functools.partial(print, flush=True)
 
-from TimeAndGuard import TimeAndGuard
-import traceback
+from omnetpp.internal.TimeAndGuard import TimeAndGuard
+from omnetpp.internal import Gateway
 
-import results
-import chart
-
-import Gateway
+from omnetpp.scave import results
+from omnetpp.scave import chart
 
 try:
     import matplotlib as mpl
-    mpl.use('module://backend_SWTAgg')
+    mpl.use('module://omnetpp.internal.backend_SWTAgg')
 
     import pandas as pd
     pd.set_option("display.width", 500)

@@ -1,15 +1,13 @@
-import pandas as pd
+import os
+import io
+import subprocess
 import numpy as np
-import pickle
-import time
+import pandas as pd
 
-import Gateway
-from TimeAndGuard import TimeAndGuard
+# TODO: document
+inputfiles = list()
 
-import functools
-print = functools.partial(print, flush=True)
-
-
+# TODO - DEDUPLICATE THIS - IT WAS COPIED FROM THE IDE MODULE
 def transform_results(df):
     # print(df)
 
@@ -120,7 +118,7 @@ def transform_results(df):
 
     return joined
 
-
+# TODO - DEDUPLICATE THIS - IT WAS COPIED FROM THE IDE MODULE
 def filter_metadata(df, attrs=[], itervars=[], params=[], runattrs=[], droplevel=True):
     keys = [k for k in list(df.columns) if k[0] == 'result']
 
@@ -139,25 +137,7 @@ def filter_metadata(df, attrs=[], itervars=[], params=[], runattrs=[], droplevel
     return df
 
 
-def getScalars(filter):
-    time0 = time.perf_counter()
-    pckl = Gateway.results_provider.getScalarsPickle(filter)
-    # f = open("/home/attila/scalars_flat.pkl", "wb")
-    # f.write(pckl)
-    time1 = time.perf_counter()
-    unpickled = pickle.loads(pckl)
-    time2 = time.perf_counter()
-
-    df = pd.DataFrame(unpickled, columns=["run", "type", "module", "name", "attrname", "attrvalue", "value"])
-
-    time3 = time.perf_counter()
-    # print("times: getting pickle: " + str((time1 - time0) * 1000.0) + " ms, unpickling: " + str((time2 - time1) * 1000.0) + " df constr:" + str((time3 - time2) * 1000.0) + " ms")
-
-    # pickle.dump(df, open("/home/attila/scalars_df.pkl", "wb"))
-
-    return df
-
-
+# TODO - DEDUPLICATE THIS - IT WAS COPIED FROM THE IDE MODULE
 def pivotScalars1(df):
     attrs = df[df.type.isin(["runattr", "itervar"])][["run", "attrname", "attrvalue"]]
 
@@ -173,6 +153,7 @@ def pivotScalars1(df):
     return df
 
 
+# TODO - DEDUPLICATE THIS - IT WAS COPIED FROM THE IDE MODULE
 # @TimeAndGuard(measureTime=False)
 def pivotScalars(df, columns=["module"], index=["name"], values=None):
 
@@ -190,66 +171,42 @@ def pivotScalars(df, columns=["module"], index=["name"], values=None):
     return df
 
 
-def getVectors(filter):
-    time0 = time.perf_counter()
-    pk = Gateway.results_provider.getVectorsPickle(filter)
-    # f = open("/home/attila/vectors.pkl", "wb")
-    # f.write(pk)
-    time1 = time.perf_counter()
-    unpickled = pickle.loads(pk)
-    time2 = time.perf_counter()
+def _parse_if_number(s):
+    try: return float(s)
+    except: return True if s=="true" else False if s=="false" else s if s else None
 
-    df = pd.DataFrame(unpickled, columns=["run", "type", "module", "name", "attrname", "attrvalue", "vectime", "vecvalue"])
-
-    df["vectime"] = df["vectime"].map(lambda v: np.frombuffer(v, dtype=np.dtype('>f8')), na_action='ignore')
-    df["vecvalue"] = df["vecvalue"].map(lambda v: np.frombuffer(v, dtype=np.dtype('>f8')), na_action='ignore')
-    df["attrvalue"] = pd.to_numeric(df["attrvalue"], errors='ignore')
-
-    time3 = time.perf_counter()
-    # print("times: getting pickle: " + str((time1 - time0) * 1000.0) + " ms, unpickling: " + str((time2 - time1) * 1000.0) + " df constr:" + str((time3 - time2) * 1000.0) + " ms")
-
-    # pickle.dump(df, open("/home/attila/vectors_df.pkl", "wb"))
-
-    return df
+def _parse_ndarray(s):
+    return np.fromstring(s, sep=' ') if s else None
 
 
-def getStatistics(filter):
-    time0 = time.perf_counter()
-    pk = Gateway.results_provider.getStatisticsPickle(filter)
-    # f = open("/home/attila/statistics.pkl", "wb")
-    # f.write(pk)
-    time1 = time.perf_counter()
-    unpickled = pickle.loads(pk)
-    time2 = time.perf_counter()
+def _get_results(filter_expression, file_extension, result_type):
 
-    df = pd.DataFrame(unpickled, columns=["run", "type", "module", "name", "attrname", "attrvalue", "count", "sumweights", "mean", "stddev", "min", "max"])
+    output = subprocess.check_output(["opp_scavetool", "x", *[i for i in inputfiles if i.endswith(file_extension)],
+        '-T', result_type, '-f', filter_expression, "-F", "CSV-R", "-o", "-"])
+    # print(output.decode('utf-8'))
 
-    time3 = time.perf_counter()
-    # print("times: getting pickle: " + str((time1 - time0) * 1000.0) + " ms, unpickling: " + str((time2 - time1) * 1000.0) + " df constr:" + str((time3 - time2) * 1000.0) + " ms")
-
-    # pickle.dump(df, open("/home/attila/statistics_df.pkl", "wb"))
+    # TODO: stream the output through subprocess.PIPE ?
+    df = pd.read_csv(io.BytesIO(output), converters = {
+        'value': _parse_if_number,
+        'attrvalue': _parse_if_number,
+        'binedges': _parse_ndarray,
+        'binvalues': _parse_ndarray,
+        'vectime': _parse_ndarray,
+        'vecvalue': _parse_ndarray
+    })
+    # print(df)
 
     return df
 
 
-def getHistograms(filter):
-    time0 = time.perf_counter()
-    pk = Gateway.results_provider.getHistogramsPickle(filter)
-    # f = open("/home/attila/histograms.pkl", "wb")
-    # f.write(pk)
-    time1 = time.perf_counter()
-    unpickled = pickle.loads(pk)
-    time2 = time.perf_counter()
+def getVectors(filter_expression):
+    return _get_results(filter_expression, '.vec', 'v')
 
-    df = pd.DataFrame(unpickled, columns=["run", "type", "module", "name", "attrname", "attrvalue", "count", "sumweights", "mean", "stddev", "min", "max", "binedges", "binvalues"])
+def getScalars(filter_expression):
+    return _get_results(filter_expression, '.sca', 's')
 
-    df["binedges"] = df["binedges"].map(lambda v: np.frombuffer(v, dtype=np.dtype('>f8')), na_action='ignore')
-    df["binvalues"] = df["binvalues"].map(lambda v: np.frombuffer(v, dtype=np.dtype('>f8')), na_action='ignore')
+def getStatistics(filter_expression):
+    return _get_results(filter_expression, '.sca', 't')
 
-    time3 = time.perf_counter()
-    # print("times: getting pickle: " + str((time1 - time0) * 1000.0) + " ms, unpickling: " + str((time2 - time1) * 1000.0) + " df constr:" + str((time3 - time2) * 1000.0) + " ms")
-
-    # pickle.dump(df, open("/home/attila/histograms_df.pkl", "wb"))
-
-    return df
-
+def getHistograms(filter_expression):
+    return _get_results(filter_expression, '.sca', 'h')

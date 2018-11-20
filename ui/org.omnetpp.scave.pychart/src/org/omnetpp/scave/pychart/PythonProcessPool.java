@@ -68,23 +68,19 @@ public class PythonProcessPool {
             e.printStackTrace();
         }
 
-        String location1 = locationBase + File.separator + "src/org/omnetpp/scave/pychart/python"; // during development
-        String location2 = locationBase + File.separator + "org/omnetpp/scave/pychart/python"; // in release builds
-        String location3 = locationBase + File.separator + "python"; // for Py4J
-
-        String pythonPath = location1 + File.pathSeparator + location2 + File.pathSeparator + location3;
+        String location = locationBase + File.separator + "python";
 
         ProcessBuilder pb = new ProcessBuilder()
-                .command("python3", "-m", "PythonEntryPoint", Integer.toString(javaPort))
+                .command("python3", "-m", "omnetpp.internal.PythonEntryPoint", Integer.toString(javaPort))
                 // .directory(new File(location))
                 .redirectErrorStream(true).redirectOutput(ProcessBuilder.Redirect.PIPE)
                 .redirectInput(ProcessBuilder.Redirect.PIPE);
 
         Map<String, String> env = pb.environment();
         if (env.containsKey("PYTHONPATH"))
-            env.put("PYTHONPATH", pythonPath + File.pathSeparator + env.get("PYTHONPATH"));
+            env.put("PYTHONPATH", location + File.pathSeparator + env.get("PYTHONPATH"));
         else
-            env.put("PYTHONPATH", pythonPath);
+            env.put("PYTHONPATH", location);
 
         System.out.println("starting python process... with path " + env.get("PYTHONPATH"));
 

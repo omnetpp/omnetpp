@@ -6,7 +6,7 @@ import time
 import functools
 print = functools.partial(print, flush=True)
 
-import PythonEntryPoint
+from omnetpp.internal import PythonEntryPoint
 
 from py4j.java_gateway import DEFAULT_PORT
 from py4j.clientserver import ClientServer, JavaParameters, PythonParameters
@@ -16,10 +16,10 @@ java_port = int(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_PORT
 
 entry_point = PythonEntryPoint.PythonEntryPoint()
 
-properties_provider = None # will be set later
-results_provider = None # will be set later
-widget_provider = None # will be set later
-chart_plotter = None # will be set later
+properties_provider = None  # will be set later
+results_provider = None  # will be set later
+widget_provider = None  # will be set later
+chart_plotter = None  # will be set later
 
 gateway = ClientServer(
     java_parameters=JavaParameters(port=java_port, auto_field=True, auto_convert=True, auto_close=True),

@@ -1,9 +1,10 @@
 import numpy as np
 import pandas as pd
 import math
-import Gateway
 import pickle as pl
-import results
+
+from omnetpp.scave import results
+from omnetpp.internal import Gateway
 
 
 def _list_to_bytes(l):

@@ -1,3 +1,6 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 from scipy.stats import kendalltau
 import seaborn as sns
 sns.set(style="ticks")

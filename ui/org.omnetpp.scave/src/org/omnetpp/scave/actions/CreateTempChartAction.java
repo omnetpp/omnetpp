@@ -69,8 +69,10 @@ public class CreateTempChartAction extends AbstractScaveAction {
 
                 StringBuilder inputBuilder = new StringBuilder();
 
-                inputBuilder.append("import results\n\n");
-                inputBuilder.append("import operations as ops\n\n");
+                inputBuilder.append("from omnetpp.scave import results, chart\n\n");
+
+                inputBuilder.append("from omnetpp.scave import vectorops as ops\n\n");
+
                 inputBuilder.append("# This expression selects the results (you might be able to logically simplify it)\n");
                 inputBuilder.append("filter_expression = \"\"\"\n" + ScaveModelUtil.getIDListAsChartInput(idList, filterFields, manager) + "\"\"\"\n\n");
 

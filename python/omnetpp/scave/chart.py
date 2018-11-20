@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import math
-import results
+from omnetpp.scave import results
 
 properties = dict()
 name = ""

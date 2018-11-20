@@ -38,7 +38,7 @@ class Context:
     vectimes = {}
     vecvalues = {}
 
-
+# TODO: rename to something sensible, like read_results
 def read_omnetpp(filename):
     # Performance notes:
     #  (1) most CPU cycles are burnt in splitting the line to tokens (you can verify this by strategically placing 'continue' statements below)
