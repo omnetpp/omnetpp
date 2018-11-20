@@ -22,7 +22,7 @@ def _to_label(x):
         return str(x)
 
 
-def _plotScalars_lists(row_label, labels, values):
+def _plot_scalars_lists(row_label, labels, values):
     Gateway.chart_plotter.plotScalars(pl.dumps(
         {
             "columnKeys": labels if labels else [""] * len(values),
@@ -32,7 +32,7 @@ def _plotScalars_lists(row_label, labels, values):
     ))
 
 
-def _plotScalars_DF_simple(df):
+def _plot_scalars_DF_simple(df):
     Gateway.chart_plotter.plotScalars(pl.dumps(
         {
             "columnKeys": [_to_label(c) for c in list(df.columns)],
@@ -42,11 +42,11 @@ def _plotScalars_DF_simple(df):
     ))
 
 
-def _plotScalars_DF_scave(df):
-    _plotScalars_DF_simple(results.pivotScalars(df))
+def _plot_scalars_DF_scave(df):
+    _plot_scalars_DF_simple(results.pivotScalars(df))
 
 
-def _plotScalars_DF_2(df):
+def _plot_scalars_DF_2(df):
     names = df.index.get_level_values('name').tolist()
     modules = df.index.get_level_values('module').tolist()
 
@@ -54,10 +54,10 @@ def _plotScalars_DF_2(df):
 
     values = df[('result', 'value')]
 
-    _plotScalars_lists(None, paths, values)
+    _plot_scalars_lists(None, paths, values)
 
 
-def plotScalars(df_or_values, labels=None, row_label=None):
+def plot_scalars(df_or_values, labels=None, row_label=None):
     """
     This method only does dynamic dispatching based on its first argument.
     TODO: styling in-place?
@@ -65,16 +65,16 @@ def plotScalars(df_or_values, labels=None, row_label=None):
     if isinstance(df_or_values, pd.DataFrame):
         df = df_or_values
         if "value" in df.columns and "type" in df.columns and "module" in df.columns and "name" in df.columns:
-            _plotScalars_DF_scave(df)
+            _plot_scalars_DF_scave(df)
         elif "experiment" in df.index.names and "measurement" in df.index.names and "replication" in df.index.names and "module" in df.index.names and "name" in df.index.names:
-            _plotScalars_DF_2(df)
+            _plot_scalars_DF_2(df)
         else:
-            _plotScalars_DF_simple(df)
+            _plot_scalars_DF_simple(df)
     else:
-        _plotScalars_lists(row_label, labels, df_or_values)
+        _plot_scalars_lists(row_label, labels, df_or_values)
 
 
-def plotVector(label, xs, ys):
+def plot_vector(label, xs, ys):
     Gateway.chart_plotter.plotVectors(pl.dumps([
         {
             "title": str(label),
@@ -85,7 +85,7 @@ def plotVector(label, xs, ys):
     ]))
 
 
-def _plotVectors_tuplelist(vectors):
+def _plot_vectors_tuplelist(vectors):
     """ vectors is a list of (label, xs, ys) tuples """
     Gateway.chart_plotter.plotVectors(pl.dumps([
         {
@@ -98,7 +98,7 @@ def _plotVectors_tuplelist(vectors):
     ]))
 
 
-def _plotVectors_DF_simple(df):
+def _plot_vectors_DF_simple(df):
     xs = None
     if "time" in df:
         xs = _list_to_bytes(df["time"])
@@ -116,7 +116,7 @@ def _plotVectors_DF_simple(df):
     ]))
 
 
-def _plotVectors_DF_scave(df):
+def _plot_vectors_DF_scave(df):
     Gateway.chart_plotter.plotVectors(pl.dumps([
         {
             "title": row.module + ":" + row.name,
@@ -128,7 +128,7 @@ def _plotVectors_DF_scave(df):
     ]))
 
 
-def _plotVectors_DF_2(df):
+def _plot_vectors_DF_2(df):
     Gateway.chart_plotter.plotVectors(pl.dumps([
         {
             "title": row[('attr', 'title')],
@@ -145,32 +145,32 @@ def _plotVectors_DF_2(df):
             key = "-".join(row.name) + row[('attr', 'title')]
 
             if interp == "none":
-                setProperty("Line.Type/" + key, "Dots")
+                set_property("Line.Type/" + key, "Dots")
             elif interp == "linear":
-                setProperty("Line.Type/" + key, "Linear")
+                set_property("Line.Type/" + key, "Linear")
             elif interp == "sample-hold":
-                setProperty("Line.Type/" + key, "SampleHold")
+                set_property("Line.Type/" + key, "SampleHold")
             elif interp == "backward-sample-hold":
-                setProperty("Line.Type/" + key, "BackwardSampleHold")
+                set_property("Line.Type/" + key, "BackwardSampleHold")
 
 
-def plotVectors(df_or_list):
+def plot_vectors(df_or_list):
     """
     TODO: styling in-place?
     """
     if isinstance(df_or_list, pd.DataFrame):
         df = df_or_list
         if "vectime" in df.columns and "vecvalue" in df.columns and "type" in df.columns and "module" in df.columns and "name" in df.columns:
-            _plotVectors_DF_scave(df)
+            _plot_vectors_DF_scave(df)
         elif "experiment" in df.index.names and "measurement" in df.index.names and "replication" in df.index.names and "module" in df.index.names and "name" in df.index.names:
-            _plotVectors_DF_2(df)
+            _plot_vectors_DF_2(df)
         else:
-            _plotVectors_DF_simple(df)
+            _plot_vectors_DF_simple(df)
     else:
-        _plotVectors_tuplelist(df_or_list)
+        _plot_vectors_tuplelist(df_or_list)
 
 
-def _plotPoints_DF(df):
+def _plot_points_DF(df):
     Gateway.chart_plotter.plotVectors(pl.dumps([
         {
             "title": str(row[0]),
@@ -182,7 +182,7 @@ def _plotPoints_DF(df):
     ]))
 
 
-def _plotPoints_tuplelist(points):
+def _plot_points_tuplelist(points):
     """ points is a list of (label, x, y) tuples """
     Gateway.chart_plotter.plotVectors(pl.dumps([
         {
@@ -204,14 +204,14 @@ def plotPoints(df_or_points):
 """
 
 
-def plotScatter(df, xdata, iso_column):
+def plot_scatter(df, xdata, iso_column):
 
     names = set(df["name"].values)
     names.discard(None)
     names.discard(xdata)
     names.discard(iso_column)
 
-    df = results.pivotScalars(df, index=xdata, columns=iso_column, values="value")
+    df = results.pivot_scalars(df, index=xdata, columns=iso_column, values="value")
 
     renaming = dict()
 
@@ -248,7 +248,7 @@ def plotScatter(df, xdata, iso_column):
     return list(names)
 
 
-def plotHistogram(label, edges, values, count=-1, lowest=math.nan, highest=math.nan):
+def plot_histogram(label, edges, values, count=-1, lowest=math.nan, highest=math.nan):
     Gateway.chart_plotter.plotHistograms(pl.dumps([
         {
             "title": label,
@@ -262,7 +262,7 @@ def plotHistogram(label, edges, values, count=-1, lowest=math.nan, highest=math.
     ]))
 
 
-def _plotHistograms_DF(df):
+def _plot_histograms_DF(df):
     for row in df.itertuples(index=False):
         if row[1] == "histogram":
 
@@ -286,7 +286,7 @@ def _plotHistograms_DF(df):
             ]))
 
 
-def _plotHistograms_DF_2(df):
+def _plot_histograms_DF_2(df):
     Gateway.chart_plotter.plotHistograms(pl.dumps([
         {
             "title": row[('attr', 'title')],  # row[2] + ":" + row[3],
@@ -301,18 +301,18 @@ def _plotHistograms_DF_2(df):
     ]))
 
 
-def plotHistograms(df):
+def plot_histograms(df):
     if "experiment" in df.index.names and "measurement" in df.index.names and "replication" in df.index.names and "module" in df.index.names and "name" in df.index.names:
-        _plotHistograms_DF_2(df)
+        _plot_histograms_DF_2(df)
     else:
-        _plotHistograms_DF(df)
+        _plot_histograms_DF(df)
 
 
-def setProperty(key, value):
+def set_property(key, value):
     Gateway.chart_plotter.setChartProperty(key, value)
 
 
-def setProperties(*vargs, **kwargs):
+def set_properties(*vargs, **kwargs):
     for a in vargs:
         for k, v in a.items():
             Gateway.chart_plotter.setChartProperty(k, v)  # TODO: could be optimized
@@ -320,19 +320,19 @@ def setProperties(*vargs, **kwargs):
         Gateway.chart_plotter.setChartProperty(k, v)
 
 
-def getProperties():
+def get_properties():
     return Gateway.properties_provider.getChartProperties()
 
 
-def getProperty(key):
+def get_property(key):
     return Gateway.properties_provider.getChartProperties()["key"]  # TODO: could be optimized
 
 
-def getDefaultProperties():
+def get_default_properties():
     return Gateway.properties_provider.getDefaultChartProperties()
 
 
-def getName():
+def get_name():
     return Gateway.properties_provider.getChartName()
 
 """

@@ -64,7 +64,7 @@ public class CreateTempChartAction extends AbstractScaveAction {
                         ResultItemField.MODULE, ResultItemField.NAME };
 
                 String typeName = type.getName();
-                typeName = typeName.substring(0, 1).toUpperCase() + typeName.substring(1) + "s";
+                typeName += "s";
 
 
                 StringBuilder inputBuilder = new StringBuilder();
@@ -77,7 +77,7 @@ public class CreateTempChartAction extends AbstractScaveAction {
                 inputBuilder.append("filter_expression = \"\"\"\n" + ScaveModelUtil.getIDListAsChartInput(idList, filterFields, manager) + "\"\"\"\n\n");
 
                 inputBuilder.append("# The data is returned as a Pandas DataFrame\n");
-                inputBuilder.append("df = results.get" + typeName + "(filter_expression)\n\n");
+                inputBuilder.append("df = results.get_" + typeName + "(filter_expression)\n\n");
 
                 inputBuilder.append("# Which we turn into a more usable format\n");
                 inputBuilder.append("df = results.transform_results(df)\n\n");
@@ -85,14 +85,14 @@ public class CreateTempChartAction extends AbstractScaveAction {
                 /*
                 if (type == ResultType.SCALAR_LITERAL) {
                     inputBuilder.append("# The scalars are transformed into a much simpler format\n");
-                    inputBuilder.append("df = results.pivotScalars(df, columns=[\"module\"], index=[\"name\", \"measurement\"])\n\n");
+                    inputBuilder.append("df = results.pivot_scalars(df, columns=[\"module\"], index=[\"name\", \"measurement\"])\n\n");
                 }
                 */
 
                 inputBuilder.append("# You can perform any transformations on the data here\n\n");
 
                 inputBuilder.append("# Finally, the results are plotted\n");
-                inputBuilder.append("chart.plot" + typeName + "(df)\n");
+                inputBuilder.append("chart.plot_" + typeName + "(df)\n");
 
                 String name = "Chart" + (++counter);
                 String title = StringUtils.defaultIfEmpty(ScriptEngine.defaultTitle(ScaveModelUtil.getResultItems(idList, manager)), name);

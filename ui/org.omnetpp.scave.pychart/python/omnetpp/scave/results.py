@@ -139,7 +139,7 @@ def filter_metadata(df, attrs=[], itervars=[], params=[], runattrs=[], droplevel
     return df
 
 
-def getScalars(filter):
+def get_scalars(filter):
     time0 = time.perf_counter()
     pckl = Gateway.results_provider.getScalarsPickle(filter)
     # f = open("/home/attila/scalars_flat.pkl", "wb")
@@ -158,7 +158,7 @@ def getScalars(filter):
     return df
 
 
-def pivotScalars1(df):
+def _pivot_scalars1(df):
     attrs = df[df.type.isin(["runattr", "itervar"])][["run", "attrname", "attrvalue"]]
 
     scalars = df[df.type == "scalar"][["run", "module", "name", "value"]]
@@ -174,9 +174,9 @@ def pivotScalars1(df):
 
 
 # @TimeAndGuard(measureTime=False)
-def pivotScalars(df, columns=["module"], index=["name"], values=None):
+def pivot_scalars(df, columns=["module"], index=["name"], values=None):
 
-    df = pivotScalars1(df)
+    df = _pivot_scalars1(df)
 
     df = df.pivot_table(columns=columns, index=index, values=values)
 
@@ -190,7 +190,7 @@ def pivotScalars(df, columns=["module"], index=["name"], values=None):
     return df
 
 
-def getVectors(filter):
+def get_vectors(filter):
     time0 = time.perf_counter()
     pk = Gateway.results_provider.getVectorsPickle(filter)
     # f = open("/home/attila/vectors.pkl", "wb")
@@ -213,7 +213,7 @@ def getVectors(filter):
     return df
 
 
-def getStatistics(filter):
+def get_statistics(filter):
     time0 = time.perf_counter()
     pk = Gateway.results_provider.getStatisticsPickle(filter)
     # f = open("/home/attila/statistics.pkl", "wb")
@@ -232,7 +232,7 @@ def getStatistics(filter):
     return df
 
 
-def getHistograms(filter):
+def get_histograms(filter):
     time0 = time.perf_counter()
     pk = Gateway.results_provider.getHistogramsPickle(filter)
     # f = open("/home/attila/histograms.pkl", "wb")

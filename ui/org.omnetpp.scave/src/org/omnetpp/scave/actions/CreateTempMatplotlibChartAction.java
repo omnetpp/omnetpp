@@ -68,13 +68,13 @@ public class CreateTempMatplotlibChartAction extends AbstractScaveAction {
         String[] filterFields = ScaveModelUtil.getFilterFieldsFor(runidFields);
 
         String typeName = type.getName();
-        typeName = typeName.substring(0, 1).toUpperCase() + typeName.substring(1) + "s";
+        typeName += "s";
 
         StringBuilder sb = new StringBuilder("import numpy as np\n" +
                 "import pandas as pd\n" +
                 "import matplotlib.pyplot as plt\n" +
                 "from omnetpp.scave import results, chart\n\n" +
-                "df = results.get" + typeName + "(\"\"\"\n");
+                "df = results.get_" + typeName + "(\"\"\"\n");
 
         sb.append(ScaveModelUtil.getIDListAsChartInput(ids, filterFields, manager));
 
@@ -90,7 +90,7 @@ public class CreateTempMatplotlibChartAction extends AbstractScaveAction {
             sb.append("    plt.plot(t[0], t[1], label=(t[2] + ':' + t[3])[:-7], drawstyle='steps-post')\n");
 
         } else if (type.getName().equals("scalar")) {
-            sb.append("df = results.pivotScalars(df)\n");
+            sb.append("df = results.pivot_scalars(df)\n");
             sb.append("df.plot(kind='bar')\n");
         } else if (type.getName().equals("histogram")) {
             sb.append("df = df[df.type == 'histogram']\n");

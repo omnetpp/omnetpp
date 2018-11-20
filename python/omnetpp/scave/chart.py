@@ -7,21 +7,21 @@ from omnetpp.scave import results
 properties = dict()
 name = ""
 
-def getProperties():
+def get_properties():
     return properties
 
-def setProperties(*vargs, **kwargs):
+def set_properties(*vargs, **kwargs):
     for a in vargs:
         properties.update(a)
     properties.update(kwargs)
 
-def setProperty(key, value):
+def set_property(key, value):
     properties[key] = value
 
-def getDefaultProperties():
+def get_default_properties():
     return dict() # TODO
 
-def getName():
+def get_name():
     return name
 
 
@@ -36,12 +36,12 @@ def _to_label(x):
         return str(x)
 
 
-def _plotScalars_lists(row_label, labels, values):
+def _plot_scalars_lists(row_label, labels, values):
     plt.bar(np.arange(len(values)), values, tick_label=labels, label=row_label)
     plt.legend()
     plt.grid()
 
-def _plotScalars_DF_simple(df):
+def _plot_scalars_DF_simple(df):
     column_labels = [_to_label(c) for c in list(df.columns)]
 
     N = len(df.index)
@@ -60,11 +60,11 @@ def _plotScalars_DF_simple(df):
     plt.legend()
 
 
-def _plotScalars_DF_scave(df):
-    _plotScalars_DF_simple(results.pivotScalars(df))
+def _plot_scalars_DF_scave(df):
+    _plot_scalars_DF_simple(results.pivot_scalars(df))
 
 
-def _plotScalars_DF_2(df):
+def _plot_scalars_DF_2(df):
     names = df.index.get_level_values('name').tolist()
     modules = df.index.get_level_values('module').tolist()
 
@@ -72,34 +72,34 @@ def _plotScalars_DF_2(df):
 
     values = df[('result', 'value')]
 
-    _plotScalars_lists(None, paths, values)
+    _plot_scalars_lists(None, paths, values)
 
 
-def plotScalars(df_or_values, labels=None, row_label=None):
+def plot_scalars(df_or_values, labels=None, row_label=None):
     if isinstance(df_or_values, pd.DataFrame):
         df = df_or_values
         if "value" in df.columns and "type" in df.columns and "module" in df.columns and "name" in df.columns:
-            _plotScalars_DF_scave(df)
+            _plot_scalars_DF_scave(df)
         elif "experiment" in df.index.names and "measurement" in df.index.names and "replication" in df.index.names and "module" in df.index.names and "name" in df.index.names:
-            _plotScalars_DF_2(df)
+            _plot_scalars_DF_2(df)
         else:
-            _plotScalars_DF_simple(df)
+            _plot_scalars_DF_simple(df)
     else:
-        _plotScalars_lists(row_label, labels, df_or_values)
+        _plot_scalars_lists(row_label, labels, df_or_values)
 
 
-def plotVector(label, xs, ys):
+def plot_vector(label, xs, ys):
     plt.plot(xs, ys, label=_to_label(label))
     plt.legend()
 
 
-def _plotVectors_tuplelist(vectors):
+def _plot_vectors_tuplelist(vectors):
     for v in vectors:
         plt.plot(v[1], v[2], label=_to_label(v[0]))
     plt.legend()
 
 
-def _plotVectors_DF_simple(df):
+def _plot_vectors_DF_simple(df):
     xs = None
     if "time" in df:
         xs = list(df["time"])
@@ -112,13 +112,13 @@ def _plotVectors_DF_simple(df):
     plt.legend()
 
 
-def _plotVectors_DF_scave(df):
+def _plot_vectors_DF_scave(df):
     for row in df.itertuples(index=False):
         if row.type == "vector":
             plt.plot(list(row.vectime), list(row.vecvalue), label=row.module + ':' + row.name)
     plt.legend()
 
-def _plotVectors_DF_2(df):
+def _plot_vectors_DF_2(df):
     for index, row in df.iterrows():
         style = dict()
         if ('attr', 'interpolationmode') in row:
@@ -139,27 +139,27 @@ def _plotVectors_DF_2(df):
 
 
 
-def plotVectors(df_or_list):
+def plot_vectors(df_or_list):
     if isinstance(df_or_list, pd.DataFrame):
         df = df_or_list
         if "vectime" in df.columns and "vecvalue" in df.columns and "type" in df.columns and "module" in df.columns and "name" in df.columns:
-            _plotVectors_DF_scave(df)
+            _plot_vectors_DF_scave(df)
         elif "experiment" in df.index.names and "measurement" in df.index.names and "replication" in df.index.names and "module" in df.index.names and "name" in df.index.names:
-            _plotVectors_DF_2(df)
+            _plot_vectors_DF_2(df)
         else:
-            _plotVectors_DF_simple(df)
+            _plot_vectors_DF_simple(df)
     else:
-        _plotVectors_tuplelist(df_or_list)
+        _plot_vectors_tuplelist(df_or_list)
 
 
 
 
-def plotHistogram(label, edges, values, count=-1, lowest=math.nan, highest=math.nan):
+def plot_histogram(label, edges, values, count=-1, lowest=math.nan, highest=math.nan):
     plt.hist(bins=edges, x=edges[:-1], weights=values, label=label)
     plt.legend()
 
 
-def _plotHistograms_DF(df):
+def _plot_histograms_DF(df):
     for row in df.itertuples(index=False):
         if row[1] == "histogram":
 
@@ -170,7 +170,7 @@ def _plotHistograms_DF(df):
     plt.legend()
 
 
-def _plotHistograms_DF_2(df):
+def _plot_histograms_DF_2(df):
     for index, row in df.iterrows():
         edges = list(row[('result', 'binedges')])
         values = list(row[('result', 'binvalues')])
@@ -178,8 +178,8 @@ def _plotHistograms_DF_2(df):
 
 
 
-def plotHistograms(df):
+def plot_histograms(df):
     if "experiment" in df.index.names and "measurement" in df.index.names and "replication" in df.index.names and "module" in df.index.names and "name" in df.index.names:
-        _plotHistograms_DF_2(df)
+        _plot_histograms_DF_2(df)
     else:
-        _plotHistograms_DF(df)
+        _plot_histograms_DF(df)

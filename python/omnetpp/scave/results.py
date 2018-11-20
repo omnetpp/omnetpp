@@ -138,7 +138,7 @@ def filter_metadata(df, attrs=[], itervars=[], params=[], runattrs=[], droplevel
 
 
 # TODO - DEDUPLICATE THIS - IT WAS COPIED FROM THE IDE MODULE
-def pivotScalars1(df):
+def pivot_scalars1(df):
     attrs = df[df.type.isin(["runattr", "itervar"])][["run", "attrname", "attrvalue"]]
 
     scalars = df[df.type == "scalar"][["run", "module", "name", "value"]]
@@ -155,9 +155,9 @@ def pivotScalars1(df):
 
 # TODO - DEDUPLICATE THIS - IT WAS COPIED FROM THE IDE MODULE
 # @TimeAndGuard(measureTime=False)
-def pivotScalars(df, columns=["module"], index=["name"], values=None):
+def pivot_scalars(df, columns=["module"], index=["name"], values=None):
 
-    df = pivotScalars1(df)
+    df = pivot_scalars1(df)
 
     df = df.pivot_table(columns=columns, index=index, values=values)
 
@@ -199,14 +199,14 @@ def _get_results(filter_expression, file_extension, result_type):
     return df
 
 
-def getVectors(filter_expression):
+def get_vectors(filter_expression):
     return _get_results(filter_expression, '.vec', 'v')
 
-def getScalars(filter_expression):
+def get_scalars(filter_expression):
     return _get_results(filter_expression, '.sca', 's')
 
-def getStatistics(filter_expression):
+def get_statistics(filter_expression):
     return _get_results(filter_expression, '.sca', 't')
 
-def getHistograms(filter_expression):
+def get_histograms(filter_expression):
     return _get_results(filter_expression, '.sca', 'h')
