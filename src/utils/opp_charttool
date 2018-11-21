@@ -51,7 +51,7 @@ def load_anf_file(anf_file_name):
     inputs = [i.get('pattern') for i in analysis.findall("inputs/input")]
 
     charts = [
-            Chart(c.get('type'), c.get('name'), c.get('script'),
+            Chart(c.get('type'), c.get('name'), c.get('script') if 'script' in c.keys() else c.text,
                 { p.get('name') : p.get('value') for p in c.findall('property') })
             for c in analysis.findall("charts/chart")]
 
@@ -80,8 +80,7 @@ def run_chart(wd, c):
     os.chdir(wd)
     # print(sys.path)
     sys.path = [wd,
-        get_opp_root() + "/ui/org.omnetpp.scave.pychart/src/org/omnetpp/scave/pychart/python/",
-        get_opp_root() + "/ui/org.omnetpp.scave.pychart/org/omnetpp/scave/pychart/python/"
+        get_opp_root() + "/ui/org.omnetpp.scave.pychart/python/"
     ] + sys.path
 
     chart.name = c.name
@@ -93,7 +92,7 @@ def run_chart(wd, c):
     _show_called = False
 
     # print(script)
-    exec(script)
+    exec(script, {})
 
     if not _show_called:
         # print("calling explicit plt.show()")
