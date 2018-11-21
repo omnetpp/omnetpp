@@ -430,9 +430,9 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
         w, h = self.get_width_height()
 
         # print("rasterizing with Agg at " + str(w) + "x" + str(h) + " and halfRes? " + str(half) + " ...")
-        startTime = time.perf_counter()
+        # startTime = time.perf_counter()
         FigureCanvasAgg.draw(self)
-        endTime = time.perf_counter()
+        # endTime = time.perf_counter()
         # print("rasterizing with Agg took " + str((endTime - startTime) * 1000.0) + " ms")
 
         pixelBuffer = self.buffer_rgba()
@@ -445,7 +445,7 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
         # f.write(stringBuffer)
 
         if self.useRle:
-            rleStart = time.perf_counter()
+            # rleStart = time.perf_counter()
 
             intPixels = np.frombuffer(pixelBuffer, dtype=np.uint8)
 
@@ -457,7 +457,7 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
             # that it got bigger (or just a tiny bit smaller)
             bytes = rleInts.view(dtype=np.int8).tobytes()
 
-            rleEnd = time.perf_counter()
+            # rleEnd = time.perf_counter()
             # print("RLE encoding took " + str((rleEnd - rleStart) * 1000) + " ms.")
 
         self.widget.setPixels(bytes, w, h, self.useRle, half)
