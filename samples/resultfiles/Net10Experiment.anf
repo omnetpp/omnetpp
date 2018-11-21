@@ -5,6 +5,23 @@
         <input pattern="/resultfiles/routing2/Net10Experiment-*.sca"/>
     </inputs>
     <charts>
-        <chart name="CutThrough vs Store and Forward" script="import results&#10;&#10;filter_string = &quot;&quot;&quot;((name(endToEndDelay:mean) and module(*.rte[1].app) )&#10;  OR (name(iaMean) )) &quot;&quot;&quot;&#10;&#10;df = results.get_scalars(filter_string)&#10;&#10;xdata = 'iaMean'&#10;iso_column = None&#10;&#10;names = chart.plotScatter(df, xdata=xdata, iso_column=iso_column)&#10;&#10;chart.set_property('Y.Axis.Title', ', '.join(names))&#10;chart.set_property('X.Axis.Title', 'iaMean')&#10;chart.set_property('Graph.Title', chart.get_name())&#10;&#10;chart.set_properties(chart.get_properties())&#10;" type="ScatterChart"/>
+        <chart name="CutThrough vs Store and Forward" type="ScatterChart">from omnetpp.scave import results, chart
+
+filter_string = """((name(endToEndDelay:mean) and module(*.rte[1].app) )
+  OR (name(iaMean) )) """
+
+df = results.get_scalars(filter_string)
+
+xdata = 'iaMean'
+iso_column = None
+
+names = chart.plot_scatter(df, xdata=xdata, iso_column=iso_column)
+
+chart.set_property('Y.Axis.Title', ', '.join(names))
+chart.set_property('X.Axis.Title', 'iaMean')
+chart.set_property('Graph.Title', chart.get_name())
+
+chart.set_properties(chart.get_properties())
+</chart>
     </charts>
 </analysis>

@@ -5,11 +5,40 @@
         <input pattern="/resultfiles/PureAloha2-*.sca"/>
     </inputs>
     <charts>
-        <chart name="Chart2" script="ADD vectors WHERE run(PureAloha2-0-20170320-11:14:54-11186) AND module(Aloha.server) AND name(serverChannelState:vector)&#10;ADD vectors WHERE run(PureAloha2-0-20170320-11:14:54-11186) AND module(Aloha.host[6]) AND name(radioState:vector)&#10;" type="LineChart">
-            <property name="Graph.Title" value="PureAloha2  #0"/>
+        <chart name="Chart2" type="LineChart">from omnetpp.scave import results, chart
+
+df = results.get_vectors("""
+ADD vectors WHERE run(PureAloha2-0-20170320-11:14:54-11186) AND module(Aloha.server) AND name(serverChannelState:vector)
+ADD vectors WHERE run(PureAloha2-0-20170320-11:14:54-11186) AND module(Aloha.host[6]) AND name(radioState:vector)
+""")
+
+chart.plot_vectors(df)<property name="Graph.Title" value="PureAloha2  #0"/>
         </chart>
-        <chart name="Chart7" script="import results&#10;&#10;# This expression selects the results (you might be able to logically simplify it)&#10;filter_expression = &quot;&quot;&quot;&#10;ADD scalars WHERE attr:experiment(PureAloha2) AND attr:replication(#0) AND module(Aloha.server) AND name(collisionLength:mean)&#10;ADD scalars WHERE attr:experiment(PureAloha2) AND attr:replication(#0) AND module(Aloha.server) AND name(collisionLength:sum)&#10;ADD scalars WHERE attr:experiment(PureAloha2) AND attr:replication(#0) AND module(Aloha.server) AND name(collisionLength:max)&#10;ADD scalars WHERE attr:experiment(PureAloha2) AND attr:replication(#0) AND module(Aloha.server) AND name(channelUtilization:last)&#10;&quot;&quot;&quot;&#10;&#10;# The data is returned as a Pandas DataFrame&#10;df = results.get_scalars(filter_expression)&#10;&#10;df = results.transform_results(df)&#10;&#10;print(df)&#10;&#10;# The scalars are transformed into a much simpler format&#10;# df = results.pivot_scalars(df, columns=[&quot;module&quot;], index=[&quot;name&quot;, &quot;measurement&quot;])&#10;&#10;# You can perform any transformations on the data here&#10;&#10;# Finally, the results are plotted&#10;# chart.plot_scalars(df)&#10;" type="BarChart">
-            <property name="Graph.Title" value="Aloha.server"/>
+        <chart name="Chart7" type="BarChart">from omnetpp.scave import results, chart
+
+# This expression selects the results (you might be able to logically simplify it)
+filter_expression = """
+ADD scalars WHERE attr:experiment(PureAloha2) AND attr:replication(#0) AND module(Aloha.server) AND name(collisionLength:mean)
+ADD scalars WHERE attr:experiment(PureAloha2) AND attr:replication(#0) AND module(Aloha.server) AND name(collisionLength:sum)
+ADD scalars WHERE attr:experiment(PureAloha2) AND attr:replication(#0) AND module(Aloha.server) AND name(collisionLength:max)
+ADD scalars WHERE attr:experiment(PureAloha2) AND attr:replication(#0) AND module(Aloha.server) AND name(channelUtilization:last)
+"""
+
+# The data is returned as a Pandas DataFrame
+df = results.get_scalars(filter_expression)
+
+df = results.transform_results(df)
+
+print(df)
+
+# The scalars are transformed into a much simpler format
+# df = results.pivot_scalars(df, columns=["module"], index=["name", "measurement"])
+
+# You can perform any transformations on the data here
+
+# Finally, the results are plotted
+# chart.plot_scalars(df)
+<property name="Graph.Title" value="Aloha.server"/>
         </chart>
     </charts>
 </analysis>
