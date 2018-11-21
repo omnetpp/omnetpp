@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.omnetpp.common.Debug;
-import org.omnetpp.scave.computed.XYVector;
+import org.omnetpp.scave.charting.dataset.XYVector;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.VectorResult;

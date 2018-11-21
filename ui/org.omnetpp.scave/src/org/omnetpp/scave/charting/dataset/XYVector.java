@@ -1,4 +1,4 @@
-package org.omnetpp.scave.computed;
+package org.omnetpp.scave.charting.dataset;
 
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.scave.engine.XYArray;

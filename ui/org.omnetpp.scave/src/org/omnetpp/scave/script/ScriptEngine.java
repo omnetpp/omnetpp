@@ -35,9 +35,7 @@ import org.omnetpp.scave.charting.dataset.ScalarDataset;
 import org.omnetpp.scave.charting.dataset.ScalarScatterPlotDataset;
 import org.omnetpp.scave.charting.dataset.VectorDataset;
 import org.omnetpp.scave.charting.dataset.VectorScatterPlotDataset;
-import org.omnetpp.scave.computed.ComputedScalarManager;
-import org.omnetpp.scave.computed.VectorOperation;
-import org.omnetpp.scave.computed.XYVector;
+import org.omnetpp.scave.charting.dataset.XYVector;
 import org.omnetpp.scave.engine.DataSorter;
 import org.omnetpp.scave.engine.DataflowManager;
 import org.omnetpp.scave.engine.IDList;
@@ -102,26 +100,6 @@ public class ScriptEngine {
                     XYVector[] vectors = getDataOfVectors(manager, vectorIDs, progressMonitor);
                     for (int i = 0; i < vectorIDs.size(); i++)
                         resultSet.vectorData.put(vectorIDs.get(i), vectors[i]);
-                }
-                else if (command instanceof ApplyCommand) {
-                    ApplyCommand applyCommand = (ApplyCommand)command;
-                    String filter = applyCommand.getFilterExpression();
-                    IDList inputIDs = filter == null ? resultSet.idList : manager.filterIDList(resultSet.idList, filter);
-                    VectorOperation operation = applyCommand.getOperation();
-                    Object[] args = applyCommand.getParameters();
-                    int n = inputIDs.size();
-                    for (int i = 0; i < n; i++) {
-                        XYVector vector = resultSet.vectorData.get(inputIDs.get(i));
-                        if (vector != null)  // i.e. is a vector
-                            operation.apply(vector, args);
-                    }
-                }
-                else if (command instanceof ComputeScalarCommand) {
-                    ComputeScalarCommand computeCommand = (ComputeScalarCommand)command;
-                    String filter = computeCommand.getFilterExpression();
-                    IDList inputIDs = filter == null ? resultSet.idList : manager.filterIDList(resultSet.idList, filter);
-                    IDList computedScalarIds = ComputedScalarManager.computeAndAddScalars(manager, computeCommand, inputIDs);
-                    resultSet.idList.merge(computedScalarIds);
                 }
                 else {
                     throw new RuntimeException("Unknown command " + command.toString());

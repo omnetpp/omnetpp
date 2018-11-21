@@ -7,34 +7,17 @@
 
 package org.omnetpp.scave.script;
 
-import static org.omnetpp.scave.engine.ResultItemField.MODULE;
 import static org.omnetpp.scave.script.IScriptConstants.ADD;
-import static org.omnetpp.scave.script.IScriptConstants.APPLY;
-import static org.omnetpp.scave.script.IScriptConstants.AVERAGEREPLICATIONS;
 import static org.omnetpp.scave.script.IScriptConstants.COMMAND_ANDS_CLAUSE_COMMANDS;
-import static org.omnetpp.scave.script.IScriptConstants.COMPUTE;
-import static org.omnetpp.scave.script.IScriptConstants.COMPUTECONFIDENCEINTERVAL;
-import static org.omnetpp.scave.script.IScriptConstants.COMPUTEMINMAX;
-import static org.omnetpp.scave.script.IScriptConstants.COMPUTESTDDEV;
-import static org.omnetpp.scave.script.IScriptConstants.COMPUTE_CLAUSE_KEYWORDS;
-import static org.omnetpp.scave.script.IScriptConstants.GROUPING;
-import static org.omnetpp.scave.script.IScriptConstants.NAMED;
-import static org.omnetpp.scave.script.IScriptConstants.OPTIONS;
-import static org.omnetpp.scave.script.IScriptConstants.VALUE;
 import static org.omnetpp.scave.script.IScriptConstants.WHERE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.eclipse.core.runtime.IStatus;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.scave.computed.ComputedScalarEngine;
-import org.omnetpp.scave.computed.VectorOperation;
-import org.omnetpp.scave.computed.VectorOperations;
 import org.omnetpp.scave.model.ResultType;
 
 /**
@@ -69,47 +52,6 @@ public class ScriptParser {
                     addCommand.setFilterExpression(filter);
                     commands.add(addCommand);
                 }
-                else if (command.equalsIgnoreCase(APPLY)) {
-                    // APPLY <operation> WHERE <filter>
-                    checkClauses(clauses, new String[] {APPLY, WHERE});
-                    String operation = clauses.get(APPLY);
-                    String filter = clauses.get(WHERE);
-
-                    int openParenPos = operation.indexOf('(');
-                    String name = openParenPos == -1 ? operation : operation.substring(0, openParenPos);
-                    VectorOperation op = VectorOperations.get(name);
-                    if (op == null)
-                        throw new RuntimeException("No such vector operation: " + name);
-                    Object[] args = parseArgs(operation, op);
-
-                    ApplyCommand applyCommand = new ApplyCommand();
-                    applyCommand.setOperation(op);
-                    applyCommand.setParameters(args);
-                    applyCommand.setFilterExpression(filter);
-                    commands.add(applyCommand);
-                }
-                else if (command.equalsIgnoreCase(COMPUTE)) {
-                    // COMPUTE scalars NAMED <scalarName> AS <valueExpr> MODULE <moduleExpr> GROUPING <groupByExpr> OPTIONS averageReplications, computeStddev, computeConfidenceInterval, confidenceLevel, computeMinMax
-                    checkClauses(clauses, ArrayUtils.add(COMPUTE_CLAUSE_KEYWORDS, COMPUTE));
-                    ComputeScalarCommand computeCommand = new ComputeScalarCommand();
-                    computeCommand.setScalarName(clauses.get(NAMED));
-                    computeCommand.setValueExpr(clauses.get(VALUE));
-                    computeCommand.setModuleExpr(clauses.get(MODULE));
-                    computeCommand.setGroupByExpr(clauses.get(GROUPING));
-                    computeCommand.setFilterExpression(clauses.get(WHERE));
-                    String[] options = StringUtils.nullToEmpty(clauses.get(OPTIONS)).split(" *, *");
-                    computeCommand.setAverageReplications(ArrayUtils.contains(options, AVERAGEREPLICATIONS));
-                    computeCommand.setComputeMinMax(ArrayUtils.contains(options, COMPUTEMINMAX));
-                    computeCommand.setComputeStddev(ArrayUtils.contains(options, COMPUTESTDDEV));
-                    computeCommand.setComputeConfidenceInterval(ArrayUtils.contains(options, COMPUTECONFIDENCEINTERVAL));
-                    computeCommand.setConfidenceLevel(0.95); //TODO
-                    commands.add(computeCommand);
-                    
-                    //IStatus[] status = new ComputedScalarEngine(null).validate(computeCommand.getValueExpr(), computeCommand.getScalarName(), computeCommand.getModuleExpr(), computeCommand.getGroupByExpr(), new HashSet<String>());
-                    //if (status.length > 0)
-                    //    throw new RuntimeException(status[0].getMessage()); //TODO
-
-                }
                 else {
                     throw new RuntimeException("Unknown command '" + StringUtils.abbreviate(command,15) + "'");
                 }
@@ -118,34 +60,6 @@ public class ScriptParser {
         }
         catch (Exception e) {
             throw new RuntimeException("<script>:" + lineNo + ": " + e.getMessage());
-        }
-    }
-
-    private static Object[] parseArgs(String operation, VectorOperation op) {
-        if (!operation.contains("("))
-            operation = "()";
-
-        String argsString = StringUtils.removeEnd(StringUtils.substringAfter(operation, "("), ")");
-        String[] argTokens = StringUtils.isBlank(argsString) ? new String[0] : argsString.split(",");
-        int argCount = op.getArgTypes().length;
-        if (argTokens.length != argCount)
-            throw new RuntimeException(op.getName() + " expects " + StringUtils.formatCounted(argCount, "arg"));
-
-        try {
-            Object[] args = new Object[argCount];
-            for (int i = 0; i < argCount; i++) {
-                Class<?> argType = op.getArgTypes()[i];
-                if (argType == double.class)
-                    args[i] = Double.valueOf(argTokens[i]); //TODO better error handling
-                else if (argType == int.class)
-                    args[i] = Integer.valueOf(argTokens[i]); //TODO better error handling
-                else
-                    throw new RuntimeException(op.getName() + ": unsupported argument type " + argType.getName());
-            }
-            return args;
-        }
-        catch (NumberFormatException e) {
-            throw new RuntimeException(op.getName() + ": error in argument list");
         }
     }
 
