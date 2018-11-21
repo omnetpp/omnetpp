@@ -20,7 +20,6 @@ import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.engine.ScalarResult;
-import org.omnetpp.scave.engine.StringMap;
 import org.omnetpp.scave.engine.StringSet;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.VectorResult;
@@ -127,52 +126,6 @@ public class ResultFileManagerEx extends ResultFileManager {
             getWriteLock().unlock();
         }
     }
-
-    @Override
-    public long addComputedVector(int vectorId, String name, String file, StringMap attributes, long computationID, long input, Object processingOp) {
-        checkNotDeleted();
-        getWriteLock().lock();
-        try {
-            checkNotDeleted();
-            long id = super.addComputedVector(vectorId, name, file, attributes, computationID, input, processingOp);
-            notifyChangeListeners(new ResultFileManagerChangeEvent(this, ChangeType.COMPUTED_ITEM_ADDED, id));
-            return id;
-        }
-        finally {
-            getWriteLock().unlock();
-        }
-    }
-
-    @Override
-    public long addComputedScalar(String name, String module, String runName, double value, StringMap attributes, Object computeScalarNode) {
-        checkNotDeleted();
-        getWriteLock().lock();
-        try {
-            checkNotDeleted();
-            long id = super.addComputedScalar(name, module, runName, value, attributes, computeScalarNode);
-            notifyChangeListeners(new ResultFileManagerChangeEvent(this, ChangeType.COMPUTED_ITEM_ADDED, id));
-            return id;
-        }
-        finally {
-            getWriteLock().unlock();
-        }
-    }
-
-    @Override
-    public void clearComputedScalars() {
-        checkNotDeleted();
-        getWriteLock().lock();
-        try {
-            checkNotDeleted();
-            super.clearComputedScalars();
-            notifyChangeListeners(new ResultFileManagerChangeEvent(this, ChangeType.COMPUTED_SCALARS_CLEARED));
-        }
-        finally {
-            getWriteLock().unlock();
-        }
-    }
-
-
 
     /*-------------------------------------------
      *               Reader methods
@@ -418,24 +371,6 @@ public class ResultFileManagerEx extends ResultFileManager {
     public boolean isFileLoaded(String fileName) {
         checkNotDeleted();
         return super.isFileLoaded(fileName);
-    }
-
-    @Override
-    public long getComputedID(long computationID, long inputID) {
-        checkNotDeleted();
-        return super.getComputedID(computationID, inputID);
-    }
-
-    @Override
-    public ResultFile getComputedScalarFile() {
-        checkNotDeleted();
-        return super.getComputedScalarFile();
-    }
-
-    @Override
-    public IDList getComputedScalarIDs(Object node) {
-        checkNotDeleted();
-        return wrap(super.getComputedScalarIDs(node));
     }
 
     @Override

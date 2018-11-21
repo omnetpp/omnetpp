@@ -15,10 +15,8 @@ import org.omnetpp.scave.engine.ResultFile;
  */
 public class ResultFilePropertySource extends FilePropertySource {
     // display labels as well as property IDs
-    public static final String PROP_COMPUTED = "Computed";
 
     public static final String[] MAIN_PROPERTY_IDS = {
-        PROP_COMPUTED,
     };
 
     protected static final IPropertyDescriptor[] MAIN_PROPERTY_DESCS = makeDescriptors(MAIN_PROPERTY_IDS, "", "Main");
@@ -30,23 +28,13 @@ public class ResultFilePropertySource extends FilePropertySource {
         return descs;
     }
 
-    private ResultFile resultFile;
-
     public ResultFilePropertySource(ResultFile resultFile) {
         super(ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(resultFile.getFilePath())));
-        this.resultFile = resultFile;
     }
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
         return ArrayUtils.addAll(MAIN_PROPERTY_DESCS, super.getPropertyDescriptors());
-    }
-
-    @Override
-    public Object getPropertyValue(Object propertyId) {
-        if (propertyId.equals(PROP_COMPUTED)) return resultFile.isComputed();
-
-        return super.getPropertyValue(propertyId);
     }
 
     @Override

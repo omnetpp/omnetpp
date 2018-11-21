@@ -307,7 +307,7 @@ ResultFile *OmnetppResultFileLoader::loadFile(const char *fileName, const char *
     ResultFile *fileRef = nullptr;
 
     try {
-        fileRef = resultFileManager->addFile(fileName, fileSystemFileName, ResultFile::FILETYPE_OMNETPP, false);
+        fileRef = resultFileManager->addFile(fileName, fileSystemFileName, ResultFile::FILETYPE_OMNETPP);
 
         // if vector file and has index, load vectors from the index file
         if (IndexFile::isExistingVectorFile(fileSystemFileName) && IndexFile::isIndexFileUpToDate(fileSystemFileName)) {

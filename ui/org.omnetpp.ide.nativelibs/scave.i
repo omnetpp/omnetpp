@@ -260,67 +260,6 @@ namespace omnetpp { namespace scave {
 %enddef
 
 
-//
-// addComputedVector
-//
-
-%typemap(jni)     omnetpp::scave::IComputation* "jobject"
-%typemap(jtype)   omnetpp::scave::IComputation* "Object"
-%typemap(jstype)  omnetpp::scave::IComputation* "Object"
-%typemap(javain)  omnetpp::scave::IComputation* "$javainput"
-%typemap(javaout) omnetpp::scave::IComputation* {
-   return $jnicall;
-}
-
-%{
-class Computation : public omnetpp::scave::IComputation {
-  JavaVM *jvm;
-  jobject ref;
-  private:
-    Computation(const Computation &other); // unimplemented
-    Computation &operator=(const Computation &other); // unimplemented
-    JNIEnv *getJNIEnv() const
-    {
-      JNIEnv *env;
-      jint error = jvm->AttachCurrentThread((void**)&env, NULL);
-      if (error)
-        throw opp_runtime_error("Can not access JNIEnv from the current thread.");
-      return env;
-    }
-  public:
-    Computation(JNIEnv *jenv, jobject computation)
-    {
-        jint error = jenv->GetJavaVM(&jvm);
-        if (error)
-          throw opp_runtime_error("Can not access JVM.");
-        ref = jenv->NewGlobalRef(computation);
-    }
-
-    virtual IComputation *dup() { return new Computation(getJNIEnv(), ref); }
-    virtual ~Computation() { getJNIEnv()->DeleteGlobalRef(ref); }
-
-    virtual bool operator==(const IComputation &other) const
-    {
-      Computation &o = dynamic_cast<Computation&>(const_cast<IComputation&>(other));
-      return getJNIEnv()->IsSameObject(this->ref, o.ref);
-    }
-
-    jobject getJavaObject() const { return getJNIEnv()->NewLocalRef(ref);; }
-};
-%}
-
-%typemap(in) omnetpp::scave::IComputation* {
-  $1 = (IComputation*)new Computation(jenv, $input);
-}
-
-%typemap(out) omnetpp::scave::IComputation* {
-  if (dynamic_cast<Computation*>($1))
-    $result = dynamic_cast<Computation*>($1)->getJavaObject();
-  else
-    $result = $null;
-}
-
-
 /*--------------------------------------------------------------------------
  *                     check ResultFileFormatException
  *--------------------------------------------------------------------------*/
@@ -366,7 +305,6 @@ namespace omnetpp { namespace common {
 
 /* ------------- resultfilemanager.h  ----------------- */
 namespace omnetpp { namespace scave {
-%ignore IComputation;
 %ignore ResultFileManager::dump;
 %ignore Run::runName;
 %ignore VectorResult::columns;
@@ -407,17 +345,6 @@ namespace omnetpp { namespace scave {
 //%ignore ResultFileManager::getUniqueNames;
 //%ignore ResultFileManager::getUniqueAttributeValues;
 //%ignore ResultFileManager::getFileAndRunNumberFilterHints;
-
-%extend ResultFileManager {
-    IDList getComputedScalarIDs(const IComputation *computation) const
-    {
-        IDList result = $self->getComputedScalarIDs(computation);
-        // KLUDGE: computation is allocated in the SWIG generated JNI code
-        // unfortunately it isn't easy to delete this there without affecting other generated code
-        delete computation;
-        return result;
-    }
-}
 
 %newobject ResultItem::getEnum() const;
 

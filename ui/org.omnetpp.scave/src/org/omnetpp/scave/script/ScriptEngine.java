@@ -245,7 +245,6 @@ public class ScriptEngine {
             // take the scalars only
             IDList scalarIDs = resultSet.idList.filterByTypes(ResultFileManager.SCALAR);
             ScalarDataset result = new ScalarDataset(scalarIDs, chart.getGroupByFields(), chart.getBarFields(), chart.getAveragedFields(), manager);
-            manager.clearComputedScalars();
             return result;
         }
         catch (Exception e) {
@@ -380,7 +379,6 @@ public class ScriptEngine {
                     new VectorScatterPlotDataset(yVectors, xyVectors, manager));
         else
             result = null; //TODO ???
-        manager.clearComputedScalars();
         return result;
     }
 

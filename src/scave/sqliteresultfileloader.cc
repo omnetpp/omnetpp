@@ -362,7 +362,7 @@ void SqliteResultFileLoader::cleanupDb()
 ResultFile *SqliteResultFileLoader::loadFile(const char *fileName, const char *fileSystemFileName, bool reload)
 {
     try {
-        fileRef = resultFileManager->addFile(fileName, fileSystemFileName, ResultFile::FILETYPE_SQLITE, false);
+        fileRef = resultFileManager->addFile(fileName, fileSystemFileName, ResultFile::FILETYPE_SQLITE);
         checkOK(sqlite3_open_v2(fileSystemFileName, &db, SQLITE_OPEN_READONLY, 0));
         loadRuns();
         loadRunAttrs();

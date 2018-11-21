@@ -63,7 +63,7 @@ const std::string NULLSTRING = "";
 const char *ITERVARSCALAR_MODULE = "_runattrs_";
 
 ResultItem::ResultItem(FileRun *fileRun, const std::string& moduleName, const std::string& name, const StringMap& attrs) :
-        fileRunRef(fileRun), moduleNameRef(nullptr), nameRef(nullptr), attributes(attrs), computation(nullptr)
+        fileRunRef(fileRun), moduleNameRef(nullptr), nameRef(nullptr), attributes(attrs)
 {
     ResultFileManager *resultFileManager = fileRun->fileRef->getResultFileManager();
     moduleNameRef = resultFileManager->moduleNames.insert(moduleName);
@@ -79,9 +79,7 @@ ResultItem& ResultItem::operator=(const ResultItem& rhs)
     moduleNameRef = rhs.moduleNameRef;
     nameRef = rhs.nameRef;
     attributes = rhs.attributes;
-    if (computation)
-        delete computation;
-    computation = rhs.computation ? rhs.computation->dup() : nullptr;
+
     return *this;
 }
 
@@ -190,7 +188,7 @@ const std::string& Run::getParamAssignment(const std::string& key) const
 
 ResultFileManager::ResultFileManager()
 {
-    computedScalarFile = nullptr;
+
 }
 
 ResultFileManager::~ResultFileManager()
@@ -218,7 +216,7 @@ ResultFileList ResultFileManager::getFiles() const
     READER_MUTEX
     ResultFileList out;
     for (int i = 0; i < (int)fileList.size(); i++)
-        if (fileList[i] && !fileList[i]->isComputed())
+        if (fileList[i])
             out.push_back(fileList[i]);
     return out;
 }
@@ -243,12 +241,12 @@ RunList ResultFileManager::getRunsInFile(ResultFile *file) const
     return out;
 }
 
-ResultFileList ResultFileManager::getFilesForRun(Run *run, bool includeComputed) const
+ResultFileList ResultFileManager::getFilesForRun(Run *run) const
 {
     READER_MUTEX
     ResultFileList out;
     for (int i = 0; i < (int)fileRunList.size(); i++)
-        if (fileRunList[i]->runRef == run && (includeComputed || !fileRunList[i]->fileRef->isComputed()))
+        if (fileRunList[i]->runRef == run)
             out.push_back(fileRunList[i]->fileRef);
     return out;
 }
@@ -474,63 +472,62 @@ const HistogramResult& ResultFileManager::getHistogram(ID id) const
 }
 
 template<class T>
-void ResultFileManager::collectIDs(IDList& out, std::vector<T> ResultFile::*vec, int type, bool includeComputed, bool includeFields, bool includeItervars) const
+void ResultFileManager::collectIDs(IDList& out, std::vector<T> ResultFile::*vec, int type, bool includeFields, bool includeItervars) const
 {
     for (int k = 0; k < (int)fileList.size(); k++) {
         if (fileList[k] != nullptr) {
             std::vector<T>& v = fileList[k]->*vec;
             for (int i = 0; i < (int)v.size(); i++) {
-                bool isComputed = v[i].isComputed();
                 bool isField = type == SCALAR ? ((ScalarResult&)v[i]).isField() : false;
                 bool isItervar = type == SCALAR ? ((ScalarResult&)v[i]).isItervar() : false;
 
-                if ((!isField || includeFields) && (!isComputed || includeComputed) && (!isItervar || includeItervars))
-                    out.uncheckedAdd(_mkID(isComputed, isField, type, k, i));
+                if ((!isField || includeFields) && (!isItervar || includeItervars))
+                    out.uncheckedAdd(_mkID(isField, type, k, i));
             }
         }
     }
 }
 
-IDList ResultFileManager::getAllItems(bool includeComputed, bool includeFields, bool includeItervars) const
+IDList ResultFileManager::getAllItems(bool includeFields, bool includeItervars) const
 {
     READER_MUTEX
     IDList out;
-    collectIDs(out, &ResultFile::scalarResults, SCALAR, includeComputed, includeFields, includeItervars);
-    collectIDs(out, &ResultFile::vectorResults, VECTOR, includeComputed, includeFields, includeItervars);
-    collectIDs(out, &ResultFile::statisticsResults, STATISTICS, includeComputed, includeFields, includeItervars);
-    collectIDs(out, &ResultFile::histogramResults, HISTOGRAM, includeComputed, includeFields, includeItervars);
+    collectIDs(out, &ResultFile::scalarResults, SCALAR, includeFields, includeItervars);
+    collectIDs(out, &ResultFile::vectorResults, VECTOR, includeFields, includeItervars);
+    collectIDs(out, &ResultFile::statisticsResults, STATISTICS, includeFields, includeItervars);
+    collectIDs(out, &ResultFile::histogramResults, HISTOGRAM, includeFields, includeItervars);
     return out;
 }
 
-IDList ResultFileManager::getAllScalars(bool includeComputed, bool includeFields, bool includeItervars) const
+IDList ResultFileManager::getAllScalars(bool includeFields, bool includeItervars) const
 {
     READER_MUTEX
     IDList out;
-    collectIDs(out, &ResultFile::scalarResults, SCALAR, includeComputed, includeFields, includeItervars);
+    collectIDs(out, &ResultFile::scalarResults, SCALAR, includeFields, includeItervars);
     return out;
 }
 
-IDList ResultFileManager::getAllVectors(bool includeComputed) const
+IDList ResultFileManager::getAllVectors() const
 {
     READER_MUTEX
     IDList out;
-    collectIDs(out, &ResultFile::vectorResults, VECTOR, includeComputed, true, true);
+    collectIDs(out, &ResultFile::vectorResults, VECTOR, true, true);
     return out;
 }
 
-IDList ResultFileManager::getAllStatistics(bool includeComputed) const
+IDList ResultFileManager::getAllStatistics() const
 {
     READER_MUTEX
     IDList out;
-    collectIDs(out, &ResultFile::statisticsResults, STATISTICS, includeComputed, true, true);
+    collectIDs(out, &ResultFile::statisticsResults, STATISTICS, true, true);
     return out;
 }
 
-IDList ResultFileManager::getAllHistograms(bool includeComputed) const
+IDList ResultFileManager::getAllHistograms() const
 {
     READER_MUTEX
     IDList out;
-    collectIDs(out, &ResultFile::histogramResults, HISTOGRAM, includeComputed, true, true);
+    collectIDs(out, &ResultFile::histogramResults, HISTOGRAM, true, true);
     return out;
 }
 
@@ -541,8 +538,8 @@ IDList ResultFileManager::getScalarsInFileRun(FileRun *fileRun) const
     int fileId = fileRun->fileRef->id;
     ScalarResults& v = fileRun->fileRef->scalarResults;
     for (int i = 0; i < (int)v.size(); i++)
-        if (v[i].getFileRun() == fileRun && !v[i].isComputed())
-            out.uncheckedAdd(_mkID(false, v[i].isField(), SCALAR, fileId, i));
+        if (v[i].getFileRun() == fileRun)
+            out.uncheckedAdd(_mkID(v[i].isField(), SCALAR, fileId, i));
 
     return out;
 }
@@ -554,8 +551,8 @@ IDList ResultFileManager::getVectorsInFileRun(FileRun *fileRun) const
     int fileId = fileRun->fileRef->id;
     VectorResults& v = fileRun->fileRef->vectorResults;
     for (int i = 0; i < (int)v.size(); i++)
-        if (v[i].getFileRun() == fileRun && !v[i].isComputed())
-            out.uncheckedAdd(_mkID(false, false, VECTOR, fileId, i));
+        if (v[i].getFileRun() == fileRun)
+            out.uncheckedAdd(_mkID(false, VECTOR, fileId, i));
 
     return out;
 }
@@ -567,8 +564,8 @@ IDList ResultFileManager::getStatisticsInFileRun(FileRun *fileRun) const
     int fileId = fileRun->fileRef->id;
     StatisticsResults& v = fileRun->fileRef->statisticsResults;
     for (int i = 0; i < (int)v.size(); i++)
-        if (v[i].getFileRun() == fileRun && !v[i].isComputed())
-            out.uncheckedAdd(_mkID(false, false, STATISTICS, fileId, i));
+        if (v[i].getFileRun() == fileRun)
+            out.uncheckedAdd(_mkID(false, STATISTICS, fileId, i));
 
     return out;
 }
@@ -580,8 +577,8 @@ IDList ResultFileManager::getHistogramsInFileRun(FileRun *fileRun) const
     int fileId = fileRun->fileRef->id;
     HistogramResults& v = fileRun->fileRef->histogramResults;
     for (int i = 0; i < (int)v.size(); i++)
-        if (v[i].getFileRun() == fileRun && !v[i].isComputed())
-            out.uncheckedAdd(_mkID(false, false, HISTOGRAM, fileId, i));
+        if (v[i].getFileRun() == fileRun)
+            out.uncheckedAdd(_mkID(false, HISTOGRAM, fileId, i));
 
     return out;
 }
@@ -647,28 +644,28 @@ ID ResultFileManager::getItemByName(FileRun *fileRunRef, const char *module, con
     for (int i = 0; i < (int)scalarResults.size(); i++) {
         const ResultItem& d = scalarResults[i];
         if (d.getModuleName() == *moduleNameRef && d.getName() == *nameRef && d.getFileRun() == fileRunRef)
-            return _mkID(d.isComputed(), scalarResults[i].isField(), SCALAR, fileRunRef->fileRef->id, i);
+            return _mkID(scalarResults[i].isField(), SCALAR, fileRunRef->fileRef->id, i);
     }
 
     VectorResults& vectorResults = fileRunRef->fileRef->vectorResults;
     for (int i = 0; i < (int)vectorResults.size(); i++) {
         const ResultItem& d = vectorResults[i];
         if (d.getModuleName() == *moduleNameRef && d.getName() == *nameRef && d.getFileRun() == fileRunRef)
-            return _mkID(d.isComputed(), false, VECTOR, fileRunRef->fileRef->id, i);
+            return _mkID(false, VECTOR, fileRunRef->fileRef->id, i);
     }
 
     StatisticsResults& statisticsResults = fileRunRef->fileRef->statisticsResults;
     for (int i = 0; i < (int)statisticsResults.size(); i++) {
         const ResultItem& d = statisticsResults[i];
         if (d.getModuleName() == *moduleNameRef && d.getName() == *nameRef && d.getFileRun() == fileRunRef)
-            return _mkID(d.isComputed(), false, STATISTICS, fileRunRef->fileRef->id, i);
+            return _mkID(false, STATISTICS, fileRunRef->fileRef->id, i);
     }
 
     HistogramResults& histogramResults = fileRunRef->fileRef->histogramResults;
     for (int i = 0; i < (int)histogramResults.size(); i++) {
         const ResultItem& d = histogramResults[i];
         if (d.getModuleName() == *moduleNameRef && d.getName() == *nameRef && d.getFileRun() == fileRunRef)
-            return _mkID(d.isComputed(), false, HISTOGRAM, fileRunRef->fileRef->id, i);
+            return _mkID(false, HISTOGRAM, fileRunRef->fileRef->id, i);
     }
     return 0;
 }
@@ -936,7 +933,7 @@ void ResultFileManager::checkPattern(const char *pattern)
     MatchExpression matchExpr(pattern, false  /*dottedpath*/, true  /*fullstring*/, true  /*casesensitive*/);
 }
 
-ResultFile *ResultFileManager::addFile(const char *fileName, const char *fileSystemFileName, ResultFile::FileType fileType, bool computed)
+ResultFile *ResultFileManager::addFile(const char *fileName, const char *fileSystemFileName, ResultFile::FileType fileType)
 {
     ResultFile *file = new ResultFile();
     file->id = fileList.size();
@@ -946,13 +943,12 @@ ResultFile *ResultFileManager::addFile(const char *fileName, const char *fileSys
     file->filePath = fileNameToSlash(fileName);
     splitFileName(file->filePath.c_str(), file->directory, file->fileName);
     file->fileType = fileType;
-    file->computed = computed;
     return file;
 }
 
-Run *ResultFileManager::addRun(const std::string& runName, bool computed)
+Run *ResultFileManager::addRun(const std::string& runName)
 {
-    Run *run = new Run(runName, computed, this);
+    Run *run = new Run(runName, this);
     runList.push_back(run);
     return run;
 }
@@ -1035,99 +1031,6 @@ void ResultFileManager::addStatisticsFieldsAsScalars(FileRun *fileRunRef, const 
     if (!stat.isWeighted())
         addScalar(fileRunRef, moduleName, (name+":sum").c_str(), emptyAttrs, stat.getSum(), true, false);  // this one might be useful
     //TODO sumWeights? isWeighted?
-}
-
-// create a file for each dataset?
-ID ResultFileManager::addComputedVector(int vectorId, const char *name, const char *file,
-        const StringMap& vectorAttributes, ComputationID computationID, ID input, IComputation *computation)
-{
-    WRITER_MUTEX
-
-    assert(getTypeOf(input) == VECTOR);
-
-    const VectorResult& vector = getVector(input);
-
-    ResultFile *fileRef = getFile(file);
-    if (!fileRef)
-        fileRef = addFile(file, file, ResultFile::FILETYPE_OMNETPP, true);  // XXX
-    Run *runRef = vector.getRun();
-    FileRun *fileRunRef = getFileRun(fileRef, runRef);
-    if (!fileRunRef)
-        fileRunRef = addFileRun(fileRef, runRef);
-
-    VectorResult newVector(fileRunRef, vector.getModuleName(), name, vectorAttributes, vectorId, vector.getColumns());
-    newVector.computation = computation;
-    newVector.stat = Statistics::makeInvalid(false);
-    fileRef->vectorResults.push_back(newVector);
-    ID id = _mkID(true, false, VECTOR, fileRef->id, fileRef->vectorResults.size()-1);
-    std::pair<ComputationID, ID> key = std::make_pair(computationID, input);
-    computedIDCache[key] = id;
-    return id;
-}
-
-ID ResultFileManager::getComputedID(ComputationID computationID, ID input) const
-{
-    READER_MUTEX
-    std::pair<ComputationID, ID> key = std::make_pair(computationID, input);
-    ComputedIDCache::const_iterator it = computedIDCache.find(key);
-    if (it != computedIDCache.end())
-        return it->second;
-    else
-        return -1;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-// Computed Scalars
-//---------------------------------------------------------------------------------------------------------------------
-
-ID ResultFileManager::addComputedScalar(const char *name, const char *module, const char *runName, double value, const StringMap& attributes, IComputation *node)
-{
-    WRITER_MUTEX
-
-    if (!computedScalarFile)
-        computedScalarFile = addFile("<computed>", "<none>", ResultFile::FILETYPE_OMNETPP, true);
-    Run *run = getRunByName(runName);
-    if (!run) {
-        run = addRun(runName, true);
-        for (auto& pair : attributes)
-            run->setAttribute(pair.first, pair.second);
-    }
-    FileRun *fileRun = getFileRun(computedScalarFile, run);
-    if (!fileRun)
-        fileRun = addFileRun(computedScalarFile, run);
-
-    ScalarResult scalar(fileRun, module, name, StringMap(), value, false, false);
-    scalar.computation = node;
-
-    int id = computedScalarFile->scalarResults.size();
-    computedScalarFile->scalarResults.push_back(scalar);
-    return _mkID(true, false, SCALAR, computedScalarFile->id, id);
-}
-
-IDList ResultFileManager::getComputedScalarIDs(const IComputation *node) const
-{
-    READER_MUTEX
-
-    IDList result;
-    if (computedScalarFile && node) {
-        const ScalarResults& scalars = computedScalarFile->scalarResults;
-        for (int i = 0; i < (int)scalars.size(); ++i) {
-            const ScalarResult& scalar = scalars[i];
-            if ((*scalar.computation) == (*node))
-                result.add(_mkID(true, false, SCALAR, computedScalarFile->id, i));
-        }
-    }
-    return result;
-}
-
-void ResultFileManager::clearComputedScalars()
-{
-    WRITER_MUTEX
-
-    if (computedScalarFile) {
-        unloadFile(computedScalarFile);
-        computedScalarFile = nullptr;
-    }
 }
 
 /*
@@ -1240,18 +1143,6 @@ void ResultFileManager::unloadFile(ResultFile *file)
 {
     WRITER_MUTEX
 
-    // remove computed vector IDs
-    for (ComputedIDCache::iterator it = computedIDCache.begin(); it != computedIDCache.end(); ) {
-        ID id = it->first.second;
-        if (_fileid(id) == file->id) {
-            ComputedIDCache::iterator oldIt = it;
-            ++it;
-            computedIDCache.erase(oldIt);
-        }
-        else
-            ++it;
-    }
-
     // remove FileRun entries
     RunList runsPotentiallyToBeDeleted;
     for (int i = 0; i < (int)fileRunList.size(); i++) {
@@ -1266,13 +1157,6 @@ void ResultFileManager::unloadFile(ResultFile *file)
         }
     }
 
-    // Computed names only refered from computedScalarFile, so clear them now.
-    if (file == computedScalarFile) {
-        computedScalarFile = nullptr;
-        computedScalarNames.clear();
-        computedModuleNames.clear();
-    }
-
     // delete ResultFile entry. Note that the fileList array will have a hole.
     // It is not allowed to move another ResultFile into the hole, because
     // that would change its "id", and invalidate existing IDs (IDLists)
@@ -1283,7 +1167,7 @@ void ResultFileManager::unloadFile(ResultFile *file)
     // remove Runs that don't appear in other loaded files
     for (int i = 0; i < (int)runsPotentiallyToBeDeleted.size(); i++) {
         Run *runRef = runsPotentiallyToBeDeleted[i];
-        if (getFilesForRun(runRef, true).empty()) {
+        if (getFilesForRun(runRef).empty()) {
             // delete it.
             RunList::iterator it = std::find(runList.begin(), runList.end(), runRef);
             assert(it != runList.end());  // runs may occur only once in runsPotentiallyToBeDeleted, because runNames are not allowed to repeat in files

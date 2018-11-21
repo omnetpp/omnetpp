@@ -418,7 +418,7 @@ void ScaveTool::queryCommand(int argc, char **argv)
     loadFiles(resultFileManager, opt_fileNames, opt_indexingAllowed, opt_verbose);
 
     // filter statistics
-    IDList results = resultFileManager.getAllItems(true, opt_includeFields, opt_includeItervars);
+    IDList results = resultFileManager.getAllItems(opt_includeFields, opt_includeItervars);
     results.set(results.filterByTypes(opt_resultTypeFilter));
     results.set(resultFileManager.filterIDList(results, opt_filterExpression.c_str()));
 
@@ -699,7 +699,7 @@ void ScaveTool::exportCommand(int argc, char **argv)
     loadFiles(resultFileManager, opt_fileNames, opt_indexingAllowed, opt_verbose);
 
     // filter statistics
-    IDList results = resultFileManager.getAllItems(true, opt_includeFields, opt_includeItervars);
+    IDList results = resultFileManager.getAllItems(opt_includeFields, opt_includeItervars);
     results.set(results.filterByTypes(opt_resultTypeFilter));
     results.set(resultFileManager.filterIDList(results, opt_filterExpression.c_str()));
 

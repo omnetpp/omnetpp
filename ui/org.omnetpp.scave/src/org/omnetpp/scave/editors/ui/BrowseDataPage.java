@@ -47,7 +47,7 @@ import org.omnetpp.scave.model.ResultType;
 /**
  * This is the "Browse Data" page of Scave Editor
  */
-//TODO Statistics result items should be added to the histogram page 
+//TODO Statistics result items should be added to the histogram page
 //TODO remove page description; display "empty-table message" instead (stacklayout?)
 //TODO save filter bar sash positions
 //TODO focus issue (currently a toolbar icon gets the focus by default?)
@@ -66,7 +66,7 @@ public class BrowseDataPage extends FormEditorPage {
     private DropdownAction treeLevelsAction;
     private FlatModuleTreeAction flatModuleTreeAction;
     private ChooseTableColumnsAction chooseTableColumnsAction;
-    
+
     public BrowseDataPage(Composite parent, ScaveEditor editor) {
         super(parent, SWT.NONE, editor);
         initialize();
@@ -171,7 +171,7 @@ public class BrowseDataPage extends FormEditorPage {
         });
         updateIconVisibility();
     }
-        
+
     private void updateIconVisibility() {
         boolean isAllPanelActive = (getActivePanel() == getAllPanel());
         setToolbarActionVisible(flatModuleTreeAction, isAllPanelActive);
@@ -307,11 +307,11 @@ public class BrowseDataPage extends FormEditorPage {
      */
     protected void refreshPage(ResultFileManager manager) {
         boolean showFields = false; // on the scalars page --TODO make configurable!!!
-        IDList items = manager.getAllItems(false, false, true); // exclude computed and fields
-        IDList vectors = manager.getAllVectors(false);
-        IDList scalars = manager.getAllScalars(false, showFields, true); 
-        IDList histograms = manager.getAllStatistics(false);
-        histograms.merge(manager.getAllHistograms(false));
+        IDList items = manager.getAllItems(false, true); // exclude computed and fields
+        IDList vectors = manager.getAllVectors();
+        IDList scalars = manager.getAllScalars(showFields, true);
+        IDList histograms = manager.getAllStatistics();
+        histograms.merge(manager.getAllHistograms());
 
         tabFolder.getAllPanel().setIDList(items);
         tabFolder.getScalarsPanel().setIDList(scalars);

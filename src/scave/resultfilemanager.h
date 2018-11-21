@@ -63,19 +63,6 @@ typedef std::vector< std::pair<std::string, std::string> > OrderedKeyValueList;
 using omnetpp::common::Statistics;
 using omnetpp::common::Histogram;
 
-typedef int64_t ComputationID;
-
-struct SCAVE_API IComputation {
-    IComputation() {}
-    virtual ~IComputation() {}
-    virtual IComputation *dup() = 0;
-    virtual bool operator==(const IComputation& other) const = 0;
-    virtual bool operator!=(const IComputation& other) const { return !(*this == other);}
-private:
-    IComputation(const IComputation &); // unimplemented
-    IComputation& operator=(const IComputation &); // unimplemented
-};
-
 /**
  * Represents a run in a result file. Such item is needed because
  * result files and runs are in many-to-many relationship: a result file
@@ -109,7 +96,6 @@ class SCAVE_API ResultItem
     const std::string *moduleNameRef; // points into ResultFileManager'strptr StringSet
     const std::string *nameRef; // scalarname or vectorname; points into ResultFileManager'strptr StringSet
     StringMap attributes; // metadata in key/value form
-    IComputation *computation;
 
   protected:
     ResultItem(FileRun *fileRun, const std::string& moduleName, const std::string& name, const StringMap& attrs);
@@ -119,9 +105,9 @@ class SCAVE_API ResultItem
   public:
     ResultItem(const ResultItem& o)
         : fileRunRef(o.fileRunRef), moduleNameRef(o.moduleNameRef), nameRef(o.nameRef),
-          attributes(o.attributes), computation(o.computation ? o.computation->dup() : nullptr) {}
+          attributes(o.attributes) {}
     ResultItem& operator=(const ResultItem& rhs);
-    virtual ~ResultItem() { delete computation; }
+    virtual ~ResultItem() { }
 
     virtual int getItemType() const = 0;
 
@@ -133,7 +119,6 @@ class SCAVE_API ResultItem
     Run *getRun() const {return fileRunRef->runRef;}  //TODO return const
 
     const StringMap& getAttributes() const {return attributes;}
-    IComputation *getComputation() const {return computation;}
 
     const std::string& getAttribute(const std::string& attrName) const {
         StringMap::const_iterator it = attributes.find(attrName);
@@ -151,8 +136,6 @@ class SCAVE_API ResultItem
      * or nullptr if no "enum" attribute.
      */
     EnumType *getEnum() const;
-
-    bool isComputed() const { return computation != nullptr; }
 };
 
 /**
@@ -278,7 +261,6 @@ class SCAVE_API ResultFile
     std::string filePath; // workspace directory + fileName
     std::string fileSystemFilePath; // directory+fileName of underlying file (for fopen())
     FileType fileType;
-    bool computed;
     ScalarResults scalarResults;
     VectorResults vectorResults;
     StatisticsResults statisticsResults;
@@ -291,7 +273,6 @@ class SCAVE_API ResultFile
     const std::string& getFilePath() const {return filePath;}
     const std::string& getFileSystemFilePath() const {return fileSystemFilePath;}
     FileType getFileType() const {return fileType;}
-    bool isComputed() const {return computed;}
 };
 
 /**
@@ -312,10 +293,9 @@ class SCAVE_API Run
     StringMap itervars;  // iteration variables (${} notation in omnetpp.ini)
     OrderedKeyValueList paramAssignments; // module parameter assignments from the ini file and command line
     //TODO: OrderedKeyValueList configEntries; // configuration entries from the ini file and command line
-    bool computed;
 
   private:
-    Run(const std::string& runName, bool computed, ResultFileManager *manager) : runName(runName), resultFileManager(manager), computed(computed) {}
+    Run(const std::string& runName, ResultFileManager *manager) : runName(runName), resultFileManager(manager) {}
     void setAttribute(const std::string& attrName, const std::string& value) {attributes[attrName] = value;}
     void addParamAssignmentEntry(const std::string& key, const std::string& value) {paramAssignments.push_back(std::make_pair(key,value));}
     //TODO void addConfigEntry(const std::string& key, const std::string& value) {configEntries.push_back(std::make_pair(key,value));}
@@ -331,11 +311,7 @@ class SCAVE_API Run
     const std::string& getParamAssignment(const std::string& key) const;
     //TODO const OrderedKeyValueList& getConfigEntries() const {return configEntries;}
     //TODO const std::string& getConfigOption(const std::string& key) const;
-    bool isComputed() const {return computed;}
 };
-
-
-typedef std::map<std::pair<ComputationID, ID> , ID> ComputedIDCache;
 
 /**
  * Loads and efficiently stores OMNeT++ output scalar files and output
@@ -374,11 +350,6 @@ class SCAVE_API ResultFileManager
     ScaveStringPool names;
     ScaveStringPool classNames; // currently not used
 
-    ResultFile *computedScalarFile; // this computed file contains all computed scalars
-    ScaveStringPool computedModuleNames; // computed modules, cleared when the computed scalar file is unloaded
-    ScaveStringPool computedScalarNames; // computed scalar names, cleared when the computed scalar file is unloaded
-
-    ComputedIDCache computedIDCache;
 #ifdef THREADED
     omnetpp::common::ReentrantReadWriteLock lock;
 #endif
@@ -387,18 +358,18 @@ class SCAVE_API ResultFileManager
     enum {SCALAR=1, VECTOR=2, STATISTICS=4, HISTOGRAM=8}; // must be 1,2,4,8 etc, because of IDList::getItemTypes()
 
   private:
-    // ID: 1 bit computed**, 1 bit field**, 6 bit type, 24 bit fileid, 32 bit pos (** apparently unused)
+    // ID: 1 bit field**, 6 bit type, 24 bit fileid, 32 bit pos (** apparently unused)
     static int _type(ID id)   {return (id >> 56) & 0x3fUL;}
     static int _fileid(ID id) {return (id >> 32) & 0x00fffffful;}
     static int _pos(ID id)    {return id & 0xffffffffUL;}
-    static ID _mkID(bool computed, bool field, int type, int fileid, int pos) {
+    static ID _mkID(bool field, int type, int fileid, int pos) {
         assert((type>>7)==0 && (fileid>>24)==0 && (pos>>31)<=1);
-        return ((computed ? (ID)1 << 63 : (ID)0) | (field ? (ID)1 << 62 : (ID)0) | (ID)type << 56) | ((ID)fileid << 32) | (ID)pos;
+        return ((field ? (ID)1 << 62 : (ID)0) | (ID)type << 56) | ((ID)fileid << 32) | (ID)pos;
     }
 
     // utility functions called while loading a result file
-    ResultFile *addFile(const char *fileName, const char *fileSystemFileName, ResultFile::FileType fileType, bool computed);
-    Run *addRun(const std::string& runName, bool computed=false);
+    ResultFile *addFile(const char *fileName, const char *fileSystemFileName, ResultFile::FileType fileType);
+    Run *addRun(const std::string& runName);
     FileRun *addFileRun(ResultFile *file, Run *run);
     Run *getOrAddRun(const std::string& runName);
     FileRun *getOrAddFileRun(ResultFile *file, Run *run);
@@ -414,7 +385,7 @@ class SCAVE_API ResultFileManager
     void addNumericIterationVariableAsScalar(FileRun *fileRunRef, const char *name, const char *value);
 
     template <class T>
-    void collectIDs(IDList& result, std::vector<T> ResultFile::* vec, int type, bool includeComputed, bool includeFields, bool includeItervars) const;
+    void collectIDs(IDList& result, std::vector<T> ResultFile::* vec, int type, bool includeFields, bool includeItervars) const;
 
     // unchecked getters are only for internal use by CmpBase in idlist.cc
     const ResultItem& uncheckedGetItem(ID id) const;
@@ -441,7 +412,7 @@ class SCAVE_API ResultFileManager
     const RunList& getRuns() const {return runList;}
     FileRunList getFileRunsInFile(ResultFile *file) const;
     RunList getRunsInFile(ResultFile *file) const;
-    ResultFileList getFilesForRun(Run *run, bool includeComputed = false) const;
+    ResultFileList getFilesForRun(Run *run) const;
 
     const ResultItem& getItem(ID id) const;
     const ScalarResult& getScalar(ID id) const;
@@ -473,11 +444,11 @@ class SCAVE_API ResultFileManager
     StringSet *getUniqueParamAssignmentValues(const RunList& runList, const char *key) const;
 
     // getting lists of data items
-    IDList getAllScalars(bool includeComputed = false, bool includeFields = true, bool includeItervars = true) const;
-    IDList getAllVectors(bool includeComputed = false) const;
-    IDList getAllStatistics(bool includeComputed = false) const;
-    IDList getAllHistograms(bool includeComputed = false) const;
-    IDList getAllItems(bool includeComputed = false, bool includeFields = true, bool includeItervars = true) const;
+    IDList getAllScalars(bool includeFields = true, bool includeItervars = true) const;
+    IDList getAllVectors() const;
+    IDList getAllStatistics() const;
+    IDList getAllHistograms() const;
+    IDList getAllItems(bool includeFields = true, bool includeItervars = true) const;
     IDList getScalarsInFileRun(FileRun *fileRun) const;
     IDList getVectorsInFileRun(FileRun *fileRun) const;
     IDList getStatisticsInFileRun(FileRun *fileRun) const;
@@ -516,15 +487,6 @@ class SCAVE_API ResultFileManager
      * message.
      */
     static void checkPattern(const char *pattern);
-
-    // computed vectors
-    ID getComputedID(ComputationID computationID, ID inputID) const;
-    ID addComputedVector(int vectorId, const char *name, const char *file, const StringMap& attributes, ComputationID computationID, ID inputID, IComputation *node);
-    // computedScalars
-    ResultFile *getComputedScalarFile() const { return computedScalarFile; }
-    IDList getComputedScalarIDs(const IComputation *node) const;
-    ID addComputedScalar(const char *name, const char *module, const char *runName, double value, const StringMap& runAttributes, IComputation *node);
-    void clearComputedScalars();
 
     /**
      * loading files. fileName is the file path in the Eclipse workspace;

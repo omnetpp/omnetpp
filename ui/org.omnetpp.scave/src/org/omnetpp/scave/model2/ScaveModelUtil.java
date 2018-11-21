@@ -412,10 +412,10 @@ public class ScaveModelUtil {
 
     public static IDList getAllIDs(ResultFileManager manager, ResultType type) {
         if (type == null)
-            return manager.getAllItems(false, true, true);
+            return manager.getAllItems(true, true);
 
         switch (type.getValue()) {
-        case ResultType.SCALAR: return manager.getAllScalars(false, true, true);
+        case ResultType.SCALAR: return manager.getAllScalars(true, true);
         case ResultType.VECTOR: return manager.getAllVectors();
         case ResultType.STATISTICS: return manager.getAllStatistics();
         case ResultType.HISTOGRAM: return manager.getAllHistograms();
