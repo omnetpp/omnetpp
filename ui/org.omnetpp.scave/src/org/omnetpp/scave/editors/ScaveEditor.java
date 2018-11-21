@@ -702,7 +702,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
                         if (scriptAttrNode != null)
                             chart.setScript(scriptAttrNode.getNodeValue());
                         else
-                            chart.setScript(chartNode.getTextContent());
+                            chart.setScript(StringUtils.stripEnd(chartNode.getTextContent(), " "));
 
                         NodeList props = chartNode.getChildNodes();
 
