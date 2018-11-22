@@ -1,3 +1,0 @@
-This folder is no longer used to build the IDE. The new build system is located at
-'ui/releng/org.omnetpp.ide.product'. This folder should be removed once it no longer
-contains useful information.

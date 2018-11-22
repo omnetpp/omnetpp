@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Product
-Bundle-SymbolicName: org.omnetpp.product
-Bundle-Version: 6.0.0.qualifier
