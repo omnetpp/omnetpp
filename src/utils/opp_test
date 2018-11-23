@@ -242,6 +242,20 @@ cmdenv-log-prefix = ""
         myout = open(os.path.join(wdir, outfile), "w")
         myerr = open(os.path.join(wdir, errfile), "w")
         status = subprocess.call(do, stdout=myout, stderr=myerr)
+
+        # convert from Python convention to bash or windows convention
+        if status < 0:
+            # https://docs.python.org/3.7/library/subprocess.html#subprocess.Popen.returncode
+            # "A negative value -N indicates that the child was terminated by signal N (POSIX only)."
+            if os.name == 'posix' or os.name == 'mac': # 'mac' is not used on python3
+                # https://stackoverflow.com/a/13410845/635587
+                # "The status value reported by bash will be 128 + <signum> for processes that terminate due to signal <signum>"
+                status = 128 + -status
+            elif os.name == 'nt':
+                # https://msdn.microsoft.com/en-us/library/xdkz3x12.aspx
+                # "By default, signal terminates the calling program with exit code 3, regardless of the value of sig."
+                status = 3
+
         myout.close()
         myerr.close()
         self.lprint(2, "  returned status = {}".format(status))
