@@ -234,12 +234,6 @@ public class MakemakeOptionsPanel extends Composite {
         forceCompileForDllCheckbox.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
         dllSymbolText = createLabelAndText(dllGroup, "DLL export/import symbol (e.g. FOO):", "Base name for the FOO_API, FOO_EXPORT and FOO_IMPORT macros");
         Link pathsPageLink2 = createLink(compilePage, "NOTE: Additional preprocessor symbols can be specified in the <A>Paths and Symbols</A> property page.");
-        if (!IConstants.IS_COMMERCIAL) {
-            // the noncommercial version does not need to show the DLL stuff, because it does not support MSVC;
-            // the settings will still be preserved, and also editable via the Preview tab
-            dllGroup.setVisible(false);
-            ((GridData)dllGroup.getLayoutData()).exclude = true;
-        }
         compilePageToggle = createToggleLink(compilePage, new Control[] {srcGroup, dllGroup, pathsPageLink2});
 
         // "Link" page

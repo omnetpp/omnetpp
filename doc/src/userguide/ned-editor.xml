@@ -423,25 +423,17 @@
         <para>The Eclipse platform's bookmarking and navigation history facilities also work in the NED editor.</para>
       </sect3>
     </sect2>
-    <commercial>
-      <sect2>
-        <title>Other Features</title>
-<!--FIXME TODO
-        <sect3>
-          <title>Printing</title>
-          <para>You can print the content of the ...</para>
-        </sect3>
--->
-        <sect3>
-          <title>Exporting Images</title>
-          <para> To export a compound module as a picture, select the compound module and bring up its context
-            menu, select ``Export Image...'' and choose file name and type. The module will be exported to the
-            file system. BMP, PNG, JPEG, SVG and PDF formats are supported.</para>
-          <para> It is also possible to export images from all (or selected) NED files; the corresponding
-            wizard can be found under ``File|Export...'' in the menu.</para>
-        </sect3>
-      </sect2>
-    </commercial>
+    <sect2>
+      <title>Other Features</title>
+      <sect3>
+        <title>Exporting Images</title>
+        <para> To export a compound module as a picture, select the compound module and bring up its context
+          menu, select ``Export Image...'' and choose file name and type. The module will be exported to the
+          file system. BMP, PNG, JPEG, SVG and PDF formats are supported.</para>
+        <para> It is also possible to export images from all (or selected) NED files; the corresponding
+          wizard can be found under ``File|Export...'' in the menu.</para>
+      </sect3>
+    </sect2>
   </sect1>
   <sect1>
     <title>Associated Views</title>

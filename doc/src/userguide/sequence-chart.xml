@@ -477,17 +477,15 @@ attr enum "IDLE=0,TRANSMIT=1,RECEIVE=2"
 	with a different color.
       </para>
     </sect2>
-    <commercial>
-      <sect2>
-	<title>Exporting</title>
-	<para>
+    <sect2>
+      <title>Exporting</title>
+	    <para>
 	  The Sequence Chart supports exporting continuous parts into SVG format for
 	  documentation purposes. This function is available from the context menu <icon
 	  name="export_wiz.gif"/>. You can export the whole Sequence Chart, a region
 	  between two selected events, or the currently visible area.
-	</para>
-      </sect2>
-    </commercial>
+      </para>
+    </sect2>
     <sect2>
       <title>Associated Views</title>
       <para>
@@ -1278,12 +1276,10 @@ attr enum "IDLE=0,TRANSMIT=1,RECEIVE=2"
     dramatically. You might need to scroll and zoom in or out to see the
     details. This shows the usefulness of the nonlinear timeline mode.
   </para>
-  <commercial>
-    <para>
-      You can export this sequence chart for documentation purposes using the
-      context menu's ``Export to SVG'' option.
-    </para>
-  </commercial>
+  <para>
+    You can export this sequence chart for documentation purposes using the
+    context menu's ``Export to SVG'' option.
+  </para>
       </sect3>
       <sect3>
   <title>Unsuccessful Ping</title>

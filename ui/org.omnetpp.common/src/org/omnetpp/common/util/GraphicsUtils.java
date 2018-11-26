@@ -18,10 +18,9 @@ public class GraphicsUtils {
      * Measures the given string in pixels.
      */
     public static Point getTextExtent(Graphics graphics, String string) {
-        if (IConstants.IS_COMMERCIAL && graphics instanceof GraphicsSVG) {
+        if (graphics instanceof GraphicsSVG) {
             java.awt.Graphics g = ((GraphicsSVG)graphics).getSVGGraphics2D();
             java.awt.geom.Rectangle2D r = g.getFontMetrics().getStringBounds(string, g);
-
             return new Point((int)Math.ceil(r.getWidth()), (int)Math.ceil(r.getHeight()));
         }
         else if (graphics instanceof SWTGraphics) {

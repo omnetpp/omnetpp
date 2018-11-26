@@ -503,11 +503,9 @@ public class GraphicalNedEditor
         action = new NedSelectAllAction(this);
         registry.registerAction(action);
 
-        if (IConstants.IS_COMMERCIAL) {
-            action = new ExportImageAction(this);
-            registry.registerAction(action);
-            getSelectionActions().add(action.getId());
-        }
+        action = new ExportImageAction(this);
+        registry.registerAction(action);
+        getSelectionActions().add(action.getId());
 
         action = new OpenTypeAction(this);
         registry.registerAction(action);

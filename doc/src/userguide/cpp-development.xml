@@ -53,7 +53,6 @@
           On Windows: The &Omnetpp;  distribution comes with a preconfigured MinGW compiler toolchain,
           there is no need to manually install anything. By default, the IDE uses the Clang compiler
           from MinGW, but it is also possible to switch to the GCC compiler (also part of MinGW).
-          <commercial>&Omnetpp; can also use the Clang/C2 compiler from your Microsoft Visual Studio installation.</commercial>
         </listitem>
         <listitem>
           On Linux: By default, the Clang compiler is used, but &Omnetpp; falls back to use GCC
@@ -514,12 +513,7 @@
 
         <sect3>
           <title>The ``Compile'' Tab</title>
-          <commercial>
-            <picture file="pictures/CPP-ConfigureProject3-omnest.png">Compiler options</picture>
-          </commercial>
-          <noncommercial>
-            <picture file="pictures/CPP-ConfigureProject3-omnetpp.png">Compiler options</picture>
-          </noncommercial>
+          <picture file="pictures/CPP-ConfigureProject3.png">Compiler options</picture>
           <para>
             The ``Compile'' tab allows you to adjust the parameters passed to the compiler during the build
             process.</para>
@@ -551,15 +545,14 @@
             </listitem>
           </itemizedlist>
 
-          <commercial>
           <para>
-              If you want to build a DLL on Windows using the Microsoft Visual Studio Clang/C2 compiler,
-              symbols you want to use from other code need to be explicitly exported from the DLL.
-              Functions, variables and classes must be marked with [[__declspec(dllexport)]] when the DLL is
-              compiled, and with [[__declspec(dllimport)]] when you reference them from external code.
-              This is achieved by defining a macro which expands differently in the two cases. The &Omnetpp;
-              convention is to name the macro [[FOO_API]], where ``FOO'' is your project's short name.
-              The macro should be defined as follows:</para>
+            If you build a Windows DLL, symbols you want to be available from other DLLs (or executables)
+            need to be explicitly exported from the DLL.
+            Functions, variables and classes must be marked with [[__declspec(dllexport)]] when the DLL is
+            compiled, and with [[__declspec(dllimport)]] when you reference them from external code.
+            This is achieved by defining a macro which expands differently in the two cases. The &Omnetpp;
+            convention is to name the macro [[FOO_API]], where ``FOO'' is your project's short name.
+            The macro should be defined as follows:</para>
           <screen>
 #if defined(FOO_EXPORT)
 #  define FOO_API OPP_DLLEXPORT
@@ -569,12 +562,23 @@
 #  define FOO_API
 #endif
           </screen>
-          <para>and the above definition should be manually placed into a header file which is included
-          by all headers where the macro is used.
-          [[OPP_DLLEXPORT]] and [[OPP_DLLIMPORT]] are provided by [[&lt;omnetpp.h&gt;]], and
-          [[FOO_EXPORT]] / [[FOO_IMPORT]] that control the macro expansion will be provided by the
-          generated makefile via a compile option.
+          <para>
+            and the above definition should be manually placed into a header file which is included
+            by all headers where the macro is used.
+            [[OPP_DLLEXPORT]] and [[OPP_DLLIMPORT]] are provided by [[&lt;omnetpp.h&gt;]], and
+            [[FOO_EXPORT]] / [[FOO_IMPORT]] that control the macro expansion will be provided by the
+            generated makefile via a compile option.
           </para>
+          <para>
+            The [[FOO_API]] macro is used as illustrated in the following code:
+          </para>
+          <screen>
+class FOO_API ExportedClass {
+   // public methods will be automatically exported
+};
+int FOO_API exportedFunction(...);
+extern int FOO_API exportedGlobalVariable;
+          </screen>
           <para>Settings for Windows DLLs:</para>
           <itemizedlist>
             <listitem>
@@ -589,7 +593,6 @@
               Makemake option: [[-p]]
             </listitem>
           </itemizedlist>
-          </commercial>
         </sect3>
 
         <sect3>

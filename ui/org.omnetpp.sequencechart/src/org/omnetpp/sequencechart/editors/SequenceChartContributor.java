@@ -235,9 +235,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         this.releaseMemoryAction = createReleaseMemoryAction();
         this.refreshAction = createRefreshAction();
         this.pinAction = createPinAction();
-
-        if (IConstants.IS_COMMERCIAL)
-            this.exportToSVGAction = createExportToSVGAction();
+        this.exportToSVGAction = createExportToSVGAction();
 
         this.timelineModeStatus = createTimelineModeStatus();
         this.filterStatus = createFilterStatus();
@@ -382,8 +380,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
                 menuManager.add(toggleBookmarkAction);
                 menuManager.add(copyToClipboardAction);
-                if (IConstants.IS_COMMERCIAL)
-                    menuManager.add(exportToSVGAction);
+                menuManager.add(exportToSVGAction);
                 menuManager.add(new Separator());
 
                 menuManager.add(pinAction);
