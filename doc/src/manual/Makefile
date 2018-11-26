@@ -110,7 +110,7 @@ eclipse : $(HTMCHAPTERS) $(SVGPICS) eclipse.thtml prephtml2 ltoh.specs ltoh.pl
 	cp figures/*.svg eclipse
 	cp figures/*.png eclipse
 
-html : $(HTMCHAPTERS) $(SVGPICS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
+html : $(HTMCHAPTERS) $(SVGPICS) $(TEMPLATE).thtml prephtml2 ltoh.specs ltoh.pl
 	cat $(HTMCHAPTERS) > usman.tmp
 	$(PERL) prephtml2 --template $(TEMPLATE).thtml --opp_version $(VERSION) usman.tmp
 	rm usman.tmp
