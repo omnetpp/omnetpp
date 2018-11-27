@@ -608,10 +608,10 @@ sub do_comment_verbatim {
             vec($orig_inh, $i, 1) = $true;      # inhibit further processing
             $inh = $false;              # allow processing on next line
             $esc = $true;
-        } elsif ($line =~ s/\\begin\{(verbatim|ned|msg|cpp|inifile|filelisting|commandline)}/<pre class="$1">/ ) {
+        } elsif ($line =~ s/\\begin\{(verbatim|ned|msg|cpp|inifile|filelisting|commandline)}/$html_start{"\\begin{$1}"}/e ) {
             vec($orig_inh, $i, 1) = $true;      # inhibit further processing
             $inh = $true;
-        } elsif ($line =~ s/\\end\{(verbatim|ned|msg|cpp|inifile|filelisting|commandline)}/<\/pre>/ ) {
+        } elsif ($line =~ s/\\end\{(verbatim|ned|msg|cpp|inifile|filelisting|commandline)}/$html_end{"\\begin{$1}"}/e ) {
             vec($orig_inh, $i, 1) = $true;      # inhibit further processing
             $inh = $false;              # allow processing on next line
         } elsif ($inh == $false && $line =~ s:^([ \t]*%.*):<!-- $1 -->: ) {
@@ -1219,7 +1219,7 @@ sub formatmath ()
       $txt =~ s!\\tilde\{(n|N|a|A)}!&$1tilde;!g;
 
       # convert \bar{n}
-      $txt =~ s!\\bar\{(.+?)}!$1&#772!g;
+      $txt =~ s!\\bar\{(.+?)}!$1&#772;!g;
 
       # convert \in
       $txt =~ s!\\in\b! is in !g;
