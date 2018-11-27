@@ -14,7 +14,10 @@ import subprocess
 import sys
 import difflib
 
-progname = 'opp_test.py'
+progname = 'opp_test'
+shouldCompressDiff = True
+useColors = sys.stdout.isatty()
+maxPrintableSize = 32768
 
 def fail(msg):
     print(progname + ": Error: {}".format(msg), file=sys.stderr)
@@ -775,19 +778,19 @@ Supported .test file entry types:
 
                     if (key.startswith('contains-regex(') and not match):
                         self.testfailed(testfilename, "{} fails \%{} rule".format(self.values[key], key))
-                        if (len(txt) <= 8192):
+                        if (len(txt) <= maxPrintableSize):
                             self.lprint(1, "expected pattern:\n>>>>{}<<<<\nactual output:\n>>>>{}<<<<\n".format(pattern, txt))
                         else:
-                            self.lprint(1, "expected pattern:\n>>>>{}<<<<\nactual output too big to dump (>8K), see file `{}' in work directory\n".format(pattern, realinfname))
+                            self.lprint(1, "expected pattern:\n>>>>{}<<<<\nactual output too long to dump, see file `{}' in work directory\n".format(pattern, realinfname))
                         self.lprint(1, "TRY: meld '{}' '{}'\n".format(patternfilename, resultfilename))
                         return
                     elif (key.startswith('not-contains-regex(') and match):
                         self.testfailed(testfilename, "{} fails \%{} rule".format(self.values[key], key))
-                        if (len(txt) <= 8192):
+                        if (len(txt) <= maxPrintableSize):
                             self.lprint(1, "unexpected pattern:\n>>>>{}<<<<\nactual output:\n>>>>{}<<<<\n".format(pattern, txt))
                             self.lprint(1, "at line {}\n".format(txt.count("\n", 0, match.start())+1))
                         else:
-                            self.lprint(1, "unexpected pattern:\n>>>>{}<<<<\nactual output too big to dump (>8K), see file `{}' in work directory\n".format(pattern, realinfname))
+                            self.lprint(1, "unexpected pattern:\n>>>>{}<<<<\nactual output too long to dump, see file `{}' in work directory\n".format(pattern, realinfname))
                             self.lprint(1, "at line {}\n".format(txt.count("\n", 0, match.start())+1))
                         self.lprint(1, "TRY: meld '{}' '{}'\n".format(patternfilename, resultfilename))
                         return
@@ -798,23 +801,25 @@ Supported .test file entry types:
                         self.testfailed(testfilename, "{} fails \%{} rule".format(self.values[key], key))
 
                         diff = difflib.ndiff(pattern.splitlines(True), txt.splitlines(True))
-                        diff = compressDiff(diff)
-                        diff = colorDiff(diff)
+                        if shouldCompressDiff:
+                            diff = compressDiff(diff)
+                        if useColors:
+                            diff = colorDiff(diff)
                         difftxt = ''.join(diff)
 
-                        if (len(difftxt) <= 8192):
+                        if (len(difftxt) <= maxPrintableSize):
                             self.lprint(1, "diff:\n=====\n"+difftxt)
                         else:
-                            self.lprint(1, "expected substring:\n>>>>{}<<<<\nactual output too big to dump (>8K), see file `{}' in work directory\n".format(pattern, realinfname))
+                            self.lprint(1, "expected substring:\n>>>>{}<<<<\nactual output too long to dump, see file `{}' in work directory\n".format(pattern, realinfname))
                         self.lprint(1, "TRY: meld '{}' '{}'\n".format(patternfilename, resultfilename))
                         return
                     elif (key.startswith('not-contains(') and match != -1):
                         self.testfailed(testfilename, "{} fails \%{} rule".format(self.values[key], key))
-                        if (len(txt) <= 8192):
+                        if (len(txt) <= maxPrintableSize):
                             self.lprint(1, "unexpected substring:\n>>>>{}<<<<\nactual output:\n>>>>{}<<<<\n".format(pattern, txt))
                             self.lprint(1, "at line {}\n".format(txt.count("\n", 0, match)+1))
                         else:
-                            self.lprint(1, "unexpected substring:\n>>>>{}<<<<\nactual output too big to dump (>8K), see file `{}' in work directory\n".format(pattern, realinfname))
+                            self.lprint(1, "unexpected substring:\n>>>>{}<<<<\nactual output too long to dump, see file `{}' in work directory\n".format(pattern, realinfname))
                             self.lprint(1, "at line {}\n".format(txt.count("\n", 0, match)+1))
                         self.lprint(1, "TRY: meld '{}' '{}'\n".format(patternfilename, resultfilename))
                         return
