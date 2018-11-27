@@ -756,11 +756,8 @@ Supported .test file entry types:
                     if (key.startswith('contains(') and match == -1):
                         self.testfailed(testfilename, "{} fails \%{} rule".format(self.values[key], key))
 
-
-                        diff = difflib.ndiff(['{0}\n'.format(element) for element in pattern.splitlines()],
-                                             ['{0}\n'.format(element) for element in txt.splitlines()])
+                        diff = difflib.ndiff(pattern.splitlines(True), txt.splitlines(True))
                         difftxt = ''.join(diff)
-
 
                         if (len(difftxt) <= 8192):
                             self.lprint(1, "diff:\n=====\n"+difftxt)
