@@ -28,7 +28,7 @@ def compressOneDiff(tmpDiff, maxLines):
         return tmpDiff
     pre = tmpDiff[0][0]
     return tmpDiff[:maxLines] \
-            + [ pre + ".\n", pre + ". <hidden lines>\n", pre + ".\n"] \
+            + [ pre + ".\n", pre + ". <snip>\n", pre + ".\n"] \
             + tmpDiff[-maxLines:]
 
 def compressDiff(diff):
