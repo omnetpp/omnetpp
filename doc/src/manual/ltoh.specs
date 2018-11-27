@@ -49,6 +49,7 @@ htmlfile_spec := $BASE.html
 :{2}	:\renewcommand#1#2:::
 :{1}	:\makebox[^{]*#1:#1::
 :b/e	:\begin{center}:<div align=center>:</>:
+:b/e	:\begin{verbatim}:<pre class="verbatim">:</>:
 :b/e	:\begin{itemize}(\[noitemsep\])?:<ul>:</>:
 :b/e	:\begin{enumerate}:<ol>:</>:
 :b/e	:\begin{description}:<ul class="dl">:</>:
