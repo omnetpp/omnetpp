@@ -23,6 +23,9 @@ def fail(msg):
     print(progname + ": Error: {}".format(msg), file=sys.stderr)
     sys.exit(1)
 
+def addMissingNewLine(str):
+    return str if str.endswith("\n") else str + "\n"
+
 def compressOneDiff(tmpDiff, maxLines):
     if len(tmpDiff) <= 2 * maxLines + 3:
         return tmpDiff
@@ -800,7 +803,7 @@ Supported .test file entry types:
                     if (key.startswith('contains(') and match == -1):
                         self.testfailed(testfilename, "{} fails \%{} rule".format(self.values[key], key))
 
-                        diff = difflib.ndiff(pattern.splitlines(True), txt.splitlines(True))
+                        diff = difflib.ndiff(addMissingNewLine(pattern).splitlines(True), addMissingNewLine(txt).splitlines(True))
                         if shouldCompressDiff:
                             diff = compressDiff(diff)
                         if useColors:
@@ -808,7 +811,7 @@ Supported .test file entry types:
                         difftxt = ''.join(diff)
 
                         if (len(difftxt) <= maxPrintableSize):
-                            self.lprint(1, "diff:\n=====\n"+difftxt)
+                            self.lprint(1, "\n" + difftxt)
                         else:
                             self.lprint(1, "expected substring:\n>>>>{}<<<<\nactual output too long to dump, see file `{}' in work directory\n".format(pattern, realinfname))
                         self.lprint(1, "TRY: meld '{}' '{}'\n".format(patternfilename, resultfilename))
