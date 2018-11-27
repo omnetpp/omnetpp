@@ -242,7 +242,7 @@ cmdenv-log-prefix = ""
         myout.close()
         myerr.close()
         self.lprint(2, "  returned status = {}".format(status))
-        return status;
+        return status
 
 
     def parse_testfile(self, testfilename):
@@ -502,7 +502,7 @@ Supported .test file entry types:
             f = open(fname, 'r')
         except (IOError, OSError) as e:
             print("cannot open {} file: {}".format(fname, e))
-            return;
+            return
 
         f.seek(0, os.SEEK_END)
         if (f.tell() > self.taillength):
@@ -596,7 +596,7 @@ Supported .test file entry types:
                 envkey = m.group(1)
                 envvalue = m.group(2)
                 os.environ[envkey] = envvalue
-                runscript += "export " + envkey + "=\""+envvalue+"\"\n";
+                runscript += "export " + envkey + "=\""+envvalue+"\"\n"
                 self.lprint(2, "  setting environment variable `{}' = `{}'".format(envkey, envvalue))
 
         # execute pre-run commands
@@ -605,7 +605,7 @@ Supported .test file entry types:
                 if (key.startswith('prerun-command(')):
                     # execute file
                     runscript += value + ">" + key + ".out 2>" + key + ".err\n"
-                    exitcode = self.exec_program(value, os.path.join(self.args.workdir, self.testname), key+".out", key+".err");
+                    exitcode = self.exec_program(value, os.path.join(self.args.workdir, self.testname), key+".out", key+".err")
                     if (exitcode != 0):
                         self.testunresolved(testfilename, "pre-run command \""+value+"\" returned nonzero exit code: "+str(exitcode))
                         return
@@ -640,7 +640,7 @@ Supported .test file entry types:
         # check exitcode
             if (exitcode == 127):
                 self.testunresolved(testfilename, "could not execute test program")
-                return;
+                return
 
             exitCodeFail = True
             insteadOf = ''
@@ -665,7 +665,7 @@ Supported .test file entry types:
                 if self.args.verbose > 0:
                     self.print_tail("stdout", os.path.join(self.args.workdir, self.testname, outfname))
                     self.print_tail("stderr", os.path.join(self.args.workdir, self.testname, errfname))
-                return;
+                return
 
         # if stdout contains "#UNRESOLVED" or "#UNRESOLVED: some explanation", count this test as unresolved
         with open(os.path.join(self.args.workdir, self.testname, outfname), 'r') as f:
@@ -673,7 +673,7 @@ Supported .test file entry types:
                 m=re.match(r'^#UNRESOLVED:? *(.*)', line)
                 if (m):
                     self.testunresolved(testfilename, "test program says UNRESOLVED: {}".format(m.group(1)))
-                    return;
+                    return
 
         # execute post-run commands
         if (self.args.mode == 'run'):
@@ -684,7 +684,7 @@ Supported .test file entry types:
                     exitcode = self.exec_program(value, os.path.join(self.args.workdir, self.testname), key+".out", key+".err")
                     if (exitcode != 0):
                         self.testunresolved(testfilename, "post-run command \"{}\" returned nonzero exit code: {}".format(value, exitcode))
-                        return;
+                        return
 
         runfile = os.path.join(self.args.workdir, self.testname,"run")
         self.writefile(runfile, runscript)
@@ -750,7 +750,7 @@ Supported .test file entry types:
                             txt = re.sub(flags+searchstring, replacement, txt)
                         except re.error as e:
                             self.testunresolved(testfilename, "%subst: wrong pattern `{}': {}".format(value, e))
-                            return;
+                            return
                 realinfname = infname
                 if havesubst:
                     # write out substitution result for debugging purposes
