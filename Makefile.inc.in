@@ -31,7 +31,7 @@ SHARED_LIBS ?= @SHARED_LIBS@
 
 # NOTE: it is important to evaluate the current path immediately in this file using :=
 OMNETPP_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
-OMNETPP_IMAGE_PATH := ./bitmaps:./images:$(OMNETPP_ROOT)/images
+OMNETPP_IMAGE_PATH := $(OMNETPP_ROOT)/images
 OMNETPP_BIN_DIR = $(OMNETPP_ROOT)/bin
 OMNETPP_INCL_DIR = $(OMNETPP_ROOT)/include
 OMNETPP_LIB_DIR = $(OMNETPP_ROOT)/lib$(OUTPUT_PREFIX)

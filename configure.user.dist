@@ -206,6 +206,6 @@ SHARED_LIBS=yes
 
 #
 #
-# Override the following setting if you have additional icons somewhere else.
+# You may override the following setting if you have additional icons somewhere else.
 #
-# OMNETPP_IMAGE_PATH="./images;./bitmaps;$OMNETPP_ROOT/images"
+# OMNETPP_IMAGE_PATH="$OMNETPP_ROOT/images"
