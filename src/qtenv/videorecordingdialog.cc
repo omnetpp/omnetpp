@@ -68,13 +68,7 @@ VideoRecordingDialog::VideoRecordingDialog(MainWindow *mainWindow, QString confi
     connect(ui->padding, &QRadioButton::toggled, [this, mainWindow, moduleInspector](bool checked) {
         if (checked) {
             QRect modRect = moduleInspector->getModuleRect(true, 10);
-
-            if (modRect.width() % 2) modRect.adjust(0, 0, 1, 0);
-            if (modRect.height() % 2) modRect.adjust(0, 0, 0, 1);
-
-            modRect.moveTopLeft(moduleInspector->mapTo(mainWindow, modRect.topLeft()));
-
-            cropArea = modRect;
+            cropArea = adjustModuleCropArea(modRect, mainWindow, moduleInspector);
             updateCommandLabel();
         }
     });
@@ -82,13 +76,7 @@ VideoRecordingDialog::VideoRecordingDialog(MainWindow *mainWindow, QString confi
     connect(ui->border, &QRadioButton::toggled, [this, mainWindow, moduleInspector](bool checked) {
         if (checked) {
             QRect modRect = moduleInspector->getModuleRect(true, 0);
-
-            if (modRect.width() % 2) modRect.adjust(0, 0, 1, 0);
-            if (modRect.height() % 2) modRect.adjust(0, 0, 0, 1);
-
-            modRect.moveTopLeft(moduleInspector->mapTo(mainWindow, modRect.topLeft()));
-
-            cropArea = modRect;
+            cropArea = adjustModuleCropArea(modRect, mainWindow, moduleInspector);
             updateCommandLabel();
         }
     });
@@ -96,13 +84,7 @@ VideoRecordingDialog::VideoRecordingDialog(MainWindow *mainWindow, QString confi
     connect(ui->network, &QRadioButton::toggled, [this, mainWindow, moduleInspector](bool checked) {
         if (checked) {
             QRect modRect = moduleInspector->getModuleRect(false, 0);
-
-            if (modRect.width() % 2) modRect.adjust(0, 0, 1, 0);
-            if (modRect.height() % 2) modRect.adjust(0, 0, 0, 1);
-
-            modRect.moveTopLeft(moduleInspector->mapTo(mainWindow, modRect.topLeft()));
-
-            cropArea = modRect;
+            cropArea = adjustModuleCropArea(modRect, mainWindow, moduleInspector);
             updateCommandLabel();
         }
     });
@@ -157,6 +139,23 @@ void VideoRecordingDialog::updateCommandLabel()
 {
     ui->commandLabel->setText("<span style=\"font-family:'monospace'; font-weight:600;\">"
                                + makeEncodingCommand() + "</span>");
+}
+
+QRect VideoRecordingDialog::adjustModuleCropArea(QRect modRect, MainWindow *mainWindow, ModuleInspector *moduleInspector)
+{
+    // first clip the modRect to the contentsRect
+    modRect = modRect.intersected(moduleInspector->contentsRect());
+
+    // then map the module rectangle from widget space to window space
+    modRect.moveTopLeft(moduleInspector->mapTo(mainWindow, modRect.topLeft()));
+
+    // finally make sure its size is divisible by 2
+    if (modRect.width() % 2)
+        modRect.adjust(0, 0, 1, 0);
+    if (modRect.height() % 2)
+        modRect.adjust(0, 0, 0, 1);
+
+    return modRect;
 }
 
 void VideoRecordingDialog::accept()

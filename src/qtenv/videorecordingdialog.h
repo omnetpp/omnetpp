@@ -46,6 +46,8 @@ class VideoRecordingDialog : public QDialog
     const QString PREFVAL_BORDER = "with-border";
     const QString PREFVAL_PADDING = "with-padding";
 
+    static QRect adjustModuleCropArea(QRect modRect, MainWindow *mainWindow, ModuleInspector *moduleInspector);
+
 public:
     explicit VideoRecordingDialog(MainWindow *mainWindow, QString configRun);
     ~VideoRecordingDialog() override;
