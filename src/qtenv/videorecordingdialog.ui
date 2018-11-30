@@ -6,42 +6,7 @@
    <string>Video Recording</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="1" column="0" colspan="2">
-    <widget class="QLabel" name="commandLabel">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'monospace'; font-weight:600;&quot;&gt;ffmpeg -r FPS -f image2 -i &quot;frames/CONFIGURATION#RUN_%04d.png&quot; -filter:v &quot;crop=WIDTH:HEIGHT:X:Y&quot; -vcodec libx264 -pix_fmt yuv420p CONFIGURATION#RUN.mp4&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
-     <property name="textInteractionFlags">
-      <set>Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="0" colspan="2">
-    <widget class="QLabel" name="label">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string>You can customize this command by changing the options below. Note that these do not affect the actual capture process in any way, only the suggested encoding command line.</string>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="0">
+   <item row="6" column="0">
     <widget class="QGroupBox" name="containerFormatGroup">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
@@ -83,7 +48,7 @@
      </property>
     </widget>
    </item>
-   <item row="6" column="0" colspan="3">
+   <item row="5" column="0" colspan="3">
     <widget class="QGroupBox" name="recordingAreaGroup">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
@@ -92,7 +57,7 @@
       </sizepolicy>
      </property>
      <property name="title">
-      <string>Recorded Area</string>
+      <string>Crop Area</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
@@ -138,7 +103,7 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Video recording is performed by exporting a series of numbered PNG images, starting with 'frames/${BASE}0000.png'.&lt;br/&gt;&lt;br/&gt;To encode them into a video file, use the following command (provided that ffmpeg and x264 are installed on your system):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>Video recording is performed by exporting a series of numbered PNG images of full window screenshots, starting with 'frames/${BASE}0000.png'. Screenshots can be assembled to videos using ffmpeg.</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
@@ -154,14 +119,14 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>Before continuing, make sure there is ample disk space available, especially if you plan to record a long video, since the raw frame output is lossless, therefore can grow quite large.&lt;br/&gt;&lt;br/&gt;While recording, the size of the main Qtenv window will be adjusted and fixed to have its width and height both divisible by 2, to ensure compatibility with more video encodings.</string>
+      <string>Before continuing, make sure there is ample disk space available, because the raw frame output can grow quite large.&lt;br/&gt;&lt;br/&gt;While recording, the size of the main Qtenv window will be adjusted to have its width and height both divisible by 2, to ensure compatibility with more video codec options.</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
      </property>
     </widget>
    </item>
-   <item row="7" column="1">
+   <item row="6" column="1">
     <widget class="QGroupBox" name="pixelFormatGroup">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
@@ -196,7 +161,45 @@
    <item row="9" column="0" colspan="2" alignment="Qt::AlignRight">
     <widget class="QPushButton" name="copyButton">
      <property name="text">
-      <string>Copy command line to clipboard</string>
+      <string>Copy to clipboard</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0" colspan="2">
+    <widget class="QLabel" name="middleLabel">
+     <property name="text">
+      <string>Command line to encode captured frames into a video file (make sure that ffmpeg and x264 are installed on your system):</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0" colspan="2">
+    <widget class="QLabel" name="commandLabel">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: palette(base);</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'monospace'; font-weight:600;&quot;&gt;ffmpeg -r FPS -f image2 -i &quot;frames/CONFIGURATION#RUN_%04d.png&quot; -filter:v &quot;crop=WIDTH:HEIGHT:X:Y&quot; -vcodec libx264 -pix_fmt yuv420p CONFIGURATION#RUN.mp4&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+     <property name="margin">
+      <number>6</number>
+     </property>
+     <property name="textInteractionFlags">
+      <set>Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
      </property>
     </widget>
    </item>
