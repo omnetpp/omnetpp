@@ -104,34 +104,13 @@ void Histograms::createStatisticObjects()
 
     addHistogram("Default", new cDefaultHistogramStrategy());
     addHistogram("Default bins=5", new cDefaultHistogramStrategy(5));
-    addHistogram("Default bins=100", new cDefaultHistogramStrategy(100));
 
-    addHistogram("FixedRange [0,10), bins=40, reals", new cFixedRangeHistogramStrategy(0, 10, 40, cHistogram::MODE_REALS));
-    addHistogram("FixedRange [0,100), bins=25, integers", new cFixedRangeHistogramStrategy(0, 100, 25, cHistogram::MODE_INTEGERS));
     addHistogram("FixedRange [10,100), bins=9, reals", new cFixedRangeHistogramStrategy(10, 100, 9, cHistogram::MODE_REALS));
 
     addHistogram("AutoRange default", new cAutoRangeHistogramStrategy());
-    addHistogram("AutoRange bins=5", new cAutoRangeHistogramStrategy(5));
-    addHistogram("AutoRange bins=500", new cAutoRangeHistogramStrategy(500));
-    addHistogram("AutoRange bins=5, integers", new cAutoRangeHistogramStrategy(5, cHistogram::MODE_INTEGERS));
     addHistogram("AutoRange bins=500, integers", new cAutoRangeHistogramStrategy(500, cHistogram::MODE_INTEGERS));
-
-    addHistogram("AutoRange [0,100)", AutoRangeStrategyBuilder().setRange(0, 100).get());
     addHistogram("AutoRange [10,auto)", AutoRangeStrategyBuilder().setRange(10, NAN).get());
-    addHistogram("AutoRange [-1.5,1.5) numBins=10", AutoRangeStrategyBuilder().setRange(-1.5, 1.5).setNumBins(10).get());
-    addHistogram("AutoRange [auto,20)", AutoRangeStrategyBuilder().setRange(NAN,20).get());
-    addHistogram("AutoRange rangeExt=2.0", AutoRangeStrategyBuilder().setRange(NAN, NAN, 2.0).get());
-    addHistogram("AutoRange rangeExt=0.8", AutoRangeStrategyBuilder().setRange(NAN, NAN, 0.8).get());
-
-    addHistogram("AutoRange binSizeRounding=false", AutoRangeStrategyBuilder().setBinSize(NAN, true).get());
     addHistogram("AutoRange binSize=2.5", AutoRangeStrategyBuilder().setBinSize(2.5, false).get());
-
-    addHistogram("AutoRange autoExtend=false", AutoRangeStrategyBuilder().setAutoExtend(false).get());
-    addHistogram("AutoRange autoExtend=true, binMerging=false", AutoRangeStrategyBuilder().setAutoExtend(true, false).get());
-
-    addHistogram("AutoRange numBins=1", AutoRangeStrategyBuilder().setNumBins(1).get());
-    addHistogram("AutoRange numBins=1 autoExtend=false", AutoRangeStrategyBuilder().setNumBins(1).setAutoExtend(false).get());
-
     addHistogram("AutoRange [10,20) numBins=1 autoExtend=false)", AutoRangeStrategyBuilder().setRange(10,20).setNumBins(1).setAutoExtend(false).get());
 }
 
