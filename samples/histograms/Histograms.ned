@@ -21,6 +21,8 @@ simple Histograms
         @isNetwork;
         @signal[unweightedValue](type=double);
         @statistic[unweightedValue](record=vector,histogram,ksplit,psquare);
+        @figure[hint](type=text;pos=10,50;text="Hint: Open histogram objects by double-clicking in the Inspector pane\n(left-bottom corner), then run the simulation");
+        @display("bgb=500,140");
         int count = default(-1); // -1 for none
         bool weighted = default(false);
         volatile double variable; // source of random numbers
