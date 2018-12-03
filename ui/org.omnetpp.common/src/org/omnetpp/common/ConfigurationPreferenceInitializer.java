@@ -22,6 +22,7 @@ import org.omnetpp.common.util.StringUtils;
  * Class used to initialize default preference values.
  */
 public class ConfigurationPreferenceInitializer extends AbstractPreferenceInitializer {
+    @Override
     public void initializeDefaultPreferences() {
         IPreferenceStore store = CommonPlugin.getConfigurationPreferenceStore();
         store.setDefault(IConstants.PREF_OMNETPP_ROOT, getOmnetppRootDefault().toOSString());

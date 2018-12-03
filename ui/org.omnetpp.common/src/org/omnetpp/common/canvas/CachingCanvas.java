@@ -148,8 +148,6 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
         try {
             SVGGraphics2D g = graphics.getSVGGraphics2D();
             g.setClip(0, 0, width, height);
-            g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-            graphics.setAntialias(SWT.ON);
             paintWithoutCaching(graphics);
             writeXML(graphics, fileName);
         }

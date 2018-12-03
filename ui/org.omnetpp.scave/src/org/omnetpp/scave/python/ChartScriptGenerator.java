@@ -1,7 +1,5 @@
 package org.omnetpp.scave.python;
 
-import java.util.concurrent.Callable;
-
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
