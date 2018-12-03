@@ -55,13 +55,8 @@ class cGate;
  *
  * @ingroup ExtensionPoints
  */
-class SIM_API cIOutputVectorManager : public cObject, public cISimulationLifecycleListener
+class SIM_API cIOutputVectorManager : public cObject, public cISimulationLifecycleListener, noncopyable
 {
-  private:
-    // copy constructor and assignment unsupported, make them inaccessible and also leave unimplemented
-    cIOutputVectorManager(const cIOutputVectorManager&);
-    cIOutputVectorManager& operator=(const cIOutputVectorManager&);
-
   protected:
     /**
      * A cISimulationLifecycleListener method. Delegates to startRun(), endRun() and flush(); override if needed.
@@ -165,13 +160,8 @@ class SIM_API cIOutputVectorManager : public cObject, public cISimulationLifecyc
  *
  * @ingroup ExtensionPoints
  */
-class SIM_API cIOutputScalarManager : public cObject, public cISimulationLifecycleListener
+class SIM_API cIOutputScalarManager : public cObject, public cISimulationLifecycleListener, noncopyable
 {
-  private:
-    // copy constructor and assignment unsupported, make them inaccessible and also leave unimplemented
-    cIOutputScalarManager(const cIOutputScalarManager&);
-    cIOutputScalarManager& operator=(const cIOutputScalarManager&);
-
   protected:
     /**
      * A cISimulationLifecycleListener method. Delegates to startRun(), endRun() and flush(); override if needed.
@@ -256,13 +246,8 @@ class SIM_API cIOutputScalarManager : public cObject, public cISimulationLifecyc
  *
  * @ingroup ExtensionPoints
  */
-class SIM_API cISnapshotManager : public cObject, public cISimulationLifecycleListener
+class SIM_API cISnapshotManager : public cObject, public cISimulationLifecycleListener, noncopyable
 {
-  private:
-    // copy constructor and assignment unsupported, make them inaccessible and also leave unimplemented
-    cISnapshotManager(const cISnapshotManager&);
-    cISnapshotManager& operator=(const cISnapshotManager&);
-
   protected:
     /**
      * A cISimulationLifecycleListener method. Delegates to startRun() and endRun(); override if needed.
@@ -340,13 +325,8 @@ class SIM_API cISnapshotManager : public cObject, public cISimulationLifecycleLi
  *
  * @ingroup ExtensionPoints
  */
-class SIM_API cIEventlogManager : public cObject
+class SIM_API cIEventlogManager : public cObject, noncopyable
 {
-  private:
-    // copy constructor and assignment unsupported, make them inaccessible and also leave unimplemented
-    cIEventlogManager(const cIEventlogManager&);
-    cIEventlogManager& operator=(const cIEventlogManager&);
-
   public:
     /** @name Constructor, destructor */
     //@{
@@ -420,8 +400,6 @@ class SIM_API cIEventlogManager : public cObject
     virtual void stoppedWithException(bool isError, int resultCode, const char *message) = 0;
     //@}
 };
-
-
 
 }  // namespace omnetpp
 
