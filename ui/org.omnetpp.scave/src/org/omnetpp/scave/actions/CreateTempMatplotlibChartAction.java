@@ -8,9 +8,6 @@
 
 package org.omnetpp.scave.actions;
 
-import java.util.concurrent.Callable;
-
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScaveImages;
@@ -20,15 +17,13 @@ import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ResultItemField;
-import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.MatplotlibChart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScaveModelFactory;
-import org.omnetpp.scave.model2.FilterUtil;
 import org.omnetpp.scave.model2.ScaveModelUtil;
+import org.omnetpp.scave.python.ChartScriptGenerator;
 import org.omnetpp.scave.script.ScriptEngine;
 
 /**
@@ -61,89 +56,28 @@ public class CreateTempMatplotlibChartAction extends AbstractScaveAction {
         }
     }
 
-    // TODO: move this into ScaveModuleUtil ?
-    // copied from ScaveModuleUtil.getIDListAsChartInput
-    String getIDListAsScript(String title, IDList ids, String[] runidFields, ResultType type, ResultFileManager manager) {
-        Assert.isNotNull(runidFields);
-        String[] filterFields = ScaveModelUtil.getFilterFieldsFor(runidFields);
-
-        String typeName = type.getName();
-        typeName += "s";
-
-        StringBuilder sb = new StringBuilder("import numpy as np\n" +
-                "import pandas as pd\n" +
-                "import matplotlib.pyplot as plt\n" +
-                "from omnetpp.scave import results, chart\n" +
-                "from omnetpp.scave import vectorops as ops\n\n" +
-                "df = results.get_" + typeName + "(\"\"\"\n");
-
-        sb.append(ScaveModelUtil.getIDListAsChartInput(ids, filterFields, manager));
-
-        sb.append("\n\"\"\")\n");
-
-        sb.append("\n# You can perform any transformations on the data here\n\n");
-
-        if (type.getName().equals("vector")) {
-            sb.append("df = df[df.type == 'vector']\n");
-
-            sb.append("plt.xlabel('Simulation time (s)')\n");
-            sb.append("plt.ylabel('Vector value')\n");
-
-            sb.append("for t in df[['vectime', 'vecvalue', 'module', 'name']].itertuples(index=False):\n");
-            sb.append("    plt.plot(t[0], t[1], label=(t[2] + ':' + t[3])[:-7], drawstyle='steps-post')\n");
-
-        } else if (type.getName().equals("scalar")) {
-            sb.append("df = results.pivot_scalars(df)\n");
-            sb.append("df.plot(kind='bar')\n");
-        } else if (type.getName().equals("histogram")) {
-            sb.append("df = df[df.type == 'histogram']\n");
-
-            //sb.append("plt.xlabel('Simulation time (s)')\n");
-            //sb.append("plt.ylabel('Vector value')\n");
-
-            sb.append("for t in df[['binedges', 'binvalues', 'module', 'name']].itertuples(index=False):\n");
-            sb.append("    plt.hist(bins=t[0][1:], x=t[0][1:-1], weights=t[1][1:-1], label=t[2] + ':' + t[3], histtype='step')\n");
-        }
-
-        sb.append("plt.legend()\n");
-        sb.append("plt.title(\"\"\"" + title + "\"\"\")\n");
-        sb.append("plt.tight_layout()\n");
-
-        //sb.append("cursor = mpl.widgets.Cursor(plt.gca(), useblit=True, color='red', linewidth=2)\n");
-
-        return sb.toString();
-    }
-
     protected void openMatplotlibChart(final ScaveEditor editor, final ResultFileManager manager, final ResultType type, final IDList idList) {
-        Chart chart = ResultFileManager.callWithReadLock(manager, new Callable<Chart>() {
-            @Override
-            public Chart call() {
-                //String[] filterFields = new String[] { ResultItemField.FILE, RunAttribute.CONFIGNAME, RunAttribute.RUNNUMBER };
-                String[] filterFields = new String[] { ResultItemField.RUN };
 
-                String name = "MatplotlibChart" + (++counter);
-                String title = StringUtils.defaultIfEmpty(ScriptEngine.defaultTitle(ScaveModelUtil.getResultItems(idList, manager)), name);
-                String input = getIDListAsScript(title, idList, filterFields, type, manager);
-                //Chart chart = ScaveModelUtil.createChart(name, title, type);
+        //String[] filterFields = new String[] { ResultItemField.FILE, RunAttribute.CONFIGNAME, RunAttribute.RUNNUMBER };
+        String[] filterFields = new String[] { ResultItemField.RUN };
 
+        String name = "MatplotlibChart" + (++counter);
 
-                MatplotlibChart chart = ScaveModelUtil.createMatplotlibChart(name);
-
-                Property property = ScaveModelFactory.eINSTANCE.createProperty();
-                property.setName(ChartProperties.PROP_GRAPH_TITLE);
-                property.setValue(title);
-                chart.getProperties().add(property);
-
-
-                chart.setScript(input);
-                chart.setTemporary(true);
-                //TODO cache the IDs
-                // IDList cachedIDs = new IDList();
-                // cachedIDs.set(idList);;
-                // add.setCachedIDs(cachedIDs);  //TODO see Add.cachedIDs field in scave_old
-                return chart;
-            }
+        String title = ResultFileManager.callWithReadLock(manager, () -> {
+            return StringUtils.defaultIfEmpty(ScriptEngine.defaultTitle(ScaveModelUtil.getResultItems(idList, manager)), name);
         });
+
+        String input = ChartScriptGenerator.makeMatplotlibChartScript(title, idList, filterFields, type, manager);
+
+        MatplotlibChart chart = ScaveModelUtil.createMatplotlibChart(name);
+
+        Property property = ScaveModelFactory.eINSTANCE.createProperty();
+        property.setName(ChartProperties.PROP_GRAPH_TITLE);
+        property.setValue(title);
+        chart.getProperties().add(property);
+
+        chart.setScript(input);
+        chart.setTemporary(true);
 
         editor.openChart(chart);
     }

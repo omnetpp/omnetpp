@@ -8,8 +8,6 @@
 
 package org.omnetpp.scave.actions;
 
-import java.util.concurrent.Callable;
-
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScaveImages;
@@ -18,11 +16,10 @@ import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.engine.ResultItemField;
-import org.omnetpp.scave.engine.RunAttribute;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model2.ScaveModelUtil;
+import org.omnetpp.scave.python.ChartScriptGenerator;
 import org.omnetpp.scave.script.ScriptEngine;
 
 /**
@@ -55,60 +52,16 @@ public class CreateTempChartAction extends AbstractScaveAction {
         }
     }
 
-    protected void openChart(final ScaveEditor editor, final ResultFileManager manager, final ResultType type, final IDList idList) {
-        Chart chart = ResultFileManager.callWithReadLock(manager, new Callable<Chart>() {
-            @Override
-            public Chart call() {
-                //String[] filterFields = new String[] { ResultItemField.FILE, RunAttribute.CONFIGNAME, RunAttribute.RUNNUMBER };
-                String[] filterFields = new String[] { RunAttribute.EXPERIMENT, RunAttribute.MEASUREMENT, RunAttribute.REPLICATION,
-                        ResultItemField.MODULE, ResultItemField.NAME };
+    protected void openChart(ScaveEditor editor, final ResultFileManager manager, final ResultType type, final IDList idList) {
+        String name = "Chart" + (++counter);
 
-                String typeName = type.getName();
-                typeName += "s";
-
-
-                StringBuilder inputBuilder = new StringBuilder();
-
-                inputBuilder.append("from omnetpp.scave import results, chart\n\n");
-
-                inputBuilder.append("from omnetpp.scave import vectorops as ops\n\n");
-
-                inputBuilder.append("# This expression selects the results (you might be able to logically simplify it)\n");
-                inputBuilder.append("filter_expression = \"\"\"\n" + ScaveModelUtil.getIDListAsChartInput(idList, filterFields, manager) + "\"\"\"\n\n");
-
-                inputBuilder.append("# The data is returned as a Pandas DataFrame\n");
-                inputBuilder.append("df = results.get_" + typeName + "(filter_expression)\n\n");
-
-                inputBuilder.append("# Which we turn into a more usable format\n");
-                inputBuilder.append("df = results.transform_results(df)\n\n");
-
-                /*
-                if (type == ResultType.SCALAR_LITERAL) {
-                    inputBuilder.append("# The scalars are transformed into a much simpler format\n");
-                    inputBuilder.append("df = results.pivot_scalars(df, columns=[\"module\"], index=[\"name\", \"measurement\"])\n\n");
-                }
-                */
-
-                inputBuilder.append("# You can perform any transformations on the data here\n\n");
-
-                inputBuilder.append("# Finally, the results are plotted\n");
-                inputBuilder.append("chart.plot_" + typeName + "(df)\n");
-
-                String name = "Chart" + (++counter);
-                String title = StringUtils.defaultIfEmpty(ScriptEngine.defaultTitle(ScaveModelUtil.getResultItems(idList, manager)), name);
-
-
-                Chart chart = ScaveModelUtil.createChart(name, title, type);
-                chart.setScript(inputBuilder.toString());
-                chart.setTemporary(true);
-                //TODO cache the IDs
-                // IDList cachedIDs = new IDList();
-                // cachedIDs.set(idList);;
-                // add.setCachedIDs(cachedIDs);  //TODO see Add.cachedIDs field in scave_old
-                return chart;
-            }
+        String title = ResultFileManager.callWithReadLock(manager, () -> {
+            return StringUtils.defaultIfEmpty(ScriptEngine.defaultTitle(ScaveModelUtil.getResultItems(idList, manager)), name);
         });
 
+        Chart chart = ScaveModelUtil.createChart(name, title, type);
+        chart.setScript(ChartScriptGenerator.makeNativeChartScript(manager, type, idList));
+        chart.setTemporary(true);
         editor.openChart(chart);
     }
 

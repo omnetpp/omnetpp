@@ -8,6 +8,11 @@ import java.util.List;
 
 import org.eclipse.emf.common.util.Enumerator;
 
+
+// XXX: This USED TO BE generated from the ecore model, but now it ISN'T, but it IS still USED.
+// Could probably be replaced with a very simple enum - without all the fancy ecore stuff in it.
+
+
 /**
  * <!-- begin-user-doc -->
  * A representation of the literals of the enumeration '<em><b>Result Type</b></em>',
@@ -264,5 +269,5 @@ public enum ResultType implements Enumerator {
     public String toString() {
         return literal;
     }
-    
+
 } //ResultType

@@ -128,7 +128,7 @@ public class ScaveModelUtil {
         return chart;
     }
 
-    //TODO obsolete
+
     public static List<String> getIDListAsFilters(IDList ids, String[] runidFields, ResultFileManager manager) {
         Assert.isNotNull(runidFields);
         String[] filterFields = getFilterFieldsFor(runidFields);
