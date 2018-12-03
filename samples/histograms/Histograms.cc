@@ -76,25 +76,25 @@ void Histograms::createStatisticObjects()
     addHistogram("Default", new cDefaultHistogramStrategy());
     addHistogram("Default bins=5", new cDefaultHistogramStrategy(5));
 
-    addHistogram("FixedRange [10,100), bins=9, reals", new cFixedRangeHistogramStrategy(10, 100, 9, cHistogram::MODE_REALS));
+    addHistogram("FixedRange [-10,10), bins=40, reals", new cFixedRangeHistogramStrategy(-10, 10, 40, cHistogram::MODE_REALS));
 
     addHistogram("AutoRange default", new cAutoRangeHistogramStrategy());
-    addHistogram("AutoRange bins=500, integers", new cAutoRangeHistogramStrategy(500, cHistogram::MODE_INTEGERS));
+    addHistogram("AutoRange bins=100, integers", new cAutoRangeHistogramStrategy(100, cHistogram::MODE_INTEGERS));
 
     cAutoRangeHistogramStrategy *rangeStrategy = new cAutoRangeHistogramStrategy();
-    rangeStrategy->setRangeHint(10, NAN);
-    addHistogram("AutoRange [10,auto)", rangeStrategy);
+    rangeStrategy->setRangeHint(5, NAN);
+    addHistogram("AutoRange [5,auto)", rangeStrategy);
 
     cAutoRangeHistogramStrategy *binSizeStrategy = new cAutoRangeHistogramStrategy();
-    binSizeStrategy->setBinSizeHint(2.5);
+    binSizeStrategy->setBinSizeHint(2);
     binSizeStrategy->setBinSizeRounding(false);
-    addHistogram("AutoRange binSize=2.5", binSizeStrategy);
+    addHistogram("AutoRange binSize=2", binSizeStrategy);
 
     cAutoRangeHistogramStrategy *fixedBinsStrategy = new cAutoRangeHistogramStrategy();
-    fixedBinsStrategy->setRangeHint(10,20);
+    fixedBinsStrategy->setRangeHint(5,15);
     fixedBinsStrategy->setNumBinsHint(5);
     fixedBinsStrategy->setAutoExtend(false);
-    addHistogram("AutoRange [10,20) numBins=5 autoExtend=false)", fixedBinsStrategy);
+    addHistogram("AutoRange [5,15) numBins=5 autoExtend=false)", fixedBinsStrategy);
 }
 
 
