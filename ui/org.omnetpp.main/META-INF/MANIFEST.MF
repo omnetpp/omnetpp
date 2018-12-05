@@ -24,7 +24,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.help.ui,
  org.apache.commons.logging,
  org.omnetpp.common,
- org.omnetpp.cdt
+ org.omnetpp.cdt,
+ org.omnetpp.scave
 Export-Package: org.omnetpp.ide;
   uses:="org.eclipse.jface.action,
    org.eclipse.ui,

@@ -38,6 +38,7 @@ import org.omnetpp.common.util.CommandlineUtils;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.ide.installer.FirstStepsDialog;
 import org.omnetpp.ide.installer.OnClosingWelcomeView;
+import org.omnetpp.scave.ScavePlugin;
 import org.osgi.framework.Bundle;
 
 /**
@@ -59,9 +60,12 @@ public class OmnetppStartup implements IStartup {
         // as we currently do not have a consent dialog, we just disable it for now
         // checkForNewVersion();
 
+        ScavePlugin.ensurePyDevInterpreterConfigured();
+
         final IWorkbench workbench = PlatformUI.getWorkbench();
         workbench.getDisplay().asyncExec(new Runnable() {
             public void run() {
+
                 CommandlineUtils.autoimportAndOpenFilesOnCommandLine();
                 if (isWorkspaceEmpty()) {
                     IWorkbenchWindow activeWorkbenchWindow = workbench.getActiveWorkbenchWindow();

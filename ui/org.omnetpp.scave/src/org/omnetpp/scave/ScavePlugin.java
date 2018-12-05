@@ -90,7 +90,17 @@ public class ScavePlugin extends AbstractUIPlugin {
         // We do not use anything from this interpreter configuration at the moment, we just need it
         // to make the error marker disappear, and let PyDev be happy.
         IInterpreterManager manager = InterpreterManagersAPI.getPythonInterpreterManager();
-        if (manager.getInterpreterInfos().length == 0) {
+
+        IInterpreterInfo[] infos = manager.getInterpreterInfos();
+
+        boolean needsConfiguration = (infos.length == 0);
+
+        /*
+        // this is an ugly hack, let's hope we won't need this
+        if (infos.length == 1 && "DUMMY".equals(infos[0].getName()) && "DUMMY".equals(infos[0].getExecutableOrJar()))
+            needsConfiguration = true;
+        */
+        if (needsConfiguration) {
 
             String pythonExecutable = findExecutableOnPath(SystemUtils.IS_OS_WINDOWS ? "python3.exe" : "python3");
             Debug.println("found python3: " + pythonExecutable);
