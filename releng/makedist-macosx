@@ -1,0 +1,74 @@
+#!/bin/sh
+#
+# create an OMNeT++/OMNEST source distribution package for macOS
+# in: SOURCE_DISTRIBUTION_BASE_NAME (1st arg optionally) contains the source file name (minus the .tgz extension)
+#     (placed in DISTDIR) that is used as a source for the windows build
+# in: TOOLS_DIR - the directory storing the platform specific binaries (JRE, toolchain etc.) (without the version and the last platform specific segment!)
+# in: TOOLS_VERSION - the (timestamp) version number of the toolchain to be integrated with the distro
+# in: VERSION - the version suffix used in the build (i.e. 5.0b3)
+
+if [ "$1" != "" ]; then
+   SOURCE_DISTRIBUTION_BASE_NAME=$1
+fi
+if test -z "$SOURCE_DISTRIBUTION_BASE_NAME"; then
+  echo "SOURCE_DISTRIBUTION_BASE_NAME environment variable is not specified!"; exit 1;
+fi
+
+if test -z "$TOOLS_DIR"; then
+  echo "TOOLS_DIR environment variable is not specified!"; exit 1;
+fi
+
+if test -z "$TOOLS_VERSION"; then
+  echo "TOOLS_VERSION environment variable is not specified!"; exit 1;
+fi
+
+if test -z "$VERSION"; then
+  echo "VERSION environment variable is not specified!"; exit 1;
+fi
+
+if [ "$what" != "omnest" ]; then
+    what="omnetpp"
+fi
+
+cd `dirname $0`/..
+OMNETPP_ROOT=`pwd`
+
+# the directory where the distribution file will created
+DISTDIR=$OMNETPP_ROOT/out/dist
+
+if [ -d $DISTDIR/$what-$VERSION ]; then
+    echo "Deleting old target directory: $DISTDIR/$what-$VERSION !"
+    rm -rf $DISTDIR/$what-$VERSION
+fi
+
+# extract the source archive
+echo "Extracting source distribution: $SOURCE_DISTRIBUTION_BASE_NAME.tgz "
+cd $DISTDIR
+tar xfz $SOURCE_DISTRIBUTION_BASE_NAME.tgz || { echo --- error extracting source ---; exit 1;}
+
+# cd into the extracted source achive dir
+cd $what-$VERSION || exit 1
+
+echo "Preparing to create distribution package: $what, version: $VERSION platform: macosx..."
+
+# Prepare IDE
+cp -r ide/macosx/* ide
+mv ide/features ide/Eclipse.app/Contents/Eclipse
+mv ide/plugins ide/Eclipse.app/Contents/Eclipse
+mv ide/Eclipse.app ide/$what.app
+rm -rf ide/win32 ide/win64 ide/linux ide/linux64 ide/macosx
+
+# copy the self extracting toolchain file into the distro
+mkdir -p tools
+echo "Extracting tools archive..."
+tar xfz $TOOLS_DIR/$TOOLS_VERSION/macosx/opp-tools-macosx.tar.gz --directory tools || { echo --- error extracting opp-tools-macosx.tar.gz ---; exit 1;}
+
+# pack the distro
+cd ..
+# create macOS version - tgz with macOS tools added
+export SOURCE_DISTRIBUTION_NAME_MACOSX=$SOURCE_DISTRIBUTION_BASE_NAME-macosx.tgz
+echo Creating $DISTDIR/$SOURCE_DISTRIBUTION_NAME_MACOSX
+tar cfz $SOURCE_DISTRIBUTION_NAME_MACOSX $what-$VERSION || { echo --- error creating src-macosx.tgz ---; exit 1;}
+
+# delete the source stuff
+rm -rf $what-$VERSION

@@ -1,0 +1,384 @@
+#!/bin/sh
+#
+# create an OMNeT++/OMNEST source distribution package
+# Before running this script the IDE componenet both the native and the java parts
+# must be present in the out/ide directory (or BUILD_IDE=yes must be specified)
+#
+# in: BUILD_CORE_DISTRO, BUILD_LINUX_DISTRO, BUILD_WIN64_DISTRO, BUILD_MACOSX_DISTRO 
+#     if "yes", the repsective platform distro will be built
+# in: Build identifier can be passed as BUILDID variable (optional)
+# in: If BUILD_IDE=yes (default) - it tries to build the native and java part of the IDE
+# in: If BUILD_IDE_NATIVE=yes (default) - it tries to build the native part of the IDE
+# in: If BUILD_DOC=yes (default) - it tries to build the documentation
+# out: SOURCE_DISTRIBUTION_NAME contains the created archivename
+
+cd `dirname $0`/..
+OMNETPP_ROOT=`pwd`
+
+if [ "$what" != "omnest" ]; then
+    export WHAT="OMNeT++"
+    export what="omnetpp"
+    export EDITION="Academic Public License -- NOT FOR COMMERCIAL USE"
+else
+    export WHAT="OMNEST"
+    export what="omnest"
+    export EDITION="Commercial Edition"
+fi
+
+if test -z "$BUILD_DOC"; then
+  BUILD_DOC="yes"
+fi
+
+if test -z "$BUILD_IDE"; then
+  BUILD_IDE="yes"
+fi
+
+if test -z "$BUILD_IDE_NATIVE"; then
+  BUILD_IDE_NATIVE="yes"
+fi
+
+export BUILD_CORE_DISTRO
+export BUILD_LINUX_DISTRO
+export BUILD_WIN64_DISTRO
+export BUILD_MACOSX_DISTRO
+
+if test -z "$TOOLS_DIR"; then
+export TOOLS_DIR=$HOME/tools/downloads
+fi
+
+# set the version number of the tools directory that is used in the Windows/macOS distros
+if test -z "$TOOLS_VERSION"; then
+export TOOLS_VERSION=180301
+fi
+
+TWEAKCONFIG="perl releng/tweakconfigfile.pl"
+REGEXPREPLACE="perl -i -pe"
+
+# use the default language in perl (supresses a lot of warnings in perl calls)
+export LANG=C
+
+# the directory where the distribution file will created
+DISTDIR=out/dist
+
+# the directory where the pre-built IDE files are present
+IDE_BUILDDIR=out/ui/releng/org.omnetpp.ide.product/target/products/org.$what.ide.product/ide
+
+checkfile() {
+    if [ ! -r $1 ]; then
+        echo "file $1 not found -- $2"
+        exit 1
+    fi
+}
+
+checkfile configure.in 'Must be called in top-level omnetpp dir!'
+
+if file include/omnetpp.h | grep CRLF >/dev/null; then
+        # Note: on a DOS-mode Cygwin filesystem, "file" won't notice CRLFs :-(((
+        echo "Seems like files are in DOS mode (CRLF), we need Unix files!!!" 1>&2
+        exit 1
+fi
+
+if mount | grep textmode >/dev/null; then
+        echo "Text-mode Cygwin drives won't do, use binary mounts!!!" 1>&2
+        exit 1
+fi
+
+# Get version string and BUILD identifier
+export VERSION=`cat Version | sed 's/^.*-//'`
+if [ "$BUILDID" = "" ]; then
+  # generate our own build identifier
+  export BUILDID=`date +%y%m%d`-`git describe --tags | awk -F '-g' '{print $2;}'`
+fi
+
+RELEASE="$what-$VERSION"
+
+echo $RELEASE >Version
+
+echo "Preparing to build $WHAT, version: $VERSION, build: $BUILDID, edition: $EDITION..."
+echo "Core build: $BUILD_CORE_DISTRO"
+echo "Linux build: $BUILD_LINUX_DISTRO"
+echo "WIN64 build: $BUILD_WIN64_DISTRO"
+echo "macOS build: $BUILD_MACOSX_DISTRO"
+
+cp configure.user.dist configure.user
+
+# tweak the version and buildid
+$TWEAKCONFIG set configure.in    OMNETPP_PRODUCT "\"$WHAT\"" || exit 1
+$TWEAKCONFIG set configure.in    OMNETPP_EDITION "\"$EDITION\"" || exit 1
+$TWEAKCONFIG set configure.in    OMNETPP_BUILDID "\"$BUILDID\"" || exit 1
+$TWEAKCONFIG set configure       OMNETPP_PRODUCT "\"$WHAT\"" || exit 1
+$TWEAKCONFIG set configure       OMNETPP_EDITION "\"$EDITION\"" || exit 1
+$TWEAKCONFIG set configure       OMNETPP_BUILDID "\"$BUILDID\"" || exit 1
+
+# check configure.user settings are to our taste (just needed to build the documentation so Qtenv is turend off)
+$TWEAKCONFIG set configure.user WITH_NETBUILDER yes || exit 1
+$TWEAKCONFIG set configure.user WITH_PARSIM yes || exit 1
+$TWEAKCONFIG set configure.user WITH_QTENV no || exit 1
+$TWEAKCONFIG set configure.user WITH_OSG no || exit 1
+
+# set vars for documentation
+$TWEAKCONFIG set doc/src/api.doxyfile    PROJECT_NUMBER $VERSION || exit 1
+$TWEAKCONFIG set doc/src/nedxml.doxyfile PROJECT_NUMBER $VERSION || exit 1
+$TWEAKCONFIG set doc/src/parsim.doxyfile PROJECT_NUMBER $VERSION || exit 1
+$TWEAKCONFIG set doc/src/scave.doxyfile  PROJECT_NUMBER $VERSION || exit 1
+$TWEAKCONFIG set doc/src/manual/Makefile TEMPLATE $what || exit 1
+$TWEAKCONFIG set doc/src/manual/Makefile VERSION $VERSION || exit 1
+
+# replace (the default) OMNeT++ token with OMNEST if needed
+if [ "$what" = "omnest" ]; then
+    # set the welcome message depending on edition
+    $REGEXPREPLACE 's/OMNeT\+\+/OMNEST/g' releng/overlay/tools/win64/etc/bash.bashrc
+    $REGEXPREPLACE 's/"omnetpp"/"omnest"/g' releng/overlay/tools/win64/etc/bash.bashrc
+    # replace in the documentation source files
+    $REGEXPREPLACE 's/OMNeT\+\+/OMNEST/g' doc/Readme-IDE
+    $REGEXPREPLACE 's/"omnetpp"/"omnest"/g' doc/Readme-IDE
+    $REGEXPREPLACE 's/OMNeT\+\+/OMNEST/g' README
+    $REGEXPREPLACE 's/OMNeT\+\+/OMNEST/g' INSTALL
+    $REGEXPREPLACE 's/OMNeT\+\+/OMNEST/g' WHATSNEW
+    $REGEXPREPLACE 's/OMNeT\+\+/OMNEST/g' MIGRATION
+
+    $REGEXPREPLACE 's/OMNeT\+\+/OMNEST/g' `find doc -type f -name '*.doxyfile'`
+    $REGEXPREPLACE 's/<!ENTITY +Omnetpp +".*?" *>/<!ENTITY Omnetpp "OMNEST">/g' doc/src/ide-overview/custom-docbook.dtd
+    $REGEXPREPLACE 's/<!ENTITY +Omnetpp +".*?" *>/<!ENTITY Omnetpp "OMNEST">/g' doc/src/userguide/custom-docbook.dtd
+    $REGEXPREPLACE 's/<!ENTITY +Omnetpp +".*?" *>/<!ENTITY Omnetpp "OMNEST">/g' doc/src/ide-customization-guide/custom-docbook.dtd
+
+    $REGEXPREPLACE 's/%\\commercialtrue/\\commercialtrue/g' doc/src/manual/usman.tex
+    $REGEXPREPLACE 's/:\\opp:OMNeT\+\+::/:\\opp:OMNEST::/g' doc/src/manual/ltoh.specs
+    $REGEXPREPLACE 's/\$product = "OMNeT\+\+"/\$product = "OMNEST"/g' doc/src/manual/prephtml2
+    $REGEXPREPLACE 's!<xsl:param name="what">omnetpp</xsl:param>!<xsl:param name="what">omnest</xsl:param>!g' doc/src/userguide/trans.xsl
+
+    # replace in Qtenv
+    $REGEXPREPLACE 's/OMNeT\+\+\/Qtenv/OMNEST\/Qtenv/g' src/qtenv/mainwindow.ui
+    $REGEXPREPLACE 's/About OMNeT\+\+/About OMNEST/g' src/qtenv/mainwindow.cc
+
+    # rewite the launcher files
+    $REGEXPREPLACE 's/OMNeT\+\+/OMNEST/g' src/utils/omnetpp.cmd src/utils/omnetpp
+    $REGEXPREPLACE 's/LAUNCHER=omnetpp/LAUNCHER=omnest/g' src/utils/omnetpp.cmd src/utils/omnetpp
+    # copy the commercial license into doc
+    cp releng/License_omnest doc/License
+else
+    # OMNeT++ build
+    # rewite the launcher files
+    $REGEXPREPLACE 's/OMNEST/OMNeT\+\+/g' src/utils/omnest.cmd src/utils/omnest
+    $REGEXPREPLACE 's/LAUNCHER=omnest/LAUNCHER=omnetpp/g' src/utils/omnest.cmd src/utils/omnest
+fi
+
+if [ -d $DISTDIR/$what-$VERSION ]; then
+    echo "Deleting old target directory: $DISTDIR/$what-$VERSION !"
+    rm -rf $DISTDIR/$what-$VERSION
+fi
+
+echo "Checks OK."
+echo
+
+grep 'OMNETPP_VERSION' include/omnetpp/simkerneldefs.h
+echo
+
+#echo "Setting permissions"
+#if [ ! -x releng/setperm ]; then
+#    chmod +x releng/setperm
+#fi
+#releng/setperm
+
+# add omnetpp/bin to PATH
+export PATH=$OMNETPP_ROOT/bin:$PATH
+
+# create Makefile.inc
+./configure || { echo --- error during running configure ---; exit 1;}
+
+# Generating PDF documentation
+if [ "$BUILD_DOC" = "yes" ]; then
+  echo Generating documentation
+  (cd doc/src && make clean)
+  make docu || { echo --- error generating documentation ---; exit 1;}
+fi
+
+if [ "$BUILD_IDE_NATIVE" = "yes" ]; then
+  echo --- Building native parts of the IDE ---
+  $OMNETPP_ROOT/releng/ide/native/build-ide-native || { echo --- error during compiling native IDE parts ---; exit 1;}
+fi
+
+# re-create Makefile.inc becuase the native build proc has overwritten it
+./configure || { echo --- error during running configure ---; exit 1;}
+
+# create the ide package
+if [ "$BUILD_IDE" = "yes" ]; then
+  if [ "$BUILD_DOC" = "yes" ]; then
+    echo --- Copying documatation to the IDE doc plugin
+    make copy-ui-docu || { echo --- error copyig documentation ---; exit 1;}
+  fi
+  echo --- Building java parts of the IDE
+  $OMNETPP_ROOT/releng/ide/java/build-ide-java || { echo --- error during building the IDE component ---; exit 1;}
+fi
+
+make utils
+
+echo "Copying version controlled files to $DISTDIR/$what-$VERSION"
+# create distributin dir
+mkdir -p $DISTDIR/$what-$VERSION
+
+# add new files to the index created by the patching
+git add -f configure.user
+# add the changed files created by the patching to the index (to allow exporting the changed files)
+git add -u .
+# export the changed tree (i.e. the current working tree)
+git checkout-index -a -f --prefix=$DISTDIR/$what-$VERSION/
+# remove changes from the index (but keep them as local modifications i.e. no --hard)
+git reset
+
+###############################
+# copy the generated documentation
+echo Copying generated documentation
+
+checkfile doc/SimulationManual.pdf               'SimulationManual.pdf must exist in doc/'
+checkfile doc/UserGuide.pdf            'UserGuide.pdf must exist in doc/'
+checkfile doc/IDE-CustomizationGuide.pdf      'IDE-CustomizationGuide.pdf must exist in doc/'
+checkfile doc/IDE-DevelopersGuide.pdf      'IDE-DevelopersGuide.pdf must exist in doc/'
+checkfile doc/InstallGuide.pdf    'InstallGuide.pdf must exist in doc/'
+
+cp -r doc/api $DISTDIR/$what-$VERSION/doc/api
+cp -r doc/parsim-api $DISTDIR/$what-$VERSION/doc/parsim-api
+cp -r doc/nedxml-api $DISTDIR/$what-$VERSION/doc/nedxml-api
+cp -r doc/manual $DISTDIR/$what-$VERSION/doc/manual
+# cp -r doc/ide-customization-guide $DISTDIR/$what-$VERSION/doc/ide-customization-guide
+# cp -r doc/ide-developersguide $DISTDIR/$what-$VERSION/doc/ide-developersguide
+# cp -r doc/userguide $DISTDIR/$what-$VERSION/doc/userguide
+cp doc/SimulationManual.pdf $DISTDIR/$what-$VERSION/doc
+cp doc/InstallGuide.pdf $DISTDIR/$what-$VERSION/doc
+cp doc/UserGuide.pdf $DISTDIR/$what-$VERSION/doc
+cp doc/IDE-CustomizationGuide.pdf $DISTDIR/$what-$VERSION/doc
+cp doc/IDE-DevelopersGuide.pdf $DISTDIR/$what-$VERSION/doc
+cp doc/IDE-Overview.pdf $DISTDIR/$what-$VERSION/doc
+cp ui/ChangeLog $DISTDIR/$what-$VERSION/doc/IDE-Changes
+
+###############################
+# copy the "ide" directory
+if [ ! -d $IDE_BUILDDIR/plugins ]; then
+    echo The IDE component must be built and present in $IDE_BUILDDIR before creating a distribution.
+    exit 1
+fi
+
+echo "Copying multiplatform IDE"
+cp -a $IDE_BUILDDIR $DISTDIR/$what-$VERSION
+
+# copy IDE icon
+cp releng/icon.png $DISTDIR/$what-$VERSION/ide
+
+# create update site repository archive
+export IDE_REPOSIRORY_NAME=${BUILDID}-$what-${VERSION}-ide-repository.zip
+if [ -d $IDE_BUILDDIR/../update ]; then
+  zip -r -X -9 -q $DISTDIR/$IDE_REPOSITORY_NAME $IDE_BUILDDIR/../update || { echo --- error creating src-windows.zip ---; exit 1;}
+fi
+
+###############################
+if [ "$BUILD_WIN64_DISTRO" = "true" ]; then
+  echo "Checking Win64 version..."
+  # check if the opplibs native lib is in place and correctly built
+  OPPLIBSFILE=`echo $DISTDIR/$what-$VERSION/ide/plugins/org.omnetpp.ide.nativelibs.win32.x86_64_?.?.?.*/opplibs.dll`
+  if [ ! -f "$OPPLIBSFILE" ]; then
+    echo $OPPLIBSFILE does not exsist
+    exit 1
+  fi
+  #checkfile $OPPLIBSFILE 'opplibs.dll for win64 must be present'
+  OPPLIBSCONTENT=`strings $OPPLIBSFILE | grep common..dll`
+  if [ "$OPPLIBSCONTENT" != "" ]; then
+    echo "opplibs.dll must be built statically. Run 'make MODE=release SHARED_LIBS=no ui'"
+    exit 1
+  fi
+fi
+
+#########################################
+if [ "$BUILD_LINUX_DISTRO" = "true" ]; then
+  echo "Checking Linux GTK 64bit version..."
+  # check if the opplibs native lib is in place and correctly built
+  OPPLIBSFILE=`echo $DISTDIR/$what-$VERSION/ide/plugins/org.omnetpp.ide.nativelibs.linux.x86_64_?.?.?.*/libopplibs.so`
+  if [ ! -f "$OPPLIBSFILE" ]; then
+    echo $OPPLIBSFILE does not exsist
+    exit 1
+  fi
+  #checkfile $OPPLIBSFILE 'libopplibs.so for Linux_x86_64 must be present'
+  OPPLIBSCONTENT=`strings $OPPLIBSFILE | grep libcommon..so`
+  if [ "$OPPLIBSCONTENT" != "" ]; then
+    echo "libopplibs.so must be built statically. Run 'make MODE=release SHARED_LIBS=no ui'"
+    exit 1
+  fi
+  # TODO check if it is a release build
+fi
+
+#########################################
+if [ "$BUILD_MACOSX_DISTRO" = "true" ]; then
+  echo "Checking MacOS X version..."
+  # check if the opplibs native lib is in place and correctly built
+  OPPLIBSFILE=`echo $DISTDIR/$what-$VERSION/ide/plugins/org.omnetpp.ide.nativelibs.macosx_?.?.?.*/libopplibs.jnilib`
+  if [ ! -f "$OPPLIBSFILE" ]; then
+    echo $OPPLIBSFILE does not exsist
+    exit 1
+  fi
+  #checkfile $OPPLIBSFILE 'libopplibs.so for Linux_x86 must be present'
+  OPPLIBSCONTENT=`strings $OPPLIBSFILE | grep libcommon..so`
+  if [ "$OPPLIBSCONTENT" != "" ]; then
+    echo "libopplibs.so must be built statically. Run 'make MODE=release SHARED_LIBS=no ui'"
+    exit 1
+  fi
+  # TODO check if it is a release build
+fi
+
+# switch to the distribution dir and process the files there
+cd $DISTDIR/$what-$VERSION || exit 1
+
+# create the initial version of configure.user files from the *.dist templates
+mv configure.user.dist configure.user
+
+# create an empty bin and lib directory because git does not store empty dirs
+mkdir bin
+mkdir lib
+
+# extracting sample data to OSG samples
+echo "Extracting osg-samples-data archive..."
+tar xfz $TOOLS_DIR/$TOOLS_VERSION/all/osg-samples-data.tar.gz --directory samples || { echo --- error extracting osg-samples-data.tar.gz ---; exit 1;}
+
+# cleanup: remove the ui and other unnecessary directories
+echo Removing unnecessary code: IDE source, petrinet, images source, releng etc.
+rm -rf .github doc/src images/src releng ui misc/petrinets
+
+unneededfiles=`find . -name '.gitignore'`
+if [ "$unneededfiles" != "" ]; then
+    echo "Removing files not needed in distribution: $unneededfiles"
+    rm $unneededfiles
+fi
+
+cd ..
+# pack and create tar.gz archives
+# sleep/sync hack to avoid tar errors about changed files: http://www.mail-archive.com/bug-tar@gnu.org/msg01456.html
+sleep 5
+sync
+export SOURCE_DISTRIBUTION_BASE_NAME=${BUILDID}-$what-${VERSION}-src
+export SOURCE_DISTRIBUTION_NAME=$SOURCE_DISTRIBUTION_BASE_NAME.tgz
+echo Creating $DISTDIR/$SOURCE_DISTRIBUTION_NAME
+tar cfz $SOURCE_DISTRIBUTION_NAME $what-$VERSION || { echo --- error creating ...src.tgz ---; exit 1;}
+
+###################################
+# build platform specific packages
+
+if [ "$BUILD_CORE_DISTRO" = "true" ]; then
+echo "Creating Core (platform independent) distro..."
+$OMNETPP_ROOT/releng/makedist-core
+fi
+
+if [ "$BUILD_LINUX_DISTRO" = "true" ]; then
+echo "Creating Linux distro..."
+$OMNETPP_ROOT/releng/makedist-linux
+fi
+
+if [ "$BUILD_WIN64_DISTRO" = "true" ]; then
+echo "Creating Win64 distro..."
+$OMNETPP_ROOT/releng/makedist-win64
+fi
+
+if [ "$BUILD_MACOSX_DISTRO" = "true" ]; then
+echo "Creating macOS distro..."
+$OMNETPP_ROOT/releng/makedist-macosx
+fi
+
+# delete the source stuff
+rm -rf $what-$VERSION

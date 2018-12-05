@@ -14,7 +14,7 @@ if [ "$VERSION"x = "x" ]; then
   export VERSION=unknown
 fi
 
-cd `dirname $0`/../../..
+cd $(dirname $0)/../../..
 
 echo Copying 'ui' to 'out/ui' ...
 rm -rf out/ui
@@ -27,6 +27,7 @@ touch out/ui/org.omnetpp.ide.nativelibs.macosx/libopplibs.jnilib
 
 echo Building $what IDE version: $VERSION with buildID: $BUILDID
 cd out/ui
+
 mvn clean verify -Dwhat=$what -DforceContextQualifier=$BUILDID || { echo --- error during compiling/packaging Java IDE parts ---; exit 1;}
 
 # post process the final layout. Merge the plugins and features directory of all platforms to save space

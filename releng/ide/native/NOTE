@@ -1,0 +1,6 @@
+- on Linux -static-libstdc++ should be added to LDFLAGS to avoid binary dependency on GLIBCXX which can cause issues with old systems
+- For windows 
+  o you should use the mingw cross compiler (x86_64-w64-mingw32-g++)
+  o Additionally you MUST add the -mthreads option to both CFLAGS and LDFLAGS otherwise the resulting lib will CRASH.
+  o you should add the include path the the JDK include files manually (they should be present somewhere in the docker
+    build image so cross compilation will work.)

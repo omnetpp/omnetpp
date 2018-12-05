@@ -16,7 +16,6 @@
   <modules>
     <module>org.omnetpp.ide</module>
     <module>org.omnetpp.ide.academic</module>
-    <module>org.omnetpp.ide.commercial</module>
   </modules>
 
 </project>

@@ -1,0 +1,9 @@
+Release Engineering
+===================
+
+This folder contains various scripts to create the final OMNeT++ distribution archives.
+It is using a docker image that contains all necessary build tools (cross compilers, 
+eclipse maven cache etc.). The docker receipts are available under the 'dockerfiles' folder.
+
+Iniside the docker container the 'releng/makedist' script is called and the final archives
+will be available in the 'releng/dist' folder.
