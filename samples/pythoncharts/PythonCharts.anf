@@ -524,6 +524,8 @@ plt.show()</chart>
         <chart name="aloha mpl" type="MatplotlibChart">import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from omnetpp.scave import results
+
 aloha = results.get_scalars('run("PureAlohaExperiment*") AND attr:replication(#1)')
 
 aloha = aloha.assign(qname = aloha.module + "." + aloha.name)
