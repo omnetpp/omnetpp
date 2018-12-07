@@ -1336,9 +1336,14 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         if (pageId == null || pageId.equals("Inputs") || pageId.equals("BrowseData") || pageId.equals("Charts"))
             return null;
 
-        EObject object = null;
+        // TODO: add a unique ID to all charts and use that instead of the index
+        int index = Integer.parseInt(pageId);
+        List<AnalysisItem> charts = analysis.getCharts().getItems();
 
-        object = analysis.getCharts().getItems().get(Integer.parseInt(pageId));
+        if (index < 0 || index >= charts.size())
+            return null;
+
+        EObject object = charts.get(index);
 
         if (object != null) {
             open(object);
