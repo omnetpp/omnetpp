@@ -1750,7 +1750,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
      * isApplicable() method is hooked on selection changes.
      */
     public void fakeSelectionChange() {
-        //TODO setSelection(getSelection());
+        setSelection(getSelection());
     }
 
     /*

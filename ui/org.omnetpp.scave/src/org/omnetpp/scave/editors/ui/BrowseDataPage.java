@@ -320,6 +320,11 @@ public class BrowseDataPage extends FormEditorPage {
         tabFolder.refreshPanelTitles();
     }
 
+    @Override
+    public void pageActivated() {
+        updateSelection();
+    }
+
     /**
      * Sets the editor selection to the selection of control of the active panel.
      */
