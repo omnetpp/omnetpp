@@ -1,2 +1,0 @@
-#/bin/sh
-perl _convert.pl tkenv.lst ..\src\tkenv\icons.tcl icons
