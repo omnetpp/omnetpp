@@ -8,7 +8,7 @@ networks, but it has been successfully used in other areas like the simulation
 of IT systems, queueing networks, hardware architectures and business processes
 as well.
 
-If you installed and successfully compiled the source distribution, the omnetpp 
+If you installed and successfully compiled the source distribution, the omnetpp
 directory on your system should contain the following subdirectories.
 (If you installed a precompiled distribution, some of the directories may be missing,
 or there might be additional directories, e.g. containing software bundled with OMNeT++.)
@@ -34,7 +34,6 @@ The simulation system itself:
         netbuilder/files for dynamically reading NED files
       envir/       common code for runtime user interfaces
       cmdenv/      command-line runtime user interface
-      tkenv/       Tcl/Tk-based graphical runtime user interface
       qtenv/       Qt-based graphical runtime user interface
       nedxml/      nedtool, message compiler, NED infrastructure
       layout/      graph layouting library
@@ -46,11 +45,10 @@ The simulation system itself:
     misc/          various 3rd party contributions
     test/          regression test suite
       core/        regression test suite for the simulation library
-      distrib/     regression test suite for built-in distributions
       ...
     tools/         3rd party tools and libraries bundled with OMNeT++
       win64/       on Windows, contains MSYS tools and the MinGW-W64 toolchain
-      macosx/      on OS X, contains various 3rd party libraries (e.g. OSG, osgEarth, Qt)
+      macosx/      on macOS, contains various 3rd party libraries (e.g. OSG, osgEarth, Qt)
 
 Sample simulations are in the samples directory.
 
@@ -72,9 +70,5 @@ Installation
 ~~~~~~~~~~~~
 
 Please see the Install Guide, doc/InstallGuide.pdf for specific instructions
-for various operating systems, and to read about dependencies, optional 
+for various operating systems, and to read about dependencies, optional
 packages and build options.
-
-Enjoy.
-
-Andras Varga and the OMNeT++ Team.
