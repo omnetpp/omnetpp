@@ -1,0 +1,6 @@
+To build the documentation on Ubuntu, extra packages packages need to be 
+installed:
+
+    sudo apt install texlive texlive-latex-extra inkscape graphviz asciidoc \
+         docbook-xml docbook-xsl fop xsltproc txt2html qpdf doxygen
+
