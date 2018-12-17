@@ -153,14 +153,16 @@ void OmnetppVectorFileWriter::finalizeVector(VectorData *vp)
 void OmnetppVectorFileWriter::endRecordingForRun()
 {
     Assert(isOpen());
-    for (VectorData *vp : vectors)
+    for (VectorData *vp : vectors) {
         finalizeVector(vp);
+        delete vp;
+    }
+    vectors.clear();
 
     check(fprintf(f, "\n"));
     check(fprintf(fi, "\n"));
 
     bufferedSamples = 0;
-    vectors.clear();
     nextVectorId = 0;
 }
 
