@@ -63,30 +63,6 @@ accessible format.
 SQLite is part of the OMNEST/OMNeT++ source code.
 
 
-Tcl/Tk
-------
-The Tkenv simulation execution environment is based on Tcl/Tk, an open-source
-script language and GUI toolkit, written by James Ousterhout and many others.
-Tcl/Tk is currently available from http://www.tcl.tk/, under a BSD-style
-open source license: Tcl/Tk license (http://www.tcl.tk/software/tcltk/license.html)
-
-Tcl/Tk is needed to run models under Tkenv GUI. Alternatives to Tkenv
-are Qtenv and Cmdenv -- when you only use those, Tcl/Tk is not needed.
-
-On Linux, the user has to install Tcl/Tk from the repository; on OS X,
-OMNEST/OMNeT++ uses the Tcl/Tk installation bundled with the OS. On Windows,
-it is bundled with OMNEST/OMNeT++.
-
-
-Tkpath
-------
-SVG-like canvas widget for the Tcl/Tk canvas (http://wiki.tcl.tk/14545).
-Tkpath is distributed under the BSD License.
-
-If you don't use Tkenv, Tkpath is not needed. Tkpath is bundled with
-OMNEST/OMNeT++ on all platforms.
-
-
 Qt
 --
 The Qtenv simulation execution environment is based on Qt, a cross-platform
