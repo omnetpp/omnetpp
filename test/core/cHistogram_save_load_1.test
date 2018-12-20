@@ -30,6 +30,8 @@ fclose(f3);
 515689	 #= sum_squared_vals
 42	 #= underflow
 32	 #= overflow
+0	 #= neg_inf
+0	 #= pos_inf
 20	 #= num_bins
 #= bin_edges
  40
@@ -83,6 +85,8 @@ fclose(f3);
 515689	 #= sum_squared_vals
 42	 #= underflow
 32	 #= overflow
+0	 #= neg_inf
+0	 #= pos_inf
 20	 #= num_bins
 #= bin_edges
  40

@@ -1,0 +1,82 @@
+%description:
+cHistogram instances in various configurations collect a single Inf
+
+%includes:
+#include <iomanip>
+#include <limits>
+
+%global:
+static void setupRange(cHistogram& hist, double lower, double upper, int numToPrecollect=-1, double rangeExtFactor=-1)
+{
+    hist.setRange(lower, upper);
+    if (numToPrecollect > 0)
+        hist.setNumPrecollectedValues(numToPrecollect);
+    if (rangeExtFactor > 0)
+        hist.setRangeExtensionFactor(rangeExtFactor);
+}
+
+%activity:
+
+const int FIRSTVALS=100;
+const double RANGEEXT=1.5;
+
+cHistogram if_("int-fixed");
+cHistogram ia ("int-auto");
+cHistogram iau("int-autoupper");
+cHistogram ial("int-autolower");
+
+cHistogram ian("int-auto-5cell");
+cHistogram ifn("int-fixed-5cell");
+cHistogram iaun("int-autoupper-5cell");
+cHistogram ialn("int-autolower-5cell");
+
+cHistogram df_("double-fixed");
+cHistogram da ("double-auto");
+cHistogram dau("double-autoupper");
+cHistogram dal("double-autolower");
+
+cHistogram dan("double-auto-5cell");
+cHistogram dfn("double-fixed-5cell");
+cHistogram daun("double-autoupper-5cell");
+cHistogram daln("double-autolower-5cell");
+
+cKSplit ksa("double-ksplit-auto");
+cPSquare psq("double-psquare");
+
+if_.setRange(10, 20); if_.setMode(cHistogram::MODE_INTEGERS); // mode is not auto-selected, because transform happens immediately (FIXME is that good?)
+setupRange(ia, NAN, NAN, FIRSTVALS, RANGEEXT);
+setupRange(iau, 10, NAN, FIRSTVALS, RANGEEXT);
+setupRange(ial, NAN, 20, FIRSTVALS, RANGEEXT);
+
+ifn.setNumBinsHint(5);  ifn.setRange(10, 20);
+ian.setNumBinsHint(5);  setupRange(ian, NAN, NAN, FIRSTVALS, RANGEEXT);
+iaun.setNumBinsHint(5); setupRange(iaun, 10, NAN, FIRSTVALS, RANGEEXT);
+ialn.setNumBinsHint(5); setupRange(ialn, NAN, 20, FIRSTVALS, RANGEEXT);
+
+df_.setRange(10, 20); df_.setMode(cHistogram::MODE_DOUBLES); // mode is not auto-selected, because transform happens immediately (FIXME is that good?)
+setupRange(da, NAN, NAN, FIRSTVALS, RANGEEXT);
+setupRange(dau, 10, NAN, FIRSTVALS, RANGEEXT);
+setupRange(dal, NAN, 20, FIRSTVALS, RANGEEXT);
+
+dfn.setNumBinsHint(5);  dfn.setRange(10, 20);
+dan.setNumBinsHint(5);  setupRange(dan, NAN, NAN, FIRSTVALS, RANGEEXT);
+daun.setNumBinsHint(5); setupRange(daun, 10, NAN, FIRSTVALS, RANGEEXT);
+daln.setNumBinsHint(5); setupRange(daln, NAN, 20, FIRSTVALS, RANGEEXT);
+
+cAbstractHistogram *h[] = {
+  &if_, &ia, &iau, &ial,
+  &ifn, &ian, &iaun, &ialn,
+  &df_, &da, &dau, &dal,
+  &dfn, &dan, &daun, &daln,
+  &ksa, &psq,
+};
+
+int nh = sizeof(h)/sizeof(cAbstractHistogram*);
+
+for (int k=0; k<nh; k++)
+    h[k]->collect(std::numeric_limits<double>::infinity());
+
+for (int k=0; k<nh; k++)
+    h[k]->record();
+
+%exitcode: 0

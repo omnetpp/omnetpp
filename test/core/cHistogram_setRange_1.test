@@ -104,6 +104,10 @@ for (int i=0; i<FIRSTVALS+10; i++)
         h[k]->collect(doublevalue);
 }
 
+// test recording
+for (int k=0; k<nh; k++)
+    h[k]->record();
+
 %subst: /-1\.7[0-9]+e\+308/DBL_MIN/
 
 %contains: stdout

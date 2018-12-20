@@ -56,6 +56,8 @@ fclose(f);
 4.22383e+06	 #= sum_squared_vals
 0	 #= underflow
 0	 #= overflow
+0	 #= neg_inf
+0	 #= pos_inf
 55	 #= num_bins
 #= bin_edges
  0
@@ -180,6 +182,8 @@ fclose(f);
 55653.6	 #= sum
 4.22383e+06	 #= sum_squared_vals
 10	 #= numbins
+0	 #= numneginfs
+0	 #= numposinfs
 1000	 #= numobs
 #= n[]
  0
@@ -221,7 +225,9 @@ fclose(f);
 1.3	 #= range_ext_factor
 0 303.542	 #= range
 0 0	 #= cell_under, cell_over
-0 0	 #= sumweights_underflow, sum_weights_overflow
+0 0	 #= num_neg_infs, num_pos_infs
+0 0	 #= sum_weights_underflow, sum_weights_overflow
+0 0	 #= sum_weights_neg_inf, sum_weights_pos_inf
 100	 #= num_firstvals
 0	 #= firstvals[] exists
 13	 #= num_cells
@@ -313,6 +319,8 @@ fclose(f);
 4.22383e+06	 #= sum_squared_vals
 0	 #= underflow
 0	 #= overflow
+0	 #= neg_inf
+0	 #= pos_inf
 55	 #= num_bins
 #= bin_edges
  0
@@ -437,6 +445,8 @@ fclose(f);
 55653.6	 #= sum
 4.22383e+06	 #= sum_squared_vals
 10	 #= numbins
+0	 #= numneginfs
+0	 #= numposinfs
 1000	 #= numobs
 #= n[]
  0
@@ -478,7 +488,9 @@ fclose(f);
 1.3	 #= range_ext_factor
 0 303.542	 #= range
 0 0	 #= cell_under, cell_over
-0 0	 #= sumweights_underflow, sum_weights_overflow
+0 0	 #= num_neg_infs, num_pos_infs
+0 0	 #= sum_weights_underflow, sum_weights_overflow
+0 0	 #= sum_weights_neg_inf, sum_weights_pos_inf
 100	 #= num_firstvals
 0	 #= firstvals[] exists
 13	 #= num_cells
