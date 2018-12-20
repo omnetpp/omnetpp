@@ -31,7 +31,7 @@ namespace omnetpp {
  * refining the resolution of the histogram where needed.
  *
  * The histogram produced by k-split will be an approximation, because the
- * algorithm has no information on to divide up observations collected
+ * algorithm has no information on how to divide up observations collected
  * into a bin before it was split. Nevertheless, for stationary distributions,
  * k-split usually produces a superior estimate of the distribution than
  * uniform-bin histograms. If the distribution changes over time, and

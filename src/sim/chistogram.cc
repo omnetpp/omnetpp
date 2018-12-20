@@ -1,5 +1,5 @@
 //==========================================================================
-//  CHISTOGRAM2.CC - part of
+//  CHISTOGRAM.CC - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
