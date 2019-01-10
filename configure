@@ -627,7 +627,6 @@ SHLIB_POSTPROCESS
 MKPATH
 LN
 MAKEDEPEND
-WISH
 STRIP
 DLLTOOL
 SHLIB_LD
@@ -2186,6 +2185,7 @@ DEPENDFLAGS=${DEPENDFLAGS:- -MMD -MP -MF \$(basename \$@).d}
 CXXFLAGS=${CXXFLAGS:- -std=c++11}
 DEFINES=${DEFINES:-}
 PREFER_CLANG=${PREFER_CLANG:-yes}
+USE_MS_ABI=${USE_MS_ABI:-no}
 WITH_QTENV=${WITH_QTENV:-yes}
 MSGC=${MSGC:-opp_msgc}
 NEDTOOL=${NEDTOOL:-opp_nedtool}
@@ -3261,15 +3261,9 @@ fi
 
 fi
 
-# determine toolchain name, used in opp_makemake-generated Makefiles as part of the linker path
-if test "$CC" = "clang" -a "$($CC --version | grep windows-msvc)" != ""; then
-    # detect if we happen to have Microsoft's Clang/C2 compiler detected
-    TOOLCHAIN_NAME="clangc2"
-else
-    # toolchain name: compiler ($CC) without path
-    # note: doubling the brackets is needed, otherwise M4 swallows them!
-    TOOLCHAIN_NAME=`echo $CC | sed 's!^.*/!!g' | sed 's![ :]!_!'g`
-fi
+# toolchain name: compiler ($CC) without path
+# note: doubling the brackets is needed, otherwise M4 swallows them!
+TOOLCHAIN_NAME=`echo $CC | sed 's!^.*/!!g' | sed 's![ :]!_!'g`
 
 #-------------------------------
 #  Figure out the host platform
@@ -3314,11 +3308,15 @@ else
         PLATFORM=win32.x86_64
         EXE_SUFFIX=".exe"
         SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
-        if test "$TOOLCHAIN_NAME" = "clangc2"; then
+        # sepcial values for MS ABI compatible build is selected and clang is used
+        if test "$TOOLCHAIN_NAME" = "clang" -a "$USE_MS_ABI" = "yes"; then
+            TOOLCHAIN_NAME="clang-msabi"
+            echo "checking whether we are using MS ABI compatible libraries... yes"
             DEFINES="$DEFINES -D_MT -D_WINDOWS -D_WIN32 -DWIN32 -DWIN64 -D_USRDLL -D_WINDLL -D_DLL"
-            CFLAGS_RELEASE="$CFLAGS_RELEASE -O0" # FIXME temporary workaround as clang 3.8 on windows crashes with -O1 , or -O2
+            CFLAGS="$CFLAGS --target=x86_64-windows-msvc"
             CFLAGS_ARCH="$CFLAGS_ARCH -Wno-deprecated-declarations -isystem /visualc/include"
             CXXFLAGS="-std=c++14 -fcxx-exceptions"
+            LDFLAGS="$LDFLAGS --target=x86_64-windows-msvc"
             LDFLAG_LIBPATH="-Wl,-libpath:"
             LDFLAG_INCLUDE="-Wl,-include:"
             LDFLAG_LIB="-Wl,-wholearchive:"
@@ -3329,7 +3327,7 @@ else
             RANLIB="test"
             A_LIB_SUFFIX=".lib"
             LIB_PREFIX=""
-        else # mingw compiler (clang or gcc)
+        else # mingw compiler (clang or gcc) with GCC compatible ABI
             # on MinGW dll auto importing MUST be used with shared gcc and stdc++
             # otherwise exceptions can't be thrown across dll boundaries
             LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,--enable-auto-import -L/usr/bin"
@@ -3427,10 +3425,10 @@ rm -f core conftest.err conftest.$ac_objext \
 
 #----------------------
 # check for support of --no-as-needed  linker option. GCC 4.6 has changed not to link with a shared lib
-# if the program does not reference a symbol from the lib. ClangC2 compiler does not support this, but accept it
+# if the program does not reference a symbol from the lib. The MS linker does not support this, but accept it
 # so we exclude it from testing.
 #----------------------
-if test "$TOOLCHAIN_NAME" != "clangc2"; then
+if test "$TOOLCHAIN_NAME" != "clang-msabi"; then
   AS_NEEDED_OFF=-Wl,--no-as-needed
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports $AS_NEEDED_OFF" >&5
@@ -4198,7 +4196,7 @@ fi
 
 SYS_LIBS=""
 
-if test "$TOOLCHAIN_NAME" != "clangc2"; then
+if test "$TOOLCHAIN_NAME" != "clang-msabi"; then
   # math functions
 
    save_CXXFLAGS=$CXXFLAGS
@@ -4386,7 +4384,7 @@ rm -f core conftest.err conftest.$ac_objext \
   if test $stdcpp_ok = no; then
      as_fn_error $? "Standard C++ library -lstdc++_s or -lstdc++ or -lcxx or -lcxa or -lc++ not found" "$LINENO" 5
   fi
-fi # end clangc2
+fi # end clang-msabi
 
 # dlopen()
 
@@ -5799,7 +5797,7 @@ rm -f core conftest.err conftest.$ac_objext \
    LIBS=$save_LIBS
 
     fi
-    # on clangc2/msys try a different library name
+    # on clang-msabi with msys try a different library name
     if test $zlib_ok = no; then
         ZLIB_LIBS="-lzlib"
 
@@ -5907,7 +5905,6 @@ ac_config_files="$ac_config_files Makefile.inc src/qtenv/qtenv.pri"
 #----------------------
 # Substitutions.
 #----------------------
-
 
 
 
@@ -7240,9 +7237,9 @@ fi
 
 #----------------------
 # Check if the rpath option is unsupported. in this warn the user to provide the LD_LIBRARY_PATH variable
-# (we do not care about this if we are using the clangc2 toolchan)
+# (we do not care about this if we are using the clang-msabi toolchain)
 #----------------------
-if test -n "$RPATH_UNSUPPORTED" -a "$TOOLCHAIN_NAME" != "clangc2" ; then
+if test -n "$RPATH_UNSUPPORTED" -a "$TOOLCHAIN_NAME" != "clang-msabi" ; then
 
     cat 1>&2 << EOT
 

@@ -1163,7 +1163,7 @@ include $(CONFIGFILE)
 {~nolink:}{~staticlib:}# Simulation kernel and user interface libraries
 {exe:}OMNETPP_LIBS = $(OPPMAIN_LIB) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
 {sharedlib:}OMNETPP_LIBS = -loppenvir$D $(KERNEL_LIBS) $(SYS_LIBS)
-{~nolink:}{~staticlib:}{libpathdirs:}ifneq ($(TOOLCHAIN_NAME),clangc2)
+{~nolink:}{~staticlib:}{libpathdirs:}ifneq ($(TOOLCHAIN_NAME),clang-msabi)
 {~nolink:}{~staticlib:}{libpathdirs:}LIBS +={@dir:libpathdirs} -Wl,-rpath,$(abspath {dir}){/@}
 {~nolink:}{~staticlib:}{libpathdirs:}endif
 
@@ -1197,8 +1197,8 @@ endif
 $(TARGET_DIR)/% :: $O/%
 	@mkdir -p $(TARGET_DIR)
 	$(Q)$(LN) $< $@
-ifeq ($(TOOLCHAIN_NAME),clangc2)
-	$(Q)-$(LN) $(<:%.dll=%.lib) $(@:%.dll=%.lib)
+ifeq ($(TOOLCHAIN_NAME),clang-msabi)
+	-$(Q)-$(LN) $(<:%.dll=%.lib) $(@:%.dll=%.lib) 2>/dev/null
 endif
 
 {exe:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} $(wildcard $(EXTRA_OBJS)) {makefile} $(CONFIGFILE)

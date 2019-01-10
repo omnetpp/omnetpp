@@ -21,6 +21,11 @@
 PREFER_CLANG=yes
 
 #
+# On Windows, use the separately installed Visual C linker and Windows SDK. This will generate
+# binaries, that are compatible with the Visual C++ compiler.
+# USE_MS_ABI=yes
+
+#
 # Compiler optimization switches. There are two sets of switches,
 # and the MODE variable ("debug" or "release") decides which one gets used.
 # (Note: For maximum debugging info use switch -ggdb or -gstabs+3 when using gcc and gdb)
