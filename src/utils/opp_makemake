@@ -92,7 +92,7 @@ $progname [options] [object files or libraries]
                           no effect.
     -s, --make-so         Build shared library (.so or .dll). Useful if you want
                           to load the model dynamically (via the load-libs=
-                          omnetpp.ini or the -l Cmdenv/Tkenv command-line option).
+                          omnetpp.ini or the -l Cmdenv/Qtenv command-line option).
     -a, --make-lib        Create static library (.a or .lib).
     -S, --fordll          Compile C++ files for use in DLLs; see -p option.
                           The -s (build shared library) option implies this one.
@@ -100,7 +100,7 @@ $progname [options] [object files or libraries]
                           or add them to the created library. OBSOLETE.
     -u name, --userinterface name
                           Selects the user interface libraries to link with.
-                          Possible values are "all", "Cmdenv", "Tkenv", "Qtenv".
+                          Possible values are "all", "Cmdenv", "Qtenv".
                           Defaults to "all".
     -Idir                 Additional NED and C++ include directory
     -Ldir                 Add a directory to the library path
@@ -276,8 +276,8 @@ sub makemake()
         elsif ($arg eq "-u" || $arg eq "--userinterface") {
             $userInterface = shift @ARGV;
             $userInterface = uc($userInterface);
-            if ($userInterface ne "ALL" && $userInterface ne "CMDENV" && $userInterface ne "TKENV" && $userInterface ne "QTENV") {
-                error("$progname: -u: specify All, Cmdenv, Tkenv or Qtenv");
+            if ($userInterface ne "ALL" && $userInterface ne "CMDENV" && $userInterface ne "QTENV") {
+                error("$progname: -u: specify All, Cmdenv or Qtenv");
             }
         }
         elsif ($arg eq "-i" || $arg eq "--includefragment") {
@@ -628,7 +628,6 @@ sub makemake()
         "defaultmode" =>  $defaultMode,
         "allenv" => ($userInterface =~ /^A/) ne "",
         "cmdenv" =>  ($userInterface =~ /^C/) ne "",
-        "tkenv" =>  ($userInterface =~ /^T/) ne "",
         "qtenv" =>  ($userInterface =~ /^Q/) ne "",
         "extraobjs" =>  quoteJoin(\@extraObjs),
         "includepath" =>  prefixQuoteJoin(\@includeDirs, "-I"),
@@ -1095,9 +1094,8 @@ sub template()
 {~nolink:}TARGET_DIR = .
 {~nolink:}
 {exe:}# User interface (uncomment one) (-u option)
-{exe:}{~allenv?#}USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(QTENV_LIBS) $(CMDENV_LIBS)
+{exe:}{~allenv?#}USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(QTENV_LIBS) $(CMDENV_LIBS)
 {exe:}{~cmdenv?#}USERIF_LIBS = $(CMDENV_LIBS)
-{exe:}{~tkenv?#}USERIF_LIBS = $(TKENV_LIBS)
 {exe:}{~qtenv?#}USERIF_LIBS = $(QTENV_LIBS)
 {exe:}
 {sourcedirs:}# C++ include paths (with -I)
