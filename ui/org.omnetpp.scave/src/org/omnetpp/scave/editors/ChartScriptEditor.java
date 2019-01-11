@@ -67,7 +67,7 @@ import org.omnetpp.scave.python.HomeAction;
 import org.omnetpp.scave.python.InteractAction;
 import org.omnetpp.scave.python.KillPythonProcessAction;
 import org.omnetpp.scave.python.MatplotlibChartViewer;
-import org.omnetpp.scave.python.MatplotlibChartViewer.IPy4JExceptionHandler;
+import org.omnetpp.scave.python.MatplotlibChartViewer.ChartExceptionHandler;
 import org.omnetpp.scave.python.MatplotlibChartViewer.IStateChangeListener;
 import org.omnetpp.scave.python.NativeChartViewer;
 import org.omnetpp.scave.python.PanAction;
@@ -75,8 +75,6 @@ import org.omnetpp.scave.python.ToggleAutoUpdateAction;
 import org.omnetpp.scave.python.ZoomAction;
 import org.python.pydev.editor.PyEdit;
 import org.python.pydev.shared_core.callbacks.ICallbackListener;
-
-import py4j.Py4JException;
 
 public class ChartScriptEditor extends PyEdit {
     Chart chart;
@@ -519,7 +517,7 @@ public class ChartScriptEditor extends PyEdit {
                 });
             };
 
-            IPy4JExceptionHandler errorHandler = (e) -> {
+            ChartExceptionHandler errorHandler = (e) -> {
                 Display.getDefault().syncExec(() -> {
                     annotatePythonException(e);
                     revealErrorAnnotation();
@@ -534,7 +532,7 @@ public class ChartScriptEditor extends PyEdit {
         });
     }
 
-    private void annotatePythonException(Py4JException e) {
+    private void annotatePythonException(Exception e) {
         String msg = e.getMessage();
 
         String problemMessage = null;
@@ -635,7 +633,8 @@ public class ChartScriptEditor extends PyEdit {
         setShowSource(true);
 
         Position pos = documentProvider.annotationModel.getPosition(errorMarkerAnnotation);
-        getSourceViewer().revealRange(pos.offset, pos.length);
+        if (pos != null)
+            getSourceViewer().revealRange(pos.offset, pos.length);
     }
 
     public void gotoErrorAnnotation() {

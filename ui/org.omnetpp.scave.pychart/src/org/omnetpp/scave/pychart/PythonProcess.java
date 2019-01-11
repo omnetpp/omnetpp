@@ -57,6 +57,7 @@ public class PythonProcess {
             entryPoint = null;
             Debug.println("Couldn't get the entry point to the Python process... :(");
             Debug.println("Python said:" + outputMonitoringThread.outputSoFar);
+            throw new RuntimeException("Couldn't get the entry point to the Python process.\nIts output so far:\n" + outputMonitoringThread.getOutputSoFar());
         }
 
         return entryPoint;

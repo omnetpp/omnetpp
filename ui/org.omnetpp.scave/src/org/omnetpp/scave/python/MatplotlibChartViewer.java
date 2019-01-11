@@ -30,12 +30,10 @@ import org.omnetpp.scave.pychart.PythonProcess;
 import org.omnetpp.scave.pychart.PythonProcessPool;
 import org.omnetpp.scave.pychart.PythonOutputMonitoringThread.IOutputListener;
 
-import py4j.Py4JException;
-
 public class MatplotlibChartViewer {
 
-    public interface IPy4JExceptionHandler {
-        void handle(Py4JException e);
+    public interface ChartExceptionHandler {
+        void handle(Exception e);
     }
 
     public interface IStateChangeListener {
@@ -94,7 +92,7 @@ public class MatplotlibChartViewer {
         plotWidget = new PlotWidget(parent, SWT.DOUBLE_BUFFERED, proc, null);
     }
 
-    public void runPythonScript(String script, File workingDir, Runnable runAfterDone, IPy4JExceptionHandler runAfterError) {
+    public void runPythonScript(String script, File workingDir, Runnable runAfterDone, ChartExceptionHandler runAfterError) {
         if (proc != null)
             proc.dispose();
 
@@ -105,10 +103,13 @@ public class MatplotlibChartViewer {
             l.activeActionChanged("");
             lastActiveAction = "";
         }
-
+        try {
         proc.getEntryPoint().setPlotWidgetProvider(widgetProvider);
         proc.getEntryPoint().setResultsProvider(resultsProvider);
         proc.getEntryPoint().setChartPropertiesProvider(propertiesProvider);
+        } catch(Exception e) {
+            runAfterError.handle(e);
+        }
 
         for (IOutputListener l : outputListeners)
             proc.outputMonitoringThread.addOutputListener(l);
@@ -116,12 +117,11 @@ public class MatplotlibChartViewer {
         if (script != null && !script.isEmpty()) {
             proc.pythonCallerThread.asyncExec(() -> {
 
-                if (workingDir != null)
-                    proc.getEntryPoint().execute("import os; os.chdir(\"\"\"" + workingDir.getAbsolutePath() + "\"\"\"); del os;");
-
                 try {
+                    if (workingDir != null)
+                        proc.getEntryPoint().execute("import os; os.chdir(\"\"\"" + workingDir.getAbsolutePath() + "\"\"\"); del os;");
                     proc.getEntryPoint().execute(script);
-                } catch (Py4JException e) {
+                } catch (RuntimeException e) {
                     if (runAfterError != null)
                         runAfterError.handle(e);
                     return;

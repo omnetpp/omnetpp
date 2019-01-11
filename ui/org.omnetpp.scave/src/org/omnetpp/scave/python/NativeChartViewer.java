@@ -23,7 +23,7 @@ import org.omnetpp.scave.pychart.IScaveResultsPickleProvider;
 import org.omnetpp.scave.pychart.PythonOutputMonitoringThread.IOutputListener;
 import org.omnetpp.scave.pychart.PythonProcess;
 import org.omnetpp.scave.pychart.PythonProcessPool;
-import org.omnetpp.scave.python.MatplotlibChartViewer.IPy4JExceptionHandler;
+import org.omnetpp.scave.python.MatplotlibChartViewer.ChartExceptionHandler;
 import org.omnetpp.scave.python.MatplotlibChartViewer.IStateChangeListener;
 
 import py4j.Py4JException;
@@ -94,7 +94,7 @@ public class NativeChartViewer {
     IChartPropertiesProvider propertiesProvider = null;
 
 
-    public void runPythonScript(File workingDir, Runnable runAfterDone, IPy4JExceptionHandler runAfterError) {
+    public void runPythonScript(File workingDir, Runnable runAfterDone, ChartExceptionHandler runAfterError) {
 
         if (chartView.isDisposed())
             return;
