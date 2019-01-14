@@ -1,3 +1,5 @@
+[![Join the chat at https://gitter.im/omnetpp/community](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/omnetpp/community)
+
 # OMNeT++
 
 OMNeT++ is a public-source, component-based, modular and open-architecture
