@@ -519,7 +519,8 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
             for (int i = 0; i < argLen; i++) {
                 v[i] = stack[stackSize-len+i];
                 if (v[i].getType() == Expression::Elem::FUNCTOR && dynamic_cast<SignalSourceReference *>(v[i].getFunctor())) {
-                    signalSourceReference = (SignalSourceReference *)v[i].getFunctor();
+                    // we must take the pointer from the Elem in the stack vector, because v[i] is overwritten in the next line
+                    signalSourceReference = (SignalSourceReference *)stack[stackSize-len+i].getFunctor();
                     v[i] = exprFilter->makeValueVariable(index, signalSourceReference->getSignalSource().getFilter());
                     index++;
                 }
