@@ -93,6 +93,7 @@ class COMMON_API Expression
                 delete [] s;
             else if (type==FUNCTOR)
                 delete fu;
+            type = UNDEF;
         }
 
       public:
