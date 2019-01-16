@@ -88,8 +88,6 @@ class SIM_API cPrecollectionBasedDensityEst : public cAbstractHistogram
     void copy(const cPrecollectionBasedDensityEst& other);
 
   protected:
-    static void plotline (std::ostream& os, const char *pref, double xval, double count, double a);
-
     // part of merge(); to be implemented in subclasses
     virtual void doMergeBinValues(const cPrecollectionBasedDensityEst *other) = 0;
 

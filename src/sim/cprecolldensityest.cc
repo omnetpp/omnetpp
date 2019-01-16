@@ -392,20 +392,6 @@ void cPrecollectionBasedDensityEst::collectWeighted(double value, double weight)
     }
 }
 
-void cPrecollectionBasedDensityEst::plotline(ostream& os, const char *pref, double xval, double count, double a)
-{
-    const int pictureWidth = 54;
-    char buf[101];
-    sprintf(buf, "   %s%12f %5g :", pref, xval, count);
-    char *s = buf + strlen(buf);
-    int x = (int)floor(a * count + .5);
-    int k = x <= pictureWidth ? x : pictureWidth;
-    for (int m = 1; m <= k; m++)
-        *s++ = '-';
-    strcpy(s, x <= pictureWidth ? "*\n" : ">\n");
-    os << buf;
-}
-
 void cPrecollectionBasedDensityEst::saveToFile(FILE *f) const
 {
     cAbstractHistogram::saveToFile(f);
