@@ -85,7 +85,7 @@ ifeq ($(WITH_PARSIM),yes)
   IMPLIBS += $(MPI_LIBS)
 endif
 
-# macro is used in $(EXPORT_DEFINES) with clang/c2 when building a shared lib
+# macro is used in $(EXPORT_DEFINES) with clang-msabi when building a shared lib
 EXPORT_MACRO = -DSIM_EXPORT
 
 .PHONY: all clean

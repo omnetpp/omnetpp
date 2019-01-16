@@ -34,7 +34,7 @@ OBJS= $O/geometry.o $O/graphcomponent.o $O/heapembedding.o $O/startreeembedding.
       $O/forcedirectedparametersbase.o $O/forcedirectedparameters.o $O/forcedirectedembedding.o \
       $O/graphlayouter.o $O/basicspringembedderlayout.o $O/forcedirectedgraphlayouter.o
 
-# macro is used in $(EXPORT_DEFINES) with clang/c2 when building a shared lib
+# macro is used in $(EXPORT_DEFINES) with clang-msabi when building a shared lib
 EXPORT_MACRO = -DLAYOUT_EXPORT
 
 .PHONY: all clean

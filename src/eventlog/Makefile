@@ -37,7 +37,7 @@ OBJS= $O/ievent.o $O/ieventlog.o $O/eventlogfacade.o $O/eventlogtablefacade.o $O
 
 GENERATED_SOURCES= eventlogentries.csv eventlogentries.h eventlogentries.cc eventlogentryfactory.cc
 
-# macro is used in $(EXPORT_DEFINES) with clang/c2 when building a shared lib
+# macro is used in $(EXPORT_DEFINES) with clang-msabi when building a shared lib
 EXPORT_MACRO = -DEVENTLOG_EXPORT
 
 .PHONY: all clean

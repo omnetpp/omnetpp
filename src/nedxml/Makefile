@@ -54,7 +54,7 @@ GENERATED_SOURCES=nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h \
                   msg2.tab.hh msg2.tab.cc lex.msg2yy.cc \
                   sim_std_msg.cc
 
-# macro is used in $(EXPORT_DEFINES) with clang/c2 when building a shared lib
+# macro is used in $(EXPORT_DEFINES) with clang-msabi when building a shared lib
 EXPORT_MACRO = -DNEDXML_EXPORT
 
 .PHONY: all clean

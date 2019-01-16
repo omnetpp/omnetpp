@@ -50,8 +50,11 @@ COPTS+= -DTHREADED $(PTHREAD_CFLAGS)
 IMPLIBS+= $(PTHREAD_LIBS)
 endif
 
-# macro is used in $(EXPORT_DEFINES) with clang/c2 when building a shared lib
+# macro is used in $(EXPORT_DEFINES) with clang-msabi when building a shared lib
 EXPORT_MACRO = -DCOMMON_EXPORT
+ifeq ($(TOOLCHAIN_NAME),clang-msabi)
+    EXPORT_MACRO+= " -DSQLITE_API=__declspec(dllexport)"
+endif
 
 .PHONY: all clean
 .SECONDARY: $(OBJS) $O/$(LIBNAME)$(LIB_SUFFIX) $(GENERATED_SOURCES)
@@ -95,7 +98,7 @@ endif
 $O/sqlite3.o: sqlite3.c
 	@mkdir -p $O
 	$(qecho) "$<"
-	$(Q)$(CC) -c $(COPTS) -Wno-deprecated-declarations $(EXPORT_DEFINES) $(IMPORT_DEFINES) "-DSQLITE_API=__declspec(dllexport)" -DSQLITE_THREADSAFE=0 -DSQLITE_OMIT_LOAD_EXTENSION -DSQLITE_DEFAULT_FOREIGN_KEYS=1 -o $@ $<
+	$(Q)$(CC) -c $(COPTS) -Wno-deprecated-declarations $(EXPORT_DEFINES) -DSQLITE_THREADSAFE=0 -DSQLITE_OMIT_LOAD_EXTENSION -DSQLITE_DEFAULT_FOREIGN_KEYS=1 -o $@ $<
 
 # copy files to the bin and lib directories from the out directory
 $(OMNETPP_BIN_DIR)/% $(OMNETPP_LIB_DIR)/%: $O/% $(CONFIGFILE)

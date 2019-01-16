@@ -54,7 +54,7 @@ OBJS= $O/arraybuilder.o $O/channel.o $O/commonnodes.o $O/compoundfilter.o \
       $O/omnetppscalarfileexporter.o $O/sqlitescalarfileexporter.o \
       $O/omnetppvectorfileexporter.o $O/sqlitevectorfileexporter.o
 
-# macro is used in $(EXPORT_DEFINES) with clang/c2 when building a shared lib
+# macro is used in $(EXPORT_DEFINES) with clang-msabi when building a shared lib
 EXPORT_MACRO = -DSCAVE_EXPORT
 
 .PHONY: all clean

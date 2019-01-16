@@ -57,7 +57,7 @@ RESOURCES_OUT=$(RESOURCES_SRC:%.qrc=qrc_%.cpp)
 GENERATED_SOURCES=$(UI_OUT) $(MOC_OUT) $(RESOURCES_OUT)
 OBJS=$(SOURCES:%.cc=$O/%.o) $(MOC_OUT:%.cpp=$O/%.o) $(RESOURCES_OUT:%.cpp=$O/%.o)
 
-# macro is used in $(EXPORT_DEFINES) with clang/c2 when building a shared lib
+# macro is used in $(EXPORT_DEFINES) with clang-msabi when building a shared lib
 EXPORT_MACRO = -DQTENV_EXPORT
 
 .PHONY: all clean qtenv-osg

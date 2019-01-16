@@ -31,7 +31,7 @@ IMPLIBS= -loppsim$D -loppenvir$D -loppcommon$D
 
 OBJS = $O/cmdenv.o
 
-# macro is used in $(EXPORT_DEFINES) with clang/c2 when building a shared lib
+# macro is used in $(EXPORT_DEFINES) with clang-msabi when building a shared lib
 EXPORT_MACRO = -DCMDENV_EXPORT
 
 .PHONY: all clean
