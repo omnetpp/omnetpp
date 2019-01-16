@@ -43,9 +43,9 @@ void Expression::Elem_eq(Elem& e, const Elem& other)
     memcpy(&e, &other, sizeof(Elem));
 
     if (e.type == Elem::STR)
-        e.s = opp_strdup(e.s);
+        e.s = opp_strdup(other.s);
     else if (e.type == Elem::FUNCTOR)
-        e.fu = e.fu->dup();
+        e.fu = other.fu->dup();
 }
 
 // should be member of Elem, but the VC++ 9.0 linker disagrees
