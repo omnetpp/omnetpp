@@ -75,6 +75,8 @@ class SIM_API cAbstractHistogram : public cStdDev
        copy(res);
        return *this;
     }
+
+    virtual cAbstractHistogram *dup() const override {throw cRuntimeError(this, E_CANTDUP);}
     //@}
 
     /** @name Accessing histogram bins. */
