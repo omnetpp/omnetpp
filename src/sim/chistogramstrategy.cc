@@ -692,6 +692,8 @@ void cAutoRangeHistogramStrategy::mergeAllBinsIntoOne(double newApproxBinSize)
 void cAutoRangeHistogramStrategy::clear()
 {
     cPrecollectionBasedHistogramStrategy::clear();
+    lo = NAN;
+    hi = NAN;
     binSize = NAN;
 }
 
