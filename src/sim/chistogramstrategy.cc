@@ -603,12 +603,27 @@ void cAutoRangeHistogramStrategy::extendBinsTo(double value)
         hist->extendBinsTo(value, binSize);
         if (hist->getNumBins() > (targetNumBins*3)/2)
             reduceNumBinsTo(targetNumBins);
+
+        // If we can merge bins, we must have reached a range that includes value now. No excuses.
+        ASSERT(hist->getBinEdges().front() <= value);
+        ASSERT(value < hist->getBinEdges().back());
     }
-    else
+    else {
         hist->extendBinsTo(value, binSize, maxNumBins);
 
-    ASSERT(hist->getBinEdges().front() <= value);
-    ASSERT(hist->getBinEdges().back() > value);
+        // However, even when we are not allowed to merge bins, in case we couldn't make the range big enough
+        // to contain the value, we must have tried as hard as we could, and reached the max number of bins.
+        if (value < hist->getBinEdges().front() || hist->getBinEdges().back() <= value)
+            ASSERT(hist->getNumBins() == maxNumBins);
+
+        // Actually, it might be possible that we didn't stop extending because we hit the maxNumBins
+        // limit, instead it just so happened that the number of bins needed was exactly the maximum.
+        // We can't tell the difference now, so not using <= here.
+        if (hist->getNumBins() < maxNumBins) {
+            ASSERT(hist->getBinEdges().front() <= value);
+            ASSERT(hist->getBinEdges().back() > value);
+        }
+    }
 }
 
 void cAutoRangeHistogramStrategy::reduceNumBinsTo(int numBinsLimit)
