@@ -7,3 +7,5 @@ eclipse maven cache etc.). The docker receipts are available under the 'dockerfi
 
 Iniside the docker container the 'releng/makedist' script is called and the final archives
 will be available in the 'releng/dist' folder.
+
+To create a build, execute the 'build-omnetpp-in-docker' script.

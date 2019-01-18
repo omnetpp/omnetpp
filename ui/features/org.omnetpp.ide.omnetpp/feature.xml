@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.omnetpp.ide.academic"
+      id="org.omnetpp.ide.omnetpp"
       label="OMNeT++ IDE - Academic Edition, not for commercial use"
       version="6.0.0.qualifier"
       provider-name="OpenSim Ltd."

@@ -25,7 +25,7 @@
     <module>org.omnetpp.inifile.editor</module>
     <module>org.omnetpp.launch</module>
     <module>org.omnetpp.main</module>
-    <module>org.omnetpp.main.omnetpp</module>
+    <module>org.omnetpp.main.${what}</module>
     <module>org.omnetpp.msg.editor</module>
     <module>org.omnetpp.ned.core</module>
     <module>org.omnetpp.ned.editor</module>

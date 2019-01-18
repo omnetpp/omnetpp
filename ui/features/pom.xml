@@ -15,7 +15,7 @@
 
   <modules>
     <module>org.omnetpp.ide</module>
-    <module>org.omnetpp.ide.academic</module>
+    <module>org.omnetpp.ide.${what}</module>
   </modules>
 
 </project>

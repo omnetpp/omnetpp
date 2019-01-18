@@ -1,10 +1,9 @@
 #!/bin/sh
 #
-# create an OMNeT++/OMNEST source distribution package
-# Before running this script the IDE componenet both the native and the java parts
-# must be present in the out/ide directory (or BUILD_IDE=yes must be specified)
+# create an OMNeT++ source distribution package
 #
-# in: BUILD_CORE_DISTRO, BUILD_LINUX_DISTRO, BUILD_WIN64_DISTRO, BUILD_MACOSX_DISTRO 
+# in: what - whether to build "omnetpp" (default) or "omnest"
+# in: BUILD_CORE_DISTRO, BUILD_LINUX_DISTRO, BUILD_WIN64_DISTRO, BUILD_MACOSX_DISTRO
 #     if "yes", the repsective platform distro will be built
 # in: Build identifier can be passed as BUILDID variable (optional)
 # in: If BUILD_IDE=yes (default) - it tries to build the native and java part of the IDE
@@ -12,17 +11,14 @@
 # in: If BUILD_DOC=yes (default) - it tries to build the documentation
 # out: SOURCE_DISTRIBUTION_NAME contains the created archivename
 
+TWEAKCONFIG="perl releng/tweakconfigfile.pl"
+REGEXPREPLACE="perl -i -pe"
+
 cd `dirname $0`/..
 OMNETPP_ROOT=`pwd`
 
-if [ "$what" != "omnest" ]; then
-    export WHAT="OMNeT++"
+if [ test -z "$what" ]; then
     export what="omnetpp"
-    export EDITION="Academic Public License -- NOT FOR COMMERCIAL USE"
-else
-    export WHAT="OMNEST"
-    export what="omnest"
-    export EDITION="Commercial Edition"
 fi
 
 if test -z "$BUILD_DOC"; then
@@ -43,16 +39,13 @@ export BUILD_WIN64_DISTRO
 export BUILD_MACOSX_DISTRO
 
 if test -z "$TOOLS_DIR"; then
-export TOOLS_DIR=$HOME/tools/downloads
+  export TOOLS_DIR=$HOME/tools/downloads
 fi
 
 # set the version number of the tools directory that is used in the Windows/macOS distros
 if test -z "$TOOLS_VERSION"; then
-export TOOLS_VERSION=180301
+  export TOOLS_VERSION=180301
 fi
-
-TWEAKCONFIG="perl releng/tweakconfigfile.pl"
-REGEXPREPLACE="perl -i -pe"
 
 # use the default language in perl (supresses a lot of warnings in perl calls)
 export LANG=C
@@ -94,13 +87,10 @@ RELEASE="$what-$VERSION"
 
 echo $RELEASE >Version
 
-echo "Preparing to build $WHAT, version: $VERSION, build: $BUILDID, edition: $EDITION..."
-echo "Core build: $BUILD_CORE_DISTRO"
-echo "Linux build: $BUILD_LINUX_DISTRO"
-echo "WIN64 build: $BUILD_WIN64_DISTRO"
-echo "macOS build: $BUILD_MACOSX_DISTRO"
-
 cp configure.user.dist configure.user
+
+# do some edition specific preprocessing
+source $OMNETPP_ROOT/releng/makedist-${what}.sh
 
 # tweak the version and buildid
 $TWEAKCONFIG set configure.in    OMNETPP_PRODUCT "\"$WHAT\"" || exit 1
@@ -110,7 +100,7 @@ $TWEAKCONFIG set configure       OMNETPP_PRODUCT "\"$WHAT\"" || exit 1
 $TWEAKCONFIG set configure       OMNETPP_EDITION "\"$EDITION\"" || exit 1
 $TWEAKCONFIG set configure       OMNETPP_BUILDID "\"$BUILDID\"" || exit 1
 
-# check configure.user settings are to our taste (just needed to build the documentation so Qtenv is turend off)
+# check if configure.user settings are to our taste (just needed to build the documentation so Qtenv is turend off)
 $TWEAKCONFIG set configure.user WITH_NETBUILDER yes || exit 1
 $TWEAKCONFIG set configure.user WITH_PARSIM yes || exit 1
 $TWEAKCONFIG set configure.user WITH_QTENV no || exit 1
@@ -124,61 +114,19 @@ $TWEAKCONFIG set doc/src/scave.doxyfile  PROJECT_NUMBER $VERSION || exit 1
 $TWEAKCONFIG set doc/src/manual/Makefile TEMPLATE $what || exit 1
 $TWEAKCONFIG set doc/src/manual/Makefile VERSION $VERSION || exit 1
 
-# replace (the default) OMNeT++ token with OMNEST if needed
-if [ "$what" = "omnest" ]; then
-    # set the welcome message depending on edition
-    $REGEXPREPLACE 's/OMNeT\+\+/OMNEST/g' releng/overlay/tools/win64/etc/bash.bashrc
-    $REGEXPREPLACE 's/"omnetpp"/"omnest"/g' releng/overlay/tools/win64/etc/bash.bashrc
-    # replace in the documentation source files
-    $REGEXPREPLACE 's/OMNeT\+\+/OMNEST/g' doc/Readme-IDE
-    $REGEXPREPLACE 's/"omnetpp"/"omnest"/g' doc/Readme-IDE
-    $REGEXPREPLACE 's/OMNeT\+\+/OMNEST/g' README
-    $REGEXPREPLACE 's/OMNeT\+\+/OMNEST/g' INSTALL
-    $REGEXPREPLACE 's/OMNeT\+\+/OMNEST/g' WHATSNEW
-    $REGEXPREPLACE 's/OMNeT\+\+/OMNEST/g' MIGRATION
-
-    $REGEXPREPLACE 's/OMNeT\+\+/OMNEST/g' `find doc -type f -name '*.doxyfile'`
-    $REGEXPREPLACE 's/<!ENTITY +Omnetpp +".*?" *>/<!ENTITY Omnetpp "OMNEST">/g' doc/src/ide-overview/custom-docbook.dtd
-    $REGEXPREPLACE 's/<!ENTITY +Omnetpp +".*?" *>/<!ENTITY Omnetpp "OMNEST">/g' doc/src/userguide/custom-docbook.dtd
-    $REGEXPREPLACE 's/<!ENTITY +Omnetpp +".*?" *>/<!ENTITY Omnetpp "OMNEST">/g' doc/src/ide-customization-guide/custom-docbook.dtd
-
-    $REGEXPREPLACE 's/%\\commercialtrue/\\commercialtrue/g' doc/src/manual/usman.tex
-    $REGEXPREPLACE 's/:\\opp:OMNeT\+\+::/:\\opp:OMNEST::/g' doc/src/manual/ltoh.specs
-    $REGEXPREPLACE 's/\$product = "OMNeT\+\+"/\$product = "OMNEST"/g' doc/src/manual/prephtml2
-    $REGEXPREPLACE 's!<xsl:param name="what">omnetpp</xsl:param>!<xsl:param name="what">omnest</xsl:param>!g' doc/src/userguide/trans.xsl
-
-    # replace in Qtenv
-    $REGEXPREPLACE 's/OMNeT\+\+\/Qtenv/OMNEST\/Qtenv/g' src/qtenv/mainwindow.ui
-    $REGEXPREPLACE 's/About OMNeT\+\+/About OMNEST/g' src/qtenv/mainwindow.cc
-
-    # rewite the launcher files
-    $REGEXPREPLACE 's/OMNeT\+\+/OMNEST/g' src/utils/omnetpp.cmd src/utils/omnetpp
-    $REGEXPREPLACE 's/LAUNCHER=omnetpp/LAUNCHER=omnest/g' src/utils/omnetpp.cmd src/utils/omnetpp
-    # copy the commercial license into doc
-    cp releng/License_omnest doc/License
-else
-    # OMNeT++ build
-    # rewite the launcher files
-    $REGEXPREPLACE 's/OMNEST/OMNeT\+\+/g' src/utils/omnest.cmd src/utils/omnest
-    $REGEXPREPLACE 's/LAUNCHER=omnest/LAUNCHER=omnetpp/g' src/utils/omnest.cmd src/utils/omnest
-fi
+echo "Preparing to build $WHAT, version: $VERSION, build: $BUILDID, edition: $EDITION..."
+echo "Core build: $BUILD_CORE_DISTRO"
+echo "Linux build: $BUILD_LINUX_DISTRO"
+echo "WIN64 build: $BUILD_WIN64_DISTRO"
+echo "macOS build: $BUILD_MACOSX_DISTRO"
 
 if [ -d $DISTDIR/$what-$VERSION ]; then
     echo "Deleting old target directory: $DISTDIR/$what-$VERSION !"
     rm -rf $DISTDIR/$what-$VERSION
 fi
 
-echo "Checks OK."
-echo
-
 grep 'OMNETPP_VERSION' include/omnetpp/simkerneldefs.h
 echo
-
-#echo "Setting permissions"
-#if [ ! -x releng/setperm ]; then
-#    chmod +x releng/setperm
-#fi
-#releng/setperm
 
 # add omnetpp/bin to PATH
 export PATH=$OMNETPP_ROOT/bin:$PATH
@@ -361,23 +309,23 @@ tar cfz $SOURCE_DISTRIBUTION_NAME $what-$VERSION || { echo --- error creating ..
 # build platform specific packages
 
 if [ "$BUILD_CORE_DISTRO" = "true" ]; then
-echo "Creating Core (platform independent) distro..."
-$OMNETPP_ROOT/releng/makedist-core
+  echo "Creating Core (platform independent) distro..."
+  $OMNETPP_ROOT/releng/makedist-core
 fi
 
 if [ "$BUILD_LINUX_DISTRO" = "true" ]; then
-echo "Creating Linux distro..."
-$OMNETPP_ROOT/releng/makedist-linux
+  echo "Creating Linux distro..."
+  $OMNETPP_ROOT/releng/makedist-linux
 fi
 
 if [ "$BUILD_WIN64_DISTRO" = "true" ]; then
-echo "Creating Win64 distro..."
-$OMNETPP_ROOT/releng/makedist-win64
+  echo "Creating Win64 distro..."
+  $OMNETPP_ROOT/releng/makedist-win64
 fi
 
 if [ "$BUILD_MACOSX_DISTRO" = "true" ]; then
-echo "Creating macOS distro..."
-$OMNETPP_ROOT/releng/makedist-macosx
+  echo "Creating macOS distro..."
+  $OMNETPP_ROOT/releng/makedist-macosx
 fi
 
 # delete the source stuff
