@@ -38,7 +38,7 @@
     <configuration>
        <products>
          <product>
-           <id>org.${what}.ide.product</id>
+           <id>org.omnetpp.ide.${what}.product</id>
          </product>
        </products>
      </configuration>

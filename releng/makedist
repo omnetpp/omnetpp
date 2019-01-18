@@ -54,7 +54,7 @@ export LANG=C
 DISTDIR=out/dist
 
 # the directory where the pre-built IDE files are present
-IDE_BUILDDIR=out/ui/releng/org.omnetpp.ide.product/target/products/org.$what.ide.product/ide
+IDE_BUILDDIR=out/ui/releng/org.omnetpp.ide.$what.product/target/products/org.omnetpp.ide.$what.product/ide
 
 checkfile() {
     if [ ! -r $1 ]; then

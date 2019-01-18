@@ -41,7 +41,7 @@
     <module>org.visigoths.freemarker.ide</module>
 
     <module>features</module>
-    <module>releng/org.omnetpp.ide.product</module>
+    <module>releng/org.omnetpp.ide.${what}.product</module>
  </modules>
 
 </project>

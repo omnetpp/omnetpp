@@ -31,7 +31,7 @@ cd out/ui
 mvn clean verify -Dwhat=$what -DforceContextQualifier=$BUILDID || { echo --- error during compiling/packaging Java IDE parts ---; exit 1;}
 
 # post process the final layout. Merge the plugins and features directory of all platforms to save space
-cd releng/org.omnetpp.ide.product/target/products/org.$what.ide.product || { echo --- error changing to the final result directory ---; exit 1;}
+cd releng/org.omnetpp.ide.$what.product/target/products/org.omnetpp.ide.$what.product || { echo --- error changing to the final result directory ---; exit 1;}
 
 echo Post processing IDE installation files...
 rm -rf ide
