@@ -62,9 +62,10 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     enum {
       FL_PARAMSFINALIZED  = 1 << 2, // whether finalizeParameters() has been called
       FL_INITIALIZED      = 1 << 3, // whether initialize() has been called
-      FL_DISPSTR_CHECKED  = 1 << 4, // for hasDisplayString(): whether the FL_DISPSTR_NOTEMPTY flag is valid
-      FL_DISPSTR_NOTEMPTY = 1 << 5, // for hasDisplayString(): whether the display string is not empty
-      FL_LOGLEVEL_SHIFT   = 6,      // 3 bits wide
+      FL_DELETING         = 1 << 4, // module or channel is being deleted (via deleteModule(), disconnect(), etc.)
+      FL_DISPSTR_CHECKED  = 1 << 5, // for hasDisplayString(): whether the FL_DISPSTR_NOTEMPTY flag is valid
+      FL_DISPSTR_NOTEMPTY = 1 << 6, // for hasDisplayString(): whether the display string is not empty
+      FL_LOGLEVEL_SHIFT   = 7,      // 3 bits wide
     };
 
   private:
