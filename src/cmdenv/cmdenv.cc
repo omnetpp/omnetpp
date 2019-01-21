@@ -344,7 +344,7 @@ inline bool elapsed(long millis, int64_t& since)
     return ret;
 }
 
-void Cmdenv::simulate()  // XXX probably not needed anymore -- take over interesting bits to other methods!
+void Cmdenv::simulate()
 {
     // implement graceful exit when Ctrl-C is hit during simulation. We want
     // to finish the current event, then normally exit via callFinish() etc
