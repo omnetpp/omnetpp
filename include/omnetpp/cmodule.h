@@ -278,9 +278,9 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
   private:
     enum {
-        FL_BUILDINSIDE_CALLED = 1 << 9, // whether buildInside() has been called
-        FL_RECORD_EVENTS      = 1 << 10, // enables recording events in this module
-        FL_BUILTIN_ANIMATIONS = 1 << 11, // whether built-in animations are requested on this module's graphical inspector
+        FL_BUILDINSIDE_CALLED = 1 << 10, // whether buildInside() has been called
+        FL_RECORD_EVENTS      = 1 << 11, // enables recording events in this module
+        FL_BUILTIN_ANIMATIONS = 1 << 12, // whether built-in animations are requested on this module's graphical inspector
     };
 
   private:
