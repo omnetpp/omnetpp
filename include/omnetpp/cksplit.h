@@ -282,6 +282,11 @@ class SIM_API cKSplit : public cPrecollectionBasedDensityEst
     virtual void merge(const cStatistic *other) override;
 
     /**
+     * Clears the results collected so far.
+     */
+    virtual void clear() override;
+
+    /**
      * Writes the contents of the object into a text file.
      */
     virtual void saveToFile(FILE *) const override;
