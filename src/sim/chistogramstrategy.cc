@@ -98,6 +98,8 @@ void cPrecollectionBasedHistogramStrategy::copy(const cPrecollectionBasedHistogr
     lastRange = other.lastRange;
     rangeUnchangedCounter = other.rangeUnchangedCounter;
     rangeUnchangedThreshold = other.rangeUnchangedThreshold;
+    finiteMinValue = other.finiteMinValue;
+    finiteMaxValue = other.finiteMaxValue;
     values = other.values;
     weights = other.weights;
 }
@@ -132,7 +134,7 @@ bool cPrecollectionBasedHistogramStrategy::precollect(double value, double weigh
     }
 
     // decide when to stop precollection
-    double range = hist->getMax() - hist->getMin();
+    double range = finiteMaxValue - finiteMinValue;
     if (lastRange == range)
         rangeUnchangedCounter++;
     else {
@@ -164,6 +166,7 @@ void cPrecollectionBasedHistogramStrategy::clear()
     inPrecollection = true;
     lastRange = NAN;
     rangeUnchangedCounter = 0;
+    finiteMinValue = finiteMaxValue = NAN;
     values.clear();
     weights.clear();
 }
@@ -178,7 +181,7 @@ void cDefaultHistogramStrategy::copy(const cDefaultHistogramStrategy& other)
     targetNumBins = other.targetNumBins;
     mode = other.mode;
     autoExtend = other.autoExtend;
-    binMerging =other.binMerging;
+    binMerging = other.binMerging;
     maxNumBins = other.maxNumBins;
 }
 
@@ -196,6 +199,13 @@ void cDefaultHistogramStrategy::collect(double value)
 
 void cDefaultHistogramStrategy::collectWeighted(double value, double weight)
 {
+    if (std::isfinite(value)) {
+        if (std::isnan(finiteMinValue) || value < finiteMinValue)
+            finiteMinValue = value;
+        if (std::isnan(finiteMaxValue) || value > finiteMaxValue)
+            finiteMaxValue = value;
+    }
+
     if (inPrecollection) {
         if (precollect(value, weight))
             setUpBins();
@@ -298,8 +308,8 @@ void cDefaultHistogramStrategy::createBins()
     }
 
     // compute histogram
-    double minValue = hist->getMin();
-    double maxValue = hist->getMax();
+    double minValue = finiteMinValue;
+    double maxValue = finiteMaxValue;
 
     double c = (minValue + maxValue) / 2;
     double r = (maxValue - minValue) * rangeExtensionFactor;
@@ -326,11 +336,11 @@ void cDefaultHistogramStrategy::createBins()
     // create underflows/overflows and we'll run into problems later when
     // new observations will try to further extend the histogram
     // TODO: do we really need the next two lines? (unless rangeExtensionFactor < 1.0?)
-    extendBinsTo(hist->getMin());
-    extendBinsTo(hist->getMax());
+    extendBinsTo(finiteMinValue);
+    extendBinsTo(finiteMaxValue);
 
-    ASSERT(hist->getBinEdges().front() <= hist->getMin());
-    ASSERT(hist->getBinEdges().back() > hist->getMax());
+    ASSERT(hist->getBinEdges().front() <= finiteMinValue);
+    ASSERT(hist->getBinEdges().back() > finiteMaxValue);
     ASSERT(hist->getNumBins() >  0);
 }
 
@@ -458,6 +468,13 @@ void cAutoRangeHistogramStrategy::collect(double value)
 
 void cAutoRangeHistogramStrategy::collectWeighted(double value, double weight)
 {
+    if (std::isfinite(value)) {
+        if (std::isnan(finiteMinValue) || value < finiteMinValue)
+            finiteMinValue = value;
+        if (std::isnan(finiteMaxValue) || value > finiteMaxValue)
+            finiteMaxValue = value;
+    }
+
     if (inPrecollection) {
         bool needPrecollection = (mode == cHistogram::MODE_AUTO) || std::isnan(lo) || std::isnan(hi); // if true, we precollect the first value and immediately set up the bins
         bool precollectionOver = precollect(value, weight);
@@ -504,15 +521,16 @@ void cAutoRangeHistogramStrategy::createBins()
     if (hist->getCount() == 0)
         c = r = 0;
     else {
-        double minValue = hist->getMin();
-        double maxValue = hist->getMax();
+        double minValue = finiteMinValue;
+        double maxValue = finiteMaxValue;
+
         c = (minValue + maxValue) / 2;
         r = (maxValue - minValue) * rangeExtensionFactor;
     }
     double rangeMin = hasLo ? lo : c - r / 2;
     double rangeMax = hasHi ? hi : c + r / 2;
 
-    if (!hasLo && rangeMin < 0 && hist->getCount() > 0 && hist->getMin() >= 0 && hist->getMax() > 0)
+    if (!hasLo && rangeMin < 0 && hist->getCount() > 0 && finiteMinValue >= 0 && finiteMaxValue > 0)
         rangeMin = 0; // do not go into negative unless warranted by the collected data
 
     if (rangeMin >= rangeMax) {
@@ -526,6 +544,15 @@ void cAutoRangeHistogramStrategy::createBins()
         rangeMin = floor(rangeMin);
         rangeMax = ceil(rangeMax);
     }
+
+    if (std::isnan(rangeMin) && std::isnan(rangeMax)) {
+        rangeMin = 0;
+        rangeMax = 1;
+    }
+    if (std::isnan(rangeMin))
+        rangeMin = rangeMax - 1;
+    if (std::isnan(rangeMax))
+        rangeMax = rangeMin + 1;
 
     // determine bin size
     if (!std::isnan(requestedBinSize)) {
@@ -553,7 +580,7 @@ void cAutoRangeHistogramStrategy::createBins()
     if (!hasLo && !hasHi) {
         double rangeDiff = newRange - (rangeMax - rangeMin);
         rangeMin -= (mode == cHistogram::MODE_INTEGERS) ? floor(rangeDiff / 2) : rangeDiff / 2;
-        if (!hasLo && rangeMin < 0 && hist->getCount() > 0 && hist->getMin() >= 0 && hist->getMax() > 0)
+        if (!hasLo && rangeMin < 0 && hist->getCount() > 0 && finiteMinValue >= 0 && finiteMaxValue > 0)
              rangeMin = 0; // do not go into negative unless warranted by the collected data
         rangeMax = rangeMin + newRange;
     }
@@ -574,8 +601,10 @@ void cAutoRangeHistogramStrategy::createBins()
         // auto-extending now is needed, otherwise collectIntoHistogram() will
         // create underflows/overflows and we'll run into problems later when
         // new observations will try to further extend the histogram
-        extendBinsTo(hist->getMin());
-        extendBinsTo(hist->getMax());
+        if (std::isfinite(finiteMinValue))
+            extendBinsTo(finiteMinValue);
+        if (std::isfinite(finiteMaxValue))
+            extendBinsTo(finiteMaxValue);
     }
 
     ASSERT(hist->getNumBins() > 0);
@@ -587,11 +616,15 @@ void cAutoRangeHistogramStrategy::extendBinsTo(double value)
     double lastEdge = hist->getBinEdges().back();
     bool isUnderflow = value < firstEdge;
     bool isOverflow = value >= lastEdge;
+
+    double finiteUnderflowSumWeights = hist->getUnderflowSumWeights() - hist->getNegInfSumWeights();
+    double finiteOverflowSumWeights = hist->getOverflowSumWeights() - hist->getPosInfSumWeights();
+
     if (!isUnderflow && !isOverflow)
         return; // nothing to do
-    if (isUnderflow && (hist->getUnderflowSumWeights() > 0 || !std::isnan(lo)))
+    if (isUnderflow && (finiteUnderflowSumWeights > 0 || !std::isnan(lo)))
         return; // cannot extend
-    if (isOverflow &&  (hist->getOverflowSumWeights() > 0 || !std::isnan(hi)))
+    if (isOverflow &&  (finiteOverflowSumWeights > 0 || !std::isnan(hi)))
         return; // cannot extend
 
     if (binMerging) {
@@ -667,15 +700,21 @@ void cAutoRangeHistogramStrategy::mergeAllBinsIntoOne(double newApproxBinSize)
     // compute new histogram range
     double newFirstEdge = firstEdge;
     double newLastEdge = lastEdge;
+
+    double finiteUnderflowSumWeights = hist->getUnderflowSumWeights() - hist->getNegInfSumWeights();
+    double finiteOverflowSumWeights = hist->getOverflowSumWeights() - hist->getPosInfSumWeights();
+
     //TODO the following code ignores lo and hi!!!
-    if (hist->getUnderflowSumWeights() == 0 && hist->getOverflowSumWeights() == 0) {
+    // note: cHistogram doesn't store the _number of_ under/overflow samples, only
+    // their sumweights, so no need to use getNumFiniteUnderflows/getNumFiniteOverflows
+    if (finiteUnderflowSumWeights == 0 && finiteOverflowSumWeights == 0) {
         newFirstEdge = newBinSize * std::floor(newFirstEdge / newBinSize); // snap
         newLastEdge = newBinSize * std::ceil(newLastEdge / newBinSize); // snap
         newBinSize = newLastEdge - newFirstEdge;
     }
-    else if (hist->getUnderflowSumWeights() == 0)
+    else if (finiteUnderflowSumWeights == 0)
         newFirstEdge = newLastEdge - newBinSize;
-    else if (hist->getNumOverflows() == 0)
+    else if (finiteOverflowSumWeights == 0)
         newLastEdge = newFirstEdge + newBinSize;
     else
         ; // cannot extend range

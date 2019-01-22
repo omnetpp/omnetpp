@@ -122,25 +122,51 @@ class SIM_API cAbstractHistogram : public cStdDev
 
     /**
      * Returns number of observations that were below the histogram range,
-     * independent of their weights.
+     * independent of their weights. This includes the number of collected
+     * negative infinities as well.
      */
     virtual int64_t getNumUnderflows() const = 0;
 
     /**
      * Returns number of observations that were above the histogram range,
-     * independent of their weights.
+     * independent of their weights. This includes the number of collected
+     * positive infinities as well.
      */
     virtual int64_t getNumOverflows() const = 0;
 
     /**
-     * Returns the total weight of the observations that were below the histogram range.
+     * Returns the total weight of the observations that were below the
+     * histogram range. This includes the weights of the collected negative
+     * infinities as well.
      */
     virtual double getUnderflowSumWeights() const = 0;
 
     /**
-     * Returns the total weight of the observations that were above the histogram range.
+     * Returns the total weight of the observations that were above the
+     * histogram range. This includes the weights of the collected positive
+     * infinities as well.
      */
     virtual double getOverflowSumWeights() const = 0;
+
+    /**
+     * Returns number of observations that were negative infinity, independent of their weights.
+     */
+    virtual int64_t getNumNegInfs() const = 0;
+
+    /**
+     * Returns number of observations that were positive infinity, independent of their weights.
+     */
+    virtual int64_t getNumPosInfs() const = 0;
+
+    /**
+     * Returns the total weight of the observations that were negative infinity.
+     */
+    virtual double getNegInfSumWeights() const = 0;
+
+    /**
+     * Returns the total weight of the observations that were positive infinity.
+     */
+    virtual double getPosInfSumWeights() const = 0;
 
     /**
      * Combines the functionality of getBinEdge(), getBinValue() and getBinPDF() into a

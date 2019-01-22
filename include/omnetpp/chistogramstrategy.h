@@ -163,6 +163,7 @@ class SIM_API cPrecollectionBasedHistogramStrategy : public cIHistogramStrategy
     double lastRange = NAN;
     int rangeUnchangedCounter = 0;
     int rangeUnchangedThreshold = 50;
+    double finiteMinValue = NAN, finiteMaxValue = NAN; // have to keep track separate from cStdDev, ignoring infs
     std::vector<double> values;
     std::vector<double> weights; // same size as values[]
 
@@ -212,6 +213,9 @@ class SIM_API cPrecollectionBasedHistogramStrategy : public cIHistogramStrategy
  * To keep up with distributions that change over time, this histogram strategy
  * can auto-extend the histogram range by adding new bins as needed. It also
  * performs bin merging when necessary, to keep the number of bins reasonably low.
+ *
+ * Collected infinities are counted as underflows/overflows, and they do not
+ * affect the histogram layout in any way.
  *
  * @ingroup Statistics
  */
@@ -291,6 +295,9 @@ class SIM_API cDefaultHistogramStrategy : public cPrecollectionBasedHistogramStr
  * histogram bins to prevent it from growing indefinitely. Bin merging can
  * also be enabled: it will cause every two (or N) adjacent bins to be
  * merged to reduce the number of bins if their number grows too high.
+ *
+ * Collected infinities are counted as underflows/overflows, and they do not
+ * affect the histogram layout in any way.
  *
  * @ingroup Statistics
  */

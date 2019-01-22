@@ -53,6 +53,7 @@ cPSquare::cPSquare(const char *name, int bins) : cAbstractHistogram(name)
     numObs = 0;
     n = new int[numBins+2];
     q = new double[numBins+2];
+    numNegInfs = numPosInfs = 0;
 
     for (int i = 0; i <= numBins+1; i++) {
         n[i] = i;
@@ -75,6 +76,8 @@ void cPSquare::parsimPack(cCommBuffer *buffer) const
 
     buffer->pack(numBins);
     buffer->pack(numObs);
+    buffer->pack(numNegInfs);
+    buffer->pack(numPosInfs);
 
     if (buffer->packFlag(n != nullptr))
         buffer->pack(n, numBins + 2);
@@ -92,6 +95,8 @@ void cPSquare::parsimUnpack(cCommBuffer *buffer)
 
     buffer->unpack(numBins);
     buffer->unpack(numObs);
+    buffer->unpack(numNegInfs);
+    buffer->unpack(numPosInfs);
 
     if (buffer->checkFlag()) {
         n = new int[numBins + 2];
@@ -109,6 +114,8 @@ void cPSquare::copy(const cPSquare& res)
 {
     numObs = res.numObs;
     numBins = res.numBins;
+    numNegInfs = res.numNegInfs;
+    numPosInfs = res.numPosInfs;
     delete[] n;
     delete[] q;
     n = new int[numBins+2];
@@ -131,6 +138,15 @@ cPSquare& cPSquare::operator=(const cPSquare& res)
 void cPSquare::collect(double val)
 {
     cAbstractHistogram::collect(val);
+
+    if (std::isinf(val)) {
+        if (val < 0)
+            numNegInfs++;
+        else
+            numPosInfs++;
+
+        return;
+    }
 
     numObs++;  // an extra observation is added
 
@@ -210,6 +226,7 @@ void cPSquare::merge(const cStatistic *other)
 void cPSquare::clear()
 {
     numObs = 0;
+    numNegInfs = numPosInfs = 0;
 
     for (int i = 0; i <= numBins+1; i++) {
         n[i] = i;
@@ -290,6 +307,8 @@ void cPSquare::saveToFile(FILE *f) const
     cAbstractHistogram::saveToFile(f);
 
     fprintf(f, "%u\t #= numbins\n", numBins);
+    fprintf(f, "%ld\t #= numneginfs\n", numNegInfs);
+    fprintf(f, "%ld\t #= numposinfs\n", numPosInfs);
     fprintf(f, "%ld\t #= numobs\n", numObs);
 
     int i;
@@ -307,6 +326,8 @@ void cPSquare::loadFromFile(FILE *f)
     cAbstractHistogram::loadFromFile(f);
 
     freadvarsf(f, "%u\t #= numbins", &numBins);
+    freadvarsf(f, "%ld\t #= numneginfs", &numNegInfs);
+    freadvarsf(f, "%ld\t #= numposinfs", &numPosInfs);
     freadvarsf(f, "%ld\t #= numobs", &numObs);
 
     int i;

@@ -269,23 +269,38 @@ void cKSplit::collectIntoHistogram(double value)
 
 void cKSplit::collectWeightedIntoHistogram(double value, double weight)
 {
-    // see if x fits into current range and act accordingly
-    if (value >= rangeMin && value < rangeMax)
-        insertIntoGrids(value, weight, true);
-    else if (rangeExtEnabled)
-        newRootGrids(value, weight);
-    else if (value < rangeMin) {
-        numUnderflows++;
-        underflowSumWeights += weight;
+    if (std::isinf(value)) {
+        if (value < 0) {
+            numNegInfs++;
+            negInfSumWeights += value;
+        }
+        else {
+            numPosInfs++;
+            posInfSumWeights += value;
+        }
     }
-    else if (value >= rangeMax) {
-        numOverflows++;
-        overflowSumWeights += weight;
+    else {
+        // see if x fits into current range and act accordingly
+        if (value >= rangeMin && value < rangeMax)
+            insertIntoGrids(value, weight, true);
+        else if (rangeExtEnabled)
+            newRootGrids(value, weight);
+        else if (value < rangeMin) {
+            numFiniteUnderflows++;
+            finiteUnderflowSumWeights += weight;
+        }
+        else if (value >= rangeMax) {
+            numFiniteOverflows++;
+            finiteOverflowSumWeights += weight;
+        }
     }
 }
 
 void cKSplit::insertIntoGrids(double value, double weight, int enableSplits)
 {
+    if (!std::isfinite(value))
+        return;
+
     int i;
 
     // new observation fits in the current grid

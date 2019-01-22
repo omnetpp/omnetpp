@@ -28,7 +28,8 @@ class cAutoRangeHistogramStrategy;
  * @brief Generic histogram class, capable of representing both unweighted and
  * weighted distributions. Histogram data are stored as n+1 bin edges and
  * n bin values, both being double-precision floating point values. Upper and
- * lower outliers are kept both as counts and as sum of weights.
+ * lower outliers (as well as positive and negative infinities) are kept as counts
+ * (for unweighted statistics) or as sum of weights (for weighted statistics).
  *
  * cHistogram is able to generate random numbers from the stored distribution,
  * and also supports save/load of the histogram data in a file.
@@ -47,7 +48,8 @@ class cAutoRangeHistogramStrategy;
  * The default constructor of cHistogram installs a default histogram strategy
  * which was designed to provide a good quality histogram for arbitrary
  * distributions, without manual configuration. It employs precollection
- * and also auto-extends the histogram at runtime.
+ * and also auto-extends the histogram at runtime, merging neighbouring groups
+ * of bins if there would be too many of them after extension.
  *
  * Custom behavior can be achieved by setting up and installing an appropriate
  * strategy class, such as cFixedRangeHistogramStrategy or cAutoRangeHistogramStrategy.
@@ -97,7 +99,8 @@ class SIM_API cHistogram : public cAbstractHistogram
 
     std::vector<double> binEdges;
     std::vector<double> binValues; // one less than bin edges
-    double underflowSumWeights = 0, overflowSumWeights = 0;
+    double finiteUnderflowSumWeights = 0, finiteOverflowSumWeights = 0;
+    double posInfSumWeights = 0, negInfSumWeights = 0;
 
   public:
     // INTERNAL, only for cIHistogramSetupStrategy implementations.
@@ -322,12 +325,12 @@ class SIM_API cHistogram : public cAbstractHistogram
     /**
      * Returns the total weight of the observations that were under the histogram range.
      */
-    virtual double getUnderflowSumWeights() const override {return underflowSumWeights;}
+    virtual double getUnderflowSumWeights() const override {return finiteUnderflowSumWeights + negInfSumWeights;}
 
     /**
      * Returns the total weight of the observations that were above the histogram range.
      */
-    virtual double getOverflowSumWeights() const override {return overflowSumWeights;}
+    virtual double getOverflowSumWeights() const override {return finiteOverflowSumWeights + posInfSumWeights;}
 
     /**
      * Returns the number of observations that were under the histogram range.
@@ -342,6 +345,30 @@ class SIM_API cHistogram : public cAbstractHistogram
      * error to call this method on a weighted histogram.
      */
     virtual int64_t getNumOverflows() const override;
+
+    /**
+     * Returns number of observations that were negative infinity, independent of their weights.
+     * This value is only collected for unweighted statistics, i.e. it is an
+     * error to call this method on a weighted histogram.
+     */
+    virtual int64_t getNumNegInfs() const override;
+
+    /**
+     * Returns number of observations that were positive infinity, independent of their weights.
+     * This value is only collected for unweighted statistics, i.e. it is an
+     * error to call this method on a weighted histogram.
+     */
+    virtual int64_t getNumPosInfs() const override;
+
+    /**
+     * Returns the total weight of the observations that were negative infinity.
+     */
+    virtual double getNegInfSumWeights() const override {return negInfSumWeights;}
+
+    /**
+     * Returns the total weight of the observations that were above the histogram range.
+     */
+    virtual double getPosInfSumWeights() const override {return posInfSumWeights;}
     //@}
 
     /** @name cAutoRangeHistogramStrategy-based convenience API. */
