@@ -40,8 +40,10 @@ cPrecollectionBasedDensityEst::cPrecollectionBasedDensityEst(const char *name, b
     numPrecollected = 100;
     rangeExtFactor = 2.0;
     rangeMin = rangeMax = 0; //TODO NaN?
-    numUnderflows = numOverflows = 0;
-    underflowSumWeights = overflowSumWeights = 0;
+    numFiniteUnderflows = numFiniteOverflows = 0;
+    numNegInfs = numPosInfs = 0;
+    finiteUnderflowSumWeights = finiteOverflowSumWeights = 0;
+    negInfSumWeights = posInfSumWeights = 0;
     transformed = false;
     precollectedValues = new double[numPrecollected];  // to match RANGE_AUTO
     precollectedWeights = weighted ? new double[numPrecollected] : nullptr;
@@ -63,10 +65,14 @@ void cPrecollectionBasedDensityEst::parsimPack(cCommBuffer *buffer) const
     buffer->pack(rangeMin);
     buffer->pack(rangeMax);
     buffer->pack(numPrecollected);
-    buffer->pack(numUnderflows);
-    buffer->pack(numOverflows);
-    buffer->pack(underflowSumWeights);
-    buffer->pack(overflowSumWeights);
+    buffer->pack(numFiniteUnderflows);
+    buffer->pack(numFiniteOverflows);
+    buffer->pack(numNegInfs);
+    buffer->pack(numPosInfs);
+    buffer->pack(finiteUnderflowSumWeights);
+    buffer->pack(finiteOverflowSumWeights);
+    buffer->pack(negInfSumWeights);
+    buffer->pack(posInfSumWeights);
     buffer->pack(rangeExtFactor);
     buffer->pack(rangeMode);
     buffer->pack(transformed);
@@ -88,10 +94,14 @@ void cPrecollectionBasedDensityEst::parsimUnpack(cCommBuffer *buffer)
     buffer->unpack(rangeMin);
     buffer->unpack(rangeMax);
     buffer->unpack(numPrecollected);
-    buffer->unpack(numUnderflows);
-    buffer->unpack(numOverflows);
-    buffer->unpack(underflowSumWeights);
-    buffer->unpack(overflowSumWeights);
+    buffer->unpack(numFiniteUnderflows);
+    buffer->unpack(numFiniteOverflows);
+    buffer->unpack(numNegInfs);
+    buffer->unpack(numPosInfs);
+    buffer->unpack(finiteUnderflowSumWeights);
+    buffer->unpack(finiteOverflowSumWeights);
+    buffer->unpack(negInfSumWeights);
+    buffer->unpack(posInfSumWeights);
     buffer->unpack(rangeExtFactor);
     int tmp;
     buffer->unpack(tmp);
@@ -118,10 +128,14 @@ void cPrecollectionBasedDensityEst::copy(const cPrecollectionBasedDensityEst& re
     rangeMin = res.rangeMin;
     rangeMax = res.rangeMax;
     numPrecollected = res.numPrecollected;
-    numUnderflows = res.numUnderflows;
-    numOverflows = res.numOverflows;
-    underflowSumWeights = res.underflowSumWeights;
-    overflowSumWeights = res.overflowSumWeights;
+    numFiniteUnderflows = res.numFiniteUnderflows;
+    numFiniteOverflows = res.numFiniteOverflows;
+    numNegInfs = res.numNegInfs;
+    numPosInfs = res.numPosInfs;
+    finiteUnderflowSumWeights = res.finiteUnderflowSumWeights;
+    finiteOverflowSumWeights = res.finiteOverflowSumWeights;
+    negInfSumWeights = res.negInfSumWeights;
+    posInfSumWeights = res.posInfSumWeights;
 
     rangeExtFactor = res.rangeExtFactor;
     rangeMode = res.rangeMode;
@@ -187,10 +201,14 @@ void cPrecollectionBasedDensityEst::merge(const cStatistic *other)
                         otherd->getClassName(), otherd->getFullPath().c_str());
 
         // merge underflow/overflow bins
-        numUnderflows += otherd->getNumUnderflows();
-        numOverflows += otherd->getNumOverflows();
-        underflowSumWeights += otherd->getUnderflowSumWeights();
-        overflowSumWeights += otherd->getOverflowSumWeights();
+        numFiniteUnderflows += otherd->numFiniteUnderflows;
+        numFiniteOverflows += otherd->numFiniteOverflows;
+        finiteUnderflowSumWeights += otherd->finiteUnderflowSumWeights;
+        finiteOverflowSumWeights += otherd->finiteOverflowSumWeights;
+        numNegInfs += otherd->numNegInfs;
+        numPosInfs += otherd->numPosInfs;
+        negInfSumWeights += otherd->negInfSumWeights;
+        posInfSumWeights += otherd->posInfSumWeights;
 
         // then merge bin values
         doMergeBinValues(otherd);
@@ -206,8 +224,11 @@ void cPrecollectionBasedDensityEst::clear()
     numPrecollected = 100;
     rangeExtFactor = 2.0;
     rangeMin = rangeMax = 0;
-    numUnderflows = numOverflows = 0;
-    underflowSumWeights = overflowSumWeights = 0;
+    numFiniteUnderflows = numFiniteOverflows = 0;
+    numNegInfs = numPosInfs = 0;
+    finiteUnderflowSumWeights = finiteOverflowSumWeights = 0;
+    negInfSumWeights = posInfSumWeights = 0;
+    finiteMinValue = finiteMaxValue = NAN;
 
     delete[] precollectedValues;
     precollectedValues = new double[numPrecollected];  // to match RANGE_AUTO
@@ -315,11 +336,11 @@ void cPrecollectionBasedDensityEst::setupRange()
     double c, r;
     switch (rangeMode) {
         case RANGE_AUTO:
-            if (numValues == 0)
+            if (numValues == 0 || !std::isfinite(finiteMinValue) || !std::isfinite(finiteMaxValue))
                 c = r = 0;
             else {
-                c = (minValue + maxValue) / 2;
-                r = (maxValue - minValue) * rangeExtFactor;
+                c = (finiteMinValue + finiteMaxValue) / 2;
+                r = (finiteMaxValue - finiteMinValue) * rangeExtFactor;
             }
             if (r == 0)
                 r = 1.0;  // warning?
@@ -329,17 +350,17 @@ void cPrecollectionBasedDensityEst::setupRange()
             break;
 
         case RANGE_AUTOLOWER:
-            if (rangeMax <= minValue)
+            if (rangeMax <= finiteMinValue || !std::isfinite(finiteMinValue) || !std::isfinite(finiteMaxValue))
                 rangeMin = rangeMax - 1.0;  // warning?
             else
-                rangeMin = rangeMax - fixupDelta((rangeMax - minValue) * rangeExtFactor, rangeMax);
+                rangeMin = rangeMax - fixupDelta((rangeMax - finiteMinValue) * rangeExtFactor, rangeMax);
             break;
 
         case RANGE_AUTOUPPER:
-            if (rangeMin >= maxValue)
+            if (rangeMin >= finiteMaxValue || !std::isfinite(finiteMinValue) || !std::isfinite(finiteMaxValue))
                 rangeMax = rangeMin + 1.0;  // warning?
             else
-                rangeMax = rangeMin + fixupDelta((maxValue - rangeMin) * rangeExtFactor, rangeMin);
+                rangeMax = rangeMin + fixupDelta((finiteMaxValue - rangeMin) * rangeExtFactor, rangeMin);
             break;
 
         case RANGE_FIXED:
@@ -359,6 +380,11 @@ void cPrecollectionBasedDensityEst::collect(double value)
 
     cAbstractHistogram::collect(value);
 
+    if (!std::isfinite(finiteMinValue) || value < finiteMinValue)
+        finiteMinValue = value;
+    if (!std::isfinite(finiteMaxValue) || value > finiteMaxValue)
+        finiteMaxValue = value;
+
     if (!binsAlreadySetUp()) {
         ASSERT(precollectedValues);
         precollectedValues[numValues-1] = value;
@@ -377,6 +403,11 @@ void cPrecollectionBasedDensityEst::collectWeighted(double value, double weight)
         setUpBins();
 
     cAbstractHistogram::collectWeighted(value, weight);
+
+    if (!std::isfinite(finiteMinValue) || value < finiteMinValue)
+        finiteMinValue = value;
+    if (!std::isfinite(finiteMaxValue) || value > finiteMaxValue)
+        finiteMaxValue = value;
 
     if (!binsAlreadySetUp()) {
         ASSERT(precollectedValues);
@@ -400,8 +431,10 @@ void cPrecollectionBasedDensityEst::saveToFile(FILE *f) const
     fprintf(f, "%d\t #= range_mode\n", rangeMode);
     fprintf(f, "%lg\t #= range_ext_factor\n", rangeExtFactor);
     fprintf(f, "%lg %g\t #= range\n", rangeMin, rangeMax);
-    fprintf(f, "%" PRId64 " %" PRId64 "\t #= cell_under, cell_over\n", numUnderflows, numOverflows);
-    fprintf(f, "%lg %lg\t #= sumweights_underflow, sum_weights_overflow\n", underflowSumWeights, overflowSumWeights);
+    fprintf(f, "%" PRId64 " %" PRId64 "\t #= cell_under, cell_over\n", numFiniteUnderflows, numFiniteOverflows);
+    fprintf(f, "%" PRId64 " %" PRId64 "\t #= num_neg_infs, num_pos_infs\n", numNegInfs, numPosInfs);
+    fprintf(f, "%lg %lg\t #= sum_weights_underflow, sum_weights_overflow\n", finiteUnderflowSumWeights, finiteOverflowSumWeights);
+    fprintf(f, "%lg %lg\t #= sum_weights_neg_inf, sum_weights_pos_inf\n", negInfSumWeights, posInfSumWeights);
     fprintf(f, "%d\t #= num_firstvals\n", numPrecollected);
 
     fprintf(f, "%d\t #= firstvals[] exists\n", precollectedValues != nullptr);
@@ -427,8 +460,10 @@ void cPrecollectionBasedDensityEst::loadFromFile(FILE *f)
     freadvarsf(f, "%d\t #= range_mode", &tmp); rangeMode = (RangeMode)tmp;
     freadvarsf(f, "%lg\t #= range_ext_factor", &rangeExtFactor);
     freadvarsf(f, "%lg %lg\t #= range", &rangeMin, &rangeMax);
-    freadvarsf(f, "%" PRId64 " %" PRId64 "\t #= cell_under, cell_over", &numUnderflows, &numOverflows);
-    freadvarsf(f, "%lg %lg\t #= sumweights_underflow, sum_weights_overflow", &underflowSumWeights, &overflowSumWeights);
+    freadvarsf(f, "%" PRId64 " %" PRId64 "\t #= cell_under, cell_over", &numFiniteUnderflows, &numFiniteOverflows);
+    freadvarsf(f, "%" PRId64 " %" PRId64 "\t #= num_neg_infs, num_pos_infs", &numNegInfs, &numPosInfs);
+    freadvarsf(f, "%lg %lg\t #= sum_weights_underflow, sum_weights_overflow", &finiteUnderflowSumWeights, &finiteOverflowSumWeights);
+    freadvarsf(f, "%lg %lg\t #= sum_weights_neg_inf, sum_weights_pos_inf", &negInfSumWeights, &posInfSumWeights);
     freadvarsf(f, "%d\t #= num_firstvals", &numPrecollected);
 
     int hasPrecollectedValues;

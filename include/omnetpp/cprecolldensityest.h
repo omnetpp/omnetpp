@@ -77,12 +77,17 @@ class SIM_API cPrecollectionBasedDensityEst : public cAbstractHistogram
     RangeMode rangeMode;
     double rangeExtFactor;    // we extend the range of precollected values by rangeExtFactor
     double rangeMin, rangeMax;
+    double finiteMinValue = NAN, finiteMaxValue = NAN;
 
     // variables for counting out-of-range observations
-    int64_t numUnderflows;
-    int64_t numOverflows;
-    double underflowSumWeights;
-    double overflowSumWeights;
+    int64_t numFiniteUnderflows;
+    int64_t numFiniteOverflows;
+    int64_t numNegInfs;
+    int64_t numPosInfs;
+    double finiteUnderflowSumWeights;
+    double finiteOverflowSumWeights;
+    double negInfSumWeights;
+    double posInfSumWeights;
 
   private:
     void copy(const cPrecollectionBasedDensityEst& other);
@@ -277,23 +282,43 @@ class SIM_API cPrecollectionBasedDensityEst : public cAbstractHistogram
      * Returns number of observations that were below the histogram range,
      * independent of their weights.
      */
-    virtual int64_t getNumUnderflows() const override {return numUnderflows;}
+    virtual int64_t getNumUnderflows() const override {return numFiniteUnderflows + numNegInfs;}
 
     /**
      * Returns number of observations that were above the histogram range,
      * independent of their weights.
      */
-    virtual int64_t getNumOverflows() const override {return numOverflows;}
+    virtual int64_t getNumOverflows() const override {return numFiniteOverflows + numPosInfs;}
 
     /**
      * Returns the total weight of the observations that were below the histogram range.
      */
-    virtual double getUnderflowSumWeights() const override {return underflowSumWeights;}
+    virtual double getUnderflowSumWeights() const override {return finiteUnderflowSumWeights + negInfSumWeights;}
 
     /**
      * Returns the total weight of the observations that were above the histogram range.
      */
-    virtual double getOverflowSumWeights() const override {return overflowSumWeights;}
+    virtual double getOverflowSumWeights() const override {return finiteOverflowSumWeights + posInfSumWeights;}
+
+    /**
+     * Returns number of observations that were negative infinity, independent of their weights.
+     */
+    virtual int64_t getNumNegInfs() const override {return numNegInfs;}
+
+    /**
+     * Returns number of observations that were positive infinity, independent of their weights.
+     */
+    virtual int64_t getNumPosInfs() const override {return numPosInfs;}
+
+    /**
+     * Returns the total weight of the observations that were negative infinity.
+     */
+    virtual double getNegInfSumWeights() const override {return negInfSumWeights;}
+
+    /**
+     * Returns the total weight of the observations that were positive infinity.
+     */
+    virtual double getPosInfSumWeights() const override {return posInfSumWeights;}
     //@}
 };
 

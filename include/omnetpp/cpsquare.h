@@ -40,6 +40,8 @@ class SIM_API cPSquare : public cAbstractHistogram
     int *n;            // array of positions
     double *q;         // array of heights
 
+    long numNegInfs, numPosInfs;
+
   protected:
     void copy(const cPSquare& other);
     void ensureStrictlyIncreasingEdges();
@@ -140,27 +142,53 @@ class SIM_API cPSquare : public cAbstractHistogram
 
     /**
      * Returns number of observations that were below the histogram range,
-     * independent of their weights. In cPSquare, this method always returns 0.
+     * independent of their weights. In cPSquare, this is always the same as the
+     * number of negative infinities.
      */
-    virtual int64_t getNumUnderflows() const override {return 0;}
+    virtual int64_t getNumUnderflows() const override {return numNegInfs;}
 
     /**
      * Returns number of observations that were above the histogram range,
-     * independent of their weights. In cPSquare, this method always returns 0.
+     * independent of their weights. In cPSquare, this is always the same as the
+     * number of positive infinities.
      */
-    virtual int64_t getNumOverflows() const override {return 0;}
+    virtual int64_t getNumOverflows() const override {return numPosInfs;}
 
     /**
      * Returns the total weight of the observations that were below the histogram range.
-     * In cPSquare, this method always returns 0.
+     * In cPSquare, this is always the same as the number of negative infinities.
      */
-    virtual double getUnderflowSumWeights() const override {return 0;}
+    virtual double getUnderflowSumWeights() const override {return numNegInfs;}
 
     /**
      * Returns the total weight of the observations that were above the histogram range.
-     * In cPSquare, this method always returns 0.
+     * In cPSquare, this is always the same as the number of positive infinities.
      */
-    virtual double getOverflowSumWeights() const override {return 0;}
+    virtual double getOverflowSumWeights() const override {return numPosInfs;}
+
+    /**
+     * Returns number of observations that were negative infinity, independent of their weights.
+     */
+    virtual int64_t getNumNegInfs() const override {return numNegInfs;}
+
+    /**
+     * Returns number of observations that were positive infinity, independent of their weights.
+     */
+    virtual int64_t getNumPosInfs() const override {return numPosInfs;}
+
+    /**
+     * Returns the total weight of the observations that were negative infinity.
+     * Since cPSquare does not support weighted statistics, this is always the same
+     * as the number of observations that were negative infinity.
+     */
+    virtual double getNegInfSumWeights() const override {return numNegInfs;}
+
+    /**
+     * Returns the total weight of the observations that were positive infinity.
+     * Since cPSquare does not support weighted statistics, this is always the same
+     * as the number of observations that were positive infinity.
+     */
+    virtual double getPosInfSumWeights() const override {return numPosInfs;}
 
     /**
      * Generates a random number based on the collected data.
