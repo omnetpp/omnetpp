@@ -207,6 +207,16 @@ void cPSquare::merge(const cStatistic *other)
     throw cRuntimeError(this, "cPSquare does not support merge()");
 }
 
+void cPSquare::clear()
+{
+    numObs = 0;
+
+    for (int i = 0; i <= numBins+1; i++) {
+        n[i] = i;
+        q[i] = -DBL_MAX;
+    }
+}
+
 double cPSquare::draw() const
 {
     double s;

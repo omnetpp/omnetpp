@@ -195,6 +195,20 @@ void cKSplit::doMergeBinValues(const cPrecollectionBasedDensityEst *other)
     ASSERT(false);  // never comes here, as merge() already throws an error
 }
 
+void cKSplit::clear()
+{
+    cPrecollectionBasedDensityEst::clear();
+
+    numCells = 0;
+    delete [] gridv;
+    gridv = nullptr;
+    gridvSize = 0;
+    rootGridIndex = lastGridIndex = -1;
+
+    iter = nullptr;
+    iterNumValues = -1;
+}
+
 void cKSplit::setUpBins()
 {
     if (binsAlreadySetUp())
