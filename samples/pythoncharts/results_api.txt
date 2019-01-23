@@ -1,0 +1,78 @@
+Python chart "results" API design:
+
+Requirements:
+
+    1. All information is available - different types of rows (data) can be queried independently, or together
+    2. The inclusion of additional (meta) data can be disabled
+
+
+Formats:
+
+    - CSV
+        - Row "types" can be filtered
+        - Option: omit empty (unused) columns (for example "binedges" for scalars)
+
+        - runID, type
+        - module, name
+        - attrname, attrvalue
+        - value
+        - vectime, vecvalue
+        - count, sumweights, mean, stddev, min, max,
+        - binedges, binvalues
+
+
+    - Minimal (simple rows without an index by default, maybe an option to add some columns to the index)
+        - scalar: runID, module, name, value
+        - vector: runID, module, name, vectime, vecvalue (event numbers should not be necessary)
+        - statistics: runID, module, name, mean, min, max, stddev, count, sumweights, etc...
+        - histogram: runID, module, name, binedges, binvalues, underflows, overflows
+        - attr: runID, module, name, attrname, attrvalue
+        - run: runID
+        - run_attr: runID, name, value
+        - itervar: runID, name, value
+        - param pattern: runID, module, pattern, value
+        - param value: runID, module, name, value
+
+    - Minimal + Optional (optional data off by default): (these can be written in python, combining the above)
+        - scalar: attrs, runattrs, itervars
+        - vector: attrs, statistics fields, runattrs, itervars
+        - statistics: attrs, runattrs, itervars
+        - histogram: attrs, statistics fields, runattrs, itervars
+        - result_attr: runattrs, itervars
+        - run: runattrs, itervars
+        - run_attr: runattrs, itervars
+        - itervar: runattrs, itervars
+        - param pattern: runattrs, itervars
+        - param value: runattrs, itervars
+
+    - Additional options:
+        - For itervars and runattrs: as_numeric (filtering + conversion)
+        - Merge module and name as name (joined by a period)
+
+    - Filtering:
+        - For results: just like before
+        - For run data? We need a new matcher...
+
+    - Java should be able to provide data in both CSV and Minimal formats
+    - Python should be able to convert from CSV to Minimal + Optional
+
+
+API:
+
+    CSV:
+        get_results(filter_expression, row_types=['runattr', 'itervar', 'param', 'scalar', 'vector', 'statistics', 'histogram', 'attr'], omit_unused_columns=True)
+
+    Minimal + Optional:
+        get_scalars(filter_expression, include_attrs=False, include_runattrs=False, include_itervars=False, merge_module_and_name=False)
+        get_vectors(filter_expression, include_attrs=False, include_runattrs=False, include_itervars=False, merge_module_and_name=False)
+        get_statistics(filter_expression, include_attrs=False, include_runattrs=False, include_itervars=False, merge_module_and_name=False)
+        get_histograms(filter_expression, include_attrs=False, include_runattrs=False, include_itervars=False, merge_module_and_name=False, include_statistics_fields=False)
+
+        get_result_attrs(filter_expression, include_runattrs=False, include_itervars=False)
+
+        get_runs(filter_expression, include_runattrs=False, include_itervars=False)
+        get_run_attrs(filter_expression, include_runattrs=False, include_itervars=False, convert_to_numeric=False)
+        get_itervars(filter_expression, include_runattrs=False, include_itervars=False, convert_to_numeric=False)
+        get_param_patterns(filter_expression, include_runattrs=False, include_itervars=False)
+        get_param_values(filter_expression, include_runattrs=False, include_itervars=False)
+
