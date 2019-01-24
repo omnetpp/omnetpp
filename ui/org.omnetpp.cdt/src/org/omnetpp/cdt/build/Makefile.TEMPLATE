@@ -160,7 +160,7 @@ endif
 ### Pattern rules for msg files.
 {sourcedirs:}%_m.{cc} %_m.h: %.msg
 {sourcedirs:}	$(qecho) MSGC: $<
-{sourcedirs:}	$(Q)$(MSGC) -s _m.{cc} -MD -MP -MF $O/$(basename $@).d $(MSGCOPTS) $?
+{sourcedirs:}	$(Q)$(MSGC) -s _m.{cc} -MD -MP -MF $O/$(basename $<)_m.h.d $(MSGCOPTS) $?
 {sourcedirs:}
 {@msg:msgfiles,m_cc:msgccfiles,m_h:msghfiles}
 {/@}
@@ -198,4 +198,4 @@ cleanall:
 	$(Q)-rm -rf $(PROJECT_OUTPUT_DIR)
 
 # include all dependencies
--include $(OBJS:%.o=%.d)
+-include $(OBJS:%=%.d) $(MSGFILES:%.msg=$O/%_m.h.d)
