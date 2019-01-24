@@ -59,35 +59,6 @@ void Histograms::initialize()
     scheduleAt(0, new cMessage);
 }
 
-struct AutoRangeStrategyBuilder {
-    cAutoRangeHistogramStrategy *strategy = new cAutoRangeHistogramStrategy();
-    AutoRangeStrategyBuilder(cHistogram::Mode mode=cHistogram::MODE_AUTO) {
-        strategy->setMode(mode);
-    }
-    AutoRangeStrategyBuilder& setRange(double lo, double hi, double rangeExtensionFactor=NAN) {
-        strategy->setRangeHint(lo, hi);
-        if (!std::isnan(rangeExtensionFactor))
-            strategy->setRangeExtensionFactor(rangeExtensionFactor);
-        return *this;
-    }
-    AutoRangeStrategyBuilder& setNumBins(int numBins, int maxNumBins=10000) {
-        strategy->setNumBinsHint(numBins);
-        strategy->setMaxNumBins(maxNumBins);
-        return *this;
-    }
-    AutoRangeStrategyBuilder& setBinSize(double binSize, bool binSizeRounding) {
-        strategy->setBinSizeHint(binSize);
-        strategy->setBinSizeRounding(binSizeRounding);
-        return *this;
-    }
-    AutoRangeStrategyBuilder& setAutoExtend(bool autoExtend, bool binMerging=true) {
-        strategy->setAutoExtend(autoExtend);
-        strategy->setBinMerging(binMerging);
-        return *this;
-    }
-    cAutoRangeHistogramStrategy *get() {return strategy;}
-};
-
 void Histograms::addHistogram(const char *name, cIHistogramStrategy *strategy)
 {
     statisticObjects.push_back(new cHistogram(name, strategy, weighted));
@@ -109,9 +80,21 @@ void Histograms::createStatisticObjects()
 
     addHistogram("AutoRange default", new cAutoRangeHistogramStrategy());
     addHistogram("AutoRange bins=500, integers", new cAutoRangeHistogramStrategy(500, cHistogram::MODE_INTEGERS));
-    addHistogram("AutoRange [10,auto)", AutoRangeStrategyBuilder().setRange(10, NAN).get());
-    addHistogram("AutoRange binSize=2.5", AutoRangeStrategyBuilder().setBinSize(2.5, false).get());
-    addHistogram("AutoRange [10,20) numBins=1 autoExtend=false)", AutoRangeStrategyBuilder().setRange(10,20).setNumBins(1).setAutoExtend(false).get());
+
+    cAutoRangeHistogramStrategy *rangeStrategy = new cAutoRangeHistogramStrategy();
+    rangeStrategy->setRangeHint(10, NAN);
+    addHistogram("AutoRange [10,auto)", rangeStrategy);
+
+    cAutoRangeHistogramStrategy *binSizeStrategy = new cAutoRangeHistogramStrategy();
+    binSizeStrategy->setBinSizeHint(2.5);
+    binSizeStrategy->setBinSizeRounding(false);
+    addHistogram("AutoRange binSize=2.5", binSizeStrategy);
+
+    cAutoRangeHistogramStrategy *fixedBinsStrategy = new cAutoRangeHistogramStrategy();
+    fixedBinsStrategy->setRangeHint(10,20);
+    fixedBinsStrategy->setNumBinsHint(5);
+    fixedBinsStrategy->setAutoExtend(false);
+    addHistogram("AutoRange [10,20) numBins=5 autoExtend=false)", fixedBinsStrategy);
 }
 
 
