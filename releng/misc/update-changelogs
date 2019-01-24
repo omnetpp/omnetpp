@@ -1,0 +1,95 @@
+#! /usr/bin/env python
+#
+# This script automatically updates ChangeLog files from the git history.
+# The result may need some editing before committing back into the repo.
+#
+import re
+import os
+import string
+import subprocess
+
+# configuration
+since = ''  # empty means "since last entry in the ChangeLog file"
+fromtag = 'master' # alternative for 'since': from the given tag or branch
+
+entriesToIgnore = [
+"""2017-03-03  User Name
+
+        doc: changelogs updated and tagged
+
+""",
+"""2017-03-03  User Name
+
+        doc: updated copyright end year to 2017
+
+""",
+]
+addMarker = True
+
+isWindows = ('OS' in os.environ) and os.environ['OS']=='Windows_NT'
+isMSYS = isWindows and ('OSTYPE' in os.environ) and os.environ['OSTYPE']=='msys'
+changedFiles = []
+
+def formatChangeLog(txt):
+    txt = re.sub('(?m)^    (    )?', "\t", txt) # spaces-to-tab
+    txt = re.sub('(?m)^\s+X-Committed-on-Branch:.*$', '', txt)  # remove X-Committed-on-Branch lines
+    txt = re.sub('(?m)^    (    )?', "\t", txt) # spaces-to-tab
+    txt = re.sub('(?m)[ \t]+$', '', txt)     # remove end-line spaces
+    txt = re.sub("(?s)\n\n+", "\n\n", txt)   # remove multiple blank lines
+    txt = string.strip(txt)+"\n"             # remove leading/trailing blank
+    return txt
+
+def updateChangeLogIn(dir):
+    global since, addMarker, isWindows, isMSYS, changedFiles
+
+    # read existing ChangeLog file
+    changelogFile = os.path.join(dir,'ChangeLog')
+    f = open(changelogFile, 'r')
+    oldLog = f.read()
+    f.close()
+
+    # if "since" is not set, find most recent entry in the log
+    if since=="" and fromtag=="":
+        since = '2000-01-01'
+        m = re.search('^\d\d\d\d-\d\d-\d\d', oldLog)
+        if m:
+            since = m.group(0)
+
+    # get appropriately formatted git log since that date
+    gitLogCommand = ['git', 'log', '--date=short', '--pretty=format:%ad  %an%n%n%w(81,8,8)%s%n%n%b']
+    if since!="": gitLogCommand +=  ['--since='+since]
+    if fromtag!="": gitLogCommand += [fromtag+"..HEAD"]
+    gitLogCommand += [dir]
+    newLog = subprocess.check_output(gitLogCommand, shell=(isWindows and not isMSYS))
+    newLog = formatChangeLog(newLog)
+
+    newLog = re.sub('(?m)^    (    )?', "\t", newLog) # spaces-to-tab
+    for e in entriesToIgnore:
+        newLog = string.replace(newLog, formatChangeLog(e), "")     # remove ignorable entries
+
+    # if there's nothing new, skip the rest
+    if string.strip(newLog) == "":
+        print "    nothing new since", since
+        return
+
+    print "   ", len(re.findall('(?m)^20', newLog)), "entrie(s) since", since
+
+    # concatenate the two logs
+    marker = "----------- lines above this marker have been added from git log -----------\n\n" if addMarker else ""
+    updatedLog = newLog.strip() + "\n\n" + marker + oldLog.strip() + "\n"
+    updatedLog = formatChangeLog(updatedLog)
+
+    # write to disk
+    f = open(changelogFile, 'w')
+    f.write(updatedLog)
+    f.close()
+    changedFiles.append(changelogFile)
+
+# find those directories that contain ChangeLogs, and update them
+for root, dirs, files in os.walk('.'):
+    if 'ChangeLog' in files:
+        print root, "contains ChangeLog, updating..."
+        updateChangeLogIn(root)
+print "\nUpdated ChangeLog files:\n", " ".join(changedFiles)
+
+
