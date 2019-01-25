@@ -26,7 +26,6 @@
 #include "histograminspector.h"
 #include "histograminspectorconfigdialog.h"
 
-//unused? static const double SNAP_Y_AXIS_TO_ZERO_FACTOR = 0.3;
 static const double X_RANGE = 1;  // use when minX>=maxX
 static const double Y_RANGE = 1;  // use when minY>=maxY
 static const QColor BACKGROUND_COLOR("#E2E8FA");
@@ -47,7 +46,6 @@ class HistogramInspectorFactory : public InspectorFactory
     Inspector *createInspector(QWidget *parent, bool isTopLevel) override { return new HistogramInspector(parent, isTopLevel, this); }
 };
 
-// TODO: uncomment when the inspector implementation in the topic branch is completed and merged.
 Register_InspectorFactory(HistogramInspectorFactory);
 
 HistogramInspector::HistogramInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) :
@@ -173,7 +171,7 @@ double HistogramInspector::maxY()
     for (int bin = 0; bin < distr->getNumBins(); bin++) {
         // calculate height
         double y = chartType == HistogramView::SHOW_PDF ? distr->getBinPDF(bin) : distr->getBinValue(bin);
-        if (y > maxY)
+        if (y > maxY && std::isfinite(y))
             maxY = y;
     }
 
