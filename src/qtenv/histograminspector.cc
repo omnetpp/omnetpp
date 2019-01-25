@@ -143,12 +143,14 @@ void HistogramInspector::refresh()
         yRangeCorrection(minYVal, maxYVal, isMinYAutoscaled, isMaxYAutoscaled);
 
     if (isMaxYAutoscaled) {
+        // computing the top of the y scale before adjustment (if this is the first time we do this)
         if (lastMaxY < 0)
-            lastMaxY = minYVal + (maxYVal - minYVal) / 0.85;
+            lastMaxY = minYVal + (maxYVal - minYVal) / AUTOSCALE_Y_RATIO;
 
-        if ((maxYVal < minYVal + (0.75 * (lastMaxY - minYVal)))
-                || (maxYVal > minYVal + 0.95 * (lastMaxY - minYVal)))
-            maxYVal = minYVal + (maxYVal - minYVal) / 0.85;
+        // We add some hysteresis to the rescaling of the Y axis.
+        if ((maxYVal < minYVal + (AUTOSCALE_Y_HYST_LOW * (lastMaxY - minYVal)))
+                || (maxYVal > minYVal + AUTOSCALE_Y_HYST_HIGH * (lastMaxY - minYVal)))
+            maxYVal = minYVal + (maxYVal - minYVal) / AUTOSCALE_Y_RATIO;
         else
             maxYVal = lastMaxY;
     }

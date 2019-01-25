@@ -65,7 +65,7 @@ int HistogramView::mapXToView(const double x) const
 int HistogramView::mapYToView(const double y) const
 {
     int histogramHeight = gridItem->getDiagramFrame()->boundingRect().height();
-    return std::max(0, maxY - y) * histogramHeight / (maxY - minY);
+    return std::max(0.0, maxY - y) * histogramHeight / (maxY - minY);
 }
 
 void HistogramView::mouseMoveEvent(QMouseEvent *event)
