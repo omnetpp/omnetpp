@@ -146,6 +146,7 @@ ChartTickDecimal::ChartTickDecimal(int64_t man, int exp)
 
 ChartTickDecimal::ChartTickDecimal(double val)
 {
+    Assert(std::isfinite(val));
     int magnitude = std::ceil(std::log10(std::abs(val)));
     const int maxMagnitude = 15; // the double type has this many digits of precision
     exponent = magnitude - maxMagnitude;
@@ -467,6 +468,26 @@ bool ChartTickDecimal::operator >(const ChartTickDecimal &other) const
     match(thisClone, otherClone);
 
     return thisClone.mantissa > otherClone.mantissa;
+}
+
+bool ChartTickDecimal::operator <(double other) const
+{
+    if (std::isfinite(other))
+        return *this < ChartTickDecimal(other);
+    else {
+        Assert(std::isinf(other)); // NaN is not accepted
+        return other > 0;
+    }
+}
+
+bool ChartTickDecimal::operator <=(double other) const
+{
+    if (std::isfinite(other))
+        return *this <= ChartTickDecimal(other);
+    else {
+        Assert(std::isinf(other)); // NaN is not accepted
+        return other > 0;
+    }
 }
 
 }  // namespace qtenv
