@@ -69,7 +69,7 @@ class ChartTickDecimal
     ChartTickDecimal() = default;
     ChartTickDecimal(const ChartTickDecimal& other) = default;
     ChartTickDecimal(int64_t man, int exp);
-    explicit ChartTickDecimal(double val);
+    explicit ChartTickDecimal(double val); // val must be finite
 
     int64_t getMantissa() const { return mantissa; }
     int64_t getExponent() const { return exponent; }
@@ -104,12 +104,10 @@ class ChartTickDecimal
     bool operator >(const ChartTickDecimal& other) const;
     bool operator >=(const ChartTickDecimal& other) const  { return (*this == other) || (*this > other); }
 
-
-    bool operator <(double other) const { return *this < ChartTickDecimal(other); }
-    bool operator <=(double other) const { return *this <= ChartTickDecimal(other); }
-
-    bool operator >(double other) const { return *this > ChartTickDecimal(other); }
-    bool operator >=(double other) const { return *this >= ChartTickDecimal(other); }
+    bool operator <(double other) const;
+    bool operator <=(double other) const;
+    bool operator >(double other) const { return !(*this <= other); }
+    bool operator >=(double other) const { return !(*this < other); }
 };
 
 }  // namespace qtenv
