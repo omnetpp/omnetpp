@@ -32,6 +32,13 @@ class QTENV_API HistogramInspector : public Inspector
 {
     Q_OBJECT
 
+    // If Y autoscaling is enabled, then whenever the highest bar fills the visible range
+    // (vertically) more than HYST_HIGH, or less than HYST_LOW, the range is adjusted
+    // so that the new bar height will be at RATIO of the visible Y range.
+    static constexpr double AUTOSCALE_Y_HYST_LOW = 0.75;
+    static constexpr double AUTOSCALE_Y_HYST_HIGH = 0.95;
+    static constexpr double AUTOSCALE_Y_RATIO = 0.85;
+
   protected:
     HistogramView *view;
     QStatusBar *statusBar;
