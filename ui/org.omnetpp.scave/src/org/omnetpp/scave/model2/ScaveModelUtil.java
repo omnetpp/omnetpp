@@ -149,8 +149,7 @@ public class ScaveModelUtil {
             long id = ids.get(i);
             ResultItem item = manager.getItem(id);
             String filter = new FilterUtil(item, filterFields).getFilterPattern();
-            String typeName = item.getClass().getSimpleName().replace("Result", "").toLowerCase().concat("s"); //TODO hack
-            sb.append("ADD " + typeName + " WHERE " + filter + "\n");
+            sb.append(filter + " \n");
         }
         return sb.toString();
     }
@@ -601,7 +600,9 @@ public class ScaveModelUtil {
     }
 
     public static IFile getFileOfEObject(EObject object) {
-        URI uri = object.eResource().getURI();
+        if (object == null || object.eResource() == null)
+            return null;
+        URI uri = object.eResource().getURI();// itt van egy error sokszor TODO
         if (uri.isPlatformResource())
             return (IFile) ResourcesPlugin.getWorkspace().getRoot().findMember(uri.toPlatformString(true));
         return null;

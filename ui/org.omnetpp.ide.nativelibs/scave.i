@@ -332,20 +332,6 @@ namespace omnetpp { namespace scave {
 %ignore ResultFile::resultFileManager;
 %ignore Run::resultFileManager;
 
-// unused methods
-%ignore ResultFileManager::filterRunList;
-%ignore ResultFileManager::filterFileList;
-%ignore ResultFileManager::getFileRuns;
-%ignore ResultFileManager::getUniqueFileRuns;
-%ignore ResultFileManager::getScalarsInFileRun;
-%ignore ResultFileManager::getHistogramsInFileRun;
-%ignore ResultFileManager::getUniqueRunAttributeValues;
-%ignore ResultFileManager::getUniqueModuleParamValues;
-//%ignore ResultFileManager::getUniqueModuleNames;
-//%ignore ResultFileManager::getUniqueNames;
-//%ignore ResultFileManager::getUniqueAttributeValues;
-//%ignore ResultFileManager::getFileAndRunNumberFilterHints;
-
 %newobject ResultItem::getEnum() const;
 
 %extend ResultItem {

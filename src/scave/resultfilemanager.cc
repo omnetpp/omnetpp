@@ -479,10 +479,9 @@ void ResultFileManager::collectIDs(IDList& out, std::vector<T> ResultFile::*vec,
             std::vector<T>& v = fileList[k]->*vec;
             for (int i = 0; i < (int)v.size(); i++) {
                 bool isField = type == SCALAR ? ((ScalarResult&)v[i]).isField() : false;
-                bool isItervar = type == SCALAR ? ((ScalarResult&)v[i]).isItervar() : false;
 
-                if ((!isField || includeFields) && (!isItervar || includeItervars))
-                    out.uncheckedAdd(_mkID(isField, type, k, i));
+                if (!isField || includeFields)
+                    out.uncheckedAdd(_mkID(type, k, i));
             }
         }
     }
@@ -539,7 +538,7 @@ IDList ResultFileManager::getScalarsInFileRun(FileRun *fileRun) const
     ScalarResults& v = fileRun->fileRef->scalarResults;
     for (int i = 0; i < (int)v.size(); i++)
         if (v[i].getFileRun() == fileRun)
-            out.uncheckedAdd(_mkID(v[i].isField(), SCALAR, fileId, i));
+            out.uncheckedAdd(_mkID(SCALAR, fileId, i));
 
     return out;
 }
@@ -552,7 +551,7 @@ IDList ResultFileManager::getVectorsInFileRun(FileRun *fileRun) const
     VectorResults& v = fileRun->fileRef->vectorResults;
     for (int i = 0; i < (int)v.size(); i++)
         if (v[i].getFileRun() == fileRun)
-            out.uncheckedAdd(_mkID(false, VECTOR, fileId, i));
+            out.uncheckedAdd(_mkID(VECTOR, fileId, i));
 
     return out;
 }
@@ -565,7 +564,7 @@ IDList ResultFileManager::getStatisticsInFileRun(FileRun *fileRun) const
     StatisticsResults& v = fileRun->fileRef->statisticsResults;
     for (int i = 0; i < (int)v.size(); i++)
         if (v[i].getFileRun() == fileRun)
-            out.uncheckedAdd(_mkID(false, STATISTICS, fileId, i));
+            out.uncheckedAdd(_mkID(STATISTICS, fileId, i));
 
     return out;
 }
@@ -578,7 +577,7 @@ IDList ResultFileManager::getHistogramsInFileRun(FileRun *fileRun) const
     HistogramResults& v = fileRun->fileRef->histogramResults;
     for (int i = 0; i < (int)v.size(); i++)
         if (v[i].getFileRun() == fileRun)
-            out.uncheckedAdd(_mkID(false, HISTOGRAM, fileId, i));
+            out.uncheckedAdd(_mkID(HISTOGRAM, fileId, i));
 
     return out;
 }
@@ -644,28 +643,28 @@ ID ResultFileManager::getItemByName(FileRun *fileRunRef, const char *module, con
     for (int i = 0; i < (int)scalarResults.size(); i++) {
         const ResultItem& d = scalarResults[i];
         if (d.getModuleName() == *moduleNameRef && d.getName() == *nameRef && d.getFileRun() == fileRunRef)
-            return _mkID(scalarResults[i].isField(), SCALAR, fileRunRef->fileRef->id, i);
+            return _mkID(SCALAR, fileRunRef->fileRef->id, i);
     }
 
     VectorResults& vectorResults = fileRunRef->fileRef->vectorResults;
     for (int i = 0; i < (int)vectorResults.size(); i++) {
         const ResultItem& d = vectorResults[i];
         if (d.getModuleName() == *moduleNameRef && d.getName() == *nameRef && d.getFileRun() == fileRunRef)
-            return _mkID(false, VECTOR, fileRunRef->fileRef->id, i);
+            return _mkID(VECTOR, fileRunRef->fileRef->id, i);
     }
 
     StatisticsResults& statisticsResults = fileRunRef->fileRef->statisticsResults;
     for (int i = 0; i < (int)statisticsResults.size(); i++) {
         const ResultItem& d = statisticsResults[i];
         if (d.getModuleName() == *moduleNameRef && d.getName() == *nameRef && d.getFileRun() == fileRunRef)
-            return _mkID(false, STATISTICS, fileRunRef->fileRef->id, i);
+            return _mkID(STATISTICS, fileRunRef->fileRef->id, i);
     }
 
     HistogramResults& histogramResults = fileRunRef->fileRef->histogramResults;
     for (int i = 0; i < (int)histogramResults.size(); i++) {
         const ResultItem& d = histogramResults[i];
         if (d.getModuleName() == *moduleNameRef && d.getName() == *nameRef && d.getFileRun() == fileRunRef)
-            return _mkID(false, HISTOGRAM, fileRunRef->fileRef->id, i);
+            return _mkID(HISTOGRAM, fileRunRef->fileRef->id, i);
     }
     return 0;
 }
@@ -898,6 +897,161 @@ const char *MatchableResultItem::getItemType() const
     }
 }
 
+
+class MatchableRun : public MatchExpression::Matchable
+{
+    const Run *run;
+
+    public:
+        MatchableRun(const Run *run) : run(run) {}
+        virtual const char *getAsString() const override { return getName(); }
+        virtual const char *getAsString(const char *attribute) const override;
+    private:
+        const char *getName() const { return run->getRunName().c_str(); }
+        const char *getAttribute(const char *attrName) const { return run->getAttribute(attrName).c_str(); }
+        const char *getIterationVariable(const char *name) const { return run->getIterationVariable(name).c_str(); }
+        const char *getParamAssignment(const char *key) const { return run->getParamAssignment(key).c_str(); }
+};
+
+const char *MatchableRun::getAsString(const char *attribute) const
+{
+    if (strcasecmp("name", attribute) == 0)
+        return getName();
+    else if (strncasecmp("attr:", attribute, 5) == 0) // TODO: also add with runattr: prefix?
+        return getAttribute(attribute+5);
+    else if (strncasecmp("itervar:", attribute, 8) == 0)
+        return getIterationVariable(attribute+8);
+    else if (strncasecmp("param:", attribute, 6) == 0)
+        return getParamAssignment(attribute+6);
+    else
+        return getAttribute(attribute);
+}
+
+
+class MatchableItervar : public MatchExpression::Matchable
+{
+    const Run *run;
+    std::string itervar;
+
+    public:
+        MatchableItervar(const Run *run, const std::string &itervar) : run(run), itervar(itervar) {}
+        virtual const char *getAsString() const override { return getName(); }
+        virtual const char *getAsString(const char *attribute) const override;
+    private:
+        const char *getName() const { return itervar.c_str(); }
+        const char *getRunName() const { return run->getRunName().c_str(); }
+        const char *getRunAttribute(const char *attrName) const { return run->getAttribute(attrName).c_str(); }
+        const char *getIterationVariable(const char *name) const { return run->getIterationVariable(name).c_str(); }
+        const char *getParamAssignment(const char *key) const { return run->getParamAssignment(key).c_str(); }
+};
+
+const char *MatchableItervar::getAsString(const char *attribute) const
+{
+    if (strcasecmp("name", attribute) == 0)
+        return getName();
+    else if (strcasecmp("run", attribute) == 0)
+        return getRunName();
+    else if (strncasecmp("runattr:", attribute, 8) == 0)
+        return getRunAttribute(attribute+8);
+    else if (strncasecmp("itervar:", attribute, 8) == 0)
+        return getIterationVariable(attribute+8);
+    else if (strncasecmp("param:", attribute, 6) == 0)
+        return getParamAssignment(attribute+6);
+    else
+        return getName();
+}
+
+
+
+class MatchableRunattr : public MatchExpression::Matchable
+{
+    const Run *run;
+    std::string runattr;
+
+    public:
+        MatchableRunattr(const Run *run, const std::string &runattr) : run(run), runattr(runattr) {}
+        virtual const char *getAsString() const override { return getName(); }
+        virtual const char *getAsString(const char *attribute) const override;
+    private:
+        const char *getName() const { return runattr.c_str(); }
+        const char *getRunName() const { return run->getRunName().c_str(); }
+        const char *getRunAttribute(const char *attrName) const { return run->getAttribute(attrName).c_str(); }
+        const char *getIterationVariable(const char *name) const { return run->getIterationVariable(name).c_str(); }
+        const char *getParamAssignment(const char *key) const { return run->getParamAssignment(key).c_str(); }
+};
+
+const char *MatchableRunattr::getAsString(const char *attribute) const
+{
+    if (strcasecmp("name", attribute) == 0)
+        return getName();
+    else if (strcasecmp("run", attribute) == 0)
+        return getRunName();
+    else if (strncasecmp("runattr:", attribute, 8) == 0)
+        return getRunAttribute(attribute+8);
+    else if (strncasecmp("itervar:", attribute, 8) == 0)
+        return getIterationVariable(attribute+8);
+    else if (strncasecmp("param:", attribute, 6) == 0)
+        return getParamAssignment(attribute+6);
+    else
+        return getName();
+}
+
+
+
+std::vector<std::pair<std::string, std::string>> ResultFileManager::getMatchingItervars(const char *pattern) const
+{
+    if (pattern == nullptr || pattern[0] == '\0')  // no filter
+        pattern = "*";
+
+    MatchExpression matchExpr(pattern, false  /*dottedpath*/, true  /*fullstring*/, true  /*casesensitive*/);
+
+    READER_MUTEX
+    std::vector<std::pair<std::string, std::string>> out;
+    for (int k = 0; k < (int)runList.size(); k++) {
+        if (runList[k] != nullptr) {
+            Run *run = runList[k];
+            int i = 0;
+            for (auto &iv : run->getIterationVariables()) {
+
+                MatchableItervar matchable(run, iv.first);
+
+                if (matchExpr.matches(&matchable))
+                    out.push_back({run->getRunName(), iv.first});
+
+                ++i;
+            }
+        }
+    }
+    return out;
+}
+
+std::vector<std::pair<std::string, std::string>> ResultFileManager::getMatchingRunattrs(const char *pattern) const
+{
+    if (pattern == nullptr || pattern[0] == '\0')  // no filter
+        pattern = "*";
+
+    MatchExpression matchExpr(pattern, false  /*dottedpath*/, true  /*fullstring*/, true  /*casesensitive*/);
+
+    READER_MUTEX
+    std::vector<std::pair<std::string, std::string>> out;
+    for (int k = 0; k < (int)runList.size(); k++) {
+        if (runList[k] != nullptr) {
+            Run *run = runList[k];
+            int i = 0;
+            for (auto &ra : run->getAttributes()) {
+
+                MatchableRunattr matchable(run, ra.first);
+
+                if (matchExpr.matches(&matchable))
+                    out.push_back({run->getRunName(), ra.first});
+
+                ++i;
+            }
+        }
+    }
+    return out;
+}
+
 IDList ResultFileManager::filterIDList(const IDList& idlist, const char *pattern) const
 {
     if (pattern == nullptr || pattern[0] == '\0')  // no filter
@@ -914,6 +1068,23 @@ IDList ResultFileManager::filterIDList(const IDList& idlist, const char *pattern
         MatchableResultItem matchable(item);
         if (matchExpr.matches(&matchable))
             out.uncheckedAdd(id);
+    }
+    return out;
+}
+
+RunList ResultFileManager::filterRunList(const RunList& runlist, const char *pattern) const
+{
+    if (pattern == nullptr || pattern[0] == '\0')  // no filter
+        pattern = "*";
+
+    MatchExpression matchExpr(pattern, false  /*dottedpath*/, true  /*fullstring*/, true  /*casesensitive*/);
+
+    READER_MUTEX
+    RunList out;
+    for (Run *run : runlist) {
+        MatchableRun matchable(run);
+        if (matchExpr.matches(&matchable))
+            out.push_back(run);
     }
     return out;
 }
@@ -975,9 +1146,9 @@ FileRun *ResultFileManager::getOrAddFileRun(ResultFile *file, Run *run)
 }
 
 int ResultFileManager::addScalar(FileRun *fileRunRef, const char *moduleName, const char *scalarName,
-        const StringMap& attrs, double value, bool isField, bool isItervar)
+        const StringMap& attrs, double value, bool isField)
 {
-    ScalarResult scalar(fileRunRef, moduleName, scalarName, attrs, value, isField, isItervar);
+    ScalarResult scalar(fileRunRef, moduleName, scalarName, attrs, value, isField);
     ScalarResults& scalars = fileRunRef->fileRef->scalarResults;
     scalars.push_back(scalar);
     return scalars.size() - 1;
@@ -1018,13 +1189,13 @@ void ResultFileManager::addStatisticsFieldsAsScalars(FileRun *fileRunRef, const 
 {
     std::string name = statisticsName;
     StringMap emptyAttrs;
-    addScalar(fileRunRef, moduleName, (name+":count").c_str(), emptyAttrs, stat.getCount(), true, false);
-    addScalar(fileRunRef, moduleName, (name+":mean").c_str(), emptyAttrs, stat.getMean(), true, false);
-    addScalar(fileRunRef, moduleName, (name+":stddev").c_str(), emptyAttrs, stat.getStddev(), true, false);
-    addScalar(fileRunRef, moduleName, (name+":min").c_str(), emptyAttrs, stat.getMin(), true, false);
-    addScalar(fileRunRef, moduleName, (name+":max").c_str(), emptyAttrs, stat.getMax(), true, false);
+    addScalar(fileRunRef, moduleName, (name+":count").c_str(), emptyAttrs, stat.getCount(), true);
+    addScalar(fileRunRef, moduleName, (name+":mean").c_str(), emptyAttrs, stat.getMean(), true);
+    addScalar(fileRunRef, moduleName, (name+":stddev").c_str(), emptyAttrs, stat.getStddev(), true);
+    addScalar(fileRunRef, moduleName, (name+":min").c_str(), emptyAttrs, stat.getMin(), true);
+    addScalar(fileRunRef, moduleName, (name+":max").c_str(), emptyAttrs, stat.getMax(), true);
     if (!stat.isWeighted())
-        addScalar(fileRunRef, moduleName, (name+":sum").c_str(), emptyAttrs, stat.getSum(), true, false);  // this one might be useful
+        addScalar(fileRunRef, moduleName, (name+":sum").c_str(), emptyAttrs, stat.getSum(), true);  // this one might be useful
     //TODO sumWeights? isWeighted?
 }
 
@@ -1093,45 +1264,8 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
         SqliteResultFileLoader(this).loadFile(fileName, fileSystemFileName, reload) :
         OmnetppResultFileLoader(this).loadFile(fileName, fileSystemFileName, reload);
 
-    // add numeric itervars as scalars
-    FileRunList fileRunsInFile = getFileRunsInFile(file);
-    for (FileRun *fileRun : fileRunsInFile) {
-        const StringMap& itervars = fileRun->runRef->getIterationVariables();
-        for (auto pair : itervars) {
-            ID id = getItemByName(fileRun, ITERVARSCALAR_MODULE, pair.first.c_str());
-            if (id == 0 || _type(id) != SCALAR)
-                addNumericIterationVariableAsScalar(fileRun, pair.first.c_str(), pair.second.c_str());
-        }
-    }
-
     Assert(file != nullptr);
     return file;
-}
-
-void ResultFileManager::addNumericIterationVariableAsScalar(FileRun *fileRunRef, const char *name, const char *valueStr)
-{
-    char *e;
-    setlocale(LC_NUMERIC, "C");
-    double value = strtod(valueStr, &e);
-    if (*e == '\0') {
-        // plain number - just add as it is
-        addScalar(fileRunRef, ITERVARSCALAR_MODULE, name, StringMap(), value, false, true);
-    }
-    else if (e != valueStr) {
-        // starts with a number, so it might be something like "100s"; if so, record it as scalar with "unit" attribute
-        std::string unit;
-        bool parsedOK = false;
-        try {
-            value = UnitConversion::parseQuantity(valueStr, unit);
-            parsedOK = true;
-        }
-        catch (std::exception& e) {
-        }
-        StringMap attrs;
-        if (parsedOK && !unit.empty())
-            attrs["unit"] = unit;
-        addScalar(fileRunRef, ITERVARSCALAR_MODULE, name, attrs, value, false, true);
-    }
 }
 
 void ResultFileManager::unloadFile(ResultFile *file)

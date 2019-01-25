@@ -93,8 +93,8 @@ class SCAVE_API ResultItem
 
   protected:
     FileRun *fileRunRef; // backref to containing FileRun
-    const std::string *moduleNameRef; // points into ResultFileManager'strptr StringSet
-    const std::string *nameRef; // scalarname or vectorname; points into ResultFileManager'strptr StringSet
+    const std::string *moduleNameRef; // points into ResultFileManager's StringSet
+    const std::string *nameRef; // scalarname or vectorname; points into ResultFileManager's StringSet
     StringMap attributes; // metadata in key/value form
 
   protected:
@@ -147,15 +147,13 @@ class SCAVE_API ScalarResult : public ResultItem
   private:
     double value;
     bool isField_; // whether this scalar was created by exploding a "statistic" to its fields
-    bool isItervar_; // whether this scalar was create by converting itervars to scalars
   protected:
-    ScalarResult(FileRun *fileRun, const std::string& moduleName, const std::string& name, const StringMap& attrs, double value, bool isField, bool isItervar) :
-        ResultItem(fileRun, moduleName, name, attrs), value(value), isField_(isField), isItervar_(isItervar) {}
+    ScalarResult(FileRun *fileRun, const std::string& moduleName, const std::string& name, const StringMap& attrs, double value, bool isField) :
+        ResultItem(fileRun, moduleName, name, attrs), value(value), isField_(isField) {}
   public:
     virtual int getItemType() const;
     double getValue() const {return value;}
     bool isField() const {return isField_;}
-    bool isItervar() const {return isItervar_;}
 };
 
 /**
@@ -292,7 +290,7 @@ class SCAVE_API Run
     StringMap attributes;  // run attributes, such as configname, runnumber, network, datetime, processid, etc.
     StringMap itervars;  // iteration variables (${} notation in omnetpp.ini)
     OrderedKeyValueList paramAssignments; // module parameter assignments from the ini file and command line
-    //TODO: OrderedKeyValueList configEntries; // configuration entries from the ini file and command line
+    //TODO: OrderedKeyValueList configEntries; // TODO configuration entries from the ini file and command line
 
   private:
     Run(const std::string& runName, ResultFileManager *manager) : runName(runName), resultFileManager(manager) {}
@@ -327,6 +325,7 @@ class SCAVE_API ResultFileManager
 {
     friend class ResultItem; // moduleNames, names
     friend class IDList;  // _type()
+    friend class Run;  // _pos()
     friend class CmpBase; // uncheckedGet...()
     friend class OmnetppResultFileLoader;
     friend class SqliteResultFileLoader;
@@ -355,16 +354,16 @@ class SCAVE_API ResultFileManager
 #endif
 
   public:
-    enum {SCALAR=1, VECTOR=2, STATISTICS=4, HISTOGRAM=8}; // must be 1,2,4,8 etc, because of IDList::getItemTypes()
+    enum {SCALAR = 1<<0, VECTOR = 1<<1, STATISTICS = 1<<2, HISTOGRAM = 1<<3}; // must be 1,2,4,8 etc, because of IDList::getItemTypes()
 
   private:
-    // ID: 1 bit field**, 6 bit type, 24 bit fileid, 32 bit pos (** apparently unused)
-    static int _type(ID id)   {return (id >> 56) & 0x3fUL;}
+    // ID: 8 bit type, 24 bit fileid, 32 bit pos
+    static int _type(ID id)   {return (id >> 56) & 0xffUL;}
     static int _fileid(ID id) {return (id >> 32) & 0x00fffffful;}
     static int _pos(ID id)    {return id & 0xffffffffUL;}
-    static ID _mkID(bool field, int type, int fileid, int pos) {
-        assert((type>>7)==0 && (fileid>>24)==0 && (pos>>31)<=1);
-        return ((field ? (ID)1 << 62 : (ID)0) | (ID)type << 56) | ((ID)fileid << 32) | (ID)pos;
+    static ID _mkID(int type, int fileid, int pos) {
+        assert((type>>8)==0 && (fileid>>24)==0 && ((pos>>31)==0 || (pos>>31)==-1)); // can't shift by 32, and int is 32 bits
+        return ((ID)type << 56) | ((ID)fileid << 32) | (ID)pos;
     }
 
     // utility functions called while loading a result file
@@ -374,15 +373,13 @@ class SCAVE_API ResultFileManager
     Run *getOrAddRun(const std::string& runName);
     FileRun *getOrAddFileRun(ResultFile *file, Run *run);
 
-    int addScalar(FileRun *fileRunRef, const char *moduleName, const char *scalarName, const StringMap& attrs, double value, bool isField, bool isItervar);
+    int addScalar(FileRun *fileRunRef, const char *moduleName, const char *scalarName, const StringMap& attrs, double value, bool isField);
     int addVector(FileRun *fileRunRef, int vectorId, const char *moduleName, const char *vectorName, const StringMap& attrs, const char *columns);
     int addStatistics(FileRun *fileRunRef, const char *moduleName, const char *statisticsName, const Statistics& stat, const StringMap& attrs);
     int addHistogram(FileRun *fileRunRef, const char *moduleName, const char *histogramName, const Statistics& stat, const Histogram& bins, const StringMap& attrs);
     void addStatisticsFieldsAsScalars(FileRun *fileRunRef, const char *moduleName, const char *statisticsName, const Statistics& stat);
 
     ResultFile *getFileForID(ID id) const; // checks for nullptr
-
-    void addNumericIterationVariableAsScalar(FileRun *fileRunRef, const char *name, const char *value);
 
     template <class T>
     void collectIDs(IDList& result, std::vector<T> ResultFile::* vec, int type, bool includeFields, bool includeItervars) const;
@@ -454,6 +451,9 @@ class SCAVE_API ResultFileManager
     IDList getStatisticsInFileRun(FileRun *fileRun) const;
     IDList getHistogramsInFileRun(FileRun *fileRun) const;
 
+    std::vector< std::pair<std::string, std::string> > getMatchingItervars(const char *pattern) const;
+    std::vector< std::pair<std::string, std::string> > getMatchingRunattrs(const char *pattern) const;
+
     /**
      * Get a filtered subset of the input set (of scalars or vectors).
      * All three filter parameters may be null, or (the textual ones)
@@ -480,6 +480,8 @@ class SCAVE_API ResultFileManager
      * matched exactly.
      */
     IDList filterIDList(const IDList& idlist, const char *runName, const char *moduleName, const char *name) const;
+
+    RunList filterRunList(const RunList& runlist, const char *pattern) const;
 
     /**
      * Checks that the given pattern is syntactically correct.

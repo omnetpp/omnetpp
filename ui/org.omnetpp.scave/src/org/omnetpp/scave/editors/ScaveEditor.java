@@ -1507,9 +1507,12 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
             }
         }
 
-        inputsPage.selectionChanged(selection);
-        browseDataPage.selectionChanged(selection);
-        chartsPage.selectionChanged(selection);
+        if (inputsPage != null)
+            inputsPage.selectionChanged(selection);
+        if (browseDataPage != null)
+            browseDataPage.selectionChanged(selection);
+        if (chartsPage != null)
+            chartsPage.selectionChanged(selection);
 
         /*
             ((FormEditorPage)page).selectionChanged(selection);

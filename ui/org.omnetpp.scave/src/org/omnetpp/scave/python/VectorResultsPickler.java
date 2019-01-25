@@ -17,54 +17,75 @@ import net.razorvine.pickle.Pickler;
 
 public class VectorResultsPickler implements IObjectPickler {
 
-    static void pickleVectorResult(ResultFileManager resultManager, long ID, XYVector data, Pickler pickler,
+    void pickleVectorResult(ResultFileManager resultManager, long ID, XYVector data, Pickler pickler,
             OutputStream out) throws PickleException, IOException {
         VectorResult result = resultManager.getVector(ID);
 
+        // runID, module, name, vectime, vecvalue
         out.write(Opcodes.MARK);
         {
             pickler.save(result.getRun().getRunName());
-            pickler.save("vector");
             pickler.save(result.getModuleName());
-            pickler.save(result.getName());
-            pickler.save(null); // attrname
-            pickler.save(null); // value
+            if (mergeModuleAndName)
+                pickler.save(result.getModuleName() + "." + result.getName());
+            else
+                pickler.save(result.getName());
 
             ResultPicklingUtils.pickleDoubleArray(data.x, out);
             ResultPicklingUtils.pickleDoubleArray(data.y, out);
         }
         out.write(Opcodes.TUPLE);
-
-        ResultPicklingUtils.pickleResultAttributes(result, pickler, out);
     }
 
-    public static void pickleVectorsFiltered(ResultFileManager resultManager, String filter, Pickler pickler,
-            OutputStream out) throws IOException {
-        out.write(Opcodes.MARK);
-        {
-            IDList vectors = resultManager.getAllVectors();
+    String filterExpression;
+    boolean includeAttrs;
+    boolean includeRunattrs;
+    boolean includeItervars;
+    boolean mergeModuleAndName;
 
-            vectors = resultManager.filterIDList(vectors, filter);
-            Debug.println("pickling " + vectors.size() + " vectors");
-
-            ResultPicklingUtils.pickleRunsOfResults(resultManager, vectors, pickler, out);
-
-            XYVector[] vectorsData = ScriptEngine.getDataOfVectors(resultManager, vectors, null);
-
-            for (int i = 0; i < vectors.size(); ++i)
-                pickleVectorResult(resultManager, vectors.get(i), vectorsData[i], pickler, out);
-        }
-        out.write(Opcodes.LIST);
-    }
-
-    String filter;
-
-    public VectorResultsPickler(String filter) {
-        this.filter = filter;
+    public VectorResultsPickler(String filterExpression, boolean includeAttrs, boolean includeRunattrs, boolean includeItervars, boolean mergeModuleAndName) {
+        this.filterExpression = filterExpression;
+        this.includeAttrs = includeAttrs;
+        this.includeRunattrs = includeRunattrs;
+        this.includeItervars = includeItervars;
+        this.mergeModuleAndName = mergeModuleAndName;
     }
 
     @Override
     public void pickle(Object obj, OutputStream out, Pickler pickler) throws PickleException, IOException {
-        pickleVectorsFiltered((ResultFileManager) obj, filter, pickler, out);
+        ResultFileManager resultManager = (ResultFileManager)obj;
+
+        out.write(Opcodes.MARK);
+        {
+            out.write(Opcodes.MARK);
+            {
+                IDList vectors = resultManager.getAllVectors();
+
+                vectors = resultManager.filterIDList(vectors, filterExpression);
+                Debug.println("pickling " + vectors.size() + " vectors");
+
+                XYVector[] vectorsData = ScriptEngine.getDataOfVectors(resultManager, vectors, null);
+
+                for (int i = 0; i < vectors.size(); ++i)
+                    pickleVectorResult(resultManager, vectors.get(i), vectorsData[i], pickler, out);
+            }
+            out.write(Opcodes.LIST);
+
+            if (includeAttrs)
+                new ResultAttrsPickler(filterExpression).pickle(resultManager, out, pickler);
+            else
+                out.write(Opcodes.NONE);
+
+            if (includeRunattrs)
+                new RunAttrsPickler(filterExpression, RunAttrsPickler.FilterMode.FILTER_RESULTS).pickle(resultManager, out, pickler);
+            else
+                out.write(Opcodes.NONE);
+
+            if (includeItervars)
+                new IterVarsPickler(filterExpression, IterVarsPickler.FilterMode.FILTER_RESULTS).pickle(resultManager, out, pickler);
+            else
+                out.write(Opcodes.NONE);
+        }
+        out.write(Opcodes.TUPLE);
     }
 }

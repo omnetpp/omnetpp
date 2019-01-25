@@ -15,51 +15,70 @@ import net.razorvine.pickle.Pickler;
 
 public class ScalarResultsPickler implements IObjectPickler {
 
-    static void pickleScalarResult(ResultFileManager resultManager, long ID, Pickler pickler, OutputStream out)
+    String filterExpression;
+    boolean includeAttrs;
+    boolean includeRunattrs;
+    boolean includeItervars;
+    boolean mergeModuleAndName;
+
+    public ScalarResultsPickler(String filterExpression, boolean includeAttrs, boolean includeRunattrs, boolean includeItervars, boolean mergeModuleAndName) {
+        this.filterExpression = filterExpression;
+        this.includeAttrs = includeAttrs;
+        this.includeRunattrs = includeRunattrs;
+        this.includeItervars = includeItervars;
+        this.mergeModuleAndName = mergeModuleAndName;
+    }
+
+    void pickleScalarResult(ResultFileManager resultManager, long ID, Pickler pickler, OutputStream out)
             throws PickleException, IOException {
         ScalarResult result = resultManager.getScalar(ID);
 
+        // runID, module, name, value
         out.write(Opcodes.MARK);
         {
             pickler.save(result.getRun().getRunName());
-            pickler.save("scalar");
             pickler.save(result.getModuleName());
-            pickler.save(result.getName());
-            pickler.save(null); // attrname
-            pickler.save(null); // attrvalue
+            if (mergeModuleAndName)
+                pickler.save(result.getModuleName() + "." + result.getName());
+            else
+                pickler.save(result.getName());
             pickler.save(result.getValue());
         }
         out.write(Opcodes.TUPLE);
-
-        ResultPicklingUtils.pickleResultAttributes(result, pickler, out);
-    }
-
-    public static void pickleScalarsFiltered(ResultFileManager resultManager, String filter, Pickler pickler,
-            OutputStream out) throws IOException {
-
-        out.write(Opcodes.MARK);
-        {
-            IDList scalars = resultManager.getAllScalars();
-            scalars = resultManager.filterIDList(scalars, filter);
-
-            Debug.println("pickling " + scalars.size() + " scalars");
-
-            ResultPicklingUtils.pickleRunsOfResults(resultManager, scalars, pickler, out);
-
-            for (int i = 0; i < scalars.size(); ++i)
-                pickleScalarResult(resultManager, scalars.get(i), pickler, out);
-        }
-        out.write(Opcodes.LIST);
-    }
-
-    String filter;
-
-    public ScalarResultsPickler(String filter) {
-        this.filter = filter;
     }
 
     @Override
     public void pickle(Object obj, OutputStream out, Pickler pickler) throws PickleException, IOException {
-        pickleScalarsFiltered((ResultFileManager) obj, filter, pickler, out);
+        ResultFileManager resultManager = (ResultFileManager)obj;
+
+        out.write(Opcodes.MARK);
+        {
+            out.write(Opcodes.MARK);
+            {
+                IDList scalars = resultManager.getAllScalars(false, false);
+                scalars = resultManager.filterIDList(scalars, filterExpression);
+
+                Debug.println("pickling " + scalars.size() + " scalars");
+                for (int i = 0; i < scalars.size(); ++i)
+                    pickleScalarResult(resultManager, scalars.get(i), pickler, out);
+            }
+            out.write(Opcodes.LIST);
+
+            if (includeAttrs)
+                new ResultAttrsPickler(filterExpression).pickle(resultManager, out, pickler);
+            else
+                out.write(Opcodes.NONE);
+
+            if (includeRunattrs)
+                new RunAttrsPickler(filterExpression, RunAttrsPickler.FilterMode.FILTER_RESULTS).pickle(resultManager, out, pickler);
+            else
+                out.write(Opcodes.NONE);
+
+            if (includeItervars)
+                new IterVarsPickler(filterExpression, IterVarsPickler.FilterMode.FILTER_RESULTS).pickle(resultManager, out, pickler);
+            else
+                out.write(Opcodes.NONE);
+        }
+        out.write(Opcodes.TUPLE);
     }
 }
