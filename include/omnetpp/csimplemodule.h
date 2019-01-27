@@ -123,14 +123,6 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     cSimpleModule(unsigned stacksize = 0);
 
     /**
-     * COMPATIBILITY. This constructor is only provided to make it possible
-     * to write simple modules that do not use the Module_Class_Members
-     * macro and can also be compiled with OMNeT++ versions earlier than
-     * 3.2. The first two args are unused in this and later versions.
-     */
-    cSimpleModule(const char *dummy1, cModule *dummy2, unsigned stacksize);
-
-    /**
      * Destructor.
      */
     virtual ~cSimpleModule();
