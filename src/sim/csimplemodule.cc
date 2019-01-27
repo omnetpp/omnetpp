@@ -164,30 +164,6 @@ void cSimpleModule::activate(void *p)
     }
 }
 
-// legacy constructor, only for backwards compatiblity; first two args are unused
-cSimpleModule::cSimpleModule(const char *, cModule *, unsigned stackSize)
-{
-    coroutine = nullptr;
-    setFlag(FL_USESACTIVITY, stackSize != 0);
-    setFlag(FL_ISTERMINATED, false);
-    setFlag(FL_STACKALREADYUNWOUND, false);
-
-    // for an activity() module, timeoutmsg will be created in scheduleStart()
-    // which must always be called
-    timeoutMessage = nullptr;
-
-    if (usesActivity())
-    {
-       // setup coroutine, allocate stack for it
-       coroutine = new cCoroutine;
-       if (!coroutine->setup(cSimpleModule::activate, this, stackSize+getEnvir()->getExtraStackForEnvir()))
-           throw cRuntimeError("Cannot create coroutine with %d+%d bytes of stack space for module '%s' -- "
-                               "see Manual for hints on how to increase the number of coroutines that can be created, "
-                               "or rewrite modules to use handleMessage() instead of activity()",
-                               stackSize, getEnvir()->getExtraStackForEnvir(), getFullPath().c_str());
-    }
-}
-
 cSimpleModule::cSimpleModule(unsigned stackSize)
 {
     coroutine = nullptr;
