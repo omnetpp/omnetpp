@@ -637,6 +637,12 @@ class SIM_API cModule : public cComponent //implies noncopyable
      *  @see cSimulation::getModuleByPath()
      */
     virtual cModule *getModuleByPath(const char *path) const;
+
+    /**
+     * Returns true of the given module has this module as an ancestor, and
+     * false otherwise.
+     */
+    virtual bool containsModule(cModule *module) const;
     //@}
 
     /** @name Gates. */
