@@ -1128,6 +1128,17 @@ cModule *cModule::getModuleByPath(const char *path) const
     return const_cast<cModule*>(module);  // nullptr if not found
 }
 
+bool cModule::containsModule(cModule *module) const
+{
+    while (module) {
+        if (module == this)
+            return true;
+        module = module->getParentModule();
+    }
+    return false;
+}
+
+
 cPar& cModule::getAncestorPar(const char *name)
 {
     // search parameter in parent modules
