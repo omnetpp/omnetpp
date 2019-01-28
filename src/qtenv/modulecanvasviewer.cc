@@ -542,7 +542,7 @@ QRectF ModuleCanvasViewer::getSubmodRect(cModule *mod)
     // (like one between a sibling of a module and one of its submodules) gracefully.
     // ASSERT(mod->getParentModule() == object);
 
-    if (!containsKey(submoduleGraphicsItems, mod))
+    if (!containsKey(submoduleGraphicsItems, mod) && compoundModuleItem)
         return compoundModuleItem->getArea();
 
     return getQtenv()->getModuleLayouter()->getModuleRectangle(mod, zoomFactor, imageSizeFactor);
