@@ -1285,7 +1285,9 @@ void Qtenv::deleteInspector(Inspector *insp)
 void Qtenv::callRefreshDisplay()
 {
     ASSERT(simulationState != SIM_ERROR && simulationState != SIM_NONET);
-    getSimulation()->getSystemModule()->callRefreshDisplay();
+    cModule *systemModule = getSimulation()->getSystemModule();
+    if (systemModule)
+        systemModule->callRefreshDisplay();
     ++refreshDisplayCount;
     inspectorsFresh = false;
 }
