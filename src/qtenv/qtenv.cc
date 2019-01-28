@@ -1725,6 +1725,9 @@ void Qtenv::objectDeleted(cObject *object)
             confirm(INFO, "Message to run until has just been deleted.");
     }
 
+    if (messageAnimator && object == messageAnimator->getMarkedModule())
+        messageAnimator->setMarkedModule(nullptr);
+
     emit objectDeletedSignal(object);
 
     // TODO: use signals
