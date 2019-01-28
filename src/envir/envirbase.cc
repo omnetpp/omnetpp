@@ -1498,8 +1498,9 @@ int EnvirBase::parseSimtimeResolution(const char *resolution)
 void EnvirBase::setEventlogRecording(bool enabled)
 {
     if (enabled != recordEventlog) {
-        // NOTE: eventlogmgr must be non-nullptr when record_eventlog is true
-        if (enabled)
+        if (!eventlogManager)
+            alert("No eventlog manager");
+	else if (enabled)
             eventlogManager->startRecording();
         else
             eventlogManager->stopRecording();
