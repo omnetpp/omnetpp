@@ -52,20 +52,9 @@ extern omnetpp::cConfigOption *CFGID_VECTOR_BUFFER;
 
 Register_GlobalConfigOption(CFGID_OUTPUT_VECTOR_DB_INDEXING, "output-vector-db-indexing", CFG_CUSTOM, "skip", "Whether and when to add an index to the 'vectordata' table in SQLite output vector files. Possible values: skip, ahead, after");
 
-//TODO move out table creation code into a common file!
-/*
- * Performance notes:
- *  - file size: without index, about the same as with the traditional text-based format
- *  - index adds about 30-70% to the file size
- *  - raw recording performance: about half of text based recorder
- *  - with adding the index up front, total time is worse than with adding index after
- */
-
 SqliteOutputVectorManager::SqliteOutputVectorManager()
 {
     initialized = false;
-
-    //TODO why not read per-run?
 
     size_t memoryLimit = (size_t) getEnvir()->getConfig()->getAsDouble(CFGID_OUTPUTVECTOR_MEMORY_LIMIT);
     writer.setOverallMemoryLimit(memoryLimit);
@@ -106,7 +95,8 @@ void SqliteOutputVectorManager::initialize()
     writeRunData();
 }
 
-inline StringMap convertMap(const opp_string_map *m) {
+inline StringMap convertMap(const opp_string_map *m)
+{
     StringMap result;
     if (m)
         for (auto pair : *m)
