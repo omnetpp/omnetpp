@@ -362,6 +362,9 @@ class SIM_API cModule : public cComponent //implies noncopyable
     // internal: builds submodules and internal connections for this module
     virtual void doBuildInside();
 
+    // internal: helper for deleteModule()
+    virtual void doDeleteModule();
+
   public:
 #ifdef USE_OMNETPP4x_FINGERPRINTS
     // internal: returns OMNeT++ V4.x compatible module ID

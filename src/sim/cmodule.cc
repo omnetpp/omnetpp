@@ -98,7 +98,7 @@ cModule::~cModule()
     for (SubmoduleIterator it(this); !it.end(); ) {
         cModule *submodule = *it;
         ++it;
-        submodule->deleteModule();
+        submodule->doDeleteModule();
     }
 
     // adjust gates that were directed here
@@ -1210,6 +1210,11 @@ void cModule::deleteModule()
     if (activeModule != nullptr && this->containsModule(activeModule))
         throw cDeleteModuleException(this);
 
+    doDeleteModule();
+}
+
+void cModule::doDeleteModule()
+{
     // notify pre-change listeners
     if (hasListeners(PRE_MODEL_CHANGE)) {
         cPreModuleDeleteNotification tmp;
