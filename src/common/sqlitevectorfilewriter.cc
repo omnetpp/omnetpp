@@ -350,7 +350,8 @@ void SqliteVectorFileWriter::writeBlock(VectorData *vp)
 
 void SqliteVectorFileWriter::flush()
 {
-    writeRecords();
+    if (db)
+        writeRecords();
 }
 
 
