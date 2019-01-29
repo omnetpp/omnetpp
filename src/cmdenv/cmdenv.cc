@@ -203,7 +203,7 @@ void Cmdenv::doRun()
             runsTried++;
             bool finishedOK = false;
             bool networkSetupDone = false;
-            bool startrunDone = false;
+            bool startrunCalled = false;
             try {
                 if (opt->verbose)
                     out << "\nPreparing for running configuration " << opt->configName << ", run #" << runNumber << "..." << endl;
@@ -248,8 +248,9 @@ void Cmdenv::doRun()
                     out << "Initializing..." << endl;
 
                 loggingEnabled = !opt->expressMode;
+
+                startrunCalled = true;
                 startRun();
-                startrunDone = true;
 
                 // run the simulation
                 if (opt->verbose)
@@ -280,7 +281,7 @@ void Cmdenv::doRun()
             }
 
             // call endRun()
-            if (startrunDone) {
+            if (startrunCalled) {
                 try {
                     endRun();
                 }

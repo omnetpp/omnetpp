@@ -779,7 +779,7 @@ void EnvirBase::startRun()
     cLogProxy::flushLastLine();
 }
 
-void EnvirBase::endRun()  // FIXME eliminate???
+void EnvirBase::endRun()
 {
     notifyLifecycleListeners(LF_ON_RUN_END);
 }
