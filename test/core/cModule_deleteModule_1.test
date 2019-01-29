@@ -1,0 +1,103 @@
+%description:
+Tests that an activity() and handleMessage() modules can be deleted, also from
+themselves; and that compound modules containing activity() and handleMessage()
+modules can be deleted, also from one of their own submodules.
+
+%file: test.ned
+
+import testlib.*;
+
+module CompoundWithActivity {
+    @class(::testlib::DeletionTesterBase);
+    submodules:
+        deleter: DeletionTesterActivity;
+}
+
+module CompoundWithHandleMessage {
+    @class(::testlib::DeletionTesterBase);
+    submodules:
+        deleter: DeletionTesterHandleMessage;
+}
+
+network Test
+{
+    submodules:
+        suicide1: DeletionTesterHandleMessage {
+            moduleToDelete = ".";
+        }
+        suicide2: DeletionTesterActivity {
+            moduleToDelete = ".";
+        }
+
+        victim1: DeletionTesterHandleMessage;
+        killer1: DeletionTesterHandleMessage {
+            moduleToDelete = "^.victim1";
+        }
+
+        victim2: DeletionTesterActivity;
+        killer2: DeletionTesterActivity {
+            moduleToDelete = "^.victim2";
+        }
+
+        suicideCompound1 : CompoundWithActivity {
+            deleter.moduleToDelete = "^";
+        }
+
+        suicideCompound2 : CompoundWithHandleMessage {
+            deleter.moduleToDelete = "^";
+        }
+
+        victimCompound1 : CompoundWithActivity;
+        compoundKiller1: DeletionTesterHandleMessage {
+            moduleToDelete = "^.victimCompound1";
+        }
+
+        victimCompound2 : CompoundWithHandleMessage;
+        compoundKiller2: DeletionTesterHandleMessage {
+            moduleToDelete = "^.victimCompound2";
+        }
+
+}
+
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+cmdenv-event-banners = false
+sim-time-limit = 10s
+
+%contains: stdout
+t=1s: Test.suicide1: deleting Test.suicide1
+ *** Test.suicide1 deleted
+t=1s: Test.killer1: deleting Test.victim1
+ *** Test.victim1 deleted
+t=1s: Test.suicideCompound2.deleter: deleting Test.suicideCompound2
+ *** Test.suicideCompound2 deleted
+ *** Test.suicideCompound2.deleter deleted
+t=1s: Test.compoundKiller1: deleting Test.victimCompound1
+ *** Test.victimCompound1 deleted
+ *** Test.victimCompound1.deleter deleted
+ *** Noisy object Test.victimCompound1.deleter.noisy deleted
+t=1s: Test.compoundKiller2: deleting Test.victimCompound2
+ *** Test.victimCompound2 deleted
+ *** Test.victimCompound2.deleter deleted
+t=1s: Test.suicide2: deleting Test.suicide2
+ *** Noisy object Test.suicide2.noisy deleted
+ *** Test.suicide2 deleted
+t=1s: Test.killer2: deleting Test.victim2
+ *** Test.victim2 deleted
+ *** Noisy object Test.victim2.noisy deleted
+t=1s: Test.suicideCompound1.deleter: deleting Test.suicideCompound1
+ *** Noisy object Test.suicideCompound1.deleter.noisy deleted
+ *** Test.suicideCompound1 deleted
+ *** Test.suicideCompound1.deleter deleted
+
+<!> Simulation time limit reached -- at t=10s, event #24
+
+Calling finish() at end of Run #0...
+ *** Test.killer1 deleted
+ *** Test.killer2 deleted
+ *** Noisy object Test.killer2.noisy deleted
+ *** Test.compoundKiller1 deleted
+ *** Test.compoundKiller2 deleted
