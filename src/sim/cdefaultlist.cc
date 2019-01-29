@@ -82,8 +82,10 @@ cDefaultList::~cDefaultList()
         for (int i = 0; i < numObjs; i++) {
             if (dynamic_cast<cWatchBase *>(objs[i]))
                 delete objs[i--];  // "i--" used because delete will move last item to position i
-            else
+            else {
                 getEnvir()->undisposedObject(objs[i]);
+                objs[i]->removeFromOwnershipTree(); // as its current owner is being deleted
+            }
         }
 
         // we can free up the pointer array itself though
