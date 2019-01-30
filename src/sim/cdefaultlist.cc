@@ -84,7 +84,7 @@ cDefaultList::~cDefaultList()
                 delete objs[i--];  // "i--" used because delete will move last item to position i
             else {
                 getEnvir()->undisposedObject(objs[i]);
-                objs[i]->removeFromOwnershipTree(); // as its current owner is being deleted
+                objs[i]->owner = nullptr; // as its current owner (this) is being deleted
             }
         }
 
