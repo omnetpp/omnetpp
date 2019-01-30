@@ -66,7 +66,7 @@ inline void SqliteVectorFileWriter::checkDone(int sqlite3_result)
 void SqliteVectorFileWriter::error(const char *errmsg)
 {
     std::string msg = errmsg ? errmsg : "unknown error";
-    if (db == nullptr) msg += " (db == nullptr)"; // sqlite's own error message is usually 'out of memory' (?)
+    if (db == nullptr) msg = "Database not open (db=nullptr), or " + msg; // sqlite's own error message is usually 'out of memory' (?)
     std::string fname = this->fname; // cleanup may clear it
     cleanup();
     throw opp_runtime_error("SQLite error '%s' on file '%s'", msg.c_str(), fname.c_str());
