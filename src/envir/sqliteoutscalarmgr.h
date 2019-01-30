@@ -46,7 +46,6 @@ class SqliteOutputScalarManager : public cIOutputScalarManager
     void closeDb();
     void writeRunData();
     virtual void initialize();
-    virtual void recordNumericIterationVariableAsScalar(const char *name, const char *value); // i.e. write *if* numeric
     bool isBad() {return initialized && !writer.isOpen();}
 
   public:
