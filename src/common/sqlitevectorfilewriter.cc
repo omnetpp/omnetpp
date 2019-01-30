@@ -294,7 +294,7 @@ void SqliteVectorFileWriter::recordInVector(void *vectorhandle, eventnumber_t ev
 
     // store value
     vp->buffer.push_back(Sample(t, eventNumber, value));
-    this->bufferedSamples++;
+    bufferedSamples++;
 
     // write out block if necessary
     if (vp->bufferedSamplesLimit > 0 && (int)vp->buffer.size() >= vp->bufferedSamplesLimit)
@@ -336,12 +336,12 @@ void SqliteVectorFileWriter::writeBlock(VectorData *vp)
 
     Assert(db != nullptr);
 
-    for (Samples::iterator it = vp->buffer.begin(); it != vp->buffer.end(); ++it) {
+    for (const Sample& sample : vp->buffer) {
         checkOK(sqlite3_reset(add_vector_data_stmt));
         checkOK(sqlite3_bind_int64(add_vector_data_stmt, 1, vp->id));
-        checkOK(sqlite3_bind_int64(add_vector_data_stmt, 2, it->eventNumber));
-        checkOK(sqlite3_bind_int64(add_vector_data_stmt, 3, it->simtime));
-        checkOK(sqlite3_bind_double(add_vector_data_stmt, 4, it->value));
+        checkOK(sqlite3_bind_int64(add_vector_data_stmt, 2, sample.eventNumber));
+        checkOK(sqlite3_bind_int64(add_vector_data_stmt, 3, sample.simtime));
+        checkOK(sqlite3_bind_double(add_vector_data_stmt, 4, sample.value));
         checkDone(sqlite3_step(add_vector_data_stmt));
     }
     bufferedSamples -= vp->buffer.size();

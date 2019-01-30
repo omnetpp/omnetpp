@@ -49,16 +49,13 @@ class COMMON_API SqliteVectorFileWriter
         Sample(rawsimtime_t t, eventnumber_t eventNumber, double val) : simtime(t), eventNumber(eventNumber), value(val) {}
     };
 
-    typedef std::vector<Sample> Samples;  //TODO these typedefs are no longer needed
-
     struct VectorData {
         sqlite_int64 id;           // vector ID
-        Samples buffer;            // buffer holding recorded data not yet written to the database
-        long bufferedSamples;      // number of samples in the buffer  //---FIXME isn't this buffer.size() ????
+        std::vector<Sample> buffer; // buffer holding recorded data not yet written to the database
         long bufferedSamplesLimit; // maximum number of samples gathered in the buffer before writing out; 0=no limit
 
         // statistics
-        eventnumber_t startEventNum = 0; // event number of the first sample in the block    //TODO these four are completely useless, could be removed
+        eventnumber_t startEventNum = 0; // event number of the first sample in the blocK
         eventnumber_t endEventNum = 0; // event number of the last sample in the block
         rawsimtime_t startTime = 0;   // simulation time of the first sample
         rawsimtime_t endTime = 0;     // simulation time of the last sample
