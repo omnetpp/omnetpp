@@ -774,18 +774,13 @@ void EnvirBase::setupNetwork(cModuleType *network)
         EnvirUtils::dumpResultRecorders(out, getSimulation()->getSystemModule());
 }
 
-void EnvirBase::startRun()
+void EnvirBase::prepareForRun()
 {
     resetClock();
     if (opt->simtimeLimit >= SIMTIME_ZERO)
         getSimulation()->setSimulationTimeLimit(opt->simtimeLimit);
     getSimulation()->callInitialize();
     cLogProxy::flushLastLine();
-}
-
-void EnvirBase::endRun()
-{
-    notifyLifecycleListeners(LF_ON_RUN_END);
 }
 
 //-------------------------------------------------------------

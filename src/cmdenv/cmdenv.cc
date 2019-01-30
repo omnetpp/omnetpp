@@ -203,7 +203,7 @@ void Cmdenv::doRun()
             runsTried++;
             bool finishedOK = false;
             bool networkSetupDone = false;
-            bool startrunCalled = false;
+            bool endRunRequired = false;
             try {
                 if (opt->verbose)
                     out << "\nPreparing for running configuration " << opt->configName << ", run #" << runNumber << "..." << endl;
@@ -236,6 +236,8 @@ void Cmdenv::doRun()
                 cModuleType *network = resolveNetwork(opt->networkName.c_str());
                 ASSERT(network);
 
+                endRunRequired = true;
+
                 // set up network
                 if (opt->verbose)
                     out << "Setting up network \"" << opt->networkName.c_str() << "\"..." << endl;
@@ -249,8 +251,7 @@ void Cmdenv::doRun()
 
                 loggingEnabled = !opt->expressMode;
 
-                startrunCalled = true;
-                startRun();
+                prepareForRun();
 
                 // run the simulation
                 if (opt->verbose)
@@ -280,10 +281,10 @@ void Cmdenv::doRun()
                 displayException(e);
             }
 
-            // call endRun()
-            if (startrunCalled) {
+            // send LF_ON_RUN_END notification
+            if (endRunRequired) {
                 try {
-                    endRun();
+                    notifyLifecycleListeners(LF_ON_RUN_END);
                 }
                 catch (std::exception& e) {
                     finishedOK = false;

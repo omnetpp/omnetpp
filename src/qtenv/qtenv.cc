@@ -667,7 +667,7 @@ void Qtenv::doRun()
 
     // delete network if not yet done
     if (simulationState != SIM_NONET && simulationState != SIM_FINISHCALLED)
-        endRun();
+        notifyLifecycleListeners(LF_ON_RUN_END);
     getSimulation()->deleteNetwork();
 
     // pull down inspector factories
@@ -1042,7 +1042,7 @@ void Qtenv::finishSimulation()
     }
     // then endrun
     try {
-        endRun();
+        notifyLifecycleListeners(LF_ON_RUN_END);
     }
     catch (std::exception& e) {
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
@@ -1102,7 +1102,7 @@ void Qtenv::newNetwork(const char *networkname)
         if (simulationState != SIM_NONET) {
             storeInspectors(true);
             if (simulationState != SIM_FINISHCALLED)
-                endRun();
+                notifyLifecycleListeners(LF_ON_RUN_END);
             getSimulation()->deleteNetwork();
             simulationState = SIM_NONET;
         }
@@ -1116,7 +1116,7 @@ void Qtenv::newNetwork(const char *networkname)
         readPerRunOptions();
         opt->networkName = network->getName();  // override config setting
         setupNetwork(network);
-        startRun();
+        prepareForRun();
 
         simulationState = SIM_NEW;
         callRefreshDisplay(); // the one without exception handling!
@@ -1155,7 +1155,7 @@ void Qtenv::newRun(const char *configname, int runnumber)
         if (simulationState != SIM_NONET) {
             storeInspectors(true);
             if (simulationState != SIM_FINISHCALLED)
-                endRun();
+                notifyLifecycleListeners(LF_ON_RUN_END);
             getSimulation()->deleteNetwork();
             simulationState = SIM_NONET;
         }
@@ -1174,7 +1174,7 @@ void Qtenv::newRun(const char *configname, int runnumber)
         ASSERT(network);
 
         setupNetwork(network);
-        startRun();
+        prepareForRun();
 
         simulationState = SIM_NEW;
         callRefreshDisplay(); // the one without exception handling!
