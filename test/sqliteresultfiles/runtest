@@ -1,0 +1,65 @@
+#! /bin/bash
+#
+# Test that SQLite and OMNeT++ result file formats contain the same information.
+#
+# The same simulations are run to record once in SQLite and once in OMNeT++
+# file format, and the results must have identical contents.
+# Before the comparison, we convert both file formats into CSV, and erase
+# naturally differring parts such as result dir, runid, processid, datetime.
+# After that, normal textual diff should find no difference at all.
+#
+
+ERROR() { echo '*** ERROR ***' ; exit 1 ; }
+FAIL() { echo '*** TEST FAILED ***' ; exit 1 ; }
+withecho() { echo "\$ $@" ; "$@" ; }
+
+WORKDIR=$(pwd)
+rm -rf $WORKDIR/results-omnetpp $WORKDIR/results-sqlite
+
+runsimulation() {
+    DIR=$1
+    shift
+    CMD=$@
+
+    cd $DIR || ERROR
+    withecho $CMD -s -u Cmdenv --outputvectormanager-class=omnetpp::envir::OmnetppOutputVectorManager --outputscalarmanager-class=omnetpp::envir::OmnetppOutputScalarManager --result-dir=$WORKDIR/results-omnetpp --cmdenv-performance-display=false || ERROR
+    echo
+    withecho $CMD -s -u Cmdenv --outputvectormanager-class=omnetpp::envir::SqliteOutputVectorManager --outputscalarmanager-class=omnetpp::envir::SqliteOutputScalarManager --result-dir=$WORKDIR/results-sqlite --cmdenv-performance-display=false || ERROR
+    echo
+    cd $WORKDIR
+}
+
+echo ================================================================================================================
+echo RUNNING SIMULATIONS TO PRODUCE RESULT FILES IN SQLite and OMNeT++ FORMATS:
+echo
+runsimulation ../../samples/aloha ./aloha -c PureAloha1 --sim-time-limit=60s
+runsimulation ../../samples/aloha ./aloha -c PureAlohaExperiment -r 5
+
+echo ================================================================================================================
+echo SCAVETOOL SUMMARY REPORT OF EACH RESULT FILE:
+for f in results-*/*.vec results-*/*.sca; do
+    printf '%s\t' $f
+    scavetool -p --no-indexing $f || ERROR
+done
+echo
+
+echo ================================================================================================================
+echo BRINGING SQLite and OMNeT++ FILES TO COMMON FORMAT, VIA CSV EXPORT:
+for f in results-*/*.vec results-*/*.sca; do
+    withecho scavetool x $f -o $f.csv -x precision=12 || ERROR
+    # erase naturally differring parts, such as runid's variable part, processid, resultdir
+    sed -E -e 's/^([A-Za-z0-9_]+-[0-9]+)-[^,]+/\1-xxxx/' \
+           -e 's/results-(sqlite|omnetpp)/results-xxx/' \
+           -e 's/processid,[0-9]+/processid,9999/' \
+           -e 's/datetime,[0-9:-]+/datetime,xxxx/' \
+           $f.csv > $f.csvx
+done
+echo
+
+echo ================================================================================================================
+echo DIFF OUTPUTS SHOULD BE EMPTY:
+for f in $(cd results-omnetpp; echo *.sca *.vec); do
+    withecho diff -u1 results-omnetpp/$f.csvx results-sqlite/$f.csvx || FAIL
+done
+echo '*** PASS ***'
+
