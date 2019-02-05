@@ -55,8 +55,8 @@ Define_NED_Math_Function3(sin, 1,   "math", "Trigonometric function; see standar
 Define_NED_Math_Function3(cos, 1,   "math", "Trigonometric function; see standard C function of the same name")
 Define_NED_Math_Function3(tan, 1,   "math", "Trigonometric function; see standard C function of the same name")
 
-Define_NED_Math_Function3(ceil, 1,  "math", "Rounds down; see standard C function of the same name")
-Define_NED_Math_Function3(floor, 1, "math", "Rounds up; see standard C function of the same name")
+Define_NED_Math_Function3(ceil, 1,  "math", "Rounds up; see standard C function of the same name")
+Define_NED_Math_Function3(floor, 1, "math", "Rounds down; see standard C function of the same name")
 
 Define_NED_Math_Function3(exp, 1,   "math", "Exponential; see standard C function of the same name")
 Define_NED_Math_Function3(pow, 2,   "math", "Power; see standard C function of the same name")
