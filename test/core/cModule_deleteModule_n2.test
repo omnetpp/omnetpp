@@ -1,0 +1,60 @@
+%description:
+Negative test for deleteModule(): check that deleting a module object directly is not allowed
+
+%file: test.ned
+
+simple Tester {}
+
+module Node {}
+
+network Test
+{
+    submodules:
+        node: Node;
+        tester: Tester;
+}
+
+%file: test.cc
+
+#include <string.h>
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Tester : public cSimpleModule
+{
+  public:
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
+};
+
+Define_Module(Tester);
+
+void Tester::initialize()
+{
+    scheduleAt(0, new cMessage);
+}
+
+void Tester::handleMessage(cMessage *msg)
+{
+    delete msg;
+    cModule *node = getParentModule()->getSubmodule("node");
+    ASSERT(node);
+    delete node; // <-- this should fail! modules cannot be deleted directly
+    EV << "Done\n";
+}
+
+}; //namespace
+
+%exitcode: 134
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+cmdenv-event-banners = false
+
+%contains: stdout
+<!> (omnetpp::cModule)Test.node: Fatal: Direct deletion of a module is illegal, use deleteModule() instead; ABORTING -- in module (cModule_deleteModule_n2::Tester) Test.tester (id=3), at t=0s, event #1

@@ -1,0 +1,13 @@
+%description:
+Deleting a module /channel object directly is allowed if it has not yet been inserted into the network
+
+%activity:
+
+cModule *moduleObject1 = new cModule();
+delete moduleObject1;
+
+cSimpleModule *moduleObject2 = new cSimpleModule();
+delete moduleObject2;
+
+cChannel *channelObject1 = new cDatarateChannel();
+delete channelObject1;
