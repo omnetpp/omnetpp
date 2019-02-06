@@ -5,7 +5,7 @@ struct GeneratedStruct
     string baz;
 }
 
-class GeneratedClass
+class GeneratedClass extends cObject
 {
     int one;
     double two;

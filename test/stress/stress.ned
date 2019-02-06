@@ -11,7 +11,7 @@ simple StressSource
 {
     parameters:
         volatile double serviceTime @unit(s);
-        volatile double messageLength @unit(byte);
+        volatile int messageLength @unit(byte);
         @display("i=block/source");
     gates:
         input directIn;
@@ -45,7 +45,7 @@ simple StressCapsulate
     parameters:
         double encapsulateProbability;
         double decapsulateProbability;
-        volatile double messageLength @unit(byte);
+        volatile int messageLength @unit(byte);
         @display("i=block/socket");
     gates:
         input directIn;
@@ -56,7 +56,7 @@ simple StressCapsulate
 simple StressDuplicate
 {
     parameters:
-        volatile double numberOfDuplicates;
+        volatile int numberOfDuplicates;
         @display("i=block/fork");
     gates:
         input directIn;

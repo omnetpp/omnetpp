@@ -13,6 +13,5 @@
 //
 packet StressPacket
 {
-   fields:
-      int remainingHops;
+    int remainingHops;
 };

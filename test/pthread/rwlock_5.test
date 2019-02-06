@@ -5,6 +5,7 @@ Tests the ReadWriteLock class
 
 #include <common/rwlock.h>
 using namespace omnetpp;
+using namespace omnetpp::common;
 
 %activity:
 
