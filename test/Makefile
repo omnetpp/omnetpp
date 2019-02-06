@@ -3,7 +3,8 @@
 # are REQUIRED to pass before each release.
 #
 
-all: test_anim test_common test_core test_envir test_makemake test_featuretool test_fingerprint test_histograms test_sqliteresultfiles
+
+all: test_anim test_build test_common test_core test_envir test_makemake test_featuretool test_fingerprint test_histograms test_sqliteresultfiles test_msys
 
 test_anim:
 	cd anim && make
@@ -34,6 +35,9 @@ test_histograms:
 
 test_sqliteresultfiles:
 	cd sqliteresultfiles && ./runtest
+
+test_msys:
+	cd msys && ./runtest
 
 clean:
 	rm -rf core/work envir/work common/work makemake/work makemake/out featuretool/work fingerprint/results test_sqliteresultfiles/results-*

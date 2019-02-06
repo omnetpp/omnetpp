@@ -1,0 +1,5 @@
+Test various histogram configurations with various inputs.
+
+Two uses:
+1. visual inspection of histograms, using Qtenv
+2. as part of the fingerprint tests

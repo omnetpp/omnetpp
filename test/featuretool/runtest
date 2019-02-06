@@ -3,10 +3,6 @@
 # usage: runtest [<testfile>...]
 # without args, runs all *.test files in the current directory
 #
-failure() {
-    echo "FAILED: $1"
-    exit 1
-}
 
 MAKE=make
 TESTFILES=$*
