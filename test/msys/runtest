@@ -1,0 +1,8 @@
+#! /bin/sh
+
+if [ "$OSTYPE" != "msys" ]; then
+	echo "This is not an MSYS system, skipping test"
+	exit 0
+fi
+
+./msys-smoketest
