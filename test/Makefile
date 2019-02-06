@@ -1,5 +1,9 @@
+#
+# This Makefiles contains the list of official regression tests that
+# are REQUIRED to pass before each release.
+#
 
-all: test_anim test_common test_core test_envir test_makemake test_featuretool test_fingerprint test_histograms
+all: test_anim test_common test_core test_envir test_makemake test_featuretool test_fingerprint test_histograms test_sqliteresultfiles
 
 test_anim:
 	cd anim && make
@@ -28,6 +32,9 @@ test_featuretool:
 test_histograms:
 	cd histograms && opp_makemake -f && make
 
+test_sqliteresultfiles:
+	cd sqliteresultfiles && ./runtest
+
 clean:
-	rm -rf core/work envir/work common/work makemake/work makemake/out featuretool/work fingerprint/results
+	rm -rf core/work envir/work common/work makemake/work makemake/out featuretool/work fingerprint/results test_sqliteresultfiles/results-*
 	cd anim && make clean
