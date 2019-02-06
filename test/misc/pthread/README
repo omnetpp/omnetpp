@@ -1,0 +1,2 @@
+Note: pthread-related classes are only compiled into Common when built for the IDE.
+Normally, trying to run these tests will result in missing linker symbols.
