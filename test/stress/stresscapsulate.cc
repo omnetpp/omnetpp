@@ -31,7 +31,7 @@ void StressCapsulate::handleMessage(cMessage *msg)
         EV << "Encapsulating message: "  << packet << "\n";
         StressPacket *encapsulatedPacket = new StressPacket();
         encapsulatedPacket->setName("Encapsulated");
-        encapsulatedPacket->setBitLength((long)exponential(par("messageLength").doubleValue()));
+        encapsulatedPacket->setBitLength((long)exponential(par("messageLength").intValue()));
         encapsulatedPacket->encapsulate(packet);
         packet = encapsulatedPacket;
     }

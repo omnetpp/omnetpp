@@ -29,7 +29,7 @@ void StressQueue::handleMessage(cMessage *msg)
     cMessage *sendOutMsg = nullptr;
 
     if (msg == timer) {
-        if (!queue.empty()) {
+        if (!queue.isEmpty()) {
             sendOutMsg = (cMessage *)queue.pop();
 
             EV << "Sending out queued message: "  << sendOutMsg << "\n";
@@ -56,7 +56,7 @@ void StressQueue::handleMessage(cMessage *msg)
     // colorize icon
     if (!timer->isScheduled())
         getDisplayString().setTagArg("i", 1, "");
-    else if (queue.empty())
+    else if (queue.isEmpty())
         getDisplayString().setTagArg("i", 1, "green");
     else
         getDisplayString().setTagArg("i", 1, "yellow");
