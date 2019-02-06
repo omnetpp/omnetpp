@@ -4,10 +4,13 @@
 #
 
 
-all: test_anim test_build test_common test_core test_envir test_makemake test_featuretool test_fingerprint test_histograms test_sqliteresultfiles test_msys
+all: test_anim test_models test_build test_common test_core test_envir test_makemake test_featuretool test_fingerprint test_sqliteresultfiles test_msys
 
 test_anim:
 	cd anim && make
+
+test_models:
+	cd models && make
 
 test_build:
 	cd build && ./test-builds
@@ -21,7 +24,7 @@ test_core:
 test_makemake:
 	cd makemake && ./runtest
 
-test_fingerprint: test_histograms
+test_fingerprint: test_models
 	cd fingerprint && ./runtest
 
 test_envir:
@@ -29,9 +32,6 @@ test_envir:
 
 test_featuretool:
 	cd featuretool && ./runtest
-
-test_histograms:
-	cd histograms && opp_makemake -f && make
 
 test_sqliteresultfiles:
 	cd sqliteresultfiles && ./runtest
