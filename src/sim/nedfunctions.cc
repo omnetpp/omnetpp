@@ -833,7 +833,7 @@ cNedValue nedf_intuniform(cComponent *contextComponent, cNedValue argv[], int ar
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
     if (opp_strcmp(argv[0].getUnit(), argv[1].getUnit()) != 0)
-        throw cRuntimeError("intuniform(%s,%s): arguments must have the same unit", argv[0].stdstringValue().c_str(), argv[1].stdstringValue().c_str()); //TODO convert to smaller unit instead
+        throw cRuntimeError("intuniform(%s,%s): arguments must have the same unit", argv[0].stdstringValue().c_str(), argv[1].stdstringValue().c_str());
     return cNedValue((intpar_t)contextComponent->intuniform((int)argv[0], (int)argv[1], rng), argv[1].getUnit());
 }
 
@@ -846,7 +846,7 @@ cNedValue nedf_intuniformexcl(cComponent *contextComponent, cNedValue argv[], in
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
     if (opp_strcmp(argv[0].getUnit(), argv[1].getUnit()) != 0)
-        throw cRuntimeError("intuniformexcl(%s,%s): arguments must have the same unit", argv[0].stdstringValue().c_str(), argv[1].stdstringValue().c_str()); //TODO convert to smaller unit instead
+        throw cRuntimeError("intuniformexcl(%s,%s): arguments must have the same unit", argv[0].stdstringValue().c_str(), argv[1].stdstringValue().c_str());
     return cNedValue((intpar_t)contextComponent->intuniformexcl((int)argv[0], (int)argv[1], rng), argv[1].getUnit());
 }
 
