@@ -8071,3 +8071,24 @@ runtime environment (Qtenv) will not be available.
 EOT
 
 fi
+
+#---------------------------
+# Check for ccache
+#---------------------------
+
+if ccache -V >/dev/null 2>&1; then
+  if which "$CXX" | grep ccache >/dev/null 2>/dev/null; then
+    : # using ccache's compiler wrapper, OK
+  elif echo "$CXX" | grep ccache >/dev/null 2>/dev/null; then
+    : # compiler command prefixd with ccache, OK
+  else
+    cat << EOT
+
+Note: ccache is installed, but it is apparently not used by your current setup.
+To activate it, add /usr/lib/ccache at the front of your PATH, or prefix the
+compiler commands with "ccache" in configure.user (e.g., CXX="ccache clang++"),
+and re-run configure.
+EOT
+  fi
+fi
+
