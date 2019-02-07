@@ -297,6 +297,15 @@ SIM_API double pareto_shifted(cRNG *rng, double a, double b, double c);
 SIM_API int intuniform(cRNG *rng, int a, int b);
 
 /**
+ * @brief Returns a random integer with uniform distribution over [a,b),
+ * that is, from [a,b-1].
+ *
+ * @param a, b  the interval, a<b
+ * @param rng the underlying random number generator
+ */
+SIM_API int intuniformexcl(cRNG *rng, int a, int b);
+
+/**
  * @brief Returns the result of a Bernoulli trial with probability p,
  * that is, 1 with probability p and 0 with probability (1-p).
  *

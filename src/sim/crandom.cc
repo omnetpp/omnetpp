@@ -38,6 +38,7 @@ Register_Class(cTriang);
 Register_Class(cWeibull);
 Register_Class(cParetoShifted);
 Register_Class(cIntUniform);
+Register_Class(cIntUniformExcl);
 Register_Class(cBernoulli);
 Register_Class(cBinomial);
 Register_Class(cGeometric);
@@ -471,6 +472,36 @@ std::string cIntUniform::str() const
 }
 
 double cIntUniform::draw() const
+{
+    return (double)omnetpp::intuniformexcl(rng, a, b);
+}
+
+//----
+
+void cIntUniformExcl::copy(const cIntUniformExcl& other)
+{
+    a = other.a;
+    b = other.b;
+}
+
+cIntUniformExcl& cIntUniformExcl::operator=(const cIntUniformExcl& other)
+{
+    if (this == &other)
+        return *this;
+
+    cRandom::operator=(other);
+    copy(other);
+    return *this;
+}
+
+std::string cIntUniformExcl::str() const
+{
+    std::stringstream out;
+    out << "a=" << a << ", b=" << b;
+    return out.str();
+}
+
+double cIntUniformExcl::draw() const
 {
     return (double)omnetpp::intuniform(rng, a, b);
 }

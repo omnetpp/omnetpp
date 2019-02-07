@@ -744,6 +744,15 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     virtual int intuniform(int a, int b, int rng=0) const  {return omnetpp::intuniform(getRNG(rng), a, b);};
 
     /**
+     * Returns a random integer with uniform distribution over [a,b), that is,
+     * from [a,b-1].
+     *
+     * @param a, b  the interval, a<b
+     * @param rng index of the component RNG to use, see getRNG(int)
+     */
+    virtual int intuniformexcl(int a, int b, int rng=0) const  {return omnetpp::intuniformexcl(getRNG(rng), a, b);};
+
+    /**
      * Returns the result of a Bernoulli trial with probability p,
      * that is, 1 with probability p and 0 with probability (1-p).
      *
