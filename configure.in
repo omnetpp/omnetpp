@@ -331,7 +331,7 @@ else
         EXE_SUFFIX=".exe"
         SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
         # sepcial values for MS ABI compatible build is selected and clang is used
-        if test "$TOOLCHAIN_NAME" = "clang" -a "$USE_MS_ABI" = "yes"; then            
+        if test "$TOOLCHAIN_NAME" = "clang" -a "$USE_MS_ABI" = "yes"; then
             TOOLCHAIN_NAME="clang-msabi"
             echo "checking whether we are using MS ABI compatible libraries... yes"
             DEFINES="$DEFINES -D_MT -D_WINDOWS -D_WIN32 -DWIN32 -DWIN64 -D_USRDLL -D_WINDLL -D_DLL"
@@ -1266,3 +1266,24 @@ runtime environment (Qtenv) will not be available.
 EOT
 
 fi
+
+#---------------------------
+# Check for ccache
+#---------------------------
+
+if ccache -V >/dev/null 2>/dev/null; then
+  if which "$CXX" | grep ccache >/dev/null 2>/dev/null; then
+    : # using ccache's compiler wrapper, OK
+  elif echo "$CXX" | grep ccache >/dev/null 2>/dev/null; then
+    : # compiler command prefixed with ccache, OK
+  else
+    cat << EOT
+
+Note: ccache is installed, but it is apparently not used by your current setup.
+To activate it, add /usr/lib/ccache at the front of your PATH, or prefix the
+compiler commands with "ccache" in configure.user (e.g., CXX="ccache clang++"),
+and re-run configure.
+EOT
+  fi
+fi
+
