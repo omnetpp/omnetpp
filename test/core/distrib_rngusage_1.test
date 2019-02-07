@@ -60,6 +60,7 @@ for (int rng=0; rng<=2; rng++)
     CHECKNUMDRAWN(pareto_shifted(1.0, 2.0, 3.0, rng));
 
     CHECKNUMDRAWN(intuniform(0, 10, rng));
+    CHECKNUMDRAWN(intuniformexcl(0, 10, rng));
     CHECKNUMDRAWN(bernoulli(0.3, rng));
     CHECKNUMDRAWN(binomial(10, 0.3, rng));
     CHECKNUMDRAWN(geometric(0.3, rng));

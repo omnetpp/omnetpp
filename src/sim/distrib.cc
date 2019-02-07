@@ -318,6 +318,11 @@ int intuniform(cRNG *rng, int a, int b)
     return a + rng->intRand(b-a+1);
 }
 
+int intuniformexcl(cRNG *rng, int a, int b)
+{
+    return a + rng->intRand(b-a);
+}
+
 // bernoulli() is inline
 
 int binomial(cRNG *rng, int n, double p)

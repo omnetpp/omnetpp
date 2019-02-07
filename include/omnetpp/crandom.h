@@ -636,6 +636,47 @@ class SIM_API cIntUniform : public cRandom
 };
 
 /**
+ * @brief Generates random numbers from the discrete uniform distribution.
+ *
+ * This class is an object-oriented wrapper around the
+ * <code>intuniformexcl(cRNG *rng, int a, int b)</code>
+ * function.
+ *
+ * @ingroup RandomNumbersDiscr
+ */
+class SIM_API cIntUniformExcl : public cRandom
+{
+    protected:
+        int a;
+        int b;
+    private:
+        void copy(const cIntUniformExcl& other);
+    public:
+        /** @name Constructors, destructor, etc. */
+        //@{
+        cIntUniformExcl(cRNG *rng, int a, int b) : cRandom(rng), a(a), b(b) {}
+        cIntUniformExcl(const char *name=nullptr, cRNG *rng=nullptr, int a=0, int b=1) : cRandom(rng), a(a), b(b) {}
+        cIntUniformExcl(const cIntUniformExcl& other) : cRandom(other) {copy(other);}
+        virtual cIntUniformExcl *dup() const override {return new cIntUniformExcl(*this);}
+        cIntUniformExcl& operator =(const cIntUniformExcl& other);
+        virtual std::string str() const override;
+        //@}
+
+        /** @name Parameters. */
+        //@{
+        void setA(int a) {this->a = a;}
+        int getA() const {return a;}
+        void setB(int b) {this->b = b;}
+        int getB() const {return b;}
+        //@}
+
+        /** @name Random number generation. */
+        //@{
+        virtual double draw() const override;
+        //@}
+};
+
+/**
  * @brief Generates random numbers that are the results of Bernoulli trials.
  *
  * This class is an object-oriented wrapper around the
