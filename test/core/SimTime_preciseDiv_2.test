@@ -1,0 +1,62 @@
+%description:
+SimTime: check preciseDiv(int64_i, Simtime)
+
+%global:
+
+// make protected SimTime::resetScale() accessible via subclassing
+class SimTimeExt : SimTime {
+  public: static void reset() {resetScale();}
+};
+
+static void test(int64_t x, int scaleExp, int64_t raw)
+{
+    SimTimeExt::reset();
+    SimTime::setScaleExp(scaleExp);
+
+    SimTime time;
+    time.setRaw(raw);
+
+    EV << "preciseDiv(" << x << ", " << time << ")";
+
+    int64_t num, denom;
+    int64_t intres;
+    try {
+        intres = preciseDiv(x, time, num, denom);
+    } catch (std::exception& e) {
+        EV << " ==> " << e.what() << endl;
+        return;
+    }
+
+    double dblres = intres + num/(double)denom;
+
+    EV << " = " << intres;
+    if (num != 0)
+        EV << " " << num << "/" << denom << ", ~" << dblres;
+
+    double approxres = x / time.dbl();
+
+    if (fabs(dblres / approxres - 1.0) > 0.0001)
+            EV << " NUMERIC ERROR";
+    EV << endl;
+}
+
+%activity:
+
+std::vector<int64_t> numbers = { 0, 1, 5, 6, 10, 17, 100, 7895776, 7895777, 1000000000LL, 1LL<<62, (1LL<<62)+1 };
+std::vector<int64_t> rawValues = { 1, 5, 6, 10, 17, 100, 7895776, 7895777, 1000000000LL, 1LL<<62, (1LL<<62)+1 };
+
+for (int64_t x : numbers) {
+    for (int scaleExp = -18; scaleExp <= 0; scaleExp++) {
+        for (int64_t raw : rawValues) {
+            test(x, scaleExp, raw);
+            test(x, scaleExp, -raw);
+            test(-x, scaleExp, raw);
+            test(-x, scaleExp, -raw);
+        }
+    }
+}
+
+EV << ".\n";
+
+%not-contains: stdout
+NUMERIC ERROR
