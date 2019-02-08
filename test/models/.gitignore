@@ -1,1 +1,3 @@
 Makefile
+histograms/histograms*
+stress/stress*
