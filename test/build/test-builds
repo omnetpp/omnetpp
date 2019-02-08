@@ -2,12 +2,9 @@
 #
 # Test the build process with different configurations
 #
-# The toolchain used for testing (default is gcc)
-# $TOOLCHAIN=vc or gcc
+# The toolchain used for testing (default is clang)
+# $TOOLCHAIN=clang or gcc
 #
-# EXTRA_TESTS=yes/no (default no) - whether to carry out additional testing
-# like double simtime support and tests whether OMNeT++ compiles without XML
-# libraries
 
 
 cd `dirname $0`
@@ -15,6 +12,10 @@ TEST_DIR=`pwd`
 LOG_DIR=$TEST_DIR/_buildlog
 cd $TEST_DIR/../..
 OMNETPP_ROOT=`pwd`
+
+# storing PID so we can exit from this shell in case of failure even if we are running inside a subshell
+trap "exit 1" TERM
+export MY_PID=$$
 
 export TEST_PROG="opp_run -h all"
 export WITH_NETBUILDER=yes
@@ -47,14 +48,7 @@ if [ "$TOOLCHAIN" = "" ]; then
     export TOOLCHAIN=clang
 fi
 
-if [ "$TOOLCHAIN" = "gcc" ]; then
-    export PREFER_CLANG=no
-fi
-
 export MAKE_PROG=make
-if [ "$TOOLCHAIN" = "vc" ]; then
-    export MAKE_PROG="nmake -f Makefile.vc"
-fi
 
 echo "Testing on $PLATFORM using the $TOOLCHAIN toolchain."
 
@@ -65,7 +59,9 @@ echo "Testing on $PLATFORM using the $TOOLCHAIN toolchain."
 
 failure() {
     echo "FAILED: $1"
-    exit 1
+    # As this function might be used inside a subshell, but we want to exit the top level script, we will send
+    # a TERM signal instead to the top level shell.
+    kill -s TERM $MY_PID
 }
 
 contains() {
@@ -86,107 +82,45 @@ contains() {
 # Compile functions
 #
 
-compile_gcc() {
-    echo "*** Compiling with gcc: $CFG"
-
-    # tweak
-    $TWEAKCONFIG setoradd configure.user PREFER_CLANG "$PREFER_CLANG" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user WITH_NETBUILDER  "$WITH_NETBUILDER" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user WITH_QTENV  "$WITH_QTENV" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user WITH_OSG  "$WITH_OSG" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user WITH_OSGEARTH  "$WITH_OSGEARTH" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user MPI_LIBS  "$MPI_LIBS" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user LIBXML_LIBS  "$LIBXML_LIBS" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user EXPAT_LIBS  "$EXPAT_LIBS" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user WITH_SYSTEMC  "$WITH_SYSTEMC" || failure $CFG
-
-    echo "    Configuring..."
-    cp configure.user "$LOG_DIR/$CFG-configure.user"
-    ./configure >"$LOG_DIR/$CFG-configure.out" 2>"$LOG_DIR/$CFG-configure.err"
-    cp Makefile.inc "$LOG_DIR/$CFG-Makefile.inc"
-
-    $TWEAKCONFIG assert Makefile.inc WITH_NETBUILDER  "$WITH_NETBUILDER" || failure $CFG
-    $TWEAKCONFIG assert Makefile.inc WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
-    $TWEAKCONFIG assert Makefile.inc SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
-    $TWEAKCONFIG assert Makefile.inc WITH_QTENV  "$WITH_QTENV" || failure $CFG
-    $TWEAKCONFIG assert Makefile.inc WITH_OSG  "$WITH_OSG" || failure $CFG
-    $TWEAKCONFIG assert Makefile.inc WITH_OSGEARTH  "$WITH_OSGEARTH" || failure $CFG
-    $TWEAKCONFIG assert Makefile.inc WITH_SYSTEMC  "$WITH_SYSTEMC" || failure $CFG
-
-    echo "    Building..."
-    $MAKE_PROG cleanall >"$LOG_DIR/$CFG-makeclean.out" 2>"$LOG_DIR/$CFG-makeclean.err" || failure "make cleanall failed - $CFG"
-    $MAKE_PROG -j8 >"$LOG_DIR/$CFG-make.out" 2>"$LOG_DIR/$CFG-make.err" || failure "make failed - $CFG"
-    samples/aloha/aloha -v >"$LOG_DIR/$CFG-buildinfo.out" 2>"$LOG_DIR/$CFG-buildinfo.err"
-}
-
-compile_vc() {
-    echo "*** Compiling with Visual C++: $CFG"
-
-    # tweak
-    $TWEAKCONFIG setoradd configuser.vc WITH_NETBUILDER  "$WITH_NETBUILDER" || failure $CFG
-    $TWEAKCONFIG setoradd configuser.vc WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
-    $TWEAKCONFIG setoradd configuser.vc WITH_QTENV  "$WITH_QTENV" || failure $CFG
-    $TWEAKCONFIG setoradd configuser.vc WITH_OSG  "$WITH_OSG" || failure $CFG
-    $TWEAKCONFIG setoradd configuser.vc WITH_OSGEARTH  "$WITH_OSGEARTH" || failure $CFG
-    $TWEAKCONFIG setoradd configuser.vc SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
-    $TWEAKCONFIG setoradd configuser.vc WITH_SYSTEMC  "$WITH_SYSTEMC" || failure $CFG
-
-    cp configuser.vc "$LOG_DIR/$CFG-configuser.vc"
-
-    echo "    Building..."
-    $MAKE_PROG cleanall >"$LOG_DIR/$CFG-makeclean.out" 2>"$LOG_DIR/$CFG-makeclean.err" || failure "make cleanall failed - $CFG"
-    $MAKE_PROG >"$LOG_DIR/$CFG-make.out" 2>"$LOG_DIR/$CFG-make.err" || failure "make failed - $CFG"
-    samples/aloha/aloha -v >"$LOG_DIR/$CFG-buildinfo.out" 2>"$LOG_DIR/$CFG-buildinfo.err"
-}
-
-compile_clang() {
-    echo "    Compiling with clang: $CFG"
-
-    PREFER_CLANG=yes
-
-    #tweak
-    $TWEAKCONFIG setoradd configure.user PREFER_CLANG "$PREFER_CLANG" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user WITH_NETBUILDER  "$WITH_NETBUILDER" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user WITH_QTENV  "$WITH_QTENV" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user WITH_OSG  "$WITH_OSG" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user WITH_OSGEARTH  "$WITH_OSGEARTH" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user MPI_LIBS  "$MPI_LIBS" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user LIBXML_LIBS  "$LIBXML_LIBS" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user EXPAT_LIBS  "$EXPAT_LIBS" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user WITH_SYSTEMC  "$WITH_SYSTEMC" || failure $CFG
-
-    echo "    Configuring..."
-    cp configure.user "$LOG_DIR/$CFG-configure.user"
-    ./configure >"$LOG_DIR/$CFG-configure.out" 2>"$LOG_DIR/$CFG-configure.err"
-    cp Makefile.inc "$LOG_DIR/$CFG-Makefile.inc"
-
-
-    $TWEAKCONFIG assert Makefile.inc WITH_NETBUILDER  "$WITH_NETBUILDER" || failure $CFG
-    $TWEAKCONFIG assert Makefile.inc WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
-    $TWEAKCONFIG assert Makefile.inc SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
-    $TWEAKCONFIG assert Makefile.inc WITH_QTENV  "$WITH_QTENV" || failure $CFG
-    $TWEAKCONFIG assert Makefile.inc WITH_OSG  "$WITH_OSG" || failure $CFG
-    $TWEAKCONFIG assert Makefile.inc WITH_OSGEARTH  "$WITH_OSGEARTH" || failure $CFG
-    $TWEAKCONFIG assert Makefile.inc WITH_SYSTEMC  "$WITH_SYSTEMC" || failure $CFG
-
-    echo "    Building..."
-    $MAKE_PROG cleanall >"$LOG_DIR/$CFG-makeclean.out" 2>"$LOG_DIR/$CFG-makeclean.err" || failure "make cleanall failed - $CFG"
-    $MAKE_PROG -j8 >"$LOG_DIR/$CFG-make.out" 2>"$LOG_DIR/$CFG-make.err" || failure "make failed - $CFG"
-    samples/aloha/aloha -v >"$LOG_DIR/$CFG-buildinfo.out" 2>"$LOG_DIR/$CFG-buildinfo.err"
-}
-
 compile() {
     if [ "$TOOLCHAIN" = "gcc" ]; then
-        compile_gcc
-    elif [ "$TOOLCHAIN" = "clang" ]; then
-        compile_clang
+        export PREFER_CLANG=no
     else
-        compile_vc
+        export PREFER_CLANG=yes
     fi
+
+    echo "*** Compiling with $TOOLCHAIN: $CFG"
+
+    # tweak
+    $TWEAKCONFIG setoradd configure.user PREFER_CLANG "$PREFER_CLANG" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user WITH_NETBUILDER  "$WITH_NETBUILDER" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user WITH_QTENV  "$WITH_QTENV" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user WITH_OSG  "$WITH_OSG" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user WITH_OSGEARTH  "$WITH_OSGEARTH" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user MPI_LIBS  "$MPI_LIBS" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user LIBXML_LIBS  "$LIBXML_LIBS" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user EXPAT_LIBS  "$EXPAT_LIBS" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user WITH_SYSTEMC  "$WITH_SYSTEMC" || failure $CFG
+
+    echo "    Configuring..."
+    cp configure.user "$LOG_DIR/$CFG-configure.user"
+    ./configure >"$LOG_DIR/$CFG-configure.out" 2>"$LOG_DIR/$CFG-configure.err"
+    cp Makefile.inc "$LOG_DIR/$CFG-Makefile.inc"
+
+    $TWEAKCONFIG assert Makefile.inc WITH_NETBUILDER  "$WITH_NETBUILDER" || failure $CFG
+    $TWEAKCONFIG assert Makefile.inc WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
+    $TWEAKCONFIG assert Makefile.inc SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
+    $TWEAKCONFIG assert Makefile.inc WITH_QTENV  "$WITH_QTENV" || failure $CFG
+    $TWEAKCONFIG assert Makefile.inc WITH_OSG  "$WITH_OSG" || failure $CFG
+    $TWEAKCONFIG assert Makefile.inc WITH_OSGEARTH  "$WITH_OSGEARTH" || failure $CFG
+    $TWEAKCONFIG assert Makefile.inc WITH_SYSTEMC  "$WITH_SYSTEMC" || failure $CFG
+
+    echo "    Building..."
+    $MAKE_PROG cleanall >"$LOG_DIR/$CFG-makeclean.out" 2>"$LOG_DIR/$CFG-makeclean.err" || failure "make cleanall failed - $CFG"
+    $MAKE_PROG -j8 >"$LOG_DIR/$CFG-make.out" 2>"$LOG_DIR/$CFG-make.err" || failure "make failed - $CFG"
+    samples/aloha/aloha -v >"$LOG_DIR/$CFG-buildinfo.out" 2>"$LOG_DIR/$CFG-buildinfo.err"
 }
 
 
@@ -199,11 +133,10 @@ runtest() {
     maxfailures=$2
     outputfile="$LOG_DIR/$CFG-$1-test.out"
     echo "    Running $1 tests..."
-    cd test && $MAKE_PROG test_$1 >$outputfile 2>"$LOG_DIR/$CFG-$1-test.err" || failure "test/$1 failed - $CFG"
+    cd test && $MAKE_PROG test_$1 >$outputfile 2>"$LOG_DIR/$CFG-$1-test.err"
     grep -E "PASS:|FAILED" $outputfile
     awk '/FAIL:/ {if($4>'$maxfailures') {exit 1;} }' $outputfile || failure "test_$1 failed (too many failed tests) - $CFG"
 }
-
 
 ################################################
 
@@ -216,9 +149,9 @@ mkdir -p $LOG_DIR
 if [ "$PLATFORM" = "windows" -a -f bin/opp_run.exe ]; then
 
   CFG=precompiled-binaries
-  (runtest core 1)
+  (runtest core 2)
   (runtest common 0)
-  (runtest envir 1)
+  (runtest envir 0)
   (runtest makemake 0)
 fi
 
@@ -227,6 +160,26 @@ fi
 # Compile tests
 #
 
+# check building with gcc
+CFG=default-gcc
+(TOOLCHAIN=gcc compile)
+contains cParsimPartition yes
+contains "Cmdenv : command-line user interface" yes
+contains "Qtenv : Qt-based graphical user interface" yes
+
+(TEST_PROG="opp_run -v" contains "GCC" yes)
+
+(TEST_PROG="opp_run -v" contains "XMLPARSER=libxml" yes)
+(TEST_PROG="opp_run -v" contains "WITH_NETBUILDER" yes)
+(TEST_PROG="opp_run -v" contains "large-file-support=yes" yes)
+(TEST_PROG="opp_run -v" contains "WITH_OSG" yes)
+(TEST_PROG="opp_run -v" contains "WITH_OSGEARTH" yes)
+(runtest core 2)
+(runtest common 0)
+(runtest envir 0)
+(runtest makemake 0)
+
+###########################################
 CFG=default
 (compile)
 
@@ -234,18 +187,16 @@ contains cParsimPartition yes
 contains "Cmdenv : command-line user interface" yes
 contains "Qtenv : Qt-based graphical user interface" yes
 
-if [ "$TOOLCHAIN" = "clang" ]; then
-    (TEST_PROG="opp_run -v" contains "Clang" yes)
-fi
+(TEST_PROG="opp_run -v" contains "Clang" yes)
 
 (TEST_PROG="opp_run -v" contains "XMLPARSER=libxml" yes)
 (TEST_PROG="opp_run -v" contains "WITH_NETBUILDER" yes)
 (TEST_PROG="opp_run -v" contains "large-file-support=yes" yes)
 (TEST_PROG="opp_run -v" contains "WITH_OSG" yes)
 (TEST_PROG="opp_run -v" contains "WITH_OSGEARTH" yes)
-(runtest core 1)
+(runtest core 2)
 (runtest common 0)
-(runtest envir 1)
+(runtest envir 0)
 (runtest makemake 0)
 
 #########################################
@@ -265,9 +216,9 @@ CFG=without_osg
 (runtest makemake 0)
 
 ########################################
-# Run SystemC compile tests on Linux and on Visual C++
+# Run SystemC compile tests on Linux
 # Other platforms / compilers are not supported
-if [ "$PLATFORM" = "linux" -o "$TOOLCHAIN" = "vc" ]; then
+if [ "$PLATFORM" = "linux" ]; then
     if [ -d src/systemc ]; then
         CFG=systemc
         (WITH_SYSTEMC=yes compile)
@@ -316,28 +267,13 @@ if [ "$PLATFORM" = "linux" ]; then
 fi
 
 ########################################
-#
-# The rest is tested only on GCC and CLANG, because with Visual C++
-# the libs should be configured by hand (no configure process)
-# in configuser.vc file. If we change those libs in this test
-# (i.e. set it to a fake value) those lib settings will be
-# permanently lost and the user will be forced to restore
-# the original configuser.vc somehow (e.g. by reinsalling OMNEST)
-# We don't want to permanently ruin the installation.
-#
+CFG=no_libxml
+(LIBXML_LIBS=-lbubu compile)
+(TEST_PROG="opp_run -v" contains "XMLPARSER=expat" yes)
+(runtest makemake 0)
 
-if [ "$TOOLCHAIN" = "gcc" -o "$TOOLCHAIN" = "clang"]; then
-
-  ########################################
-  CFG=no_libxml
-  (LIBXML_LIBS=-lbubu compile)
-  (TEST_PROG="opp_run -v" contains "XMLPARSER=expat" yes)
-  (runtest makemake 0)
-
-  ########################################
-  CFG=no_xmlparser
-  (LIBXML_LIBS=-lbubu EXPAT_LIBS=-lbubu compile)
-  (TEST_PROG="opp_run -v" contains "XMLPARSER=none" yes)
-  (runtest makemake 0)
-
-fi
+########################################
+CFG=no_xmlparser
+(LIBXML_LIBS=-lbubu EXPAT_LIBS=-lbubu compile)
+(TEST_PROG="opp_run -v" contains "XMLPARSER=none" yes)
+(runtest makemake 0)

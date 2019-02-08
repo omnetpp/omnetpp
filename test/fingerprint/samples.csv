@@ -91,7 +91,7 @@
 /samples/osg-earth/,                 ./osg-earth -f omnetpp.ini -c BostonPark -r 0,            5000s,         598d-fe7e/tplx,PASS,
 /samples/osg-earth/,                 ./osg-earth -f omnetpp.ini -c BostonStreets -r 0,         5000s,         d2fe-f19f/tplx,PASS,
 
-/samples/osg-indoor/,                ./osg-indoor -f omnetpp.ini -c Office -r 0,                5000s,         69f4-5a68/tplx,PASS,
+#/samples/osg-indoor/,                ./osg-indoor -f omnetpp.ini -c Office -r 0,                5000s,         0000-0000,PASS,
 
 #/samples/osg-intro/,                 ./osg-intro -f omnetpp.ini -c Simple3DModel -r 0,         5000s,         0000-0000,PASS,
 #/samples/osg-intro/,                 ./osg-intro -f omnetpp.ini -c OpenStreetMapGlobe -r 0,    5000s,         0000-0000,PASS,

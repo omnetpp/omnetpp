@@ -3,8 +3,12 @@
 # are REQUIRED to pass before each release.
 #
 
+# Test everything. Note, that test_core, test_common, test_envir and test_makemake is not included, because those 
+# test are implicitly executed by the 'test_build' target
+all: test_anim test_models test_featuretool test_fingerprint test_sqliteresultfiles test_build test_toolchain
 
-all: test_anim test_models test_build test_common test_core test_envir test_makemake test_featuretool test_fingerprint test_sqliteresultfiles test_msys
+# a (relatively) fast test which runs all tests that can finish in reasonable time. (i.e. full builds excluded)
+test_quick: test_anim test_models test_core test_common test_envir test_makemake test_featuretool test_sqliteresultfiles test_fingerprint
 
 test_anim:
 	cd anim && make
@@ -36,9 +40,10 @@ test_featuretool:
 test_sqliteresultfiles:
 	cd sqliteresultfiles && ./runtest
 
-test_msys:
-	cd msys && ./runtest
+test_toolchain:
+	cd toolchain && ./runtest
 
 clean:
 	rm -rf core/work envir/work common/work makemake/work makemake/out featuretool/work fingerprint/results test_sqliteresultfiles/results-*
 	cd anim && make clean
+	cd models && make clean

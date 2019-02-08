@@ -1,0 +1,17 @@
+#! /bin/sh
+
+
+if [ -d "$(dirname $0)/../../tools/win64/mingw64" ]; then
+  echo "Detected mingw64 toolchain. Testing..."
+  ./msys-smoketest || exit 1
+  echo "MinGW toolchain test: PASS"
+  exit 0
+fi
+
+if [ -d "$(dirname $0)/../../tools/macosx" ]; then
+  echo "Detected macOS toolchain. Testing..."
+  ./macos-smoketest || exit 1
+  echo "macOS toolchain test: PASS"
+  exit 0
+fi
+
