@@ -1,12 +1,12 @@
 %description:
-Test what happens if an activity-based module deletes itself
+Test what happens if an activity-based module throws an exception
 
 %activity:
-delete this;
+throw cRuntimeError("Banggg");
 
 %exitcode: 1
 
 %contains-regex: stderr
-Cannot delete itself
+<!> Error: Banggg
 
 
