@@ -7,17 +7,15 @@
 
 package org.omnetpp.ned.editor.graph.actions;
 
-import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.ned.editor.graph.commands.ChangeLayoutSeedCommand;
-import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.editor.graph.parts.CompoundModuleEditPart;
 
 /**
  * Re-position unpinned submodules in the currently selected compound module
  *
- * @author rhornig
+ * @author rhornig, andras
  */
 public class RelayoutAction extends CompoundModuleAction {
 
@@ -35,14 +33,11 @@ public class RelayoutAction extends CompoundModuleAction {
         setHoverImageDescriptor(IMAGE);
     }
 
-    protected Command makeCommand() {
-        CompoundModuleElementEx compoundModuleElement = getSelectionCompoundModule().getModel();
-        return new ChangeLayoutSeedCommand(compoundModuleElement);
-    }
-
     @Override
     public void run() {
-        execute(makeCommand());
+        CompoundModuleEditPart compoundModule = getSelectionCompoundModule();
+        compoundModule.changeLayout();
+        compoundModule.getRoot().getContents().refresh();
     }
 
 }

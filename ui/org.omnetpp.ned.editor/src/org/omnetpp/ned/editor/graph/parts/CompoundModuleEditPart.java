@@ -31,6 +31,7 @@ import org.eclipse.gef.editpolicies.SnapFeedbackPolicy;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.common.util.UIUtils;
+import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.anchors.CompoundModuleGateAnchor;
 import org.omnetpp.figures.anchors.GateAnchor;
 import org.omnetpp.ned.editor.NedEditorPlugin;
@@ -371,6 +372,11 @@ public class CompoundModuleEditPart extends ModuleEditPart {
             iconScale = 1.0f;
         this.iconScale = iconScale;
         getSettings().put(getModel().getNedTypeInfo().getFullyQualifiedName()+PREF_ICONSCALE, iconScale);
+    }
+
+    public void changeLayout() {
+        CompoundModuleFigure figure = getFigure().getSubmoduleArea();
+        figure.changeLayout();
     }
 
     @Override
