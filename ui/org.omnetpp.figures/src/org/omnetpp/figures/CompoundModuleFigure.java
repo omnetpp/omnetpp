@@ -74,6 +74,7 @@ public class CompoundModuleFigure extends LayeredPane implements IAnchorBounds, 
     private float lastIconScale = -1;
     private int lastCumulativeHashCode;
     private int seed = 0;
+    private int newSeed = 0;
     private boolean isSelected;
 
     /**
@@ -276,13 +277,20 @@ public class CompoundModuleFigure extends LayeredPane implements IAnchorBounds, 
         this.unit = unit;
     }
 
+    public void changeLayout() {
+        newSeed = seed + 1;
+        if (newSeed < 0)
+            newSeed = 1;
+    }
+
     /**
      * Adjusts the figure properties using a displayString object
      */
     public void setDisplayString(IDisplayString dps, float scale, float iconScale, IProject project) {
+
         // Optimization: do not change anything if the display string has not changed
         int cumulativeHashCode = dps.cumulativeHashCode();
-        if (lastScale == scale && lastIconScale == iconScale && lastCumulativeHashCode != 0 && cumulativeHashCode == lastCumulativeHashCode)
+        if (lastScale == scale && seed == newSeed && lastIconScale == iconScale && lastCumulativeHashCode != 0 && cumulativeHashCode == lastCumulativeHashCode)
             return;
 
         this.lastCumulativeHashCode = cumulativeHashCode;
@@ -316,8 +324,6 @@ public class CompoundModuleFigure extends LayeredPane implements IAnchorBounds, 
         backgroundSize = dps.getCompoundSize().toPixels(scale);
 
         layouter.setScale(scale);
-
-        int newSeed = dps.getAsInt(IDisplayString.Prop.MODULE_LAYOUT_SEED, 1);
 
         // if the seed changed, we explicitly have to force a re-layout
         if (seed != newSeed) {
