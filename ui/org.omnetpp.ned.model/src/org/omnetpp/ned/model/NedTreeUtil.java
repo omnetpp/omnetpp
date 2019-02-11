@@ -31,7 +31,23 @@ import org.omnetpp.ned.model.ex.MsgFileElementEx;
 import org.omnetpp.ned.model.ex.NedElementFactoryEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
+import org.omnetpp.ned.model.pojo.ClassDeclElement;
+import org.omnetpp.ned.model.pojo.ClassElement;
+import org.omnetpp.ned.model.pojo.CplusplusElement;
+import org.omnetpp.ned.model.pojo.EnumDeclElement;
+import org.omnetpp.ned.model.pojo.EnumElement;
+import org.omnetpp.ned.model.pojo.EnumFieldElement;
+import org.omnetpp.ned.model.pojo.FieldElement;
+import org.omnetpp.ned.model.pojo.ImportElement;
+import org.omnetpp.ned.model.pojo.MessageDeclElement;
+import org.omnetpp.ned.model.pojo.MessageElement;
+import org.omnetpp.ned.model.pojo.MsgFileElement;
+import org.omnetpp.ned.model.pojo.NamespaceElement;
 import org.omnetpp.ned.model.pojo.NedElementTags;
+import org.omnetpp.ned.model.pojo.PacketDeclElement;
+import org.omnetpp.ned.model.pojo.PacketElement;
+import org.omnetpp.ned.model.pojo.StructDeclElement;
+import org.omnetpp.ned.model.pojo.StructElement;
 
 /**
  * Utility functions working on NedElement trees. Conversions, serialization, dumping of trees.
@@ -52,12 +68,32 @@ public class NedTreeUtil {
         ErrorStore errors = new ErrorStore();
         errors.setPrintToStderr(false); // turn it on for debugging
         ASTNode swigTree = pojo2swig(treeRoot);
-        String result = (treeRoot.getContainingNedFileElement() != null)
+        String result = !isMsgElement(treeRoot)
                 ? new NedGenerator().generate(swigTree, "")
                 : new MsgGenerator().generate(swigTree, "");
         // TODO check ErrorStore for conversion errors
         swigTree.delete();
         return result;
+    }
+
+    protected static boolean isMsgElement(INedElement node) {
+        return
+                node instanceof MsgFileElement ||
+                node instanceof ImportElement ||
+                node instanceof NamespaceElement ||
+                node instanceof CplusplusElement ||
+                node instanceof StructDeclElement ||
+                node instanceof ClassDeclElement ||
+                node instanceof MessageDeclElement ||
+                node instanceof PacketDeclElement ||
+                node instanceof EnumDeclElement ||
+                node instanceof EnumElement ||
+                node instanceof EnumFieldElement ||
+                node instanceof MessageElement ||
+                node instanceof PacketElement ||
+                node instanceof ClassElement ||
+                node instanceof StructElement ||
+                node instanceof FieldElement;
     }
 
     /**
@@ -305,7 +341,7 @@ public class NedTreeUtil {
      */
     public static ASTNode pojo2swig(INedElement pojoNode) {
 
-        ASTNode swigNode = (pojoNode.getContainingNedFileElement() != null)
+        ASTNode swigNode = !isMsgElement(pojoNode)
                               ? nedElementFactory.createElementWithTag(pojoNode.getTagCode())
                               : msgElementFactory.createElementWithTag(pojoNode.getTagCode());
 

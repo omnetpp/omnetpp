@@ -84,6 +84,7 @@ namespace omnetpp { namespace nedxml {
 %ignore  FilesElement;
 %ignore  NedFileElement;
 %ignore  CommentElement;
+%ignore  PackageElement;
 %ignore  ImportElement;
 %ignore  PropertyDeclElement;
 %ignore  ExtendsElement;
@@ -117,16 +118,18 @@ namespace omnetpp { namespace nedxml {
 %ignore  IdentElement;
 %ignore  LiteralElement;
 %ignore  MsgFileElement;
-%ignore  NamespaceDeclElement;
+%ignore  NamespaceElement;
 %ignore  CplusplusElement;
 %ignore  StructDeclElement;
 %ignore  ClassDeclElement;
 %ignore  MessageDeclElement;
+%ignore  PacketDeclElement;
 %ignore  EnumDeclElement;
 %ignore  EnumElement;
 %ignore  EnumFieldsElement;
 %ignore  EnumFieldElement;
 %ignore  MessageElement;
+%ignore  PacketElement;
 %ignore  ClassElement;
 %ignore  StructElement;
 %ignore  FieldsElement;
