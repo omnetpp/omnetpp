@@ -180,7 +180,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     private SequenceChartAction showAxisLabelsAction;
     private SequenceChartAction showAxesWithoutEventsAction;
     private SequenceChartAction showTransmissionDurationsAction;
-    private SequenceChartAction showModuleMethodCallsAction;
+    private SequenceChartAction showComponentMethodCallsAction;
     private SequenceChartAction changeFontAction;
     private SequenceChartAction increaseSpacingAction;
     private SequenceChartAction decreaseSpacingAction;
@@ -220,7 +220,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         this.showAxisLabelsAction = createShowAxisLabelsAction();
         this.showAxesWithoutEventsAction = createShowAxesWithoutEventsAction();
         this.showTransmissionDurationsAction = createShowTransmissionDurationsAction();
-        this.showModuleMethodCallsAction = createShowModuleMethodCallsAction();
+        this.showComponentMethodCallsAction = createShowComponentMethodCallsAction();
         this.changeFontAction = createChangeFontAction();
         this.increaseSpacingAction = createIncreaseSpacingAction();
         this.decreaseSpacingAction = createDecreaseSpacingAction();
@@ -325,7 +325,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 showHideSubmenu.add(showSelfMessageReusesAction);
                 showHideSubmenu.add(showMixedMessageDependenciesAction);
                 showHideSubmenu.add(showMixedSelfMessageDependenciesAction);
-                showHideSubmenu.add(showModuleMethodCallsAction);
+                showHideSubmenu.add(showComponentMethodCallsAction);
                 showHideSubmenu.add(new Separator());
                 showHideSubmenu.add(showAxesWithoutEventsAction);
                 showHideSubmenu.add(showTransmissionDurationsAction);
@@ -411,7 +411,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         toolBarManager.add(showSelfMessageReusesAction);
         toolBarManager.add(showMixedMessageDependenciesAction);
         toolBarManager.add(showMixedSelfMessageDependenciesAction);
-        toolBarManager.add(showModuleMethodCallsAction);
+        toolBarManager.add(showComponentMethodCallsAction);
         toolBarManager.add(new Separator());
         toolBarManager.add(increaseSpacingAction);
         toolBarManager.add(decreaseSpacingAction);
@@ -991,17 +991,17 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         };
     }
 
-    private SequenceChartAction createShowModuleMethodCallsAction() {
+    private SequenceChartAction createShowComponentMethodCallsAction() {
         return new SequenceChartAction("Show Module Method Calls", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_MODULE_METHOD_CALLS)) {
             @Override
             protected void doRun() {
-                sequenceChart.setShowModuleMethodCalls(!sequenceChart.getShowModuleMethodCalls());
+                sequenceChart.setShowComponentMethodCalls(!sequenceChart.getShowComponentMethodCalls());
                 update();
             }
 
             @Override
             public void update() {
-                setChecked(sequenceChart.getShowModuleMethodCalls());
+                setChecked(sequenceChart.getShowComponentMethodCalls());
             }
         };
     }

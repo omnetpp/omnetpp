@@ -55,8 +55,8 @@ import org.omnetpp.eventlog.engine.MessageEntry;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.ModuleDeletedEntry;
 import org.omnetpp.eventlog.engine.ModuleDisplayStringChangedEntry;
-import org.omnetpp.eventlog.engine.ModuleMethodBeginEntry;
-import org.omnetpp.eventlog.engine.ModuleMethodEndEntry;
+import org.omnetpp.eventlog.engine.ComponentMethodBeginEntry;
+import org.omnetpp.eventlog.engine.ComponentMethodEndEntry;
 import org.omnetpp.eventlog.engine.PStringVector;
 import org.omnetpp.eventlog.engine.SendDirectEntry;
 import org.omnetpp.eventlog.engine.SendHopEntry;
@@ -357,22 +357,22 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 
                 builder.constant(": ").bubble(bubbleEntry.getText());
             }
-            else if (eventLogEntry instanceof ModuleMethodBeginEntry) {
-                ModuleMethodBeginEntry moduleMethodBeginEntry = (ModuleMethodBeginEntry)eventLogEntry;
+            else if (eventLogEntry instanceof ComponentMethodBeginEntry) {
+                ComponentMethodBeginEntry componentMethodBeginEntry = (ComponentMethodBeginEntry)eventLogEntry;
                 builder.constant("Begin calling ");
-                String method = moduleMethodBeginEntry.getMethod();
+                String method = componentMethodBeginEntry.getMethod();
 
                 if (StringUtils.isEmpty(method))
                     builder.constant("method");
                 else
                     builder.data(method);
 
-                builder.constant(" in ").module(moduleMethodBeginEntry.getToModuleId());
+                builder.constant(" in ").module(componentMethodBeginEntry.getTargetComponentId());
 
-                if (contextEvent.getModuleId() != moduleMethodBeginEntry.getContextModuleId())
-                    builder.constant(" from ").module(moduleMethodBeginEntry.getFromModuleId());
+                if (contextEvent.getModuleId() != componentMethodBeginEntry.getContextModuleId())
+                    builder.constant(" from ").module(componentMethodBeginEntry.getSourceComponentId());
             }
-            else if (eventLogEntry instanceof ModuleMethodEndEntry) {
+            else if (eventLogEntry instanceof ComponentMethodEndEntry) {
                 builder.constant("End calling module");
             }
             else if (eventLogEntry instanceof ModuleCreatedEntry) {

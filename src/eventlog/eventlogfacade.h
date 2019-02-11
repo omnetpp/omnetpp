@@ -30,7 +30,7 @@ namespace eventlog {
 #define BEGIN_SEND_ENTRY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<BeginSendEntry *>((BeginSendEntry *)ptr));
 #define END_SEND_ENTRY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<EndSendEntry *>((EndSendEntry *)ptr));
 #define MODULE_CREATED_ENTRY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<ModuleCreatedEntry *>((ModuleCreatedEntry *)ptr));
-#define MODULE_METHOD_BEGIN_ENTRY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<ModuleMethodBeginEntry *>((ModuleMethodBeginEntry *)ptr));
+#define MODULE_METHOD_BEGIN_ENTRY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<ComponentMethodBeginEntry *>((ComponentMethodBeginEntry *)ptr));
 #define IMESSAGE_DEPENDENCY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<IMessageDependency *>((IMessageDependency *)ptr));
 #define MESSAGE_SEND_DEPENDENCY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<MessageSendDependency *>((MessageSendDependency *)ptr));
 #define MESSAGE_REUSE_DEPENDENCY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<MessageReuesDependency *>((MessageReuseDependency *)ptr));
@@ -86,9 +86,9 @@ class EVENTLOG_API EventLogFacade
 
         const char *ModuleCreatedEntry_getModuleFullPath(ptr_t ptr);
 
-        int ModuleMethodBeginEntry_getFromModuleId(ptr_t ptr);
-        int ModuleMethodBeginEntry_getToModuleId(ptr_t ptr);
-        const char *ModuleMethodBeginEntry_getMethod(ptr_t ptr);
+        int ComponentMethodBeginEntry_getSourceComponentId(ptr_t ptr);
+        int ComponentMethodBeginEntry_getTargetComponentId(ptr_t ptr);
+        const char *ComponentMethodBeginEntry_getMethod(ptr_t ptr);
 
         IMessageDependency *IMessageDependency_getMessageDependency(ptr_t ptr);
         const char *IMessageDependency_getMessageName(ptr_t ptr);

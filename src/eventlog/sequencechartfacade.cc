@@ -498,13 +498,13 @@ double SequenceChartFacade::getTimelineCoordinateForSimulationTimeAndEventInModu
     return getTimelineCoordinateForSimulationTime(simulationTime);
 }
 
-std::vector<ptr_t> *SequenceChartFacade::getModuleMethodBeginEntries(ptr_t startEventPtr, ptr_t endEventPtr)
+std::vector<ptr_t> *SequenceChartFacade::getComponentMethodBeginEntries(ptr_t startEventPtr, ptr_t endEventPtr)
 {
     IEvent *startEvent = (IEvent *)startEventPtr;
     IEvent *endEvent = (IEvent *)endEventPtr;
     Assert(startEvent);
     Assert(endEvent);
-    std::vector<ptr_t> *moduleMethodBeginEntries = new std::vector<ptr_t>();
+    std::vector<ptr_t> *componentMethodBeginEntries = new std::vector<ptr_t>();
 
     for (IEvent *event = startEvent; ; event = event->getNextEvent()) {
         eventLog->progress();
@@ -512,15 +512,15 @@ std::vector<ptr_t> *SequenceChartFacade::getModuleMethodBeginEntries(ptr_t start
         for (int i = 0; i < event->getNumEventLogEntries(); i++) {
             EventLogEntry *eventLogEntry = event->getEventLogEntry(i);
 
-            if (dynamic_cast<ModuleMethodBeginEntry *>(eventLogEntry))
-                moduleMethodBeginEntries->push_back((ptr_t)eventLogEntry);
+            if (dynamic_cast<ComponentMethodBeginEntry *>(eventLogEntry))
+                componentMethodBeginEntries->push_back((ptr_t)eventLogEntry);
         }
 
         if (event == endEvent)
             break;
     }
 
-    return moduleMethodBeginEntries;
+    return componentMethodBeginEntries;
 }
 
 std::vector<ptr_t> *SequenceChartFacade::getIntersectingMessageDependencies(ptr_t startEventPtr, ptr_t endEventPtr)

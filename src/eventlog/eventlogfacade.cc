@@ -218,22 +218,22 @@ const char *EventLogFacade::ModuleCreatedEntry_getModuleFullPath(ptr_t ptr)
     return eventLogStringPool.get(fullPath.c_str());
 }
 
-int EventLogFacade::ModuleMethodBeginEntry_getFromModuleId(ptr_t ptr)
+int EventLogFacade::ComponentMethodBeginEntry_getSourceComponentId(ptr_t ptr)
 {
     MODULE_METHOD_BEGIN_ENTRY_PTR(ptr);
-    return ((ModuleMethodBeginEntry *)ptr)->fromModuleId;
+    return ((ComponentMethodBeginEntry *)ptr)->sourceComponentId;
 }
 
-int EventLogFacade::ModuleMethodBeginEntry_getToModuleId(ptr_t ptr)
+int EventLogFacade::ComponentMethodBeginEntry_getTargetComponentId(ptr_t ptr)
 {
     MODULE_METHOD_BEGIN_ENTRY_PTR(ptr);
-    return ((ModuleMethodBeginEntry *)ptr)->toModuleId;
+    return ((ComponentMethodBeginEntry *)ptr)->targetComponentId;
 }
 
-const char *EventLogFacade::ModuleMethodBeginEntry_getMethod(ptr_t ptr)
+const char *EventLogFacade::ComponentMethodBeginEntry_getMethod(ptr_t ptr)
 {
     MODULE_METHOD_BEGIN_ENTRY_PTR(ptr);
-    return ((ModuleMethodBeginEntry *)ptr)->method;
+    return ((ComponentMethodBeginEntry *)ptr)->method;
 }
 
 IMessageDependency *EventLogFacade::IMessageDependency_getMessageDependency(ptr_t ptr)

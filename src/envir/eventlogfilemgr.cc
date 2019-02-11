@@ -256,10 +256,10 @@ void EventlogFileManager::recordMessages()
             removeBeginSendEntryReference(msg);
             recordKeyframe();
         }
-        // TODO: this will write more than one fake ModuleMethodBegin entries for initialize, but it is a lie anyway
+        // TODO: this will write more than one fake ComponentMethodBegin entries for initialize, but it is a lie anyway
         if (eventNumber == 0)
             // NOTE: we lie that the network module called initialize in the arrival module which sent the message to itself
-            EventLogWriter::recordModuleMethodBeginEntry_sm_tm_m(feventlog, 1, msg->getArrivalModuleId(), "initialize");
+            EventLogWriter::recordComponentMethodBeginEntry_sm_tm_m(feventlog, 1, msg->getArrivalModuleId(), "initialize");
         eventnumber_t previousEventNumber = msg->getPreviousEventNumber();
         msg->setPreviousEventNumber(-1);
         messageCreated(msg);
@@ -283,7 +283,7 @@ void EventlogFileManager::recordMessages()
             endSend(msg);
         }
         if (eventNumber == 0)
-            EventLogWriter::recordModuleMethodEndEntry(feventlog);
+            EventLogWriter::recordComponentMethodEndEntry(feventlog);
     }
     eventNumber = oldEventNumber;
 }
@@ -570,7 +570,7 @@ void EventlogFileManager::componentMethodBegin(cComponent *from, cComponent *to,
             methodTextBuf[MAX_METHODCALL-1] = '\0';
             methodText = methodTextBuf;
         }
-        EventLogWriter::recordModuleMethodBeginEntry_sm_tm_m(feventlog, from ? from->getId() : -1, to->getId(), methodText);
+        EventLogWriter::recordComponentMethodBeginEntry_sm_tm_m(feventlog, from ? from->getId() : -1, to->getId(), methodText);
         entryIndex++;
     }
 }
@@ -578,7 +578,7 @@ void EventlogFileManager::componentMethodBegin(cComponent *from, cComponent *to,
 void EventlogFileManager::componentMethodEnd()
 {
     if (isCombinedRecordingEnabled) {
-        EventLogWriter::recordModuleMethodEndEntry(feventlog);
+        EventLogWriter::recordComponentMethodEndEntry(feventlog);
         entryIndex++;
     }
 }

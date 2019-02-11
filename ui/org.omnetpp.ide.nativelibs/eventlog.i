@@ -377,7 +377,7 @@ import java.lang.reflect.Constructor;
     }
 %}
 
-%newobject SequenceChartFacade::getModuleMethodBeginEntries;
+%newobject SequenceChartFacade::getComponentMethodBeginEntries;
 %newobject SequenceChartFacade::getIntersectingMessageDependencies;
 
 } } // namespaces
@@ -410,7 +410,7 @@ namespace omnetpp { namespace eventlog {
 FIX_CHARPTR_MEMBER(EventLogMessageEntry, text, Text);
 FIX_CHARPTR_MEMBER(SimulationBeginEntry, runId, RunId);
 FIX_CHARPTR_MEMBER(BubbleEntry, text, Text);
-FIX_CHARPTR_MEMBER(ModuleMethodBeginEntry, method, Method);
+FIX_CHARPTR_MEMBER(ComponentMethodBeginEntry, method, Method);
 FIX_CHARPTR_MEMBER(ModuleCreatedEntry, moduleClassName, ModuleClassName);
 FIX_CHARPTR_MEMBER(ModuleCreatedEntry, fullName, FullName);
 FIX_CHARPTR_MEMBER(GateCreatedEntry, name, Name);

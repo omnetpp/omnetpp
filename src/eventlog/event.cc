@@ -162,8 +162,8 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
         Assert(eventEntry);
 
         // handle module method end
-        ModuleMethodEndEntry *moduleMethodEndEntry = dynamic_cast<ModuleMethodEndEntry *>(eventLogEntry);
-        if (moduleMethodEndEntry)
+        ComponentMethodEndEntry *componentMethodEndEntry = dynamic_cast<ComponentMethodEndEntry *>(eventLogEntry);
+        if (componentMethodEndEntry)
             contextModuleIds.pop_front();
 
         // store log entry
@@ -172,9 +172,9 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
         eventLogEntries.push_back(eventLogEntry);
 
         // handle module method begin
-        ModuleMethodBeginEntry *moduleMethodBeginEntry = dynamic_cast<ModuleMethodBeginEntry *>(eventLogEntry);
-        if (moduleMethodBeginEntry)
-            contextModuleIds.push_front(moduleMethodBeginEntry->toModuleId);
+        ComponentMethodBeginEntry *componentMethodBeginEntry = dynamic_cast<ComponentMethodBeginEntry *>(eventLogEntry);
+        if (componentMethodBeginEntry)
+            contextModuleIds.push_front(componentMethodBeginEntry->targetComponentId);
 
         // count message entry
         if (dynamic_cast<EventLogMessageEntry *>(eventLogEntry))

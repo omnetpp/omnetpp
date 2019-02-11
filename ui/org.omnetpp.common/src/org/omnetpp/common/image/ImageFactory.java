@@ -92,8 +92,8 @@ public class ImageFactory {
     public final static String EVENLOG_IMAGE_BUBBLE = EVENTLOG_IMAGE_DIR + "Bubble";
     public final static String EVENLOG_IMAGE_EVENT_LOG_MESSAGE = EVENTLOG_IMAGE_DIR + "EventLogMessage";
 
-    public final static String EVENLOG_IMAGE_MODULE_METHOD_BEGIN = EVENTLOG_IMAGE_DIR + "ModuleMethodBegin";
-    public final static String EVENLOG_IMAGE_MODULE_METHOD_END = EVENTLOG_IMAGE_DIR + "ModuleMethodEnd";
+    public final static String EVENLOG_IMAGE_MODULE_METHOD_BEGIN = EVENTLOG_IMAGE_DIR + "ComponentMethodBegin";
+    public final static String EVENLOG_IMAGE_MODULE_METHOD_END = EVENTLOG_IMAGE_DIR + "ComponentMethodEnd";
     public final static String EVENLOG_IMAGE_MODULE_CREATED = EVENTLOG_IMAGE_DIR + "ModuleCreated";
     public final static String EVENLOG_IMAGE_MODULE_DELETED = EVENTLOG_IMAGE_DIR + "ModuleDeleted";
     public final static String EVENLOG_IMAGE_MODULE_REPARENTED = EVENTLOG_IMAGE_DIR + "ModuleReparented";

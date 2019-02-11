@@ -20,14 +20,14 @@ BU BubbleEntry // display a bubble message
    txt string text // displayed message text
 }
 
-MB ModuleMethodBeginEntry // beginning of a call to another module
+MB ComponentMethodBeginEntry // beginning of a call to another component (module/channel)
 {
-   sm int fromModuleId // id of the caller module
-   tm int toModuleId   // id of the module being called
+   sm int sourceComponentId // id of the caller component
+   tm int targetComponentId   // id of the component being called
    m string method     // C++ method name
 }
 
-ME ModuleMethodEndEntry // end of a call to another module
+ME ComponentMethodEndEntry // end of a call to another component
 {
 }
 
