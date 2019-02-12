@@ -30,6 +30,7 @@ Register_ResultFilter("warmup", WarmupPeriodFilter);
 Register_ResultFilter("count", CountFilter);
 Register_ResultFilter("constant0", Constant0Filter);
 Register_ResultFilter("constant1", Constant1Filter);
+Register_ResultFilter("time", TimeFilter);
 Register_ResultFilter("skipNan", SkipNanFilter);
 Register_ResultFilter("sum", SumFilter);
 Register_ResultFilter("mean", MeanFilter);
