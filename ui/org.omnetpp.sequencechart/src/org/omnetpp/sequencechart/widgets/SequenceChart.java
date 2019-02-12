@@ -1752,6 +1752,7 @@ public class SequenceChart
                 PtrVector componentMethodBeginEntries = sequenceChartFacade.getComponentMethodBeginEntries(startEventPtr, endEventPtr);
                 for (int i = 0; i < componentMethodBeginEntries.size(); i++) {
                     long componentMethodCallPtr = componentMethodBeginEntries.get(i);
+                    // TODO: source/target component is not necessarily a module, it may be a channel as well
                     axisModuleIds.add(sequenceChartFacade.ComponentMethodBeginEntry_getSourceComponentId(componentMethodCallPtr));
                     axisModuleIds.add(sequenceChartFacade.ComponentMethodBeginEntry_getTargetComponentId(componentMethodCallPtr));
                 }
@@ -4308,11 +4309,16 @@ public class SequenceChart
     }
 
     private String getComponentMethodCallText(ComponentMethodBeginEntry componentMethodCall, boolean formatted) {
-        String itallicStart = formatted ? "<i>" : "";
-        String itallicEnd = formatted ? "</i>" : "";
-        ModuleCreatedEntry fromModuleCreatedEntry = eventLog.getModuleCreatedEntry(componentMethodCall.getSourceComponentId());
-        ModuleCreatedEntry toModuleCreatedEntry = eventLog.getModuleCreatedEntry(componentMethodCall.getTargetComponentId());
-        return itallicStart + componentMethodCall.getMethod() + itallicEnd + " - method call from module " + getModuleText(fromModuleCreatedEntry, formatted) + " to module " + getModuleText(toModuleCreatedEntry, formatted);
+        String italicStart = formatted ? "<i>" : "";
+        String italicEnd = formatted ? "</i>" : "";
+        ModuleCreatedEntry fromModuleCreatedEntry = eventLog.getModuleCreatedEntry(componentMethodCall.getSourceComponentId()); // null if component is a channel
+        ModuleCreatedEntry toModuleCreatedEntry = eventLog.getModuleCreatedEntry(componentMethodCall.getTargetComponentId()); // null if component is a channel
+        String result = italicStart + componentMethodCall.getMethod() + italicEnd + " - method call";
+        if (fromModuleCreatedEntry != null)
+            result += " from module " + getModuleText(fromModuleCreatedEntry, formatted);
+        if (toModuleCreatedEntry != null)
+            result += " to module " + getModuleText(toModuleCreatedEntry, formatted);
+        return result;
     }
 
     private String getSimulationTimeDeltaText(IMessageDependency messageDependency) {
