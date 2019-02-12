@@ -104,6 +104,26 @@ class SIM_API Constant1Filter : public ConstantFilter
 };
 
 /**
+ * @brief Result filter that yields the time of emitting the signal.
+ *
+ * Note: unlike CountFilter, this filter does not ignore NaN and nullptr
+ * emitted values.
+ */
+class SIM_API TimeFilter : public cResultFilter
+{
+    protected:
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) override {fire(this,t,t,details);}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details) override {fire(this,t,t,details);}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details) override {fire(this,t,t,details);}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d, cObject *details) override {fire(this,t,t,details);}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v, cObject *details) override {fire(this,t,t,details);}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details) override {fire(this,t,t,details);}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details) override {fire(this,t,t,details);}
+    public:
+        TimeFilter() {}
+};
+
+/**
  * @brief This class is a no-op filter.
  */
 class SIM_API IdentityFilter : public cNumericResultFilter
