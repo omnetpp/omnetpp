@@ -278,7 +278,8 @@ public class DocumentationGenerator {
         this.excludedDirsRegexPattern = excludedDirs.replace(".", "\\.")
                 .replace("**", ".¤?").replace("*", "[^/]*").replace(".¤?", ".*?")
                 .replaceAll("\\s*,\\s*", ".*?|");
-        this.excludedDirsRegexPattern += ".*?";
+        if (StringUtils.isNotBlank(excludedDirs))
+            this.excludedDirsRegexPattern += ".*?";
     }
 
     public void setGenerateCppSourceListings(boolean generateCppSourceListings) {
