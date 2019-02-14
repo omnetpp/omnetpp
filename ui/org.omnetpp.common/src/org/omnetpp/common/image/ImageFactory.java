@@ -161,6 +161,9 @@ public class ImageFactory {
 
     public final static String DECORATOR_IMAGE_ERROR = DECORATORS_IMAGE_DIR + "error";
     public final static String DECORATOR_IMAGE_WARNING = DECORATORS_IMAGE_DIR + "warning";
+    public final static String DECORATOR_IMAGE_ERROR_TSK = DECORATORS_IMAGE_DIR + "error_tsk";
+    public final static String DECORATOR_IMAGE_WARNING_TSK = DECORATORS_IMAGE_DIR + "warning_tsk";
+    public final static String DECORATOR_IMAGE_INFO_TSK = DECORATORS_IMAGE_DIR + "info_tsk";
 
     public final static String CURSOR_IMAGE_ZOOMIN = CURSOR_IMAGE_DIR + "ZoomIn";
     public final static String CURSOR_IMAGE_ZOOMOUT = CURSOR_IMAGE_DIR + "ZoomOut";

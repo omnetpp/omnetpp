@@ -20,9 +20,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.Debug;
+import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.IProblemDecorationSupport;
 import org.omnetpp.figures.ITooltipTextProvider;
 
@@ -33,9 +32,9 @@ import org.omnetpp.figures.ITooltipTextProvider;
  */
 public class FigureUtils {
 
-    public static final Image ICON_ERROR = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK); //ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_ERROR);
-    public static final Image ICON_WARNING = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK); //ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_WARNING);
-    public static final Image ICON_INFO = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_INFO_TSK); //ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_INFO);
+    public static final Image ICON_ERROR = ImageFactory.global().getImage(ImageFactory.DECORATOR_IMAGE_ERROR_TSK);
+    public static final Image ICON_WARNING = ImageFactory.global().getImage(ImageFactory.DECORATOR_IMAGE_WARNING_TSK);
+    public static final Image ICON_INFO = ImageFactory.global().getImage(ImageFactory.DECORATOR_IMAGE_INFO_TSK);
 
     public static Image getProblemImageFor(int severity) {
         Image image;
