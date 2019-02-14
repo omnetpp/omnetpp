@@ -64,7 +64,7 @@ public class FilterUtil {
         parseFields(filterPattern);
     }
 
-//TODO unused    
+//TODO unused
 //    public FilterUtil(String runName, String moduleName, String dataName) {
 //        setField(RUN, runName);
 //        setField(MODULE, moduleName);
@@ -136,7 +136,7 @@ public class FilterUtil {
 
     private void appendField(StringBuffer sb, String attrName, String attrPattern) {
         if (RunAttribute.isAttributeName(attrName))
-            attrName = "attr:" + attrName;
+            attrName = "runattr:" + attrName;
         if (attrPattern != null && attrPattern.length() > 0) {
             if (sb.length() > 0)
                 sb.append(" AND ");
@@ -179,8 +179,8 @@ public class FilterUtil {
         for (Map.Entry<String,String> entry : visitor.fields.entrySet()) {
             String name = entry.getKey();
             String value = entry.getValue();
-            if (name.startsWith("attr:"))
-                name = name.substring(5);
+            if (name.startsWith("runattr:"))
+                name = name.substring(8);
             if (name.startsWith("itervar:"))
                 name = name.substring(8);
             else if (name.startsWith("param:"))

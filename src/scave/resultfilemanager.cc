@@ -876,14 +876,16 @@ const char *MatchableResultItem::getAsString(const char *attribute) const
         return getRunName();
     else if (strcasecmp("file", attribute) == 0)
         return getFileName();
-    else if (strncasecmp("attr:", attribute, 5) == 0) //TODO rename runattr? this can be confused with item's own attrs
-        return getRunAttribute(attribute+5);
-    else if (strncasecmp("itervar:", attribute, 5) == 0) //TODO runitervar?
+    else if (strncasecmp("attr:", attribute, 5) == 0)
+        return getResultItemAttribute(attribute+5);
+    else if (strncasecmp("runattr:", attribute, 8) == 0)
+        return getRunAttribute(attribute+8);
+    else if (strncasecmp("itervar:", attribute, 8) == 0)
         return getIterationVariable(attribute+8);
-    else if (strncasecmp("param:", attribute, 6) == 0) //TODO runparam?
+    else if (strncasecmp("param:", attribute, 6) == 0)
         return getParamAssignment(attribute+6);
     else
-        return getResultItemAttribute(attribute); //TODO prefix with "attr:" ?
+        return getResultItemAttribute(attribute);
 }
 
 const char *MatchableResultItem::getItemType() const
