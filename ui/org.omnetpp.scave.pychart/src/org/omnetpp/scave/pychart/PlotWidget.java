@@ -218,7 +218,7 @@ public class PlotWidget extends Canvas implements IPlotWidget {
                     m_pixels = intsToBytes(decodedInts.array());
                 }
 
-                if (pixels.length == 0)
+                if (m_pixels.length == 0)
                     return; // avoids InvalidArgumentException
 
                 PaletteData palette = new PaletteData(0xFF000000, 0xFF0000, 0xFF00);
