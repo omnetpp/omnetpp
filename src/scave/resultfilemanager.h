@@ -333,7 +333,7 @@ class SCAVE_API ResultFileManager
   private:
     // List of files loaded. This vector can have holes (NULLs) in it due to
     // unloaded files. The "id" field of ResultFile is the index into this vector.
-    // It is not allowed to move elements, because IDs contain the file'strptr index in them.
+    // It is not allowed to move elements, because IDs contain the file's index in them.
     ResultFileList fileList;
 
     // List of unique runs in the files. If several files contain the same runName,

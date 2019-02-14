@@ -851,7 +851,7 @@ class MatchableResultItem : public MatchExpression::Matchable
 
     public:
         MatchableResultItem(const ResultItem& item) : item(item) {}
-        virtual const char *getAsString() const override;
+        virtual const char *getAsString() const override { return getName(); }
         virtual const char *getAsString(const char *attribute) const override;
     private:
         const char *getItemType() const;
@@ -864,11 +864,6 @@ class MatchableResultItem : public MatchExpression::Matchable
         const char *getIterationVariable(const char *name) const { return item.getRun()->getIterationVariable(name).c_str(); }
         const char *getParamAssignment(const char *key) const { return item.getRun()->getParamAssignment(key).c_str(); }
 };
-
-const char *MatchableResultItem::getAsString() const
-{
-    return getName();
-}
 
 const char *MatchableResultItem::getAsString(const char *attribute) const
 {
