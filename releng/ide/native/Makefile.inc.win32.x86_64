@@ -257,7 +257,7 @@ endif
 #
 # toolchain specific flags and options
 #
-ifeq ($(TOOLCHAIN_NAME),clangc2)
+ifeq ($(TOOLCHAIN_NAME),clang-msabi)
   # this macro can be used to pass EXPORT macros to the compiler if omnet is built as shared library
   ifeq ($(SHARED_LIBS),yes)
     IMPORT_DEFINES = -DOMNETPPLIBS_IMPORT

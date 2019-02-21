@@ -8,7 +8,7 @@ if [ "$BUILD_LINUX_DISTRO" = "true" ]; then
   # build Linux 64-bit
   echo Building 64-bit Linux binaries
   cp releng/ide/native/Makefile.inc.linux.x86_64 Makefile.inc
-  make cleanall
+  make cleanall || { echo --- error during cleaning native Linux64 IDE parts ---; exit 1;}
   make SHARED_LIBS=no MODE=release ui -j$(nproc) || { echo --- error during compiling native Linux64 IDE parts ---; exit 1;}
 fi
 
@@ -16,16 +16,16 @@ if [ "$BUILD_WIN64_DISTRO" = "true" ]; then
   # Build MS Windows
   echo Building 64-bit Windows binaries
   cp releng/ide/native/Makefile.inc.win32.x86_64 Makefile.inc
-  make cleanall
+  make cleanall || { echo --- error during cleaning native Win64 IDE parts ---; exit 1;}
   make SHARED_LIBS=no MODE=release ui -j$(nproc) || { echo --- error during compiling native Win64 IDE parts ---; exit 1;}
 fi
 
 if [ "$BUILD_MACOSX_DISTRO" = "true" ]; then
  if which x86_64-apple-darwin15-clang++-libc++ ; then
   echo Building 64-bit macOS binaries using a cross compiler
-  make cleanall
   cp releng/ide/native/Makefile.inc.macosx Makefile.inc
-  export MACOSX_DEPLOYMENT_TARGET=10.10
+  export MACOSX_DEPLOYMENT_TARGET=10.10 
+  make cleanall || { echo --- error during cleaning native macOS IDE parts ---; exit 1;}
   make SHARED_LIBS=no MODE=release ui -j$(nproc) || { echo --- error during compiling native macOS IDE parts ---; exit 1;}
  else
   echo macOS cross compiler is not available
