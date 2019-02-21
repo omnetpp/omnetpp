@@ -1,11 +1,11 @@
-all: test_histograms test_stress
+FOLDERS = stress histograms
 
-test_histograms:
-	cd histograms && opp_makemake -f && make MODE=debug
+all: makefiles
+	for i in $(FOLDERS); do (cd $$i && make MODE=debug) || exit 1; done
 
-test_stress:
-	cd stress && opp_makemake -f && make MODE=debug
+makefiles:
+	for i in $(FOLDERS); do (cd $$i && opp_makemake -f) || exit 1; done
 
-clean:
-	cd histograms && make clean MODE=debug
-	cd stress && make clean MODE=debug
+clean: makefiles
+	for i in $(FOLDERS); do (cd $$i && make clean MODE=debug) || exit 1; done
+
