@@ -23,16 +23,16 @@
 namespace omnetpp {
 namespace common {
 
-LineTokenizer::LineTokenizer(int bufferSize, int maxTokenNum, char sep1, char sep2)
+LineTokenizer::LineTokenizer(int initialBufferSize, int maxTokenNum, char sep1, char sep2)
     : sep1(sep1), sep2(sep2)
 {
     if (maxTokenNum < 0)
-        maxTokenNum = bufferSize/4;
+        maxTokenNum = initialBufferSize/4;
 
     vecsize = maxTokenNum;
     vec = new char *[vecsize];
 
-    lineBufferSize = bufferSize;
+    lineBufferSize = initialBufferSize;
     lineBuffer = new char[lineBufferSize];
 }
 
@@ -100,8 +100,11 @@ static void interpretBackslashes(char *buffer)
 
 int LineTokenizer::tokenize(const char *line, int length)
 {
-    if (length >= lineBufferSize)
-        throw opp_runtime_error("Cannot tokenize lines longer than %d", lineBufferSize - 1);
+    if (length >= lineBufferSize) {
+        delete[] lineBuffer;
+        lineBufferSize = length + 1;
+        lineBuffer = new char[lineBufferSize];
+    }
 
     strncpy(lineBuffer, line, length);
     lineBuffer[length] = '\0';  // guard
