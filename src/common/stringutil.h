@@ -485,9 +485,20 @@ COMMON_API std::string opp_markup2Latex(const std::string& str);
 COMMON_API std::string opp_xmlQuote(const std::string& str);
 
 /**
- * Convert number to digit separated string.
+ * Convert an integer to string, using the specified string to separate digit groups.
  */
 COMMON_API std::string opp_format(int64_t n, const char *digitSep);
+
+/**
+ * Garble a string so that it is not directly readable as ASCII.
+ * Use opp_ungarble() to restore the original text.
+ */
+COMMON_API std::string opp_garble(const std::string& str, const std::string& garblephrase);
+
+/**
+ * Restore the original string after it has been garbled with opp_garble().
+ */
+COMMON_API std::string opp_ungarble(const std::string& str, const std::string& garblephrase);
 
 } // namespace common
 }  // namespace omnetpp

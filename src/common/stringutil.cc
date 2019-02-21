@@ -1134,6 +1134,24 @@ std::string opp_format(int64_t n, const char *digitSep)
     return os.str();
 }
 
+std::string opp_garble(const std::string& str, const std::string& garblehrase)
+{
+    size_t passlen = garblehrase.length();
+    if (passlen == 0)
+        throw opp_runtime_error("opp_garble(): empty garblephrase");
+    std::string tmp = str;
+    for (size_t i = 0; i < tmp.length(); i++) {
+        char c = garblehrase[i % passlen];
+        tmp[i] = tmp[i] ^ c ^ ((c&3)<<6); // top 1-2 bits are usually zero, reuse lower 2 bits for them
+    }
+    return tmp;
+}
+
+std::string opp_ungarble(const std::string& str, const std::string& garblephrase)
+{
+    return opp_garble(str, garblephrase);
+}
+
 }  // namespace common
 }  // namespace omnetpp
 
