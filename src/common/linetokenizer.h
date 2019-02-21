@@ -50,7 +50,7 @@ class COMMON_API LineTokenizer
     /**
      * Constructor.
      */
-    LineTokenizer(int lineBufferSize = 1000, int maxTokenNum=-1 /*=lineBufferSize/4*/, char sep1=' ', char sep2='\t');
+    LineTokenizer(int initialBufferSize = 1024, int maxTokenNum=-1 /*=initialBufferSize/4*/, char sep1=' ', char sep2='\t');
 
     /**
      * Destructor.
