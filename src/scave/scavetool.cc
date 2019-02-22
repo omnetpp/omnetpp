@@ -74,7 +74,7 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.para("To get help, use scavetool help <topic>. Available help topics: any command name, 'filter', and 'operations'.");
     }
     else if (page == "q" || page == "query") {
-        help.line("Usage: scavetool query [<mode-option>] [<options>] <output-vector-and-scalar-files>");
+        help.para("Usage: scavetool query [<mode-option>] [<options>] <output-vector-and-scalar-files>");
         help.para("Query the contents of result files.");
         help.line("Mode options (mutually exclusive):");
         help.option("-s, --print-summary", "Report the number of result items. (This is the default.)");
