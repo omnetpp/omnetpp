@@ -24,14 +24,7 @@
 
 namespace omnetpp {
 
-//
-// Global objects
-//
-
-// Internal: list in which objects are accumulated if there is no simple module in context.
-// @see cOwnedObject::setDefaultOwner() and cSimulation::setContextModule())
-SIM_API extern cDefaultList defaultList;
-
+// Global registration lists
 SIM_API extern cGlobalRegistrationList componentTypes;  ///< List of all component types (cComponentType)
 SIM_API extern cGlobalRegistrationList nedFunctions;    ///< List if all NED functions (cNedFunction and cNedMathFunction)
 SIM_API extern cGlobalRegistrationList classes;         ///< List of all classes that can be instantiated using createOne(); see cObjectFactory and Register_Class() macro
@@ -42,6 +35,22 @@ SIM_API extern cGlobalRegistrationList resultFilters;   ///< List of result filt
 SIM_API extern cGlobalRegistrationList resultRecorders; ///< List of result recorders (cResultRecorder)
 SIM_API extern cGlobalRegistrationList messagePrinters; ///< List of message printers (cMessagePrinter)
 SIM_API extern std::map<std::string,std::string> figureTypes; ///< Maps figure type names to implementation C++ class names (index into "classes")
+
+// Internal: list in which objects are accumulated if there is no simple module in context.
+// @see cOwnedObject::setDefaultOwner() and cSimulation::setContextModule())
+SIM_API extern cDefaultList defaultList;
+
+// Internal: Support for embedding NED files as string constants
+struct EmbeddedNedFile
+{
+    EmbeddedNedFile(std::string fileName, std::string nedText, std::string garblephrase="") :
+        fileName(fileName), nedText(nedText), garblephrase(garblephrase) {}
+    std::string fileName;
+    std::string nedText;
+    std::string garblephrase;
+};
+
+SIM_API extern std::vector<EmbeddedNedFile> embeddedNedFiles;
 
 }  // namespace omnetpp
 

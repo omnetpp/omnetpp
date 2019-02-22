@@ -583,6 +583,18 @@ bool EnvirBase::setup()
 #endif
         }
 
+        // load NED files embedded into the simulation program as string literals
+        if (!embeddedNedFiles.empty()) {
+            if (opt->verbose)
+                out << "Loading embedded NED files: " << embeddedNedFiles.size() << endl;
+            for (const auto& file : embeddedNedFiles) {
+                std::string nedText = file.nedText;
+                if (!file.garblephrase.empty())
+                    nedText = opp_ungarble(file.nedText, file.garblephrase);
+                getSimulation()->loadNedText(file.fileName.c_str(), nedText.c_str());
+            }
+        }
+
         // load NED files from folders on the NED path
         StringTokenizer tokenizer(opt->nedPath.c_str(), PATH_SEPARATOR);
         std::set<std::string> foldersLoaded;

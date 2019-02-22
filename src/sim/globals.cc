@@ -21,9 +21,6 @@
 
 namespace omnetpp {
 
-//
-// Global objects
-//
 cGlobalRegistrationList componentTypes("component types");
 cGlobalRegistrationList nedFunctions("NED functions");
 cGlobalRegistrationList classes("classes");
@@ -34,6 +31,7 @@ cGlobalRegistrationList resultFilters("resultFilters");
 cGlobalRegistrationList resultRecorders("resultRecorders");
 cGlobalRegistrationList messagePrinters("messagePrinters");
 std::map<std::string,std::string> figureTypes;
+std::vector<EmbeddedNedFile> embeddedNedFiles;
 
 EXECUTE_ON_SHUTDOWN(
         componentTypes.clear();
