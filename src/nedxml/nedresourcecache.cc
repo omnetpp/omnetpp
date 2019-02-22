@@ -193,7 +193,6 @@ void NedResourceCache::loadNedFile(const char *nedfname, const char *expectedPac
         throw NedException("loadNedFile(): File name is nullptr");
 
     doLoadNedFileOrText(nedfname, nullptr, expectedPackage, isXML);
-    registerPendingNedTypes();
 }
 
 void NedResourceCache::loadNedText(const char *name, const char *nedtext, const char *expectedPackage, bool isXML)
@@ -204,7 +203,6 @@ void NedResourceCache::loadNedText(const char *name, const char *nedtext, const 
         throw NedException("loadNedText(): Name '%s' already used", name);
 
     doLoadNedFileOrText(name, nedtext, expectedPackage, isXML);
-    registerPendingNedTypes();
 }
 
 bool NedResourceCache::addFile(const char *fname, ASTNode *node)
@@ -349,8 +347,6 @@ NedFileElement *NedResourceCache::getParentPackageNedFile(NedFileElement *nedfil
 
     // walk up in search for a package.ned
     while (dir != topDir) {
-        // printf("%s   ~   %s\n", dir.c_str(), topDir.c_str());
-
         // chop last segment
         std::string parentDir, dummy;
         splitFileName(dir.c_str(), parentDir, dummy);
