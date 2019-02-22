@@ -77,11 +77,18 @@ void splitFileName(const char *pathname, std::string& dir, std::string& fnameonl
     }
 }
 
-std::string directoryOf(const char *pathname)
+std::string directoryOf(const char *path)
 {
     std::string dir, dummy;
-    splitFileName(pathname, dir, dummy);
+    splitFileName(path, dir, dummy);
     return dir;
+}
+
+std::string filenameOf(const char *path)
+{
+    std::string dir, filename;
+    splitFileName(path, dir, filename);
+    return filename;
 }
 
 std::string tidyFilename(const char *pathname, bool slashes)
@@ -139,6 +146,16 @@ std::string tidyFilename(const char *pathname, bool slashes)
     for (int i = 1; i < (int)segments.size(); i++)
         result += DELIM + segments[i];
     return result;
+}
+
+std::string removeFileExtension(const char *fileName)
+{
+    const char *dot = strrchr(fileName, '.');
+    const char *slash = strrchr(fileName, '/');
+    const char *backslash = strrchr(fileName, '\\');
+    if (!dot || dot < slash || dot < backslash)
+        return fileName;
+    return std::string(fileName, dot - fileName);
 }
 
 std::string toAbsolutePath(const char *pathname)
