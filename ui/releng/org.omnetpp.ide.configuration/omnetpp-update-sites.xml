@@ -5,5 +5,5 @@
    <site url="http://download.eclipse.org/releases/latest" selected="true" name="Latest Eclipse release"/>
    <site url="http://download.eclipse.org/linuxtools/update" selected="true" name="Linux Tools"/>
    <site url="http://www.pydev.org/updates/" selected="true" name="PyDev"/>
-   <site url="http://download.eclipse.org/eclipse/updates/4.10" selected="true" name="The Eclipse Project Updates"/>
+   <site url="http://download.eclipse.org/eclipse/updates/4.11" selected="true" name="The Eclipse Project Updates"/>
 </bookmarks>
