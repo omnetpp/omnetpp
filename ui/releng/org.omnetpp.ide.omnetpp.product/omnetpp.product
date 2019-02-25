@@ -47,8 +47,6 @@
    </plugins>
 
    <features>
-      <feature id="org.eclipse.epp.logging.aeri.feature"/>
-      <feature id="org.eclipse.mylyn.commons.notifications"/>
       <feature id="org.eclipse.egit"/>
       <feature id="org.eclipse.linuxtools.valgrind"/>
       <feature id="org.omnetpp.ide.omnetpp"/>
