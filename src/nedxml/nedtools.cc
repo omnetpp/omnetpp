@@ -14,7 +14,12 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <fstream>
+
 #include "common/fileutil.h"
+#include "common/fileglobber.h"
+#include "common/stringutil.h"
+#include "common/opp_ctype.h"
 #include "nedtools.h"
 
 #include "errorstore.h"
@@ -42,7 +47,6 @@ void NedTools::repairNedAST(ASTNode *tree)
             break;  // we can't help if root node is wrong
 
         // throw out problem node, and try again
-        // printf("DBG: repairASTNodeTree: discarding <%s>\n", errnode->getTagName());
         errorNode->getParent()->removeChild(errorNode);
     }
 }
@@ -63,20 +67,21 @@ void NedTools::repairMsgAST(ASTNode *tree)
             break;  // we can't help if root node is wrong
 
         // throw out problem node, and try again
-        // printf("DBG: repairASTNodeTree: discarding <%s>\n", errnode->getTagName());
         errorNode->getParent()->removeChild(errorNode);
     }
+}
+
+inline bool isNedComponent(ASTNode *node)
+{
+    int type = node->getTagCode();
+    return type == NED_SIMPLE_MODULE || type == NED_COMPOUND_MODULE || type == NED_CHANNEL ||
+           type == NED_MODULE_INTERFACE || type == NED_CHANNEL_INTERFACE;
 }
 
 void NedTools::splitNedFiles(FilesElement *tree)
 {
     FilesElement *tmpTree = new FilesElement();
-    for (ASTNode *child = tree->getFirstChild(); child; child = child->getNextSibling()) {
-        // ignore msg files
-        if (child->getTagCode() != NED_NED_FILE)
-            continue;
-
-        NedFileElement *fileNode = (NedFileElement *)child;
+    for (NedFileElement *fileNode = tree->getFirstNedFileChild(); fileNode; ) {
 
         // we'll generate new files into the directory of the original file
         std::string directory;
@@ -84,12 +89,9 @@ void NedTools::splitNedFiles(FilesElement *tree)
         splitFileName(fileNode->getFilename(), directory, filename);
 
         // go through NED components in the file, and create new NED files for them
+        bool fileStripped = false;
         for (ASTNode *child = fileNode->getFirstChild(); child; ) {
-            int type = child->getTagCode();
-            if (type != NED_SIMPLE_MODULE && type != NED_COMPOUND_MODULE &&
-                type != NED_CHANNEL && type != NED_MODULE_INTERFACE &&
-                type != NED_CHANNEL_INTERFACE)
-            {
+            if (!isNedComponent(child)) {
                 child = child->getNextSibling();
                 continue;
             }
@@ -100,29 +102,123 @@ void NedTools::splitNedFiles(FilesElement *tree)
 
             // create new file for it
             NedFileElement *newFileNode = fileNode->dup();
-            std::string newFileName = directory + "/" + componentName + ".ned";
+            std::string newFileName = concatDirAndFile(directory.c_str(), componentName) + ".ned";
             newFileNode->setFilename(newFileName.c_str());
             tmpTree->appendChild(newFileNode);
 
-            // copy comments and imports from old file
+            // copy comments, imports, etc. from old file
             for (ASTNode *child2 = fileNode->getFirstChild(); child2; child2 = child2->getNextSibling())
-                if (child2->getTagCode() == NED_COMMENT || child2->getTagCode() == NED_IMPORT)
+                if (!isNedComponent(child2))
                     newFileNode->appendChild(child2->dupTree());
-
 
             // move NED component into new file
             child = child->getNextSibling();  // adjust iterator
             fileNode->removeChild(componentNode);
             newFileNode->appendChild(componentNode);
+
+            fileStripped = true;
         }
 
-        // rename original file
-        fileNode->setFilename((std::string(fileNode->getFilename())+"-STRIPPED").c_str());
+        // if components were stripped away from this file, discard the remains
+        if (!fileStripped)
+            fileNode = fileNode->getNextNedFileSibling();
+        else {
+            NedFileElement *strippedFileNode = fileNode;
+            fileNode = strippedFileNode->getNextNedFileSibling();
+            delete strippedFileNode;
+        }
     }
 
     while (tmpTree->getFirstChild())
         tree->appendChild(tmpTree->removeChild(tmpTree->getFirstChild()));
 }
+
+void NedTools::doCollectNedFiles(std::vector<std::string>& result, const std::string& prefix)
+{
+    FileGlobber globber("*");
+    const char *filename;
+    while ((filename = globber.getNext()) != nullptr) {
+        if (filename[0] == '.')
+            continue;  // ignore ".", "..", and dotfiles
+        else if (isDirectory(filename)) {
+            PushDir pushDir(filename);
+            doCollectNedFiles(result, prefix + filename + "/");
+        }
+        else if (opp_stringendswith(filename, ".ned"))
+            result.push_back(prefix + filename);
+    }
+}
+
+std::vector<std::string> NedTools::collectNedFiles(const char *foldername)
+{
+    std::vector<std::string> result;
+    PushDir pushDir(foldername);
+    doCollectNedFiles(result, std::string(foldername) == "." ? "" : std::string(foldername) + "/");
+    return result;
+}
+
+void NedTools::printNedFileAsStringConstant(const char *symbol, const char *filename, const char *passphrase, std::ostream& out)
+{
+    std::ifstream infile(filename);
+    std::string contents((std::istreambuf_iterator<char>(infile)), std::istreambuf_iterator<char>());
+    if (!passphrase) {
+        out << "static const char *" << symbol << " = R\"raw(" << contents << ")raw\";\n\n";
+    }
+    else {
+        contents = opp_garble(contents, passphrase);
+        out << "static const char " << symbol << "[] = {";
+        for (size_t i = 0; i < contents.size(); i++) {
+            if (i%20 == 0)
+                out << "\n    ";
+            out << (int)contents[i] << ",";
+        }
+        out << "};\n\n";
+    }
+}
+
+void NedTools::generateCppSource(const char *cppfile, std::vector<std::string> nedfiles, const char *garblephrase)
+{
+    std::ofstream out(cppfile);
+    if (out.fail())
+        throw opp_runtime_error("Cannot open '%s' for write", cppfile);
+
+    out << "//\n// generated file, do not edit\n//\n\n";
+    out << "#include <omnetpp.h>\n\n";
+    out << "using namespace omnetpp;\n\n";
+
+    std::map<std::string,std::string> symbols;
+    int i = 0;
+    for (auto& nedfile : nedfiles) {
+        std::stringstream ss;
+        ss << "FILE" << (++i) << "_";
+        for (char c : filenameOf(nedfile.c_str()))
+            ss << (opp_isalnum(c) ? opp_toupper(c) : '_');
+        ss << "_CONTENTS";
+        std::string symbol = ss.str();
+
+        printNedFileAsStringConstant(symbol.c_str(), nedfile.c_str(), garblephrase, out);
+        symbols[nedfile] = symbol;
+    }
+
+    out << "EXECUTE_ON_STARTUP(\n";
+    if (garblephrase)
+        out << "    const char *passphrase = \"" << garblephrase << "\";\n";
+    for (auto& filename : nedfiles) {
+        out << "    embeddedNedFiles.push_back(EmbeddedNedFile(\"" << filename << "\", ";
+        if (!garblephrase)
+            out << symbols[filename];
+        else {
+            out << "std::string(" << symbols[filename] << ", sizeof(" << symbols[filename] << ")), passphrase";
+        }
+        out << "));\n";
+    }
+    out << ")\n";
+    out.close();
+    if (!out)
+        throw opp_runtime_error("Error writing '%s'", cppfile);
+}
+
+
 
 }  // namespace nedxml
 }  // namespace omnetpp

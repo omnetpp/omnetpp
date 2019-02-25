@@ -24,10 +24,14 @@
 #include <cerrno>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "common/fileglobber.h"
 #include "common/fileutil.h"
 #include "common/stringutil.h"
+#include "common/stlutil.h"
+#include "common/formattedprinter.h"
+#include "common/opp_ctype.h"
 #include "common/ver.h"
 #include "errorstore.h"
 #include "omnetpp/platdep/platmisc.h"  // getcwd, chdir
@@ -40,7 +44,9 @@
 #include "xmlgenerator.h"
 #include "nedtools.h"
 #include "xmlastparser.h"
+#include "opp_nedtool.h"
 
+using namespace std;
 using namespace omnetpp::common;
 
 namespace omnetpp {
@@ -50,548 +56,559 @@ using std::ofstream;
 using std::ifstream;
 using std::ios;
 
-// file types
-enum { XML_FILE, NED_FILE, MSG_FILE, CPP_FILE, UNKNOWN_FILE };
-
-// option variables
-bool opt_genxml = false;           // -x
-bool opt_gensrc = false;           // -n
-bool opt_validateonly = false;     // -v
-int opt_nextfiletype = UNKNOWN_FILE; // -T
-const char *opt_suffix = nullptr;  // -s
-bool opt_inplace = false;          // -k
-bool opt_unparsedexpr = false;     // -e
-bool opt_storesrc = false;         // -S
-bool opt_novalidation = false;     // -y
-bool opt_noimports = false;        // -z
-bool opt_srcloc = false;           // -p
-bool opt_mergeoutput = false;      // -m
-bool opt_verbose = false;          // -V
-const char *opt_outputfile = nullptr; // -o
-bool opt_here = false;             // -h
-bool opt_splitnedfiles = false;    // -u
-
-FilesElement *outputtree;
-
-//TODO turn code into a class, like scavetool
-
-void printUsage()
+std::vector<std::string> NedTool::expandNedFolder(const char *fname)
 {
-    fprintf(stderr,
-       "opp_nedtool -- part of " OMNETPP_PRODUCT ", (C) 2006-2018 Andras Varga, OpenSim Ltd.\n"
-       "Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
-       "\n"
-       "Usage: opp_nedtool [options] <file1> <file2> ...\n"
-       "Files may be given in a listfile as well, with the @listfile or @@listfile\n"
-       "syntax (check the difference below.) By default, if neither -n nor -x is\n"
-       "specified, opp_nedtool generates C++ source.\n"
-       "  -x: generate XML (you may need -y, -e and -p as well)\n"
-       "  -n: generate source (NED or MSG; you may need -y and -e as well)\n"
-       "  -P: pretty-print; this is a shortcut for -n -k -y\n"
-       "  -v: no output (only validate input)\n"
-       "  -m: output is a single file (out_n.* by default, see also -o)\n"
-       "  -o <filename>: output file name (don't use when processing multiple files)\n"
-       "  -h  place output file into current directory\n"
-       "  -I <dir>: add directory to NED include path\n"
-       "  -s <suffix>: suffix for generated files\n"
-       "  -T xml/ned/off: following files are XML or NED up to '-T off'\n"
-       "  -k: with -n: replace original file and create backup (.bak). If input is a\n"
-       "      single XML file created by 'opp_nedtool -m -x': replace original NED files\n"
-       "  -u: with -m or -k: split NED files to one NED component per file\n" //XXX refine help text
-       "  -e: do not parse expressions in NED input; expect unparsed expressions in XML\n"
-       "  -y: skip semantic validation (implies -z, skip processing imports)\n"
-       "  -z: skip processing imports\n"
-       "  -S: with NED parsing: include source code of components in XML\n"
-       "  -p: with -x: add source location info (src-loc attributes) to XML output\n"
-       "  -V: verbose\n"
-       "  @listfile: listfile should contain one file per line (@ or @@ listfiles\n"
-       "      also accepted). Files are interpreted as relative to the listfile.\n"
-       "      @ listfiles can be invoked from anywhere, with the same effect.\n"
-       "  @@listfile: like @listfile, but contents is interpreted as relative to\n"
-       "      the current working directory. @@ listfiles can be put anywhere,\n"
-       "      including /tmp -- effect only depends on the working directory.\n"
-    );
+    if (isDirectory(fname))
+        return NedTools::collectNedFiles(fname);
+    else
+        return std::vector<std::string> { fname };
 }
 
-void createFileNameWithSuffix(char *outfname, const char *infname, const char *suffix)
+std::vector<std::string> NedTool::expandFileArg(const char *arg)
 {
-    if (opt_here) {
-        // remove directory part
-        const char *s = infname+strlen(infname);
-        while (s > infname && *s != '/' && *s != '\\')
-            s--;
-        if (*s == '/' || *s == '\\')
-            s++;
-        strcpy(outfname, s);
+#if SHELL_EXPANDS_WILDCARDS
+    return expandNedFolder(arg);
+#else
+    // we have to expand wildcards ourselves
+    std::vector<std::string> expandedList = FileGlobber(arg).getFilenames();
+    if (expandedList.empty())
+        throw opp_runtime_error("not found: %s", arg);
+    std::vector<std::string> result;
+    for (std::string elem : expandedList)
+        addAll(result, expandNedFolder(elem.c_str()));
+    return result;
+#endif
+}
+
+bool NedTool::fileLooksLikeXml(const char *filename)
+{
+    // return true if first non-whitespace character is "<"
+    ifstream in(filename);
+    unsigned char c = 0;
+    while (in.good() && (c == 0 || opp_isspace(c)))
+        in >> c;
+    return in.good() && c == '<';
+}
+
+NedFileElement *NedTool::parseNedFile(const char *filename, bool opt_unparsedexpr, bool opt_storesrc)
+{
+    if (opt_verbose)
+        std::cout << "parsing " << filename << "\n";
+
+    ErrorStore errors;
+    errors.setPrintToStderr(true);
+    ASTNode *tree;
+
+    // process input tree
+    NedParser parser(&errors);
+    parser.setParseExpressions(!opt_unparsedexpr);
+    parser.setStoreSource(opt_storesrc);
+    tree = parser.parseNedFile(filename);
+    if (errors.containsError()) {
+        delete tree;
+        return nullptr;
+    }
+
+    NedDtdValidator dtdvalidator(&errors);
+    dtdvalidator.validate(tree);
+    if (errors.containsError()) {
+        delete tree;
+        return nullptr;
+    }
+
+    NedSyntaxValidator syntaxvalidator(!opt_unparsedexpr, &errors);
+    syntaxvalidator.validate(tree);
+    if (errors.containsError()) {
+        delete tree;
+        return nullptr;
+    }
+
+    if (!dynamic_cast<NedFileElement *>(tree))
+        throw opp_runtime_error("internal error: NedFileElement expected as root");
+
+    return static_cast<NedFileElement *>(tree);
+}
+
+ASTNode *NedTool::parseXmlFile(const char *filename)
+{
+    if (opt_verbose)
+        std::cout << "loading " << filename << "\n";
+    ErrorStore errors;
+    errors.setPrintToStderr(true);
+    return parseXML(filename, &errors);
+}
+
+FilesElement *NedTool::wrapIntoFilesElement(ASTNode *tree)
+{
+    if (!tree)
+        return nullptr;
+    else if (dynamic_cast<FilesElement*>(tree))
+        return (FilesElement *)tree;
+    else if (dynamic_cast<NedFileElement*>(tree)) {
+        FilesElement *result = new FilesElement;
+        result->appendChild(tree);
+        return result;
     }
     else {
-        strcpy(outfname, infname);
+        delete tree;
+        throw opp_runtime_error("root element of XML is expected to be <files> or <ned-file>");
     }
-
-    // replace extension with suffix.
-    char *s = outfname+strlen(outfname);
-    while (s > outfname && *s != '/' && *s != '\\' && *s != '.')
-        s--;
-    if (*s != '.')
-        s = outfname+strlen(outfname);
-    strcpy(s, suffix);
 }
 
-bool renameFileToBAK(const char *fname)
+void NedTool::moveChildren(ASTNode *source, ASTNode *target)
 {
-    // returns false on failure, true if successfully renamed or no such file
-    char bakfname[1024];
-    createFileNameWithSuffix(bakfname, fname, ".bak");
-
-    if (unlink(bakfname) != 0 && errno != ENOENT) {
-        fprintf(stderr, "opp_nedtool: cannot remove old backup file %s, leaving file %s unchanged\n", bakfname, fname);
-        return false;
-    }
-    if (rename(fname, bakfname) != 0 && errno != ENOENT) {
-        fprintf(stderr, "opp_nedtool: cannot rename original %s to %s, leaving file unchanged\n", fname, bakfname);
-        return false;
-    }
-    return true;
-}
-
-void generateSource(std::ostream& out, ASTNode *node, ErrorStore *e, int contentType)
-{
-    //TODO
-    switch (contentType) {
-    case NED_FILE: generateNed(out, node); break;
+    for (ASTNode *child = source->getFirstChild(); child; ) {
+        ASTNode *nextChild = child->getNextSibling();
+        source->removeChild(child);
+        target->appendChild(child);
+        child = nextChild;
     }
 }
 
-bool processFile(const char *fname, ErrorStore *errors)
+void NedTool::generateNedFile(const char *filename, NedFileElement *tree)
 {
     if (opt_verbose)
-        fprintf(stdout, "processing '%s'...\n", fname);
+        std::cout << "writing " << filename << "\n";
 
-    ASTNode *tree = nullptr;
+    ofstream out(filename);
+    if (out.fail())
+        throw opp_runtime_error("cannot open '%s' for write", filename);
+    generateNed(out, tree);
+    out.close();
+    if (!out)
+        throw opp_runtime_error("error writing '%s'", filename);
+}
+
+void NedTool::generateNedFiles(FilesElement *tree)
+{
+    for (NedFileElement *child = tree->getFirstNedFileChild(); child; child = child->getNextNedFileSibling())
+        generateNedFile(child->getFilename(), child);
+}
+
+void NedTool::generateXmlFile(const char *filename, NedElement *tree, bool srcloc)
+{
+    if (opt_verbose)
+        std::cout << "writing " << filename << "\n";
+    ofstream out(filename);
+    if (out.fail())
+        throw opp_runtime_error("cannot open '%s' for write", filename);
+    generateXML(out, tree, srcloc);
+    out.close();
+    if (!out)
+        throw opp_runtime_error("error writing '%s'", filename);
+}
+
+void NedTool::renameFileToBak(const char *filename)
+{
+    std::string bakfname = removeFileExtension(filename) + ".bak";
+    if (opt_verbose)
+        std::cout << "renaming " << filename << " to " << bakfname << "\n";
+    if (unlink(bakfname.c_str()) != 0 && errno != ENOENT)
+        throw opp_runtime_error("cannot remove old backup file %s, leaving file %s unchanged", bakfname.c_str(), filename);
+    if (rename(filename, bakfname.c_str()) != 0 && errno != ENOENT)
+        throw opp_runtime_error("cannot rename original %s to %s, leaving file unchanged", filename, bakfname.c_str());
+}
+
+void NedTool::helpCommand(int argc, char **argv)
+{
+    string page = argc==0 ? "options" : argv[0];
+    printHelpPage(page);
+}
+
+void NedTool::printHelpPage(const std::string& page)
+{
+    FormattedPrinter help(cout);
+    if (page == "options") {
+        help.line("opp_nedtool -- part of " OMNETPP_PRODUCT ", (C) 2006-2018 OpenSim Ltd.");
+        help.line("Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION);
+        help.line();
+        help.para("Usage: opp_nedtool [<command>] [<options>] <files>...");
+        help.para("Operations on (and related to) NED files.");
+        help.line("Commands:");
+        help.option("c, convert", "Convert NED files to XML form and vice versa, split up NED files to contain one NED type per file, etc.");
+        help.option("p, prettyprint", "Format (pretty-print) NED files");
+        help.option("v, validate", "Validate NED files");
+        help.option("x, cpp", "Translate NED files into C++, to allow building self-contained binaries that don't need separate NED files for running simulations");
+        help.option("h, help", "Print this help text");
+        help.line();
+        help.para("The default command is 'validate'.");
+        help.para("To get help, use opp_nedtool help <topic>. Available help topics: 'options' and any command name.");
+    }
+    else if (page == "c" || page == "convert") {
+        help.para("Usage: opp_nedtool convert [<options>] <ned-folders-and-ned-or-xml-files>");
+        help.para("Convert between NED source and its XML AST representation, split up NED files "
+                  "to contain one NED type per file, etc.");
+        help.para("In addition to NED files, the command also consumes and produces XML files "
+                  "that essentially contain NED in parsed (abstract syntax tree, AST) form. "
+                  "See the manual or doc/etc/ned2.dtd for the format of the XML.");
+        help.para("NED-to-XML conversion parses the NED file and exports its AST in XML form. "
+                  "The presence of certain elements/attributes in the XML can be controlled.");
+        help.para("XML-to-NED conversion produces one or more NED files per XML file, depending "
+                  "on the number of <ned-file> elements in the XML. NED file names will be taken "
+                  "from the XML file (filename attribute of <ned-file>).");
+        help.para("NED-to-NED conversion amounts to parsing into AST and regenerating the "
+                  "NED source from it. The net result is essentially pretty-printing.");
+
+        help.line("Options:");
+        help.option("-n, --ned", "Force NED output");
+        help.option("-x, --xml", "Force XML output");
+        help.option("-m, --merge", "Output is a single file (out.ned or out.xml by default).");
+        help.option("-o <filename>", "Output file name (don't use when processing multiple files)");
+        help.option("-s, --split", "Split NED files to one NED component per file");
+        help.option("-u, --unparsedexpr", "Do not parse expressions in NED input");
+        help.option("-l, --srcloc", "Add source location info (src-loc attributes) to XML output");
+        help.option("-t, --storesrc", "When converting NED to XML, include source code of components in XML output");
+        help.option("-k, --bak", "Save backup of original files as .bak");
+        help.option("-v", "Verbose");
+        help.line();
+    }
+    else if (page == "p" || page == "prettyprint") {
+        help.para("Usage: opp_nedtool prettyprint <ned-folders-and-files>");
+        help.para("Format (pretty-print) NED files. The original files will be overwritten, optionally creating backups of the original files.");
+        help.line("Options:");
+        help.option("-k, --bak", "Save backup of original files as .bak");
+        help.option("-v", "Verbose");
+        help.line();
+    }
+    else if (page == "v" || page == "validate") {
+        help.para("Usage: opp_nedtool validate [<options>] <ned-folders-and-files>");
+        help.para("Perform syntax check and basic local validation of the NED files.");
+        help.line("Options:");
+        help.option("-e", "Do not parse expressions");
+        help.option("-v", "Verbose");
+        help.line();
+    }
+    else if (page == "x" || page == "cpp") {
+        help.para("Usage: opp_nedtool cpp [<options>] <ned-folders-and-files>");
+        help.para("Generate C++ source that embeds the content of the specified NED files as "
+                  "string constants. When the C++ source is compiled into a simulation binary, "
+                  "the original NED files will no longer be required for running simulations. "
+                  "Optional garbling, which prevents NED source code from being directly readable "
+                  "inside the compiled binaries (and from being extracted using the 'strings' "
+                  "command), is also available.");
+        help.para("A makefrag file can be used to integrate the NED-to-C++ translation "
+                  "into the build process. To see an example makefrag file, "
+                  "view the 'makefrag' help topic:");
+        help.line("$ opp_nedtool -h makefrag");
+        help.line();
+        help.line("Options:");
+        help.option("-o <filename>", "Name of output file. Default: out_n.cc");
+        help.option("-p, --garblephrase <string>", "Phrase for garbling the NED source. Default: none");
+        help.option("-v", "Verbose");
+        help.line();
+    }
+    else if (page == "makefrag") {
+        help.line("----8<------------------------------------------------------------------------------");
+        help.line("# Save this file as 'makefrag' into the folder where opp_makemake (or the IDE)");
+        help.line("# generates the Makefile for your simulation binary, and re-generate the Makefile.");
+        help.line("# Note: make sure to use a Tab character for the indented lines below, not 8 spaces.");
+        help.line();
+        help.line("# Change the following line to point to the root of your NED source tree.");
+        help.line("NEDFOLDER = .");
+        help.line();
+        help.line("NEDFILES_CC = nedfiles_n.cc # File name must end in '_n.cc'");
+        help.line("OBJS += $O/$(NEDFILES_CC:.cc=.o)");
+        help.line();
+        help.line("default: all");
+        help.line();
+        help.line("$(NEDFILES_CC): $(call opp_rwildcard, $(NEDFOLDER), *.ned)");
+        help.line("\t$(Q) opp_nedtool cpp $(NEDFOLDER) -o $(NEDFILES_CC)");
+        help.line();
+        help.line("clean: clean-nedfilescc");
+        help.line();
+        help.line("clean-nedfilescc:");
+        help.line("\t$(Q) rm -f $(NEDFILES_CC)");
+        help.line("----8<------------------------------------------------------------------------------");
+        help.line();
+    }
+    else {
+        throw opp_runtime_error("no help topic '%s'", page.c_str());
+    }
+}
+
+void NedTool::convertCommand(int argc, char **argv)
+{
+    // process options
+    bool opt_forcened = false;
+    bool opt_forcexml = false;
+    bool opt_mergeoutput = false;
+    std::string opt_outputfile;
+    bool opt_splitnedfiles = false;
+    bool opt_unparsedexpr = false;
+    bool opt_srcloc = false;
+    bool opt_storesrc = false;
+    bool opt_makebackup = false;
+    std::vector<std::string> inputFiles;
+
+    for (int i = 0; i < argc; i++) {
+        if (string(argv[i]) == "-n" || string(argv[i]) == "--ned")
+            opt_forcened = true;
+        else if (string(argv[i]) == "-x" || string(argv[i]) == "--xml")
+            opt_forcexml = true;
+        else if (string(argv[i]) == "-m" || string(argv[i]) == "--merge")
+            opt_mergeoutput = true;
+        else if (string(argv[i]) == "-o") {
+            i++;
+            if (i == argc)
+                throw opp_runtime_error("unexpected end of arguments after -o");
+            opt_outputfile = argv[i];
+        }
+        else if (string(argv[i]) == "-s" || string(argv[i]) == "--split")
+            opt_splitnedfiles = true;
+        else if (string(argv[i]) == "-u" || string(argv[i]) == "--unparsedexpr")
+            opt_unparsedexpr = true;
+        else if (string(argv[i]) == "-l" || string(argv[i]) == "--srcloc")
+            opt_srcloc = true;
+        else if (string(argv[i]) == "-t" || string(argv[i]) == "--storesrc")
+            opt_storesrc = true;
+        else if (string(argv[i]) == "-k" || string(argv[i]) == "--bak")
+            opt_makebackup = true;
+        else if (string(argv[i]) == "-v")
+            opt_verbose = true;
+        else if (argv[i][0] == '-')
+            throw opp_runtime_error("unknown option %s", argv[i]);
+        else
+            addAll(inputFiles, expandFileArg(argv[i]));
+    }
+
+    if (opt_forcened && opt_forcexml)
+        throw opp_runtime_error("conflicting options --ned and --xml");
+
+    if (opt_verbose)
+        std::cout << "Converting " << inputFiles.size() << " file(s)\n";
+
+    if (inputFiles.empty())
+        std::cerr << "opp_nedtool: warning: no input files\n";
+
+    FilesElement *mergedTree = opt_mergeoutput ? new FilesElement : nullptr;
+    std::unique_ptr<FilesElement> dummy(mergedTree);
+
+    int numSkipped = 0;
+    for (std::string inputFile : inputFiles) {
+        bool isNedFile = opp_stringendswith(inputFile.c_str(), ".ned") ? true :
+                opp_stringendswith(inputFile.c_str(), ".xml") ? false :
+                        !fileLooksLikeXml(inputFile.c_str());
+        FilesElement *tree;
+        if (isNedFile)
+            tree = wrapIntoFilesElement(parseNedFile(inputFile.c_str(), opt_unparsedexpr, opt_storesrc));
+        else
+            tree = wrapIntoFilesElement(parseXmlFile(inputFile.c_str()));
+
+        if (tree == nullptr)
+            numSkipped++;
+        else if (opt_mergeoutput) {
+            moveChildren(tree, mergedTree);
+            delete tree;
+        }
+        else {
+            std::unique_ptr<FilesElement> dummy(tree);
+
+            if (opt_splitnedfiles)
+                NedTools::splitNedFiles(tree);
+
+            bool nedOutput = opt_forcened ? true : opt_forcexml ? false : isNedFile;
+
+            std::string outputFile = inputFile;
+            if (isNedFile == nedOutput) {  // NED-to-NED or XML-to-XML
+                if (opt_makebackup)
+                    renameFileToBak(inputFile.c_str());
+                else
+                    removeFile(inputFile.c_str(), nullptr);
+            }
+            else {
+                // change extension if needed
+                outputFile += (nedOutput ? ".ned" : ".xml");
+            }
+            if (!nedOutput)
+                generateXmlFile(outputFile.c_str(), tree, opt_srcloc);
+            else
+                generateNedFiles(tree);
+        }
+    }
+
+    if (opt_mergeoutput) {
+        if (opt_splitnedfiles)
+            NedTools::splitNedFiles(mergedTree);
+        if (opt_forcened)
+            throw opp_runtime_error("refusing to generate merged NED file");
+        std::string outputFile = opt_outputfile.empty() ? "out.xml" : opt_outputfile;
+        generateXmlFile(outputFile.c_str(), mergedTree, opt_srcloc);
+    }
+
+    if (numSkipped > 0)
+        throw opp_runtime_error("error in %d file(s)", numSkipped);
+}
+
+void NedTool::prettyprintCommand(int argc, char **argv)
+{
+    // process options
+    bool opt_makebackup = false;
+    std::vector<std::string> nedfiles;
+
+    for (int i = 0; i < argc; i++) {
+        if (string(argv[i]) == "-k" || string(argv[i]) == "--bak")
+            opt_makebackup = true;
+        else if (string(argv[i]) == "-v")
+            opt_verbose = true;
+        else if (argv[i][0] == '-')
+            throw opp_runtime_error("unknown option %s", argv[i]);
+        else
+            addAll(nedfiles, expandFileArg(argv[i]));
+    }
+
+    if (nedfiles.empty())
+        std::cerr << "opp_nedtool: warning: no input files\n";
+
+    if (opt_verbose)
+        std::cout << "Pretty-printing " << nedfiles.size() << " file(s)\n";
+
+    int numSkipped = 0;
+    for (std::string nedfile : nedfiles) {
+        NedFileElement *tree = parseNedFile(nedfile.c_str(), true, false);
+        if (tree == nullptr)
+            numSkipped++;
+        else {
+            if (opt_makebackup)
+                renameFileToBak(nedfile.c_str());
+            generateNedFile(nedfile.c_str(), tree);
+            delete tree;
+        }
+    }
+    if (numSkipped > 0)
+        throw opp_runtime_error("error in %d file(s)", numSkipped);
+}
+
+void NedTool::validateCommand(int argc, char **argv)
+{
+    // process options
+    bool opt_unparsedexpr = false;     // -e
+    std::vector<std::string> nedfiles;
+
+    for (int i = 0; i < argc; i++) {
+        if (string(argv[i]) == "-e")
+            opt_unparsedexpr = true;
+        else if (string(argv[i]) == "-v")
+            opt_verbose = true;
+        else if (argv[i][0] == '-')
+            throw opp_runtime_error("unknown option %s", argv[i]);
+        else
+            addAll(nedfiles, expandFileArg(argv[i]));
+    }
+
+    if (opt_verbose)
+        std::cout << "Validating " << nedfiles.size() << " file(s)\n";
+
+    if (nedfiles.empty())
+        std::cerr << "opp_nedtool: Warning: no input files\n";
+
+    int numFilesWithErrors = 0;
+    for (std::string nedfile : nedfiles) {
+        NedElement *tree = parseNedFile(nedfile.c_str(), opt_unparsedexpr, false);
+        if (tree == nullptr)
+            numFilesWithErrors++;
+        else
+            delete tree;
+    }
+
+    if (numFilesWithErrors > 0)
+        throw opp_runtime_error("error in %d file(s)", numFilesWithErrors);
+
+    if (opt_verbose)
+        cout << "Validation found no error\n";
+
+}
+
+void NedTool::generateCppCommand(int argc, char **argv)
+{
+    // process options
+    std::string opt_cppfile = "out_n.cc";
+    std::string opt_garblephrase;
+    std::vector<std::string> nedfiles;
+
+    for (int i = 0; i < argc; i++) {
+        if (string(argv[i]) == "-o") {
+            i++;
+            if (i == argc)
+                throw opp_runtime_error("unexpected end of arguments after -o");
+            opt_cppfile = argv[i];
+        }
+        else if (string(argv[i]) == "-p" || string(argv[i]) == "--garblephrase") {
+            i++;
+            if (i == argc)
+                throw opp_runtime_error("unexpected end of arguments after -p");
+            opt_garblephrase = argv[i];
+        }
+        else if (string(argv[i]) == "-v")
+            opt_verbose = true;
+        else if (argv[i][0] == '-')
+            throw opp_runtime_error("unknown option %s", argv[i]);
+        else
+            addAll(nedfiles, expandFileArg(argv[i]));
+    }
+
+    if (nedfiles.empty())
+        std::cerr << "opp_nedtool: Warning: no input files\n";
+
+    if (opt_verbose)
+        std::cout << "Converting to C++ " << nedfiles.size() << " file(s)\n";
+
+    // basic syntax check on the files
+    int numFilesWithErrors = 0;
+    for (std::string nedfile : nedfiles) {
+        NedElement *tree = parseNedFile(nedfile.c_str(), true, false);
+        if (tree == nullptr)
+            numFilesWithErrors++;
+        else
+            delete tree;
+    }
+    if (numFilesWithErrors > 0)
+        throw opp_runtime_error("errors found in %d file(s), refusing to generate C++ source", numFilesWithErrors);
+
+    // generate C++ source
+    NedTools::generateCppSource(opt_cppfile.c_str(), nedfiles, opt_garblephrase.empty() ? nullptr : opt_garblephrase.c_str());
+}
+
+int NedTool::main(int argc, char **argv)
+{
+    if (argc < 2) {
+        helpCommand(argc-1, argv+1);
+        exit(0);
+    }
 
     try {
-        // determine file type
-        int ftype = opt_nextfiletype;
-        if (ftype == UNKNOWN_FILE) {
-            if (opp_stringendswith(fname, ".ned"))
-                ftype = NED_FILE;
-            else if (opp_stringendswith(fname, ".msg"))
-                ftype = MSG_FILE;
-            else if (opp_stringendswith(fname, ".xml"))
-                ftype = XML_FILE;
-            else
-                ftype = NED_FILE;
-        }
-
-        if (ftype == MSG_FILE) {
-            fprintf(stdout, "opp_nedtool: %s: error: use opp_msgtool for processing msg files\n", fname);
-            return false;
-        }
-
-        // process input tree
-        errors->clear();
-        if (ftype == XML_FILE) {
-            tree = parseXML(fname, errors);
-        }
-        else if (ftype == NED_FILE) {
-            NedParser parser(errors);
-            parser.setParseExpressions(!opt_unparsedexpr);
-            parser.setStoreSource(opt_storesrc);
-            tree = parser.parseNedFile(fname);
-        }
-        if (errors->containsError()) {
-            delete tree;
-            return false;
-        }
-
-        int contentType = (ftype==NED_FILE || ftype==MSG_FILE) ? ftype :
-                (tree->getTagCode()==NED_NED_FILE || tree->getFirstChildWithTag(NED_NED_FILE)!=nullptr) ? NED_FILE : UNKNOWN_FILE;
-
-        // DTD validation and additional syntax validation
-        if (contentType == NED_FILE) {
-            NedDtdValidator dtdvalidator(errors);
-            dtdvalidator.validate(tree);
-            if (errors->containsError()) {
-                delete tree;
-                return false;
-            }
-
-            NedSyntaxValidator syntaxvalidator(!opt_unparsedexpr, errors);
-            syntaxvalidator.validate(tree);
-            if (errors->containsError()) {
-                delete tree;
-                return false;
-            }
-        }
-
-        if (opt_mergeoutput) {
-            outputtree->appendChild(tree);
-        }
-        else if (!opt_validateonly) {
-            char outfname[1024];
-            char outhdrfname[1024];
-
-            if (opt_inplace) {
-                // won't be used if we're to split a single XML to several NED files
-                strcpy(outfname, fname);
-                strcpy(outhdrfname, "");  // unused
-            }
-            else if (opt_outputfile && (opt_genxml || opt_gensrc)) {
-                strcpy(outfname, opt_outputfile);
-                strcpy(outhdrfname, "");  // unused
-            }
-            else {
-                // generate output file name
-                const char *suffix = opt_suffix;
-                if (!suffix) {
-                    if (opt_genxml)
-                        suffix = "_n.xml";
-                    else if (opt_gensrc)
-                        suffix = "_n.ned";
-                    else
-                        ; //TODO ensure this cannot happen
-                }
-                createFileNameWithSuffix(outfname, fname, suffix);
-            }
-
-            // TBD check output file for write errors!
-            if (opt_genxml) {
-                if (opt_inplace && !renameFileToBAK(outfname))
-                    return false;
-                ofstream out(outfname);
-                if (out.fail())
-                    throw opp_runtime_error("Cannot open '%s' for write", outfname);
-                generateXML(out, tree, opt_srcloc);
-                out.close();
-                if (!out)
-                    throw opp_runtime_error("Error writing '%s'", outfname);
-            }
-            else if (opt_inplace && opt_gensrc && (tree->getTagCode() == NED_FILES || tree->getTagCode() == NED_NED_FILE))
-            {
-                if (tree->getTagCode() == NED_NED_FILE) {
-                    // wrap the tree into a FilesElement
-                    ASTNode *file = tree;
-                    tree = new FilesElement();
-                    tree->appendChild(file);
-                }
-
-                if (opt_splitnedfiles)
-                    NedTools::splitNedFiles((FilesElement *)tree);
-
-                for (ASTNode *child = tree->getFirstChild(); child; child = child->getNextSibling()) {
-                    // extract file name
-                    if (child->getTagCode() == NED_NED_FILE)
-                        strcpy(outfname, ((NedFileElement *)child)->getFilename());
-                    else
-                        continue;  // if there's anything else, ignore it
-
-                    // generate the file
-                    if (opt_inplace && !renameFileToBAK(outfname))
-                        return false;
-                    ofstream out(outfname);
-                    if (out.fail())
-                        throw opp_runtime_error("Cannot open '%s' for write", outfname);
-                    generateSource(out, child, errors, contentType);
-                    out.close();
-                    if (!out)
-                        throw opp_runtime_error("Error writing '%s'", outfname);
-                }
-            }
-            else if (opt_gensrc) {
-                if (opt_inplace && !renameFileToBAK(outfname))
-                    return false;
-                ofstream out(outfname);
-                if (out.fail())
-                    throw opp_runtime_error("Cannot open '%s' for write", outfname);
-                generateSource(out, tree, errors, contentType);
-                out.close();
-                if (!out)
-                    throw opp_runtime_error("Error writing '%s'", outfname);
-            }
-            else {
-                Assert(!opt_gensrc && !opt_genxml);  // already handled above
-                fprintf(stderr, "opp_nedtool: generating C++ source from %s files is not supported\n",
-                        (ftype == NED_FILE ? "NED" : ftype == XML_FILE ? "XML" : "unknown"));
-                delete tree;
-                return false;
-            }
-            delete tree;
-
-            if (errors->containsError())
-                return false;
-        }
+        string command = argv[1];
+        if (argc >= 3 && command[0] != '-' && (string(argv[2]) == "-h" || string(argv[2]) == "--help"))
+            printHelpPage(command);
+        else if (command == "c" || command == "convert")
+            convertCommand(argc-2, argv+2);
+        else if (command == "p" || command == "prettyprint")
+            prettyprintCommand(argc-2, argv+2);
+        else if (command == "v" || command == "validate")
+            validateCommand(argc-2, argv+2);
+        else if (command == "x" || command == "cpp")
+            generateCppCommand(argc-2, argv+2);
+        else if (command == "h" || command == "help" || command == "-h" || command == "--help")
+            helpCommand(argc-2, argv+2);
+        else if (command[0] == '-' || isFile(command.c_str()) || isDirectory(command.c_str())) // missing command
+            validateCommand(argc-1, argv+1);
+        else
+            throw opp_runtime_error("unknown command or file name '%s'", command.c_str());
     }
-    catch (std::exception& e) {
-        fprintf(stderr, "opp_nedtool: error: %s\n", e.what());
-        delete tree;
-        return false;
+    catch (exception& e) {
+        cerr << "opp_nedtool: " << e.what() << endl;
+        return 1;
     }
-    return true;
+    return 0;
 }
 
-bool processListFile(const char *listfilename, bool istemplistfile, ErrorStore *errors)
-{
-    const int maxline = 1024;
-    char line[maxline];
-    char olddir[1024] = "";
-
-    if (opt_verbose)
-        fprintf(stdout, "processing list file '%s'...\n", listfilename);
-
-    ifstream in(listfilename, ios::in);
-    if (in.fail()) {
-        fprintf(stderr, "opp_nedtool: cannot open list file '%s'\n", listfilename);
-        return false;
-    }
-
-    if (!istemplistfile) {
-        // with @listfile, files should be relative to list file, so try cd into list file's directory
-        // (with @@listfile, files are relative to the wd, so we don't cd)
-        std::string dir, fnameonly;
-        splitFileName(listfilename, dir, fnameonly);
-        if (!getcwd(olddir, 1024)) {
-            fprintf(stderr, "opp_nedtool: cannot get the name of current directory\n");
-            return false;
-        }
-        if (opt_verbose)
-            fprintf(stdout, "changing into '%s'...\n", dir.c_str());
-        if (chdir(dir.c_str())) {
-            fprintf(stderr, "opp_nedtool: cannot temporarily change to directory '%s' (does it exist?)\n", dir.c_str());
-            return false;
-        }
-    }
-
-    while (in.getline(line, maxline)) {
-        int len = in.gcount();
-        if (line[len-1] == '\n')
-            line[len-1] = '\0';
-        const char *fname = line;
-        if (fname[0] == '@') {
-            bool istmp = (fname[1] == '@');
-            if (!processListFile(fname+(istmp ? 2 : 1), istmp, errors)) {
-                in.close();
-                return false;
-            }
-        }
-        else if (fname[0] && fname[0] != '#') {
-            if (!processFile(fname, errors)) {
-                in.close();
-                return false;
-            }
-        }
-    }
-
-    if (in.bad()) {
-        fprintf(stderr, "opp_nedtool: error reading list file '%s'\n", listfilename);
-        return false;
-    }
-    in.close();
-
-    if (olddir[0]) {
-        if (opt_verbose)
-            fprintf(stdout, "changing back to '%s'...\n", olddir);
-        if (chdir(olddir)) {
-            fprintf(stderr, "opp_nedtool: cannot change back to directory '%s'\n", olddir);
-            return false;
-        }
-    }
-    return true;
-}
-
-}  // namespace nedxml
+}  // namespace scave
 }  // namespace omnetpp
 
 using namespace omnetpp::nedxml;
 
 int main(int argc, char **argv)
 {
-    // print usage
-    if (argc < 2) {
-        printUsage();
-        return 0;
-    }
-
-    ErrorStore errorstore;
-    ErrorStore *errors = &errorstore;
-    errors->setPrintToStderr(true);
-
-    // process options
-    for (int i = 1; i < argc; i++) {
-        if (!strcmp(argv[i], "-x")) {
-            opt_genxml = true;
-        }
-        else if (!strcmp(argv[i], "-n")) {
-            opt_gensrc = true;
-        }
-        else if (!strcmp(argv[i], "-P")) {
-            opt_gensrc = true;
-            opt_inplace = true;
-            opt_novalidation = true;
-        }
-        else if (!strcmp(argv[i], "-v")) {
-            opt_validateonly = true;
-        }
-        else if (!strncmp(argv[i], "-T", 2)) {
-            const char *arg = argv[i]+2;
-            if (!*arg) {
-                if (++i == argc) {
-                    fprintf(stderr, "opp_nedtool: unexpected end of arguments after %s\n", argv[i-1]);
-                    return 1;
-                }
-                arg = argv[i];
-            }
-            if (!strcmp(arg, "ned"))
-                opt_nextfiletype = NED_FILE;
-            else if (!strcmp(arg, "msg"))
-                opt_nextfiletype = MSG_FILE;
-            else if (!strcmp(arg, "xml"))
-                opt_nextfiletype = XML_FILE;
-            else if (!strcmp(arg, "off"))
-                opt_nextfiletype = UNKNOWN_FILE;
-            else {
-                fprintf(stderr, "opp_nedtool: unknown file type %s after -T\n", arg);
-                return 1;
-            }
-        }
-        else if (!strcmp(argv[i], "-s")) {
-            i++;
-            if (i == argc) {
-                fprintf(stderr, "opp_nedtool: unexpected end of arguments after -s\n");
-                return 1;
-            }
-            opt_suffix = argv[i];
-        }
-        else if (!strcmp(argv[i], "-k")) {
-            opt_inplace = true;
-        }
-        else if (!strcmp(argv[i], "-u")) {
-            opt_splitnedfiles = true;
-        }
-        else if (!strcmp(argv[i], "-e")) {
-            opt_unparsedexpr = true;
-        }
-        else if (!strcmp(argv[i], "-S")) {
-            opt_storesrc = true;
-        }
-        else if (!strcmp(argv[i], "-y")) {
-            opt_novalidation = true;
-        }
-        else if (!strcmp(argv[i], "-z")) {
-            opt_noimports = true;
-        }
-        else if (!strcmp(argv[i], "-p")) {
-            opt_srcloc = true;
-        }
-        else if (!strcmp(argv[i], "-m")) {
-            opt_mergeoutput = true;
-            outputtree = new FilesElement;
-        }
-        else if (!strcmp(argv[i], "-o")) {
-            i++;
-            if (i == argc) {
-                fprintf(stderr, "opp_nedtool: unexpected end of arguments after -o\n");
-                return 1;
-            }
-            opt_outputfile = argv[i];
-        }
-        else if (!strcmp(argv[i], "-V")) {
-            opt_verbose = true;
-        }
-        else if (!strcmp(argv[i], "-h")) {
-            opt_here = true;
-        }
-        else if (argv[i][0] == '-') {
-            fprintf(stderr, "opp_nedtool: unknown option %s\n", argv[i]);
-            return 1;
-        }
-        else if (argv[i][0] == '@') {
-            // treat @listfile and @@listfile differently
-            bool istmp = (argv[i][1] == '@');
-            if (!processListFile(argv[i]+(istmp ? 2 : 1), istmp, errors))
-                return 1;
-        }
-        else {
-            // process individual files on the command line
-            // FIXME these checks get bypassed with list files
-            if (opt_genxml && opt_gensrc) {
-                fprintf(stderr, "opp_nedtool: conflicting options -n (generate source) and -x (generate XML)\n");
-                return 1;
-            }
-            if (opt_mergeoutput && opt_inplace) {
-                fprintf(stderr, "opp_nedtool: conflicting options -m (merge files) and -k (replace original file)\n");
-                return 1;
-            }
-            if (opt_inplace && !opt_genxml && !opt_gensrc) {
-                fprintf(stderr, "opp_nedtool: conflicting options: -k (replace original file) needs -n (generate source) or -x (generate XML)\n");
-                return 1;
-            }
-            if (opt_mergeoutput && !opt_genxml && !opt_gensrc) {
-                fprintf(stderr, "opp_nedtool: option -m not supported with C++ output\n");
-                return 1;
-            }
-            if (opt_splitnedfiles && !opt_mergeoutput && !opt_inplace) {
-                fprintf(stderr, "opp_nedtool: option -u ignored because -k or -m is not specified\n");  // XXX not too logical
-            }
-
-#if SHELL_EXPANDS_WILDCARDS
-            if (!processFile(argv[i], errors))
-                return 1;
-#else
-            // we have to expand wildcards ourselves
-            std::vector<std::string> filelist = FileGlobber(argv[i]).getFilenames();
-            if (filelist.empty()) {
-                fprintf(stderr, "opp_nedtool: not found: %s\n", argv[i]);
-                return 1;
-            }
-            for (size_t i = 0; i < filelist.size(); i++)
-                if (!processFile(filelist[i].c_str(), errors))
-                    return 1;
-
-#endif
-        }
-
-    }
-
-    if (opt_mergeoutput) {
-        if (errors->containsError()) {
-            delete outputtree;
-            return 1;
-        }
-
-        if (opt_splitnedfiles)
-            NedTools::splitNedFiles(outputtree);
-
-        const char *outfname;
-
-        if (opt_outputfile)
-            outfname = opt_outputfile;
-        else if (opt_genxml)
-            outfname = "out_n.xml";
-        else if (opt_gensrc)
-            outfname = "out_n.ned";
-        else
-            outfname = "out_n.cc";
-
-        ofstream out(outfname);
-        if (out.fail())
-            throw opp_runtime_error("Cannot open '%s' for write", outfname);
-
-        if (opt_genxml)
-            generateXML(out, outputtree, opt_srcloc);
-        else if (opt_gensrc)
-            generateSource(out, outputtree, errors, NED_FILE);
-        else
-            return 1;  // mergeoutput with C++ output not supported
-        out.close();
-        if (!out)
-            throw opp_runtime_error("Error writing '%s'", outfname);
-
-        delete outputtree;
-
-        if (errors->containsError())
-            return 1;
-    }
-
-    return 0;
+    NedTool nedTool;
+    return nedTool.main(argc, argv);
 }
 

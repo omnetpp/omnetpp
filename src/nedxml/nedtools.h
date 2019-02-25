@@ -18,6 +18,8 @@
 #ifndef __OMNETPP_NEDXML_NEDTOOLS_H
 #define __OMNETPP_NEDXML_NEDTOOLS_H
 
+#include <string>
+#include <vector>
 #include "nedelements.h"
 
 namespace omnetpp {
@@ -30,6 +32,10 @@ namespace nedxml {
  */
 class NEDXML_API NedTools
 {
+  private:
+    static void doCollectNedFiles(std::vector<std::string>& result, const std::string& prefix);
+    static void printNedFileAsStringConstant(const char *varname, const char *filename, const char *passphrase, std::ostream& out);
+
   public:
     /**
      * Tries to makes an ASTNode tree comply with the DTD by gradually
@@ -48,6 +54,20 @@ class NEDXML_API NedTools
      * every module or interface is placed into its own file.
      */
     static void splitNedFiles(FilesElement *tree);
+
+    /**
+     * Collect NED files from a NED source folder
+     */
+    static std::vector<std::string> collectNedFiles(const char *foldername);
+
+    /**
+     * Generate C++ source that embeds the content of the specified NED files,
+     * and makes it available at runtime for simulations. The passphrase (optional)
+     * causes the NED source to be garbled a little so that it not directly
+     * readable inside the compiled binary.
+     */
+    static void generateCppSource(const char *cppfile, std::vector<std::string> nedfiles, const char *passphrase);
+
 };
 
 } // namespace nedxml
