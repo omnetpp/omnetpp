@@ -248,7 +248,6 @@ void NedTool::printHelpPage(const std::string& page)
                   "from the XML file (filename attribute of <ned-file>).");
         help.para("NED-to-NED conversion amounts to parsing into AST and regenerating the "
                   "NED source from it. The net result is essentially pretty-printing.");
-
         help.line("Options:");
         help.option("-n, --ned", "Force NED output");
         help.option("-x, --xml", "Force XML output");
@@ -291,6 +290,11 @@ void NedTool::printHelpPage(const std::string& page)
                   "view the 'makefrag' help topic:");
         help.line("$ opp_nedtool -h makefrag");
         help.line();
+        help.para("Tip: When you try out NED file embedding on a simulation, "
+                   "you may want to also prevent the simulation program from dynamically "
+                   "loading NED files, to avoid confusion. You can do so by additionally "
+                   "specifying the '-n:' option to the simulation. This option effectively "
+                   "sets an empty NED path.");
         help.line("Options:");
         help.option("-o <filename>", "Name of output file. Default: out_n.cc");
         help.option("-p, --garblephrase <string>", "Phrase for garbling the NED source. Default: none");
