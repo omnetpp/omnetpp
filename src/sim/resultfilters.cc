@@ -365,7 +365,7 @@ Expression::Functor *NaryExpressionFilter::makeValueVariable(int index, cResultF
 {
     Assert(0 <= index && index <= signalCount);
     prevFilters[index] = prevFilter;
-    lastInputValues[index] = NAN;
+    lastInputValues[index] = prevFilter->getInitialDoubleValue();
     return new ValueVariable(this, &(lastInputValues[index]));
 }
 

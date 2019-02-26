@@ -60,6 +60,7 @@ class SIM_API CountFilter : public cResultFilter
     public:
         CountFilter() {count = 0;}
         long getCount() const {return count;}
+        virtual double getInitialDoubleValue() const override {return getCount();}
         virtual std::string str() const override;
 };
 
@@ -153,6 +154,7 @@ class SIM_API SumFilter : public cNumericResultFilter
     public:
         SumFilter() {sum = 0;}
         double getSum() const {return sum;}
+        virtual double getInitialDoubleValue() const override {return getSum();}
         virtual std::string str() const override;
 };
 
@@ -299,6 +301,7 @@ class SIM_API SumPerDurationFilter : public cNumericResultFilter
     public:
         SumPerDurationFilter() {sum = 0;}
         double getSumPerDuration() const;
+        virtual double getInitialDoubleValue() const override {return getSumPerDuration();}
         virtual std::string str() const override;
 };
 
