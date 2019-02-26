@@ -23,6 +23,10 @@
 namespace omnetpp {
 namespace nedxml {
 
+class ASTNode;
+class FilesElement;
+class NedFileElement;
+
 /**
  * Implements opp_nedtool.
  */
@@ -41,7 +45,7 @@ class NedTool
     void moveChildren(ASTNode *source, ASTNode *target);
     void generateNedFile(const char *filename, NedFileElement *tree);
     void generateNedFiles(FilesElement *tree);
-    void generateXmlFile(const char *filename, NedElement *tree, bool srcloc);
+    void generateXmlFile(const char *filename, ASTNode *tree, bool srcloc);
     void renameFileToBak(const char *fname);
 
     // commands

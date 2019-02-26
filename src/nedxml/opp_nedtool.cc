@@ -185,7 +185,7 @@ void NedTool::generateNedFiles(FilesElement *tree)
         generateNedFile(child->getFilename(), child);
 }
 
-void NedTool::generateXmlFile(const char *filename, NedElement *tree, bool srcloc)
+void NedTool::generateXmlFile(const char *filename, ASTNode *tree, bool srcloc)
 {
     if (opt_verbose)
         std::cout << "writing " << filename << "\n";
