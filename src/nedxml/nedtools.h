@@ -56,11 +56,6 @@ class NEDXML_API NedTools
     static void splitNedFiles(FilesElement *tree);
 
     /**
-     * Collect NED files from a NED source folder
-     */
-    static std::vector<std::string> collectNedFiles(const char *foldername);
-
-    /**
      * Generate C++ source that embeds the content of the specified NED files,
      * and makes it available at runtime for simulations. The passphrase (optional)
      * causes the NED source to be garbled a little so that it not directly

@@ -56,12 +56,12 @@ using std::ofstream;
 using std::ifstream;
 using std::ios;
 
-std::vector<std::string> NedTool::expandNedFolder(const char *fname)
+std::vector<std::string> NedTool::expandNedFolder(const char *filename)
 {
-    if (isDirectory(fname))
-        return NedTools::collectNedFiles(fname);
+    if (isDirectory(filename))
+        return collectFiles(filename, ".ned");
     else
-        return std::vector<std::string> { fname };
+        return std::vector<std::string> { filename };
 }
 
 std::vector<std::string> NedTool::expandFileArg(const char *arg)

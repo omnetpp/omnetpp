@@ -133,30 +133,6 @@ void NedTools::splitNedFiles(FilesElement *tree)
         tree->appendChild(tmpTree->removeChild(tmpTree->getFirstChild()));
 }
 
-void NedTools::doCollectNedFiles(std::vector<std::string>& result, const std::string& prefix)
-{
-    FileGlobber globber("*");
-    const char *filename;
-    while ((filename = globber.getNext()) != nullptr) {
-        if (filename[0] == '.')
-            continue;  // ignore ".", "..", and dotfiles
-        else if (isDirectory(filename)) {
-            PushDir pushDir(filename);
-            doCollectNedFiles(result, prefix + filename + "/");
-        }
-        else if (opp_stringendswith(filename, ".ned"))
-            result.push_back(prefix + filename);
-    }
-}
-
-std::vector<std::string> NedTools::collectNedFiles(const char *foldername)
-{
-    std::vector<std::string> result;
-    PushDir pushDir(foldername);
-    doCollectNedFiles(result, std::string(foldername) == "." ? "" : std::string(foldername) + "/");
-    return result;
-}
-
 void NedTools::printNedFileAsStringConstant(const char *symbol, const char *filename, const char *passphrase, std::ostream& out)
 {
     std::ifstream infile(filename);

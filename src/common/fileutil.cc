@@ -29,6 +29,8 @@
 #include "omnetpp/platdep/platmisc.h"  // mkdir
 #include "opp_ctype.h"
 #include "fileutil.h"
+#include "fileglobber.h"
+#include "stringutil.h"
 #include "stringtokenizer.h"
 #include "exception.h"
 
@@ -269,6 +271,30 @@ void mkPath(const char *pathname)
         if (opp_mkdir(pathname, 0755) != 0 && errno != EEXIST)
             throw opp_runtime_error("Cannot create directory '%s': %s", pathname, strerror(errno));
     }
+}
+
+static void doCollectFiles(std::vector<std::string>& result, const std::string& prefix, const char *suffix)
+{
+    FileGlobber globber("*");
+    const char *filename;
+    while ((filename = globber.getNext()) != nullptr) {
+        if (filename[0] == '.')
+            continue;  // ignore ".", "..", and dotfiles
+        else if (isDirectory(filename)) {
+            PushDir pushDir(filename);
+            doCollectFiles(result, prefix + filename + "/", suffix);
+        }
+        else if (suffix == nullptr || opp_stringendswith(filename, suffix))
+            result.push_back(prefix + filename);
+    }
+}
+
+std::vector<std::string> collectFiles(const char *foldername, const char *suffix)
+{
+    std::vector<std::string> result;
+    PushDir pushDir(foldername);
+    doCollectFiles(result, std::string(foldername) == "." ? "" : std::string(foldername) + "/", suffix);
+    return result;
 }
 
 //----

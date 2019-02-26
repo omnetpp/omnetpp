@@ -18,6 +18,7 @@
 #define __OMNETPP_COMMON_FILEUTIL_H
 
 #include <string>
+#include <vector>
 #include "commondefs.h"
 
 namespace omnetpp {
@@ -107,6 +108,13 @@ COMMON_API void removeFile(const char *fname, const char *descr);
  * Recursively creates all directories in the specified path
  */
 COMMON_API void mkPath(const char *pathname);
+
+/**
+ * Collect files in the specified folder with the given file suffix (normally
+ * a file extension with the dot included, e.g. ".txt"). Specify nullptr for suffix
+ * to collect all files.
+ */
+COMMON_API std::vector<std::string> collectFiles(const char *foldername, const char *suffix=nullptr);
 
 /**
  * Utility class for temporary change of directory. Changes back to
