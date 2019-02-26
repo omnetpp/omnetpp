@@ -4,6 +4,8 @@
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
+// Contains: main() for opp_msgtool
+//
 //==========================================================================
 
 /*--------------------------------------------------------------*
@@ -22,23 +24,30 @@
 #include <cerrno>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "common/fileglobber.h"
 #include "common/fileutil.h"
 #include "common/stringutil.h"
+#include "common/stlutil.h"
+#include "common/formattedprinter.h"
+#include "common/opp_ctype.h"
 #include "common/ver.h"
-#include "omnetpp/platdep/platmisc.h"  // getcwd, chdir
 #include "errorstore.h"
+#include "omnetpp/platdep/platmisc.h"  // getcwd, chdir
+#include "msgparser.h"
+#include "exception.h"
+#include "msgdtdvalidator.h"
+#include "msgvalidator.h"
+#include "msggenerator.h"
 #include "msgcompiler.h"
 #include "msgcompilerold.h"
-#include "msgparser.h"
-#include "msgdtdvalidator.h"
-#include "msggenerator.h"
 #include "xmlgenerator.h"
-#include "xmlastparser.h"
 #include "nedtools.h"
-#include "exception.h"
+#include "xmlastparser.h"
+#include "opp_msgtool.h"
 
+using namespace std;
 using namespace omnetpp::common;
 
 namespace omnetpp {
@@ -48,130 +57,164 @@ using std::ofstream;
 using std::ifstream;
 using std::ios;
 
-// file types
-enum { XML_FILE, NED_FILE, MSG_FILE, CPP_FILE, UNKNOWN_FILE };
-
-// option variables
-bool opt_genxml = false;           // -x
-bool opt_gensrc = false;           // -n
-bool opt_validateonly = false;     // -v
-int opt_nextfiletype = UNKNOWN_FILE; // -T
-const char *opt_suffix = nullptr;  // -s
-const char *opt_hdrsuffix = nullptr; // -t
-bool opt_inplace = false;          // -k
-bool opt_storesrc = false;         // -S
-bool opt_srcloc = false;           // -p
-bool opt_mergeoutput = false;      // -m
-bool opt_verbose = false;          // -V
-const char *opt_outputfile = nullptr; // -o
-bool opt_here = false;             // -h
-bool opt_legacymode = false;       // --msg4/--msg6
-std::vector<std::string> opt_importpath; // -I
-bool opt_generatedependencies = false; // -MD
-std::string opt_dependenciesfile;  // -MF
-bool opt_phonytargets = false;     // -MP
-
-// MSG specific option variables:
-static MsgCompilerOptions msg_options;
-
-static FilesElement *outputtree;
-
-
-static void printUsage()
+std::vector<std::string> MsgTool::expandMsgFolder(const char *filename)
 {
-    fprintf(stderr,
-       "opp_msgtool -- part of " OMNETPP_PRODUCT ", (C) 2006-2018 Andras Varga, OpenSim Ltd.\n"
-       "Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
-       "\n"
-       "Usage: opp_msgtool [options] <file1> <file2> ...\n"
-       "Files may be given in a listfile as well, with the @listfile or @@listfile\n"
-       "syntax (check the difference below.) By default, if neither -n nor -x is\n"
-       "specified, opp_msgtool generates C++ source.\n"
-       "  -x: export AST as XML\n"
-       "  -n: generate source\n"
-       "  -P: pretty-print\n"
-       "  -v: no output (only validate input)\n"
-       "  -m: output is a single file (out_m.* by default, see also -o)\n"
-       "  -o <filename>: output file name (don't use when processing multiple files)\n"
-       "  -h  place output file into current directory\n"
-       "  -I <dir>: add directory to MSG import path\n"
-       "  -T xml/msg/off: following files are XML or MSG up to '-T off'\n"
-       "  -s <suffix>: suffix for generated files\n"
-       "  -t <suffix>: when generating C++, suffix for generated header files\n"
-       "  -k: with -n: replace original file and create backup (.bak). If input is a\n"
-       "      single XML file created by 'opp_msgtool -m -x': replace original MSG files\n"
-       "  -S: with MSG parsing: include source code of components in XML\n"
-       "  -p: with -x: add source location info (src-loc attributes) to XML output\n"
-       "  -V: verbose\n"
-       "  -P <symbol>: add dllexport/dllimport symbol to class declarations; if symbol\n"
-       "      name ends in _API, boilerplate code to conditionally define\n"
-       "      it as OPP_DLLEXPORT/OPP_DLLIMPORT is also generated\n"
-       "  -MD: turn on dependency generation for message files; see also: -MF, -MP\n"
-       "  -MF <file>: save dependencies into the specified file; when absent,\n"
-       "      dependencies will be written to the standard output\n"
-       "  -MP: add a phony target for each dependency other than the main file,\n"
-       "      causing each to depend on nothing. These dummy rules work around errors\n"
-       "      make gives if you remove header files without updating the Makefile.\n"
-       "  -Xnc: do not generate the classes, only object descriptions\n"
-       "  -Xnd: do not generate class descriptors\n"
-       "  -Xns: do not generate setters in class descriptors\n"
-       "  --msg6: no-op; retained for backward compatibility.\n"
-       "  --msg4: force OMNeT++ 4.x compatible message file processing.\n"
-       "  @listfile: listfile should contain one file per line (@ or @@ listfiles\n"
-       "      also accepted). Files are interpreted as relative to the listfile.\n"
-       "      @ listfiles can be invoked from anywhere, with the same effect.\n"
-       "  @@listfile: like @listfile, but contents is interpreted as relative to\n"
-       "      the current working directory. @@ listfiles can be put anywhere,\n"
-       "      including /tmp -- effect only depends on the working directory.\n"
-    );
+    if (isDirectory(filename))
+        return collectFiles(filename, ".msg");
+    else
+        return std::vector<std::string> { filename };
 }
 
-static void createFileNameWithSuffix(char *outfname, const char *infname, const char *suffix)
+std::vector<std::string> MsgTool::expandFileArg(const char *arg)
 {
-    if (opt_here) {
-        // remove directory part
-        const char *s = infname+strlen(infname);
-        while (s > infname && *s != '/' && *s != '\\')
-            s--;
-        if (*s == '/' || *s == '\\')
-            s++;
-        strcpy(outfname, s);
+#if SHELL_EXPANDS_WILDCARDS
+    return expandMsgFolder(arg);
+#else
+    // we have to expand wildcards ourselves
+    std::vector<std::string> expandedList = FileGlobber(arg).getFilenames();
+    if (expandedList.empty())
+        throw opp_runtime_error("not found: %s", arg);
+    std::vector<std::string> result;
+    for (std::string elem : expandedList)
+        addAll(result, expandMsgFolder(elem.c_str()));
+    return result;
+#endif
+}
+
+bool MsgTool::fileLooksLikeXml(const char *filename)
+{
+    // return true if first non-whitespace character is "<"
+    ifstream in(filename);
+    unsigned char c = 0;
+    while (in.good() && (c == 0 || opp_isspace(c)))
+        in >> c;
+    return in.good() && c == '<';
+}
+
+MsgFileElement *MsgTool::parseMsgFile(const char *filename, bool opt_legacymode, bool opt_storesrc)
+{
+    if (opt_verbose)
+        std::cout << "parsing " << filename << "\n";
+
+    ErrorStore errors;
+    errors.setPrintToStderr(true);
+    ASTNode *tree;
+
+    // process input tree
+    MsgParser parser(&errors);
+    parser.setMsgNewSyntaxFlag(!opt_legacymode);
+    parser.setStoreSource(opt_storesrc);
+    tree = parser.parseMsgFile(filename);
+    if (errors.containsError()) {
+        delete tree;
+        return nullptr;
+    }
+
+    MsgDtdValidator dtdvalidator(&errors);
+    dtdvalidator.validate(tree);
+    if (errors.containsError()) {
+        delete tree;
+        return nullptr;
+    }
+
+    if (!dynamic_cast<MsgFileElement *>(tree))
+        throw opp_runtime_error("internal error: MsgFileElement expected as root");
+
+    return static_cast<MsgFileElement *>(tree);
+}
+
+ASTNode *MsgTool::parseXmlFile(const char *filename)
+{
+    if (opt_verbose)
+        std::cout << "loading " << filename << "\n";
+    ErrorStore errors;
+    errors.setPrintToStderr(true);
+    return parseXML(filename, &errors);
+}
+
+FilesElement *MsgTool::wrapIntoFilesElement(ASTNode *tree)
+{
+    if (!tree)
+        return nullptr;
+    else if (dynamic_cast<FilesElement*>(tree))
+        return (FilesElement *)tree;
+    else if (dynamic_cast<MsgFileElement*>(tree)) {
+        FilesElement *result = new FilesElement;
+        result->appendChild(tree);
+        return result;
     }
     else {
-        strcpy(outfname, infname);
+        delete tree;
+        throw opp_runtime_error("root element of XML is expected to be <files> or <msg-file>");
     }
-
-    // replace extension with suffix.
-    char *s = outfname+strlen(outfname);
-    while (s > outfname && *s != '/' && *s != '\\' && *s != '.')
-        s--;
-    if (*s != '.')
-        s = outfname+strlen(outfname);
-    strcpy(s, suffix);
 }
 
-static bool renameFileToBAK(const char *fname)
+void MsgTool::moveChildren(ASTNode *source, ASTNode *target)
 {
-    // returns false on failure, true if successfully renamed or no such file
-    char bakfname[1024];
-    createFileNameWithSuffix(bakfname, fname, ".bak");
-
-    if (unlink(bakfname) != 0 && errno != ENOENT) {
-        fprintf(stderr, "opp_msgtool: cannot remove old backup file %s, leaving file %s unchanged\n", bakfname, fname);
-        return false;
+    for (ASTNode *child = source->getFirstChild(); child; ) {
+        ASTNode *nextChild = child->getNextSibling();
+        source->removeChild(child);
+        target->appendChild(child);
+        child = nextChild;
     }
-    if (rename(fname, bakfname) != 0 && errno != ENOENT) {
-        fprintf(stderr, "opp_msgtool: cannot rename original %s to %s, leaving file unchanged\n", fname, bakfname);
-        return false;
-    }
-    return true;
 }
 
-static void generateDependencies(const char *depsfile, const char *fname, const char *outhdrfname, const char *outfname, const std::set<std::string>& dependencies)
+void MsgTool::generateMsgFile(const char *filename, MsgFileElement *tree)
 {
-    std::ofstream fileStream;
+    if (opt_verbose)
+        std::cout << "writing " << filename << "\n";
+
+    ofstream out(filename);
+    if (out.fail())
+        throw opp_runtime_error("cannot open '%s' for write", filename);
+    generateMsg(out, tree);
+    out.close();
+    if (!out)
+        throw opp_runtime_error("error writing '%s'", filename);
+}
+
+void MsgTool::generateMsgFiles(FilesElement *tree)
+{
+    for (MsgFileElement *child = (MsgFileElement*)tree->getFirstChildWithTag(MSG_MSG_FILE); child; child = (MsgFileElement*)child->getNextSiblingWithTag(MSG_MSG_FILE))
+        generateMsgFile(child->getFilename(), child);
+}
+
+void MsgTool::generateXmlFile(const char *filename, ASTNode *tree, bool srcloc)
+{
+    if (opt_verbose)
+        std::cout << "writing " << filename << "\n";
+    ofstream out(filename);
+    if (out.fail())
+        throw opp_runtime_error("cannot open '%s' for write", filename);
+    generateXML(out, tree, srcloc);
+    out.close();
+    if (!out)
+        throw opp_runtime_error("error writing '%s'", filename);
+}
+
+void MsgTool::renameFileToBak(const char *filename)
+{
+    std::string bakfname = removeFileExtension(filename) + ".bak";
+    if (opt_verbose)
+        std::cout << "renaming " << filename << " to " << bakfname << "\n";
+    if (unlink(bakfname.c_str()) != 0 && errno != ENOENT)
+        throw opp_runtime_error("cannot remove old backup file %s, leaving file %s unchanged", bakfname.c_str(), filename);
+    if (rename(filename, bakfname.c_str()) != 0 && errno != ENOENT)
+        throw opp_runtime_error("cannot rename original %s to %s, leaving file unchanged", filename, bakfname.c_str());
+}
+
+void MsgTool::generateDependencies(const char *depsfile, const char *msgfile, const char *hfile, const char *ccfile, const std::set<std::string>& dependencies, bool wantPhonytargets)
+{
     bool useFileOutput = !opp_isempty(depsfile) && strcmp(depsfile, "-") != 0;
-    std::ostream& out = useFileOutput ? fileStream : std::cout;
+
+    if (opt_verbose) {
+        if (useFileOutput)
+        cout << "writing dependencies to " << depsfile << "\n";
+        else
+        cout << "writing dependencies to stdout\n";
+    }
+
+    std::ofstream fileStream;
     if (useFileOutput) {
         mkPath(directoryOf(depsfile).c_str());
         fileStream.open(depsfile);
@@ -179,13 +222,14 @@ static void generateDependencies(const char *depsfile, const char *fname, const 
             throw opp_runtime_error("Could not open '%s' for write", depsfile);
     }
 
-    out << outfname << " " << outhdrfname << " :";
-    out << " \\\n\t" << fname;
+    std::ostream& out = useFileOutput ? fileStream : std::cout;
+    out << ccfile << " " << hfile << " :";
+    out << " \\\n\t" << msgfile;
     for (const std::string& dep : dependencies)
         out << " \\\n\t" << dep;
     out << "\n";
-    if (opt_phonytargets) {
-        out << fname << ":\n";
+    if (wantPhonytargets) {
+        out << msgfile << ":\n";
         for (const std::string& dep : dependencies)
             out << dep << ":\n";
     }
@@ -195,365 +239,331 @@ static void generateDependencies(const char *depsfile, const char *fname, const 
         fileStream.close();
 }
 
-static bool processFile(const char *fname, ErrorStore *errors)
+
+void MsgTool::helpCommand(int argc, char **argv)
 {
-    if (opt_verbose)
-        fprintf(stdout, "processing '%s'...\n", fname);
-
-    ASTNode *tree = nullptr;
-
-    try {
-        // determine file type
-        int ftype = opt_nextfiletype;
-        if (ftype == UNKNOWN_FILE) {
-            if (opp_stringendswith(fname, ".ned"))
-                ftype = NED_FILE;
-            else if (opp_stringendswith(fname, ".msg"))
-                ftype = MSG_FILE;
-            else if (opp_stringendswith(fname, ".xml"))
-                ftype = XML_FILE;
-            else
-                ftype = MSG_FILE;
-        }
-
-        // process input tree
-        errors->clear();
-        switch (ftype) {
-        case XML_FILE:
-            tree = parseXML(fname, errors);
-            break;
-        case MSG_FILE: {
-            MsgParser parser(errors);
-            parser.setMsgNewSyntaxFlag(!opt_legacymode);
-            parser.setStoreSource(opt_storesrc);
-            tree = parser.parseMsgFile(fname);
-            break;
-        }
-        case NED_FILE:
-            fprintf(stderr, "opp_msgtool: NED files are not supported: '%s'\n", fname);
-            return false;
-        default:
-            assert(false);
-        }
-
-        if (errors->containsError()) {
-            delete tree;
-            return false;
-        }
-
-        // DTD validation and additional syntax validation
-        MsgDtdValidator dtdvalidator(errors);
-        dtdvalidator.validate(tree);
-        if (errors->containsError()) {
-            delete tree;
-            return false;
-        }
-
-        if (opt_mergeoutput) {
-            outputtree->appendChild(tree);
-        }
-        else if (!opt_validateonly) {
-            char outfname[1024];
-            char outhdrfname[1024];
-
-            if (opt_inplace) {
-                // won't be used if we're to split a single XML to several MSG files
-                strcpy(outfname, fname);
-                strcpy(outhdrfname, "");  // unused
-            }
-            else if (opt_outputfile && (opt_genxml || opt_gensrc)) {
-                strcpy(outfname, opt_outputfile);
-                strcpy(outhdrfname, "");  // unused
-            }
-            else {
-                // generate output file name
-                const char *suffix = opt_suffix;
-                const char *hdrsuffix = opt_hdrsuffix;
-                if (!suffix) {
-                    if (opt_genxml)
-                        suffix = "_m.xml";
-                    else if (opt_gensrc)
-                        suffix = "_m.msg";
-                    else
-                        suffix = "_m.cc";
-                }
-                if (!hdrsuffix) {
-                    hdrsuffix = "_m.h";
-                }
-                createFileNameWithSuffix(outfname, fname, suffix);
-                createFileNameWithSuffix(outhdrfname, fname, hdrsuffix);
-            }
-
-            // TBD check output file for write errors!
-            if (opt_genxml) {
-                if (opt_inplace && !renameFileToBAK(outfname))
-                    return false;
-                ofstream out(outfname);
-                if (out.fail())
-                    throw opp_runtime_error("Cannot open '%s' for write", outfname);
-                generateXML(out, tree, opt_srcloc);
-                out.close();
-                if (!out)
-                    throw opp_runtime_error("Error writing '%s'", outfname);
-            }
-            else if (opt_inplace && opt_gensrc && (tree->getTagCode() == NED_FILES || tree->getTagCode() == MSG_MSG_FILE))
-            {
-                if (tree->getTagCode() == MSG_MSG_FILE) {
-                    // wrap the tree into a FilesElement
-                    ASTNode *file = tree;
-                    tree = new FilesElement();
-                    tree->appendChild(file);
-                }
-
-                for (ASTNode *child = tree->getFirstChild(); child; child = child->getNextSibling()) {
-                    // extract file name
-                    if (child->getTagCode() == MSG_MSG_FILE)
-                        strcpy(outfname, ((MsgFileElement *)child)->getFilename());
-                    else
-                        continue;  // if there's anything else, ignore it
-
-                    // generate the file
-                    if (opt_inplace && !renameFileToBAK(outfname))
-                        return false;
-                    ofstream out(outfname);
-                    if (out.fail())
-                        throw opp_runtime_error("Cannot open '%s' for write", outfname);
-                    generateMsg(out, child);
-                    out.close();
-                    if (!out)
-                        throw opp_runtime_error("Error writing '%s'", outfname);
-                }
-            }
-            else if (opt_gensrc) {
-                if (opt_inplace && !renameFileToBAK(outfname))
-                    return false;
-                ofstream out(outfname);
-                if (out.fail())
-                    throw opp_runtime_error("Cannot open '%s' for write", outfname);
-                generateMsg(out, tree);
-                out.close();
-                if (!out)
-                    throw opp_runtime_error("Error writing '%s'", outfname);
-            }
-            else {
-                if (opt_legacymode) {
-                    // legacy (4.x) mode
-                    MsgCompilerOptionsOld options;
-                    options.exportDef = msg_options.exportDef;
-                    options.generateClasses = msg_options.generateClasses;
-                    options.generateDescriptors = msg_options.generateDescriptors;
-                    options.generateSettersInDescriptors = msg_options.generateSettersInDescriptors;
-                    MsgCompilerOld generator(errors, options);
-                    generator.generate(dynamic_cast<MsgFileElement *>(tree), outhdrfname, outfname);
-                }
-                else {
-                    msg_options.importPath = opt_importpath;
-                    MsgCompiler generator(msg_options, errors);
-                    std::set<std::string> dependencies;
-                    generator.generate(dynamic_cast<MsgFileElement *>(tree), outhdrfname, outfname, dependencies);
-                    if (opt_generatedependencies)
-                        generateDependencies(opt_dependenciesfile.c_str(), fname, outhdrfname, outfname, dependencies);
-                }
-            }
-            delete tree;
-
-            if (errors->containsError())
-                return false;
-        }
-    }
-    catch (std::exception& e) {
-        fprintf(stderr, "opp_msgtool: error: %s\n", e.what());
-        delete tree;
-        return false;
-    }
-    return true;
+    string page = argc==0 ? "options" : argv[0];
+    printHelpPage(page);
 }
 
-static bool processListFile(const char *listfilename, bool istemplistfile, ErrorStore *errors)
+void MsgTool::printHelpPage(const std::string& page)
 {
-    const int maxline = 1024;
-    char line[maxline];
-    char olddir[1024] = "";
-
-    if (opt_verbose)
-        fprintf(stdout, "processing list file '%s'...\n", listfilename);
-
-    ifstream in(listfilename, ios::in);
-    if (in.fail()) {
-        fprintf(stderr, "opp_msgtool: cannot open list file '%s'\n", listfilename);
-        return false;
+    FormattedPrinter help(cout);
+    if (page == "options") {
+        help.line("opp_msgtool -- part of " OMNETPP_PRODUCT ", (C) 2006-2018 OpenSim Ltd.");
+        help.line("Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION);
+        help.line();
+        help.para("Usage: opp_msgtool [<command>] [<options>] <files>...");
+        help.para("Message compiler and MSG file manipulation tool.");
+        help.line("Commands:");
+        help.option("c, convert", "Convert MSG files to XML form and vice versa, etc.");
+        help.option("p, prettyprint", "Format (pretty-print) MSG files");
+        help.option("v, validate", "Validate MSG files");
+        help.option("x, cpp", "Generate C++ code (message compiler mode)");
+        help.option("h, help", "Print this help text");
+        help.line();
+        help.para("The default command is 'cpp'.");
+        help.para("To get help, use opp_msgtool help <topic>. Available help topics: 'options' and any command name.");
     }
-
-    if (!istemplistfile) {
-        // with @listfile, files should be relative to list file, so try cd into list file's directory
-        // (with @@listfile, files are relative to the wd, so we don't cd)
-        std::string dir, fnameonly;
-        splitFileName(listfilename, dir, fnameonly);
-        if (!getcwd(olddir, 1024)) {
-            fprintf(stderr, "opp_msgtool: cannot get the name of current directory\n");
-            return false;
-        }
-        if (opt_verbose)
-            fprintf(stdout, "changing into '%s'...\n", dir.c_str());
-        if (chdir(dir.c_str())) {
-            fprintf(stderr, "opp_msgtool: cannot temporarily change to directory '%s' (does it exist?)\n", dir.c_str());
-            return false;
-        }
+    else if (page == "c" || page == "convert") {
+        help.para("Usage: opp_msgtool convert [<options>] <folders-and-msg-or-xml-files>");
+        help.para("Convert between MSG source and its XML AST representation, split up MSG files "
+                  "to contain one MSG type per file, etc.");
+        help.para("In addition to MSG files, the command also consumes and produces XML files "
+                  "that essentially contain MSG in parsed (abstract syntax tree, AST) form. "
+                  "See the manual or doc/etc/msg2.dtd for the format of the XML.");
+        help.para("MSG-to-XML conversion parses the MSG file and exports its AST in XML form. "
+                  "The presence of certain elements/attributes in the XML can be controlled.");
+        help.para("XML-to-MSG conversion produces one or more MSG files per XML file, depending "
+                  "on the number of <msg-file> elements in the XML. MSG file names will be taken "
+                  "from the XML file (filename attribute of <msg-file>).");
+        help.para("MSG-to-MSG conversion amounts to parsing into AST and regenerating the "
+                  "MSG source from it. The net result is essentially pretty-printing.");
+        help.line("Options:");
+        help.option("-g, --msg", "Force MSG output");
+        help.option("-x, --xml", "Force XML output");
+        help.option("-m, --merge", "Output is a single file (out.msg or out.xml by default).");
+        help.option("-o <filename>", "Output file name (don't use when processing multiple files)");
+        help.option("-s, --split", "Split MSG files to one MSG component per file");
+        help.option("-u, --unparsedexpr", "Do not parse expressions in MSG input");
+        help.option("-l, --srcloc", "Add source location info (src-loc attributes) to XML output");
+        help.option("-t, --storesrc", "When converting MSG to XML, include source code of components in XML output");
+        help.option("-k, --bak", "Save backup of original files as .bak");
+        help.option("-v", "Verbose");
+        help.line();
     }
-
-    while (in.getline(line, maxline)) {
-        int len = in.gcount();
-        if (line[len-1] == '\n')
-            line[len-1] = '\0';
-        const char *fname = line;
-        if (fname[0] == '@') {
-            bool istmp = (fname[1] == '@');
-            if (!processListFile(fname+(istmp ? 2 : 1), istmp, errors)) {
-                in.close();
-                return false;
-            }
-        }
-        else if (fname[0] && fname[0] != '#') {
-            if (!processFile(fname, errors)) {
-                in.close();
-                return false;
-            }
-        }
+    else if (page == "p" || page == "prettyprint") {
+        help.para("Usage: opp_msgtool prettyprint <folders-and-msg-files>");
+        help.para("Format (pretty-print) MSG files. The original files will be overwritten, optionally creating backups of the original files.");
+        help.line("Options:");
+        help.option("-k, --bak", "Save backup of original files as .bak");
+        help.option("-v", "Verbose");
+        help.line();
     }
-
-    if (in.bad()) {
-        fprintf(stderr, "opp_msgtool: error reading list file '%s'\n", listfilename);
-        return false;
+    else if (page == "v" || page == "validate") {
+        help.para("Usage: opp_msgtool validate [<options>] <folders-and-msg-files>");
+        help.para("Perform syntax check and basic local validation of the MSG files.");
+        help.line("Options:");
+        help.option("-e", "Do not parse expressions");
+        help.option("-v", "Verbose");
+        help.line();
     }
-    in.close();
-
-    if (olddir[0]) {
-        if (opt_verbose)
-            fprintf(stdout, "changing back to '%s'...\n", olddir);
-        if (chdir(olddir)) {
-            fprintf(stderr, "opp_msgtool: cannot change back to directory '%s'\n", olddir);
-            return false;
-        }
+    else if (page == "x" || page == "cpp") {
+        help.para("Usage: opp_msgtool cpp [<options>] <folders-and-msg-files>");
+        help.para("Generate C++ source from message definitions.");
+        help.line();
+        help.line("Options:");
+        help.option("--msg6", "No-op; retained for backward compatibility.");
+        help.option("--msg4", "Force OMNeT++ 4.x compatible message file processing.");
+        help.option("-I <dir>", "Add directory to MSG import path");
+        help.option("-s <suffix>", "Suffix for generated C++ source files (default: '_m.cc')");
+        help.option("-t <suffix>", "Suffix for generated C++ header files (default: '_m.h')");
+        help.option("-P <symbol>", "Add dllexport/dllimport symbol to class declarations; if symbol "
+                    "name ends in _API, boilerplate code to conditionally define "
+                    "it as OPP_DLLEXPORT/OPP_DLLIMPORT is also generated");
+        help.option("-MD", "Turn on dependency generation for message files; see also: -MF, -MP");
+        help.option("-MF <file>", "Save dependencies into the specified file; when absent, "
+                    "dependencies will be written to the standard output");
+        help.option("-MP", "Add a phony target for each dependency other than the main file,"
+                    "causing each to depend on nothing. These dummy rules work around errors "
+                    "make gives if you remove header files without updating the Makefile.");
+        help.option("-Xnc", "Do not generate the classes, only object descriptions");
+        help.option("-Xnd", "Do not generate class descriptors");
+        help.option("-Xns", "Do not generate setters in class descriptors");
+        help.option("-v", "Verbose");
+        help.line();
     }
-    return true;
+    else {
+        throw opp_runtime_error("no help topic '%s'", page.c_str());
+    }
 }
 
-}  // namespace nedxml
-}  // namespace omnetpp
-
-using namespace omnetpp::nedxml;
-
-int main(int argc, char **argv)
+void MsgTool::convertCommand(int argc, char **argv)
 {
-    // print usage
-    if (argc < 2) {
-        printUsage();
-        return 0;
-    }
-
-    ErrorStore errorstore;
-    ErrorStore *errors = &errorstore;
-    errors->setPrintToStderr(true);
-
-    bool msg4=false, msg6=false;
-
     // process options
-    for (int i = 1; i < argc; i++) {
-        if (!strcmp(argv[i], "-x")) {
-            opt_genxml = true;
+    bool opt_forcemsg = false;
+    bool opt_forcexml = false;
+    bool opt_mergeoutput = false;
+    std::string opt_outputfile;
+    bool opt_unparsedexpr = false;
+    bool opt_srcloc = false;
+    bool opt_storesrc = false;
+    bool opt_makebackup = false;
+    std::vector<std::string> inputFiles;
+
+    for (int i = 0; i < argc; i++) {
+        if (string(argv[i]) == "-g" || string(argv[i]) == "--msg")
+            opt_forcemsg = true;
+        else if (string(argv[i]) == "-x" || string(argv[i]) == "--xml")
+            opt_forcexml = true;
+        else if (string(argv[i]) == "-m" || string(argv[i]) == "--merge")
+            opt_mergeoutput = true;
+        else if (string(argv[i]) == "-o") {
+            i++;
+            if (i == argc)
+                throw opp_runtime_error("unexpected end of arguments after -o");
+            opt_outputfile = argv[i];
         }
-        else if (!strcmp(argv[i], "-n")) {
-            opt_gensrc = true;
+        else if (string(argv[i]) == "-u" || string(argv[i]) == "--unparsedexpr")
+            opt_unparsedexpr = true;
+        else if (string(argv[i]) == "-l" || string(argv[i]) == "--srcloc")
+            opt_srcloc = true;
+        else if (string(argv[i]) == "-t" || string(argv[i]) == "--storesrc")
+            opt_storesrc = true;
+        else if (string(argv[i]) == "-k" || string(argv[i]) == "--bak")
+            opt_makebackup = true;
+        else if (string(argv[i]) == "-v")
+            opt_verbose = true;
+        else if (argv[i][0] == '-')
+            throw opp_runtime_error("unknown option %s", argv[i]);
+        else
+            addAll(inputFiles, expandFileArg(argv[i]));
+    }
+
+    if (opt_forcemsg && opt_forcexml)
+        throw opp_runtime_error("conflicting options --msg and --xml");
+
+    if (opt_verbose)
+        std::cout << "Converting " << inputFiles.size() << " file(s)\n";
+
+    if (inputFiles.empty())
+        std::cerr << "opp_msgtool: warning: no input files\n";
+
+    FilesElement *mergedTree = opt_mergeoutput ? new FilesElement : nullptr;
+    std::unique_ptr<FilesElement> dummy(mergedTree);
+
+    int numSkipped = 0;
+    for (std::string inputFile : inputFiles) {
+        bool isMsgFile = opp_stringendswith(inputFile.c_str(), ".msg") ? true :
+                opp_stringendswith(inputFile.c_str(), ".xml") ? false :
+                        !fileLooksLikeXml(inputFile.c_str());
+        FilesElement *tree;
+        if (isMsgFile)
+            tree = wrapIntoFilesElement(parseMsgFile(inputFile.c_str(), opt_unparsedexpr, opt_storesrc));
+        else
+            tree = wrapIntoFilesElement(parseXmlFile(inputFile.c_str()));
+
+        if (tree == nullptr)
+            numSkipped++;
+        else if (opt_mergeoutput) {
+            moveChildren(tree, mergedTree);
+            delete tree;
         }
-        else if (!strcmp(argv[i], "-P")) {
-            opt_gensrc = true;
-            opt_inplace = true;
+        else {
+            std::unique_ptr<FilesElement> dummy(tree);
+
+            bool msgOutput = opt_forcemsg ? true : opt_forcexml ? false : isMsgFile;
+
+            std::string outputFile = inputFile;
+            if (isMsgFile == msgOutput) {  // MSG-to-MSG or XML-to-XML
+                if (opt_makebackup)
+                    renameFileToBak(inputFile.c_str());
+                else
+                    removeFile(inputFile.c_str(), nullptr);
+            }
+            else {
+                // change extension if needed
+                outputFile += (msgOutput ? ".msg" : ".xml");
+            }
+            if (!msgOutput)
+                generateXmlFile(outputFile.c_str(), tree, opt_srcloc);
+            else
+                generateMsgFiles(tree);
         }
-        else if (!strcmp(argv[i], "-v")) {
-            opt_validateonly = true;
+    }
+
+    if (opt_mergeoutput) {
+        if (opt_forcemsg)
+            throw opp_runtime_error("refusing to generate merged MSG file");
+        std::string outputFile = opt_outputfile.empty() ? "out.xml" : opt_outputfile;
+        generateXmlFile(outputFile.c_str(), mergedTree, opt_srcloc);
+    }
+
+    if (numSkipped > 0)
+        throw opp_runtime_error("error in %d file(s)", numSkipped);
+}
+
+void MsgTool::prettyprintCommand(int argc, char **argv)
+{
+    // process options
+    bool opt_makebackup = false;
+    std::vector<std::string> msgfiles;
+
+    for (int i = 0; i < argc; i++) {
+        if (string(argv[i]) == "-k" || string(argv[i]) == "--bak")
+            opt_makebackup = true;
+        else if (string(argv[i]) == "-v")
+            opt_verbose = true;
+        else if (argv[i][0] == '-')
+            throw opp_runtime_error("unknown option %s", argv[i]);
+        else
+            addAll(msgfiles, expandFileArg(argv[i]));
+    }
+
+    if (msgfiles.empty())
+        std::cerr << "opp_msgtool: warning: no input files\n";
+
+    if (opt_verbose)
+        std::cout << "Pretty-printing " << msgfiles.size() << " file(s)\n";
+
+    int numSkipped = 0;
+    for (std::string msgfile : msgfiles) {
+        MsgFileElement *tree = parseMsgFile(msgfile.c_str(), true, false);
+        if (tree == nullptr)
+            numSkipped++;
+        else {
+            if (opt_makebackup)
+                renameFileToBak(msgfile.c_str());
+            generateMsgFile(msgfile.c_str(), tree);
+            delete tree;
         }
-        else if (!strncmp(argv[i], "-I", 2)) {
+    }
+    if (numSkipped > 0)
+        throw opp_runtime_error("error in %d file(s)", numSkipped);
+}
+
+void MsgTool::validateCommand(int argc, char **argv)
+{
+    // process options
+    bool opt_unparsedexpr = false;     // -e
+    std::vector<std::string> msgfiles;
+
+    for (int i = 0; i < argc; i++) {
+        if (string(argv[i]) == "-e")
+            opt_unparsedexpr = true;
+        else if (string(argv[i]) == "-v")
+            opt_verbose = true;
+        else if (argv[i][0] == '-')
+            throw opp_runtime_error("unknown option %s", argv[i]);
+        else
+            addAll(msgfiles, expandFileArg(argv[i]));
+    }
+
+    if (opt_verbose)
+        std::cout << "Validating " << msgfiles.size() << " file(s)\n";
+
+    if (msgfiles.empty())
+        std::cerr << "opp_msgtool: Warning: no input files\n";
+
+    int numFilesWithErrors = 0;
+    for (std::string msgfile : msgfiles) {
+        MsgElement *tree = parseMsgFile(msgfile.c_str(), opt_unparsedexpr, false);
+        if (tree == nullptr)
+            numFilesWithErrors++;
+        else
+            delete tree;
+    }
+
+    if (numFilesWithErrors > 0)
+        throw opp_runtime_error("error in %d file(s)", numFilesWithErrors);
+
+    if (opt_verbose)
+        cout << "Validation found no error\n";
+
+}
+
+void MsgTool::generateCppCommand(int argc, char **argv)
+{
+    // process options
+    const char *opt_suffix = nullptr;  // -s
+    const char *opt_hdrsuffix = nullptr; // -t
+    bool opt_legacymode = false;       // --msg4/--msg6
+    std::vector<std::string> opt_importpath; // -I
+    bool opt_generatedependencies = false; // -MD
+    std::string opt_dependenciesfile;  // -MF
+    bool opt_phonytargets = false;     // -MP
+    MsgCompilerOptions msg_options;
+    std::vector<std::string> msgfiles;
+
+    bool msg4 = false, msg6 = false;
+    for (int i = 0; i < argc; i++) {
+        if (!strncmp(argv[i], "-I", 2)) {
             const char *arg = argv[i]+2;
             if (!*arg) {
-                if (++i == argc) {
-                    fprintf(stderr, "opp_msgtool: unexpected end of arguments after %s\n", argv[i-1]);
-                    return 1;
-                }
+                if (++i == argc)
+                    throw opp_runtime_error("unexpected end of arguments after %s", argv[i-1]);
                 arg = argv[i];
             }
             opt_importpath.push_back(arg);
         }
-        else if (!strncmp(argv[i], "-T", 2)) {
-            const char *arg = argv[i]+2;
-            if (!*arg) {
-                if (++i == argc) {
-                    fprintf(stderr, "opp_msgtool: unexpected end of arguments after %s\n", argv[i-1]);
-                    return 1;
-                }
-                arg = argv[i];
-            }
-            if (!strcmp(arg, "msg"))
-                opt_nextfiletype = MSG_FILE;
-            else if (!strcmp(arg, "xml"))
-                opt_nextfiletype = XML_FILE;
-            else if (!strcmp(arg, "off"))
-                opt_nextfiletype = UNKNOWN_FILE;
-            else {
-                fprintf(stderr, "opp_msgtool: unknown file type %s after -T\n", arg);
-                return 1;
-            }
-        }
         else if (!strcmp(argv[i], "-s")) {
             i++;
-            if (i == argc) {
-                fprintf(stderr, "opp_msgtool: unexpected end of arguments after -s\n");
-                return 1;
-            }
+            if (i == argc)
+                throw opp_runtime_error("unexpected end of arguments after -s");
             opt_suffix = argv[i];
         }
         else if (!strcmp(argv[i], "-t")) {
             i++;
-            if (i == argc) {
-                fprintf(stderr, "opp_msgtool: unexpected end of arguments after -t\n");
-                return 1;
-            }
+            if (i == argc)
+                throw opp_runtime_error("unexpected end of arguments after -t");
             opt_hdrsuffix = argv[i];
-        }
-        else if (!strcmp(argv[i], "-k")) {
-            opt_inplace = true;
-        }
-        else if (!strcmp(argv[i], "-S")) {
-            opt_storesrc = true;
-        }
-        else if (!strcmp(argv[i], "-p")) {
-            opt_srcloc = true;
-        }
-        else if (!strcmp(argv[i], "-m")) {
-            opt_mergeoutput = true;
-            outputtree = new FilesElement;
-        }
-        else if (!strcmp(argv[i], "-o")) {
-            i++;
-            if (i == argc) {
-                fprintf(stderr, "opp_msgtool: unexpected end of arguments after -o\n");
-                return 1;
-            }
-            opt_outputfile = argv[i];
-        }
-        else if (!strcmp(argv[i], "-V")) {
-            opt_verbose = true;
-        }
-        else if (!strcmp(argv[i], "-h")) {
-            opt_here = true;
         }
         else if (!strncmp(argv[i], "-P", 2)) {
             if (argv[i][2])
                 msg_options.exportDef = argv[i]+2;
             else {
-                if (++i == argc) {
-                    fprintf(stderr, "opp_msgtool: unexpected end of arguments after %s\n", argv[i-1]);
-                    return 1;
-                }
+                if (++i == argc)
+                    throw opp_runtime_error("unexpected end of arguments after %s", argv[i-1]);
                 msg_options.exportDef = argv[i];
             }
         }
@@ -569,10 +579,8 @@ int main(int argc, char **argv)
             opt_generatedependencies = true;
         }
         else if (!strcmp(argv[i], "-MF")) {
-            if (++i == argc) {
-                fprintf(stderr, "opp_msgtool: unexpected end of arguments after %s\n", argv[i-1]);
-                return 1;
-            }
+            if (++i == argc)
+                throw opp_runtime_error("unexpected end of arguments after %s", argv[i-1]);
             opt_dependenciesfile = argv[i];
         }
         else if (!strcmp(argv[i], "-MP")) {
@@ -581,10 +589,8 @@ int main(int argc, char **argv)
         else if (!strncmp(argv[i], "-X", 2)) {
             const char *arg = argv[i]+2;
             if (!*arg) {
-                if (++i == argc) {
-                    fprintf(stderr, "opp_msgtool: unexpected end of arguments after %s\n", argv[i-1]);
-                    return 1;
-                }
+                if (++i == argc)
+                    throw opp_runtime_error("unexpected end of arguments after %s", argv[i-1]);
                 arg = argv[i];
             }
             if (!strcmp(arg, "nc")) {
@@ -596,101 +602,120 @@ int main(int argc, char **argv)
             else if (!strcmp(arg, "ns")) {
                 msg_options.generateSettersInDescriptors = false;
             }
-            else {
-                fprintf(stderr, "opp_msgtool: unknown option -X %s\n", arg);
-                return 1;
-            }
+            else
+                throw opp_runtime_error("unknown option -X %s", arg);
         }
-        else if (argv[i][0] == '-') {
-            fprintf(stderr, "opp_msgtool: unknown option %s\n", argv[i]);
-            return 1;
+        else if (string(argv[i]) == "-v")
+            opt_verbose = true;
+        else if (argv[i][0] == '-')
+            throw opp_runtime_error("unknown option %s", argv[i]);
+        else
+            addAll(msgfiles, expandFileArg(argv[i]));
+    }
+
+    if (msg4 && msg6)
+        throw opp_runtime_error("conflicting options --msg4 and --msg6");
+
+    if (msgfiles.empty())
+        std::cerr << "opp_msgtool: Warning: no input files\n";
+
+    if (opt_verbose)
+        std::cout << "Translating to C++ " << msgfiles.size() << " file(s)\n";
+
+    int numFilesWithErrors = 0;
+    for (std::string msgfile : msgfiles) {
+        // parse
+        MsgFileElement *tree = parseMsgFile(msgfile.c_str(), opt_legacymode, false);
+        if (tree == nullptr) {
+            numFilesWithErrors++;
+            continue;
         }
-        else if (argv[i][0] == '@') {
-            // treat @listfile and @@listfile differently
-            bool istmp = (argv[i][1] == '@');
-            if (!processListFile(argv[i]+(istmp ? 2 : 1), istmp, errors))
-                return 1;
+
+        // generate output file names
+        const char *suffix = opt_suffix;
+        const char *hdrsuffix = opt_hdrsuffix;
+        if (!suffix)
+            suffix = "_m.cc";
+        if (!hdrsuffix)
+            hdrsuffix = "_m.h";
+        std::string outccfname = removeFileExtension(msgfile.c_str()) + suffix;
+        std::string outhfname = removeFileExtension(msgfile.c_str()) + hdrsuffix;
+
+        // generate C++ code
+        if (opt_verbose)
+            cout << "writing " << outhfname << " and " << outccfname << "\n";
+        ErrorStore errors;
+        errors.setPrintToStderr(true);
+        if (opt_legacymode) {
+            // legacy (4.x) mode
+            MsgCompilerOptionsOld options;
+            options.exportDef = msg_options.exportDef;
+            options.generateClasses = msg_options.generateClasses;
+            options.generateDescriptors = msg_options.generateDescriptors;
+            options.generateSettersInDescriptors = msg_options.generateSettersInDescriptors;
+            MsgCompilerOld generator(&errors, options);
+            generator.generate(tree, outhfname.c_str(), outccfname.c_str());
+            if (errors.containsError())
+                numFilesWithErrors++;
         }
         else {
-            // process individual files on the command line
-            // FIXME these checks get bypassed with list files
-            if (opt_genxml && opt_gensrc) {
-                fprintf(stderr, "opp_msgtool: conflicting options -n (generate source) and -x (generate XML)\n");
-                return 1;
-            }
-            if (opt_mergeoutput && opt_inplace) {
-                fprintf(stderr, "opp_msgtool: conflicting options -m (merge files) and -k (replace original file)\n");
-                return 1;
-            }
-            if (opt_inplace && !opt_genxml && !opt_gensrc) {
-                fprintf(stderr, "opp_msgtool: conflicting options: -k (replace original file) needs -n (generate source) or -x (generate XML)\n");
-                return 1;
-            }
-            if (opt_mergeoutput && !opt_genxml && !opt_gensrc) {
-                fprintf(stderr, "opp_msgtool: option -m not supported with C++ output\n");
-                return 1;
-            }
-
-#if SHELL_EXPANDS_WILDCARDS
-            if (!processFile(argv[i], errors))
-                return 1;
-#else
-            // we have to expand wildcards ourselves
-            std::vector<std::string> filelist = FileGlobber(argv[i]).getFilenames();
-            if (filelist.empty()) {
-                fprintf(stderr, "opp_msgtool: not found: %s\n", argv[i]);
-                return 1;
-            }
-            for (size_t i = 0; i < filelist.size(); i++)
-                if (!processFile(filelist[i].c_str(), errors))
-                    return 1;
-
-#endif
+            msg_options.importPath = opt_importpath;
+            MsgCompiler generator(msg_options, &errors);
+            std::set<std::string> dependencies;
+            generator.generate(tree, outhfname.c_str(), outccfname.c_str(), dependencies);
+            if (errors.containsError())
+                numFilesWithErrors++;
+            if (opt_generatedependencies)
+                generateDependencies(opt_dependenciesfile.c_str(), msgfile.c_str(), outhfname.c_str(), outccfname.c_str(), dependencies, opt_phonytargets);
         }
-
-        if (msg4 && msg6) {
-            fprintf(stderr, "opp_msgtool: conflicting options: --msg4, --msg6\n");
-            return 1;
-        }
+        delete tree;
     }
 
-    if (opt_mergeoutput) {
-        if (errors->containsError()) {
-            delete outputtree;
-            return 1;
-        }
+    if (numFilesWithErrors > 0)
+        throw opp_runtime_error("error in %d file(s)", numFilesWithErrors);
+}
 
-        const char *outfname;
-
-        if (opt_outputfile)
-            outfname = opt_outputfile;
-        else if (opt_genxml)
-            outfname = "out_m.xml";
-        else if (opt_gensrc)
-            outfname = "out_m.msg";
-        else
-            outfname = "out_m.cc";
-
-        ofstream out(outfname);
-        if (out.fail())
-            throw opp_runtime_error("Cannot open '%s' for write", outfname);
-
-        if (opt_genxml)
-            generateXML(out, outputtree, opt_srcloc);
-        else if (opt_gensrc)
-            generateMsg(out, outputtree);
-        else
-            return 1;  // mergeoutput with C++ output not supported
-        out.close();
-        if (!out)
-            throw opp_runtime_error("Error writing '%s'", outfname);
-
-        delete outputtree;
-
-        if (errors->containsError())
-            return 1;
+int MsgTool::main(int argc, char **argv)
+{
+    if (argc < 2) {
+        helpCommand(argc-1, argv+1);
+        exit(0);
     }
 
+    try {
+        string command = argv[1];
+        if (argc >= 3 && command[0] != '-' && (string(argv[2]) == "-h" || string(argv[2]) == "--help"))
+            printHelpPage(command);
+        else if (command == "c" || command == "convert")
+            convertCommand(argc-2, argv+2);
+        else if (command == "p" || command == "prettyprint")
+            prettyprintCommand(argc-2, argv+2);
+        else if (command == "v" || command == "validate")
+            validateCommand(argc-2, argv+2);
+        else if (command == "x" || command == "cpp")
+            generateCppCommand(argc-2, argv+2);
+        else if (command == "h" || command == "help" || command == "-h" || command == "--help")
+            helpCommand(argc-2, argv+2);
+        else if (command[0] == '-' || isFile(command.c_str()) || isDirectory(command.c_str())) // missing command
+            generateCppCommand(argc-1, argv+1);
+        else
+            throw opp_runtime_error("unknown command or file name '%s'", command.c_str());
+    }
+    catch (exception& e) {
+        cerr << "opp_msgtool: " << e.what() << endl;
+        return 1;
+    }
     return 0;
+}
+
+}  // namespace scave
+}  // namespace omnetpp
+
+using namespace omnetpp::nedxml;
+
+int main(int argc, char **argv)
+{
+    MsgTool msgTool;
+    return msgTool.main(argc, argv);
 }
 
