@@ -276,20 +276,23 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
         for (int i = 0; i < table->size(); i++) {
             cNedFunction *nf = dynamic_cast<cNedFunction *>(table->get(i));
             cNedMathFunction *mf = dynamic_cast<cNedMathFunction *>(table->get(i));
-            categories.insert(nf ? nf->getCategory() : mf ? mf->getCategory() : "???");
+            categories.insert(nf ? nf->getCategory() : mf ? mf->getCategory() : "<uncategorized>");
         }
         for (auto category : categories) {
             out << "\n Category \"" << category << "\":\n";
+            bool printDescriptions = true; // for now
             for (int i = 0; i < table->size(); i++) {
                 cObject *obj = table->get(i);
                 cNedFunction *nf = dynamic_cast<cNedFunction *>(table->get(i));
                 cNedMathFunction *mf = dynamic_cast<cNedMathFunction *>(table->get(i));
-                const char *fcat = nf ? nf->getCategory() : mf ? mf->getCategory() : "???";
-                const char *desc = nf ? nf->getDescription() : mf ? mf->getDescription() : "???";
+                const char *fcat = nf ? nf->getCategory() : mf ? mf->getCategory() : "<uncategorized>";
+                const char *description = nf ? nf->getDescription() : mf ? mf->getDescription() : "<no description>";
                 if (fcat == category) {
                     out << "  " << obj->getFullName() << " : " << obj->str() << "\n";
-                    if (desc)
-                        out << "    " << desc << "\n";
+                    if (printDescriptions && !opp_isempty(description))
+                        out << opp_indentlines(opp_breaklines(description, 75), "    ") << "\n";
+                    if (printDescriptions)
+                        out << "\n";
                 }
             }
         }
@@ -325,7 +328,7 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
     if (wantAll || !strcmp(category, "enums")) {
         processed = true;
         if (verbose)
-            out << "Enums defined in .msg files\n";
+            out << "Enums defined in msg files:\n";
         cRegistrationList *table = enums.getInstance();
         table->sort();
         for (int i = 0; i < table->size(); i++) {
