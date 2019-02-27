@@ -16,6 +16,7 @@
 *--------------------------------------------------------------*/
 
 #include "common/commonutil.h"
+#include "common/stringutil.h"
 #include "omnetpp/cresultfilter.h"
 
 using namespace omnetpp::common;
@@ -214,10 +215,9 @@ void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, c
 
 //---
 
-cResultFilterType::cResultFilterType(const char *name, cResultFilter *(*f)())
-    : cNoncopyableOwnedObject(name, false)
+cResultFilterType::cResultFilterType(const char *name, cResultFilter *(*f)(), const char *description)
+: cNoncopyableOwnedObject(name, false), description(opp_nulltoempty(description)), factory(f)
 {
-    creatorfunc = f;
 }
 
 cResultFilterType *cResultFilterType::find(const char *name)

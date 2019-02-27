@@ -171,10 +171,9 @@ void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t
 
 //----
 
-cResultRecorderType::cResultRecorderType(const char *name, cResultRecorder *(*f)())
-    : cNoncopyableOwnedObject(name, false)
+cResultRecorderType::cResultRecorderType(const char *name, cResultRecorder *(*f)(), const char *description)
+    : cNoncopyableOwnedObject(name, false), description(opp_nulltoempty(description)), factory(f)
 {
-    creatorfunc = f;
 }
 
 cResultRecorderType *cResultRecorderType::find(const char *name)

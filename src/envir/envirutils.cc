@@ -351,11 +351,16 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
         processed = true;
         if (verbose)
             out << "Result filters that can be used in @statistic properties:\n";
+        bool printDescriptions = true; // for now
         cRegistrationList *table = resultFilters.getInstance();
         table->sort();
         for (int i = 0; i < table->size(); i++) {
-            cObject *obj = table->get(i);
-            out << "  " << obj->getFullName() << " : " << obj->str() << "\n";
+            cResultFilterType *obj = (cResultFilterType *)table->get(i);
+            out << "  " << obj->getFullName() << "\n";
+            if (printDescriptions && !opp_isempty(obj->getDescription()))
+                out << opp_indentlines(opp_breaklines(obj->getDescription(), 75), "    ") << "\n";
+            if (printDescriptions)
+                out << "\n";
         }
         out << "\n";
     }
@@ -364,11 +369,16 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
         processed = true;
         if (verbose)
             out << "Result recorders that can be used in @statistic properties:\n";
+        bool printDescriptions = true; // for now
         cRegistrationList *table = resultRecorders.getInstance();
         table->sort();
         for (int i = 0; i < table->size(); i++) {
-            cObject *obj = table->get(i);
-            out << "  " << obj->getFullName() << " : " << obj->str() << "\n";
+            cResultRecorderType *obj = (cResultRecorderType *)table->get(i);
+            out << "  " << obj->getFullName() << "\n";
+            if (printDescriptions && !opp_isempty(obj->getDescription()))
+                out << opp_indentlines(opp_breaklines(obj->getDescription(), 75), "    ") << "\n";
+            if (printDescriptions)
+                out << "\n";
         }
         out << "\n";
     }
