@@ -44,6 +44,21 @@ class cProperty;
 
 
 /**
+ * @brief Registers a result filter with a description string.
+ *
+ * The class must be a subclass of cResultFilter. Registered result filters
+ * can be used in the <tt>source=</tt> and <tt>record=</tt> attributes of
+ * <tt>@statistic</tt> properties in NED files, and with the
+ * <tt>**.result-recording-modes=</tt> configuration option.
+ *
+ * @ingroup RegMacros
+ * @hideinitializer
+ */
+#define Register_ResultFilter2(NAME, CLASSNAME, DESCRIPTION) \
+  static omnetpp::cResultFilter *__FILEUNIQUENAME__() {return new CLASSNAME;} \
+  EXECUTE_ON_STARTUP(omnetpp::resultFilters.getInstance()->add(new omnetpp::cResultFilterType(NAME,__FILEUNIQUENAME__,DESCRIPTION));)
+
+/**
  * @brief Base class for result filters.
  *
  * Result filters map ONE SIGNAL to ONE SIGNAL (i.e. vector-to-vector
@@ -132,19 +147,25 @@ class SIM_API cObjectResultFilter : public cResultFilter
 class SIM_API cResultFilterType : public cNoncopyableOwnedObject
 {
   private:
-    cResultFilter *(*creatorfunc)();
+    std::string description;
+    cResultFilter *(*factory)();
 
   public:
     /**
      * Constructor.
      */
-    cResultFilterType(const char *name, cResultFilter *(*f)());
+    cResultFilterType(const char *name, cResultFilter *(*f)(), const char *description=nullptr);
 
     /**
      * Creates an instance of a particular class by calling the creator
      * function.
      */
-    cResultFilter *create() const  {return creatorfunc();}
+    cResultFilter *create() const  {return factory();}
+
+    /**
+     * Returns the documentation of this result filter.
+     */
+    const char *getDescription() const {return description.c_str();}
 
     /**
      * Finds the factory object for the given name. The class must have been

@@ -42,6 +42,22 @@ class cProperty;
   static omnetpp::cResultRecorder *__FILEUNIQUENAME__() {return new CLASSNAME;} \
   EXECUTE_ON_STARTUP(omnetpp::resultRecorders.getInstance()->add(new omnetpp::cResultRecorderType(NAME,__FILEUNIQUENAME__));)
 
+/**
+ * @brief Registers a result recorder class with a description string.
+ *
+ * The class must be a subclass of cResultRecorder.
+ *
+ * Registered result recorders can be used in the <tt>record=</tt> attributes
+ * of <tt>@statistic</tt> properties in NED files, and with the
+ * <tt>**.result-recording-modes=</tt> configuration option.
+ *
+ * @ingroup RegMacros
+ * @hideinitializer
+ */
+#define Register_ResultRecorder2(NAME, CLASSNAME, DESCRIPTION) \
+  static omnetpp::cResultRecorder *__FILEUNIQUENAME__() {return new CLASSNAME;} \
+  EXECUTE_ON_STARTUP(omnetpp::resultRecorders.getInstance()->add(new omnetpp::cResultRecorderType(NAME,__FILEUNIQUENAME__,DESCRIPTION));)
+
 
 /**
  * @brief Abstract base class for result recorders.
@@ -115,19 +131,25 @@ class SIM_API cNumericResultRecorder : public cResultRecorder
 class SIM_API cResultRecorderType : public cNoncopyableOwnedObject
 {
   private:
-    cResultRecorder *(*creatorfunc)();
+    std::string description;
+    cResultRecorder *(*factory)();
 
   public:
     /**
      * Constructor.
      */
-    cResultRecorderType(const char *name, cResultRecorder *(*f)());
+    cResultRecorderType(const char *name, cResultRecorder *(*f)(), const char *description=nullptr);
 
     /**
      * Creates an instance of a particular class by calling the creator
      * function.
      */
-    cResultRecorder *create() const  {return creatorfunc();}
+    cResultRecorder *create() const  {return factory();}
+
+    /**
+     * Returns the documentation of this result recorder.
+     */
+    const char *getDescription() const {return description.c_str();}
 
     /**
      * Finds the factory object for the given name. The class must have been

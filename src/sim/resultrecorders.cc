@@ -29,20 +29,88 @@ namespace omnetpp {
 
 using namespace omnetpp::common;  // Expression
 
-Register_ResultRecorder("vector", VectorRecorder);
-Register_ResultRecorder("count", CountRecorder);
-Register_ResultRecorder("last", LastValueRecorder);
-Register_ResultRecorder("sum", SumRecorder);
-Register_ResultRecorder("mean", MeanRecorder);
-Register_ResultRecorder("min", MinRecorder);
-Register_ResultRecorder("max", MaxRecorder);
-Register_ResultRecorder("avg", AverageRecorder);
-Register_ResultRecorder("timeavg", TimeAverageRecorder);
-Register_ResultRecorder("stats", StatsRecorder);
-Register_ResultRecorder("histogram", HistogramRecorder);
-Register_ResultRecorder("timeWeightedHistogram", TimeWeightedHistogramRecorder);
-Register_ResultRecorder("psquare", PSquareRecorder);
-Register_ResultRecorder("ksplit", KSplitRecorder);
+#define SIGNALTYPE_TO_NUMERIC_CONVERSIONS \
+        "Numeric types are all converted to double, and boolean to 0 and 1. " \
+        "Other non-numeric types will cause an error. "
+
+#define NAN_VALUES_IGNORED \
+        "NaN values in the input are ignored. "
+
+#define OPTIONALLY_TIMEWEIGHTED \
+        "NaN values in the input are ignored, or in the time-weighted case, " \
+        "they denote intervals to be ignored. To turn on time-weighted, " \
+        "specify 'timeWeighted=true' in the @statistic property."
+
+
+Register_ResultRecorder2("vector", VectorRecorder,
+        "Records signal values to an output vector. "
+        SIGNALTYPE_TO_NUMERIC_CONVERSIONS
+);
+Register_ResultRecorder2("count", CountRecorder,
+        "Records the count of signal values. "
+        "Signal values do not need to be numeric to be counted. "
+        "NaN and nullptr values are ignored."
+);
+Register_ResultRecorder2("last", LastValueRecorder,
+        "Records the last signal value. "
+        SIGNALTYPE_TO_NUMERIC_CONVERSIONS
+        NAN_VALUES_IGNORED
+);
+Register_ResultRecorder2("sum", SumRecorder,
+        "Records the sum of signal values. "
+        SIGNALTYPE_TO_NUMERIC_CONVERSIONS
+        NAN_VALUES_IGNORED
+);
+Register_ResultRecorder2("mean", MeanRecorder,
+        "Records the (time-weighted or unweighted) mean of signal values. "
+        SIGNALTYPE_TO_NUMERIC_CONVERSIONS
+        OPTIONALLY_TIMEWEIGHTED
+);
+Register_ResultRecorder2("min", MinRecorder,
+        "Records the minimum of signal values. "
+        SIGNALTYPE_TO_NUMERIC_CONVERSIONS
+        NAN_VALUES_IGNORED
+);
+Register_ResultRecorder2("max", MaxRecorder,
+        "Records the maximum of signal values. "
+        SIGNALTYPE_TO_NUMERIC_CONVERSIONS
+        NAN_VALUES_IGNORED
+);
+Register_ResultRecorder2("avg", AverageRecorder,
+        "Records the arithmetic mean of signal values. "
+        SIGNALTYPE_TO_NUMERIC_CONVERSIONS
+        NAN_VALUES_IGNORED
+);
+Register_ResultRecorder2("timeavg", TimeAverageRecorder,
+        "Records the time average of signal values. "
+        SIGNALTYPE_TO_NUMERIC_CONVERSIONS
+        "NaN values in the input denote intervals to be ignored. "
+);
+Register_ResultRecorder2("stats", StatsRecorder,
+        "Records basic statistics (count, mean, stddev, min, max, etc.) of signal values. "
+        SIGNALTYPE_TO_NUMERIC_CONVERSIONS
+        OPTIONALLY_TIMEWEIGHTED
+);
+Register_ResultRecorder2("histogram", HistogramRecorder,
+        "Records the histogram of signal values. "
+        SIGNALTYPE_TO_NUMERIC_CONVERSIONS
+        OPTIONALLY_TIMEWEIGHTED
+);
+Register_ResultRecorder2("timeWeightedHistogram", TimeWeightedHistogramRecorder,
+        "Records the time-weighted histogram of signal values. "
+        SIGNALTYPE_TO_NUMERIC_CONVERSIONS
+        "NaN values in the input denote intervals to be ignored. "
+);
+Register_ResultRecorder2("psquare", PSquareRecorder,
+        "Records the histogram of signal values using the P^2 algorithm (cPSquare class). "
+        SIGNALTYPE_TO_NUMERIC_CONVERSIONS
+        OPTIONALLY_TIMEWEIGHTED
+);
+Register_ResultRecorder2("ksplit", KSplitRecorder,
+        "Records the histogram of signal values using the k-split algorithm (cKSplit class). "
+        SIGNALTYPE_TO_NUMERIC_CONVERSIONS
+        OPTIONALLY_TIMEWEIGHTED
+);
 
 VectorRecorder::~VectorRecorder()
 {
