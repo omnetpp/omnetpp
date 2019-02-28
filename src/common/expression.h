@@ -3,11 +3,10 @@
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-//  Author: Andras Varga
-//
 //==========================================================================
 
 /*--------------------------------------------------------------*
+  Copyright (C) 1992-2017 Andras Varga
   Copyright (C) 2006-2017 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
@@ -17,403 +16,209 @@
 #ifndef __OMNETPP_COMMON_EXPRESSION_H
 #define __OMNETPP_COMMON_EXPRESSION_H
 
-#include <string>
 #include "commondefs.h"
-#include "commonutil.h"
-#include "stringutil.h"
+#include "exprvalue.h"
+#include "exprnode.h"
 #include "stringpool.h"
 
 namespace omnetpp {
 namespace common {
 
 /**
- * This is an extensible arithmetic expression evaluator class. Supports the
- * following data types: long, double, string, bool.
- *
- * The code is based on the simkernel's expression evaluator, with a number of
- * modifications:
- *   - no dependence on simkernel classes (cPar, cComponent, cRuntimeError, etc)
- *   - no support for NED constructs (sizeof(), index, this, default(), etc)
- *   - no support for xmldoc() and the XML data type
- *   - "unit" support for numeric values removed
- *   - does not use stringpool
- *   - added resolver
- *   - $ and @ accepted in identifier names
+ * @brief Generic expression-evaluator class.
  */
 class COMMON_API Expression
 {
-  public:
-    /**
-     * Operations supported by this class:
-     *  - add, subtract, multiply, divide ("+" is also string concatenation)
-     *  - modulo, power of, negation (-1)
-     *  - equal, not equal, greater, greater or equal, less, less or equal
-     *  - inline if (the C/C++ ?: operator)
-     *  - logical and, or, xor, not
-     *  - bitwise and, or, xor, not (1's complement)
-     *  - left shift, right shift
-     */
-    enum OpType {
-        ADD, SUB, MUL, DIV, MOD, POW, NEG,
-        EQ, NE, GT, GE, LT, LE, IIF, AND, OR, XOR, NOT,
-        BIN_AND, BIN_OR, BIN_XOR, BIN_NOT, LSHIFT, RSHIFT
-    };
-
-    class Functor; // forward decl
+public:
+    typedef omnetpp::common::expression::ExprValue ExprValue;
+    typedef omnetpp::common::expression::ExprNode ExprNode;
+    typedef omnetpp::common::expression::Context Context;
 
     /**
-     * One element in a (reverse Polish) expression
+     * Node type for the expression AST, an intermediate representation which
+     * is the result of parsing and the input to the ExprNode tree generation.
      */
-    class COMMON_API Elem
+    struct COMMON_API AstNode
     {
-      friend class Expression;
-      public:
-        // Types:
-        //  - bool
-        //  - double (there is no long -- we calculate everything in double)
-        //  - string
-        //  - math operator (+-*/%^...)
-        //  - functor
-        //
-        enum Type {UNDEF, BOOL, DBL, STR, FUNCTOR, OP};
-        static StringPool stringPool;
-      private:
+        enum Type {UNDEF, CONSTANT, OP, IDENT, IDENT_W_INDEX, FUNCTION, MEMBER, MEMBER_W_INDEX, METHOD};
         Type type;
-        union {
-            bool b;
-            struct {double d; const char *unit;} d;
-            char *s;
-            Functor *fu;
-            OpType op;
-        };
+        ExprValue constant;
+        std::string name; // of operator, identifier or function
+        std::vector<AstNode*> children;
 
-      private:
-        void deleteOld() { // note: when defined in .cc file, VC++ linker won't find it from the envir lib
-            if (type==STR)
-                delete [] s;
-            else if (type==FUNCTOR)
-                delete fu;
-            type = UNDEF;
-        }
-
-      public:
-        Elem()  {type=UNDEF;}
-        Elem(const Elem& other)  {type=UNDEF; operator=(other);}
-        ~Elem() {deleteOld();}
-
-        /** @name Getters */
-        //@{
-        Type getType() const {return type;}
-        bool getBool() const {Assert(type==BOOL); return b;}
-        double getDouble() const {Assert(type==DBL); return d.d;}
-        const char *getString() const {Assert(type==STR); return s;}
-        Functor *getFunctor() const {Assert(type==FUNCTOR); return fu;}
-        OpType getOp() const {Assert(type==OP); return op;}
-        //@}
-
-        /**
-         * Assignment operator -- we need to copy Elem at a hundred places
-         */
-        void operator=(const Elem& other) {Elem_eq(*this, other);}
-
-        /**
-         * Effect during evaluation of the expression: pushes the given boolean
-         * constant to the evaluation stack.
-         */
-        void operator=(bool _b);
-
-        /**
-         * Effect during evaluation of the expression: pushes the given number
-         * (which is converted to double) to the evaluation stack.
-         */
-        void operator=(int _i);
-
-        /**
-         * Effect during evaluation of the expression: pushes the given number
-         * (which is converted to double) to the evaluation stack.
-         */
-        void operator=(short _i);
-
-        /**
-         * Effect during evaluation of the expression: pushes the given number
-         * (which is converted to double) to the evaluation stack.
-         */
-        void operator=(long _l);
-
-        /**
-         * Effect during evaluation of the expression: pushes the given number
-         * to the evaluation stack.
-         */
-        void operator=(double _d);
-
-        /**
-         * Effect during evaluation of the expression: pushes the given string
-         * to the evaluation stack.
-         */
-        void operator=(const char* _s);
-
-        /**
-         * Function object, with an interface not unlike cNedFunction.
-         * This object will be deleted by expression's destructor.
-         */
-        void operator=(Functor* _f);
-
-        /**
-         * Unary, binary or tertiary (?: only) operations.
-         */
-        void operator=(OpType _op);
-
-        /**
-         * Sets the unit of an Elem previously set to a double value.
-         * The type must already be DBL, or an error gets thrown.
-         */
-        void setUnit(const char *s)  {Assert(type==DBL); d.unit = stringPool.get(s);}
-
-        /**
-         * Utility function, returns the argument count of this element.
-         * I.e. returns 0 for BOOL, DBL, STRING and zero-arg Functors,
-         * returns 1 for a one-arg Functors, and returns 2 for most operators.
-         */
-        int getNumArgs() const {return Elem_getNumArgs(*this);}
-
-        /**
-         * Debug string.
-         */
-        std::string str() const { return Elem_str(type,b,d.d,s,fu,op);}
+        AstNode() : type(UNDEF) {}
+        AstNode(const ExprValue& c) : type(CONSTANT), constant(c) {}
+        AstNode(Type type, const char *name) : type(type), name(name) {}
+        ~AstNode() {for (AstNode *child : children) delete child;}
+        std::string str() const;
+        static const char *typeName(Type type);
     };
 
     /**
-     * The dynamic expression evaluator calculates in Values.
-     * There is no "long" field in it: all numeric calculations are performed
-     * in double. XXX This is fine for 32-bit longs, but not for 64-bit ones,
-     * as double's mantissa is only 53 bits.
+     * Translates AST to expression evaluation tree. translateToExpressionTree()
+     * should translate the given AST into expression tree if it is capable of doing so,
+     * otherwise it should return nullptr to give other translators a chance.
      */
-    struct COMMON_API Value
-    {
-        enum {UNDEF=0, BOOL='B', DBL='D', STR='S'} type;
-        bool bl;
-        double dbl;
-        const char *dblunit=nullptr; // stringpooled, may be nullptr
-        std::string s;
-
-        Value()  {type=UNDEF;}
-        Value(bool b)  {*this=b;}
-        Value(long l)  {*this=l;}
-        Value(double d)  {*this=d;}
-        Value(double d, const char *unit)  {set(d,unit);}
-        Value(const char *s)  {*this=s;}
-        Value(const std::string& s)  {*this=s;}
-        void operator=(bool b)  {type=BOOL; bl=b;}
-        void operator=(long l)  {type=DBL; dbl=l; dblunit=nullptr;}
-        void operator=(double d)  {type=DBL; dbl=d; dblunit=nullptr;}
-        void operator=(const char *s)  {type=STR; this->s=s?s:"";}
-        void operator=(const std::string& s)  {type=STR; this->s=s;}
-        void set(double d, const char *unit) {type=DBL; dbl=d; dblunit=unit;}
-        std::string str();
+    class AstTranslator {
+    protected:
+        virtual ExprNode *translateChild(AstNode *astChild, AstTranslator *translatorForChildren); // utility
+        virtual void translateChildren(AstNode *astNode, ExprNode *node, AstTranslator *translatorForChildren); // utility
+    public:
+        virtual ~AstTranslator() {}
+        virtual ExprNode *translateToExpressionTree(AstNode *astNode, AstTranslator *translatorForChildren) = 0; // return nullptr of not applicable
     };
 
     /**
-     * Function object base class. They can be used to implement variables, etc.
+     * Try multiple translators until one succeeds. If none does, return nullptr.
      */
-    class COMMON_API Functor
-    {
-      public:
-        virtual ~Functor() {}
-        virtual Functor *dup() const = 0;
-        virtual const char *getName() const = 0;
-        virtual const char *getArgTypes() const = 0;
-        virtual int getNumArgs() const {return strlen(getArgTypes());}
-        virtual char getReturnType() const = 0;
-        virtual Value evaluate(Value args[], int numArgs) = 0;
-        virtual std::string str(std::string args[], int numArgs) = 0;
+    class MultiAstTranslator : public AstTranslator {
+    protected:
+        std::vector<AstTranslator*> translators;
+    public:
+        MultiAstTranslator() {}
+        MultiAstTranslator(const std::vector<AstTranslator*>& translators) : translators(translators) {}
+        virtual void setTranslators(const std::vector<AstTranslator*>& list) {translators=list;}
+        virtual void addTranslator(AstTranslator *translator) {translators.push_back(translator);}
+        virtual const std::vector<AstTranslator*>& getTranslators() {return translators;}
+        virtual ExprNode *translateToExpressionTree(AstNode *astNode, AstTranslator *translatorForChildren);
     };
 
     /**
-     * A functor subclass that implements a variable; still an abstract class.
+     * Practical base class for translators. translateToExpressionTree() does the main job, and
+     * relies on factory methods. Factory methods should return nullptr if the name cannot be resolved,
+     * to give other resolvers a chance. Methods should throw an exception with a human-readable
+     * description when the function or variable was recognized, but it is used incorrectly
+     * (e.g. with the wrong number or type of parameters).
      */
-    class COMMON_API Variable : public Functor
-    {
-      public:
-        virtual const char *getArgTypes() const override {return "";}
-        virtual int getNumArgs() const override {return 0;}
-        virtual std::string str(std::string args[], int numArgs) override {return getName();}
+    class BasicAstTranslator : public AstTranslator {
+    public:
+        virtual ExprNode *translateToExpressionTree(AstNode *astNode, AstTranslator *translatorForChildren);
+    protected:
+        // override any that applies:
+        virtual ExprNode *createIdentNode(const char *varName, bool withIndex) {return nullptr;}
+        virtual ExprNode *createMemberNode(const char *varName, bool withIndex) {return nullptr;}
+        virtual ExprNode *createFunctionNode(const char *functionName, int argCount) {return nullptr;}
+        virtual ExprNode *createMethodNode(const char *functionName, int argCount) {return nullptr;}
+        virtual ExprNode *createOperatorNode(const char *opName, int argCount) {return nullptr;}
     };
 
     /**
-     * A functor subclass that implements a function; still an abstract class.
+     * Spaciousness values for str().
      */
-    class COMMON_API Function : public Functor
-    {
-      public:
-        // returns name(arg1,arg2,...)
-        virtual std::string str(std::string args[], int numArgs) override {return Function_str(getName(), args, numArgs);}
-    };
-
-    /**
-     * Abstract base class for variable and function resolvers. A resolver
-     * is used during parsing, and tells the parser how to convert variable
-     * references and functions into Functor objects for the stored expression.
-     * Methods should return nullptr or throw an exception with a human-readable
-     * description when the variable or function cannot be resolved; this will
-     * be converted to an error message.
-     */
-    class COMMON_API Resolver
-    {
-      public:
-        virtual ~Resolver() {}
-        /**
-         * Should return nullptr or throw exception if variable is not found
-         */
-        virtual Functor *resolveVariable(const char *varName) = 0;
-        /**
-         * Should return nullptr or throw exception if variable is not found.
-         * Does not need to check the argCount, because it is also done by the caller.
-         */
-        virtual Functor *resolveFunction(const char *functionName, int argCount) = 0;
+    enum {
+        SPACIOUSNESS_MIN = ExprNode::SPACIOUSNESS_MIN,
+        SPACIOUSNESS_DEFAULT = ExprNode::SPACIOUSNESS_DEFAULT,
+        SPACIOUSNESS_MAX = ExprNode::SPACIOUSNESS_MAX
     };
 
   protected:
-    Elem *elems;
-    int nelems;
+    ExprNode *tree = nullptr;
+    static MultiAstTranslator defaultTranslator;
 
-    // workaround: when calling out-of-line methods of inner classes (Elem, Function etc)
-    // from the Envir lib, VC++ 9.0 linker reports them as undefined symbols; workaround
-    // is to delegate them to Expression.
-    static void Elem_eq(Elem& e, const Elem& other);
-    static int Elem_getNumArgs(const Elem& e);
-    static std::string Elem_str(int type, bool b, double d, const char *s, Functor *fu, int op);
-    static std::string Function_str(const char *name, std::string args[], int numArgs);
-
-  private:
+  protected:
     void copy(const Expression& other);
+    virtual bool findFoldableSubtrees(ExprNode *tree, std::vector<ExprNode*>& foldableSubtrees) const;
+    virtual ExprNode *foldSubtrees(ExprNode *tree, const std::vector<ExprNode*>& foldableSubtrees) const;
+    virtual bool isFoldableNode(ExprNode *node) const;
+    static void errorCouldNotTranslate(AstNode *astNode);
 
   public:
-    /** @name Constructors, destructor, assignment. */
-    //@{
+    /**
+     * Install global default translators.
+     */
+    static void installAstTranslator(AstTranslator *translator) {defaultTranslator.addTranslator(translator);}
+    static const std::vector<AstTranslator*>& getInstalledAstTranslators() {return defaultTranslator.getTranslators();}
+    static MultiAstTranslator *getDefaultAstTranslator() {return &defaultTranslator;}
 
     /**
      * Constructor.
      */
-    Expression();
-
-    /**
-     * Copy constructor.
-     */
-    Expression(const Expression& other) {elems=nullptr; copy(other);}
-
-    /**
-     * Destructor.
-     */
-    virtual ~Expression();
-
-    /**
-     * Assignment operator.
-     */
+    Expression() {}
+    Expression(const Expression& other) {copy(other);}
+    virtual ~Expression() {delete tree;}
     Expression& operator=(const Expression& other);
-    //@}
-
-    /** @name Setter and evaluator methods. */
-    //@{
-    /**
-     * Sets the Reverse Polish expression to evaluate. The array must be a
-     * dynamically allocated one, and will be deleted by this object.
-     * No verification is performed on the expression at this time.
-     */
-    virtual void setExpression(Elem e[], int nelems);
 
     /**
-     * Returns the Reverse Polish expression as an array of Elems.
-     * The array size is getExpressionLength().
+     * Returns the string form of the expression, as assembled by the ExprNode expression tree.
      */
-    virtual const Elem *getExpression() const {return elems;}
+    virtual std::string str() const {return tree->str();}
+    virtual std::string str(int spaciousness) const {return tree->str(spaciousness);}
 
     /**
-     * Returns the length of the array that contains the Reverse Polish
-     * expression. The array is returned by getExpression().
+     * Interprets the string as an expression, and stores it. The translator can be used
+     * to customize how the expression tree is built from the AST, e.g. how variables
+     * and functions are translated.
+     *
+     * If no translator is given, it uses the global default translator.
      */
-    virtual int getExpressionLength() const {return nelems;}
+    virtual void parse(const char *text, AstTranslator *translator=nullptr);
 
     /**
-     * Evaluate the expression, and return the results as a Value.
-     * Throws an error if the expression has some problem (i.e. stack
-     * overflow/underflow, "cannot cast", "function not found", etc.)
+     * Returns true if the expression is empty. An empty expression cannot be evaluated.
      */
-    virtual Value evaluate() const;
+    bool isEmpty() const {return tree != nullptr;}
+
+    /**
+     * Returns true if the expression consists of a constant, or can be transparently
+     * replaced by a constant.
+     */
+    virtual bool isAConstant() const;
+
+    /**
+     * Evaluate the expression, and return the results as a ExprValue.
+     * Throws an exception if there is an error during evaluation.
+     */
+    virtual ExprValue evaluate(Context* context = nullptr) const;
 
     /**
      * Evaluate the expression and convert the result to bool if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual bool boolValue() const;
+    virtual bool boolValue(Context *context=nullptr) const;
 
     /**
-     * Evaluate the expression and convert the result to long if possible;
-     * throw an error if conversion from that type is not supported.
+     * Evaluate the expression and convert the result to intpar_t if possible;
+     * throw an error if conversion from that type is not supported, or
+     * the value is out of the range of intpar_t.
      */
-    virtual long longValue(const char *expectedUnit=nullptr) const;
+    virtual intpar_t intValue(const char *expectedUnit=nullptr) const {return intValue(nullptr, expectedUnit);}
+    virtual intpar_t intValue(Context *context, const char *expectedUnit=nullptr) const;
 
     /**
      * Evaluate the expression and convert the result to double if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual double doubleValue(const char *expectedUnit=nullptr) const;
+    virtual double doubleValue(const char *expectedUnit=nullptr) const {return doubleValue(nullptr, expectedUnit);}
+    virtual double doubleValue(Context *context, const char *expectedUnit=nullptr) const;
 
     /**
      * Evaluate the expression and convert the result to string if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual std::string stringValue() const;
-    //@}
+    virtual std::string stringValue(Context *context) const;
 
-    /** @name Miscellaneous utility functions. */
-    //@{
-    /**
-     * Converts the expression to string.
-     */
-    virtual std::string str() const;
+    // Advanced use and debugging:
 
-    /**
-     * Interprets the string as an expression, and stores it. Resolver
-     * is used for translating variable and function references during
-     * parsing. Throws exception on parse errors.
-     */
-    virtual void parse(const char *text, Resolver *resolver = nullptr);
+    // direct access to the expression evaluator tree
+    virtual void setExpressionTree(ExprNode* exprTree);
+    virtual const ExprNode *getExpressionTree() const {return tree;}
+    virtual ExprNode *removeExpressionTree() {ExprNode *result = tree; tree = nullptr; return result;}
 
-    /**
-     * Returns true if the expression is just a literal (or equivalent to one,
-     * like "2+2").
-     */
-    virtual bool isAConstant() const;
-    //@}
+    // various stages of the expression parsing and translation, as utility functions
+    virtual AstNode *parseToAst(const char *text) const;
+    virtual ExprNode *translateToExpressionTree(AstNode *astTree, AstTranslator *translator) const;
+    virtual ExprNode *performConstantFolding(ExprNode *tree) const;
+    virtual ExprNode *parseAndTranslate(const char *text, AstTranslator *translator=nullptr) const;
+
+
+    // print expression tree and AST as tree
+    virtual void dumpTree(std::ostream& out=std::cout) const;
+    virtual void dumpAst(AstNode *node, std::ostream& out=std::cout, int indentLevel=0) const;
+    virtual void dumpExprTree(ExprNode *node, std::ostream& out=std::cout, int indentLevel=0) const;
 };
 
 
-/**
- * Function object to implement all math.h functions.
- */
-class COMMON_API MathFunction : public Expression::Function
-{
-  private:
-    std::string funcname;
-    double (*f)(...);
-    int argcount;
-  public:
-    struct FuncDesc {const char *name; double (*f)(...); int argcount;};
-  private:
-    static FuncDesc functable[];
-    static FuncDesc *lookup(const char *name);
-  public:
-    static bool supports(const char *name);
-    MathFunction(const char *name);
-    virtual ~MathFunction();
-    virtual Functor *dup() const override;
-    virtual const char *getName() const override;
-    virtual const char *getArgTypes() const override;
-    virtual char getReturnType() const override;
-    virtual Expression::Value evaluate(Expression::Value args[], int numArgs) override;
-};
-
-} // namespace common
+}  // namespace common
 }  // namespace omnetpp
 
 

@@ -14,37 +14,41 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-/* number of expected shift-reduce conflicts */
-/*TODO this needs to be checked why: %expect 46 */
-
 /* Reserved words */
-%token DOUBLETYPE INTTYPE STRINGTYPE BOOLTYPE
-%token TRUE_ FALSE_
+%token TRUE_ FALSE_ NAN_ INF_ UNDEFINED_
 
 /* Other tokens: identifiers, numeric literals, operators etc */
 %token NAME INTCONSTANT REALCONSTANT STRINGCONSTANT
-%token EQ_ NE_ GE_ LE_
-%token AND_ OR_ XOR_ NOT_
-%token BINAND_ BINOR_ BINXOR_ BINCOMPL_
-%token SHIFTLEFT_ SHIFTRIGHT_
+%token EQ NE GE LE SPACESHIP
+%token AND OR XOR
+%token SHIFT_LEFT SHIFT_RIGHT
 
 %token INVALID_CHAR   /* just to generate parse error */
 
 /* Operator precedences (low to high) and associativity */
-%left '?' ':'
-%left AND_ OR_ XOR_
-%left EQ_ NE_ '>' GE_ '<' LE_
-%left BINAND_ BINOR_ BINXOR_
-%left SHIFTLEFT_ SHIFTRIGHT_
+%right '?' ':'
+%left OR
+%left XOR
+%left AND
+%left EQ NE '='
+%left '<' '>' LE GE
+%left SPACESHIP
+%left MATCH
+%left '|'
+%left '#'
+%left '&'
+%left SHIFT_LEFT SHIFT_RIGHT
 %left '+' '-'
 %left '*' '/' '%'
 %right '^'
-%left UMIN_ NOT_ BINCOMPL_
+%right UMIN_ NEG_ NOT_
+%left BANG_
 
 %start expression
 
 %{
 
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include "commonutil.h"
@@ -63,8 +67,11 @@
 #include "stringutil.h"
 #include "unitconversion.h"
 
-using namespace omnetpp;
 using namespace omnetpp::common;
+using namespace omnetpp::common::expression;
+
+typedef Expression::AstNode AstNode;
+typedef Expression::AstNode::Type AstNodeType;
 
 #define yyin expressionyyin
 #define yyout expressionyyout
@@ -82,8 +89,7 @@ void yyerror (const char *s);
 
 LineColumn xpos, xprevpos;
 
-static Expression::Elem *e;
-static Expression::Resolver *resolver;
+static std::vector<AstNode*> astNodes;
 
 static char *join(const char *s1, const char *s2, const char *s3=nullptr)
 {
@@ -105,38 +111,48 @@ static char *concat(const char *s1, const char *s2, const char *s3=nullptr, cons
     return d;
 }
 
-static void addFunction(const char *funcname, int numargs)
+static void addNode(AstNode *node, int numChildren)
 {
-    try {
-        if (!resolver)
-            throw opp_runtime_error("Cannot resolve function '%s': No resolver provided", funcname);
-        Expression::Functor *f = resolver->resolveFunction(funcname, numargs);
-        if (!f)
-            throw opp_runtime_error("Cannot resolve function name '%s'", funcname);
-        if (f->getNumArgs() != numargs)
-            throw opp_runtime_error("Function %s() takes %d argument(s) and not %d", funcname, f->getNumArgs(), numargs);
-        *e++ = f;
-    }
-    catch (std::exception& e) {
-        yyerror(e.what());
-    }
+    node->children.resize(numChildren);
+    for (int i=0; i<numChildren; i++)
+        node->children[i] = astNodes[astNodes.size()-numChildren+i];
+    astNodes.resize(astNodes.size()-numChildren);
+    astNodes.push_back(node);
 }
 
-static void addVariableRef(const char *varname)
+static void addConstant(const ExprValue& c)
 {
-    try {
-        if (!resolver)
-            throw opp_runtime_error("Cannot resolve variable '%s': No resolver provided", varname);
-        Expression::Functor *f = resolver->resolveVariable(varname);
-        if (!f)
-            throw opp_runtime_error("Cannot resolve variable '%s'", varname);
-        if (f->getNumArgs() != 0)
-            throw opp_runtime_error("Internal error: functor representing a variable cannot expect arguments: %s", varname);
-        *e++ = f;
-    }
-    catch (std::exception& e) {
-        yyerror(e.what());
-    }
+    addNode(new AstNode(c), 0);
+}
+
+static void addNode(AstNodeType type, const char *name, int numChildren)
+{
+    addNode(new AstNode(type, name), numChildren);
+}
+
+static void addOp(const char *name, int numArgs)
+{
+    addNode(new AstNode(AstNode::OP, name), numArgs);
+}
+
+static void addFunction(const char *name, int numArgs)
+{
+    addNode(new AstNode(AstNode::FUNCTION, name), numArgs);
+}
+
+static void addMethod(const char *name, int numArgs)
+{
+    addNode(new AstNode(AstNode::METHOD, name), 1 + numArgs);
+}
+
+static void addIdent(const char *name, bool withIndex)
+{
+    addNode(new AstNode(withIndex ? AstNode::IDENT_W_INDEX : AstNode::IDENT, name), withIndex ? 1 : 0);
+}
+
+static void addMember(const char *name, bool withIndex)
+{
+    addNode(new AstNode(withIndex ? AstNode::MEMBER_W_INDEX : AstNode::MEMBER, name), withIndex ? 2 : 1);
 }
 
 static double parseQuantity(const char *text, std::string& unit)
@@ -160,70 +176,93 @@ expression
         ;
 
 expr
-        : simple_expr
+        : basicexpr
+        | literal
+        | functioncall
         | '(' expr ')'
+        | operation
+        ;
 
-        | expr '+' expr
-                { *e++ = Expression::ADD; }
+operation
+        : expr '+' expr
+                { addOp("+", 2); }
         | expr '-' expr
-                { *e++ = Expression::SUB; }
+                { addOp("-", 2); }
         | expr '*' expr
-                { *e++ = Expression::MUL; }
+                { addOp("*", 2); }
         | expr '/' expr
-                { *e++ = Expression::DIV; }
+                { addOp("/", 2); }
         | expr '%' expr
-                { *e++ = Expression::MOD; }
+                { addOp("%", 2); }
         | expr '^' expr
-                { *e++ = Expression::POW; }
+                { addOp("^", 2); }
 
         | '-' expr
                 %prec UMIN_
-                { *e++ = Expression::NEG; }
+                {
+                  AstNode *last = astNodes.back();
+                  if (last->type == AstNode::CONSTANT && last->constant.getType() == ExprValue::DOUBLE)
+                      last->constant.setPreservingUnit(-last->constant.doubleValue());
+                  else if (last->type == AstNode::CONSTANT && last->constant.getType() == ExprValue::INT)
+                      last->constant.setPreservingUnit(-last->constant.intValue());
+                  else
+                      addOp("-", 1);
+                }
 
         | expr '=' expr
-                { *e++ = Expression::EQ; }
-        | expr EQ_ expr
-                { *e++ = Expression::EQ; }
-        | expr NE_ expr
-                { *e++ = Expression::NE; }
+                { addOp("=", 2); }
+        | expr EQ expr
+                { addOp("==", 2); }
+        | expr NE expr
+                { addOp("!=", 2); }
         | expr '>' expr
-                { *e++ = Expression::GT; }
-        | expr GE_ expr
-                { *e++ = Expression::GE; }
+                { addOp(">", 2); }
+        | expr GE expr
+                { addOp(">=", 2); }
         | expr '<' expr
-                { *e++ = Expression::LT; }
-        | expr LE_ expr
-                { *e++ = Expression::LE; }
+                { addOp("<", 2); }
+        | expr LE expr
+                { addOp("<=", 2); }
+        | expr SPACESHIP expr
+                { addOp("<=>", 2); }
+        | expr MATCH expr
+                { addOp("=~", 2); }
 
-        | expr AND_ expr
-                { *e++ = Expression::AND; }
-        | expr OR_ expr
-                { *e++ = Expression::OR; }
-        | expr XOR_ expr
-                { *e++ = Expression::XOR; }
+        | expr AND expr
+                { addOp("&&", 2); }
+        | expr OR expr
+                { addOp("||", 2); }
+        | expr XOR expr
+                { addOp("##", 2); }
 
-        | NOT_ expr
-                %prec UMIN_
-                { *e++ = Expression::NOT; }
+        | '!' expr
+                %prec NOT_
+                { addOp("!", 1); }
 
-        | expr BINAND_ expr
-                { *e++ = Expression::BIN_AND; }
-        | expr BINOR_ expr
-                { *e++ = Expression::BIN_OR; }
-        | expr BINXOR_ expr
-                { *e++ = Expression::BIN_XOR; }
+        | expr '!'
+                %prec BANG_
+                { addOp("_!", 1); /*!!!*/ }
 
-        | BINCOMPL_ expr
-                %prec UMIN_
-                { *e++ = Expression::BIN_NOT; }
-        | expr SHIFTLEFT_ expr
-                { *e++ = Expression::LSHIFT; }
-        | expr SHIFTRIGHT_ expr
-                { *e++ = Expression::RSHIFT; }
+        | expr '&' expr
+                { addOp("&", 2); }
+        | expr '|' expr
+                { addOp("|", 2); }
+        | expr '#' expr
+                { addOp("#", 2); }
+
+        | '~' expr
+                %prec NEG_
+                { addOp("~", 1); }
+        | expr SHIFT_LEFT expr
+                { addOp("<<", 2); }
+        | expr SHIFT_RIGHT expr
+                { addOp(">>", 2); }
         | expr '?' expr ':' expr
-                { *e++ = Expression::IIF; }
+                { addOp("?:", 3); }
+        ;
 
-        | NAME '(' ')'
+functioncall
+        : NAME '(' ')'
                 { addFunction($1,0); delete [] $1; }
         | NAME '(' expr ')'
                 { addFunction($1,1); delete [] $1; }
@@ -233,28 +272,66 @@ expr
                 { addFunction($1,3); delete [] $1; }
         | NAME '(' expr ',' expr ',' expr ',' expr ')'
                 { addFunction($1,4); delete [] $1; }
-         ;
+        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ')'
+                { addFunction($1,5); delete [] $1; }
+        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+                { addFunction($1,6); delete [] $1; }
+        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+                { addFunction($1,7); delete [] $1; }
+        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+                { addFunction($1,8); delete [] $1; }
+        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+                { addFunction($1,9); delete [] $1; }
+        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+                { addFunction($1,10); delete [] $1; }
+        ;
 
-simple_expr
-        : variable
-        | literal
+basicexpr
+        : variable '.' members
+        | functioncall '.' members
+        | '(' expr ')' '.' members
+        | variable
+        ;
+
+members
+        :  member '.' members
+        |  member
         ;
 
 variable
-        : variable2
-                { addVariableRef($1); delete [] $1; }
-        ;
-
-variable2
-        : variable2 '.' segment
-                { $$ = concat($1, ".", $3); delete [] $1; delete [] $3; }
-        | segment
-        ;
-
-segment
         : NAME
-        | NAME '[' INTCONSTANT ']'
-                { $$ = concat($1, "[", $3, "]"); delete [] $1; delete [] $3; }
+                { addIdent($1, false); delete [] $1; }
+        | NAME '[' expr ']'
+                { addIdent($1, true); delete [] $1; }
+        ;
+
+member
+        : NAME
+                { addMember($1, false); delete [] $1; }
+        | NAME '[' expr ']'
+                { addMember($1, true); delete [] $1; }
+        | NAME '(' ')'
+                { addMethod($1,0); delete [] $1; }
+        | NAME '(' expr ')'
+                { addMethod($1,1); delete [] $1; }
+        | NAME '(' expr ',' expr ')'
+                { addMethod($1,2); delete [] $1; }
+        | NAME '(' expr ',' expr ',' expr ')'
+                { addMethod($1,3); delete [] $1; }
+        | NAME '(' expr ',' expr ',' expr ',' expr ')'
+                { addMethod($1,4); delete [] $1; }
+        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ')'
+                { addMethod($1,5); delete [] $1; }
+        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+                { addMethod($1,6); delete [] $1; }
+        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+                { addMethod($1,7); delete [] $1; }
+        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+                { addMethod($1,8); delete [] $1; }
+        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+                { addMethod($1,9); delete [] $1; }
+        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+                { addMethod($1,10); delete [] $1; }
         ;
 
 literal
@@ -265,52 +342,63 @@ literal
 
 stringliteral
         : STRINGCONSTANT
-                { *e++ = opp_parsequotedstr($1).c_str(); delete [] $1; }
+                { addConstant(opp_parsequotedstr($1)); delete [] $1; }
         ;
 
 boolliteral
         : TRUE_
-                { *e++ = true; }
+                { addConstant(true); }
         | FALSE_
-                { *e++ = false; }
+                { addConstant(false); }
         ;
 
 numliteral
         : INTCONSTANT
-                { *e++ = opp_atol($1); delete [] $1; }
+                { addConstant((intpar_t)opp_atoll($1)); delete [] $1; }
         | REALCONSTANT
-                { *e++ = opp_atof($1); delete [] $1; }
+                { addConstant(opp_atof($1)); delete [] $1; }
+        | NAN_
+                { addConstant(std::nan("")); }
+        | INF_
+                { addConstant(1/0.0); }
+        | UNDEFINED_
+                { addConstant(ExprValue()); }
         | quantity
                 {
-                  std::string unit;
-                  *e++ = parseQuantity($1, unit);
-                  if (!unit.empty())
-                      (e-1)->setUnit(unit.c_str());
+                  std::string unitstr;
+                  double d = parseQuantity($1, unitstr);
+                  const char *unit = ExprValue::getPooled(unitstr.c_str());
+                  intpar_t l = (intpar_t)d;
+                  if (d == l)
+                      addConstant(ExprValue(l, unit));
+                  else
+                      addConstant(ExprValue(d, unit));
                   delete [] $1;
                 }
         ;
 
 quantity
-        : quantity INTCONSTANT NAME
+        : quantity qnumber NAME
                 { $$ = join($1, $2, $3); delete [] $1; delete [] $2; delete [] $3; }
-        | quantity REALCONSTANT NAME
-                { $$ = join($1, $2, $3); delete [] $1; delete [] $2; delete [] $3; }
-        | INTCONSTANT NAME
-                { $$ = join($1, $2); delete [] $1; delete [] $2; }
-        | REALCONSTANT NAME
+        | qnumber NAME
                 { $$ = join($1, $2); delete [] $1; delete [] $2; }
         ;
 
+qnumber
+        : INTCONSTANT
+        | REALCONSTANT
+        | NAN_
+                { $$ = opp_strdup("nan"); }
+        | INF_
+                { $$ = opp_strdup("inf"); }
+        ;
 %%
 
 //----------------------------------------------------------------------
 
-void doParseExpression(const char *text, Expression::Resolver *res, Expression::Elem *&elems, int& nelems)
+AstNode *Expression::parseToAst(const char *text) const
 {
     NONREENTRANT_PARSER();
-
-    elems = nullptr;
-    nelems = 0;
 
     // reset the lexer
     xpos.co = 0;
@@ -325,9 +413,9 @@ void doParseExpression(const char *text, Expression::Resolver *res, Expression::
     if (!handle)
         throw std::runtime_error("Parser is unable to allocate work memory");
 
-    Expression::Elem *v = new Expression::Elem[100]; // overestimate for now; XXX danger of overrun
-    e = v;
-    resolver = res;
+    for (AstNode *node : astNodes)
+        delete node;
+    astNodes.clear();
 
     // parse
     try
@@ -337,17 +425,17 @@ void doParseExpression(const char *text, Expression::Resolver *res, Expression::
     catch (std::exception& e)
     {
         yy_delete_buffer(handle);
-        delete [] v;
+        for (AstNode *node : astNodes)
+            delete node;
+        astNodes.clear();
         throw;
     }
     yy_delete_buffer(handle);
 
-    // copy v[] and return
-    nelems = e - v;
-    elems = new Expression::Elem[nelems];
-    for (int i=0; i<nelems; i++)
-        elems[i] = v[i];
-    delete [] v;
+    Assert(astNodes.size() == 1);
+    AstNode *result = astNodes[0];
+    astNodes.clear();
+    return result;
 }
 
 void yyerror(const char *s)

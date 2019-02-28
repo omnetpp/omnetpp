@@ -1,0 +1,633 @@
+//==========================================================================
+//   EXPRNODES.CC  - part of
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
+//
+//  Author: Andras Varga
+//
+//==========================================================================
+
+/*--------------------------------------------------------------*
+  Copyright (C) 1992-2017 Andras Varga
+  Copyright (C) 2006-2017 OpenSim Ltd.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  `license' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
+#include <cmath>
+#include <cinttypes>  // PRId64
+#include <sstream>
+#include "unitconversion.h"
+#include "stlutil.h"
+#include "stringutil.h"
+#include "stringpool.h"
+#include "exprnodes.h"
+#include "patternmatcher.h"
+
+namespace omnetpp {
+namespace common {
+namespace expression {
+
+LeafNode *ExprNodeFactory::createConstant(const ExprValue& value)
+{
+    return new ConstantNode(value);
+}
+
+UnaryNode *ExprNodeFactory::createUnaryOperator(const char *op_)
+{
+    std::string op = op_;
+    if (op == "-") return new NegateNode();
+    if (op == "!") return new NotNode();
+    if (op == "~") return new BitwiseNotNode();
+    if (op == "_!") throw opp_runtime_error("Not a recognized unary operator: postfix '!' (bang operator)");
+    throw opp_runtime_error("Not a recognized unary operator: '%s'", op.c_str());
+}
+
+BinaryNode *ExprNodeFactory::createBinaryOperator(const char *op_)
+{
+    std::string op = op_;
+    if (op == "+") return new AddNode();
+    if (op == "-") return new SubNode();
+    if (op == "*") return new MulNode();
+    if (op == "/") return new DivNode();
+    if (op == "%") return new ModNode();
+    if (op == "^") return new PowNode();
+    if (op == "==") return new EqualNode();
+    if (op == "!=") return new NotEqualNode();
+    if (op == "<") return new LessThanNode();
+    if (op == ">") return new GreaterThanNode();
+    if (op == "<=") return new LessOrEqualNode();
+    if (op == ">=") return new GreaterOrEqualNode();
+    if (op == "<=>") return new ThreeWayComparisonNode();
+    if (op == "&&") return new AndNode();
+    if (op == "||") return new OrNode();
+    if (op == "##") return new XorNode();
+    if (op == "&") return new BitwiseAndNode();
+    if (op == "|") return new BitwiseOrNode();
+    if (op == "#") return new BitwiseXorNode();
+    if (op == "<<") return new LShiftNode();
+    if (op == ">>") return new RShiftNode();
+    throw opp_runtime_error("Not a recognized binary operator: '%s'", op.c_str());
+}
+
+TernaryNode *ExprNodeFactory::createTernaryOperator(const char *op_)
+{
+    std::string op = op_;
+    if (op == "?:") return new InlineIfNode();
+    throw opp_runtime_error("Not a recognized ternary operator: '%s'", op.c_str());
+}
+
+bool ExprNodeFactory::supportsStdMathFunction(const char *name)
+{
+    static std::vector<std::string> names = { "acos","asin","atan","atan2","sin","cos","tan","ceil","floor","exp","pow","sqrt","fabs","fmod","hypot","log","log10" };
+    return contains(names, std::string(name));
+}
+
+ExprNode *ExprNodeFactory::createStdMathFunction(const char *name_)
+{
+    std::string name = name_;
+    if (name == "acos") return createMathFunction("acos", acos);
+    if (name == "asin") return createMathFunction("asin", asin);
+    if (name == "atan") return createMathFunction("atan", atan);
+    if (name == "atan2") return createMathFunction("atan2", atan2);
+    if (name == "sin") return createMathFunction("sin", sin);
+    if (name == "cos") return createMathFunction("cos", cos);
+    if (name == "tan") return createMathFunction("tan", tan);
+    if (name == "ceil") return createMathFunction("ceil", ceil);
+    if (name == "floor") return createMathFunction("floor", floor);
+    if (name == "exp") return createMathFunction("exp", exp);
+    if (name == "pow") return createMathFunction("pow", pow);
+    if (name == "sqrt") return createMathFunction("sqrt", sqrt);
+    if (name == "fabs") return createMathFunction("fabs", fabs);
+    if (name == "fmod") return createMathFunction("fmod", fmod);
+    if (name == "hypot") return createMathFunction("hypot", hypot);
+    if (name == "log") return createMathFunction("log", log);
+    if (name == "log10") return createMathFunction("log10", log10);
+    throw opp_runtime_error("Not a standard <cmath> function: '%s'", name_);
+}
+
+ExprNode *ExprNodeFactory::createMathFunction(const char *name, double (*f0)())
+{
+    return new MathFunc0Node(name, f0);
+}
+
+ExprNode *ExprNodeFactory::createMathFunction(const char *name, double (*f1)(double))
+{
+    return new MathFunc1Node(name, f1);
+}
+
+ExprNode *ExprNodeFactory::createMathFunction(const char *name, double (*f2)(double,double))
+{
+    return new MathFunc2Node(name, f2);
+}
+
+ExprNode *ExprNodeFactory::createMathFunction(const char *name, double (*f3)(double,double,double))
+{
+    return new MathFunc3Node(name, f3);
+}
+
+//---
+
+ExprValue NegateNode::evaluate(Context *context) const
+{
+    ExprValue value = child->tryEvaluate(context);
+    if (value.type == ExprValue::INT) {
+        ensureNoLogarithmicUnit(value);
+        value.intv = -value.intv;
+    }
+    else if (value.type == ExprValue::DOUBLE) {
+        ensureNoLogarithmicUnit(value);
+        value.dbl = -value.dbl;
+    }
+    else if (value.type == ExprValue::UNDEF)
+        return value;
+    else
+        errorNumericArgExpected(value);
+    return value;
+}
+
+void UnaryOperatorNode::print(std::ostream& out, int spaciousness) const
+{
+    out << getName();
+    if (needSpaces(spaciousness))
+        out << " ";
+    printChild(out, child, spaciousness);
+}
+
+void BinaryOperatorNode::print(std::ostream& out, int spaciousness) const
+{
+    printChild(out, child1, spaciousness);
+    if (needSpaces(spaciousness))
+        out << " " << getName() << " ";
+    else
+        out << getName();
+    printChild(out, child2, spaciousness);
+}
+
+inline char *concatenate(const char *s1, const char *s2)
+{
+    size_t len1 = strlen(s1);
+    size_t len2 = strlen(s2);
+    char *res = new char[len1+len2+1];
+    strcpy(res, s1);
+    strcpy(res+len1, s2);
+    return res;
+}
+
+ExprValue AddNode::evaluate(Context *context) const
+{
+    ExprValue leftValue = child1->tryEvaluate(context);
+    ExprValue rightValue = child2->tryEvaluate(context);
+    if (leftValue.type == ExprValue::UNDEF || rightValue.type == ExprValue::UNDEF)
+        return ExprValue();
+
+    // numeric addition or string concatenation
+    if (leftValue.type == ExprValue::INT && rightValue.type == ExprValue::INT) {  // both ints -> integer addition
+        ensureNoLogarithmicUnit(rightValue);
+        ensureNoLogarithmicUnit(leftValue);
+        bringToCommonTypeAndUnit(rightValue, leftValue);
+        leftValue.intv = safeAdd(leftValue.intv, rightValue.intv);
+        return leftValue;
+    }
+    else if (leftValue.type == ExprValue::DOUBLE || rightValue.type == ExprValue::DOUBLE) { // at least one is double -> double addition
+        ensureNoLogarithmicUnit(rightValue);
+        ensureNoLogarithmicUnit(leftValue);
+        bringToCommonTypeAndUnit(rightValue, leftValue);
+        leftValue.dbl = leftValue.dbl + rightValue.dbl;
+        return leftValue;
+    }
+    else if (leftValue.type == ExprValue::STRING && rightValue.type == ExprValue::STRING) {
+        char *res = concatenate(leftValue.s, rightValue.s);
+        leftValue.deleteOld();
+        leftValue.s = res;
+        return leftValue;
+    }
+    else
+        errorNumericArgsExpected(leftValue, rightValue);
+}
+
+ExprValue SubNode::evaluate(Context *context) const
+{
+    ExprValue leftValue = child1->tryEvaluate(context);
+    ExprValue rightValue = child2->tryEvaluate(context);
+    if (leftValue.type == ExprValue::UNDEF || rightValue.type == ExprValue::UNDEF)
+        return ExprValue();
+
+    // numeric addition or string concatenation
+    if (leftValue.type == ExprValue::INT && rightValue.type == ExprValue::INT) {  // both ints -> integer subtraction
+        ensureNoLogarithmicUnit(rightValue);
+        ensureNoLogarithmicUnit(leftValue);
+        bringToCommonTypeAndUnit(rightValue, leftValue);
+        leftValue.intv = safeSub(leftValue.intv, rightValue.intv);
+        return leftValue;
+    }
+    else if (leftValue.type == ExprValue::DOUBLE || rightValue.type == ExprValue::DOUBLE) { // at least one is double -> double addition
+        ensureNoLogarithmicUnit(rightValue);
+        ensureNoLogarithmicUnit(leftValue);
+        bringToCommonTypeAndUnit(rightValue, leftValue);
+        leftValue.dbl = leftValue.dbl - rightValue.dbl;
+        return leftValue;
+    }
+    else
+        errorNumericArgsExpected(leftValue, rightValue);
+}
+
+ExprValue MulNode::evaluate(Context *context) const
+{
+    ExprValue leftValue = child1->tryEvaluate(context);
+    ExprValue rightValue = child2->tryEvaluate(context);
+    if (leftValue.type == ExprValue::UNDEF || rightValue.type == ExprValue::UNDEF)
+        return ExprValue();
+
+    if (leftValue.type == ExprValue::INT && rightValue.type == ExprValue::INT) {  // both are integers -> integer multiplication
+        if (!opp_isempty(rightValue.unit) && !opp_isempty(leftValue.unit))
+            throw opp_runtime_error("Multiplying two quantities with units is not supported");
+        ensureNoLogarithmicUnit(rightValue);
+        ensureNoLogarithmicUnit(leftValue);
+        leftValue.intv = safeMul(leftValue.intv, rightValue.intv);
+        if (opp_isempty(leftValue.unit))
+            leftValue.unit = rightValue.unit;
+        return leftValue;
+    }
+    else if (leftValue.type == ExprValue::DOUBLE || rightValue.type == ExprValue::DOUBLE) { // at least one is double -> double multiplication
+        if (!opp_isempty(rightValue.unit) && !opp_isempty(leftValue.unit))
+            throw opp_runtime_error("Multiplying two quantities with units is not supported");
+        ensureNoLogarithmicUnit(rightValue);
+        ensureNoLogarithmicUnit(leftValue);
+        leftValue.convertToDouble();
+        rightValue.convertToDouble();
+        leftValue.dbl = leftValue.dbl * rightValue.dbl;
+        if (opp_isempty(leftValue.unit))
+            leftValue.unit = rightValue.unit;
+        return leftValue;
+    }
+    else
+        errorNumericArgsExpected(leftValue, rightValue);
+}
+
+ExprValue DivNode::evaluate(Context *context) const
+{
+    ExprValue leftValue = child1->tryEvaluate(context);
+    ExprValue rightValue = child2->tryEvaluate(context);
+    if (leftValue.type == ExprValue::UNDEF || rightValue.type == ExprValue::UNDEF)
+        return ExprValue();
+
+    // even if both args are integer, we perform the division in double, to reduce surprises;
+    // for now we only support num/num, unit/num, plus and unit/unit only if the two units are convertible
+    leftValue.convertToDouble();
+    rightValue.convertToDouble();
+    ensureNoLogarithmicUnit(rightValue);
+    if (rightValue.dbl != 0)  // allow "0dB/0" as nan for compatibility with INET 3.x
+        ensureNoLogarithmicUnit(leftValue);
+    if (!opp_isempty(rightValue.unit))
+        rightValue.dbl = UnitConversion::convertUnit(rightValue.dbl, rightValue.unit, leftValue.unit);
+    leftValue.dbl = leftValue.dbl / rightValue.dbl;
+    if (!opp_isempty(rightValue.unit))
+        leftValue.unit = nullptr;
+    return leftValue;
+}
+
+ExprValue ModNode::evaluate(Context *context) const
+{
+    ExprValue leftValue = child1->tryEvaluate(context);
+    ExprValue rightValue = child2->tryEvaluate(context);
+    if (leftValue.type == ExprValue::UNDEF || rightValue.type == ExprValue::UNDEF)
+        return ExprValue();
+
+    if (leftValue.type == ExprValue::INT && rightValue.type == ExprValue::INT) {  // both ints -> integer modulo
+        ensureNoLogarithmicUnit(rightValue);
+        ensureNoLogarithmicUnit(leftValue);
+        if (!opp_isempty(rightValue.unit) || !opp_isempty(leftValue.unit))
+            errorDimlessArgsExpected(leftValue, rightValue);
+        return leftValue.intv % rightValue.intv;
+    }
+    else if (leftValue.type == ExprValue::DOUBLE || rightValue.type == ExprValue::DOUBLE) { // at least one is double -> double modulo
+        ensureNoLogarithmicUnit(rightValue);
+        ensureNoLogarithmicUnit(leftValue);
+        leftValue.convertToDouble();
+        rightValue.convertToDouble();
+        if (!opp_isempty(rightValue.unit) || !opp_isempty(leftValue.unit))
+            errorDimlessArgsExpected(leftValue, rightValue);
+        return fmod(trunc(leftValue.dbl), trunc(rightValue.dbl));
+    }
+    else
+        errorNumericArgsExpected(leftValue, rightValue);
+}
+
+ExprValue PowNode::evaluate(Context *context) const
+{
+    ExprValue leftValue = child1->tryEvaluate(context);
+    ExprValue rightValue = child2->tryEvaluate(context);
+    if (leftValue.type == ExprValue::UNDEF || rightValue.type == ExprValue::UNDEF)
+        return ExprValue();
+
+    if (leftValue.type == ExprValue::INT && rightValue.type == ExprValue::INT) { // both ints -> integer exponentiation
+        if (!opp_isempty(rightValue.unit) || !opp_isempty(leftValue.unit))
+            errorDimlessArgsExpected(leftValue, rightValue);
+        if (rightValue.intv < 0)
+            throw opp_runtime_error("Negative exponent in integer exponentiation, cast operands to double to allow it");
+        return intPow(leftValue.intv, rightValue.intv);
+    }
+    else {
+        leftValue.convertToDouble();
+        rightValue.convertToDouble();
+        if (!opp_isempty(rightValue.unit) || !opp_isempty(leftValue.unit))
+            errorDimlessArgsExpected(leftValue, rightValue);
+        return pow(leftValue.dbl, rightValue.dbl);
+    }
+}
+
+ExprValue CompareNode::evaluate(Context *context) const
+{
+    ExprValue leftValue = child1->tryEvaluate(context);
+    ExprValue rightValue = child2->tryEvaluate(context);
+    if (leftValue.type == ExprValue::UNDEF || rightValue.type == ExprValue::UNDEF)
+        return ExprValue();
+
+    double diff;
+    if (leftValue.type==ExprValue::INT && rightValue.type==ExprValue::INT) {
+        bringToCommonTypeAndUnit(rightValue, leftValue);
+        diff = leftValue.intv - rightValue.intv;
+    }
+    else if (leftValue.type==ExprValue::DOUBLE || rightValue.type==ExprValue::DOUBLE) {
+        leftValue.convertToDouble();
+        rightValue.convertToDouble();
+        rightValue.dbl = UnitConversion::convertUnit(rightValue.dbl, rightValue.unit, leftValue.unit);
+        // Notes:
+        // 1. diff type is double so we can return nan if either is nan
+        // 2.leftVal==rightVal part is to make inf==inf return 0 (=equals)
+        diff = leftValue.dbl == rightValue.dbl ? 0 : leftValue.dbl - rightValue.dbl;
+    }
+    else if (leftValue.type==ExprValue::STRING && rightValue.type==ExprValue::STRING)
+        diff = strcmp(leftValue.s, rightValue.s);
+    else if (leftValue.type==ExprValue::BOOL && rightValue.type==ExprValue::BOOL)
+        diff = (int)leftValue.bl - (int)rightValue.bl;
+    else
+        throw opp_runtime_error("Wrong argument type for '%s'", getName().c_str());
+
+    return compute(diff);
+}
+
+ExprValue MatchNode::evaluate(Context *context) const
+{
+    ExprValue value = child1->tryEvaluate(context);
+    ExprValue pattern = child2->tryEvaluate(context);
+    if (value.type == ExprValue::UNDEF || pattern.type == ExprValue::UNDEF)
+        return ExprValue();
+
+    if (value.type!=ExprValue::STRING || pattern.type!=ExprValue::STRING)
+        throw opp_runtime_error("String operands expected for '=~'");
+    PatternMatcher matcher(pattern.s, true/*dottedpath*/, true/*fullstring*/, true/*casesensitive*/);
+    return matcher.matches(value.s);
+}
+
+void MatchConstPatternNode::print(std::ostream& out, int spaciousness) const
+{
+    printChild(out, child, spaciousness);
+    out << (needSpaces(spaciousness) ? " =~ " : "=~");
+    out << matcher.str();
+}
+
+ExprValue MatchConstPatternNode::evaluate(Context *context) const
+{
+    ExprValue value = child->tryEvaluate(context);
+    if (value.type == ExprValue::UNDEF)
+        return value;
+    if (value.type != ExprValue::STRING)
+        throw opp_runtime_error("String operand expected for '=~'");
+    return matcher.matches(value.s);
+
+}
+
+void InlineIfNode::print(std::ostream& out, int spaciousness) const
+{
+    printChild(out, child1, spaciousness);
+    out << (needSpaces(spaciousness) ? " ? " : "?");
+    printChild(out, child2, spaciousness);
+    out << (needSpaces(spaciousness) ? " : " : ":");
+    printChild(out, child3, spaciousness);
+}
+
+ExprValue InlineIfNode::evaluate(Context *context) const
+{
+    ExprValue cond = child1->tryEvaluate(context);
+    if (cond.type == ExprValue::UNDEF)
+        return cond;
+    if (cond.type != ExprValue::BOOL)
+        errorBooleanArgExpected(cond);
+    return cond.bl ? child2->tryEvaluate(context) : child3->tryEvaluate(context);
+}
+
+ExprValue NotNode::evaluate(Context *context) const
+{
+    ExprValue value = child->tryEvaluate(context);
+    if (value.type == ExprValue::UNDEF)
+        return value;
+    if (value.type != ExprValue::BOOL)
+        errorBooleanArgExpected(value);
+    value.bl = !value.bl;
+    return value;
+}
+
+ExprValue LogicalInfixOperatorNode::evaluate(Context *context) const
+{
+    ExprValue leftValue = child1->tryEvaluate(context);
+    if (leftValue.type == ExprValue::UNDEF)
+        return leftValue;
+    if (leftValue.type != ExprValue::BOOL)
+        errorBooleanArgExpected(leftValue);
+    if (shortcut(leftValue.bl))
+        return compute(leftValue.bl, false); // value of 2nd arg is irrelevant
+
+    ExprValue rightValue = child2->tryEvaluate(context);
+    if (rightValue.type == ExprValue::UNDEF)
+        return rightValue;
+    if (rightValue.type != ExprValue::BOOL)
+        errorBooleanArgExpected(rightValue);
+    return compute(leftValue.bl, rightValue.bl);
+}
+
+ExprValue BitwiseNotNode::evaluate(Context *context) const
+{
+    ExprValue value = child->tryEvaluate(context);
+    if (value.type == ExprValue::UNDEF)
+        return value;
+    if (value.type != ExprValue::INT)
+        errorIntegerArgExpected(value);
+    if (!opp_isempty(value.unit))
+        errorDimlessArgExpected(value);
+    value.intv = ~value.intv;
+    return value;
+}
+
+ExprValue BitwiseInfixOperatorNode::evaluate(Context *context) const
+{
+    ExprValue leftValue = child1->tryEvaluate(context);
+    ExprValue rightValue = child2->tryEvaluate(context);
+    if (leftValue.type == ExprValue::UNDEF || rightValue.type == ExprValue::UNDEF)
+        return ExprValue();
+    if (rightValue.type != ExprValue::INT || leftValue.type != ExprValue::INT)
+        errorIntegerArgsExpected(leftValue, rightValue);
+    if (!opp_isempty(rightValue.unit) || !opp_isempty(leftValue.unit))
+        errorDimlessArgsExpected(leftValue, rightValue);
+    return compute(leftValue.intv, rightValue.intv);
+}
+
+void IntCastNode::print(std::ostream& out, int spaciousness) const
+{
+    printFunction(out, spaciousness);
+}
+
+ExprValue IntCastNode::evaluate(Context *context) const
+{
+    ExprValue value = child->tryEvaluate(context);
+    switch (value.getType()) {
+        case ExprValue::UNDEF:
+            return value;
+        case ExprValue::BOOL:
+            return (intpar_t)( (bool)value ? 1 : 0 );
+        case ExprValue::INT:
+            return value;
+        case ExprValue::DOUBLE:
+            return ExprValue(checked_int_cast<intpar_t>(floor(value.doubleValue())), value.getUnit());
+        case ExprValue::STRING: {
+            std::string unit;
+            double d = UnitConversion::parseQuantity(value.stringValue(), unit);
+            return ExprValue(checked_int_cast<intpar_t>(floor(d)), ExprValue::getPooled(unit.c_str()));
+        }
+        default:
+            throw opp_runtime_error("Cannot cast %s to int", ExprValue::getTypeName(value.getType()));
+    }
+
+}
+
+void DoubleCastNode::print(std::ostream& out, int spaciousness) const
+{
+    printFunction(out, spaciousness);
+}
+
+ExprValue DoubleCastNode::evaluate(Context *context) const
+{
+    ExprValue value = child->tryEvaluate(context);
+    switch (value.getType()) {
+        case ExprValue::UNDEF:
+            return value;
+        case ExprValue::BOOL:
+            return (bool)value ? 1.0 : 0.0;
+        case ExprValue::INT:
+            return ExprValue((double)value.intValue(), value.getUnit());
+        case ExprValue::DOUBLE:
+            return value;
+        case ExprValue::STRING: {
+            std::string unit;
+            double d = UnitConversion::parseQuantity(value.stringValue(), unit);
+            return ExprValue(d, ExprValue::getPooled(unit.c_str()));
+        }
+        default:
+            throw opp_runtime_error("Cannot cast %s to double", ExprValue::getTypeName(value.getType()));
+    }
+}
+
+void MathFunc0Node::print(std::ostream& out, int spaciousness) const
+{
+    printFunction(out, spaciousness);
+}
+
+ExprValue MathFunc0Node::evaluate(Context *context) const
+{
+    return f();
+}
+
+void MathFunc1Node::print(std::ostream& out, int spaciousness) const
+{
+    printFunction(out, spaciousness);
+}
+
+ExprValue MathFunc1Node::evaluate(Context *context) const
+{
+    ExprValue arg1 = child->tryEvaluate(context);
+    if (arg1.type == ExprValue::UNDEF)
+        return arg1;
+    ensureDimlessDoubleArg(arg1);
+    return f(arg1.dbl);
+}
+
+void MathFunc2Node::print(std::ostream& out, int spaciousness) const
+{
+    printFunction(out, spaciousness);
+}
+
+ExprValue MathFunc2Node::evaluate(Context *context) const
+{
+    ExprValue arg1 = child1->tryEvaluate(context);
+    ExprValue arg2 = child2->tryEvaluate(context);
+    if (arg1.type == ExprValue::UNDEF || arg2.type == ExprValue::UNDEF)
+        return ExprValue();
+    ensureDimlessDoubleArg(arg1);
+    ensureDimlessDoubleArg(arg2);
+    return f(arg1.dbl, arg2.dbl);
+}
+
+void MathFunc3Node::print(std::ostream& out, int spaciousness) const
+{
+    printFunction(out, spaciousness);
+}
+
+ExprValue MathFunc3Node::evaluate(Context *context) const
+{
+    ExprValue arg1 = child1->tryEvaluate(context);
+    ExprValue arg2 = child2->tryEvaluate(context);
+    ExprValue arg3 = child3->tryEvaluate(context);
+    if (arg1.type == ExprValue::UNDEF || arg2.type == ExprValue::UNDEF || arg3.type == ExprValue::UNDEF)
+        return ExprValue();
+    ensureDimlessDoubleArg(arg1);
+    ensureDimlessDoubleArg(arg2);
+    ensureDimlessDoubleArg(arg3);
+    return f(arg1.dbl, arg2.dbl, arg3.dbl);
+}
+
+void MathFunc4Node::print(std::ostream& out, int spaciousness) const
+{
+    printFunction(out, spaciousness);
+}
+
+ExprValue MathFunc4Node::evaluate(Context *context) const
+{
+    Assert(children.size() == 4);
+    ExprValue arg1 = children[0]->tryEvaluate(context);
+    ExprValue arg2 = children[1]->tryEvaluate(context);
+    ExprValue arg3 = children[2]->tryEvaluate(context);
+    ExprValue arg4 = children[3]->tryEvaluate(context);
+    if (arg1.type == ExprValue::UNDEF || arg2.type == ExprValue::UNDEF || arg3.type == ExprValue::UNDEF || arg4.type == ExprValue::UNDEF)
+        return ExprValue();
+    ensureDimlessDoubleArg(arg1);
+    ensureDimlessDoubleArg(arg2);
+    ensureDimlessDoubleArg(arg3);
+    ensureDimlessDoubleArg(arg4);
+    return f(arg1.dbl, arg2.dbl, arg3.dbl, arg4.dbl);
+}
+
+void FunctionNode::print(std::ostream& out, int spaciousness) const
+{
+    printFunction(out, spaciousness);
+}
+
+ExprValue FunctionNode::evaluate(Context *context) const
+{
+    int n = children.size();
+    std::unique_ptr<ExprValue[]> values(new ExprValue[n]);
+    int i = 0;
+    for (ExprNode *child : children) {
+        values[i] = child->tryEvaluate(context);
+        if (values[i].type == ExprValue::UNDEF)
+            return ExprValue();
+        i++;
+    }
+    return f(values.get(), n);
+}
+
+
+}  // namespace expression
+}  // namespace common
+}  // namespace omnetpp

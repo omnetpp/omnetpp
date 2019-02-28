@@ -39,7 +39,8 @@ OBJS= $O/lcgrandom.o $O/filereader.o $O/linetokenizer.o \
       $O/enumstr.o $O/stringtokenizer2.o $O/colorutil.o $O/statistics.o $O/sqlite3.o \
       $O/formattedprinter.o $O/csvwriter.o $O/jsonwriter.o $O/sqliteresultfileschema.o \
       $O/sqlitescalarfilewriter.o  $O/sqlitevectorfilewriter.o \
-      $O/omnetppscalarfilewriter.o $O/omnetppvectorfilewriter.o
+      $O/omnetppscalarfilewriter.o $O/omnetppvectorfilewriter.o \
+      $O/exprnode.o $O/exprnodes.o $O/exprvalue.o $O/intutil.o
 
 GENERATED_SOURCES= expression.tab.hh expression.tab.cc lex.expressionyy.cc \
                    matchexpression.tab.hh matchexpression.tab.cc

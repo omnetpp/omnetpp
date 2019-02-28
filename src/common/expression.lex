@@ -14,14 +14,18 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+/*
+ * Note: since the Expression class is used to parse NED expressions as well, the Expression
+ * lexer (and parser) must accept everything that may occur in NED expressions. For example,
+ * the local definition of L ('letter', see below) allows a superset of NED's definition.
+ */
 
 D  [0-9]
-L  [$@a-zA-Z_]
+L  [$@a-zA-Z_\x80-\xff]
 X  [0-9a-fA-F]
 E  [Ee][+-]?{D}+
 S  [ \t\v\n\r\f]
 
-%x cplusplusbody
 %x stringliteral
 
 /* the following option keeps isatty() out */
@@ -38,9 +42,11 @@ S  [ \t\v\n\r\f]
 extern YYSTYPE yylval;
 
 // wrap symbols to allow several .lex files coexist
+#define comment     expressionComment
 #define countChars  expressionCount
 #define extendCount expressionExtendCount
 
+void comment();
 void countChars();
 void extendCount();
 
@@ -59,13 +65,13 @@ using namespace omnetpp::common;
 %}
 
 %%
-"double"                 { countChars(); return DOUBLETYPE; }
-"int"                    { countChars(); return INTTYPE; }
-"string"                 { countChars(); return STRINGTYPE; }
-"bool"                   { countChars(); return BOOLTYPE; }
+"//"                     { comment(); /* needed for NED */ }
 
 "true"                   { countChars(); return TRUE_; }
 "false"                  { countChars(); return FALSE_; }
+"nan"                    { countChars(); return NAN_; }
+"inf"                    { countChars(); return INF_; }
+"undefined"              { countChars(); return UNDEFINED_; }
 
 {L}({L}|{D})*            { countChars(); yylval = opp_strdup(yytext); return NAME; }
 {D}+                     { countChars(); yylval = opp_strdup(yytext); return INTCONSTANT; }
@@ -93,17 +99,17 @@ using namespace omnetpp::common;
 "."                      { countChars(); return '.'; }
 "?"                      { countChars(); return '?'; }
 
-"||"                     { countChars(); return OR_; }
-"&&"                     { countChars(); return AND_; }
-"##"                     { countChars(); return XOR_; }
-"!"                      { countChars(); return NOT_; }
+"||"                     { countChars(); return OR; }
+"&&"                     { countChars(); return AND; }
+"##"                     { countChars(); return XOR; }
+"!"                      { countChars(); return '!'; }
 
-"|"                      { countChars(); return BINOR_; }
-"&"                      { countChars(); return BINAND_; }
-"#"                      { countChars(); return BINXOR_; }
-"~"                      { countChars(); return BINCOMPL_; }
-"<<"                     { countChars(); return SHIFTLEFT_; }
-">>"                     { countChars(); return SHIFTRIGHT_; }
+"|"                      { countChars(); return '|'; }
+"&"                      { countChars(); return '&'; }
+"#"                      { countChars(); return '#'; }
+"~"                      { countChars(); return '~'; }
+"<<"                     { countChars(); return SHIFT_LEFT; }
+">>"                     { countChars(); return SHIFT_RIGHT; }
 
 "^"                      { countChars(); return '^'; }
 "+"                      { countChars(); return '+'; }
@@ -114,11 +120,14 @@ using namespace omnetpp::common;
 "<"                      { countChars(); return '<'; }
 ">"                      { countChars(); return '>'; }
 
-"=="                     { countChars(); return EQ_; }
-"!="                     { countChars(); return NE_; }
-"<="                     { countChars(); return LE_; }
-">="                     { countChars(); return GE_; }
+"=="                     { countChars(); return EQ; }
+"!="                     { countChars(); return NE; }
+"<="                     { countChars(); return LE; }
+">="                     { countChars(); return GE; }
+"<=>"                    { countChars(); return SPACESHIP; }
+"=~"                     { countChars(); return MATCH; }
 
+"\\xEF\\xBB\\xBF"           { /* UTF-8 BOM mark, ignore */ }
 {S}                      { countChars(); }
 .                        { countChars(); return INVALID_CHAR; }
 
@@ -142,6 +151,13 @@ int yywrap()
 
 /* the following #define is needed for broken flex versions */
 #define yytext_ptr yytext
+
+void comment()
+{
+    int c;
+    while ((c = input())!='\n' && c!=0 && c!=EOF);
+    if (c=='\n') unput(c);
+}
 
 /*
  * - counts the line and column number of the current token in `pos'

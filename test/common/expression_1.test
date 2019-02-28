@@ -3,52 +3,39 @@ Tests the expression evaluation class
 
 %includes:
 #include <common/expression.h>
+#include <common/exprnodes.h>
 
 %global:
 using namespace omnetpp::common;
+using namespace omnetpp::common::expression;
 
-class Variable : public Expression::Functor
+class Variable : public ValueNode
 {
   private:
-    std::string varname;
+    std::string varName;
   public:
-    Variable(const char *name) {varname = name;}
-    virtual ~Variable() { }
-    virtual Expression::Functor *dup() const override {return new Variable(varname.c_str());}
-    virtual const char *getName() const override {return varname.c_str();}
-    virtual const char *getArgTypes() const override {return "";}
-    virtual char getReturnType() const override {return Expression::Value::DBL;}
-    virtual Expression::Value evaluate(Expression::Value args[], int numargs) override {return (double)(varname[1]-'0');}
-    virtual std::string str(std::string args[], int numargs) override {return getName();}
+    Variable(const char *name) {varName = name;}
+    virtual ExprNode *dup() const override {return new Variable(varName.c_str());}
+    virtual std::string getName() const override {return varName;}
+    virtual void print(std::ostream& out, int spaciousness) const override { out << varName; }
+    virtual ExprValue evaluate(Context *context) const override {return (double)(varName[1]-'0');}
 };
 
-class Resolver : public Expression::Resolver
+class VariableTranslator : public Expression::BasicAstTranslator
 {
   public:
-    virtual Expression::Functor *resolveVariable(const char *varname) override;
-    virtual Expression::Functor *resolveFunction(const char *funcname, int argcount) override;
+    virtual ExprNode *createIdentNode(const char *varName, bool withIndex) override { return new Variable(varName); }
 };
-
-Expression::Functor *Resolver::resolveVariable(const char *varname)
-{
-    return new Variable(varname);
-}
-
-Expression::Functor *Resolver::resolveFunction(const char *funcname, int argcount)
-{
-    if (MathFunction::supports(funcname))
-        return new MathFunction(funcname);
-    else
-        throw opp_runtime_error("Unrecognized function: %s()", funcname);
-}
 
 static void eval(const char *txt)
 {
     try {
         EV << txt << " -> ";
         Expression expr;
-        Resolver resolver;
-        expr.parse(txt, &resolver);
+        VariableTranslator variableTranslator;
+        Expression::MultiAstTranslator multiTranslator({ &variableTranslator, Expression::getDefaultAstTranslator() });
+        
+        expr.parse(txt, &multiTranslator);
         //EV << expr.str() << " --> ";  // echo parsed form
         EV << expr.evaluate().str() << "\n";
     }
@@ -115,7 +102,7 @@ eval("1s^2");
 eval("1s^2s");
 eval("1^2s");
 
-//TODO many more tests needed, for all operators, precedence rules, etc
+//TODO many more tests needed, for all operators, precedence rules, BOOL/INT/STRING type, overflow, functions, =~ operator, etc
 
 EV << ".\n";
 
@@ -144,11 +131,11 @@ true && true -> true
 2m -> 2m
 -2m -> -2m
 1q+2q -> 3q
-1s+2ms -> 1.002s
--1s+2ms -> -0.998s
+1s+2ms -> 1002ms
+-1s+2ms -> -998ms
 1q-2q -> -1q
-1s-2ms -> 0.998s
--1s-2ms -> -1.002s
+1s-2ms -> 998ms
+-1s-2ms -> -1002ms
 3*5s -> 15s
 -3*5s -> -15s
 5s*3 -> 15s

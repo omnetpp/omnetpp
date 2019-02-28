@@ -42,8 +42,6 @@ struct my_yyltype {
 typedef struct {int li; int co;} LineColumn;
 extern LineColumn xpos, xprevpos;
 
-void doParseExpression(const char *text, omnetpp::common::Expression::Resolver *resolver, omnetpp::common::Expression::Elem *&elems, int& nelems);
-
 #endif
 
 
