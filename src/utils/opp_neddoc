@@ -1,0 +1,51 @@
+#!/bin/sh
+#
+# Detects the platform and architecture, and starts the NED documetation generator as an application inside the IDE
+#
+EXENAME=omnetpp
+IDEDIR=$(dirname $0)/../ide
+if test ! -d $IDEDIR/configuration -a ! -d $IDEDIR/${EXENAME}.app/Contents/Eclipse/configuration; then
+  echo "The IDE is not installed, but it is required by opp_neddoc!"
+  exit 1;
+fi
+
+# platform specific launcher name
+case $(uname -sm) in
+*Linux*)
+	LAUNCHER=$IDEDIR/${EXENAME}
+        ;;
+*MINGW*)
+	LAUNCHER=$IDEDIR/${EXENAME}.exe
+        ;;
+*Darwin*)
+	# remove the quarantine extended bit so the IDE will not be copied to a private dir on macOS sierra and later
+	xattr -d com.apple.quarantine $IDEDIR/${EXENAME}.app 2>/dev/null
+	# starting the executable directly allows to avoid unsigned app warnings showing up
+	LAUNCHER=$IDEDIR/${EXENAME}.app/Contents/MacOS/${EXENAME}
+        ;;
+*)
+	echo opp_neddoc is supported only on: Linux, Windows and macOS
+	exit 1
+        ;;
+esac
+
+TEMP_WORKSPACE_DIR=$(mktemp -d)
+# get rid of the temp workspace no matter how we exit
+trap "rm -rf $TEMP_WORKSPACE_DIR" EXIT
+
+# Eclipse is unable to report errors correctly with exit codes (non-zero exit code shows a GUI dialog!)
+# so we are grepping the standard error and looking for 'Error:' prefix which is used by
+# the documentation generator to report error. If we find a matching line, we exit with code 1
+# so the opp_neddoc script will return error codes correctly.
+#
+# Eclipse also prints a lot of noise to the standard error which we are not interested in
+# so we show only the lines from the doc generator (those that start with the Error: prefix)
+# Filtering of the standard error is done by temporarily assigning the standard error to the
+# standard out, doing the grep and then assigning back the original standard output so that will
+# be visible also.
+
+WORKSPACE_ARGS="-nosplash -application org.omnetpp.neddoc.application -data $TEMP_WORKSPACE_DIR -clean"
+{ $LAUNCHER "$@" $WORKSPACE_ARGS 2>&1 1>&3 | grep 'Error:' 1>&2 && exit 1; } 3>&1
+
+# successful execution, explicitly return 0
+exit 0

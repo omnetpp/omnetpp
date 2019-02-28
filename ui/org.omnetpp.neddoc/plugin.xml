@@ -69,4 +69,17 @@
          </enabledWhen>
       </page>
    </extension>
+   <extension
+         id="org.omnetpp.neddoc.application"
+         name="Ned Documentation Generator"
+         point="org.eclipse.core.runtime.applications">
+      <application
+            cardinality="singleton-global"
+            thread="main"
+            visible="true">
+         <run
+               class="org.omnetpp.neddoc.NeddocApplication">
+         </run>
+      </application>
+   </extension>
 </plugin>

@@ -80,6 +80,7 @@ import org.omnetpp.msg.editor.highlight.MsgPrivateDocColorizerScanner;
 import org.omnetpp.msg.editor.highlight.MsgSyntaxHighlightPartitionScanner;
 import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.MsgResources;
+import org.omnetpp.ned.core.NedResources;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.export.ExportDiagramFilesOperation;
 import org.omnetpp.ned.editor.export.NedFigureProvider;
@@ -176,6 +177,7 @@ public class DocumentationGenerator {
     protected boolean generateMsgDefinitions = true;
     protected boolean generateFileListings = true;
     protected boolean automaticHyperlinking = true;  // true: tilde notation; false: autolinking
+    protected boolean verboseMode = false;
     protected boolean generateDoxy = true;
     protected boolean generateCppSourceListings = false;
     protected String excludedDirsRegexPattern;
@@ -234,6 +236,10 @@ public class DocumentationGenerator {
         this.headless = headless;
     }
     
+    public void setVerboseMode(boolean verboseMode) {
+        this.verboseMode = verboseMode;
+    }
+
     public void setGenerateNedTypeFigures(boolean generateNedTypeFigures) {
         this.generateNedTypeFigures = generateNedTypeFigures;
     }
@@ -314,6 +320,9 @@ public class DocumentationGenerator {
 
     public IStatus generate(IProgressMonitor monitor) {
         try {
+            if (verboseMode)
+                System.out.println("Generating NED documentation for '" + project.getName() + "'.");
+
             DocumentationGenerator.this.monitor = monitor;
             renderer = new HtmlRenderer(documentationRootPath.append(rootRelativeNeddocPath));
 
@@ -356,6 +365,8 @@ public class DocumentationGenerator {
             return NeddocPlugin.getErrorStatus("Internal error during generating NED documentation", e);
         }
         finally {
+            if (verboseMode)
+                System.out.println("");
             try {
                 refreshFolder(getFullDoxyPath());
                 refreshFolder(getFullNeddocPath());
@@ -410,6 +421,7 @@ public class DocumentationGenerator {
     protected void collectCaches() throws Exception {
         try {
             monitor.beginTask("Collecting data...", 6);
+            NedResources.getInstance().readMissingNedFiles(); // ensure that all ned files are loaded already
 
             navigationItemIndex = new TreeMap<String, ArrayList>();
             for (int i = 0; i<levelIndex.length; i++)
@@ -1238,6 +1250,9 @@ public class DocumentationGenerator {
             monitor.beginTask("Generating NED type pages...", typeElements.size());
 
             for (final ITypeElement typeElement : typeElements) {
+                if (verboseMode)
+                    System.out.append('.').flush();
+                
                 generatePage(getOutputBaseFileName(typeElement), typeElement.getName(), () -> {
                         boolean isNedTypeElement = typeElement instanceof INedTypeElement;
                         boolean isMsgTypeElement = typeElement instanceof IMsgTypeElement;
@@ -1687,7 +1702,10 @@ public class DocumentationGenerator {
                 monitor.beginTask("Moving type diagrams...", nedFiles.size());
 
                 for (IFile file : nedFiles) {
+                    if (verboseMode)
+                        System.out.append('.').flush();                    
                     monitor.subTask(file.getFullPath().toString());
+                    
                     List<INedTypeElement> typeElements = nedResources.getNedFileElement(file).getTopLevelTypeNodes();
 
                     for (INedTypeElement typeElement : typeElements) {
