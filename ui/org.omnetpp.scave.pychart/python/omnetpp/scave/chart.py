@@ -62,7 +62,7 @@ def make_legend_label(legend_cols, row):
     return ", ".join([col + "=" + str(row[i]) for i, col in legend_cols])
 
 def make_chart_title(df, title_col, legend_cols):
-    return str(df[title_col][0]) + ((" (by " + ", ".join([id[1] for id in legend_cols]) + ")") if legend_cols else "")
+    return str(list(df[title_col])[0]) + ((" (by " + ", ".join([id[1] for id in legend_cols]) + ")") if legend_cols else "")
 
 def _list_to_bytes(l):
     return np.array(np.array(l), dtype=np.dtype('>f8')).tobytes()

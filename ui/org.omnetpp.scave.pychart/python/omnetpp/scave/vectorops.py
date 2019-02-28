@@ -10,7 +10,7 @@ def apply(dataframe, operation, *args, **kwargs):
     else:
         condition = kwargs.pop('condition', None)
         clone = dataframe.copy()
-        clone.apply(lambda row: operation(row, *args, **kwargs) if not condition or condition(row) else row, axis='columns')
+        clone = clone.transform(lambda row: operation(row.copy(), *args, **kwargs) if not condition or condition(row) else row, axis='columns')
         return clone
 
 
@@ -22,7 +22,7 @@ def compute(dataframe, operation, *args, **kwargs):
     else:
         condition = kwargs.pop('condition', None)
         clone = dataframe.copy()
-        clone.apply(lambda row: operation(row, *args, **kwargs) if not condition or condition(row) else row, axis='columns')
+        clone = clone.transform(lambda row: operation(row.copy(), *args, **kwargs) if not condition or condition(row) else row, axis='columns')
         return dataframe.append(clone)
 
 
