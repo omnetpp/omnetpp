@@ -172,10 +172,10 @@ public class DocumentationGenerator {
     protected boolean generatePerTypeInheritanceDiagrams = true;
     protected boolean generateFullUsageDiagrams = false;
     protected boolean generateFullInheritanceDiagrams = false;
-    protected boolean generateNedSourceListings = true;
+    protected boolean generateSourceListings = true;
     protected boolean generateMsgDefinitions = true;
     protected boolean generateFileListings = true;
-    protected boolean generateExplicitLinksOnly = false;  // true: tilde notation; false: autolinking
+    protected boolean automaticHyperlinking = true;  // true: tilde notation; false: autolinking
     protected boolean generateDoxy = true;
     protected boolean generateCppSourceListings = false;
     protected String excludedDirsRegexPattern;
@@ -250,8 +250,8 @@ public class DocumentationGenerator {
         this.generateFullInheritanceDiagrams = generateFullInheritanceDiagrams;
     }
 
-    public void setGenerateNedSourceListings(boolean generateNedSourceListings) {
-        this.generateNedSourceListings = generateNedSourceListings;
+    public void setGenerateSourceListings(boolean generateSourceListings) {
+        this.generateSourceListings = generateSourceListings;
     }
 
     public void setGenerateMsgDefinitions(boolean generateMsgDefinitions) {
@@ -262,15 +262,15 @@ public class DocumentationGenerator {
         this.generateFileListings = generateFileListings;
     }
 
-    public void setGenerateExplicitLinksOnly(boolean generateExplicitLinksOnly) {
-        this.generateExplicitLinksOnly = generateExplicitLinksOnly;
+    public void setAutomaticHyperlinking(boolean automaticHyperlinking) {
+        this.automaticHyperlinking = automaticHyperlinking;
     }
 
     public void setGenerateDoxy(boolean generateDoxy) {
         this.generateDoxy = generateDoxy;
     }
 
-    public void setExcudedDirs(String excludedDirs) {
+    public void setExcludedDirs(String excludedDirs) {
         // create a regex from the * and ** globs,
         // escape single . chars
         // use ¤ char as a temporary char instead of *
@@ -509,7 +509,7 @@ public class DocumentationGenerator {
             buffer.deleteCharAt(buffer.length() - 1);  // remove last "|"
 
         String typeNamesPattern = buffer.toString().replace(".", "\\.");
-        if (generateExplicitLinksOnly) {
+        if (!automaticHyperlinking) {
             // tilde syntax; we match any name prefixed with a tilde (or more tildes);
             // a double tilde means one literal tilde, so we'll have to count them when we do the replacement
             possibleTypeReferencesPattern = Pattern.compile("(~+)(" + Keywords.NED_IDENT_REGEX + "(\\." + Keywords.NED_IDENT_REGEX + ")*)\\b");
@@ -704,7 +704,7 @@ public class DocumentationGenerator {
     }
 
     protected String processHTMLContent(String clazz, String comment) {
-        return NedCommentFormatter.makeHtmlDocu(comment, clazz.equals("briefcomment"), generateExplicitLinksOnly, new INeddocProcessor() {
+        return NedCommentFormatter.makeHtmlDocu(comment, clazz.equals("briefcomment"), !automaticHyperlinking, new INeddocProcessor() {
             public String process(String comment) {
                 return replaceTypeReferences(comment);
             }});
@@ -720,7 +720,7 @@ public class DocumentationGenerator {
                 String identifier = matcher.group(2);
                 List<ITypeElement> typeElements = typeNamesMap.get(identifier);
 
-                if ((generateExplicitLinksOnly && !evenPrefixes) || (!generateExplicitLinksOnly && evenPrefixes && typeElements != null))
+                if ((!automaticHyperlinking && !evenPrefixes) || (automaticHyperlinking && evenPrefixes && typeElements != null))
                 {
                     // literal backslashes and tildes are doubled in the neddoc source when they are in front of an identifier
                     prefix = prefix.substring(0, prefix.length() / 2);
@@ -1283,7 +1283,7 @@ public class DocumentationGenerator {
                             generatePropertiesTable(msgTypeElement);
                         }
 
-                        if (generateNedSourceListings) {
+                        if (generateSourceListings) {
                             generateSourceContent(typeElement);
 
                             if (typeElement instanceof INedTypeElement && nedResources.isBuiltInDeclaration(((INedTypeElement)typeElement).getNedTypeInfo()))

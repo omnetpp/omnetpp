@@ -244,10 +244,10 @@ public class GeneratorConfigurationDialog
         generateFullUsageDiagrams.setEnabled(dotAvailable);
 
         generateMsgDefinitions = createCheckbox(group, "Message Definitions", configuration.generateMsgDefinitions);
-        generateSourceContent = createCheckbox(group, "Source on NED and MSG type pages", configuration.nedSourceListings);
+        generateSourceContent = createCheckbox(group, "Source on NED and MSG type pages", configuration.generateSourceListings);
         generateFileListings = createCheckbox(group, "NED and MSG source file listings", configuration.generateFileListings);
 
-        enableAutomaticHyperlinking = createCheckbox(group, "Automatic hyperlinking of NED and message type names", !configuration.generateExplicitLinksOnly);
+        enableAutomaticHyperlinking = createCheckbox(group, "Automatic hyperlinking of NED and message type names", configuration.automaticHyperlinking);
         Label label = new Label(group, SWT.NONE);
         label.setText("   Note: when turned off, use the tilde notation for names to be hyperlinked: ~Sink, ~TCP.");
 
@@ -354,10 +354,10 @@ public class GeneratorConfigurationDialog
         configuration.generatePerTypeInheritanceDiagrams = generatePerTypeInheritanceDiagrams.getSelection();
         configuration.generateFullUsageDiagrams = generateFullUsageDiagrams.getSelection();
         configuration.generateFullInheritanceDiagrams = generateFullInheritanceDiagrams.getSelection();
-        configuration.nedSourceListings = generateSourceContent.getSelection();
+        configuration.generateSourceListings = generateSourceContent.getSelection();
         configuration.generateFileListings = generateFileListings.getSelection();
         configuration.generateMsgDefinitions = generateMsgDefinitions.getSelection();
-        configuration.generateExplicitLinksOnly = !enableAutomaticHyperlinking.getSelection();
+        configuration.automaticHyperlinking = enableAutomaticHyperlinking.getSelection();
         configuration.excludedDirs = excludedDirs.getText();
 
         configuration.generateDoxy = generateDoxy.getSelection();
@@ -396,13 +396,13 @@ public class GeneratorConfigurationDialog
             generator.setGenerateFullUsageDiagrams(configuration.generateFullUsageDiagrams);
             generator.setGeneratePerTypeInheritanceDiagrams(configuration.generatePerTypeInheritanceDiagrams);
             generator.setGenerateFullInheritanceDiagrams(configuration.generateFullInheritanceDiagrams);
-            generator.setGenerateNedSourceListings(configuration.nedSourceListings);
+            generator.setGenerateSourceListings(configuration.generateSourceListings);
             generator.setGenerateFileListings(configuration.generateFileListings);
             generator.setGenerateMsgDefinitions(configuration.generateMsgDefinitions);
-            generator.setGenerateExplicitLinksOnly(configuration.generateExplicitLinksOnly);
+            generator.setAutomaticHyperlinking(configuration.automaticHyperlinking);
             generator.setGenerateDoxy(configuration.generateDoxy);
             generator.setGenerateCppSourceListings(configuration.cppSourceListings);
-            generator.setExcudedDirs(configuration.excludedDirs);
+            generator.setExcludedDirs(configuration.excludedDirs);
             generators.add(generator);
         }
 

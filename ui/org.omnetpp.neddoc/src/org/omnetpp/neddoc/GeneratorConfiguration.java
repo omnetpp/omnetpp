@@ -17,10 +17,10 @@ public class GeneratorConfiguration {
     private static final String GENERATE_FULL_USAGE_DIAGRAMS = "GenerateFullUsageDiagrams";
     private static final String GENERATE_PER_TYPE_INHERITANCE_DIAGRAMS = "GeneratePerTypeInheritanceDiagrams";
     private static final String GENERATE_FULL_INHERITANCE_DIAGRAMS = "GenerateFullInheritanceDiagrams";
-    private static final String GENERATE_NED_SOURCE_LISTINGS = "GenerateNedSourceListings";
+    private static final String GENERATE_SOURCE_LISTINGS = "GenerateSourceListings";
     private static final String GENERATE_FILE_LISTINGS = "GenerateFileListings";
     private static final String GENERATE_MSG_DEFINITIONS = "GenerateMsgDefinitions";
-    private static final String GENERATE_EXPLICIT_LINKS_ONLY = "GenerateExplicitLinks";
+    private static final String AUTOMATIC_HYPERLINKING = "AutomaticHyperlinking";
     private static final String GENERATE_EXCLUDED_DIRS = "GenerateExcludedPackages";
     private static final String GENERATE_DOXY = "GenerateDoxy";
     private static final String DOXY_SOURCE_BROWSER = "DoxySourceBrowser";
@@ -34,9 +34,9 @@ public class GeneratorConfiguration {
     public boolean generatePerTypeInheritanceDiagrams = true;
     public boolean generateFullInheritanceDiagrams = false;
     public boolean generateMsgDefinitions = true;
-    public boolean nedSourceListings = true;
+    public boolean generateSourceListings = true;
     public boolean generateFileListings = true;
-    public boolean generateExplicitLinksOnly = false;
+    public boolean automaticHyperlinking = true;
     public String excludedDirs;
 
     public boolean generateDoxy = true;
@@ -50,10 +50,10 @@ public class GeneratorConfiguration {
         settings.put(GENERATE_FULL_USAGE_DIAGRAMS, generateFullUsageDiagrams);
         settings.put(GENERATE_PER_TYPE_INHERITANCE_DIAGRAMS, generatePerTypeInheritanceDiagrams);
         settings.put(GENERATE_FULL_INHERITANCE_DIAGRAMS, generateFullInheritanceDiagrams);
-        settings.put(GENERATE_NED_SOURCE_LISTINGS, nedSourceListings);
+        settings.put(GENERATE_SOURCE_LISTINGS, generateSourceListings);
         settings.put(GENERATE_FILE_LISTINGS, generateFileListings);
         settings.put(GENERATE_MSG_DEFINITIONS, generateMsgDefinitions);
-        settings.put(GENERATE_EXPLICIT_LINKS_ONLY, generateExplicitLinksOnly);
+        settings.put(AUTOMATIC_HYPERLINKING, automaticHyperlinking);
         settings.put(GENERATE_EXCLUDED_DIRS, excludedDirs);
 
         settings.put(GENERATE_DOXY, generateDoxy);
@@ -73,14 +73,14 @@ public class GeneratorConfiguration {
             generateFullUsageDiagrams = settings.getBoolean(GENERATE_FULL_USAGE_DIAGRAMS);
         if (settings.get(GENERATE_FULL_INHERITANCE_DIAGRAMS) != null)
             generateFullInheritanceDiagrams = settings.getBoolean(GENERATE_FULL_INHERITANCE_DIAGRAMS);
-        if (settings.get(GENERATE_NED_SOURCE_LISTINGS) != null)
-            nedSourceListings = settings.getBoolean(GENERATE_NED_SOURCE_LISTINGS);
+        if (settings.get(GENERATE_SOURCE_LISTINGS) != null)
+            generateSourceListings = settings.getBoolean(GENERATE_SOURCE_LISTINGS);
         if (settings.get(GENERATE_FILE_LISTINGS) != null)
             generateFileListings = settings.getBoolean(GENERATE_FILE_LISTINGS);
         if (settings.get(GENERATE_MSG_DEFINITIONS) != null)
             generateMsgDefinitions = settings.getBoolean(GENERATE_MSG_DEFINITIONS);
-        if (settings.get(GENERATE_EXPLICIT_LINKS_ONLY) != null)
-            generateExplicitLinksOnly = settings.getBoolean(GENERATE_EXPLICIT_LINKS_ONLY);
+        if (settings.get(AUTOMATIC_HYPERLINKING) != null)
+            automaticHyperlinking = settings.getBoolean(AUTOMATIC_HYPERLINKING);
 
         if (settings.get(GENERATE_DOXY) != null)
             generateDoxy = settings.getBoolean(GENERATE_DOXY);
