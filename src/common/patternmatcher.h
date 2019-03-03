@@ -165,6 +165,11 @@ class COMMON_API PatternMatcher
     const char *patternPrefixMatches(const char *line, int suffixoffset) const;
 
     /**
+     * Returns the string representation of the pattern.
+     */
+    std::string str() const;
+
+    /**
      * Returns the internal representation of the pattern as a string.
      * May be useful for debugging purposes.
      */

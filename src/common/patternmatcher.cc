@@ -192,6 +192,42 @@ bool PatternMatcher::parseNumRange(const char *& str, char closingchar, long& lo
     return true;
 }
 
+inline void printSetRanges(std::stringstream& out, const char *set)
+{
+    while (*set) {
+        out << *set << "-" << *(set+1);
+        set += 2;
+    }
+}
+
+std::string PatternMatcher::str() const
+{
+    std::stringstream out;
+    for (const Elem& e : pattern) {
+        switch (e.type) {
+            case LITERALSTRING: out << e.literalString; break;
+            case ANYCHAR: out << "?"; break;
+            case COMMONCHAR: out << "?"; break;
+            case ANYSEQ: out << "**"; break;
+            case COMMONSEQ: out << "*"; break;
+            case SET: out << "["; printSetRanges(out, e.setOfChars.c_str()); out << "]"; break;
+            case NEGSET: out << "[^"; printSetRanges(out, e.setOfChars.c_str()); out << "]"; break;
+            case NUMRANGE: {
+                out << "{";
+                if (e.numStart >= 0)
+                    out << e.numStart;
+                out << "..";
+                if (e.numEnd >= 0)
+                    out << e.numEnd;
+                out << "}";
+                break;
+            }
+            default: assert(0);
+        }
+    }
+    return out.str();
+}
+
 std::string PatternMatcher::debugStrFrom(int from) const
 {
     std::string result;
