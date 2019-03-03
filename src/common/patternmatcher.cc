@@ -192,11 +192,11 @@ bool PatternMatcher::parseNumRange(const char *& str, char closingchar, long& lo
     return true;
 }
 
-std::string PatternMatcher::debugStrFrom(int from)
+std::string PatternMatcher::debugStrFrom(int from) const
 {
     std::string result;
     for (int k = from; k < (int)pattern.size(); k++) {
-        Elem& e = pattern[k];
+        const Elem& e = pattern[k];
         switch (e.type) {
             case LITERALSTRING:
                 result += opp_quotestr(e.literalString);
@@ -241,7 +241,7 @@ std::string PatternMatcher::debugStrFrom(int from)
     return result;
 }
 
-bool PatternMatcher::isInSet(char c, const char *set)
+bool PatternMatcher::isInSet(char c, const char *set) const
 {
     assert((strlen(set)&1) == 0);
     if (!caseSensitive)
@@ -254,10 +254,10 @@ bool PatternMatcher::isInSet(char c, const char *set)
     return false;
 }
 
-bool PatternMatcher::doMatch(const char *s, int k, int suffixlen)
+bool PatternMatcher::doMatch(const char *s, int k, int suffixlen) const
 {
     while (true) {
-        Elem& e = pattern[k];
+        const Elem& e = pattern[k];
         long num;  // case NUMRANGE
         int len;  // case LITERALSTRING
         switch (e.type) {
@@ -353,7 +353,7 @@ bool PatternMatcher::doMatch(const char *s, int k, int suffixlen)
     }
 }
 
-bool PatternMatcher::matches(const char *line)
+bool PatternMatcher::matches(const char *line) const
 {
     assert(pattern[pattern.size()-1].type == END);
 
@@ -364,7 +364,7 @@ bool PatternMatcher::matches(const char *line)
     // case. omnetpp.ini is case sensitive.)
 
     if (pattern.size() >= 2 && caseSensitive) {
-        Elem& e = pattern[pattern.size()-2];
+        const Elem& e = pattern[pattern.size()-2];
         if (e.type == LITERALSTRING) {
             // return if last 2 chars don't match
             int pattlen = e.literalString.size();
@@ -379,7 +379,7 @@ bool PatternMatcher::matches(const char *line)
     return doMatch(line, 0, 0);
 }
 
-const char *PatternMatcher::patternPrefixMatches(const char *line, int suffixoffset)
+const char *PatternMatcher::patternPrefixMatches(const char *line, int suffixoffset) const
 {
     if (!caseSensitive)
         throw opp_runtime_error("PatternMatcher: patternPrefixMatches() doesn't support case-insensitive match");
@@ -388,7 +388,7 @@ const char *PatternMatcher::patternPrefixMatches(const char *line, int suffixoff
     assert(pattern[pattern.size()-1].type == END);
     if (pattern.size() < 2)
         return nullptr;
-    Elem& e = pattern[pattern.size()-2];
+    const Elem& e = pattern[pattern.size()-2];
     if (e.type != LITERALSTRING)
         return nullptr;
 

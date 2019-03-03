@@ -96,17 +96,17 @@ class COMMON_API PatternMatcher
     std::vector<Elem> pattern;
     bool caseSensitive;
 
-    std::string rest; // used to pass return value from doMatch() to patternPrefixMatches()
+    mutable std::string rest; // used to pass return value from doMatch() to patternPrefixMatches()
 
   private:
     void parseSet(const char *&s, Elem& e);
     void parseNumRange(const char *&s, Elem& e);
     void parseLiteralString(const char *&s, Elem& e);
     bool parseNumRange(const char *&str, char closingchar, long& lo, long& up);
-    std::string debugStrFrom(int from);
-    bool isInSet(char c, const char *set);
+    std::string debugStrFrom(int from) const;
+    bool isInSet(char c, const char *set) const;
     // match line from pattern[patternpos]; with last string literal, ignore last suffixlen of pattern
-    bool doMatch(const char *line, int patternpos, int suffixlen);
+    bool doMatch(const char *line, int patternpos, int suffixlen) const;
 
   public:
     /**
@@ -140,7 +140,7 @@ class COMMON_API PatternMatcher
      * Returns true if the line matches the pattern with the given settings.
      * See setPattern().
      */
-    bool matches(const char *line);
+    bool matches(const char *line) const;
 
     /**
      * Similar to matches(): it returns non-nullptr iif (1) the pattern ends in
@@ -162,19 +162,19 @@ class COMMON_API PatternMatcher
      *
      * See matches().
      */
-    const char *patternPrefixMatches(const char *line, int suffixoffset);
+    const char *patternPrefixMatches(const char *line, int suffixoffset) const;
 
     /**
      * Returns the internal representation of the pattern as a string.
      * May be useful for debugging purposes.
      */
-    std::string debugStr()  {return debugStrFrom(0);}
+    std::string debugStr() const {return debugStrFrom(0);}
 
     /**
      * Prints the internal representation of the pattern on the standard output.
      * May be useful for debugging purposes.
      */
-    void dump()  {printf("%s", debugStr().c_str());}
+    void dump() const {printf("%s", debugStr().c_str());}
 
     /**
      * Utility function to determine whether a given string contains wildcards.
