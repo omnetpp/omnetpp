@@ -2,7 +2,7 @@
 #
 # Detects the platform and architecture, and starts the NED documetation generator as an application inside the IDE
 #
-EXENAME=omnetpp
+EXENAME=opp_ide
 IDEDIR=$(dirname $0)/../ide
 if test ! -d $IDEDIR/configuration -a ! -d $IDEDIR/${EXENAME}.app/Contents/Eclipse/configuration; then
   echo "The IDE is not installed, but it is required by opp_neddoc!"

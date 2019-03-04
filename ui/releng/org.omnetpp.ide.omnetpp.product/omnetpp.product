@@ -29,7 +29,7 @@
       startupProgressRect="10,10,298,10"
       startupMessageRect="10,20,500,25"
       startupForegroundColor="000000" />
-   <launcher name="omnetpp">
+   <launcher name="opp_ide">
       <linux icon="../../org.omnetpp.main/icons/logo.xpm"/>
       <macosx icon="../../org.omnetpp.main/icons/logo.icns"/>
       <win useIco="true">

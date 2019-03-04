@@ -4,7 +4,7 @@
 #
 IDEDIR=`dirname $0`/../ide
 PLATFORM=`uname -sm`
-LAUNCHER=omnetpp
+LAUNCHER=opp_ide
 
 echo Starting the OMNeT++ IDE...
 

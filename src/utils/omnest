@@ -4,7 +4,7 @@
 #
 IDEDIR=`dirname $0`/../ide
 PLATFORM=`uname -sm`
-LAUNCHER=omnest
+LAUNCHER=opp_ide
 
 echo Starting the OMNEST IDE...
 
