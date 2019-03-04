@@ -16,7 +16,11 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.expressions.IEvaluationContext;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.window.Window;
 
 /**
@@ -42,7 +46,7 @@ public class GenerateNeddocHandler extends AbstractHandler {
 
             if (dialog.getReturnCode() == Window.OK)
                 for (DocumentationGenerator generator : dialog.getConfiguredDocumentationGenerators())
-                    generator.generate();
+                    scheduleGenerateJob(generator);
 
             return null;
         }
@@ -51,6 +55,18 @@ public class GenerateNeddocHandler extends AbstractHandler {
         }
     }
 
+    public Job scheduleGenerateJob(DocumentationGenerator generator) throws Exception {
+        WorkspaceJob job = new WorkspaceJob("Generating NED Documentation...") {
+            @Override
+            public IStatus runInWorkspace(IProgressMonitor monitor) {
+                return generator.generate(monitor);
+            }
+        };
+        job.setUser(true);
+        job.schedule();
+        return job;
+    }
+    
     @SuppressWarnings("rawtypes")
     private List<IProject> getSelectedOpenProjects(ExecutionEvent event) {
         List<IProject> projects = new ArrayList<IProject>();

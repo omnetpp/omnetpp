@@ -43,7 +43,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -167,6 +166,7 @@ public class DocumentationGenerator {
     private final static Pattern includePattern = Pattern.compile("(?m)^//[ \t]*@include[ \t]+(.*?)$");
 
     // configuration flags
+    protected boolean headless = false;
     protected boolean generateNedTypeFigures = true;
     protected boolean generatePerTypeUsageDiagrams = true;
     protected boolean generatePerTypeInheritanceDiagrams = true;
@@ -229,7 +229,11 @@ public class DocumentationGenerator {
         dotExecutablePath = ProcessUtils.lookupExecutable(store.getString(IConstants.PREF_GRAPHVIZ_DOT_EXECUTABLE));
         doxyExecutablePath = ProcessUtils.lookupExecutable(store.getString(IConstants.PREF_DOXYGEN_EXECUTABLE));
     }
-
+    
+    public void setHeadless(boolean headless) {
+        this.headless = headless;
+    }
+    
     public void setGenerateNedTypeFigures(boolean generateNedTypeFigures) {
         this.generateNedTypeFigures = generateNedTypeFigures;
     }
@@ -308,67 +312,61 @@ public class DocumentationGenerator {
         this.customCssPath = customCssPath;
     }
 
-    public void generate() throws Exception {
-        WorkspaceJob job = new WorkspaceJob("Generating NED Documentation...") {
-            @Override
-            public IStatus runInWorkspace(IProgressMonitor monitor) {
-                try {
-                    DocumentationGenerator.this.monitor = monitor;
-                    renderer = new HtmlRenderer(documentationRootPath.append(rootRelativeNeddocPath));
+    public IStatus generate(IProgressMonitor monitor) {
+        try {
+            DocumentationGenerator.this.monitor = monitor;
+            renderer = new HtmlRenderer(documentationRootPath.append(rootRelativeNeddocPath));
 
-                    ensureEmptyNeddoc();
-                    collectCaches();
-                    generateDoxy();
-                    collectDoxyMap();
-                    renderer.copyStaticResources(customCssPath);
-                    generateNavTreeData();
-                    generateNavTreeIndex();
-                    generateNedTypeFigures();
-                    generatePackagesPage();
-                    if (generateFileListings)
-                        generateFilePages();
-                    generateTypePages();
-                    generateFullDiagrams();
-                    generateNedTagFile();
-                    if (generateMsgDefinitions)
-                        generateMsgTagFile();
+            ensureEmptyNeddoc();
+            collectCaches();
+            generateDoxy();
+            collectDoxyMap();
+            renderer.copyStaticResources(customCssPath);
+            generateNavTreeData();
+            generateNavTreeIndex();
+            generateNedTypeFigures();
+            generatePackagesPage();
+            if (generateFileListings)
+                generateFilePages();
+            generateTypePages();
+            generateFullDiagrams();
+            generateNedTagFile();
+            if (generateMsgDefinitions)
+                generateMsgTagFile();
 
-                    return Status.OK_STATUS;
-                }
-                catch (CancellationException e) {
-                    return Status.CANCEL_STATUS;
-                }
-                catch (NeddocException e) {
-                    return NeddocPlugin.getErrorStatus("Error during generating NED documentation", e);
-                }
-                catch (final IllegalStateException e) {
-                    if (e.getMessage() != null) {
-                        DisplayUtils.runNowOrSyncInUIThread(() -> {
-                                MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error during generating NED documentation", e.getMessage());
-                            }
-                        );
-                    }
-
-                    return Status.CANCEL_STATUS;
-                }
-                catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-                finally {
-                    try {
-                        refreshFolder(getFullDoxyPath());
-                        refreshFolder(getFullNeddocPath());
-                    }
-                    catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    monitor.done();
-                }
+            return Status.OK_STATUS;
+        }
+        catch (CancellationException e) {
+            return Status.CANCEL_STATUS;
+        }
+        catch (NeddocException e) {
+            NeddocPlugin.logError(e);
+            return NeddocPlugin.getErrorStatus("Error during generating NED documentation", e);
+        }
+        catch (IOException e) {
+            NeddocPlugin.logError(e);
+            return NeddocPlugin.getErrorStatus("Error during generating NED documentation", e);
+        }
+        catch (CoreException e) {
+            NeddocPlugin.logError(e);
+            return NeddocPlugin.getErrorStatus("Error during generating NED documentation", e);
+        }
+        catch (Exception e) {
+            NeddocPlugin.logError(e);
+            return NeddocPlugin.getErrorStatus("Internal error during generating NED documentation", e);
+        }
+        finally {
+            try {
+                refreshFolder(getFullDoxyPath());
+                refreshFolder(getFullNeddocPath());
             }
-        };
-        job.setUser(true);
-        job.schedule();
+            catch (Exception e) {
+                NeddocPlugin.logError(e);
+            }
+
+            if (monitor != null)
+                monitor.done();
+        }
     }
 
     protected void ensureEmptyNeddoc() throws CoreException {
@@ -628,11 +626,16 @@ public class DocumentationGenerator {
                 File doxyConfigFile = absoluteDoxyConfigFilePath.toFile();
 
                 if (!doxyConfigFile.exists()) {
-                    DisplayUtils.runNowOrSyncInUIThread(() -> {
-                            if (MessageDialog.openQuestion(null, "Missing configuration file", "Doxygen configuration file does not exist: " + absoluteDoxyConfigFilePath + "\n\nDo you want to create a default one?"))
-                                DocumentationGeneratorPropertyPage.generateDefaultDoxyConfigurationFile(project, doxyExecutablePath, absoluteDoxyConfigFilePath.toString());
-                        }
-                    );
+                    boolean[] ok = new boolean[1];
+                    if (!headless) {
+                        DisplayUtils.runNowOrSyncInUIThread(() -> {
+                            ok[0] = MessageDialog.openQuestion(null, "Missing configuration file", "Doxygen configuration file does not exist: " + absoluteDoxyConfigFilePath + "\n\nDo you want to create a default one?");
+                        });
+                    } else {
+                        ok[0] = true;
+                    }
+                    if (ok[0])
+                        DocumentationGeneratorPropertyPage.generateDefaultDoxyConfigurationFile(project, doxyExecutablePath, absoluteDoxyConfigFilePath.toString());
                 }
 
                 if (doxyConfigFile.exists()) {

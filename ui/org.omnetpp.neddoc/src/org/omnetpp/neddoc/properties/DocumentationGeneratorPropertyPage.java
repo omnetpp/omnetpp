@@ -8,7 +8,9 @@
 package org.omnetpp.neddoc.properties;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.CancellationException;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
@@ -36,9 +38,9 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
+import org.omnetpp.common.OmnetppDirs;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.ProcessUtils;
-import org.omnetpp.common.OmnetppDirs;
 
 /**
  * This is a property page displayed in project properties to set the project specific parameters for documentation generation.
@@ -123,7 +125,14 @@ public class DocumentationGeneratorPropertyPage
                     if (!MessageDialog.openConfirm(getShell(), "Confirm overwrite", "Do you wan to overwrite the Doxygen configuration file: " + fileName + "?"))
                        return;
 
-                generateDefaultDoxyConfigurationFile(project, doxyExecutablePath, fileName);
+                try {
+                    generateDefaultDoxyConfigurationFile(project, doxyExecutablePath, fileName);
+                }
+                catch (Exception x) {
+                    MessageDialog.openError(null, "Documentation Generation",
+                            "Error generating the Doxygen configuration file: " + fileName + " using Doxygen: " + doxyExecutablePath);
+                }
+
             }
         });
 
@@ -273,36 +282,31 @@ public class DocumentationGeneratorPropertyPage
         return content.replaceAll("(?m)^\\s*" + key +"\\s*=.*?$", key + "=" + value);
     }
 
-    public static void generateDefaultDoxyConfigurationFile(final IProject project, final String doxyExecutablePath, String fileName) {
-        try {
-            ProcessUtils.exec(doxyExecutablePath, new String[] {"-g", fileName}, project.getLocation().toString(), null);
+    public static void generateDefaultDoxyConfigurationFile(final IProject project, final String doxyExecutablePath, String fileName) 
+            throws IOException {
+        ProcessUtils.exec(doxyExecutablePath, new String[] {"-g", fileName}, project.getLocation().toString(), null);
 
-            String content = FileUtils.readTextFile(fileName, null);
-            // AUTO means will be set when generating the documentation based on project settings
-            content = replaceDoxygenConfigurationEntry(content, "PROJECT_NAME", project.getName());
-            content = replaceDoxygenConfigurationEntry(content, "OUTPUT_DIRECTORY", "AUTO");
-            content = replaceDoxygenConfigurationEntry(content, "FULL_PATH_NAMES", "NO");
-            content = replaceDoxygenConfigurationEntry(content, "DETAILS_AT_TOP", "YES");
-            content = replaceDoxygenConfigurationEntry(content, "JAVADOC_AUTOBRIEF", "YES");
-            content = replaceDoxygenConfigurationEntry(content, "EXTRACT_ALL", "YES");
-            content = replaceDoxygenConfigurationEntry(content, "EXTRACT_PRIVATE", "YES");
-            content = replaceDoxygenConfigurationEntry(content, "QUIET", "YES");
-            content = replaceDoxygenConfigurationEntry(content, "RECURSIVE", "YES");
-            content = replaceDoxygenConfigurationEntry(content, "EXCLUDE_PATTERNS", "*_m.cc *_n.cc *.d");
-            content = replaceDoxygenConfigurationEntry(content, "INLINE_SOURCES", "YES");
-            content = replaceDoxygenConfigurationEntry(content, "REFERENCES_RELATION", "NO");
-            content = replaceDoxygenConfigurationEntry(content, "VERBATIM_HEADERS", "NO");
-            content = replaceDoxygenConfigurationEntry(content, "HTML_OUTPUT", ".");
-            content = replaceDoxygenConfigurationEntry(content, "GENERATE_TREEVIEW", "NO");
-            content = replaceDoxygenConfigurationEntry(content, "GENERATE_LATEX", "NO");
-            content = replaceDoxygenConfigurationEntry(content, "GENERATE_TAGFILE", "AUTO");
-            content = replaceDoxygenConfigurationEntry(content, "TEMPLATE_RELATIONS", "YES");
-            content = replaceDoxygenConfigurationEntry(content, "TAGFILES", OmnetppDirs.getOmnetppRootDir() + "/doc/api/opptags.xml=" + OmnetppDirs.getOmnetppRootDir() + "/doc/api");
-            FileUtils.writeTextFile(fileName, content, null);
-        }
-        catch (Exception x) {
-            MessageDialog.openError(null, "Documentation Generation",
-                    "Error generating the Doxygen configuration file: " + fileName + " using Doxygen: " + doxyExecutablePath);
-        }
+        String content = FileUtils.readTextFile(fileName, null);
+        // AUTO means will be set when generating the documentation based on project settings
+        content = replaceDoxygenConfigurationEntry(content, "PROJECT_NAME", project.getName());
+        content = replaceDoxygenConfigurationEntry(content, "OUTPUT_DIRECTORY", "AUTO");
+        content = replaceDoxygenConfigurationEntry(content, "FULL_PATH_NAMES", "NO");
+        content = replaceDoxygenConfigurationEntry(content, "DETAILS_AT_TOP", "YES");
+        content = replaceDoxygenConfigurationEntry(content, "JAVADOC_AUTOBRIEF", "YES");
+        content = replaceDoxygenConfigurationEntry(content, "EXTRACT_ALL", "YES");
+        content = replaceDoxygenConfigurationEntry(content, "EXTRACT_PRIVATE", "YES");
+        content = replaceDoxygenConfigurationEntry(content, "QUIET", "YES");
+        content = replaceDoxygenConfigurationEntry(content, "RECURSIVE", "YES");
+        content = replaceDoxygenConfigurationEntry(content, "EXCLUDE_PATTERNS", "*_m.cc *_n.cc *.d");
+        content = replaceDoxygenConfigurationEntry(content, "INLINE_SOURCES", "YES");
+        content = replaceDoxygenConfigurationEntry(content, "REFERENCES_RELATION", "NO");
+        content = replaceDoxygenConfigurationEntry(content, "VERBATIM_HEADERS", "NO");
+        content = replaceDoxygenConfigurationEntry(content, "HTML_OUTPUT", ".");
+        content = replaceDoxygenConfigurationEntry(content, "GENERATE_TREEVIEW", "NO");
+        content = replaceDoxygenConfigurationEntry(content, "GENERATE_LATEX", "NO");
+        content = replaceDoxygenConfigurationEntry(content, "GENERATE_TAGFILE", "AUTO");
+        content = replaceDoxygenConfigurationEntry(content, "TEMPLATE_RELATIONS", "YES");
+        content = replaceDoxygenConfigurationEntry(content, "TAGFILES", OmnetppDirs.getOmnetppRootDir() + "/doc/api/opptags.xml=" + OmnetppDirs.getOmnetppRootDir() + "/doc/api");
+        FileUtils.writeTextFile(fileName, content, null);
     }
 }
