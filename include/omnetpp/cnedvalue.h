@@ -259,14 +259,14 @@ class SIM_API cNedValue
     bool boolValue() const {assertType(BOOL); return bl;}
 
     /**
-     * Returns value as integer. The type must be INT or DOUBLE.
+     * Returns value as integer. The type must be INT.
      */
     intpar_t intValue() const;
 
     /**
      * Returns the numeric value as an integer converted to the given unit.
      * If the current unit cannot be converted to the given one, an error
-     * will be thrown. The type must be DOUBLE or INT.
+     * will be thrown. The type must be INT.
      */
     intpar_t intValueInUnit(const char *targetUnit) const;
 
