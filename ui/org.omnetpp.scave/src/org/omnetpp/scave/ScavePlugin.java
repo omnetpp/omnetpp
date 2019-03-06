@@ -91,6 +91,9 @@ public class ScavePlugin extends AbstractUIPlugin {
         // to make the error marker disappear, and let PyDev be happy.
         IInterpreterManager manager = InterpreterManagersAPI.getPythonInterpreterManager();
 
+        if (manager == null)
+            return; // TODO: wait? try again later?
+
         IInterpreterInfo[] infos = manager.getInterpreterInfos();
 
         boolean needsConfiguration = (infos.length == 0);
