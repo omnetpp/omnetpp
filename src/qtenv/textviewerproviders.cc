@@ -522,9 +522,13 @@ QString EventEntryMessageLinesProvider::getLineText(LogBuffer::Entry *entry, int
     cMessagePrinter *printer = chooseMessagePrinter(msg);
     std::stringstream os;
 
-    // TODO try-catch
     if (printer)
-        printer->printMessage(os, msg, messagePrinterOptions);
+        try {
+            printer->printMessage(os, msg, messagePrinterOptions);
+        }
+        catch (cRuntimeError &e) {
+            os << "\x1b[91mERROR: " << e.getFormattedMessage() << "\x1b[0m";
+        }
     else
         os << "[no message printer for this object]";
 
