@@ -74,7 +74,7 @@ public class PythonProcessPool {
         ProcessBuilder pb = new ProcessBuilder()
                 .command("python3", "-m", "omnetpp.internal.PythonEntryPoint", Integer.toString(javaPort))
                 // .directory(new File(location))
-                .redirectErrorStream(true).redirectOutput(ProcessBuilder.Redirect.PIPE)
+                .redirectError(ProcessBuilder.Redirect.PIPE).redirectOutput(ProcessBuilder.Redirect.PIPE)
                 .redirectInput(ProcessBuilder.Redirect.PIPE);
 
         Map<String, String> env = pb.environment();

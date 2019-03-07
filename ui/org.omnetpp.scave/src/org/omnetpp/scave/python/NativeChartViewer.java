@@ -128,8 +128,10 @@ public class NativeChartViewer {
         proc.getEntryPoint().setNativeChartPlotter(chartPlotter);
 
 
-        for (IOutputListener l : outputListeners)
+        for (IOutputListener l : outputListeners) {
             proc.outputMonitoringThread.addOutputListener(l);
+            proc.errorMonitoringThread.addOutputListener(l);
+        }
 
         chartPlotter.reset();
 

@@ -78,7 +78,7 @@ public class Test {
         Label label = new Label(shell, SWT.NONE);
         label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, true, false));
 
-        proc.outputMonitoringThread.addOutputListener(content -> {
+        proc.outputMonitoringThread.addOutputListener((content, err) -> {
             Display.getDefault().asyncExec(() -> {
                 label.setText(content);
                 shell.layout();

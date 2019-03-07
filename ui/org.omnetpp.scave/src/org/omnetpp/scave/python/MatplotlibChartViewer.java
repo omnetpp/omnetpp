@@ -111,8 +111,10 @@ public class MatplotlibChartViewer {
             runAfterError.handle(e);
         }
 
-        for (IOutputListener l : outputListeners)
+        for (IOutputListener l : outputListeners) {
             proc.outputMonitoringThread.addOutputListener(l);
+            proc.errorMonitoringThread.addOutputListener(l);
+        }
 
         if (script != null && !script.isEmpty()) {
             proc.pythonCallerThread.asyncExec(() -> {

@@ -9,6 +9,7 @@ public class PythonProcess {
     private ClientServer clientServer = null;
 
     public PythonOutputMonitoringThread outputMonitoringThread;
+    public PythonOutputMonitoringThread errorMonitoringThread;
     public PythonCallerThread pythonCallerThread;
 
     IPythonEntryPoint entryPoint = null;
@@ -17,8 +18,10 @@ public class PythonProcess {
         this.process = process;
         this.clientServer = clientServer;
 
-        outputMonitoringThread = new PythonOutputMonitoringThread(process);
+        outputMonitoringThread = new PythonOutputMonitoringThread(process, false);
         outputMonitoringThread.start();
+        errorMonitoringThread = new PythonOutputMonitoringThread(process, true);
+        errorMonitoringThread.start();
 
         // this does not have any references to anything, the Runnable
         // instances passed to it later do
@@ -56,8 +59,8 @@ public class PythonProcess {
         if (!ok) {
             entryPoint = null;
             Debug.println("Couldn't get the entry point to the Python process... :(");
-            Debug.println("Python said:" + outputMonitoringThread.outputSoFar);
-            throw new RuntimeException("Couldn't get the entry point to the Python process.\nIts output so far:\n" + outputMonitoringThread.getOutputSoFar());
+            Debug.println("Python said:" + outputMonitoringThread.outputSoFar + errorMonitoringThread.outputSoFar);
+            throw new RuntimeException("Couldn't get the entry point to the Python process.\nIts output so far:\n" + outputMonitoringThread.getOutputSoFar() + errorMonitoringThread.getOutputSoFar());
         }
 
         return entryPoint;

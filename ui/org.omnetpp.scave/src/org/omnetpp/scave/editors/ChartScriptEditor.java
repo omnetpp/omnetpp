@@ -24,6 +24,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -93,7 +94,8 @@ public class ChartScriptEditor extends PyEdit {
     ChartScriptEditorInput editorInput;
 
     IOConsole console;
-    IOConsoleOutputStream consoleStream;
+    IOConsoleOutputStream outputStream;
+    IOConsoleOutputStream errorStream;
 
     ChartScriptDocumentProvider documentProvider;
 
@@ -142,7 +144,9 @@ public class ChartScriptEditor extends PyEdit {
         console = new IOConsole("Chart script output of " + getChartName(), null);
         IConsoleManager consoleManager = ConsolePlugin.getDefault().getConsoleManager();
         consoleManager.addConsoles(new IConsole[] { console });
-        consoleStream = console.newOutputStream();
+        outputStream = console.newOutputStream();
+        errorStream = console.newOutputStream();
+        errorStream.setColor(new Color(Display.getCurrent(), 220, 10, 10));
 
         onCreatePartControl.registerListener(new ICallbackListener<Composite>() {
 
@@ -247,10 +251,13 @@ public class ChartScriptEditor extends PyEdit {
                 Assert.isTrue(sashForm.getChildren().length == 1 && sashForm.getChildren()[0] instanceof Composite);
                 sourceEditorContainer = (Composite) (sashForm.getChildren()[0]);
 
-                IOutputListener outputListener = output -> {
+                IOutputListener outputListener = (output, err) -> {
                     Display.getDefault().asyncExec(() -> {
                         try {
-                            consoleStream.write(output);
+                            if (err)
+                                errorStream.write(output);
+                            else
+                                outputStream.write(output);
                         }
                         catch (IOException e) {
                             ScavePlugin.logError(e);
@@ -712,7 +719,7 @@ public class ChartScriptEditor extends PyEdit {
             nativeChartViewer.dispose();
 
         try {
-            consoleStream.close();
+            outputStream.close();
         }
         catch (IOException e) {
         }
