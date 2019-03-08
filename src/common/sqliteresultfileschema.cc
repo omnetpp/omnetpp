@@ -57,7 +57,7 @@ const char SQL_CREATE_TABLES[] =
             "runId         INTEGER  NOT NULL REFERENCES run(runId) ON DELETE CASCADE, "
             "moduleName    TEXT NOT NULL, "
             "scalarName    TEXT NOT NULL, "
-            "scalarValue   REAL "       // NOT NULL removed, because sqlite converts NaN double value to NULL
+            "scalarValue   REAL "       // cannot be NOT NULL, because sqlite converts NaN double value to NULL
         "); "
         ""
         "CREATE TABLE IF NOT EXISTS scalarAttr "
@@ -73,8 +73,8 @@ const char SQL_CREATE_TABLES[] =
             "runId         INTEGER NOT NULL REFERENCES run(runId) ON DELETE CASCADE, "
             "moduleName    TEXT NOT NULL, "
             "statName      TEXT NOT NULL, "
-            "isHistogram   INTEGER NOT NULL, "  //actually, BOOL
-            "isWeighted    INTEGER NOT NULL, "  //actually, BOOL
+            "isHistogram   INTEGER NOT NULL, "  // actually, BOOL
+            "isWeighted    INTEGER NOT NULL, "  // actually, BOOL
             "statCount     INTEGER NOT NULL, "
             "statMean      REAL, "  // note: computed; stored for convenience
             "statStddev    REAL, "  // note: computed; stored for convenience
@@ -82,7 +82,7 @@ const char SQL_CREATE_TABLES[] =
             "statSqrsum    REAL, "
             "statMin       REAL, "
             "statMax       REAL, "
-            "statWeights          REAL, " // note: name of this and subsequent fields is consistent with textual sca file field names
+            "statWeights          REAL, " // note: names of this and subsequent fields are consistent with textual sca file field names
             "statWeightedSum      REAL, "
             "statSqrSumWeights    REAL, "
             "statWeightedSqrSum   REAL "
@@ -98,8 +98,8 @@ const char SQL_CREATE_TABLES[] =
         "CREATE TABLE IF NOT EXISTS histogramBin "
         "( "
             "statId        INTEGER NOT NULL REFERENCES statistic(statId) ON DELETE CASCADE, "
-            "lowerEdge     NUMERIC NOT NULL, "
-            "binValue      NUMERIC NOT NULL "
+            "lowerEdge     REAL NOT NULL, "
+            "binValue      REAL NOT NULL "
         "); "
         ""
         "CREATE TABLE IF NOT EXISTS vector "
@@ -132,7 +132,7 @@ const char SQL_CREATE_TABLES[] =
             "vectorId      INTEGER NOT NULL REFERENCES vector(vectorId) ON DELETE CASCADE, "
             "eventNumber   INTEGER NOT NULL, "
             "simtimeRaw    INTEGER NOT NULL, "
-            "value         NUMERIC NOT NULL "
+            "value         REAL " // cannot be NOT NULL because of NaN values
         "); "
         ""
         "COMMIT TRANSACTION; "
