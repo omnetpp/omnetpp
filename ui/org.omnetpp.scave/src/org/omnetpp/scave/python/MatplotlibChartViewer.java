@@ -112,8 +112,10 @@ public class MatplotlibChartViewer {
                 proc.getEntryPoint().setResultsProvider(resultsProvider);
                 proc.getEntryPoint().setChartPropertiesProvider(propertiesProvider);
 
-                if (workingDir != null)
+                if (workingDir != null) {
                     proc.getEntryPoint().execute("import os; os.chdir(\"\"\"" + workingDir.getAbsolutePath() + "\"\"\"); del os;");
+                    proc.getEntryPoint().execute("import site; site.addsitedir(\"\"\"" + workingDir.getAbsolutePath() + "\"\"\"); del site;");
+                }
                 proc.getEntryPoint().execute(script);
             }, runAfterDone, runAfterError);
         }
