@@ -19,10 +19,11 @@ try:
     mpl.use('module://omnetpp.internal.backend_SWTAgg')
 
     import pandas as pd
+
     pd.set_option("display.width", 500)
-    pd.set_option("display.max_columns", 20)
+    pd.set_option("display.max_columns", 50)
     pd.set_option("display.max_colwidth", 50)
-    pd.set_option("display.max_rows", 100)
+    pd.set_option("display.max_rows", 500)
 
 except ImportError as e:
     print("can't import " + e.name)
