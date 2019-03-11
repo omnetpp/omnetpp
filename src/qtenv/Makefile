@@ -135,4 +135,5 @@ clean:
 
 $(RESOURCES_OUT): $(wildcard icons/tools/* icons/logo/* icons/objects/*)
 
--include $(OBJS:%.o=%.d)
+-include $(OBJS:%=%.d)
+

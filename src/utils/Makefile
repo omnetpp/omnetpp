@@ -49,4 +49,5 @@ clean:
 	$(Q)rm -rf $O
 	$(Q)cd $(OMNETPP_BIN_DIR) && rm -f opp_makemake opp_runall opp_test opp_fingerprinttest splitvec
 
--include $(OBJS:%.o=%.d)
+-include $(OBJS:%=%.d)
+

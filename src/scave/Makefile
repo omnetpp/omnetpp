@@ -118,4 +118,5 @@ clean:
 	$(qecho) Cleaning scave
 	$(Q)rm -rf $O $(GENERATED_SOURCES) $(TARGET_LIB_FILES) $(TARGET_EXE_FILES)
 
--include $(OBJS:%.o=%.d)
+-include $(OBJS:%=%.d)
+
