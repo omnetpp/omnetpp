@@ -6,19 +6,22 @@ Referencing a later submodule's parameter is currently not implemented, should b
 module Node
 {
     parameters:
-        int i;
+        int p;
 }
 
 network Test
 {
     submodules:
-        a: Node {i = b.i;}
-        b: Node {i = 5;}
+        a: Node {p = 1;}
+        b: Node {p = a.p;} // OK
+
+        c: Node {p = d.p;} // Error: d not declared yet
+        d: Node {p = 5;}
 }
 
 %exitcode: 1
 
 %contains: stderr
-Cannot evaluate parameter 'i': Cannot find submodule for parameter 'b.i'
+Cannot evaluate parameter 'p': 'd.p': Submodule 'd' not found
 
 

@@ -142,19 +142,19 @@ static void errorBadArgType(cNedFunction *self, int index, cNedValue::Type expec
     const char *note = (expected == cNedValue::INT && actual.getType() == cNedValue::DOUBLE) ?
             " (note: no implicit conversion from double to int)" : "";
     const char *expectedTypeName = (expected == cNedValue::DOUBLE) ? "double or int" :  cNedValue::getTypeName(expected);
-    throw cRuntimeError("%s(): %s expected for argument %d, got %s%s",
-            self->getName(), expectedTypeName, index, cNedValue::getTypeName(actual.getType()), note);
+    throw cRuntimeError("%s expected for argument %d, got %s%s",
+            expectedTypeName, index, cNedValue::getTypeName(actual.getType()), note);
 }
 
 static void errorDimlessArgExpected(cNedFunction *self, int index, const cNedValue& actual)
 {
-    throw cRuntimeError("%s(): argument %d must be dimensionless, got %s", self->getName(), index, actual.str().c_str());
+    throw cRuntimeError("Argument %d must be dimensionless, got %s", index, actual.str().c_str());
 }
 
 void cNedFunction::checkArgs(cNedValue argv[], int argc)
 {
     if (argc < minArgc || (argc > maxArgc && !hasVarargs_))
-        throw cRuntimeError("%s: Called with wrong number of arguments", getName());
+        throw cRuntimeError("Wrong number of arguments");
 
     int n = std::min(argc, maxArgc);
     for (int i = 0; i < n; i++) {

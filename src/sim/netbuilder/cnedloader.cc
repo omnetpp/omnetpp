@@ -27,9 +27,9 @@
 #include "omnetpp/cdoubleparimpl.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/cdisplaystring.h"
+#include "omnetpp/cdynamicexpression.h"
 #include "cnedloader.h"
 #include "nedxml/errorstore.h"
-#include "cexpressionbuilder.h"
 #include "cdynamicmoduletype.h"
 #include "cdynamicchanneltype.h"
 
@@ -86,14 +86,15 @@ cNedDeclaration *cNedLoader::getDecl(const char *qname) const
     return decl;
 }
 
-cDynamicExpression *cNedLoader::getCompiledExpression(ExpressionElement *exprNode, bool inSubcomponentScope)
+cDynamicExpression *cNedLoader::getCompiledExpression(const ExprRef& key, bool inSubcomponentScope)
 {
-    auto it = cachedExpresssions.find(exprNode);
+    auto it = cachedExpresssions.find(key);
     if (it != cachedExpresssions.end())
         return it->second;
-    cDynamicExpression *e = cExpressionBuilder().process(exprNode, inSubcomponentScope);
-    cachedExpresssions[exprNode] = e;
-    return e;
+    cDynamicExpression *expr = new cDynamicExpression();
+    expr->parse(key.getExprText(), inSubcomponentScope, false);
+    cachedExpresssions[key] = expr;
+    return expr;
 }
 
 }  // namespace omnetpp

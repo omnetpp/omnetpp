@@ -24,155 +24,228 @@
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/ccomponenttype.h"
-#include "omnetpp/nedsupport.h"
+#include "omnetpp/checkandcast.h"
+#include "nedsupport.h"
 
 using namespace omnetpp::common;
 
 namespace omnetpp {
-
 namespace nedsupport {
 
-ModuleIndex::ModuleIndex()
+cNedValue makeNedValue(const ExprValue& value)
 {
+    switch (value.getType()) {
+    case ExprValue::UNDEF: return cNedValue();
+    case ExprValue::BOOL: return cNedValue(value.boolValue());
+    case ExprValue::INT: return cNedValue(value.intValue(), value.getUnit());
+    case ExprValue::DOUBLE: return cNedValue(value.doubleValue(), value.getUnit());
+    case ExprValue::STRING: return cNedValue(value.stringValue());
+    case ExprValue::OBJECT: return cNedValue(check_and_cast<cXMLElement*>(value.objectValue()));
+    }
+    Assert(false);
 }
 
-cNedValue ModuleIndex::evaluate(Context *context, cNedValue args[], int numargs)
+ExprValue makeExprValue(const cNedValue& value)
 {
-    ASSERT(numargs == 0 && context != nullptr && context->component != nullptr);
+    switch (value.getType()) {
+    case cNedValue::UNDEF: return ExprValue();
+    case cNedValue::BOOL: return ExprValue(value.boolValue());
+    case cNedValue::INT: return ExprValue(value.intValue(), value.getUnit());
+    case cNedValue::DOUBLE: return ExprValue(value.doubleValue(), value.getUnit());
+    case cNedValue::STRING: return ExprValue(value.stringValue());
+    case cNedValue::XML: return ExprValue(value.xmlValue());
+    }
+    Assert(false);
+}
+
+ExprValue makeExprValue(const cPar& par)
+{
+    switch (par.getType()) {
+    case cPar::BOOL: return ExprValue(par.boolValue());
+    case cPar::INT: return ExprValue(par.intValue(), par.getUnit());
+    case cPar::DOUBLE: return ExprValue(par.doubleValue(), par.getUnit());
+    case cPar::STRING: return ExprValue(par.stdstringValue());
+    case cPar::XML: return ExprValue(par.xmlValue());
+    }
+    Assert(false);
+}
+
+//----
+
+std::string NedFunctionNode::getName() const
+{
+    return nedFunction->getName();
+}
+
+std::string NedFunctionNode::makeErrorMessage(std::exception& e) const
+{
+    return getName() + "(): " + e.what();
+}
+
+ExprValue NedFunctionNode::evaluate(Context *context_) const
+{
+    cExpression::Context *context = dynamic_cast<cExpression::Context*>(context_->simContext);
+    ASSERT(context != nullptr);
+    int argc = children.size();
+    std::unique_ptr<cNedValue[]> argv(new cNedValue[argc]);
+    int i = 0;
+    for (ExprNode *child : children)
+        argv[i++] = makeNedValue(child->tryEvaluate(context_));
+    return makeExprValue(nedFunction->invoke(context->component, argv.get(), argc));
+}
+
+void NedFunctionNode::print(std::ostream& out, int spaciousness) const
+{
+    printFunction(out, spaciousness);
+}
+
+//----
+
+ExprValue ModuleIndex::evaluate(Context *context_) const
+{
+    cExpression::Context *context = dynamic_cast<cExpression::Context*>(context_->simContext);
+    ASSERT(context != nullptr);
     cModule *module = dynamic_cast<cModule *>(context->component);
     if (!module)
-        throw cRuntimeError(context->component, "Cannot evaluate 'index' operator in expression: Context is not a module");
+        throw cRuntimeError("'index' may only occur in submodule context");
     return (intpar_t)module->getIndex();
 }
 
-std::string ModuleIndex::str(std::string args[], int numargs)
+void ModuleIndex::print(std::ostream& out, int spaciousness) const
 {
-    return "index";
+    out << "index";
 }
 
 //----
 
-Exists::Exists(const char *ident, bool ofParent)
+ExprValue Exists::evaluate(Context *context_) const
 {
-    this->ident = ident;
-    this->ofParent = ofParent;
-}
-
-
-cNedValue Exists::evaluate(Context *context, cNedValue args[], int numargs)
-{
-    ASSERT(numargs == 0 && context != nullptr && context->component != nullptr);
-    cModule *module = ofParent ? context->component->getParentModule() : dynamic_cast<cModule *>(context->component);
+    cExpression::Context *context = dynamic_cast<cExpression::Context*>(context_->simContext);
+    ASSERT(context != nullptr);
+    cModule *module = inSubcomponentScope ? context->component->getParentModule() : dynamic_cast<cModule *>(context->component);
     if (!module)
-        throw cRuntimeError(context->component, E_ENOPARENT);
-
-    // Find ident among submodules. If there's no such submodule, it may be that such
-    // submodule vector never existed, or can be that it's zero size -- we cannot tell
-    bool exists = module->getSubmodule(ident.c_str()) || module->getSubmodule(ident.c_str(), 0);
+        throw cRuntimeError("'exists()' may only occur in module or submodule context");
+    bool exists = module->getSubmodule(name.c_str()) || module->getSubmodule(name.c_str(), 0);
     return exists;
 }
 
-std::string Exists::str(std::string args[], int numargs)
+void Exists::print(std::ostream& out, int spaciousness) const
 {
-    return std::string("exists(") + ident + ")";
+    out << "exists(" << name << ")";
 }
 
 //----
 
-Typename::Typename()
+ExprValue Typename::evaluate(Context *context_) const
 {
-}
-
-cNedValue Typename::evaluate(Context *context, cNedValue args[], int numargs)
-{
-    ASSERT(numargs == 0 && context != nullptr && context->component != nullptr);
+    cExpression::Context *context = dynamic_cast<cExpression::Context*>(context_->simContext);
+    ASSERT(context != nullptr);
+    if (!context->component)
+        throw cRuntimeError("'typename' may only occur in submodule context");
     NedExpressionContext *nedContext = dynamic_cast<NedExpressionContext*>(context);
     if (!nedContext)
         return context->component->getNedTypeName();
     switch(nedContext->role) {
         case NedExpressionContext::SUBMODULE_CONDITION: return nedContext->computedTypename;
-        case NedExpressionContext::SUBMODULE_ARRAY_CONDITION: throw cRuntimeError("typename is not allowed in the condition of a submodule vector");
+        case NedExpressionContext::SUBMODULE_ARRAY_CONDITION: throw cRuntimeError("'typename' may not occur in the condition of a submodule vector");
         default: return context->component->getNedTypeName();
     }
-
 }
 
-std::string Typename::str(std::string args[], int numargs)
+void Typename::print(std::ostream& out, int spaciousness) const
 {
-    return "typename";
-}
-
-//----
-
-ParameterRef::ParameterRef(const char *paramName, bool ofParent, bool explicitKeyword)
-{
-    this->paramName = paramName;
-    this->ofParent = ofParent;
-    this->explicitKeyword = explicitKeyword;
-}
-
-cNedValue ParameterRef::evaluate(Context *context, cNedValue args[], int numargs)
-{
-    ASSERT(numargs == 0 && context != nullptr && context->component != nullptr);
-    cComponent *component = ofParent ? context->component->getParentModule() : context->component;
-    if (!component)
-        throw cRuntimeError(context->component, E_ENOPARENT);
-
-    // In inner types, a "paramName" should be first tried as the enclosing type's
-    // parameter, only then as local parameter.
-    // However, "this.paramName" (that is, ofParent==false and explicitKeyword==true)
-    // means local parameter, so parent should not be looked up in that case
-    if (!ofParent && !explicitKeyword && component->getComponentType()->isInnerType())
-        if (component->getParentModule() && component->getParentModule()->hasPar(paramName.c_str()))
-            return component->getParentModule()->par(paramName.c_str());
-
-
-    return component->par(paramName.c_str());
-}
-
-std::string ParameterRef::str(std::string args[], int numargs)
-{
-    if (!explicitKeyword)
-        return paramName;
-    else if (ofParent)
-        return std::string("parent.") + paramName;  // not a legal NED syntax
-    else
-        return std::string("this.") + paramName;
+    out << "typename";
 }
 
 //----
 
-SiblingModuleParameterRef::SiblingModuleParameterRef(const char *moduleName, const char *paramName, bool ofParent, bool withModuleIndex)
+ExprValue ParameterRef::evaluate(Context *context_) const
 {
-    ASSERT(!opp_isempty(moduleName) && !opp_isempty(paramName) && omnetpp::opp_strcmp(moduleName, "this") != 0);
-    this->moduleName = moduleName;
-    this->paramName = paramName;
-    this->ofParent = ofParent;
-    this->withModuleIndex = withModuleIndex;
+    cExpression::Context *context = dynamic_cast<cExpression::Context*>(context_->simContext);
+    ASSERT(context != nullptr);
+    if (!context->component)
+        throw cRuntimeError("Parameter reference '%s' may only occur in component context", getName().c_str());
+    if (ofThis) {
+        // note: same code to do for both inSubcomponentScope=true and =false
+        cComponent *component = context->component;
+        return makeExprValue(component->par(paramName.c_str()));
+    }
+    else {
+        cComponent *component = inSubcomponentScope ? context->component->getParentModule() : context->component;
+        if (!component)
+            throw cRuntimeError(context->component, E_ENOPARENT);
+        // In inner types, a "paramName" should be first tried as the enclosing type's
+        // parameter, only then as local parameter.
+        if (!inSubcomponentScope && component->getComponentType()->isInnerType())
+            if (component->getParentModule() && component->getParentModule()->hasPar(paramName.c_str()))
+                return makeExprValue(component->getParentModule()->par(paramName.c_str()));
+        return makeExprValue(component->par(paramName.c_str()));
+    }
 }
 
-cNedValue SiblingModuleParameterRef::evaluate(Context *context, cNedValue args[], int numargs)
+void ParameterRef::print(std::ostream& out, int spaciousness) const
 {
-    ASSERT(context != nullptr && context->component != nullptr);
-    ASSERT(!withModuleIndex || (withModuleIndex && numargs == 1 && args[0].type == cNedValue::INT));
-    cModule *compoundModule = dynamic_cast<cModule *>(ofParent ? context->component->getParentModule() : context->component);  // this works for channels too
+    out << (ofThis ? "this." : "") << paramName << ")";
+}
+
+//----
+
+ExprValue SubmoduleParameterRef::evaluate(Context *context_) const
+{
+    cExpression::Context *context = dynamic_cast<cExpression::Context*>(context_->simContext);
+    ASSERT(context != nullptr);
+    if (!context->component)
+        throw cRuntimeError(context->component, "Cannot evaluate parameter '%s' without component context", getName().c_str());
+    cModule *compoundModule = dynamic_cast<cModule *>(inSubcomponentScope ? context->component->getParentModule() : context->component);  // this works for channels too
     if (!compoundModule)
         throw cRuntimeError(context->component, E_ENOPARENT);
-    int moduleIndex = withModuleIndex ? (int)args[0] : -1;
-    cModule *siblingModule = compoundModule->getSubmodule(moduleName.c_str(), moduleIndex);
-    if (!siblingModule) {
-        std::string modName = moduleIndex == -1 ? moduleName : opp_stringf("%s[%d]", moduleName.c_str(), moduleIndex);
-        throw cRuntimeError(context->component, "Cannot find submodule for parameter '%s.%s'", modName.c_str(), paramName.c_str());
-    }
-    return siblingModule->par(paramName.c_str());
+    cModule *submodule = compoundModule->getSubmodule(submoduleName.c_str());
+    if (!submodule)
+        throw cRuntimeError("'%s': Submodule '%s' not found", getName().c_str(), submoduleName.c_str());
+    return makeExprValue(submodule->par(paramName.c_str()));
 }
 
-std::string SiblingModuleParameterRef::str(std::string args[], int numargs)
+void SubmoduleParameterRef::print(std::ostream& out, int spaciousness) const
 {
-    if (withModuleIndex)
-        return moduleName + "[" + args[0] + "]." + paramName;
-    else
-        return moduleName + "." + paramName;
+    out << submoduleName << "." << paramName;
+}
+
+//----
+
+IndexedSubmoduleParameterRef::IndexedSubmoduleParameterRef(const char *moduleName, const char *paramName, bool inSubcomponentScope)
+{
+    ASSERT(!opp_isempty(moduleName) && !opp_isempty(paramName) && omnetpp::opp_strcmp(moduleName, "this") != 0);
+    this->submoduleName = moduleName;
+    this->paramName = paramName;
+    this->inSubcomponentScope = inSubcomponentScope;
+}
+
+ExprValue IndexedSubmoduleParameterRef::evaluate(Context *context_) const
+{
+    cExpression::Context *context = dynamic_cast<cExpression::Context*>(context_->simContext);
+    ASSERT(context != nullptr);
+    if (!context->component)
+        throw cRuntimeError(context->component, "Cannot evaluate parameter '%s' without component context", getName().c_str());
+    cModule *compoundModule = dynamic_cast<cModule *>(inSubcomponentScope ? context->component->getParentModule() : context->component);  // this works for channels too
+    if (!compoundModule)
+        throw cRuntimeError(context->component, E_ENOPARENT);
+
+    ExprValue indexValue = child->tryEvaluate(context_);
+    int index = indexValue.intValue();
+    if (indexValue.getUnit() != nullptr)
+        throw cRuntimeError("'%s': Module index must be dimensionless, got '%s'", getName().c_str(), indexValue.str().c_str());
+
+    cModule *submodule = compoundModule->getSubmodule(submoduleName.c_str(), index);
+    if (!submodule)
+        throw cRuntimeError("'%s': Submodule '%s[%d]' not found", getName().c_str(), submoduleName.c_str(), index);
+    return makeExprValue(submodule->par(paramName.c_str()));
+}
+
+void IndexedSubmoduleParameterRef::print(std::ostream& out, int spaciousness) const
+{
+    out << submoduleName << "[";
+    printChild(out, child, spaciousness);
+    out<< "]." << paramName;
 }
 
 //----
@@ -194,168 +267,326 @@ void LoopVar::popVar()
     varCount--;
 }
 
-void LoopVar::reset()
+void LoopVar::clear()
 {
     varCount = 0;
 }
 
-cNedValue LoopVar::evaluate(Context *context, cNedValue args[], int numargs)
+bool LoopVar::contains(const char *varName)
 {
-    ASSERT(numargs == 0 && context != nullptr && context->component != nullptr);
+    for (int i = 0; i < varCount; i++)
+        if (strcmp(varNames[i], varName) == 0)
+            return true;
+    return false;
+}
+
+ExprValue LoopVar::evaluate(Context *context_) const
+{
+    cExpression::Context *context = dynamic_cast<cExpression::Context*>(context_->simContext);
+    ASSERT(context != nullptr);
     const char *var = varName.c_str();
     for (int i = 0; i < varCount; i++)
         if (strcmp(var, varNames[i]) == 0)
             return (intpar_t)vars[i];
 
-    throw cRuntimeError(context->component, "Loop variable %s not found", varName.c_str());
+    throw cRuntimeError(context->component, "Loop variable '%s' not found", varName.c_str());
 }
 
-std::string LoopVar::str(std::string args[], int numargs)
+void LoopVar::print(std::ostream& out, int spaciousness) const
 {
-    // return varName;
-    return std::string("(loopvar)") + varName;  // for debugging only
+    out << varName;
 }
 
 //---
 
-Sizeof::Sizeof(const char *ident, bool ofParent, bool explicitKeyword)
+ExprValue SizeofGateOrSubmodule::evaluate(Context *context_) const
 {
-    this->ident = ident;
-    this->ofParent = ofParent;
-    this->explicitKeyword = explicitKeyword;
+    cExpression::Context *context = dynamic_cast<cExpression::Context*>(context_->simContext);
+    ASSERT(context != nullptr);
+    if (!context->component)
+        throw cRuntimeError(context->component, "Cannot evaluate '%s' without component context", getName().c_str());
+
+    if (ofThis) {
+        ASSERT(inSubcomponentScope);
+        cModule *module = dynamic_cast<cModule *>(context->component);
+        if (!module)
+            throw cRuntimeError("'%s': Size of gate vector is only meaningful in module context", getName().c_str());
+        return (intpar_t)module->getVectorSize();
+    }
+    else {
+        cModule *module = dynamic_cast<cModule *>(inSubcomponentScope ? context->component->getParentModule() : context->component);
+        if (!module)
+            throw cRuntimeError(context->component, E_ENOPARENT);
+        // name is either a submodule vector or a gate vector of the module
+        if (module->hasGate(name.c_str())) {
+            return (intpar_t)module->gateSize(name.c_str());  // returns 1 if it's not a vector
+        }
+        else {
+            // Find ident among submodules. If there's no such submodule, it may
+            // be that such submodule vector never existed, or can be that it's zero
+            // size -- we cannot tell, so we have to return 0 (and cannot throw error).
+            cModule *submodule0 = module->getSubmodule(name.c_str(), 0);  // returns nullptr if submodule is not a vector
+            if (!submodule0 && module->getSubmodule(name.c_str()))
+                return (intpar_t)1;  // return 1 if submodule exists but not a vector
+            return (intpar_t)(submodule0 ? submodule0->getVectorSize() : 0L);
+        }
+    }
 }
 
-cNedValue Sizeof::evaluate(Context *context, cNedValue args[], int numargs)
+void SizeofGateOrSubmodule::print(std::ostream& out, int spaciousness) const
 {
-    ASSERT(numargs == 0 && context != nullptr && context->component != nullptr);
-    cModule *module = dynamic_cast<cModule *>(ofParent ? context->component->getParentModule() : context->component);
+    out << "sizeof(" << (ofThis ? "this." : "") << name << ")";
+}
+
+//---
+
+ExprValue SizeofSubmoduleGate::evaluate(Context *context_) const
+{
+    cExpression::Context *context = dynamic_cast<cExpression::Context*>(context_->simContext);
+    ASSERT(context != nullptr);
+    if (!context->component)
+        throw cRuntimeError(context->component, "Cannot evaluate '%s' without component context", getName().c_str());
+    cModule *module = dynamic_cast<cModule *>(inSubcomponentScope ? context->component->getParentModule() : context->component);
     if (!module)
         throw cRuntimeError(context->component, E_ENOPARENT);
 
-//FIXME stuff already implemented at the bottom of this file????
+    cModule *submodule = module->getSubmodule(submoduleName.c_str());
+    if (!submodule)
+        throw cRuntimeError("'%s': Submodule '%s' not found", getName().c_str(), submoduleName.c_str());
+     return (intpar_t)submodule->gateSize(gateName.c_str());
+}
 
-//FIXME decide it at buildtime, not now? (info is known then already!)
-    // ident might be a gate vector of the *parent* module, or a sibling submodule vector
-    // Note: it might NOT mean gate vector of this module
-    if (module->hasGate(ident.c_str())) {
-        return (intpar_t)module->gateSize(ident.c_str());  // returns 1 if it's not a vector
+void SizeofSubmoduleGate::print(std::ostream& out, int spaciousness) const
+{
+    out << "sizeof(" << submoduleName << "." << gateName << ")";
+}
+
+//---
+
+ExprValue SizeofIndexedSubmoduleGate::evaluate(Context *context_) const
+{
+    cExpression::Context *context = dynamic_cast<cExpression::Context*>(context_->simContext);
+    ASSERT(context != nullptr);
+    if (!context->component)
+        throw cRuntimeError(context->component, "Cannot evaluate '%s' without component context", getName().c_str());
+    cModule *module = dynamic_cast<cModule *>(inSubcomponentScope ? context->component->getParentModule() : context->component);
+    if (!module)
+        throw cRuntimeError(context->component, E_ENOPARENT);
+
+    ExprValue indexValue = child->tryEvaluate(context_);
+    int index = indexValue.intValue();
+    if (indexValue.getUnit() != nullptr)
+        throw cRuntimeError("'%s': Module index must be dimensionless, got '%s'", getName().c_str(), indexValue.str().c_str());
+
+    cModule *submodule = module->getSubmodule(submoduleName.c_str(), index);
+    if (!submodule)
+        throw cRuntimeError("'%s': Submodule '%s[%d]' not found", getName().c_str(), submoduleName.c_str(), index);
+     return (intpar_t)submodule->gateSize(gateName.c_str());
+}
+
+void SizeofIndexedSubmoduleGate::print(std::ostream& out, int spaciousness) const
+{
+    out << "sizeof(" << submoduleName << "[";
+    printChild(out, child, spaciousness);
+    out << "]." << gateName << ")";
+}
+
+//---
+
+
+typedef Expression::AstNode AstNode;
+
+inline bool isIdent(AstNode *astNode) {
+    return astNode->type == AstNode::IDENT;
+}
+inline bool isIdentWithIndex(AstNode *astNode) {
+    return astNode->type == AstNode::IDENT_W_INDEX;
+}
+inline bool isFunction(AstNode *astNode) {
+    return astNode->type == AstNode::FUNCTION;
+}
+inline bool isMember(AstNode *astNode) {
+    return astNode->type == AstNode::MEMBER;
+}
+inline bool isIdent(AstNode *astNode, const std::string& name) {
+    return astNode->type == AstNode::IDENT && astNode->name == name;
+}
+inline bool isFunction(AstNode *astNode, const std::string& name) {
+    return astNode->type == AstNode::FUNCTION && astNode->name == name;
+}
+inline bool isMember(AstNode *astNode, const std::string& name) {
+    return astNode->type == AstNode::MEMBER && astNode->name == name;
+}
+inline AstNode *getSingleChild(AstNode *astNode) {
+    if (astNode->children.size() != 1)
+        throw cRuntimeError("%s() expects one argument", astNode->name.c_str());
+    return astNode->children[0];
+}
+
+ExprNode *NedOperatorTranslator::translateToExpressionTree(AstNode *astNode, AstTranslator *translatorForChildren)
+{
+    (void)inInifile; // eliminate "unused variable" warning
+    if (isFunction(astNode, "sizeof"))
+        return translateSizeof(astNode, translatorForChildren);
+    else if (isFunction(astNode, "exists"))
+        return translateExists(astNode, translatorForChildren);
+    else if (isIdent(astNode, "typename"))
+        return new Typename();
+    else if (isIdent(astNode, "index"))
+        return translateIndex(astNode, translatorForChildren);
+    else if (isIdent(astNode))
+        return translateIdent(astNode, translatorForChildren);
+    else if (isMember(astNode))
+        return translateMember(astNode, translatorForChildren);
+    else
+        return nullptr; // not recognized here
+}
+
+ExprNode *NedOperatorTranslator::translateSizeof(AstNode *sizeofNode, AstTranslator *translatorForChildren)
+{
+    // Excerpt from the NED Reference:
+    // """
+    // The sizeof() operator expects one argument, and it is only accepted in compound module definitions.
+    //
+    // The sizeof(identifier) syntax occurring anywhere in a compound module yields the size of the
+    // named submodule or gate vector of the compound module.
+    //
+    // Inside submodule bodies, the size of a gate vector of the same submodule can be referred to
+    // with the this qualifier: sizeof(this.out).
+    //
+    // To refer to the size of a submodule's gate vector defined earlier in the NED file, use the
+    // sizeof(submoduleName.gateVectorName) or sizeof(submoduleName[index].gateVectorName) syntax.
+    // """
+
+    AstNode *childNode = getSingleChild(sizeofNode);
+    if (isIdent(childNode)) { // sizeof(ident)
+        const char *name = childNode->name.c_str();
+        return new SizeofGateOrSubmodule(name, inSubcomponentScope, false);
+    }
+    else if (isMember(childNode)) {
+        ASSERT(childNode->children.size() >= 1);
+        AstNode *grandChildNode = childNode->children[0];
+        if (isIdent(grandChildNode, "this")) { // sizeof(this.ident)
+            if (!inSubcomponentScope)
+                throw cRuntimeError("sizeof(this.<ident>) may only occur in submodule context");
+            const char *name = childNode->name.c_str();
+            return new SizeofGateOrSubmodule(name, inSubcomponentScope, true);
+        }
+        else if (isIdent(grandChildNode)) { // sizeof(ident.ident)
+            const char *submoduleName = grandChildNode->name.c_str();
+            const char *gateVectorName = childNode->name.c_str();
+            return new SizeofSubmoduleGate(submoduleName, gateVectorName, inSubcomponentScope);
+        }
+        else if (isIdentWithIndex(grandChildNode)) { // sizeof(ident[expr].ident)
+            const char *submoduleName = grandChildNode->name.c_str();
+            const char *gateVectorName = childNode->name.c_str();
+            auto result = new SizeofIndexedSubmoduleGate(submoduleName, gateVectorName, inSubcomponentScope);
+            translateChildren(grandChildNode, result, translatorForChildren);
+            return result;
+        }
+        else
+            throw cRuntimeError("Illegal argument for sizeof()");
     }
     else {
-        // Find ident among submodules. If there's no such submodule, it may
-        // be that such submodule vector never existed, or can be that it's zero
-        // size -- we cannot tell, so we have to return 0 (and cannot throw error).
-        cModule *siblingModule = module->getSubmodule(ident.c_str(), 0);  // returns nullptr if submodule is not a vector
-        if (!siblingModule && module->getSubmodule(ident.c_str()))
-            return (intpar_t)1;  // return 1 if submodule exists but not a vector
-        return (intpar_t)(siblingModule ? siblingModule->getVectorSize() : 0L);
+        throw cRuntimeError("Illegal argument for sizeof()");
     }
 }
 
-std::string Sizeof::str(std::string args[], int numargs)
+ExprNode *NedOperatorTranslator::translateExists(AstNode *existsNode, AstTranslator *translatorForChildren)
 {
-    const char *prefix = !explicitKeyword ? "" : ofParent ? "parent." : "this.";  // "parent" is not a legal NED syntax though
-    return std::string("sizeof(") + prefix + ident + ")";
-}
-
-};
-
-}  // namespace omnetpp
-
-/*
-//TODO make error messages consistent
-
-typedef cNEDcNedValue cNedValue; // abbreviation for local use
-
-//
-// internal function to support NED: resolves a sizeof(moduleOrGateVectorName) reference
-//
-cNedValue cDynamicExpression::getSizeofIdent(Context *context, cNedValue args[], int numargs)
-{
-    ASSERT(numargs==1 && args[0].type==cNedValue::STR);
-    const char *ident = args[0].s.c_str();
-
-    // ident might be a gate vector of the *parent* module, or a sibling submodule vector
-    // Note: it might NOT mean gate vector of this module
-    cModule *parentModule = dynamic_cast<cModule *>(context->component->getParentModule()); // this works for channels too
-    if (!parentModule)
-        throw cRuntimeError(context->component, "sizeof(%s) occurs in wrong context", ident);
-    if (parentModule->hasGate(ident))
-    {
-        return (intpar_t) parentModule->gateSize(ident); // returns 1 if it's not a vector
+    AstNode *argNode = getSingleChild(existsNode);
+    if (isIdent(argNode)) {
+        // exists(ident)
+        const char *name = argNode->name.c_str();
+        return new Exists(name, inSubcomponentScope);
     }
     else
-    {
-        // Find ident among submodules. If there's no such submodule, it may
-        // be that such submodule vector never existed, or can be that it's zero
-        // size -- we cannot tell, so we have to return 0.
-        cModule *siblingModule = parentModule->getSubmodule(ident, 0); // returns nullptr if submodule is not a vector
-        if (!siblingModule && parentModule->getSubmodule(ident))
-            return (intpar_t)1; // return 1 if submodule exists but not a vector
-        return (intpar_t) siblingModule ? siblingModule->size() : 0L;
+        throw cRuntimeError("Illegal argument for exists()");
+}
+
+ExprNode *NedOperatorTranslator::translateIndex(AstNode *identNode, AstTranslator *translatorForChildren)
+{
+    if (!inSubcomponentScope)
+        throw cRuntimeError("'index' may only occur in submodule context");
+    return new ModuleIndex();
+}
+
+ExprNode *NedOperatorTranslator::translateIdent(AstNode *identNode, AstTranslator *translatorForChildren)
+{
+    const char *name = identNode->name.c_str();
+    if (LoopVar::contains(name))
+        return new LoopVar(name);
+    else
+        return new ParameterRef(name, inSubcomponentScope, false);
+}
+
+ExprNode *NedOperatorTranslator::translateMember(AstNode *memberNode, AstTranslator *translatorForChildren)
+{
+    ASSERT(memberNode->children.size() == 1);
+    AstNode *objectNode = memberNode->children[0];
+    if (isIdent(objectNode, "this")) {
+        // this.foo
+        bool explicitKeyword = true;
+        return new ParameterRef(memberNode->name.c_str(), inSubcomponentScope, explicitKeyword);
+    }
+    else if (isIdent(objectNode)) {
+        // foo.bar
+        return new SubmoduleParameterRef(objectNode->name.c_str(), memberNode->name.c_str(), inSubcomponentScope);
+    }
+    else if (isIdentWithIndex(objectNode)) {
+        // foo[i].bar
+        ASSERT(objectNode->children.size() == 1);
+        ExprNode *node = new IndexedSubmoduleParameterRef(objectNode->name.c_str(), memberNode->name.c_str(), inSubcomponentScope);
+        translateChildren(objectNode, node, translatorForChildren);
+        return node;
+    }
+    else
+        throw cRuntimeError("'.%s': invalid member access", memberNode->name.c_str());
+}
+
+//---
+
+
+ExprNode *NedFunctionTranslator::createFunctionNode(const char *functionName, int argCount)
+{
+    if (cNedFunction *nedFunction = cNedFunction::find(functionName))
+        return createNedFunctionNode(nedFunction, argCount);
+    if (cNedMathFunction *mathFunction = cNedMathFunction::find(functionName, argCount))
+        return createMathFunctionNode(mathFunction, argCount);
+    return nullptr;
+}
+
+ExprNode *NedFunctionTranslator::createNedFunctionNode(cNedFunction *nedFunction, int argCount)
+{
+    int minArgs = nedFunction->getMinArgs();
+    int maxArgs = nedFunction->getMaxArgs();
+    bool varArgs = nedFunction->hasVarArgs();
+    if (argCount < minArgs || (argCount > maxArgs && !varArgs)) {
+        if (varArgs)
+            throw opp_runtime_error("NED function '%s' expects at least %d", nedFunction->getName(), minArgs);
+        else if (minArgs == maxArgs)
+            throw opp_runtime_error("NED function '%s' expects %d arguments", nedFunction->getName(), minArgs);
+        else
+            throw opp_runtime_error("NED function '%s' expects %d..%d arguments", nedFunction->getName(), minArgs, maxArgs);
+    }
+    return new NedFunctionNode(nedFunction);
+}
+
+ExprNode *NedFunctionTranslator::createMathFunctionNode(cNedMathFunction *mathFunction, int argCount)
+{
+    ASSERT(mathFunction->getNumArgs() == argCount);
+    const char *name = mathFunction->getName();
+    switch (argCount) {
+        case 0: return new MathFunc0Node(name, mathFunction->getMathFuncNoArg());
+        case 1: return new MathFunc1Node(name, mathFunction->getMathFunc1Arg());
+        case 2: return new MathFunc2Node(name, mathFunction->getMathFunc2Args());
+        case 3: return new MathFunc3Node(name, mathFunction->getMathFunc3Args());
+        case 4: return new MathFunc4Node(name, mathFunction->getMathFunc4Args());
+        default: throw opp_runtime_error("'%s()': NED math functions only support up to 4 arguments", name);
     }
 }
 
-//
-// internal function to support NED: resolves a sizeof(this.gateVectorName) reference
-//
-cNedValue cDynamicExpression::getSizeofGate(Context *context, cNedValue args[], int numargs)
-{
-    ASSERT(numargs==1 && args[0].type==cNedValue::STR);
-    const char *gateName = args[0].s.c_str();
-    cModule *module = dynamic_cast<cModule *>(context->component);
-    if (!module || !module->hasGate(gateName))
-        throw cRuntimeError(context->component, "Error evaluating sizeof(): No such gate: '%s'", gateName);
-    return (intpar_t) module->gateSize(gateName); // returns 1 if it's not a vector
-}
 
-//
-// internal function to support NED: resolves a sizeof(parent.gateVectorName) reference
-//
-cNedValue cDynamicExpression::getSizeofParentModuleGate(Context *context, cNedValue args[], int numargs)
-{
-    ASSERT(numargs==1 && args[0].type==cNedValue::STR);
-    const char *gateName = args[0].s.c_str();
-    cModule *parentModule = dynamic_cast<cModule *>(context->component->getParentModule()); // this works for channels too
-    if (!parentModule)
-        throw cRuntimeError(context->component, "sizeof() occurs in wrong context", gateName);
-    if (!parentModule->hasGate(gateName))
-        throw cRuntimeError(context->component, "Error evaluating sizeof(): No such gate: '%s'", gateName);
-    return (intpar_t) parentModule->gateSize(gateName); // returns 1 if it's not a vector
-}
 
-//
-// internal function to support NED: resolves a sizeof(module.gateName) reference
-//
-cNedValue cDynamicExpression::getSizeofSiblingModuleGate(Context *context, cNedValue args[], int numargs)
-{
-    ASSERT(numargs==2 && args[0].type==cNedValue::STR && args[1].type==cNedValue::STR);
-    const char *siblingModuleName = args[0].s.c_str();
-    const char *gateName = args[1].s.c_str();
-
-    cModule *parentModule = dynamic_cast<cModule *>(context->component->getParentModule()); // this works for channels too
-    if (!parentModule)
-        throw cRuntimeError(context->component, "sizeof() occurs in wrong context", gateName);
-    cModule *siblingModule = parentModule->getSubmodule(siblingModuleName); // returns nullptr if submodule is not a vector
-    if (!siblingModule->hasGate(gateName))
-        throw cRuntimeError(context->component, "Error evaluating sizeof(): No such gate: '%s'", gateName);
-    return (intpar_t) siblingModule->gateSize(gateName); // returns 1 if it's not a vector
-}
-
-//
-// internal function to support NED: resolves a sizeof(module.gateName) reference
-//
-cNedValue cDynamicExpression::getSizeofIndexedSiblingModuleGate(Context *context, cNedValue args[], int numargs)
-{
-    ASSERT(numargs==3 && args[0].type==cNedValue::STR && args[1].type==cNedValue::STR && args[2].type==cNedValue::DBL);
-    const char *gateName = args[1].s.c_str();
-    const char *siblingModuleName = args[1].s.c_str();
-    int siblingModuleIndex = (int)args[2].dbl;
-    cModule *parentModule = dynamic_cast<cModule *>(context->component->getParentModule()); // this works for channels too
-    cModule *siblingModule = parentModule ? parentModule->getSubmodule(siblingModuleName, siblingModuleIndex) : nullptr;
-    if (!siblingModule)
-        throw cRuntimeError(context->component, "sizeof(): Cannot find submodule %[%d]",
-                                siblingModuleName, siblingModuleIndex,
-                                siblingModuleName, siblingModuleIndex, gateName);
-    return (intpar_t) siblingModule->gateSize(gateName); // returns 1 if it's not a vector
-}
-*/
+}  // namespace omnetpp
+} // namespace nedsupport

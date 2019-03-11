@@ -126,7 +126,6 @@
 #include "omnetpp/resultfilters.h"
 #include "omnetpp/resultrecorders.h"
 #include "omnetpp/simutil.h"
-#include "omnetpp/nedsupport.h"
 #include "omnetpp/packing.h"
 #include "omnetpp/compat.h"
 #include "omnetpp/platdep/intlimits.h"

@@ -25,6 +25,21 @@
 
 namespace omnetpp {
 
+class ExprRef {
+  private:
+    NedElement *node;
+    int attrId;
+    const char *cachedExprText;
+  public:
+    ExprRef(NedElement *node, int attrId) : node(node), attrId(attrId) {
+        cachedExprText = node->getAttribute(attrId);
+    }
+    bool empty() const {return !cachedExprText[0];}
+    const char *getExprText() const {return cachedExprText;}
+    NedElement *getNode() const {return node;}
+    bool operator<(const ExprRef& other) const {return node!=other.node ? node<other.node : attrId<other.attrId;}
+};
+
 /**
  * @brief Stores dynamically loaded NED files, and one can look up NED declarations
  * of modules, channels, module interfaces and channel interfaces in them.
@@ -41,7 +56,7 @@ class SIM_API cNedLoader : public NedResourceCache
     static cNedLoader *inst;
 
     // expression cache
-    std::map<ExpressionElement*, cDynamicExpression*> cachedExpresssions;
+    std::map<ExprRef, cDynamicExpression*> cachedExpresssions;
 
   protected:
     // constructor is protected, because we want only one instance
@@ -62,8 +77,8 @@ class SIM_API cNedLoader : public NedResourceCache
     /** Redefined to make return type more specific. */
     virtual cNedDeclaration *getDecl(const char *qname) const override;
 
-    /** Compile NED expression to a cDynamicExpression, and cache it */
-    virtual cDynamicExpression *getCompiledExpression(ExpressionElement *exprNode, bool inSubcomponentScope);
+    /** Compile NED expression (which occurs in given attribute of the given node) to a cDynamicExpression, and cache it */
+    virtual cDynamicExpression *getCompiledExpression(const ExprRef& expr, bool inSubcomponentScope);
 };
 
 }  // namespace omnetpp

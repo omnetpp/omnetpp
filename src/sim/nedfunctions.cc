@@ -305,9 +305,9 @@ cNedValue nedf_substring(cComponent *contextComponent, cNedValue argv[], int arg
     int length = argc == 3 ? (int)argv[2] : size - index;
 
     if (index < 0 || index > size)
-        throw cRuntimeError("substring(): Index out of bounds");
+        throw cRuntimeError("Index out of bounds");
     if (length < 0)
-        throw cRuntimeError("substring(): Length is negative");
+        throw cRuntimeError("Length is negative");
     return argv[0].stdstringValue().substr(index, length);
 }
 
@@ -384,7 +384,7 @@ cNedValue nedf_tail(cComponent *contextComponent, cNedValue argv[], int argc)
 {
     int length = (int)argv[1];
     if (length < 0)
-        throw cRuntimeError("tail(): Length is negative");
+        throw cRuntimeError("Length is negative");
     int size = (int)argv[0].stdstringValue().size();
     return argv[0].stdstringValue().substr(std::max(0, size - length), size);
 }
@@ -403,9 +403,9 @@ cNedValue nedf_replace(cComponent *contextComponent, cNedValue argv[], int argc)
     if (argc == 4) {
         index = (int)argv[3];
         if (index < 0)
-            throw cRuntimeError("replace(): Start index is negative");
+            throw cRuntimeError("Start index is negative");
         if (index > (int)str.size())
-            throw cRuntimeError("replace(): Start index out of bounds");
+            throw cRuntimeError("Start index out of bounds");
     }
 
     size_t searchSize = search.size();
@@ -431,9 +431,9 @@ cNedValue nedf_replaceFirst(cComponent *contextComponent, cNedValue argv[], int 
     if (argc == 4) {
         index = (int)argv[3];
         if (index < 0)
-            throw cRuntimeError("replaceFirst(): Start index is negative");
+            throw cRuntimeError("Start index is negative");
         if (index > (int)str.size())
-            throw cRuntimeError("replaceFirst(): Start index out of bounds");
+            throw cRuntimeError("Start index out of bounds");
     }
 
     size_t searchSize = search.size();
@@ -471,12 +471,12 @@ cNedValue nedf_choose(cComponent *contextComponent, cNedValue argv[], int argc)
 {
     int index = (int)argv[0];
     if (index < 0)
-        throw cRuntimeError("choose(): Negative index");
+        throw cRuntimeError("Negative index");
     cStringTokenizer tokenizer(argv[1].stdstringValue().c_str());
     for (int i = 0; i < index && tokenizer.hasMoreTokens(); i++)
         tokenizer.nextToken();
     if (!tokenizer.hasMoreTokens())
-        throw cRuntimeError("choose(): Index out of bounds: %d", index);
+        throw cRuntimeError("Index out of bounds: %d", index);
     return tokenizer.nextToken();
 }
 
@@ -540,7 +540,7 @@ cNedValue nedf_int(cComponent *contextComponent, cNedValue argv[], int argc)
             return cNedValue(checked_int_cast<intpar_t>(floor(d)), cNedValue::getPooled(unit.c_str()));
         }
         case cNedValue::XML:
-            throw cRuntimeError("int(): Cannot convert xml to int");
+            throw cRuntimeError("Cannot convert xml to int");
         default:
             throw cRuntimeError("Internal error: Invalid cNedValue type");
     }
@@ -566,7 +566,7 @@ cNedValue nedf_double(cComponent *contextComponent, cNedValue argv[], int argc)
             return cNedValue(d, cNedValue::getPooled(unit.c_str()));
         }
         case cNedValue::XML:
-            throw cRuntimeError("double(): Cannot convert xml to double");
+            throw cRuntimeError("Cannot convert xml to double");
         default:
             throw cRuntimeError("Internal error: Bad cNedValue type");
     }
@@ -616,9 +616,9 @@ cNedValue nedf_parentIndex(cComponent *contextComponent, cNedValue argv[], int a
 {
     cModule *mod = contextComponent->getParentModule();
     if (!mod)
-        throw cRuntimeError("parentIndex(): '%s' has no parent module", contextComponent->getFullPath().c_str());
+        throw cRuntimeError("'%s' has no parent module", contextComponent->getFullPath().c_str());
     if (!mod->isVector())
-        throw cRuntimeError("parentIndex(): Module '%s' is not a vector", mod->getFullPath().c_str());
+        throw cRuntimeError("Module '%s' is not a vector", mod->getFullPath().c_str());
     return (intpar_t)mod->getIndex();
 }
 
@@ -631,16 +631,16 @@ cNedValue nedf_ancestorIndex(cComponent *contextComponent, cNedValue argv[], int
 {
     int levels = (int)argv[0];
     if (levels < 0)
-        throw cRuntimeError("ancestorIndex(): Negative number of levels");
+        throw cRuntimeError("Negative number of levels");
     if (levels == 0 && !contextComponent->isModule())
-        throw cRuntimeError("ancestorIndex(): Numlevels==0 and this is not a module");
+        throw cRuntimeError("numlevels==0 and this is not a module");
     cModule *mod = dynamic_cast<cModule *>(contextComponent);
     for (int i = 0; mod && i < levels; i++)
         mod = mod->getParentModule();
     if (!mod)
-        throw cRuntimeError("ancestorIndex(): Argument is larger than current nesting level");
+        throw cRuntimeError("Argument is larger than current nesting level");
     if (!mod->isVector())
-        throw cRuntimeError("ancestorIndex(): Module '%s' is not a vector", mod->getFullPath().c_str());
+        throw cRuntimeError("Module '%s' is not a vector", mod->getFullPath().c_str());
     return (intpar_t)mod->getIndex();
 }
 
@@ -729,7 +729,7 @@ cNedValue nedf_erlang_k(cComponent *contextComponent, cNedValue argv[], int argc
 {
     int k = (int)argv[0];
     if (k < 0)
-        throw cRuntimeError("erlang_k(): K parameter (number of phases) must be positive (k=%d)", k);
+        throw cRuntimeError("k parameter (number of phases) must be positive (k=%d)", k);
     int rng = argc == 3 ? (int)argv[2] : 0;
     return cNedValue(contextComponent->erlang_k(k, (double)argv[1], rng), argv[1].getUnit());
 }
@@ -743,7 +743,7 @@ cNedValue nedf_chi_square(cComponent *contextComponent, cNedValue argv[], int ar
 {
     int k = (int)argv[0];
     if (k < 0)
-        throw cRuntimeError("chi_square(): K parameter (degrees of freedom) must be positive (k=%d)", k);
+        throw cRuntimeError("k parameter (degrees of freedom) must be positive (k=%d)", k);
     int rng = argc == 2 ? (int)argv[1] : 0;
     return contextComponent->chi_square(k, rng);
 }
@@ -757,7 +757,7 @@ cNedValue nedf_student_t(cComponent *contextComponent, cNedValue argv[], int arg
 {
     int i = (int)argv[0];
     if (i < 0)
-        throw cRuntimeError("student_t(): I parameter (degrees of freedom) must be positive (i=%d)", i);
+        throw cRuntimeError("i parameter (degrees of freedom) must be positive (i=%d)", i);
     int rng = argc == 2 ? (int)argv[1] : 0;
     return contextComponent->student_t(i, rng);
 }
@@ -833,7 +833,7 @@ cNedValue nedf_intuniform(cComponent *contextComponent, cNedValue argv[], int ar
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
     if (opp_strcmp(argv[0].getUnit(), argv[1].getUnit()) != 0)
-        throw cRuntimeError("intuniform(%s,%s): arguments must have the same unit", argv[0].stdstringValue().c_str(), argv[1].stdstringValue().c_str());
+        throw cRuntimeError("Arguments must have the same unit, got (%s,%s)", argv[0].stdstringValue().c_str(), argv[1].stdstringValue().c_str());
     return cNedValue((intpar_t)contextComponent->intuniform((int)argv[0], (int)argv[1], rng), argv[1].getUnit());
 }
 
@@ -846,7 +846,7 @@ cNedValue nedf_intuniformexcl(cComponent *contextComponent, cNedValue argv[], in
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
     if (opp_strcmp(argv[0].getUnit(), argv[1].getUnit()) != 0)
-        throw cRuntimeError("intuniformexcl(%s,%s): arguments must have the same unit", argv[0].stdstringValue().c_str(), argv[1].stdstringValue().c_str());
+        throw cRuntimeError("Arguments must have the same unit, got (%s,%s)", argv[0].stdstringValue().c_str(), argv[1].stdstringValue().c_str());
     return cNedValue((intpar_t)contextComponent->intuniformexcl((int)argv[0], (int)argv[1], rng), argv[1].getUnit());
 }
 
@@ -923,9 +923,9 @@ cNedValue nedf_xmldoc(cComponent *contextComponent, cNedValue argv[], int argc)
     cXMLElement *node = getEnvir()->getXMLDocument(filename, xpath);
     if (!node) {
         if (argc == 1)
-            throw cRuntimeError("xmldoc(\"%s\"): Element not found", filename);
+            throw cRuntimeError("File \"%s\"not found", filename);
         else
-            throw cRuntimeError("xmldoc(\"%s\", \"%s\"): Element not found", filename, xpath);
+            throw cRuntimeError("Element \"%s\" in file \"%s\" not found", xpath, filename);
     }
     return node;
 }
@@ -939,16 +939,14 @@ DEF(nedf_xml,
 
 cNedValue nedf_xml(cComponent *contextComponent, cNedValue argv[], int argc)
 {
-    cXMLElement *node;
-    if (argc == 1) {
-        node = getEnvir()->getParsedXMLString(argv[0].stdstringValue().c_str(), nullptr);
-        if (!node)
-            throw cRuntimeError("xml(\"%s\"): Element not found", argv[0].stdstringValue().c_str());
-    }
-    else {
-        node = getEnvir()->getParsedXMLString(argv[0].stdstringValue().c_str(), argv[1].stdstringValue().c_str());
-        if (!node)
-            throw cRuntimeError("xml(\"%s\", \"%s\"): Element not found", argv[0].stdstringValue().c_str(), argv[1].stdstringValue().c_str());
+    const char *xmlText = argv[0].stringValue();
+    const char *xpath = argc == 1 ? nullptr : argv[1].stringValue();
+    cXMLElement *node = getEnvir()->getParsedXMLString(xmlText, xpath);
+    if (!node) {
+        if (argc == 1)
+            throw cRuntimeError("Empty XML document");
+        else
+            throw cRuntimeError("Element \"%s\" not found in XML document string", xpath);
     }
     return node;
 }
@@ -977,9 +975,9 @@ cNedValue nedf_select(cComponent *contextComponent, cNedValue argv[], int argc)
 {
     long index = argv[0];
     if (index < 0)
-        throw cRuntimeError("select(): Negative index %ld", index);
+        throw cRuntimeError("Negative index %ld", index);
     if (index >= argc-1)
-        throw cRuntimeError("select(): Index=%ld is too large", index, argc-1);
+        throw cRuntimeError("Index=%ld is too large", index, argc-1);
     return argv[index+1];
 }
 
@@ -996,7 +994,7 @@ cNedValue nedf_firstAvailable(cComponent *contextComponent, cNedValue argv[], in
     cRegistrationList *types = componentTypes.getInstance();
     for (int i = 0; i < argc; i++) {
         if (argv[i].getType() != cNedValue::STRING)
-            throw cRuntimeError("firstAvailable(): String arguments expected");
+            throw cRuntimeError("String arguments expected");
         const char *name = argv[i].stringValue();
         cComponentType *c;
         c = dynamic_cast<cComponentType *>(types->lookup(name));  // by qualified name

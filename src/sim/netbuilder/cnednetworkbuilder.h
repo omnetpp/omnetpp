@@ -25,6 +25,7 @@
 #include "omnetpp/globals.h"
 #include "omnetpp/cpar.h"
 #include "cneddeclaration.h"
+#include "cnedloader.h"
 
 namespace omnetpp {
 
@@ -98,25 +99,24 @@ class SIM_API cNedNetworkBuilder
     void doAddConnOrConnGroup(cModule *modp, NedElement *connOrConnGroup);
     void doAddConnection(cModule *modp, ConnectionElement *conn);
     void doConnectGates(cModule *modp, cGate *srcg, cGate *destg, ConnectionElement *conn);
-    cGate *resolveGate(cModule *parentmodp, const char *modname, ExpressionElement *modindexp,
-                       const char *gatename, ExpressionElement *gateindexp, int subg, bool isplusplus);
-    void resolveInoutGate(cModule *parentmodp, const char *modname, ExpressionElement *modindexp,
-                       const char *gatename, ExpressionElement *gateindexp, bool isplusplus,
+    cGate *resolveGate(cModule *parentmodp, const char *modname, const ExprRef& modindexp,
+                       const char *gatename, const ExprRef& gateindexp, int subg, bool isplusplus);
+    void resolveInoutGate(cModule *parentmodp, const char *modname, const ExprRef& modindexp,
+                       const char *gatename, const ExprRef& gateindexp, bool isplusplus,
                        cGate *&gate1, cGate *&gate2);
-    cModule *resolveModuleForConnection(cModule *parentmodp, const char *modname, ExpressionElement *modindexp);
+    cModule *resolveModuleForConnection(cModule *parentmodp, const char *modname, const ExprRef& modindexp);
     std::string getChannelTypeName(cModule *modp, cGate *srcgate, ConnectionElement *conn, const char *channelName);
     cChannel *createChannel(ConnectionElement *conn, cModule *parentmodp, cGate *srcgate);
 
     cChannelType *findAndCheckChannelType(const char *channelTypeName, cModule *modp);
     cChannelType *findAndCheckChannelTypeLike(const char *channelTypeName, const char *likeType, cModule *modp);
-    ExpressionElement *findExpression(NedElement *node, const char *exprname);
-    cDynamicExpression *getOrCreateExpression(ExpressionElement *exprNode, bool inSubcomponentScope);
-    long evaluateAsLong(ExpressionElement *exprNode, cComponent *contextComponent, bool inSubcomponentScope);
-    bool evaluateAsBool(ExpressionElement *exprNode, cComponent *contextComponent, bool inSubcomponentScope);
-    std::string evaluateAsString(ExpressionElement *exprNode, cComponent *contextComponent, bool inSubcomponentScope);
-    long evaluateAsLong(ExpressionElement *exprNode, cExpression::Context *context, bool inSubcomponentScope);
-    bool evaluateAsBool(ExpressionElement *exprNode, cExpression::Context *context, bool inSubcomponentScope);
-    std::string evaluateAsString(ExpressionElement *exprNode, cExpression::Context *context, bool inSubcomponentScope);
+    cDynamicExpression *getOrCreateExpression(const ExprRef& exprRef, bool inSubcomponentScope);
+    long evaluateAsLong(const ExprRef& exprRef, cComponent *contextComponent, bool inSubcomponentScope);
+    bool evaluateAsBool(const ExprRef& exprRef, cComponent *contextComponent, bool inSubcomponentScope);
+    std::string evaluateAsString(const ExprRef& exprRef, cComponent *contextComponent, bool inSubcomponentScope);
+    long evaluateAsLong(const ExprRef& exprRef, cExpression::Context *context, bool inSubcomponentScope);
+    bool evaluateAsBool(const ExprRef& exprRef, cExpression::Context *context, bool inSubcomponentScope);
+    std::string evaluateAsString(const ExprRef& exprRef, cExpression::Context *context, bool inSubcomponentScope);
 
   public:
     /** Constructor */

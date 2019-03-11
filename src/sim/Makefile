@@ -47,13 +47,12 @@ OBJS_STD=\
     $O/csimulation.o $O/cstatistic.o $O/cstddev.o $O/cstlwatch.o $O/cstringparimpl.o \
     $O/cstringpool.o $O/cstringtokenizer.o $O/cclassdescriptor.o $O/ctopology.o \
     $O/cvisitor.o $O/cwatch.o $O/cxmlelement.o $O/cxmlparimpl.o $O/distrib.o $O/nedfunctions.o \
-    $O/errmsg.o $O/globals.o $O/cregistrationlist.o $O/lex.expryy.o $O/minixpath.o $O/onstartup.o \
-    $O/simtime.o $O/simtimemath.o $O/task.o $O/util.o $O/gettime.o $O/expr.tab.o $O/nedsupport.o $O/sim_std_m.o \
+    $O/errmsg.o $O/globals.o $O/cregistrationlist.o $O/minixpath.o $O/onstartup.o \
+    $O/simtime.o $O/simtimemath.o $O/task.o $O/util.o $O/gettime.o $O/nedsupport.o $O/sim_std_m.o \
     $O/cstatisticbuilder.o $O/statisticparsing.o $O/resultfilters.o $O/resultrecorders.o \
     $O/ccommbuffer.o $O/cparsimcomm.o
 
 OBJS_NETBUILDER=\
-    $O/netbuilder/cexpressionbuilder.o \
     $O/netbuilder/cneddeclaration.o \
     $O/netbuilder/cnedloader.o \
     $O/netbuilder/cdynamicchanneltype.o \
@@ -72,7 +71,7 @@ OBJS_PARSIM=\
 
 OBJS= $(OBJS_STD)
 
-GENERATED_SOURCES= expr.tab.hh expr.tab.cc lex.expryy.cc sim_std_m.cc sim_std_m.h
+GENERATED_SOURCES= sim_std_m.cc sim_std_m.h
 
 ifeq ($(WITH_NETBUILDER),yes)
   OBJS += $(OBJS_NETBUILDER)
@@ -149,16 +148,7 @@ clean:
 	$(qecho) Cleaning sim
 	$(Q)rm -rf $O $(GENERATED_SOURCES) $(TARGET_LIB_FILES)
 
-# rules for generated sources
-lex.expryy.cc: expr.lex
-	$(qecho) LEX: $<
-	$(Q)$(LEX) -olex.expryy.cc -Pexpryy expr.lex
-
 # NOTE: This is a trick: creating a muti-target pattern rule that prevents executing this target multiple times when running make in parallel
-%xpr.tab.hh %xpr.tab.cc : expr.y
-	$(qecho) YACC: $<
-	$(Q)$(YACC) -o expr.tab.cc -p expryy -d expr.y
-
 %im_std_m.h %im_std_m.cc : sim_std.msg
 	$(qecho) MSGC: $<
 	$(Q)$(MSGC) --msg6 sim_std.msg

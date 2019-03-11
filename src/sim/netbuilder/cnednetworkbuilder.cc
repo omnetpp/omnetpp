@@ -37,6 +37,7 @@
 #include "omnetpp/cchannel.h"
 #include "omnetpp/cdataratechannel.h"
 #include "omnetpp/ccomponenttype.h"
+#include "omnetpp/cdynamicexpression.h"
 #include "omnetpp/cboolparimpl.h"
 #include "omnetpp/cintparimpl.h"
 #include "omnetpp/cstringparimpl.h"
@@ -44,10 +45,9 @@
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/cenvir.h"
-#include "omnetpp/nedsupport.h"
+#include "../nedsupport.h"
 #include "cnednetworkbuilder.h"
 #include "cnedloader.h"
-#include "cexpressionbuilder.h"
 
 using namespace omnetpp::common;
 using namespace omnetpp::nedsupport;
@@ -210,11 +210,14 @@ void cNedNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
         ASSERT(!impl->isSet());  // we do not overwrite assigned values
 
         // put new value into impl
-        ExpressionElement *exprNode = paramNode->getFirstExpressionChild();
-        if (exprNode) {
+        ExprRef valueExpr(paramNode, ParamElement::ATT_VALUE);
+        if (!valueExpr.empty()) {
             ASSERT(impl == component->par(paramName).impl() && !impl->isShared());
-            cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isSubcomponent);
-            cExpressionBuilder::setExpression(impl, dynamicExpr);
+            cDynamicExpression *expr = new cDynamicExpression();
+            expr->parse(valueExpr.getExprText(), isSubcomponent, false);
+            impl->setExpression(expr);
+            if (expr->isAConstant())
+                impl->convertToConst(nullptr);
             impl->setIsSet(!paramNode->getIsDefault());
         }
         else if (paramNode->getIsDefault()) {
@@ -328,12 +331,15 @@ void cNedNetworkBuilder::doAssignParameterFromPattern(cPar& par, ParamElement *p
     try {
         ASSERT(patternNode->getIsPattern());
         cParImpl *impl = par.copyIfShared();
-        ExpressionElement *exprNode = patternNode->getFirstExpressionChild();
-        if (exprNode) {
+        ExprRef valueExpr(patternNode, ParamElement::ATT_VALUE);
+        if (!valueExpr.empty()) {
             // assign the parameter
             ASSERT(impl == par.impl() && !impl->isShared());
-            cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isInSubcomponent);
-            cExpressionBuilder::setExpression(impl, dynamicExpr);
+            cDynamicExpression *expr = new cDynamicExpression();
+            expr->parse(valueExpr.getExprText(), isInSubcomponent, false);
+            impl->setExpression(expr);
+            if (expr->isAConstant())
+                impl->convertToConst(nullptr);
             par.setEvaluationContext(evalContext);
             impl->setIsSet(!patternNode->getIsDefault());
         }
@@ -378,18 +384,21 @@ void cNedNetworkBuilder::doGateSize(cModule *module, GateElement *gateNode, bool
     try {
         if (gateNode->getIsVector()) {
             // if there's a gatesize expression given, apply it
-            ExpressionElement *exprNode = gateNode->getFirstExpressionChild();
-            if (exprNode) {
-                // ExpressionElement first needs to be compiled into a cParImpl
+            ExprRef vectorSizeExpr(gateNode, GateElement::ATT_VECTOR_SIZE);
+            if (!vectorSizeExpr.empty()) {
+                // The expression first needs to be compiled into a cParImpl
                 // for evaluation; these cParImpl's are cached
-                cParImpl *value = currentDecl->getSharedParImplFor(exprNode);
+                cParImpl *value = currentDecl->getSharedParImplFor(gateNode);
                 if (!value) {
                     // not yet seen, compile and cache it
-                    cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isSubcomponent);
+                    cDynamicExpression *dynamicExpr = new cDynamicExpression();
+                    dynamicExpr->parse(vectorSizeExpr.getExprText(), isSubcomponent, false);
                     value = new cIntParImpl();
                     value->setName("gatesize-expression");
-                    cExpressionBuilder::setExpression(value, dynamicExpr);
-                    currentDecl->putSharedParImplFor(exprNode, value);
+                    value->setExpression(dynamicExpr);
+                    if (dynamicExpr->isAConstant())
+                        value->convertToConst(nullptr);
+                    currentDecl->putSharedParImplFor(gateNode, value);
                 }
 
                 // evaluate the expression, and set the gate vector size
@@ -595,11 +604,9 @@ std::string cNedNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleEle
     else {
         // first, try to use expression between angle braces from the NED file
         if (!submod->getIsDefault()) {
-            if (!opp_isempty(submod->getLikeExpr()))
-                return modp->par(submod->getLikeExpr()).stringValue();
-            ExpressionElement *likeExprElement = findExpression(submod, "like-expr");
-            if (likeExprElement)
-                return evaluateAsString(likeExprElement, modp, false);
+            ExprRef likeExpr(submod, SubmoduleElement::ATT_LIKE_EXPR);
+            if (!likeExpr.empty())
+                return evaluateAsString(likeExpr, modp, false);
         }
 
         std::string submodFullName = submodName;
@@ -628,11 +635,9 @@ std::string cNedNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleEle
 
         // last, use default(expression) between angle braces from the NED file
         if (submod->getIsDefault()) {
-            if (!opp_isempty(submod->getLikeExpr()))
-                return modp->par(submod->getLikeExpr()).stringValue();
-            ExpressionElement *likeExprElement = findExpression(submod, "like-expr");
-            if (likeExprElement)
-                return evaluateAsString(likeExprElement, modp, false);
+            ExprRef likeExpr(submod, SubmoduleElement::ATT_LIKE_EXPR);
+            if (!likeExpr.empty())
+                return evaluateAsString(likeExpr, modp, false);
         }
         throw cRuntimeError(modp, "Unable to determine type name for submodule %s, missing entry %s.%s and no default value", submodName, key.c_str(), CFGID_TYPENAME->getName());
     }
@@ -671,8 +676,8 @@ bool cNedNetworkBuilder::getSubmoduleOrChannelTypeNameFromDeepAssignments(cModul
                 for (int j = 0; j < numPatterns; j++) {
                     if (patterns[j].matcher->matches(key.c_str())) {
                         // return the value if it's not enclosed in 'default()', otherwise remember it
-                        ExpressionElement *typeNameExpr = findExpression(patterns[j].patternNode, "value");
-                        if (typeNameExpr) {
+                        ExprRef typeNameExpr(patterns[j].patternNode, ParamElement::ATT_VALUE);
+                        if (!typeNameExpr.empty()) {
                             outTypeName = evaluateAsString(typeNameExpr, mod, false);
                             if (patterns[j].patternNode->getIsDefault())
                                 found = true;
@@ -699,8 +704,8 @@ bool cNedNetworkBuilder::getSubmoduleOrChannelTypeNameFromDeepAssignments(cModul
                 for (int j = 0; j < numPatterns; j++) {
                     if (submodPatterns[j].matcher->matches(key.c_str())) {
                         // return the value if it's not enclosed in 'default()', otherwise remember it
-                        ExpressionElement *typeNameExpr = findExpression(submodPatterns[j].patternNode, "value");
-                        if (typeNameExpr) {
+                        ExprRef typeNameExpr(submodPatterns[j].patternNode, ParamElement::ATT_VALUE);
+                        if (!typeNameExpr.empty()) {
                             outTypeName = evaluateAsString(typeNameExpr, mod, true);
                             if (submodPatterns[j].patternNode->getIsDefault())
                                 found = true;
@@ -734,10 +739,10 @@ void cNedNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement 
     // find vector size expression
     const char *submodName = submod->getName();
     bool usesLike = !opp_isempty(submod->getLikeType());
-    ExpressionElement *vectorSizeExpr = findExpression(submod, "vector-size");
+    ExprRef vectorSizeExpr(submod, SubmoduleElement::ATT_VECTOR_SIZE);
 
     // create submodule
-    if (!vectorSizeExpr) {
+    if (vectorSizeExpr.empty()) {
         cModuleType *submodType;
         try {
             std::string submodTypeName = getSubmoduleTypeName(compoundModule, submod);
@@ -745,8 +750,7 @@ void cNedNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement 
             // handle conditional submodule
             ConditionElement *condition = submod->getFirstConditionChild();
             if (condition) {
-                ExpressionElement *conditionExpr = findExpression(condition, "condition");
-                ASSERT(conditionExpr);
+                ExprRef conditionExpr(condition, ConditionElement::ATT_CONDITION);
                 NedExpressionContext context(compoundModule, NedExpressionContext::SUBMODULE_CONDITION, submodTypeName.c_str());
                 if (evaluateAsBool(conditionExpr, &context, false) == false)
                     return;
@@ -772,8 +776,7 @@ void cNedNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement 
         // handle conditional submodule vector
         ConditionElement *condition = submod->getFirstConditionChild();
         if (condition) {
-            ExpressionElement *conditionExpr = findExpression(condition, "condition");
-            ASSERT(conditionExpr);
+            ExprRef conditionExpr(condition, ConditionElement::ATT_CONDITION);
             // note: "typename" may NOT occur in vector submodules' condition, because type is
             // per-element, and we want to evaluate the condition only once for the whole vector
             NedExpressionContext context(compoundModule, NedExpressionContext::SUBMODULE_ARRAY_CONDITION, nullptr);
@@ -832,7 +835,7 @@ void cNedNetworkBuilder::addConnectionOrConnectionGroup(cModule *modp, NedElemen
     // and execute the LoopElement and ConditionElement children recursively to get
     // nested loops etc, then after (inside) the last one create the connection(s)
     // themselves, which is (are) then parent of the LoopNode/ConditionNode.
-    LoopVar::reset();
+    LoopVar::clear();
     doConnOrConnGroupBody(modp, connOrConnGroup, connOrConnGroup->getFirstChild());
 }
 
@@ -854,8 +857,8 @@ void cNedNetworkBuilder::doLoopOrCondition(cModule *modp, NedElement *loopOrCond
     if (loopOrCondition->getTagCode() == NED_CONDITION) {
         // check condition
         ConditionElement *condition = (ConditionElement *)loopOrCondition;
-        ExpressionElement *condexpr = findExpression(condition, "condition");
-        if (condexpr && evaluateAsBool(condexpr, modp, false) == true) {
+        ExprRef conditionExpr(condition, ConditionElement::ATT_CONDITION);
+        if (evaluateAsBool(conditionExpr, modp, false) == true) {
             // do the body of the "if": either further "for"'s and "if"'s, or
             // the connection(group) itself that we are children of.
             doConnOrConnGroupBody(modp, loopOrCondition->getParent(), loopOrCondition->getNextSibling());
@@ -863,8 +866,10 @@ void cNedNetworkBuilder::doLoopOrCondition(cModule *modp, NedElement *loopOrCond
     }
     else if (loopOrCondition->getTagCode() == NED_LOOP) {
         LoopElement *loop = (LoopElement *)loopOrCondition;
-        long start = evaluateAsLong(findExpression(loop, "from-value"), modp, false);
-        long end = evaluateAsLong(findExpression(loop, "to-value"), modp, false);
+        ExprRef startExpr(loop, LoopElement::ATT_FROM_VALUE);
+        ExprRef endExpr(loop, LoopElement::ATT_TO_VALUE);
+        long start = evaluateAsLong(startExpr, modp, false);
+        long end = evaluateAsLong(endExpr, modp, false);
 
         // do loop
         long& i = LoopVar::pushVar(loop->getParamName());
@@ -902,11 +907,15 @@ void cNedNetworkBuilder::doAddConnection(cModule *modp, ConnectionElement *conn)
     try {
         if (!conn->getIsBidirectional()) {
             // find gates and create connection
-            cGate *srcGate = resolveGate(modp, conn->getSrcModule(), findExpression(conn, "src-module-index"),
-                        conn->getSrcGate(), findExpression(conn, "src-gate-index"),
+            ExprRef srcModuleIndexExpr(conn, ConnectionElement::ATT_SRC_MODULE_INDEX);
+            ExprRef srcGateIndexExpr(conn, ConnectionElement::ATT_SRC_GATE_INDEX);
+            ExprRef destModuleIndexExpr(conn, ConnectionElement::ATT_DEST_MODULE_INDEX);
+            ExprRef destGateIndexExpr(conn, ConnectionElement::ATT_DEST_GATE_INDEX);
+            cGate *srcGate = resolveGate(modp, conn->getSrcModule(), srcModuleIndexExpr,
+                        conn->getSrcGate(), srcGateIndexExpr,
                         conn->getSrcGateSubg(), conn->getSrcGatePlusplus());
-            cGate *destGate = resolveGate(modp, conn->getDestModule(), findExpression(conn, "dest-module-index"),
-                        conn->getDestGate(), findExpression(conn, "dest-gate-index"),
+            cGate *destGate = resolveGate(modp, conn->getDestModule(), destModuleIndexExpr,
+                        conn->getDestGate(), destGateIndexExpr,
                         conn->getDestGateSubg(), conn->getDestGatePlusplus());
 
             // check directions
@@ -929,12 +938,16 @@ void cNedNetworkBuilder::doAddConnection(cModule *modp, ConnectionElement *conn)
             // now: 1 is input, 2 is output, except for parent module gates where it is the other way round
             // (because we connect xx.out --> yy.in, but xx.out --> out!)
             cGate *srcGate1, *srcGate2, *destGate1, *destGate2;
-            resolveInoutGate(modp, conn->getSrcModule(), findExpression(conn, "src-module-index"),
-                    conn->getSrcGate(), findExpression(conn, "src-gate-index"),
+            ExprRef srcModuleIndexExpr(conn, ConnectionElement::ATT_SRC_MODULE_INDEX);
+            ExprRef srcGateIndexExpr(conn, ConnectionElement::ATT_SRC_GATE_INDEX);
+            ExprRef destModuleIndexExpr(conn, ConnectionElement::ATT_DEST_MODULE_INDEX);
+            ExprRef destGateIndexExpr(conn, ConnectionElement::ATT_DEST_GATE_INDEX);
+            resolveInoutGate(modp, conn->getSrcModule(), srcModuleIndexExpr,
+                    conn->getSrcGate(), srcGateIndexExpr,
                     conn->getSrcGatePlusplus(),
                     srcGate1, srcGate2);
-            resolveInoutGate(modp, conn->getDestModule(), findExpression(conn, "dest-module-index"),
-                    conn->getDestGate(), findExpression(conn, "dest-gate-index"),
+            resolveInoutGate(modp, conn->getDestModule(), destModuleIndexExpr,
+                    conn->getDestGate(), destGateIndexExpr,
                     conn->getDestGatePlusplus(),
                     destGate1, destGate2);
 
@@ -965,11 +978,11 @@ void cNedNetworkBuilder::doConnectGates(cModule *modp, cGate *srcGate, cGate *de
 }
 
 cGate *cNedNetworkBuilder::resolveGate(cModule *compoundModule,
-        const char *moduleName, ExpressionElement *moduleIndexExpr,
-        const char *gateName, ExpressionElement *gateIndexExpr,
+        const char *moduleName, const ExprRef& moduleIndexExpr,
+        const char *gateName, const ExprRef& gateIndexExpr,
         int subgate, bool isPlusPlus)
 {
-    if (isPlusPlus && gateIndexExpr)
+    if (isPlusPlus && !gateIndexExpr.empty())
         throw cRuntimeError(compoundModule, "Both '++' and gate index expression used in a connection");
 
     cModule *module = resolveModuleForConnection(compoundModule, moduleName, moduleIndexExpr);
@@ -986,7 +999,7 @@ cGate *cNedNetworkBuilder::resolveGate(cModule *compoundModule,
 
     // look up gate
     cGate *gate = nullptr;
-    if (!gateIndexExpr && !isPlusPlus) {
+    if (gateIndexExpr.empty() && !isPlusPlus) {
         gate = module->gate(gateName2);
     }
     else if (isPlusPlus) {
@@ -1008,18 +1021,18 @@ cGate *cNedNetworkBuilder::resolveGate(cModule *compoundModule,
 }
 
 void cNedNetworkBuilder::resolveInoutGate(cModule *compoundModule,
-        const char *moduleName, ExpressionElement *moduleIndexExpr,
-        const char *gateName, ExpressionElement *gateIndexExpr,
+        const char *moduleName, const ExprRef& moduleIndexExpr,
+        const char *gateName, const ExprRef& gateIndexExpr,
         bool isPlusPlus,
         cGate *& outGate1, cGate *& outGate2)
 {
-    if (isPlusPlus && gateIndexExpr)
+    if (isPlusPlus && !gateIndexExpr.empty())
         throw cRuntimeError(compoundModule, "Both '++' and gate index expression used in a connection");
 
     cModule *module = resolveModuleForConnection(compoundModule, moduleName, moduleIndexExpr);
 
     outGate1 = outGate2 = nullptr;
-    if (!gateIndexExpr && !isPlusPlus) {
+    if (gateIndexExpr.empty() && !isPlusPlus) {
         // optimization possibility: add gatePair() method to cModule to spare one lookup
         outGate1 = module->gateHalf(gateName, cGate::INPUT);
         outGate2 = module->gateHalf(gateName, cGate::OUTPUT);
@@ -1036,7 +1049,7 @@ void cNedNetworkBuilder::resolveInoutGate(cModule *compoundModule,
         }
     }
     else {  // (gateIndexExpr)
-            // optimization possibility: add gatePair() method to cModule to spare one lookup
+        // optimization possibility: add gatePair() method to cModule to spare one lookup
         int gateIndex = (int)evaluateAsLong(gateIndexExpr, compoundModule, false);
         outGate1 = module->gateHalf(gateName, cGate::INPUT, gateIndex);
         outGate2 = module->gateHalf(gateName, cGate::OUTPUT, gateIndex);
@@ -1047,16 +1060,16 @@ void cNedNetworkBuilder::resolveInoutGate(cModule *compoundModule,
     }
 }
 
-cModule *cNedNetworkBuilder::resolveModuleForConnection(cModule *compoundModule, const char *moduleName, ExpressionElement *moduleIndexExpr)
+cModule *cNedNetworkBuilder::resolveModuleForConnection(cModule *compoundModule, const char *moduleName, const ExprRef& moduleIndexExpr)
 {
     if (opp_isempty(moduleName)) {
         return compoundModule;
     }
     else {
-        int moduleIndex = !moduleIndexExpr ? 0 : (int)evaluateAsLong(moduleIndexExpr, compoundModule, false);
+        int moduleIndex = moduleIndexExpr.empty() ? 0 : (int)evaluateAsLong(moduleIndexExpr, compoundModule, false);
         cModule *module = _submodule(compoundModule, moduleName, moduleIndex);
         if (!module) {
-            if (!moduleIndexExpr)
+            if (moduleIndexExpr.empty())
                 throw cRuntimeError(module, "No submodule '%s' to be connected", moduleName);
             else
                 throw cRuntimeError(module, "No submodule '%s[%d]' to be connected", moduleName, moduleIndex);
@@ -1091,11 +1104,9 @@ std::string cNedNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
     else {
         // first, try to use expression between angle braces from the NED file
         if (!conn->getIsDefault()) {
-            if (!opp_isempty(conn->getLikeExpr()))
-                return parentmodp->par(conn->getLikeExpr()).stringValue();
-            ExpressionElement *likeExprElement = findExpression(conn, "like-expr");
-            if (likeExprElement)
-                return evaluateAsString(likeExprElement, parentmodp, false);
+            ExprRef likeExpr(conn, ConnectionElement::ATT_LIKE_EXPR);
+            if (!likeExpr.empty())
+                return evaluateAsString(likeExpr, parentmodp, false);
         }
 
         // produce key to identify channel within the parent module, e.g. "in[3].channel" or "queue.out.channel"
@@ -1126,9 +1137,9 @@ std::string cNedNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
         if (conn->getIsDefault()) {
             if (!opp_isempty(conn->getLikeExpr()))
                 return parentmodp->par(conn->getLikeExpr()).stringValue();
-            ExpressionElement *likeExprElement = findExpression(conn, "like-expr");
-            if (likeExprElement)
-                return evaluateAsString(likeExprElement, parentmodp, false);
+            ExprRef likeExpr(conn, ConnectionElement::ATT_LIKE_EXPR);
+            if (!likeExpr.empty())
+                return evaluateAsString(likeExpr, parentmodp, false);
         }
         throw cRuntimeError(parentmodp, "Unable to determine type name for channel: Missing config entry %s.%s and no default value", key.c_str(), CFGID_TYPENAME->getName());
     }
@@ -1201,74 +1212,61 @@ cChannelType *cNedNetworkBuilder::findAndCheckChannelTypeLike(const char *channe
     return (cChannelType *)componenttype;
 }
 
-ExpressionElement *cNedNetworkBuilder::findExpression(NedElement *node, const char *exprname)
+cDynamicExpression *cNedNetworkBuilder::getOrCreateExpression(const ExprRef& exprRef, bool inSubcomponentScope)
 {
-    // find expression with given name in node
-    if (!node)
-        return nullptr;
-    for (NedElement *child = node->getFirstChildWithTag(NED_EXPRESSION); child; child = child->getNextSiblingWithTag(NED_EXPRESSION)) {
-        ExpressionElement *expr = (ExpressionElement *)child;
-        if (!strcmp(expr->getTarget(), exprname))
-            return expr;
-    }
-    return nullptr;
+    return cNedLoader::getInstance()->getCompiledExpression(exprRef, inSubcomponentScope);
 }
 
-cDynamicExpression *cNedNetworkBuilder::getOrCreateExpression(ExpressionElement *exprNode, bool inSubcomponentScope)
-{
-    return cNedLoader::getInstance()->getCompiledExpression(exprNode, inSubcomponentScope);
-}
-
-long cNedNetworkBuilder::evaluateAsLong(ExpressionElement *exprNode, cComponent *contextComponent, bool inSubcomponentScope)
+long cNedNetworkBuilder::evaluateAsLong(const ExprRef& exprRef, cComponent *contextComponent, bool inSubcomponentScope)
 {
     cExpression::Context context(contextComponent);
-    return evaluateAsLong(exprNode, &context, inSubcomponentScope);
+    return evaluateAsLong(exprRef, &context, inSubcomponentScope);
 }
 
-bool cNedNetworkBuilder::evaluateAsBool(ExpressionElement *exprNode, cComponent *contextComponent, bool inSubcomponentScope)
+bool cNedNetworkBuilder::evaluateAsBool(const ExprRef& exprRef, cComponent *contextComponent, bool inSubcomponentScope)
 {
     cExpression::Context context(contextComponent);
-    return evaluateAsBool(exprNode, &context, inSubcomponentScope);
+    return evaluateAsBool(exprRef, &context, inSubcomponentScope);
 }
 
-std::string cNedNetworkBuilder::evaluateAsString(ExpressionElement *exprNode, cComponent *contextComponent, bool inSubcomponentScope)
+std::string cNedNetworkBuilder::evaluateAsString(const ExprRef& exprRef, cComponent *contextComponent, bool inSubcomponentScope)
 {
     cExpression::Context context(contextComponent);
-    return evaluateAsString(exprNode, &context, inSubcomponentScope);
+    return evaluateAsString(exprRef, &context, inSubcomponentScope);
 }
 
-long cNedNetworkBuilder::evaluateAsLong(ExpressionElement *exprNode, cExpression::Context *context, bool inSubcomponentScope)
+long cNedNetworkBuilder::evaluateAsLong(const ExprRef& exprRef, cExpression::Context *context, bool inSubcomponentScope)
 {
     try {
-        cDynamicExpression *expr = getOrCreateExpression(exprNode, inSubcomponentScope);
+        cDynamicExpression *expr = getOrCreateExpression(exprRef, inSubcomponentScope);
         return expr->intValue(context);
     }
     catch (std::exception& e) {
-        updateOrRethrowException(e, exprNode);
+        updateOrRethrowException(e, exprRef.getNode());
         throw;
     }
 }
 
-bool cNedNetworkBuilder::evaluateAsBool(ExpressionElement *exprNode, cExpression::Context *context, bool inSubcomponentScope)
+bool cNedNetworkBuilder::evaluateAsBool(const ExprRef& exprRef, cExpression::Context *context, bool inSubcomponentScope)
 {
     try {
-        cDynamicExpression *expr = getOrCreateExpression(exprNode, inSubcomponentScope);
+        cDynamicExpression *expr = getOrCreateExpression(exprRef, inSubcomponentScope);
         return expr->boolValue(context);
     }
     catch (std::exception& e) {
-        updateOrRethrowException(e, exprNode);
+        updateOrRethrowException(e, exprRef.getNode());
         throw;
     }
 }
 
-std::string cNedNetworkBuilder::evaluateAsString(ExpressionElement *exprNode, cExpression::Context *context, bool inSubcomponentScope)
+std::string cNedNetworkBuilder::evaluateAsString(const ExprRef& exprRef, cExpression::Context *context, bool inSubcomponentScope)
 {
     try {
-        cDynamicExpression *expr = getOrCreateExpression(exprNode, inSubcomponentScope);
+        cDynamicExpression *expr = getOrCreateExpression(exprRef, inSubcomponentScope);
         return expr->stringValue(context);
     }
     catch (std::exception& e) {
-        updateOrRethrowException(e, exprNode);
+        updateOrRethrowException(e, exprRef.getNode());
         throw;
     }
 }

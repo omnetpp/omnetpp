@@ -197,6 +197,12 @@ class SIM_API cExpression : public cObject
      * as (part of) a key in std::map or std::set.
      */
     virtual int compare(const cExpression *other) const = 0;
+
+    /**
+     * Returns true if the expression is just a literal (or equivalent to one,
+     * like "2+2"). This can be used for optimization.
+     */
+    virtual bool isAConstant() const {return false;}
     //@}
 };
 

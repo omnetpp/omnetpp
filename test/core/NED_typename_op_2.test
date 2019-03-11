@@ -26,4 +26,4 @@ cmdenv-express-mode = false
 %exitcode: 1
 
 %contains: stderr
-typename is not allowed in the condition of a submodule vector
+'typename' may not occur in the condition of a submodule vector
