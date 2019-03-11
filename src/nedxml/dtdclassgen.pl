@@ -174,6 +174,7 @@ foreach $element (@elements)
     # attribute names, types
     @varnames = ();
     @ucvarnames = ();
+    @attrids = ();
     @argtypes = ();
     @enumnames = ();
     for ($i=0; $i<$attcount; $i++)
@@ -185,6 +186,11 @@ foreach $element (@elements)
 
         $ucvarname = $varname;
         $ucvarname =~ s/(.)(.*)/uc($1).$2/e;
+
+        $attrid = uc($attnames[$i]);
+        $attrid =~ s/-/_/g;
+        $attrid =~ s/[^A-Z0-9_]//g;
+        $attrid = "ATT_" . $attrid;
 
         $enumname = "";
         if ($atttypes[$i] eq '(true|false)') {
@@ -214,12 +220,14 @@ foreach $element (@elements)
         }
         push(@varnames,$varname);
         push(@ucvarnames,$ucvarname);
+        push(@attrids,$attrid);
         push(@argtypes,$argtype);
         push(@enumnames,$enumname);
     }
 
     $att_varnames{$element} = [ @varnames ];
     $att_ucvarnames{$element} = [ @ucvarnames ];
+    $att_attrids{$element} = [ @attrids ];
     $att_argtypes{$element} = [ @argtypes ];
     $att_enumnames{$element} = [ @enumnames ];
 }
@@ -326,6 +334,7 @@ foreach $element (@elements)
     @childvars = @{$childvars{$element}};
     @varnames = @{$att_varnames{$element}};
     @ucvarnames = @{$att_ucvarnames{$element}};
+    @attrids = @{$att_attrids{$element}};
     @argtypes = @{$att_argtypes{$element}};
     @enumnames = @{$att_enumnames{$element}};
 
@@ -351,6 +360,15 @@ foreach $element (@elements)
     print H " */\n";
     print H "class NEDXML_API $elementclass : public ASTNode\n";
     print H "{\n";
+    if ($attcount > 0) {
+		print H "  public:\n";
+		print H "    enum { ";
+		for ($i=0; $i<$attcount; $i++)
+		{
+		    print H "$attrids[$i], ";
+		}
+		print H "};\n";
+    }
     print H "  private:\n";
     for ($i=0; $i<$attcount; $i++)
     {
@@ -441,7 +459,7 @@ foreach $element (@elements)
     print CC "    switch (k) {\n";
     for ($i=0; $i<$attcount; $i++)
     {
-        print CC "        case $i: return \"$attnames[$i]\";\n";
+        print CC "        case $attrids[$i]: return \"$attnames[$i]\";\n";
     }
     print CC "        default: return 0;\n";
     print CC "    }\n";
@@ -453,13 +471,13 @@ foreach $element (@elements)
     for ($i=0; $i<$attcount; $i++)
     {
         if ($argtypes[$i] eq "const char *") {
-            print CC "        case $i: return $varnames[$i].c_str();\n";
+            print CC "        case $attrids[$i]: return $varnames[$i].c_str();\n";
         }
         elsif ($argtypes[$i] eq "bool") {
-            print CC "        case $i: return boolToString($varnames[$i]);\n";
+            print CC "        case $attrids[$i]: return boolToString($varnames[$i]);\n";
         }
         elsif ($argtypes[$i] eq "int") {
-            print CC "        case $i: return enumToString($varnames[$i], $enumnames[$i]_vals, $enumnames[$i]_nums, $enumnames[$i]_n);\n";
+            print CC "        case $attrids[$i]: return enumToString($varnames[$i], $enumnames[$i]_vals, $enumnames[$i]_nums, $enumnames[$i]_n);\n";
         }
     }
     print CC "        default: return 0;\n";
@@ -472,13 +490,13 @@ foreach $element (@elements)
     for ($i=0; $i<$attcount; $i++)
     {
         if ($argtypes[$i] eq "const char *") {
-            print CC "        case $i: $varnames[$i] = val; break;\n";
+            print CC "        case $attrids[$i]: $varnames[$i] = val; break;\n";
         }
         elsif ($argtypes[$i] eq "bool") {
-            print CC "        case $i: $varnames[$i] = stringToBool(val); break;\n";
+            print CC "        case $attrids[$i]: $varnames[$i] = stringToBool(val); break;\n";
         }
         elsif ($argtypes[$i] eq "int") {
-            print CC "        case $i: $varnames[$i] = stringToEnum(val, $enumnames[$i]_vals, $enumnames[$i]_nums, $enumnames[$i]_n); break;\n";
+            print CC "        case $attrids[$i]: $varnames[$i] = stringToEnum(val, $enumnames[$i]_vals, $enumnames[$i]_nums, $enumnames[$i]_n); break;\n";
         }
     }
     print CC "        default: ;\n";
@@ -493,11 +511,11 @@ foreach $element (@elements)
         $attval = $attvals[$i];
         $attval =~ s/\&#10;/\\n/g;
         if ($attval eq "#IMPLIED") {
-            print CC "        case $i: return \"\";\n";
+            print CC "        case $attrids[$i]: return \"\";\n";
         } elsif ($attval eq "#REQUIRED") {
-            print CC "        case $i: return nullptr;\n";
+            print CC "        case $attrids[$i]: return nullptr;\n";
         } else {
-            print CC "        case $i: return $attval;\n";
+            print CC "        case $attrids[$i]: return $attval;\n";
         }
     }
     print CC "        default: return 0;\n";
