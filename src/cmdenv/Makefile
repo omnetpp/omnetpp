@@ -86,4 +86,5 @@ clean:
 	$(qecho) Cleaning cmdenv
 	$(Q)rm -rf $O $(OMNETPP_LIB_DIR)/$(LIBNAME).* $(OMNETPP_BIN_DIR)/$(LIBNAME).*
 
--include $(OBJS:%.o=%.d)
+-include $(OBJS:%=%.d)
+

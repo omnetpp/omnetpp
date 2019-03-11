@@ -107,4 +107,5 @@ clean:
 	@echo Generating $(GENERATED_SOURCES) from $<
 	$(Q)$(PERL) eventlogentries.pl
 
--include $(OBJS:%.o=%.d)
+-include $(OBJS:%=%.d)
+

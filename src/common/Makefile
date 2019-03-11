@@ -127,4 +127,5 @@ matchexpressio%.tab.hh matchexpressio%.tab.cc : matchexpression.y
 	$(qecho) YACC: $<
 	$(Q)$(YACC) -o matchexpression.tab.cc --no-lines -p matchexpressionyy -d matchexpression.y
 
--include $(OBJS:%.o=%.d)
+-include $(OBJS:%=%.d)
+

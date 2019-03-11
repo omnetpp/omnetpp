@@ -157,4 +157,5 @@ sim_std_msg.cc : ../sim/sim_std.msg
 	$(Q)cat $< >>$@
 	$(Q)echo ')ENDMARK"; } }' >>$@
 
--include $(OBJS:%.o=%.d)
+-include $(OBJS:%=%.d)
+

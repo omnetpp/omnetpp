@@ -139,4 +139,5 @@ clean:
 
 #$O/envirbase.o: eventlogwriter.h
 
--include $(OBJS:%.o=%.d)
+-include $(OBJS:%=%.d)
+

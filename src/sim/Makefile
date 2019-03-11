@@ -154,4 +154,5 @@ lex.expryy.cc: expr.lex
 	$(qecho) MSGC: $<
 	$(Q)$(MSGC) --msg6 sim_std.msg
 
--include $(OBJS:%.o=%.d)
+-include $(OBJS:%=%.d)
+
