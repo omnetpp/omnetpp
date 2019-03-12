@@ -22,22 +22,9 @@ namespace omnetpp {
 
 
 /**
- * @brief Function for comparing two cObjects, used for example by cQueue.
- *
- * The return value should be:
- * - less than zero if a < b
- * - greater than zero if a > b
- * - zero if a == b
- *
- * @ingroup Containers
- */
-typedef int (*CompareFunc)(cObject *a, cObject *b);
-
-
-/**
  * @brief Queue class for objects derived from cObject.
  *
- * The default behaviour of cQueue is a FIFO: you insert elements at the back
+ * The default behavior of cQueue is a FIFO: you insert elements at the back
  * using insert(), and remove them at the front using pop().
  *
  * cQueue may be set up to act as a priority queue. This requires the user to
@@ -63,6 +50,19 @@ class SIM_API cQueue : public cOwnedObject
     };
 
   public:
+    /**
+     * @brief Function for comparing two cObjects, used by cQueue for
+     * priority queuing.
+     *
+     * The return value should be:
+     * - less than zero if a < b
+     * - greater than zero if a > b
+     * - zero if a == b
+     *
+     * @ingroup Containers
+     */
+    typedef int (*CompareFunc)(cObject *a, cObject *b);
+
     /**
      * @brief Walks along a cQueue.
      */
@@ -330,6 +330,9 @@ class SIM_API cQueue : public cOwnedObject
     bool getTakeOwnership() const {return takeOwnership;}
     //@}
 };
+
+// for backward compatibility
+typedef cQueue::CompareFunc CompareFunc;
 
 }  // namespace omnetpp
 
