@@ -33,11 +33,6 @@ using std::ostream;
 
 Register_Class(cPacketQueue);
 
-cPacketQueue::cPacketQueue(const char *name, CompareFunc cmp) : cQueue(name, cmp)
-{
-    bitLength = 0;
-}
-
 cPacketQueue::cPacketQueue(const cPacketQueue& queue) : cQueue(queue)
 {
     copy(queue);

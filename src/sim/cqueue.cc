@@ -36,18 +36,33 @@ using std::ostream;
 
 Register_Class(cQueue);
 
+class FunctionBasedComparator : public cQueue::Comparator
+{
+   cQueue::CompareFunc f;
+  public:
+   FunctionBasedComparator(cQueue::CompareFunc f) : f(f) {}
+   virtual FunctionBasedComparator *dup() const override {return new FunctionBasedComparator(f);}
+   virtual bool less(cObject *a, cObject *b) override {return f(a,b) < 0;}
+};
+
+
 cQueue::cQueue(const cQueue& queue) : cOwnedObject(queue)
 {
     copy(queue);
 }
 
-cQueue::cQueue(const char *name, CompareFunc cmp) : cOwnedObject(name), compare(cmp)
+cQueue::cQueue(const char *name, Comparator *cmp) : cOwnedObject(name), comparator(cmp)
+{
+}
+
+cQueue::cQueue(const char *name, CompareFunc cmp) : cOwnedObject(name), comparator(new FunctionBasedComparator(cmp))
 {
 }
 
 cQueue::~cQueue()
 {
     clear();
+    delete comparator;
 }
 
 std::string cQueue::str() const
@@ -72,7 +87,7 @@ void cQueue::parsimPack(cCommBuffer *buffer) const
 #else
     cOwnedObject::parsimPack(buffer);
 
-    if (compare)
+    if (comparator)
         throw cRuntimeError(this, "parsimPack(): Cannot transmit comparison function");
 
     buffer->pack(len);
@@ -95,13 +110,13 @@ void cQueue::parsimUnpack(cCommBuffer *buffer)
 
     buffer->unpack(len);
 
-    CompareFunc old_cmp = compare;
-    compare = nullptr;  // temporarily, so that insert() keeps the original order
+    Comparator *oldCmp = comparator;
+    comparator = nullptr;  // temporarily, so that insert() keeps the original order
     for (int i = 0; i < len; i++) {
         cObject *obj = buffer->unpackObject();
         insert(obj);
     }
-    compare = old_cmp;
+    comparator = oldCmp;
 #endif
 }
 
@@ -123,7 +138,8 @@ void cQueue::clear()
 
 void cQueue::copy(const cQueue& queue)
 {
-    compare = nullptr;  // temporarily, so that insert() keeps the original order
+    delete comparator;
+    comparator = nullptr;  // temporarily, so that insert() keeps the original order
     for (cQueue::Iterator it(queue); !it.end(); ++it) {
         cObject *obj = *it;
         if (!obj->isOwnedObject()) {
@@ -140,7 +156,8 @@ void cQueue::copy(const cQueue& queue)
     }
 
     takeOwnership = queue.takeOwnership;
-    compare = queue.compare;
+    if (queue.comparator)
+        comparator = queue.comparator->dup();
 }
 
 cQueue& cQueue::operator=(const cQueue& queue)
@@ -153,9 +170,15 @@ cQueue& cQueue::operator=(const cQueue& queue)
     return *this;
 }
 
+void cQueue::setup(Comparator *cmp)
+{
+    delete comparator;
+    comparator = cmp;
+}
+
 void cQueue::setup(CompareFunc cmp)
 {
-    compare = cmp;
+    setup(new FunctionBasedComparator(cmp));
 }
 
 cQueue::QElem *cQueue::find_qelem(cObject *obj) const
@@ -231,13 +254,13 @@ void cQueue::insert(cObject *obj)
         frontp = backp = e;
         len = 1;
     }
-    else if (compare == nullptr) {
+    else if (comparator == nullptr) {
         insafter_qelem(backp, obj);
     }
     else {
         // priority queue: seek insertion place
         QElem *p = backp;
-        while (p && compare(obj, p->obj) < 0)
+        while (p && comparator->less(obj, p->obj))
             p = p->prev;
         if (p)
             insafter_qelem(p, obj);

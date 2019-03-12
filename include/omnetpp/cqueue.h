@@ -51,6 +51,18 @@ class SIM_API cQueue : public cOwnedObject
 
   public:
     /**
+     * @brief Base class for object comparators, used by cQueue for
+     * priority queuing.
+     */
+    class SIM_API Comparator
+    {
+      public:
+        virtual ~Comparator() {}
+        virtual Comparator *dup() const = 0;
+        virtual bool less(cObject *a, cObject *b) = 0;
+    };
+
+    /**
      * @brief Function for comparing two cObjects, used by cQueue for
      * priority queuing.
      *
@@ -134,7 +146,7 @@ class SIM_API cQueue : public cOwnedObject
     bool takeOwnership = true;
     QElem *frontp = nullptr, *backp = nullptr;  // front and back pointers
     int len = 0;  // number of items in the queue
-    CompareFunc compare = nullptr;   // comparison function; nullptr for FIFO
+    Comparator *comparator = nullptr; // comparison functor; nullptr for FIFO
 
   private:
     void copy(const cQueue& other);
@@ -150,10 +162,15 @@ class SIM_API cQueue : public cOwnedObject
     /** @name Constructors, destructor, assignment. */
     //@{
     /**
-     * Constructor. When comparison function argument is nullptr, the queue will
+     * Constructor. When comparator argument is nullptr, the queue will
      * act as FIFO, otherwise as priority queue.
      */
-    cQueue(const char *name=nullptr, CompareFunc cmp=nullptr);
+    cQueue(const char *name=nullptr, Comparator *cmp=nullptr);
+
+    /**
+     * Constructor. Sets up cQueue as a priority queue.
+     */
+    cQueue(const char *name, CompareFunc cmp);
 
     /**
      * Copy constructor. Contained objects that are owned by the queue
@@ -216,6 +233,12 @@ class SIM_API cQueue : public cOwnedObject
 
     /** @name Setup, insertion and removal functions. */
     //@{
+    /**
+     * Sets the comparator. This only affects future insertions,
+     * i.e. the queue's current content will not be re-sorted.
+     */
+    virtual void setup(Comparator *cmp);
+
     /**
      * Sets the comparator function. This only affects future insertions,
      * i.e. the queue's current content will not be re-sorted.
