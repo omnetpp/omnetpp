@@ -39,7 +39,7 @@ Register_Class(cQueue);
 cQueue::cQueue(const cQueue& queue) : cOwnedObject(queue)
 {
     frontp = backp = nullptr;
-    n = 0;
+    len = 0;
     copy(queue);
 }
 
@@ -47,7 +47,7 @@ cQueue::cQueue(const char *name, CompareFunc cmp) : cOwnedObject(name)
 {
     takeOwnership = true;
     frontp = backp = nullptr;
-    n = 0;
+    len = 0;
     compare = cmp;
 }
 
@@ -58,10 +58,10 @@ cQueue::~cQueue()
 
 std::string cQueue::str() const
 {
-    if (n == 0)
+    if (len == 0)
         return std::string("empty");
     std::stringstream out;
-    out << "length=" << n;
+    out << "length=" << len;
     return out.str();
 }
 
@@ -82,7 +82,7 @@ void cQueue::parsimPack(cCommBuffer *buffer) const
     if (compare)
         throw cRuntimeError(this, "parsimPack(): Cannot transmit comparison function");
 
-    buffer->pack(n);
+    buffer->pack(len);
 
     for (cQueue::Iterator it(*this); !it.end(); ++it) {
         cObject *obj = *it;
@@ -100,11 +100,11 @@ void cQueue::parsimUnpack(cCommBuffer *buffer)
 #else
     cOwnedObject::parsimUnpack(buffer);
 
-    buffer->unpack(n);
+    buffer->unpack(len);
 
     CompareFunc old_cmp = compare;
     compare = nullptr;  // temporarily, so that insert() keeps the original order
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < len; i++) {
         cObject *obj = buffer->unpackObject();
         insert(obj);
     }
@@ -125,7 +125,7 @@ void cQueue::clear()
         frontp = tmp;
     }
     backp = nullptr;
-    n = 0;
+    len = 0;
 }
 
 void cQueue::copy(const cQueue& queue)
@@ -185,7 +185,7 @@ void cQueue::insbefore_qelem(QElem *p, cObject *obj)
         e->prev->next = e;
     else
         frontp = e;
-    n++;
+    len++;
 }
 
 void cQueue::insafter_qelem(QElem *p, cObject *obj)
@@ -200,7 +200,7 @@ void cQueue::insafter_qelem(QElem *p, cObject *obj)
         e->next->prev = e;
     else
         backp = e;
-    n++;
+    len++;
 }
 
 cObject *cQueue::remove_qelem(QElem *p)
@@ -216,7 +216,7 @@ cObject *cQueue::remove_qelem(QElem *p)
 
     cObject *retobj = p->obj;
     delete p;
-    n--;
+    len--;
     if (retobj->isOwnedObject() && retobj->getOwner() == this)
         drop(static_cast<cOwnedObject *>(retobj));
     return retobj;
@@ -236,7 +236,7 @@ void cQueue::insert(cObject *obj)
         e->obj = obj;
         e->next = e->prev = nullptr;
         frontp = backp = e;
-        n = 1;
+        len = 1;
     }
     else if (compare == nullptr) {
         insafter_qelem(backp, obj);
@@ -312,7 +312,7 @@ cObject *cQueue::pop()
 
 int cQueue::getLength() const
 {
-    return n;
+    return len;
 }
 
 bool cQueue::contains(cObject *obj) const

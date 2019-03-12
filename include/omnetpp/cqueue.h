@@ -66,7 +66,7 @@ class SIM_API cQueue : public cOwnedObject
     /**
      * @brief Walks along a cQueue.
      */
-    class Iterator
+    class SIM_API Iterator
     {
       private:
         QElem *p;
@@ -128,7 +128,7 @@ class SIM_API cQueue : public cOwnedObject
   private:
     bool takeOwnership; //TODO move it info flags
     QElem *frontp, *backp;  // inserting at back(), removal at front()
-    int n;  // number of items in the queue
+    int len;  // number of items in the queue
     CompareFunc compare;   // comparison function; nullptr for FIFO
 
   private:
