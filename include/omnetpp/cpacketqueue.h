@@ -33,7 +33,7 @@ namespace omnetpp {
 class SIM_API cPacketQueue : public cQueue
 {
   private:
-    int64_t bitLength;
+    int64_t bitLength=0;
 
   private:
     void copy(const cPacketQueue& other);
@@ -51,9 +51,15 @@ class SIM_API cPacketQueue : public cQueue
     /** @name Constructors, destructor, assignment. */
     //@{
     /**
-     * Constructor.
+     * Constructor. When comparator argument is nullptr, the queue will
+     * act as FIFO, otherwise as priority queue.
      */
-    cPacketQueue(const char *name=nullptr, CompareFunc cmp=nullptr);
+    cPacketQueue(const char *name=nullptr, Comparator *cmp=nullptr) : cQueue(name, cmp) {}
+
+    /**
+     * Constructor. Sets up cPacketQueue as a priority queue.
+     */
+    cPacketQueue(const char *name, CompareFunc cmp) : cQueue(name, cmp) {}
 
     /**
      * Copy constructor. Contained objects that are owned by the queue
