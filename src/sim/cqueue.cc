@@ -38,17 +38,11 @@ Register_Class(cQueue);
 
 cQueue::cQueue(const cQueue& queue) : cOwnedObject(queue)
 {
-    frontp = backp = nullptr;
-    len = 0;
     copy(queue);
 }
 
-cQueue::cQueue(const char *name, CompareFunc cmp) : cOwnedObject(name)
+cQueue::cQueue(const char *name, CompareFunc cmp) : cOwnedObject(name), compare(cmp)
 {
-    takeOwnership = true;
-    frontp = backp = nullptr;
-    len = 0;
-    compare = cmp;
 }
 
 cQueue::~cQueue()
@@ -67,7 +61,6 @@ std::string cQueue::str() const
 
 void cQueue::forEachChild(cVisitor *v)
 {
-    // loop through elements
     for (QElem *p = frontp; p != nullptr; p = p->next)
         v->visit(p->obj);
 }
@@ -295,7 +288,6 @@ cObject *cQueue::remove(cObject *obj)
 {
     if (!obj)
         return nullptr;
-    //FIXME: handle special cases faster: if obj==front() or ==back(), don't invoke find_qelem()
     QElem *p = find_qelem(obj);
     if (!p)
         return nullptr;

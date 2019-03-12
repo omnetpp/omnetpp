@@ -126,10 +126,10 @@ class SIM_API cQueue : public cOwnedObject
     friend class Iterator;
 
   private:
-    bool takeOwnership; //TODO move it info flags
-    QElem *frontp, *backp;  // inserting at back(), removal at front()
-    int len;  // number of items in the queue
-    CompareFunc compare;   // comparison function; nullptr for FIFO
+    bool takeOwnership = true;
+    QElem *frontp = nullptr, *backp = nullptr;  // front and back pointers
+    int len = 0;  // number of items in the queue
+    CompareFunc compare = nullptr;   // comparison function; nullptr for FIFO
 
   private:
     void copy(const cQueue& other);
