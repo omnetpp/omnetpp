@@ -50,16 +50,15 @@
 namespace omnetpp {
 namespace common {
 
+namespace expression { class ExprNode; }
+
 void yyerror (void *statePtr, const char *s);  // used by bison 3+
 void yyerror (const char *s);  // used by bison 2.x
 
 #define YYSTYPE  char *
 
 typedef struct _MatchExpressionParserState {
-    std::vector<MatchExpression::Elem> *elemsp;
-    bool dottedpath;
-    bool fullstring;
-    bool casesensitive;
+    std::vector<MatchExpression::Elem> elems;
     MatchExpressionLexer *lexer;
 } MatchExpressionParserState;
 
@@ -81,24 +80,24 @@ expression
 or_expr
         : or_expr OR_ and_expr
                 { MatchExpressionParserState &state = *(MatchExpressionParserState*)statePtr;
-                  state.elemsp->push_back(MatchExpression::Elem(MatchExpression::Elem::OR)); }
+                  state.elems.push_back(MatchExpression::Elem(MatchExpression::Elem::OR)); }
         | or_expr /*implicit-OR*/ and_expr
                 { MatchExpressionParserState &state = *(MatchExpressionParserState*)statePtr;
-                  state.elemsp->push_back(MatchExpression::Elem(MatchExpression::Elem::OR)); }
+                  state.elems.push_back(MatchExpression::Elem(MatchExpression::Elem::OR)); }
         | and_expr
         ;
 
 and_expr
         : and_expr AND_ not_expr
                 { MatchExpressionParserState &state = *(MatchExpressionParserState*)statePtr;
-                  state.elemsp->push_back(MatchExpression::Elem(MatchExpression::Elem::AND)); }
+                  state.elems.push_back(MatchExpression::Elem(MatchExpression::Elem::AND)); }
         | not_expr
         ;
 
 not_expr
         : NOT_ term
                 { MatchExpressionParserState &state = *(MatchExpressionParserState*)statePtr;
-                  state.elemsp->push_back(MatchExpression::Elem(MatchExpression::Elem::NOT)); }
+                  state.elems.push_back(MatchExpression::Elem(MatchExpression::Elem::NOT)); }
         | term
         ;
 
@@ -111,26 +110,20 @@ fieldpattern
         : STRINGLITERAL
                 {
                     MatchExpressionParserState &state = *(MatchExpressionParserState*)statePtr;
-                    PatternMatcher *p = new PatternMatcher();
-                    p->setPattern($1, state.dottedpath, state.fullstring, state.casesensitive);
-                    state.elemsp->push_back(MatchExpression::Elem(p));
+                    state.elems.push_back(MatchExpression::Elem($1));
                     delete [] $1;
                 }
         | STRINGLITERAL '(' STRINGLITERAL ')'
                 {
                     MatchExpressionParserState &state = *(MatchExpressionParserState*)statePtr;
-                    PatternMatcher *p = new PatternMatcher();
-                    p->setPattern($3, state.dottedpath, state.fullstring, state.casesensitive);
-                    state.elemsp->push_back(MatchExpression::Elem(p, $1));
+                    state.elems.push_back(MatchExpression::Elem($3, $1));
                     delete [] $1;
                     delete [] $3;
                 }
         | STRINGLITERAL MATCHES STRINGLITERAL
                 {
                     MatchExpressionParserState &state = *(MatchExpressionParserState*)statePtr;
-                    PatternMatcher *p = new PatternMatcher();
-                    p->setPattern($3, state.dottedpath, state.fullstring, state.casesensitive);
-                    state.elemsp->push_back(MatchExpression::Elem(p, $1));
+                    state.elems.push_back(MatchExpression::Elem($3, $1));
                     delete [] $1;
                     delete [] $3;
                 }
@@ -140,21 +133,18 @@ fieldpattern
 
 //----------------------------------------------------------------------
 
-void MatchExpression::parsePattern(std::vector<MatchExpression::Elem>& elems, const char *pattern,
-                                   bool dottedpath, bool fullstring, bool casesensitive)
+std::vector<MatchExpression::Elem>  MatchExpression::parsePattern(const char *pattern)
 {
     MatchExpressionLexer lexer(pattern);
 
     // store options
     MatchExpressionParserState state;
-    state.elemsp = &elems;
-    state.dottedpath = dottedpath;
-    state.fullstring = fullstring;
-    state.casesensitive = casesensitive;
     state.lexer = &lexer;
 
     // parse
     yyparse(&state);
+
+    return state.elems;
 }
 
 // for bison 3.x

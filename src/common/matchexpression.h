@@ -22,13 +22,13 @@
 #include <vector>
 #include <map>
 #include "commondefs.h"
+#include "exprnode.h"
 #include "exception.h"
 
 namespace omnetpp {
 namespace common {
 
 class PatternMatcher;
-
 
 /**
  * Matches various fields of an object. By default, a pattern must match
@@ -66,7 +66,7 @@ class COMMON_API MatchExpression
     /**
      * Objects to be matched must implement this interface
      */
-    class COMMON_API Matchable
+    class COMMON_API Matchable : public expression::Context
     {
       public:
         /**
@@ -89,58 +89,46 @@ class COMMON_API MatchExpression
     };
 
     /**
-     * One element in a (reverse Polish) expression
+     * Element in a (reverse Polish) expression, only used during parsing.
      */
-    class COMMON_API Elem
+    struct COMMON_API Elem
     {
-      public:
-        friend class MatchExpression;
-        enum Type {UNDEF, AND, OR, NOT, PATTERN, FIELDPATTERN};
-      private:
+        enum Type {UNDEF, AND, OR, NOT, PATTERN};
         Type type;
+        std::string pattern;
         std::string fieldname;
-        PatternMatcher *pattern;
-      public:
-        /** Ctor for AND, OR, NOT */
-        Elem(Type type=UNDEF)  {this->type = type;}
-
-        /** The given field of the object must match pattern */
-        Elem(PatternMatcher *pattern, const char *fieldname=nullptr);
-
-        /** Copy ctor */
-        Elem(const Elem& other)  {type=UNDEF; operator=(other);}
-
-        /** Dtor */
-        ~Elem();
-
-        /** Assignment */
-        void operator=(const Elem& other);
+        Elem(Type type=UNDEF) : type(type) {}
+        Elem(const char *pattern, const char *fieldname="") : type(PATTERN), pattern(pattern), fieldname(fieldname) {}
     };
 
   protected:
     // options
-    bool matchDottedPath;
-    bool matchFullString;
-    bool caseSensitive;
+    bool matchDottedPath = false;
+    bool matchFullString = true;
+    bool caseSensitive = true;
 
     // stores the expression
-    std::vector<Elem> elems;
+    expression::ExprNode *tree = nullptr;
 
   protected:
-    // internal: access to the parser
-    static void parsePattern(std::vector<MatchExpression::Elem>& elems, const char *pattern,
-                             bool dottedpath, bool fullstring, bool casesensitive);
+    virtual std::vector<Elem>  parsePattern(const char *pattern);
+    virtual expression::ExprNode *generateEvaluator(const std::vector<Elem>& elems, bool dottedpath, bool fullstring, bool casesensitive);
 
   public:
     /**
      * Constructor
      */
-    MatchExpression();
+    MatchExpression() {}
 
     /**
      * Constructor, accepts the same args as setPattern().
      */
     MatchExpression(const char *pattern, bool dottedpath, bool fullstring, bool casesensitive);
+
+    /**
+     * Virtual destructor.
+     */
+    virtual ~MatchExpression() {delete tree;}
 
     /**
      * Sets the pattern to be used by subsequent calls to matches(). See the

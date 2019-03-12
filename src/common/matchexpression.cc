@@ -14,37 +14,66 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <stack>
 #include "matchexpression.h"
 #include "patternmatcher.h"
 #include "commonutil.h"
+#include "exprnodes.h"
+#include "exprvalue.h"
+
+using namespace omnetpp::common::expression;
 
 namespace omnetpp {
 namespace common {
 
-MatchExpression::Elem::Elem(PatternMatcher *pattern, const char *fieldname)
+
+class ContextObjectMatchesConstPattern : public LeafNode {
+protected:
+    PatternMatcher matcher;
+public:
+    ContextObjectMatchesConstPattern(PatternMatcher matcher) : matcher(matcher) {}
+    virtual ExprNode *dup() const override {return new ContextObjectMatchesConstPattern(matcher);}
+    virtual std::string getName() const override {return "=~//";}
+    virtual void print(std::ostream& out, int spaciousness) const override;
+    virtual ExprValue evaluate(Context *context) const override;
+};
+
+class ContextObjectFieldMatchesConstPattern : public LeafNode {
+protected:
+    std::string fieldToMatch;
+    PatternMatcher matcher;
+public:
+    ContextObjectFieldMatchesConstPattern(PatternMatcher matcher, const char *fieldToMatch) : fieldToMatch(fieldToMatch), matcher(matcher) {}
+    virtual ExprNode *dup() const override {return new ContextObjectFieldMatchesConstPattern(matcher, fieldToMatch.c_str());}
+    virtual std::string getName() const override {return fieldToMatch + "=~//";};
+    virtual void print(std::ostream& out, int spaciousness) const override;
+    virtual ExprValue evaluate(Context *context) const override;
+};
+
+void ContextObjectMatchesConstPattern::print(std::ostream& out, int spaciousness) const
 {
-    type = fieldname == nullptr ? PATTERN : FIELDPATTERN;
-    this->fieldname = fieldname == nullptr ? "" : fieldname;
-    this->pattern = pattern;
+    out << matcher.str();
 }
 
-MatchExpression::Elem::~Elem()
+ExprValue ContextObjectMatchesConstPattern::evaluate(Context *context) const
 {
-    if (type == PATTERN || type == FIELDPATTERN)
-        delete pattern;
+    MatchExpression::Matchable *matchableObject = dynamic_cast<MatchExpression::Matchable*>(context);
+    Assert(matchableObject);
+    const char *text = matchableObject->getAsString();
+    return matcher.matches(text);
 }
 
-void MatchExpression::Elem::operator=(const Elem& other)
+void ContextObjectFieldMatchesConstPattern::print(std::ostream& out, int spaciousness) const
 {
-    type = other.type;
-    if (type == PATTERN || type == FIELDPATTERN) {
-        fieldname = other.fieldname;
-        pattern = new PatternMatcher(*(other.pattern));
-    }
+    out << fieldToMatch << (needSpaces(spaciousness) ? " =~ " : "=~") << matcher.str();
 }
 
-MatchExpression::MatchExpression()
+ExprValue ContextObjectFieldMatchesConstPattern::evaluate(Context *context) const
 {
+    MatchExpression::Matchable *matchableObject = dynamic_cast<MatchExpression::Matchable*>(context);
+    Assert(matchableObject);
+    const char *text = matchableObject->getAsString(fieldToMatch.c_str());
+    return matcher.matches(text);
 }
 
 MatchExpression::MatchExpression(const char *pattern, bool dottedpath, bool fullstring, bool casesensitive)
@@ -54,71 +83,71 @@ MatchExpression::MatchExpression(const char *pattern, bool dottedpath, bool full
 
 void MatchExpression::setPattern(const char *pattern, bool dottedpath, bool fullstring, bool casesensitive)
 {
+    std::vector<Elem> elems = parsePattern(pattern);
+    ExprNode *t = generateEvaluator(elems, dottedpath, fullstring, casesensitive);
+
     this->matchDottedPath = dottedpath;
     this->matchFullString = fullstring;
     this->caseSensitive = casesensitive;
-
-    elems.clear();
-
-    Assert(pattern);
-    if (*pattern)
-        parsePattern(elems, pattern, dottedpath, fullstring, casesensitive);
+    delete tree;
+    tree = t;
 }
 
-bool MatchExpression::matches(const Matchable *object)
+ExprNode *MatchExpression::generateEvaluator(const std::vector<Elem>& elems, bool dottedpath, bool fullstring, bool casesensitive)
 {
-    if (elems.empty())
-        return false;
+    Assert(!elems.empty());
 
-    const int stksize = 20;
-    bool stk[stksize];
+    std::stack<ExprNode*> stack;
 
-    int tos = -1;
     for (auto & e : elems) {
-        const char *attr;
         switch (e.type) {
-            case Elem::PATTERN:
-                if (tos >= stksize-1)
-                    throw opp_runtime_error("MatchExpression: Malformed expression: Stack overflow");
-                attr = object->getAsString();
-                stk[++tos] = attr == nullptr ? false : e.pattern->matches(attr);
+            case Elem::PATTERN: {
+                PatternMatcher matcher(e.pattern.c_str(), dottedpath, fullstring, casesensitive);
+                if (e.fieldname.empty())
+                    stack.push(new ContextObjectMatchesConstPattern(matcher));
+                else
+                    stack.push(new ContextObjectFieldMatchesConstPattern(matcher, e.fieldname.c_str()));
                 break;
-
-            case Elem::FIELDPATTERN:
-                if (tos >= stksize-1)
-                    throw opp_runtime_error("MatchExpression: Malformed expression: Stack overflow");
-                attr = object->getAsString(e.fieldname.c_str());
-                stk[++tos] = attr == nullptr ? false : e.pattern->matches(attr);
-                break;
-
-            case Elem::OR:
-                if (tos < 1)
-                    throw opp_runtime_error("MatchExpression: Malformed expression: Stack underflow");
-                stk[tos-1] = stk[tos-1] || stk[tos];
-                tos--;
-                break;
+            }
 
             case Elem::AND:
-                if (tos < 1)
-                    throw opp_runtime_error("MatchExpression: Malformed expression: Stack underflow");
-                stk[tos-1] = stk[tos-1] && stk[tos];
-                tos--;
+            case Elem::OR: {
+                Assert(stack.size() >= 2);
+                ExprNode *arg2 = stack.top(); stack.pop();
+                ExprNode *arg1 = stack.top(); stack.pop();
+                BinaryNode *node = (e.type == Elem::AND) ? (BinaryNode *)new AndNode() : (BinaryNode *)new OrNode();
+                node->setChildren(arg1, arg2);
+                stack.push(node);
                 break;
+            }
 
-            case Elem::NOT:
-                if (tos < 0)
-                    throw opp_runtime_error("MatchExpression: Malformed expression: Stack underflow");
-                stk[tos] = !stk[tos];
+            case Elem::NOT: {
+                Assert(!stack.empty());
+                ExprNode *arg = stack.top(); stack.pop();
+                NotNode *node = new NotNode();
+                node->setChild(arg);
+                stack.push(node);
                 break;
+            }
 
             default:
                 throw opp_runtime_error("MatchExpression: Malformed expression: Unknown element type");
         }
     }
-    if (tos != 0)
-        throw opp_runtime_error("MatchExpression: Malformed expression: %d items left on stack", tos);
+    Assert(stack.size() == 1);
+    return stack.top();
+}
 
-    return stk[tos];
+bool MatchExpression::matches(const Matchable *matchableObject)
+{
+    if (!tree)
+        throw opp_runtime_error("MatchExpression: Empty match expression");
+    if (!matchableObject)
+        throw opp_runtime_error("MatchExpression: Input is nullptr");
+    ExprValue value = tree->tryEvaluate(const_cast<Matchable*>(matchableObject));
+    if (value.type != ExprValue::BOOL)
+        throw opp_runtime_error("MatchExpression: expression did not evaluate to a boolean");
+    return value.bl;
 }
 
 const char *MatchableStringMap::getAsString(const char *attribute) const
