@@ -361,6 +361,13 @@ std::string RemoveRepeatsFilter::str() const
     return os.str();
 }
 
+bool RemoveRepeatsFilter::process(simtime_t& t, double& value, cObject *details)
+{
+    bool repeated = std::isnan(value) ? std::isnan(prev) : value==prev;
+    prev = value;
+    return !repeated;
+}
+
 //---
 
 std::string ExpressionFilter::str() const
