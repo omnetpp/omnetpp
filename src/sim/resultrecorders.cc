@@ -45,6 +45,10 @@ Register_ResultRecorder2("vector", VectorRecorder,
         "Records the input values to an output vector. "
         SIGNALTYPE_TO_NUMERIC_CONVERSIONS
 );
+Register_ResultRecorder2("totalCount", TotalCountRecorder,
+        "Records the count of the input values, including NaN and nullptr values. "
+        "Signal values do not need to be numeric to be counted. "
+);
 Register_ResultRecorder2("count", CountRecorder,
         "Records the count of the input values. "
         "Signal values do not need to be numeric to be counted. "
@@ -54,6 +58,13 @@ Register_ResultRecorder2("last", LastValueRecorder,
         "Records the last input value. "
         SIGNALTYPE_TO_NUMERIC_CONVERSIONS
         NAN_VALUES_IGNORED
+);
+Register_ResultRecorder2("errorNan", ErrorNanRecorder,
+        "Raises a runtime error if it encounters a NaN value in the input. "
+        "Tip: If you want to verify that statistics in a simulation do not "
+        "accidentally produce NaN values, add the following entry to the "
+        "configuration: '**.result-recording-modes = +errorNan' "
+        SIGNALTYPE_TO_NUMERIC_CONVERSIONS
 );
 Register_ResultRecorder2("sum", SumRecorder,
         "Records the sum of the input values. "
@@ -156,13 +167,13 @@ std::string VectorRecorder::str() const
 
 //---
 
-void CountRecorder::finish(cResultFilter *prev)
+void TotalCountRecorder::finish(cResultFilter *prev)
 {
     opp_string_map attributes = getStatisticAttributes();
     getEnvir()->recordScalar(getComponent(), getResultName().c_str(), count, &attributes);
 }
 
-std::string CountRecorder::str() const
+std::string TotalCountRecorder::str() const
 {
     std::stringstream os;
     os << getResultName() << " = " << getCount();
@@ -190,6 +201,13 @@ std::string LastValueRecorder::str() const
     return os.str();
 }
 
+//---
+
+void ErrorNanRecorder::collect(simtime_t_cref t, double value, cObject *details)
+{
+    if (std::isnan(value))
+        throw cRuntimeError("errorNan: NaN value detected in result '%s'", getResultName().c_str());
+}
 //---
 
 void SumRecorder::collect(simtime_t_cref t, double value, cObject *details)

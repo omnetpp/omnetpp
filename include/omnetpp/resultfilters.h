@@ -42,10 +42,9 @@ class SIM_API WarmupPeriodFilter : public cResultFilter
 };
 
 /**
- * @brief Result filter for counting signals. Signal values do not need to be numeric
- * to be counted. NaN and nullptr values are ignored.
+ * @brief Result filter for counting the input values, including NaN and nullptr values.
  */
-class SIM_API CountFilter : public cResultFilter
+class SIM_API TotalCountFilter : public cResultFilter
 {
     protected:
         long count;
@@ -53,15 +52,29 @@ class SIM_API CountFilter : public cResultFilter
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) override {count++; fire(this,t,count,details);}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details) override {count++; fire(this,t,count,details);}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details) override {count++; fire(this,t,count,details);}
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d, cObject *details) override {if (!std::isnan(d)) count++; fire(this,t,count,details);}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d, cObject *details) override {count++; fire(this,t,count,details);}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v, cObject *details) override {count++; fire(this,t,count,details);}
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details) override {if (s) count++; fire(this,t,count,details);}
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details) override {if (obj) count++; fire(this,t,count,details);}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details) override {count++; fire(this,t,count,details);}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details) override {count++; fire(this,t,count,details);}
     public:
-        CountFilter() {count = 0;}
+        TotalCountFilter() {count = 0;}
         long getCount() const {return count;}
         virtual double getInitialDoubleValue() const override {return getCount();}
         virtual std::string str() const override;
+};
+
+/**
+ * @brief Result filter for counting signals. Signal values do not need
+ * to be numeric to be counted. NaN and nullptr values are ignored.
+ */
+class SIM_API CountFilter : public TotalCountFilter
+{
+    protected:
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d, cObject *details) override {if (!std::isnan(d)) count++; fire(this,t,count,details);}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details) override {if (s) count++; fire(this,t,count,details);}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details) override {if (obj) count++; fire(this,t,count,details);}
+    public:
+        CountFilter() {}
 };
 
 /**
@@ -140,6 +153,31 @@ class SIM_API SkipNanFilter : public cNumericResultFilter
 {
     protected:
         virtual bool process(simtime_t& t, double& value, cObject *details) override {return !std::isnan(value);}
+};
+
+/**
+ * @brief Filter that raises a runtime error if it sees a NaN in the input.
+ */
+class SIM_API ErrorNanFilter : public cNumericResultFilter
+{
+    protected:
+        virtual bool process(simtime_t& t, double& value, cObject *details) override;
+};
+
+/**
+ * @brief Filter that counts NaN values in the input.
+ */
+class SIM_API CountNanFilter : public cNumericResultFilter
+{
+    protected:
+        long count = 0;
+    protected:
+        virtual bool process(simtime_t& t, double& value, cObject *details) override;
+    public:
+        CountNanFilter() {}
+        long getCount() const {return count;}
+        virtual double getInitialDoubleValue() const override {return getCount();}
+        virtual std::string str() const override;
 };
 
 /**

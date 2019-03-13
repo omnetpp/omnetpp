@@ -46,6 +46,11 @@ Register_ResultFilter2("warmup", WarmupPeriodFilter,
         "is specified in the configuration."
 );
 
+Register_ResultFilter2("totalCount", TotalCountFilter,
+        "Produces the count of the input values, including NaN and nullptr values. "
+        "Signal values do not need to be numeric to be counted. "
+);
+
 Register_ResultFilter2("count", CountFilter,
         "Produces the count of the input values. "
         "Signal values do not need to be numeric to be counted. "
@@ -64,6 +69,14 @@ Register_ResultFilter2("time", TimeFilter,
 );
 Register_ResultFilter2("skipNan", SkipNanFilter,
         "Removes (filters out) NaNs, and lets through all other values."
+        SIGNALTYPE_TO_NUMERIC_CONVERSIONS
+);
+Register_ResultFilter2("errorNan", ErrorNanFilter,
+        "Raises a runtime error if it encounters a NaN value in the input. "
+        SIGNALTYPE_TO_NUMERIC_CONVERSIONS
+);
+Register_ResultFilter2("nanCount", CountNanFilter, // NOTE: the name "nanCount" (as opposed to "countNan") is better suited for typical use: "record=count,mean,nanCount"
+        "Counts the number of NaN values in the input. "
         SIGNALTYPE_TO_NUMERIC_CONVERSIONS
 );
 Register_ResultFilter2("sum", SumFilter,
@@ -175,7 +188,7 @@ std::string WarmupPeriodFilter::str() const
 
 //---
 
-std::string CountFilter::str() const
+std::string TotalCountFilter::str() const
 {
     std::stringstream os;
     os << "count = " << getCount();
@@ -188,6 +201,33 @@ std::string ConstantFilter::str() const
 {
     std::stringstream os;
     os << "c = " << getConstant();
+    return os.str();
+}
+
+//---
+
+bool ErrorNanFilter::process(simtime_t& t, double& value, cObject *details)
+{
+    if (std::isnan(value))
+        throw cRuntimeError("errorNan: NaN value detected");
+    return true;
+}
+
+//---
+
+bool CountNanFilter::process(simtime_t& t, double& value, cObject *details)
+{
+    if (!std::isnan(value))
+        return false;
+    count++;
+    value = count;
+    return true;
+}
+
+std::string CountNanFilter::str() const
+{
+    std::stringstream os;
+    os << "count = " << getCount();
     return os.str();
 }
 

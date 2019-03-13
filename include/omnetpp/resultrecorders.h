@@ -46,10 +46,9 @@ class SIM_API VectorRecorder : public cNumericResultRecorder
 };
 
 /**
- * @brief Listener for recording the count of signal values. Signal values do not need
- * to be numeric to be counted. NaN and nullptr values are ignored.
+ * @brief Listener for recording the count of signal values, including NaN and nullptr.
  */
-class SIM_API CountRecorder : public cResultRecorder
+class SIM_API TotalCountRecorder : public cResultRecorder
 {
     protected:
         long count;
@@ -63,9 +62,23 @@ class SIM_API CountRecorder : public cResultRecorder
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details) override {if (obj) count++;}
         virtual void finish(cResultFilter *prev) override;
     public:
-        CountRecorder() {count = 0;}
+        TotalCountRecorder() {count = 0;}
         long getCount() const {return count;}
         virtual std::string str() const override;
+};
+
+/**
+ * @brief Listener for recording the count of signal values. Signal values do not need
+ * to be numeric to be counted. NaN and nullptr values are ignored.
+ */
+class SIM_API CountRecorder : public TotalCountRecorder
+{
+    protected:
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d, cObject *details) override {if (!std::isnan(d)) count++;}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details) override {if (s) count++;}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details) override {if (obj) count++;}
+    public:
+        CountRecorder() {}
 };
 
 /**
@@ -82,6 +95,18 @@ class SIM_API LastValueRecorder : public cNumericResultRecorder
         LastValueRecorder() {lastValue = NAN;}
         double getLastValue() const {return lastValue;}
         virtual std::string str() const override;
+};
+
+/**
+ * @brief Recorder that raises a runtime error if it sees a NaN in the input
+ * (and never records anything).
+ */
+class SIM_API ErrorNanRecorder : public cNumericResultRecorder
+{
+    protected:
+        virtual void collect(simtime_t_cref t, double value, cObject *details) override;
+    public:
+        ErrorNanRecorder() {}
 };
 
 /**
