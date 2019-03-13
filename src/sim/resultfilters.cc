@@ -34,24 +34,29 @@ using namespace omnetpp::common;  // Expression
 
 #define OPTIONALLY_TIMEWEIGHTED \
         "NaN values in the input are ignored, or in the time-weighted case, " \
-        "they denote intervals to be ignored. To turn on time-weighted, " \
-        "specify 'timeWeighted=true' in the @statistic property."
+        "they indicate that the interval up to the next value is to be ignored. " \
+        "To turn on time-weighted, specify 'timeWeighted=true' in the @statistic property."
 
 // note: we don't register ExpressionFilter
 
-Register_ResultFilter2("warmup", WarmupPeriodFilter, "TODO");
+Register_ResultFilter2("warmup", WarmupPeriodFilter,
+        "Ignores all values in the input during the warmup period, "
+        "and lets everything through unchanged afterwards. "
+        "This filter is inserted automatically whenever a warmup period "
+        "is specified in the configuration."
+);
 
 Register_ResultFilter2("count", CountFilter,
-        "Produces the count of signal values. "
+        "Produces the count of the input values. "
         "Signal values do not need to be numeric to be counted. "
         "NaN and nullptr values are ignored."
 );
 
 Register_ResultFilter2("constant0", Constant0Filter,
-        "Replaces every value with the 0 constant. Signal values do not need to be numeric."
+        "Replaces every input value, regardless of its type, with the 0 constant."
 );
 Register_ResultFilter2("constant1", Constant1Filter,
-        "Replaces every value with the 1.0 constant. Signal values do not need to be numeric."
+        "Replaces every value, regardless of its type, with the 1.0 constant."
 );
 Register_ResultFilter2("time", TimeFilter,
         "Replaces every value with the time of emitting the signal. "
@@ -62,39 +67,40 @@ Register_ResultFilter2("skipNan", SkipNanFilter,
         SIGNALTYPE_TO_NUMERIC_CONVERSIONS
 );
 Register_ResultFilter2("sum", SumFilter,
-        "Produces the sum of signal values. "
+        "Produces the sum of the input values. "
         NAN_VALUES_IGNORED
         SIGNALTYPE_TO_NUMERIC_CONVERSIONS
 );
 Register_ResultFilter2("mean", MeanFilter,
-        "Produces the (time-weighted or unweighted) mean of signal values. "
+        "Produces the (time-weighted or unweighted) mean of the input values. "
         SIGNALTYPE_TO_NUMERIC_CONVERSIONS
         OPTIONALLY_TIMEWEIGHTED
 );
 Register_ResultFilter2("min", MinFilter,
-        "Produces the minimum of signal values. "
+        "Produces the minimum of the input values. "
         SIGNALTYPE_TO_NUMERIC_CONVERSIONS
         NAN_VALUES_IGNORED
 );
 Register_ResultFilter2("max", MaxFilter,
-        "Produces the maximum of signal values. "
+        "Produces the maximum of the input values. "
         SIGNALTYPE_TO_NUMERIC_CONVERSIONS
         NAN_VALUES_IGNORED
 );
 Register_ResultFilter2("last", IdentityFilter,
-        "Useful for expressions like: record=last+5. " //TODO
+        "This is actually the identity filter that lets through all input unchanged. "
+        "It is useful for expressions like: record=last+5. "
         SIGNALTYPE_TO_NUMERIC_CONVERSIONS
 );
 
 Register_ResultFilter2("avg", AverageFilter,
-        "Produces the arithmetic mean of signal values. "
+        "Produces the arithmetic mean of the input values. "
         SIGNALTYPE_TO_NUMERIC_CONVERSIONS
         NAN_VALUES_IGNORED
 );
 Register_ResultFilter2("timeavg", TimeAverageFilter,
-        "Produces the time average of signal values. " //TODO assuming sample-hold interpolation
+        "Produces the time average of the input values, assuming sample-hold interpolation. "
         SIGNALTYPE_TO_NUMERIC_CONVERSIONS
-        "NaN values in the input denote intervals to be ignored. "
+        "A NaN value in the input indicates that the interval up to the next value is to be ignored. "
 );
 Register_ResultFilter2("removeRepeats", RemoveRepeatsFilter,
         "Removes repeated values from the input. "
@@ -111,7 +117,7 @@ Register_ResultFilter2("packetBits", PacketBitsFilter,
         "Non-object signals and objects which are not cPacket will cause an error. "
 );
 Register_ResultFilter2("sumPerDuration", SumPerDurationFilter,
-        "Outputs the sum of signal values divided by the measurement interval "
+        "Outputs the sum of the input values divided by the measurement interval "
         "(simtime minus warmupPeriod). NaN values in the input are ignored. "
         SIGNALTYPE_TO_NUMERIC_CONVERSIONS
 );
