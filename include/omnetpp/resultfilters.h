@@ -257,7 +257,7 @@ class SIM_API RemoveRepeatsFilter : public cNumericResultFilter
     protected:
         double prev;
     protected:
-        virtual bool process(simtime_t& t, double& value, cObject *details) override {bool repeated = (value==prev); prev = value; return !repeated;}
+        virtual bool process(simtime_t& t, double& value, cObject *details) override;
     public:
         RemoveRepeatsFilter() {prev = NAN;}
         double getLastValue() const {return prev;}
