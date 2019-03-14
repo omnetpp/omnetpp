@@ -39,9 +39,7 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace envir {
 
-// XXX error messages (exceptions) should contain file/line info!
 // XXX make sure quoting "$\{" works!
-// TODO optimize storage (now keys with wildcard suffix are stored multiple times, in several bins)
 
 Register_GlobalConfigOption(CFGID_SECTIONBASEDCONFIG_CONFIGREADER_CLASS, "sectionbasedconfig-configreader-class", CFG_STRING, "", "When `configuration-class=SectionBasedConfiguration`: selects the configuration reader C++ class, which must subclass from `cConfigurationReader`.");
 Register_PerRunConfigOption(CFGID_DESCRIPTION, "description", CFG_STRING, nullptr, "Descriptive name for the given simulation configuration. Descriptions get displayed in the run selection dialog.");
@@ -130,20 +128,25 @@ void SectionBasedConfiguration::setCommandLineConfigOptions(const std::map<std::
     const std::string *basedirRef = getPooledBaseDir(baseDir);
     for (const auto & it : options) {
         // validate the key, then store the option
-        // XXX we should better use the code in the validate() method...
         const char *key = it.first.c_str();
         const char *value = it.second.c_str();
+        bool containsDot = strchr(key, '.') != nullptr;
         const char *option = strchr(key, '.') ? strrchr(key, '.')+1 : key;  // check only the part after the last dot, i.e. recognize per-object keys as well
-        cConfigOption *e = lookupConfigOption(option);
-        if (!e)
-            throw cRuntimeError("Unknown command-line configuration option --%s", key);
-        if (!e->isPerObject() && key != option)
-            throw cRuntimeError("Wrong command-line configuration option --%s: %s is not a per-object option", key, e->getName());
+        bool containsHyphen = strchr(option, '-') != nullptr;
         std::string tmp;
-        if (e->isPerObject() && key == option)
-            key = (tmp = std::string("**.")+key).c_str();  // prepend with "**." (XXX this should be done in inifile contents too)
+        if (containsDot && !containsHyphen)
+            ; // parameter or "**.typename", just store it
+        else {
+            cConfigOption *e = lookupConfigOption(option);
+            if (!e)
+                throw cRuntimeError("Unknown command-line configuration option --%s", key);
+            if (containsDot && !e->isPerObject())
+                throw cRuntimeError("Invalid command-line configuration option --%s: %s is not a per-object option", key, e->getName());
+            if (!containsDot && e->isPerObject())
+                key = (tmp = std::string("**.")+key).c_str();  // prepend with "**."
+        }
         if (!value[0])
-            throw cRuntimeError("Missing value for command-line configuration option --%s", key);
+            throw cRuntimeError("Missing value for command-line option --%s", key);
         commandLineOptions.push_back(Entry(basedirRef, key, value));
     }
     activateGlobalConfig();
@@ -836,33 +839,6 @@ static int selectNext(const SectionChainList& sectionChains)
     return -1;
 }
 
-/*
-   std::vector<int> SectionBasedConfiguration::resolveSectionChain(const char *sectionName) const
-   {
-    // determine the list of sections, from this one following the "extends" chain up to [General]
-    std::vector<int> sectionChain;
-    int generalSectionId = internalFindSection("General");
-    int sectionId = internalGetSectionId(sectionName);
-    while (true)
-    {
-        if (std::find(sectionChain.begin(), sectionChain.end(), sectionId) != sectionChain.end())
-            throw cRuntimeError("Cycle detected in section fallback chain at [%s]", ini->getSectionName(sectionId));
-        sectionChain.push_back(sectionId);
-        int entryId = internalFindEntry(sectionId, CFGID_EXTENDS->getName());
-        std::string extends = entryId==-1 ? "" : ini->getEntry(sectionId, entryId).getValue();
-        if (extends.empty() && generalSectionId!=-1 && sectionId!=generalSectionId)
-            extends = "General";
-        if (extends.empty())
-            break;
-        sectionId = resolveConfigName(extends.c_str());
-        if (sectionId == -1)
-            break; // wrong config name
-    }
-
-    return sectionChain;
-}
-*/
-
 void SectionBasedConfiguration::addEntry(const Entry& entry)
 {
     entries.push_back(entry);
@@ -1016,14 +992,6 @@ const char *SectionBasedConfiguration::internalGetValue(const std::vector<int>& 
     return fallbackValue;
 }
 
-static int findInArray(const char *s, const char **array)
-{
-    for (int i = 0; array[i] != nullptr; i++)
-        if (!strcmp(s, array[i]))
-            return i;
-    return -1;
-}
-
 enum { WHITE, GREY, BLACK };
 
 class SectionGraphNode
@@ -1124,7 +1092,6 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
     SectionGraph graph;
     for (int i = 0; i < ini->getNumSections(); i++) {
         graph.push_back(SectionGraphNode(i));
-
         const char *section = ini->getSectionName(i);
         int numEntries = ini->getNumEntries(i);
         for (int j = 0; j < numEntries; j++) {
@@ -1172,7 +1139,6 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
                 bool containsHyphen = strchr(suffix.c_str(), '-') != nullptr;
                 if (containsHyphen) {
                     // this is a per-object config
-                    // XXX suffix (probably) should not contain wildcard; but surely not "**" !!!!
                     cConfigOption *e = lookupConfigOption(suffix.c_str());
                     if (!e && isIgnorableConfigKey(ignorableConfigKeys, suffix.c_str()))
                         continue;
