@@ -1046,13 +1046,14 @@ bool cModule::checkInternalConnections() const
 
 int cModule::findSubmodule(const char *name, int index) const
 {
-    for (SubmoduleIterator it(this); !it.end(); ++it) {
-        cModule *submodule = *it;
-        if (submodule->isName(name) && ((index == -1 && !submodule->isVector()) || submodule->getIndex() == index))
-            return submodule->getId();
+    int result = -1;
+    cModule *submodule = getSubmodule(name, index);
+
+    if (submodule) {
+        result = submodule->getId();
     }
 
-    return -1;
+    return result;
 }
 
 cModule *cModule::getSubmodule(const char *name, int index) const
