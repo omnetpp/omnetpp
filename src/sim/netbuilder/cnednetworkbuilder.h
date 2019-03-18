@@ -59,10 +59,6 @@ class SIM_API cNedNetworkBuilder
     // avoid having to pass it around as a parameter.
     cNedDeclaration *currentDecl = nullptr;
 
-    // stack of loop variables in NED "for" loops
-    struct {const char *varname; int value;} loopVarStack[MAX_LOOP_NESTING];
-    int loopVarSP = -1;
-
     // submodule pointers. This is an optimization because cModule::getSubmodule()
     // is slow if there are very large submodule vectors.
     typedef std::vector<cModule*> ModulePtrVector;
