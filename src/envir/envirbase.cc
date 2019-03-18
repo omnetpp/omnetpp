@@ -1354,15 +1354,15 @@ void EnvirBase::readOptions()
         imagePath = configImagePath + ";" + imagePath;
     opt->imagePath = imagePath;
 
-    // NED path. It is taken from the "-n" command-line option or the NEDPATH variable
-    // ("-n" takes precedence), and the "ned-path=" config entry gets appended to it.
+    // NED path. It is taken from the "-n" command-line options,
+    // the NEDPATH environment variable, and the "ned-path=" config option.
     // If the result is still empty, we fall back to "." -- this is needed for
     // single-directory models to work
-    const char *nedPath1 = args->optionValue('n', 0);
-    if (!nedPath1)
-        nedPath1 = getenv("NEDPATH");
-    std::string nedPath2 = getConfig()->getAsPath(CFGID_NED_PATH);
-    std::string nedPath = opp_join(";", nedPath1, nedPath2.c_str());
+    std::string nedPath;
+    for (std::string opt : args->optionValues('n'))
+        nedPath = opp_join(";", nedPath, opt);
+    nedPath = opp_join(";", nedPath, getConfig()->getAsPath(CFGID_NED_PATH));
+    nedPath = opp_join(";", nedPath, opp_nulltoempty(getenv("NEDPATH")));
     if (nedPath.empty())
         nedPath = ".";
     opt->nedPath = nedPath;

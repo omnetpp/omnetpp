@@ -276,6 +276,12 @@ COMMON_API std::string opp_strupper(const char *s);
 COMMON_API std::string opp_join(const char *separator, const char *s1, const char *s2);
 
 /**
+ * If either s1 or s2 is empty, returns the other one, otherwise returns
+ * s1 + separator + s2.
+ */
+COMMON_API std::string opp_join(const char *separator, const std::string& s1, const std::string& s2);
+
+/**
  * Concatenate the strings passed in the nullptr-terminated const char * array, using
  * the given separator and putting each item between quoteChars unless it is '\0'.
  */

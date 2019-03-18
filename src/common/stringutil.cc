@@ -567,6 +567,11 @@ std::string opp_join(const char *separator, const char *s1, const char *s2)
         return std::string(s1) + separator + s2;
 }
 
+std::string opp_join(const char *separator, const std::string& s1, const std::string& s2)
+{
+    return s1.empty() ? s2 : s2.empty() ? s1 : s1 + separator + s2;
+}
+
 std::string opp_join(const char **strings, const char *separator, char quoteChar)
 {
     std::stringstream os;
