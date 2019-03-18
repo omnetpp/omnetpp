@@ -73,7 +73,7 @@ class ENVIR_API ArgList
      * to indicate that it takes a required argument. If the option
      * character is followed by a question mark ('?'), it means that
      * the argument is optional, that is, it should not be an error to specify
-     * the option as the last argument (ie followed by nothing).
+     * the option as the last argument (i.e. followed by nothing).
      * '?' is probably ONLY useful with -h.
      *
      * Throws an exception if there are unrecognized options
@@ -86,11 +86,17 @@ class ENVIR_API ArgList
     bool optionGiven(char c) const;
 
     /**
-     * Returns the value of the given option. If there are more than one
-     * occurrences, k specifies which one to return. Returns nullptr if not
-     * found.
+     * Returns the value of the given option, or nullptr if not
+     * found. If there are more than one occurrences of the given
+     * option, k specifies which one to return. The default one
+     * is to return the last one (k=-1).
      */
-    const char *optionValue(char c, int k=0) const;
+    const char *optionValue(char c, int k=-1) const;
+
+    /**
+     * Returns the values specified for given option.
+     */
+    std::vector<std::string> optionValues(char c) const;
 
     /**
      * Returns long options (those that begin with '--'), as key-value pairs;

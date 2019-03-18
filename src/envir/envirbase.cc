@@ -87,7 +87,7 @@
 #ifdef USE_PORTABLE_COROUTINES  /* coroutine stacks reside in main stack area */
 
 # define TOTAL_STACK_SIZE    (2*1024*1024)
-# define MAIN_STACK_SIZE     (128*1024)  // Tkenv needs more than 64K
+# define MAIN_STACK_SIZE     (128*1024)
 
 #else /* nonportable coroutines, stacks are allocated on heap */
 

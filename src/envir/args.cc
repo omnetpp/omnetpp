@@ -20,6 +20,7 @@
 #include <cstring>
 #include <cstdio>
 #include "common/opp_ctype.h"
+#include "common/stlutil.h"
 #include "args.h"
 
 using namespace omnetpp::common;
@@ -114,20 +115,27 @@ std::map<std::string, std::string> ArgList::getLongOptions() const
 
 bool ArgList::optionGiven(char c) const
 {
-    return shortOpts.find(c) != shortOpts.end();
+    return containsKey(shortOpts, c);
 }
 
 const char *ArgList::optionValue(char c, int k) const
 {
-    if (shortOpts.find(c) == shortOpts.end())
+    if (!containsKey(shortOpts, c))
         return nullptr;
-    const std::vector<std::string>& v = shortOpts.find(c)->second;
-    return (k >= 0 && k < (int)v.size()) ? v[k].c_str() : nullptr;
+    const std::vector<std::string>& v = shortOpts.at(c);
+    return k == -1 ? v.back().c_str() : k < (int)v.size() ? v.at(k).c_str() : nullptr;
+}
+
+std::vector<std::string> ArgList::optionValues(char c) const
+{
+    if (!containsKey(shortOpts, c))
+        return std::vector<std::string>();
+    return shortOpts.at(c);
 }
 
 const char *ArgList::argument(int k) const
 {
-    return (k >= 0 && k < (int)params.size()) ? params[k].c_str() : nullptr;
+    return k < (int)params.size() ? params.at(k).c_str() : nullptr;
 }
 
 }  // namespace envir
