@@ -197,8 +197,7 @@ int setupUserInterface(int argc, char *argv[])
         // will be done by the user interface class.
         //
 
-        // was it specified explicitly which one to use?
-        std::string appName = opp_nulltoempty(args.optionValue('u', 0));  // 1st '-u name' option
+        std::string appName = opp_nulltoempty(args.optionValue('u')); // last -u argument
         if (appName.empty())
             appName = config->getAsString(CFGID_USER_INTERFACE);
 
