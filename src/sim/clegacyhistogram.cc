@@ -384,7 +384,8 @@ double cLegacyHistogram::draw() const
         return precollectedValues[intrand(rng, numValues)];
     }
     else {
-        long m = intrand(rng, numValues - numUnderflows - numOverflows);
+        long numOutliers = numFiniteUnderflows + numFiniteOverflows + numNegInfs + numPosInfs;
+        long m = intrand(rng, numValues - numOutliers);
 
         // select a random bin (k-1) and return a random number from it
         int k;
@@ -411,17 +412,29 @@ void cLegacyHistogram::collectIntoHistogram(double value)
 
 void cLegacyHistogram::collectWeightedIntoHistogram(double value, double weight)
 {
-    int k = (int)floor((value - rangeMin) / cellSize);
-    if (k < 0 || value < rangeMin) {
-        numUnderflows++;
-        underflowSumWeights += weight;
+    if (std::isinf(value)) {
+        if (value < 0) {
+            numNegInfs++;
+            negInfSumWeights += value;
+        }
+        else {
+            numPosInfs++;
+            posInfSumWeights += value;
+        }
     }
-    else if (k >= numCells || value >= rangeMax) {
-        numOverflows++;
-        overflowSumWeights += weight;
+    else {
+        int k = (int)floor((value - rangeMin) / cellSize);
+        if (k < 0 || value < rangeMin) {
+            numFiniteUnderflows++;
+            finiteUnderflowSumWeights += weight;
+        }
+        else if (k >= numCells || value >= rangeMax) {
+            numFiniteOverflows++;
+            finiteOverflowSumWeights += weight;
+        }
+        else
+            cellv[k] += weight;
     }
-    else
-        cellv[k] += weight;
 }
 
 double cLegacyHistogram::getPDF(double x) const

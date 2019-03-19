@@ -301,37 +301,49 @@ void cVarHistogram::setUpBins()
     transformed = true;
 }
 
-void cVarHistogram::collectIntoHistogram(double val)
+void cVarHistogram::collectIntoHistogram(double value)
 {
-    if (val < rangeMin) {  // rangemin == cellLowerBounds[0]
-        numUnderflows++;
-        underflowSumWeights += 1;
-    }
-    else if (val >= rangeMax) {  // rangemax == cellLowerBounds[num_cells]
-        numOverflows++;
-        overflowSumWeights += 1;
+    if (std::isinf(value)) {
+        if (value < 0) {
+            numNegInfs++;
+            negInfSumWeights += value;
+        }
+        else {
+            numPosInfs++;
+            posInfSumWeights += value;
+        }
     }
     else {
-        // sample falls in the range of ordinary bins/bins (rangeMin <= val < rangeMax),
-        // perform binary search
-        int lowerIndex, upperIndex, index;
-        for (lowerIndex = 0, upperIndex = numCells,
-             index = (lowerIndex + upperIndex) / 2;
-
-             lowerIndex < index;
-
-             index = (lowerIndex + upperIndex) / 2)
-        {
-            // cycle invariant: cellLowerBounds[lowerIndex] <= val < cellLowerBounds[upperIndex]
-            if (val < cellLowerBounds[index])
-                upperIndex = index;
-            else
-                lowerIndex = index;
+        if (value < rangeMin) {  // rangemin == cellLowerBounds[0]
+            numFiniteUnderflows++;
+            finiteUnderflowSumWeights += 1;
         }
-        // here, cellLowerBounds[lowerIndex] <= val < cellLowerBounds[lower_index+1]
+        else if (value >= rangeMax) {  // rangemax == cellLowerBounds[num_cells]
+            numFiniteOverflows++;
+            finiteOverflowSumWeights += 1;
+        }
+        else {
+            // sample falls in the range of ordinary bins/bins (rangeMin <= value < rangeMax),
+            // perform binary search
+            int lowerIndex, upperIndex, index;
+            for (lowerIndex = 0, upperIndex = numCells,
+                    index = (lowerIndex + upperIndex) / 2;
 
-        // increment the appropriate counter
-        cellv[lowerIndex]++;
+                    lowerIndex < index;
+
+                    index = (lowerIndex + upperIndex) / 2)
+            {
+                // cycle invariant: cellLowerBounds[lowerIndex] <= value < cellLowerBounds[upperIndex]
+                if (value < cellLowerBounds[index])
+                    upperIndex = index;
+                else
+                    lowerIndex = index;
+            }
+            // here, cellLowerBounds[lowerIndex] <= value < cellLowerBounds[lower_index+1]
+
+            // increment the appropriate counter
+            cellv[lowerIndex]++;
+        }
     }
 }
 
@@ -378,11 +390,11 @@ double cVarHistogram::draw() const
         double lower, upper;
 
         // generate in [lower, upper)
-        double m = intrand(rng, numValues - numUnderflows - numOverflows);
+        long numOutliers = numFiniteUnderflows + numFiniteOverflows + numNegInfs + numPosInfs;
+        double m = intrand(rng, numValues - numOutliers);
 
         // select a random interval (k-1) and return a random number from
         // that interval generated according to uniform distribution.
-        m -= numUnderflows;
         int k;
         for (k = 0; m >= 0; k++)
             m -= cellv[k];
