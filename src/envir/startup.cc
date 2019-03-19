@@ -126,29 +126,27 @@ int setupUserInterface(int argc, char *argv[])
         }
 
         //
-        // First, load the ini file. It might contain the name of the user interface
+        // First, load the ini file(s). It might contain the name of the user interface
         // to instantiate.
         //
-        const char *fname = args.optionValue('f', 0);  // 1st '-f filename' option
-        if (!fname)
-            fname = args.argument(0);  // first argument
-        if (!fname)
-            fname = "omnetpp.ini";  // or default filename
-
-        // when -h or -v is specified, be forgiving about nonexistent omnetpp.ini
-        InifileReader *inifile = new InifileReader();
-        if ((!args.optionGiven('v') && !args.optionGiven('h')) || fileExists(fname))
-            inifile->readFile(fname);
-
-        // process additional '-f filename' options or arguments if there are any
-        for (int k = 1; (fname = args.optionValue('f', k)) != nullptr; k++)
-            inifile->readFile(fname);
-        for (int k = (args.optionValue('f', 0) ? 0 : 1); (fname = args.argument(k)) != nullptr; k++)
-            inifile->readFile(fname);
+        InifileReader *iniReader = new InifileReader();
+        const char *fname;
+        int inifilesRead = 0;
+        for (int k = 0; (fname = args.optionValue('f', k)) != nullptr; k++, inifilesRead++)
+            iniReader->readFile(fname);
+        for (int k = 0; (fname = args.argument(k)) != nullptr; k++, inifilesRead++)
+            iniReader->readFile(fname);
+        if (inifilesRead == 0) {
+            fname = "omnetpp.ini";
+            if (fileExists(fname))
+                iniReader->readFile(fname);
+            else if (!args.optionGiven('v') && !args.optionGiven('h'))
+                throw cRuntimeError("Missing configuration: No ini files specified and no 'omnetpp.ini' in the current working directory");
+        }
 
         // activate [General] section so that we can read global settings from it
         bootConfig = new SectionBasedConfiguration();
-        bootConfig->setConfigurationReader(inifile);
+        bootConfig->setConfigurationReader(iniReader);
         bootConfig->setCommandLineConfigOptions(args.getLongOptions(), getWorkingDir().c_str());
 
         //
