@@ -73,6 +73,8 @@ enum class DebuggerPresence {
     CANT_DETECT
 };
 
+#define ARGSPEC "h?f:u:l:c:r:n:p:x:X:q:agGvwsm"
+
 struct ENVIR_API EnvirOptions
 {
     EnvirOptions();

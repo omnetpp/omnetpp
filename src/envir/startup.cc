@@ -28,6 +28,7 @@
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/cmodule.h"
 #include "common/ver.h"
+#include "envirbase.h" // ARGSPEC
 #include "args.h"
 #include "inifilereader.h"
 #include "sectionbasedconfig.h"
@@ -113,7 +114,7 @@ int setupUserInterface(int argc, char *argv[])
 
         // args
         ArgList args;
-        args.parse(argc, argv, "h?f:u:l:c:r:n:p:x:X:q:agGvwsm");
+        args.parse(argc, argv, ARGSPEC);
 
         useStderr = !args.optionGiven('m');
 

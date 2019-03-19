@@ -344,7 +344,7 @@ int EnvirBase::run(int argc, char *argv[], cConfiguration *configobject)
 {
     opt = createOptions();
     args = new ArgList();
-    args->parse(argc, argv, "h?f:u:l:c:r:n:p:x:X:q:agGvwsm");  // TODO share spec with startup.cc!
+    args->parse(argc, argv, ARGSPEC);
     opt->useStderr = !args->optionGiven('m');
     opt->verbose = !args->optionGiven('s');
     cfg = dynamic_cast<cConfigurationEx *>(configobject);
@@ -671,6 +671,7 @@ void EnvirBase::printHelp()
     out << "                with an error even if no available port was found. A plain\n";
     out << "                minus sign will turn off the built-in web server.\n";
     out << "                The default value is \"8000+\".\n";
+    out << "  -s            Silent mode; makes the output less verbose.\n";
     out << "  -v            Print version and build info, and exit.\n";
     out << "  -m            Merge standard error into standard output, i.e. report errors on\n";
     out << "                the standard output instead of the default standard error.\n";
@@ -709,7 +710,7 @@ void EnvirBase::printHelp()
     out << "    -h userinterfaces Lists available user interfaces (see -u option)\n";
     out << "    -h classes        Lists registered C++ classes (including module classes)\n";
     out << "    -h classdesc      Lists C++ classes that have associated reflection\n";
-    out << "                      information (needed for Tkenv inspectors)\n";
+    out << "                      information (needed for Qtenv inspectors)\n";
     out << "    -h nedfunctions   Lists registered NED functions\n";
     out << "    -h neddecls       Lists built-in NED component declarations\n";
     out << "    -h units          Lists recognized physical units\n";
