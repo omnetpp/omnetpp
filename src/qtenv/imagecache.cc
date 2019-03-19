@@ -61,20 +61,24 @@ void ImageCache::loadImages(const char *path)
     //# (like "c:\bitmaps"). Using a space is also not an option (think of
     //# "C:\Program Files\...").
 
-    out << std::endl;
-    StringTokenizer dir(path, PATH_SEPARATOR);
+    if (verbose)
+        out << std::endl;
 
+    StringTokenizer dir(path, PATH_SEPARATOR);
     while (dir.hasMoreTokens()) {
         auto cd = dir.nextToken();
-        out << "Loading images from '" << cd << "':";
+        if (verbose)
+            out << "Loading images from '" << cd << "':";
         doLoadImages("", toAbsolutePath(cd).c_str());
-        out << std::endl;
+        if (verbose)
+            out << std::endl;
     }
 
-    if (imagesWithSize.empty())
+    if (imagesWithSize.empty() && verbose)
         out << "*** no images in '" << path << "'";
 
-    out << std::endl;
+    if (verbose)
+        out << std::endl;
 }
 
 void ImageCache::loadImage(const char *fileName, const char *imageName)
@@ -99,7 +103,7 @@ void ImageCache::doLoadImage(const QString& fileName, const std::string& imageNa
     QImage *image = new QImage(fileName);
 
     if (image->isNull()) {
-        out << "Could not load image '" << fileName.toStdString() << "'" << std::endl;
+        out << "Warning: Could not load image '" << fileName.toStdString() << "'" << std::endl;
         delete image;
     }
     else
@@ -114,7 +118,8 @@ void ImageCache::doLoadImages(const char *dir, const char *prefix)
     content.setNameFilters(filters);
     content.setFilter(QDir::Files);
 
-    out << " " << dir << "*: " << content.count() << " ";
+    if (verbose)
+        out << " " << dir << "*: " << content.count() << " ";
 
     // load bitmaps from this directory
     for (size_t i = 0; i < content.count(); ++i) {

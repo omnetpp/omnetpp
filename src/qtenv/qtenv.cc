@@ -554,6 +554,7 @@ void Qtenv::doRun()
         signal(SIGINT, signalHandler);
         signal(SIGTERM, signalHandler);
 
+        icons.setVerbose(opt->verbose);
         icons.loadImages(opt->imagePath.c_str());
 
         // we need to flush streams, otherwise output written from Tcl tends to overtake

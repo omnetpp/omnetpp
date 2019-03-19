@@ -53,11 +53,13 @@ private:
     // A reference to the out member of EnvirBase (Qtenv),
     // using this to make output redirection work.
     std::ostream& out;
+    bool verbose = true;
 
 public:
     ImageCache(std::ostream& out);
     ~ImageCache();
 
+    void setVerbose(bool verbose) {this->verbose = verbose;}
     void loadImages(const char *path);
     void loadImage(const char *fileName, const char *imageName = nullptr);
 
