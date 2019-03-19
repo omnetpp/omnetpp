@@ -141,8 +141,8 @@ int setupUserInterface(int argc, char *argv[])
             fname = "omnetpp.ini";
             if (fileExists(fname))
                 iniReader->readFile(fname);
-            else if (!args.optionGiven('v') && !args.optionGiven('h'))
-                throw cRuntimeError("Missing configuration: No ini files specified and no 'omnetpp.ini' in the current working directory");
+            else if (!args.optionGiven('v') && !args.optionGiven('h') && !args.longOptionGiven("network"))
+                throw cRuntimeError("Missing configuration: No ini files specified and no 'omnetpp.ini' in the current working directory (specify at least --network=<name> to suppress this message)");
         }
 
         // activate [General] section so that we can read global settings from it

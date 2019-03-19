@@ -105,6 +105,12 @@ class ENVIR_API ArgList
     std::map<std::string,std::string> getLongOptions() const;
 
     /**
+     * Returns true if the given long option (specified without the leading '--')
+     * is present on the command line.
+     */
+    bool longOptionGiven(const char *opt) const;
+
+    /**
      * Returns the kth non-option argument. Returns nullptr if k is out of range.
      */
     const char *argument(int k) const;

@@ -118,6 +118,11 @@ bool ArgList::optionGiven(char c) const
     return containsKey(shortOpts, c);
 }
 
+bool ArgList::longOptionGiven(const char *opt) const
+{
+    return containsKey(longOpts, std::string(opt));
+}
+
 const char *ArgList::optionValue(char c, int k) const
 {
     if (!containsKey(shortOpts, c))
