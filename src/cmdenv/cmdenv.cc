@@ -233,6 +233,8 @@ void Cmdenv::doRun()
                 }
 
                 // find network
+                if (opt->networkName.empty())
+                    throw cRuntimeError("No network specified (missing or empty network= configuration option)");
                 cModuleType *network = resolveNetwork(opt->networkName.c_str());
                 ASSERT(network);
 
