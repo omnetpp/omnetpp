@@ -338,6 +338,11 @@ void MsgTool::printHelpPage(const std::string& page)
     }
 }
 
+static ASTNode *maybeUnwrap(FilesElement *filesElement)
+{
+    return filesElement->getNumChildren() == 1 ? filesElement->getFirstChild() : filesElement;
+}
+
 void MsgTool::convertCommand(int argc, char **argv)
 {
     // process options
@@ -426,7 +431,7 @@ void MsgTool::convertCommand(int argc, char **argv)
                 outputFile += (msgOutput ? ".msg" : ".xml");
             }
             if (!msgOutput)
-                generateXmlFile(outputFile.c_str(), tree, opt_srcloc);
+                generateXmlFile(outputFile.c_str(), maybeUnwrap(tree), opt_srcloc);
             else
                 generateMsgFiles(tree);
         }

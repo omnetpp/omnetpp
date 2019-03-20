@@ -330,6 +330,11 @@ void NedTool::printHelpPage(const std::string& page)
     }
 }
 
+static ASTNode *maybeUnwrap(FilesElement *filesElement)
+{
+    return filesElement->getNumChildren() == 1 ? filesElement->getFirstChild() : filesElement;
+}
+
 void NedTool::convertCommand(int argc, char **argv)
 {
     // process options
@@ -424,7 +429,7 @@ void NedTool::convertCommand(int argc, char **argv)
                 outputFile += (nedOutput ? ".ned" : ".xml");
             }
             if (!nedOutput)
-                generateXmlFile(outputFile.c_str(), tree, opt_srcloc);
+                generateXmlFile(outputFile.c_str(), maybeUnwrap(tree), opt_srcloc);
             else
                 generateNedFiles(tree);
         }
