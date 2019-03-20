@@ -262,9 +262,24 @@ void FindObjectsDialog::refresh()
 {
     // resolve root object
     std::string fullPath = ui->searchEdit->text().toStdString();
-
     cFindByPathVisitor visitor(fullPath.c_str());
-    visitor.process(getSimulation());
+
+    std::vector<cObject*> roots {
+        getSimulation(),
+        componentTypes.getInstance(),
+        nedFunctions.getInstance(),
+        classes.getInstance(),
+        enums.getInstance(),
+        classDescriptors.getInstance(),
+        configOptions.getInstance(),
+        resultFilters.getInstance(),
+        resultRecorders.getInstance(),
+        messagePrinters.getInstance(),
+    };
+
+    for (cObject *root : roots)
+        visitor.process(root);
+
     if (visitor.getArraySize() == 0) {
         QMessageBox::warning(this, "Error",
                 QString("Object to search in (\"") + fullPath.c_str() + "\") could not be resolved.",
