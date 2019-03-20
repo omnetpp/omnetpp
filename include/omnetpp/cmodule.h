@@ -535,8 +535,12 @@ class SIM_API cModule : public cComponent //implies noncopyable
     //@{
 
     /**
-     * Convenience function. Returns true this is a simple module
-     * (i.e. subclassed from cSimpleModule), false otherwise.
+     * Returns true if the C++ class of this module is a subclass of cSimpleModule,
+     * and false otherwise, i.e. it is equivalent to a <tt>dynamic_cast</tt>.
+     *
+     * In contrast, to check whether this module is a NED compound or simple module
+     * (i.e. whether it was declared with the "module" or with the "simple" keyword in NED),
+     * use <tt>cModuleType::isSimple()</tt>: <tt>getModuleType()->isSimple()</tt>.
      */
     virtual bool isSimple() const;
 

@@ -588,7 +588,7 @@ void EventlogFileManager::moduleCreated(cModule *module)
     if (isCombinedRecordingEnabled) {
         bool recordModuleEvents = envir->getConfig()->getAsBool(module->getFullPath().c_str(), CFGID_MODULE_EVENTLOG_RECORDING);
         module->setRecordEvents(recordModuleEvents);
-        bool isCompoundModule = !module->isSimple();
+        bool isCompoundModule = !module->getModuleType()->isSimple();
         // FIXME: size() is missing
         EventLogWriter::recordModuleCreatedEntry_id_c_t_pid_n_cm(feventlog, module->getId(), module->getClassName(), module->getNedTypeName(), module->getParentModule() ? module->getParentModule()->getId() : -1, module->getFullName(), isCompoundModule);
         entryIndex++;
