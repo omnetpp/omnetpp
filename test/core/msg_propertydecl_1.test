@@ -12,7 +12,7 @@ packet Foo {
   int x @baz1 @baz2[index];
 }
 
-%testprog: opp_msgtool --msg6 -T msg test.msg_
+%testprog: opp_msgtool test.msg_
 
 %contains-regex: stderr
 .*: Warning: Unknown property @foo1 \(missing declaration via @property\?\)

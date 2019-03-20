@@ -19,7 +19,7 @@ packet Foo {
   int x @baz1 @baz2;
 }
 
-%testprog: opp_msgtool --msg6 -T msg test.msg_
+%testprog: opp_msgtool convert --xml test.msg_
 
 %not-contains: stderr
 Warning

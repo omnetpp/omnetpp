@@ -14,7 +14,7 @@ packet Foo {
   int x @baz1;
 }
 
-%testprog: opp_msgtool --msg6 -T msg test.msg_
+%testprog: opp_msgtool test.msg_
 
 %contains-regex: stderr
 .*: Warning: @foo1 cannot be used as file property \(see see corresponding @property declaration\)
