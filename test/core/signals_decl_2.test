@@ -39,11 +39,11 @@ t=0s: emit "m0" type=signals_decl_2::Foo value=
 t=0s: emit "m1" type=signals_decl_2::Foo value=
 t=0s: emit "m2" type=Foo value=
 t=0s: emit "m0" type=Foo value=
-ERROR: Signal "m0" emitted with wrong class (Foo does not subclass from signals_decl_2::Foo as declared)
+ERROR: Signal 'm0' emitted with wrong class (Foo does not subclass from signals_decl_2::Foo as declared)
 t=0s: emit "m1" type=Foo value=
-ERROR: Signal "m1" emitted with wrong class (Foo does not subclass from signals_decl_2::Foo as declared)
+ERROR: Signal 'm1' emitted with wrong class (Foo does not subclass from signals_decl_2::Foo as declared)
 t=0s: emit "m2" type=signals_decl_2::Foo value=
-ERROR: Signal "m2" emitted with wrong class (signals_decl_2::Foo does not subclass from Foo as declared)
+ERROR: Signal 'm2' emitted with wrong class (signals_decl_2::Foo does not subclass from Foo as declared)
 
 %contains: stdout
 emitted 6 signals with 3 errors

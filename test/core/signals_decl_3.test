@@ -36,13 +36,13 @@ t=0s: emit "abc" type=long value=1
 t=0s: emit "bar8" type=long value=1
 t=0s: emit "foo.x.bar" type=long value=1
 t=0s: emit "Xfoo-123" type=long value=1
-ERROR: Undeclared signal "Xfoo-123" emitted (@signal missing from NED file?)
+ERROR: Undeclared signal 'Xfoo-123' emitted (@signal missing from NED file?)
 t=0s: emit "aXXc" type=long value=1
-ERROR: Undeclared signal "aXXc" emitted (@signal missing from NED file?)
+ERROR: Undeclared signal 'aXXc' emitted (@signal missing from NED file?)
 t=0s: emit "bar11" type=long value=1
-ERROR: Undeclared signal "bar11" emitted (@signal missing from NED file?)
+ERROR: Undeclared signal 'bar11' emitted (@signal missing from NED file?)
 t=0s: emit "foo.x.barX" type=long value=1
-ERROR: Undeclared signal "foo.x.barX" emitted (@signal missing from NED file?)
+ERROR: Undeclared signal 'foo.x.barX' emitted (@signal missing from NED file?)
 
 %contains: stdout
 emitted 8 signals with 4 errors

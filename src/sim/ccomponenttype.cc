@@ -98,7 +98,7 @@ cComponentType *cComponentType::get(const char *qname)
     cComponentType *componentType = find(qname);
     if (!componentType) {
         const char *hint = (!qname || !strchr(qname, '.')) ? " (fully qualified type name expected)" : "";
-        throw cRuntimeError("NED type \"%s\" not found%s", qname, hint);
+        throw cRuntimeError("NED type '%s' not found%s", qname, hint);
     }
     return componentType;
 }
@@ -158,7 +158,7 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
         const char *signalName = cComponent::getSignalName(signalID);
         cProperty *prop = getSignalDeclaration(signalName);
         if (!prop)
-            throw cRuntimeError("Undeclared signal \"%s\" emitted (@signal missing from NED file?)", signalName);
+            throw cRuntimeError("Undeclared signal '%s' emitted (@signal missing from NED file?)", signalName);
 
         // found; extract info from it, and add signal to signalsSeen
         const char *declaredType = prop->getValue("type");
@@ -177,7 +177,7 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
                 desc.objectType = lookupClass(declaredType);
             }
             if (!desc.objectType)
-                throw cRuntimeError("Wrong type \"%s\" in the @signal[%s] property in the \"%s\" NED type, "
+                throw cRuntimeError("Wrong type '%s' in the @signal[%s] property in the '%s' NED type, "
                                     "should be one of: long, unsigned long, double, simtime_t, string, or a "
                                     "registered class name optionally followed by a question mark",
                         declaredType, prop->getIndex(), getFullName());
@@ -194,22 +194,22 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
                 cObject *innerObj;
                 if (!timestampedValue) {
                     if (obj)
-                        throw cRuntimeError("Signal \"%s\" emitted with wrong class (%s does not subclass from %s as declared)",
+                        throw cRuntimeError("Signal '%s' emitted with wrong class (%s does not subclass from %s as declared)",
                                 cComponent::getSignalName(signalID), obj->getClassName(), desc.objectType->getFullName());
                     else if (!desc.isNullable)
-                        throw cRuntimeError("Signal \"%s\" emitted a nullptr (specify 'type=%s?' in @signal to allow nullptr)",
+                        throw cRuntimeError("Signal '%s' emitted a nullptr (specify 'type=%s?' in @signal to allow nullptr)",
                                 cComponent::getSignalName(signalID), desc.objectType->getFullName());
                 }
                 else if (timestampedValue->getValueType(signalID) != SIMSIGNAL_OBJECT)
-                    throw cRuntimeError("Signal \"%s\" emitted as timestamped value with wrong type (%s, but object expected)",
+                    throw cRuntimeError("Signal '%s' emitted as timestamped value with wrong type (%s, but object expected)",
                             cComponent::getSignalName(signalID), getSignalTypeName(timestampedValue->getValueType(signalID)));
                 else if ((innerObj = timestampedValue->objectValue(signalID)) == nullptr) {
                     if (!desc.isNullable)
-                        throw cRuntimeError("Signal \"%s\" emitted as timestamped value with nullptr in it (specify 'type=%s?' in @signal to allow nullptr)",
+                        throw cRuntimeError("Signal '%s' emitted as timestamped value with nullptr in it (specify 'type=%s?' in @signal to allow nullptr)",
                                 cComponent::getSignalName(signalID), desc.objectType->getFullName());
                 }
                 else if (!desc.objectType->isInstance(innerObj))
-                    throw cRuntimeError("Signal \"%s\" emitted as timestamped value with wrong class in it (%s does not subclass from %s as declared)",
+                    throw cRuntimeError("Signal '%s' emitted as timestamped value with wrong class in it (%s does not subclass from %s as declared)",
                             cComponent::getSignalName(signalID), innerObj->getClassName(), desc.objectType->getFullName());
             }
         }
@@ -217,16 +217,16 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
             // additionally allow time-stamped value of the appropriate type
             cITimestampedValue *timestampedValue = dynamic_cast<cITimestampedValue *>(obj);
             if (!timestampedValue)
-                throw cRuntimeError("Signal \"%s\" emitted with wrong data type (expected=%s, actual=%s)",
+                throw cRuntimeError("Signal '%s' emitted with wrong data type (expected=%s, actual=%s)",
                         cComponent::getSignalName(signalID), getSignalTypeName(desc.type), obj ? obj->getClassName() : "nullptr");
             SimsignalType actualType = timestampedValue->getValueType(signalID);
             if (timestampedValue->getValueType(signalID) != desc.type)
-                throw cRuntimeError("Signal \"%s\" emitted as timestamped value with wrong data type (expected=%s, actual=%s)",
+                throw cRuntimeError("Signal '%s' emitted as timestamped value with wrong data type (expected=%s, actual=%s)",
                         cComponent::getSignalName(signalID), getSignalTypeName(desc.type), getSignalTypeName(actualType));
         }
     }
     else if (type != desc.type && desc.type != SIMSIGNAL_UNDEF) {
-        throw cRuntimeError("Signal \"%s\" emitted with wrong data type (expected=%s, actual=%s)",
+        throw cRuntimeError("Signal '%s' emitted with wrong data type (expected=%s, actual=%s)",
                 cComponent::getSignalName(signalID), getSignalTypeName(desc.type), getSignalTypeName(type));
     }
 }
@@ -256,7 +256,7 @@ cObjectFactory *cComponentType::lookupClass(const char *className) const
 
 //----
 
-cModuleType::cModuleType(const char *name) : cComponentType(name)
+cModuleType::cModuleType(const char *qname) : cComponentType(qname)
 {
 }
 
@@ -354,20 +354,16 @@ cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int 
 
 cModule *cModuleType::instantiateModuleClass(const char *className)
 {
-    cObject *obj = cObjectFactory::createOne(className);  // this won't return nullptr
+    cObject *obj = cObjectFactory::createOne(className);
     cModule *module = dynamic_cast<cModule *>(obj);
     if (!module)
-        throw cRuntimeError("Incorrect module class %s: Not subclassed from cModule", className);
-
-    // check module object
-    if (!module->isModule())
-        throw cRuntimeError("Incorrect module class %s: isModule() returns false", className);
+        throw cRuntimeError("Incorrect class '%s' (not a subclass of cModule) for NED module type '%s'", className, getFullName());
+    ASSERT(module->isModule());
 
     if (isSimple()) {
         if (dynamic_cast<cSimpleModule *>(module) == nullptr)
-            throw cRuntimeError("Incorrect simple module class %s: Not subclassed from cSimpleModule", className);
-        if (module->isSimple() == false)
-            throw cRuntimeError("Incorrect simple module class %s: isSimple() returns false", className);
+            throw cRuntimeError("Incorrect class '%s' (not a subclass of cSimpleModule) for NED simple module type '%s'", className, getFullName());
+        ASSERT(module->isSimple());
     }
 
     return module;
@@ -396,7 +392,7 @@ cModuleType *cModuleType::get(const char *qname)
     cModuleType *p = find(qname);
     if (!p) {
         const char *hint = (!qname || !strchr(qname, '.')) ? " (fully qualified type name expected)" : "";
-        throw cRuntimeError("NED module type \"%s\" not found%s", qname, hint);
+        throw cRuntimeError("NED module type '%s' not found%s", qname, hint);
     }
     return p;
 }
@@ -407,16 +403,16 @@ cChannelType *cChannelType::idealChannelType;
 cChannelType *cChannelType::delayChannelType;
 cChannelType *cChannelType::datarateChannelType;
 
-cChannelType::cChannelType(const char *name) : cComponentType(name)
+cChannelType::cChannelType(const char *qname) : cComponentType(qname)
 {
 }
 
-cChannel *cChannelType::instantiateChannelClass(const char *classname)
+cChannel *cChannelType::instantiateChannelClass(const char *className)
 {
-    cObject *obj = cObjectFactory::createOne(classname);  // this won't return nullptr
+    cObject *obj = cObjectFactory::createOne(className);  // this won't return nullptr
     cChannel *channel = dynamic_cast<cChannel *>(obj);
     if (!channel)
-        throw cRuntimeError("Class %s is not a channel type", classname);  //FIXME better msg
+        throw cRuntimeError("Incorrect class '%s' (not a subclass of cChannel) for NED channel type '%s'", className, getFullName());
     return channel;
 }
 
@@ -435,7 +431,7 @@ cChannel *cChannelType::create(const char *name)
         channel = createChannelObject();
     }
     catch (std::exception& e) {
-        // restore defaultowner, otherwise it'll remain pointing to a dead object
+        // restore default owner, otherwise it'll remain pointing to a dead object
         cOwnedObject::setDefaultOwner(oldlist);
         throw;
     }
@@ -482,7 +478,7 @@ cChannelType *cChannelType::get(const char *qname)
     cChannelType *p = find(qname);
     if (!p) {
         const char *hint = (!qname || !strchr(qname, '.')) ? " (fully qualified type name expected)" : "";
-        throw cRuntimeError("NED channel type \"%s\" not found%s", qname, hint);
+        throw cRuntimeError("NED channel type '%s' not found%s", qname, hint);
     }
     return p;
 }
