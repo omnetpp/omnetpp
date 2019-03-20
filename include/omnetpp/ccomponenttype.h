@@ -193,44 +193,26 @@ class SIM_API cModuleType : public cComponentType
 {
     friend class cModule;
   protected:
-    /**
-     * Creates the module object. To be defined in subclasses.
-     */
+    // internal: create the module object
     virtual cModule *createModuleObject() = 0;
 
-    /**
-     * Adds parameters and gates to a newly created module object.
-     * Gate vectors will be created with zero size, and a further
-     * call to setupGateVectors() will be needed once parameter values
-     * have been finalized.
-     */
-    //TODO in 5.0, these methods should be internal (i.e. nor public API)
+    // internal: add parameters and gates to a newly created module object.
+    // Gate vectors will be created with zero size, and a further call to
+    // setupGateVectors() will be needed once parameter values have been finalized/
     virtual void addParametersAndGatesTo(cModule *mod) = 0;
 
-    /**
-     * Sets gate vector sizes on the module. This must be called AFTER all
-     * parameters have been set (see finalizeParameters()) because gate
-     * vector sizes may depend on parameter values; and it it must be
-     * invoked before connecting the gates and calling mod->buildInside().
-     */
+    // internal: set gate vector sizes on the module. This must be called AFTER all
+    // parameters have been set (see finalizeParameters()) because gate vector sizes
+    // may depend on parameter values; and it it must be invoked before connecting
+    // the gates and calling mod->buildInside().
     virtual void setupGateVectors(cModule *mod) = 0;
 
-    /**
-     * Creates and connects submodules of a newly created module object.
-     * To be defined in subclasses. addParametersAndGatesTo() and
-     * setupGateVectors() must have been already called at this point.
-     *
-     * NOTE: If you have an old simulation model that attempts to call
-     * this method directly, it is using an API call which has been DEPRECATED
-     * since OMNeT++ 2.3b1 -- please change the code to <tt>mod->buildInside()</tt>.
-     */
+    // internal: create and connect submodules of a newly created module object.
+    // addParametersAndGatesTo() and setupGateVectors() must have been already called at this point.
     virtual void buildInside(cModule *mod) = 0;
 
-    /**
-     * Utility function: instantiates the given class, and tries to cast the
-     * result to cModule. Raises an error if class was not found or could
-     * not be cast.
-     */
+    // internal: utility function: instantiates the given class, and tries to cast
+    // the result to cModule. Raises an error if class was not found or could not be cast.
     cModule *instantiateModuleClass(const char *classname);
 
   public:
@@ -317,21 +299,14 @@ class SIM_API cChannelType : public cComponentType
     static cChannelType *datarateChannelType;
 
   protected:
-    /**
-     * Creates the channel object. To be defined in subclasses.
-     */
+    // internal: create the channel object
     virtual cChannel *createChannelObject() = 0;
 
-    /**
-     * Adds parameters to a newly created channel object.
-     * To be defined in subclasses.
-     */
+    // internal: add parameters to a newly created channel object.
     virtual void addParametersTo(cChannel *channel) = 0;
 
-    /**
-     * Utility function: instantiates the given class, and tries to cast the
-     * result to cChannel. Raises an error if class was not found or could not be cast.
-     */
+    // internal: utility function: instantiates the given class, and tries to cast the
+    // result to cChannel. Raises an error if class was not found or could not be cast.
     cChannel *instantiateChannelClass(const char *classname);
 
   public:
