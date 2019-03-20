@@ -120,7 +120,7 @@ struct ENVIR_API EnvirOptions
 
 /**
  * Abstract base class for the user interface. Concrete user interface
- * implementations (Cmdenv, Tkenv) should be derived from this class.
+ * implementations (Cmdenv, Qtenv) should be derived from this class.
  */
 class ENVIR_API EnvirBase : public cRunnableEnvir
 {

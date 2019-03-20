@@ -87,11 +87,11 @@ namespace omnetpp {
  *
  * @brief \opp provides container classes that are aware of the simulation
  * kernel's ownership mechanism, and also make contents inspectable in
- * runtime GUIs like Qtenv or Tkenv.
+ * runtime GUIs like Qtenv.
  *
  * In addition, one can also use standard C++ container classes like
  * std::vector or std::map. Note that these containers will not show up
- * in Tkenv or Qtenv inspectors unless you use the WATCH_VECTOR(), WATCH_MAP()
+ * in Qtenv inspectors unless you use the WATCH_VECTOR(), WATCH_MAP()
  * macros.
  */
 
@@ -266,7 +266,7 @@ namespace omnetpp {
 /**
  * @defgroup WatchMacros  WATCH Macros
  *
- * @brief WATCH macros make normal variables show up in Tkenv/Qtenv inspectors.
+ * @brief WATCH macros make normal variables show up in Qtenv inspectors.
  */
 
 /**

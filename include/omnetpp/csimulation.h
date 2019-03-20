@@ -52,7 +52,7 @@ SIM_API extern cDefaultList defaultList; // also in globals.h
  *
  * Most cSimulation methods are not of interest for simulation model code,
  * they are used internally (e.g. by the user interface libraries (Envir,
- * Cmdenv, Tkenv) to set up and run simulations).
+ * Cmdenv, Qtenv) to set up and run simulations).
  *
  * Some methods which can be of interest when programming simple modules:
  * getUniqueNumber(), getModuleByPath(), getModule(), snapshot().

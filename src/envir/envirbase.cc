@@ -245,10 +245,6 @@ static const char *buildOptions = ""
     " WITH_NETBUILDER"
     #endif
 
-    #ifdef WITH_TKENV
-    " WITH_TKENV"
-    #endif
-
     #ifdef WITH_QTENV
     " WITH_QTENV"
     #endif
@@ -1360,7 +1356,7 @@ void EnvirBase::readOptions()
                 "(it allows values like \"us\" or \"100ps\" in addition to base-10 scale exponents)",
                 CFGID_SIMTIME_SCALE->getName(), CFGID_SIMTIME_RESOLUTION->getName());
 
-    // note: this is read per run as well, but Tkenv needs its value on startup too
+    // note: this is read per run as well, but Qtenv needs its value on startup too
     opt->inifileNetworkDir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
 
     // NED path. It is taken from the "-n" command-line options,

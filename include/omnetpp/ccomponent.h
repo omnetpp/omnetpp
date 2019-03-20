@@ -174,7 +174,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     // internal: calls refreshDisplay() recursively
     virtual void callRefreshDisplay() = 0;
 
-    // internal: used from Tkenv: find out if this module has a display string.
+    // internal: used from Qtenv: find out if this module has a display string.
     // getDisplayString() would create the object immediately which we want to avoid.
     bool hasDisplayString();
 
@@ -265,7 +265,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
 
     /**
      * This method is called on all components of the simulation by graphical
-     * user interfaces (Qtenv, Tkenv) whenever GUI contents need to be refreshed
+     * user interfaces like Qtenv, whenever GUI contents need to be refreshed
      * after processing some simulation events. Components that contain
      * visualization-related code are expected to override refreshDisplay(),
      * and move visualization code display string manipulation, canvas figures
@@ -278,10 +278,10 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * (Data members that do need to be updated inside refreshDisplay(), i.e.
      * those related to visualization, may be declared mutable to allow that).
      *
-     * Tkenv and Qtenv invoke refreshDisplay() with similar strategies: in Step
-     * and Run mode, after each event; in Fast Run and Express Run mode, every
-     * time the screen is refereshed, which is typically on the order of once
-     * per second. Cmdenv does not invoke refreshDisplay() at all.
+     * Qtenv invokes refreshDisplay() in Step and Run mode, after each event;
+     * in Fast Run and Express Run mode, every time the screen is refereshed,
+     * which is typically on the order of once per second.
+     * Cmdenv does not invoke refreshDisplay() at all.
      *
      * Note that overriding refreshDisplay() is generally preferable to doing
      * display updates as part of event handling: it results in essentially
@@ -1004,7 +1004,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     //@{
     /**
      * Returns true if the current environment is a graphical user interface.
-     * (For example, it returns true if the simulation is running over Tkenv/Qtenv,
+     * (For example, it returns true if the simulation is running in Qtenv,
      * and false if it's running over Cmdenv.) Modules can examine this flag
      * to decide whether or not they need to bother with visualization, e.g.
      * dynamically update display strings or draw on canvases.
@@ -1025,7 +1025,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     virtual void setDisplayString(const char *dispstr);
 
     /**
-     * When the models is running under Tkenv or Qtenv, it displays the given
+     * When the models is running in Qtenv, it displays the given
      * text in the network graphics, as a bubble above the module's icon.
      */
     virtual void bubble(const char *text) const;

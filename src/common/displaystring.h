@@ -27,7 +27,7 @@ namespace common {
 /**
  * Class for storage and easy manipulation of display strings. Display strings
  * are used to control the graphical presentation of network elements
- * when a GUI execution environment is used (Tkenv).
+ * when a GUI execution environment is used.
  *
  * A display string consist of several named tags, where each tag may have
  * several arguments (parameters). The syntax: "tag1=value1,val2,val3;tag2=val4,val5".

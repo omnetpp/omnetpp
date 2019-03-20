@@ -25,19 +25,12 @@ namespace omnetpp {
 
 
 /**
- * @brief Abstract base class for structure description classes, used mainly
- * with message subclassing.
+ * @brief Abstract base class for structure description classes.
  *
- * Subclasses of cClassDescriptor encapsulate the kind of reflection
- * information (in the Java sense) which is needed by Tkenv to display
- * fields in a message, struct or object created with the .msg syntax.
- * The cClassDescriptor subclass is generated along with the message class,
- * (struct, object, etc.).
- *
- * When Tkenv encounters a message object, it creates an appropriate
- * cClassDescriptor object and uses that to find out what fields the
- * message object has, what are their values etc. The message object
- * is said to be the `client object' of the cClassDescriptor object.
+ * Subclasses of cClassDescriptor encapsulate reflection information
+ * (in the Java sense) which is needed by e.g. Qtenv to display object
+ * contents. cClassDescriptor subclasses are normally generated
+ * by the message compiler from MSG files.
  *
  * @ingroup Internals
  */

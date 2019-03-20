@@ -91,7 +91,7 @@ int insptypeCodeFromName(const char *name)
 //
 // We have also tried a few others (Drawer, Popup, etc...), but none were quite right.
 //
-// Tkenv does something else, it puts the Inspector windows on a so-called
+// Tkenv did something else, it put Inspector windows on a so-called
 // Utility Level, so they work best (and move with the MainWindow on Mac),
 // but we couldn't find a way to do that without ugly ObjC code.
 //

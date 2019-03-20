@@ -593,7 +593,7 @@ class SIM_API cMessage : public cEvent
     //@{
     /**
      * Override to define a display string for the message. Display string
-     * affects message appearance in Tkenv. This default implementation
+     * affects message appearance in Qtenv. This default implementation
      * returns "".
      */
     virtual const char *getDisplayString() const;

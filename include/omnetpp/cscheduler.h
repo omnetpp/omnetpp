@@ -69,8 +69,8 @@ class SIM_API cScheduler : public cObject, public cISimulationLifecycleListener
     virtual ~cScheduler();
 
     /**
-     * Return a short description. This string will be displayed in the Qtenv
-     * and Tkenv GUIs as scheduler information. Returning an empty string means
+     * Return a short description. This string will be displayed in Qtenv
+     * as scheduler information. Returning an empty string means
      * "default scheduler", and is reserved for cSequentialScheduler.
      */
     virtual std::string str() const override;
@@ -96,7 +96,7 @@ class SIM_API cScheduler : public cObject, public cISimulationLifecycleListener
     virtual void endRun() {}
 
     /**
-     * Called every time the user hits the Run button in Tkenv.
+     * Called every time the user hits the Run button in Qtenv.
      * Real-time schedulers (e.g. cRealTimeScheduler) may make use of
      * this callback to pin current simulation time to current
      * wall clock time.

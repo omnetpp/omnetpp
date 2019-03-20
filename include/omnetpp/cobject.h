@@ -39,7 +39,7 @@ class cOwnedObject;
  * cObject and its subclass cOwnedObject define an ownership mechanism.
  * Any cObject may become owner of other objects, but owned objects must be
  * subclassed from cOwnedObject. cObject also contains methods that allow
- * the object to be displayed in graphical user interfaces (Tkenv, Qtenv).
+ * the object to be displayed in graphical user interfaces like Qtenv.
  *
  * It is recommended to use cObject as a base class for any class
  * that has at least one virtual member function. This makes the class more

@@ -48,7 +48,7 @@ class cObjectFactory;
  * - a figure subtree can be hidden by calling setVisible(false)
  * - the order of child figures also denotes drawing order (of overlapping figures, the last one will appear on top)
  * - dup() makes shallow copy (doesn't copy child figures); see dupTree() as well
- * - figures are only data storage classes, rendering is done in the back-end (e.g. Tkenv)
+ * - figures are only data storage classes, rendering is done in the back-end (e.g. Qtenv)
  *   by separate renderer classes.
  *
  * @see cCanvas
@@ -818,7 +818,7 @@ class SIM_API cFigure : public cOwnedObject
         /**
          * Returns the name of the class responsible for rendering this figure.
          * Renderer classes are specific to, and are usually implemented as
-         * part of, the graphical user interface library (Tkenv or Qtenv).
+         * part of, the graphical user interface library e.g. Qtenv.
          */
         virtual const char *getRendererClassName() const = 0;
         //@}
@@ -2414,8 +2414,8 @@ class SIM_API cAbstractTextFigure : public cFigure
          * ascent height) need to be supplied by the user interface of the
          * simulation (cEnvir). The result depends on the details of font
          * rendering and other factors, so the returned numbers and their
-         * accuracy may vary across user interfaces (Qtenv vs. Tkenv), operating
-         * systems or even installations. Cmdenv and other non-GUI environments
+         * accuracy may vary across user interfaces, operating systems or
+         * even installations. Cmdenv and other non-GUI environments
          * may return completely made-up (but not entirely unrealistic) numbers.
          *
          * @see cEnvir::getTextExtent()
@@ -2933,13 +2933,13 @@ class SIM_API cPixmapFigure : public cAbstractImageFigure
  * Notes:
  * - all figures are under a root figure (which we try not to expose too much)
  * - Z-order is defined by child order (bottom-to-top) and preorder traversal
- * - layer-like functionality is provided via figure tags: the Tkenv UI will allow figures
+ * - layer-like functionality is provided via figure tags: the Qtenv UI allows figures
  *   to be shown or hidden according to tags they contain
  * - cModule has one dedicated canvas, additional canvas objects can be created
  * - initial module canvas contents comes from @figure properties inside the compound module NED file, see samples/canvas for examples!
  * - extensibility: type=foo in a @figure property will cause the canvas to look for a registered FooFigure or cFooFigure class to instantiate
  * - dup() makes deep copy (duplicates the figure tree too)
- * - the submodules layer (see getSubmodulesLayer()) is currently an empty placeholder figure where Tkenv will
+ * - the submodules layer (see getSubmodulesLayer()) is currently an empty placeholder figure where Qtenv will
  *   draw modules and connections (by means outside cCanvas/cFigure) -- it can be used for Z-order positioning
  *   of other figures relative to the submodules and connections
  *

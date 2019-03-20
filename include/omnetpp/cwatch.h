@@ -25,7 +25,7 @@ namespace omnetpp {
 
 /**
  * @brief Helper class to make primitive types and non-cOwnedObject objects
- * inspectable in Tkenv/Qtenv. To be used only via the WATCH, WATCH_PTR,
+ * inspectable in Qtenv. To be used only via the WATCH, WATCH_PTR,
  * WATCH_OBJ, WATCH_VECTOR etc macros.
  *
  * @ingroup Internals
@@ -317,7 +317,7 @@ inline cWatchBase *createWatch_cObjectPtr(const char *varname, cObject *&refp, c
 //@{
 
 /**
- * @brief Makes primitive types and types with operator<< inspectable in Tkenv.
+ * @brief Makes primitive types and types with operator<< inspectable in Qtenv.
  * See also WATCH_RW(), WATCH_PTR(), WATCH_OBJ(), WATCH_VECTOR(),
  * WATCH_PTRVECTOR(), etc. macros.
  *
@@ -326,7 +326,7 @@ inline cWatchBase *createWatch_cObjectPtr(const char *varname, cObject *&refp, c
 #define WATCH(variable)  omnetpp::createWatch(#variable,(variable))
 
 /**
- * @brief Makes types with operator\<\< and operator\>\> inspectable in Tkenv.
+ * @brief Makes types with operator\<\< and operator\>\> inspectable in Qtenv.
  * operator\>\> is used to enable changing the variable's value interactively.
  *
  * @hideinitializer
@@ -334,7 +334,7 @@ inline cWatchBase *createWatch_cObjectPtr(const char *varname, cObject *&refp, c
 #define WATCH_RW(variable)  omnetpp::createWatch_genericAssignable(#variable,(variable))
 
 /**
- * @brief Makes classes derived from cObject inspectable in Tkenv.
+ * @brief Makes classes derived from cObject inspectable in Qtenv.
  * See also WATCH_PTR().
  *
  * @hideinitializer
@@ -342,7 +342,7 @@ inline cWatchBase *createWatch_cObjectPtr(const char *varname, cObject *&refp, c
 #define WATCH_OBJ(variable)  omnetpp::createWatch_cObject(#variable,(variable))
 
 /**
- * @brief Makes pointers to objects derived from cObject inspectable in Tkenv.
+ * @brief Makes pointers to objects derived from cObject inspectable in Qtenv.
  * See also WATCH_OBJ().
  *
  * @hideinitializer

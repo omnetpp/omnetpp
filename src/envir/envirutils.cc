@@ -257,7 +257,7 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
     if (wantAll || !strcmp(category, "classdesc")) {
         processed = true;
         if (verbose)
-            out << "Classes that have associated reflection information (needed for Tkenv inspectors):\n";
+            out << "Classes that have associated reflection information (needed for e.g. Qtenv inspectors):\n";
         cRegistrationList *table = classDescriptors.getInstance();
         table->sort();
         for (int i = 0; i < table->size(); i++) {

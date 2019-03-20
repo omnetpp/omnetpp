@@ -30,7 +30,7 @@ class cMessage;
  * Message printers is a somewhat experimental feature, intended at giving
  * models a way to control how network packets or in general, cMessage
  * objects) are displayed. Currently, message printer output is used for
- * the Messages mode display of the Log viewer in Tkenv/Qtenv.
+ * the Messages mode display of the Log viewer in Qtenv.
  *
  * Several message printers may be registered (with Register_MessagePrinter()),
  * independent of each other, and OMNeT++ will choose the "best" or most

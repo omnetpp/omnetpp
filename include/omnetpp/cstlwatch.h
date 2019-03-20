@@ -112,7 +112,7 @@ class cStdListWatcher : public cStdVectorWatcherBase
     virtual int size() const override {return v.size();}
     virtual std::string at(int i) const override {
         // std::list doesn't support random access iterator and iteration is slow,
-        // so we have to use a trick, knowing that Tkenv will call this function with
+        // so we have to use a trick, knowing that Qtenv will call this function with
         // i=0, i=1, etc...
         if (i==0) {
             it=v.begin(); itPos=0;
@@ -185,7 +185,7 @@ class cStdSetWatcher : public cStdVectorWatcherBase
     virtual int size() const override {return v.size();}
     virtual std::string at(int i) const override {
         // std::set doesn't support random access iterator and iteration is slow,
-        // so we have to use a trick, knowing that Tkenv will call this function with
+        // so we have to use a trick, knowing that Qtenv will call this function with
         // i=0, i=1, etc...
         if (i==0) {
             it=v.begin(); itPos=0;
@@ -258,7 +258,7 @@ class cStdMapWatcher : public cStdVectorWatcherBase
     virtual int size() const override {return m.size();}
     virtual std::string at(int i) const override {
         // std::map doesn't support random access iterator and iteration is slow,
-        // so we have to use a trick, knowing that Tkenv will call this function with
+        // so we have to use a trick, knowing that Qtenv will call this function with
         // i=0, i=1, etc...
         if (i==0) {
             it=m.begin(); itPos=0;
@@ -314,56 +314,56 @@ void createStdPointerMapWatcher(const char *varname, std::map<KeyT,ValueT,CmpT>&
 //@{
 
 /**
- * @brief Makes std::vectors inspectable in Tkenv. See also WATCH_PTRVECTOR().
+ * @brief Makes std::vectors inspectable in Qtenv. See also WATCH_PTRVECTOR().
  *
  * @hideinitializer
  */
 #define WATCH_VECTOR(variable)     omnetpp::createStdVectorWatcher(#variable,(variable))
 
 /**
- * @brief Makes std::vectors storing pointers inspectable in Tkenv. See also WATCH_VECTOR().
+ * @brief Makes std::vectors storing pointers inspectable in Qtenv. See also WATCH_VECTOR().
  *
  * @hideinitializer
  */
 #define WATCH_PTRVECTOR(variable)  omnetpp::createStdPointerVectorWatcher(#variable,(variable))
 
 /**
- * @brief Makes std::lists inspectable in Tkenv. See also WATCH_PTRLIST().
+ * @brief Makes std::lists inspectable in Qtenv. See also WATCH_PTRLIST().
  *
  * @hideinitializer
  */
 #define WATCH_LIST(variable)       omnetpp::createStdListWatcher(#variable,(variable))
 
 /**
- * @brief Makes std::lists storing pointers inspectable in Tkenv. See also WATCH_LIST().
+ * @brief Makes std::lists storing pointers inspectable in Qtenv. See also WATCH_LIST().
  *
  * @hideinitializer
  */
 #define WATCH_PTRLIST(variable)    omnetpp::createStdPointerListWatcher(#variable,(variable))
 
 /**
- * @brief Makes std::sets inspectable in Tkenv. See also WATCH_PTRSET().
+ * @brief Makes std::sets inspectable in Qtenv. See also WATCH_PTRSET().
  *
  * @hideinitializer
  */
 #define WATCH_SET(variable)        omnetpp::createStdSetWatcher(#variable,(variable))
 
 /**
- * @brief Makes std::sets storing pointers inspectable in Tkenv. See also WATCH_SET().
+ * @brief Makes std::sets storing pointers inspectable in Qtenv. See also WATCH_SET().
  *
  * @hideinitializer
  */
 #define WATCH_PTRSET(variable)     omnetpp::createStdPointerSetWatcher(#variable,(variable))
 
 /**
- * @brief Makes std::maps inspectable in Tkenv. See also WATCH_PTRMAP().
+ * @brief Makes std::maps inspectable in Qtenv. See also WATCH_PTRMAP().
  *
  * @hideinitializer
  */
 #define WATCH_MAP(m)               omnetpp::createStdMapWatcher(#m,(m))
 
 /**
- * @brief Makes std::maps storing pointers inspectable in Tkenv. See also WATCH_MAP().
+ * @brief Makes std::maps storing pointers inspectable in Qtenv. See also WATCH_MAP().
  *
  * @hideinitializer
  */

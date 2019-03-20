@@ -34,8 +34,8 @@ namespace envir {
 //
 // For registering user interfaces as subclasses of cEnvir.
 // Creating the user interface object allows us to link an envir.dll on
-// Windows without having to know in which dll (cmdenv, tkenv) cEnvir's
-// appropriate subclass will come from. (On Unix, this was no problem anyway...)
+// Windows without having to know in which dll (cmdenv, qtenv) cEnvir's
+// appropriate subclass will come from.
 //
 //  score:   by default, OMNeT++ will choose the user interface with the
 //           highest score when it starts

@@ -74,7 +74,7 @@ class ENVIR_API cCollectObjectsVisitor : public cVisitor
 /**
  * Traverses an object tree, and collects objects that belong to certain
  * "categories" (see CATEGORY_... constants) and their getClassName()
- * and/or getFullPath() matches a pattern. Used by the Tkenv "Object Filter" dialog.
+ * and/or getFullPath() matches a pattern. Used by the Qtenv "Find Objects" dialog.
  */
 class ENVIR_API cFilteredCollectObjectsVisitor : public cCollectObjectsVisitor
 {

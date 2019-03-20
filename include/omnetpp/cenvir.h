@@ -454,8 +454,8 @@ class SIM_API cEnvir
     //@{
     /**
      * Returns true if the current environment is a graphical user interface.
-     * (For example, it returns true if the simulation is running over Tkenv or
-     * Qtenv, and false if it's running over Cmdenv.) Modules can examine this
+     * (For example, it returns true if the simulation is running in Qtenv,
+     * and false if it's running in Cmdenv.) Modules can examine this
      * flag to decide whether or not they need to bother with visualization,
      * e.g. dynamically updating display strings or drawing on canvases.
      */
@@ -475,7 +475,7 @@ class SIM_API cEnvir
     virtual bool isExpressMode() const = 0;
 
     /**
-     * In graphical user interfaces (Tkenv/Qtenv), it pops up a transient
+     * In graphical user interfaces like Qtenv, it pops up a transient
      * "bubble" over the module icon.
      */
     virtual void bubble(cComponent *component, const char *text) = 0;

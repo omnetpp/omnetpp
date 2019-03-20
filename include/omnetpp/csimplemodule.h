@@ -182,7 +182,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * By default, the whole simulation (all modules etc) will be written
      * out.
      *
-     * Tkenv also supports making snapshots manually, from menu.
+     * Qtenv also supports making snapshots interactively.
      *
      * See also class cWatch and the WATCH() macro.
      */
