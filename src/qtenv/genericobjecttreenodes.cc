@@ -19,6 +19,7 @@
 #include "common/stlutil.h"
 #include "common/stringutil.h"
 #include "qtutil.h"
+#include "qtenv.h"  // for getQtenv
 #include <QElapsedTimer>
 #include <set>
 #include "envir/visitor.h"
@@ -569,8 +570,15 @@ bool FieldNode::isEditable()
            : false;
 }
 
+struct DisableDebugOnErrors {
+    bool oldValue;
+    DisableDebugOnErrors() {oldValue = getQtenv()->debugOnErrors; getQtenv()->debugOnErrors = false;}
+    ~DisableDebugOnErrors() {getQtenv()->debugOnErrors = oldValue;}
+};
+
 bool FieldNode::setData(const QVariant& value, int role)
 {
+    DisableDebugOnErrors dummy; // prevent the Debug dialog from kicking in if there is an exception inside setFieldValueAsString()
     return containingDesc
            ? containingDesc->setFieldValueAsString(containingObject, fieldIndex, 0, value.toString().toStdString().c_str())
            : false;
