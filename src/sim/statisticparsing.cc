@@ -317,15 +317,15 @@ SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filt
 
 void StatisticSourceParser::checkSignalDeclaration(cComponent *component, const char *signalName, TristateBool checkSignalDecl)
 {
-    // if it's a simple module or a channel, we expect the signal to be declared with @signal.
-    // This behavior can be overridden with the checkSignal=true/false setting.
-    // We can't always check for the presence of the signal declaration, because
-    // a signal also may be emitted by submodules
+    // If it's a simple module or a channel, we expect the signal to be declared with @signal.
+    // This behavior can be overridden with the checkSignal=true/false setting in the @statistic property.
+    // We can't always check for the presence of the signal declaration, because a signal also may be emitted by submodules.
 
-    if (checkSignalDecl==cStatisticBuilder::TRISTATE_TRUE || (checkSignalDecl==cStatisticBuilder::TRISTATE_DEFAULT && (component->isChannel() || (component->isModule() && ((cModule*)component)->isSimple())))) {
+    if (checkSignalDecl==cStatisticBuilder::TRISTATE_TRUE || (checkSignalDecl==cStatisticBuilder::TRISTATE_DEFAULT && (component->isChannel() || (component->isModule() && ((cModule*)component)->getModuleType()->isSimple())))) {
         omnetpp::cProperty *signalDeclaration = component->getComponentType()->getSignalDeclaration(signalName);
         if (!signalDeclaration)
-            throw opp_runtime_error("Signal '%s' is not declared on type '%s' (you can turn off or force this check by setting %s=false/true)",
+            throw opp_runtime_error("Signal '%s' is not declared on type '%s' (you can turn off this check "
+                    "by adding %s=false to the @statistic property in the NED file)",
                     signalName, component->getComponentType()->getFullName(), PROPKEY_STATISTIC_CHECKSIGNALS);
     }
 

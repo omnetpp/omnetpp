@@ -250,7 +250,8 @@ class SIM_API cModuleType : public cComponentType
     virtual bool isNetwork() const = 0;
 
     /**
-     * Returns true if this object represents a simple module type.
+     * Returns true if this module type was declared as a simple module in the
+     * NED file, i.e. using the "simple" keyword.
      */
     virtual bool isSimple() const = 0;
     //@}
