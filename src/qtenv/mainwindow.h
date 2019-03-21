@@ -152,9 +152,13 @@ private slots:
     void on_actionSimulation_triggered();
     void on_actionNedComponentTypes_triggered();
     void on_actionRegisteredClasses_triggered();
+    void on_actionClassDescriptors_triggered();
     void on_actionNED_Functions_triggered();
     void on_actionRegistered_Enums_triggered();
     void on_actionSupportedConfigurationOption_triggered();
+    void on_actionResultFilters_triggered();
+    void on_actionResultRecorders_triggered();
+    void on_actionMessagePrinters_triggered();
     void on_actionInspectByPointer_triggered();
     void on_actionRecordVideo_toggled(bool checked);
     void on_actionShowAnimationParams_toggled(bool checked);

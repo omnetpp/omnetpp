@@ -1313,6 +1313,11 @@ void MainWindow::on_actionRegisteredClasses_triggered()
     getQtenv()->inspect(classes.getInstance(), INSP_DEFAULT, true);
 }
 
+void MainWindow::on_actionClassDescriptors_triggered()
+{
+    getQtenv()->inspect(classDescriptors.getInstance(), INSP_DEFAULT, true);
+}
+
 // inspectFunctions
 void MainWindow::on_actionNED_Functions_triggered()
 {
@@ -1329,6 +1334,21 @@ void MainWindow::on_actionRegistered_Enums_triggered()
 void MainWindow::on_actionSupportedConfigurationOption_triggered()
 {
     getQtenv()->inspect(configOptions.getInstance(), INSP_DEFAULT, true);
+}
+
+void MainWindow::on_actionResultFilters_triggered()
+{
+    getQtenv()->inspect(resultFilters.getInstance(), INSP_DEFAULT, true);
+}
+
+void MainWindow::on_actionResultRecorders_triggered()
+{
+    getQtenv()->inspect(resultRecorders.getInstance(), INSP_DEFAULT, true);
+}
+
+void MainWindow::on_actionMessagePrinters_triggered()
+{
+    getQtenv()->inspect(messagePrinters.getInstance(), INSP_DEFAULT, true);
 }
 
 // inspectBypointer
