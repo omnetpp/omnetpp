@@ -515,16 +515,17 @@ char *opp_concat(const char *s1,
                  const char *s3,
                  const char *s4)
 {
-    // concatenate strings into a static buffer
-    // FIXME throw error if string overflows!!!
-    static char buf[256];
-    char *bufEnd = buf+255;
-    char *dest=buf;
+    const int BUFLEN = 256;
+    static char buf[BUFLEN];
+    char *bufEnd = buf+BUFLEN-1;
+    char *dest = buf;
     if (s1) while (*s1 && dest!=bufEnd) *dest++ = *s1++;
     if (s2) while (*s2 && dest!=bufEnd) *dest++ = *s2++;
     if (s3) while (*s3 && dest!=bufEnd) *dest++ = *s3++;
     if (s4) while (*s4 && dest!=bufEnd) *dest++ = *s4++;
     *dest = 0;
+    if (dest==bufEnd)
+        throw opp_runtime_error("Concatenated string '%s%s%s%s' exceeds buffer length %d", s1, s2, s3, s4, BUFLEN);
     return buf;
 }
 
