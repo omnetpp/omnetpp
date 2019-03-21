@@ -738,22 +738,22 @@ Total number of messages created since start of the simulation</string>
   </action>
   <action name="actionScheduledEvents">
    <property name="text">
-    <string>&amp;Scheduled Events (FES)</string>
+    <string>Scheduled &amp;Events (FES)</string>
    </property>
   </action>
   <action name="actionSimulation">
    <property name="text">
-    <string>S&amp;imulation</string>
+    <string>&amp;Simulation</string>
    </property>
   </action>
   <action name="actionNedComponentTypes">
    <property name="text">
-    <string>&amp;NED Component Types</string>
+    <string>NED Component &amp;Types</string>
    </property>
   </action>
   <action name="actionRegisteredClasses">
    <property name="text">
-    <string>&amp;Registered Classes</string>
+    <string>Registered &amp;Classes</string>
    </property>
   </action>
   <action name="actionNED_Functions">
@@ -768,12 +768,12 @@ Total number of messages created since start of the simulation</string>
   </action>
   <action name="actionSupportedConfigurationOption">
    <property name="text">
-    <string>&amp;Supported Configuration Options</string>
+    <string>Supported Configuration &amp;Options</string>
    </property>
   </action>
   <action name="actionInspectByPointer">
    <property name="text">
-    <string>Ins&amp;pect by Pointer...</string>
+    <string>Inspect by &amp;Pointer...</string>
    </property>
   </action>
   <action name="actionStatusDetails">
@@ -862,7 +862,7 @@ Total number of messages created since start of the simulation</string>
   </action>
   <action name="actionResultRecorders">
    <property name="text">
-    <string>Result Re&amp;corders</string>
+    <string>Result &amp;Recorders</string>
    </property>
    <property name="toolTip">
     <string>Result Recorders</string>
@@ -870,7 +870,7 @@ Total number of messages created since start of the simulation</string>
   </action>
   <action name="actionMessagePrinters">
    <property name="text">
-    <string>Message Pr&amp;inters</string>
+    <string>Message &amp;Printers</string>
    </property>
    <property name="toolTip">
     <string>Message Printers</string>
