@@ -141,7 +141,7 @@ Register_PerRunConfigOption(CFGID_OUTPUTVECTORMANAGER_CLASS, "outputvectormanage
 Register_PerRunConfigOption(CFGID_OUTPUTSCALARMANAGER_CLASS, "outputscalarmanager-class", CFG_STRING, DEFAULT_OUTPUTSCALARMANAGER_CLASS, "Part of the Envir plugin mechanism: selects the output scalar manager class to be used to record data passed to recordScalar(). The class has to implement the `cIOutputScalarManager` interface.");
 Register_PerRunConfigOption(CFGID_SNAPSHOTMANAGER_CLASS, "snapshotmanager-class", CFG_STRING, "omnetpp::envir::FileSnapshotManager", "Part of the Envir plugin mechanism: selects the class to handle streams to which snapshot() writes its output. The class has to implement the `cISnapshotManager` interface.");
 Register_PerRunConfigOption(CFGID_FUTUREEVENTSET_CLASS, "futureeventset-class", CFG_STRING, "omnetpp::cEventHeap", "Part of the Envir plugin mechanism: selects the class for storing the future events in the simulation. The class has to implement the `cFutureEventSet` interface.");
-Register_GlobalConfigOption(CFGID_IMAGE_PATH, "image-path", CFG_PATH, "./bitmaps;./images", "A semicolon-separated list of directories that contain module icons and other resources. This list will be concatenated with the contents of the `OMNETPP_IMAGE_PATH` environment variable or with a compile-time, hardcoded image path if the environment variable is empty.");
+Register_GlobalConfigOption(CFGID_IMAGE_PATH, "image-path", CFG_PATH, "./images", "A semicolon-separated list of directories that contain module icons and other resources. This list will be concatenated with the contents of the `OMNETPP_IMAGE_PATH` environment variable or with a compile-time, hardcoded image path if the environment variable is empty.");
 Register_GlobalConfigOption(CFGID_FNAME_APPEND_HOST, "fname-append-host", CFG_BOOL, nullptr, "Turning it on will cause the host name and process Id to be appended to the names of output files (e.g. omnetpp.vec, omnetpp.sca). This is especially useful with distributed simulation. The default value is true if parallel simulation is enabled, false otherwise.");
 Register_GlobalConfigOption(CFGID_DEBUG_ON_ERRORS, "debug-on-errors", CFG_BOOL, "false", "When set to true, runtime errors will cause the simulation program to break into the C++ debugger (if the simulation is running under one, or just-in-time debugging is activated). Once in the debugger, you can view the stack trace or examine variables.");
 Register_GlobalConfigOption(CFGID_PRINT_UNDISPOSED, "print-undisposed", CFG_BOOL, "true", "Whether to report objects left (that is, not deallocated by simple module destructors) after network cleanup.");
@@ -665,6 +665,14 @@ void EnvirBase::printHelp()
     out << "                variable. If the result is empty, the NED path defaults to '.',\n";
     out << "                that is, NED files will be loaded from the current directory and\n";
     out << "                its subfolders.\n";
+    out << "  -i <imgpath>  List of folders to load images from. Folders are separated\n";
+    out << "                with a semicolon (on non-Windows systems, colon may also be used).\n";
+    out << "                Multiple -i options may be present. The effective image path is\n";
+    out << "                produced by concatenating the values of the -i options, the\n";
+    out << "                image-path configuration option, and the OMNETPP_IMAGE_PATH\n";
+    out << "                environment variable. When the environment variable is not\n";
+    out << "                present, a hardcoded folder (determined at compile time) pointing\n";
+    out << "                to <omnetpp>/images is used instead.\n";
     out << "  -l <library>  Load the specified shared library (.so or .dll) on startup.\n";
     out << "                The file name should be given without the .so or .dll suffix\n";
     out << "                (it will be appended automatically.) The loaded module may\n";
@@ -1355,16 +1363,6 @@ void EnvirBase::readOptions()
     // note: this is read per run as well, but Tkenv needs its value on startup too
     opt->inifileNetworkDir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
 
-    // path for images and other resources
-    std::string imagePath = opp_emptytodefault(getenv("OMNETPP_IMAGE_PATH"), OMNETPP_IMAGE_PATH);
-    // strip away the /; sequence from the beginning (a workaround for MinGW path conversion). See #785
-    if (imagePath.find("/;") == 0)
-        imagePath.erase(0, 2);
-    std::string configImagePath = cfg->getAsPath(CFGID_IMAGE_PATH);
-    if (!configImagePath.empty())
-        imagePath = configImagePath + ";" + imagePath;
-    opt->imagePath = imagePath;
-
     // NED path. It is taken from the "-n" command-line options,
     // the NEDPATH environment variable, and the "ned-path=" config option.
     // If the result is still empty, we fall back to "." -- this is needed for
@@ -1377,6 +1375,16 @@ void EnvirBase::readOptions()
     if (nedPath.empty())
         nedPath = ".";
     opt->nedPath = nedPath;
+
+    // Image path similarly to NED path, except that we have compile-time default as well,
+    // in the OMNETPP_IMAGE_PATH macro.
+    std::string imagePath;
+    for (std::string opt : args->optionValues('i'))
+        imagePath = opp_join(";", imagePath, opt);
+    imagePath = opp_join(";", imagePath, getConfig()->getAsPath(CFGID_IMAGE_PATH));
+    const char *builtinImagePath = opp_removestart(OMNETPP_IMAGE_PATH, "/;"); // strip away the /; sequence from the beginning (a workaround for MinGW path conversion). See #785
+    imagePath = opp_join(";", imagePath, opp_emptytodefault(getenv("OMNETPP_IMAGE_PATH"), builtinImagePath));
+    opt->imagePath = imagePath;
 
     // other options are read on per-run basis
 }

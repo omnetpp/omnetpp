@@ -244,6 +244,11 @@ COMMON_API std::string opp_substringbeforelast(const std::string& str, const std
 COMMON_API std::string opp_substringafterlast(const std::string& str, const std::string& substr);
 
 /**
+ * Remove the prefix if the string starts with it, otherwise return the string unchanged.
+ */
+COMMON_API const char *opp_removestart(const char *s, const char *prefix);
+
+/**
  * Concatenates up to four strings. Returns a pointer to a static buffer
  * of length 256. If the result length would exceed 256, it is truncated.
  */

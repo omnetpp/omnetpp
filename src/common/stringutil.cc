@@ -505,6 +505,11 @@ std::string opp_substringafterlast(const std::string& str, const std::string& su
     return pos == std::string::npos ? "" : str.substr(pos+substr.size());
 }
 
+const char *opp_removestart(const char *s, const char *prefix)
+{
+    return opp_stringbeginswith(s, prefix) ? s + strlen(prefix) : s;
+}
+
 char *opp_concat(const char *s1,
                  const char *s2,
                  const char *s3,
