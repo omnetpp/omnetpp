@@ -21,6 +21,7 @@
 #include "common/fileglobber.h"
 #include "common/patternmatcher.h"
 #include "common/opp_ctype.h"
+#include "common/stringtokenizer.h"
 #include "exception.h"
 #include "nedresourcecache.h"
 
@@ -37,6 +38,11 @@ namespace omnetpp {
 namespace nedxml {
 
 // TODO collect errors in a NedErrorStore?
+
+inline std::string canonicalize(const char *pathname)
+{
+    return tidyFilename(toAbsolutePath(pathname).c_str(), true);
+}
 
 NedResourceCache::NedResourceCache()
 {
@@ -70,7 +76,7 @@ void NedResourceCache::registerBuiltinDeclarations()
 int NedResourceCache::loadNedSourceFolder(const char *foldername)
 {
     try {
-        std::string canonicalFolderName = tidyFilename(toAbsolutePath(foldername).c_str(), true);
+        std::string canonicalFolderName = canonicalize(foldername);
         std::string rootPackageName = determineRootPackageName(foldername);
         folderPackages[canonicalFolderName] = rootPackageName;
         return doLoadNedSourceFolder(foldername, rootPackageName.c_str());
@@ -109,7 +115,7 @@ void NedResourceCache::doLoadNedFileOrText(const char *nedfname, const char *ned
         return;  // already loaded
 
     // parse file
-    std::string nedfname2 = nedtext ? nedfname : tidyFilename(toAbsolutePath(nedfname).c_str());  // so that NedFileElement stores absolute file name
+    std::string nedfname2 = nedtext ? nedfname : canonicalize(nedfname);  // so that NedFileElement stores absolute file name
     ASTNode *tree = parseAndValidateNedFileOrText(nedfname2.c_str(), nedtext, isXML);
     Assert(tree);
 
@@ -207,7 +213,7 @@ void NedResourceCache::loadNedText(const char *name, const char *nedtext, const 
 
 bool NedResourceCache::addFile(const char *fname, ASTNode *node)
 {
-    std::string key = tidyFilename(toAbsolutePath(fname).c_str());
+    std::string key = canonicalize(fname);
     NedFileMap::iterator it = files.find(key);
     if (it != files.end())
         return false;  // already added
@@ -322,14 +328,14 @@ NedTypeInfo *NedResourceCache::getDecl(const char *qname) const
 ASTNode *NedResourceCache::getFile(const char *fname) const
 {
     // hash table lookup
-    std::string key = tidyFilename(toAbsolutePath(fname).c_str());
+    std::string key = canonicalize(fname);
     NedFileMap::const_iterator i = files.find(key);
     return i == files.end() ? nullptr : i->second;
 }
 
 NedFileElement *NedResourceCache::getParentPackageNedFile(NedFileElement *nedfile) const
 {
-    std::string nedfilename = tidyFilename(toAbsolutePath(nedfile->getFilename()).c_str(), true);
+    std::string nedfilename = canonicalize(nedfile->getFilename());
     std::string dir, fname;
     splitFileName(nedfilename.c_str(), dir, fname);
     dir = tidyFilename(dir.c_str(), true);
@@ -399,7 +405,7 @@ std::string NedResourceCache::getNedSourceFolderForFolder(const char *folder) co
 {
     // find NED source folder which is a prefix of folder.
     // note: this is unambiguous because nested NED source folders are not allowed
-    std::string folderName = tidyFilename(toAbsolutePath(folder).c_str(), true);
+    std::string folderName = canonicalize(folder);
     for (const auto & folderPackage : folderPackages)
         if (isPathPrefixOf(folderPackage.first.c_str(), folderName.c_str()))
             return folderPackage.first;
@@ -413,7 +419,7 @@ std::string NedResourceCache::getNedPackageForFolder(const char *folder) const
     if (sourceFolder.empty())
         return "";
 
-    std::string folderName = tidyFilename(toAbsolutePath(folder).c_str(), true);
+    std::string folderName = canonicalize(folder);
     std::string suffix = folderName.substr(sourceFolder.size());
     if (suffix.length() > 0 && suffix[0] == '/')
         suffix = suffix.substr(1);
