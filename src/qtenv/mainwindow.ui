@@ -334,9 +334,13 @@ Total number of messages created since start of the simulation</string>
      </property>
      <addaction name="actionNedComponentTypes"/>
      <addaction name="actionRegisteredClasses"/>
+     <addaction name="actionClassDescriptors"/>
      <addaction name="actionNED_Functions"/>
      <addaction name="actionRegistered_Enums"/>
      <addaction name="actionSupportedConfigurationOption"/>
+     <addaction name="actionResultFilters"/>
+     <addaction name="actionResultRecorders"/>
+     <addaction name="actionMessagePrinters"/>
     </widget>
     <addaction name="actionNetwork"/>
     <addaction name="actionScheduledEvents"/>
@@ -838,6 +842,38 @@ Total number of messages created since start of the simulation</string>
    </property>
    <property name="toolTip">
     <string>Break into the debugger upon runtime errors</string>
+   </property>
+  </action>
+  <action name="actionClassDescriptors">
+   <property name="text">
+    <string>Class &amp;Descriptors</string>
+   </property>
+   <property name="toolTip">
+    <string>Class Descriptors</string>
+   </property>
+  </action>
+  <action name="actionResultFilters">
+   <property name="text">
+    <string>Result Fi&amp;lters</string>
+   </property>
+   <property name="toolTip">
+    <string>Result Filters</string>
+   </property>
+  </action>
+  <action name="actionResultRecorders">
+   <property name="text">
+    <string>Result Re&amp;corders</string>
+   </property>
+   <property name="toolTip">
+    <string>Result Recorders</string>
+   </property>
+  </action>
+  <action name="actionMessagePrinters">
+   <property name="text">
+    <string>Message Pr&amp;inters</string>
+   </property>
+   <property name="toolTip">
+    <string>Message Printers</string>
    </property>
   </action>
  </widget>
