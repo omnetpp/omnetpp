@@ -73,7 +73,7 @@ enum class DebuggerPresence {
     CANT_DETECT
 };
 
-#define ARGSPEC "h?f:u:l:c:r:n:i:p:x:X:q:agGvwsm"
+#define ARGSPEC "h?f:u:l:c:r:n:i:p:q:avwsm"
 
 struct ENVIR_API EnvirOptions
 {
@@ -86,6 +86,7 @@ struct ENVIR_API EnvirOptions
     std::string inifileNetworkDir;
     std::string imagePath;
     std::string nedPath;
+    std::string nedExclusionPath;
 
     int numRNGs;
     std::string rngClass;

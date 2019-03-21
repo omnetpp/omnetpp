@@ -396,23 +396,6 @@ bool EnvirBase::simulationRequired()
     const char *runFilter = args->optionValue('r');
     const char *query = args->optionValue('q');
 
-    // legacy options that map to -q
-    if (args->optionGiven('x')) {
-        warn() << "Deprecated option -x (will be removed in future version), use -q instead" << endl;
-        configName = args->optionValue('x');
-        if (args->optionGiven('G'))
-            query = "rundetails";
-        else if (args->optionGiven('g'))
-            query = "runs";
-        else
-            query = "numruns";
-    }
-    else if (args->optionGiven('X')) {
-        warn() << "Deprecated option -X (will be removed in a future version), use -q instead" << endl;
-        configName = args->optionValue('X');
-        query = "sectioninheritance";
-    }
-
     // process -q
     if (query) {
         if (!configName) {
@@ -708,12 +691,6 @@ void EnvirBase::printHelp()
     out << "                variables and the full configuration for each matching run.\n";
     out << "    -q sectioninheritance\n";
     out << "                Print the section fallback chain of the specified configuration.\n";
-    out << "  -x <configname>\n";
-    out << "                Obsolete form of -c <configname> -q numruns\n";
-    out << "  -g            With -x: Obsolete form of -c <configname> -q runs\n";
-    out << "  -G            With -x: Obsolete form of -c <configname> -q rundetails\n";
-    out << "  -X <configname>\n";
-    out << "                Obsolete form of -c <configname> -q sectioninheritance\n";
     out << "  -h            Print this help and exit.\n";
     out << "  -h <category> Lists registered components:\n";
     out << "    -h config         Prints the list of available configuration options\n";
@@ -1371,6 +1348,14 @@ void EnvirBase::readOptions()
     if (nedPath.empty())
         nedPath = ".";
     opt->nedPath = nedPath;
+
+    // NED exclusion path
+    std::string nedExclusionPath;
+    for (std::string opt : args->optionValues('x'))
+        nedExclusionPath = opp_join(";", nedExclusionPath, opt);
+    //nedExclusionPath = opp_join(";", nedExclusionPath, getConfig()->getAsPath(CFGID_NED_EXCLUSION_PATH));
+    nedExclusionPath = opp_join(";", nedExclusionPath, opp_nulltoempty(getenv("NED_EXCLUSION_PATH")));
+    opt->nedExclusionPath = nedExclusionPath;
 
     // Image path similarly to NED path, except that we have compile-time default as well,
     // in the OMNETPP_IMAGE_PATH macro.
