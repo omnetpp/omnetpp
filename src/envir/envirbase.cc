@@ -722,13 +722,13 @@ void EnvirBase::printHelp()
     cRegistrationList *table = omnetapps.getInstance();
     table->sort();
     for (int i = 0; i < table->size(); i++) {
-        // instantiate the ui, call printUISpecificHelp(), then dispose.
-        // note: their ctors are not supposed to do anything but trivial member initializations
+        // Instantiate the user interface, call printUISpecificHelp(), then dispose.
+        // Note: their constructors are not supposed to do anything but trivial member initialization.
         cOmnetAppRegistration *appreg = dynamic_cast<cOmnetAppRegistration *>(table->get(i));
         ASSERT(appreg != nullptr);
         cEnvir *app = appreg->createOne();
-        if (EnvirBase *app2 = dynamic_cast<EnvirBase *>(app))
-            app2->printUISpecificHelp();
+        if (EnvirBase *envir = dynamic_cast<EnvirBase *>(app))
+            envir->printUISpecificHelp();
         delete app;
     }
 }

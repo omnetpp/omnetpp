@@ -29,46 +29,29 @@
 namespace omnetpp {
 namespace envir {
 
-//
-// Register_OmnetApp() macro, omnetapps list, cOmnetAppRegistration class.
-//
-// For registering user interfaces as subclasses of cEnvir.
-// Creating the user interface object allows us to link an envir.dll on
-// Windows without having to know in which dll (cmdenv, qtenv) cEnvir's
-// appropriate subclass will come from.
-//
-//  score:   by default, OMNeT++ will choose the user interface with the
-//           highest score when it starts
-//  desc:    textual description of the user interface
-//
-
-
-// the macro
 #define Register_OmnetApp(UINAME,CLASSNAME,SCORE,DESCR) \
     static cRunnableEnvir *__FILEUNIQUENAME__() {return new CLASSNAME();} \
     EXECUTE_ON_STARTUP(omnetapps.getInstance()->add(new cOmnetAppRegistration(UINAME,SCORE,DESCR,__FILEUNIQUENAME__)))
 
 extern ENVIR_API cGlobalRegistrationList omnetapps;
 
-// registration class
+/**
+ * Class for registering user interfaces as subclasses of cRunnableEnvir.
+ * User interfaces have an associated score, and on startup, OMNeT++ will
+ * instantiate the one with the highest score.
+ */
 class ENVIR_API cOmnetAppRegistration : public cOwnedObject
 {
     typedef cRunnableEnvir *(*AppCreatorFunc)();
-    AppCreatorFunc creatorfunc;
-    std::string desc;
-    int scor;
+    AppCreatorFunc factoryFunction;
+    std::string description;
+    int score;
   public:
     cOmnetAppRegistration(const char *name, int score, const char *description, AppCreatorFunc f) :
-      cOwnedObject(name, false), creatorfunc(f), desc(description), scor(score) {}
-    virtual ~cOmnetAppRegistration()  {}
-
-    // redefined functions
-    virtual const char *getClassName() const override {return "cOmnetAppRegistration";}
-
-    // new functions
-    cRunnableEnvir *createOne()  {return creatorfunc();}
-    std::string str() const override {return desc;}
-    int getScore()  {return scor;}
+      cOwnedObject(name, false), factoryFunction(f), description(description), score(score) {}
+    cRunnableEnvir *createOne()  {return factoryFunction();}
+    std::string str() const override {return description;}
+    int getScore()  {return score;}
 
     static cOmnetAppRegistration *chooseBest();
 };
