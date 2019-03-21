@@ -992,6 +992,14 @@ const char *SectionBasedConfiguration::internalGetValue(const std::vector<int>& 
     return fallbackValue;
 }
 
+static int findInArray(const char *s, const char **array)
+{
+    for (int i = 0; array[i] != nullptr; i++)
+        if (!strcmp(s, array[i]))
+            return i;
+    return -1;
+}
+
 enum { WHITE, GREY, BLACK };
 
 class SectionGraphNode
