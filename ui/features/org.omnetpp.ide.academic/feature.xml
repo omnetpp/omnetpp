@@ -2,7 +2,7 @@
 <feature
       id="org.omnetpp.ide.academic"
       label="OMNeT++ IDE - Academic Edition, not for commercial use"
-      version="5.4.1.qualifier"
+      version="5.5.0.qualifier"
       provider-name="OpenSim Ltd."
       plugin="org.omnetpp.main"
       os="linux,macosx,win32"
