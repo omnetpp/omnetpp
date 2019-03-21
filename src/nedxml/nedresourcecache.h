@@ -108,7 +108,7 @@ class NEDXML_API NedResourceCache
 
   protected:
     virtual void registerBuiltinDeclarations();
-    virtual int doLoadNedSourceFolder(const char *foldername, const char *expectedPackage);
+    virtual int doLoadNedSourceFolder(const char *foldername, const char *expectedPackage, const std::vector<std::string>& excludedFolders);
     virtual void doLoadNedFileOrText(const char *nedfname, const char *nedtext, const char *expectedPackage, bool isXML);
     virtual ASTNode *parseAndValidateNedFileOrText(const char *nedfname, const char *nedtext, bool isXML);
     virtual std::string determineRootPackageName(const char *nedSourceFolderName);
@@ -131,12 +131,16 @@ class NEDXML_API NedResourceCache
      * Load all NED files from a NED source folder. This involves visiting
      * each subdirectory, and loading all "*.ned" files from there.
      * The given folder is assumed to be the root of the NED package hierarchy.
-     * Returns the number of files loaded.
+     * A list of folders to skip may be specified in the exclusionPath parameter
+     * (items must be separated with a semicolon; colon may also be used on
+     * non-Windows systems).
+     *
+     * The function returns the number of NED files loaded.
      *
      * Note: doneLoadingNedFiles() must be called after the last
      * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
      */
-    virtual int loadNedSourceFolder(const char *foldername);
+    virtual int loadNedSourceFolder(const char *foldername, const char *exclusionPath);
 
     /**
      * Load a single NED file. If the expected package is given (non-nullptr),

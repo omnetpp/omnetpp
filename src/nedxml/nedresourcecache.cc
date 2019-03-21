@@ -18,6 +18,7 @@
 #include <cstring>
 #include "common/fileutil.h"
 #include "common/stringutil.h"
+#include "common/stlutil.h"
 #include "common/fileglobber.h"
 #include "common/patternmatcher.h"
 #include "common/opp_ctype.h"
@@ -73,21 +74,39 @@ void NedResourceCache::registerBuiltinDeclarations()
     addFile("/[built-in-declarations]/package.ned", tree);
 }
 
-int NedResourceCache::loadNedSourceFolder(const char *foldername)
+static std::vector<std::string> resolvePath(const char *folder, const char *path)
+{
+    PushDir pushDir(folder); // so that relative paths are interpreted as relative to the given folder
+    std::vector<std::string> result;
+    StringTokenizer tokenizer(path, PATH_SEPARATOR);
+    while (tokenizer.hasMoreTokens()) {
+        const char *item = tokenizer.nextToken();
+        std::string folder = canonicalize(item);
+        if (fileExists(folder.c_str()) && !contains(result, folder))
+            result.push_back(folder);
+    }
+    return result;
+}
+
+int NedResourceCache::loadNedSourceFolder(const char *foldername, const char *exclusionPath)
 {
     try {
+        std::vector<std::string> excludedFolders = resolvePath(foldername, exclusionPath); // list of canonicalized folder paths
         std::string canonicalFolderName = canonicalize(foldername);
         std::string rootPackageName = determineRootPackageName(foldername);
         folderPackages[canonicalFolderName] = rootPackageName;
-        return doLoadNedSourceFolder(foldername, rootPackageName.c_str());
+        return doLoadNedSourceFolder(foldername, rootPackageName.c_str(), excludedFolders);
     }
     catch (std::exception& e) {
         throw NedException("Could not load NED sources from '%s': %s", foldername, e.what());
     }
 }
 
-int NedResourceCache::doLoadNedSourceFolder(const char *foldername, const char *expectedPackage)
+int NedResourceCache::doLoadNedSourceFolder(const char *foldername, const char *expectedPackage, const std::vector<std::string>& excludedFolders)
 {
+    if (contains(excludedFolders, canonicalize(foldername)))
+        return 0;
+
     PushDir pushDir(foldername);
     int count = 0;
 
@@ -98,7 +117,7 @@ int NedResourceCache::doLoadNedSourceFolder(const char *foldername, const char *
             continue;  // ignore ".", "..", and dotfiles
         }
         if (isDirectory(filename)) {
-            count += doLoadNedSourceFolder(filename, expectedPackage == nullptr ? nullptr : opp_join(".", expectedPackage, filename).c_str());
+            count += doLoadNedSourceFolder(filename, expectedPackage == nullptr ? nullptr : opp_join(".", expectedPackage, filename).c_str(), excludedFolders);
         }
         else if (opp_stringendswith(filename, ".ned")) {
             doLoadNedFileOrText(filename, nullptr, expectedPackage, false);

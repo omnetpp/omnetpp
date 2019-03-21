@@ -582,7 +582,7 @@ bool EnvirBase::setup()
             if (foldersLoaded.find(folder) == foldersLoaded.end()) {
                 if (opt->verbose)
                     out << "Loading NED files from " << folder << ": ";
-                int count = getSimulation()->loadNedSourceFolder(folder);
+                int count = getSimulation()->loadNedSourceFolder(folder, opt->nedExclusionPath.c_str());
                 if (opt->verbose)
                     out << " " << count << endl;
                 foldersLoaded.insert(folder);
@@ -644,6 +644,13 @@ void EnvirBase::printHelp()
     out << "                variable. If the result is empty, the NED path defaults to '.',\n";
     out << "                that is, NED files will be loaded from the current directory and\n";
     out << "                its subfolders.\n";
+    out << "  -x <nedexclusionpath>\n";
+    out << "                List of folders to ignore when loading NED files. Folders are separated\n";
+    out << "                with a semicolon (on non-Windows systems, colon may also be used).\n";
+    out << "                Multiple -x options may be present, and additional folders may be\n";
+    out << "                specified in the OMNETPP_NED_EXCLUSION_PATH environment variable.\n";
+    out << "                Relative paths are interpreted as relative to the NED source folder\n";
+    out << "                the files are being loaded from.\n";
     out << "  -i <imgpath>  List of folders to load images from. Folders are separated\n";
     out << "                with a semicolon (on non-Windows systems, colon may also be used).\n";
     out << "                Multiple -i options may be present. The effective image path is\n";
@@ -1354,7 +1361,7 @@ void EnvirBase::readOptions()
     for (std::string opt : args->optionValues('x'))
         nedExclusionPath = opp_join(";", nedExclusionPath, opt);
     //nedExclusionPath = opp_join(";", nedExclusionPath, getConfig()->getAsPath(CFGID_NED_EXCLUSION_PATH));
-    nedExclusionPath = opp_join(";", nedExclusionPath, opp_nulltoempty(getenv("NED_EXCLUSION_PATH")));
+    nedExclusionPath = opp_join(";", nedExclusionPath, opp_nulltoempty(getenv("OMNETPP_NED_EXCLUSION_PATH")));
     opt->nedExclusionPath = nedExclusionPath;
 
     // Image path similarly to NED path, except that we have compile-time default as well,
