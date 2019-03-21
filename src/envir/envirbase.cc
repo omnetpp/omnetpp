@@ -657,12 +657,20 @@ void EnvirBase::printHelp()
     out << "                containing spaces etc need to be enclosed in quotes. Patterns\n";
     out << "                may contain elements matching numeric ranges, in the {a..b}\n";
     out << "                syntax. See also: -q.\n";
-    out << "  -n <nedpath>  When present, overrides the NEDPATH environment variable.\n";
+    out << "  -n <nedpath>  List of folders to load NED files from. Folders are separated\n";
+    out << "                with a semicolon (on non-Windows systems, colon may also be used).\n";
+    out << "                Multiple -n options may be present. The effective NED path is\n";
+    out << "                produced by concatenating the values of the -n options, the\n";
+    out << "                ned-path configuration option, and the NEDPATH environment\n";
+    out << "                variable. If the result is empty, the NED path defaults to '.',\n";
+    out << "                that is, NED files will be loaded from the current directory and\n";
+    out << "                its subfolders.\n";
     out << "  -l <library>  Load the specified shared library (.so or .dll) on startup.\n";
     out << "                The file name should be given without the .so or .dll suffix\n";
     out << "                (it will be appended automatically.) The loaded module may\n";
     out << "                contain simple modules, plugins, etc. Multiple -l options\n";
     out << "                can be present.\n";
+#ifdef SIMFRONTEND_SUPPORT
     out << "  -p <port>     Port number for the built-in web server.\n";
     out << "                If the port is not available, the program will exit with an\n";
     out << "                error message unless the number is suffixed with the plus\n";
@@ -671,6 +679,7 @@ void EnvirBase::printHelp()
     out << "                with an error even if no available port was found. A plain\n";
     out << "                minus sign will turn off the built-in web server.\n";
     out << "                The default value is \"8000+\".\n";
+#endif
     out << "  -s            Silent mode; makes the output less verbose.\n";
     out << "  -v            Print version and build info, and exit.\n";
     out << "  -m            Merge standard error into standard output, i.e. report errors on\n";
