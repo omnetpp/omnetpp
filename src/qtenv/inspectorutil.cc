@@ -213,7 +213,7 @@ QMenu *InspectorUtil::createInspectorContextMenu(QVector<cObject *> objects, Ins
             QString label;
             if (baseClass == "cGate") {
                 cGate *nextGate = static_cast<cGate *>(object)->getNextGate();
-                const char *nextGateName = object->getFullName();
+                const char *nextGateName = nextGate->getFullName();
                 cObject *owner = object->getOwner();
                 const char *ownerName = owner->getFullName();
                 cObject *nextGateOwner = nextGate->getOwner();
