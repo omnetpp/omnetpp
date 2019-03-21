@@ -55,7 +55,8 @@ cQueue::cQueue(const char *name, Comparator *cmp) : cOwnedObject(name), comparat
 {
 }
 
-cQueue::cQueue(const char *name, CompareFunc cmp) : cOwnedObject(name), comparator(new FunctionBasedComparator(cmp))
+cQueue::cQueue(const char *name, CompareFunc cmp) : cOwnedObject(name),
+        comparator(cmp ? new FunctionBasedComparator(cmp) : nullptr)
 {
 }
 
@@ -178,7 +179,7 @@ void cQueue::setup(Comparator *cmp)
 
 void cQueue::setup(CompareFunc cmp)
 {
-    setup(new FunctionBasedComparator(cmp));
+    setup(cmp ? new FunctionBasedComparator(cmp) : nullptr);
 }
 
 cQueue::QElem *cQueue::find_qelem(cObject *obj) const
