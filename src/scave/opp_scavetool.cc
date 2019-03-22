@@ -148,16 +148,23 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.line();
     }
     else if (page == "i" || page == "index") {
-        help.para("Usage: scavetool index [<options>] <output-vector-files>");
-        help.para("Generate index files (.vci) for vector files. Note that this command is usually not needed, as other scavetool commands automatically create indices for loaded vector files if they are missing or out of date, unless indexing is explicitly disabled.");
+        help.para("Usage: opp_scavetool index [<options>] <output-vector-files>");
+        help.para("Generate index files (.vci) for vector files. Note that this command "
+                  "is usually not needed, as other opp_scavetool commands automatically "
+                  "create indices for loaded vector files if they are missing or out of date, "
+                  "unless indexing is explicitly disabled.");
         help.line("Options:");
         help.option("-r, --rebuild", "Rebuild vector files (rearrange their content into blocks) in addition to indexing them");
         help.option("-v, --verbose", "Print info about progress (verbose)");
         help.line();
     }
     else if (page == "filter") {
-        help.para("Several commands have a -f <filter> option that accepts a match expression for filtering result items. This page describes the syntax available for match expressions.");
-        help.para("A match expression consist of '<pattern>' and '<fieldname>(<pattern>)' elements, combined with AND, OR, and NOT operators. A plain '<pattern>' is equivalent to 'name(<pattern>)'.");
+        help.para("Several commands have a -f <filter> option that accepts a match expression "
+                  "for filtering result items. This page describes the syntax available for "
+                  "match expressions.");
+        help.para("A match expression consist of '<pattern>' and '<fieldname>(<pattern>)' "
+                  "elements, combined with AND, OR, and NOT operators. A plain '<pattern>' is "
+                  "equivalent to 'name(<pattern>)'.");
         help.line("<fieldname> is one of:");
         help.para(
                 "    file              Full path of the result file\n"
@@ -183,7 +190,9 @@ void ScaveTool::printHelpPage(const std::string& page)
     else if (page == "operations") {
         help.para("Scalar operations:");
         help.para("scatter(module, scalar, ...)"); // currently this is the only scalar operation
-        help.indentPara("Create scatter plot dataset. The first two arguments identify the scalar selected for the X axis. Additional arguments identify the iso attributes; they are (module, scalar) pairs, or names of run attributes.");
+        help.indentPara("Create scatter plot dataset. The first two arguments identify the "
+                        "scalar selected for the X axis. Additional arguments identify the "
+                        "iso attributes; they are (module, scalar) pairs, or names of run attributes.");
         help.para("Vector operations:");
         NodeTypeRegistry *registry = NodeTypeRegistry::getInstance();
         NodeTypeVector nodeTypes = registry->getNodeTypes();
