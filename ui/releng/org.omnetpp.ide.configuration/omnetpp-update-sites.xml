@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bookmarks>
-   <site url="http://download.eclipse.org/tools/cdt/releases/9.6" selected="true" name="CDT"/>
+   <site url="http://download.eclipse.org/tools/cdt/releases/9.7" selected="true" name="CDT"/>
    <site url="http://download.eclipse.org/tools/gef/updates/legacy/releases/" selected="true" name="GEF3 Legacy"/>
    <site url="http://download.eclipse.org/releases/latest" selected="true" name="Latest Eclipse release"/>
    <site url="http://download.eclipse.org/linuxtools/update" selected="true" name="Linux Tools"/>

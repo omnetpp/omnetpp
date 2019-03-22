@@ -12,7 +12,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <repo.url>http://download.eclipse.org/releases/photon</repo.url>
     <update-repo.url>http://download.eclipse.org/eclipse/updates/4.11</update-repo.url>
-    <cdt-repo.url>http://download.eclipse.org/tools/cdt/releases/9.6</cdt-repo.url>
+    <cdt-repo.url>http://download.eclipse.org/tools/cdt/releases/9.7</cdt-repo.url>
     <pydev-repo.url>http://www.pydev.org/updates</pydev-repo.url>
 <!--    <cdt-repo.url>http://download.eclipse.org/tools/cdt/builds/photon/milestones</cdt-repo.url> -->
 <!--    <cdt-repo.url>http://download.eclipse.org/tools/cdt/builds/master/nightly</cdt-repo.url> -->
