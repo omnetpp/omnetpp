@@ -21,8 +21,7 @@ ifeq ($(PLATFORM),win32.x86_64)
     endif
   endif
 endif
-TARGET_EXE_FILES=$(OMNETPP_BIN_DIR)/scavetool$(EXE_SUFFIX) \
-                 $(OMNETPP_BIN_DIR)/opp_scavetool
+TARGET_EXE_FILES=$(OMNETPP_BIN_DIR)/opp_scavetool$(EXE_SUFFIX)
 
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/scave
 
@@ -96,14 +95,10 @@ $O/%$(A_LIB_SUFFIX) : $(OBJS)
 	$(Q)$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
 endif
 
-$O/scavetool$(EXE_SUFFIX) : scavetool.cc $(GENERATED_SOURCES) $(TARGET_LIB_FILES)
+$O/opp_scavetool$(EXE_SUFFIX) : opp_scavetool.cc $(GENERATED_SOURCES) $(TARGET_LIB_FILES)
 	@mkdir -p $O
 	@echo Creating executable: $@
-	$(Q)$(CXX) $(CXXFLAGS) $(COPTS) $(IMPORT_DEFINES) scavetool.cc -o $@ $(LDFLAGS) -loppscave$D $(IMPLIBS)
-
-$O/opp_scavetool:
-	@mkdir -p $O
-	$(Q)cp opp_scavetool $O && chmod +x $O/opp_scavetool
+	$(Q)$(CXX) $(CXXFLAGS) $(COPTS) $(IMPORT_DEFINES) opp_scavetool.cc -o $@ $(LDFLAGS) -loppscave$D $(IMPLIBS)
 
 # copy files to the bin and lib directories from the out directory
 $(OMNETPP_BIN_DIR)/% $(OMNETPP_LIB_DIR)/%: $O/% $(CONFIGFILE)

@@ -1,5 +1,5 @@
 //=========================================================================
-//  SCAVETOOL.CC - part of
+//  OPP_SCAVETOOL.CC - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
@@ -39,7 +39,8 @@
 #include "sqliteresultfileutils.h"
 #include "exporter.h"
 
-#include "scavetool.h"
+#include "opp_scavetool.h"
+
 
 using namespace std;
 using namespace omnetpp::common;
@@ -59,10 +60,10 @@ void ScaveTool::printHelpPage(const std::string& page)
 {
     FormattedPrinter help(cout);
     if (page == "options") {
-        help.line("scavetool -- part of " OMNETPP_PRODUCT ", (C) 2006-2018 OpenSim Ltd.");
+        help.line("opp_scavetool -- part of " OMNETPP_PRODUCT ", (C) 2006-2018 OpenSim Ltd.");
         help.line("Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION);
         help.line();
-        help.para("Usage: scavetool <command> [<options>] <files>...");
+        help.para("Usage: opp_scavetool <command> [<options>] <files>...");
         help.para("For processing result files written by simulations: vector files (.vec) and scalar files (.sca).");
         help.line("Commands:");
         help.option("q, query", "Query the contents of result files");
@@ -71,14 +72,14 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.option("h, help", "Print help text");
         help.line();
         help.para("The default command is 'query'.");
-        help.para("To get help, use scavetool help <topic>. Available help topics: command names, 'filter', 'operations'.");
+        help.para("To get help, use opp_scavetool help <topic>. Available help topics: command names, 'filter', 'operations'.");
     }
     else if (page == "h" || page == "help") {
-        help.para("Usage: scavetool help <topic>");
+        help.para("Usage: opp_scavetool help <topic>");
         help.para("Print help text on the given topic.");
     }
     else if (page == "q" || page == "query") {
-        help.para("Usage: scavetool query [<mode-option>] [<options>] <output-vector-and-scalar-files>");
+        help.para("Usage: opp_scavetool query [<mode-option>] [<options>] <output-vector-and-scalar-files>");
         help.para("Query the contents of result files.");
         help.line("Mode options (mutually exclusive):");
         help.option("-s, --print-summary", "Report the number of result items. (This is the default.)");
@@ -111,7 +112,7 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.para("See also the following help topics: 'filter'");
     }
     else if (page == "x" || page == "export") {
-        help.para("Usage: scavetool export [<options>] <output-vector-and-scalar-files>");
+        help.para("Usage: opp_scavetool export [<options>] <output-vector-and-scalar-files>");
         help.para("Export results in various formats.");
         help.line("Options:");
         help.option("-T, --type <types>", "Limit item types; <types> is concatenation of type characters (v=vector, s=scalar, t=statistic, h=histogram).");
@@ -212,7 +213,7 @@ void ScaveTool::printHelpPage(const std::string& page)
 void ScaveTool::loadFiles(ResultFileManager& manager, const vector<string>& fileNames, bool indexingAllowed, bool verbose)
 {
     if (fileNames.empty()) {
-        cerr << "scavetool: Warning: No input files\n";
+        cerr << "opp_scavetool: Warning: No input files\n";
         return;
     }
 
@@ -784,7 +785,7 @@ int ScaveTool::main(int argc, char **argv)
 
     try {
         string command = argv[1];
-        if (argc >= 3 && command[0] != '-' && (string(argv[2]) == "-h" || string(argv[2]) == "--help"))  // "scavetool query -h"
+        if (argc >= 3 && command[0] != '-' && (string(argv[2]) == "-h" || string(argv[2]) == "--help"))  // "opp_scavetool query -h"
             printHelpPage(command);
         else if (command == "q" || command == "query")
             queryCommand(argc-2, argv+2);
@@ -800,7 +801,7 @@ int ScaveTool::main(int argc, char **argv)
             throw opp_runtime_error("Unknown command or file name '%s'", command.c_str());
     }
     catch (exception& e) {
-        cerr << "scavetool: " << e.what() << endl;
+        cerr << "opp_scavetool: " << e.what() << endl;
         return 1;
     }
     return 0;

@@ -21,8 +21,7 @@ ifeq ($(PLATFORM),win32.x86_64)
     endif
   endif
 endif
-TARGET_EXE_FILES=$(OMNETPP_BIN_DIR)/eventlogtool$(EXE_SUFFIX) \
-                 $(OMNETPP_BIN_DIR)/opp_eventlogtool
+TARGET_EXE_FILES=$(OMNETPP_BIN_DIR)/opp_eventlogtool$(EXE_SUFFIX)
 
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/eventlog
 INCL_FLAGS= -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)"
@@ -79,14 +78,10 @@ $O/%$(A_LIB_SUFFIX) : $(OBJS)
 	$(Q)$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
 endif
 
-$O/eventlogtool$(EXE_SUFFIX) : eventlogtool.cc $(GENERATED_SOURCES) $(TARGET_LIB_FILES)
+$O/opp_eventlogtool$(EXE_SUFFIX) : opp_eventlogtool.cc $(GENERATED_SOURCES) $(TARGET_LIB_FILES)
 	@mkdir -p $O
 	@echo Creating executable: $@
-	$(Q)$(CXX) $(CXXFLAGS) $(COPTS) $(IMPORT_DEFINES) eventlogtool.cc -o $@ $(LDFLAGS) $(IMPLIBS) -loppeventlog$D
-
-$O/opp_eventlogtool:
-	@mkdir -p $O
-	$(Q)cp opp_eventlogtool $O && chmod +x $O/opp_eventlogtool
+	$(Q)$(CXX) $(CXXFLAGS) $(COPTS) $(IMPORT_DEFINES) opp_eventlogtool.cc -o $@ $(LDFLAGS) $(IMPLIBS) -loppeventlog$D
 
 # copy files to the bin and lib directories from the out directory
 $(OMNETPP_BIN_DIR)/% $(OMNETPP_LIB_DIR)/%: $O/% $(CONFIGFILE)

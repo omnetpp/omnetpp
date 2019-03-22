@@ -1,5 +1,5 @@
 //=========================================================================
-//  EVENTLOGTOOL.CC - part of
+//  OPP_EVENTLOGTOOL.CC - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
@@ -348,11 +348,11 @@ void usage(const char *message)
         fprintf(stderr, "Error: %s\n\n", message);
 
     fprintf(stderr, ""
-"eventlogtool -- part of " OMNETPP_PRODUCT ", (C) 2006-2018 OpenSim Ltd.\n"
+"opp_eventlogtool -- part of " OMNETPP_PRODUCT ", (C) 2006-2018 OpenSim Ltd.\n"
 "Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
 "\n"
 "Usage:\n"
-"   eventlogtool <command> [options]* <input-file-name>\n"
+"   opp_eventlogtool <command> [options]* <input-file-name>\n"
 "\n"
 "   Commands:\n"
 "      offsets     - prints the file offsets for the given even numbers (-e) one per line, all other options are ignored.\n"

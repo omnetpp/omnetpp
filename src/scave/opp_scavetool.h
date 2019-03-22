@@ -1,5 +1,5 @@
 //=========================================================================
-//  SCAVETOOL.H - part of
+//  OPP_SCAVETOOL.H - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
