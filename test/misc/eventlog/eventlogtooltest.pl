@@ -1,4 +1,4 @@
-$eventLogTool = "../../bin/eventlogtool";
+$eventLogTool = "../../bin/opp_eventlogtool";
 
 sub testEchoWhole
 {

@@ -1,5 +1,5 @@
 %description:
-Test scavetool's query command
+Test opp_scavetool's query command
 
 %file: test.ned
 
@@ -34,12 +34,12 @@ for f in results/*; do
 done
 
 #
-# scavetool wrapper, for output, error handling and shorter command lines
+# opp_scavetool wrapper, for output, error handling and shorter command lines
 #
 run() {
     echo "------------------------"
-    echo "$ scavetool $* <files>"
-    scavetool "$@" results/*.sca results/*.vec 2>&1 || echo ERROR
+    echo "$ opp_scavetool $* <files>"
+    opp_scavetool "$@" results/*.sca results/*.vec 2>&1 || echo ERROR
 }
 
 #
@@ -182,19 +182,19 @@ echo .
 
 %contains: postrun-command(1).out
 ------------------------
-$ scavetool  <files>
+$ opp_scavetool  <files>
 runs: 2   scalars: 4  vectors: 2  statistics: 2  histograms: 2
 ------------------------
-$ scavetool q <files>
+$ opp_scavetool q <files>
 runs: 2   scalars: 4  vectors: 2  statistics: 2  histograms: 2
 ------------------------
-$ scavetool query <files>
+$ opp_scavetool query <files>
 runs: 2   scalars: 4  vectors: 2  statistics: 2  histograms: 2
 ------------------------
-$ scavetool -s <files>
+$ opp_scavetool -s <files>
 runs: 2   scalars: 4  vectors: 2  statistics: 2  histograms: 2
 ------------------------
-$ scavetool -l <files>
+$ opp_scavetool -l <files>
 General-0-xxxx:
 
 scalar      Test.node  foo:mean       19.84
@@ -212,7 +212,7 @@ statistics  Test.node  foo:stats      count=100   mean=19.65  min=13      max=27
 histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=24
 
 ------------------------
-$ scavetool -a <files>
+$ opp_scavetool -a <files>
 General-0-xxxx:
 
 configname      General
@@ -248,34 +248,34 @@ runnumber       1
 seedset         1
 
 ------------------------
-$ scavetool -n <files>
+$ opp_scavetool -n <files>
 foo:histogram
 foo:last
 foo:mean
 foo:stats
 foo:vector
 ------------------------
-$ scavetool -m <files>
+$ opp_scavetool -m <files>
 Test.node
 ------------------------
-$ scavetool -e <files>
+$ opp_scavetool -e <files>
 Test.node.foo:histogram
 Test.node.foo:last
 Test.node.foo:mean
 Test.node.foo:stats
 Test.node.foo:vector
 ------------------------
-$ scavetool -r <files>
+$ opp_scavetool -r <files>
 General-0-xxxx
 General-1-xxxx
 ------------------------
-$ scavetool -c <files>
+$ opp_scavetool -c <files>
 General
 ------------------------
-$ scavetool --print-summary <files>
+$ opp_scavetool --print-summary <files>
 runs: 2   scalars: 4  vectors: 2  statistics: 2  histograms: 2
 ------------------------
-$ scavetool --list-results <files>
+$ opp_scavetool --list-results <files>
 General-0-xxxx:
 
 scalar      Test.node  foo:mean       19.84
@@ -293,7 +293,7 @@ statistics  Test.node  foo:stats      count=100   mean=19.65  min=13      max=27
 histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=24
 
 ------------------------
-$ scavetool --list-runattrs <files>
+$ opp_scavetool --list-runattrs <files>
 General-0-xxxx:
 
 configname      General
@@ -329,49 +329,49 @@ runnumber       1
 seedset         1
 
 ------------------------
-$ scavetool --list-names <files>
+$ opp_scavetool --list-names <files>
 foo:histogram
 foo:last
 foo:mean
 foo:stats
 foo:vector
 ------------------------
-$ scavetool --list-modules <files>
+$ opp_scavetool --list-modules <files>
 Test.node
 ------------------------
-$ scavetool --list-qnames <files>
+$ opp_scavetool --list-qnames <files>
 Test.node.foo:histogram
 Test.node.foo:last
 Test.node.foo:mean
 Test.node.foo:stats
 Test.node.foo:vector
 ------------------------
-$ scavetool --list-runs <files>
+$ opp_scavetool --list-runs <files>
 General-0-xxxx
 General-1-xxxx
 ------------------------
-$ scavetool --list-configs <files>
+$ opp_scavetool --list-configs <files>
 General
 ------------------------
-$ scavetool --type sv <files>
+$ opp_scavetool --type sv <files>
 runs: 2   scalars: 4  vectors: 2
 ------------------------
-$ scavetool -Ts <files>
+$ opp_scavetool -Ts <files>
 runs: 2   scalars: 4
 ------------------------
-$ scavetool -Tv <files>
+$ opp_scavetool -Tv <files>
 runs: 2   vectors: 2
 ------------------------
-$ scavetool -Th <files>
+$ opp_scavetool -Th <files>
 runs: 2   histograms: 2
 ------------------------
-$ scavetool -Tsv <files>
+$ opp_scavetool -Tsv <files>
 runs: 2   scalars: 4  vectors: 2
 ------------------------
-$ scavetool -T sv <files>
+$ opp_scavetool -T sv <files>
 runs: 2   scalars: 4  vectors: 2
 ------------------------
-$ scavetool -l --filter *:mean <files>
+$ opp_scavetool -l --filter *:mean <files>
 General-0-xxxx:
 
 scalar  Test.node  foo:mean  19.84
@@ -381,7 +381,7 @@ General-1-xxxx:
 scalar  Test.node  foo:mean  19.65
 
 ------------------------
-$ scavetool -l -f *:mean <files>
+$ opp_scavetool -l -f *:mean <files>
 General-0-xxxx:
 
 scalar  Test.node  foo:mean  19.84
@@ -391,7 +391,7 @@ General-1-xxxx:
 scalar  Test.node  foo:mean  19.65
 
 ------------------------
-$ scavetool -l -f name(*:mean) <files>
+$ opp_scavetool -l -f name(*:mean) <files>
 General-0-xxxx:
 
 scalar  Test.node  foo:mean  19.84
@@ -401,7 +401,7 @@ General-1-xxxx:
 scalar  Test.node  foo:mean  19.65
 
 ------------------------
-$ scavetool -l -f *:mean OR *:vector <files>
+$ opp_scavetool -l -f *:mean OR *:vector <files>
 General-0-xxxx:
 
 scalar  Test.node  foo:mean    19.84
@@ -413,7 +413,7 @@ scalar  Test.node  foo:mean    19.65
 vector  Test.node  foo:vector  vectorId=0  count=100  mean=19.65  min=13  max=27
 
 ------------------------
-$ scavetool -l -f module(Test.node) AND *:vector <files>
+$ opp_scavetool -l -f module(Test.node) AND *:vector <files>
 General-0-xxxx:
 
 vector  Test.node  foo:vector  vectorId=0  count=100  mean=19.84  min=12  max=28
@@ -423,19 +423,19 @@ General-1-xxxx:
 vector  Test.node  foo:vector  vectorId=0  count=100  mean=19.65  min=13  max=27
 
 ------------------------
-$ scavetool -e -f *:mean OR *:vector <files>
+$ opp_scavetool -e -f *:mean OR *:vector <files>
 Test.node.foo:mean
 Test.node.foo:vector
 ------------------------
-$ scavetool -s --per-run <files>
+$ opp_scavetool -s --per-run <files>
 General-0-xxxx  scalars: 2  vectors: 1  statistics: 1  histograms: 1
 General-1-xxxx  scalars: 2  vectors: 1  statistics: 1  histograms: 1
 ------------------------
-$ scavetool -s -p <files>
+$ opp_scavetool -s -p <files>
 General-0-xxxx  scalars: 2  vectors: 1  statistics: 1  histograms: 1
 General-1-xxxx  scalars: 2  vectors: 1  statistics: 1  histograms: 1
 ------------------------
-$ scavetool -l -p <files>
+$ opp_scavetool -l -p <files>
 General-0-xxxx:
 
 scalar      Test.node  foo:mean       19.84
@@ -453,7 +453,7 @@ statistics  Test.node  foo:stats      count=100   mean=19.65  min=13      max=27
 histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=24
 
 ------------------------
-$ scavetool -a -p <files>
+$ opp_scavetool -a -p <files>
 General-0-xxxx:
 
 configname      General
@@ -489,7 +489,7 @@ runnumber       1
 seedset         1
 
 ------------------------
-$ scavetool -n -p <files>
+$ opp_scavetool -n -p <files>
 General-0-xxxx:
 
 foo:histogram
@@ -507,7 +507,7 @@ foo:stats
 foo:vector
 
 ------------------------
-$ scavetool -m -p <files>
+$ opp_scavetool -m -p <files>
 General-0-xxxx:
 
 Test.node
@@ -517,7 +517,7 @@ General-1-xxxx:
 Test.node
 
 ------------------------
-$ scavetool -e -p <files>
+$ opp_scavetool -e -p <files>
 General-0-xxxx:
 
 Test.node.foo:histogram
@@ -535,14 +535,14 @@ Test.node.foo:stats
 Test.node.foo:vector
 
 ------------------------
-$ scavetool -r -p <files>
+$ opp_scavetool -r -p <files>
 General-0-xxxx
 General-1-xxxx
 ------------------------
-$ scavetool -c -p <files>
+$ opp_scavetool -c -p <files>
 General
 ------------------------
-$ scavetool -l --bare <files>
+$ opp_scavetool -l --bare <files>
 General-0-xxxx:
 
 scalar      Test.node  foo:mean       19.84
@@ -560,7 +560,7 @@ statistics  Test.node  foo:stats      100    19.65  13     27
 histogram   Test.node  foo:histogram  100    19.65  13     27  24
 
 ------------------------
-$ scavetool -l -b <files>
+$ opp_scavetool -l -b <files>
 General-0-xxxx:
 
 scalar      Test.node  foo:mean       19.84
@@ -578,7 +578,7 @@ statistics  Test.node  foo:stats      100    19.65  13     27
 histogram   Test.node  foo:histogram  100    19.65  13     27  24
 
 ------------------------
-$ scavetool -l --grep-friendly <files>
+$ opp_scavetool -l --grep-friendly <files>
 General-0-xxxx  scalar      Test.node  foo:mean       19.84
 General-0-xxxx  scalar      Test.node  foo:last       17
 General-0-xxxx  vector      Test.node  foo:vector     vectorId=0  count=100   mean=19.84  min=12  max=28
@@ -592,7 +592,7 @@ General-1-xxxx  statistics  Test.node  foo:stats      count=100   mean=19.65  mi
 General-1-xxxx  histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=24
 
 ------------------------
-$ scavetool -l -g <files>
+$ opp_scavetool -l -g <files>
 General-0-xxxx  scalar      Test.node  foo:mean       19.84
 General-0-xxxx  scalar      Test.node  foo:last       17
 General-0-xxxx  vector      Test.node  foo:vector     vectorId=0  count=100   mean=19.84  min=12  max=28
@@ -606,7 +606,7 @@ General-1-xxxx  statistics  Test.node  foo:stats      count=100   mean=19.65  mi
 General-1-xxxx  histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=24
 
 ------------------------
-$ scavetool -n --per-run -g <files>
+$ opp_scavetool -n --per-run -g <files>
 General-0-xxxx  foo:histogram
 General-0-xxxx  foo:last
 General-0-xxxx  foo:mean
@@ -620,13 +620,13 @@ General-1-xxxx  foo:stats
 General-1-xxxx  foo:vector
 
 ------------------------
-$ scavetool -m --per-run -g <files>
+$ opp_scavetool -m --per-run -g <files>
 General-0-xxxx  Test.node
 
 General-1-xxxx  Test.node
 
 ------------------------
-$ scavetool -e --per-run -g <files>
+$ opp_scavetool -e --per-run -g <files>
 General-0-xxxx  Test.node.foo:histogram
 General-0-xxxx  Test.node.foo:last
 General-0-xxxx  Test.node.foo:mean
@@ -640,7 +640,7 @@ General-1-xxxx  Test.node.foo:stats
 General-1-xxxx  Test.node.foo:vector
 
 ------------------------
-$ scavetool -l --tabs <files>
+$ opp_scavetool -l --tabs <files>
 General-0-xxxx:
 
 scalar	Test.node	foo:mean	19.84
@@ -658,7 +658,7 @@ statistics	Test.node	foo:stats	count=100	mean=19.65	min=13	max=27
 histogram	Test.node	foo:histogram	count=100	mean=19.65	min=13	max=27	#bins=24
 
 ------------------------
-$ scavetool -l --grep-friendly --tabs <files>
+$ opp_scavetool -l --grep-friendly --tabs <files>
 General-0-xxxx	scalar	Test.node	foo:mean	19.84
 General-0-xxxx	scalar	Test.node	foo:last	17
 General-0-xxxx	vector	Test.node	foo:vector	vectorId=0	count=100	mean=19.84	min=12	max=28
@@ -672,7 +672,7 @@ General-1-xxxx	statistics	Test.node	foo:stats	count=100	mean=19.65	min=13	max=27
 General-1-xxxx	histogram	Test.node	foo:histogram	count=100	mean=19.65	min=13	max=27	#bins=24
 
 ------------------------
-$ scavetool -l --add-fields-as-scalars <files>
+$ opp_scavetool -l --add-fields-as-scalars <files>
 General-0-xxxx:
 
 scalar      Test.node  foo:mean              19.84
@@ -714,7 +714,7 @@ statistics  Test.node  foo:stats             count=100   mean=19.65  min=13     
 histogram   Test.node  foo:histogram         count=100   mean=19.65  min=13      max=27  #bins=24
 
 ------------------------
-$ scavetool -l -w <files>
+$ opp_scavetool -l -w <files>
 General-0-xxxx:
 
 scalar      Test.node  foo:mean              19.84
@@ -756,33 +756,33 @@ statistics  Test.node  foo:stats             count=100   mean=19.65  min=13     
 histogram   Test.node  foo:histogram         count=100   mean=19.65  min=13      max=27  #bins=24
 
 ------------------------
-$ scavetool -r --rundisplay runnumber <files>
+$ opp_scavetool -r --rundisplay runnumber <files>
 General  0
 General  1
 ------------------------
-$ scavetool -r -D runid <files>
+$ opp_scavetool -r -D runid <files>
 General-0-xxxx
 General-1-xxxx
 ------------------------
-$ scavetool -r -D runnumber <files>
+$ opp_scavetool -r -D runnumber <files>
 General  0
 General  1
 ------------------------
-$ scavetool -r -D itervars <files>
+$ opp_scavetool -r -D itervars <files>
 General  null  0
 General  null  1
 ------------------------
-$ scavetool -r -D experiment <files>
+$ opp_scavetool -r -D experiment <files>
 General  null  #0
 General  null  #1
 ------------------------
-$ scavetool -k <files>
+$ opp_scavetool -k <files>
 runs: 2   scalars: 4  vectors: 2  statistics: 2  histograms: 2
 ------------------------
-$ scavetool --no-indexing <files>
+$ opp_scavetool --no-indexing <files>
 runs: 2   scalars: 4  vectors: 2  statistics: 2  histograms: 2
 ------------------------
-$ scavetool -v <files>
+$ opp_scavetool -v <files>
 reading results/General-#0.sca... done
 reading results/General-#1.sca... done
 reading results/General-#0.vec... done
@@ -790,7 +790,7 @@ reading results/General-#1.vec... done
 4 file(s) loaded
 runs: 2   scalars: 4  vectors: 2  statistics: 2  histograms: 2
 ------------------------
-$ scavetool --verbose <files>
+$ opp_scavetool --verbose <files>
 reading results/General-#0.sca... done
 reading results/General-#1.sca... done
 reading results/General-#0.vec... done

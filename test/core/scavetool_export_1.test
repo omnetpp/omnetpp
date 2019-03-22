@@ -1,5 +1,5 @@
 %description:
-Test scavetool's export command's options. This test des not cover the exporters themselves!
+Test opp_scavetool's export command's options. This test does not cover the exporters themselves!
 
 %file: test.ned
 
@@ -34,12 +34,12 @@ for f in results/*; do
 done
 
 #
-# scavetool wrapper, for output, error handling and shorter command lines
+# opp_scavetool wrapper, for output, error handling and shorter command lines
 #
 run() {
     echo "---------------------------------------------------------------"
-    echo "$ scavetool $* <files>"
-    scavetool "$@" ../results/General-*.sca ../results/General-*.vec 2>&1 || echo ERROR
+    echo "$ opp_scavetool $* <files>"
+    opp_scavetool "$@" ../results/General-*.sca ../results/General-*.vec 2>&1 || echo ERROR
 }
 
 rm -rf export
@@ -141,8 +141,8 @@ run x -o out-v2.csv --verbose
 echo ===============================================================
 files=$(ls *.sca *.vec -1 | sort -d)
 for f in $files; do
-  echo '$ scavetool' $f
-  scavetool $f 2>&1 || echo ERROR
+  echo '$ opp_scavetool' $f
+  opp_scavetool $f 2>&1 || echo ERROR
 done
 
 #for f in *.py; do
@@ -155,10 +155,10 @@ echo .
 
 %contains: postrun-command(1).out
 ---------------------------------------------------------------
-$ scavetool q <files>
+$ opp_scavetool q <files>
 runs: 2   scalars: 4  vectors: 2  statistics: 2  histograms: 2
 ---------------------------------------------------------------
-$ scavetool q -l <files>
+$ opp_scavetool q -l <files>
 General-0-xxxx:
 
 scalar      Test.node  foo:mean       19.84
@@ -176,112 +176,112 @@ statistics  Test.node  foo:stats      count=100   mean=19.65  min=13      max=27
 histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=24
 
 ---------------------------------------------------------------
-$ scavetool export <files>
-scavetool: Output file name must be specified (-o option)
+$ opp_scavetool export <files>
+opp_scavetool: Output file name must be specified (-o option)
 ERROR
 ---------------------------------------------------------------
-$ scavetool x <files>
-scavetool: Output file name must be specified (-o option)
+$ opp_scavetool x <files>
+opp_scavetool: Output file name must be specified (-o option)
 ERROR
 ---------------------------------------------------------------
-$ scavetool x -o out.csv <files>
+$ opp_scavetool x -o out.csv <files>
 Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
 ---------------------------------------------------------------
-$ scavetool x -o out.json <files>
+$ opp_scavetool x -o out.json <files>
 Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
 ---------------------------------------------------------------
-$ scavetool x -o out.vec -Tv <files>
-scavetool: Exporter: OMNeT++ vec files currently do not support multiple runs per file
+$ opp_scavetool x -o out.vec -Tv <files>
+opp_scavetool: Exporter: OMNeT++ vec files currently do not support multiple runs per file
 ERROR
 ---------------------------------------------------------------
-$ scavetool x -o out.vec -Tv -f attr:repetition(0) <files>
+$ opp_scavetool x -o out.vec -Tv -f attr:repetition(0) <files>
 Exported 1 vector
 ---------------------------------------------------------------
-$ scavetool x -o out.sca -Tsth <files>
+$ opp_scavetool x -o out.sca -Tsth <files>
 Exported 4 scalars, 2 statistics, 2 histograms
 ---------------------------------------------------------------
-$ scavetool x -o out-Fcsv-r.csv -F CSV-R <files>
+$ opp_scavetool x -o out-Fcsv-r.csv -F CSV-R <files>
 Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
 ---------------------------------------------------------------
-$ scavetool x -o out-Fcsv-s.csv -F CSV-S -x allowMixed=true <files>
+$ opp_scavetool x -o out-Fcsv-s.csv -F CSV-S -x allowMixed=true <files>
 Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
 ---------------------------------------------------------------
-$ scavetool x -o out-Fjson.json -F JSON <files>
+$ opp_scavetool x -o out-Fjson.json -F JSON <files>
 Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
 ---------------------------------------------------------------
-$ scavetool x -o out-Fjson-py.py -F JSON -x pythonFlavoured=true <files>
+$ opp_scavetool x -o out-Fjson-py.py -F JSON -x pythonFlavoured=true <files>
 Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
 ---------------------------------------------------------------
-$ scavetool x -o out-Foppvec.vec -F OmnetppVectorFile -Tv <files>
-scavetool: Exporter: OMNeT++ vec files currently do not support multiple runs per file
+$ opp_scavetool x -o out-Foppvec.vec -F OmnetppVectorFile -Tv <files>
+opp_scavetool: Exporter: OMNeT++ vec files currently do not support multiple runs per file
 ERROR
 ---------------------------------------------------------------
-$ scavetool x -o out-Foppvec.vec -F OmnetppVectorFile -Tv -f attr:repetition(0) <files>
+$ opp_scavetool x -o out-Foppvec.vec -F OmnetppVectorFile -Tv -f attr:repetition(0) <files>
 Exported 1 vector
 ---------------------------------------------------------------
-$ scavetool x -o out-Foppsca.sca -F OmnetppScalarFile -Tsth <files>
+$ opp_scavetool x -o out-Foppsca.sca -F OmnetppScalarFile -Tsth <files>
 Exported 4 scalars, 2 statistics, 2 histograms
 ---------------------------------------------------------------
-$ scavetool x -o out-Fsqlvec.vec -F SqliteVectorFile -Tv <files>
+$ opp_scavetool x -o out-Fsqlvec.vec -F SqliteVectorFile -Tv <files>
 Exported 2 vectors
 ---------------------------------------------------------------
-$ scavetool x -o out-Fsqlsca.sca -F SqliteScalarFile -Tsth <files>
+$ opp_scavetool x -o out-Fsqlsca.sca -F SqliteScalarFile -Tsth <files>
 Exported 4 scalars, 2 statistics, 2 histograms
 ---------------------------------------------------------------
-$ scavetool x -o out-Ts.csv -Ts <files>
+$ opp_scavetool x -o out-Ts.csv -Ts <files>
 Exported 4 scalars
 ---------------------------------------------------------------
-$ scavetool x -o out-Tt.csv -Tt <files>
+$ opp_scavetool x -o out-Tt.csv -Tt <files>
 Exported 2 statistics
 ---------------------------------------------------------------
-$ scavetool x -o out-Th.csv -Th <files>
+$ opp_scavetool x -o out-Th.csv -Th <files>
 Exported 2 histograms
 ---------------------------------------------------------------
-$ scavetool x -o out-Tv.csv -Tv <files>
+$ opp_scavetool x -o out-Tv.csv -Tv <files>
 Exported 2 vectors
 ---------------------------------------------------------------
-$ scavetool x -o out-Tsh1.csv -Tsh <files>
+$ opp_scavetool x -o out-Tsh1.csv -Tsh <files>
 Exported 4 scalars, 2 histograms
 ---------------------------------------------------------------
-$ scavetool x -o out-Tsv2.csv -T scalars,vectors <files>
+$ opp_scavetool x -o out-Tsv2.csv -T scalars,vectors <files>
 Exported 4 scalars, 2 vectors
 ---------------------------------------------------------------
-$ scavetool x -o out-Tsh3.csv --type sh <files>
+$ opp_scavetool x -o out-Tsh3.csv --type sh <files>
 Exported 4 scalars, 2 histograms
 ---------------------------------------------------------------
-$ scavetool x -o out-Tsv4.csv --type scalars,vectors <files>
+$ opp_scavetool x -o out-Tsv4.csv --type scalars,vectors <files>
 Exported 4 scalars, 2 vectors
 ---------------------------------------------------------------
-$ scavetool x -o out-f1.csv --filter *:vector <files>
+$ opp_scavetool x -o out-f1.csv --filter *:vector <files>
 Exported 2 vectors
 ---------------------------------------------------------------
-$ scavetool x -o out-f2.csv -f *:vector <files>
+$ opp_scavetool x -o out-f2.csv -f *:vector <files>
 Exported 2 vectors
 ---------------------------------------------------------------
-$ scavetool x -o out-w1.csv -Tsth --add-fields-as-scalars <files>
+$ opp_scavetool x -o out-w1.csv -Tsth --add-fields-as-scalars <files>
 Exported 28 scalars, 2 statistics, 2 histograms
 ---------------------------------------------------------------
-$ scavetool x -o out-w2.csv -Tsth -w <files>
+$ opp_scavetool x -o out-w2.csv -Tsth -w <files>
 Exported 28 scalars, 2 statistics, 2 histograms
 ---------------------------------------------------------------
-$ scavetool x -o out-x.csv -x separator=tab -x quoteEscaping=backslash <files>
+$ opp_scavetool x -o out-x.csv -x separator=tab -x quoteEscaping=backslash <files>
 Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
 ---------------------------------------------------------------
-$ scavetool x -o out-k1.vec -Tv -k <files>
-scavetool: Exporter: OMNeT++ vec files currently do not support multiple runs per file
+$ opp_scavetool x -o out-k1.vec -Tv -k <files>
+opp_scavetool: Exporter: OMNeT++ vec files currently do not support multiple runs per file
 ERROR
 ---------------------------------------------------------------
-$ scavetool x -o out-k2.vec -Tv --no-indexing <files>
-scavetool: Exporter: OMNeT++ vec files currently do not support multiple runs per file
+$ opp_scavetool x -o out-k2.vec -Tv --no-indexing <files>
+opp_scavetool: Exporter: OMNeT++ vec files currently do not support multiple runs per file
 ERROR
 ---------------------------------------------------------------
-$ scavetool x -o out-k1.vec -Tv -k -f attr:repetition(0) <files>
+$ opp_scavetool x -o out-k1.vec -Tv -k -f attr:repetition(0) <files>
 Exported 1 vector
 ---------------------------------------------------------------
-$ scavetool x -o out-k2.vec -Tv --no-indexing -f attr:repetition(0) <files>
+$ opp_scavetool x -o out-k2.vec -Tv --no-indexing -f attr:repetition(0) <files>
 Exported 1 vector
 ---------------------------------------------------------------
-$ scavetool x -o out-v1.csv -v <files>
+$ opp_scavetool x -o out-v1.csv -v <files>
 inferred export format from file name: CSV-R
 reading ../results/General-#0.sca... done
 reading ../results/General-#1.sca... done
@@ -291,7 +291,7 @@ reading ../results/General-#1.vec... done
 exporting to out-v1.csv... done
 Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
 ---------------------------------------------------------------
-$ scavetool x -o out-v2.csv --verbose <files>
+$ opp_scavetool x -o out-v2.csv --verbose <files>
 inferred export format from file name: CSV-R
 reading ../results/General-#0.sca... done
 reading ../results/General-#1.sca... done
@@ -301,20 +301,20 @@ reading ../results/General-#1.vec... done
 exporting to out-v2.csv... done
 Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
 ===============================================================
-$ scavetool out-Foppsca.sca
+$ opp_scavetool out-Foppsca.sca
 runs: 2   scalars: 4  vectors: 0  statistics: 2  histograms: 2
-$ scavetool out-Foppvec.vec
+$ opp_scavetool out-Foppvec.vec
 runs: 1   scalars: 0  vectors: 1  statistics: 0  histograms: 0
-$ scavetool out-Fsqlsca.sca
+$ opp_scavetool out-Fsqlsca.sca
 runs: 2   scalars: 4  vectors: 0  statistics: 2  histograms: 2
-$ scavetool out-Fsqlvec.vec
+$ opp_scavetool out-Fsqlvec.vec
 runs: 2   scalars: 0  vectors: 2  statistics: 0  histograms: 0
-$ scavetool out-k1.vec
+$ opp_scavetool out-k1.vec
 runs: 1   scalars: 0  vectors: 1  statistics: 0  histograms: 0
-$ scavetool out-k2.vec
+$ opp_scavetool out-k2.vec
 runs: 1   scalars: 0  vectors: 1  statistics: 0  histograms: 0
-$ scavetool out.sca
+$ opp_scavetool out.sca
 runs: 2   scalars: 4  vectors: 0  statistics: 2  histograms: 2
-$ scavetool out.vec
+$ opp_scavetool out.vec
 runs: 1   scalars: 0  vectors: 1  statistics: 0  histograms: 0
 .

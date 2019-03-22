@@ -37,8 +37,8 @@ echo
 
 echo READ PERFORMANCE
 echo -----------------
-runcmd "omnetpp-indexed.vec, export all vectors"      scavetool v results/omnetpp-indexed.vec
-runcmd "omnetpp-indexed.vec, export one vector"       scavetool v results/omnetpp-indexed.vec -p 'dummy-vector-1'
-runcmd "sqlite-indexed-after.vec, export all vectors" scavetool v results/sqlite-indexed-after.vec
-runcmd "sqlite-indexed-after.vec, export one vector"  scavetool v results/sqlite-indexed-after.vec -p 'dummy-vector-1'
+runcmd "omnetpp-indexed.vec, export all vectors"      opp_scavetool v results/omnetpp-indexed.vec
+runcmd "omnetpp-indexed.vec, export one vector"       opp_scavetool v results/omnetpp-indexed.vec -p 'dummy-vector-1'
+runcmd "sqlite-indexed-after.vec, export all vectors" opp_scavetool v results/sqlite-indexed-after.vec
+runcmd "sqlite-indexed-after.vec, export one vector"  opp_scavetool v results/sqlite-indexed-after.vec -p 'dummy-vector-1'
 

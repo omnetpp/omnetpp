@@ -33,7 +33,7 @@ output-scalar-file-append = true
 repeat = 3
 
 %prerun-command: rm -f results/General.sca
-%postrun-command: scavetool results/General.sca
+%postrun-command: opp_scavetool results/General.sca
 
 %contains: postrun-command(1).out
 runs: 3   scalars: 6  vectors: 0  statistics: 0  histograms: 0
