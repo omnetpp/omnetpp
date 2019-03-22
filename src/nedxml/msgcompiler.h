@@ -42,15 +42,9 @@ struct MsgCompilerOptions
 {
     std::vector<std::string> importPath;
     std::string exportDef;
-    bool generateClasses;
-    bool generateDescriptors;
-    bool generateSettersInDescriptors;
-
-    MsgCompilerOptions() :
-        generateClasses(true),
-        generateDescriptors(true),
-        generateSettersInDescriptors(true)
-        {}
+    bool generateClasses = true;
+    bool generateDescriptors = true;
+    bool generateSettersInDescriptors = true;
 };
 
 /**

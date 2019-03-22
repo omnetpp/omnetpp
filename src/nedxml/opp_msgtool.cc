@@ -209,9 +209,9 @@ void MsgTool::generateDependencies(const char *depsfile, const char *msgfile, co
 
     if (opt_verbose) {
         if (useFileOutput)
-        cout << "writing dependencies to " << depsfile << "\n";
+            cout << "writing dependencies to " << depsfile << "\n";
         else
-        cout << "writing dependencies to stdout\n";
+            cout << "writing dependencies to stdout\n";
     }
 
     std::ofstream fileStream;
@@ -256,35 +256,47 @@ void MsgTool::printHelpPage(const std::string& page)
         help.para("Usage: opp_msgtool [<command>] [<options>] <files>...");
         help.para("Message compiler and MSG file manipulation tool.");
         help.line("Commands:");
-        help.option("c, convert", "Convert MSG files to XML form and vice versa, etc.");
+        help.option("x, cpp", "Generate C++ code from MSG files");
         help.option("p, prettyprint", "Format (pretty-print) MSG files");
+        help.option("c, convert", "Convert MSG files to XML form and vice versa, etc.");
         help.option("v, validate", "Validate MSG files");
-        help.option("x, cpp", "Generate C++ code (message compiler mode)");
-        help.option("h, help", "Print this help text");
+        help.option("h, help", "Print help text");
         help.line();
         help.para("The default command is 'cpp'.");
-        help.para("To get help, use opp_msgtool help <topic>. Available help topics: 'options' and any command name.");
+        help.para("To get help, use opp_msgtool help <topic>. Available help topics: command names.");
+    }
+    else if (page == "h" || page == "help") {
+        help.para("Usage: opp_msgtool help <topic>");
+        help.para("Print help text on the given topic.");
     }
     else if (page == "c" || page == "convert") {
         help.para("Usage: opp_msgtool convert [<options>] <folders-and-msg-or-xml-files>");
-        help.para("Convert between MSG source and its XML AST representation, split up MSG files "
-                  "to contain one MSG type per file, etc.");
-        help.para("In addition to MSG files, the command also consumes and produces XML files "
-                  "that essentially contain MSG in parsed (abstract syntax tree, AST) form. "
-                  "See the manual or doc/etc/msg2.dtd for the format of the XML.");
-        help.para("MSG-to-XML conversion parses the MSG file and exports its AST in XML form. "
-                  "The presence of certain elements/attributes in the XML can be controlled.");
-        help.para("XML-to-MSG conversion produces one or more MSG files per XML file, depending "
-                  "on the number of <msg-file> elements in the XML. MSG file names will be taken "
-                  "from the XML file (filename attribute of <msg-file>).");
-        help.para("MSG-to-MSG conversion amounts to parsing into AST and regenerating the "
-                  "MSG source from it. The net result is essentially pretty-printing.");
+        help.para("This command essentially converts between MSG and its abstract syntax tree (AST) "
+                  "representation serialized in XML form. It is possible to export the AST of a MSG file "
+                  "(or files) to XML, and to regenerate the MSG file(s) from said XML.");
+        help.para("An XML file may contain the ASTs of one or more MSG files. The MSG file names (with "
+                  "their relative paths) are also part of the XML, so it is possible to regenerate "
+                  "(and overwrite) the MSG files the XML was produced from. The format of XML files is "
+                  "described in the file <omnetpp>/doc/etc/msg2.dtd, and also in the manual. "
+                  "The XML format has optional features, such as optional location info "
+                  "(line/column ranges that AST nodes correspond to), and having expressions "
+                  "in parsed or unparsed form. Command-line options exist to control these features "
+                  "when translating MSG to XML.");
+        help.para("Unless specified otherwise, MSG files specified on the command line are "
+                  "converted to XML, and XML files are converted to MSG. For the latter case "
+                  "(XML-to-MSG conversion), the names of MSG files to be generated are taken from "
+                  "the XML, i.e. the original MSG files will be overwritten.");
+        help.para("Specifying a folder as argument will cause all MSG files in it to be processed. "
+                  "To specify all XML files in a folder as input, use shell wildcards or the Unix "
+                  "'find' command.");
+        help.para("MSG-to-MSG conversion (which you can force with the --msg option) amounts to "
+                  "parsing into AST and regenerating MSG source from it. The net result is "
+                  "essentially pretty-printing.");
         help.line("Options:");
         help.option("-g, --msg", "Force MSG output");
         help.option("-x, --xml", "Force XML output");
         help.option("-m, --merge", "Output is a single file (out.msg or out.xml by default).");
         help.option("-o <filename>", "Output file name (don't use when processing multiple files)");
-        help.option("-s, --split", "Split MSG files to one MSG component per file");
         help.option("-u, --unparsedexpr", "Do not parse expressions in MSG input");
         help.option("-l, --srcloc", "Add source location info (src-loc attributes) to XML output");
         help.option("-t, --storesrc", "When converting MSG to XML, include source code of components in XML output");
@@ -302,7 +314,10 @@ void MsgTool::printHelpPage(const std::string& page)
     }
     else if (page == "v" || page == "validate") {
         help.para("Usage: opp_msgtool validate [<options>] <folders-and-msg-files>");
-        help.para("Perform syntax check and basic local validation of the MSG files.");
+        help.para("Perform syntax check and basic local validation of the MSG files. "
+                  "If no errors are found, the output is empty and the program will exit with zero exit code. "
+                  "Otherwise, errors will be reported on the standard error, the program will return a nonzero exit code. "
+                  "Specify -v (verbose) to see which files are being checked.");
         help.line("Options:");
         help.option("-e", "Do not parse expressions");
         help.option("-v", "Verbose");
@@ -310,26 +325,26 @@ void MsgTool::printHelpPage(const std::string& page)
     }
     else if (page == "x" || page == "cpp") {
         help.para("Usage: opp_msgtool cpp [<options>] <folders-and-msg-files>");
-        help.para("Generate C++ source from message definitions.");
+        help.para("Generate C++ source from MSG files.");
         help.line();
         help.line("Options:");
-        help.option("--msg6", "No-op; retained for backward compatibility.");
-        help.option("--msg4", "Force OMNeT++ 4.x compatible message file processing.");
+        help.option("--msg6", "This is the default mode in OMNeT++ 6.0 and later.");
+        help.option("--msg4", "Compatibility mode for processing MSG files written for OMNeT++ 4.x and 5.x.");
         help.option("-I <dir>", "Add directory to MSG import path");
         help.option("-s <suffix>", "Suffix for generated C++ source files (default: '_m.cc')");
         help.option("-t <suffix>", "Suffix for generated C++ header files (default: '_m.h')");
         help.option("-P <symbol>", "Add dllexport/dllimport symbol to class declarations; if symbol "
                     "name ends in _API, boilerplate code to conditionally define "
                     "it as OPP_DLLEXPORT/OPP_DLLIMPORT is also generated");
-        help.option("-MD", "Turn on dependency generation for message files; see also: -MF, -MP");
+        help.option("-MD", "Turn on dependency generation for MSG files; see also: -MF, -MP");
         help.option("-MF <file>", "Save dependencies into the specified file; when absent, "
                     "dependencies will be written to the standard output");
         help.option("-MP", "Add a phony target for each dependency other than the main file,"
                     "causing each to depend on nothing. These dummy rules work around errors "
                     "make gives if you remove header files without updating the Makefile.");
-        help.option("-Xnc", "Do not generate the classes, only object descriptions");
-        help.option("-Xnd", "Do not generate class descriptors");
-        help.option("-Xns", "Do not generate setters in class descriptors");
+        help.option("-Xnc", "Do not generate classes, only descriptors (cf. @existingClass MSG property)");
+        help.option("-Xnd", "Do not generate class descriptors (cf. @descriptor(false) MSG property)");
+        help.option("-Xns", "Do not generate setters in class descriptors (cf. @descriptor(readonly) MSG property)");
         help.option("-v", "Verbose");
         help.line();
     }
@@ -417,7 +432,7 @@ void MsgTool::convertCommand(int argc, char **argv)
         else {
             std::unique_ptr<FilesElement> dummy(tree);
 
-            bool msgOutput = opt_forcemsg ? true : opt_forcexml ? false : isMsgFile;
+            bool msgOutput = opt_forcemsg ? true : opt_forcexml ? false : !isMsgFile;
 
             std::string outputFile = inputFile;
             if (isMsgFile == msgOutput) {  // MSG-to-MSG or XML-to-XML

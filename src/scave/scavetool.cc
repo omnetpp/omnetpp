@@ -68,10 +68,14 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.option("q, query", "Query the contents of result files");
         help.option("x, export", "Export results in various formats");
         help.option("i, index", "Generate index files (.vci) for vector files");
-        help.option("h, help", "Print this help text");
+        help.option("h, help", "Print help text");
         help.line();
         help.para("The default command is 'query'.");
-        help.para("To get help, use scavetool help <topic>. Available help topics: any command name, 'filter', and 'operations'.");
+        help.para("To get help, use scavetool help <topic>. Available help topics: command names, 'filter', 'operations'.");
+    }
+    else if (page == "h" || page == "help") {
+        help.para("Usage: scavetool help <topic>");
+        help.para("Print help text on the given topic.");
     }
     else if (page == "q" || page == "query") {
         help.para("Usage: scavetool query [<mode-option>] [<options>] <output-vector-and-scalar-files>");

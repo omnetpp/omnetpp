@@ -228,26 +228,41 @@ void NedTool::printHelpPage(const std::string& page)
         help.option("c, convert", "Convert NED files to XML form and vice versa, split up NED files to contain one NED type per file, etc.");
         help.option("p, prettyprint", "Format (pretty-print) NED files");
         help.option("v, validate", "Validate NED files");
-        help.option("x, cpp", "Translate NED files into C++, to allow building self-contained binaries that don't need separate NED files for running simulations");
-        help.option("h, help", "Print this help text");
+        help.option("x, cpp", "Translate NED files into C++, to allow building self-contained simulation binaries that don't need separate NED files");
+        help.option("h, help", "Print help text");
         help.line();
         help.para("The default command is 'validate'.");
-        help.para("To get help, use opp_nedtool help <topic>. Available help topics: 'options' and any command name.");
+        help.para("To get help, use opp_nedtool help <topic>. Available help topics: command names, 'makefrag'.");
+    }
+    else if (page == "h" || page == "help") {
+        help.para("Usage: opp_nedtool help <topic>");
+        help.para("Print help text on the given topic.");
     }
     else if (page == "c" || page == "convert") {
         help.para("Usage: opp_nedtool convert [<options>] <ned-folders-and-ned-or-xml-files>");
-        help.para("Convert between NED source and its XML AST representation, split up NED files "
-                  "to contain one NED type per file, etc.");
-        help.para("In addition to NED files, the command also consumes and produces XML files "
-                  "that essentially contain NED in parsed (abstract syntax tree, AST) form. "
-                  "See the manual or doc/etc/ned2.dtd for the format of the XML.");
-        help.para("NED-to-XML conversion parses the NED file and exports its AST in XML form. "
-                  "The presence of certain elements/attributes in the XML can be controlled.");
-        help.para("XML-to-NED conversion produces one or more NED files per XML file, depending "
-                  "on the number of <ned-file> elements in the XML. NED file names will be taken "
-                  "from the XML file (filename attribute of <ned-file>).");
-        help.para("NED-to-NED conversion amounts to parsing into AST and regenerating the "
-                  "NED source from it. The net result is essentially pretty-printing.");
+        help.para("This command essentially converts between NED and its abstract syntax tree (AST) "
+                  "representation serialized in XML form. It is possible to export the AST of a NED file "
+                  "(or files) to XML, and to regenerate the NED file(s) from said XML. The command "
+                  "can also optionally perform additional tasks, such as splitting up NED files "
+                  "containing multiple NED components to several NED files containing one component each.");
+        help.para("An XML file may contain the ASTs of one or more NED files. The NED file names (with "
+                  "their relative paths) are also part of the XML, so it is possible to regenerate "
+                  "(and overwrite) the NED files the XML was produced from. The format of XML files is "
+                  "described in the file <omnetpp>/doc/etc/ned2.dtd, and also in the manual. "
+                  "The XML format has optional features, such as optional location info "
+                  "(line/column ranges that AST nodes correspond to), and having expressions "
+                  "in parsed or unparsed form. Command-line options exist to control these features "
+                  "when translating NED to XML.");
+        help.para("Unless specified otherwise, NED files specified on the command line are "
+                  "converted to XML, and XML files are converted to NED. For the latter case "
+                  "(XML-to-NED conversion), the names of NED files to be generated are taken from "
+                  "the XML, i.e. the original NED files will be overwritten.");
+        help.para("Specifying a folder as argument will cause all NED files in it to be processed. "
+                  "To specify all XML files in a folder as input, use shell wildcards or the Unix "
+                  "'find' command.");
+        help.para("NED-to-NED conversion (which you can force with the --ned option) amounts to "
+                  "parsing into AST and regenerating NED source from it. The net result is "
+                  "essentially pretty-printing.");
         help.line("Options:");
         help.option("-n, --ned", "Force NED output");
         help.option("-x, --xml", "Force XML output");
@@ -271,7 +286,10 @@ void NedTool::printHelpPage(const std::string& page)
     }
     else if (page == "v" || page == "validate") {
         help.para("Usage: opp_nedtool validate [<options>] <ned-folders-and-files>");
-        help.para("Perform syntax check and basic local validation of the NED files.");
+        help.para("Perform syntax check and basic local validation of the NED files. "
+                  "If no errors are found, the output is empty and the program will exit with zero exit code. "
+                  "Otherwise, errors will be reported on the standard error, the program will return a nonzero exit code. "
+                  "Specify -v (verbose) to see which files are being checked.");
         help.line("Options:");
         help.option("-e", "Do not parse expressions");
         help.option("-v", "Verbose");
@@ -293,8 +311,8 @@ void NedTool::printHelpPage(const std::string& page)
         help.para("Tip: When you try out NED file embedding on a simulation, "
                    "you may want to also prevent the simulation program from dynamically "
                    "loading NED files, to avoid confusion. You can do so by additionally "
-                   "specifying the '-n:' option to the simulation. This option effectively "
-                   "sets an empty NED path.");
+                   "specifying the '-x.' option to the simulation. This option prevents "
+                   "all NED files from being loaded.");
         help.line("Options:");
         help.option("-o <filename>", "Name of output file. Default: out_n.cc");
         help.option("-p, --garblephrase <string>", "Phrase for garbling the NED source. Default: none");
@@ -415,7 +433,7 @@ void NedTool::convertCommand(int argc, char **argv)
             if (opt_splitnedfiles)
                 NedTools::splitNedFiles(tree);
 
-            bool nedOutput = opt_forcened ? true : opt_forcexml ? false : isNedFile;
+            bool nedOutput = opt_forcened ? true : opt_forcexml ? false : !isNedFile;
 
             std::string outputFile = inputFile;
             if (isNedFile == nedOutput) {  // NED-to-NED or XML-to-XML
