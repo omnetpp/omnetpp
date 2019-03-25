@@ -550,7 +550,7 @@ void NedTool::generateCppCommand(int argc, char **argv)
     // process options
     std::string opt_cppfile = "out_n.cc";
     std::string opt_garblephrase;
-    std::vector<std::string> nedfiles;
+    std::vector<std::string> fileArgs;
 
     for (int i = 0; i < argc; i++) {
         if (string(argv[i]) == "-o") {
@@ -570,8 +570,13 @@ void NedTool::generateCppCommand(int argc, char **argv)
         else if (argv[i][0] == '-')
             throw opp_runtime_error("unknown option %s", argv[i]);
         else
-            addAll(nedfiles, expandFileArg(argv[i]));
+            fileArgs.push_back(argv[i]);
     }
+
+    // load NED files/folders
+    std::vector<std::string> nedfiles;
+    for (std::string arg : fileArgs)
+        addAll(nedfiles, expandFileArg(arg.c_str()));
 
     if (nedfiles.empty())
         std::cerr << "opp_nedtool: Warning: no input files\n";
