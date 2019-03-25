@@ -16,7 +16,6 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.workbench.texteditor,
  org.eclipse.core.resources,
  org.eclipse.ui.ide
-Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: lib/kxml-plugin.jar,
  lib/xmlpull_1_1_3_1.jar,
  .
