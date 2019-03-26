@@ -84,6 +84,9 @@ class NEDXML_API NedResourceCache
     // list of "package.ned" files by package name
     std::map<std::string, std::vector<NedFileElement*>> packageDotNedFiles;
 
+    // true after doneLoadingNedFiles() has been called
+    bool doneLoadingNedFilesCalled = false;
+
     // table of NED type declarations; key is fully qualified name, and elements point into nedFiles
     std::map<std::string, NedTypeInfo*> nedTypes;
 
@@ -168,7 +171,7 @@ class NEDXML_API NedResourceCache
      * redefined to issue errors for components that could not be fully
      * resolved because of missing base types or interfaces.
      */
-    virtual void doneLoadingNedFiles(); //TODO don't let package.ned files to be loaded after this one!!!!
+    virtual void doneLoadingNedFiles();
 
     /**
      * Return a list of "package.ned" files relevant for the given package.

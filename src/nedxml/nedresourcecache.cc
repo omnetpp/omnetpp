@@ -127,11 +127,18 @@ int NedResourceCache::doLoadNedSourceFolder(const char *folderName, const char *
     return count;
 }
 
+inline bool isPackageNedFile(const char *fname)
+{
+    return strcmp(fname, "package.ned") == 0 || opp_stringendswith(fname, "/package.ned");
+}
+
 void NedResourceCache::doLoadNedFileOrText(const char *nedFilename, const char *nedText, const char *expectedPackage, bool isXML)
 {
     // parse file
     Assert(nedFilename);
     std::string canonicalFilename = nedText ? nedFilename : canonicalize(nedFilename);  // so that NedFileElement stores absolute file name
+    if (doneLoadingNedFilesCalled && isPackageNedFile(canonicalFilename.c_str()))
+        throw NedException("Cannot load %s: 'package.ned' files can no longer be loaded at this point", canonicalFilename.c_str()); // as it could contain e.g. @namespace
     NedFileElement *tree = parseAndValidateNedFileOrText(canonicalFilename.c_str(), nedText, isXML);
     Assert(tree);
 
@@ -144,6 +151,13 @@ void NedResourceCache::doLoadNedFileOrText(const char *nedFilename, const char *
 
     // register it
     addFile(canonicalFilename.c_str(), tree);
+
+    // if doneLoadingNedFiles() has already been called, we cannot defer resolving the types in it
+    if (doneLoadingNedFilesCalled) {
+        std::string packagePrefix = declaredPackage.empty() ? "" : declaredPackage + ".";
+        collectNedTypesFrom(tree, packagePrefix, false);
+        registerPendingNedTypes();
+    }
 }
 
 NedFileElement *NedResourceCache::parseAndValidateNedFileOrText(const char *fname, const char *nedText, bool isXML)
@@ -272,10 +286,14 @@ bool NedResourceCache::areDependenciesResolved(const char *qname, ASTNode *node)
 
 void NedResourceCache::doneLoadingNedFiles()
 {
+    if (doneLoadingNedFilesCalled)
+        throw NedException("NedResourceCache::doneLoadingNedFiles() may only be called once");
+    doneLoadingNedFilesCalled = true;
+
     // collect package.ned files
     for (NedFileElement *nedFile : nedFiles) {
         const char *fname = nedFile->getFilename();
-        if (strcmp(fname, "package.ned") == 0 || opp_stringendswith(fname, "/package.ned")) {
+        if (isPackageNedFile(fname)) {
             std::string packageName;
             if (PackageElement *packageDecl = (PackageElement *)nedFile->getFirstChildWithTag(NED_PACKAGE))
                 packageName = packageDecl->getName();
@@ -288,22 +306,11 @@ void NedResourceCache::doneLoadingNedFiles()
         std::string packagePrefix;
         if (PackageElement *packageDecl = (PackageElement *)node->getFirstChildWithTag(NED_PACKAGE))
             packagePrefix = std::string(packageDecl->getName()) + ".";
-        collectNedTypesFrom(node, packagePrefix, false);  //TODO this needs to done for NED files loaded AFTER "done"!
+        collectNedTypesFrom(node, packagePrefix, false);
     }
 
     // register NED types from all the files we've loaded
     registerPendingNedTypes();
-
-    // if something was missing --> error
-    if (!pendingList.empty()) {
-        std::string unresolvedNames;
-        for (int i = 0; i < (int)pendingList.size(); i++)
-            unresolvedNames += std::string(i == 0 ? "" : ", ") + pendingList[i].qname;
-        if (pendingList.size() == 1)
-            throw NedException(pendingList[0].node, "NED type '%s' could not be fully resolved due to a missing base type or interface", unresolvedNames.c_str());
-        else
-            throw NedException("The following NED types could not be fully resolved due to a missing base type or interface: %s", unresolvedNames.c_str());
-    }
 }
 
 void NedResourceCache::registerPendingNedTypes()
@@ -322,6 +329,17 @@ void NedResourceCache::registerPendingNedTypes()
                 again = true;
             }
         }
+    }
+
+    // report errors
+    if (!pendingList.empty()) {
+        std::string unresolvedNames;
+        for (int i = 0; i < (int)pendingList.size(); i++)
+            unresolvedNames += std::string(i == 0 ? "" : ", ") + pendingList[i].qname;
+        if (pendingList.size() == 1)
+            throw NedException(pendingList[0].node, "NED type '%s' could not be fully resolved due to a missing base type or interface", unresolvedNames.c_str());
+        else
+            throw NedException("The following NED types could not be fully resolved due to a missing base type or interface: %s", unresolvedNames.c_str());
     }
 }
 
