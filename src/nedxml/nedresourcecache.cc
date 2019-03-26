@@ -371,10 +371,8 @@ std::string NedResourceCache::determineRootPackageName(const char *nedSourceFold
 {
     // determine if a package.ned file exists
     std::string packageNedFilename = std::string(nedSourceFolderName) + "/package.ned";
-    FILE *f = fopen(packageNedFilename.c_str(), "r");
-    if (!f)
+    if (!fileExists(packageNedFilename.c_str()))
         return "";
-    fclose(f);
 
     // read package declaration from it
     ASTNode *tree = parseAndValidateNedFileOrText(packageNedFilename.c_str(), nullptr, false);
@@ -448,20 +446,14 @@ std::string NedResourceCache::resolveNedType(const NedLookupContext& context, co
         // inner type?
         if (context.element->getTagCode() == NED_COMPOUND_MODULE) {
             std::string qname = context.qname;
-            ASTNode *topLevelCompoundModule = context.element->getParent()->getParentWithTag(NED_COMPOUND_MODULE);
-            if (topLevelCompoundModule) {
+            bool contextIsInnerType = context.element->getParent()->getParentWithTag(NED_COMPOUND_MODULE) != nullptr;
+            if (contextIsInnerType) {
                 // if context is already an inner type, look up nedtypename in its enclosing toplevel NED type
                 int index = qname.rfind('.');
                 Assert(index != -1);
-                qname.replace(index, qname.length() - index, "");
+                qname = qname.substr(0, index);
             }
-            /* TODO new code for the above, using NedTypeInfo:
-               NedTypeInfo *contextNedType = getDecl(context.qname.c_str()) const;
-               if (contextNedType->isInnerType())
-                contextNedType = getDecl(contextNedType->getEnclosingTypeName());
-               qname = std::string(contextNedType->getFullName()) + "." + nedtypename;
-             */
-            qname = qname + "." + nedtypename;
+            qname = qname + "." + nedTypeName;
             if (qnames->contains(qname.c_str()))
                 return qname;
             // TODO: try with ancestor types (i.e. maybe nedTypeName is an inherited inner type)
