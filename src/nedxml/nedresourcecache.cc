@@ -38,8 +38,6 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace nedxml {
 
-// TODO collect errors in a NedErrorStore?
-
 inline std::string canonicalize(const char *pathname)
 {
     return tidyFilename(toAbsolutePath(pathname).c_str(), true);
@@ -51,8 +49,8 @@ NedResourceCache::NedResourceCache()
 
 NedResourceCache::~NedResourceCache()
 {
-    for (auto & file : files)
-        delete file.second;
+    for (auto & file : nedFiles)
+        delete file;
     for (auto & nedType : nedTypes)
         delete nedType.second;
 }
@@ -60,18 +58,20 @@ NedResourceCache::~NedResourceCache()
 void NedResourceCache::registerBuiltinDeclarations()
 {
     // NED code to define built-in types
-    const char *nedcode = NedParser::getBuiltInDeclarations();
+    const char *nedCode = NedParser::getBuiltInDeclarations();
 
     ErrorStore errors;
     NedParser parser(&errors);
-    ASTNode *tree = parser.parseNedText(nedcode, "built-in-declarations");
+    ASTNode *tree = parser.parseNedText(nedCode, "built-in-declarations");
     if (errors.containsError()) {
         delete tree;
         throw NedException(getFirstError(&errors).c_str());
     }
+    NedFileElement *nedFileElement = dynamic_cast<NedFileElement*>(tree);
+    Assert(nedFileElement);
 
-    // note: file must be called package.ned so that @namespace("") takes effect
-    addFile("/[built-in-declarations]/package.ned", tree);
+    // note: file must be called package.ned so that @namespace takes effect
+    addFile("/[built-in-declarations]/package.ned", nedFileElement);
 }
 
 static std::vector<std::string> resolvePath(const char *folder, const char *path)
@@ -129,13 +129,10 @@ int NedResourceCache::doLoadNedSourceFolder(const char *foldername, const char *
 
 void NedResourceCache::doLoadNedFileOrText(const char *nedfname, const char *nedtext, const char *expectedPackage, bool isXML)
 {
-    Assert(nedfname);
-    if (getFile(nedfname))
-        return;  // already loaded
-
     // parse file
-    std::string nedfname2 = nedtext ? nedfname : canonicalize(nedfname);  // so that NedFileElement stores absolute file name
-    ASTNode *tree = parseAndValidateNedFileOrText(nedfname2.c_str(), nedtext, isXML);
+    Assert(nedfname);
+    std::string canonicalFilename = nedtext ? nedfname : canonicalize(nedfname);  // so that NedFileElement stores absolute file name
+    NedFileElement *tree = parseAndValidateNedFileOrText(canonicalFilename.c_str(), nedtext, isXML);
     Assert(tree);
 
     // check that declared package matches expected package
@@ -146,10 +143,10 @@ void NedResourceCache::doLoadNedFileOrText(const char *nedfname, const char *ned
                 declaredPackage.c_str(), expectedPackage, nedfname);
 
     // register it
-    addFile(nedfname2.c_str(), tree);
+    addFile(canonicalFilename.c_str(), tree);
 }
 
-ASTNode *NedResourceCache::parseAndValidateNedFileOrText(const char *fname, const char *nedtext, bool isXML)
+NedFileElement *NedResourceCache::parseAndValidateNedFileOrText(const char *fname, const char *nedtext, bool isXML)
 {
     // load file
     ASTNode *tree = nullptr;
@@ -187,7 +184,10 @@ ASTNode *NedResourceCache::parseAndValidateNedFileOrText(const char *fname, cons
         delete tree;
         throw NedException(getFirstError(&errors).c_str());
     }
-    return tree;
+    NedFileElement *nedFileElement = dynamic_cast<NedFileElement*>(tree);
+    if (!nedFileElement)
+        throw NedException("<ned-file> expected as root element, in file %s", fname);
+    return nedFileElement;
 }
 
 std::string NedResourceCache::getFirstError(ErrorStore *errors, const char *prefix)
@@ -224,28 +224,12 @@ void NedResourceCache::loadNedText(const char *name, const char *nedtext, const 
 {
     if (!name)
         throw NedException("loadNedText(): Name is nullptr");
-    if (getFile(name))
-        throw NedException("loadNedText(): Name '%s' already used", name);
-
     doLoadNedFileOrText(name, nedtext, expectedPackage, isXML);
 }
 
-bool NedResourceCache::addFile(const char *fname, ASTNode *node)
+void NedResourceCache::addFile(const char *fname, NedFileElement *node)
 {
-    std::string key = canonicalize(fname);
-    NedFileMap::iterator it = files.find(key);
-    if (it != files.end())
-        return false;  // already added
-
-    files[key] = node;
-
-    PackageElement *packageDecl = (PackageElement *)node->getFirstChildWithTag(NED_PACKAGE);
-    std::string packagePrefix = packageDecl ? packageDecl->getName() : "";
-    if (!packagePrefix.empty())
-        packagePrefix += ".";
-
-    collectNedTypesFrom(node, packagePrefix, false);
-    return true;
+    nedFiles.push_back(node);
 }
 
 void NedResourceCache::collectNedTypesFrom(ASTNode *node, const std::string& packagePrefix, bool areInnerTypes)
@@ -288,6 +272,25 @@ bool NedResourceCache::areDependenciesResolved(const char *qname, ASTNode *node)
 
 void NedResourceCache::doneLoadingNedFiles()
 {
+    // collect package.ned files
+    for (NedFileElement *nedFile : nedFiles) {
+        const char *fname = nedFile->getFilename();
+        if (strcmp(fname, "package.ned") == 0 || opp_stringendswith(fname, "/package.ned")) {
+            std::string packageName;
+            if (PackageElement *packageDecl = (PackageElement *)nedFile->getFirstChildWithTag(NED_PACKAGE))
+                packageName = packageDecl->getName();
+            packageDotNedFiles[packageName].push_back(nedFile);
+        }
+    }
+
+    // collect types from loaded NED files
+    for (ASTNode *node : nedFiles) {
+        std::string packagePrefix;
+        if (PackageElement *packageDecl = (PackageElement *)node->getFirstChildWithTag(NED_PACKAGE))
+            packagePrefix = std::string(packageDecl->getName()) + ".";
+        collectNedTypesFrom(node, packagePrefix, false);  //TODO this needs to done for NED files loaded AFTER "done"!
+    }
+
     // register NED types from all the files we've loaded
     registerPendingNedTypes();
 
@@ -332,8 +335,8 @@ void NedResourceCache::registerNedType(const char *qname, bool isInnerType, ASTN
 NedTypeInfo *NedResourceCache::lookup(const char *qname) const
 {
     // hash table lookup
-    NedTypeInfoMap::const_iterator i = nedTypes.find(qname);
-    return i == nedTypes.end() ? nullptr : i->second;
+    auto it = nedTypes.find(qname);
+    return it == nedTypes.end() ? nullptr : it->second;
 }
 
 NedTypeInfo *NedResourceCache::getDecl(const char *qname) const
@@ -344,46 +347,24 @@ NedTypeInfo *NedResourceCache::getDecl(const char *qname) const
     return decl;
 }
 
-ASTNode *NedResourceCache::getFile(const char *fname) const
+inline std::string getParentPackage(std::string& package)
 {
-    // hash table lookup
-    std::string key = canonicalize(fname);
-    NedFileMap::const_iterator i = files.find(key);
-    return i == files.end() ? nullptr : i->second;
+    int pos = package.rfind('.');
+    return (pos != -1) ? package.substr(0, pos) : "";
 }
 
-NedFileElement *NedResourceCache::getParentPackageNedFile(NedFileElement *nedfile) const
+std::vector<NedFileElement*> NedResourceCache::getPackageNedListForLookup(const char *packageName) const
 {
-    std::string nedfilename = canonicalize(nedfile->getFilename());
-    std::string dir, fname;
-    splitFileName(nedfilename.c_str(), dir, fname);
-    dir = tidyFilename(dir.c_str(), true);
-
-    std::string topDir = getNedSourceFolderForFolder(dir.c_str());
-    if (topDir.empty())
-        return nullptr;
-
-    if (fname != "package.ned") {
-        // get package.ned from same package
-        ASTNode *e = getFile(tidyFilename(concatDirAndFile(dir.c_str(), "package.ned").c_str(), true).c_str());
-        if (e)
-            return (NedFileElement *)e;
+    std::vector<NedFileElement*> result;
+    std::string package = packageName;
+    while (true) {
+        if (containsKey(packageDotNedFiles, package))
+            addAll(result, packageDotNedFiles.at(package));
+        if (package == "")
+            break;
+        package = getParentPackage(package);
     }
-
-    // walk up in search for a package.ned
-    while (dir != topDir) {
-        // chop last segment
-        std::string parentDir, dummy;
-        splitFileName(dir.c_str(), parentDir, dummy);
-        Assert(dir != parentDir);  // we should exit via reaching the NED source folder
-        dir = tidyFilename(parentDir.c_str(), true);
-
-        // return package.ned from this dir, if exists
-        ASTNode *e = getFile(tidyFilename(concatDirAndFile(dir.c_str(), "package.ned").c_str(), true).c_str());
-        if (e)
-            return (NedFileElement *)e;
-    }
-    return nullptr;
+    return result;
 }
 
 std::string NedResourceCache::determineRootPackageName(const char *nedSourceFolderName)

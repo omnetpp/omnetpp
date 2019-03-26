@@ -176,15 +176,14 @@ std::string NedTypeInfo::getPackage() const
 
 std::string NedTypeInfo::getPackageProperty(const char *propertyName) const
 {
-    // find first such property in the current file, then in package.ned of this package and parent packages
-    for (NedFileElement *nedFile = (NedFileElement *)getTree()->getParentWithTag(NED_NED_FILE);
-         nedFile != nullptr;
-         nedFile = getResolver()->getParentPackageNedFile(nedFile))
-    {
-        const char *propertyValue = ASTNodeUtil::getLocalStringProperty(nedFile, propertyName);
-        if (propertyValue)
+    NedFileElement *nedFile = (NedFileElement *)getTree()->getParentWithTag(NED_NED_FILE);
+    if (const char *propertyValue = ASTNodeUtil::getLocalStringProperty(nedFile, propertyName))
+        return propertyValue;
+
+    std::vector<NedFileElement*> files = getResolver()->getPackageNedListForLookup(getPackage().c_str());
+    for (NedFileElement *nedFile : files)
+        if (const char *propertyValue = ASTNodeUtil::getLocalStringProperty(nedFile, propertyName))
             return propertyValue;
-    }
     return "";
 }
 

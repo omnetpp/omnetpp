@@ -78,15 +78,14 @@ class NEDXML_API NedResourceCache
       };
 
   protected:
-    typedef std::map<std::string, ASTNode *> NedFileMap;
-    typedef std::map<std::string, NedTypeInfo *> NedTypeInfoMap;
+    // table of loaded NED files
+    std::vector<NedFileElement*> nedFiles;
 
-    // table of loaded NED files; maps file name to NED element.
-    NedFileMap files;
+    // list of "package.ned" files by package name
+    std::map<std::string, std::vector<NedFileElement*>> packageDotNedFiles;
 
-    // table of NED type declarations; key is fully qualified name, and
-    // elements point into the files map
-    NedTypeInfoMap nedTypes;
+    // table of NED type declarations; key is fully qualified name, and elements point into nedFiles
+    std::map<std::string, NedTypeInfo*> nedTypes;
 
     // cached keys of the nedTypes map, for getTypeNames(); zero size means out of date
     mutable std::vector<std::string> nedTypeNames;
@@ -107,10 +106,11 @@ class NEDXML_API NedResourceCache
     std::vector<PendingNedType> pendingList;
 
   protected:
+    virtual void addFile(const char *fname, NedFileElement *node);
     virtual void registerBuiltinDeclarations();
     virtual int doLoadNedSourceFolder(const char *foldername, const char *expectedPackage, const std::vector<std::string>& excludedFolders);
     virtual void doLoadNedFileOrText(const char *nedfname, const char *nedtext, const char *expectedPackage, bool isXML);
-    virtual ASTNode *parseAndValidateNedFileOrText(const char *nedfname, const char *nedtext, bool isXML);
+    virtual NedFileElement *parseAndValidateNedFileOrText(const char *nedfname, const char *nedtext, bool isXML);
     virtual std::string determineRootPackageName(const char *nedSourceFolderName);
     virtual std::string getNedSourceFolderForFolder(const char *folder) const;
     virtual void collectNedTypesFrom(ASTNode *node, const std::string& packagePrefix, bool areInnerTypes);
@@ -168,25 +168,13 @@ class NEDXML_API NedResourceCache
      * redefined to issue errors for components that could not be fully
      * resolved because of missing base types or interfaces.
      */
-    virtual void doneLoadingNedFiles();
+    virtual void doneLoadingNedFiles(); //TODO don't let package.ned files to be loaded after this one!!!!
 
     /**
-     * Add a file (parsed into an object tree) to the cache. If the file
-     * was already added, no processing takes place and the function
-     * returns false; otherwise it returns true.
+     * Return a list of "package.ned" files relevant for the given package.
+     * Files are in bottom-up order, the order they should be searched for package properties.
      */
-    virtual bool addFile(const char *fname, ASTNode *node);  //XXX make protected?
-
-    /** Get a file (represented as object tree) from the cache */
-    virtual ASTNode *getFile(const char *fname) const;
-
-    /**
-     * Given a NED file, returns the package.ned file from the same folder,
-     * or the nearest ancestor package.ned file. If the file is a package.ned
-     * file itself, returns the nearest ancestor package.ned file. Returns nullptr
-     * if there is no parent package.ned file.
-     */
-    virtual NedFileElement *getParentPackageNedFile(NedFileElement *nedfile) const;
+    std::vector<NedFileElement*> getPackageNedListForLookup(const char *packageName) const;
 
     /** Look up a fully qualified NED type name from the cache. Returns nullptr if not found. */
     virtual NedTypeInfo *lookup(const char *qname) const;
