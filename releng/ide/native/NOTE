@@ -1,5 +1,8 @@
-- on Linux -static-libstdc++ should be added to LDFLAGS to avoid binary dependency on GLIBCXX which can cause issues with old systems
-- For windows 
+- Linux:
+  o -static-libstdc++ and -static-libgcc should be added to LDFLAGS to avoid binary dependency on GLIBCXX which can cause issues with old systems
+  o add -include $(OMNETPP_ROOT)/releng/ide/native/force_link_glibc_2.12.2.h to CFLAGS so the .so file will be linked with 
+    GLIBC 2.12 symbols which will allow it to run on old Linux distros (GLIBC 2.12 was used on CentOS 6)
+- Windows:
   o you should use the mingw cross compiler (x86_64-w64-mingw32-g++)
   o Additionally you MUST add the -mthreads option to both CFLAGS and LDFLAGS otherwise the resulting lib will CRASH.
   o you should add the include path the the JDK include files manually (they should be present somewhere in the docker

@@ -116,15 +116,14 @@ CXX = g++
 TOOLCHAIN_NAME = gcc
 DEFINES = -DHAVE_SWAPCONTEXT -DWITH_MPI
 CFLAGS_DEBUG = -g -Wall
-# modification compared to the ./configre generated makefile: make sure that -march=native -mtune=native is NOT in cflags.
 CFLAGS_RELEASE = -O3 -DNDEBUG=1
-CFLAGS += -m64 -MMD -MP  -fPIC -fno-stack-protector $(DEFINES)
+CFLAGS += -m64 -MMD -MP -fPIC -fno-stack-protector -include $(OMNETPP_ROOT)/releng/ide/native/force_link_glibc_2.12.2.h $(DEFINES)
 CXXFLAGS =  -std=c++11
 LDFLAG_LIBPATH = -L
 LDFLAG_INCLUDE = -Wl,-u,
 LDFLAG_LIB = -l
 LDFLAG_IMPLIB = -Wl,--out-implib,
-LDFLAGS = -static-libstdc++ -Wl,-rpath,$(OMNETPP_LIB_DIR) -Wl,-rpath,$(OMNETPP_TOOLS_DIR)/lib -Wl,-rpath,.  $(LDFLAG_LIBPATH)$(OMNETPP_LIB_DIR)
+LDFLAGS = -static-libgcc -static-libstdc++ -Wl,-rpath,$(OMNETPP_LIB_DIR) -Wl,-rpath,$(OMNETPP_TOOLS_DIR)/lib -Wl,-rpath,.  $(LDFLAG_LIBPATH)$(OMNETPP_LIB_DIR)
 WHOLE_ARCHIVE_ON = -Wl,--whole-archive
 WHOLE_ARCHIVE_OFF = -Wl,--no-whole-archive
 AS_NEEDED_ON = -Wl,--as-needed
