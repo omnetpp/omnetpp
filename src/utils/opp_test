@@ -520,7 +520,7 @@ Supported .test file entry types:
             self.savedEnv[envkey] = os.environ[envkey]
 
     def restoreOriginalEnv(self):
-        for envkey in os.environ:
+        for envkey in list(os.environ.keys()):
             if envkey not in self.savedEnv:
                 del os.environ[envkey]
         for envkey,envvar in self.savedEnv.items():
