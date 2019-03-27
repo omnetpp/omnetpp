@@ -9,15 +9,15 @@
       arch="x86,x86_64">
 
    <requires>
+      <import feature="org.eclipse.platform"/>
       <import feature="org.eclipse.cdt"/>
       <import feature="org.eclipse.emf.common"/>
-      <import feature="org.eclipse.gmf"/>
       <import feature="org.eclipse.emf.ecore"/>
       <import feature="org.eclipse.emf.ecore.edit"/>
       <import feature="org.eclipse.emf.edit"/>
       <import feature="org.eclipse.gef"/>
+      <import feature="org.eclipse.gmf"/>
       <import feature="org.eclipse.gmf.runtime.thirdparty"/>
-      <import feature="org.eclipse.platform"/>
       <import feature="org.python.pydev.feature"/>
    </requires>
 

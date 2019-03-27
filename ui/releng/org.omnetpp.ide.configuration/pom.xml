@@ -81,22 +81,6 @@
         </configuration>
       </plugin>
 
-      <!-- Compiler configuration -->
-      <plugin>
-          <groupId>org.eclipse.tycho</groupId>
-          <artifactId>tycho-compiler-plugin</artifactId>
-          <version>${tycho.version}</version>
-          <configuration>
-            <compilerArgs>
-            </compilerArgs>
-            <useProjectSettings>false</useProjectSettings>
-
-            <!-- Java 8  -->
-            <source>1.8</source>
-            <target>1.8</target>
-          </configuration>
-      </plugin>
-
       <!-- enable source bundle generation -->
       <plugin>
          <groupId>org.eclipse.tycho</groupId>
@@ -112,12 +96,19 @@
          </executions>
       </plugin>
 
+      <!-- Compiler configuration -->
       <plugin>
         <groupId>org.eclipse.tycho</groupId>
         <artifactId>tycho-compiler-plugin</artifactId>
         <version>${tycho.version}</version>
         <configuration>
+          <compilerArgs>
+          </compilerArgs>
           <useProjectSettings>false</useProjectSettings>
+
+          <!-- Java 8  -->
+          <source>1.8</source>
+          <target>1.8</target>
         </configuration>
       </plugin>
     </plugins>
