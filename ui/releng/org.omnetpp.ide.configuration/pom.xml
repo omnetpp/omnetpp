@@ -53,6 +53,14 @@
   </repositories>
 
   <build>
+    <extensions>
+      <extension>
+        <groupId>org.eclipse.tycho.extras</groupId>
+        <artifactId>tycho-pomless</artifactId>
+        <version>${tycho.version}</version>
+      </extension>
+    </extensions>
+
     <plugins>
       <plugin>
         <groupId>org.eclipse.tycho</groupId>

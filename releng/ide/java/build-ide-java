@@ -28,7 +28,7 @@ touch out/ui/org.omnetpp.ide.nativelibs.macosx/libopplibs.jnilib
 echo Building $what IDE version: $VERSION with buildID: $BUILDID
 cd out/ui
 
-mvn clean verify -Dwhat=$what -DforceContextQualifier=$BUILDID || { echo --- error during compiling/packaging Java IDE parts ---; exit 1;}
+mvn clean verify --offline -Dwhat=$what -DforceContextQualifier=$BUILDID || { echo --- error during compiling/packaging Java IDE parts ---; exit 1;}
 
 # post process the final layout. Merge the plugins and features directory of all platforms to save space
 cd releng/org.omnetpp.ide.$what.product/target/products/org.omnetpp.ide.$what.product || { echo --- error changing to the final result directory ---; exit 1;}

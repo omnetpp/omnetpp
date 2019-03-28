@@ -8,4 +8,4 @@ NOTE: you need to rebuild this image whenever the Windows/macOS toolchain or Ecl
 
 build the image with:
 
-$ docker build -t omnetpp/distrobuild:eclipse480-tools180301-181214 .
+$ docker build -t omnetpp/distrobuild:eclipse4.11-tools180301-190328 .
