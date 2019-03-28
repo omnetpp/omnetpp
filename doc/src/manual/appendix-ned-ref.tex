@@ -1670,17 +1670,45 @@ The following operators are supported (in order of decreasing precedence):
 %%
 \ttt{<<}, \ttt{>>}               & bitwise shift \\\hline
 %%
-\ttt{\&}, \ttt{|}, \ttt{\#}      & bitwise and, or, xor \\\hline
+\ttt{\&}                         & bitwise and \\\hline
 %%
-\ttt{==}                         & equal \\
-\ttt{!=}                         & not equal \\
+\ttt{\#}                         & bitwise xor \\\hline
+%%
+\ttt{|}                          & bitwise or \\\hline
+%%
+\ttt{=\ensuremath{\sim}}         & string match \\\hline
+%%
+\ttt{<=>}                        & three-way comparison, a.k.a. ``spaceship operator'' \\\hline
+%%
 \ttt{>}, \ttt{>=}                & greater than, greater than or equal to\\
 \ttt{<}, \ttt{<=}                & less than, less than or equal to \\\hline
 %%
-\ttt{\&\&}, \ttt{||}, \ttt{\#\#} & logical operators and, or, xor \\\hline
+\ttt{==}                         & equal \\
+\ttt{!=}                         & not equal \\\hline
+%%
+\ttt{\&\&}                       & logical operator and \\\hline
+%%
+\ttt{\#\#}                       & logical operator xor \\\hline
+%%
+\ttt{||}                         & logical operator or  \\\hline
 %%
 \ttt{?:}                         & the C/C++ ``inline if'' \\\hline
 \end{longtable}
+
+The spaceship operator is defined as follows. The result of \ttt{a <=> b} is negative
+if \ttt{a<b}, zero if \ttt{a==b}, and positive if \ttt{a>b}. If either \ttt{a} or \ttt{b} is
+\ttt{nan} (not-a-number), the result is \ttt{nan} as well.
+
+The string match operator works the following way. \ttt{a =\ensuremath{\sim} pattern} returns \ttt{true}
+if the string \ttt{s} matches \ttt{pattern}, and \ttt{false} otherwise. Pattern syntax
+and rules are similar to those used in \ffilename{omnetpp.ini} files: case sensitive,
+full-string match, where an asterisk \ttt{*} matches zero or more of any character
+except dot, a double asterisk matches  \ttt{**} matches zero or more of any character
+(including dot), and notations also exist to express embedded numbers and square-bracketed
+numeric indices within a numeric range.
+
+The interpretation of other operators is similar to that in C/C++.
+
 
 \subsubsection{Conversions}
 \label{sec:ned-ref:conversions}
@@ -1694,7 +1722,7 @@ there is no implicit conversion.
 Integer-to-double converson is implicit. However, a runtime error will be raised
 if there is precision loss during the conversion, i.e. the integer is so large
 that it cannot be precisely represented in a double. That error can be suppressed
-by using an explicit cast (\ttt{double()}.
+by using an explicit cast (\ttt{double()}).
 
 There is no implicit conversion between boolean and numeric types, so \ttt{0}
 is not a synonym for \fkeyword{false}, and nonzero numbers are not a synonym
