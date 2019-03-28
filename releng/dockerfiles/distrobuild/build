@@ -1,0 +1,11 @@
+#!/bin/sh
+#
+# Copy to this (context) directory:
+#
+# - the 'tools' directory containing the Windows and macOS toolchains (i.e. in ./tools/170717/...)
+# - the 'omnetpp-repo' bare repository as a base to be able to pre-load and cache maven artifacts.
+#   can be created with: 'git clone -n ../../../.git omnetpp-repo'
+#
+# NOTE: you need to rebuild this image whenever the Windows/macOS toolchain or Eclipse is updated
+
+docker build -t omnetpp/distrobuild:eclipse4.11-tools180301-190328 .

@@ -9,9 +9,12 @@ ENV PATH $PATH:$OMNETPP_DIR/bin
 
 # clone the directory
 WORKDIR /root
-RUN git clone -n https://github.com/omnetpp/omnetpp.git $OMNETPP_DIR
-# optionally you can use local repo from the context dir:
-# COPY omnetpp-repo $OMNETPP_DIR
+
+# clone the repository either remotely or from a local repo in the context directory
+#RUN git clone -n https://github.com/omnetpp/omnetpp.git $OMNETPP_DIR
+# optionally you can use local bare repo, called 'omnetpp-repo' from the context dir
+# use 'git clone -n ../../../.git omnetpp-repo' to create it
+COPY omnetpp-repo/ $OMNETPP_DIR
 
 # copy the windows/macOS tools into the build image
 COPY tools/$TOOLS_VERSION $TOOLS_DIR/$TOOLS_VERSION
@@ -24,10 +27,12 @@ WORKDIR $OMNETPP_DIR
 # see: https://gist.github.com/mikaelhg/527204e746984cf9a33f7910bb8b4cb6
 RUN /usr/bin/printf '\xfe\xed\xfe\xed\x00\x00\x00\x02\x00\x00\x00\x00\xe2\x68\x6e\x45\xfb\x43\xdf\xa4\xd9\x92\xdd\x41\xce\xb6\xb2\x1c\x63\x30\xd7\x92' > /etc/ssl/certs/java/cacerts && \
     /var/lib/dpkg/info/ca-certificates-java.postinst configure
-# getting only the dependnecies does not work correctly
-#RUN git checkout master && (cd $OMNETPP_DIR/ui && (mvn dependency:go-offline -DexcludeGroupIds=org.omnetpp.ide || true)) && rm $OMNETPP_DIR/* -rf
+
+# getting only the dependnecies does not work correctly (not everything is cached unfortunately, so a full build is required)
+#RUN git checkout 4f05766d && (cd $OMNETPP_DIR/ui && (mvn dependency:go-offline -Dwhat=omnetpp -fn || true)) ; rm -rf $OMNETPP_DIR
+
 # we dummy build the IDE and then delete the whole OMNeT++ source, so as a side effect the maven cache will be updated
-RUN git checkout master && \
+RUN git checkout 4f05766d && \
     cp configure.user.dist configure.user && \
     ./configure WITH_QTENV=no WITH_OSG=no WITH_OSGEARTH=no && \
     make MODE=release ui -j$(nproc) && \
