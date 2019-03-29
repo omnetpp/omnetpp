@@ -8,7 +8,10 @@ import net.razorvine.pickle.PickleException;
 public interface IScaveResultsPickleProvider {
     byte[] getRunsPickle(String filter, boolean includeRunattrs, boolean includeItervars) throws PickleException, IOException;
     byte[] getRunAttrsPickle(String filter) throws PickleException, IOException;
+    // TODO merge the one below into the one above, with an extra parameter
+    byte[] getRunAttrsForItervarsPickle(String filter) throws PickleException, IOException;
     byte[] getItervarsPickle(String filter) throws PickleException, IOException;
+    // TODO: getItervarsForRunAttrsPickle, similar to getRunAttrsForItervarsPickle
 
     // CSV format
     byte[] getResultsPickle(String filterExpression, List<String> rowTypes, boolean omitUnusedColumns) throws PickleException, IOException;

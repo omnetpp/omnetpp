@@ -592,9 +592,9 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
             Node rootNode = nl.item(0);
 
             if ("scave:Analysis".equals(rootNode.getNodeName())) {
-                MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK | SWT.CANCEL | SWT.ICON_QUESTION);
+                MessageBox messageBox = new MessageBox(getSite().getShell(), SWT.OK | SWT.CANCEL | SWT.ICON_QUESTION);
                 messageBox.setText("Convert Analysis File?");
-                messageBox.setMessage("The .anf file you try to open is in an older file format.\n" +
+                messageBox.setMessage("File " + modelFile.getFile().getFullPath() + " is in an older file format.\n" +
                                       "Do you want to open and convert it?\n");
                 int result = messageBox.open();
                 switch (result) {
@@ -1793,6 +1793,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
      * Perform "Save As"
      */
     protected void doSaveAs(URI uri, IEditorInput editorInput) {
+        // this DOES NOT WORK sometimes, after converting an old .anf file - getResources() is an empty list??
         editingDomain.getResourceSet().getResources().get(0).setURI(uri);
         setInputWithNotify(editorInput);
         setPartName(editorInput.getName());

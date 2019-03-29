@@ -16,7 +16,12 @@
 
       <x:children>
             <label text="Filter expression:"/>
-            <combo x:id="filter" x:style="BORDER" x:id.content="scalarnames,itervarnames,runattrnames"> 
+            <combo x:id="filter" x:style="BORDER" x:id.content="vectornames,itervarnames,runattrnames"> 
+                <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+            </combo>
+
+            <label text="Vector operations:"/>
+            <combo x:id="vector_operations" x:style="BORDER"> 
                 <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
             </combo>
       </x:children>

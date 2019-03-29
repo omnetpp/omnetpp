@@ -46,6 +46,11 @@ class ResultsProvider implements IScaveResultsPickleProvider {
     }
 
     @Override
+    public byte[] getRunAttrsForItervarsPickle(String filter) throws PickleException, IOException {
+        return ResultPicklingUtils.pickleResultsUsing(rfm, new RunAttrsPickler(filter, RunAttrsPickler.FilterMode.FILTER_ITERVARS));
+    }
+
+    @Override
     public byte[] getItervarsPickle(String filter) throws PickleException, IOException {
         return ResultPicklingUtils.pickleResultsUsing(rfm, new IterVarsPickler(filter, IterVarsPickler.FilterMode.FILTER_ITERVARS));
     }

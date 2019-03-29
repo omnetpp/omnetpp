@@ -29,6 +29,20 @@ import org.w3c.dom.NodeList;
  */
 public class XmlUtils  {
 
+    public static ArrayList<String> collectChildTextsFromElementsWithTag(Node parent, String tag) {
+        ArrayList<String> result = new ArrayList<>();
+
+        NodeList children = parent.getChildNodes();
+
+        for (int k = 0; k < children.getLength(); ++k) {
+            Node childNode = children.item(k);
+            if (childNode instanceof Element && tag.equals(childNode.getNodeName()))
+                result.add(((Element)childNode).getTextContent());
+        }
+
+        return result;
+    }
+
     public static Element getFirstElementWithTag(Node parent, String tag) {
         NodeList children = parent.getChildNodes();
 

@@ -19,6 +19,21 @@
             <combo x:id="filter" x:style="BORDER" x:id.content="scalarnames,itervarnames,runattrnames"> 
                 <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
             </combo>
+
+            <label text="X data pattern:"/>
+            <combo x:id="x_pattern" x:id.content="scalarnames,itervarnames,runattrnames" x:style="BORDER">
+                <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+            </combo>
+
+            <label text="ISO data patterns:"/>
+            <combo x:id="iso_patterns" x:id.content="scalarnames,itervarnames,runattrnames" x:style="BORDER">
+                <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+            </combo>
+
+            <label text="Average replications:"/>
+            <button x:id="average_replications" x:style="CHECK">
+                <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+            </button>
       </x:children>
     </group>
   </x:children>

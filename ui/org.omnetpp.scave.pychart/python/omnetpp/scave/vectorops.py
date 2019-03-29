@@ -262,17 +262,17 @@ def vector_divtime(r):
     return r
 
 
-def vector_expression(r, expr):
+def vector_expression(r, expression):
     t = r['vectime']
     y = r['vecvalue']
 
     tprev = np.concatenate([np.array([0]), t[:-1]])
     yprev = np.concatenate([np.array([0]), y[:-1]])
 
-    r['vecvalue'] = eval(expr)  # TODO - sanitize expr
+    r['vecvalue'] = eval(expression)  # TODO - sanitize expression
 
     if "title" in r:
-        r['title'] = r['title'] + ": " + expr
+        r['title'] = r['title'] + ": " + expression
     return r
 
 
@@ -292,7 +292,7 @@ def _integrate_helper(t, v, interpolation):
     return np.cumsum(increments)
 
 
-def vector_integrate(r, interpolation):
+def vector_integrate(r, interpolation='sample-hold'):
     t = r['vectime']
     v = r['vecvalue']
 
@@ -435,6 +435,7 @@ def vector_timewinavg(r, window_size=1):
 
 
 def vector_winavg(r, window_size=10):
+    window_size = int(window_size)
     t = r['vectime']
     v = r['vecvalue']
 

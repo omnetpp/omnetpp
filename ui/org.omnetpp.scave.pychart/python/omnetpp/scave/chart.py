@@ -90,6 +90,7 @@ def _plot_scalars_lists(row_label, labels, values):
 
 
 def _plot_scalars_DF_simple(df):
+    # TODO: detect single-valued index/ column header levels, drop them
     Gateway.chart_plotter.plotScalars(pl.dumps(
         {
             "columnKeys": [_to_label(c) for c in list(df.columns)],
@@ -159,16 +160,16 @@ def _plot_vectors_tuplelist(vectors):
 def _plot_vectors_DF_simple(df):
     xs = None
     if "time" in df:
-        xs = _list_to_bytes(df["time"])
+        xs = df["time"]
     else:
-        xs = _list_to_bytes(range(len(df[df.columns[0]])))
+        xs = range(len(df[df.columns[0]]))
 
     Gateway.chart_plotter.plotVectors(pl.dumps([
         {
-            "title": column,
-            "key": column,
-            "xs": xs,
-            "ys": _list_to_bytes(df[column])
+            "title": str(column),
+            "key": str(column),
+            "xs": _list_to_bytes(xs[~np.isnan(df[column])]),
+            "ys": _list_to_bytes(df[column].values[~np.isnan(df[column])])
         }
         for column in df if column != "time"
     ]))
@@ -363,7 +364,8 @@ def _plot_histograms_DF_scave(df):
     ]))
 
     title = make_chart_title(df, title_col, legend_cols)
-    set_property("Graph.Title", title)
+    if not get_property("Graph.Title"):
+        set_property("Graph.Title", title)
 
 
 

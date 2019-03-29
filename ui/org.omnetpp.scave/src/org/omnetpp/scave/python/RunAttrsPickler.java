@@ -2,6 +2,8 @@ package org.omnetpp.scave.python;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.omnetpp.common.Debug;
 import org.omnetpp.scave.engine.IDList;
@@ -12,7 +14,6 @@ import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.engine.StringMap;
 import org.omnetpp.scave.engine.StringPair;
 import org.omnetpp.scave.engine.StringVector;
-import org.omnetpp.scave.python.IterVarsPickler.FilterMode;
 
 import net.razorvine.pickle.IObjectPickler;
 import net.razorvine.pickle.Opcodes;
@@ -24,7 +25,8 @@ public class RunAttrsPickler implements IObjectPickler {
     public enum FilterMode {
         FILTER_RUNATTRS,
         FILTER_RUNS,
-        FILTER_RESULTS
+        FILTER_RESULTS,
+        FILTER_ITERVARS
     };
 
     FilterMode filterMode;
@@ -61,8 +63,22 @@ public class RunAttrsPickler implements IObjectPickler {
                 }
             }
             else {
+                if (filterMode == FilterMode.FILTER_ITERVARS) {
+                    OrderedKeyValueList itervars = resultManager.getMatchingItervars(filterExpression);
+                    Set<Run> runSet = new HashSet<Run>();
 
-                if (filterMode == FilterMode.FILTER_RUNS) {
+                    for (int i = 0; i < itervars.size(); ++i) {
+                        StringPair iv = itervars.get(i);
+                        Run run = resultManager.getRunByName(iv.getFirst());
+                        runSet.add(run);
+                    }
+
+                    runs = new RunList();
+                    for (Run r :runSet)
+                        runs.add(r);
+                    Debug.println("pickling attrs of " + runs.size() + " runs for " + itervars.size() + " itervars");
+                }
+                else if (filterMode == FilterMode.FILTER_RUNS) {
                     runs = resultManager.getRuns();
                     runs = resultManager.filterRunList(runs, filterExpression);
                     Debug.println("pickling attrs of " + runs.size() + " runs");

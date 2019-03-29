@@ -270,7 +270,7 @@ def get_itervars(filter_expression="", include_runattrs=False, include_itervars=
     runattrs = None
     itervars = None
     if include_runattrs:
-        runattrs = get_run_attrs(filter_expression)
+        runattrs = pickle.loads(Gateway.results_provider.getRunAttrsForItervarsPickle(filter_expression))
     if include_itervars:
         itervars = df
     return _append_additional_data(df, None, runattrs, itervars)

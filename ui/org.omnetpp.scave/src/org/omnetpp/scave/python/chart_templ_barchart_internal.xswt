@@ -19,6 +19,22 @@
             <combo x:id="filter" x:style="BORDER" x:id.content="scalarnames,itervarnames,runattrnames"> 
                 <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
             </combo>
+            
+            <label text="Groups:"/>
+            <combo x:id="groups" x:style="BORDER" x:id.content="itervarnames,runattrnames"> 
+                <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+            </combo>
+
+            <label text="Bars:"/>
+            <combo x:id="bars" x:style="BORDER" x:id.content="itervarnames,runattrnames"> 
+                <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+            </combo>
+            
+            <label text="Averaged:"/>
+            <combo x:id="averaged" x:style="BORDER" x:id.content="itervarnames,runattrnames"> 
+                <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+            </combo>
+            
       </x:children>
     </group>
   </x:children>
