@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.util.XmlUtils;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.InputFile;
@@ -76,7 +77,7 @@ public class LegacyAnalysisLoader {
     }
 
 
-    private static String makeScatterChartScript(Chart chart, Node chartNode, ArrayList<DataOp> ops, ArrayList<DataFilter> filters) {
+    private static String makeScatterChartScript(Chart chart, Node chartNode, ArrayList<DataOp> ops, ArrayList<DataFilter> filters, ArrayList<String> errors) {
         StringBuilder sb = new StringBuilder();
 
         String filter = makeFilterString(ops, filters);
@@ -107,6 +108,7 @@ public class LegacyAnalysisLoader {
                 else {
                     // TODO: handle better
                     Debug.println("Warning: More than one isoDataPattern.");
+                    errors.add(chart.getName() + ": More than one isoDataPattern found, this not yet supported, second and further ones were dropped.");
                     break;
                 }
             }
@@ -177,7 +179,7 @@ public class LegacyAnalysisLoader {
         return sb.toString();
     }
 
-    private static Chart makeLegacyChart(ArrayList<DataOp> ops, String datasetName, Node chartNode, String chartType) {
+    private static Chart makeLegacyChart(ArrayList<DataOp> ops, String datasetName, Node chartNode, String chartType, ArrayList<String> errors) {
         Chart chart = null;
 
         if ("scave:BarChart".equals(chartType))
@@ -215,7 +217,7 @@ public class LegacyAnalysisLoader {
         else if ("scave:HistogramChart".equals(chartType))
             chart.setScript(makeHistogramChartScript(chart, chartNode, ops, filters));
         else if ("scave:ScatterChart".equals(chartType))
-            chart.setScript(makeScatterChartScript(chart, chartNode, ops, filters));
+            chart.setScript(makeScatterChartScript(chart, chartNode, ops, filters, errors));
         else if ("scave:LineChart".equals(chartType))
             chart.setScript(makeLineChartScript(chart, chartNode, ops, filters));
         else
@@ -225,7 +227,7 @@ public class LegacyAnalysisLoader {
     }
 
 
-    public static Analysis loadLegacyAnalysis(Node rootNode) {
+    public static Analysis loadLegacyAnalysis(Node rootNode, ArrayList<String> errors) {
 
         Analysis analysis = factory.createAnalysis();
         analysis.setInputs(factory.createInputs());
@@ -233,9 +235,7 @@ public class LegacyAnalysisLoader {
 
         NodeList topLevelNodes = rootNode.getChildNodes();
 
-        ArrayList<String> errors = new ArrayList<>();
-
-        // TODO: load transitional models?
+        // TODO: add proper error reporting
 
         for (int i = 0; i < topLevelNodes.getLength(); ++i) {
             Node node = topLevelNodes.item(i);
@@ -291,10 +291,11 @@ public class LegacyAnalysisLoader {
                                 if ("scave:Add".equals(itemType))
                                     ops.add(new DataOp("Add", filterNode.getNodeValue(), opType));
                                 else if ("scave:BarChart".equals(itemType) || "scave:HistogramChart".equals(itemType) || "scave:ScatterChart".equals(itemType) || "scave:LineChart".equals(itemType))
-                                    analysis.getCharts().getItems().add(makeLegacyChart(ops, datasetName, itemNode, itemType));
+                                    analysis.getCharts().getItems().add(makeLegacyChart(ops, datasetName, itemNode, itemType, errors));
                                 else {
                                     // TODO: handle better
                                     Debug.println("UNIMPLEMENTED ITEM TYPE: " + itemType);
+                                    errors.add("Unimplemented item type: " + itemType);
                                 }
                             } else if ("#text".equals(itemNode.getNodeName())) {
                                 if (!itemNode.getNodeValue().trim().isEmpty())
@@ -313,7 +314,9 @@ public class LegacyAnalysisLoader {
                 }
             }
             else if ("chartSheets".equals(node.getNodeName())) {
-                // TODO: warn about discarded chartsheets if there are actually any chartsheets
+                int n = XmlUtils.getElementsWithTag(node, "chartSheets").size();
+                if (n > 0)
+                    errors.add("Chart sheets not supported, " + n + " chart sheet(s) were discarded.");
             }
             else if ("#text".equals(node.getNodeName())) {
                 if (!node.getNodeValue().trim().isEmpty())

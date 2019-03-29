@@ -78,11 +78,13 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.util.LocalSelectionTransfer;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
@@ -123,6 +125,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
+import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
@@ -599,7 +602,18 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
                     analysis = null;
                     return;
                 case SWT.OK:
-                    analysis = LegacyAnalysisLoader.loadLegacyAnalysis(rootNode);
+                    ArrayList<String> errors = new ArrayList<>();
+                    analysis = LegacyAnalysisLoader.loadLegacyAnalysis(rootNode, errors);
+
+                    if (!errors.isEmpty()) {
+                        ListDialog errorDialog = new ListDialog(Display.getCurrent().getActiveShell());
+                        errorDialog.setInput(errors);
+                        errorDialog.setContentProvider(new ArrayContentProvider());
+                        errorDialog.setLabelProvider(new LabelProvider());
+                        errorDialog.setMessage("Conversion errors:");
+                        errorDialog.open();
+                    }
+
                     break;
                 }
             } else if ("analysis".equals(rootNode.getNodeName()))

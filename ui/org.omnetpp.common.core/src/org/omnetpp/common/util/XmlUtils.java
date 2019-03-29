@@ -8,6 +8,7 @@
 package org.omnetpp.common.util;
 
 import java.io.StringWriter;
+import java.util.ArrayList;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -17,6 +18,9 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * XML-related utilities.
@@ -24,6 +28,32 @@ import org.w3c.dom.Document;
  * @author andras
  */
 public class XmlUtils  {
+
+    public static Element getFirstElementWithTag(Node parent, String tag) {
+        NodeList children = parent.getChildNodes();
+
+        for (int k = 0; k < children.getLength(); ++k) {
+            Node childNode = children.item(k);
+            if (childNode instanceof Element && tag.equals(childNode.getNodeName()))
+                return (Element)childNode;
+        }
+
+        return null;
+    }
+
+    public static ArrayList<Element> getElementsWithTag(Node parent, String tag) {
+        ArrayList<Element> result = new ArrayList<>();
+
+        NodeList children = parent.getChildNodes();
+
+        for (int k = 0; k < children.getLength(); ++k) {
+            Node childNode = children.item(k);
+            if (childNode instanceof Element && tag.equals(childNode.getNodeName()))
+                result.add((Element)childNode);
+        }
+
+        return result;
+    }
 
     /**
      * Convert DOM tree to string.

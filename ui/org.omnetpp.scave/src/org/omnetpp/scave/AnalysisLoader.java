@@ -1,6 +1,7 @@
 package org.omnetpp.scave;
 
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.util.XmlUtils;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.InputFile;
@@ -13,18 +14,6 @@ import org.w3c.dom.NodeList;
 public class AnalysisLoader {
 
     private static final ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
-
-    private static Element getFirstElementByName(Node parent, String type) {
-        NodeList children = parent.getChildNodes();
-
-        for (int k = 0; k < children.getLength(); ++k) {
-            Node childNode = children.item(k);
-            if (childNode instanceof Element && type.equals(childNode.getNodeName()))
-                return (Element)childNode;
-        }
-
-        return null;
-    }
 
     public static Analysis loadNewAnalysis(Node rootNode) {
 
@@ -97,8 +86,8 @@ public class AnalysisLoader {
                         if (templateNode != null)
                             chart.setTemplateID(templateNode.getNodeValue());
 
-                        Element scriptElement = getFirstElementByName(chartNode, "script");
-                        Element formElement = getFirstElementByName(chartNode, "form");
+                        Element scriptElement = XmlUtils.getFirstElementWithTag(chartNode, "script");
+                        Element formElement = XmlUtils.getFirstElementWithTag(chartNode, "form");
 
                         Node scriptAttrNode = chartNode.getAttributes().getNamedItem("script");
                         if (scriptAttrNode != null)
