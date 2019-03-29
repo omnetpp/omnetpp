@@ -61,5 +61,5 @@ void Simple::activity()
 %exitcode: 1
 
 %contains: stderr
-Element not found
+Cannot evaluate parameter 'xmlconfig': xmldoc(): Element "foo/nothing" in file "test.xml" not found
 

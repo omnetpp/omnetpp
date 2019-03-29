@@ -1,0 +1,32 @@
+%description:
+Test recording of expressions computed from multiple scalars
+
+%file: test.ned
+
+module Node
+{
+    parameters:
+        @signal[a](type=double);
+        @signal[b](type=double);
+        @statistic[foo](source=a+b+floor(a); record=min,max,last,vector);
+}
+
+network Test
+{
+    submodules:
+       node: Node;
+}
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+cmdenv-event-banners = false
+sim-time-limit=1s
+debug-statistics-recording = true
+
+%exitcode: 1
+
+%contains: stderr
+Cannot add statistic 'foo' to module Test.node (NED type: Node): Error in source=a+b+floor(a): Cannot use a signal more than once in a statistics source expression, due to multipath propagation causing glitches in the output
+

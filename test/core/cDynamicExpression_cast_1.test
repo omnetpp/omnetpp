@@ -67,16 +67,16 @@ EV << ".\n";
 
 %contains: stdout
 ~3.0 ==> operator "~": Integer argument expected, got double (note: no implicit conversion from double to int)
-1.0 & 3 ==> operator "&": Integer argument expected, got double and integer (note: no implicit conversion from double to int)
-1 & 3.0 ==> operator "&": Integer argument expected, got integer and double (note: no implicit conversion from double to int)
-1.0 | 3 ==> operator "|": Integer argument expected, got double and integer (note: no implicit conversion from double to int)
-1 | 3.0 ==> operator "|": Integer argument expected, got integer and double (note: no implicit conversion from double to int)
-1.0 # 3 ==> operator "#": Integer argument expected, got double and integer (note: no implicit conversion from double to int)
-1 # 3.0 ==> operator "#": Integer argument expected, got integer and double (note: no implicit conversion from double to int)
-1 << 1.0 ==> operator "<<": Integer argument expected, got integer and double (note: no implicit conversion from double to int)
-1.0 << 1 ==> operator "<<": Integer argument expected, got double and integer (note: no implicit conversion from double to int)
-1 >> 1.0 ==> operator ">>": Integer argument expected, got integer and double (note: no implicit conversion from double to int)
-1.0 >> 1 ==> operator ">>": Integer argument expected, got double and integer (note: no implicit conversion from double to int)
+1.0 & 3 ==> operator "&": Integer arguments expected, got double and integer (note: no implicit conversion from double to int)
+1 & 3.0 ==> operator "&": Integer arguments expected, got integer and double (note: no implicit conversion from double to int)
+1.0 | 3 ==> operator "|": Integer arguments expected, got double and integer (note: no implicit conversion from double to int)
+1 | 3.0 ==> operator "|": Integer arguments expected, got integer and double (note: no implicit conversion from double to int)
+1.0 # 3 ==> operator "#": Integer arguments expected, got double and integer (note: no implicit conversion from double to int)
+1 # 3.0 ==> operator "#": Integer arguments expected, got integer and double (note: no implicit conversion from double to int)
+1 << 1.0 ==> operator "<<": Integer arguments expected, got integer and double (note: no implicit conversion from double to int)
+1.0 << 1 ==> operator "<<": Integer arguments expected, got double and integer (note: no implicit conversion from double to int)
+1 >> 1.0 ==> operator ">>": Integer arguments expected, got integer and double (note: no implicit conversion from double to int)
+1.0 >> 1 ==> operator ">>": Integer arguments expected, got double and integer (note: no implicit conversion from double to int)
 intuniform(1.0, 3) ==> intuniform(): integer expected for argument 0, got double (note: no implicit conversion from double to int)
 intuniform(1, 3.0) ==> intuniform(): integer expected for argument 1, got double (note: no implicit conversion from double to int)
 
@@ -85,13 +85,13 @@ int(3.1) ==> 3
 int(3.9) ==> 3
 int(-3.1) ==> -4
 int(-3.9) ==> -4
-int(9.5e18) ==> Overflow casting 9500000000000000000.000000 to the target integer type
-int(-9.5e18) ==> Overflow casting -9500000000000000000.000000 to the target integer type
+int(9.5e18) ==> int(): Overflow casting 9500000000000000000.000000 to the target integer type
+int(-9.5e18) ==> int(): Overflow casting -9500000000000000000.000000 to the target integer type
 
 3.14 + 1 ==> 4.14
 3.14 + 1234567890123456 ==> 1.23457e+15
-3.14 + 12345678901234567 ==> operator "+": Integer 12345678901234567 too large, conversion to double would incur precision loss (hint: if this occurs in NED or ini, use the double() operator to suppress this error)
-3.14 - 12345678901234567 ==> operator "-": Integer -12345678901234567 too large, conversion to double would incur precision loss (hint: if this occurs in NED or ini, use the double() operator to suppress this error)
+3.14 + 12345678901234567 ==> operator "+": Integer 12345678901234567 too large, conversion to double would incur precision loss (use explicit cast to double to suppress this error)
+3.14 - 12345678901234567 ==> operator "-": Integer 12345678901234567 too large, conversion to double would incur precision loss (use explicit cast to double to suppress this error)
 
 double(1234567890123456789) ==> 1.23457e+18
 double(-1234567890123456789) ==> -1.23457e+18

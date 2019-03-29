@@ -7,7 +7,7 @@ import testlib.Dump;
 
 module Node
 {
-    @statistic[src0](source=3.14 + 3.14; record=vector);
+    @statistic[src0](source=3.14 + floor(3.14); record=vector);
 }
 
 network Test
@@ -24,4 +24,4 @@ debug-statistics-recording = true
 %exitcode: 1
 
 %contains: stderr
-Error in source=3.14 + 3.14: A constant statistics source expression is meaningless
+Cannot add statistic 'src0' to module Test.node (NED type: Node): Error in source=3.14 + floor(3.14): Expression has no signal input

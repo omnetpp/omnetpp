@@ -134,9 +134,9 @@ EV << ".\n";
 3 - 2m ==> operator "-": Cannot convert unit 'm' (meter) to none
 3m - 2 ==> operator "-": Cannot convert unit none to 'm' (meter)
 3m - 2s ==> operator "-": Cannot convert unit 's' (second) to 'm' (meter)
-2 - 10dBm ==> operator "-": Refusing to perform computations involving quantities with nonlinear units (-10dBm)
+2 - 10dBm ==> operator "-": Refusing to perform computations involving quantities with nonlinear units (10dBm)
 10dBm - 2 ==> operator "-": Refusing to perform computations involving quantities with nonlinear units (10dBm)
-10dBm - 10dBm ==> operator "-": Refusing to perform computations involving quantities with nonlinear units (-10dBm)
+10dBm - 10dBm ==> operator "-": Refusing to perform computations involving quantities with nonlinear units (10dBm)
 
 3 * -2 ==> -6
 3 * 2 ==> 6
@@ -164,87 +164,87 @@ EV << ".\n";
 
 3 % -2 ==> 1
 3 % 2 ==> 1
-3m % 2m ==> operator "%": Dimensionless argument expected, got 3m and 2m
-3m % 2km ==> operator "%": Dimensionless argument expected, got 3m and 2km
-3km % 2m ==> operator "%": Dimensionless argument expected, got 3km and 2m
-3 % 2m ==> operator "%": Dimensionless argument expected, got 3 and 2m
-3m % 2 ==> operator "%": Dimensionless argument expected, got 3m and 2
-3m % 2s ==> operator "%": Dimensionless argument expected, got 3m and 2s
+3m % 2m ==> operator "%": Dimensionless arguments expected, got 3m and 2m
+3m % 2km ==> operator "%": Dimensionless arguments expected, got 3m and 2km
+3km % 2m ==> operator "%": Dimensionless arguments expected, got 3km and 2m
+3 % 2m ==> operator "%": Dimensionless arguments expected, got 3 and 2m
+3m % 2 ==> operator "%": Dimensionless arguments expected, got 3m and 2
+3m % 2s ==> operator "%": Dimensionless arguments expected, got 3m and 2s
 2 % 10dBm ==> operator "%": Refusing to perform computations involving quantities with nonlinear units (10dBm)
 10dBm % 2 ==> operator "%": Refusing to perform computations involving quantities with nonlinear units (10dBm)
 10dBm % 10dBm ==> operator "%": Refusing to perform computations involving quantities with nonlinear units (10dBm)
 
 3 ^ -2 ==> operator "^": Negative exponent in integer exponentiation, cast operands to double to allow it
 3 ^ 2 ==> 9
-3m ^ 2m ==> operator "^": Dimensionless argument expected, got 3m and 2m
-3m ^ 2km ==> operator "^": Dimensionless argument expected, got 3m and 2km
-3km ^ 2m ==> operator "^": Dimensionless argument expected, got 3km and 2m
-3 ^ 2m ==> operator "^": Dimensionless argument expected, got 3 and 2m
-3m ^ 2 ==> operator "^": Dimensionless argument expected, got 3m and 2
-3m ^ 2s ==> operator "^": Dimensionless argument expected, got 3m and 2s
-2 ^ 10dBm ==> operator "^": Dimensionless argument expected, got 2 and 10dBm
-10dBm ^ 2 ==> operator "^": Dimensionless argument expected, got 10dBm and 2
-10dBm ^ 10dBm ==> operator "^": Dimensionless argument expected, got 10dBm and 10dBm
+3m ^ 2m ==> operator "^": Dimensionless arguments expected, got 3m and 2m
+3m ^ 2km ==> operator "^": Dimensionless arguments expected, got 3m and 2km
+3km ^ 2m ==> operator "^": Dimensionless arguments expected, got 3km and 2m
+3 ^ 2m ==> operator "^": Dimensionless arguments expected, got 3 and 2m
+3m ^ 2 ==> operator "^": Dimensionless arguments expected, got 3m and 2
+3m ^ 2s ==> operator "^": Dimensionless arguments expected, got 3m and 2s
+2 ^ 10dBm ==> operator "^": Dimensionless arguments expected, got 2 and 10dBm
+10dBm ^ 2 ==> operator "^": Dimensionless arguments expected, got 10dBm and 2
+10dBm ^ 10dBm ==> operator "^": Dimensionless arguments expected, got 10dBm and 10dBm
 
 3 & -2 ==> 2
 3 & 2 ==> 2
-3m & 2m ==> operator "&": Dimensionless argument expected, got 3m and 2m
-3m & 2km ==> operator "&": Dimensionless argument expected, got 3m and 2km
-3km & 2m ==> operator "&": Dimensionless argument expected, got 3km and 2m
-3 & 2m ==> operator "&": Dimensionless argument expected, got 3 and 2m
-3m & 2 ==> operator "&": Dimensionless argument expected, got 3m and 2
-3m & 2s ==> operator "&": Dimensionless argument expected, got 3m and 2s
-2 & 10dBm ==> operator "&": Dimensionless argument expected, got 2 and 10dBm
-10dBm & 2 ==> operator "&": Dimensionless argument expected, got 10dBm and 2
-10dBm & 10dBm ==> operator "&": Dimensionless argument expected, got 10dBm and 10dBm
+3m & 2m ==> operator "&": Dimensionless arguments expected, got 3m and 2m
+3m & 2km ==> operator "&": Dimensionless arguments expected, got 3m and 2km
+3km & 2m ==> operator "&": Dimensionless arguments expected, got 3km and 2m
+3 & 2m ==> operator "&": Dimensionless arguments expected, got 3 and 2m
+3m & 2 ==> operator "&": Dimensionless arguments expected, got 3m and 2
+3m & 2s ==> operator "&": Dimensionless arguments expected, got 3m and 2s
+2 & 10dBm ==> operator "&": Dimensionless arguments expected, got 2 and 10dBm
+10dBm & 2 ==> operator "&": Dimensionless arguments expected, got 10dBm and 2
+10dBm & 10dBm ==> operator "&": Dimensionless arguments expected, got 10dBm and 10dBm
 
 3 | -2 ==> -1
 3 | 2 ==> 3
-3m | 2m ==> operator "|": Dimensionless argument expected, got 3m and 2m
-3m | 2km ==> operator "|": Dimensionless argument expected, got 3m and 2km
-3km | 2m ==> operator "|": Dimensionless argument expected, got 3km and 2m
-3 | 2m ==> operator "|": Dimensionless argument expected, got 3 and 2m
-3m | 2 ==> operator "|": Dimensionless argument expected, got 3m and 2
-3m | 2s ==> operator "|": Dimensionless argument expected, got 3m and 2s
-2 | 10dBm ==> operator "|": Dimensionless argument expected, got 2 and 10dBm
-10dBm | 2 ==> operator "|": Dimensionless argument expected, got 10dBm and 2
-10dBm | 10dBm ==> operator "|": Dimensionless argument expected, got 10dBm and 10dBm
+3m | 2m ==> operator "|": Dimensionless arguments expected, got 3m and 2m
+3m | 2km ==> operator "|": Dimensionless arguments expected, got 3m and 2km
+3km | 2m ==> operator "|": Dimensionless arguments expected, got 3km and 2m
+3 | 2m ==> operator "|": Dimensionless arguments expected, got 3 and 2m
+3m | 2 ==> operator "|": Dimensionless arguments expected, got 3m and 2
+3m | 2s ==> operator "|": Dimensionless arguments expected, got 3m and 2s
+2 | 10dBm ==> operator "|": Dimensionless arguments expected, got 2 and 10dBm
+10dBm | 2 ==> operator "|": Dimensionless arguments expected, got 10dBm and 2
+10dBm | 10dBm ==> operator "|": Dimensionless arguments expected, got 10dBm and 10dBm
 
 3 # -2 ==> -3
 3 # 2 ==> 1
-3m # 2m ==> operator "#": Dimensionless argument expected, got 3m and 2m
-3m # 2km ==> operator "#": Dimensionless argument expected, got 3m and 2km
-3km # 2m ==> operator "#": Dimensionless argument expected, got 3km and 2m
-3 # 2m ==> operator "#": Dimensionless argument expected, got 3 and 2m
-3m # 2 ==> operator "#": Dimensionless argument expected, got 3m and 2
-3m # 2s ==> operator "#": Dimensionless argument expected, got 3m and 2s
-2 # 10dBm ==> operator "#": Dimensionless argument expected, got 2 and 10dBm
-10dBm # 2 ==> operator "#": Dimensionless argument expected, got 10dBm and 2
-10dBm # 10dBm ==> operator "#": Dimensionless argument expected, got 10dBm and 10dBm
+3m # 2m ==> operator "#": Dimensionless arguments expected, got 3m and 2m
+3m # 2km ==> operator "#": Dimensionless arguments expected, got 3m and 2km
+3km # 2m ==> operator "#": Dimensionless arguments expected, got 3km and 2m
+3 # 2m ==> operator "#": Dimensionless arguments expected, got 3 and 2m
+3m # 2 ==> operator "#": Dimensionless arguments expected, got 3m and 2
+3m # 2s ==> operator "#": Dimensionless arguments expected, got 3m and 2s
+2 # 10dBm ==> operator "#": Dimensionless arguments expected, got 2 and 10dBm
+10dBm # 2 ==> operator "#": Dimensionless arguments expected, got 10dBm and 2
+10dBm # 10dBm ==> operator "#": Dimensionless arguments expected, got 10dBm and 10dBm
 
 3 << -2 ==> 0
 3 << 2 ==> 12
-3m << 2m ==> operator "<<": Dimensionless argument expected, got 3m and 2m
-3m << 2km ==> operator "<<": Dimensionless argument expected, got 3m and 2km
-3km << 2m ==> operator "<<": Dimensionless argument expected, got 3km and 2m
-3 << 2m ==> operator "<<": Dimensionless argument expected, got 3 and 2m
-3m << 2 ==> operator "<<": Dimensionless argument expected, got 3m and 2
-3m << 2s ==> operator "<<": Dimensionless argument expected, got 3m and 2s
-2 << 10dBm ==> operator "<<": Dimensionless argument expected, got 2 and 10dBm
-10dBm << 2 ==> operator "<<": Dimensionless argument expected, got 10dBm and 2
-10dBm << 10dBm ==> operator "<<": Dimensionless argument expected, got 10dBm and 10dBm
+3m << 2m ==> operator "<<": Dimensionless arguments expected, got 3m and 2m
+3m << 2km ==> operator "<<": Dimensionless arguments expected, got 3m and 2km
+3km << 2m ==> operator "<<": Dimensionless arguments expected, got 3km and 2m
+3 << 2m ==> operator "<<": Dimensionless arguments expected, got 3 and 2m
+3m << 2 ==> operator "<<": Dimensionless arguments expected, got 3m and 2
+3m << 2s ==> operator "<<": Dimensionless arguments expected, got 3m and 2s
+2 << 10dBm ==> operator "<<": Dimensionless arguments expected, got 2 and 10dBm
+10dBm << 2 ==> operator "<<": Dimensionless arguments expected, got 10dBm and 2
+10dBm << 10dBm ==> operator "<<": Dimensionless arguments expected, got 10dBm and 10dBm
 
 3 >> -2 ==> 12
 3 >> 2 ==> 0
-3m >> 2m ==> operator ">>": Dimensionless argument expected, got 3m and 2m
-3m >> 2km ==> operator ">>": Dimensionless argument expected, got 3m and 2km
-3km >> 2m ==> operator ">>": Dimensionless argument expected, got 3km and 2m
-3 >> 2m ==> operator ">>": Dimensionless argument expected, got 3 and 2m
-3m >> 2 ==> operator ">>": Dimensionless argument expected, got 3m and 2
-3m >> 2s ==> operator ">>": Dimensionless argument expected, got 3m and 2s
-2 >> 10dBm ==> operator ">>": Dimensionless argument expected, got 2 and 10dBm
-10dBm >> 2 ==> operator ">>": Dimensionless argument expected, got 10dBm and 2
-10dBm >> 10dBm ==> operator ">>": Dimensionless argument expected, got 10dBm and 10dBm
+3m >> 2m ==> operator ">>": Dimensionless arguments expected, got 3m and 2m
+3m >> 2km ==> operator ">>": Dimensionless arguments expected, got 3m and 2km
+3km >> 2m ==> operator ">>": Dimensionless arguments expected, got 3km and 2m
+3 >> 2m ==> operator ">>": Dimensionless arguments expected, got 3 and 2m
+3m >> 2 ==> operator ">>": Dimensionless arguments expected, got 3m and 2
+3m >> 2s ==> operator ">>": Dimensionless arguments expected, got 3m and 2s
+2 >> 10dBm ==> operator ">>": Dimensionless arguments expected, got 2 and 10dBm
+10dBm >> 2 ==> operator ">>": Dimensionless arguments expected, got 10dBm and 2
+10dBm >> 10dBm ==> operator ">>": Dimensionless arguments expected, got 10dBm and 10dBm
 
 3 == -2 ==> false
 3 == 2 ==> false

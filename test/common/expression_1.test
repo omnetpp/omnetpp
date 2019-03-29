@@ -143,16 +143,16 @@ true && true -> true
 1s/2 -> 0.5s
 1s/2s -> 0.5
 1s/2ms -> 500
-1+2m -> exception: Cannot convert unit 'm' (meter) to none
-1m+2 -> exception: Cannot convert unit none to 'm' (meter)
-1m+2s -> exception: Cannot convert unit 's' (second) to 'm' (meter)
-1-2m -> exception: Cannot convert unit 'm' (meter) to none
-1m-2 -> exception: Cannot convert unit none to 'm' (meter)
-1m-2s -> exception: Cannot convert unit 's' (second) to 'm' (meter)
-1s*2s -> exception: Multiplying two quantities with units is not supported
-1s/2m -> exception: Cannot convert unit 'm' (meter) to 's' (second)
-1s^2 -> exception: Error in expression: '^': argument(s) must be dimensionless
-1s^2s -> exception: Error in expression: '^': argument(s) must be dimensionless
-1^2s -> exception: Error in expression: '^': argument(s) must be dimensionless
+1+2m -> exception: operator "+": Cannot convert unit 'm' (meter) to none
+1m+2 -> exception: operator "+": Cannot convert unit none to 'm' (meter)
+1m+2s -> exception: operator "+": Cannot convert unit 's' (second) to 'm' (meter)
+1-2m -> exception: operator "-": Cannot convert unit 'm' (meter) to none
+1m-2 -> exception: operator "-": Cannot convert unit none to 'm' (meter)
+1m-2s -> exception: operator "-": Cannot convert unit 's' (second) to 'm' (meter)
+1s*2s -> exception: operator "*": Multiplying two quantities with units is not supported
+1s/2m -> exception: operator "/": Cannot convert unit 'm' (meter) to 's' (second)
+1s^2 -> exception: operator "^": Dimensionless arguments expected, got 1s and 2
+1s^2s -> exception: operator "^": Dimensionless arguments expected, got 1s and 2s
+1^2s -> exception: operator "^": Dimensionless arguments expected, got 1 and 2s
 .
 

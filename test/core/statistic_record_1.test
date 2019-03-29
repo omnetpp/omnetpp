@@ -41,43 +41,47 @@ debug-statistics-recording = true
 %contains: stdout
 Test.node (Node):
     "rec13" (signalID=_):
-        <signalvalue> + 5 (UnaryExpressionFilter)
+        $0 + 5 (ExpressionFilter)
             VectorRecorder ==> rec13:vector($source+5)
     "rec12" (signalID=_):
         VectorRecorder ==> rec12:vector($source)
     "rec11" (signalID=_):
-        <lastsignalvalue> + 5 (ExpressionRecorder) ==> rec11:$source+5
+        $0 + 5 (ExpressionFilter)
+            LastValueRecorder ==> rec11:$source+5
     "rec10" (signalID=_):
         LastValueRecorder ==> rec10:last($source)
     "rec8" (signalID=_):
         TimeAverageFilter
-            3 + <signalvalue> (UnaryExpressionFilter)
+            3 + $0 (ExpressionFilter)
                 MeanFilter
-                    2 + <signalvalue> (UnaryExpressionFilter)
+                    2 + $0 (ExpressionFilter)
                         MaxFilter
-                            1 + <signalvalue> (UnaryExpressionFilter)
+                            1 + $0 (ExpressionFilter)
                                 VectorRecorder ==> rec8:vector(1+max(2+mean(3+timeavg)))
     "rec7" (signalID=_):
         TimeAverageFilter
-            3 + <signalvalue> (UnaryExpressionFilter)
+            3 + $0 (ExpressionFilter)
                 MeanFilter
-                    2 + <signalvalue> (UnaryExpressionFilter)
+                    2 + $0 (ExpressionFilter)
                         MaxFilter
-                            1 + <lastsignalvalue> (ExpressionRecorder) ==> rec7:1+max(2+mean(3+timeavg))
+                            1 + $0 (ExpressionFilter)
+                                LastValueRecorder ==> rec7:1+max(2+mean(3+timeavg))
     "rec6" (signalID=_):
         MeanFilter
-            <signalvalue> + 1 (UnaryExpressionFilter)
+            $0 + 1 (ExpressionFilter)
                 HistogramRecorder ==> rec6:histogram(mean+1)
     "rec5" (signalID=_):
         MeanFilter
-            <signalvalue> + 1 (UnaryExpressionFilter)
+            $0 + 1 (ExpressionFilter)
                 VectorRecorder ==> rec5:vector(mean+1)
     "rec4" (signalID=_):
         MeanFilter
-            fabs(<lastsignalvalue> + 1) (ExpressionRecorder) ==> rec4:fabs(mean+1)
+            fabs($0 + 1) (ExpressionFilter)
+                LastValueRecorder ==> rec4:fabs(mean+1)
     "rec3" (signalID=_):
         MeanFilter
-            <lastsignalvalue> + 1 (ExpressionRecorder) ==> rec3:mean+1
+            $0 + 1 (ExpressionFilter)
+                LastValueRecorder ==> rec3:mean+1
     "rec2" (signalID=_):
         TimeAverageFilter
             MeanFilter

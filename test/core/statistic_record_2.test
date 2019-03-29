@@ -66,17 +66,21 @@ debug-statistics-recording = true
 Test.node (Node):
     "rec31" (signalID=_):
         MaxFilter
-            <lastsignalvalue> + 1 (ExpressionRecorder) ==> rec31:max+1
+            $0 + 1 (ExpressionFilter)
+                LastValueRecorder ==> rec31:max+1
     "rec30" (signalID=_):
         MaxFilter
-            <lastsignalvalue> + 1 (ExpressionRecorder) ==> rec30:max+1
+            $0 + 1 (ExpressionFilter)
+                LastValueRecorder ==> rec30:max+1
         TimeAverageFilter
             MaxFilter
-                <lastsignalvalue> / 2 (ExpressionRecorder) ==> rec30:max(timeavg)/2
+                $0 / 2 (ExpressionFilter)
+                    LastValueRecorder ==> rec30:max(timeavg)/2
         MeanFilter
             VectorRecorder ==> rec30:vector(mean)
         MeanFilter
-            cos(<lastsignalvalue> + 1) (ExpressionRecorder) ==> rec30:cos(mean+1)
+            cos($0 + 1) (ExpressionFilter)
+                LastValueRecorder ==> rec30:cos(mean+1)
         MaxFilter
             VectorRecorder ==> rec30:vector(max)
     "rec21" (signalID=_):

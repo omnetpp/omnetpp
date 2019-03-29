@@ -63,8 +63,8 @@ EV << ".\n";
 9223372036854775806 + 1 ==> 9223372036854775807
 9223372036854775807 + 1 ==> operator "+": Integer overflow adding 9223372036854775807 and 1, try casting operands to double
 -9223372036854775807 - 1 ==> -9223372036854775808
--9223372036854775807 - 2 ==> operator "-": Integer overflow adding -9223372036854775807 and -2, try casting operands to double
-0 - (-9223372036854775807-1) ==> operator "-": Integer overflow: cannot subtract -MAXINT
+-9223372036854775807 - 2 ==> operator "-": Integer overflow subtracting 2 from -9223372036854775807, try casting operands to double
+0 - (-9223372036854775807-1) ==> operator "-": Integer overflow subtracting -9223372036854775808 from 0, try casting operands to double
 2147483648 * 4294967295 ==> 9223372034707292160
 2147483648 * 4294967296 ==> operator "*": Integer overflow multiplying 2147483648 and 4294967296, try casting operands to double
 2^61 ==> 2305843009213693952
@@ -73,7 +73,7 @@ EV << ".\n";
 2^64 ==> operator "^": Overflow during integer exponentiation, try casting operands to double
 int(9.22e18) ==> 9220000000000000000
 int(-9.22e18) ==> -9220000000000000000
-int(9.23e18) ==> Overflow casting 9230000000000000000.000000 to the target integer type
-int(-9.23e18) ==> Overflow casting -9230000000000000000.000000 to the target integer type
+int(9.23e18) ==> int(): Overflow casting 9230000000000000000.000000 to the target integer type
+int(-9.23e18) ==> int(): Overflow casting -9230000000000000000.000000 to the target integer type
 .
 

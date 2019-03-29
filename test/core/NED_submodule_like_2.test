@@ -22,9 +22,6 @@ network Test
         c[10]: <randomTypeName> like IFooModule;
         d[10]: <"Compound"+string(oneOrTwo)> like IFooModule;
         e[10]: <"Compound"+string(1+intuniform(0,1))> like IFooModule;
-        //FIXME f[2]: <"Compound"+string(index)> like IFooModule; ==> "index not allowed here"
-        //FIXME g[5]: <index%2==0 ? "Compound1" : "Compound2"> like IFooModule;  ==> "parse error", but with parens it's OK!
-        //FIXME h[5]: <(index%2==0 ? "Compound1" : "Compound2")> like IFooModule; ==> "index not allowed here"
         dump: Dump;
 }
 

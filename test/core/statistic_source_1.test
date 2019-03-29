@@ -40,42 +40,39 @@ debug-statistics-recording = true
 %contains: stdout
 Test.node (Node):
     "bar" (signalID=_):
-        IdentityFilter
-            <signalvalue> + <signalvalue> (NaryExpressionFilter)
-                VectorRecorder ==> src10:vector
-        IdentityFilter
-            <signalvalue> + 3 * <signalvalue> (NaryExpressionFilter)
-                MaxFilter
-                    VectorRecorder ==> src11:vector
-        IdentityFilter
-            <signalvalue> + sin(<signalvalue>) (NaryExpressionFilter)
-                VectorRecorder ==> src12:vector
+        $0 + $1 (ExpressionFilter)
+            VectorRecorder ==> src10:vector
+        $0 + 3 * $1 (ExpressionFilter)
+            MaxFilter
+                VectorRecorder ==> src11:vector
+        $0 + sin($1) (ExpressionFilter)
+            VectorRecorder ==> src12:vector
         MinFilter
-            <signalvalue> + <signalvalue> (NaryExpressionFilter)
+            $0 + $1 (ExpressionFilter)
                 VectorRecorder ==> src13:vector
     "foo" (signalID=_):
         VectorRecorder ==> src1:vector
         HistogramRecorder ==> src1:histogram
-        <signalvalue> + 1 (UnaryExpressionFilter)
+        $0 + 1 (ExpressionFilter)
             VectorRecorder ==> src2:vector
             HistogramRecorder ==> src2:histogram
-        2 * fabs(<signalvalue> + 1) (UnaryExpressionFilter)
+        2 * fabs($0 + 1) (ExpressionFilter)
             VectorRecorder ==> src3:vector
             HistogramRecorder ==> src3:histogram
         MeanFilter
             VectorRecorder ==> src4:vector
             HistogramRecorder ==> src4:histogram
         MeanFilter
-            fabs(<signalvalue>) (UnaryExpressionFilter)
+            fabs($0) (ExpressionFilter)
                 VectorRecorder ==> src5:vector
                 HistogramRecorder ==> src5:histogram
-        <signalvalue> + 1 (UnaryExpressionFilter)
+        $0 + 1 (ExpressionFilter)
             MeanFilter
                 VectorRecorder ==> src6:vector
                 HistogramRecorder ==> src6:histogram
-        <signalvalue> + 1 (UnaryExpressionFilter)
+        $0 + 1 (ExpressionFilter)
             MeanFilter
-                3 + fabs(<signalvalue>) (UnaryExpressionFilter)
+                3 + fabs($0) (ExpressionFilter)
                     VectorRecorder ==> src7:vector
                     HistogramRecorder ==> src7:histogram
         TimeAverageFilter
@@ -83,26 +80,24 @@ Test.node (Node):
                 MaxFilter
                     VectorRecorder ==> src8:vector
                     HistogramRecorder ==> src8:histogram
-        3 + <signalvalue> (UnaryExpressionFilter)
+        3 + $0 (ExpressionFilter)
             TimeAverageFilter
-                2 + <signalvalue> (UnaryExpressionFilter)
+                2 + $0 (ExpressionFilter)
                     MeanFilter
-                        1 + <signalvalue> (UnaryExpressionFilter)
+                        1 + $0 (ExpressionFilter)
                             MaxFilter
                                 VectorRecorder ==> src9:vector
                                 HistogramRecorder ==> src9:histogram
-        IdentityFilter
-            <signalvalue> + <signalvalue> (NaryExpressionFilter)
-                VectorRecorder ==> src10:vector
-        IdentityFilter
-            <signalvalue> + 3 * <signalvalue> (NaryExpressionFilter)
-                MaxFilter
-                    VectorRecorder ==> src11:vector
+        $0 + $1 (ExpressionFilter)
+            VectorRecorder ==> src10:vector
+        $0 + 3 * $1 (ExpressionFilter)
+            MaxFilter
+                VectorRecorder ==> src11:vector
         MaxFilter
-            <signalvalue> + sin(<signalvalue>) (NaryExpressionFilter)
+            $0 + sin($1) (ExpressionFilter)
                 VectorRecorder ==> src12:vector
         MaxFilter
-            <signalvalue> + <signalvalue> (NaryExpressionFilter)
+            $0 + $1 (ExpressionFilter)
                 VectorRecorder ==> src13:vector
     "src0" (signalID=_):
         VectorRecorder ==> src0:vector

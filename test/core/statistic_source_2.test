@@ -43,29 +43,29 @@ debug-statistics-recording = true
 Test.node (Node):
     "bar" (signalID=_):
         WarmupPeriodFilter
-            <signalvalue> + <signalvalue> (NaryExpressionFilter)
+            $0 + $1 (ExpressionFilter)
                 VectorRecorder ==> src10:vector
         WarmupPeriodFilter
-            <signalvalue> + 3 * <signalvalue> (NaryExpressionFilter)
+            $0 + 3 * $1 (ExpressionFilter)
                 MaxFilter
                     VectorRecorder ==> src11:vector
         WarmupPeriodFilter
-            <signalvalue> + sin(<signalvalue>) (NaryExpressionFilter)
+            $0 + sin($1) (ExpressionFilter)
                 VectorRecorder ==> src12:vector
         WarmupPeriodFilter
             MinFilter
-                <signalvalue> + <signalvalue> (NaryExpressionFilter)
+                $0 + $1 (ExpressionFilter)
                     VectorRecorder ==> src13:vector
     "foo" (signalID=_):
         WarmupPeriodFilter
             VectorRecorder ==> src1:vector
             HistogramRecorder ==> src1:histogram
         WarmupPeriodFilter
-            <signalvalue> + 1 (UnaryExpressionFilter)
+            $0 + 1 (ExpressionFilter)
                 VectorRecorder ==> src2:vector
                 HistogramRecorder ==> src2:histogram
         WarmupPeriodFilter
-            2 * fabs(<signalvalue> + 1) (UnaryExpressionFilter)
+            2 * fabs($0 + 1) (ExpressionFilter)
                 VectorRecorder ==> src3:vector
                 HistogramRecorder ==> src3:histogram
         WarmupPeriodFilter
@@ -74,18 +74,18 @@ Test.node (Node):
                 HistogramRecorder ==> src4:histogram
         WarmupPeriodFilter
             MeanFilter
-                fabs(<signalvalue>) (UnaryExpressionFilter)
+                fabs($0) (ExpressionFilter)
                     VectorRecorder ==> src5:vector
                     HistogramRecorder ==> src5:histogram
         WarmupPeriodFilter
-            <signalvalue> + 1 (UnaryExpressionFilter)
+            $0 + 1 (ExpressionFilter)
                 MeanFilter
                     VectorRecorder ==> src6:vector
                     HistogramRecorder ==> src6:histogram
         WarmupPeriodFilter
-            <signalvalue> + 1 (UnaryExpressionFilter)
+            $0 + 1 (ExpressionFilter)
                 MeanFilter
-                    3 + fabs(<signalvalue>) (UnaryExpressionFilter)
+                    3 + fabs($0) (ExpressionFilter)
                         VectorRecorder ==> src7:vector
                         HistogramRecorder ==> src7:histogram
         WarmupPeriodFilter
@@ -95,28 +95,28 @@ Test.node (Node):
                         VectorRecorder ==> src8:vector
                         HistogramRecorder ==> src8:histogram
         WarmupPeriodFilter
-            3 + <signalvalue> (UnaryExpressionFilter)
+            3 + $0 (ExpressionFilter)
                 TimeAverageFilter
-                    2 + <signalvalue> (UnaryExpressionFilter)
+                    2 + $0 (ExpressionFilter)
                         MeanFilter
-                            1 + <signalvalue> (UnaryExpressionFilter)
+                            1 + $0 (ExpressionFilter)
                                 MaxFilter
                                     VectorRecorder ==> src9:vector
                                     HistogramRecorder ==> src9:histogram
         WarmupPeriodFilter
-            <signalvalue> + <signalvalue> (NaryExpressionFilter)
+            $0 + $1 (ExpressionFilter)
                 VectorRecorder ==> src10:vector
         WarmupPeriodFilter
-            <signalvalue> + 3 * <signalvalue> (NaryExpressionFilter)
+            $0 + 3 * $1 (ExpressionFilter)
                 MaxFilter
                     VectorRecorder ==> src11:vector
         WarmupPeriodFilter
             MaxFilter
-                <signalvalue> + sin(<signalvalue>) (NaryExpressionFilter)
+                $0 + sin($1) (ExpressionFilter)
                     VectorRecorder ==> src12:vector
         WarmupPeriodFilter
             MaxFilter
-                <signalvalue> + <signalvalue> (NaryExpressionFilter)
+                $0 + $1 (ExpressionFilter)
                     VectorRecorder ==> src13:vector
     "src0" (signalID=_):
         WarmupPeriodFilter

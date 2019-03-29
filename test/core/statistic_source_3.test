@@ -48,39 +48,33 @@ debug-statistics-recording = true
 Setting up network "Test"...
 Test.host1.app (App):
     "rcvdPk" (signalID=_):
-        IdentityFilter
-            <signalvalue> + <signalvalue> (NaryExpressionFilter)
-                CountRecorder ==> appTotal:count
+        $0 + $1 (ExpressionFilter)
+            CountRecorder ==> appTotal:count
     "sentPk" (signalID=_):
         CountRecorder ==> appSent:count
-        2 * <signalvalue> (UnaryExpressionFilter)
+        2 * $0 (ExpressionFilter)
             CountRecorder ==> appSentx2:count
-        IdentityFilter
-            <signalvalue> + <signalvalue> (NaryExpressionFilter)
-                CountRecorder ==> appTotal:count
+        $0 + $1 (ExpressionFilter)
+            CountRecorder ==> appTotal:count
 Test.host1.udp (UDP):
     "rcvdPk" (signalID=_):
-        IdentityFilter
-            <signalvalue> + <signalvalue> (NaryExpressionFilter)
-                CountRecorder ==> host1Total:count
+        $0 + $1 (ExpressionFilter)
+            CountRecorder ==> host1Total:count
     "sentPk" (signalID=_):
         CountRecorder ==> host1Sent:count
-        2 * <signalvalue> (UnaryExpressionFilter)
+        2 * $0 (ExpressionFilter)
             CountRecorder ==> host1Sentx2:count
-        IdentityFilter
-            <signalvalue> + <signalvalue> (NaryExpressionFilter)
-                CountRecorder ==> host1Total:count
+        $0 + $1 (ExpressionFilter)
+            CountRecorder ==> host1Total:count
 Test.host2.app (App):
     "rcvdPk" (signalID=_):
-        IdentityFilter
-            <signalvalue> + <signalvalue> (NaryExpressionFilter)
-                CountRecorder ==> appTotal:count
+        $0 + $1 (ExpressionFilter)
+            CountRecorder ==> appTotal:count
     "sentPk" (signalID=_):
         CountRecorder ==> appSent:count
-        2 * <signalvalue> (UnaryExpressionFilter)
+        2 * $0 (ExpressionFilter)
             CountRecorder ==> appSentx2:count
-        IdentityFilter
-            <signalvalue> + <signalvalue> (NaryExpressionFilter)
-                CountRecorder ==> appTotal:count
+        $0 + $1 (ExpressionFilter)
+            CountRecorder ==> appTotal:count
 Initializing...
 

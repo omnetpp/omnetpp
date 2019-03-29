@@ -173,23 +173,24 @@ P( ratio(0dB));
 EV << ".\n";
 
 %contains: stdout
+W(150mW) ==> 0.15W
 min(3, 2) ==> 2
 min(3m, 2m) ==> 2m
 min(3m, 2km) ==> 3m
 min(2km, 3m) ==> 3m
-min(1m, 1) ==> Cannot convert unit none to 'm' (meter)
-min(1m, 1s) ==> Cannot convert unit 's' (second) to 'm' (meter)
+min(1m, 1) ==> min(): Cannot convert unit none to 'm' (meter)
+min(1m, 1s) ==> min(): Cannot convert unit 's' (second) to 'm' (meter)
 
 max(3, 2) ==> 3
 max(3m, 2m) ==> 3m
 max(3m, 2km) ==> 2km
 max(2km, 3m) ==> 2km
-max(1m, 1) ==> Cannot convert unit none to 'm' (meter)
-max(1m, 1s) ==> Cannot convert unit 's' (second) to 'm' (meter)
+max(1m, 1) ==> max(): Cannot convert unit none to 'm' (meter)
+max(1m, 1s) ==> max(): Cannot convert unit 's' (second) to 'm' (meter)
 
 convertUnit(1.5h, "s") ==> 5400s
-convertUnit(1.5h, "") ==> Cannot convert unit 'h' (hour) to none
-convertUnit(1.5h, "kg") ==> Cannot convert unit 'h' (hour) to 'kg' (kilogram)
+convertUnit(1.5h, "") ==> convertUnit(): Cannot convert unit 'h' (hour) to none
+convertUnit(1.5h, "kg") ==> convertUnit(): Cannot convert unit 'h' (hour) to 'kg' (kilogram)
 
 replaceUnit(1.5h, "s") ==> 1.5s
 replaceUnit(1.5h, "kg") ==> 1.5kg
