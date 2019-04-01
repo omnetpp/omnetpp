@@ -211,6 +211,12 @@ double UnitConversion::parseQuantity(const char *str, std::string& unit)
         return result;
     }
 
+    bool minus = false;
+    if (result < 0) {
+        minus = true;
+        result = -result;
+    }
+
     // now process the rest: [<number> <unit>]*
     while (*s) {
         // read number and unit
@@ -220,6 +226,10 @@ double UnitConversion::parseQuantity(const char *str, std::string& unit)
         std::string tmpUnit;
         if (!readUnit(s, tmpUnit))
             throw opp_runtime_error("Syntax error parsing quantity '%s': Missing unit", str);
+
+        // check number
+        if (d < 0)
+            throw opp_runtime_error("Syntax error parsing quantity '%s': Minus sign only accepted at the front", str);
 
         // check unit
         if (!isLinearUnit(unit.c_str()) || !isLinearUnit(tmpUnit.c_str()))
@@ -233,6 +243,9 @@ double UnitConversion::parseQuantity(const char *str, std::string& unit)
         result = result * factor + d;
         unit = tmpUnit;
     }
+
+    if (minus)
+        result = -result;
 
     // must be at the end of the input string
     if (*s)
@@ -295,7 +308,7 @@ double UnitConversion::tryGetConversionFactor(UnitDesc *unitDesc, UnitDesc *targ
         return unitDesc->mult;
     if (equal(unitDesc->unit, targetUnitDesc->baseUnit) && targetUnitDesc->mapping == LINEAR)
         return 1.0 / targetUnitDesc->mult;
-    
+
     // convert unit to the base, and try again
     if (!equal(unitDesc->unit, unitDesc->baseUnit) && unitDesc->mapping == LINEAR) {
         UnitDesc *baseUnitDesc = lookupUnit(unitDesc->baseUnit);
@@ -307,7 +320,7 @@ double UnitConversion::tryGetConversionFactor(UnitDesc *unitDesc, UnitDesc *targ
         UnitDesc *targetBaseDesc = lookupUnit(targetUnitDesc->baseUnit);
         return tryGetConversionFactor(unitDesc, targetBaseDesc) / targetUnitDesc->mult;
     }
-    
+
     return 0; // no conversion found
 }
 
@@ -372,7 +385,7 @@ double UnitConversion::tryConvert(double value, UnitDesc *unitDesc, UnitDesc *ta
         return convertToBase(value, unitDesc);
     if (equal(unitDesc->unit, targetUnitDesc->baseUnit))
         return convertFromBase(value, targetUnitDesc);
-    
+
     // convert unit to the base, and try again
     if (!equal(unitDesc->unit, unitDesc->baseUnit)) {
         UnitDesc *baseUnitDesc = lookupUnit(unitDesc->baseUnit);
@@ -384,7 +397,7 @@ double UnitConversion::tryConvert(double value, UnitDesc *unitDesc, UnitDesc *ta
         UnitDesc *targetBaseDesc = lookupUnit(targetUnitDesc->baseUnit);
         return convertFromBase(tryConvert(value, unitDesc, targetBaseDesc), targetUnitDesc);
     }
-    
+
     return NaN;
 }
 

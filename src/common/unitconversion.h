@@ -64,6 +64,10 @@ class COMMON_API UnitConversion
      *
      * Syntax: <number> | (<number> <unit>)+
      *
+     * To reduce the chance of confusion, negative numbers may only occur
+     * at the start of the quantity, and the minus sign refers to the whole quantity.
+     * For example, "-1s200ms" means -1.2s and not -0.8s; and "1s-100ms" is illegal.
+     *
      * If there is a syntax error, or if unit mismatch is found (i.e. distance
      * is given instead of time), the method throws an exception.
      */
@@ -117,7 +121,7 @@ class COMMON_API UnitConversion
     static const char *getBaseUnit(const char *unit);
 
     /**
-     * Returns true if the given unit is linear (e.g. W and KiB), and false 
+     * Returns true if the given unit is linear (e.g. W and KiB), and false
      * if not (dBm, dbW). Unknown (custom) units are assumed to be linear.
      */
     static bool isLinearUnit(const char *unit);
