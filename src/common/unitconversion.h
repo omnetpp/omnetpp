@@ -52,8 +52,9 @@ class COMMON_API UnitConversion
   public:
     /**
      * Invokes parseQuantity(), and converts the result into the given unit.
-     * If conversion is not possible (unrelated or unknown units), and error
-     * is thrown.
+     * nullptr or empty string for expectedUnit means no unit (dimensionless
+     * number expected). If conversion is not possible (unrelated or unknown units),
+     * an exception is thrown.
      */
     static double parseQuantity(const char *str, const char *expectedUnit=nullptr);
 
@@ -103,7 +104,8 @@ class COMMON_API UnitConversion
     static double getConversionFactor(const char *sourceUnit, const char *targetUnit);
 
     /**
-     * Converts the given value with unit into the given target unit.
+     * Converts the given value with unit into the given target unit. nullptr or empty
+     * string for either argument means no unit (dimensionless number).
      * Throws an error if the conversion is not possible.
      */
     static double convertUnit(double d, const char *unit, const char *targetUnit);
