@@ -81,8 +81,8 @@ class NEDXML_API NedResourceCache
     // table of loaded NED files
     std::vector<NedFileElement*> nedFiles;
 
-    // list of "package.ned" files by package name
-    std::map<std::string, std::vector<NedFileElement*>> packageDotNedFiles;
+    // "package.ned" files by package name (only one per package accepted)
+    std::map<std::string, NedFileElement*> packageDotNedFiles;
 
     // true after doneLoadingNedFiles() has been called
     bool doneLoadingNedFilesCalled = false;

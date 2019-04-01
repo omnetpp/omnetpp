@@ -292,12 +292,15 @@ void NedResourceCache::doneLoadingNedFiles()
 
     // collect package.ned files
     for (NedFileElement *nedFile : nedFiles) {
-        const char *fname = nedFile->getFilename();
-        if (isPackageNedFile(fname)) {
+        const char *fileName = nedFile->getFilename();
+        if (isPackageNedFile(fileName)) {
             std::string packageName;
             if (PackageElement *packageDecl = (PackageElement *)nedFile->getFirstChildWithTag(NED_PACKAGE))
                 packageName = packageDecl->getName();
-            packageDotNedFiles[packageName].push_back(nedFile);
+            if (containsKey(packageDotNedFiles, packageName))
+                throw NedException("More than one package.ned file per package: '%s' and '%s'",
+                        fileName, packageDotNedFiles[packageName]->getFilename());
+            packageDotNedFiles[packageName] = nedFile;
         }
     }
 
@@ -377,7 +380,7 @@ std::vector<NedFileElement*> NedResourceCache::getPackageNedListForLookup(const 
     std::string package = packageName;
     while (true) {
         if (containsKey(packageDotNedFiles, package))
-            addAll(result, packageDotNedFiles.at(package));
+            result.push_back(packageDotNedFiles.at(package));
         if (package == "")
             break;
         package = getParentPackage(package);
