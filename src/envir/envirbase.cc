@@ -147,7 +147,8 @@ Register_GlobalConfigOption(CFGID_DEBUG_ON_ERRORS, "debug-on-errors", CFG_BOOL, 
 Register_GlobalConfigOption(CFGID_PRINT_UNDISPOSED, "print-undisposed", CFG_BOOL, "true", "Whether to report objects left (that is, not deallocated by simple module destructors) after network cleanup.");
 Register_GlobalConfigOption(CFGID_SIMTIME_SCALE, "simtime-scale", CFG_INT, "-12", "DEPRECATED in favor of simtime-resolution. Sets the scale exponent, and thus the resolution of time for the 64-bit fixed-point simulation time representation. Accepted values are -18..0; for example, -6 selects microsecond resolution. -12 means picosecond resolution, with a maximum simtime of ~110 days.");
 Register_GlobalConfigOption(CFGID_SIMTIME_RESOLUTION, "simtime-resolution", CFG_CUSTOM, "ps", "Sets the resolution for the 64-bit fixed-point simulation time representation. Accepted values are: second-or-smaller time units (`s`, `ms`, `us`, `ns`, `ps`, `fs` or as), power-of-ten multiples of such units (e.g. 100ms), and base-10 scale exponents in the -18..0 range. The maximum representable simulation time depends on the resolution. The default is picosecond resolution, which offers a range of ~110 days.");
-Register_GlobalConfigOption(CFGID_NED_PATH, "ned-path", CFG_PATH, "", "A semicolon-separated list of directories. The directories will be regarded as roots of the NED package hierarchy, and all NED files will be loaded from their subdirectory trees. This option is normally left empty, as the OMNeT++ IDE sets the NED path automatically, and for simulations started outside the IDE it is more convenient to specify it via a command-line option or the OMNETPP_NED_PATH environment variable.");
+Register_GlobalConfigOption(CFGID_NED_PATH, "ned-path", CFG_PATH, "", "A semicolon-separated list of directories. The directories will be regarded as roots of the NED package hierarchy, and all NED files will be loaded from their subdirectory trees. This option is normally left empty, as the OMNeT++ IDE sets the NED path automatically, and for simulations started outside the IDE it is more convenient to specify it via command-line option (-n) or via environment variable (OMNETPP_NED_PATH, NEDPATH).");
+Register_GlobalConfigOption(CFGID_NED_EXCLUSION_PATH, "ned-exclusion-path", CFG_PATH, "", "A semicolon-separated list of directories to be skipped when loading NED files. Relative paths are interpreted as relative to root of the NED folder being loaded, i.e. specifying 'tests' will skip the 'tests' subdirectory in each folder in the NED path. The NED exclusion path may also be specified via command-line option (-x) and environment variable (OMNETPP_NED_EXCLUSION_PATH).");
 Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_ON_STARTUP, "debugger-attach-on-startup", CFG_BOOL, "false", "When set to true, the simulation program will launch an external debugger attached to it (if not already present), allowing you to set breakpoints before proceeding. The debugger command is configurable. Note that debugging (i.e. attaching to) a non-child process needs to be explicitly enabled on some systems, e.g. Ubuntu.");
 Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_ON_ERROR, "debugger-attach-on-error", CFG_BOOL, "false", "When set to true, runtime errors and crashes will trigger an external debugger to be launched (if not already present), allowing you to perform just-in-time debugging on the simulation process. The debugger command is configurable. Note that debugging (i.e. attaching to) a non-child process needs to be explicitly enabled on some systems, e.g. Ubuntu.");
 Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_COMMAND, "debugger-attach-command", CFG_STRING, nullptr, "Command line to launch the debugger. It must contain exactly one percent sign, as `%u`, which will be replaced by the PID of this process. The command must not block (i.e. it should end in `&` on Unix-like systems). Default on this platform: `" DEFAULT_DEBUGGER_COMMAND "`. This default can be overridden with the `OMNETPP_DEBUGGER_COMMAND` environment variable.");
@@ -1346,25 +1347,17 @@ void EnvirBase::readOptions()
     // NED path. It is taken from the "-n" command-line options, the OMNETPP_NED_PATH
     // environment variable, and the "ned-path=" config option. If the result is still
     // empty, we fall back to "." -- this is needed for single-directory models to work.
-    std::string nedPath;
-    for (std::string opt : args->optionValues('n'))
-        nedPath = opp_join(";", nedPath, opt);
+    std::string nedPath = opp_join(args->optionValues('n'), ";");
     nedPath = opp_join(";", nedPath, getConfig()->getAsPath(CFGID_NED_PATH));
-    const char *nedPathEnv = getenv("OMNETPP_NED_PATH");
-    const char *obsoleteNedPathEnv = getenv("NEDPATH");
-    if (!opp_isempty(obsoleteNedPathEnv))
-        warn() << "Obsolete environment variable NEDPATH was found, please update your scripts to define OMNETPP_NED_PATH instead" << endl;
-    const char *nedPathEnvVar = opp_emptytodefault(nedPathEnv, obsoleteNedPathEnv);
-    nedPath = opp_join(";", nedPath, opp_nulltoempty(nedPathEnvVar));
+    nedPath = opp_join(";", nedPath, opp_nulltoempty(getenv("OMNETPP_NED_PATH")));
+    nedPath = opp_join(";", nedPath, opp_nulltoempty(getenv("NEDPATH")));
     if (nedPath.empty())
         nedPath = ".";
     opt->nedPath = nedPath;
 
     // NED exclusion path
-    std::string nedExclusionPath;
-    for (std::string opt : args->optionValues('x'))
-        nedExclusionPath = opp_join(";", nedExclusionPath, opt);
-    //nedExclusionPath = opp_join(";", nedExclusionPath, getConfig()->getAsPath(CFGID_NED_EXCLUSION_PATH));
+    std::string nedExclusionPath = opp_join(args->optionValues('x'), ";");
+    nedExclusionPath = opp_join(";", nedExclusionPath, getConfig()->getAsPath(CFGID_NED_EXCLUSION_PATH));
     nedExclusionPath = opp_join(";", nedExclusionPath, opp_nulltoempty(getenv("OMNETPP_NED_EXCLUSION_PATH")));
     opt->nedExclusionPath = nedExclusionPath;
 
