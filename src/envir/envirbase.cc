@@ -16,7 +16,6 @@
 *--------------------------------------------------------------*/
 
 #include <cstdio>
-#include <cassert>
 #include <csignal>
 #include <fstream>
 #include <sstream>
@@ -867,28 +866,7 @@ void EnvirBase::readParameter(cPar *par)
     std::string moduleFullPath = par->getOwner()->getFullPath();
     const char *str = getConfigEx()->getParameterValue(moduleFullPath.c_str(), par->getName(), par->containsValue());
 
-/* XXX hack to use base directory for resolving xml files location has been commented out
- * FIXME a solution needs to be worked out!
-    if (str[0]=='x' && !strncmp(str,"xmldoc",6) && !opp_isalnum(str[6]))
-    {
-        // Make XML file location relative to the ini file in which it occurs.
-        // Find substring between first two quotes (that is, the XML filename),
-        // and prefix it with the directory.
-        const char *begQuote = strchr(str+6,'"');
-        if (!begQuote)
-            return std::string(str);
-        const char *endQuote = strchr(begQuote+1,'"');
-        while (endQuote && *(endQuote-1)=='\\' && *(endQuote-2)!='\\')
-            endQuote = strchr(endQuote+1,'"');
-        if (!endQuote)
-            return std::string(str);
-        std::string fname(begQuote+1, endQuote-begQuote-1);
-        const char *baseDir = getConfig()->getBaseDirectoryFor(nullptr, "Parameters", parname);
-        fname = tidyFilename(concatDirAndFile(baseDir, fname.c_str()).c_str(),true);
-        std::string ret = std::string(str, begQuote-str+1) + fname + endQuote;
-        //XXX use "ret" further!!!
-    }
-*/
+    //TODO somehow  use base directory for finding XML files specified with relative path
 
     if (omnetpp::opp_strcmp(str, "default") == 0) {
         ASSERT(par->containsValue());  // cConfiguration should not return "=default" lines for params that have no default value
@@ -978,7 +956,7 @@ cXMLElement *EnvirBase::getParsedXMLString(const char *content, const char *path
 
 cXMLElement *EnvirBase::resolveXMLPath(cXMLElement *documentnode, const char *path)
 {
-    assert(documentnode);
+    ASSERT(documentnode);
     if (path) {
         ModNameParamResolver resolver(getSimulation()->getContextModule());  // resolves $MODULE_NAME etc in XPath expr.
         return cXMLElement::getDocumentElementByPath(documentnode, path, &resolver);
@@ -1074,7 +1052,6 @@ void EnvirBase::bubble(cComponent *component, const char *text)
 
 void EnvirBase::objectDeleted(cObject *object)
 {
-    // TODO?
 }
 
 void EnvirBase::simulationEvent(cEvent *event)
@@ -1248,7 +1225,7 @@ void EnvirBase::processFileName(std::string& fname)
 
 void EnvirBase::startOutputRedirection(const char *fileName)
 {
-    Assert(!isOutputRedirected());
+    ASSERT(!isOutputRedirected());
 
     mkPath(directoryOf(fileName).c_str());
 
@@ -1612,25 +1589,25 @@ void EnvirBase::setupRNGMapping(cComponent *component)
 
 void *EnvirBase::registerOutputVector(const char *modulename, const char *vectorname)
 {
-    assert(outvectorManager);
+    ASSERT(outvectorManager);
     return outvectorManager->registerVector(modulename, vectorname);
 }
 
 void EnvirBase::deregisterOutputVector(void *vechandle)
 {
-    assert(outvectorManager);
+    ASSERT(outvectorManager);
     outvectorManager->deregisterVector(vechandle);
 }
 
 void EnvirBase::setVectorAttribute(void *vechandle, const char *name, const char *value)
 {
-    assert(outvectorManager);
+    ASSERT(outvectorManager);
     outvectorManager->setVectorAttribute(vechandle, name, value);
 }
 
 bool EnvirBase::recordInOutputVector(void *vechandle, simtime_t t, double value)
 {
-    assert(outvectorManager);
+    ASSERT(outvectorManager);
     if (getSimulation()->getFingerprintCalculator())
         // TODO: determine component and result name if possible
         getSimulation()->getFingerprintCalculator()->addVectorResult(nullptr, "", t, value);
@@ -1641,7 +1618,7 @@ bool EnvirBase::recordInOutputVector(void *vechandle, simtime_t t, double value)
 
 void EnvirBase::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)
 {
-    assert(outScalarManager);
+    ASSERT(outScalarManager);
     outScalarManager->recordScalar(component, name, value, attributes);
     if (getSimulation()->getFingerprintCalculator())
         getSimulation()->getFingerprintCalculator()->addScalarResult(component, name, value);
@@ -1649,7 +1626,7 @@ void EnvirBase::recordScalar(cComponent *component, const char *name, double val
 
 void EnvirBase::recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
-    assert(outScalarManager);
+    ASSERT(outScalarManager);
     outScalarManager->recordStatistic(component, name, statistic, attributes);
     if (getSimulation()->getFingerprintCalculator())
         getSimulation()->getFingerprintCalculator()->addStatisticResult(component, name, statistic);
