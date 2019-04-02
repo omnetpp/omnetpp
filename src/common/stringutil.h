@@ -289,12 +289,13 @@ COMMON_API std::string opp_join(const char *separator, const std::string& s1, co
 /**
  * Concatenate the strings passed in the nullptr-terminated const char * array, using
  * the given separator and putting each item between quoteChars unless it is '\0'.
+ * Empty elements are skipped.
  */
 COMMON_API std::string opp_join(const char **strings, const char *separator, char quoteChar=0);
 
 /**
  * Concatenate the strings passed in the vector, using the given separator,
- * and putting each item between quoteChars unless it is '\0'.
+ * and putting each item between quoteChars unless it is '\0'. Empty elements are skipped.
  */
 COMMON_API std::string opp_join(const std::vector<std::string>& strings, const char *separator, char quoteChar=0);
 
