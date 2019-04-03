@@ -14,7 +14,7 @@ TARGET_LIB_FILES=$(OMNETPP_LIB_DIR)/$(LIBNAME)$(LIB_SUFFIX)
 ifeq ($(PLATFORM),win32.x86_64)
   ifeq ($(SHARED_LIBS),yes)
     TARGET_LIB_FILES=$(OMNETPP_BIN_DIR)/$(LIBNAME)$(DLL_LIB_SUFFIX)
-    ifeq ($(TOOLCHAIN_NAME),clangc2)
+    ifeq ($(TOOLCHAIN_NAME),clang-msabi)
       ifeq ($(MODE),debug)
         TARGET_LIB_FILES+=$(OMNETPP_BIN_DIR)/$(LIBNAME).pdb
       endif
@@ -22,7 +22,7 @@ ifeq ($(PLATFORM),win32.x86_64)
   endif
 endif
 
-O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/qtenv/osg
+O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/qtenv/osg
 
 # disable warnings for cleaner output on MinGW/clang
 CFLAGS += -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)" $(QT_CFLAGS) -Wno-ignored-attributes -Wno-inconsistent-missing-override
@@ -39,7 +39,7 @@ ifeq ($(MODE),release)
   DEFINES += -DQT_NO_DEBUG_OUTPUT
 endif
 
-ifeq ($(TOOLCHAIN_NAME),clangc2)
+ifeq ($(TOOLCHAIN_NAME),clang-msabi)
 # QT_COMPILING_QSTRING_COMPAT_CPP should be added only for clang-c2 compiler
   DEFINES += -DQT_COMPILING_QSTRING_COMPAT_CPP
 endif

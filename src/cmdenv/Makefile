@@ -21,7 +21,7 @@ ifeq ($(PLATFORM),win32.x86_64)
   endif
 endif
 
-O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/cmdenv
+O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/cmdenv
 
 INCL_FLAGS= -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)"
 

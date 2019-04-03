@@ -22,7 +22,7 @@ ifeq ($(PLATFORM),win32.x86_64)
   endif
 endif
 
-O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/qtenv
+O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/qtenv
 
 # disable warnings for cleaner output on MinGW/clang
 CFLAGS += -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)" $(QT_CFLAGS) -Wno-ignored-attributes -Wno-inconsistent-missing-override
