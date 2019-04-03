@@ -11,19 +11,37 @@ OMNETPP_EDITION = @OMNETPP_EDITION@
 #
 # Optional features (set to "yes" to enable the feature)
 #
-WITH_QTENV ?= @WITH_QTENV@
-WITH_OSG ?= @WITH_OSG@
-WITH_OSGEARTH ?= @WITH_OSGEARTH@
-WITH_NETBUILDER ?= @WITH_NETBUILDER@
-WITH_PARSIM ?= @WITH_PARSIM@
-WITH_SYSTEMC ?= @WITH_SYSTEMC@
-PREFER_SQLITE_RESULT_FILES ?= @PREFER_SQLITE_RESULT_FILES@
+WITH_QTENV = @WITH_QTENV@
+WITH_OSG = @WITH_OSG@
+WITH_OSGEARTH = @WITH_OSGEARTH@
+WITH_NETBUILDER = @WITH_NETBUILDER@
+WITH_PARSIM = @WITH_PARSIM@
+WITH_SYSTEMC = @WITH_SYSTEMC@
+PREFER_SQLITE_RESULT_FILES = @PREFER_SQLITE_RESULT_FILES@
 
 #
 # SHARED_LIBS determines whether omnetpp is built as shared or static libs
 # By default we use shared libs
 #
-SHARED_LIBS ?= @SHARED_LIBS@
+SHARED_LIBS = @SHARED_LIBS@
+
+#
+# Configure MODE specific flags/suffixes
+#
+MODE = release
+ifeq ($(MODE),release)
+  CFLAGS = $(CFLAGS_RELEASE)
+  D=
+else ifeq ($(MODE),debug)
+  CFLAGS = $(CFLAGS_DEBUG)
+  D=_dbg
+else ifeq ($(MODE),sanitize)
+  CFLAGS = $(CFLAGS_DEBUG) $(SANITIZE_FLAGS)
+  LDFLAGS = $(SANITIZE_FLAGS)
+  D=_sanitize
+else
+  $(error Unknown mode: '$(MODE)'. Use 'release', 'debug', 'sanitize' or define your own mode in 'Makefile.inc.in')
+endif
 
 #
 # Directories
@@ -54,19 +72,6 @@ else
   # Linux and other platforms do not have a tools directory
 endif
 
-#
-# Configure MODE specific flags/suffixes
-#
-ifeq ($(MODE),debug)
-  CFLAGS=$(CFLAGS_DEBUG)
-  D=_dbg
-else
-  # by default assume release mode
-  MODE=release
-  CFLAGS=$(CFLAGS_RELEASE)
-  D=
-endif
-
 # use statically built omnetpp if we are building the IDE native helper library
 ifeq ($(BUILDING_UILIBS),yes)
   SHARED_LIBS=no
@@ -78,7 +83,7 @@ endif
 # makemake-generated makefiles create object files and other
 # build artifacts.
 #
-CONFIGNAME ?= $(TOOLCHAIN_NAME)-$(MODE)
+CONFIGNAME = $(TOOLCHAIN_NAME)-$(MODE)
 
 #
 # Control verbosity. Specifiying V=1 will make the build output verbose. You can use:
@@ -109,15 +114,16 @@ CC = @CC@
 CXX = @CXX@
 TOOLCHAIN_NAME = @TOOLCHAIN_NAME@
 DEFINES =@DEFINES@
-CFLAGS_DEBUG =@CFLAGS_DEBUG@
-CFLAGS_RELEASE =@CFLAGS_RELEASE@
-CFLAGS +=@CFLAGS@
+SANITIZE_FLAGS = @SANITIZE_FLAGS@
+CFLAGS_DEBUG = @CFLAGS_DEBUG@
+CFLAGS_RELEASE = @CFLAGS_RELEASE@
+CFLAGS += $(CFLAGS_EXTRA) @CFLAGS@
 CXXFLAGS = @CXXFLAGS@
 LDFLAG_LIBPATH = @LDFLAG_LIBPATH@
 LDFLAG_INCLUDE = @LDFLAG_INCLUDE@
 LDFLAG_LIB = @LDFLAG_LIB@
 LDFLAG_IMPLIB = @LDFLAG_IMPLIB@
-LDFLAGS = @LDFLAGS@
+LDFLAGS += $(LDFLAGS_EXTRA) @LDFLAGS@
 WHOLE_ARCHIVE_ON = @WHOLE_ARCHIVE_ON@
 WHOLE_ARCHIVE_OFF = @WHOLE_ARCHIVE_OFF@
 AS_NEEDED_ON = @AS_NEEDED_ON@

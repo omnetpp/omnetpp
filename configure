@@ -649,6 +649,7 @@ LDFLAG_LIBPATH
 DEFINES
 CFLAGS_RELEASE
 CFLAGS_DEBUG
+SANITIZE_FLAGS
 OMNETPP_EDITION
 OMNETPP_BUILDID
 OMNETPP_VERSION
@@ -2178,6 +2179,7 @@ LIB_PREFIX="lib"
 # Set variables to defaults if not already set.
 # Note: ${VAR:-defaultvalue} used below appears to be a POSIX syntax.
 #----------------------
+SANITIZE_FLAGS=${SANITIZE_FLAGS:- -fsanitize=leak,address,undefined}
 CFLAGS_DEBUG=${CFLAGS_DEBUG:- -g -Wall}
 CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O3 -DNDEBUG=1}
 CFLAGS=${CFLAGS:-}
@@ -5996,6 +5998,7 @@ ac_config_files="$ac_config_files Makefile.inc src/qtenv/qtenv.pri"
 
 
 
+
 #
 # Generate files
 #
@@ -7270,11 +7273,11 @@ fi
 # Check for ccache
 #---------------------------
 
-if ccache -V >/dev/null 2>&1; then
+if ccache -V >/dev/null 2>/dev/null; then
   if which "$CXX" | grep ccache >/dev/null 2>/dev/null; then
     : # using ccache's compiler wrapper, OK
   elif echo "$CXX" | grep ccache >/dev/null 2>/dev/null; then
-    : # compiler command prefixd with ccache, OK
+    : # compiler command prefixed with ccache, OK
   else
     cat << EOT
 
