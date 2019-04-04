@@ -11,10 +11,6 @@ include $(CONFIGFILE)
 O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/utils
 L=$(OMNETPP_LIB_DIR)
 
-INCL_FLAGS= -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)"
-
-COPTS=$(CFLAGS) $(INCL_FLAGS)
-
 .PHONY : all clean
 #
 # Rules

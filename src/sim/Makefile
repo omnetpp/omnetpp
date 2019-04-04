@@ -88,6 +88,15 @@ endif
 # macro is used in $(EXPORT_DEFINES) with clang-msabi when building a shared lib
 EXPORT_MACRO = -DSIM_EXPORT
 
+# we want to recompile everything if COPTS changes,
+# so we store COPTS into $COPTS_FILE (if COPTS has changed since last build)
+# and make the object files depend on it
+COPTS_FILE = $O/.last-copts
+ifneq ("$(COPTS)","$(shell cat $(COPTS_FILE) 2>/dev/null || echo '')")
+  $(shell $(MKPATH) "$O")
+  $(file >$(COPTS_FILE),$(COPTS))
+endif
+
 .PHONY: all clean
 .SECONDARY: $(OBJS) $O/$(LIBNAME)$(LIB_SUFFIX) $(GENERATED_SOURCES)
 
@@ -96,7 +105,7 @@ EXPORT_MACRO = -DSIM_EXPORT
 #
 .SUFFIXES : .cc
 
-$O/%.o: %.cc $(GENERATED_SOURCES) $(CONFIGFILE)
+$O/%.o: %.cc $(GENERATED_SOURCES) $(CONFIGFILE) $(COPTS_FILE)
 	@mkdir -p $O $O/netbuilder $O/parsim
 	$(qecho) "$<"
 	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) $(EXPORT_DEFINES) $(IMPORT_DEFINES) -o $@ $<

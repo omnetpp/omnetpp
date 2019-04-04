@@ -63,6 +63,15 @@ GENERATED_SOURCES= eventlogwriter.cc eventlogwriter.h
 # macro is used in $(EXPORT_DEFINES) with clang-msabi when building a shared lib
 EXPORT_MACRO = -DENVIR_EXPORT
 
+# we want to recompile everything if COPTS changes,
+# so we store COPTS into $COPTS_FILE (if COPTS has changed since last build)
+# and make the object files depend on it
+COPTS_FILE = $O/.last-copts
+ifneq ("$(COPTS)","$(shell cat $(COPTS_FILE) 2>/dev/null || echo '')")
+  $(shell $(MKPATH) "$O")
+  $(file >$(COPTS_FILE),$(COPTS))
+endif
+
 .PHONY: all clean opp_run_executable
 .SECONDARY: $(OBJS) $O/$(LIBNAME)$(LIB_SUFFIX) $(GENERATED_SOURCES)
 
@@ -71,7 +80,7 @@ EXPORT_MACRO = -DENVIR_EXPORT
 #
 .SUFFIXES : .cc
 
-$O/%.o: %.cc $(GENERATED_SOURCES) $(CONFIGFILE)
+$O/%.o: %.cc $(GENERATED_SOURCES) $(CONFIGFILE) $(COPTS_FILE)
 	@mkdir -p $O
 	$(qecho) "$<"
 	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) $(EXPORT_DEFINES) $(IMPORT_DEFINES) -o $@ $<

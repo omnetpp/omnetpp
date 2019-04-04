@@ -25,13 +25,13 @@ endif
 O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/qtenv
 
 # disable warnings for cleaner output on MinGW/clang
-CFLAGS += -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)" $(QT_CFLAGS) -Wno-ignored-attributes -Wno-inconsistent-missing-override
+COPTS = $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)" $(QT_CFLAGS) -Wno-ignored-attributes -Wno-inconsistent-missing-override
 DEFINES += -DUNICODE -DQT_NO_EMIT -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 IMPLIBS = -loppsim$D -loppenvir$D -lopplayout$D -loppcommon$D $(QT_LIBS)
 
 # Required only on Mac OS X
 ifeq ("$(PLATFORM)", "macosx")
-  CFLAGS += -Wno-deprecated-declarations
+  COPTS += -Wno-deprecated-declarations
   LDFLAGS += -framework ApplicationServices
 endif
 
@@ -60,6 +60,15 @@ OBJS=$(SOURCES:%.cc=$O/%.o) $(MOC_OUT:%.cpp=$O/%.o) $(RESOURCES_OUT:%.cpp=$O/%.o
 # macro is used in $(EXPORT_DEFINES) with clang-msabi when building a shared lib
 EXPORT_MACRO = -DQTENV_EXPORT
 
+# we want to recompile everything if COPTS changes,
+# so we store COPTS into $COPTS_FILE (if COPTS has changed since last build)
+# and make the object files depend on it
+COPTS_FILE = $O/.last-copts
+ifneq ("$(COPTS)","$(shell cat $(COPTS_FILE) 2>/dev/null || echo '')")
+  $(shell $(MKPATH) "$O")
+  $(file >$(COPTS_FILE),$(COPTS))
+endif
+
 .PHONY: all clean qtenv-osg
 .SECONDARY: $(OBJS) $O/$(LIBNAME)$(LIB_SUFFIX) $(GENERATED_SOURCES)
 
@@ -68,15 +77,15 @@ EXPORT_MACRO = -DQTENV_EXPORT
 #
 .SUFFIXES : .cc .cpp .ui .qrc .h
 
-$O/%.o: %.cc $(CONFIGFILE) $(GENERATED_SOURCES)
+$O/%.o: %.cc $(CONFIGFILE) $(GENERATED_SOURCES) $(COPTS_FILE)
 	@mkdir -p $O
 	$(qecho) "$<"
-	$(Q)$(CXX) -c $(CXXFLAGS) $(CFLAGS) $(EXPORT_DEFINES) $(IMPORT_DEFINES) -o $@ $<
+	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) $(EXPORT_DEFINES) $(IMPORT_DEFINES) -o $@ $<
 
 $O/%.o: %.cpp $(CONFIGFILE) $(GENERATED_SOURCES)
 	@mkdir -p $O
 	$(qecho) "$<"
-	$(Q)$(CXX) -c $(CXXFLAGS) $(CFLAGS) $(EXPORT_DEFINES) $(IMPORT_DEFINES) -o $@ $<
+	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) $(EXPORT_DEFINES) $(IMPORT_DEFINES) -o $@ $<
 
 qrc_%.cpp: %.qrc
 	$(Q)$(RCC) -name $(basename $<) -o $@ $<
