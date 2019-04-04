@@ -26,7 +26,11 @@ PREFER_SQLITE_RESULT_FILES = @PREFER_SQLITE_RESULT_FILES@
 SHARED_LIBS = @SHARED_LIBS@
 
 #
-# Configure MODE specific flags/suffixes
+# Configure MODE specific flags/suffixes. You can add new modes at will.
+# Do not forget to run ./configure after editing this file.
+#
+# Each mode will have a different subdirectory in the output folder (out/).
+# $D is a suffix which will be appended to the names of the binaries.
 #
 MODE = release
 ifeq ($(MODE),release)
@@ -264,3 +268,119 @@ else
   KERNEL_LIBS += -loppnedxml$D -loppcommon$D $(XML_LIBS)
 endif
 
+#
+# Messages for the HELP target
+#
+
+define HELP_SYNOPSYS
+
+SYNOPSYS
+    make [TARGET] [VARIABLE1=value1 ...] [make-options]
+endef
+export HELP_SYNOPSYS
+
+define HELP_TARGETS
+
+TARGETS
+    all       Build the simulation. (This is the default target.)
+              If the MODE variable is not specified, both release and debug mode
+              binaries will be created.
+    clean     Clean build artifacts belonging to the selected mode
+              (MODE=<modename>, or 'release' by default).
+    cleanall  Clean build artifacts for all modes.
+endef
+export HELP_TARGETS
+
+define HELP_OPP_TARGETS
+    all       Build the simulator and the samples. (This is the default target.)
+              If the MODE variable is not specified, both release and debug mode
+              binaries will be created.
+    clean     Clean build artifacts belonging to the selected mode
+              (MODE=<modename>, or 'release' by default).
+    cleanall  Clean build artifacts for all modes.
+    apis      Build the API documentation.
+    doc       Build the User Guide and the Manual.
+    tests     Build and run the automated tests.
+    samples   Build only the samples.
+endef
+export HELP_OPP_TARGETS
+
+define HELP_VARIABLES
+
+VARIABLES
+    MODE      'release', 'debug', 'sanitize' or any other user defined string.
+              Modes specify what compiler and linker flags are used during the
+              build. User defined modes must be added in the 'Makefile.inc.in' file.
+              (Look for the 'Configure MODE specific flags/suffixes' section.)
+              After adding a new mode, run './configure' again to re-create
+              the Makefile.inc file. The output will be available in the
+              'out/$${TOOLCHAIN}-$${MODE}' folder.
+
+              Predefined modes are:
+              - release: Generate optimized code without debugging info.
+              - debug: Generate code for debugging.
+              - sanitize: Generate code which is instrumented with various
+                sanitizers. The list of available sanitizers depend on the
+                compiler. For example, Clang provides AddressSanitizer,
+                MemorySanitizer, etc.
+                Default options: $(SANITIZE_FLAGS)
+
+    V         Use V=1 to echo all build commands on the console. This is useful
+              for debugging the build process.
+
+    CFLAGS_RELEASE, CFLAGS_DEBUG, SANITIZE_FLAGS
+              Various flags used by default in 'release', 'debug' or 'sanitize'
+              mode. Specifying these on the command line will override the
+              default values for the given mode.
+
+    CFLAGS_EXTRA, LDFLAGS_EXTRA
+              Allows adding compiler and linker flags to the default command line
+              options.
+
+    CFLAGS, LDFLAGS
+              Allows overriding the compiler and linker flags.
+
+    CXXFLAGS  Compiler flags that should be passed to the C++ compiler
+              only (e.g. -std=c++11).
+endef
+export HELP_VARIABLES
+
+define HELP_OPP_VARIABLES
+
+    SHARED_LIBS
+              Use 'no' to build static libraries.
+
+    WITH_QTENV, WITH_OSG, WITH_OSGEARTH, WITH_NETBUILDER, WITH_PARSIM, WITH_SYSTEMC
+              Turn off features by specifying 'no' for these variables.
+
+    PREFER_SQLITE_RESULT_FILES
+              Specify 'yes' to write result files in SQLite database file
+              format by default.
+endef
+export HELP_OPP_VARIABLES
+
+define HELP_EXAMPLES
+
+EXAMPLES
+    $$ make MODE=debug
+    Build in debug mode.
+
+    $$ make MODE=release V=1
+    Build in release mode, show compiler and linker command lines.
+
+    $$ make SHARED_LIBS=no
+    Build static instead of dynamic libraries.
+
+    $$ make MODE=release CFLAGS_RELEASE='-O0 -DNDEBUG=1'
+    Build in release mode, but do not optimize.
+
+    $$ make MODE=sanitize CFLAGS_EXTRA=-fsanitize-trap=undefined
+    Build with the default sanitizers, and in addition, generate
+    traps where the code relies on undefined C/C++ language behavior.
+
+    $$ make MODE=sanitize SANITIZE_FLAGS=-fsanitize=memory
+    Instrument the code with the memory sanitizer only instead of the
+    default sanitizers.
+
+endef
+export HELP_EXAMPLES

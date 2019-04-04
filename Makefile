@@ -1,11 +1,8 @@
 #
 # Toplevel makefile for OMNeT++ libraries and programs
 #
-# Use MODE=release or MODE=debug on the command line to build only
-# release or debug mode binaries.
-# Use V=1 to print all commands executed by the makefile.
-#
-#=====================================================================
+#===============================================================================
+
 
 #=====================================================================
 #
@@ -24,9 +21,19 @@ ifneq ($(V),1)
 MAKE += -s
 endif
 
+help:
+	@echo "$$HELP_SYNOPSYS"
+	@echo "$$HELP_OPP_TARGETS"
+	@echo "$$HELP_VARIABLES"
+	@echo "$$HELP_OPP_VARIABLES"
+	@echo "$$HELP_EXAMPLES"
+
 allmodes:
-	$(MAKE) MODE=release
-	$(MAKE) MODE=debug
+	@echo
+	@echo "Building release and debug mode executables. Type 'make help' for further options."
+	@echo
+	$(Q)$(MAKE) MODE=release
+	$(Q)$(MAKE) MODE=debug
 	@echo
 	@echo "Now you can type \"`echo $(OMNETPP_RELEASE) | sed 's/-.*//'`\" to start the IDE"
 
@@ -78,7 +85,7 @@ endif
 
 .PHONY: check-env cleanall cleanall-samples makefiles clean apis doc tests all allmodes \
         components base ui uilibs samples common layout eventlog scave nedxml sim \
-        envir cmdenv qtenv utils systemc
+        envir cmdenv qtenv utils systemc help
 #
 # Group targets.
 #
@@ -155,7 +162,7 @@ tests: base
 #=====================================================================
 
 check-env:
-	@echo "***** Configuration: MODE=$(MODE), TOOLCHAIN_NAME=$(TOOLCHAIN_NAME), LIB_SUFFIX=$(LIB_SUFFIX) ****"
+	@echo "***** Configuration: MODE=$(MODE), TOOLCHAIN_NAME=$(TOOLCHAIN_NAME), SHARED_LIBS=$(SHARED_LIBS), LIB_SUFFIX=$(LIB_SUFFIX) ****"
 	@echo ===== Checking environment =====
 	@mkdir -p $(OMNETPP_BIN_DIR)
 	@probefile=__probe__; \

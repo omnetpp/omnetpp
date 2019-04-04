@@ -198,5 +198,11 @@ cleanall:
 	$(Q)$(MAKE) -s clean MODE=debug
 	$(Q)-rm -rf $(PROJECT_OUTPUT_DIR)
 
+help:
+	@echo "$$HELP_SYNOPSYS"
+	@echo "$$HELP_TARGETS"
+	@echo "$$HELP_VARIABLES"
+	@echo "$$HELP_EXAMPLES"
+
 # include all dependencies
 -include $(OBJS:%=%.d) $(MSGFILES:%.msg=$O/%_m.h.d)
