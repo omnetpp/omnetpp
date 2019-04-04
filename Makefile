@@ -76,7 +76,7 @@ systemc: sim
 endif
 endif
 
-.PHONY: check-env cleanall cleanall-samples makefiles clean apis docu tests all allmodes \
+.PHONY: check-env cleanall cleanall-samples makefiles clean apis doc tests all allmodes \
         components base ui uilibs samples common layout eventlog scave nedxml sim \
         envir cmdenv qtenv utils systemc
 #
@@ -137,7 +137,7 @@ apis:
 	@echo ===== Building $@ ====
 	$(Q)cd $(OMNETPP_DOC_DIR)/src && $(MAKE) apis
 
-docu:
+doc:
 	@echo ===== Building $@ ====
 	$(Q)cd $(OMNETPP_DOC_DIR)/src && $(MAKE)
 
@@ -223,7 +223,7 @@ makefiles:
 
 # copy the documentation to the UI doc folder too.
 # patch some files to have correct URLs and add generic eclipse stylesheet when needed
-copy-ui-docu:
+copy-ui-doc:
 	$(Q)rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/api
 	$(Q)rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/manual
 	$(Q)rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/userguide

@@ -138,7 +138,7 @@ export PATH=$OMNETPP_ROOT/bin:$PATH
 if [ "$BUILD_DOC" = "yes" ]; then
   echo Generating documentation
   (cd doc/src && make clean)
-  make docu || { echo --- error generating documentation ---; exit 1;}
+  make doc || { echo --- error generating documentation ---; exit 1;}
 fi
 
 if [ "$BUILD_IDE_NATIVE" = "yes" ]; then
@@ -153,7 +153,7 @@ fi
 if [ "$BUILD_IDE" = "yes" ]; then
   if [ "$BUILD_DOC" = "yes" ]; then
     echo --- Copying documatation to the IDE doc plugin
-    make copy-ui-docu || { echo --- error copyig documentation ---; exit 1;}
+    make copy-ui-doc || { echo --- error copyig documentation ---; exit 1;}
   fi
   echo --- Building java parts of the IDE
   $OMNETPP_ROOT/releng/ide/java/build-ide-java || { echo --- error during building the IDE component ---; exit 1;}
