@@ -31,6 +31,9 @@ cResultFilter::cResultFilter()
 
 void cResultFilter::addDelegate(cResultListener *delegate)
 {
+    if (hasDelegate(delegate))
+        throw cRuntimeError("%s: delegate already added", getClassName());
+
     // reallocate each time
     Assert(delegates != nullptr);
     int n = getNumDelegates();
@@ -42,6 +45,14 @@ void cResultFilter::addDelegate(cResultListener *delegate)
     delegates = v;
     delegate->subscribeCount++;
     delegate->subscribedTo(this);
+}
+
+bool cResultFilter::hasDelegate(cResultListener *delegate)
+{
+    for (int i = 0; delegates[i]; i++)
+        if (delegates[i] == delegate)
+            return true;
+    return false;
 }
 
 int cResultFilter::getNumDelegates() const

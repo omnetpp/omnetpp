@@ -90,6 +90,7 @@ class SIM_API cResultFilter : public cResultListener
         virtual void init(cComponent *component, cProperty *attrsProperty) {}
         virtual double getInitialDoubleValue() const {return NAN;}
         virtual void addDelegate(cResultListener *delegate);
+        virtual bool hasDelegate(cResultListener *delegate);
         virtual int getNumDelegates() const;
         cResultListener *getDelegate(int k) const {return delegates[k];}  // unsafe
         std::vector<cResultListener*> getDelegates() const;
