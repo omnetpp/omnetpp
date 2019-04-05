@@ -671,7 +671,7 @@ void cComponent::subscribe(simsignal_t signalID, cIListener *listener)
     SignalListenerList *listenerList = findOrCreateListenerList(signalID);
     checkNotFiring(signalID, listenerList->listeners);
     if (!listenerList->addListener(listener))
-        throw cRuntimeError(this, "subscribe(): Listener already subscribed, signalID=%d (%s)", signalID, getSignalName(signalID));
+        throw cRuntimeError(this, "subscribe(): Listener already subscribed at this component to signal '%s' (id=%d)", getSignalName(signalID), signalID);
     signalListenerCounts[signalID]++;
     listener->subscribeCount++;
     listener->subscribedTo(this, signalID);
