@@ -883,9 +883,10 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     virtual void emit(simsignal_t signalID, const SimTime& t, cObject *details = nullptr);
 
     /**
-     * Emits the given string as a signal. If the given signal has listeners in this
-     * component or in ancestor components, their appropriate receiveSignal() methods
-     * are called. If there are no listeners, the runtime cost is usually minimal.
+     * Emits the given string as a signal. Emitting nullptr is not allowed.
+     * If the given signal has listeners in this component or in ancestor components,
+     * their appropriate receiveSignal() methods are called. If there are no listeners,
+     * the runtime cost is usually minimal.
      */
     virtual void emit(simsignal_t signalID, const char *s, cObject *details = nullptr);
 

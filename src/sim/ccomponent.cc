@@ -606,6 +606,8 @@ void cComponent::emit(simsignal_t signalID, const SimTime& t, cObject *details)
 
 void cComponent::emit(simsignal_t signalID, const char *s, cObject *details)
 {
+    if (s == nullptr)
+        throw cRuntimeError(this, "emit(): Emitting nullptr as string (const char *) signal value is not allowed, signalID=%d", signalID);
     if (checkSignals)
         getComponentType()->checkSignal(signalID, SIMSIGNAL_STRING);
     if (mayHaveListeners(signalID))
