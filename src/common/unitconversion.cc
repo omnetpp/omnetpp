@@ -130,29 +130,77 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {  // note: imperial unit
 #undef _
 };
 
+UnitConversion::UnitDesc *UnitConversion::hashTable[HTSIZE];
+int UnitConversion::numCollisions = 0;
+
 inline bool equal(const char *a, const char *b) {return strcmp(a,b)==0;}
+
+bool UnitConversion::matches(UnitDesc *desc, const char *unit)
+{
+    // short name
+    if (equal(desc->unit, unit))
+        return true;
+    // if unit is at least 3 chars, look up by long name, case insensitive ("herz", "milliwatt")
+    if (unit[1] && unit[2] && strcasecmp(desc->longName, unit) == 0)
+        return true;
+    return false;
+}
+
+inline char lc(char c) {return c | 0x20;} // assuming ASCII letters
+
+inline int UnitConversion::UnitConversion::hashCode(const char *unit)
+{
+    int result = lc(unit[0]);
+    if (!unit[1]) return result;
+    result = result*65 + lc(unit[1]);
+    if (!unit[2]) return result;
+    result = result*65 + lc(unit[2]);
+    for (const char *s = unit+3; *s; s++)
+        result = result*65 + lc(*s);
+    return result;
+}
 
 UnitConversion::UnitDesc *UnitConversion::lookupUnit(const char *unit)
 {
-    // short name ("Hz", "mW")
-    for (int i = 0; unitTable[i].unit; i++)
-        if (equal(unitTable[i].unit, unit))
-            return unitTable+i;
+    // fill hash table on first call
+    static struct Init { Init() {fillHashtable();} } dummy;
 
-    // long name, case insensitive ("herz", "milliwatt")
-    for (int i = 0; unitTable[i].unit; i++)
-        if (!strcasecmp(unitTable[i].longName, unit))
-            return unitTable+i;
+    if (!*unit)
+        return nullptr; // empty string is not a unit
 
-    // long name in plural, case insensitive ("milliwatts")
-    if (unit[strlen(unit)-1] == 's') {
-        std::string tmp = std::string(unit, strlen(unit)-1);
-        for (int i = 0; unitTable[i].unit; i++)
-            if (!strcasecmp(unitTable[i].longName, tmp.c_str()))
-                return unitTable+i;
+    // hash table lookup
+    int hash = hashCode(unit);
+    for (int pos = hash & (HTSIZE-1); hashTable[pos]; pos = (pos+1) & (HTSIZE-1))
+        if (matches(hashTable[pos], unit))
+            return hashTable[pos];
 
-    }
+    // not found, maybe it's a plural form of long name, retry by slicing off the trailing "s"
+    int len = strlen(unit);
+    if (len >= 4 && unit[len-1] == 's')
+        return lookupUnit(std::string(unit, len-1).c_str());
+
     return nullptr;
+}
+
+void UnitConversion::insert(const char *key, UnitDesc *desc)
+{
+    int localCollisions = 0;
+    int hash = hashCode(key);
+    int pos;
+    for (pos = hash & (HTSIZE-1); hashTable[pos]; pos = (pos+1) & (HTSIZE-1))
+        localCollisions++;
+    hashTable[pos] = desc;
+    numCollisions += localCollisions;
+    Assert(localCollisions <= 2); // usually 0, rarely 1 collision observed at the time of writing
+}
+
+void UnitConversion::fillHashtable()
+{
+    for (UnitDesc *p = unitTable; p->unit; p++) {
+        insert(p->unit, p);
+        insert(p->longName, p);
+    }
+    Assert(numCollisions <= 25); // 21 collisions observed at the time of writing
 }
 
 bool UnitConversion::readNumber(const char *& s, double& number)
@@ -164,6 +212,7 @@ bool UnitConversion::readNumber(const char *& s, double& number)
 
     char *endp;
     setlocale(LC_NUMERIC, "C");
+
     errno = 0;
     number = strtod(s, &endp);
     if (s == endp)

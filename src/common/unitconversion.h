@@ -35,7 +35,16 @@ class COMMON_API UnitConversion
     struct UnitDesc { const char *unit; double mult; Mapping mapping; const char *baseUnit; const char *longName; };
     static UnitDesc unitTable[];
 
+    static const int HTSIZE = 2048; // must be power of 2
+    static UnitDesc *hashTable[HTSIZE];
+    static int numCollisions;
+
   protected:
+    static int hashCode(const char *unit);
+    static bool matches(UnitDesc *desc, const char *unit);
+    static void insert(const char *key, UnitDesc *desc);
+    static void fillHashtable();
+
     static UnitDesc *lookupUnit(const char *unit);
     static bool readNumber(const char *&s, double& number);
     static bool readUnit(const char *&s, std::string& unit);
