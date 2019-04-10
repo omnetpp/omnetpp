@@ -216,8 +216,8 @@ void cDefaultHistogramStrategy::collectWeighted(double value, double weight)
         hist->collectIntoHistogram(value, weight);
     }
 
-    ASSERT(hist->getUnderflowSumWeights() == 0);
-    ASSERT(hist->getOverflowSumWeights() == 0);
+    ASSERT(hist->getUnderflowSumWeights() - hist->getNegInfSumWeights() == 0);
+    ASSERT(hist->getOverflowSumWeights() - hist->getPosInfSumWeights() == 0);
 }
 
 static double roundToPowerOfTen(double x)
@@ -341,7 +341,7 @@ void cDefaultHistogramStrategy::createBins()
 
     ASSERT(hist->getBinEdges().front() <= finiteMinValue);
     ASSERT(hist->getBinEdges().back() > finiteMaxValue);
-    ASSERT(hist->getNumBins() >  0);
+    ASSERT(hist->getNumBins() > 0);
 }
 
 void cDefaultHistogramStrategy::extendBinsTo(double value)
