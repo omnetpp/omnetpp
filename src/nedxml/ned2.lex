@@ -127,6 +127,7 @@ using namespace omnetpp::nedxml;
 "false"                  { countChars(); return FALSE_; }
 "nan"                    { countChars(); return NAN_; }
 "inf"                    { countChars(); return INF_; }
+"undefined"              { countChars(); return UNDEFINED_; }
 "this"                   { countChars(); return THIS_; }
 "default"                { countChars(); return DEFAULT; }
 "ask"                    { countChars(); return ASK; }
@@ -227,6 +228,8 @@ using namespace omnetpp::nedxml;
 "!="                     { countChars(); return NE; }
 "<="                     { countChars(); return LE; }
 ">="                     { countChars(); return GE; }
+"<=>"                    { countChars(); return SPACESHIP; }
+"=~"                     { countChars(); return MATCH; }
 
 "\\xEF\\xBB\\xBF"           { /* UTF-8 BOM mark, ignore */ }
 {S}                      { countChars(); }

@@ -28,13 +28,13 @@
 %token INPUT_ OUTPUT_ INOUT_
 %token IF FOR
 %token RIGHTARROW LEFTARROW DBLARROW TO
-%token TRUE_ FALSE_ NAN_ INF_
 %token THIS_ DEFAULT ASK CONST_ SIZEOF INDEX_ EXISTS TYPENAME XMLDOC
+%token TRUE_ FALSE_ NAN_ INF_ UNDEFINED_
 
 /* Other tokens: identifiers, numeric literals, operators etc */
 %token NAME PROPNAME INTCONSTANT REALCONSTANT STRINGCONSTANT CHARCONSTANT
 %token PLUSPLUS DOUBLEASTERISK
-%token EQ NE GE LE
+%token EQ NE GE LE SPACESHIP
 %token AND OR XOR
 %token SHIFT_LEFT SHIFT_RIGHT
 
@@ -50,6 +50,8 @@
 %left AND
 %left EQ NE
 %left '<' '>' LE GE
+%left SPACESHIP
+%left MATCH
 %left '|'
 %left '#'
 %left '&'
@@ -57,7 +59,7 @@
 %left '+' '-'
 %left '*' '/' '%'
 %right '^'
-%left UMIN '!' '~'
+%right UMIN_ NEG_ NOT_
 
 %start startsymbol
 
@@ -1526,7 +1528,7 @@ expr
         | expr '^' expr
                 { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "^", $1, $3); }
         | '-' expr
-                %prec UMIN
+                %prec UMIN_
                 {
                   if (np->getParseExpressionsFlag()) {
                       if ($2->getTagCode() == NED_LITERAL)
@@ -1548,6 +1550,10 @@ expr
                 { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "<", $1, $3); }
         | expr LE expr
                 { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "<=", $1, $3); }
+        | expr SPACESHIP expr
+                { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "<=>", $1, $3); }
+        | expr MATCH expr
+                { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "=~", $1, $3); }
 
         | expr AND expr
                 { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "&&", $1, $3); }
@@ -1557,7 +1563,7 @@ expr
                 { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "##", $1, $3); }
 
         | '!' expr
-                %prec UMIN
+                %prec NOT_
                 { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "!", $2); }
 
         | expr '&' expr
@@ -1568,7 +1574,7 @@ expr
                 { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "#", $1, $3); }
 
         | '~' expr
-                %prec UMIN
+                %prec NEG_
                 { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "~", $2); }
         | expr SHIFT_LEFT expr
                 { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "<<", $1, $3); }
@@ -1665,6 +1671,8 @@ numliteral
                 { if (np->getParseExpressionsFlag()) $$ = createLiteral(np, LIT_INT, @1, @1); }
         | realconstant_ext
                 { if (np->getParseExpressionsFlag()) $$ = createLiteral(np, LIT_DOUBLE, @1, @1); }
+        | UNDEFINED_
+                { if (np->getParseExpressionsFlag()) $$ = createLiteral(np, LIT_DOUBLE, @1, @1); }  /*TODO*/
         | quantity
                 { if (np->getParseExpressionsFlag()) $$ = createQuantityLiteral(np, @1); }
         ;

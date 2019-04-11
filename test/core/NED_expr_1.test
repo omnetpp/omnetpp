@@ -81,6 +81,22 @@ simple Test
         bool le3 = 8<=8;
         bool le4 = 8.0<=8;
 
+        // comparison ("spaceship" operator, yields, -1, 0, 1 or nan)
+        double cmp1 = 8<=>3;
+        double cmp2 = 3<=>8;
+        double cmp3 = 8<=>8;
+        double cmp4 = 8.0<=>8;
+        double cmp5 = inf<=>inf;
+        double cmp6 = nan<=>8;
+
+        // match (case-sensitive, full-string, dotted-path)
+        bool match1 = "foobar" =~ "foo";
+        bool match2 = "foobar" =~ "foo*";
+        bool match3 = "foobar" =~ "*xxx*";
+        bool match4 = "foobar" =~ "F*O*";
+        bool match5 = "foo.bar" =~ "f*b*";
+        bool match6 = "foo.bar" =~ "f**b*";
+
         // logical negation
         bool not1 = !true;
         bool not2 = !false;
@@ -227,6 +243,18 @@ le1=0
 le2=1
 le3=1
 le4=1
+cmp1=1
+cmp2=-1
+cmp3=0
+cmp4=0
+cmp5=0
+cmp6=nan
+match1=0
+match2=1
+match3=0
+match4=0
+match5=0
+match6=1
 not1=0
 not2=1
 and1=1
