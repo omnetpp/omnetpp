@@ -145,14 +145,14 @@ using namespace omnetpp::nedxml;
 }
 
 <propertyvalue>{
-    [({[]                { countChars(); ++parenDepth; return P(CHAR); }
-    [)}\]]               { countChars(); if (--parenDepth==0) {BEGIN(INITIAL); return P(yytext[0]);} else return P(CHAR); }
-    "="                  { countChars(); return P(parenDepth==1 ? '=' : CHAR); }
-    ","                  { countChars(); return P(parenDepth==1 ? ',' : CHAR); }
-    ";"                  { countChars(); return P(parenDepth==1 ? ';' : CHAR); }
+    [({[]                { countChars(); ++parenDepth; return P(COMMONCHAR); }
+    [)}\]]               { countChars(); if (--parenDepth==0) {BEGIN(INITIAL); return P(yytext[0]);} else return P(COMMONCHAR); }
+    "="                  { countChars(); return P(parenDepth==1 ? '=' : COMMONCHAR); }
+    ","                  { countChars(); return P(parenDepth==1 ? ',' : COMMONCHAR); }
+    ";"                  { countChars(); return P(parenDepth==1 ? ';' : COMMONCHAR); }
     \"                   { countChars(); BEGIN(stringliteral); }
-    "\n"                 { countChars(); return P(CHAR); }
-    .                    { countChars(); return P(CHAR); }
+    "\n"                 { countChars(); return P(COMMONCHAR); }
+    .                    { countChars(); return P(COMMONCHAR); }
 }
 
 "{{"                     { countChars(); BEGIN(cplusplusbody); }
@@ -297,7 +297,7 @@ void extendCount()
 
 int debugPrint(int c)
 {
-    if (c==CHAR) fprintf(stderr, " ret=CHAR\n");
+    if (c==COMMONCHAR) fprintf(stderr, " ret=COMMONCHAR\n");
     else if (c==STRINGCONSTANT) fprintf(stderr, " ret=STRINGCONSTANT\n");
     else if (c>0 && c<=255) fprintf(stderr, " ret='%c'\n", c);
     else fprintf(stderr, " ret=%d\n", c);

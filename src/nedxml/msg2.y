@@ -35,7 +35,7 @@
 %token BIN_AND BIN_OR BIN_XOR BIN_COMPL
 %token SHIFT_LEFT SHIFT_RIGHT
 
-%token CHAR
+%token COMMONCHAR
 %token INVALID_CHAR   /* just to generate parse error */
 
 /* Operator precedences (low to high) and associativity */
@@ -686,9 +686,9 @@ property_value
         ;
 
 property_literal
-        : property_literal CHAR
+        : property_literal COMMONCHAR
         | property_literal STRINGCONSTANT
-        | CHAR
+        | COMMONCHAR
         | STRINGCONSTANT
         ;
 
