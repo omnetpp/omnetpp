@@ -35,8 +35,7 @@
 %token NAME PROPNAME INTCONSTANT REALCONSTANT STRINGCONSTANT CHARCONSTANT
 %token PLUSPLUS DOUBLEASTERISK
 %token EQ NE GE LE
-%token AND OR XOR NOT
-%token BIN_AND BIN_OR BIN_XOR BIN_COMPL
+%token AND OR XOR
 %token SHIFT_LEFT SHIFT_RIGHT
 
 %token EXPRESSION_SELECTOR   /* forces parsing text as a single expression */
@@ -51,14 +50,14 @@
 %left AND
 %left EQ NE
 %left '<' '>' LE GE
-%left BIN_OR
-%left BIN_XOR
-%left BIN_AND
+%left '|'
+%left '#'
+%left '&'
 %left SHIFT_LEFT SHIFT_RIGHT
 %left '+' '-'
 %left '*' '/' '%'
 %right '^'
-%left UMIN NOT BIN_COMPL
+%left UMIN '!' '~'
 
 %start startsymbol
 
@@ -1557,18 +1556,18 @@ expr
         | expr XOR expr
                 { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "##", $1, $3); }
 
-        | NOT expr
+        | '!' expr
                 %prec UMIN
                 { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "!", $2); }
 
-        | expr BIN_AND expr
+        | expr '&' expr
                 { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "&", $1, $3); }
-        | expr BIN_OR expr
+        | expr '|' expr
                 { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "|", $1, $3); }
-        | expr BIN_XOR expr
+        | expr '#' expr
                 { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "#", $1, $3); }
 
-        | BIN_COMPL expr
+        | '~' expr
                 %prec UMIN
                 { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "~", $2); }
         | expr SHIFT_LEFT expr

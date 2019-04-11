@@ -31,8 +31,7 @@
 %token BOOL_ CHAR_ SHORT_ INT_ LONG_ DOUBLE_ UNSIGNED_ CONST_ STRING_
 
 %token EQ NE GE LE
-%token AND OR XOR NOT
-%token BIN_AND BIN_OR BIN_XOR BIN_COMPL
+%token AND OR XOR
 %token SHIFT_LEFT SHIFT_RIGHT
 
 %token COMMONCHAR
@@ -42,12 +41,12 @@
 %left '?' ':'
 %left AND OR XOR
 %left EQ NE '>' GE '<' LE
-%left BIN_AND BIN_OR BIN_XOR
+%left '&' '|' '#'
 %left SHIFT_LEFT SHIFT_RIGHT
 %left '+' '-'
 %left '*' '/' '%'
 %right '^'
-%left UMIN NOT BIN_COMPL
+%left UMIN '!' '~'
 
 %start msgfile
 
@@ -574,8 +573,8 @@ fieldvalueitem
         | NAME
         | DOUBLECOLON
         | '?' | ':' | AND | OR | XOR | EQ | NE | '>' | GE | '<' | LE
-        | BIN_AND | BIN_OR | BIN_XOR | SHIFT_LEFT | SHIFT_RIGHT
-        | '+' | '-' | '*' | '/' | '%' | '^' | '&' | UMIN | NOT | BIN_COMPL
+        | '&' | '|' | '#' | SHIFT_LEFT | SHIFT_RIGHT
+        | '+' | '-' | '*' | '/' | '%' | '^' | UMIN | '!' | '~'
         | '.' | ',' | '(' | ')' | '[' | ']'
         ;
 

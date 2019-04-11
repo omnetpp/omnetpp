@@ -181,12 +181,12 @@ using namespace omnetpp::nedxml;
 "||"                     { countChars(); return OR; }
 "&&"                     { countChars(); return AND; }
 "##"                     { countChars(); return XOR; }
-"!"                      { countChars(); return NOT; }
+"!"                      { countChars(); return '!'; }
 
-"|"                      { countChars(); return BIN_OR; }
-"&"                      { countChars(); return BIN_AND; }
-"#"                      { countChars(); return BIN_XOR; }
-"~"                      { countChars(); return BIN_COMPL; }
+"|"                      { countChars(); return '|'; }
+"&"                      { countChars(); return '&'; }
+"#"                      { countChars(); return '#'; }
+"~"                      { countChars(); return '~'; }
 "<<"                     { countChars(); return SHIFT_LEFT; }
 ">>"                     { countChars(); return SHIFT_RIGHT; }
 
