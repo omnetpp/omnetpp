@@ -340,14 +340,6 @@ void cPar::finalize()
     // convert non-volatile expressions to constant
     if (p->isExpression() && !p->isVolatile())
         convertToConst();
-
-    // convert CONST subexpressions into constants
-    if (p->isExpression() && p->containsConstSubexpressions()) {
-        beforeChange();
-        copyIfShared();
-        p->evaluateConstSubexpressions(evalContext);  //XXX sharing?
-        afterChange();
-    }
 }
 
 void cPar::acceptDefault()

@@ -109,21 +109,6 @@ cNedValue cParImpl::evaluate(cExpression *expr, cComponent *contextComponent) co
     }
 }
 
-bool cParImpl::containsConstSubexpressions() const
-{
-    cExpression *expr = getExpression();
-    return expr == nullptr ? false : expr->containsConstSubexpressions();
-}
-
-void cParImpl::evaluateConstSubexpressions(cComponent *contextComponent)
-{
-    cExpression *expr = getExpression();
-    if (expr) {
-        cExpression::Context context(contextComponent);
-        expr->evaluateConstSubexpressions(&context);
-    }
-}
-
 int cParImpl::compare(const cParImpl *other) const
 {
     int res = strcmp(getName(), other->getName());

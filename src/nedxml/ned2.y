@@ -1510,8 +1510,6 @@ expr
         : simple_expr
         | '(' expr ')'
                 { $$ = $2; }
-        | CONST_ '(' expr ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction(np, "const", $3); }
 
         | expr '+' expr
                 { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "+", $1, $3); }

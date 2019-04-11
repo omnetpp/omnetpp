@@ -328,19 +328,6 @@ bool cDynamicExpression::isAConstant() const
     return true;
 }
 
-bool cDynamicExpression::containsConstSubexpressions() const
-{
-    for (int i = 0; i < size; i++)
-        if (elems[i].type == Elem::CONSTSUBEXPR)
-            return true;
-    return false;
-}
-
-void cDynamicExpression::evaluateConstSubexpressions(Context *context)
-{
-    throw cRuntimeError(this, "Const subexpressions not yet implemented");  // TODO implement
-}
-
 bool cDynamicExpression::boolValue(Context *context) const
 {
     cNedValue v = evaluate(context);

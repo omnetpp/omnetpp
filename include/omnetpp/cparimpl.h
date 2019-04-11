@@ -287,17 +287,6 @@ class SIM_API cParImpl : public cNamedObject
     virtual void convertToConst(cComponent *context) = 0;
 
     /**
-     * Returns true if this expression contains const subexpressions.
-     */
-    virtual bool containsConstSubexpressions() const;
-
-    /**
-     * Evaluates const subexpressions, and replaces them with their values.
-     * See cDynamicExpression::Elem::CONSTSUBEXPR.
-     */
-    virtual void evaluateConstSubexpressions(cComponent *context);
-
-    /**
      * Convert the value from string, and store the result.
      * If the text cannot be parsed, an exception is thrown, which
      * can be caught as std::runtime_error& if necessary.
