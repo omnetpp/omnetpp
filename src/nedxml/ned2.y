@@ -47,7 +47,8 @@
 %left OR
 %left XOR
 %left AND
-%left EQ NE '>' GE '<' LE
+%left EQ NE 
+%left '<' '>' LE GE
 %left BIN_OR
 %left BIN_XOR
 %left BIN_AND
