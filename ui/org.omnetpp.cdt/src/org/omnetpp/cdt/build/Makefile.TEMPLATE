@@ -70,13 +70,6 @@ endif
 
 include $(CONFIGFILE)
 
-### # Check that MODE is valid (not enabled, to allow implementing other MODEs)
-### ifneq ($(MODE),"debug")
-### ifneq ($(MODE),"release")
-### $(error MODE must be "debug" or "release")
-### endif
-### endif
-
 {~nolink:}{~staticlib:}# Simulation kernel and user interface libraries
 {exe:}OMNETPP_LIBS = $(OPPMAIN_LIB) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
 {sharedlib:}OMNETPP_LIBS = -loppenvir$D $(KERNEL_LIBS) $(SYS_LIBS)
@@ -99,9 +92,7 @@ endif
 
 #------------------------------------------------------------------------------
 # User-supplied makefile fragment(s)
-# >>>
 {makefrags:}{makefrags}
-# <<<
 #------------------------------------------------------------------------------
 
 # Main target
