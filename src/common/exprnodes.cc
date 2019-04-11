@@ -300,8 +300,9 @@ ExprValue ModNode::evaluate(Context *context) const
         ensureNoLogarithmicUnit(rightValue);
         ensureNoLogarithmicUnit(leftValue);
         if (!opp_isempty(rightValue.unit) || !opp_isempty(leftValue.unit))
-            errorDimlessArgsExpected(leftValue, rightValue);
-        return leftValue.intv % rightValue.intv;
+            bringToCommonTypeAndUnit(leftValue, rightValue);
+        leftValue.intv = leftValue.intv % rightValue.intv;
+        return leftValue;
     }
     else
         errorIntegerArgsExpected(leftValue, rightValue);

@@ -164,12 +164,12 @@ EV << ".\n";
 
 3 % -2 ==> 1
 3 % 2 ==> 1
-3m % 2m ==> operator "%": Dimensionless arguments expected, got 3m and 2m
-3m % 2km ==> operator "%": Dimensionless arguments expected, got 3m and 2km
-3km % 2m ==> operator "%": Dimensionless arguments expected, got 3km and 2m
-3 % 2m ==> operator "%": Dimensionless arguments expected, got 3 and 2m
-3m % 2 ==> operator "%": Dimensionless arguments expected, got 3m and 2
-3m % 2s ==> operator "%": Dimensionless arguments expected, got 3m and 2s
+3m % 2m ==> 1m
+3m % 2km ==> 3m
+3km % 2m ==> 0m
+3 % 2m ==> operator "%": Cannot convert unit none to 'm' (meter)
+3m % 2 ==> operator "%": Cannot convert unit 'm' (meter) to none
+3m % 2s ==> operator "%": Cannot convert unit 'm' (meter) to 's' (second)
 2 % 10dBm ==> operator "%": Refusing to perform computations involving quantities with nonlinear units (10dBm)
 10dBm % 2 ==> operator "%": Refusing to perform computations involving quantities with nonlinear units (10dBm)
 10dBm % 10dBm ==> operator "%": Refusing to perform computations involving quantities with nonlinear units (10dBm)
