@@ -37,6 +37,7 @@ class ENVIR_API Scenario
 {
   public:
     typedef omnetpp::common::Expression Expression;
+    typedef omnetpp::common::expression::ExprValue ExprValue;
 
     /**
      * Used during scenario resolution: an iteration variable in the
@@ -69,7 +70,7 @@ class ENVIR_API Scenario
     bool inc() { return incOuter(variables.size()); }
     bool incOuter(int n);
     bool evaluateConstraint();
-    Expression::Value getIterationVariableValue(const char *varname);
+    ExprValue getIterationVariableValue(const char *varname);
     int getIteratorPosition(const char *varid) const;
     std::vector<std::string> resolveNestingOrderSpec(const char *orderSpec);
 

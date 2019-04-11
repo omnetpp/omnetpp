@@ -23,37 +23,29 @@
 #include "common/stringutil.h"
 #include "common/commonutil.h"
 #include "common/stringtokenizer2.h"
+#include "common/exprnodes.h"
 #include "common/unitconversion.h"
 #include "omnetpp/cexception.h"
 #include "valueiterator.h"
 
 using namespace std;
 using namespace omnetpp::common;
+using namespace omnetpp::common::expression;
 
 namespace omnetpp {
 namespace envir {
 
-inline const char *getTypeName(char type)
+void ValueIterator::Expr::checkType(ExprValue::Type expected) const
 {
-    switch (type) {
-        case 'B': return "boolean";
-        case 'D': return "number";
-        case 'S': return "string";
-        default: return "<undefined>";
-    }
-}
-
-void ValueIterator::Expr::checkType(char expected) const
-{
-    if (value.type != expected) {
-        if (value.type)
+    if (value.getType() != expected) {
+        if (value.getType() != ExprValue::UNDEF)
             throw opp_runtime_error("%s expected, but %s (%s) found in the expression '%s'",
-                    getTypeName(expected), getTypeName(value.type),
-                    const_cast<Expression::Value *>(&value)->str().c_str(),
+                    ExprValue::getTypeName(expected), ExprValue::getTypeName(value.getType()),
+                    const_cast<ExprValue *>(&value)->str().c_str(),
                     raw.c_str());
         else
             throw opp_runtime_error("%s expected, but nothing found in the expression '%s'",
-                    getTypeName(expected), raw.c_str());
+                    ExprValue::getTypeName(expected), raw.c_str());
     }
 }
 
@@ -77,18 +69,6 @@ void ValueIterator::Expr::collectVariablesInto(set<string>& result) const
     }
 }
 
-class FunctionResolver : public Expression::Resolver
-{
-  public:
-    FunctionResolver() {}
-    virtual ~FunctionResolver() {};
-    // Variables are substituted textually before parsing the expression
-    virtual Expression::Functor *resolveVariable(const char *varName) override { return nullptr; }
-    virtual Expression::Functor *resolveFunction(const char *functionName, int argCount) override {
-        return MathFunction::supports(functionName) ? new MathFunction(functionName) : nullptr;  // argcount will be checked by the caller afterwards
-    }
-};
-
 namespace {
 struct Resolver : public opp_substitutevariables_resolver
 {
@@ -103,7 +83,7 @@ struct Resolver : public opp_substitutevariables_resolver
         return it->second->get();
     }
 };
-} // namespace {
+} // namespace
 
 void ValueIterator::Expr::substituteVariables(const VariableMap& map)
 {
@@ -111,23 +91,36 @@ void ValueIterator::Expr::substituteVariables(const VariableMap& map)
     value = opp_substitutevariables(raw, resolver);
 }
 
+/**
+ * Translate '=' as synonym of '=='. Used for compatibility with OMNeT++ 4.x and 5.x
+ */
+class EqualSignToEqualsAstTranslator : public Expression::BasicAstTranslator
+{
+  public:
+    virtual ExprNode *createOperatorNode(const char *opName, int argCount) override {
+        return (strcmp(opName,"=")==0 && argCount==2) ? ExprNodeFactory::createBinaryOperator("==") : nullptr;
+    }
+};
+
 void ValueIterator::Expr::evaluate()
 {
-    Assert(value.type == 'S');
+    Assert(value.getType() == ExprValue::Type::STRING);
 
-    FunctionResolver resolver;
     Expression expr;
+    EqualSignToEqualsAstTranslator equalsSignTranslator; // accept '=' as 'equals', too
+    Expression::MultiAstTranslator translator({ &equalsSignTranslator, Expression::getDefaultAstTranslator() });
+
     try {
-        expr.parse(value.s.c_str(), &resolver);
+        expr.parse(value.stringValue(), &translator);
     }
     catch (std::exception& e) {
-        throw opp_runtime_error("Parse error in expression '%s': %s", value.s.c_str(), e.what());
+        throw opp_runtime_error("Parse error in expression '%s': %s", (const char *)value, e.what());
     }
     try {
         value = expr.evaluate();
     }
     catch (std::exception& e) {
-        throw opp_runtime_error("Cannot evaluate expression '%s': %s", value.s.c_str(), e.what());
+        throw opp_runtime_error("Cannot evaluate expression '%s': %s", (const char *)value, e.what());
     }
 }
 

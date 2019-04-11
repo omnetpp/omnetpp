@@ -54,6 +54,7 @@ class ENVIR_API ValueIterator
 {
   public:
     typedef omnetpp::common::Expression Expression;
+    typedef omnetpp::common::expression::ExprValue ExprValue;
     typedef std::map<std::string,ValueIterator*> VariableMap; // maps variable names to their iterators
 
     /**
@@ -65,17 +66,17 @@ class ENVIR_API ValueIterator
     class Expr {
       private:
         std::string raw; // original text of item; may contain variable references
-        Expression::Value value;  // value after variable substitution and optional evalutation; filled in by substituteVariables() and evaluate()
-        void checkType(char expected) const;
+        ExprValue value;  // value after variable substitution and optional evaluation; filled in by substituteVariables() and evaluate()
+        void checkType(ExprValue::Type expected) const;
       public:
         Expr() {}
         Expr(const char *text) : raw(text) {}
         void collectVariablesInto(std::set<std::string>& vars) const;
         void substituteVariables(const VariableMap& map);  // raw -> value
         void evaluate(); // value -> value
-        double dblValue() const { checkType('D'); return value.dbl; }
-        bool boolValue() const { checkType('B'); return value.bl; }
-        std::string strValue() const { checkType('S'); return value.s; }
+        double dblValue() const { if (value.getType() == ExprValue::INT) return (intpar_t)value; checkType(ExprValue::DOUBLE); return (double)value; }
+        bool boolValue() const { checkType(ExprValue::BOOL); return (bool)value; }
+        std::string strValue() const { checkType(ExprValue::STRING); return (std::string)value; }
     };
 
   private:

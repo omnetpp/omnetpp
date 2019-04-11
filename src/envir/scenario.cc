@@ -27,6 +27,7 @@
 #include "valueiterator.h"
 
 using namespace omnetpp::common;
+using namespace omnetpp::common::expression;
 
 namespace omnetpp {
 namespace envir {
@@ -154,7 +155,7 @@ std::vector<std::string> Scenario::getIterationVariableNames() const
     return result;
 }
 
-Expression::Value Scenario::getIterationVariableValue(const char *varName)
+ExprValue Scenario::getIterationVariableValue(const char *varName)
 {
     std::string value = getVariable(varName);
     try {
