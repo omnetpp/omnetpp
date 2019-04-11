@@ -303,17 +303,8 @@ ExprValue ModNode::evaluate(Context *context) const
             errorDimlessArgsExpected(leftValue, rightValue);
         return leftValue.intv % rightValue.intv;
     }
-    else if (leftValue.type == ExprValue::DOUBLE || rightValue.type == ExprValue::DOUBLE) { // at least one is double -> double modulo
-        ensureNoLogarithmicUnit(rightValue);
-        ensureNoLogarithmicUnit(leftValue);
-        leftValue.convertToDouble();
-        rightValue.convertToDouble();
-        if (!opp_isempty(rightValue.unit) || !opp_isempty(leftValue.unit))
-            errorDimlessArgsExpected(leftValue, rightValue);
-        return fmod(trunc(leftValue.dbl), trunc(rightValue.dbl));
-    }
     else
-        errorNumericArgsExpected(leftValue, rightValue);
+        errorIntegerArgsExpected(leftValue, rightValue);
 }
 
 ExprValue PowNode::evaluate(Context *context) const
