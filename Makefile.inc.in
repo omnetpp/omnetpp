@@ -32,6 +32,10 @@ SHARED_LIBS = @SHARED_LIBS@
 # Each mode will have a different subdirectory in the output folder (out/).
 # $D is a suffix which will be appended to the names of the binaries.
 #
+
+# add custom modes
+ALL_MODES = release debug sanitize
+# this is the default mode
 MODE = release
 ifeq ($(MODE),release)
   CFLAGS = $(CFLAGS_RELEASE)
@@ -44,8 +48,9 @@ else ifeq ($(MODE),sanitize)
   LDFLAGS = $(SANITIZE_FLAGS)
   D=_sanitize
 else
-  $(error Unknown mode: '$(MODE)'. Use 'release', 'debug', 'sanitize' or define your own mode in 'Makefile.inc.in')
+  $(error Unknown mode: '$(MODE)'. Accepted modes: $(ALL_MODES); or define your own mode in 'Makefile.inc.in')
 endif
+CLEANALL_COMMAND=$(foreach m, $(ALL_MODES), $(MAKE) -s clean MODE=$m; )
 
 #
 # Directories

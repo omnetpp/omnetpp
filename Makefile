@@ -206,7 +206,7 @@ cleanall:
 	$(Q)-rm -rf $(OMNETPP_BIN_DIR)/*
 
 cleanall-tests: makefiles
-	$(Q)cd $(OMNETPP_TEST_DIR) && $(MAKE) clean
+	$(Q)cd $(OMNETPP_TEST_DIR) && $(MAKE) cleanall
 
 cleanall-samples: makefiles
 	$(Q)for i in $(SAMPLES) ""; do \

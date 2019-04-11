@@ -185,8 +185,7 @@ clean:
 {/@}
 
 cleanall:
-	$(Q)$(MAKE) -s clean MODE=release
-	$(Q)$(MAKE) -s clean MODE=debug
+	$(Q)$(CLEANALL_COMMAND)
 	$(Q)-rm -rf $(PROJECT_OUTPUT_DIR)
 
 help:

@@ -43,6 +43,8 @@ test_sqliteresultfiles:
 test_toolchain:
 	cd toolchain && ./runtest
 
+cleanall: clean   # TODO
+
 clean:
 	rm -rf core/work envir/work common/work makemake/work makemake/out featuretool/work fingerprint/results test_sqliteresultfiles/results-*
 	cd anim && make clean
