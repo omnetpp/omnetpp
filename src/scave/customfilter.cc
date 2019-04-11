@@ -24,45 +24,33 @@ namespace omnetpp {
 namespace scave {
 
 using namespace omnetpp::common;
+using namespace omnetpp::common::expression;
 
 /**
- * Resolves variables (x, y) and functions (sin, fabs, etc) in
- * ExpressionFilterNode expressions.
+ * Resolves variables (x, y) in ExpressionFilterNode expressions.
  */
-class Resolver : public Expression::Resolver
+class VariableResolver : public Expression::BasicAstTranslator
 {
   private:
-    ExpressionFilterNode *hostnode;
+    ExpressionFilterNode *hostNode;
 
   public:
-    Resolver(ExpressionFilterNode *node) { hostnode = node; }
-    virtual ~Resolver() {};
-    virtual Expression::Functor *resolveVariable(const char *varname) override;
-    virtual Expression::Functor *resolveFunction(const char *funcname, int argcount) override;
+    VariableResolver(ExpressionFilterNode *node) : hostNode(node) {}
+    virtual ExprNode *createIdentNode(const char *varName, bool withIndex) override;
 };
 
-Expression::Functor *Resolver::resolveVariable(const char *varname)
+ExprNode *VariableResolver::createIdentNode(const char *varName, bool withIndex)
 {
-    if (strcmp(varname, "t") == 0 || strcmp(varname, "y") == 0 || strcmp(varname, "tprev") == 0 || strcmp(varname, "yprev") == 0)
-        return new ExpressionFilterNode::NodeVar(hostnode, varname);
-    else
-        throw opp_runtime_error("Unrecognized variable: %s", varname);
-}
-
-Expression::Functor *Resolver::resolveFunction(const char *funcname, int argcount)
-{
-    // FIXME check argcount!
-    if (MathFunction::supports(funcname))
-        return new MathFunction(funcname);
-    else
-        throw opp_runtime_error("Unrecognized function: %s()", funcname);
+    if (strcmp(varName, "t") == 0 || strcmp(varName, "y") == 0 || strcmp(varName, "tprev") == 0 || strcmp(varName, "yprev") == 0)
+        return new ExpressionFilterNode::NodeVar(hostNode, varName);
+    return nullptr;
 }
 
 ExpressionFilterNode::ExpressionFilterNode(const char *text)
 {
     skipFirstDatum = false;
     expr = new Expression();
-    Resolver resolver(this);
+    VariableResolver resolver(this);
     expr->parse(text, &resolver);
     prevDatum.x = prevDatum.y = NaN;
 }

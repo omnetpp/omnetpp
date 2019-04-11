@@ -19,6 +19,7 @@
 #define __OMNETPP_SCAVE_CUSTOMFILTER_H
 
 #include "common/expression.h"
+#include "common/exprnodes.h"
 #include "commonnodes.h"
 
 namespace omnetpp {
@@ -44,12 +45,16 @@ class SCAVE_API ExpressionFilterNode : public FilterNode
 {
     private:
         typedef omnetpp::common::Expression Expression;
+        typedef omnetpp::common::expression::ExprNode ExprNode;
+        typedef omnetpp::common::expression::ExprValue ExprValue;
+        typedef omnetpp::common::expression::ValueNode ValueNode;
+        typedef omnetpp::common::expression::Context Context;
     public:
         /**
          * Implements a variable in the expression. Currently just delegates
          * to ExpressionFilterNode::getVariable().
          */
-        class NodeVar : public Expression::Variable
+        class NodeVar : public ValueNode
         {
           private:
             ExpressionFilterNode *hostnode;
@@ -57,11 +62,10 @@ class SCAVE_API ExpressionFilterNode : public FilterNode
           public:
             NodeVar(ExpressionFilterNode *node, const char *name)
                 {hostnode = node; varname = name; hostnode->skipFirstDatum |= (varname=="tprev" || varname=="yprev"); }
-            virtual ~NodeVar() {}
-            virtual Expression::Functor *dup() const override {return new NodeVar(hostnode, varname.c_str());}
-            virtual const char *getName() const override {return varname.c_str();}
-            virtual char getReturnType() const override {return Expression::Value::DBL;}
-            virtual Expression::Value evaluate(Expression::Value args[], int numargs) override
+            virtual ExprNode *dup() const override {return new NodeVar(hostnode, varname.c_str());}
+            virtual std::string getName() const override {return varname;}
+            virtual void print(std::ostream& out, int spaciousness) const override {out << varname;}
+            virtual ExprValue evaluate(Context *context=nullptr) const override
                 {return hostnode->getVariable(varname.c_str());}
         };
     private:
