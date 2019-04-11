@@ -28,7 +28,7 @@ extern const char *PROPKEY_STATISTIC_RECORD;
 extern const char *PROPKEY_STATISTIC_CHECKSIGNALS;
 
 class cConfiguration;
-class SignalSource;
+struct SignalSource;
 
 /**
  * Utility class for configuring result recording from @statistic properties.

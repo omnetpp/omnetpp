@@ -49,8 +49,8 @@ OBJS_STD=\
     $O/cvisitor.o $O/cwatch.o $O/cxmlelement.o $O/cxmlparimpl.o $O/distrib.o $O/nedfunctions.o \
     $O/errmsg.o $O/globals.o $O/cregistrationlist.o $O/minixpath.o $O/onstartup.o \
     $O/simtime.o $O/simtimemath.o $O/task.o $O/util.o $O/gettime.o $O/nedsupport.o $O/sim_std_m.o \
-    $O/cstatisticbuilder.o $O/statisticparsing.o $O/resultfilters.o $O/resultrecorders.o \
-    $O/ccommbuffer.o $O/cparsimcomm.o
+    $O/cstatisticbuilder.o $O/statisticsourceparser.o $O/statisticrecorderparser.o \
+    $O/resultfilters.o $O/resultrecorders.o $O/expressionfilter.o $O/ccommbuffer.o $O/cparsimcomm.o
 
 OBJS_NETBUILDER=\
     $O/netbuilder/cneddeclaration.o \

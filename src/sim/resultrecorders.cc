@@ -23,11 +23,11 @@
 #include "omnetpp/cpsquare.h"
 #include "omnetpp/cksplit.h"
 #include "omnetpp/resultrecorders.h"
-#include "resultexpr.h"
+#include "common/stringutil.h"
 
 namespace omnetpp {
 
-using namespace omnetpp::common;  // Expression
+using namespace omnetpp::common;
 
 #define SIGNALTYPE_TO_NUMERIC_CONVERSIONS \
         "Numeric types are all converted to double, and boolean to 0 and 1. " \
@@ -516,59 +516,6 @@ void KSplitRecorder::init(cComponent *component, const char *statsName, const ch
     if (weighted)
         throw cRuntimeError("%s: cKSplit does not support weighted statistics", getClassName());
     setStatistic(new cKSplit("ksplit"));
-}
-
-//---
-
-class RecValueVariable : public Expression::Variable
-{
-  private:
-    ExpressionRecorder *owner;
-
-  public:
-    RecValueVariable(ExpressionRecorder *recorder) { owner = recorder; }
-    virtual Functor *dup() const override { return new RecValueVariable(owner); }
-    virtual const char *getName() const override { return "<lastsignalvalue>"; }
-    virtual char getReturnType() const override { return Expression::Value::DBL; }
-    virtual Expression::Value evaluate(Expression::Value args[], int numargs) override { return owner->lastInputValue; }
-};
-
-//XXX currently unused
-class RecTimeVariable : public Expression::Variable
-{
-  public:
-    virtual Functor *dup() const override { return new RecTimeVariable(); }
-    virtual const char *getName() const override { return "<simtime>"; }
-    virtual char getReturnType() const override { return Expression::Value::DBL; }
-    virtual Expression::Value evaluate(Expression::Value args[], int numargs) override { return SIMTIME_DBL(getSimulation()->getSimTime()); }
-};
-
-Expression::Functor *ExpressionRecorder::makeValueVariable()
-{
-    return new RecValueVariable(this);
-}
-
-Expression::Functor *ExpressionRecorder::makeTimeVariable()
-{
-    return new RecTimeVariable();
-}
-
-double ExpressionRecorder::getCurrentValue() const
-{
-    return expr.doubleValue();
-}
-
-void ExpressionRecorder::finish(cResultFilter *prev)
-{
-    opp_string_map attributes = getStatisticAttributes();
-    getEnvir()->recordScalar(getComponent(), getResultName().c_str(), expr.doubleValue(), &attributes);
-}
-
-std::string ExpressionRecorder::str() const
-{
-    std::stringstream os;
-    os << getResultName() << " = " << getCurrentValue();
-    return os.str();
 }
 
 }  // namespace omnetpp

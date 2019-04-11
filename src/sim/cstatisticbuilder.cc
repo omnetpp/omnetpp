@@ -22,7 +22,8 @@
 #include "common/stringtokenizer.h"
 #include "common/stringutil.h"
 #include "common/opp_ctype.h"
-#include "statisticparsing.h"
+#include "statisticsourceparser.h"
+#include "statisticrecorderparser.h"
 
 namespace omnetpp {
 

@@ -29,7 +29,7 @@ cplusplus
 #  pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
 
-#include "resultexpr.h"
+#include "expressionfilter.h"
 
 namespace omnetpp {
 
@@ -1352,23 +1352,8 @@ class ExpressionFilter extends cNumericResultFilter
     @overwritePreviousDefinition;
     @descriptor(readonly);
     string expression @toString(.str());
-    double lastValue;
-    simtime_t lastTimestamp;
-}
-
-class UnaryExpressionFilter extends ExpressionFilter
-{
-    @existingClass;
-    @overwritePreviousDefinition;
-    @descriptor(readonly);
-    double lastInputValue;
-}
-
-class NaryExpressionFilter extends ExpressionFilter
-{
-    @existingClass;
-    @overwritePreviousDefinition;
-    @descriptor(readonly);
+//    double lastValue;
+//    simtime_t lastTimestamp;
 }
 
 class cObjectResultFilter extends cResultFilter
@@ -1519,13 +1504,13 @@ class PSquareRecorder extends StatisticsRecorder
     @descriptor(readonly);
 }
 
-class ExpressionRecorder extends cNumericResultRecorder
-{
-    @existingClass;
-    @overwritePreviousDefinition;
-    @descriptor(readonly);
-    string expression @toString(.str());
-    double currentValue;
-    double lastInputValue;
-}
+//class ExpressionRecorder extends cNumericResultRecorder
+//{
+//    @existingClass;
+//    @overwritePreviousDefinition;
+//    @descriptor(readonly);
+//    string expression @toString(.str());
+//    double currentValue;
+//    double lastInputValue;
+//}
 

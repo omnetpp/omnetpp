@@ -29,7 +29,7 @@
 #include "omnetpp/cchannel.h"
 #include "omnetpp/resultfilters.h"  // ExpressionFilter
 #include "omnetpp/resultrecorders.h"  // ExpressionRecorder
-#include "sim/resultexpr.h"
+#include "sim/expressionfilter.h"
 #include "args.h"
 #include "appreg.h"
 #include "envirutils.h"
@@ -443,10 +443,8 @@ void EnvirUtils::dumpResultRecorderChain(std::ostream& out, cResultListener *lis
 {
     std::string indent(4*depth+8, ' ');
     out << indent;
-    if (ExpressionRecorder *expressionRecorder = dynamic_cast<ExpressionRecorder *>(listener))
-        out << expressionRecorder->getExpression().str() << " (" << listener->getClassName() << ")";
-    else if (ExpressionFilter *expressionFilter = dynamic_cast<ExpressionFilter *>(listener))
-        out << expressionFilter->getExpression().str() << " (" << listener->getClassName() << ")";
+    if (ExpressionFilter *expressionFilter = dynamic_cast<ExpressionFilter *>(listener))
+        out << expressionFilter->getExpression().str(Expression::SPACIOUSNESS_MAX) << " (" << listener->getClassName() << ")";
     else
         out << listener->getClassName();
 

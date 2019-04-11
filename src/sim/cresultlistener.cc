@@ -50,7 +50,7 @@ const char *cResultListener::getPooled(const char *s)
 // original cIListener API that delegates to the simplified API:
 
 #define THROW(source, signalID, datatype, e) \
-    throw cRuntimeError("%s while processing statistic signal %s (id=%d) with data type %s, emitted from (%s)%s", \
+    throw cRuntimeError("%s while processing statistic signal '%s' (id=%d) with data type '%s', emitted from (%s)%s", \
                         e.what(), cComponent::getSignalName(signalID), (int)signalID, datatype, \
                         source->getClassName(), source->getFullPath().c_str())
 

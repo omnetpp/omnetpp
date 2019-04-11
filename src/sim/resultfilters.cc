@@ -19,11 +19,8 @@
 #include "omnetpp/cproperty.h"
 #include "omnetpp/checkandcast.h"
 #include "omnetpp/resultfilters.h"
-#include "resultexpr.h"
 
 namespace omnetpp {
-
-using namespace omnetpp::common;  // Expression
 
 #define SIGNALTYPE_TO_NUMERIC_CONVERSIONS \
         "Numeric types are all converted to double, and boolean to 0 and 1. " \
@@ -412,87 +409,6 @@ bool RemoveRepeatsFilter::process(simtime_t& t, double& value, cObject *details)
     bool repeated = std::isnan(value) ? std::isnan(prev) : value==prev;
     prev = value;
     return !repeated;
-}
-
-//---
-
-std::string ExpressionFilter::str() const
-{
-    std::stringstream os;
-    os << expr.str() << " = " << getLastValue();
-    return os.str();
-}
-
-//---
-
-bool UnaryExpressionFilter::process(simtime_t& t, double& value, cObject *details)
-{
-    lastTimestamp = t;
-    lastInputValue = value;
-    lastOutputValue = value = expr.doubleValue();
-    return true;
-}
-
-//---
-
-void NaryExpressionFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details)
-{
-    simtime_t tt = t;
-    double d = b;
-    if (process(prev, tt, d))
-        fire(this, tt, d, details);
-}
-
-void NaryExpressionFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details)
-{
-    simtime_t tt = t;
-    double d = l;
-    if (process(prev, tt, d))
-        fire(this, tt, d, details);
-}
-
-void NaryExpressionFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details)
-{
-    simtime_t tt = t;
-    double d = l;
-    if (process(prev, tt, d))
-        fire(this, tt, d, details);
-}
-
-void NaryExpressionFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, double d, cObject *details)
-{
-    simtime_t tt = t;
-    if (process(prev, tt, d))
-        fire(this, tt, d, details);
-}
-
-void NaryExpressionFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v, cObject *details)
-{
-    simtime_t tt = t;
-    double d = v.dbl();
-    if (process(prev, tt, d))
-        fire(this, tt, d, details);
-}
-
-bool NaryExpressionFilter::process(cResultFilter *prev, simtime_t& t, double& value)
-{
-    lastTimestamp = t;
-    for (int i = 0; i < signalCount; i++) {
-        if (prevFilters[i] == prev) {
-            lastInputValues[i] = value;
-            lastOutputValue = value = expr.doubleValue();
-            return true;
-        }
-    }
-    throw cRuntimeError("Unknown signal");
-}
-
-Expression::Functor *NaryExpressionFilter::makeValueVariable(int index, cResultFilter *prevFilter)
-{
-    Assert(0 <= index && index <= signalCount);
-    prevFilters[index] = prevFilter;
-    lastInputValues[index] = prevFilter->getInitialDoubleValue();
-    return new ValueVariable(this, &(lastInputValues[index]));
 }
 
 //---
