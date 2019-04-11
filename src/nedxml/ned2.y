@@ -17,16 +17,18 @@
 /* number of expected shift-reduce conflicts */
 %expect 7
 
-/* Reserved words */
+/* Reserved words. Trailing '_' in some token names are there to avoid
+ * (potential) conflict with macros defined in system headers.
+ */
 %token IMPORT PACKAGE PROPERTY
 %token MODULE SIMPLE NETWORK CHANNEL MODULEINTERFACE CHANNELINTERFACE
 %token EXTENDS LIKE
 %token TYPES PARAMETERS GATES SUBMODULES CONNECTIONS ALLOWUNCONNECTED
-%token DOUBLETYPE INTTYPE STRINGTYPE BOOLTYPE XMLTYPE VOLATILE
+%token DOUBLE_ INT_ STRING_ BOOL_ XML_ VOLATILE_
 %token INPUT_ OUTPUT_ INOUT_
 %token IF FOR
 %token RIGHTARROW LEFTARROW DBLARROW TO
-%token TRUE_ FALSE_ NAN_ INF_ 
+%token TRUE_ FALSE_ NAN_ INF_
 %token THIS_ DEFAULT ASK CONST_ SIZEOF INDEX_ EXISTS TYPENAME XMLDOC
 
 /* Other tokens: identifiers, numeric literals, operators etc */
@@ -47,7 +49,7 @@
 %left OR
 %left XOR
 %left AND
-%left EQ NE 
+%left EQ NE
 %left '<' '>' LE GE
 %left BIN_OR
 %left BIN_XOR
@@ -739,20 +741,20 @@ pattern_value
         ;
 
 paramtype
-        : DOUBLETYPE
+        : DOUBLE_
                 { ps.paramType = PARTYPE_DOUBLE; }
-        | INTTYPE
+        | INT_
                 { ps.paramType = PARTYPE_INT; }
-        | STRINGTYPE
+        | STRING_
                 { ps.paramType = PARTYPE_STRING; }
-        | BOOLTYPE
+        | BOOL_
                 { ps.paramType = PARTYPE_BOOL; }
-        | XMLTYPE
+        | XML_
                 { ps.paramType = PARTYPE_XML; }
         ;
 
 opt_volatile
-        : VOLATILE
+        : VOLATILE_
                 { ps.isVolatile = true; }
         |
                 { ps.isVolatile = false; }
@@ -1526,10 +1528,10 @@ expr
                 { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "^", $1, $3); }
         | '-' expr
                 %prec UMIN
-                { 
+                {
                   if (np->getParseExpressionsFlag()) {
                       if ($2->getTagCode() == NED_LITERAL)
-                          $$ = prependMinusSign(np, $2); 
+                          $$ = prependMinusSign(np, $2);
                       else
                           $$ = createOperator(np, "-", $2);
                   }
@@ -1576,11 +1578,11 @@ expr
         | expr '?' expr ':' expr
                 { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "?:", $1, $3, $5); }
 
-        | INTTYPE '(' expr ')'
+        | INT_ '(' expr ')'
                 { if (np->getParseExpressionsFlag()) $$ = createFunction(np, toString(np, @1), $3); }
-        | DOUBLETYPE '(' expr ')'
+        | DOUBLE_ '(' expr ')'
                 { if (np->getParseExpressionsFlag()) $$ = createFunction(np, toString(np, @1), $3); }
-        | STRINGTYPE '(' expr ')'
+        | STRING_ '(' expr ')'
                 { if (np->getParseExpressionsFlag()) $$ = createFunction(np, toString(np, @1), $3); }
 
         | funcname '(' ')'
@@ -1617,7 +1619,7 @@ simple_expr
 funcname
         : NAME
         | XMLDOC
-        | XMLTYPE
+        | XML_
         ;
 
 identifier

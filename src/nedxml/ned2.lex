@@ -104,12 +104,12 @@ using namespace omnetpp::nedxml;
 "connections"            { countChars(); return CONNECTIONS; }
 "allowunconnected"       { countChars(); return ALLOWUNCONNECTED; }
 
-"double"                 { countChars(); return DOUBLETYPE; }
-"int"                    { countChars(); return INTTYPE; }
-"string"                 { countChars(); return STRINGTYPE; }
-"bool"                   { countChars(); return BOOLTYPE; }
-"xml"                    { countChars(); return XMLTYPE; }
-"volatile"               { countChars(); return VOLATILE; }
+"double"                 { countChars(); return DOUBLE_; }
+"int"                    { countChars(); return INT_; }
+"string"                 { countChars(); return STRING_; }
+"bool"                   { countChars(); return BOOL_; }
+"xml"                    { countChars(); return XML_; }
+"volatile"               { countChars(); return VOLATILE_; }
 
 "input"                  { countChars(); return INPUT_; }
 "output"                 { countChars(); return OUTPUT_; }

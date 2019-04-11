@@ -17,6 +17,9 @@
 /* number of expected shift-reduce conflicts */
 %expect 0
 
+/* Reserved words. Trailing '_' in some token names are there to avoid
+ * (potential) conflict with macros defined in system headers.
+ */
 %token NAMESPACE CPLUSPLUS CPLUSPLUSBODY
 %token MESSAGE PACKET CLASS STRUCT ENUM NONCOBJECT
 %token EXTENDS ABSTRACT
@@ -25,7 +28,7 @@
 %token NAME PROPNAME DOUBLECOLON
 %token INTCONSTANT REALCONSTANT STRINGCONSTANT CHARCONSTANT
 %token TRUE_ FALSE_
-%token BOOLTYPE CHARTYPE SHORTTYPE INTTYPE LONGTYPE DOUBLETYPE UNSIGNED_ CONST_ STRINGTYPE
+%token BOOL_ CHAR_ SHORT_ INT_ LONG_ DOUBLE_ UNSIGNED_ CONST_ STRING_
 
 %token EQ NE GE LE
 %token AND OR XOR NOT
@@ -33,7 +36,7 @@
 %token SHIFT_LEFT SHIFT_RIGHT
 
 %token CHAR
-%token INVALID_CHAR   /* just to generate parse error --VA */
+%token INVALID_CHAR   /* just to generate parse error */
 
 /* Operator precedences (low to high) and associativity */
 %left '?' ':'
@@ -522,19 +525,19 @@ fielddatatype
 fieldsimpledatatype
         : qname
 
-        | CHARTYPE
-        | SHORTTYPE
-        | INTTYPE
-        | LONGTYPE
+        | CHAR_
+        | SHORT_
+        | INT_
+        | LONG_
 
-        | UNSIGNED_ CHARTYPE
-        | UNSIGNED_ SHORTTYPE
-        | UNSIGNED_ INTTYPE
-        | UNSIGNED_ LONGTYPE
+        | UNSIGNED_ CHAR_
+        | UNSIGNED_ SHORT_
+        | UNSIGNED_ INT_
+        | UNSIGNED_ LONG_
 
-        | DOUBLETYPE
-        | STRINGTYPE
-        | BOOLTYPE
+        | DOUBLE_
+        | STRING_
+        | BOOL_
         ;
 
 

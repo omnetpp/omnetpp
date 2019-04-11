@@ -86,23 +86,23 @@ using namespace omnetpp::nedxml;
 "cplusplus"              { countChars(); return CPLUSPLUS; }
 "import"                 { countChars(); return recognizeNewKeywords ? IMPORT : NAME; }
 "struct"                 { countChars(); return STRUCT; }
-"message"                { countChars(); return MESSAGE; /*TODO maybe: recognizeObsoleteKeywords ? MESSAGE : NAME;*/ }
-"packet"                 { countChars(); return PACKET; /*TODO maybe: recognizeObsoleteKeywords ? PACKET : NAME;*/ }
+"message"                { countChars(); return MESSAGE; }
+"packet"                 { countChars(); return PACKET; }
 "class"                  { countChars(); return CLASS; }
-"noncobject"             { countChars(); return NONCOBJECT; /*TODO maybe: recognizeObsoleteKeywords ? NONCOBJECT : NAME;*/ }
+"noncobject"             { countChars(); return NONCOBJECT; /*obsolete*/ }
 "enum"                   { countChars(); return ENUM; }
 "extends"                { countChars(); return EXTENDS; }
 "abstract"               { countChars(); return ABSTRACT; }
 
-"bool"                   { countChars(); return BOOLTYPE; }
-"char"                   { countChars(); return CHARTYPE; }
-"short"                  { countChars(); return SHORTTYPE; }
-"int"                    { countChars(); return INTTYPE; }
-"long"                   { countChars(); return LONGTYPE; }
-"double"                 { countChars(); return DOUBLETYPE; }
+"bool"                   { countChars(); return BOOL_; }
+"char"                   { countChars(); return CHAR_; }
+"short"                  { countChars(); return SHORT_; }
+"int"                    { countChars(); return INT_; }
+"long"                   { countChars(); return LONG_; }
+"double"                 { countChars(); return DOUBLE_; }
 "unsigned"               { countChars(); return UNSIGNED_; }
 "const"                  { countChars(); return recognizeNewKeywords ? CONST_ : NAME; /*reserved for future use*/ }
-"string"                 { countChars(); return STRINGTYPE; }
+"string"                 { countChars(); return STRING_; }
 "true"                   { countChars(); return TRUE_; }
 "false"                  { countChars(); return FALSE_; }
 
