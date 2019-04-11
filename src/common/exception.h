@@ -38,14 +38,14 @@ class COMMON_API opp_runtime_error : public std::runtime_error
 
   public:
     /**
-     * The error message can be generated in a printf-like manner.
+     * Constructor with a printf-like argument list.
      */
     opp_runtime_error(const char *msg,...);
 
     /**
-     * Destructor with throw clause required by gcc.
+     * String constructor.
      */
-    virtual ~opp_runtime_error() throw() {}
+    opp_runtime_error(const std::string& msg) : std::runtime_error(""), errormsg(msg) {}
 
     /**
      * Returns the text of the error. Redefined from std::exception.
