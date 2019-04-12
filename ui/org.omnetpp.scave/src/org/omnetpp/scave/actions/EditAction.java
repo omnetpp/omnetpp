@@ -13,8 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
@@ -22,6 +20,7 @@ import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.forms.ScaveObjectEditFormFactory;
 import org.omnetpp.scave.editors.ui.EditDialog;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.model.AnalysisObject;
 
 /**
  * Opens an edit dialog for the selected dataset, chart, chart sheet, etc.
@@ -60,13 +59,11 @@ public class EditAction extends AbstractScaveAction {
         ResultFileManager.callWithReadLock(scaveEditor.getResultFileManager(), new Callable<Object>() {
             public Object call() throws Exception {
                 if (isApplicable(scaveEditor, selection)) {
-                    EObject editedObject = getEditedObject(scaveEditor, selection);
+                    AnalysisObject editedObject = getEditedObject(scaveEditor, selection);
                     Object selectedObject = selection.getFirstElement();
                     setFormParameter(PARAM_SELECTED_OBJECT, selectedObject);
                     EditDialog dialog = new EditDialog(scaveEditor.getSite().getShell(), editedObject, scaveEditor, formParameters);
-                    EStructuralFeature[] features = dialog.getFeatures();
-                    if (features.length > 0)
-                        dialog.open();
+                    dialog.open();
                 }
                 return null;
             }
@@ -75,13 +72,13 @@ public class EditAction extends AbstractScaveAction {
 
     @Override
     public boolean isApplicable(final ScaveEditor editor, final IStructuredSelection selection) {
-        EObject editedObject = getEditedObject(editor, selection);
+        AnalysisObject editedObject = getEditedObject(editor, selection);
         return editedObject != null && ScaveObjectEditFormFactory.instance().canCreateForm(editedObject);
     }
 
-    private EObject getEditedObject(ScaveEditor editor, IStructuredSelection selection) {
-        if (selection.size() == 1 && selection.getFirstElement() instanceof EObject)
-            return (EObject)selection.getFirstElement();
+    private AnalysisObject getEditedObject(ScaveEditor editor, IStructuredSelection selection) {
+        if (selection.size() == 1 && selection.getFirstElement() instanceof AnalysisObject)
+            return (AnalysisObject)selection.getFirstElement();
         return null;
     }
 }

@@ -7,16 +7,11 @@
 
 package org.omnetpp.scave.editors;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.eclipse.emf.common.ui.viewer.IViewerProvider;
-import org.eclipse.emf.edit.domain.IEditingDomainProvider;
-import org.eclipse.emf.edit.ui.action.CopyAction;
-import org.eclipse.emf.edit.ui.action.CutAction;
-import org.eclipse.emf.edit.ui.action.PasteAction;
-import org.eclipse.emf.edit.ui.action.RedoAction;
-import org.eclipse.emf.edit.ui.action.UndoAction;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
@@ -30,10 +25,7 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
@@ -52,10 +44,12 @@ import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.ChartMouseModeAction;
+import org.omnetpp.scave.actions.CopyAction;
 import org.omnetpp.scave.actions.CopyChartToClipboardAction;
 import org.omnetpp.scave.actions.CopyToClipboardAction;
 import org.omnetpp.scave.actions.CreateTempChartAction;
 import org.omnetpp.scave.actions.CreateTempMatplotlibChartAction;
+import org.omnetpp.scave.actions.CutAction;
 import org.omnetpp.scave.actions.EditAction;
 import org.omnetpp.scave.actions.EditInputFileAction;
 import org.omnetpp.scave.actions.ExportChartsAction;
@@ -63,22 +57,20 @@ import org.omnetpp.scave.actions.ExportDataAction;
 import org.omnetpp.scave.actions.ExportToSVGAction;
 import org.omnetpp.scave.actions.GotoChartDefinitionAction;
 import org.omnetpp.scave.actions.IScaveAction;
-import org.omnetpp.scave.actions.NewBarChartAction;
 import org.omnetpp.scave.actions.NewChartFromTemplateAction;
-import org.omnetpp.scave.actions.NewHistogramChartAction;
-import org.omnetpp.scave.actions.NewLineChartAction;
-import org.omnetpp.scave.actions.NewMatplotlibChartAction;
-import org.omnetpp.scave.actions.NewScatterChartAction;
 import org.omnetpp.scave.actions.OpenChartAction;
+import org.omnetpp.scave.actions.PasteAction;
+import org.omnetpp.scave.actions.RedoAction;
 import org.omnetpp.scave.actions.RefreshChartAction;
 import org.omnetpp.scave.actions.RemoveAction;
 import org.omnetpp.scave.actions.SaveTempChartAction;
 import org.omnetpp.scave.actions.SelectAllAction;
 import org.omnetpp.scave.actions.ShowOutputVectorViewAction;
+import org.omnetpp.scave.actions.UndoAction;
 import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.charting.IChartView;
-import org.omnetpp.scave.python.ChartTemplate;
-import org.omnetpp.scave.python.ChartTemplateRegistry;
+import org.omnetpp.scave.charttemplates.ChartTemplate;
+import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.python.KillPythonProcessAction;
 
 /**
@@ -92,11 +84,23 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     protected ISelectionProvider selectionProvider; // current selection provider
 
     protected IEditorPart activeEditor;
+
+
+    ISelectionListener selectionListener = new ISelectionListener() {
+        @Override
+        public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+            updateActions();
+        }
+    };
+
+    protected List<IScaveAction> actions = new ArrayList<>();
+
     protected CutAction cutAction;
     protected CopyAction copyAction;
     protected PasteAction pasteAction;
     protected UndoAction undoAction;
     protected RedoAction redoAction;
+
 
     // global retarget actions
     private RetargetAction undoRetargetAction;
@@ -147,23 +151,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         }
     };
 
-    protected IAction refreshViewerAction = new Action("Refresh") {
-        @Override
-        public boolean isEnabled() {
-            return activeEditor instanceof IViewerProvider;
-        }
-
-        @Override
-        public void run() {
-            if (activeEditor instanceof IViewerProvider) {
-                Viewer viewer = ((IViewerProvider)activeEditor).getViewer();
-                if (viewer != null) {
-                    viewer.refresh();
-                }
-            }
-        }
-    };
-
     IPropertyChangeListener zoomListener = new IPropertyChangeListener() {
         @Override
         public void propertyChange(PropertyChangeEvent event) {
@@ -174,10 +161,15 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         }
     };
 
+    public static ScaveEditorContributor getDefault() {
+        return instance;
+    }
+
     /**
      * Creates a multi-page contributor.
      */
     public ScaveEditorContributor() {
+        System.out.println("CONTRIBUTOR CTOR");
         if (instance == null)
             instance = this;
     }
@@ -225,18 +217,10 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         bars.setGlobalActionHandler(ActionFactory.SELECT_ALL.getId(), selectAllAction);
     }
 
+    // TODO:
     private IScaveAction registerAction(IWorkbenchPage page, final IScaveAction action) {
-        page.getWorkbenchWindow().getSelectionService().addSelectionListener(new ISelectionListener() {
-            @Override
-            public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-                action.selectionChanged(selection);
-            }
-        });
+        actions.add(action);
         return action;
-    }
-
-    public static ScaveEditorContributor getDefault() {
-        return instance;
     }
 
     public OpenChartAction getOpenAction() {
@@ -417,7 +401,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         MenuManager submenuManager = new MenuManager("New From Template");
 
         for (ChartTemplate t : ChartTemplateRegistry.getAllTemplates())
-            submenuManager.add(new NewChartFromTemplateAction(t, false));
+            submenuManager.add(new NewChartFromTemplateAction(t));
 
         menuManager.insertBefore("edit", submenuManager);
 
@@ -445,8 +429,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     protected void addGlobalActions(IMenuManager menuManager) {
         menuManager.insertAfter("additions-end", new Separator("ui-actions"));
         menuManager.insertAfter("ui-actions", showPropertiesViewAction);
-        refreshViewerAction.setEnabled(refreshViewerAction.isEnabled());
-        menuManager.insertAfter("ui-actions", refreshViewerAction);
     }
 
     @Override
@@ -480,7 +462,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
             if (activeEditor != null)
                 deactivate();
 
-            if (part instanceof IEditingDomainProvider) {
+            if (part instanceof ScaveEditor) {
                 activeEditor = part;
                 activate();
             }
@@ -549,64 +531,31 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
 
     public void deactivate() {
         activeEditor.removePropertyListener(this);
-
-        cutAction.setActiveWorkbenchPart(null);
-        copyAction.setActiveWorkbenchPart(null);
-        pasteAction.setActiveWorkbenchPart(null);
-        undoAction.setActiveWorkbenchPart(null);
-        redoAction.setActiveWorkbenchPart(null);
-
-        ISelectionProvider selectionProvider = activeEditor instanceof ISelectionProvider ? (ISelectionProvider) activeEditor
-                : activeEditor.getEditorSite().getSelectionProvider();
-
-        if (selectionProvider != null) {
-            selectionProvider.removeSelectionChangedListener(cutAction);
-            selectionProvider.removeSelectionChangedListener(copyAction);
-            selectionProvider.removeSelectionChangedListener(pasteAction);
-        }
+        //((ScaveEditor)activeEditor).getCommandStack().removeListener(this);
+        // TODO: remove all actions from workbench selection listener lists
     }
 
     public void activate() {
         activeEditor.addPropertyListener(this);
 
-        cutAction.setActiveWorkbenchPart(activeEditor);
-        copyAction.setActiveWorkbenchPart(activeEditor);
-        pasteAction.setActiveWorkbenchPart(activeEditor);
-        undoAction.setActiveWorkbenchPart(activeEditor);
-        redoAction.setActiveWorkbenchPart(activeEditor);
+        // getA .getWorkbenchWindow().getSelectionService().addSelectionListener(selectionListener);
+        //((ScaveEditor)activeEditor).getCommandStack().addListener(this);
 
-        ISelectionProvider selectionProvider = activeEditor instanceof ISelectionProvider ? (ISelectionProvider) activeEditor
-                : activeEditor.getEditorSite().getSelectionProvider();
-
-        if (selectionProvider != null) {
-            selectionProvider.addSelectionChangedListener(cutAction);
-            selectionProvider.addSelectionChangedListener(copyAction);
-            selectionProvider.addSelectionChangedListener(pasteAction);
-        }
-
-        update();
+     // TODO: add all actions to workbench selection listener lists
     }
 
-    public void update() {
-        ISelectionProvider selectionProvider = activeEditor instanceof ISelectionProvider ? (ISelectionProvider) activeEditor
-                : activeEditor.getEditorSite().getSelectionProvider();
-
-        if (selectionProvider != null) {
-            ISelection selection = selectionProvider.getSelection();
-            IStructuredSelection structuredSelection = selection instanceof IStructuredSelection
-                    ? (IStructuredSelection) selection : StructuredSelection.EMPTY;
-
-            cutAction.updateSelection(structuredSelection);
-            copyAction.updateSelection(structuredSelection);
-            pasteAction.updateSelection(structuredSelection);
+    public void updateActions() {
+        for (IScaveAction action : actions) {
+            action.updateEnabled();
         }
-
-        undoAction.update();
-        redoAction.update();
     }
+//    public void update() {
+//        undoAction.update();
+//        redoAction.update();
+//    }
 
     public void propertyChanged(Object source, int id) {
-        update();
+        //update();
     }
 
 }

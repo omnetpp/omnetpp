@@ -1,24 +1,15 @@
 package org.omnetpp.scave.editors;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.emf.common.notify.Adapter;
-import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.common.notify.Notifier;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.util.EContentAdapter;
-import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -57,13 +48,11 @@ import org.omnetpp.scave.actions.RefreshChartAction;
 import org.omnetpp.scave.actions.SaveTempChartAction;
 import org.omnetpp.scave.actions.ToggleShowSourceAction;
 import org.omnetpp.scave.actions.ZoomChartAction;
-import org.omnetpp.scave.charting.ChartUpdater;
 import org.omnetpp.scave.editors.ui.FormEditorPage;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.InputFile;
-import org.omnetpp.scave.model.Inputs;
-import org.omnetpp.scave.model.LineChart;
-import org.omnetpp.scave.model.MatplotlibChart;
+import org.omnetpp.scave.model.Chart.ChartType;
+import org.omnetpp.scave.model.commands.ICommand;
+import org.omnetpp.scave.model.commands.SetChartScriptCommand;
 import org.omnetpp.scave.pychart.PlotWidget;
 import org.omnetpp.scave.pychart.PythonCallerThread.ExceptionHandler;
 import org.omnetpp.scave.pychart.PythonOutputMonitoringThread.IOutputListener;
@@ -97,6 +86,7 @@ public class ChartScriptEditor extends PyEdit {
     NativeChartViewer nativeChartViewer;
     MatplotlibChartViewer matplotlibChartViewer;
 
+    ChartUpdater chartUpdater;
     ChartScriptEditorInput editorInput;
 
     IOConsole console;
@@ -186,7 +176,7 @@ public class ChartScriptEditor extends PyEdit {
                 toggleAutoUpdateAction = new ToggleAutoUpdateAction();
                 toggleAutoUpdateAction.setChecked(true);
 
-                if (chart instanceof MatplotlibChart) {
+                if (chart.getType() == ChartType.MATPLOTLIB) {
                     formEditor.addSeparatorToToolbar();
                     interactAction.setChecked(true);
                     formEditor.addToToolbar(interactAction);
@@ -347,7 +337,7 @@ public class ChartScriptEditor extends PyEdit {
                 computeSubmenuManager.add(new AddVectorOperationAction("Window average", "df = ops.compute(df, ops.vector_winavg, window_size=10) # Average of every window_size long batch of values"));
 
 
-                if (chart instanceof MatplotlibChart) {
+                if (chart.getType() == ChartType.MATPLOTLIB) {
                     matplotlibChartViewer = new MatplotlibChartViewer(scaveEditor.processPool, sashForm);
                     matplotlibChartViewer.setResultsProvider(resultsProvider);
                     matplotlibChartViewer.setChartPropertiesProvider(propertiesProvider);
@@ -395,28 +385,6 @@ public class ChartScriptEditor extends PyEdit {
 
                     PlotWidget plotWidget = matplotlibChartViewer.getPlotWidget();
                     plotWidget.setMenu(manager.createContextMenu(plotWidget));
-
-                    chart.eAdapters().add(new EContentAdapter() {
-
-                        @Override
-                        public void notifyChanged(Notification notification) {
-                            if (notification.isTouch() || !(notification.getNotifier() instanceof EObject))
-                                return;
-
-                            EObject notifier = (EObject)notification.getNotifier();
-
-                            if (notifier.eResource() != chart.eResource())
-                                return;
-
-                            if (notifier instanceof Chart && notifier == chart) {
-                                Object val = notification.getNewValue();
-                                int type = notification.getEventType();
-                                if (val != null && (type == Notification.ADD || type == Notification.ADD_MANY))
-                                    refreshChart();
-                            }
-                        }
-                    });
-
                 }
                 else {
                     nativeChartViewer = new NativeChartViewer(chart, scaveEditor.processPool, sashForm);
@@ -437,17 +405,6 @@ public class ChartScriptEditor extends PyEdit {
                         }
                     });
 
-
-                    ChartUpdater chartUpdater = new ChartUpdater(chart, ChartScriptEditor.this, nativeChartViewer.getChartViewer(), scaveEditor.getResultFileManager());
-
-                    chart.eAdapters().add(new EContentAdapter() {
-                        @Override
-                        public void notifyChanged(Notification notification) {
-                            super.notifyChanged(notification);
-                            chartUpdater.updateChart(notification);
-                        }
-                    });
-
                     IMenuManager zoomSubmenuManager = new MenuManager("Zoom", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_ZOOM), null);
                     zoomSubmenuManager.add(zoomInHorizAction);
                     zoomSubmenuManager.add(zoomOutHorizAction);
@@ -462,7 +419,7 @@ public class ChartScriptEditor extends PyEdit {
                     manager.add(toggleShowSourceAction);
                     manager.add(new EditAction());
 
-                    if (chart instanceof LineChart) {
+                    if (chart.getType() == ChartType.LINE) {
                         manager.add(new Separator());
                         manager.add(applySubmenuManager);
                         manager.add(computeSubmenuManager);
@@ -499,36 +456,14 @@ public class ChartScriptEditor extends PyEdit {
 
         editorInput = new ChartScriptEditorInput(chart);
 
-        getDocumentProvider().getDocument(editorInput).addDocumentListener(new IDocumentListener() {
+        chartUpdater = new ChartUpdater(chart, this);
 
-            int documentChangeCounter = 0;
+        getDocumentProvider().getDocument(editorInput).addDocumentListener(chartUpdater);
+        chart.addListener(chartUpdater);
+    }
 
-            @Override
-            public void documentChanged(DocumentEvent event) {
-                ++documentChangeCounter;
-
-                Display.getDefault().timerExec(1500, new Runnable() { // TODO: make this delay configurable?
-                    int savedChangeCounter = documentChangeCounter;
-
-                    @Override
-                    public void run() {
-                        if (documentChangeCounter == savedChangeCounter) {
-                            if (!getDocument().get().equals(chart.getScript())) {
-                                SetCommand cmd = (SetCommand) SetCommand.create(scaveEditor.getEditingDomain(), chart,
-                                        chart.eClass().getEStructuralFeature("script"), event.getDocument().get());
-                                scaveEditor.getEditingDomain().getCommandStack().execute(cmd);
-                            }
-
-                            if (autoUpdateEnabled)
-                                runChartScript();
-                        }
-                    }
-                });
-            }
-
-            @Override
-            public void documentAboutToBeChanged(DocumentEvent event) { }
-        });
+    public ScaveEditor getScaveEditor() {
+        return scaveEditor;
     }
 
     public void runChartScript() {
@@ -558,7 +493,7 @@ public class ChartScriptEditor extends PyEdit {
                 });
             };
 
-            if (chart instanceof MatplotlibChart)
+            if (chart.getType() == ChartType.MATPLOTLIB)
                 matplotlibChartViewer.runPythonScript(chart.getScript(), scaveEditor.getAnfFileDirectory(), afterRun,
                         errorHandler);
             else
@@ -614,7 +549,7 @@ public class ChartScriptEditor extends PyEdit {
             errorMarker.setAttribute(IMarker.TRANSIENT, true);
             errorMarker.setAttribute(IMarker.MESSAGE, problemMessage);
             errorMarker.setAttribute(IMarker.LINE_NUMBER, line);
-            errorMarker.setAttribute(IMarker.SOURCE_ID, Integer.toString(scaveEditor.getAnalysis().getCharts().getItems().indexOf(chart)));
+            errorMarker.setAttribute(IMarker.SOURCE_ID, Integer.toString(scaveEditor.getAnalysis().getCharts().getCharts().indexOf(chart)));
 
             errorMarkerAnnotation = new MarkerAnnotation(errorMarker);
             documentProvider.annotationModel.addAnnotation(errorMarkerAnnotation, new Position(offset, length));
@@ -739,6 +674,9 @@ public class ChartScriptEditor extends PyEdit {
     @Override
     public void dispose() {
 
+        getDocumentProvider().getDocument(editorInput).removeDocumentListener(chartUpdater);
+        chart.removeListener(chartUpdater);
+
         if (matplotlibChartViewer != null)
             matplotlibChartViewer.dispose();
 
@@ -768,9 +706,8 @@ public class ChartScriptEditor extends PyEdit {
         updateActions();
 
         if (!chart.getScript().equals(getDocument().get())) {
-            SetCommand cmd = (SetCommand) SetCommand.create(scaveEditor.getEditingDomain(), chart,
-                    chart.eClass().getEStructuralFeature("script"), getDocument().get());
-            scaveEditor.getEditingDomain().getCommandStack().execute(cmd);
+            ICommand command = new SetChartScriptCommand(chart, getDocument().get());
+            scaveEditor.executeCommand(command);
         }
 
         runChartScript();

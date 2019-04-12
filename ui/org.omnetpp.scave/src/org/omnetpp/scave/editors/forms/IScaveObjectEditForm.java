@@ -8,7 +8,6 @@
 package org.omnetpp.scave.editors.forms;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.widgets.Composite;
 
 /**
@@ -46,17 +45,17 @@ public interface IScaveObjectEditForm {
      * Returns the features edited on this form.
      * Do not modify the returned array.
      */
-    EStructuralFeature[] getFeatures();
+    //EStructuralFeature[] getFeatures();
 
     /**
      * Returns the value of the control associated with the specified feature.
      */
-    Object getValue(EStructuralFeature feature);
+    //Object getValue(EStructuralFeature feature);
 
     /**
      * Sets the value of the control associated with the specified feature.
      */
-    void setValue(EStructuralFeature feature, Object value);
+    //void setValue(EStructuralFeature feature, Object value);
 
     /**
      * Validates the content of the form.

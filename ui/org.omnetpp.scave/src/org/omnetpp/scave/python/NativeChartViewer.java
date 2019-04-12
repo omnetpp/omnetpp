@@ -11,12 +11,8 @@ import org.omnetpp.scave.charting.ChartViewer;
 import org.omnetpp.scave.charting.HistogramChartViewer;
 import org.omnetpp.scave.charting.ScalarChartViewer;
 import org.omnetpp.scave.charting.VectorChartViewer;
-import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.HistogramChart;
-import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.Property;
-import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.pychart.IChartPropertiesProvider;
 import org.omnetpp.scave.pychart.INativeChartPlotter;
 import org.omnetpp.scave.pychart.IScaveResultsPickleProvider;
@@ -76,12 +72,20 @@ public class NativeChartViewer {
 
         proc = null;
 
-        if (chart instanceof BarChart)
+        switch (chart.getType()) {
+        case BAR:
             chartView = new ScalarChartViewer(parent, SWT.DOUBLE_BUFFERED);
-        else if (chart instanceof LineChart || chart instanceof ScatterChart)
-            chartView = new VectorChartViewer(parent, SWT.DOUBLE_BUFFERED);
-        else if (chart instanceof HistogramChart)
+            break;
+        case HISTOGRAM:
             chartView = new HistogramChartViewer(parent, SWT.DOUBLE_BUFFERED);
+            break;
+        case LINE:
+            chartView = new VectorChartViewer(parent, SWT.DOUBLE_BUFFERED);
+            break;
+        case MATPLOTLIB:
+        default:
+            throw new RuntimeException("invalid chart type");
+        }
     }
 
 
@@ -148,12 +152,21 @@ public class NativeChartViewer {
                     chartView.setStatusText("Rendering chart...");
                     chartView.update();
 
-                    if (chart instanceof BarChart)
+                    switch (chart.getType()) {
+                    case BAR:
                         chartView.setDataset(chartPlotter.scalarDataset);
-                    else if (chart instanceof LineChart || chart instanceof ScatterChart)
-                        chartView.setDataset(chartPlotter.xyDataset);
-                    else if (chart instanceof HistogramChart)
+                        break;
+                    case HISTOGRAM:
                         chartView.setDataset(chartPlotter.histogramDataset);
+                        break;
+                    case LINE:
+                        chartView.setDataset(chartPlotter.xyDataset);
+                        break;
+                    case MATPLOTLIB:
+                    default:
+                        throw new RuntimeException("Wrong chart type.");
+                    }
+
 
                     chartView.setStatusText("");
                     chartView.update();

@@ -1,3 +1,4 @@
+
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2015 OpenSim Ltd.
 
@@ -5,7 +6,7 @@
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-package org.omnetpp.ned.editor.graph.properties.util;
+package org.omnetpp.common.properties;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,30 +15,26 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.IPropertySource2;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
-import org.omnetpp.ned.model.INedElement;
 
 /**
- * Merges several IPropertySource into a single PropertySource (flattens structure)
+ * Merges several IPropertySource into a single PropertySource (flattens
+ * structure)
  *
  * @author rhornig
  */
-// TODO: Use org.omnetpp.common.properties.MergedPropertySource
-public class MergedPropertySource extends NedBasePropertySource {
+public class MergedPropertySource implements IPropertySource2 {
     public static final String BASE_CATEGORY = "Base";
 
     List<IPropertySource> mergedList = new ArrayList<IPropertySource>();
 
     private boolean readOnly = false;
 
-    public MergedPropertySource(INedElement model) {
-        super(model);
-    }
-
     /**
      * Adds a property source to be merged into this
+     *
      * @param ps
      */
-    public void mergePropertySource(IPropertySource ps) {
+    public void addPropertySource(IPropertySource ps) {
         mergedList.add(ps);
     }
 
@@ -45,7 +42,7 @@ public class MergedPropertySource extends NedBasePropertySource {
         // ask all registered PS if it knows about this
         for (IPropertySource psrc : mergedList)
             if (psrc instanceof IPropertySource2)
-                if (((IPropertySource2)psrc).isPropertyResettable(id))
+                if (((IPropertySource2) psrc).isPropertyResettable(id))
                     return true;
 
         return false;
@@ -55,34 +52,27 @@ public class MergedPropertySource extends NedBasePropertySource {
         // ask all registered PS if it knows about this
         for (IPropertySource psrc : mergedList)
             if (psrc instanceof IPropertySource2)
-                if (((IPropertySource2)psrc).isPropertySet(id))
+                if (((IPropertySource2) psrc).isPropertySet(id))
                     return true;
 
         return false;
     }
 
     public Object getEditableValue() {
-        // by default return ourselves
-        // TODO or maybe a copy of ourselves ??? Test with editing multiple objects
         return this;
     }
 
     public IPropertyDescriptor[] getPropertyDescriptors() {
         List<IPropertyDescriptor> mergedPDList = new ArrayList<IPropertyDescriptor>();
-        // first we check whether the model element is inside the model (if not we should not
-        // provide descriptors) ie. property editor is available ONLY for elements IN the model
-        if (getModel().getParent() == null)
-            return new IPropertyDescriptor[0];
 
         // walk through all property source and merge its descriptors into a single list
         for (IPropertySource psrc : mergedList)
             for (IPropertyDescriptor pdesc : psrc.getPropertyDescriptors()) {
-                if (readOnly && (pdesc.getClass()!=PropertyDescriptor.class)) {
+                if (readOnly && (pdesc.getClass() != PropertyDescriptor.class)) {
                     // if we are read only, replace the property descriptor with a readonly one
-                    PropertyDescriptor readOnlyPDesc =
-                        new PropertyDescriptor(pdesc.getId(), pdesc.getDisplayName());
+                    PropertyDescriptor readOnlyPDesc = new PropertyDescriptor(pdesc.getId(), pdesc.getDisplayName());
                     readOnlyPDesc.setCategory(pdesc.getCategory());
-                    readOnlyPDesc.setDescription(pdesc.getDescription()+" - (read only)");
+                    readOnlyPDesc.setDescription(pdesc.getDescription() + " - (read only)");
                     mergedPDList.add(readOnlyPDesc);
                 } else
                     mergedPDList.add(pdesc);
@@ -95,7 +85,8 @@ public class MergedPropertySource extends NedBasePropertySource {
         // ask all registered property sources for the given value
         for (IPropertySource psrc : mergedList) {
             Object result = psrc.getPropertyValue(id);
-            if (result != null) return result;
+            if (result != null)
+                return result;
         }
 
         return null;

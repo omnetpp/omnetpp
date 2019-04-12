@@ -17,7 +17,6 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.BaseLabelProvider;
@@ -29,9 +28,9 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.Markers;
+import org.omnetpp.scave.model.AnalysisObject;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.InputFile;
-import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * Decorates icons according to the markers on the associated resource.
@@ -71,9 +70,11 @@ public class ScaveModelLabelDecorator extends BaseLabelProvider implements ILabe
         }
         else if (element instanceof Chart) {
             Chart item = (Chart)element;
-            IFile file = ScaveModelUtil.getFileOfEObject(item);
-            if (file != null && hasError(file, item))
-                severity = IMarker.SEVERITY_ERROR;
+
+            // TODO
+//            IFile file = ScaveModelUtil.getFileOfEObject(item);
+//            if (file != null && hasError(file, item))
+//                severity = IMarker.SEVERITY_ERROR;
         }
 
         if (severity != -1) {
@@ -112,7 +113,7 @@ public class ScaveModelLabelDecorator extends BaseLabelProvider implements ILabe
         return maxLevel;
     }
 
-    private boolean hasError(IFile file, EObject object) {
+    private boolean hasError(IFile file, AnalysisObject object) {
         try {
             IMarker problems[] = file.findMarkers(Markers.ANALYSISFILE_PROBLEMMARKER_ID, true, IResource.DEPTH_ZERO);
             for (IMarker problem : problems) {

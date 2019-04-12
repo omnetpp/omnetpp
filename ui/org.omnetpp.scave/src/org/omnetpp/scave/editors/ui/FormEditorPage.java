@@ -10,7 +10,6 @@ package org.omnetpp.scave.editors.ui;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IContributionItem;
@@ -41,6 +40,7 @@ import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartViewer;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.model.AnalysisEvent;
 
 /**
  * Common functionality of Scave multi-page editor pages with title and toolbar.
@@ -129,7 +129,7 @@ public class FormEditorPage extends Composite {
      * Updates the page title, etc.
      * Called when the model changed.
      */
-    public void updatePage(Notification notification) {
+    public void updatePage(AnalysisEvent event) {
     }
 
     public void addToToolbar(IAction action) {

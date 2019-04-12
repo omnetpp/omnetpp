@@ -1,25 +1,27 @@
 package org.omnetpp.scave;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.XmlUtils;
+import org.omnetpp.scave.charttemplates.ChartTemplate;
+import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.Chart.ChartType;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Property;
-import org.omnetpp.scave.model.ScaveModelFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class AnalysisLoader {
 
-    private static final ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
-
     public static Analysis loadNewAnalysis(Node rootNode) {
 
-        Analysis analysis = factory.createAnalysis();
-        analysis.setInputs(factory.createInputs());
-        analysis.setCharts(factory.createCharts());
+        Analysis analysis = new Analysis();
 
         Node versionNode = rootNode.getAttributes().getNamedItem("version");
 
@@ -39,13 +41,10 @@ public class AnalysisLoader {
                 for (int j = 0; j < inputNodes.getLength(); ++j) {
                     Node inputNode = inputNodes.item(j);
                     if ("input".equals(inputNode.getNodeName())) {
-                        InputFile input = factory.createInputFile();
-
                         Node patternNode = inputNode.getAttributes().getNamedItem("pattern");
+                        InputFile input = new InputFile(patternNode.getNodeValue());
 
-                        input.setName(patternNode.getNodeValue());
-
-                        analysis.getInputs().getInputs().add(input);
+                        analysis.getInputs().addInput(input);
                     } else if ("#text".equals(inputNode.getNodeName())) {
                         if (!inputNode.getNodeValue().trim().isEmpty())
                             throw new RuntimeException("unexpected text content: " + inputNode.getNodeValue());
@@ -66,19 +65,22 @@ public class AnalysisLoader {
 
                         String chartType = typeNode.getNodeValue();
 
-                        Chart chart;
-                        if ("MatplotlibChart".equals(chartType))
-                            chart = factory.createMatplotlibChart();
-                        else if ("BarChart".equals(chartType))
-                            chart = factory.createBarChart();
-                        else if ("LineChart".equals(chartType))
-                            chart = factory.createLineChart();
-                        else if ("ScatterChart".equals(chartType))
-                            chart = factory.createScatterChart();
-                        else if ("HistogramChart".equals(chartType))
-                            chart = factory.createHistogramChart();
-                        else
-                            throw new RuntimeException("unknown chart type: " + chartType);
+                        Chart chart = new Chart();
+
+                        try {
+                            ChartType type = ChartType.valueOf(chartType);
+                            chart.setType(type);
+                        }
+                        catch (IllegalArgumentException e) {
+                            switch (chartType) {
+                                case "MatplotlibChart": chart.setType(ChartType.MATPLOTLIB); break;
+                                case "BarChart": chart.setType(ChartType.BAR); break;
+                                case "LineChart": chart.setType(ChartType.LINE); break;
+                                case "ScatterChart": chart.setType(ChartType.LINE); break; // for backward compatibility
+                                case "HistogramChart": chart.setType(ChartType.HISTOGRAM); break;
+                                default: throw new RuntimeException("unknown chart type: " + chartType);
+                            }
+                        }
 
                         chart.setName(chartNode.getAttributes().getNamedItem("name").getNodeValue());
 
@@ -86,34 +88,59 @@ public class AnalysisLoader {
                         if (templateNode != null)
                             chart.setTemplateID(templateNode.getNodeValue());
 
-                        Element scriptElement = XmlUtils.getFirstElementWithTag(chartNode, "script");
-                        Element formElement = XmlUtils.getFirstElementWithTag(chartNode, "form");
+                        Node iconPathNode = chartNode.getAttributes().getNamedItem("icon");
+                        if (iconPathNode != null)
+                            chart.setIconPath(iconPathNode.getNodeValue());
+                        else {
+                            ChartTemplate template = ChartTemplateRegistry.findTemplateByID(chart.getTemplateID());
+                            if (template != null)
+                                chart.setIconPath(template.getIconPath());
+                        }
 
                         Node scriptAttrNode = chartNode.getAttributes().getNamedItem("script");
+                        Element scriptElement = XmlUtils.getFirstElementWithTag(chartNode, "script");
+
                         if (scriptAttrNode != null)
                             chart.setScript(scriptAttrNode.getNodeValue());
                         else {
-                            if (scriptElement != null) {
+                            if (scriptElement != null)
                                 chart.setScript(scriptElement.getTextContent());
-                                if (formElement != null)
-                                    chart.setForm(formElement.getTextContent());
-                            }
                             else
                                 chart.setScript(StringUtils.stripEnd(chartNode.getTextContent(), " "));
+                        }
+
+                        Element formElement = XmlUtils.getFirstElementWithTag(chartNode, "form");
+                        if (formElement != null) {
+                            List<Chart.DialogPage> pages = Arrays.asList(new Chart.DialogPage[] {
+                                    new Chart.DialogPage("PROPERTIES", "Properties", formElement.getTextContent()) });
+                            chart.setDialogPages(pages);
+                        }
+                        else {
+                            ArrayList<Chart.DialogPage> pages = new ArrayList<>();
+
+                            List<Element> pageNodes = XmlUtils.getElementsWithTag(chartNode, "dialogPage");
+                            for (Element pageNode : pageNodes) {
+                                String id = pageNode.getAttributes().getNamedItem("id").getNodeValue();
+                                String label = pageNode.getAttributes().getNamedItem("label").getNodeValue();
+                                String xswtForm = pageNode.getTextContent();
+                                Chart.DialogPage page = new Chart.DialogPage(id, label, xswtForm);
+                                pages.add(page);
+                            }
+                            chart.setDialogPages(pages);
                         }
 
                         NodeList props = chartNode.getChildNodes();
                         for (int k = 0; k < props.getLength(); ++k) {
                             Node propNode = props.item(k);
                             if ("property".equals(propNode.getNodeName())) {
-                                Property prop = factory.createProperty();
-                                prop.setName(propNode.getAttributes().getNamedItem("name").getNodeValue());
-                                prop.setValue(propNode.getAttributes().getNamedItem("value").getNodeValue());
-                                chart.getProperties().add(prop);
+                                String name = propNode.getAttributes().getNamedItem("name").getNodeValue();
+                                String value = propNode.getAttributes().getNamedItem("value").getNodeValue();
+                                Property prop = new Property(name, value);
+                                chart.addProperty(prop);
                             }
                         }
 
-                        analysis.getCharts().getItems().add(chart);
+                        analysis.getCharts().addChart(chart);
                     }
                     else if ("#text".equals(chartNode.getNodeName())) {
                         if (!chartNode.getNodeValue().trim().isEmpty())

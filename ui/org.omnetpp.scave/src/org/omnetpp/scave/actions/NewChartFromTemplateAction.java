@@ -9,23 +9,25 @@ package org.omnetpp.scave.actions;
 
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.charttemplates.ChartTemplate;
 import org.omnetpp.scave.model2.ScaveModelUtil;
-import org.omnetpp.scave.python.ChartTemplate;
 
 
 public class NewChartFromTemplateAction extends NewAnalysisItemAction {
 
-    public NewChartFromTemplateAction(ChartTemplate template, boolean withEditDialog) {
-        super(ScaveModelUtil.createChartFromTemplate(template), withEditDialog);
+    public NewChartFromTemplateAction(ChartTemplate template) {
+        super(ScaveModelUtil.createChartFromTemplate(template));
         setText("New " + template.getName());
-        String iconName = "";
-        switch (template.getChartType()) {
-            case BAR:        iconName = ScaveImages.IMG_ETOOL16_NEWBARCHART;        break;
-            case HISTOGRAM:  iconName = ScaveImages.IMG_ETOOL16_NEWHISTOGRAMCHART;  break;
-            case LINE:       iconName = ScaveImages.IMG_ETOOL16_NEWLINECHART;       break;
-            case MATPLOTLIB: iconName = ScaveImages.IMG_ETOOL16_NEWMATPLOTLIBCHART; break;
-            case SCATTER:    iconName = ScaveImages.IMG_ETOOL16_NEWSCATTERCHART;    break;
-        }
+
+        String iconName = template.getToolbarIconPath();
+
+        if (iconName == null || iconName.isEmpty())
+            switch (template.getChartType()) {
+                case BAR:        iconName = ScaveImages.IMG_ETOOL16_NEWBARCHART;        break;
+                case HISTOGRAM:  iconName = ScaveImages.IMG_ETOOL16_NEWHISTOGRAMCHART;  break;
+                case LINE:       iconName = ScaveImages.IMG_ETOOL16_NEWLINECHART;       break;
+                case MATPLOTLIB: iconName = ScaveImages.IMG_ETOOL16_NEWMATPLOTLIBCHART; break;
+            }
         setImageDescriptor(ScavePlugin.getImageDescriptor(iconName));
     }
 }

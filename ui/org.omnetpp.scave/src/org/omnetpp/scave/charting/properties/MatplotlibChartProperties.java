@@ -13,21 +13,16 @@ import java.util.List;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
-import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.model.MatplotlibChart;
+import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
-import org.omnetpp.scave.model.ScaveModelFactory;
-import org.omnetpp.scave.model.ScaveModelPackage;
 
 public class MatplotlibChartProperties implements IPropertySource2 {
-    MatplotlibChart chart;
+    Chart chart;
     List<Property> properties;
-    ResultFileManager manager;
 
-    public MatplotlibChartProperties(MatplotlibChart chart, List<Property> properties, ResultFileManager manager) {
+    public MatplotlibChartProperties(Chart chart) {
         this.chart = chart;
-        this.properties = properties;
-        this.manager = manager;
+        this.properties = chart.getProperties();
     }
 
     public Property getProperty(String propertyName) {
@@ -42,14 +37,10 @@ public class MatplotlibChartProperties implements IPropertySource2 {
      * the property node is deleted.
      */
     protected void doSetProperty(String propertyName, String propertyValue) {
-        ScaveModelPackage model = ScaveModelPackage.eINSTANCE;
-        ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
         Property property = getProperty(propertyName);
 
         if (property == null && propertyValue != null) { // add new property
-            property = factory.createProperty();
-            property.setName(propertyName);
-            property.setValue(propertyValue);
+            property = new Property(propertyName, propertyValue);
             properties.add(property);
         } else if (property != null && propertyValue != null) // change existing property
             property.setValue(propertyValue);
@@ -68,14 +59,8 @@ public class MatplotlibChartProperties implements IPropertySource2 {
         return properties;
     }
 
-    public static MatplotlibChartProperties createPropertySource(MatplotlibChart chart, ResultFileManager manager) {
-        return createPropertySource(chart, chart.getProperties(), manager);
-    }
-
-    public static MatplotlibChartProperties createPropertySource(MatplotlibChart chart, List<Property> properties,
-            ResultFileManager manager) {
-        return new MatplotlibChartProperties(chart, properties, manager);
-
+    public static MatplotlibChartProperties createPropertySource(Chart chart) {
+        return new MatplotlibChartProperties(chart);
     }
 
     @Override

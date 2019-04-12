@@ -27,8 +27,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.content.IContentType;
-import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.omnetpp.common.Debug;
 import org.omnetpp.scave.ContentTypes;
 import org.omnetpp.scave.ScavePlugin;
@@ -36,6 +34,8 @@ import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.IndexFileUtils;
 import org.omnetpp.scave.jobs.ResultFileManagerUpdaterJob;
+import org.omnetpp.scave.model.AnalysisEvent;
+import org.omnetpp.scave.model.IAnalysisListener;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model2.ScaveModelUtil;
@@ -48,7 +48,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  *
  * @author andras, tomi
  */
-public class ResultFilesTracker implements INotifyChangedListener, IResourceChangeListener {
+public class ResultFilesTracker implements IResourceChangeListener, IAnalysisListener {
 
     private static final boolean debug = true;
 
@@ -73,8 +73,8 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
     /**
      * Listen to EMF model changes.
      */
-    public void notifyChanged(Notification notification) {
-        if (ScaveModelUtil.isInputsChange(notification))
+    public void analysisChanged(AnalysisEvent event) {
+        if (ScaveModelUtil.isInputsChange(event))
             synchronize(false);
     }
 

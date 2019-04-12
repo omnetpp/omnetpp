@@ -14,7 +14,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.dataset.VectorDataLoader;
-import org.omnetpp.scave.charting.properties.ChartProperties;
+import org.omnetpp.scave.charting.properties.ChartVisualProperties;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.IDList;
@@ -24,7 +24,6 @@ import org.omnetpp.scave.engine.RunAttribute;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ResultType;
-import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
@@ -65,7 +64,7 @@ public class CreateTempChartAction extends AbstractScaveAction {
 
         Chart chart = null;
         switch (type) {
-            case HISTOGRAM_LITERAL: chart = ScaveModelUtil.createChartFromTemplate("histogramchart"); break;
+            case HISTOGRAM_LITERAL: chart = ScaveModelUtil.createChartFromTemplate("histogram"); break;
             case SCALAR_LITERAL: chart = ScaveModelUtil.createChartFromTemplate("barchart"); break;
             case VECTOR_LITERAL: chart = ScaveModelUtil.createChartFromTemplate("linechart"); break;
             case STATISTICS_LITERAL: Assert.isLegal(false, "unsupported result type"); break;
@@ -73,10 +72,8 @@ public class CreateTempChartAction extends AbstractScaveAction {
         }
 
         String filter = ResultFileManager.callWithReadLock(manager, () -> { return ScaveModelUtil.getIDListAsFilterExpression(idList, filterFields, manager); });
-        Property property = ScaveModelFactory.eINSTANCE.createProperty();
-        property.setName("filter");
-        property.setValue(filter);
-        chart.getProperties().add(property);
+        Property property = new Property("filter", filter);
+        chart.addProperty(property);
 
         chart.setName(name);
         chart.setTemporary(true);

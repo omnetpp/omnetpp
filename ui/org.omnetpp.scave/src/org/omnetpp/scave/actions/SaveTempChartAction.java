@@ -7,15 +7,14 @@
 
 package org.omnetpp.scave.actions;
 
-import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.ISharedImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.ScaveModelPackage;
+import org.omnetpp.scave.model.commands.AddChartCommand;
+import org.omnetpp.scave.model.commands.ICommand;
 
 /**
  * Saves a temporary chart.
@@ -37,7 +36,7 @@ public class SaveTempChartAction extends AbstractScaveAction {
         Chart chart = getActiveTemporaryChart(scaveEditor);
         if (chart != null) {
             chart.setTemporary(false);
-            Command command = AddCommand.create(scaveEditor.getEditingDomain(), scaveEditor.getAnalysis().getCharts(), ScaveModelPackage.eINSTANCE.getCharts_Items(), chart, -1);
+            ICommand command = new AddChartCommand(scaveEditor.getAnalysis(), chart);
             scaveEditor.executeCommand(command);
             scaveEditor.getActiveChartScriptEditor().updateActions();
             scaveEditor.showAnalysisItem(chart);

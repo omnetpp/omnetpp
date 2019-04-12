@@ -99,6 +99,7 @@ public class ScaveImages {
     public static final String IMG_OBJ_CHARTSHEET = "icons/full/obj/chartsheet.png";
     public static final String IMG_OBJ_DATASET = "icons/full/obj/dataset.png";
     public static final String IMG_OBJ_FOLDER = "icons/full/obj/folder.png";
+    public static final String IMG_OBJ_CHART = "icons/full/obj/chart.png";
     public static final String IMG_OBJ_HISTOGRAMCHART = "icons/full/obj/histogramchart.png";
     public static final String IMG_OBJ_LINECHART = "icons/full/obj/linechart.png";
     public static final String IMG_OBJ_MATPLOTLIBCHART = "icons/full/obj/matplotlibchart.png";

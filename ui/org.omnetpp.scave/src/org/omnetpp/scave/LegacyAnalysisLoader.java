@@ -1,5 +1,11 @@
 package org.omnetpp.scave;
 
+import static org.omnetpp.scave.charttemplates.ChartTemplateRegistry.BARCHART_ID;
+import static org.omnetpp.scave.charttemplates.ChartTemplateRegistry.HISTOGRAMCHART_ID;
+import static org.omnetpp.scave.charttemplates.ChartTemplateRegistry.LINECHART_ID;
+import static org.omnetpp.scave.charttemplates.ChartTemplateRegistry.SCATTERCHART_ID;
+import static org.omnetpp.scave.charttemplates.ChartTemplateRegistry.getTemplateByID;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,17 +17,12 @@ import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Property;
-import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model2.ScaveModelUtil;
-import org.omnetpp.scave.python.ChartTemplateRegistry;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class LegacyAnalysisLoader {
-
-    private static final ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
-
     static class DataOp {
         String op;
         String filter;
@@ -111,13 +112,13 @@ public class LegacyAnalysisLoader {
         Chart chart = null;
 
         if ("scave:BarChart".equals(chartType))
-            chart = ScaveModelUtil.createChartFromTemplate(ChartTemplateRegistry.barChartInternal);
+            chart = ScaveModelUtil.createChartFromTemplate(getTemplateByID(BARCHART_ID));
         else if ("scave:HistogramChart".equals(chartType))
-            chart = ScaveModelUtil.createChartFromTemplate(ChartTemplateRegistry.histogramChart);
+            chart = ScaveModelUtil.createChartFromTemplate(getTemplateByID(HISTOGRAMCHART_ID));
         else if ("scave:ScatterChart".equals(chartType))
-            chart = ScaveModelUtil.createChartFromTemplate(ChartTemplateRegistry.scatterChartInternal);
+            chart = ScaveModelUtil.createChartFromTemplate(getTemplateByID(SCATTERCHART_ID));
         else if ("scave:LineChart".equals(chartType))
-            chart = ScaveModelUtil.createChartFromTemplate(ChartTemplateRegistry.lineChartInternal);
+            chart = ScaveModelUtil.createChartFromTemplate(getTemplateByID(LINECHART_ID));
         else
             throw new RuntimeException("unknown chart type: " + chartType);
 
@@ -130,10 +131,10 @@ public class LegacyAnalysisLoader {
         for (int k = 0; k < props.getLength(); ++k) {
             Node propNode = props.item(k);
             if ("properties".equals(propNode.getNodeName())) {
-                Property prop = factory.createProperty();
-                prop.setName(propNode.getAttributes().getNamedItem("name").getNodeValue());
-                prop.setValue(propNode.getAttributes().getNamedItem("value").getNodeValue());
-                chart.getProperties().add(prop);
+                String name = propNode.getAttributes().getNamedItem("name").getNodeValue();
+                String value = propNode.getAttributes().getNamedItem("value").getNodeValue();
+                Property prop = new Property(name, value);
+                chart.addProperty(prop);
             } else if ("filters".equals(propNode.getNodeName())) {
                 filters.add(new DataFilter(propNode.getAttributes().getNamedItem("xsi:type").getNodeValue(), propNode.getAttributes().getNamedItem("filterPattern").getNodeValue()));
             }
@@ -187,11 +188,10 @@ public class LegacyAnalysisLoader {
     private static void setProperty(Chart chart, String name, String value) {
         Property prop = ScaveModelUtil.getChartProperty(chart, name);
         if (prop == null) {
-            prop = factory.createProperty();
-            chart.getProperties().add(prop);
-            prop.setName(name);
-        }
-        prop.setValue(value);
+            prop = new Property(name, value);
+            chart.addProperty(prop);
+        } else
+            prop.setValue(value);
     }
 
     static Map<String, String> extractVectorOpParams(Node operationNode) {
@@ -249,7 +249,7 @@ public class LegacyAnalysisLoader {
                     vecOps.add(new DataVecOp("scave:Apply".equals(itemType) ? "apply" : "compute", operationNode.getNodeValue(), extractVectorOpParams(itemNode)));
                 }
                 else if ("scave:BarChart".equals(itemType) || "scave:HistogramChart".equals(itemType) || "scave:ScatterChart".equals(itemType) || "scave:LineChart".equals(itemType))
-                    analysis.getCharts().getItems().add(makeLegacyChart(ops, vecOps, datasetName, itemNode, itemType, errors));
+                    analysis.getCharts().addChart(makeLegacyChart(ops, vecOps, datasetName, itemNode, itemType, errors));
                 else if ("scave:Group".equals(itemType)) {
                     loadItems(itemNode, analysis, errors, ops, vecOps);
                 }
@@ -269,9 +269,7 @@ public class LegacyAnalysisLoader {
 
     public static Analysis loadLegacyAnalysis(Node rootNode, ArrayList<String> errors) {
 
-        Analysis analysis = factory.createAnalysis();
-        analysis.setInputs(factory.createInputs());
-        analysis.setCharts(factory.createCharts());
+        Analysis analysis = new Analysis();
 
         NodeList topLevelNodes = rootNode.getChildNodes();
 
@@ -285,13 +283,12 @@ public class LegacyAnalysisLoader {
                 for (int j = 0; j < inputNodes.getLength(); ++j) {
                     Node inputNode = inputNodes.item(j);
                     if ("inputs".equals(inputNode.getNodeName())) {
-                        InputFile input = factory.createInputFile();
 
                         Node nameNode = inputNode.getAttributes().getNamedItem("name");
 
-                        input.setName(nameNode.getNodeValue());
+                        InputFile input = new InputFile(nameNode.getNodeValue());
 
-                        analysis.getInputs().getInputs().add(input);
+                        analysis.getInputs().addInput(input);
                     } else if ("#text".equals(inputNode.getNodeName())) {
                         if (!inputNode.getNodeValue().trim().isEmpty())
                             throw new RuntimeException("unexpected text content: " + inputNode.getNodeValue());

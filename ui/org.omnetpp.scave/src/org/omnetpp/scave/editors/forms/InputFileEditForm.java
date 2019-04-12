@@ -7,16 +7,14 @@
 
 package org.omnetpp.scave.editors.forms;
 
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.omnetpp.scave.model.AnalysisObject;
 import org.omnetpp.scave.model.InputFile;
-import org.omnetpp.scave.model.ScaveModelPackage;
 
 /**
  * Edit form of input files.
@@ -26,13 +24,6 @@ import org.omnetpp.scave.model.ScaveModelPackage;
 public class InputFileEditForm extends BaseScaveObjectEditForm {
 
     /**
-     * Features edited on this panel.
-     */
-    private static final EStructuralFeature[] features = new EStructuralFeature[] {
-        ScaveModelPackage.eINSTANCE.getInputFile_Name(),
-    };
-
-    /**
      * The edited input file.
      */
     //private InputFile inputFile;
@@ -40,16 +31,9 @@ public class InputFileEditForm extends BaseScaveObjectEditForm {
     // edit controls of the features
     private Text nameText;
 
-    public InputFileEditForm(InputFile inputFile, EObject parent) {
+    public InputFileEditForm(InputFile inputFile, AnalysisObject parent) {
         super(inputFile);
         //this.inputFile = inputFile;
-    }
-
-    /**
-     * Returns the features edited on this form.
-     */
-    public EStructuralFeature[] getFeatures() {
-        return features;
     }
 
     /**
@@ -64,26 +48,4 @@ public class InputFileEditForm extends BaseScaveObjectEditForm {
         nameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
     }
 
-    /**
-     * Reads the value of the specified feature from the corresponding control.
-     */
-    public Object getValue(EStructuralFeature feature) {
-        switch (feature.getFeatureID()) {
-        case ScaveModelPackage.INPUT_FILE__NAME:
-            return nameText.getText();
-        }
-        return null;
-    }
-
-
-    /**
-     * Writes the value of a feature into the corresponding control.
-     */
-    public void setValue(EStructuralFeature feature, Object value) {
-        switch (feature.getFeatureID()) {
-        case ScaveModelPackage.INPUT_FILE__NAME:
-            nameText.setText((String)value);
-            break;
-        }
-    }
 }

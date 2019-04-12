@@ -1,0 +1,65 @@
+/*--------------------------------------------------------------*
+  Copyright (C) 2006-2015 OpenSim Ltd.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  'License' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
+package org.omnetpp.scave.actions;
+
+import java.util.concurrent.Callable;
+
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.ISharedImages;
+import org.omnetpp.common.ui.LocalTransfer;
+import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.editors.IDListSelection;
+import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
+import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.model.AnalysisObject;
+
+/**
+ * Copy model objects to the clipboard.
+ */
+public class CopyAction extends AbstractScaveAction {
+    public CopyAction() {
+        setText("Copy to Clipboard");
+        setImageDescriptor(ScavePlugin.getSharedImageDescriptor(ISharedImages.IMG_TOOL_COPY));
+    }
+
+    @Override
+    protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
+
+        if (selection instanceof IDListSelection) {
+            // TODO this is not the proper way
+            final FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
+            if (activePanel != null) {
+                ResultFileManager.callWithReadLock(activePanel.getResultFileManager(), new Callable<Object>() {
+                    public Object call() throws Exception {
+                        activePanel.getDataControl().copySelectionToClipboard();
+                        return null;
+                    }
+                });
+            }
+        }
+        else {
+            Object[] objects = selection.toArray();
+            for (int i = 0; i < objects.length; ++i)
+                if (objects[i] instanceof AnalysisObject)
+                    objects[i] = ((AnalysisObject)objects[i]).pubClone();
+            // TODO filter out non-AnalysisObject objects
+            Clipboard clipboard = new Clipboard(Display.getCurrent());
+            clipboard.setContents(new Object[] { objects }, new Transfer[] {LocalTransfer.getInstance()});
+            clipboard.dispose();
+        }
+    }
+
+    @Override
+    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+        return !selection.isEmpty(); // TODO check if there are non-AnalysisObject objects in the selection
+    }
+}

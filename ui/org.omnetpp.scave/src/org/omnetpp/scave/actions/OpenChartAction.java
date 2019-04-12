@@ -10,7 +10,6 @@ package org.omnetpp.scave.actions;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
@@ -34,9 +33,8 @@ public class OpenChartAction extends AbstractScaveAction {
         // collect charts and chartsheets from the selection
         List<Chart> charts = new ArrayList<>();
         for (Object element : selection.toArray()) {
-            Object object = AdapterFactoryEditingDomain.unwrap(element);
-            if (object instanceof Chart)
-                charts.add((Chart)object);
+            if (element instanceof Chart)
+                charts.add((Chart)element);
         }
 
         if (charts.size() == 1)

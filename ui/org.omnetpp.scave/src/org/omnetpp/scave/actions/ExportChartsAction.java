@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
@@ -15,6 +14,7 @@ import org.omnetpp.scave.editors.ui.ExportChartsDialog;
 import org.omnetpp.scave.export.IChartExport;
 import org.omnetpp.scave.export.IGraphicalExportFileFormat;
 import org.omnetpp.scave.jobs.ExportChartsJob;
+import org.omnetpp.scave.model.AnalysisObject;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model2.FilenameGenerator;
 import org.omnetpp.scave.model2.FilenameGenerator.Overwrite;
@@ -35,8 +35,8 @@ public class ExportChartsAction extends AbstractScaveAction {
         for (Object obj : selection.toArray()) {
             if (obj instanceof Chart)
                 initialSelection.add((Chart)obj);
-            if (obj instanceof EObject)
-                initialSelection.addAll(ScaveModelUtil.findObjects((EObject)obj, Chart.class)); // findObject() does not search the object itself
+            if (obj instanceof AnalysisObject)
+                initialSelection.addAll(ScaveModelUtil.findObjects((AnalysisObject)obj, Chart.class)); // findObject() does not search the object itself
         }
         if (initialSelection.isEmpty())
             initialSelection = allCharts;

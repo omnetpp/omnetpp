@@ -9,7 +9,7 @@ import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
-import org.omnetpp.scave.charting.ChartViewerFactory;
+//import org.omnetpp.scave.charting.ChartViewerFactory;
 import org.omnetpp.scave.charting.IChartView;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;

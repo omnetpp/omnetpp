@@ -81,6 +81,7 @@ import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model2.ChartLine;
 
+// TODO DELETE
 public abstract class BaseLineChartEditForm extends ChartEditForm {
 
     public static final String PARAM_SELECTED_LINE = "SelectedLine";
@@ -145,7 +146,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
     private TableViewer linesTableViewer;
     private TristateCheckButton displayLineCheckbox;
     private Text displayNameText;
-    private ColorEdit colorEdit;
+    //private ColorEdit colorEdit;
     private ImageCombo symbolTypeCombo;
     private Combo symbolSizeCombo;
     private ImageCombo lineTypeCombo;
@@ -154,7 +155,6 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
     public BaseLineChartEditForm(Chart chart, Map<String,Object> formParameters, ResultFileManager manager) {
         super(chart, formParameters, manager);
         selectedLines = Collections.emptyList();
-        lineProps = (VectorChartProperties)properties;
     }
 
     protected void setLines(Line[] lines) {
@@ -171,7 +171,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
     @Override
     protected void populateTabFolder(TabFolder tabfolder) {
         super.populateTabFolder(tabfolder);
-        createTab(TAB_LINES, tabfolder, 2);
+        //createTab(TAB_LINES, tabfolder, 2);
     }
 
     @Override
@@ -180,12 +180,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
         String name = item.getText();
         Composite panel = (Composite)item.getControl();
 
-        if (TAB_AXES.equals(name)) {
-            Group group = getAxisBoundsGroup();
-            xAxisMinText = createTextField("X axis", group, getMaxBoundLabel());
-            xAxisMaxText = createTextField(null, group, xAxisMinText);
-        }
-        else if (TAB_LINES.equals(name)) {
+        if (TAB_LINES.equals(name)) {
             Label label = new Label(panel, SWT.NONE);
             label.setText("Select line(s) to apply changes to:");
             Button selectAllButton = new Button(panel, SWT.PUSH);
@@ -229,9 +224,9 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
                 }
             });
 
-            Group subpanel = createGroup("Properties", panel);
-            subpanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-            subpanel.setLayout(new GridLayout(2, false));
+            Group subpanel = null; // createGroup("Properties", panel);
+//            subpanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+//            subpanel.setLayout(new GridLayout(2, false));
 
             displayLineCheckbox = new TristateCheckButton(subpanel, SWT.CHECK);
             displayLineCheckbox.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
@@ -250,7 +245,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
             gridLayout.marginHeight = 0;
             subsubpanel.setLayout(gridLayout);
 
-            displayNameText = createTextField("Display name:", subsubpanel);
+            //displayNameText = createTextField("Display name:", subsubpanel);
             new ResultItemNamePatternField(displayNameText);
             displayNameText.addModifyListener(new ModifyListener() {
                 public void modifyText(ModifyEvent e) {
@@ -300,23 +295,23 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
                 }
             });
 
-            symbolSizeCombo = createComboField("Symbol size:", subpanel, SYMBOL_SIZES, true);
-            symbolSizeCombo.add(NO_CHANGE, 0);
-            symbolSizeCombo.add(AUTO, 1);
-            symbolSizeCombo.setVisibleItemCount(SYMBOL_SIZES.length);
-            symbolSizeCombo.addSelectionListener(new SelectionAdapter() {
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    updatePreview();
-                }
-            });
+//            symbolSizeCombo = createComboField("Symbol size:", subpanel, SYMBOL_SIZES, true);
+//            symbolSizeCombo.add(NO_CHANGE, 0);
+//            symbolSizeCombo.add(AUTO, 1);
+//            symbolSizeCombo.setVisibleItemCount(SYMBOL_SIZES.length);
+//            symbolSizeCombo.addSelectionListener(new SelectionAdapter() {
+//                @Override
+//                public void widgetSelected(SelectionEvent e) {
+//                    updatePreview();
+//                }
+//            });
 
-            colorEdit = createColorField("Color:", subpanel);
-            colorEdit.text.addModifyListener(new ModifyListener() {
-                public void modifyText(ModifyEvent e) {
-                    updatePreview();
-                }
-            });
+//            colorEdit = createColorField("Color:", subpanel);
+//            colorEdit.text.addModifyListener(new ModifyListener() {
+//                public void modifyText(ModifyEvent e) {
+//                    updatePreview();
+//                }
+//            });
 
             Group previewPanel = new Group(panel, SWT.NONE);
             previewPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
@@ -376,11 +371,12 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
     @SuppressWarnings("unchecked")
     void handleLineSelectionChanged(SelectionChangedEvent e) {
         // copy content of fields into lineProps based on old selection
-        if (!selectedLines.isEmpty()) {
-            VectorChartProperties newProps = (VectorChartProperties)ChartProperties.createPropertySource(chart, new ArrayList<Property>(), manager);
-            collectLineProperties(newProps, lineProps, selectedLines);
-            lineProps = newProps;
-        }
+        // TODO implement
+//        if (!selectedLines.isEmpty()) {
+//            VectorChartProperties newProps = (VectorChartProperties)ChartProperties.createPropertySource(chart, new ArrayList<Property>(), manager);
+//            collectLineProperties(newProps, lineProps, selectedLines);
+//            lineProps = newProps;
+//        }
 
         // set new selection, and fill the fields according to it
         selectedLines = ((IStructuredSelection)e.getSelection()).toList();
@@ -388,6 +384,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
         updatePreview();
     }
 
+    /*
     @Override
     protected void collectProperties(ChartProperties newProps) {
         // fill newProps (initially empty) with the updated chart properties from the dialog;
@@ -404,6 +401,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
         List<?> selection = ((IStructuredSelection) linesTableViewer.getSelection()).toList();
         collectLineProperties(newProps, lineProps, selection);
     }
+    */
 
     protected void collectLineProperties(ChartProperties newProps, ChartProperties origProps, List<?> selection) {
         // read dialog contents
@@ -414,7 +412,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
         String symbolType = symbolTypeCombo.getText();
         String symbolSize = symbolSizeCombo.getText();
         String lineType = lineTypeCombo.getText();
-        String lineColor = colorEdit.getText();
+        String lineColor = ""; // colorEdit.getText();
 
         // copy original line properties from the Chart object
         // Note: if a setting applies to all lines, remove line specific settings
@@ -499,7 +497,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
             symbolTypeCombo.setText(NO_CHANGE);
             symbolSizeCombo.setText(NO_CHANGE);
             lineTypeCombo.setText(NO_CHANGE);
-            colorEdit.setText(NO_CHANGE);
+            //colorEdit.setText(NO_CHANGE);
         }
         else {
             @SuppressWarnings("unchecked")
@@ -545,7 +543,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
             symbolTypeCombo.setText(sameSymbolType ? (symbolType == null ? AUTO : symbolType.toString()) : NO_CHANGE);
             symbolSizeCombo.setText(sameSymbolSize ? (symbolSize == null ? AUTO : symbolSize.toString()) : NO_CHANGE);
             lineTypeCombo.setText(sameLineType ? (lineType == null ? AUTO : lineType.toString()) : NO_CHANGE);
-            colorEdit.setText(sameLineColor ? (StringUtils.isEmpty(lineColor) ? AUTO : lineColor) : NO_CHANGE);
+            //colorEdit.setText(sameLineColor ? (StringUtils.isEmpty(lineColor) ? AUTO : lineColor) : NO_CHANGE);
         }
     }
 
@@ -679,8 +677,8 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 
         public Color getLineColor(Line line) {
             String colorStr = null;
-            if (!NO_CHANGE.equals(colorEdit.getText()))
-                colorStr = colorEdit.getText();
+//            if (!NO_CHANGE.equals(colorEdit.getText()))
+//                colorStr = colorEdit.getText();
             if (StringUtils.isEmpty(colorStr))
                 colorStr = lineProps.getLineProperties(line.key).getLineColor();
             if (StringUtils.isEmpty(colorStr))

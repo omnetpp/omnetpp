@@ -266,10 +266,10 @@ public class DataTable extends Table implements IDataControl {
     }
 
     protected Column[] getAllColumns() {
-        switch (type.getValue()) {
-        case ResultType.SCALAR:     return allScalarColumns;
-        case ResultType.VECTOR:     return allVectorColumns;
-        case ResultType.HISTOGRAM:  return allHistogramColumns;
+        switch (type) {
+        case SCALAR_LITERAL:     return allScalarColumns;
+        case VECTOR_LITERAL:     return allVectorColumns;
+        case HISTOGRAM_LITERAL:  return allHistogramColumns;
         default: return null;
         }
     }

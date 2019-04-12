@@ -16,8 +16,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
@@ -36,8 +34,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.part.FileEditorInput;
-import org.omnetpp.common.Debug;
 import org.omnetpp.common.ui.FocusManager;
+import org.omnetpp.common.ui.LocalTransfer;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.actions.CollapseSubtreeAction;
 import org.omnetpp.scave.actions.CollapseTreeAction;
@@ -48,6 +46,7 @@ import org.omnetpp.scave.editors.ScaveEditorContributor;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
 import org.omnetpp.scave.engineext.ResultFileManagerChangeEvent;
+import org.omnetpp.scave.model.AnalysisEvent;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model2.ScaveModelUtil;
@@ -186,8 +185,8 @@ public class InputsPage extends FormEditorPage {
     }
 
     @Override
-    public void updatePage(Notification notification) {
-        if (ScaveModelUtil.isInputsChange(notification))
+    public void updatePage(AnalysisEvent event) {
+        if (ScaveModelUtil.isInputsChange(event))
             getTreeViewer().refresh();
     }
 
@@ -217,7 +216,7 @@ public class InputsPage extends FormEditorPage {
         }
 
         // add them
-        ScaveModelUtil.addInputFiles(scaveEditor.getEditingDomain(), scaveEditor.getAnalysis(), list);
+        ScaveModelUtil.addInputFiles(scaveEditor.getCommandStack(), scaveEditor.getAnalysis(), list);
     }
 
     protected IPath makeRelative(IPath path) {

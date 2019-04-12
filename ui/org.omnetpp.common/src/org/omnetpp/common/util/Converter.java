@@ -55,11 +55,12 @@ public class Converter {
     public static <T extends Enum<T>> T stringToEnum(String value, Class<T> enumType) {
         if (value == null)
             return null;
-        try {
-            return Enum.valueOf(enumType, value);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
+
+        for (T option : enumType.getEnumConstants())
+            if (option.toString().equalsIgnoreCase(value))
+                return option;
+
+        return null;
     }
 
     /*

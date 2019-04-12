@@ -7,21 +7,19 @@
 
 package org.omnetpp.scave.actions;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 
-import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.common.command.CompoundCommand;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.edit.command.DeleteCommand;
-import org.eclipse.emf.edit.command.RemoveCommand;
-import org.eclipse.emf.edit.domain.EditingDomain;
-import org.eclipse.emf.edit.provider.IWrapperItemProvider;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.ISharedImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.model.Analysis;
+import org.omnetpp.scave.model.AnalysisItem;
+import org.omnetpp.scave.model.AnalysisObject;
+import org.omnetpp.scave.model.commands.CompoundCommand;
+import org.omnetpp.scave.model.commands.ICommand;
+import org.omnetpp.scave.model.commands.RemoveChartCommand;
 
 /**
  * Removes selected elements.
@@ -34,10 +32,8 @@ public class RemoveAction extends AbstractScaveAction {
 
     @Override
     protected void doRun(ScaveEditor scaveEditor, IStructuredSelection structuredSelection) {
-        Command command = createCommand(
-                            scaveEditor.getEditingDomain(),
-                            structuredSelection);
-        scaveEditor.getEditingDomain().getCommandStack().execute(command);
+        ICommand command = createCommand(structuredSelection);
+        scaveEditor.getCommandStack().execute(command);
     }
 
     @SuppressWarnings("unchecked")
@@ -48,9 +44,7 @@ public class RemoveAction extends AbstractScaveAction {
         Iterator<Object> elements = selection.iterator();
         while (elements.hasNext()) {
             Object element = elements.next();
-            if (element instanceof IWrapperItemProvider)
-                element = ((IWrapperItemProvider)element).getValue();
-            if (!(element instanceof EObject))  //TODO || editor.isTemporaryObject((EObject)element)
+            if (!(element instanceof AnalysisObject))  //TODO || editor.isTemporaryObject((AnalysisObject)element)
                 return false;
         }
         return true; // only non-temporary EObjects selected
@@ -69,21 +63,16 @@ public class RemoveAction extends AbstractScaveAction {
      *
      * TODO: fix EditingDomainActionBarContributor.deleteAction too.
      */
-    private Command createCommand(EditingDomain ed, IStructuredSelection selection) {
+    private ICommand createCommand(IStructuredSelection selection) {
         CompoundCommand command = new CompoundCommand("Remove");
-        Collection<Object> references = new ArrayList<Object>();
-        Collection<Object> containments = new ArrayList<Object>();
+
         for (Iterator<?> i = selection.iterator(); i.hasNext();) {
             Object object = i.next();
-            if (object instanceof IWrapperItemProvider)
-                references.add(object);
+            if (object instanceof AnalysisItem)
+                command.append(new RemoveChartCommand((AnalysisItem)object));
             else
-                containments.add(object);
+                Assert.isTrue(false); // TODO
         }
-        if (references.size() > 0)
-            command.append(RemoveCommand.create(ed, references));
-        if (containments.size() > 0)
-            command.append(DeleteCommand.create(ed, containments));
-        return command.unwrap();
+        return command;
     }
 }

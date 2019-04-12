@@ -11,10 +11,6 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.emf.common.command.CompoundCommand;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
@@ -27,9 +23,17 @@ import org.omnetpp.common.util.StatusUtil;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.editors.forms.ChartEditForm;
 import org.omnetpp.scave.editors.forms.IScaveObjectEditForm;
 import org.omnetpp.scave.editors.forms.ScaveObjectEditFormFactory;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.model.AnalysisObject;
+import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.Property;
+import org.omnetpp.scave.model.commands.AddChartPropertyCommand;
+import org.omnetpp.scave.model.commands.CompoundCommand;
+import org.omnetpp.scave.model.commands.SetChartNameCommand;
+import org.omnetpp.scave.model.commands.SetChartPropertyCommand;
 
 /**
  * This is the edit dialog for scave model objects.
@@ -43,8 +47,7 @@ import org.omnetpp.scave.engine.ResultFileManager;
 public class EditDialog extends TitleAreaDialog {
 
     private ScaveEditor editor;
-    private EObject object;
-    private EStructuralFeature[] features; //XXX not really used, remove on the long term?
+    private AnalysisObject object;
     private IScaveObjectEditForm form;
     private Object[] values;
 
@@ -59,17 +62,12 @@ public class EditDialog extends TitleAreaDialog {
      * @param editor         the editor
      * @param formParameters key-value pairs understood by the form; may be null
      */
-    public EditDialog(Shell parentShell, EObject object, ScaveEditor editor, Map<String,Object> formParameters) {
-        this(parentShell, object, null, editor, formParameters);
-    }
-
-    public EditDialog(Shell parentShell, EObject object, EStructuralFeature[] features, ScaveEditor editor, Map<String,Object> formParameters) {
+    public EditDialog(Shell parentShell, AnalysisObject object, ScaveEditor editor, Map<String,Object> formParameters) {
         super(parentShell);
         setShellStyle(getShellStyle() | SWT.RESIZE);
         this.editor = editor;
         this.object = object;
-        this.features = features;
-        this.form = createForm(object, features, editor.getResultFileManager(), formParameters);
+        this.form = createForm(object, editor.getResultFileManager(), formParameters);
 
         this.form.addChangeListener(new IScaveObjectEditForm.Listener() {
             public void editFormChanged(IScaveObjectEditForm form) {
@@ -82,20 +80,6 @@ public class EditDialog extends TitleAreaDialog {
         return UIUtils.getDialogSettings(ScavePlugin.getDefault(), getClass().getName());
     }
 
-    public EStructuralFeature[] getFeatures() {
-        return form.getFeatures();
-    }
-
-    public static EStructuralFeature[] getEditableFeatures(EObject object, ScaveEditor editor) {
-        try {
-            IScaveObjectEditForm form = createForm(object, null, editor.getResultFileManager(), null);
-            return form.getFeatures();
-        }
-        catch (IllegalArgumentException e) {
-            return new EStructuralFeature[0];
-        }
-    }
-
     public Object getValue(int index) {
         return values[index];
     }
@@ -103,7 +87,7 @@ public class EditDialog extends TitleAreaDialog {
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-        newShell.setText("Edit " + object.eClass().getName());
+        newShell.setText("Edit " + object.toString());
     }
 
     @Override
@@ -131,9 +115,10 @@ public class EditDialog extends TitleAreaDialog {
         setTitle(form.getTitle());
         setMessage(form.getDescription());
         form.populatePanel(panel);
-        features = form.getFeatures();
-        for (int i = 0; i < features.length; ++i)
-            form.setValue(features[i], object.eGet(features[i]));
+        // TODO
+//        features = form.getFeatures();
+//        for (int i = 0; i < features.length; ++i)
+//            form.setValue(features[i], object.eGet(features[i]));
         return composite;
     }
 
@@ -177,33 +162,35 @@ public class EditDialog extends TitleAreaDialog {
     }
 
     private void applyChanges() {
-        if (features == null)
-            return;
 
-        values = new Object[features.length];
-        for (int i = 0; i < values.length; ++i) {
-            values[i] = form.getValue(features[i]);
-        }
+        CompoundCommand command = new CompoundCommand("Edit Chart Properties");
+        if (form instanceof ChartEditForm) {
+            Chart chart = (Chart)object;
 
-        CompoundCommand command = new CompoundCommand("Edit");
-        for (int i = 0; i < features.length; ++i) {
-            Object oldValue = object.eGet(features[i]);
-            Object newValue = getValue(i);
-            boolean isDirty = oldValue == null && newValue != null ||
-                              oldValue != null && !oldValue.equals(newValue);
-            if (isDirty) {
-                command.append(SetCommand.create(
-                    editor.getEditingDomain(),
-                    object,
-                    features[i],
-                    newValue));
+            ChartEditForm chartForm = (ChartEditForm)form;
+            Map<String, String> props = chartForm.collectProperties();
+
+            for (String k : props.keySet()) {
+                if (k.equals(ChartEditForm.CHART_NAME_PROPERTY_KEY))
+                    command.append(new SetChartNameCommand(chart, props.get(ChartEditForm.CHART_NAME_PROPERTY_KEY)));
+                else {
+                    Property prop = chart.lookupProperty(k);
+
+                    if (prop == null)
+                        command.append(new AddChartPropertyCommand(chart, new Property(k, props.get(k))));
+                    else {
+                        String newValue = props.get(k);
+                        if (!prop.getValue().equals(newValue))
+                            command.append(new SetChartPropertyCommand(prop, newValue));
+                    }
+                }
             }
         }
+
         editor.executeCommand(command);
     }
 
-    private static IScaveObjectEditForm createForm(EObject object, EStructuralFeature[] features, ResultFileManager manager, Map<String,Object> formParameters) {
-        //XXX remove features[] parameter!
+    private static IScaveObjectEditForm createForm(AnalysisObject object, ResultFileManager manager, Map<String,Object> formParameters) {
         return ScaveObjectEditFormFactory.instance().createForm(object, formParameters, manager);
     }
 }

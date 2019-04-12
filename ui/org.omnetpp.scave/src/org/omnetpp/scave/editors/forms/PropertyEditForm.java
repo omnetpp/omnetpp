@@ -7,16 +7,14 @@
 
 package org.omnetpp.scave.editors.forms;
 
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.omnetpp.scave.model.AnalysisObject;
 import org.omnetpp.scave.model.Property;
-import org.omnetpp.scave.model.ScaveModelPackage;
 
 /**
  * Edit form of Property objects.
@@ -24,14 +22,6 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @author andras
  */
 public class PropertyEditForm extends BaseScaveObjectEditForm {
-
-    /**
-     * Features edited on this panel.
-     */
-    private static final EStructuralFeature[] features = new EStructuralFeature[] {
-        ScaveModelPackage.eINSTANCE.getProperty_Name(),
-        ScaveModelPackage.eINSTANCE.getProperty_Value(),
-    };
 
     /**
      * The edited Property.
@@ -42,16 +32,9 @@ public class PropertyEditForm extends BaseScaveObjectEditForm {
     private Text nameText;
     private Text valueText;
 
-    public PropertyEditForm(Property property, EObject parent) {
+    public PropertyEditForm(Property property, AnalysisObject parent) {
         super(property);
         //this.property = property;
-    }
-
-    /**
-     * Returns the features edited on this form.
-     */
-    public EStructuralFeature[] getFeatures() {
-        return features;
     }
 
     /**
@@ -70,33 +53,5 @@ public class PropertyEditForm extends BaseScaveObjectEditForm {
         valueText = new Text(panel, SWT.BORDER);
         valueText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-    }
-
-    /**
-     * Reads the value of the specified feature from the corresponding control.
-     */
-    public Object getValue(EStructuralFeature feature) {
-        switch (feature.getFeatureID()) {
-        case ScaveModelPackage.PROPERTY__NAME:
-            return nameText.getText();
-        case ScaveModelPackage.PROPERTY__VALUE:
-            return valueText.getText();
-        }
-        return null;
-    }
-
-
-    /**
-     * Writes the value of a feature into the corresponding control.
-     */
-    public void setValue(EStructuralFeature feature, Object value) {
-        switch (feature.getFeatureID()) {
-        case ScaveModelPackage.PROPERTY__NAME:
-            nameText.setText((String)value);
-            break;
-        case ScaveModelPackage.PROPERTY__VALUE:
-            valueText.setText((String)value);
-            break;
-        }
     }
 }

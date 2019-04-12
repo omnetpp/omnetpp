@@ -7,50 +7,27 @@
 
 package org.omnetpp.scave.actions;
 
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.window.Window;
-import org.eclipse.jface.wizard.WizardDialog;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Point;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.AnalysisItem;
-import org.omnetpp.scave.wizard.NewScaveObjectWizard;
+import org.omnetpp.scave.model.commands.AddChartCommand;
+import org.omnetpp.scave.model.commands.ICommand;
 
 /**
  * Creates a new chart, chart sheet, or other analysis item.
  */
 public class NewAnalysisItemAction extends AbstractScaveAction {
     private AnalysisItem elementPrototype;
-    private boolean withEditDialog;
 
-    public NewAnalysisItemAction(AnalysisItem elementPrototype, boolean withEditDialog) {
+    public NewAnalysisItemAction(AnalysisItem elementPrototype) {
         this.elementPrototype = elementPrototype;
-        this.withEditDialog = withEditDialog;
     }
 
     @Override
     protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
-        EObject target = editor.getAnalysis().getCharts();
-        AnalysisItem element = EcoreUtil.copy(elementPrototype);
-        Command command = AddCommand.create(editor.getEditingDomain(), target, null, element);
-        Assert.isTrue(command.canExecute());
+        AnalysisItem element = elementPrototype;
 
-        if (withEditDialog) {
-            NewScaveObjectWizard wizard = new NewScaveObjectWizard(editor, target, target.eContents().size(), element);
-            WizardDialog dialog = new WizardDialog(editor.getSite().getShell(), wizard) {
-                @Override
-                protected Point getInitialSize() {
-                    return getShell().computeSize(800, SWT.DEFAULT, true);
-                }
-            };
-            if (dialog.open() != Window.OK)
-                return;
-        }
+        ICommand command = new AddChartCommand(editor.getAnalysis(), (AnalysisItem)elementPrototype.pubClone());
 
         editor.executeCommand(command);
         editor.showAnalysisItem(element);

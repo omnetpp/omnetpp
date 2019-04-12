@@ -33,7 +33,7 @@ public class EditInputFileAction extends AbstractScaveAction {
         InputFileDialog dialog = new InputFileDialog(editor.getSite().getShell(), "Edit Input", inputFile.getName(), false, baseDir);
         if (dialog.open() == Window.OK) {
             String value = dialog.getValue();
-            ScaveModelUtil.setInputFile(editor.getEditingDomain(), inputFile, value);
+            ScaveModelUtil.setInputFile(editor.getCommandStack(), inputFile, value);
         }
     }
 

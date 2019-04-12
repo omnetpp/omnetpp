@@ -12,16 +12,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.omnetpp.scave.model.Analysis;
+import org.omnetpp.scave.model.Charts;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
-import org.omnetpp.scave.model.ScaveModelFactory;
 
 /**
  * Utility methods for creating ANF files.
@@ -32,17 +26,15 @@ public class ScaveWizardUtil {
     /**
      * Create a new analysis file.
      */
-    public static EObject createAnalysisNode(String[] initialInputFiles) {
-        ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
-        Analysis analysis = factory.createAnalysis();
-        Inputs inputs = factory.createInputs();
+    public static Analysis createAnalysisNode(String[] initialInputFiles) {
+        Analysis analysis = new Analysis();
+        Inputs inputs = new Inputs();
         analysis.setInputs(inputs);
-        analysis.setCharts(factory.createCharts());
+        analysis.setCharts(new Charts());
 
         if (initialInputFiles != null) {
             for (String fileName : initialInputFiles) {
-                InputFile inputFile = factory.createInputFile();
-                inputFile.setName(fileName);
+                InputFile inputFile = new InputFile(fileName);
                 inputs.getInputs().add(inputFile);
             }
         }
@@ -50,23 +42,9 @@ public class ScaveWizardUtil {
         return analysis;
     }
 
-    public static void saveAnfFile(IFile modelFile, EObject rootObject) throws IOException {
-        // Create a resource set
-        ResourceSet resourceSet = new ResourceSetImpl();
-
-        // Get the URI of the model file.
-        URI fileURI = URI.createPlatformResourceURI(modelFile.getFullPath().toString(), true);
-
-        // Create a resource for this file.
-        Resource resource = resourceSet.createResource(fileURI);
-
-        // Add the initial model object to the contents.
-        resource.getContents().add(rootObject);
-
-        // Save the contents of the resource to the file system.
-        Map<Object,Object> options = new HashMap<Object,Object>();
-        options.put(XMLResource.OPTION_ENCODING, ENCODING);
-        resource.save(options);
+    public static void saveAnfFile(IFile modelFile, Analysis rootObject) throws IOException {
+        // TODO
+        throw new RuntimeException("unimplemented");
     }
 
     public static void createAnfFile(IFile modelFile, String[] initialInputFiles) throws IOException {

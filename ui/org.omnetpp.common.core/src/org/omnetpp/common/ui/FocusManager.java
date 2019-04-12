@@ -104,7 +104,7 @@ public class FocusManager {
      */
     public boolean setFocus() {
         if (lastFocusControl != null) {
-            Debug.println("FocusManager: restoring focus to " + lastFocusControl);
+            //Debug.println("FocusManager: restoring focus to " + lastFocusControl);
             Assert.isTrue(!lastFocusControl.isDisposed()); // we have a disposeListener
             return lastFocusControl.setFocus();
         }
@@ -130,7 +130,7 @@ public class FocusManager {
     }
 
     protected void controlLostFocus(Control control) {
-        Debug.println("FocusManager: storing last focused widget: " + control);
+        //Debug.println("FocusManager: storing last focused widget: " + control);
         lastFocusControl = control;
     }
 

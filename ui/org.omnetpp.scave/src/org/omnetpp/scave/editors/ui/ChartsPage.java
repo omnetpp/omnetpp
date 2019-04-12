@@ -7,18 +7,18 @@
 
 package org.omnetpp.scave.editors.ui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang3.ArrayUtils;
-import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.edit.ui.provider.AdapterFactoryContentProvider;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -27,29 +27,25 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.omnetpp.common.Debug;
 import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.common.ui.IconGridViewer;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.actions.NewBarChartAction;
-import org.omnetpp.scave.actions.NewHistogramChartAction;
-import org.omnetpp.scave.actions.NewLineChartAction;
-import org.omnetpp.scave.actions.NewMatplotlibChartAction;
-import org.omnetpp.scave.actions.NewScatterChartAction;
+import org.omnetpp.scave.actions.NewChartFromTemplateAction;
+import org.omnetpp.scave.charttemplates.ChartTemplate;
+import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ScaveEditorContributor;
 import org.omnetpp.scave.model.Analysis;
+import org.omnetpp.scave.model.AnalysisEvent;
 import org.omnetpp.scave.model.AnalysisItem;
-import org.omnetpp.scave.model.BarChart;
+import org.omnetpp.scave.model.AnalysisObject;
+import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Charts;
 import org.omnetpp.scave.model.Folder;
-import org.omnetpp.scave.model.HistogramChart;
-import org.omnetpp.scave.model.LineChart;
-import org.omnetpp.scave.model.MatplotlibChart;
-import org.omnetpp.scave.model.ScatterChart;
+import org.omnetpp.scave.model.commands.SetChartNameCommand;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
@@ -85,13 +81,20 @@ public class ChartsPage extends FormEditorPage {
         viewer.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
 
         ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
-        boolean withEditDialog = false;
-        addToToolbar(new NewBarChartAction(withEditDialog));
-        addToToolbar(new NewLineChartAction(withEditDialog));
-        addToToolbar(new NewScatterChartAction(withEditDialog));
-        addToToolbar(new NewHistogramChartAction(withEditDialog));
-        // TODO: maybe add a separator here, too?
-        addToToolbar(new NewMatplotlibChartAction(withEditDialog));
+
+        List<ChartTemplate> templates = new ArrayList<ChartTemplate>();
+
+        for (ChartTemplate templ : ChartTemplateRegistry.getAllTemplates())
+            if (templ.getToolbarOrder() >= 0)
+                templates.add(templ);
+
+        templates.sort((ChartTemplate a, ChartTemplate b) ->  {
+            return Integer.compare(a.getToolbarOrder(), b.getToolbarOrder());
+        });
+
+        for (ChartTemplate templ : templates)
+            addToToolbar(new NewChartFromTemplateAction(templ));
+
         addSeparatorToToolbar();
         addToToolbar(contributor.getEditAction());
         addToToolbar(contributor.getRemoveAction());
@@ -116,12 +119,13 @@ public class ChartsPage extends FormEditorPage {
 
     @Override
     public boolean gotoObject(Object object) {
-        if (object instanceof EObject) {
-            EObject eobject = (EObject)object;
+        if (object instanceof AnalysisObject) {
+            AnalysisObject eobject = (AnalysisObject)object;
+            /*// TODO
             if (ScaveModelUtil.findEnclosingOrSelf(eobject, Charts.class) != null) {
                 getViewer().reveal(eobject);
                 return true;
-            }
+            }*/
         }
         return false;
     }
@@ -131,9 +135,7 @@ public class ChartsPage extends FormEditorPage {
         setViewerSelectionNoNotify(getViewer(), selection);
     }
 
-    public void updatePage(Notification notification) {
-        if (notification.isTouch() || !(notification.getNotifier() instanceof EObject))
-            return;
+    public void updatePage(AnalysisEvent event) {
         viewer.refresh();
     }
 
@@ -146,17 +148,12 @@ public class ChartsPage extends FormEditorPage {
         ILabelProvider labelProvider = new LabelProvider() {
             @Override
             public Image getImage(Object element) {
-                if (element instanceof LineChart)
-                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_LINECHART);
-                else if (element instanceof BarChart)
-                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_BARCHART);
-                else if (element instanceof ScatterChart)
-                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_SCATTERCHART);
-                else if (element instanceof HistogramChart)
-                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_HISTOGRAMCHART);
-                if (element instanceof MatplotlibChart)
-                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_MATPLOTLIBCHART);
-                else if (element instanceof Folder)
+                if (element instanceof Chart) {
+                    String iconPath = ((Chart)element).getIconPath();
+                    if (iconPath == null || iconPath.isEmpty())
+                        iconPath = ScaveImages.IMG_OBJ_CHART;
+                    return ScavePlugin.getImage(iconPath);
+                } else if (element instanceof Folder)
                     return ScavePlugin.getImage(ScaveImages.IMG_OBJ_FOLDER);
                 else
                     return null;
@@ -170,18 +167,26 @@ public class ChartsPage extends FormEditorPage {
             }
         };
 
-        modelViewer.setContentProvider(new AdapterFactoryContentProvider(scaveEditor.getAdapterFactory()));
+        modelViewer.setContentProvider(new IStructuredContentProvider() {
+            @Override
+            public Object[] getElements(Object inputElement) {
+                if (inputElement instanceof Charts) {
+                    Charts charts = (Charts)inputElement;
+                    return charts.getCharts().toArray();
+                }
+                return new Object[0];
+            }
+        });
         modelViewer.setLabelProvider(labelProvider);
 
         viewer.addDropListener(new IconGridViewer.IDropListener() {
             @Override
             public void drop(Object[] draggedElements, Point p) {
                 Object insertionPoint = viewer.getElementAtOrAfter(p.x, p.y);
-                Debug.println("DRAGGED BEFORE: " + insertionPoint);
                 if (insertionPoint == null ||!ArrayUtils.contains(draggedElements, insertionPoint)) {
-                    Charts charts = scaveEditor.getAnalysis().getCharts();
-                    int index = insertionPoint == null ? charts.getItems().size() : charts.getItems().indexOf(insertionPoint);
-                    ScaveModelUtil.moveElements(scaveEditor.getEditingDomain(), charts, draggedElements, index);
+                    List<AnalysisItem> charts = scaveEditor.getAnalysis().getCharts().getCharts();
+                    int index = insertionPoint == null ? charts.size() - 1 : charts.indexOf(insertionPoint);
+                    ScaveModelUtil.moveElements(scaveEditor.getCommandStack(), scaveEditor.getAnalysis().getCharts(), draggedElements, index);
                     viewer.refresh();
                 }
 
@@ -206,7 +211,7 @@ public class ChartsPage extends FormEditorPage {
 
             @Override
             public void setName(Object element, String name) {
-                ((AnalysisItem) element).setName(name);
+                scaveEditor.executeCommand(new SetChartNameCommand((AnalysisItem)element, name));
             }
         });
 

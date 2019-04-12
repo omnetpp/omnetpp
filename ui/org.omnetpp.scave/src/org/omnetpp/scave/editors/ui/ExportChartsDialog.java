@@ -9,7 +9,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -106,7 +105,7 @@ public class ExportChartsDialog extends Dialog {
         gridData.widthHint = 320;
         gridData.heightHint = 200;
         chartsTree.setLayoutData(gridData);
-        ILabelProvider labelProvider = new ScaveModelLabelProvider(new AdapterFactoryLabelProvider(editor.getAdapterFactory()));
+        ILabelProvider labelProvider = new ScaveModelLabelProvider();
         for (Chart chart : charts) {
             TreeItem item = new TreeItem(chartsTree, SWT.NONE);
             item.setText(labelProvider.getText(chart));
