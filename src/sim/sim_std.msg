@@ -1352,8 +1352,8 @@ class ExpressionFilter extends cNumericResultFilter
     @overwritePreviousDefinition;
     @descriptor(readonly);
     string expression @toString(.str());
-//    double lastValue;
-//    simtime_t lastTimestamp;
+    string lastValue @toString(.str());
+    simtime_t lastTimestamp;
 }
 
 class cObjectResultFilter extends cResultFilter
@@ -1503,14 +1503,4 @@ class PSquareRecorder extends StatisticsRecorder
     @overwritePreviousDefinition;
     @descriptor(readonly);
 }
-
-//class ExpressionRecorder extends cNumericResultRecorder
-//{
-//    @existingClass;
-//    @overwritePreviousDefinition;
-//    @descriptor(readonly);
-//    string expression @toString(.str());
-//    double currentValue;
-//    double lastInputValue;
-//}
 
