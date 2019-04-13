@@ -1,5 +1,5 @@
 %description:
-Test operators in NED, with volatile parameters.
+Basic test for operators in NED.
 
 %file: test.ned
 
@@ -7,78 +7,146 @@ simple Test
 {
     parameters:
         @isNetwork(true);
-        volatile double p00 = -3;      // unary minus or negative constant
-        volatile double p01 = -(4+1);  // unary minus
 
-        volatile double p02 = int(!true);  // negation
-        volatile double p03 = int(!false); // negation
+        // unary minus or negative constant
+        int umin1 = -3;
+        int umin2 = -(4+1);
 
-        volatile double p06 = ~3;    // bitwise complement (one's complement, yields -1*x-1 for x)
-        volatile double p07 = 12^3;  // power of
-        volatile double p08 = 12*3;  // multiply
-        volatile double p09 = 12/3;  // divide
-        volatile double p10 = 12%5;  // modulus
-        volatile double p11 = 12+3;  // add
-        volatile double p12 = 12-3;  // subtract
+        // add
+        int add1 = 12+3;
+        double add2 = 12.2+3;
 
-        volatile double p13 = 10<<2; // bitwise shifting
-        volatile double p14 = 10>>2; // bitwise shifting
+        // subtract
+        int sub1 = 12-3;
+        double sub2 = 12.2-3;
 
-        volatile double p15 = 10&3;  // bitwise and
-        volatile double p16 = 10|3;  // bitwise or
-        volatile double p17 = 10#3;  // bitwise xor
+        // multiply
+        int mul1 = 12*3;
+        double mul2 = 12.2*3;
 
-        volatile double p18 = int(8==3); // equal
-        volatile double p19 = int(8==8); // equal
+        // divide (type of result is always 'double'!)
+        double div1 = 12/5;
 
-        volatile double p20 = int(8!=3); // not equal
-        volatile double p21 = int(8!=8); // not equal
+        // modulus (expects integer args!)
+        int mod1 = 12%5;
 
-        volatile double p22 = int(8>3);  // greater
-        volatile double p23 = int(3>8);  // greater
-        volatile double p24 = int(8>8);  // greater
+        // power-of
+        int pow1 = 12^3;
+        double pow2 = 6.25^0.5;
 
-        volatile double p25 = int(8>=3); // greater or equal
-        volatile double p26 = int(3>=8); // greater or equal
-        volatile double p27 = int(8>=8); // greater or equal
+        // bitwise complement (yields -x-1)
+        int compl1 = ~3;
+        int compl2 = ~-3;
 
-        volatile double p28 = int(8<3);  // less
-        volatile double p29 = int(3<8);  // less
-        volatile double p30 = int(8<8);  // less
+        // bitwise and, or, xor
+        int band1 = 10&3;
+        int bor1 = 10|3;
+        int bxor1 = 10#3;
 
-        volatile double p31 = int(8<=3); // less or equal
-        volatile double p32 = int(3<=8); // less or equal
-        volatile double p33 = int(8<=8); // less or equal
+        // shifting
+        int lsh1 = 10<<2;
+        int rsh1 = 10>>2;
 
-        volatile double p34 = int(true && true);   // logical and
-        volatile double p35 = int(true && false);  // logical and
-        volatile double p36 = int(false && true);  // logical and
-        volatile double p37 = int(false && false); // logical and
+        // equal
+        bool eq1 = 8==3;
+        bool eq2 = 8==8;
+        bool eq3 = 8.0==8;
 
-        volatile double p38 = int(true || true);   // logical or
-        volatile double p39 = int(true || false);  // logical or
-        volatile double p40 = int(false || true);  // logical or
-        volatile double p41 = int(false || false); // logical or
+        // not equal
+        bool ne1 = 8!=3;
+        bool ne2 = 8!=8;
+        bool ne3 = 8.0!=8;
 
-        volatile double p42 = int(true ## true);   // logical xor
-        volatile double p43 = int(true ## false);  // logical xor
-        volatile double p44 = int(false ## true);  // logical xor
-        volatile double p45 = int(false ## false); // logical xor
+        // greater than
+        bool gt1 = 8>3;
+        bool gt2 = 3>8;
+        bool gt3 = 8>8;
+        bool gt4 = 8.0>8;
 
-        volatile double p46 = (true ? 5 : 2);  // the C/C++ ''inline if''
-        volatile double p47 = (false ? 5 : 2); // the C/C++ ''inline if''
+        // greater or equal
+        bool ge1 = 8>=3;
+        bool ge2 = 3>=8;
+        bool ge3 = 8>=8;
+        bool ge4 = 8.0>=8;
 
-        volatile string p48 = "" + "";      // concatenation
-        volatile string p49 = "Hello" + ""; // concatenation
-        volatile string p50 = "" + "Hello"; // concatenation
-        volatile string p51 = "He" + "llo"; // concatenation
+        // less than
+        bool lt1 = 8<3;
+        bool lt2 = 3<8;
+        bool lt3 = 8<8;
+        bool lt4 = 8.0<8;
 
-	// divides with non integer results
-        volatile double p52 = 7 / 4;       // integer divide with non integer result
-        volatile double p53 = 7.8 % 4.1;     // non integer modulus
-        volatile double p54 = 7.2 % 4.8;     // non integer modulus
-        volatile double p55 = (-7.8)%4.1;    // non integer negative
-        volatile double p56 = (-7.1)%4.8;    // non integer negative
+        // less or equal
+        bool le1 = 8<=3;
+        bool le2 = 3<=8;
+        bool le3 = 8<=8;
+        bool le4 = 8.0<=8;
+
+        // logical negation
+        bool not1 = !true;
+        bool not2 = !false;
+
+        // logical and
+        bool and1 = true && true;
+        bool and2 = true && false;
+        bool and3 = false && true;
+        bool and4 = false && false;
+
+        // logical or
+        bool or1 = true || true;
+        bool or2 = true || false;
+        bool or3 = false || true;
+        bool or4 = false || false;
+
+        // logical xor
+        bool xor1 = true ## true;
+        bool xor2 = true ## false;
+        bool xor3 = false ## true;
+        bool xor4 = false ## false;
+
+        // inline if
+        int iif1 = true ? 5 : 2;
+        int iif2 = false ? 5 : 2;
+
+        // string concatenation
+        string concat1 = "He" + "llo";
+        string concat2 = "He" + "";
+
+        // int cast
+        int int1 = int(3);
+        int int2 = int(3.14);
+        int int3 = int(-3.14);
+        int int4 = int("3.14");
+        int int5 = int("1.5e6");
+        int int6 = int(true);
+        int int7 = int(false);
+
+        // double cast
+        double double1 = double(3);
+        double double2 = double(3.14);
+        double double3 = double("3.14");
+        double double4 = double("1.5e6");
+        double double5 = double(true);
+        double double6 = double(false);
+
+        // string cast
+        string string1 = string(3);
+        string string2 = string(3.14);
+        string string3 = string("3.14");
+        string string4 = string("1.5e6");
+        string string5 = string(true);
+        string string6 = string(false);
+
+        // bool cast
+        bool bool1 = bool(0);
+        bool bool2 = bool(nan);
+        bool bool3 = bool(3);
+        bool bool4 = bool(3.14);
+        bool bool5 = bool("true");
+        bool bool6 = bool("false");
+        bool bool7 = bool("");
+        bool bool8 = bool("blah");
+        bool bool9 = bool(true);
+        bool bool10 = bool(false);
 }
 
 %file: test.cc
@@ -101,8 +169,15 @@ Define_Module(Test);
 void Test::activity()
 {
     for (int i=0; i<getNumParams(); i++) {
-        EV << par(i).getName() << "=";
-        par(i).isNumeric() ? EV << par(i).doubleValue() : EV << par(i).stringValue();
+        cPar& p = par(i);
+        EV << p.getName() << "=";
+        switch (p.getType()) {
+            case cPar::BOOL: EV << p.boolValue(); break;
+            case cPar::DOUBLE: EV << p.doubleValue(); break;
+            case cPar::INT: EV << p.intValue(); break;
+            case cPar::STRING: EV << p.stringValue(); break;
+            case cPar::XML: EV << p.xmlValue()->str(); break;
+        }
         EV << endl;
     }
     EV << ".\n";
@@ -110,61 +185,94 @@ void Test::activity()
 
 }; //namespace
 
-%contains-regex: stdout
-p00=-3
-p01=-5
-p02=0
-p03=1
-p06=-4
-p07=1728
-p08=36
-p09=4
-p10=2
-p11=15
-p12=9
-p13=40
-p14=2
-p15=2
-p16=11
-p17=9
-p18=0
-p19=1
-p20=1
-p21=0
-p22=1
-p23=0
-p24=0
-p25=1
-p26=0
-p27=1
-p28=0
-p29=1
-p30=0
-p31=0
-p32=1
-p33=1
-p34=1
-p35=0
-p36=0
-p37=0
-p38=1
-p39=1
-p40=1
-p41=0
-p42=0
-p43=1
-p44=1
-p45=0
-p46=5
-p47=2
-p48=
-p49=Hello
-p50=Hello
-p51=Hello
-p52=1\.75
-p53=3
-p54=3
-p55=-3
-p56=-3
-\.
+%contains: stdout
+umin1=-3
+umin2=-5
+add1=15
+add2=15.2
+sub1=9
+sub2=9.2
+mul1=36
+mul2=36.6
+div1=2.4
+mod1=2
+pow1=1728
+pow2=2.5
+compl1=-4
+compl2=2
+band1=2
+bor1=11
+bxor1=9
+lsh1=40
+rsh1=2
+eq1=0
+eq2=1
+eq3=1
+ne1=1
+ne2=0
+ne3=0
+gt1=1
+gt2=0
+gt3=0
+gt4=0
+ge1=1
+ge2=0
+ge3=1
+ge4=1
+lt1=0
+lt2=1
+lt3=0
+lt4=0
+le1=0
+le2=1
+le3=1
+le4=1
+not1=0
+not2=1
+and1=1
+and2=0
+and3=0
+and4=0
+or1=1
+or2=1
+or3=1
+or4=0
+xor1=0
+xor2=1
+xor3=1
+xor4=0
+iif1=5
+iif2=2
+concat1=Hello
+concat2=He
+int1=3
+int2=3
+int3=-4
+int4=3
+int5=1500000
+int6=1
+int7=0
+double1=3
+double2=3.14
+double3=3.14
+double4=1.5e+06
+double5=1
+double6=0
+string1=3
+string2=3.14
+string3="3.14"
+string4="1.5e6"
+string5=true
+string6=false
+bool1=0
+bool2=0
+bool3=1
+bool4=1
+bool5=1
+bool6=0
+bool7=0
+bool8=0
+bool9=1
+bool10=0
+.
 
