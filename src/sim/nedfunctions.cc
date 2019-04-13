@@ -34,8 +34,6 @@ using namespace omnetpp::common;
 
 namespace omnetpp {
 
-//FIXME cDynamicExpression to add function name to exceptions thrown from functions
-
 void nedfunctions_dummy() {} //see util.cc
 
 #define DEF(FUNCTION, SIGNATURE, CATEGORY, DESCRIPTION) \
@@ -518,6 +516,29 @@ cNedValue nedf_expand(cComponent *contextComponent, cNedValue argv[], int argc)
     std::string tmp = argv[0].stdstringValue();
     tmp = getEnvir()->getConfig()->substituteVariables(tmp.c_str());
     return tmp;
+}
+
+DEF(nedf_bool,
+    "bool bool(any x)",
+    "conversion",
+    "Converts x to bool, and returns the result. For numeric values, 0 and nan become false and other values become true; for strings, \"true\" becomes true and everything else becomes false.")
+
+cNedValue nedf_bool(cComponent *contextComponent, cNedValue argv[], int argc)
+{
+    switch (argv[0].getType()) {
+        case cNedValue::BOOL:
+            return argv[0];
+        case cNedValue::INT:
+            return argv[0].intValue() != 0;
+        case cNedValue::DOUBLE:
+            return !std::isnan(argv[0].doubleValue()) && argv[0].doubleValue() != 0;
+        case cNedValue::STRING:
+            return argv[0].stdstringValue() == "true";
+        case cNedValue::XML:
+            throw cRuntimeError("Cannot convert xml to bool");
+        default:
+            throw cRuntimeError("Internal error: Invalid cNedValue type");
+    }
 }
 
 DEF(nedf_int,

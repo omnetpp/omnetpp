@@ -1577,13 +1577,6 @@ expr
         | expr '?' expr ':' expr
                 { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "?:", $1, $3, $5); }
 
-        | INT_ '(' expr ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction(np, toString(np, @1), $3); }
-        | DOUBLE_ '(' expr ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction(np, toString(np, @1), $3); }
-        | STRING_ '(' expr ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction(np, toString(np, @1), $3); }
-
         | funcname '(' ')'
                 { if (np->getParseExpressionsFlag()) $$ = createFunction(np, toString(np, @1)); }
         | funcname '(' expr ')'
@@ -1617,8 +1610,12 @@ simple_expr
 
 funcname
         : NAME
-        | XMLDOC
+        | BOOL_
+        | INT_
+        | DOUBLE_
+        | STRING_
         | XML_
+        | XMLDOC
         ;
 
 identifier
