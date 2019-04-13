@@ -213,12 +213,17 @@ void cNedNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
         ExprRef valueExpr(paramNode, ParamElement::ATT_VALUE);
         if (!valueExpr.empty()) {
             ASSERT(impl == component->par(paramName).impl() && !impl->isShared());
-            cDynamicExpression *expr = new cDynamicExpression();
-            expr->parse(valueExpr.getExprText(), isSubcomponent, false);
-            impl->setExpression(expr);
-            if (expr->isAConstant())
-                impl->convertToConst(nullptr);
-            impl->setIsSet(!paramNode->getIsDefault());
+            try {
+                cDynamicExpression *expr = new cDynamicExpression();
+                expr->parse(valueExpr.getExprText(), isSubcomponent, false);
+                impl->setExpression(expr);
+                if (expr->isAConstant())
+                    impl->convertToConst(nullptr);
+                impl->setIsSet(!paramNode->getIsDefault());
+            }
+            catch (std::exception& e) {
+                throw cRuntimeError(component, "Error setting up parameter '%s': %s", paramName, e.what());
+            }
         }
         else if (paramNode->getIsDefault()) {
             // default, but no value expression: set parameter to its existing default value
