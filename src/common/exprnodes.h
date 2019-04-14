@@ -17,6 +17,7 @@
 #ifndef __OMNETPP_COMMON_EXPRNODES_H
 #define __OMNETPP_COMMON_EXPRNODES_H
 
+#include <cmath>
 #include <iostream>
 #include "exprnode.h"
 #include "patternmatcher.h" // MatchConstPattern
@@ -137,13 +138,13 @@ public:
 
 class CompareNode : public BinaryOperatorNode {
 protected:
-    virtual ExprValue compute(double diff) const { return diff; }
+    virtual ExprValue compute(double diff) const = 0;
     virtual ExprValue evaluate(Context *context) const override;
 };
 
 class ThreeWayComparisonNode : public CompareNode {
 protected:
-    virtual ExprValue compute(double diff) const override { return diff == 0; }
+    virtual ExprValue compute(double diff) const override { return std::isnan(diff) ? diff : double((0<diff) - (diff<0)); }
 public:
     virtual ExprNode *dup() const override {return new ThreeWayComparisonNode;}
     virtual std::string getName() const override {return "<=>";}

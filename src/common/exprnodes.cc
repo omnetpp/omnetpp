@@ -60,6 +60,7 @@ BinaryNode *ExprNodeFactory::createBinaryOperator(const char *op_)
     if (op == "<=") return new LessOrEqualNode();
     if (op == ">=") return new GreaterOrEqualNode();
     if (op == "<=>") return new ThreeWayComparisonNode();
+    if (op == "=~") return new MatchNode();
     if (op == "&&") return new AndNode();
     if (op == "||") return new OrNode();
     if (op == "##") return new XorNode();
