@@ -6,6 +6,10 @@ import py4j.Py4JException;
 
 public class PythonCallerThread extends Thread {
 
+    public interface ExceptionHandler {
+        void handle(Exception e);
+    }
+
     public PythonCallerThread() {
         super("Python executor");
     }
@@ -75,6 +79,27 @@ public class PythonCallerThread extends Thread {
             queue.add(cr);
             queue.notify();
         }
+    }
+
+    public void asyncExec(Runnable runnable, int eventStream, Runnable runAfterDone, ExceptionHandler errorHandler) {
+        asyncExec(() -> {
+            try {
+                runnable.run();
+            } catch (RuntimeException e) {
+                if (errorHandler != null)
+                    errorHandler.handle(e);
+                else
+                    System.out.println("NO ERROR HANDLER");
+                return;
+            }
+
+            if (runAfterDone != null)
+                runAfterDone.run();
+        }, eventStream);
+    }
+
+    public void asyncExec(Runnable runnable, Runnable runAfterDone, ExceptionHandler errorHandler) {
+        asyncExec(runnable, -1, runAfterDone, errorHandler);
     }
 
     @Override

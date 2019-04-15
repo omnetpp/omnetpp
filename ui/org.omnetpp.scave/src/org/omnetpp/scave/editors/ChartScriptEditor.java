@@ -65,6 +65,7 @@ import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.MatplotlibChart;
 import org.omnetpp.scave.pychart.PlotWidget;
+import org.omnetpp.scave.pychart.PythonCallerThread.ExceptionHandler;
 import org.omnetpp.scave.pychart.PythonOutputMonitoringThread.IOutputListener;
 import org.omnetpp.scave.python.BackAction;
 import org.omnetpp.scave.python.ExportAction;
@@ -74,7 +75,6 @@ import org.omnetpp.scave.python.HomeAction;
 import org.omnetpp.scave.python.InteractAction;
 import org.omnetpp.scave.python.KillPythonProcessAction;
 import org.omnetpp.scave.python.MatplotlibChartViewer;
-import org.omnetpp.scave.python.MatplotlibChartViewer.ChartExceptionHandler;
 import org.omnetpp.scave.python.MatplotlibChartViewer.IStateChangeListener;
 import org.omnetpp.scave.python.NativeChartViewer;
 import org.omnetpp.scave.python.PanAction;
@@ -551,7 +551,7 @@ public class ChartScriptEditor extends PyEdit {
                 });
             };
 
-            ChartExceptionHandler errorHandler = (e) -> {
+            ExceptionHandler errorHandler = (e) -> {
                 Display.getDefault().syncExec(() -> {
                     annotatePythonException(e);
                     revealErrorAnnotation();

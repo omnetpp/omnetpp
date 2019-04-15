@@ -20,13 +20,11 @@ import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.pychart.IChartPropertiesProvider;
 import org.omnetpp.scave.pychart.INativeChartPlotter;
 import org.omnetpp.scave.pychart.IScaveResultsPickleProvider;
+import org.omnetpp.scave.pychart.PythonCallerThread.ExceptionHandler;
 import org.omnetpp.scave.pychart.PythonOutputMonitoringThread.IOutputListener;
 import org.omnetpp.scave.pychart.PythonProcess;
 import org.omnetpp.scave.pychart.PythonProcessPool;
-import org.omnetpp.scave.python.MatplotlibChartViewer.ChartExceptionHandler;
 import org.omnetpp.scave.python.MatplotlibChartViewer.IStateChangeListener;
-
-import py4j.Py4JException;
 
 public class NativeChartViewer {
 
@@ -94,7 +92,7 @@ public class NativeChartViewer {
     IChartPropertiesProvider propertiesProvider = null;
 
 
-    public void runPythonScript(File workingDir, Runnable runAfterDone, ChartExceptionHandler runAfterError) {
+    public void runPythonScript(File workingDir, Runnable runAfterDone, ExceptionHandler runAfterError) {
 
         if (chartView.isDisposed())
             return;
@@ -137,21 +135,11 @@ public class NativeChartViewer {
 
         if (script != null && !script.isEmpty()) {
             proc.pythonCallerThread.asyncExec(() -> {
-
                 if (workingDir != null)
                     proc.getEntryPoint().execute("import os; os.chdir(\"\"\"" + workingDir.getAbsolutePath() + "\"\"\"); del os;");
-
-                try {
-                    proc.getEntryPoint().execute(script);
-                } catch (Py4JException e) {
-                    if (runAfterError != null)
-                        runAfterError.handle(e);
-                    return;
-                }
-
-
-                if (runAfterDone != null)
-                    runAfterDone.run();
+                proc.getEntryPoint().execute(script);
+            },() -> {
+                runAfterDone.run();
 
                 Display.getDefault().syncExec(() -> {
 
@@ -173,7 +161,7 @@ public class NativeChartViewer {
                     for (MatplotlibChartViewer.IStateChangeListener l : stateChangeListeners)
                         l.pythonProcessLivenessChanged(false);
                 });
-            });
+            }, runAfterError);
         }
 
     }

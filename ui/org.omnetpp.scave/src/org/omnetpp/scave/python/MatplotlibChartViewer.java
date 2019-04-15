@@ -26,15 +26,12 @@ import org.omnetpp.scave.pychart.IPlotWidgetProvider;
 import org.omnetpp.scave.pychart.IPyFigureCanvas;
 import org.omnetpp.scave.pychart.IScaveResultsPickleProvider;
 import org.omnetpp.scave.pychart.PlotWidget;
+import org.omnetpp.scave.pychart.PythonCallerThread.ExceptionHandler;
 import org.omnetpp.scave.pychart.PythonProcess;
 import org.omnetpp.scave.pychart.PythonProcessPool;
 import org.omnetpp.scave.pychart.PythonOutputMonitoringThread.IOutputListener;
 
 public class MatplotlibChartViewer {
-
-    public interface ChartExceptionHandler {
-        void handle(Exception e);
-    }
 
     public interface IStateChangeListener {
         void activeActionChanged(String action);
@@ -92,7 +89,7 @@ public class MatplotlibChartViewer {
         plotWidget = new PlotWidget(parent, SWT.DOUBLE_BUFFERED, proc, null);
     }
 
-    public void runPythonScript(String script, File workingDir, Runnable runAfterDone, ChartExceptionHandler runAfterError) {
+    public void runPythonScript(String script, File workingDir, Runnable runAfterDone, ExceptionHandler runAfterError) {
         if (proc != null)
             proc.dispose();
 
@@ -103,13 +100,6 @@ public class MatplotlibChartViewer {
             l.activeActionChanged("");
             lastActiveAction = "";
         }
-        try {
-        proc.getEntryPoint().setPlotWidgetProvider(widgetProvider);
-        proc.getEntryPoint().setResultsProvider(resultsProvider);
-        proc.getEntryPoint().setChartPropertiesProvider(propertiesProvider);
-        } catch(Exception e) {
-            runAfterError.handle(e);
-        }
 
         for (IOutputListener l : outputListeners) {
             proc.outputMonitoringThread.addOutputListener(l);
@@ -118,20 +108,14 @@ public class MatplotlibChartViewer {
 
         if (script != null && !script.isEmpty()) {
             proc.pythonCallerThread.asyncExec(() -> {
+                proc.getEntryPoint().setPlotWidgetProvider(widgetProvider);
+                proc.getEntryPoint().setResultsProvider(resultsProvider);
+                proc.getEntryPoint().setChartPropertiesProvider(propertiesProvider);
 
-                try {
-                    if (workingDir != null)
-                        proc.getEntryPoint().execute("import os; os.chdir(\"\"\"" + workingDir.getAbsolutePath() + "\"\"\"); del os;");
-                    proc.getEntryPoint().execute(script);
-                } catch (RuntimeException e) {
-                    if (runAfterError != null)
-                        runAfterError.handle(e);
-                    return;
-                }
-
-                if (runAfterDone != null)
-                    runAfterDone.run();
-            });
+                if (workingDir != null)
+                    proc.getEntryPoint().execute("import os; os.chdir(\"\"\"" + workingDir.getAbsolutePath() + "\"\"\"); del os;");
+                proc.getEntryPoint().execute(script);
+            }, runAfterDone, runAfterError);
         }
     }
 
