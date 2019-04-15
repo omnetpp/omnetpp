@@ -38,7 +38,8 @@ Require-Bundle: org.eclipse.ui,
  org.python.pydev.help,
  org.python.pydev.parser,
  org.python.pydev.refactoring,
- org.python.pydev.shared_interactive_console
+ org.python.pydev.shared_interactive_console,
+ org.eclipse.emf.common
 Export-Package: org.omnetpp.scave,
  org.omnetpp.scave.charting,
  org.omnetpp.scave.model2,

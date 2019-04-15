@@ -1,11 +1,15 @@
 package org.omnetpp.scave.editors;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.notify.Notifier;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.jface.action.IMenuManager;
@@ -56,6 +60,8 @@ import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.charting.ChartUpdater;
 import org.omnetpp.scave.editors.ui.FormEditorPage;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.InputFile;
+import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.MatplotlibChart;
 import org.omnetpp.scave.pychart.PlotWidget;
@@ -389,6 +395,27 @@ public class ChartScriptEditor extends PyEdit {
 
                     PlotWidget plotWidget = matplotlibChartViewer.getPlotWidget();
                     plotWidget.setMenu(manager.createContextMenu(plotWidget));
+
+                    chart.eAdapters().add(new EContentAdapter() {
+
+                        @Override
+                        public void notifyChanged(Notification notification) {
+                            if (notification.isTouch() || !(notification.getNotifier() instanceof EObject))
+                                return;
+
+                            EObject notifier = (EObject)notification.getNotifier();
+
+                            if (notifier.eResource() != chart.eResource())
+                                return;
+
+                            if (notifier instanceof Chart && notifier == chart) {
+                                Object val = notification.getNewValue();
+                                int type = notification.getEventType();
+                                if (val != null && (type == Notification.ADD || type == Notification.ADD_MANY))
+                                    refreshChart();
+                            }
+                        }
+                    });
 
                 }
                 else {
