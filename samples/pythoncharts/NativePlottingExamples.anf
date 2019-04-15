@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <analysis version="2">
     <inputs>
-        <input pattern="/resultfiles/routing/*.vec"/>
         <input pattern="/resultfiles/routing/*.sca"/>
         <input pattern="/resultfiles/routing2/*.sca"/>
-        <input pattern="/resultfiles/routing2/*.vec"/>
-        <input pattern="/resultfiles/aloha/*.vec"/>
-        <input pattern="/resultfiles/aloha/*.sca"/>
+        <input pattern="/aloha/results/*.vec"/>
+        <input pattern="/aloha/results/*.sca"/>
     </inputs>
     <charts>
         <chart name="scalars simple 1" template="" type="BarChart">
@@ -1751,7 +1749,7 @@ def customized_box_plot(percentiles, axes, redraw = True, *args, **kwargs):
     Generates a customized boxplot based on the given percentile values
     """
     n_box = len(percentiles)
-    box_plot = axes.boxplot([[-9, -4, 2, 4, 9],]*n_box, showmeans=True, meanprops=dict(marker='+'), *args, **kwargs)
+    box_plot = axes.boxplot([[-9, -4, 2, 4, 9],]*n_box, showmeans=True, meanprops=dict(marker='+'), *args, **kwargs) 
     # Creates len(percentiles) no of box plots
 
     min_y, max_y = float('inf'), -float('inf')
@@ -1803,7 +1801,7 @@ def customized_box_plot(percentiles, axes, redraw = True, *args, **kwargs):
             max_y = max(q4_end, max_y)
 
         mid_y = (min_y + max_y) / 2
-        # The y axis is rescaled to fit the new box plot completely with 10%
+        # The y axis is rescaled to fit the new box plot completely with 10% 
         # of the maximum value at both ends
         axes.set_ylim([mid_y - (mid_y - min_y) * 1.25, mid_y + (max_y - mid_y) * 1.25])
 
@@ -1813,6 +1811,13 @@ def customized_box_plot(percentiles, axes, redraw = True, *args, **kwargs):
 
     return box_plot
 
+
+title, legend = chart.extract_label_columns(df)
+
+legend = list(reversed(legend))
+
+df.sort_values(by=[l for i, l in legend], axis='index', inplace=True)
+
 # This is how much of the standard deviation will give the 25th and 75th
 # percentiles, assuming normal distribution.
 # &gt;&gt;&gt; math.sqrt(2) * scipy.special.erfinv(0.5)
@@ -1821,17 +1826,12 @@ coeff = 0.6744897501960817
 customized_box_plot([(r.min, r.mean - r.stddev * coeff, r.mean, r.mean + r.stddev * coeff, r.max)
                         for r in df.itertuples(index=False)
                             if r.count &gt; 0
-                    ], plt.gca())
-
-title, legend = chart.extract_label_columns(df)
-
-def make_label(row):
-    return ", ".join([str(l[1]) + "=" + str(row[l[0]]) for l in legend])
+                    ], plt.gca(), redraw=False)
 
 plt.title(df[title][0])
 
 plt.gca().set_xticklabels([
-    make_label(r) for r in df.itertuples(index=False)
+    chart.make_legend_label(legend, r) for r in df.itertuples(index=False)
      if r.count &gt; 0], rotation=60)
 
 plt.tight_layout()
@@ -1862,7 +1862,7 @@ plt.tight_layout()
     &lt;/group&gt;
   &lt;/x:children&gt;
 &lt;/xswt&gt;</form>
-            <property name="filter" value="name(collisionMult*) "/>
+            <property name="filter" value="name(collisionLeng*)"/>
         </chart>
         <chart name="created from template: Line Chart with MatPlotLib" template="linechart_mpl" type="MatplotlibChart">
             <script>from omnetpp.scave import results, chart, vectorops as ops
@@ -1991,6 +1991,7 @@ else:
             <script>import numpy as np
 import pandas as pd
 import matplotlib as mpl
+import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from omnetpp.scave import results, chart
@@ -1998,79 +1999,52 @@ from omnetpp.scave import results, chart
 params = chart.get_properties()
 
 df = results.get_scalars(params["scalar_filter"], include_attrs=True, include_itervars=True, include_runattrs=True)
+
+df[params["x_attr"]] = pd.to_numeric(df[params["x_attr"]])
+df[params["y_attr"]] = pd.to_numeric(df[params["y_attr"]])
+
 #print(df)
 
-try:
-    title_col, legend_cols = chart.extract_label_columns(df)
-except:
-    import traceback, sys
-    traceback.print_exc(file=sys.stdout)
-    print("pog")
-print("lgnd: " + str(legend_cols))
+title_col, legend_cols = chart.extract_label_columns(df)
+title = str(list(df[title_col])[0]) if title_col else None
 
-title = str(list(df[title_col])[0])
+df = pd.pivot_table(df, columns=[params["x_attr"]], index=params["y_attr"], values="value", dropna=False)
 
-df = pd.pivot_table(df, columns=["module", 'slotTime', params["y_attr"]], index=params["x_attr"], values="value", dropna=False)
+ax = plt.gcf().add_subplot(111, projection='3d')
+
 print(df)
-fig = plt.gcf()
-ax = fig.add_subplot(111, projection='3d')
-#print(df)
 
-proxies = []
-labels = []
-colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
+X,Y = np.meshgrid(df.columns, df.index)
 
-i = 0
-nc = len(colors)
 
-for mod in df.columns.get_level_values(0).unique():
-    df_m = df[mod]
-
-    for n in df_m.columns.get_level_values(0).unique():
-        df_n = df_m[n]
-
-        x = pd.to_numeric(df_n.columns)
-        y = pd.to_numeric(df_n.index)
-        X,Y = np.meshgrid(x,y)
-        Z = df_n
-
-        if not df.isnull().values.all():
-            ax.plot_surface(X, Y, Z)
-            proxies.append(mpl.lines.Line2D([0],[0], linestyle="none", c=colors[i % nc], marker = 'o'))
-            labels.append(df_n.index.name + ":"  + n)
-            i += 1
-        else:
-            print("all null")
+cmap = cm.get_cmap('RdYlGn') # Get desired colormap - you can change this!
+max_height = df.max()   # get range of colorbars so we can normalize
+min_height = df.min()
+top = df.values.ravel()
+rgba = [cmap((k-min_height)/max_height) for k in top] 
 
 if True:
-    pass
+    if True:
+        ax.scatter(X, Y, df, c=top, cmap='RdYlGn', depthshade=True)
+    else:
+        ax.plot_trisurf(X.ravel(), Y.ravel(), df.values.ravel(), cmap='magma', shade=True)
 else:
-    x, y = X.ravel(), Y.ravel()
-    top = df.values.ravel()
-
+    
     bottom = np.zeros_like(top)
     width = depth = 0.5
+    
+    
+    ax.bar3d(X.ravel() - width/2, Y.ravel() - depth/2, bottom, width, depth, top, shade=True, color=rgba)
 
-    ax.bar3d(x-width/2, y-depth/2, bottom, width, depth, top, shade=True)
+ax.set_xticks(df.columns)
+ax.get_xaxis().set_label_text(df.columns.name)
+
+ax.set_yticks(df.index)
+ax.get_yaxis().set_label_text(df.index.name)
 
 if title:
     plt.title(title)
-
-ax.legend()
-
-ax.legend(proxies, labels, numpoints = 1)
-
-"""
-if titles is not None:
-    plt.title(', '.join(titles[yaxis_column].unique()))
-
-if units is not None:
-    plt.gca().get_yaxis().set_label_text(plt.gca().get_yaxis().get_label_text() + " [" + ', '.join(units[yaxis_column].unique()) + "]")
-
-plt.tight_layout()
-
-plt.grid()
-"""</script>
+</script>
             <form>&lt;?xml version='1.0' encoding='UTF-8'?&gt;
 &lt;xswt xmlns:x='http://sweet_swt.sf.net/xswt'&gt;
   &lt;import xmlns='http://sweet_swt.sf.net/xswt'&gt;
@@ -2106,9 +2080,123 @@ plt.grid()
     &lt;/group&gt;
   &lt;/x:children&gt;
 &lt;/xswt&gt;</form>
-            <property name="scalar_filter" value="runattr:experiment(SlottedAlohaExperiment) AND name(channelUtilization:last)"/>
+            <property name="scalar_filter" value="runattr:experiment(PureAlohaExperiment) AND name(channelUtilization:last)"/>
             <property name="y_attr" value="iaMean"/>
             <property name="x_attr" value="numHosts"/>
+        </chart>
+        <chart name="created from template: 3D Surface Chart" template="3d" type="MatplotlibChart">
+            <script>import numpy as np
+import pandas as pd
+import matplotlib as mpl
+import matplotlib.cm as cm
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+from omnetpp.scave import results, chart
+
+params = chart.get_properties()
+
+df = results.get_scalars(params["scalar_filter"], include_attrs=True, include_itervars=True, include_runattrs=True)
+
+df[params["x_attr"]] = pd.to_numeric(df[params["x_attr"]])
+df[params["y_attr"]] = pd.to_numeric(df[params["y_attr"]])
+
+#print(df)
+
+title_col, legend_cols = chart.extract_label_columns(df)
+
+print(legend_cols)
+title = str(list(df[title_col])[0]) if title_col else None
+
+df = pd.pivot_table(df, columns=[params["x_attr"]], index=params["y_attr"], values="value", dropna=False)
+
+ax = plt.gcf().add_subplot(111, projection='3d')
+
+print(df)
+
+X,Y = np.meshgrid(df.columns, df.index)
+
+
+cmap = cm.get_cmap('RdYlGn') # Get desired colormap - you can change this!
+max_height = np.max(df.values)   # get range of colorbars so we can normalize
+min_height = np.min(df.values)
+top = df.values.ravel()
+rgba = [cmap((k-min_height)/max_height) for k in top]
+ 
+
+type = params["chart_type"]
+
+if type == "bar":
+    bottom = np.zeros_like(top)
+    width = depth = 0.5
+    ax.bar3d(X.ravel() - width/2, Y.ravel() - depth/2, bottom, width, depth, top, shade=True, color=rgba)
+elif type == "points":
+    ax.scatter(X, Y, df, c=top, cmap='RdYlGn', depthshade=True)
+elif type == "surface":
+    ax.plot_trisurf(X.ravel(), Y.ravel(), df.values.ravel(), cmap='RdYlGn', shade=True)
+
+
+ax.set_xticks(df.columns)
+ax.get_xaxis().set_label_text(df.columns.name)
+
+ax.set_yticks(df.index)
+ax.get_yaxis().set_label_text(df.index.name)
+
+if title:
+    plt.title(title)
+</script>
+            <form>&lt;?xml version='1.0' encoding='UTF-8'?&gt;
+&lt;xswt xmlns:x='http://sweet_swt.sf.net/xswt'&gt;
+  &lt;import xmlns='http://sweet_swt.sf.net/xswt'&gt;
+    &lt;package name='java.lang'/&gt;
+    &lt;package name='org.eclipse.swt.widgets' /&gt;
+    &lt;package name='org.eclipse.swt.graphics' /&gt;
+    &lt;package name='org.eclipse.swt.layout' /&gt;
+    &lt;package name='org.eclipse.swt.custom' /&gt;
+  &lt;/import&gt;
+  &lt;layout x:class='GridLayout' numColumns='1'/&gt;
+  &lt;x:children&gt;
+    &lt;group text=''&gt;
+
+      &lt;layoutData x:class='GridData' horizontalAlignment='FILL' verticalAlignment='FILL' grabExcessHorizontalSpace='true'/&gt;
+      &lt;layout x:class='GridLayout' numColumns='2'/&gt;
+
+      &lt;x:children&gt;
+            &lt;label text="Attribute for X axis data:"/&gt;
+            &lt;combo x:id="x_attr" x:id.content="itervarnames,runattrnames" x:style="BORDER"&gt;
+                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
+            &lt;/combo&gt;
+
+            &lt;label text="Attribute for Y axis data:"/&gt;
+            &lt;combo x:id="y_attr" x:id.content="itervarnames,runattrnames" x:style="BORDER"&gt;
+                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
+            &lt;/combo&gt;
+
+            &lt;label text="Scalar filter:"/&gt;
+            &lt;combo x:id="scalar_filter" x:id.content="scalarnames" x:style="BORDER"&gt;
+                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
+            &lt;/combo&gt;
+
+            &lt;label text="Chart type:"/&gt;
+            &lt;combo x:id="chart_type" x:style="BORDER|READ_ONLY"&gt;
+                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
+                &lt;add x:p0="surface"/&gt;
+                &lt;add x:p0="bar"/&gt;
+                &lt;add x:p0="points"/&gt;
+            &lt;/combo&gt;
+
+            &lt;label text="Colormap:"/&gt;
+            &lt;text x:id="colormap" x:style="BORDER"&gt; &lt;!-- TODO: use a giant combobox instead? --&gt;
+                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
+            &lt;/text&gt;
+
+      &lt;/x:children&gt;
+    &lt;/group&gt;
+  &lt;/x:children&gt;
+&lt;/xswt&gt;</form>
+            <property name="scalar_filter" value="runattr:experiment(PureAlohaExperiment) AND name(channelUtilization:last)"/>
+            <property name="chart_type" value="bar"/>
+            <property name="y_attr" value="numHosts"/>
+            <property name="x_attr" value="iaMean"/>
         </chart>
     </charts>
 </analysis>
