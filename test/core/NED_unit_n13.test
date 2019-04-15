@@ -36,6 +36,6 @@ void Test::activity()
 
 %exitcode: 1
 
-%contains-regex: stderr
-Refusing to perform computations involving quantities with nonlinear units \(10dBm\), at .*test\.ned:6
+%contains: stderr
+Cannot evaluate parameter 'p1': operator "*": Refusing to perform computations involving quantities with nonlinear units (10dBm)
 
