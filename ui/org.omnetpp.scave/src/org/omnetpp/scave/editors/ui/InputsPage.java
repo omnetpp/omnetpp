@@ -193,7 +193,7 @@ public class InputsPage extends FormEditorPage {
 
     @Override
     public void selectionChanged(ISelection selection) {
-        Debug.println(selection.toString());
+        //Debug.println(selection.toString());
         //TODO if selection contains InputFiles, select them in the tree?
     }
 
