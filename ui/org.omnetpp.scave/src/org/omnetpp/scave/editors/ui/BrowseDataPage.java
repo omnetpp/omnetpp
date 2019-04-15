@@ -280,8 +280,12 @@ public class BrowseDataPage extends FormEditorPage {
             @Override
             public void widgetDefaultSelected(SelectionEvent e) {
                 ScaveEditorContributor editorContributor = ScaveEditorContributor.getDefault();
-                if (editorContributor != null)
-                    editorContributor.getCreateTempChartAction().run();
+                if (editorContributor != null) {
+                    if (editorContributor.getCreateTempChartAction().isEnabled())
+                        editorContributor.getCreateTempChartAction().run();
+                    else
+                        editorContributor.getCreateTempMatplotlibChartAction().run();
+                }
             }
         };
 

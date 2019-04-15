@@ -359,10 +359,12 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         //
         commandStack.addCommandStackListener
             (new CommandStackListener() {
-                 public void commandStackChanged(final EventObject event) {
+                 @Override
+                public void commandStackChanged(final EventObject event) {
                      getContainer().getDisplay().asyncExec
                          (new Runnable() {
-                              public void run() {
+                              @Override
+                            public void run() {
                                   firePropertyChange(IEditorPart.PROP_DIRTY);
 
                                   // Try to select the affected objects.
@@ -631,6 +633,18 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         ResourcesPlugin.getWorkspace().addResourceChangeListener(tracker);
     }
 
+    Element getFirstElementByName(Node parent, String type) {
+        NodeList children = parent.getChildNodes();
+
+        for (int k = 0; k < children.getLength(); ++k) {
+            Node childNode = children.item(k);
+            if (childNode instanceof Element && type.equals(childNode.getNodeName()))
+                return (Element)childNode;
+        }
+
+        return null;
+    }
+
     private void loadNewAnalysis(Node rootNode) {
         Node versionNode = rootNode.getAttributes().getNamedItem("version");
 
@@ -693,14 +707,27 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
 
                         chart.setName(chartNode.getAttributes().getNamedItem("name").getNodeValue());
 
+                        Node templateNode = chartNode.getAttributes().getNamedItem("template");
+                        if (templateNode != null)
+                            chart.setTemplateID(templateNode.getNodeValue());
+
+                        Element scriptElement = getFirstElementByName(chartNode, "script");
+                        Element formElement = getFirstElementByName(chartNode, "form");
+
                         Node scriptAttrNode = chartNode.getAttributes().getNamedItem("script");
                         if (scriptAttrNode != null)
                             chart.setScript(scriptAttrNode.getNodeValue());
-                        else
-                            chart.setScript(StringUtils.stripEnd(chartNode.getTextContent(), " "));
+                        else {
+                            if (scriptElement != null) {
+                                chart.setScript(scriptElement.getTextContent());
+                                if (formElement != null)
+                                    chart.setForm(formElement.getTextContent());
+                            }
+                            else
+                                chart.setScript(StringUtils.stripEnd(chartNode.getTextContent(), " "));
+                        }
 
                         NodeList props = chartNode.getChildNodes();
-
                         for (int k = 0; k < props.getLength(); ++k) {
                             Node propNode = props.item(k);
                             if ("property".equals(propNode.getNodeName())) {
@@ -1231,7 +1258,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         propertySheetPages.add(propertySheetPage);
 
         if (propertySheetPage instanceof PropertySheetPage) {
-            ((PropertySheetPage)propertySheetPage).setPropertySourceProvider(
+            propertySheetPage.setPropertySourceProvider(
                 new ScavePropertySourceProvider(adapterFactory, manager));
         }
         return propertySheetPage;
@@ -2151,7 +2178,15 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
                                 charts.appendChild(elem);
 
                                 elem.setAttribute("name", chart.getName());
-                                elem.setTextContent(chart.getScript());
+                                elem.setAttribute("template", chart.getTemplateID());
+
+                                Element script = d.createElement("script");
+                                script.setTextContent(chart.getScript());
+                                elem.appendChild(script);
+
+                                Element form = d.createElement("form");
+                                form.setTextContent(chart.getForm());
+                                elem.appendChild(form);
 
                                 String type = null;
 

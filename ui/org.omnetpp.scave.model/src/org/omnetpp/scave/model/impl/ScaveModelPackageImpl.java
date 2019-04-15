@@ -149,7 +149,7 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 
     /**
      * Creates, registers, and initializes the <b>Package</b> for this model, and for any others upon which it depends.
-     *
+     * 
      * <p>This method is used to initialize {@link ScaveModelPackage#eINSTANCE} when that field is accessed.
      * Clients should not invoke it directly. Instead, they should simply access that field to obtain the package.
      * <!-- begin-user-doc -->
@@ -176,7 +176,7 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
         // Mark meta-data to indicate it can't be changed
         theScaveModelPackage.freeze();
 
-
+  
         // Update the registry and return the package
         EPackage.Registry.INSTANCE.put(ScaveModelPackage.eNS_URI, theScaveModelPackage);
         return theScaveModelPackage;
@@ -315,6 +315,24 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
      */
     public EAttribute getChart_Temporary() {
         return (EAttribute)chartEClass.getEStructuralFeatures().get(2);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getChart_Form() {
+        return (EAttribute)chartEClass.getEStructuralFeatures().get(3);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getChart_TemplateID() {
+        return (EAttribute)chartEClass.getEStructuralFeatures().get(4);
     }
 
     /**
@@ -536,6 +554,8 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
         createEAttribute(chartEClass, CHART__SCRIPT);
         createEReference(chartEClass, CHART__PROPERTIES);
         createEAttribute(chartEClass, CHART__TEMPORARY);
+        createEAttribute(chartEClass, CHART__FORM);
+        createEAttribute(chartEClass, CHART__TEMPLATE_ID);
 
         propertyEClass = createEClass(PROPERTY);
         createEAttribute(propertyEClass, PROPERTY__NAME);
@@ -621,6 +641,8 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
         initEAttribute(getChart_Script(), ecorePackage.getEString(), "script", null, 0, 1, Chart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEReference(getChart_Properties(), this.getProperty(), null, "properties", null, 0, -1, Chart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEAttribute(getChart_Temporary(), ecorePackage.getEBoolean(), "temporary", "false", 1, 1, Chart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getChart_Form(), ecorePackage.getEString(), "form", null, 0, 1, Chart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getChart_TemplateID(), ecorePackage.getEString(), "templateID", null, 0, 1, Chart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(propertyEClass, Property.class, "Property", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEAttribute(getProperty_Name(), ecorePackage.getEString(), "name", null, 0, 1, Property.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

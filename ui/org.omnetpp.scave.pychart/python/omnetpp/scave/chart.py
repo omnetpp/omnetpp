@@ -6,6 +6,63 @@ import pickle as pl
 from omnetpp.scave import results
 from omnetpp.internal import Gateway
 
+def extract_label_columns(df):
+    titles = ["title", "name", "module", "experiment", "measurement", "replication"]
+    legends = ["title", "name", "module", "experiment", "measurement", "replication"]
+
+    blacklist = ["runID", "value", "vectime", "vecvalue", "binedges", "binvalues",
+                 "count", "sumweights", "mean", "stddev", "min", "max",
+                 "processid", "iterationvars", "iterationvarsf", "datetime",
+                 "source", "interpolationmode", "enum", "title", 'runnumber', 'seedset'
+                ]
+
+    title_col = None
+
+    for title in titles:
+        if title in df and len(df[title].unique()) == 1:
+            title_col = title
+            break
+
+    legend_cols = []
+
+    for legend in legends:
+        if legend in df and len(df[legend].unique()) == len(df):
+            legend_cols = [(list(df.columns.values).index(legend), legend)]
+            break
+
+    if legend_cols:
+        return title_col, legend_cols
+
+    last_len = None
+    for i, col in reversed(list(enumerate(df))):
+        if col not in blacklist and col != title_col:
+            new_len = len(df.groupby([i2 for i1, i2 in legend_cols] + [col]))
+            if new_len == len(df) or (not last_len) or new_len > last_len:
+                legend_cols.append((i, col))
+                last_len = new_len
+            if new_len == len(df):
+                break
+    """
+    if not legend_cols:
+        last_len = None
+        for i, col in reversed(list(enumerate(df))):
+            if col not in blacklist and col != title_col:
+                new_len = len(df.groupby([i2 for i1, i2 in legend_cols] + [col]))
+                if new_len > 1:
+                    legend_cols.append((i, col))
+    """
+
+    # TODO: use runID (or iterationvars?) as last resort (if present)
+    return title_col, legend_cols
+
+
+def make_legend_label(legend_cols, row):
+    # if len(legend_cols) == 1:
+    #    return str(row[legend_cols[0][0]])
+    return ", ".join([col + "=" + str(row[i]) for i, col in legend_cols])
+
+def make_chart_title(df, title_col, legend_cols):
+    return str(df[title_col][0]) + ((" (by " + ", ".join([id[1] for id in legend_cols]) + ")") if legend_cols else "")
 
 def _list_to_bytes(l):
     return np.array(np.array(l), dtype=np.dtype('>f8')).tobytes()
@@ -41,9 +98,10 @@ def _plot_scalars_DF_simple(df):
         }
     ))
 
-
 def _plot_scalars_DF_scave(df):
-    _plot_scalars_DF_simple(results.pivotScalars(df))
+    # TODO: pivot in the other direction (transposed)?
+    # TODO: this is... wrong?
+    _plot_scalars_DF_simple(pd.pivot_table(df, index="module", columns="name", values="value"))
 
 
 def _plot_scalars_DF_2(df):
@@ -64,7 +122,7 @@ def plot_scalars(df_or_values, labels=None, row_label=None):
     """
     if isinstance(df_or_values, pd.DataFrame):
         df = df_or_values
-        if "value" in df.columns and "type" in df.columns and "module" in df.columns and "name" in df.columns:
+        if "value" in df.columns and "module" in df.columns and "name" in df.columns:
             _plot_scalars_DF_scave(df)
         elif "experiment" in df.index.names and "measurement" in df.index.names and "replication" in df.index.names and "module" in df.index.names and "name" in df.index.names:
             _plot_scalars_DF_2(df)
@@ -117,15 +175,31 @@ def _plot_vectors_DF_simple(df):
 
 
 def _plot_vectors_DF_scave(df):
+
+    title_col, legend_cols = extract_label_columns(df)
+
     Gateway.chart_plotter.plotVectors(pl.dumps([
         {
-            "title": row.module + ":" + row.name,
-            "key": row.module + ":" + row.name,
+            "title": make_legend_label(legend_cols, row),
+            "key": str(i),
             "xs": _list_to_bytes(row.vectime),
             "ys": _list_to_bytes(row.vecvalue)
         }
-        for row in df.itertuples(index=False) if row.type == "vector"
+        for i, row in enumerate(df.itertuples(index=False))
     ]))
+
+    for i, t in enumerate(df.itertuples(index=False)):
+        key = str(i)
+        interp = t.interpolationmode if 'interpolationmode' in df else 'sample-hold' if 'enum' in df else None
+        if interp:
+            if interp == "none":
+                set_property("Line.Type/" + key, "Dots")
+            elif interp == "linear":
+                set_property("Line.Type/" + key, "Linear")
+            elif interp == "sample-hold":
+                set_property("Line.Type/" + key, "SampleHold")
+            elif interp == "backward-sample-hold":
+                set_property("Line.Type/" + key, "BackwardSampleHold")
 
 
 def _plot_vectors_DF_2(df):
@@ -139,28 +213,13 @@ def _plot_vectors_DF_2(df):
         for index, row in df.iterrows()
     ]))
 
-    for index, row in df.iterrows():
-        if ('attr', 'interpolationmode') in row:
-            interp = row[('attr', 'interpolationmode')]
-            key = "-".join(row.name) + row[('attr', 'title')]
-
-            if interp == "none":
-                set_property("Line.Type/" + key, "Dots")
-            elif interp == "linear":
-                set_property("Line.Type/" + key, "Linear")
-            elif interp == "sample-hold":
-                set_property("Line.Type/" + key, "SampleHold")
-            elif interp == "backward-sample-hold":
-                set_property("Line.Type/" + key, "BackwardSampleHold")
-
-
 def plot_vectors(df_or_list):
     """
     TODO: styling in-place?
     """
     if isinstance(df_or_list, pd.DataFrame):
         df = df_or_list
-        if "vectime" in df.columns and "vecvalue" in df.columns and "type" in df.columns and "module" in df.columns and "name" in df.columns:
+        if "vectime" in df.columns and "vecvalue" in df.columns and "module" in df.columns and "name" in df.columns:
             _plot_vectors_DF_scave(df)
         elif "experiment" in df.index.names and "measurement" in df.index.names and "replication" in df.index.names and "module" in df.index.names and "name" in df.index.names:
             _plot_vectors_DF_2(df)
@@ -286,6 +345,28 @@ def _plot_histograms_DF(df):
             ]))
 
 
+
+def _plot_histograms_DF_scave(df):
+    title_col, legend_cols = extract_label_columns(df)
+
+    Gateway.chart_plotter.plotHistograms(pl.dumps([
+        {
+            "title": make_legend_label(legend_cols, row),  # row[2] + ":" + row[3],
+            "key": str(i), # "-".join([row.title, row.runID]),  # row[2] + ":" + row[3],
+            "count": int(row.count),
+            "min": float(row.min),
+            "max": float(row.max),
+            "edges": _list_to_bytes(list(row.binedges) + [float('inf')]),
+            "values": _list_to_bytes(row.binvalues)
+        }
+        for i, row in enumerate(df.itertuples(index=False))
+    ]))
+
+    title = make_chart_title(df, title_col, legend_cols)
+    set_property("Graph.Title", title)
+
+
+
 def _plot_histograms_DF_2(df):
     Gateway.chart_plotter.plotHistograms(pl.dumps([
         {
@@ -302,6 +383,8 @@ def _plot_histograms_DF_2(df):
 
 
 def plot_histograms(df):
+    if "binedges" in df and "binvalues" in df and "module" in df and "name" in df:
+        _plot_histograms_DF_scave(df)
     if "experiment" in df.index.names and "measurement" in df.index.names and "replication" in df.index.names and "module" in df.index.names and "name" in df.index.names:
         _plot_histograms_DF_2(df)
     else:

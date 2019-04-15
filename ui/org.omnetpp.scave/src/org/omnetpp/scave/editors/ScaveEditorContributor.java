@@ -64,6 +64,7 @@ import org.omnetpp.scave.actions.ExportToSVGAction;
 import org.omnetpp.scave.actions.GotoChartDefinitionAction;
 import org.omnetpp.scave.actions.IScaveAction;
 import org.omnetpp.scave.actions.NewBarChartAction;
+import org.omnetpp.scave.actions.NewChartFromTemplateAction;
 import org.omnetpp.scave.actions.NewHistogramChartAction;
 import org.omnetpp.scave.actions.NewLineChartAction;
 import org.omnetpp.scave.actions.NewMatplotlibChartAction;
@@ -76,6 +77,8 @@ import org.omnetpp.scave.actions.SelectAllAction;
 import org.omnetpp.scave.actions.ShowOutputVectorViewAction;
 import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.charting.IChartView;
+import org.omnetpp.scave.python.ChartTemplate;
+import org.omnetpp.scave.python.ChartTemplateRegistry;
 import org.omnetpp.scave.python.KillPythonProcessAction;
 
 /**
@@ -411,13 +414,13 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
 
         addGlobalActions(menuManager);
 
-        MenuManager submenuManager = new MenuManager("New");
-        submenuManager.add(new NewBarChartAction(false));
-        submenuManager.add(new NewLineChartAction(false));
-        submenuManager.add(new NewScatterChartAction(false));
-        submenuManager.add(new NewHistogramChartAction(false));
-        submenuManager.add(new NewMatplotlibChartAction(false));
+        MenuManager submenuManager = new MenuManager("New From Template");
+
+        for (ChartTemplate t : ChartTemplateRegistry.getAllTemplates())
+            submenuManager.add(new NewChartFromTemplateAction(t, false));
+
         menuManager.insertBefore("edit", submenuManager);
+
         menuManager.insertBefore("edit", openAction);
         menuManager.insertBefore("edit", editAction);
         // menuManager.insertBefore("edit", new EditScriptAction());

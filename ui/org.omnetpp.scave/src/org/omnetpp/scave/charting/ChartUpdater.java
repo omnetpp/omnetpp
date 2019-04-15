@@ -85,6 +85,11 @@ public class ChartUpdater {
 
         // add/remove chart property
         if (notifier instanceof Chart && notifier == chart) {
+
+            if (notification.getFeatureID(Chart.class) != ScaveModelPackage.CHART__SCRIPT) {
+                scheduleDatasetUpdate();
+            }
+
             switch (notification.getFeatureID(Chart.class)) {
             case ScaveModelPackage.CHART__SCRIPT:
                 // this is already done by the change notification through the Document

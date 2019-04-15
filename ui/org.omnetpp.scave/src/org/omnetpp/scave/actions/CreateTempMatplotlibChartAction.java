@@ -8,22 +8,22 @@
 
 package org.omnetpp.scave.actions;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.charting.properties.ChartProperties;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItemField;
-import org.omnetpp.scave.model.MatplotlibChart;
+import org.omnetpp.scave.engine.RunAttribute;
+import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model2.ScaveModelUtil;
-import org.omnetpp.scave.python.ChartScriptGenerator;
 import org.omnetpp.scave.script.ScriptEngine;
 
 /**
@@ -54,12 +54,16 @@ public class CreateTempMatplotlibChartAction extends AbstractScaveAction {
             IDList idList = IDList.fromArray(idListSelection.getHistogramIDs());
             openMatplotlibChart(editor, manager, ResultType.HISTOGRAM_LITERAL, idList);
         }
+        if (idListSelection.getStatisticsCount() != 0) {
+            IDList idList = IDList.fromArray(idListSelection.getStatisticIDs());
+            openMatplotlibChart(editor, manager, ResultType.STATISTICS_LITERAL, idList);
+        }
     }
 
     protected void openMatplotlibChart(final ScaveEditor editor, final ResultFileManager manager, final ResultType type, final IDList idList) {
 
-        //String[] filterFields = new String[] { ResultItemField.FILE, RunAttribute.CONFIGNAME, RunAttribute.RUNNUMBER };
-        String[] filterFields = new String[] { ResultItemField.RUN };
+        String[] filterFields = new String[] { RunAttribute.EXPERIMENT, RunAttribute.MEASUREMENT, RunAttribute.REPLICATION,
+                ResultItemField.MODULE, ResultItemField.NAME };
 
         String name = "MatplotlibChart" + (++counter);
 
@@ -67,16 +71,33 @@ public class CreateTempMatplotlibChartAction extends AbstractScaveAction {
             return StringUtils.defaultIfEmpty(ScriptEngine.defaultTitle(ScaveModelUtil.getResultItems(idList, manager)), name);
         });
 
-        String input = ChartScriptGenerator.makeMatplotlibChartScript(title, idList, filterFields, type, manager);
 
-        MatplotlibChart chart = ScaveModelUtil.createMatplotlibChart(name);
+        Chart chart = null;
+        switch (type) {
+            case HISTOGRAM_LITERAL: chart = ScaveModelUtil.createChartFromTemplate("histogramchart_mpl"); break;
+            case SCALAR_LITERAL: chart = ScaveModelUtil.createChartFromTemplate("barchart_mpl"); break;
+            case VECTOR_LITERAL: chart = ScaveModelUtil.createChartFromTemplate("linechart_mpl"); break;
+            case STATISTICS_LITERAL: chart = ScaveModelUtil.createChartFromTemplate("boxwhiskers_mpl"); break;
+            default: Assert.isLegal(false, "invalid enum value"); break;
+        }
 
-        Property property = ScaveModelFactory.eINSTANCE.createProperty();
-        property.setName(ChartProperties.PROP_GRAPH_TITLE);
-        property.setValue(title);
-        chart.getProperties().add(property);
 
-        chart.setScript(input);
+        {
+            Property property = ScaveModelFactory.eINSTANCE.createProperty();
+            property.setName("title");
+            property.setValue(title);
+            chart.getProperties().add(property);
+        }
+
+        {
+            String filter = ResultFileManager.callWithReadLock(manager, () -> { return ScaveModelUtil.getIDListAsChartInput(idList, filterFields, manager); });
+            Property property = ScaveModelFactory.eINSTANCE.createProperty();
+            property.setName("filter");
+            property.setValue(filter);
+            chart.getProperties().add(property);
+        }
+
+        chart.setName(name);
         chart.setTemporary(true);
 
         editor.openChart(chart);

@@ -78,7 +78,7 @@ def _plot_scalars_DF_2(df):
 def plot_scalars(df_or_values, labels=None, row_label=None):
     if isinstance(df_or_values, pd.DataFrame):
         df = df_or_values
-        if "value" in df.columns and "type" in df.columns and "module" in df.columns and "name" in df.columns:
+        if "value" in df.columns and "module" in df.columns and "name" in df.columns:
             _plot_scalars_DF_scave(df)
         elif "experiment" in df.index.names and "measurement" in df.index.names and "replication" in df.index.names and "module" in df.index.names and "name" in df.index.names:
             _plot_scalars_DF_2(df)
@@ -159,6 +159,17 @@ def plot_histogram(label, edges, values, count=-1, lowest=math.nan, highest=math
     plt.legend()
 
 
+
+def _plot_histograms_DF_scave(df):
+    for row in df.itertuples(index=False):
+        edges = list(row.binedges)
+        values = list(row.binvalues)
+
+        plt.hist(bins=edges, x=edges[:-1], weights=values, label=row.module + ":" + row.name)
+    plt.legend()
+
+
+
 def _plot_histograms_DF(df):
     for row in df.itertuples(index=False):
         if row[1] == "histogram":
@@ -179,7 +190,9 @@ def _plot_histograms_DF_2(df):
 
 
 def plot_histograms(df):
-    if "experiment" in df.index.names and "measurement" in df.index.names and "replication" in df.index.names and "module" in df.index.names and "name" in df.index.names:
+    if "binedges" in df and "binvalues" in df and "module" in df and "name" in df:
+        _plot_histograms_DF_scave(df)
+    elif "experiment" in df.index.names and "measurement" in df.index.names and "replication" in df.index.names and "module" in df.index.names and "name" in df.index.names:
         _plot_histograms_DF_2(df)
     else:
         _plot_histograms_DF(df)

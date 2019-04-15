@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xswt xmlns:x='http://sweet_swt.sf.net/xswt'>
+  <import xmlns='http://sweet_swt.sf.net/xswt'>
+    <package name='java.lang'/>
+    <package name='org.eclipse.swt.widgets' />
+    <package name='org.eclipse.swt.graphics' />
+    <package name='org.eclipse.swt.layout' />
+    <package name='org.eclipse.swt.custom' />
+  </import>
+  <layout x:class='GridLayout' numColumns='1'/>
+  <x:children>
+    <group text=''>
+
+      <layoutData x:class='GridData' horizontalAlignment='FILL' verticalAlignment='FILL' grabExcessHorizontalSpace='true'/>
+      <layout x:class='GridLayout' numColumns='2'/>
+
+      <x:children>
+            <label text="Attribute for X axis data:"/>
+            <combo x:id="x_attr" x:id.content="itervarnames,runattrnames" x:style="BORDER">
+                <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+            </combo>
+
+            <label text="Attribute for Y axis data:"/>
+            <combo x:id="y_attr" x:id.content="itervarnames,runattrnames" x:style="BORDER">
+                <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+            </combo>
+
+            <label text="Scalar filter:"/>
+            <combo x:id="scalar_filter" x:id.content="scalarnames" x:style="BORDER">
+                <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+            </combo>
+
+            <label text="Chart type:"/>
+            <combo x:id="chart_type" x:style="BORDER|READ_ONLY">
+                <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+                <add x:p0="surface"/>
+                <add x:p0="trisurf"/>
+                <add x:p0="points"/>
+                <add x:p0="bar"/>
+            </combo>
+
+            <label text="Colormap:"/>
+            <text x:id="colormap" x:style="BORDER"> <!-- TODO: use a giant combobox instead? -->
+                <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+            </text>
+
+      </x:children>
+    </group>
+  </x:children>
+</xswt>

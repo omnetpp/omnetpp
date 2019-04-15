@@ -27,8 +27,8 @@ def compute(dataframe, operation, *args, **kwargs):
 
 
 def vector_aggregator(df, function='average'):
-    vectimes = df[('result', 'vectime')]
-    vecvalues = df[('result', 'vecvalue')]
+    vectimes = df['vectime']
+    vecvalues = df['vecvalue']
 
     # the number of rows in the DataFrame
     n = len(df.index)
@@ -92,17 +92,19 @@ def vector_aggregator(df, function='average'):
     out_times = np.resize(out_times, out_index)
     out_values = np.resize(out_values, out_index)
 
-    index = pd.MultiIndex.from_tuples([('Computed', '', '#0', 'various', 'various')], names=['experiment', 'measurement', 'replication', 'module', 'name'])
-    cols = pd.MultiIndex(levels=[['result', 'attr'], ['vectime', 'vecvalue', 'title', 'unit']],
-                          labels=[[0, 0, 1, 1], [0, 1, 2, 3]])
-
-    result = pd.DataFrame([(out_times, out_values, 'aggregated', 'various')], index=index, columns=cols)
+    #index = pd.MultiIndex.from_tuples([('Computed', '', '#0', 'various', 'various')], names=['experiment', 'measurement', 'replication', 'module', 'name'])
+    cols = pd.Index(['vectime', 'vecvalue', 'title', 'unit'])
+    
+    title = "Aggregate of " + ", ".join(df["title"].unique()) if "title" in df else ""
+    unit = ", ".join(df["unit"].unique()) if "unit" in df else ""
+    
+    result = pd.DataFrame([(out_times, out_values, title, unit)], columns=cols)
     return result
 
 
 def vector_merger(df):
-    vectimes = df[('result', 'vectime')]
-    vecvalues = df[('result', 'vecvalue')]
+    vectimes = df['vectime']
+    vecvalues = df['vecvalue']
 
     # the number of rows in the DataFrame
     n = len(df.index)
@@ -151,35 +153,37 @@ def vector_merger(df):
     out_values = np.resize(out_values, out_index)
 
     index = pd.MultiIndex.from_tuples([('Computed', '', '#0', 'various', 'various')], names=['experiment', 'measurement', 'replication', 'module', 'name'])
-    cols = pd.MultiIndex(levels=[['result', 'attr'], ['vectime', 'vecvalue', 'title', 'unit']],
-                          labels=[[0, 0, 1, 1], [0, 1, 2, 3]])
+    cols = pd.Index(['vectime', 'vecvalue', 'title', 'unit'])
 
     result = pd.DataFrame([(out_times, out_values, 'merged', 'various')], index=index, columns=cols)
     return result
 
 
 def vector_mean(r):
-    v = r[('result', 'vecvalue')]
-    r[('result', 'vecvalue')] = np.cumsum(v) / np.arange(1, len(v) + 1)
-    r[('attr', 'title')] = 'Mean of ' + r[('attr', 'title')]
+    v = r['vecvalue']
+    r['vecvalue'] = np.cumsum(v) / np.arange(1, len(v) + 1)
+    if "title" in r:
+        r['title'] = 'Mean of ' + r['title']
     return r
 
 
 def vector_sum(r):
-    r[('result', 'vecvalue')] = np.cumsum(r[('result', 'vecvalue')])
-    r[('attr', 'title')] = 'Cumulative sum of ' + r[('attr', 'title')]
+    r['vecvalue'] = np.cumsum(r['vecvalue'])
+    if "title" in r:
+        r['title'] = 'Cumulative sum of ' + r['title']
     return r
 
 
 def vector_add(r, c):
-    v = r[('result', 'vecvalue')]
-    r[('result', 'vecvalue')] = v + c
-    r[('attr', 'title')] = r[('attr', 'title')] + " + " + str(c)
+    v = r['vecvalue']
+    r['vecvalue'] = v + c
+    if "title" in r:
+        r['title'] = r['title'] + " + " + str(c)
     return r
 
 
 def vector_compare(r, threshold, less=None, equal=None, greater=None):
-    v = r[('result', 'vecvalue')]
+    v = r['vecvalue']
 
     if less is not None:
         less_mask = v < threshold
@@ -193,75 +197,82 @@ def vector_compare(r, threshold, less=None, equal=None, greater=None):
         greater_mask = v > threshold
         v = np.where(greater_mask, greater, v)
 
-    r[('result', 'vecvalue')] = v
+    r['vecvalue'] = v
 
-    r[('attr', 'title')] = r[('attr', 'title')] + " compared to " + str(threshold)
+    if "title" in r:
+        r['title'] = r['title'] + " compared to " + str(threshold)
 
     return r
 
 
 def vector_crop(r, from_time, to_time):
-    t = r[('result', 'vectime')]
-    v = r[('result', 'vecvalue')]
+    t = r['vectime']
+    v = r['vecvalue']
 
     from_index = np.searchsorted(t, from_time, 'left')
     to_index = np.searchsorted(t, to_time, 'right')
 
-    r[('result', 'vectime')] = t[from_index:to_index]
-    r[('result', 'vecvalue')] = v[from_index:to_index]
+    r['vectime'] = t[from_index:to_index]
+    r['vecvalue'] = v[from_index:to_index]
 
-    r[('attr', 'title')] = r[('attr', 'title')] + " from {}s to {}s".format(from_time, to_time)
+    if "title" in r:
+        r['title'] = r['title'] + " from {}s to {}s".format(from_time, to_time)
     return r
 
 
 def vector_difference(r):
-    v = r[('result', 'vecvalue')]
+    v = r['vecvalue']
 
-    r[('result', 'vecvalue')] = v - np.concatenate([np.array([0]), v[:-1]])
+    r['vecvalue'] = v - np.concatenate([np.array([0]), v[:-1]])
 
-    r[('attr', 'title')] = "Difference of " + r[('attr', 'title')]
+    if "title" in r:
+        r['title'] = "Difference of " + r['title']
     return r
 
 
 def vector_diffquot(r):
-    t = r[('result', 'vectime')]
-    v = r[('result', 'vecvalue')]
+    t = r['vectime']
+    v = r['vecvalue']
 
     dt = t[1:] - t[:-1]
     dv = v[1:] - v[:-1]
 
-    r[('result', 'vecvalue')] = dv / dt
-    r[('result', 'vectime')] = t[:-1]
+    r['vecvalue'] = dv / dt
+    r['vectime'] = t[:-1]
 
-    r[('attr', 'title')] = "Difference quotient of " + r[('attr', 'title')]
+    if "title" in r:
+        r['title'] = "Difference quotient of " + r['title']
     return r
 
 
 def vector_divide_by(r, a):
-    v = r[('result', 'vecvalue')]
-    r[('result', 'vecvalue')] = v / a
-    r[('attr', 'title')] = r[('attr', 'title')] + " / " + str(a)
+    v = r['vecvalue']
+    r['vecvalue'] = v / a
+    if "title" in r:
+        r['title'] = r['title'] + " / " + str(a)
     return r
 
 
 def vector_divtime(r):
-    t = r[('result', 'vectime')]
-    v = r[('result', 'vecvalue')]
-    r[('result', 'vecvalue')] = v / t
-    r[('attr', 'title')] = r[('attr', 'title')] + " / t "
+    t = r['vectime']
+    v = r['vecvalue']
+    r['vecvalue'] = v / t
+    if "title" in r:
+        r['title'] = r['title'] + " / t "
     return r
 
 
 def vector_expression(r, expr):
-    t = r[('result', 'vectime')]
-    y = r[('result', 'vecvalue')]
+    t = r['vectime']
+    y = r['vecvalue']
 
     tprev = np.concatenate([np.array([0]), t[:-1]])
     yprev = np.concatenate([np.array([0]), y[:-1]])
 
-    r[('result', 'vecvalue')] = eval(expr)  # TODO - sanitize expr
+    r['vecvalue'] = eval(expr)  # TODO - sanitize expr
 
-    r[('attr', 'title')] = r[('attr', 'title')] + ": " + expr
+    if "title" in r:
+        r['title'] = r['title'] + ": " + expr
     return r
 
 
@@ -282,141 +293,159 @@ def _integrate_helper(t, v, interpolation):
 
 
 def vector_integrate(r, interpolation):
-    t = r[('result', 'vectime')]
-    v = r[('result', 'vecvalue')]
+    t = r['vectime']
+    v = r['vecvalue']
 
-    r[('result', 'vecvalue')] = _integrate_helper(t, v, interpolation)
+    r['vecvalue'] = _integrate_helper(t, v, interpolation)
 
-    r[('attr', 'title')] = r[('attr', 'title')] + " integrated " + interpolation
+    if "title" in r:
+        r['title'] = r['title'] + " integrated " + interpolation
     return r
 
 
 def vector_lineartrend(r, a):
-    t = r[('result', 'vectime')]
-    v = r[('result', 'vecvalue')]
+    t = r['vectime']
+    v = r['vecvalue']
 
-    r[('result', 'vecvalue')] = v + a * t
+    r['vecvalue'] = v + a * t
 
-    r[('attr', 'title')] = r[('attr', 'title')] + " + " + str(a) + " * t"
+    if "title" in r:
+        r['title'] = r['title'] + " + " + str(a) + " * t"
     return r
 
 
 def vector_modulo(r, a):
-    v = r[('result', 'vecvalue')]
-    r[('result', 'vecvalue')] = np.remainder(v, a)
-    r[('attr', 'title')] = r[('attr', 'title')] + " mod " + str(a)
+    v = r['vecvalue']
+    r['vecvalue'] = np.remainder(v, a)
+    if "title" in r:
+        r['title'] = r['title'] + " mod " + str(a)
     return r
 
 
 def vector_movingavg(r, alpha):
-    v = r[('result', 'vecvalue')]
+    v = r['vecvalue']
     s = pd.Series(v, dtype=np.dtype('f8'))
-    r[('result', 'vecvalue')] = s.ewm(alpha=alpha).mean()
-    r[('attr', 'title')] = r[('attr', 'title')] + " mean " + str(alpha)
+    r['vecvalue'] = s.ewm(alpha=alpha).mean()
+    if "title" in r:
+        r['title'] = r['title'] + " mean " + str(alpha)
     return r
 
 
 def vector_multiply_by(r, a):
-    v = r[('result', 'vecvalue')]
-    r[('result', 'vecvalue')] = v * a
-    r[('attr', 'title')] = r[('attr', 'title')] + " * " + str(a)
+    v = r['vecvalue']
+    r['vecvalue'] = v * a
+    if "title" in r:
+        r['title'] = r['title'] + " * " + str(a)
     return r
 
 
 def vector_removerepeats(r):
-    t = r[('result', 'vectime')]
-    v = r[('result', 'vecvalue')]
+    t = r['vectime']
+    v = r['vecvalue']
 
     is_repeating = v[:-1] == v[1:]
     not_repeating = np.concatenate([[1], 1 - is_repeating])
 
-    r[('result', 'vecvalue')] = np.compress(not_repeating, v)
-    r[('result', 'vectime')] = np.compress(not_repeating, t)
+    r['vecvalue'] = np.compress(not_repeating, v)
+    r['vectime'] = np.compress(not_repeating, t)
 
-    r[('attr', 'title')] = r[('attr', 'title')] + " removerepeats"
+    if "title" in r:
+        r['title'] = r['title'] + " removerepeats"
     return r
 
 
 def vector_slidingwinavg(r, window_size):
-    v = r[('result', 'vecvalue')]
+    v = r['vecvalue']
     s = pd.Series(v, dtype=np.dtype('f8'))
-    r[('result', 'vecvalue')] = s.rolling(window_size).mean()
-    r[('attr', 'title')] = r[('attr', 'title')] + " windowmean " + str(window_size)
+    r['vecvalue'] = s.rolling(window_size).mean()
+    if "title" in r:
+        r['title'] = r['title'] + " windowmean " + str(window_size)
     return r
 
 
 def vector_subtractfirstval(r):
-    v = r[('result', 'vecvalue')]
-    r[('result', 'vecvalue')] = v - v[0]
-    r[('attr', 'title')] = r[('attr', 'title')] + " - v[0]"
+    v = r['vecvalue']
+    r['vecvalue'] = v - v[0]
+    if "title" in r:
+        r['title'] = r['title'] + " - v[0]"
     return r
 
 
 def vector_timeavg(r, interpolation):
-    t = r[('result', 'vectime')]
-    v = r[('result', 'vecvalue')]
+    # TODO: add "auto" - where we choose interpolation based on interpolationmode and enum
+    t = r['vectime']
+    v = r['vecvalue']
 
     integrated = _integrate_helper(t, v, interpolation)
 
-    r[('result', 'vecvalue')] = integrated / t
-    r[('attr', 'title')] = r[('attr', 'title')] + " timeavg"
+    r['vecvalue'] = integrated / t
+    if "title" in r:
+        r['title'] = r['title'] + " timeavg"
+    
+    r["interpolationmode"] = "linear"
+    
     return r
 
 
 def vector_timediff(r):
-    t = r[('result', 'vectime')]
+    t = r['vectime']
 
-    r[('result', 'vecvalue')] = np.concatenate([np.array([0]), t[1:] - t[:-1]])
+    r['vecvalue'] = np.concatenate([np.array([0]), t[1:] - t[:-1]])
 
-    r[('attr', 'title')] = r[('attr', 'title')] + " timediff"
+    if "title" in r:
+        r['title'] = r['title'] + " timediff"
     return r
 
 
 def vector_timeshift(r, dt):
-    t = r[('result', 'vectime')]
+    t = r['vectime']
 
-    r[('result', 'vectime')] = t + dt
+    r['vectime'] = t + dt
 
-    r[('attr', 'title')] = r[('attr', 'title')] + " shifted by " + str(dt)
+    if "title" in r:
+        r['title'] = r['title'] + " shifted by " + str(dt)
     return r
 
 
 def vector_timetoserial(r):
-    t = r[('result', 'vectime')]
+    t = r['vectime']
 
-    r[('result', 'vectime')] = np.arange(0, len(t))
+    r['vectime'] = np.arange(0, len(t))
 
-    r[('attr', 'title')] = r[('attr', 'title')] + " timetoserial"
+    if "title" in r:
+        r['title'] = r['title'] + " timetoserial"
     return r
 
 
 def vector_timewinavg(r, window_size=1):
-    t = r[('result', 'vectime')]
-    v = r[('result', 'vecvalue')]
+    t = r['vectime']
+    v = r['vecvalue']
 
     t2 = t / window_size
     bucket = np.floor(t2)
 
     grouped = pd.Series(v, dtype=np.dtype('f8')).groupby(bucket).mean()
 
-    r[('result', 'vectime')] = grouped.index.values * window_size
-    r[('result', 'vecvalue')] = grouped.values
+    r['vectime'] = grouped.index.values * window_size
+    r['vecvalue'] = grouped.values
 
-    r[('attr', 'title')] = r[('attr', 'title')] + " timewinavg"
+    if "title" in r:
+        r['title'] = r['title'] + " timewinavg"
     return r
 
 
 def vector_winavg(r, window_size=10):
-    t = r[('result', 'vectime')]
-    v = r[('result', 'vecvalue')]
+    t = r['vectime']
+    v = r['vecvalue']
 
     t2 = np.arange(0, len(t)) / window_size
     bucket = np.floor(t2)
 
     grouped = pd.Series(v, dtype=np.dtype('f8')).groupby(bucket).mean()
 
-    r[('result', 'vectime')] = t[::window_size]
-    r[('result', 'vecvalue')] = grouped.values
+    r['vectime'] = t[::window_size]
+    r['vecvalue'] = grouped.values
 
-    r[('attr', 'title')] = r[('attr', 'title')] + " timewinavg"
+    if "title" in r:
+        r['title'] = r['title'] + " timewinavg"
     return r

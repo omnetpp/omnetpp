@@ -252,13 +252,31 @@ public interface ScaveModelPackage extends EPackage {
     int CHART__TEMPORARY = ANALYSIS_ITEM_FEATURE_COUNT + 2;
 
     /**
+     * The feature id for the '<em><b>Form</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int CHART__FORM = ANALYSIS_ITEM_FEATURE_COUNT + 3;
+
+    /**
+     * The feature id for the '<em><b>Template ID</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int CHART__TEMPLATE_ID = ANALYSIS_ITEM_FEATURE_COUNT + 4;
+
+    /**
      * The number of structural features of the '<em>Chart</em>' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int CHART_FEATURE_COUNT = ANALYSIS_ITEM_FEATURE_COUNT + 3;
+    int CHART_FEATURE_COUNT = ANALYSIS_ITEM_FEATURE_COUNT + 5;
 
     /**
      * The meta object id for the '{@link org.omnetpp.scave.model.impl.PropertyImpl <em>Property</em>}' class.
@@ -342,6 +360,24 @@ public interface ScaveModelPackage extends EPackage {
      * @ordered
      */
     int BAR_CHART__TEMPORARY = CHART__TEMPORARY;
+
+    /**
+     * The feature id for the '<em><b>Form</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BAR_CHART__FORM = CHART__FORM;
+
+    /**
+     * The feature id for the '<em><b>Template ID</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BAR_CHART__TEMPLATE_ID = CHART__TEMPLATE_ID;
 
     /**
      * The feature id for the '<em><b>Group By Fields</b></em>' attribute list.
@@ -444,6 +480,24 @@ public interface ScaveModelPackage extends EPackage {
     int LINE_CHART__TEMPORARY = CHART__TEMPORARY;
 
     /**
+     * The feature id for the '<em><b>Form</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int LINE_CHART__FORM = CHART__FORM;
+
+    /**
+     * The feature id for the '<em><b>Template ID</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int LINE_CHART__TEMPLATE_ID = CHART__TEMPLATE_ID;
+
+    /**
      * The feature id for the '<em><b>Line Name Format</b></em>' attribute.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -508,6 +562,24 @@ public interface ScaveModelPackage extends EPackage {
     int HISTOGRAM_CHART__TEMPORARY = CHART__TEMPORARY;
 
     /**
+     * The feature id for the '<em><b>Form</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int HISTOGRAM_CHART__FORM = CHART__FORM;
+
+    /**
+     * The feature id for the '<em><b>Template ID</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int HISTOGRAM_CHART__TEMPLATE_ID = CHART__TEMPLATE_ID;
+
+    /**
      * The number of structural features of the '<em>Histogram Chart</em>' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -561,6 +633,24 @@ public interface ScaveModelPackage extends EPackage {
      * @ordered
      */
     int SCATTER_CHART__TEMPORARY = CHART__TEMPORARY;
+
+    /**
+     * The feature id for the '<em><b>Form</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int SCATTER_CHART__FORM = CHART__FORM;
+
+    /**
+     * The feature id for the '<em><b>Template ID</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int SCATTER_CHART__TEMPLATE_ID = CHART__TEMPLATE_ID;
 
     /**
      * The feature id for the '<em><b>XData Pattern</b></em>' attribute.
@@ -680,6 +770,24 @@ public interface ScaveModelPackage extends EPackage {
      * @ordered
      */
     int MATPLOTLIB_CHART__TEMPORARY = CHART__TEMPORARY;
+
+    /**
+     * The feature id for the '<em><b>Form</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int MATPLOTLIB_CHART__FORM = CHART__FORM;
+
+    /**
+     * The feature id for the '<em><b>Template ID</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int MATPLOTLIB_CHART__TEMPLATE_ID = CHART__TEMPLATE_ID;
 
     /**
      * The number of structural features of the '<em>Matplotlib Chart</em>' class.
@@ -848,6 +956,28 @@ public interface ScaveModelPackage extends EPackage {
      * @generated
      */
     EAttribute getChart_Temporary();
+
+    /**
+     * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.Chart#getForm <em>Form</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Form</em>'.
+     * @see org.omnetpp.scave.model.Chart#getForm()
+     * @see #getChart()
+     * @generated
+     */
+    EAttribute getChart_Form();
+
+    /**
+     * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.Chart#getTemplateID <em>Template ID</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Template ID</em>'.
+     * @see org.omnetpp.scave.model.Chart#getTemplateID()
+     * @see #getChart()
+     * @generated
+     */
+    EAttribute getChart_TemplateID();
 
     /**
      * Returns the meta object for class '{@link org.omnetpp.scave.model.Property <em>Property</em>}'.
@@ -1204,6 +1334,22 @@ public interface ScaveModelPackage extends EPackage {
          * @generated
          */
         EAttribute CHART__TEMPORARY = eINSTANCE.getChart_Temporary();
+
+        /**
+         * The meta object literal for the '<em><b>Form</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute CHART__FORM = eINSTANCE.getChart_Form();
+
+        /**
+         * The meta object literal for the '<em><b>Template ID</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute CHART__TEMPLATE_ID = eINSTANCE.getChart_TemplateID();
 
         /**
          * The meta object literal for the '{@link org.omnetpp.scave.model.impl.PropertyImpl <em>Property</em>}' class.

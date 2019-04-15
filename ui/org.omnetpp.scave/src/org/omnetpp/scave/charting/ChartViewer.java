@@ -354,8 +354,8 @@ public abstract class ChartViewer extends ZoomableCachingCanvas implements IChar
             setYMin(Converter.stringToDouble(value));
         else if (PROP_Y_AXIS_MAX.equals(name))
             setYMax(Converter.stringToDouble(value));
-        else
-            ScavePlugin.logError(new RuntimeException("unrecognized chart property: "+name));
+        /*else
+            ScavePlugin.logError(new RuntimeException("unrecognized chart property: "+name));*/
     }
 
     protected String getElementId(String propertyName) {

@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xswt xmlns:x='http://sweet_swt.sf.net/xswt'>
+  <import xmlns='http://sweet_swt.sf.net/xswt'>
+    <package name='java.lang'/>
+    <package name='org.eclipse.swt.widgets' />
+    <package name='org.eclipse.swt.graphics' />
+    <package name='org.eclipse.swt.layout' />
+    <package name='org.eclipse.swt.custom' />
+  </import>
+  <layout x:class='GridLayout' numColumns='1'/>
+  <x:children>
+    <group text=''>
+
+      <layoutData x:class='GridData' horizontalAlignment='FILL' verticalAlignment='FILL' grabExcessHorizontalSpace='true'/>
+      <layout x:class='GridLayout' numColumns='2'/>
+
+      <x:children>
+            <label text="Common filter part:"/>
+            <combo x:id="common_filter" x:style="BORDER"> <!-- x:id.content="scalarnames,itervarnames,runattrnames" --> 
+                <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+            </combo>
+
+            <label text="Filter for X axis data:"/>
+            <combo x:id="xaxis_filter" x:id.content="scalarnames,itervarnames,runattrnames" x:style="BORDER">
+                <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+            </combo>
+
+            <label text="Filter for Y axis data:"/>
+            <combo x:id="yaxis_filter" x:id.content="scalarnames,itervarnames,runattrnames" x:style="BORDER">
+                <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+            </combo>
+
+            <label text="Filter for iso line data:"/>
+            <combo x:id="iso_filter" x:id.content="scalarnames,itervarnames,runattrnames" x:style="BORDER">
+                <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+            </combo>
+      </x:children>
+    </group>
+  </x:children>
+</xswt>

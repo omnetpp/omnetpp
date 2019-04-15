@@ -94,6 +94,10 @@ public class IDListSelection implements IStructuredSelection {
         return getIDs(ResultType.HISTOGRAM_LITERAL);
     }
 
+    public Long[] getStatisticIDs() {
+        return getIDs(ResultType.STATISTICS_LITERAL);
+    }
+
     // andras
     public Long[] getIDs() {
         return elements;

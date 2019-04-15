@@ -70,6 +70,8 @@ import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
+import org.omnetpp.scave.python.ChartTemplate;
+import org.omnetpp.scave.python.ChartTemplateRegistry;
 
 /**
  * A collection of static methods to manipulate model objects
@@ -128,6 +130,26 @@ public class ScaveModelUtil {
         return chart;
     }
 
+    public static Chart createChartFromTemplate(String templateId) {
+        return createChartFromTemplate(ChartTemplateRegistry.findTemplateByID(templateId));
+    }
+
+    public static Chart createChartFromTemplate(ChartTemplate template) {
+        Chart chart = null;
+        switch (template.getChartType()) {
+            case BAR:        chart = ScaveModelFactory.eINSTANCE.createBarChart();        break;
+            case HISTOGRAM:  chart = ScaveModelFactory.eINSTANCE.createHistogramChart();  break;
+            case LINE:       chart = ScaveModelFactory.eINSTANCE.createLineChart();       break;
+            case MATPLOTLIB: chart = ScaveModelFactory.eINSTANCE.createMatplotlibChart(); break;
+            case SCATTER:    chart = ScaveModelFactory.eINSTANCE.createScatterChart();    break;
+        }
+        chart.setScript(template.getPythonScript());
+        chart.setForm(template.getXswtForm());
+        chart.setName("created from template: " + template.getName());
+        chart.setTemplateID(template.getID());
+        chart.setTemporary(false);
+        return chart;
+    }
 
     public static List<String> getIDListAsFilters(IDList ids, String[] runidFields, ResultFileManager manager) {
         Assert.isNotNull(runidFields);

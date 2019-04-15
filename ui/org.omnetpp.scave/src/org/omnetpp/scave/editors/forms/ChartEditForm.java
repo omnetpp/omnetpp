@@ -7,11 +7,18 @@
 
 package org.omnetpp.scave.editors.forms;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -29,6 +36,7 @@ import org.eclipse.swt.widgets.ColorDialog;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FontDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -36,9 +44,11 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.ui.SWTFactory;
 import org.omnetpp.common.ui.StyledTextUndoRedoManager;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.wizard.XSWTDataBinding;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.properties.ChartDefaults;
 import org.omnetpp.scave.charting.properties.ChartProperties;
@@ -47,11 +57,14 @@ import org.omnetpp.scave.charting.properties.ChartProperties.LegendPosition;
 import org.omnetpp.scave.charting.properties.ChartProperties.ShowGrid;
 import org.omnetpp.scave.editors.ui.ResultItemNamePatternField;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.MatplotlibChart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.ChartLine;
+
+import com.swtworkbench.community.xswt.XSWT;
 
 /**
  * Edit form of charts.
@@ -68,6 +81,7 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
     public static final String TAB_CHART = "Chart";
     public static final String TAB_AXES = "Axes";
     public static final String TAB_LEGEND = "Legend";
+    public static final String TAB_PARAMETERS = "Parameters";
 
     public static final String PROP_DEFAULT_TAB = "default-page";
 
@@ -89,6 +103,7 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
     protected Map<String, Object> formParameters;
     protected ResultFileManager manager;
     protected ChartProperties properties;
+    protected Map<String,Control> xswtWidgetMap;
 
     // controls
     private Text nameText;
@@ -202,6 +217,53 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
             createTab(TAB_AXES, tabfolder, 2);
             createTab(TAB_LEGEND, tabfolder, 1);
         }
+
+        createTab(TAB_PARAMETERS, tabfolder, 1);
+    }
+
+    List<String> getComboContents(String contentString) {
+        List<String> result = new ArrayList<String>();
+
+        for (String part : contentString.split(",")) {
+            switch (part) {
+            case "scalarnames":
+                for (String name : manager.getUniqueNames(manager.getAllScalars(false, false)).keys().toArray())
+                    result.add(name);
+                break;
+            case "vectornames":
+                for (String name : manager.getUniqueNames(manager.getAllVectors()).keys().toArray())
+                    result.add(name);
+                break;
+            case "histogramnames":
+                for (String name : manager.getUniqueNames(manager.getAllHistograms()).keys().toArray())
+                    result.add(name);
+                break;
+            case "statisticnames":
+                for (String name : manager.getUniqueNames(manager.getAllStatistics()).keys().toArray())
+                    result.add(name);
+                break;
+            case "itervarnames":
+                Set<String> itervars = new HashSet<String>();
+
+                for (Run run : manager.getRuns().toArray())
+                    for (String itervar : run.getIterationVariables().keys().toArray())
+                        itervars.add(itervar);
+
+                result.addAll(itervars);
+                break;
+            case "runattrnames":
+                Set<String> runattrs = new HashSet<String>();
+
+                for (Run run : manager.getRuns().toArray())
+                    for (String runattr : run.getAttributes().keys().toArray())
+                        runattrs.add(runattr);
+
+                result.addAll(runattrs);
+                break;
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -265,11 +327,39 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
             legendPositionCombo = createComboField("Position:", group, LegendPosition.class, false);
             legendAnchorCombo = createComboField("Anchoring:", group, LegendAnchor.class, false);
             displayLegendCheckbox.addSelectionListener(new SelectionAdapter() {
+                @Override
                 public void widgetSelected(SelectionEvent e) {
                     updateLegendPanelEnabled();
                 }
             });
             updateLegendPanelEnabled();
+        } else if (TAB_PARAMETERS.equals(name)) {
+            try {
+                Composite xswtHolder = SWTFactory.createComposite(panel, 1, 1, SWTFactory.GRAB_AND_FILL_HORIZONTAL);
+                xswtWidgetMap = new HashMap<>(); // prevent NPE later
+                if (chart.getForm() != null && !chart.getForm().isEmpty())
+                    xswtWidgetMap = XSWT.create(xswtHolder, new ByteArrayInputStream(chart.getForm().getBytes()));
+            } catch (Exception e) {
+                IStatus status = new Status(IStatus.ERROR, ScavePlugin.PLUGIN_ID, "Error showing the XSWT form of chart '" + chart.getName() + "'", e);
+                ScavePlugin.log(status);
+                ErrorDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Cannot add chart options to Edit dialog.", status);
+            }
+
+            for (String key : xswtWidgetMap.keySet()) {
+                Control control = xswtWidgetMap.get(key);
+                String content = (String)control.getData("content");
+
+                if (control instanceof Combo && content != null) {
+                    Combo combo = (Combo)control;
+                    for (String comboItem : getComboContents(content))
+                        combo.add(comboItem);
+                }
+            }
+
+            for (Property prop : chart.getProperties())
+                if (xswtWidgetMap.containsKey(prop.getName())) {
+                    XSWTDataBinding.putValueIntoControl(xswtWidgetMap.get(prop.getName()), prop.getValue(), null);
+                }
         }
     }
 
@@ -634,6 +724,12 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
             newProps.setLegendFont(Converter.stringToFontdata(legendFontText.getText()));
             newProps.setLegendPosition(resolveEnum(legendPositionCombo.getText(), LegendPosition.class));
             newProps.setLegendAnchoring(resolveEnum(legendAnchorCombo.getText(), LegendAnchor.class));
+        }
+
+        for (String k : xswtWidgetMap.keySet()) {
+            Control control = xswtWidgetMap.get(k);
+            Object value = XSWTDataBinding.getValueFromControl(control, null);
+            newProps.setProperty(k, value.toString());
         }
     }
 

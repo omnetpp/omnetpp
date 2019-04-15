@@ -16,7 +16,7 @@ import org.omnetpp.scave.editors.ScaveEditor;
 
 public class AddVectorOperationAction extends AbstractScaveAction {
     String codeFragment;
-    String marker = "# You can perform any transformations on the data here";
+    String marker = "# <|> vectorops marker <|>";
 
     public AddVectorOperationAction(String name, String codeFragment) {
         this.codeFragment = codeFragment;

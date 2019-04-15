@@ -32,6 +32,8 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  *   <li>{@link org.omnetpp.scave.model.impl.ChartImpl#getScript <em>Script</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.ChartImpl#getProperties <em>Properties</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.ChartImpl#isTemporary <em>Temporary</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.impl.ChartImpl#getForm <em>Form</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.impl.ChartImpl#getTemplateID <em>Template ID</em>}</li>
  * </ul>
  *
  * @generated
@@ -86,6 +88,46 @@ public abstract class ChartImpl extends AnalysisItemImpl implements Chart {
      * @ordered
      */
     protected boolean temporary = TEMPORARY_EDEFAULT;
+
+    /**
+     * The default value of the '{@link #getForm() <em>Form</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getForm()
+     * @generated
+     * @ordered
+     */
+    protected static final String FORM_EDEFAULT = null;
+
+    /**
+     * The cached value of the '{@link #getForm() <em>Form</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getForm()
+     * @generated
+     * @ordered
+     */
+    protected String form = FORM_EDEFAULT;
+
+    /**
+     * The default value of the '{@link #getTemplateID() <em>Template ID</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getTemplateID()
+     * @generated
+     * @ordered
+     */
+    protected static final String TEMPLATE_ID_EDEFAULT = null;
+
+    /**
+     * The cached value of the '{@link #getTemplateID() <em>Template ID</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getTemplateID()
+     * @generated
+     * @ordered
+     */
+    protected String templateID = TEMPLATE_ID_EDEFAULT;
 
     /**
      * <!-- begin-user-doc -->
@@ -165,6 +207,48 @@ public abstract class ChartImpl extends AnalysisItemImpl implements Chart {
      * <!-- end-user-doc -->
      * @generated
      */
+    public String getForm() {
+        return form;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public void setForm(String newForm) {
+        String oldForm = form;
+        form = newForm;
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.CHART__FORM, oldForm, form));
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public String getTemplateID() {
+        return templateID;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public void setTemplateID(String newTemplateID) {
+        String oldTemplateID = templateID;
+        templateID = newTemplateID;
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.CHART__TEMPLATE_ID, oldTemplateID, templateID));
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
     @Override
     public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
         switch (featureID) {
@@ -188,6 +272,10 @@ public abstract class ChartImpl extends AnalysisItemImpl implements Chart {
                 return getProperties();
             case ScaveModelPackage.CHART__TEMPORARY:
                 return isTemporary();
+            case ScaveModelPackage.CHART__FORM:
+                return getForm();
+            case ScaveModelPackage.CHART__TEMPLATE_ID:
+                return getTemplateID();
         }
         return super.eGet(featureID, resolve, coreType);
     }
@@ -211,6 +299,12 @@ public abstract class ChartImpl extends AnalysisItemImpl implements Chart {
             case ScaveModelPackage.CHART__TEMPORARY:
                 setTemporary((Boolean)newValue);
                 return;
+            case ScaveModelPackage.CHART__FORM:
+                setForm((String)newValue);
+                return;
+            case ScaveModelPackage.CHART__TEMPLATE_ID:
+                setTemplateID((String)newValue);
+                return;
         }
         super.eSet(featureID, newValue);
     }
@@ -232,6 +326,12 @@ public abstract class ChartImpl extends AnalysisItemImpl implements Chart {
             case ScaveModelPackage.CHART__TEMPORARY:
                 setTemporary(TEMPORARY_EDEFAULT);
                 return;
+            case ScaveModelPackage.CHART__FORM:
+                setForm(FORM_EDEFAULT);
+                return;
+            case ScaveModelPackage.CHART__TEMPLATE_ID:
+                setTemplateID(TEMPLATE_ID_EDEFAULT);
+                return;
         }
         super.eUnset(featureID);
     }
@@ -250,6 +350,10 @@ public abstract class ChartImpl extends AnalysisItemImpl implements Chart {
                 return properties != null && !properties.isEmpty();
             case ScaveModelPackage.CHART__TEMPORARY:
                 return temporary != TEMPORARY_EDEFAULT;
+            case ScaveModelPackage.CHART__FORM:
+                return FORM_EDEFAULT == null ? form != null : !FORM_EDEFAULT.equals(form);
+            case ScaveModelPackage.CHART__TEMPLATE_ID:
+                return TEMPLATE_ID_EDEFAULT == null ? templateID != null : !TEMPLATE_ID_EDEFAULT.equals(templateID);
         }
         return super.eIsSet(featureID);
     }
@@ -268,6 +372,10 @@ public abstract class ChartImpl extends AnalysisItemImpl implements Chart {
         result.append(script);
         result.append(", temporary: ");
         result.append(temporary);
+        result.append(", form: ");
+        result.append(form);
+        result.append(", templateID: ");
+        result.append(templateID);
         result.append(')');
         return result.toString();
     }
