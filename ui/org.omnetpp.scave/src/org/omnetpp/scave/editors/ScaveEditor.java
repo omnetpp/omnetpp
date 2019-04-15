@@ -88,6 +88,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabFolder2Adapter;
 import org.eclipse.swt.custom.CTabFolderEvent;
@@ -97,8 +98,13 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
@@ -191,7 +197,6 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
     private Map<EObject,Control> closablePages = new LinkedHashMap<EObject,Control>();
 
     PythonProcessPool processPool = new PythonProcessPool(2);
-
 
     /**
      * This keeps track of the editing domain that is used to track all changes to the model.
@@ -574,10 +579,6 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         // Assumes that the input is a file object.
         IFileEditorInput modelFile = (IFileEditorInput)getEditorInput();
 
-        analysis = factory.createAnalysis();
-        analysis.setInputs(factory.createInputs());
-        analysis.setCharts(factory.createCharts());
-
         try {
             DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             modelFile.getFile().refreshLocal(1, null);
@@ -588,22 +589,23 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
             Node rootNode = nl.item(0);
 
             if ("scave:Analysis".equals(rootNode.getNodeName())) {
-                NodeList toplevelNodes = rootNode.getChildNodes();
-                boolean isTransitional = false;
-                for (int i = 0; i < toplevelNodes.getLength(); ++i)
-                    if ("charts".equals(toplevelNodes.item(i).getNodeName())) {
-                        isTransitional = true;
-                        break;
-                    }
-                if (isTransitional)
-                    loadTransitionalAnalysis(rootNode);
-                else
-                    loadLegacyAnalysis(rootNode);
+                MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK | SWT.CANCEL | SWT.ICON_QUESTION);
+                messageBox.setText("Convert Analysis File?");
+                messageBox.setMessage("The .anf file you try to open is in an older file format.\n" +
+                                      "Do you want to open and convert it?\n");
+                int result = messageBox.open();
+                switch (result) {
+                case SWT.CANCEL:
+                    analysis = null;
+                    return;
+                case SWT.OK:
+                    analysis = LegacyAnalysisLoader.loadLegacyAnalysis(rootNode);
+                    break;
+                }
             } else if ("analysis".equals(rootNode.getNodeName()))
-                loadNewAnalysis(rootNode);
+                analysis = AnalysisLoader.loadNewAnalysis(rootNode);
             else
                 throw new RuntimeException("Invalid top level node: " + rootNode.getNodeName());
-
         }
         catch (SAXException | IOException | CoreException | ParserConfigurationException | RuntimeException e) {
             MessageDialog.openError(getSite().getShell(), "Error", "Could not open resource " + modelFile.getFile().getFullPath() + "\n\n" + e.getMessage());
@@ -632,519 +634,6 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         // listen to resource changes: create, delete, modify
         ResourcesPlugin.getWorkspace().addResourceChangeListener(tracker);
     }
-
-    Element getFirstElementByName(Node parent, String type) {
-        NodeList children = parent.getChildNodes();
-
-        for (int k = 0; k < children.getLength(); ++k) {
-            Node childNode = children.item(k);
-            if (childNode instanceof Element && type.equals(childNode.getNodeName()))
-                return (Element)childNode;
-        }
-
-        return null;
-    }
-
-    private void loadNewAnalysis(Node rootNode) {
-        Node versionNode = rootNode.getAttributes().getNamedItem("version");
-
-        if (versionNode == null)
-            throw new RuntimeException("unspecified analysis file version");
-
-        if (!"2".equals(versionNode.getNodeValue()))
-            throw new RuntimeException("invalid analysis file version: " + versionNode.getNodeValue());
-
-        NodeList topLevelNodes = rootNode.getChildNodes();
-
-        for (int i = 0; i < topLevelNodes.getLength(); ++i) {
-            Node node = topLevelNodes.item(i);
-
-            if ("inputs".equals(node.getNodeName())) {
-                NodeList inputNodes = node.getChildNodes();
-                for (int j = 0; j < inputNodes.getLength(); ++j) {
-                    Node inputNode = inputNodes.item(j);
-                    if ("input".equals(inputNode.getNodeName())) {
-                        InputFile input = factory.createInputFile();
-
-                        Node patternNode = inputNode.getAttributes().getNamedItem("pattern");
-
-                        input.setName(patternNode.getNodeValue());
-
-                        analysis.getInputs().getInputs().add(input);
-                    } else if ("#text".equals(inputNode.getNodeName())) {
-                        if (!inputNode.getNodeValue().trim().isEmpty())
-                            throw new RuntimeException("unexpected text content: " + inputNode.getNodeValue());
-                    } else {
-                        throw new RuntimeException("invalid child node: " + inputNode.getNodeName());
-                    }
-                }
-            }
-            else if ("charts".equals(node.getNodeName())) {
-                NodeList chartNodes = node.getChildNodes();
-
-                for (int j = 0; j < chartNodes.getLength(); ++j) {
-                    Node chartNode = chartNodes.item(j);
-
-                    if ("chart".equals(chartNode.getNodeName())) {
-
-                        Node typeNode = chartNode.getAttributes().getNamedItem("type");
-
-                        String chartType = typeNode.getNodeValue();
-
-                        Chart chart;
-                        if ("MatplotlibChart".equals(chartType))
-                            chart = factory.createMatplotlibChart();
-                        else if ("BarChart".equals(chartType))
-                            chart = factory.createBarChart();
-                        else if ("LineChart".equals(chartType))
-                            chart = factory.createLineChart();
-                        else if ("ScatterChart".equals(chartType))
-                            chart = factory.createScatterChart();
-                        else if ("HistogramChart".equals(chartType))
-                            chart = factory.createHistogramChart();
-                        else
-                            throw new RuntimeException("unknown chart type: " + chartType);
-
-                        chart.setName(chartNode.getAttributes().getNamedItem("name").getNodeValue());
-
-                        Node templateNode = chartNode.getAttributes().getNamedItem("template");
-                        if (templateNode != null)
-                            chart.setTemplateID(templateNode.getNodeValue());
-
-                        Element scriptElement = getFirstElementByName(chartNode, "script");
-                        Element formElement = getFirstElementByName(chartNode, "form");
-
-                        Node scriptAttrNode = chartNode.getAttributes().getNamedItem("script");
-                        if (scriptAttrNode != null)
-                            chart.setScript(scriptAttrNode.getNodeValue());
-                        else {
-                            if (scriptElement != null) {
-                                chart.setScript(scriptElement.getTextContent());
-                                if (formElement != null)
-                                    chart.setForm(formElement.getTextContent());
-                            }
-                            else
-                                chart.setScript(StringUtils.stripEnd(chartNode.getTextContent(), " "));
-                        }
-
-                        NodeList props = chartNode.getChildNodes();
-                        for (int k = 0; k < props.getLength(); ++k) {
-                            Node propNode = props.item(k);
-                            if ("property".equals(propNode.getNodeName())) {
-                                Property prop = factory.createProperty();
-                                prop.setName(propNode.getAttributes().getNamedItem("name").getNodeValue());
-                                prop.setValue(propNode.getAttributes().getNamedItem("value").getNodeValue());
-                                chart.getProperties().add(prop);
-                            }
-                        }
-
-                        analysis.getCharts().getItems().add(chart);
-                    }
-                    else if ("#text".equals(chartNode.getNodeName())) {
-                        if (!chartNode.getNodeValue().trim().isEmpty())
-                            throw new RuntimeException("unexpected text content: " + chartNode.getNodeValue());
-                    } else {
-                        throw new RuntimeException("invalid child node: " + chartNode.getNodeName());
-                    }
-                }
-            }
-            else if ("#text".equals(node.getNodeName())) {
-                if (!node.getNodeValue().trim().isEmpty())
-                    throw new RuntimeException("unexpected text content: " + node.getNodeValue());
-            }
-            else {
-                throw new RuntimeException("invalid child node: " + node.getNodeName());
-            }
-        }
-    }
-
-
-    class DataOp {
-        String op;
-        String filter;
-        String type;
-
-        DataOp(String op, String filter, String type) {
-            this.op = op;
-            this.filter = filter;
-            this.type = type;
-        }
-    }
-
-    class DataFilter {
-        String type;
-        String filter;
-
-        DataFilter(String type, String filter) {
-            this.type = type;
-            this.filter = filter;
-        }
-    }
-
-    private void loadTransitionalAnalysis(Node rootNode) {
-        NodeList topLevelNodes = rootNode.getChildNodes();
-
-        for (int i = 0; i < topLevelNodes.getLength(); ++i) {
-            Node node = topLevelNodes.item(i);
-
-            if ("inputs".equals(node.getNodeName())) {
-                NodeList inputNodes = node.getChildNodes();
-                for (int j = 0; j < inputNodes.getLength(); ++j) {
-                    Node inputNode = inputNodes.item(j);
-                    if ("inputs".equals(inputNode.getNodeName())) {
-                        InputFile input = factory.createInputFile();
-
-                        Node patternNode = inputNode.getAttributes().getNamedItem("name");
-
-                        input.setName(patternNode.getNodeValue());
-
-                        analysis.getInputs().getInputs().add(input);
-                    } else if ("#text".equals(inputNode.getNodeName())) {
-                        if (!inputNode.getNodeValue().trim().isEmpty())
-                            throw new RuntimeException("unexpected text content: " + inputNode.getNodeValue());
-                    } else {
-                        throw new RuntimeException("invalid child node: " + inputNode.getNodeName());
-                    }
-                }
-            }
-            else if ("charts".equals(node.getNodeName())) {
-                NodeList chartNodes = node.getChildNodes();
-
-                for (int j = 0; j < chartNodes.getLength(); ++j) {
-                    Node chartNode = chartNodes.item(j);
-
-                    if ("items".equals(chartNode.getNodeName())) {
-
-                        Node typeNode = chartNode.getAttributes().getNamedItem("xsi:type");
-
-                        String chartType = typeNode.getNodeValue();
-
-                        Chart chart;
-                        if ("scave:MatplotlibChart".equals(chartType))
-                            chart = factory.createMatplotlibChart();
-                        else if ("scave:BarChart".equals(chartType))
-                            chart = factory.createBarChart();
-                        else if ("scave:LineChart".equals(chartType))
-                            chart = factory.createLineChart();
-                        else if ("scave:HistogramChart".equals(chartType))
-                            chart = factory.createHistogramChart();
-                        else {
-                            throw new RuntimeException("unknown chart type: " + chartType);
-                        }
-
-                        chart.setName(chartNode.getAttributes().getNamedItem("name").getNodeValue());
-                        chart.setScript(chartNode.getAttributes().getNamedItem("script").getNodeValue());
-
-                        NodeList props = chartNode.getChildNodes();
-
-                        for (int k = 0; k < props.getLength(); ++k) {
-                            Node propNode = props.item(k);
-                            if ("properties".equals(propNode.getNodeName())) {
-                                Property prop = factory.createProperty();
-                                prop.setName(propNode.getAttributes().getNamedItem("name").getNodeValue());
-                                prop.setValue(propNode.getAttributes().getNamedItem("value").getNodeValue());
-                                chart.getProperties().add(prop);
-                            }
-                        }
-
-                        analysis.getCharts().getItems().add(chart);
-                    }
-                    else if ("#text".equals(chartNode.getNodeName())) {
-                        if (!chartNode.getNodeValue().trim().isEmpty())
-                            throw new RuntimeException("unexpected text content: " + chartNode.getNodeValue());
-                    } else {
-                        throw new RuntimeException("invalid child node: " + chartNode.getNodeName());
-                    }
-                }
-            }
-            else if ("#text".equals(node.getNodeName())) {
-                if (!node.getNodeValue().trim().isEmpty())
-                    throw new RuntimeException("unexpected text content: " + node.getNodeValue());
-            }
-            else {
-                throw new RuntimeException("invalid child node: " + node.getNodeName());
-            }
-        }
-    }
-
-    private void loadLegacyAnalysis(Node rootNode) {
-        NodeList topLevelNodes = rootNode.getChildNodes();
-
-        // TODO: load transitional models?
-
-        for (int i = 0; i < topLevelNodes.getLength(); ++i) {
-            Node node = topLevelNodes.item(i);
-
-            if ("inputs".equals(node.getNodeName())) {
-                NodeList inputNodes = node.getChildNodes();
-                for (int j = 0; j < inputNodes.getLength(); ++j) {
-                    Node inputNode = inputNodes.item(j);
-                    if ("inputs".equals(inputNode.getNodeName())) {
-                        InputFile input = factory.createInputFile();
-
-                        Node nameNode = inputNode.getAttributes().getNamedItem("name");
-
-                        input.setName(nameNode.getNodeValue());
-
-                        analysis.getInputs().getInputs().add(input);
-                    } else if ("#text".equals(inputNode.getNodeName())) {
-                        if (!inputNode.getNodeValue().trim().isEmpty())
-                            throw new RuntimeException("unexpected text content: " + inputNode.getNodeValue());
-                    } else {
-                        throw new RuntimeException("invalid child node: " + inputNode.getNodeName());
-                    }
-                }
-            }
-            else if ("datasets".equals(node.getNodeName())) {
-                NodeList datasetNodes = node.getChildNodes();
-
-                for (int j = 0; j < datasetNodes.getLength(); ++j) {
-                    Node datasetNode = datasetNodes.item(j);
-
-                    if ("datasets".equals(datasetNode.getNodeName())) {
-                        Node nameNode = datasetNode.getAttributes().getNamedItem("name");
-
-                        String datasetName = nameNode.getNodeValue();
-                        NodeList itemNodes = datasetNode.getChildNodes();
-
-                        ArrayList<DataOp> ops = new ArrayList<DataOp>();
-
-                        for (int k = 0; k < itemNodes.getLength(); k++) {
-                            Node itemNode = itemNodes.item(k);
-                            if ("items".equals(itemNode.getNodeName())) {
-                                Node chartTypeNode = itemNode.getAttributes().getNamedItem("xsi:type");
-
-                                String itemType = chartTypeNode.getNodeValue();
-
-                                // these are null for charts
-                                Node filterNode = itemNode.getAttributes().getNamedItem("filterPattern");
-                                Node opTypeNode = itemNode.getAttributes().getNamedItem("type");
-                                String opType = "SCALAR";
-                                if (opTypeNode != null)
-                                    opType = opTypeNode.getNodeValue();
-
-                                if ("scave:Add".equals(itemType))
-                                    ops.add(new DataOp("Add", filterNode.getNodeValue(), opType));
-                                else if ("scave:BarChart".equals(itemType) || "scave:HistogramChart".equals(itemType) || "scave:ScatterChart".equals(itemType) || "scave:LineChart".equals(itemType))
-                                    analysis.getCharts().getItems().add(makeLegacyChart(ops, datasetName, itemNode, itemType));
-                                else
-                                    // TODO: handle better
-                                    Debug.println("UNIMPLEMENTED ITEM TYPE: " + itemType);
-                            } else if ("#text".equals(itemNode.getNodeName())) {
-                                if (!itemNode.getNodeValue().trim().isEmpty())
-                                    throw new RuntimeException("unexpected text content: " + itemNode.getNodeValue());
-                            } else {
-                                throw new RuntimeException("invalid child node: " + itemNode.getNodeName());
-                            }
-                        }
-                    }
-                    else if ("#text".equals(datasetNode.getNodeName())) {
-                        if (!datasetNode.getNodeValue().trim().isEmpty())
-                            throw new RuntimeException("unexpected text content: " + datasetNode.getNodeValue());
-                    } else {
-                        throw new RuntimeException("invalid child node: " + datasetNode.getNodeName());
-                    }
-                }
-            }
-            else if ("chartSheets".equals(node.getNodeName())) {
-                // TODO: warn about discarded chartsheets if there are actually any chartsheets
-            }
-            else if ("#text".equals(node.getNodeName())) {
-                if (!node.getNodeValue().trim().isEmpty())
-                    throw new RuntimeException("unexpected text content: " + node.getNodeValue());
-            }
-            else {
-                throw new RuntimeException("invalid child node: " + node.getNodeName());
-            }
-        }
-    }
-
-    private String makeFilterString(ArrayList<DataOp> ops, ArrayList<DataFilter> filters) {
-        String opsExpr = "";
-        for (DataOp o : ops)
-            if (opsExpr.isEmpty())
-                opsExpr = "(" + o.filter + ")";
-            else // TODO: take operation kind into account
-                opsExpr = opsExpr + "\n  OR (" + o.filter + ")";
-
-        String filtersExpr = "";
-        for (DataFilter f : filters)
-            if (filtersExpr.isEmpty())
-                filtersExpr = "(" + f.filter + ")";
-            else // TODO: take filter type into account
-                filtersExpr = filtersExpr + "\n  OR (" + f.filter + ")";
-
-        return "(" + opsExpr + ") AND (" + filtersExpr + ")";
-    }
-
-    private String makeHistogramChartScript(Chart chart, Node chartNode, ArrayList<DataOp> ops, ArrayList<DataFilter> filters) {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("import results\n\n");
-
-        String filter = makeFilterString(ops, filters);
-
-        sb.append("df = results.getHistograms(\"\"\"" + filter + "\"\"\")\n\n");
-
-        sb.append("chart.plotHistograms(df)\n\n");
-
-        sb.append("chart.setProperty('Graph.Title', chart.getName())\n\n");
-
-        sb.append("chart.setProperties(chart.getProperties())\n");
-
-        return sb.toString();
-    }
-
-
-    private String makeScatterChartScript(Chart chart, Node chartNode, ArrayList<DataOp> ops, ArrayList<DataFilter> filters) {
-        StringBuilder sb = new StringBuilder();
-
-        String filter = makeFilterString(ops, filters);
-
-        sb.append("import results\n\n");
-
-        sb.append("filter_string = \"\"\"" + filter + "\"\"\"\n\n");
-        sb.append("df = results.getScalars(filter_string)\n\n");
-
-        // sb.append("pd.set_option('display.width', 180)\n");
-        // sb.append("pd.set_option('display.max_colwidth', 100)\n");
-
-        Node xDataNode = chartNode.getAttributes().getNamedItem("xDataPattern");
-
-        if (xDataNode == null)
-            throw new RuntimeException("No xDataPattern in scatter chart " + chart.getName());
-
-        String xdata = StringUtils.substringBefore(StringUtils.substringAfter(xDataNode.getNodeValue(), "name("), ")");
-
-        String iso_column = null;
-
-        NodeList children = chartNode.getChildNodes();
-        for (int i = 0; i < children.getLength(); ++i) {
-            Node child = children.item(i);
-            if ("isoDataPattern".equals(child.getNodeName())) {
-                if (iso_column == null)
-                    iso_column = child.getTextContent();
-                else {
-                    // TODO: handle better
-                    Debug.println("Warning: More than one isoDataPattern.");
-                    break;
-                }
-            }
-        }
-
-        if (iso_column != null)
-            iso_column = StringUtils.substringBefore(StringUtils.substringAfter(iso_column, "name("), ")");
-
-        sb.append("xdata = '" + xdata + "'\n");
-        sb.append("iso_column = " + (iso_column == null ? "None" : ("'" + iso_column.replace("(*)", "") + "'")));
-        sb.append("\n\n");
-
-        sb.append("names = chart.plotScatter(df, xdata=xdata, iso_column=iso_column)\n\n");
-
-        sb.append("chart.setProperty('Y.Axis.Title', ', '.join(names))\n");
-        sb.append("chart.setProperty('X.Axis.Title', '" + xdata + "')\n");
-        sb.append("chart.setProperty('Graph.Title', chart.getName())\n\n");
-
-        sb.append("chart.setProperties(chart.getProperties())\n");
-
-        return sb.toString();
-    }
-
-    private String makeLineChartScript(Chart chart, Node chartNode, ArrayList<DataOp> ops, ArrayList<DataFilter> filters) {
-        StringBuilder sb = new StringBuilder();
-
-        String filter = makeFilterString(ops, filters);
-
-        sb.append("import results\n\n");
-
-        sb.append("filter_string = \"\"\"" + filter + "\"\"\"\n\n");
-
-        sb.append("df = results.getVectors(filter_string)\n\n");
-
-        // sb.append("pd.set_option('display.width', 180)\n");
-        // sb.append("pd.set_option('display.max_colwidth', 100)\n");
-
-        sb.append("chart.plotVectors(df)\n\n");
-
-        sb.append("chart.setProperty('X.Axis.Title', 'Time')\n");
-        sb.append("chart.setProperty('Graph.Title', chart.getName())\n\n");
-
-        sb.append("chart.setProperties(chart.getProperties())\n");
-
-        return sb.toString();
-    }
-
-    private String makeBarChartScript(Chart chart, Node chartNode, ArrayList<DataOp> ops, ArrayList<DataFilter> filters) {
-        StringBuilder sb = new StringBuilder();
-
-        String filter = makeFilterString(ops, filters);
-
-        sb.append("import results\n\n");
-
-        sb.append("filter_string = \"\"\"" + filter + "\"\"\"\n\n");
-
-        sb.append("df = results.getScalars(filter_string)\n\n");
-
-        // sb.append("pd.set_option('display.width', 180)\n");
-        // sb.append("pd.set_option('display.max_colwidth', 100)\n");
-
-        sb.append("chart.plotScalars(df)\n\n");
-
-        sb.append("chart.setProperty('Graph.Title', chart.getName())\n\n");
-
-        sb.append("chart.setProperties(chart.getProperties())\n");
-
-        return sb.toString();
-    }
-
-    private Chart makeLegacyChart(ArrayList<DataOp> ops, String datasetName, Node chartNode, String chartType) {
-        Chart chart = null;
-
-        if ("scave:BarChart".equals(chartType))
-            chart = factory.createBarChart();
-        else if ("scave:HistogramChart".equals(chartType))
-            chart = factory.createHistogramChart();
-        else if ("scave:ScatterChart".equals(chartType))
-            chart = factory.createScatterChart();
-        else if ("scave:LineChart".equals(chartType))
-            chart = factory.createLineChart();
-        else
-            throw new RuntimeException("unknown chart type: " + chartType);
-
-        chart.setName(chartNode.getAttributes().getNamedItem("name").getNodeValue());
-
-        ArrayList<DataFilter> filters = new ArrayList<DataFilter>();
-
-        NodeList props = chartNode.getChildNodes();
-
-        for (int k = 0; k < props.getLength(); ++k) {
-            Node propNode = props.item(k);
-            if ("properties".equals(propNode.getNodeName())) {
-                Property prop = factory.createProperty();
-                prop.setName(propNode.getAttributes().getNamedItem("name").getNodeValue());
-                prop.setValue(propNode.getAttributes().getNamedItem("value").getNodeValue());
-                chart.getProperties().add(prop);
-            } else if ("filters".equals(propNode.getNodeName())) {
-                filters.add(new DataFilter(propNode.getAttributes().getNamedItem("xsi:type").getNodeValue(), propNode.getAttributes().getNamedItem("filterPattern").getNodeValue()));
-            }
-        }
-
-
-        if ("scave:BarChart".equals(chartType))
-            chart.setScript(makeBarChartScript(chart, chartNode, ops, filters));
-        else if ("scave:HistogramChart".equals(chartType))
-            chart.setScript(makeHistogramChartScript(chart, chartNode, ops, filters));
-        else if ("scave:ScatterChart".equals(chartType))
-            chart.setScript(makeScatterChartScript(chart, chartNode, ops, filters));
-        else if ("scave:LineChart".equals(chartType))
-            chart.setScript(makeLineChartScript(chart, chartNode, ops, filters));
-        else
-            throw new RuntimeException("unknown chart type: " + chartType);
-
-
-        return chart;
-    }
-
 
     protected Resource createTempResource() {
         IFileEditorInput modelFile = (IFileEditorInput)getEditorInput();
@@ -2112,7 +1601,24 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
      */
     public void createPages() {
         createModel();
-        doCreatePages();
+        if (analysis != null) {
+            doCreatePages();
+        } else {
+            addFixedPage(new FormEditorPage(getContainer(), SWT.NONE, this) {
+                 {
+                    // set up UI
+                    setPageTitle("No convert");
+                    setFormTitle("No convert");
+
+                    getContent().setLayout(new GridLayout());
+
+                    Label label = new Label(getContent(), SWT.WRAP);
+                    label.setText("You chose not to convert the old file to a new format.");
+                    label.setBackground(this.getBackground());
+                    label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
+                }
+            });
+        }
     }
 
     /**
