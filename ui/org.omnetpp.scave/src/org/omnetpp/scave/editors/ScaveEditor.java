@@ -8,10 +8,8 @@
 package org.omnetpp.scave.editors;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,13 +24,7 @@ import java.util.concurrent.Callable;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Result;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -144,6 +136,9 @@ import org.omnetpp.common.util.DetailedPartInitException;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
+import org.omnetpp.common.util.XmlUtils;
+import org.omnetpp.scave.AnalysisLoader;
+import org.omnetpp.scave.LegacyAnalysisLoader;
 import org.omnetpp.scave.Markers;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartViewer;
@@ -2111,19 +2106,6 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
     public boolean isDirty() {
         return ((BasicCommandStack)editingDomain.getCommandStack()).isSaveNeeded();
     }
-
-    // yoinked from https://stackoverflow.com/a/1292458
-    private InputStream nodeToInputStream(Node node) throws TransformerException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        Result outputTarget = new StreamResult(outputStream);
-        Transformer t = TransformerFactory.newInstance().newTransformer();
-        t.setOutputProperty(OutputKeys.INDENT, "yes");
-        // holy heck, what is this string... taken from https://stackoverflow.com/a/1384816
-        t.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-        t.transform(new DOMSource(node), outputTarget);
-        return new ByteArrayInputStream(outputStream.toByteArray());
-    }
-
     /**
      * This is for implementing {@link IEditorPart} and simply saves the model file.
      */
@@ -2198,8 +2180,12 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
                             }
                         }
 
-                        InputStream is = nodeToInputStream(d);
-                        modelFile.getFile().setContents(is, true, true, null);
+                        IFile f = modelFile.getFile();
+                        String content = XmlUtils.serialize(d);
+                        if (!f.exists())
+                            f.create(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
+                        else
+                            f.setContents(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
                     }
                     catch (ParserConfigurationException | TransformerException | CoreException e) {
                         ScavePlugin.logError(e);
