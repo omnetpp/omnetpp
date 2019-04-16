@@ -311,6 +311,8 @@ public class ScaveModelUtil {
     @SuppressWarnings("unchecked")
     public static <T extends EObject> List<T> findObjects(EObject container, Class<T> type) {
         ArrayList<T> objects = new ArrayList<>();
+        if (container == null)
+            return objects;
         for (TreeIterator<EObject> iterator = container.eAllContents(); iterator.hasNext(); ) {
             EObject object = iterator.next();
             if (type.isInstance(object))

@@ -14,6 +14,7 @@ import org.eclipse.ui.ISharedImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
+import org.omnetpp.scave.editors.ui.BrowseDataPage;
 import org.omnetpp.scave.engine.ResultFileManager;
 
 /**
@@ -40,6 +41,7 @@ public class CopyToClipboardAction extends AbstractScaveAction {
 
     @Override
     protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-        return editor.getBrowseDataPage().getActivePanel() != null;
+        BrowseDataPage browseDataPage = editor.getBrowseDataPage();
+        return browseDataPage != null && browseDataPage.getActivePanel() != null;
     }
 }
