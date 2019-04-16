@@ -291,6 +291,11 @@ class COMMON_API ExprValue
     const char *stringValue() const {assertType(STRING); return s;}
 
     /**
+     * Returns value as std::string. The type must be STRING.
+     */
+    std::string stdstringValue() const {assertType(STRING); return s;}
+
+    /**
      * Returns value as pointer to cObject. The type must be OBJECT.
      */
     cObject *objectValue() const {assertType(OBJECT); return obj;}
