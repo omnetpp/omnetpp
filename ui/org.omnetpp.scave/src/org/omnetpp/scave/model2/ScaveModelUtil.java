@@ -479,30 +479,6 @@ public class ScaveModelUtil {
     }
 
 
-    public static IsoLineData[] getModuleAndDataPairs(IDList idlist, ResultFileManager manager, boolean addRunAttributes) {
-        manager.checkReadLock();
-        Set<IsoLineData> values = new HashSet<>();
-        for (int i = 0; i < idlist.size(); ++i) {
-            long id = idlist.get(i);
-            ResultItem item = manager.getItem(id);
-            IsoLineData pair = new IsoLineData(item.getModuleName(), item.getName());
-            if (pair.isValid())
-                values.add(pair);
-        }
-
-        if (addRunAttributes)
-        {
-            //StringVector runAttributes = RunAttribute.getAttributeNames();
-            StringVector runAttributes = manager.getUniqueRunAttributeNames(manager.getUniqueRuns(idlist)).keys();
-            for (int i = 0; i < runAttributes.size(); ++i)
-                values.add(new IsoLineData(runAttributes.get(i)));
-        }
-
-        IsoLineData[] result = values.toArray(new IsoLineData[values.size()]);
-        Arrays.sort(result);
-        return result;
-    }
-
     public static List<String> getResultItemFields(IDList idlist, ResultFileManager manager) {
         List<String> fields = new ArrayList<>();
         fields.add(ResultItemField.FILE);

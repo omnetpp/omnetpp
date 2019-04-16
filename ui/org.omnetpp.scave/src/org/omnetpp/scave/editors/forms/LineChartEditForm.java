@@ -20,11 +20,11 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.charting.dataset.VectorDataLoader;
 import org.omnetpp.scave.editors.ui.ResultItemNamePatternField;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.ScaveModelPackage;
-import org.omnetpp.scave.script.ScriptEngine;
 
 public class LineChartEditForm extends BaseLineChartEditForm {
 

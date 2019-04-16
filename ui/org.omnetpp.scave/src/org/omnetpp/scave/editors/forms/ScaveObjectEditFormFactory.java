@@ -61,8 +61,8 @@ public class ScaveObjectEditFormFactory {
 
         if (object instanceof BarChart)
             return new BarChartEditForm((BarChart)object, formParameters, manager);
-        else if (object instanceof ScatterChart)
-            return new ScatterChartEditForm((ScatterChart)object, formParameters, manager);
+        /*else if (object instanceof ScatterChart)
+            return new ScatterChartEditForm((ScatterChart)object, formParameters, manager);*/
         else if (object instanceof LineChart)
             return new LineChartEditForm((LineChart)object, formParameters, manager);
         else if (object instanceof HistogramChart)

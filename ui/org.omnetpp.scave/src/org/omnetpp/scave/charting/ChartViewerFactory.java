@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.Debug;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.dataset.IDataset;
+import org.omnetpp.scave.charting.dataset.VectorDataLoader;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
@@ -31,7 +32,6 @@ import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScatterChart;
-import org.omnetpp.scave.script.ScriptEngine;
 
 /**
  * Factory for scalar and vector chart viewers.

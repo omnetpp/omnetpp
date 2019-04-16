@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.omnetpp.common.Debug;
+import org.omnetpp.scave.charting.dataset.VectorDataLoader;
 import org.omnetpp.scave.charting.dataset.XYVector;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.VectorResult;
-import org.omnetpp.scave.script.ScriptEngine;
 
 import net.razorvine.pickle.IObjectPickler;
 import net.razorvine.pickle.Opcodes;
@@ -64,7 +64,7 @@ public class VectorResultsPickler implements IObjectPickler {
                 vectors = resultManager.filterIDList(vectors, filterExpression);
                 Debug.println("pickling " + vectors.size() + " vectors");
 
-                XYVector[] vectorsData = ScriptEngine.getDataOfVectors(resultManager, vectors, null);
+                XYVector[] vectorsData = VectorDataLoader.getDataOfVectors(resultManager, vectors, null);
 
                 for (int i = 0; i < vectors.size(); ++i)
                     pickleVectorResult(resultManager, vectors.get(i), vectorsData[i], pickler, out);

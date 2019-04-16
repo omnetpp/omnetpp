@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.util.List;
 
 import org.omnetpp.common.Debug;
+import org.omnetpp.scave.charting.dataset.VectorDataLoader;
 import org.omnetpp.scave.charting.dataset.XYVector;
 import org.omnetpp.scave.engine.Histogram;
 import org.omnetpp.scave.engine.HistogramResult;
@@ -21,7 +22,6 @@ import org.omnetpp.scave.engine.StringMap;
 import org.omnetpp.scave.engine.StringPair;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.VectorResult;
-import org.omnetpp.scave.script.ScriptEngine;
 
 import net.razorvine.pickle.IObjectPickler;
 import net.razorvine.pickle.Opcodes;
@@ -158,7 +158,7 @@ public class CsvResultsPickler implements IObjectPickler {
         VectorResult result = resultManager.getVector(ID);
         Long[] ids = new Long[1];
         ids[0] = ID;
-        XYVector data = ScriptEngine.getDataOfVectors(resultManager, IDList.fromArray(ids), null)[0];
+        XYVector data = VectorDataLoader.getDataOfVectors(resultManager, IDList.fromArray(ids), null)[0];
 
         out.write(Opcodes.MARK);
         {

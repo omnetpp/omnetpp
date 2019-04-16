@@ -19,7 +19,6 @@ import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.scave.charting.VectorChartViewer.LineProperties;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
-import org.omnetpp.scave.charting.dataset.VectorDataset;
 
 /**
  * Draws the selection to a vector chart.
@@ -34,8 +33,6 @@ public class VectorChartSelection implements IChartSelection {
     private int series;
     // the key of the line within the chart
     private String key;
-    // the id of the result item that the line represents
-    private long id;
     // attributes of the selected data point
     private int index;
     private long eventNum;
@@ -48,7 +45,6 @@ public class VectorChartSelection implements IChartSelection {
         this.vectorChart = vectorChart;
         this.series = point.series;
         this.key = dataset.getSeriesKey(series);
-        this.id = dataset instanceof VectorDataset ? ((VectorDataset)dataset).getID(series) : -1L;
         this.index = point.index;
         this.eventNum = -1L; // TODO set eventNum
         this.preciseX = dataset.getPreciseX(series, index);
@@ -62,10 +58,6 @@ public class VectorChartSelection implements IChartSelection {
 
     public String getSeriesKey() {
         return key;
-    }
-
-    public long getID() {
-        return id;
     }
 
     public int getIndex() {

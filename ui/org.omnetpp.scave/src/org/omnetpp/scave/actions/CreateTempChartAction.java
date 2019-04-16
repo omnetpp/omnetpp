@@ -13,6 +13,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.charting.dataset.VectorDataLoader;
 import org.omnetpp.scave.charting.properties.ChartProperties;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
@@ -25,7 +26,6 @@ import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model2.ScaveModelUtil;
-import org.omnetpp.scave.script.ScriptEngine;
 
 /**
  * Creates a temporary chart from the selection on the BrowseDataPage, and opens it.
@@ -60,10 +60,6 @@ public class CreateTempChartAction extends AbstractScaveAction {
     protected void openChart(ScaveEditor editor, final ResultFileManager manager, final ResultType type, final IDList idList) {
         String name = "Chart" + (++counter);
 
-        String title = ResultFileManager.callWithReadLock(manager, () -> {
-            return StringUtils.defaultIfEmpty(ScriptEngine.defaultTitle(ScaveModelUtil.getResultItems(idList, manager)), name);
-        });
-
         String[] filterFields = new String[] { RunAttribute.EXPERIMENT, RunAttribute.MEASUREMENT, RunAttribute.REPLICATION,
                 ResultItemField.MODULE, ResultItemField.NAME };
 
@@ -76,20 +72,12 @@ public class CreateTempChartAction extends AbstractScaveAction {
             default: Assert.isLegal(false, "invalid enum value"); break;
         }
 
-        {
-            Property property = ScaveModelFactory.eINSTANCE.createProperty();
-            property.setName(ChartProperties.PROP_GRAPH_TITLE);
-            property.setValue(title);
-            chart.getProperties().add(property);
-        }
+        String filter = ResultFileManager.callWithReadLock(manager, () -> { return ScaveModelUtil.getIDListAsFilterExpression(idList, filterFields, manager); });
+        Property property = ScaveModelFactory.eINSTANCE.createProperty();
+        property.setName("filter");
+        property.setValue(filter);
+        chart.getProperties().add(property);
 
-        {
-            String filter = ResultFileManager.callWithReadLock(manager, () -> { return ScaveModelUtil.getIDListAsChartInput(idList, filterFields, manager); });
-            Property property = ScaveModelFactory.eINSTANCE.createProperty();
-            property.setName("filter");
-            property.setValue(filter);
-            chart.getProperties().add(property);
-        }
         chart.setName(name);
         chart.setTemporary(true);
         editor.openChart(chart);
