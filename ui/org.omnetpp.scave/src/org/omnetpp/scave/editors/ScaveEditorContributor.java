@@ -168,9 +168,9 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         @Override
         public void propertyChange(PropertyChangeEvent event) {
             if (event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_X)
-                ((ZoomChartAction)hzoomOutAction).updateEnabled();
+                hzoomOutAction.updateEnabled();
             if (event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_Y)
-                ((ZoomChartAction)vzoomOutAction).updateEnabled();
+                vzoomOutAction.updateEnabled();
         }
     };
 

@@ -23,7 +23,6 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.common.Debug;
-import org.omnetpp.scave.pychart.PyChartPlugin;
 import org.omnetpp.scave.pychart.PythonProcessPool;
 import org.osgi.framework.BundleContext;
 import org.python.pydev.ast.interpreter_managers.InterpreterInfo;
