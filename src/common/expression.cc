@@ -23,6 +23,7 @@
 #include "stlutil.h"
 #include "expression.h"
 #include "exprnodes.h"
+#include "unitconversion.h"
 
 using namespace std;
 using namespace omnetpp::common::expression;
@@ -335,6 +336,12 @@ class StdMathAstTranslator : public Expression::BasicAstTranslator
     virtual ExprNode *createFunctionNode(const char *functionName, int argCount) override;
 };
 
+class UnitConversionAstTranslator : public Expression::BasicAstTranslator
+{
+  public:
+    virtual ExprNode *createFunctionNode(const char *functionName, int argCount) override;
+};
+
 ExprNode *OperatorAstTranslator::createOperatorNode(const char *opName, int argCount)
 {
     switch (argCount) {
@@ -365,10 +372,29 @@ ExprNode *StdMathAstTranslator::createFunctionNode(const char *functionName, int
     return nullptr;
 }
 
+ExprNode *UnitConversionAstTranslator::createFunctionNode(const char *functionName, int argCount)
+{
+    if (argCount == 1) {
+        if (UnitConversion::isUnit(functionName))
+            return new UnitConversionNode(functionName);
+        if (strchr(functionName, '_')) { // some unit names contain hyphen or slash, the corresponding functions use underscore and "_per_"
+            std::string unitName = opp_replacesubstring(opp_replacesubstring(functionName, "_per_", "/", true), "_", "-", true);
+            if (UnitConversion::isUnit(unitName.c_str()))
+                return new UnitConversionNode(unitName.c_str());
+        }
+    }
+    return nullptr;
+}
+
 static OperatorAstTranslator operatorAstTranslator;
 static StdMathAstTranslator stdMathAstTranslator;
+static UnitConversionAstTranslator unitConversionAstTranslator;
 
-Expression::MultiAstTranslator Expression::defaultTranslator({ &operatorAstTranslator, &stdMathAstTranslator });
+Expression::MultiAstTranslator Expression::defaultTranslator({
+    &operatorAstTranslator,
+    &stdMathAstTranslator,
+    &unitConversionAstTranslator
+});
 
 }  // namespace common
 }  // namespace omnetpp

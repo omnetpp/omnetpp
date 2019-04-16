@@ -170,6 +170,9 @@ P( W(0dBm));
 P( dBm(10W));
 P( ratio(-10dB));
 P( ratio(0dB));
+P( milliseconds(0.5s));
+P( kilowatt_hour(1500Wh));
+P( kilometer_per_hour(10mps));
 EV << ".\n";
 
 %contains: stdout
@@ -300,5 +303,8 @@ W(0dBm) ==> 0.001W
 dBm(10W) ==> 40dBm
 ratio(-10dB) ==> 0.316228ratio
 ratio(0dB) ==> 1ratio
+milliseconds(0.5s) ==> 500milliseconds
+kilowatt_hour(1500Wh) ==> 1.5kilowatt-hour
+kilometer_per_hour(10mps) ==> 36kilometer/hour
 .
 

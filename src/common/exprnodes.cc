@@ -522,6 +522,25 @@ ExprValue DoubleCastNode::evaluate(Context *context) const
     }
 }
 
+void UnitConversionNode::print(std::ostream& out, int spaciousness) const
+{
+    printFunction(out, spaciousness);
+}
+
+ExprValue UnitConversionNode::evaluate(Context *context) const
+{
+    ExprValue arg = child->tryEvaluate(context);
+    if (arg.getType() == ExprValue::UNDEF)
+        return arg;
+    if (arg.getUnit() == nullptr)
+        arg.setUnit(name.c_str());
+    else {
+        arg.convertToDouble();
+        arg.convertTo(name.c_str());
+    }
+    return arg;
+}
+
 void MathFunc0Node::print(std::ostream& out, int spaciousness) const
 {
     printFunction(out, spaciousness);

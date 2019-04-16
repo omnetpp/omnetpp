@@ -132,6 +132,11 @@ class COMMON_API UnitConversion
     static const char *getBaseUnit(const char *unit);
 
     /**
+     * Returns true if the given string is a recognized measurement unit.
+     */
+    static bool isUnit(const char *unit) {return lookupUnit(unit) != nullptr;}
+
+    /**
      * Returns true if the given unit is linear (e.g. W and KiB), and false
      * if not (dBm, dbW). Unknown (custom) units are assumed to be linear.
      */

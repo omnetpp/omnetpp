@@ -278,9 +278,9 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
             cNedMathFunction *mf = dynamic_cast<cNedMathFunction *>(table->get(i));
             categories.insert(nf ? nf->getCategory() : mf ? mf->getCategory() : "<uncategorized>");
         }
+        bool printDescriptions = true; // for now
         for (auto category : categories) {
             out << "\n Category \"" << category << "\":\n";
-            bool printDescriptions = true; // for now
             for (int i = 0; i < table->size(); i++) {
                 cObject *obj = table->get(i);
                 cNedFunction *nf = dynamic_cast<cNedFunction *>(table->get(i));
@@ -296,6 +296,19 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
                 }
             }
         }
+        out << "\n Category \"units/conversion\":\n";
+        std::stringstream tmp;
+        tmp << "All measurement unit names can be used as one-argument functions that "
+                "convert from a compatible unit or a dimensionless number. Substitute "
+                "underscore for any hyphen in the name, and '_per_' for any slash: "
+                "milliampere-hour --> milliampere_hour(), meter/sec --> meter_per_sec().\n\n";
+        for (const char *unit : UnitConversion::getAllUnits()) {
+            std::string longName = opp_replacesubstring(opp_replacesubstring(UnitConversion::getLongName(unit), "-", "_", true), "/", "_per_", true);
+            tmp << unit << "(), " << longName << "(), ";
+        }
+        tmp << "etc.";
+        if (printDescriptions)
+            out << opp_indentlines(opp_breaklines(tmp.str().c_str(), 75), "    ") << "\n";
         out << "\n";
     }
     if (wantAll || !strcmp(category, "neddecls")) {

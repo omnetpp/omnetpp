@@ -367,6 +367,19 @@ public:
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
+class UnitConversionNode : public UnaryNode {
+protected:
+    std::string name;
+protected:
+    virtual void print(std::ostream& out, int spaciousness) const override;
+    virtual ExprValue evaluate(Context *context) const override;
+public:
+    UnitConversionNode(const char *name) : name(name) {}
+    virtual ExprNode *dup() const override {return new UnitConversionNode(name.c_str());}
+    virtual std::string getName() const override {return name;}
+    virtual Precedence getPrecedence() const override {return ELEM;}
+};
+
 class MathFunc0Node : public LeafNode {
 protected:
     std::string name;
