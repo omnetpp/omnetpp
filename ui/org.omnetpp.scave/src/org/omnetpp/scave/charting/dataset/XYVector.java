@@ -23,6 +23,11 @@ public class XYVector {
         }
     }
 
+    public XYVector(int length) {
+        x = new double[length];
+        y = new double[length];
+    }
+
     public int size() {
         Assert.isTrue(x.length == y.length);
         return x.length;
