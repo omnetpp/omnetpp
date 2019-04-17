@@ -39,6 +39,10 @@ namespace scave {
  */
 class SCAVE_API IndexedVectorFileReaderNode : public FileReaderNode
 {
+
+    using VectorInfo = VectorFileIndex::VectorInfo;
+    using Block = VectorFileIndex::Block;
+
     typedef omnetpp::common::LineTokenizer LineTokenizer;
     typedef std::vector<Port> PortVector;
 

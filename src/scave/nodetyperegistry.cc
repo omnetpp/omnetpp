@@ -23,6 +23,7 @@
 #include "vectorfilewriter.h"
 #include "indexedvectorfile.h"
 #include "indexedvectorfilereadernode.h"
+#include "indexedvectorfilewriternode.h"
 #include "sqlitevectorreadernode.h"
 #include "vectorreaderbyfiletype.h"
 #include "filewriter.h"

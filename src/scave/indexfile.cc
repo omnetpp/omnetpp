@@ -31,6 +31,9 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace scave {
 
+using VectorInfo = VectorFileIndex::VectorInfo;
+using Block = VectorFileIndex::Block;
+
 static bool serialLess(const Block& first, const Block& second)
 {
     return first.endSerial() < second.endSerial();

@@ -39,12 +39,15 @@
 #endif
 
 #include "resultfilemanager.h"
+#include "indexfile.h"
 
 namespace omnetpp {
 namespace scave {
 
 class SCAVE_API OmnetppResultFileLoader : public IResultFileLoader
 {
+    using VectorInfo = VectorFileIndex::VectorInfo;
+
   protected:
     struct ParseContext {
         ResultFile *fileRef = nullptr;

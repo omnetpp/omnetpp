@@ -29,6 +29,10 @@ namespace scave {
  */
 class SCAVE_API VectorFileIndexer
 {
+
+    using VectorInfo = VectorFileIndex::VectorInfo;
+    using Block = VectorFileIndex::Block;
+
     public:
         typedef omnetpp::common::IProgressMonitor IProgressMonitor;
     public:
