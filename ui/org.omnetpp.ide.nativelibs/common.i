@@ -56,6 +56,8 @@ std::string opp_formatdouble(double value, int numSignificantDigits);
 
 %ignore UnitConversion::parseQuantity(const char *, std::string&);
 
+typedef int64_t intpar_t;
+
 } } // namespaces
 
 %include "common/patternmatcher.h"
@@ -164,48 +166,29 @@ SWIG_JAVABODY_METHODS(public, public, ILock)
 
 namespace omnetpp { namespace common {
 
-class SimpleResolver;
+%ignore Expression::AstNode;
+%ignore Expression::AstTranslator;
+%ignore Expression::MultiAstTranslator;
+%ignore Expression::BasicAstTranslator;
+%ignore Expression::installAstTranslator;
+%ignore Expression::getInstalledAstTranslators;
+%ignore Expression::getDefaultAstTranslator;
+%ignore Expression::setExpressionTree;
+%ignore Expression::getExpressionTree;
+%ignore Expression::removeExpressionTree;
+%ignore Expression::evaluate;
+%ignore Expression::parseToAst;
+%ignore Expression::translateToExpressionTree;
+%ignore Expression::performConstantFolding;
+%ignore Expression::parseAndTranslate;
+%ignore Expression::dumpTree;
+%ignore Expression::dumpAst;
+%ignore Expression::dumpAst;
+%ignore Expression::dumpExprTree;
 
-%extend Expression {
-    void parse(const char* text, std::set<std::string> vars) {
-        SimpleResolver resolver(vars);
-        self->parse(text, &resolver);
-    }
-}
 
-%{
-class SimpleVar : public Expression::Variable {
-  private:
-    std::string name;
-  public:
-    SimpleVar(const char *name) : name(name) {}
-    virtual Functor *dup() const { return new SimpleVar(name.c_str()); }
-    virtual const char *getName() const { return name.c_str(); }
-    virtual char getReturnType() const { return (char)Expression::Value::DBL; }
-    virtual Expression::Value evaluate(Expression::Value args[], int numargs) { return Expression::Value(); }
-};
 
-class SimpleResolver : public Expression::Resolver {
-  private:
-    std::set<std::string> vars;
-  public:
-    SimpleResolver(const std::set<std::string> &vars) : vars(vars) {}
-    virtual Expression::Functor *resolveVariable(const char *varname) {
-       if (vars.find(varname) == vars.end())
-         throw opp_runtime_error("Undefined variable: %s", varname);
-       return new SimpleVar(varname);
-    }
-    virtual Expression::Functor *resolveFunction(const char *funcname, int argcount) { return new MathFunction(funcname); }
-};
-%}
 
-%ignore MathFunction;
-%ignore Expression::Elem::stringPool;
-%ignore Expression::evaluate;  // swig does not support nested classes (Expression::Value)
-%ignore Expression::setExpression;
-%ignore Expression::getExpression;
-%ignore Expression::getExpressionLength;
-%ignore Expression::parse(const char *text, Resolver *resolver);
 } } // namespaces
 
 %include "common/expression.h"
