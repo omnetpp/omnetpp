@@ -624,7 +624,8 @@ void FunctionNode::print(std::ostream& out, int spaciousness) const
 ExprValue FunctionNode::evaluate(Context *context) const
 {
     int n = children.size();
-    std::unique_ptr<ExprValue[]> values(new ExprValue[n]);
+    if (values == nullptr)
+        values = new ExprValue[n]; // spare per-call allocation
     int i = 0;
     for (ExprNode *child : children) {
         values[i] = child->tryEvaluate(context);
@@ -632,7 +633,7 @@ ExprValue FunctionNode::evaluate(Context *context) const
             return ExprValue();
         i++;
     }
-    return f(values.get(), n);
+    return f(values, n);
 }
 
 

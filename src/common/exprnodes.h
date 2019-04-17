@@ -454,11 +454,13 @@ class FunctionNode : public NaryNode {
 protected:
     std::string name;
     ExprValue (*f)(ExprValue*, int);
+    mutable ExprValue *values = nullptr; // preallocated buffer
 protected:
     virtual void print(std::ostream& out, int spaciousness) const override;
     virtual ExprValue evaluate(Context *context) const override;
 public:
     FunctionNode(const char *name, ExprValue (*f)(ExprValue*, int)) : name(name), f(f) {}
+    ~FunctionNode() {delete[] values;}
     virtual ExprNode *dup() const override {return new FunctionNode(name.c_str(), f);}
     virtual std::string getName() const override {return name;}
     virtual Precedence getPrecedence() const override {return ELEM;}

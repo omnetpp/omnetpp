@@ -18,7 +18,6 @@
 #include <cmath>
 #include <sstream>
 #include "exprnode.h"
-#include "unitconversion.h"
 #include "stringutil.h"
 #include "exception.h"
 #include "exprnodes.h" // for makeErrorMessage()
@@ -136,18 +135,13 @@ void ExprNode::errorDimlessArgsExpected(const ExprValue& actual1, const ExprValu
     throw opp_runtime_error("Dimensionless arguments expected, got %s and %s", actual1.str().c_str(), actual2.str().c_str());
 }
 
-void ExprNode::ensureNoLogarithmicUnit(const ExprValue& value)
+void ExprNode::errorWrongArgType(int index, ExprValue::Type expected, const ExprValue& actual)
 {
-    Assert(value.type == ExprValue::INT || value.type == ExprValue::DOUBLE);
-    if (!opp_isempty(value.unit) && !UnitConversion::isLinearUnit(value.unit))
-        throw opp_runtime_error("Refusing to perform computations involving quantities with nonlinear units (%s)", value.str().c_str());
-}
-
-void ExprNode::ensureDimlessDoubleArg(ExprValue& value)
-{
-    value.convertToDouble();
-    if (!opp_isempty(value.unit))
-        errorDimlessArgExpected(value);
+    const char *note = (expected == ExprValue::INT && actual.getType() == ExprValue::DOUBLE) ?
+            " (note: no implicit conversion from double to int)" : "";
+    const char *expectedTypeName = (expected == ExprValue::DOUBLE) ? "double or int" :  ExprValue::getTypeName(expected);
+    throw opp_runtime_error("%s expected for argument %d, got %s%s",
+            expectedTypeName, index, ExprValue::getTypeName(actual.getType()), note);
 }
 
 void ExprNode::printFunction(std::ostream& out, int spaciousness) const

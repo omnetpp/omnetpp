@@ -23,6 +23,7 @@
 #include "commonutil.h" //Assert()
 #include "exprvalue.h"
 #include "intutil.h"
+#include "unitconversion.h"
 
 
 namespace omnetpp {
@@ -83,8 +84,12 @@ protected:
     virtual void printChild(std::ostream& out, ExprNode *child, int spaciousness) const;
     virtual bool needSpaces(int spaciousness) const {return spaciousness >= (LASTPREC-getPrecedence());}
     static void bringToCommonTypeAndUnit(ExprValue& a, ExprValue& b);
+    static void ensureArgType(int index, ExprValue::Type type, const ExprValue& actual);
+    static void ensureNumericArg(const ExprValue& actual);
     static void ensureNoLogarithmicUnit(const ExprValue& value);
+    static void ensureNumericNoLogarithmicUnit(const ExprValue& value);
     static void ensureDimlessDoubleArg(ExprValue& value);
+    [[noreturn]] static void errorWrongArgType(int index, ExprValue::Type expected, const ExprValue& actual);
     [[noreturn]] static void errorBooleanArgExpected(const ExprValue& actual);
     [[noreturn]] static void errorBooleanArgsExpected(const ExprValue& actual1, const ExprValue& actual2);
     [[noreturn]] static void errorNumericArgExpected(const ExprValue& actual);
@@ -117,6 +122,40 @@ inline ExprValue ExprNode::tryEvaluate(Context *context) const
         throw eval_error(makeErrorMessage(e));
     }
 }
+
+inline void ExprNode::ensureArgType(int index, ExprValue::Type type, const ExprValue& actual)
+{
+    if (actual.type != type)
+        errorWrongArgType(index, type, actual);
+}
+
+inline void ExprNode::ensureNumericArg(const ExprValue& actual)
+{
+    if (actual.type != ExprValue::INT && actual.type != ExprValue::DOUBLE)
+        errorNumericArgExpected(actual);
+}
+
+inline void ExprNode::ensureNoLogarithmicUnit(const ExprValue& value)
+{
+    if (!opp_isempty(value.unit) && !UnitConversion::isLinearUnit(value.unit))
+        throw opp_runtime_error("Refusing to perform computations involving quantities with nonlinear units (%s)", value.str().c_str());
+}
+
+inline void ExprNode::ensureNumericNoLogarithmicUnit(const ExprValue& value)
+{
+    if (value.type != ExprValue::INT && value.type != ExprValue::DOUBLE)
+        errorNumericArgExpected(value);
+    if (!opp_isempty(value.unit) && !UnitConversion::isLinearUnit(value.unit))
+        throw opp_runtime_error("Refusing to perform computations involving quantities with nonlinear units (%s)", value.str().c_str());
+}
+
+inline void ExprNode::ensureDimlessDoubleArg(ExprValue& value)
+{
+    value.convertToDouble();
+    if (!opp_isempty(value.unit))
+        errorDimlessArgExpected(value);
+}
+
 
 class LeafNode : public ExprNode {
 public:
