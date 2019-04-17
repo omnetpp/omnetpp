@@ -64,14 +64,12 @@ struct Block {
     }
 };
 
-typedef std::vector<Block> Blocks;
-
 typedef std::map<std::string, std::string> StringMap;
 
 /**
  * Entry for one vector in the index.
  */
-struct VectorData {
+struct VectorInfo {
     int vectorId;
     std::string moduleName;
     std::string name;
@@ -83,13 +81,13 @@ struct VectorData {
     simultime_t startTime;
     simultime_t endTime;
     Statistics stat;
-    Blocks blocks;
+    std::vector<Block> blocks;
 
     /**
      * Creates an index entry for a vector.
      */
-    VectorData() : vectorId(-1), blockSize(0) {}
-    VectorData(int vectorId, std::string moduleName, std::string name, std::string columns, int64_t blockSize)
+    VectorInfo() : vectorId(-1), blockSize(0) {}
+    VectorInfo(int vectorId, std::string moduleName, std::string name, std::string columns, int64_t blockSize)
         : vectorId(vectorId), moduleName(moduleName), name(name), columns(columns), blockSize(blockSize),
           startEventNum(-1), endEventNum(-1), startTime(0.0), endTime(0.0) {}
 
@@ -148,17 +146,17 @@ struct VectorData {
      * containing entries in the [startTime,endTime] interval (both inclusive).
      * Returns the number of blocks found.
      */
-    Blocks::size_type getBlocksInSimtimeInterval(simultime_t startTime, simultime_t endTime, Blocks::size_type& startIndex, Blocks::size_type& endIndex) const;
+    std::vector<Block>::size_type getBlocksInSimtimeInterval(simultime_t startTime, simultime_t endTime, std::vector<Block>::size_type& startIndex, std::vector<Block>::size_type& endIndex) const;
 
     /**
      * Finds the start (inclusive) and end (exclusive) indeces of the range of blocks,
      * containing entries in the [startEventNum,endEventNum] interval (both inclusive).
      * Returns the number of blocks found.
      */
-    Blocks::size_type getBlocksInEventnumInterval(eventnumber_t startEventNum, eventnumber_t endEventNum, Blocks::size_type& startIndex, Blocks::size_type& endIndex) const;
+    std::vector<Block>::size_type getBlocksInEventnumInterval(eventnumber_t startEventNum, eventnumber_t endEventNum, std::vector<Block>::size_type& startIndex, std::vector<Block>::size_type& endIndex) const;
 };
 
-typedef std::vector<VectorData> Vectors;
+typedef std::vector<VectorInfo> Vectors;
 
 /**
  * Run attributes written into the index file.
@@ -208,25 +206,25 @@ public:
         return vectors.size();
     }
 
-    void addVector(const VectorData& vector)
+    void addVector(const VectorInfo& vector)
     {
         map[vector.vectorId] = vectors.size();
         vectors.push_back(vector);
     }
 
-    const VectorData *getVectorAt(int index) const
+    const VectorInfo *getVectorAt(int index) const
     {
         Assert(0 <= index && index < (int)vectors.size());
         return& vectors[index];
     }
 
-    VectorData *getVectorAt(int index)
+    VectorInfo *getVectorAt(int index)
     {
         Assert(0 <= index && index < (int)vectors.size());
         return& vectors[index];
     }
 
-    VectorData *getVectorById(int vectorId)
+    VectorInfo *getVectorById(int vectorId)
     {
         VectorIdToIndexMap::const_iterator entry = map.find(vectorId);
         return entry!=map.end() ? getVectorAt(entry->second) : nullptr;
@@ -318,19 +316,19 @@ class SCAVE_API IndexFileWriter
         /**
          * Writes out the index of one vector (declaration+blocks).
          */
-        void writeVector(const VectorData& vector);
+        void writeVector(const VectorInfo& vector);
         /**
          * Writes out the declaration of a vector.
          */
-        void writeVectorDeclaration(const VectorData& vector);
+        void writeVectorDeclaration(const VectorInfo& vector);
         /**
          * Writes out the attributes of a vector.
          */
-        void writeVectorAttributes(const VectorData& vector);
+        void writeVectorAttributes(const VectorInfo& vector);
         /**
          * Writes out a block of the specified vector.
          */
-        void writeBlock(const VectorData& vector, const Block& block);
+        void writeBlock(const VectorInfo& vector, const Block& block);
     protected:
         /** Opens the index file. */
         void openFile();

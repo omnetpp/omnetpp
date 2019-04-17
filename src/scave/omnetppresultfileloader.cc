@@ -367,7 +367,7 @@ void OmnetppResultFileLoader::loadVectorsFromIndex(const char *filename, ResultF
 
     const StringMap emptyAttrs;
     for (int i = 0; i < numOfVectors; ++i) {
-        const VectorData *vectorRef = index->getVectorAt(i);
+        const VectorInfo *vectorRef = index->getVectorAt(i);
         assert(vectorRef);
 
         VectorResult vectorResult(fileRunRef, vectorRef->moduleName, vectorRef->name, emptyAttrs, vectorRef->vectorId, vectorRef->columns);

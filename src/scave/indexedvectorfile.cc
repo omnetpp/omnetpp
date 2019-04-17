@@ -174,12 +174,12 @@ OutputVectorEntry *IndexedVectorFileReader::getEntryByEventnum(eventnumber_t eve
 
 long IndexedVectorFileReader::collectEntriesInSimtimeInterval(simultime_t startTime, simultime_t endTime, Entries& out)
 {
-    Blocks::size_type startIndex;
-    Blocks::size_type endIndex;
+    std::vector<Block>::size_type startIndex;
+    std::vector<Block>::size_type endIndex;
     vector->getBlocksInSimtimeInterval(startTime, endTime,  /*out*/ startIndex,  /*out*/ endIndex);
 
     Entries::size_type count = 0;
-    for (Blocks::size_type i = startIndex; i < endIndex; i++) {
+    for (std::vector<Block>::size_type i = startIndex; i < endIndex; i++) {
         const Block& block = vector->blocks[i];
         loadBlock(block);
         for (long j = 0; j < block.getCount(); ++j) {
@@ -197,12 +197,12 @@ long IndexedVectorFileReader::collectEntriesInSimtimeInterval(simultime_t startT
 
 long IndexedVectorFileReader::collectEntriesInEventnumInterval(eventnumber_t startEventNum, eventnumber_t endEventNum, Entries& out)
 {
-    Blocks::size_type startIndex;
-    Blocks::size_type endIndex;
+    std::vector<Block>::size_type startIndex;
+    std::vector<Block>::size_type endIndex;
     vector->getBlocksInEventnumInterval(startEventNum, endEventNum,  /*out*/ startIndex,  /*out*/ endIndex);
 
     Entries::size_type count = 0;
-    for (Blocks::size_type i = startIndex; i < endIndex; i++) {
+    for (std::vector<Block>::size_type i = startIndex; i < endIndex; i++) {
         const Block& block = vector->blocks[i];
         loadBlock(block);
 
@@ -293,7 +293,7 @@ void IndexedVectorFileWriterNode::process()
 
         // print vector declarations and attributes
         for (PortVector::iterator it = ports.begin(); it != ports.end(); ++it) {
-            const VectorData& vector = (*it)->vector;
+            const VectorInfo& vector = (*it)->vector;
             CHECK(fprintf(f, "vector %d  %s  %s  %s\n",
                             vector.vectorId, QUOTE(vector.moduleName.c_str()), QUOTE(vector.name.c_str()), vector.columns.c_str()));
             for (StringMap::const_iterator attr = vector.attributes.begin(); attr != vector.attributes.end(); attr++)

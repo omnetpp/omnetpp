@@ -68,8 +68,8 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
     char **tokens;
     int64_t lineNo;
     int numTokens, numOfUnrecognizedLines = 0;
-    VectorData *currentVectorRef = nullptr;
-    VectorData *lastVectorDecl = nullptr;
+    VectorInfo *currentVectorRef = nullptr;
+    VectorInfo *lastVectorDecl = nullptr;
     Block currentBlock;
 
     int64_t onePercentFileSize = reader.getFileSize() / 100;
@@ -122,7 +122,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
                 if (numTokens < 4)
                     throw ResultFileFormatException("Vector file indexer: Broken vector declaration", vectorFileName, lineNo);
 
-                VectorData vector;
+                VectorInfo vector;
                 if (!parseInt(tokens[1], vector.vectorId))
                     throw ResultFileFormatException("Vector file indexer: Malformed vector in vector declaration", vectorFileName, lineNo);
                 vector.moduleName = tokens[2];

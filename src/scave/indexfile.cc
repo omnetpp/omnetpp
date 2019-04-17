@@ -36,14 +36,14 @@ static bool serialLess(const Block& first, const Block& second)
     return first.endSerial() < second.endSerial();
 }
 
-const Block *VectorData::getBlockBySerial(long serial) const
+const Block *VectorInfo::getBlockBySerial(long serial) const
 {
     if (serial < 0 || serial >= getCount())
         return nullptr;
 
     Block blockToFind;
     blockToFind.startSerial = serial;
-    Blocks::const_iterator first = std::upper_bound(blocks.begin(), blocks.end(), blockToFind, serialLess);
+    std::vector<Block>::const_iterator first = std::upper_bound(blocks.begin(), blocks.end(), blockToFind, serialLess);
     assert(first == blocks.end() || first->endSerial() > serial);  // first block ending after serial
 
     if (first != blocks.end()) {
@@ -66,30 +66,30 @@ static bool simtimeGreater(const Block& first, const Block& second)
     return first.startTime > second.endTime;
 }
 
-const Block *VectorData::getBlockBySimtime(simultime_t simtime, bool after) const
+const Block *VectorInfo::getBlockBySimtime(simultime_t simtime, bool after) const
 {
     Block blockToFind;
     blockToFind.startTime = simtime;
     blockToFind.endTime = simtime;
 
     if (after) {
-        Blocks::const_iterator first = std::lower_bound(blocks.begin(), blocks.end(), blockToFind, simtimeLess);
+        std::vector<Block>::const_iterator first = std::lower_bound(blocks.begin(), blocks.end(), blockToFind, simtimeLess);
         return first != blocks.end() ? &(*first) : nullptr;
     }
     else {
-        Blocks::const_reverse_iterator last = std::lower_bound(blocks.rbegin(), blocks.rend(), blockToFind, simtimeGreater);
+        std::vector<Block>::const_reverse_iterator last = std::lower_bound(blocks.rbegin(), blocks.rend(), blockToFind, simtimeGreater);
         return last != blocks.rend() ? &(*last) : nullptr;
     }
 }
 
-Blocks::size_type VectorData::getBlocksInSimtimeInterval(simultime_t startTime, simultime_t endTime, Blocks::size_type& startIndex, Blocks::size_type& endIndex) const
+std::vector<Block>::size_type VectorInfo::getBlocksInSimtimeInterval(simultime_t startTime, simultime_t endTime, std::vector<Block>::size_type& startIndex, std::vector<Block>::size_type& endIndex) const
 {
     Block blockToFind;
     blockToFind.startTime = startTime;
     blockToFind.endTime = endTime;
 
-    Blocks::const_iterator first = std::lower_bound(blocks.begin(), blocks.end(), blockToFind, simtimeLess);
-    Blocks::const_iterator last = std::upper_bound(blocks.begin(), blocks.end(), blockToFind, simtimeLess);
+    std::vector<Block>::const_iterator first = std::lower_bound(blocks.begin(), blocks.end(), blockToFind, simtimeLess);
+    std::vector<Block>::const_iterator last = std::upper_bound(blocks.begin(), blocks.end(), blockToFind, simtimeLess);
 
     assert(first == blocks.end() || first->endTime >= startTime);
     assert(last == blocks.end() || last->startTime > endTime);
@@ -112,30 +112,30 @@ static bool eventnumGreater(const Block& first, const Block& second)
     return first.startEventNum > second.endEventNum;
 }
 
-const Block *VectorData::getBlockByEventnum(eventnumber_t eventNum, bool after) const
+const Block *VectorInfo::getBlockByEventnum(eventnumber_t eventNum, bool after) const
 {
     Block blockToFind;
     blockToFind.startEventNum = eventNum;
     blockToFind.endEventNum = eventNum;
 
     if (after) {
-        Blocks::const_iterator first = std::lower_bound(blocks.begin(), blocks.end(), blockToFind, eventnumLess);
+        std::vector<Block>::const_iterator first = std::lower_bound(blocks.begin(), blocks.end(), blockToFind, eventnumLess);
         return first != blocks.end() ? &(*first) : nullptr;
     }
     else {
-        Blocks::const_reverse_iterator last = std::lower_bound(blocks.rbegin(), blocks.rend(), blockToFind, eventnumGreater);
+        std::vector<Block>::const_reverse_iterator last = std::lower_bound(blocks.rbegin(), blocks.rend(), blockToFind, eventnumGreater);
         return last != blocks.rend() ? &(*last) : nullptr;
     }
 }
 
-Blocks::size_type VectorData::getBlocksInEventnumInterval(eventnumber_t startEventNum, eventnumber_t endEventNum, Blocks::size_type& startIndex, Blocks::size_type& endIndex) const
+std::vector<Block>::size_type VectorInfo::getBlocksInEventnumInterval(eventnumber_t startEventNum, eventnumber_t endEventNum, std::vector<Block>::size_type& startIndex, std::vector<Block>::size_type& endIndex) const
 {
     Block blockToFind;
     blockToFind.startEventNum = startEventNum;
     blockToFind.endEventNum = endEventNum;
 
-    Blocks::const_iterator first = std::lower_bound(blocks.begin(), blocks.end(), blockToFind, eventnumLess);
-    Blocks::const_iterator last = std::upper_bound(blocks.begin(), blocks.end(), blockToFind, eventnumLess);
+    std::vector<Block>::const_iterator first = std::lower_bound(blocks.begin(), blocks.end(), blockToFind, eventnumLess);
+    std::vector<Block>::const_iterator last = std::upper_bound(blocks.begin(), blocks.end(), blockToFind, eventnumLess);
 
     assert(first == blocks.end() || first->endEventNum >= startEventNum);
     assert(last == blocks.end() || last->startEventNum > endEventNum);
@@ -381,7 +381,7 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
     if (tokens[0][0] == 'v' && strcmp(tokens[0], "vector") == 0) {
         CHECK(numTokens >= 5, "invalid vector declaration", lineNum);
 
-        VectorData vector;
+        VectorInfo vector;
         CHECK(parseInt(tokens[1], vector.vectorId), "invalid vector id", lineNum);
         vector.moduleName = tokens[2];
         vector.name = tokens[3];
@@ -391,7 +391,7 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
     }
     else if (tokens[0][0] == 'a' && strcmp(tokens[0], "attr") == 0 && index->getNumberOfVectors() > 0) {  // vector attr
         CHECK(numTokens == 3, "malformed vector attribute", lineNum);
-        VectorData *lastVector = index->getVectorAt(index->getNumberOfVectors()-1);
+        VectorInfo *lastVector = index->getVectorAt(index->getNumberOfVectors()-1);
         lastVector->attributes[tokens[1]] = tokens[2];
     }
     else if (tokens[0][0] == 'f' && strcmp(tokens[0], "file") == 0) {
@@ -417,7 +417,7 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
 
         int id;
         CHECK(parseInt(tokens[0], id), "malformed vector id", lineNum);
-        VectorData *vector = index->getVectorById(id);
+        VectorInfo *vector = index->getVectorById(id);
         CHECK(vector, "missing vector definition", lineNum);
 
         Block block;
@@ -470,7 +470,7 @@ void IndexFileWriter::writeAll(const VectorFileIndex& index)
 
     int numOfVectors = index.getNumberOfVectors();
     for (int i = 0; i < numOfVectors; ++i) {
-        const VectorData *vectorRef = index.getVectorAt(i);
+        const VectorInfo *vectorRef = index.getVectorAt(i);
         writeVector(*vectorRef);
     }
 
@@ -497,7 +497,7 @@ void IndexFileWriter::writeRun(const RunData& run)
     run.writeToFile(file, filename.c_str());
 }
 
-void IndexFileWriter::writeVector(const VectorData& vector)
+void IndexFileWriter::writeVector(const VectorInfo& vector)
 {
     if (file == nullptr)
         openFile();
@@ -513,20 +513,20 @@ void IndexFileWriter::writeVector(const VectorData& vector)
     }
 }
 
-void IndexFileWriter::writeVectorDeclaration(const VectorData& vector)
+void IndexFileWriter::writeVectorDeclaration(const VectorInfo& vector)
 {
     CHECK(fprintf(file, "vector %d %s %s %s\n",
                     vector.vectorId, QUOTE(vector.moduleName.c_str()), QUOTE(vector.name.c_str()), vector.columns.c_str()));
 }
 
-void IndexFileWriter::writeVectorAttributes(const VectorData& vector)
+void IndexFileWriter::writeVectorAttributes(const VectorInfo& vector)
 {
     for (StringMap::const_iterator it = vector.attributes.begin(); it != vector.attributes.end(); ++it) {
         CHECK(fprintf(file, "attr %s %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
     }
 }
 
-void IndexFileWriter::writeBlock(const VectorData& vector, const Block& block)
+void IndexFileWriter::writeBlock(const VectorInfo& vector, const Block& block)
 {
     static char buff1[64], buff2[64];
     char *e;

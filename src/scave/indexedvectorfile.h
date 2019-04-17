@@ -55,7 +55,7 @@ class SCAVE_API IndexedVectorFileReader
     std::string fname;  // file name of the vector file
 
     VectorFileIndex *index; // index of the vector file, loaded fully into the memory
-    const VectorData *vector;     // index data of the read vector, points into index
+    const VectorInfo *vector;     // index data of the read vector, points into index
     const Block *currentBlock;    // last loaded block, points into index
     Entries currentEntries; // entries of the loaded block
 
@@ -111,7 +111,7 @@ class SCAVE_API IndexedVectorFileWriterNode : public Node
     protected:
         class VectorInputPort : public Port {
             public:
-            VectorData vector;
+            VectorInfo vector;
             char *buffer;     // buffer holding recorded data
             int bufferSize;  // size of the allocated buffer
             char *bufferPtr; // pointer to the current position in the buffer

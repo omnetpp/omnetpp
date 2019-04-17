@@ -99,8 +99,8 @@ void IndexedVectorFileReaderNode::readIndexFile()
             throw opp_runtime_error("Indexed vector file reader: Vector %d not found, file %s",
                     vectorId, indexFileName.c_str());
 
-        Blocks& blocks = portData.vector->blocks;
-        for (Blocks::iterator it = blocks.begin(); it != blocks.end(); ++it)
+        std::vector<Block>& blocks = portData.vector->blocks;
+        for (std::vector<Block>::iterator it = blocks.begin(); it != blocks.end(); ++it)
             blocksToRead.push_back(BlockAndPortData(&(*it), &portData));
     }
 
@@ -116,7 +116,7 @@ long IndexedVectorFileReaderNode::readBlock(const Block *blockPtr, const PortDat
     file_offset_t offset;
 #define CHECK(cond, msg) {if (!(cond)) throw opp_runtime_error(msg ", file %s, offset %" PRId64, file, (int64_t)offset); }
 
-    VectorData *vector = portDataPtr->vector;
+    VectorInfo *vector = portDataPtr->vector;
     file_offset_t startOffset = blockPtr->startOffset;
     long count = blockPtr->getCount();
 
