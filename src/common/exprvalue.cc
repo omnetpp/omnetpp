@@ -135,7 +135,7 @@ double ExprValue::doubleValueInUnit(const char *targetUnit) const
 
 void ExprValue::convertTo(const char *targetUnit)
 {
-    assertType(DOUBLE);
+    ensureType(DOUBLE);
     dbl = UnitConversion::convertUnit(dbl, unit, targetUnit);
     unit = targetUnit;
 }
@@ -158,7 +158,7 @@ std::string ExprValue::str() const
     char buf[64];
     switch (type) {
         case UNDEF:
-            return "undef";
+            return "undefined";
         case BOOL:
             return bl ? "true" : "false";
         case INT:

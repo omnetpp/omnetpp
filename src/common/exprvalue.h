@@ -88,11 +88,7 @@ class COMMON_API ExprValue
     static std::string (*objectToString)(cObject *); // method to print info about cObjects
 
   private:
-#ifdef NDEBUG
-    void assertType(Type) const {}
-#else
-    void assertType(Type t) const {if (type!=t) cannotCastError(t);}
-#endif
+    void ensureType(Type t) const {if (type!=t) cannotCastError(t);}
     char *strdup(const char *s) {char *p = new char[strlen(s)+1]; strcpy(p,s); return p;}
     void deleteOld() {if (type==STRING) delete[] s;}
     [[noreturn]] void cannotCastError(Type t) const;
@@ -213,13 +209,13 @@ class COMMON_API ExprValue
      * Sets the value to the given integer value, preserving the current
      * measurement unit. The object must already have the INT type.
      */
-    void setPreservingUnit(intpar_t d) {assertType(INT); intv=d;}
+    void setPreservingUnit(intpar_t d) {ensureType(INT); intv=d;}
 
     /**
      * Sets the value to the given double value, preserving the current
      * measurement unit. The object must already have the DOUBLE type.
      */
-    void setPreservingUnit(double d) {assertType(DOUBLE); dbl=d;}
+    void setPreservingUnit(double d) {ensureType(DOUBLE); dbl=d;}
 
     /**
      * Sets the measurement unit to the given value, leaving the numeric part
@@ -253,7 +249,7 @@ class COMMON_API ExprValue
     /**
      * Returns value as a boolean. The type must be BOOL.
      */
-    bool boolValue() const {assertType(BOOL); return bl;}
+    bool boolValue() const {ensureType(BOOL); return bl;}
 
     /**
      * Returns value as integer. The type must be INT.
@@ -288,17 +284,17 @@ class COMMON_API ExprValue
     /**
      * Returns value as const char *. The type must be STRING.
      */
-    const char *stringValue() const {assertType(STRING); return s;}
+    const char *stringValue() const {ensureType(STRING); return s;}
 
     /**
      * Returns value as std::string. The type must be STRING.
      */
-    std::string stdstringValue() const {assertType(STRING); return s;}
+    std::string stdstringValue() const {ensureType(STRING); return s;}
 
     /**
      * Returns value as pointer to cObject. The type must be OBJECT.
      */
-    cObject *objectValue() const {assertType(OBJECT); return obj;}
+    cObject *objectValue() const {ensureType(OBJECT); return obj;}
 
     /**
      * Equivalent to boolValue().
