@@ -244,8 +244,6 @@ ExprValue MulNode::evaluate(Context *context) const
     if (leftValue.type == ExprValue::INT && rightValue.type == ExprValue::INT) {  // both are integers -> integer multiplication
         if (!opp_isempty(rightValue.unit) && !opp_isempty(leftValue.unit))
             throw opp_runtime_error("Multiplying two quantities with units is not supported");
-        ensureNoLogarithmicUnit(rightValue);
-        ensureNoLogarithmicUnit(leftValue);
         leftValue.intv = safeMul(leftValue.intv, rightValue.intv);
         if (opp_isempty(leftValue.unit))
             leftValue.unit = rightValue.unit;
@@ -254,8 +252,6 @@ ExprValue MulNode::evaluate(Context *context) const
     else if (leftValue.type == ExprValue::DOUBLE || rightValue.type == ExprValue::DOUBLE) { // at least one is double -> double multiplication
         if (!opp_isempty(rightValue.unit) && !opp_isempty(leftValue.unit))
             throw opp_runtime_error("Multiplying two quantities with units is not supported");
-        ensureNoLogarithmicUnit(rightValue);
-        ensureNoLogarithmicUnit(leftValue);
         leftValue.convertToDouble();
         rightValue.convertToDouble();
         leftValue.dbl = leftValue.dbl * rightValue.dbl;
