@@ -30,7 +30,7 @@ import org.omnetpp.scave.engine.VectorFileIndexer;
  *
  * @author tomi
  */
-public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
+public class IndexFileUtils extends org.omnetpp.scave.engine.IndexFileUtils {
 
     /**
      * Returns true, if <code>file</code> is an index file.
@@ -64,7 +64,7 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
      * @return true if the index file is up-to-date
      */
     public static boolean isIndexFileUpToDate(String file) {
-        return org.omnetpp.scave.engine.IndexFile.isIndexFileUpToDate(file);
+        return org.omnetpp.scave.engine.IndexFileUtils.isIndexFileUpToDate(file);
     }
 
     /**

@@ -310,8 +310,8 @@ ResultFile *OmnetppResultFileLoader::loadFile(const char *fileName, const char *
         fileRef = resultFileManager->addFile(fileName, fileSystemFileName, ResultFile::FILETYPE_OMNETPP);
 
         // if vector file and has index, load vectors from the index file
-        if (IndexFile::isExistingVectorFile(fileSystemFileName) && IndexFile::isIndexFileUpToDate(fileSystemFileName)) {
-            std::string indexFileName = IndexFile::getIndexFileName(fileSystemFileName);
+        if (IndexFileUtils::isExistingVectorFile(fileSystemFileName) && IndexFileUtils::isIndexFileUpToDate(fileSystemFileName)) {
+            std::string indexFileName = IndexFileUtils::getIndexFileName(fileSystemFileName);
             loadVectorsFromIndex(indexFileName.c_str(), fileRef);
         }
         else {

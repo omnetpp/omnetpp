@@ -236,7 +236,7 @@ public:
 /**
  * FIXME comment
  */
-class SCAVE_API IndexFile
+class SCAVE_API IndexFileUtils
 {
     public:
         static bool isIndexFile(const char *indexFileName);

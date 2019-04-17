@@ -3,8 +3,8 @@ package org.omnetpp.scave.jobs;
 import static org.omnetpp.scave.common.ScaveMarkers.MARKERTYPE_SCAVEPROBLEM;
 import static org.omnetpp.scave.common.ScaveMarkers.deleteMarkers;
 import static org.omnetpp.scave.common.ScaveMarkers.setMarker;
-import static org.omnetpp.scave.engineext.IndexFile.isIndexFileUpToDate;
-import static org.omnetpp.scave.engineext.IndexFile.isExistingVectorFile;
+import static org.omnetpp.scave.engineext.IndexFileUtils.isIndexFileUpToDate;
+import static org.omnetpp.scave.engineext.IndexFileUtils.isExistingVectorFile;
 
 import java.util.Queue;
 import java.util.concurrent.Callable;
@@ -25,7 +25,7 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.builder.Activator;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.engineext.IndexFile;
+import org.omnetpp.scave.engineext.IndexFileUtils;
 import org.omnetpp.scave.engineext.ResultFileFormatException;
 
 public class ResultFileManagerUpdaterJob extends Job {
@@ -196,7 +196,7 @@ public class ResultFileManagerUpdaterJob extends Job {
             ScavePlugin.logError("Wrong file: " + file.getLocation().toOSString(), e);
             ResultFileFormatException fileFormatException = (ResultFileFormatException)e;
             if (isExistingVectorFile(file)) {
-                IFile indexFile = IndexFile.getIndexFileFor(file);
+                IFile indexFile = IndexFileUtils.getIndexFileFor(file);
                 String message = fileFormatException.getMessage();
                 int lineNo = fileFormatException.getLineNo();
                 setMarker(indexFile, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_ERROR, "Wrong file: "+message, lineNo);
@@ -217,7 +217,7 @@ public class ResultFileManagerUpdaterJob extends Job {
 
     private ISchedulingRule getSchedulingRuleFor(IFile file) {
         if (isExistingVectorFile(file))
-            return MultiRule.combine(file, IndexFile.getIndexFileFor(file));
+            return MultiRule.combine(file, IndexFileUtils.getIndexFileFor(file));
         else
             return file;
     }

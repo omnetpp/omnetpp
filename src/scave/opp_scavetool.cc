@@ -231,7 +231,7 @@ void ScaveTool::loadFiles(ResultFileManager& manager, const vector<string>& file
         // TODO on Windows: manual globbing of wildcards
         const char *fileName = fileNames[i].c_str();
 
-        if (indexingAllowed && IndexFile::isExistingVectorFile(fileName) && !IndexFile::isIndexFileUpToDate(fileName)) {
+        if (indexingAllowed && IndexFileUtils::isExistingVectorFile(fileName) && !IndexFileUtils::isIndexFileUpToDate(fileName)) {
             if (verbose)
                 cout << "index file for " << fileName << " is missing or out of date, indexing... " << std::flush;
             VectorFileIndexer().generateIndex(fileName, nullptr);

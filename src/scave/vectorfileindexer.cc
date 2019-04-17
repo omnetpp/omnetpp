@@ -227,7 +227,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
     // generate index file: first write it to a temp file then rename it to .vci;
     // we do this in order to prevent race conditions from other processes/threads
     // reading an incomplete .vci file
-    string indexFileName = IndexFile::getIndexFileName(vectorFileName);
+    string indexFileName = IndexFileUtils::getIndexFileName(vectorFileName);
     string tempIndexFileName = createTempFileName(indexFileName);
 
     try {
@@ -258,7 +258,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
 
 void VectorFileIndexer::rebuildVectorFile(const char *vectorFileName, IProgressMonitor *monitor)
 {
-    string indexFileName = IndexFile::getIndexFileName(vectorFileName);
+    string indexFileName = IndexFileUtils::getIndexFileName(vectorFileName);
     string tempIndexFileName = createTempFileName(indexFileName);
     string tempVectorFileName = createTempFileName(vectorFileName);
 

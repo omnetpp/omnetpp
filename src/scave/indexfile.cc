@@ -208,12 +208,12 @@ static bool isFileReadable(const char *filename)
     return f != nullptr;
 }
 
-bool IndexFile::isIndexFile(const char *filename)
+bool IndexFileUtils::isIndexFile(const char *filename)
 {
     return opp_stringendswith(filename, ".vci");
 }
 
-bool IndexFile::isExistingVectorFile(const char *filename)
+bool IndexFileUtils::isExistingVectorFile(const char *filename)
 {
     if (!opp_stringendswith(filename, ".vec"))
         return false;
@@ -231,7 +231,7 @@ bool IndexFile::isExistingVectorFile(const char *filename)
     return matches;
 }
 
-std::string IndexFile::getVectorFileName(const char *filename)
+std::string IndexFileUtils::getVectorFileName(const char *filename)
 {
     std::string vectorFileName(filename);
     std::string::size_type pos = vectorFileName.rfind('.');
@@ -242,7 +242,7 @@ std::string IndexFile::getVectorFileName(const char *filename)
     return vectorFileName;
 }
 
-std::string IndexFile::getIndexFileName(const char *filename)
+std::string IndexFileUtils::getIndexFileName(const char *filename)
 {
     std::string indexFileName(filename);
     std::string::size_type pos = indexFileName.rfind('.');
@@ -253,7 +253,7 @@ std::string IndexFile::getIndexFileName(const char *filename)
     return indexFileName;
 }
 
-bool IndexFile::isIndexFileUpToDate(const char *filename)
+bool IndexFileUtils::isIndexFileUpToDate(const char *filename)
 {
     std::string indexFileName, vectorFileName;
 

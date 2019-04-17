@@ -22,8 +22,8 @@
 #include "scave/indexedvectorfile.h"
 #include "scave/vectorfileindexer.h"
 #include "scave/vectorfilereader.h"
-#include "scave/indexedvectorfilereader.h"
-#include "scave/sqlitevectorreader.h"
+#include "scave/indexedvectorfilereadernode.h"
+#include "scave/sqlitevectorreadernode.h"
 #include "scave/scaveexception.h"
 #include "scave/exporter.h"
 #include "scave/sqliteresultfileutils.h"
@@ -467,9 +467,9 @@ CHECK_RESULTFILE_FORMAT_EXCEPTION(DataflowManager::execute)
 
 namespace omnetpp { namespace scave {
 
-%javamethodmodifiers IndexFile::isIndexFileUpToDate "protected";
+%javamethodmodifiers IndexFileUtils::isIndexFileUpToDate "protected";
 
-class IndexFile
+class IndexFileUtils
 {
     public:
         static bool isIndexFile(const char *indexFileName);
@@ -543,8 +543,8 @@ namespace omnetpp { namespace scave {
 
 %include "scave/vectorfilereader.h"
 
-/* ------------- indexedvectorfilereader.h  ----------------- */
-%include "scave/indexedvectorfilereader.h"
+/* ------------- indexedvectorfilereadernode.h  ----------------- */
+%include "scave/indexedvectorfilereadernode.h"
 
 namespace omnetpp { namespace scave {
 %extend IndexedVectorFileReaderNode {
@@ -552,8 +552,8 @@ namespace omnetpp { namespace scave {
 };
 } } // namespaces
 
-/* ------------- sqlitevectorreader.h  ----------------- */
-%include "scave/sqlitevectorreader.h"
+/* ------------- sqlitevectorreadernode.h  ----------------- */
+%include "scave/sqlitevectorreadernode.h"
 
 namespace omnetpp { namespace scave {
 %extend SqliteVectorReaderNode {

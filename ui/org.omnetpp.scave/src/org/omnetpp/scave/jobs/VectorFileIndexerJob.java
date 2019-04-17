@@ -20,7 +20,7 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.MultiRule;
-import org.omnetpp.scave.engineext.IndexFile;
+import org.omnetpp.scave.engineext.IndexFileUtils;
 
 /**
  * This job generates index files for vector files in the workspace.
@@ -37,10 +37,10 @@ public class VectorFileIndexerJob extends WorkspaceJob {
         ArrayList<ISchedulingRule> rule = new ArrayList<ISchedulingRule>();
         this.filesToBeIndexed = new ArrayList<IFile>();
         for (IFile file : filesToBeIndexed)
-            if (IndexFile.isExistingVectorFile(file)) {
+            if (IndexFileUtils.isExistingVectorFile(file)) {
                 this.filesToBeIndexed.add(file);
                 rule.add(file);
-                rule.add(IndexFile.getIndexFileFor(file));
+                rule.add(IndexFileUtils.getIndexFileFor(file));
             }
 
         setRule(MultiRule.combine(rule.toArray(new ISchedulingRule[rule.size()])));
@@ -63,9 +63,9 @@ public class VectorFileIndexerJob extends WorkspaceJob {
                         return Status.CANCEL_STATUS;
 
                     monitor.subTask("Indexing "+file.getName());
-                    if (file.exists() && IndexFile.isExistingVectorFile(file) && !IndexFile.isIndexFileUpToDate(file)) {
+                    if (file.exists() && IndexFileUtils.isExistingVectorFile(file) && !IndexFileUtils.isIndexFileUpToDate(file)) {
                         IProgressMonitor subMonitor = new SubProgressMonitor(monitor, 1);
-                        IndexFile.performIndexing(file, subMonitor);
+                        IndexFileUtils.performIndexing(file, subMonitor);
                         if (subMonitor.isCanceled())
                             return Status.CANCEL_STATUS;
                     }

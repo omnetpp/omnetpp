@@ -20,7 +20,7 @@
 #include "channel.h"
 #include "scaveutils.h"
 #include "vectorfilereader.h"
-#include "indexedvectorfilereader.h"
+#include "indexedvectorfilereadernode.h"
 
 using namespace std;
 using namespace omnetpp::common;
@@ -80,12 +80,12 @@ void IndexedVectorFileReaderNode::readIndexFile()
 {
     const char *fn = filename.c_str();
 
-    if (!IndexFile::isExistingVectorFile(fn))
+    if (!IndexFileUtils::isExistingVectorFile(fn))
         throw opp_runtime_error("Indexed vector file reader: Not a vector file, file %s", fn);
-    if (!IndexFile::isIndexFileUpToDate(fn))
+    if (!IndexFileUtils::isIndexFileUpToDate(fn))
         throw opp_runtime_error("Indexed vector file reader: Index file is not up to date, file %s", fn);
 
-    string indexFileName = IndexFile::getIndexFileName(fn);
+    string indexFileName = IndexFileUtils::getIndexFileName(fn);
     IndexFileReader reader(indexFileName.c_str());
     index = reader.readAll();
 

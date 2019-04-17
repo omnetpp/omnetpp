@@ -18,8 +18,8 @@
 #include "omnetpp/platdep/platmisc.h"
 #include "channel.h"
 #include "scaveutils.h"
-#include "indexedvectorfilereader.h"
-#include "sqlitevectorreader.h"
+#include "indexedvectorfilereadernode.h"
+#include "sqlitevectorreadernode.h"
 #include "sqliteresultfileutils.h"
 #include "vectorreaderbyfiletype.h"
 

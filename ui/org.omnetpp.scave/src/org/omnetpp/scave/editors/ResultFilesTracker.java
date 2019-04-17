@@ -34,7 +34,7 @@ import org.omnetpp.scave.ContentTypes;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.engineext.IndexFile;
+import org.omnetpp.scave.engineext.IndexFileUtils;
 import org.omnetpp.scave.jobs.ResultFileManagerUpdaterJob;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
@@ -104,7 +104,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
                 return true;
 
             IFile file = (IFile)resource;
-            IFile resultFile = IndexFile.isIndexFile(file) ? IndexFile.getVectorFileFor(file) :
+            IFile resultFile = IndexFileUtils.isIndexFile(file) ? IndexFileUtils.getVectorFileFor(file) :
                                 isResultFile(file) ? file : null;
 
             if (resultFile == null || isDerived(resultFile) || !inputsMatches(resultFile))

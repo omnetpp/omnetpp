@@ -19,7 +19,7 @@
 #include "channel.h"
 #include "scaveutils.h"
 #include "resultfilemanager.h"
-#include "sqlitevectorreader.h"
+#include "sqlitevectorreadernode.h"
 
 using namespace std;
 using namespace omnetpp::common;

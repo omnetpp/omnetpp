@@ -36,7 +36,7 @@ namespace scave {
 IndexedVectorFileReader::IndexedVectorFileReader(const char *filename, int vectorId)
     : fname(filename), index(nullptr), vector(nullptr), currentBlock(nullptr)
 {
-    std::string ifname = IndexFile::getIndexFileName(filename);
+    std::string ifname = IndexFileUtils::getIndexFileName(filename);
     IndexFileReader indexReader(ifname.c_str());
     index = indexReader.readAll();  // XXX do not read whole index
     vector = index->getVectorById(vectorId);
