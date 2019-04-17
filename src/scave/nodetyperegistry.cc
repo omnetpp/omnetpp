@@ -21,7 +21,6 @@
 #include "arraybuilder.h"
 #include "vectorfilereader.h"
 #include "vectorfilewriter.h"
-#include "indexedvectorfile.h"
 #include "indexedvectorfilereadernode.h"
 #include "indexedvectorfilewriternode.h"
 #include "sqlitevectorreadernode.h"
@@ -34,6 +33,7 @@
 #include "xyplotnode.h"
 #include "diffquot.h"
 #include "customfilter.h"
+#include "indexedvectorfilereader.h"
 #include "stddev.h"
 #include "teenode.h"
 

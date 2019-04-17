@@ -1,5 +1,5 @@
 //=========================================================================
-//  INDEXEDVECTORFILE.H - part of
+//  INDEXEDVECTORFILEREADER.H - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_SCAVE_INDEXEDVECTORFILE_H
-#define __OMNETPP_SCAVE_INDEXEDVECTORFILE_H
+#ifndef __OMNETPP_SCAVE_INDEXEDVECTORFILEREADER_H
+#define __OMNETPP_SCAVE_INDEXEDVECTORFILEREADER_H
 
 #include <cassert>
 #include <cfloat>

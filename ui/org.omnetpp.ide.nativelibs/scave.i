@@ -19,7 +19,7 @@
 #include "scave/datasorter.h"
 #include "scave/indexfile.h"
 #include "scave/commonnodes.h"
-#include "scave/indexedvectorfile.h"
+#include "scave/indexedvectorfilereader.h"
 #include "scave/vectorfileindexer.h"
 #include "scave/vectorfilereader.h"
 #include "scave/indexedvectorfilereadernode.h"
@@ -488,7 +488,7 @@ CHECK_RESULTFILE_FORMAT_EXCEPTION(VectorFileIndexer::generateIndex)
 
 %include "scave/vectorfileindexer.h"
 
-/* ------------- indexedvectorfile.h  ----------------- */
+/* ------------- indexedvectorfilereader.h  ----------------- */
 %typemap(javainterfaces) omnetpp::scave::OutputVectorEntry "Comparable<OutputVectorEntry>"
 
 %typemap(javacode) omnetpp::scave::OutputVectorEntry %{
@@ -513,7 +513,7 @@ namespace omnetpp { namespace scave {
 %ignore IndexedVectorFileWriterNodeType;
 } } // namespaces
 
-%include "scave/indexedvectorfile.h"
+%include "scave/indexedvectorfilereader.h"
 
 /* ------------- vectorfilereader.h  ----------------- */
 namespace omnetpp { namespace scave {
