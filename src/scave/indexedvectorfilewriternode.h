@@ -26,6 +26,7 @@
 #include "common/filereader.h"
 #include "scavedefs.h"
 #include "indexfile.h"
+#include "indexfilewriter.h"
 #include "node.h"
 #include "nodetype.h"
 #include "resultfilemanager.h"

@@ -20,6 +20,7 @@
 #include "channel.h"
 #include "scaveutils.h"
 #include "vectorfilereader.h"
+#include "indexfilereader.h"
 #include "indexedvectorfilereadernode.h"
 
 using namespace std;

@@ -22,6 +22,7 @@
 #include "omnetpp/platdep/platmisc.h"
 #include "channel.h"
 #include "indexedvectorfile.h"
+#include "indexfilereader.h"
 #include "scaveutils.h"
 
 using namespace omnetpp::common;
