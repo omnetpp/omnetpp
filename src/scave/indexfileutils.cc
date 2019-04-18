@@ -24,9 +24,9 @@
 #include "common/stringutil.h"
 #include "scaveutils.h"
 #include "scaveexception.h"
-#include "indexfile.h"
 #include "indexfileutils.h"
 #include "indexfilereader.h"
+#include "vectorfileindex.h"
 
 using namespace omnetpp::common;
 
@@ -103,15 +103,26 @@ bool IndexFileUtils::isIndexFileUpToDate(const char *filename)
         return false;
 
     IndexFileReader reader(indexFileName.c_str());
-    VectorFileIndex *index = reader.readFingerprint();
+    VectorFileIndex::FingerPrint fingerprint = reader.readFingerprint();
 
     // when the fingerprint not found assume the index file is being written therefore it is up to date
-    if (!index)
+    if (fingerprint.isEmpty())
         return true;
 
-    bool uptodate = index->fingerprint.check(vectorFileName.c_str());
-    delete index;
-    return uptodate;
+    return fingerprint == getFingerPrint(vectorFileName.c_str());
+}
+
+VectorFileIndex::FingerPrint IndexFileUtils::getFingerPrint(const char *vectorFileName)
+{
+    struct opp_stat_t s;
+    if (opp_stat(vectorFileName, &s) != 0)
+        throw opp_runtime_error("Vector file '%s' does not exist", vectorFileName);
+
+    VectorFileIndex::FingerPrint fingerprint;
+    fingerprint.lastModified = (int64_t)s.st_mtime;
+    fingerprint.fileSize = (int64_t)s.st_size;
+
+    return fingerprint;
 }
 
 

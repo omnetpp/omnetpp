@@ -24,8 +24,8 @@
 #include "common/stringutil.h"
 #include "scaveutils.h"
 #include "scaveexception.h"
-#include "indexfile.h"
 #include "indexfilereader.h"
+#include "vectorfileindex.h"
 
 using namespace omnetpp::common;
 
@@ -68,14 +68,15 @@ VectorFileIndex *IndexFileReader::readAll()
     return index;
 }
 
-VectorFileIndex *IndexFileReader::readFingerprint()
+VectorFileIndex::FingerPrint IndexFileReader::readFingerprint()
 {
     FileReader reader(filename.c_str());
     LineTokenizer tokenizer(1024);
     int numTokens;
     char *line, **tokens;
 
-    VectorFileIndex *index = nullptr;
+    VectorFileIndex::FingerPrint result;
+
     reader.setCheckFileForChanges(false);
     while ((line = reader.getNextLineBufferPointer()) != nullptr) {
         int64_t lineNum = reader.getNumReadLines();
@@ -85,18 +86,20 @@ VectorFileIndex *IndexFileReader::readFingerprint()
 
         if (numTokens == 0 || tokens[0][0] == '#')
             continue;
-        else if (tokens[0][0] == 'f' && strcmp(tokens[0], "file") == 0) {
-            index = new VectorFileIndex();
-            parseLine(tokens, numTokens, index, lineNum);
+        else if (strcmp(tokens[0], "file") == 0) {
+            int64_t fileSize;
+            int64_t lastModified;
+            CHECK(numTokens >= 3, "missing file attributes", lineNum);
+            CHECK(parseInt64(tokens[1], fileSize), "file size is not a number", lineNum);
+            CHECK(parseInt64(tokens[2], lastModified), "modification date is not a number", lineNum);
+            result.fileSize = fileSize;
+            result.lastModified = lastModified;
         }
         else
             break;
     }
 
-    // missing fingerprint: possible if the writing of the index file is in progress
-    // CHECK(index, "missing fingerprint", -1);
-
-    return index;
+    return result;
 }
 
 void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *index, int64_t lineNum)

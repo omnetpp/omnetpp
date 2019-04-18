@@ -24,7 +24,7 @@
 #include "common/statistics.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "scavedefs.h"
-#include "indexfile.h"
+#include "vectorfileindex.h"
 
 namespace omnetpp {
 namespace scave {
@@ -53,7 +53,7 @@ class SCAVE_API IndexFileReader  //TODO this class should share the reader/parse
         /**
          * Reads the fingerprint of the vector file this index file belongs to.
          */
-        VectorFileIndex *readFingerprint();
+        VectorFileIndex::FingerPrint readFingerprint();
     protected:
         /**
          * Parse one line of the index file.

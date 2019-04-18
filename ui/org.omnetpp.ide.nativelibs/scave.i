@@ -17,7 +17,7 @@
 #include "scave/resultfilemanager.h"
 #include "scave/fields.h"
 #include "scave/datasorter.h"
-#include "scave/indexfile.h"
+#include "scave/vectorfileindex.h"
 #include "scave/indexfileutils.h"
 #include "scave/commonnodes.h"
 #include "scave/indexedvectorfilereader.h"

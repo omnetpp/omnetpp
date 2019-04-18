@@ -24,6 +24,7 @@
 #include "common/statistics.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "scavedefs.h"
+#include "vectorfileindex.h"
 
 namespace omnetpp {
 namespace scave {
@@ -45,6 +46,8 @@ class SCAVE_API IndexFileUtils
          * is equal to the size and date of the vector file.
          */
         static bool isIndexFileUpToDate(const char *fileName);
+
+        static VectorFileIndex::FingerPrint getFingerPrint(const char *vectorFileName);
 };
 
 

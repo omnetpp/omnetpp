@@ -43,7 +43,7 @@ OBJS= $O/arraybuilder.o $O/channel.o $O/commonnodes.o $O/compoundfilter.o \
       $O/resultfilemanager.o $O/slidingwinavg.o \
       $O/vectorfilereader.o $O/vectorfilewriter.o $O/windowavg.o \
       $O/xyplotnode.o $O/indexedvectorfilereader.o $O/indexedvectorfilewriternode.o \
-      $O/vectorfileindexer.o $O/indexfile.o $O/indexfileutils.o \
+      $O/vectorfileindexer.o $O/vectorfileindex.o $O/indexfileutils.o \
       $O/indexfilereader.o  $O/indexfilewriter.o \
       $O/scaveutils.o $O/scaveexception.o $O/enumtype.o $O/teenode.o \
       $O/indexedvectorfilereadernode.o $O/xyarray.o $O/fields.o \

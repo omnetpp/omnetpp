@@ -1,5 +1,5 @@
 //=========================================================================
-//  INDEXFILE.CC - part of
+//  VECTORFILEINDEX.CC - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
@@ -14,6 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "vectorfileindex.h"
+
 #include <sys/stat.h>
 #include <cstdint>
 #include <algorithm>
@@ -24,7 +26,6 @@
 #include "common/stringutil.h"
 #include "scaveutils.h"
 #include "scaveexception.h"
-#include "indexfile.h"
 #include "indexfilereader.h"
 
 using namespace omnetpp::common;
@@ -202,27 +203,6 @@ void VectorFileIndex::RunData::writeToFile(FILE *file, const char *filename) con
         CHECK(fprintf(file, "param %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())));
     CHECK(fprintf(file, "\n"));
 }
-
-//=========================================================================
-FingerPrint::FingerPrint(const char *vectorFileName)
-{
-    struct opp_stat_t s;
-    if (opp_stat(vectorFileName, &s) != 0)
-        throw opp_runtime_error("Vector file '%s' does not exist", vectorFileName);
-
-    this->lastModified = (int64_t)s.st_mtime;
-    this->fileSize = (int64_t)s.st_size;
-}
-
-bool FingerPrint::check(const char *vectorFileName)
-{
-    struct opp_stat_t s;
-    if (opp_stat(vectorFileName, &s) == 0) {
-        return (this->lastModified == (int64_t)s.st_mtime) && (this->fileSize == (int64_t)s.st_size);
-    }
-    return false;
-}
-
 
 }  // namespace scave
 }  // namespace omnetpp

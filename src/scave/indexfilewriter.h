@@ -24,6 +24,7 @@
 #include "common/statistics.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "scavedefs.h"
+#include "vectorfileindex.h"
 
 namespace omnetpp {
 namespace scave {

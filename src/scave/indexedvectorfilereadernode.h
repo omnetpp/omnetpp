@@ -24,8 +24,8 @@
 #include "node.h"
 #include "nodetype.h"
 #include "commonnodes.h"
-#include "indexfile.h"
 #include "resultfilemanager.h"
+#include "vectorfileindex.h"
 
 namespace omnetpp {
 namespace scave {

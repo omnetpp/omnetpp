@@ -24,8 +24,9 @@
 #include "common/stringutil.h"
 #include "scaveutils.h"
 #include "scaveexception.h"
-#include "indexfile.h"
+#include "indexfileutils.h"
 #include "indexfilewriter.h"
+#include "vectorfileindex.h"
 
 using namespace omnetpp::common;
 
@@ -70,7 +71,7 @@ void IndexFileWriter::writeAll(const VectorFileIndex& index)
 
 void IndexFileWriter::writeFingerprint(std::string vectorFileName)
 {
-    FingerPrint fingerprint(vectorFileName.c_str());
+    VectorFileIndex::FingerPrint fingerprint = IndexFileUtils::getFingerPrint(vectorFileName.c_str());
 
     if (file == nullptr)
         openFile();

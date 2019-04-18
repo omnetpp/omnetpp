@@ -27,7 +27,6 @@
 #include "nodetype.h"
 #include "nodetyperegistry.h"
 #include "dataflowmanager.h"
-#include "indexfile.h"
 #include "indexfileutils.h"
 #include "vectorfilereader.h"
 #include "vectorfilewriter.h"
@@ -41,6 +40,7 @@
 #include "exporter.h"
 
 #include "opp_scavetool.h"
+#include "vectorfileindex.h"
 
 
 using namespace std;

@@ -39,7 +39,7 @@
 #endif
 
 #include "resultfilemanager.h"
-#include "indexfile.h"
+#include "vectorfileindex.h"
 
 namespace omnetpp {
 namespace scave {

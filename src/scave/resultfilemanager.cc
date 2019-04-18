@@ -35,13 +35,13 @@
 #include "common/stringutil.h"
 #include "common/unitconversion.h"
 #include "omnetpp/platdep/platmisc.h"
-#include "indexfile.h"
 #include "scaveutils.h"
 #include "scaveexception.h"
 #include "sqliteresultfileutils.h"
 #include "resultfilemanager.h"
 #include "omnetppresultfileloader.h"
 #include "sqliteresultfileloader.h"
+#include "vectorfileindex.h"
 
 
 #ifdef THREADED

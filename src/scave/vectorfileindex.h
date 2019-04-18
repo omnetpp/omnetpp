@@ -1,5 +1,5 @@
 //=========================================================================
-//  INDEXFILE.H - part of
+//  VECTORFILEINDEX.H - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_SCAVE_INDEXFILE_H
-#define __OMNETPP_SCAVE_INDEXFILE_H
+#ifndef __OMNETPP_SCAVE_VECTORFILEINDEX_H
+#define __OMNETPP_SCAVE_VECTORFILEINDEX_H
 
 #include <cfloat>
 #include <map>
@@ -29,19 +29,6 @@ namespace omnetpp {
 namespace scave {
 
 using omnetpp::common::Statistics;
-
-/**
- * Attributes of the vector files that are stored in the index file to
- * check if it is up-to-date.
- */
-struct FingerPrint {
-    int64_t lastModified;
-    int64_t fileSize;
-
-    FingerPrint() : lastModified(0), fileSize(0) {}
-    FingerPrint(const char *vectorFileName);
-    bool check(const char *vectorFileName);
-};
 
 /**
  * Data of all vectors stored in the index file.
@@ -188,6 +175,17 @@ struct VectorFileIndex {
          * Returns the number of blocks found.
          */
         std::vector<Block>::size_type getBlocksInEventnumInterval(eventnumber_t startEventNum, eventnumber_t endEventNum, std::vector<Block>::size_type& startIndex, std::vector<Block>::size_type& endIndex) const;
+    };
+
+    /**
+     * Attributes of the vector files that are stored in the index file to
+     * check if it is up-to-date.
+     */
+    struct FingerPrint {
+        int64_t lastModified = 0;
+        int64_t fileSize = 0;
+        bool isEmpty() { return lastModified == 0 && fileSize == 0; }
+        bool operator==(const FingerPrint& other) { return other.lastModified == lastModified && other.fileSize == fileSize; }
     };
 
     std::string vectorFileName;
