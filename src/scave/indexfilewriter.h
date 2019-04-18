@@ -38,6 +38,7 @@ class SCAVE_API IndexFileWriter
 {
     using VectorInfo = VectorFileIndex::VectorInfo;
     using Block = VectorFileIndex::Block;
+    using RunData = VectorFileIndex::RunData;
 
     private:
         /** Name of the index file. */

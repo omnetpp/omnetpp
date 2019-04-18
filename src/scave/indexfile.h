@@ -30,23 +30,6 @@ namespace scave {
 
 using omnetpp::common::Statistics;
 
-
-/**
- * Run attributes written into the index file.
- */
-struct RunData {
-    std::string runName;
-    int runNumber;
-    StringMap attributes;
-    StringMap itervars;
-    OrderedKeyValueList paramAssignments;
-
-    RunData() : runNumber(0) {}
-
-    bool parseLine(char **tokens, int numTokens, const char *filename, int64_t lineNo);
-    void writeToFile(FILE *file, const char *filename) const;
-};
-
 /**
  * Attributes of the vector files that are stored in the index file to
  * check if it is up-to-date.
@@ -64,6 +47,22 @@ struct FingerPrint {
  * Data of all vectors stored in the index file.
  */
 struct VectorFileIndex {
+
+    /**
+     * Run attributes written into the index file.
+     */
+    struct RunData {
+        std::string runName;
+        int runNumber;
+        StringMap attributes;
+        StringMap itervars;
+        OrderedKeyValueList paramAssignments;
+
+        RunData() : runNumber(0) {}
+
+        bool parseLine(char **tokens, int numTokens, const char *filename, int64_t lineNo);
+        void writeToFile(FILE *file, const char *filename) const;
+    };
 
     /**
      * Data of one block stored in the index file.

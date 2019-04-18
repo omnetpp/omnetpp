@@ -42,6 +42,7 @@ class SCAVE_API IndexedVectorFileWriterNode : public Node
 {
     using VectorInfo = VectorFileIndex::VectorInfo;
     using Block = VectorFileIndex::Block;
+    using RunData = VectorFileIndex::RunData;
 
     protected:
         class VectorInputPort : public Port {

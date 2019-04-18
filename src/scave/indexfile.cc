@@ -157,7 +157,7 @@ std::vector<Block>::size_type VectorInfo::getBlocksInEventnumInterval(eventnumbe
 #endif
 #define CHECK(cond,msg) if (!(cond)) throw ResultFileFormatException(msg, filename, lineNo);
 
-bool RunData::parseLine(char **tokens, int numTokens, const char *filename, int64_t lineNo)
+bool VectorFileIndex::RunData::parseLine(char **tokens, int numTokens, const char *filename, int64_t lineNo)
 {
     if (tokens[0][0] == 'a' && strcmp(tokens[0], "attr") == 0) {
         CHECK(numTokens >= 3, "'attr <name> <value>' expected");
@@ -190,7 +190,7 @@ bool RunData::parseLine(char **tokens, int numTokens, const char *filename, int6
 #undef CHECK
 #define CHECK(fprintf)    if ((fprintf)<0) throw opp_runtime_error("Cannot write output file '%s'", filename)
 
-void RunData::writeToFile(FILE *file, const char *filename) const
+void VectorFileIndex::RunData::writeToFile(FILE *file, const char *filename) const
 {
     if (runName.size() > 0)
         CHECK(fprintf(file, "run %s\n", runName.c_str()));
