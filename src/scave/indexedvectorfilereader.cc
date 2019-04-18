@@ -23,6 +23,7 @@
 #include "channel.h"
 #include "indexedvectorfilereader.h"
 #include "indexfilereader.h"
+#include "indexfileutils.h"
 #include "scaveutils.h"
 
 using namespace omnetpp::common;

@@ -18,6 +18,7 @@
 #include "scave/fields.h"
 #include "scave/datasorter.h"
 #include "scave/indexfile.h"
+#include "scave/indexfileutils.h"
 #include "scave/commonnodes.h"
 #include "scave/indexedvectorfilereader.h"
 #include "scave/vectorfileindexer.h"
@@ -462,24 +463,8 @@ CHECK_RESULTFILE_FORMAT_EXCEPTION(DataflowManager::execute)
 } } // namespaces
 %include scave-plove.i
 
-/* ------------- indexfile.h  ----------------- */
-// %include "scave/indexfile.h"
-
-namespace omnetpp { namespace scave {
-
-%javamethodmodifiers IndexFileUtils::isIndexFileUpToDate "protected";
-
-class IndexFileUtils
-{
-    public:
-        static bool isIndexFile(const char *indexFileName);
-        static bool isExistingVectorFile(const char *vectorFileName);
-        static std::string getIndexFileName(const char *vectorFileName);
-        static std::string getVectorFileName(const char *indexFileName);
-        static bool isIndexFileUpToDate(const char *fileName);
-};
-
-} } // namespaces
+/* ------------- indexfileutils.h  ----------------- */
+%include "scave/indexfileutils.h"
 
 /* ------------- vectorfileindexer.h  ----------------- */
 namespace omnetpp { namespace scave {

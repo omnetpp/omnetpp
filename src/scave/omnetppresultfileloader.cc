@@ -39,6 +39,7 @@
 #include "common/stlutil.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "indexfile.h"
+#include "indexfileutils.h"
 #include "indexfilereader.h"
 #include "scaveutils.h"
 #include "scaveexception.h"

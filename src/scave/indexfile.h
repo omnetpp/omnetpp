@@ -231,26 +231,6 @@ public:
     }
 };
 
-/**
- * FIXME comment
- */
-class SCAVE_API IndexFileUtils
-{
-    public:
-        static bool isIndexFile(const char *indexFileName);
-        static bool isExistingVectorFile(const char *vectorFileName);
-        static std::string getIndexFileName(const char *vectorFileName);
-        static std::string getVectorFileName(const char *indexFileName);
-        /**
-         * Checks if the index file is up-to-date.
-         * The fileName is either the name of the index file or the vector file.
-         * The index file is up-to-date if the size and modification date stored in the index file
-         * is equal to the size and date of the vector file.
-         */
-        static bool isIndexFileUpToDate(const char *fileName);
-};
-
-
 } // namespace scave
 }  // namespace omnetpp
 

@@ -28,6 +28,7 @@
 #include "nodetyperegistry.h"
 #include "dataflowmanager.h"
 #include "indexfile.h"
+#include "indexfileutils.h"
 #include "vectorfilereader.h"
 #include "vectorfilewriter.h"
 #include "vectorfileindexer.h"

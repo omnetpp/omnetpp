@@ -28,6 +28,7 @@
 #include "scaveexception.h"
 #include "dataflowmanager.h"
 #include "indexfile.h"
+#include "indexfileutils.h"
 #include "indexedvectorfilewriternode.h"
 #include "nodetyperegistry.h"
 #include "vectorfileindexer.h"
