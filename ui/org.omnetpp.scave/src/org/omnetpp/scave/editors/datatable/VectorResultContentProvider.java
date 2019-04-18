@@ -12,10 +12,11 @@ import org.eclipse.jface.viewers.Viewer;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.virtualtable.IVirtualTableContentProvider;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.engine.OutputVectorEntry;
+import org.omnetpp.scave.engine.IndexedVectorFileReader;
+import org.omnetpp.scave.engine.IndexedVectorFileReader.Adapter;
 import org.omnetpp.scave.engine.ResultItem;
+import org.omnetpp.scave.engine.VectorDatum;
 import org.omnetpp.scave.engine.VectorResult;
-import org.omnetpp.scave.engineext.IndexedVectorFileReaderEx;
 import org.omnetpp.scave.model2.ResultItemRef;
 
 /**
@@ -24,36 +25,37 @@ import org.omnetpp.scave.model2.ResultItemRef;
  *
  * @author tomi
  */
-public class VectorResultContentProvider implements IVirtualTableContentProvider<OutputVectorEntry> {
+public class VectorResultContentProvider implements IVirtualTableContentProvider<VectorDatum> {
 
-    private IndexedVectorFileReaderEx reader;
+    private IndexedVectorFileReader reader;
+    int vectorId;
 
-    public OutputVectorEntry getApproximateElementAt(double percentage) {
+    public VectorDatum getApproximateElementAt(double percentage) {
         if (reader != null)
-            return reader.getEntryBySerial((int)(percentage * reader.getNumberOfEntries()));
+            return reader.getEntryBySerial(vectorId, (int)(percentage * reader.getNumberOfEntries(vectorId)));
         else
             return null;
     }
 
     public long getApproximateNumberOfElements() {
         if (reader != null)
-            return reader.getNumberOfEntries();
+            return reader.getNumberOfEntries(vectorId);
         else
             return 0;
     }
 
-    public double getApproximatePercentageForElement(OutputVectorEntry element) {
+    public double getApproximatePercentageForElement(VectorDatum element) {
         if (reader != null)
-            return ((double)element.getSerial()) / reader.getNumberOfEntries();
+            return ((double)element.getSerial()) / reader.getNumberOfEntries(vectorId);
         else
             return 0.0;
     }
 
-    public int compare(OutputVectorEntry element1, OutputVectorEntry element2) {
+    public int compare(VectorDatum element1, VectorDatum element2) {
         return element1.getSerial() - element2.getSerial();
     }
 
-    public long getDistanceToElement(OutputVectorEntry sourceElement, OutputVectorEntry targetElement, long limit) {
+    public long getDistanceToElement(VectorDatum sourceElement, VectorDatum targetElement, long limit) {
         if (reader != null) {
             long delta = targetElement.getSerial() - sourceElement.getSerial();
 
@@ -66,57 +68,57 @@ public class VectorResultContentProvider implements IVirtualTableContentProvider
             return 0;
     }
 
-    public long getDistanceToFirstElement(OutputVectorEntry element, long limit) {
+    public long getDistanceToFirstElement(VectorDatum element, long limit) {
         if (reader != null)
             return Math.min(element.getSerial(), limit);
         else
             return 0;
     }
 
-    public long getDistanceToLastElement(OutputVectorEntry element, long limit) {
+    public long getDistanceToLastElement(VectorDatum element, long limit) {
         if (reader != null) {
-            int lastSerial = reader.getNumberOfEntries() - 1;
+            int lastSerial = reader.getNumberOfEntries(vectorId) - 1;
             return Math.min(lastSerial - element.getSerial(), limit);
         }
         else
             return 0;
     }
 
-    public OutputVectorEntry getFirstElement() {
+    public VectorDatum getFirstElement() {
         if (reader != null)
-            return reader.getEntryBySerial(0);
+            return reader.getEntryBySerial(vectorId, 0);
         else
             return null;
     }
 
-    public OutputVectorEntry getLastElement() {
+    public VectorDatum getLastElement() {
         if (reader != null)
-            return reader.getEntryBySerial(reader.getNumberOfEntries() - 1);
+            return reader.getEntryBySerial(vectorId, reader.getNumberOfEntries(vectorId) - 1);
         else
             return null;
     }
 
-    public OutputVectorEntry getNeighbourElement(OutputVectorEntry element, long distance) {
+    public VectorDatum getNeighbourElement(VectorDatum element, long distance) {
         if (reader != null)
-            return reader.getEntryBySerial((int)(element.getSerial() + distance));
+            return reader.getEntryBySerial(vectorId, (int)(element.getSerial() + distance));
         else
             return null;
     }
 
-    public OutputVectorEntry getClosestElement(OutputVectorEntry element) {
+    public VectorDatum getClosestElement(VectorDatum element) {
         return element;
     }
 
-    public OutputVectorEntry getElementBySerial(int serial) {
-        return reader != null ? reader.getEntryBySerial(serial) : null;
+    public VectorDatum getElementBySerial(int serial) {
+        return reader != null ? reader.getEntryBySerial(vectorId, serial) : null;
     }
 
-    public OutputVectorEntry getElementBySimulationTime(BigDecimal time, boolean after) {
-        return reader != null ? reader.getEntryBySimtime(time, after) : null;
+    public VectorDatum getElementBySimulationTime(BigDecimal time, boolean after) {
+        return reader != null ? reader.getEntryBySimtime(vectorId, time, after) : null;
     }
 
-    public OutputVectorEntry getElementByEventNumber(long eventNumber, boolean after) {
-        return reader != null ? reader.getEntryByEventnum(eventNumber, after) : null;
+    public VectorDatum getElementByEventNumber(long eventNumber, boolean after) {
+        return reader != null ? reader.getEntryByEventnum(vectorId, eventNumber, after) : null;
     }
 
     public void dispose() {
@@ -139,11 +141,11 @@ public class VectorResultContentProvider implements IVirtualTableContentProvider
             ResultItem item = ((ResultItemRef)newInput).resolve();
             if (item instanceof VectorResult) {
                 VectorResult vector = (VectorResult)item;
-                int vectorId = vector.getVectorId();
+                vectorId = vector.getVectorId();
                 String filename = vector.getFileRun().getFile().getFileSystemFilePath();
 
                 try {
-                    reader = new IndexedVectorFileReaderEx(filename, vectorId);
+                    reader = new IndexedVectorFileReader(filename, (Adapter)null);
                 }
                 catch (Exception e) {
                     ScavePlugin.logError("Cannot open index file: "+filename, e);

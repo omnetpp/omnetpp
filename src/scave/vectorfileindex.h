@@ -197,33 +197,28 @@ private:
 
 public:
 
-    int getNumberOfVectors() const
-    {
-        return vectors.size();
-    }
-
     Block *addBlock(const Block &block) { blocks.push_back(block); return &blocks.back(); }
 
-    void addVector(const VectorInfo& vector)
-    {
+    const std::vector<Block>& getBlocks() const { return blocks; }
+
+    int getNumberOfVectors() const { return vectors.size(); }
+
+    void addVector(const VectorInfo& vector) {
         map[vector.vectorId] = vectors.size();
         vectors.push_back(vector);
     }
 
-    const VectorInfo *getVectorAt(int index) const
-    {
+    const VectorInfo *getVectorAt(int index) const {
         Assert(0 <= index && index < (int)vectors.size());
         return& vectors[index];
     }
 
-    VectorInfo *getVectorAt(int index)
-    {
+    VectorInfo *getVectorAt(int index) {
         Assert(0 <= index && index < (int)vectors.size());
         return& vectors[index];
     }
 
-    VectorInfo *getVectorById(int vectorId)
-    {
+    VectorInfo *getVectorById(int vectorId) {
         VectorIdToIndexMap::const_iterator entry = map.find(vectorId);
         return entry!=map.end() ? getVectorAt(entry->second) : nullptr;
     }

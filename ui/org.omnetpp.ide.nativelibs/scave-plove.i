@@ -71,8 +71,6 @@ class Node
 
 %ignore DataflowManager::addNode; // it's included in NodeType::create()
 
-%ignore XYArray::XYArray;
-
 %ignore NodeTypeRegistry::parseFilterSpec;
 
 } } // namespaces

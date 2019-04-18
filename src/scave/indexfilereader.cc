@@ -156,6 +156,7 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
         CHECK(vector, "missing vector definition", lineNum);
 
         Block block;
+        block.vectorId = id;
         block.startSerial = !vector->blocks.empty() ? vector->blocks.back()->endSerial() : 0;
         int i = 1;  // column index
         CHECK(parseInt64(tokens[i++], block.startOffset), "invalid file offset", lineNum);

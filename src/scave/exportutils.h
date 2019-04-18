@@ -43,7 +43,7 @@ T translateOptionValue(const std::map<std::string,T>& mapping, const std::string
 /**
  * Read the VectorResult items in the IDList into the XYArrays.
  */
-SCAVE_API std::vector<XYArray*> readVectorsIntoArrays(ResultFileManager *manager, const IDList& idlist, const std::vector<std::string>& filters);
+SCAVE_API std::vector<XYArray*> readVectorsIntoArrays(ResultFileManager *manager, const IDList& idlist, const std::vector<std::string>& filters = {});
 
 /**
  * Save the given table into CSV.

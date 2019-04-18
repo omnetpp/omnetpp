@@ -15,6 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <set>
 #include "common/opp_ctype.h"
 #include "common/commonutil.h"
 #include "common/stringutil.h"
@@ -22,6 +23,7 @@
 #include "scaveutils.h"
 #include "xyarray.h"
 #include "resultfilemanager.h"
+#include "indexedvectorfilereader.h"
 #include "datasorter.h"
 #include "datatable.h"
 #include "dataflowmanager.h"
@@ -38,66 +40,77 @@
 using namespace std;
 
 namespace omnetpp {
+using namespace common;
 namespace scave {
 
 typedef DataTable::Column Column;  // shorthand
 
-vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList& idlist, const vector<string>& filters)
+XYArray *convertVectorData(const std::vector<VectorDatum>& data)
 {
-    // TODO DELETE
-    DataflowManager dataflowManager;
-    string opt_readerNodeType = "vectorreaderbyfiletype";
-    NodeTypeRegistry *registry = NodeTypeRegistry::getInstance();
-    NodeType *readerNodeType = registry->getNodeType(opt_readerNodeType.c_str());
-    if (!readerNodeType)
-        throw opp_runtime_error("Unknown node type '%s'", opt_readerNodeType.c_str());
+    int l = data.size();
+
+    double* xv = new double[l];
+    double* yv = new double[l];
+    BigDecimal* xpv = new BigDecimal[l];
+    eventnumber_t* ev = new eventnumber_t[l];
+
+    for (int i = 0; i < data.size(); ++i) {
+        const VectorDatum &vd = data[i];
+        xv[i] = vd.simtime.dbl();
+        yv[i] = vd.value;
+        xpv[i] = vd.simtime;
+        ev[i] = vd.eventNumber;
+    }
+
+    return new XYArray(l, xv, yv, xpv, ev);
+}
+
+vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList& idlist, const std::vector<std::string>& filters)
+{
+    if (!filters.empty())
+        throw opp_runtime_error("Vector filters not supported.");
+
+    std::vector<std::vector<VectorDatum>> result;
+    result.resize(idlist.size());
+
     ResultFileList *filteredVectorFileList = manager->getUniqueFiles(idlist);
-    map<ResultFile *, Node *> vectorFileReaders;
+
     StringMap attrs;
     for (int i = 0; i < (int)filteredVectorFileList->size(); i++) {
         ResultFile *resultFile = filteredVectorFileList->at(i);
-        attrs["filename"] = resultFile->getFileSystemFilePath();
-        attrs["allowindexing"] = "true";
-        Node *readerNode = readerNodeType->create(&dataflowManager, attrs);
-        vectorFileReaders[resultFile] = readerNode;
-    }
-    delete filteredVectorFileList;
 
-    vector<ArrayBuilderNode *> arrayBuilders;  // for exporting
+        std::vector<int> vectorIds; // local to each file
+        RunList runs = manager->getRunsInFile(resultFile);
 
-    for (int i = 0; i < idlist.size(); i++) {
-        // create a port for each vector on its reader node
-        char portName[30];
-        const VectorResult& vector = manager->getVector(idlist.get(i));
-        Assert(vectorFileReaders.find(vector.getFile()) != vectorFileReaders.end());
-        sprintf(portName, "%d", vector.getVectorId());
-        Node *readerNode = vectorFileReaders[vector.getFile()];
-        Port *outPort = readerNodeType->getPort(readerNode, portName);
+        if (runs.size() > 1)
+            throw opp_runtime_error("More than one run in vector file.");
 
-        // add filters
-        for (int k = 0; k < (int)filters.size(); k++) {
-            // TODO support filter to merge all into a single vector
-            Node *node = registry->createNode(filters[k].c_str(), &dataflowManager);
-            FilterNode *filterNode = dynamic_cast<FilterNode *>(node);
-            if (!filterNode)
-                throw opp_runtime_error("'%s' is not a filter node", filters[k].c_str());
-            dataflowManager.connect(outPort, &(filterNode->in));
-            outPort = &(filterNode->out);
+        assert(runs.size() == 1);
+
+        IDList idsInFile = manager->filterIDList(idlist, runs[0], nullptr, nullptr);
+
+        std::set<int> vectorIdsInFile;
+        std::map<int, int> vectorIdToIndex;
+
+        for (long id : idsInFile) {
+            int vectorID = manager->getVector(id).getVectorId();
+            vectorIdsInFile.insert(vectorID);
+            vectorIdToIndex[vectorID] = idlist.indexOf(id);
         }
 
-        // create writer node(s) and connect them
-        ArrayBuilderNode *arrayBuilderNode = new ArrayBuilderNode();
-        dataflowManager.addNode(arrayBuilderNode);
-        dataflowManager.connect(outPort, &(arrayBuilderNode->in));
-        arrayBuilders.push_back(arrayBuilderNode);
+        auto adapter = [&result, &vectorIdToIndex](int vectorId, const std::vector<VectorDatum>& data) {
+            addAll(result[vectorIdToIndex.at(vectorId)], data);
+        };
+
+        IndexedVectorFileReader reader(resultFile->getFileSystemFilePath().c_str(), adapter);
+        reader.collectEntries(vectorIdsInFile);
     }
 
-    // run!
-    dataflowManager.execute();
-
     vector<XYArray *> xyArrays;
-    for (int i = 0; i < idlist.size(); i++)
-        xyArrays.push_back(arrayBuilders[i]->getArray());
+    for (int i = 0; i < idlist.size(); i++) {
+        xyArrays.push_back(convertVectorData(result[i]));
+        result[i].clear();
+    }
 
     return xyArrays;
 }

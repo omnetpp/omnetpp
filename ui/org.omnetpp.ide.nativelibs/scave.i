@@ -16,6 +16,7 @@
 #include "scave/idlist.h"
 #include "scave/resultfilemanager.h"
 #include "scave/fields.h"
+#include "scave/exportutils.h"
 #include "scave/datasorter.h"
 #include "scave/vectorfileindex.h"
 #include "scave/indexfileutils.h"
@@ -474,25 +475,26 @@ CHECK_RESULTFILE_FORMAT_EXCEPTION(VectorFileIndexer::generateIndex)
 %include "scave/vectorfileindexer.h"
 
 /* ------------- indexedvectorfilereader.h  ----------------- */
-%typemap(javainterfaces) omnetpp::scave::OutputVectorEntry "Comparable<OutputVectorEntry>"
+%typemap(javainterfaces) omnetpp::scave::VectorDatum "Comparable<VectorDatum>"
 
-%typemap(javacode) omnetpp::scave::OutputVectorEntry %{
+%typemap(javacode) omnetpp::scave::VectorDatum %{
    public boolean equals(Object obj) {
-      return (obj instanceof OutputVectorEntry) && getSerial() == ((OutputVectorEntry)obj).getSerial();
+      return (obj instanceof VectorDatum) && getSerial() == ((VectorDatum)obj).getSerial();
    }
 
    public int hashCode() {
       return getSerial();
    }
 
-   public int compareTo(OutputVectorEntry o) {
+   public int compareTo(VectorDatum o) {
       return getSerial() - o.getSerial();
    }
 %}
 
 namespace omnetpp { namespace scave {
 
-%template(EntryVector) ::std::vector<omnetpp::scave::OutputVectorEntry>;
+%template(EntryVector) ::std::vector<omnetpp::scave::VectorDatum>;
+%template(XYArrayVector) ::std::vector<omnetpp::scave::XYArray*>;
 
 %ignore IndexedVectorFileWriterNode;
 %ignore IndexedVectorFileWriterNodeType;
@@ -618,6 +620,8 @@ namespace omnetpp { namespace scave {
 
 %include "scave/exporter.h"
 
+/* ------------------ exportutils.h ----------------------- */
+%include "scave/exportutils.h"
 
 /* ------------------ sqliteresultfileutils.h ----------------------- */
 namespace omnetpp { namespace scave {

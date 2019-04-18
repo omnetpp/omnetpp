@@ -36,6 +36,7 @@ class SCAVE_API XYArray
         eventnumber_t *evec; // event numbers
     public:
         XYArray(int l, double *xv, double *yv, BigDecimal *xpv = nullptr, eventnumber_t *ev = nullptr) {len = l; x = xv; y = yv; xp = xpv; evec = ev;}
+        XYArray(int l, bool precise, bool eventnum) {len = l; x = new double[l]; y = new double[l]; xp = precise ? new BigDecimal[l] : nullptr; evec = eventnum ? new eventnumber_t[l] : nullptr;}
         ~XYArray() {delete [] x; delete [] y; delete [] xp; delete [] evec;}
         bool hasPreciseX() const  {return xp != nullptr;}
         bool hasEventNumbers() const  {return evec != nullptr;}

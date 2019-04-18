@@ -20,6 +20,7 @@
 #include <string>
 #include "common/progressmonitor.h"
 #include "resultfilemanager.h"
+#include "vectorfileindex.h"
 
 namespace omnetpp {
 namespace scave {
@@ -29,7 +30,6 @@ namespace scave {
  */
 class SCAVE_API VectorFileIndexer
 {
-
     using VectorInfo = VectorFileIndex::VectorInfo;
     using Block = VectorFileIndex::Block;
 

@@ -45,7 +45,7 @@ import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.VectorResultContentProvider;
 import org.omnetpp.scave.editors.datatable.VectorResultRowRenderer;
-import org.omnetpp.scave.engine.OutputVectorEntry;
+import org.omnetpp.scave.engine.VectorDatum;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engineext.IndexFileUtils;
@@ -62,7 +62,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
     public static final String ID = "org.omnetpp.scave.VectorBrowserView";
 
     protected TableColumn eventNumberColumn;
-    protected VirtualTable<OutputVectorEntry> viewer;
+    protected VirtualTable<VectorDatum> viewer;
     protected ISelectionListener selectionChangedListener;
     protected IPartListener partListener;
     protected IWorkbenchPart activePart;
@@ -84,7 +84,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
     @Override
     protected Control createViewControl(final Composite parent) {
         contentProvider = new VectorResultContentProvider();
-        viewer = new VirtualTable<OutputVectorEntry>(parent, SWT.NONE);
+        viewer = new VirtualTable<VectorDatum>(parent, SWT.NONE);
         viewer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         viewer.setContentProvider(contentProvider);
         viewer.setRowRenderer(new VectorResultRowRenderer());
@@ -133,19 +133,19 @@ public class VectorBrowserView extends ViewWithMessagePart {
     }
 
     public void gotoLine(int lineNumber) {
-        OutputVectorEntry entry = contentProvider.getElementBySerial(lineNumber);
+        VectorDatum entry = contentProvider.getElementBySerial(lineNumber);
         if (entry != null)
             viewer.gotoElement(entry);
     }
 
     public void gotoEvent(long eventNumber) {
-        OutputVectorEntry entry = contentProvider.getElementByEventNumber(eventNumber, true);
+        VectorDatum entry = contentProvider.getElementByEventNumber(eventNumber, true);
         if (entry != null)
             viewer.gotoElement(entry);
     }
 
     public void gotoTime(BigDecimal time) {
-        OutputVectorEntry entry = contentProvider.getElementBySimulationTime(time, true);
+        VectorDatum entry = contentProvider.getElementBySimulationTime(time, true);
         if (entry != null)
             viewer.gotoElement(entry);
     }

@@ -19,6 +19,7 @@
 #include "common/exception.h"
 #include "common/linetokenizer.h"
 #include "common/stringutil.h"
+#include "common/stlutil.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "channel.h"
 #include "indexedvectorfilereader.h"
@@ -35,23 +36,17 @@ namespace scave {
 
 //=========================================================================
 
-IndexedVectorFileReader::IndexedVectorFileReader(const char *filename, int vectorId)
-    : fname(filename), index(nullptr), vector(nullptr), currentBlock(nullptr)
+IndexedVectorFileReader::IndexedVectorFileReader(const char *filename, AdapterLambdaType adapterLambda)
+    : adapterLambda(adapterLambda), fname(filename), index(nullptr)
 {
     std::string ifname = IndexFileUtils::getIndexFileName(filename);
     IndexFileReader indexReader(ifname.c_str());
-    index = indexReader.readAll();  // XXX do not read whole index
-    vector = index->getVectorById(vectorId);
-
-    if (!vector)
-        throw opp_runtime_error("Vector with vectorId %d not found in file '%s'",
-                vectorId, filename);
+    index = indexReader.readAll();
 }
 
 IndexedVectorFileReader::~IndexedVectorFileReader()
 {
-    if (index != nullptr)
-        delete index;
+    delete index;
 }
 
 // see filemgrs.h
@@ -67,15 +62,11 @@ IndexedVectorFileReader::~IndexedVectorFileReader()
                                         msg, fname.c_str(), (int64_t)block.startOffset, line);\
             }
 
-void IndexedVectorFileReader::loadBlock(const Block& block)
+Entries IndexedVectorFileReader::loadBlock(const Block& block, std::function<bool(const VectorDatum&)> filter)
 {
-    if (currentBlock == &block)
-        return;
+    std::vector<VectorDatum> result;
 
-    if (currentBlock != nullptr) {
-        currentBlock = nullptr;
-        currentEntries.clear();
-    }
+    VectorInfo *vector = index->getVectorById(block.vectorId);
 
     size_t bufferSize = vector->blockSize;
     if (bufferSize < MIN_BUFFER_SIZE)
@@ -84,7 +75,8 @@ void IndexedVectorFileReader::loadBlock(const Block& block)
 
     long count = block.getCount();
     reader.seekTo(block.startOffset);
-    currentEntries.resize(count);
+
+    result.reserve(count);
 
     char *line, **tokens;
     int numTokens;
@@ -105,7 +97,7 @@ void IndexedVectorFileReader::loadBlock(const Block& block)
         CHECK(numTokens >= (int)columns.size() + 1, "Line is too short", block, i);
         CHECK(parseInt(tokens[0], id) && id == vector->vectorId, "Missing or unexpected vector id", block, i);
 
-        OutputVectorEntry& entry = currentEntries[i];
+        VectorDatum entry;
         entry.serial = block.startSerial+i;
         for (int j = 0; j < columnsNo; ++j) {
             switch (columns[j]) {
@@ -115,110 +107,136 @@ void IndexedVectorFileReader::loadBlock(const Block& block)
                 default: CHECK(false, "Unknown column", block, i); break;
             }
         }
-    }
 
-    currentBlock = &block;
+        if (!filter || filter(entry))
+            result.push_back(entry);
+    }
+    return result;
 }
 
-OutputVectorEntry *IndexedVectorFileReader::getEntryBySerial(long serial)
+VectorDatum *IndexedVectorFileReader::getEntryBySerial(int vectorId, long serial)
 {
-    if (serial < 0 || serial >= vector->getCount())
+    VectorInfo *vector = index->getVectorById(vectorId);
+    if (!vector)
         return nullptr;
 
-    if (currentBlock == nullptr || !currentBlock->contains(serial)) {
-        loadBlock(*(vector->getBlockBySerial(serial)));
-    }
+    const Block *block = vector->getBlockBySerial(serial);
+    if (!block)
+        return nullptr;
 
-    return &currentEntries.at(serial - currentBlock->startSerial);
+    Entries data = loadBlock(*block);
+
+    return new VectorDatum(data.at(serial - block->startSerial));
 }
 
-OutputVectorEntry *IndexedVectorFileReader::getEntryBySimtime(simultime_t simtime, bool after)
+VectorDatum *IndexedVectorFileReader::getEntryBySimtime(int vectorId, simultime_t simtime, bool after)
 {
+    VectorInfo *vector = index->getVectorById(vectorId);
+    if (!vector)
+        return nullptr;
+
     const Block *block = vector->getBlockBySimtime(simtime, after);
-    if (block) {
-        loadBlock(*block);
-        if (after) {
-            for (Entries::iterator it = currentEntries.begin(); it != currentEntries.end(); ++it)  // FIXME: binary search
-                if (it->simtime >= simtime)
-                    return &(*it);
+    if (!block)
+        return nullptr;
 
-        }
-        else {
-            for (Entries::reverse_iterator it = currentEntries.rbegin(); it != currentEntries.rend(); ++it)  // FIXME: binary search
-                if (it->simtime <= simtime)
-                    return &(*it);
+    Entries data = loadBlock(*block);
 
-        }
+    VectorDatum datumToFind;
+    datumToFind.simtime = simtime;
+
+    if (after) {
+        auto first = std::lower_bound(data.begin(), data.end(), datumToFind, [](const VectorDatum &a, const VectorDatum &b) { return a.simtime < b.simtime; } );
+        return first != data.end() ? new VectorDatum(*first) : nullptr;
     }
-    return nullptr;
+    else {
+        auto last = std::lower_bound(data.rbegin(), data.rend(), datumToFind, [](const VectorDatum &a, const VectorDatum &b) { return a.simtime > b.simtime; });
+        return last != data.rend() ? new VectorDatum(*last) : nullptr;
+    }
 }
 
-OutputVectorEntry *IndexedVectorFileReader::getEntryByEventnum(eventnumber_t eventNum, bool after)
+VectorDatum *IndexedVectorFileReader::getEntryByEventnum(int vectorId, eventnumber_t eventNum, bool after)
 {
+    VectorInfo *vector = index->getVectorById(vectorId);
+    if (!vector)
+        return nullptr;
+
     const Block *block = vector->getBlockByEventnum(eventNum, after);
-    if (block) {
-        loadBlock(*block);
-        if (after) {
-            for (Entries::iterator it = currentEntries.begin(); it != currentEntries.end(); ++it)  // FIXME: binary search
-                if (it->eventNumber >= eventNum)
-                    return &(*it);
+    if (!block)
+        return nullptr;
 
-        }
-        else {
-            for (Entries::reverse_iterator it = currentEntries.rbegin(); it != currentEntries.rend(); ++it)  // FIXME: binary search
-                if (it->eventNumber <= eventNum)
-                    return &(*it);
+    Entries data = loadBlock(*block);
 
-        }
+    VectorDatum datumToFind;
+    datumToFind.eventNumber = eventNum;
+
+    if (after) {
+        auto first = std::lower_bound(data.begin(), data.end(), datumToFind, [](const VectorDatum &a, const VectorDatum &b) { return a.eventNumber < b.eventNumber; } );
+        return first != data.end() ? new VectorDatum(*first) : nullptr;
     }
-    return nullptr;
+    else {
+        auto last = std::lower_bound(data.rbegin(), data.rend(), datumToFind, [](const VectorDatum &a, const VectorDatum &b) { return a.eventNumber > b.eventNumber; });
+        return last != data.rend() ? new VectorDatum(*last) : nullptr;
+    }
 }
 
-long IndexedVectorFileReader::collectEntriesInSimtimeInterval(simultime_t startTime, simultime_t endTime, Entries& out)
+void IndexedVectorFileReader::collectEntries(const std::set<int>& vectorIds)
 {
-    std::vector<Block>::size_type startIndex;
-    std::vector<Block>::size_type endIndex;
-    vector->getBlocksInSimtimeInterval(startTime, endTime,  /*out*/ startIndex,  /*out*/ endIndex);
-
-    Entries::size_type count = 0;
-    for (std::vector<Block>::size_type i = startIndex; i < endIndex; i++) {
-        const Block& block = *(vector->blocks[i]);
-        loadBlock(block);
-        for (long j = 0; j < block.getCount(); ++j) {
-            OutputVectorEntry& entry = currentEntries[j];
-            if (startTime <= entry.simtime && entry.simtime <= endTime) {
-                out.push_back(entry);
-                count++;
-            }
-            else if (entry.simtime > endTime)
-                break;
+    for (const auto &block : index->getBlocks()) {
+        if (contains(vectorIds, block.vectorId)) {
+            std::vector<VectorDatum> data = loadBlock(block);
+            adapterLambda(block.vectorId, data);
         }
     }
-    return count;
 }
 
-long IndexedVectorFileReader::collectEntriesInEventnumInterval(eventnumber_t startEventNum, eventnumber_t endEventNum, Entries& out)
+void IndexedVectorFileReader::collectEntriesInSimtimeInterval(const std::set<int>& vectorIds, simultime_t startTime, simultime_t endTime)
 {
-    std::vector<Block>::size_type startIndex;
-    std::vector<Block>::size_type endIndex;
-    vector->getBlocksInEventnumInterval(startEventNum, endEventNum,  /*out*/ startIndex,  /*out*/ endIndex);
-
-    Entries::size_type count = 0;
-    for (std::vector<Block>::size_type i = startIndex; i < endIndex; i++) {
-        const Block& block = *(vector->blocks[i]);
-        loadBlock(block);
-
-        for (long j = 0; j < block.getCount(); ++j) {
-            OutputVectorEntry& entry = currentEntries[j];
-            if (startEventNum <= entry.eventNumber && entry.eventNumber <= endEventNum) {
-                out.push_back(entry);
-                count++;
+    for (const auto &block : index->getBlocks()) {
+        if (contains(vectorIds, block.vectorId)) {
+            if (block.endTime < startTime || block.startTime >= endTime) {
+                // no-op, block is completely out of filtered range
             }
-            else if (entry.eventNumber > endEventNum)
-                break;
+            else if (block.startTime >= startTime && block.endTime < endTime) {
+                // no need for filter, completely in range
+                std::vector<VectorDatum> data = loadBlock(block);
+                adapterLambda(block.vectorId, data);
+            }
+            else {
+                // block is partially in range
+                auto filter = [startTime, endTime](const VectorDatum& datum) -> bool {
+                    return datum.simtime >= startTime && datum.simtime < endTime;
+                };
+
+                std::vector<VectorDatum> data = loadBlock(block, filter);
+                adapterLambda(block.vectorId, data);
+            }
         }
     }
-    return count;
+}
+
+void IndexedVectorFileReader::collectEntriesInEventnumInterval(const std::set<int>& vectorIds, eventnumber_t startEventNum, eventnumber_t endEventNum)
+{
+    for (const auto &block : index->getBlocks()) {
+        if (contains(vectorIds, block.vectorId)) {
+            if (block.endEventNum < startEventNum || block.startEventNum >= endEventNum) {
+                // no-op, block is completely out of filtered range
+            }
+            else if (block.startEventNum >= startEventNum && block.endEventNum < endEventNum) {
+                // no need for filter, completely in range
+                std::vector<VectorDatum> data = loadBlock(block);
+                adapterLambda(block.vectorId, data);
+            }
+            else {
+                // block is partially in range
+                auto filter = [startEventNum, endEventNum](const VectorDatum& datum) -> bool {
+                    return datum.eventNumber >= startEventNum && datum.eventNumber < endEventNum;
+                };
+
+                std::vector<VectorDatum> data = loadBlock(block, filter);
+                adapterLambda(block.vectorId, data);
+            }
+        }
+    }
 }
 
 

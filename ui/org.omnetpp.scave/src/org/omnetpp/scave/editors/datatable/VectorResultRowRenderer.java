@@ -23,7 +23,7 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.virtualtable.IVirtualTableRowRenderer;
 import org.omnetpp.scave.engine.EnumType;
-import org.omnetpp.scave.engine.OutputVectorEntry;
+import org.omnetpp.scave.engine.VectorDatum;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ResultItem.DataType;
 import org.omnetpp.scave.model2.ResultItemRef;
@@ -35,7 +35,7 @@ import org.omnetpp.scave.model2.ResultItemValueFormatter;
  *
  * @author tomi
  */
-public class VectorResultRowRenderer extends LabelProvider implements IVirtualTableRowRenderer<OutputVectorEntry> {
+public class VectorResultRowRenderer extends LabelProvider implements IVirtualTableRowRenderer<VectorDatum> {
 
     private static final int HORIZONTAL_SPACING = 4;
 
@@ -68,7 +68,7 @@ public class VectorResultRowRenderer extends LabelProvider implements IVirtualTa
         return fontHeight + 3;
     }
 
-    public void drawCell(GC gc, OutputVectorEntry entry, int index, boolean isSelected) {
+    public void drawCell(GC gc, VectorDatum entry, int index, boolean isSelected) {
         if (isSelected) {
             gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
             gc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION));
@@ -91,22 +91,22 @@ public class VectorResultRowRenderer extends LabelProvider implements IVirtualTa
         textLayout.dispose();
     }
 
-    public String getTooltipText(OutputVectorEntry element) {
+    public String getTooltipText(VectorDatum element) {
         return null;
     }
 
     @Override
-    public int getIndentation(OutputVectorEntry element, int index) {
+    public int getIndentation(VectorDatum element, int index) {
         return HORIZONTAL_SPACING;
     }
 
     @Override
-    public Image getImage(OutputVectorEntry element, int index) {
+    public Image getImage(VectorDatum element, int index) {
         return null;
     }
 
     @Override
-    public StyledString getStyledText(OutputVectorEntry element, int index, boolean isSelected) {
+    public StyledString getStyledText(VectorDatum element, int index, boolean isSelected) {
         String text = null;
         switch (index) {
         case 0:
