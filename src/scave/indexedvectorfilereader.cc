@@ -182,7 +182,7 @@ long IndexedVectorFileReader::collectEntriesInSimtimeInterval(simultime_t startT
 
     Entries::size_type count = 0;
     for (std::vector<Block>::size_type i = startIndex; i < endIndex; i++) {
-        const Block& block = vector->blocks[i];
+        const Block& block = *(vector->blocks[i]);
         loadBlock(block);
         for (long j = 0; j < block.getCount(); ++j) {
             OutputVectorEntry& entry = currentEntries[j];
@@ -205,7 +205,7 @@ long IndexedVectorFileReader::collectEntriesInEventnumInterval(eventnumber_t sta
 
     Entries::size_type count = 0;
     for (std::vector<Block>::size_type i = startIndex; i < endIndex; i++) {
-        const Block& block = vector->blocks[i];
+        const Block& block = *(vector->blocks[i]);
         loadBlock(block);
 
         for (long j = 0; j < block.getCount(); ++j) {

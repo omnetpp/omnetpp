@@ -118,25 +118,25 @@ void IndexFileWriter::writeVectorAttributes(const VectorInfo& vector)
     }
 }
 
-void IndexFileWriter::writeBlock(const VectorInfo& vector, const Block& block)
+void IndexFileWriter::writeBlock(const VectorInfo& vector, const Block *block)
 {
     static char buff1[64], buff2[64];
     char *e;
 
-    if (block.getCount() > 0) {
-        CHECK(fprintf(file, "%d\t%" PRId64 " %" PRId64, vector.vectorId, (int64_t)block.startOffset, (int64_t)block.size));
+    if (block->getCount() > 0) {
+        CHECK(fprintf(file, "%d\t%" PRId64 " %" PRId64, vector.vectorId, (int64_t)block->startOffset, (int64_t)block->size));
         if (vector.hasColumn('E')) {
-            CHECK(fprintf(file, " %" PRId64 " %" PRId64, block.startEventNum, block.endEventNum));
+            CHECK(fprintf(file, " %" PRId64 " %" PRId64, block->startEventNum, block->endEventNum));
         }
         if (vector.hasColumn('T')) {
             CHECK(fprintf(file, " %s %s",
-                            BigDecimal::ttoa(buff1, block.startTime, e),
-                            BigDecimal::ttoa(buff2, block.endTime, e)));
+                            BigDecimal::ttoa(buff1, block->startTime, e),
+                            BigDecimal::ttoa(buff2, block->endTime, e)));
         }
         if (vector.hasColumn('V')) {
-            const Statistics& stat = block.stat;
+            const Statistics& stat = block->stat;
             CHECK(fprintf(file, " %ld %.*g %.*g %.*g %.*g",
-                            block.getCount(), precision, stat.getMin(), precision, stat.getMax(),
+                            block->getCount(), precision, stat.getMin(), precision, stat.getMax(),
                             precision, stat.getSum(), precision, stat.getSumSqr()));
         }
         CHECK(fprintf(file, "\n"));

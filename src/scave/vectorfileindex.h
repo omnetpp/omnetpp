@@ -55,17 +55,15 @@ struct VectorFileIndex {
      * Data of one block stored in the index file.
      */
     struct Block {
-        file_offset_t startOffset;
-        int64_t size;
-        long startSerial;
-        eventnumber_t startEventNum;
-        eventnumber_t endEventNum;
-        simultime_t startTime;
-        simultime_t endTime;
+        int vectorId = -1;
+        file_offset_t startOffset = -1;
+        int64_t size = 0;
+        long startSerial = -1;
+        eventnumber_t startEventNum = -1;
+        eventnumber_t endEventNum = -1;
+        simultime_t startTime = 0.0;
+        simultime_t endTime = 0.0;
         Statistics stat;
-
-        Block() : startOffset(-1), size(0), startSerial(-1), startEventNum(-1), endEventNum(-1),
-            startTime(0.0), endTime(0.0) {}
 
         long getCount() const { return stat.getCount(); }
 
@@ -102,7 +100,7 @@ struct VectorFileIndex {
         simultime_t startTime;
         simultime_t endTime;
         Statistics stat;
-        std::vector<Block> blocks;
+        std::vector<Block *> blocks; // points into the block list of the index
 
         /**
          * Creates an index entry for a vector.
@@ -121,21 +119,21 @@ struct VectorFileIndex {
         /**
          * Adds the block statistics to the vector statistics.
          */
-        void collect(const Block& block)
+        void collect(const Block *block)
         {
             if (getCount() == 0)
             {
-                startEventNum = block.startEventNum;
-                startTime = block.startTime;
+                startEventNum = block->startEventNum;
+                startTime = block->startTime;
             }
-            endEventNum = block.endEventNum;
-            endTime = block.endTime;
-            stat.adjoin(block.stat);
-            if (block.size > blockSize)
-                blockSize = block.size;
+            endEventNum = block->endEventNum;
+            endTime = block->endTime;
+            stat.adjoin(block->stat);
+            if (block->size > blockSize)
+                blockSize = block->size;
         }
 
-        void addBlock(const Block& block) { blocks.push_back(block); collect(block); }
+        void addBlock(Block *block) { blocks.push_back(block); collect(block); }
 
         /**
          * Returns true if the vector contains the specified column.
@@ -195,6 +193,7 @@ private:
     std::vector<VectorInfo> vectors;
     typedef std::map<int,int> VectorIdToIndexMap;
     VectorIdToIndexMap map; // maps vectorId to index in the vectors array
+    std::vector<Block> blocks; // all the blocks in the vector file
 
 public:
 
@@ -202,6 +201,8 @@ public:
     {
         return vectors.size();
     }
+
+    Block *addBlock(const Block &block) { blocks.push_back(block); return &blocks.back(); }
 
     void addVector(const VectorInfo& vector)
     {

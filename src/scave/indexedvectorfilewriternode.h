@@ -56,7 +56,7 @@ class SCAVE_API IndexedVectorFileWriterNode : public Node
 
             VectorInputPort(int id, std::string moduleName, std::string name, std::string columns, int bufferSize, Node *owner)
                 : Port(owner), vector(id, moduleName, name, columns, bufferSize), finished(false)
-                { this->allocateBuffer(bufferSize); vector.blocks.push_back(Block()); }
+                { this->allocateBuffer(bufferSize); vector.blocks.push_back(new Block()); } // TODO what is this? a sentinel object?
             ~VectorInputPort() { if (buffer) delete[] buffer; }
 
             void allocateBuffer(int size) { buffer=new char[size]; bufferSize=size; clearBuffer(); }

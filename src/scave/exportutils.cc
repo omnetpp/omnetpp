@@ -44,6 +44,7 @@ typedef DataTable::Column Column;  // shorthand
 
 vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList& idlist, const vector<string>& filters)
 {
+    // TODO DELETE
     DataflowManager dataflowManager;
     string opt_readerNodeType = "vectorreaderbyfiletype";
     NodeTypeRegistry *registry = NodeTypeRegistry::getInstance();

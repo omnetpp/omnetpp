@@ -179,7 +179,7 @@ void IndexedVectorFileWriterNode::writeRecordsToBuffer(VectorInputPort *port)
             else
                 bufferPrintf(port, "%d\t%s\t%.*g\n", vectorId, BigDecimal::ttoa(buf, a.xp, endp), prec, a.y);
             port->bufferNumOfRecords++;
-            port->vector.blocks.back().collect(-1, a.x, a.y);
+            port->vector.blocks.back()->collect(-1, a.x, a.y);
         }
     }
     else if (colno == 3 && columns[0] == 'E' && columns[1] == 'T' && columns[2] == 'V') {
@@ -192,7 +192,7 @@ void IndexedVectorFileWriterNode::writeRecordsToBuffer(VectorInputPort *port)
             else
                 bufferPrintf(port, "%d\t%" PRId64 "\t%s\t%.*g\n", vectorId, a.eventNumber, BigDecimal::ttoa(buf, a.xp, endp), prec, a.y);
             port->bufferNumOfRecords++;
-            port->vector.blocks.back().collect(a.eventNumber, a.x, a.y);
+            port->vector.blocks.back()->collect(a.eventNumber, a.x, a.y);
         }
     }
     else {
@@ -223,7 +223,7 @@ void IndexedVectorFileWriterNode::writeRecordsToBuffer(VectorInputPort *port)
             }
             bufferPrintf(port, "\n");
             port->bufferNumOfRecords++;
-            port->vector.blocks.back().collect(a.eventNumber, a.x, a.y);
+            port->vector.blocks.back()->collect(a.eventNumber, a.x, a.y);
         }
     }
 }
@@ -233,14 +233,14 @@ void IndexedVectorFileWriterNode::writeBufferToFile(VectorInputPort *port)
     assert(f != nullptr);
     assert(port->vector.blocks.size() > 0);
 
-    Block& currentBlock = port->vector.blocks.back();
-    currentBlock.startOffset = opp_ftell(f);
+    Block *currentBlock = port->vector.blocks.back();
+    currentBlock->startOffset = opp_ftell(f);
 
     CHECK(fputs(port->buffer, f));
-    currentBlock.size = (int64_t)(opp_ftell(f) - currentBlock.startOffset);
+    currentBlock->size = (int64_t)(opp_ftell(f) - currentBlock->startOffset);
     port->vector.collect(currentBlock);
     port->clearBuffer();
-    port->vector.blocks.push_back(Block());
+    port->vector.blocks.push_back(new Block()); // TODO what's this? sentry?
 }
 
 void IndexedVectorFileWriterNode::writeIndex(VectorInputPort *port)

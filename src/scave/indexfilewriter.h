@@ -84,7 +84,7 @@ class SCAVE_API IndexFileWriter
         /**
          * Writes out a block of the specified vector.
          */
-        void writeBlock(const VectorInfo& vector, const Block& block);
+        void writeBlock(const VectorInfo& vector, const Block *block);
     protected:
         /** Opens the index file. */
         void openFile();

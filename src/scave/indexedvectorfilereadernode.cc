@@ -101,9 +101,9 @@ void IndexedVectorFileReaderNode::readIndexFile()
             throw opp_runtime_error("Indexed vector file reader: Vector %d not found, file %s",
                     vectorId, indexFileName.c_str());
 
-        std::vector<Block>& blocks = portData.vector->blocks;
-        for (std::vector<Block>::iterator it = blocks.begin(); it != blocks.end(); ++it)
-            blocksToRead.push_back(BlockAndPortData(&(*it), &portData));
+        std::vector<Block*>& blocks = portData.vector->blocks;
+        for (auto it = blocks.begin(); it != blocks.end(); ++it)
+            blocksToRead.push_back(BlockAndPortData(*it, &portData));
     }
 
     sort(blocksToRead.begin(), blocksToRead.end());

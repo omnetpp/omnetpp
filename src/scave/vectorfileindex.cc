@@ -36,9 +36,9 @@ namespace scave {
 using VectorInfo = VectorFileIndex::VectorInfo;
 using Block = VectorFileIndex::Block;
 
-static bool serialLess(const Block& first, const Block& second)
+static bool serialLess(const Block *first, const Block *second)
 {
-    return first.endSerial() < second.endSerial();
+    return first->endSerial() < second->endSerial();
 }
 
 const Block *VectorInfo::getBlockBySerial(long serial) const
@@ -48,27 +48,27 @@ const Block *VectorInfo::getBlockBySerial(long serial) const
 
     Block blockToFind;
     blockToFind.startSerial = serial;
-    std::vector<Block>::const_iterator first = std::upper_bound(blocks.begin(), blocks.end(), blockToFind, serialLess);
+    auto first = std::upper_bound(blocks.begin(), blocks.end(), &blockToFind, serialLess);
     assert(first == blocks.end() || first->endSerial() > serial);  // first block ending after serial
 
     if (first != blocks.end()) {
         assert(first->contains(serial));
-        return &(*first);
+        return *first;
     }
     else
         return nullptr;
 }
 
 // ordering of blocks
-static bool simtimeLess(const Block& first, const Block& second)
+static bool simtimeLess(const Block *first, const Block *second)
 {
-    return first.endTime < second.startTime;
+    return first->endTime < second->startTime;
 }
 
 // ordering of reversed blocks
-static bool simtimeGreater(const Block& first, const Block& second)
+static bool simtimeGreater(const Block *first, const Block *second)
 {
-    return first.startTime > second.endTime;
+    return first->startTime > second->endTime;
 }
 
 const Block *VectorInfo::getBlockBySimtime(simultime_t simtime, bool after) const
@@ -78,12 +78,12 @@ const Block *VectorInfo::getBlockBySimtime(simultime_t simtime, bool after) cons
     blockToFind.endTime = simtime;
 
     if (after) {
-        std::vector<Block>::const_iterator first = std::lower_bound(blocks.begin(), blocks.end(), blockToFind, simtimeLess);
-        return first != blocks.end() ? &(*first) : nullptr;
+        auto first = std::lower_bound(blocks.begin(), blocks.end(), &blockToFind, simtimeLess);
+        return first != blocks.end() ? *first : nullptr;
     }
     else {
-        std::vector<Block>::const_reverse_iterator last = std::lower_bound(blocks.rbegin(), blocks.rend(), blockToFind, simtimeGreater);
-        return last != blocks.rend() ? &(*last) : nullptr;
+        auto last = std::lower_bound(blocks.rbegin(), blocks.rend(), &blockToFind, simtimeGreater);
+        return last != blocks.rend() ? *last : nullptr;
     }
 }
 
@@ -93,8 +93,8 @@ std::vector<Block>::size_type VectorInfo::getBlocksInSimtimeInterval(simultime_t
     blockToFind.startTime = startTime;
     blockToFind.endTime = endTime;
 
-    std::vector<Block>::const_iterator first = std::lower_bound(blocks.begin(), blocks.end(), blockToFind, simtimeLess);
-    std::vector<Block>::const_iterator last = std::upper_bound(blocks.begin(), blocks.end(), blockToFind, simtimeLess);
+    auto first = std::lower_bound(blocks.begin(), blocks.end(), &blockToFind, simtimeLess);
+    auto last = std::upper_bound(blocks.begin(), blocks.end(), &blockToFind, simtimeLess);
 
     assert(first == blocks.end() || first->endTime >= startTime);
     assert(last == blocks.end() || last->startTime > endTime);
@@ -106,15 +106,15 @@ std::vector<Block>::size_type VectorInfo::getBlocksInSimtimeInterval(simultime_t
 }
 
 // ordering of blocks
-static bool eventnumLess(const Block& first, const Block& second)
+static bool eventnumLess(const Block *first, const Block *second)
 {
-    return first.endEventNum < second.startEventNum;
+    return first->endEventNum < second->startEventNum;
 }
 
 // ordering of reversed blocks
-static bool eventnumGreater(const Block& first, const Block& second)
+static bool eventnumGreater(const Block *first, const Block *second)
 {
-    return first.startEventNum > second.endEventNum;
+    return first->startEventNum > second->endEventNum;
 }
 
 const Block *VectorInfo::getBlockByEventnum(eventnumber_t eventNum, bool after) const
@@ -124,12 +124,12 @@ const Block *VectorInfo::getBlockByEventnum(eventnumber_t eventNum, bool after) 
     blockToFind.endEventNum = eventNum;
 
     if (after) {
-        std::vector<Block>::const_iterator first = std::lower_bound(blocks.begin(), blocks.end(), blockToFind, eventnumLess);
-        return first != blocks.end() ? &(*first) : nullptr;
+        auto first = std::lower_bound(blocks.begin(), blocks.end(), &blockToFind, eventnumLess);
+        return first != blocks.end() ? *first : nullptr;
     }
     else {
-        std::vector<Block>::const_reverse_iterator last = std::lower_bound(blocks.rbegin(), blocks.rend(), blockToFind, eventnumGreater);
-        return last != blocks.rend() ? &(*last) : nullptr;
+        auto last = std::lower_bound(blocks.rbegin(), blocks.rend(), &blockToFind, eventnumGreater);
+        return last != blocks.rend() ? *last : nullptr;
     }
 }
 
@@ -139,8 +139,8 @@ std::vector<Block>::size_type VectorInfo::getBlocksInEventnumInterval(eventnumbe
     blockToFind.startEventNum = startEventNum;
     blockToFind.endEventNum = endEventNum;
 
-    std::vector<Block>::const_iterator first = std::lower_bound(blocks.begin(), blocks.end(), blockToFind, eventnumLess);
-    std::vector<Block>::const_iterator last = std::upper_bound(blocks.begin(), blocks.end(), blockToFind, eventnumLess);
+    auto first = std::lower_bound(blocks.begin(), blocks.end(), &blockToFind, eventnumLess);
+    auto last = std::upper_bound(blocks.begin(), blocks.end(), &blockToFind, eventnumLess);
 
     assert(first == blocks.end() || first->endEventNum >= startEventNum);
     assert(last == blocks.end() || last->startEventNum > endEventNum);

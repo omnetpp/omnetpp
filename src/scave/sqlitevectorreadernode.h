@@ -28,6 +28,8 @@
 namespace omnetpp {
 namespace scave {
 
+class VectorResult;
+
 #define SQLITEVECFILEREADER_BUFSIZE  (64*1024)
 
 /**

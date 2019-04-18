@@ -156,7 +156,7 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
         CHECK(vector, "missing vector definition", lineNum);
 
         Block block;
-        block.startSerial = !vector->blocks.empty() ? vector->blocks.back().endSerial() : 0;
+        block.startSerial = !vector->blocks.empty() ? vector->blocks.back()->endSerial() : 0;
         int i = 1;  // column index
         CHECK(parseInt64(tokens[i++], block.startOffset), "invalid file offset", lineNum);
         CHECK(parseInt64(tokens[i++], block.size), "invalid block size", lineNum);
@@ -173,7 +173,8 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
                     parseDouble(tokens[i++], sum) && parseDouble(tokens[i++], sumSqr), "invalid statistics data", lineNum);
             block.stat = Statistics::makeUnweighted(count, min, max, sum, sumSqr);
         }
-        vector->addBlock(block);
+        Block *bp = index->addBlock(block);
+        vector->addBlock(bp);
     }
 }
 

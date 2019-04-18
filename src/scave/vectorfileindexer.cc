@@ -161,7 +161,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
                         currentBlock.size = (int64_t)(reader.getCurrentLineStartOffset() - currentBlock.startOffset);
                         if (currentBlock.size > currentVectorRef->blockSize)
                             currentVectorRef->blockSize = currentBlock.size;
-                        currentVectorRef->addBlock(currentBlock);
+                        currentVectorRef->addBlock(index.addBlock(currentBlock));
                     }
 
                     currentBlock = Block();
@@ -205,7 +205,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
             currentBlock.size = (int64_t)(reader.getFileSize() - currentBlock.startOffset);
             if (currentBlock.size > currentVectorRef->blockSize)
                 currentVectorRef->blockSize = currentBlock.size;
-            currentVectorRef->addBlock(currentBlock);
+            currentVectorRef->addBlock(index.addBlock(currentBlock));
         }
 
         if (numOfUnrecognizedLines > 0) {
@@ -286,6 +286,7 @@ void VectorFileIndexer::rebuildVectorFile(const char *vectorFileName, IProgressM
         // assemble dataflow network for vectors
         //
         {
+            // TODO DELETE
             DataflowManager dataflowManager;
             NodeTypeRegistry *registry = NodeTypeRegistry::getInstance();
 
