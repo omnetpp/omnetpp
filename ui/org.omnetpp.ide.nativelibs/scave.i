@@ -20,15 +20,12 @@
 #include "scave/datasorter.h"
 #include "scave/vectorfileindex.h"
 #include "scave/indexfileutils.h"
-#include "scave/commonnodes.h"
 #include "scave/indexedvectorfilereader.h"
 #include "scave/vectorfileindexer.h"
-#include "scave/vectorfilereader.h"
-#include "scave/indexedvectorfilereadernode.h"
-#include "scave/sqlitevectorreadernode.h"
 #include "scave/scaveexception.h"
 #include "scave/exporter.h"
 #include "scave/sqliteresultfileutils.h"
+#include "scave/xyarray.h"
 
 using namespace omnetpp::scave;
 %}
@@ -164,10 +161,8 @@ namespace std {
 
    %template(StringSet) set<string>;
    %template(StringVector) vector<string>;
-
    //specialize_std_map_on_both(string,,,,string,,,);
-
-   //%template(StringMap) map<string,string>;
+   %template(StringMap) map<string,string>;
 
    %template(IDVector) vector<omnetpp::scave::ID>;
    %template(IDVectorVector) vector<vector<omnetpp::scave::ID> >;
@@ -456,14 +451,6 @@ CHECK_RESULTFILE_FORMAT_EXCEPTION(ResultFileManager::loadFile)
 /* ------------- datasorter.h  ----------------- */
 %include "scave/datasorter.h"
 
-
-/* ------------- dataflownetwork.h  ----------------- */
-// wrap the data-flow engine as well
-namespace omnetpp { namespace scave {
-CHECK_RESULTFILE_FORMAT_EXCEPTION(DataflowManager::execute)
-} } // namespaces
-%include scave-plove.i
-
 /* ------------- indexfileutils.h  ----------------- */
 %include "scave/indexfileutils.h"
 
@@ -496,57 +483,9 @@ namespace omnetpp { namespace scave {
 %template(EntryVector) ::std::vector<omnetpp::scave::VectorDatum>;
 %template(XYArrayVector) ::std::vector<omnetpp::scave::XYArray*>;
 
-%ignore IndexedVectorFileWriterNode;
-%ignore IndexedVectorFileWriterNodeType;
 } } // namespaces
 
 %include "scave/indexedvectorfilereader.h"
-
-/* ------------- vectorfilereader.h  ----------------- */
-namespace omnetpp { namespace scave {
-%ignore SingleSourceNode;
-%ignore SingleSinkNode;
-%ignore FilterNode;
-%ignore ReaderNode;
-%ignore FileReaderNode;
-%ignore SingleSourceNodeType;
-%ignore SingleSinkNodeType;
-%ignore FilterNodeType;
-%ignore ReaderNodeType;
-} } // namespaces
-
-%include "scave/commonnodes.h"
-
-namespace omnetpp { namespace scave {
-
-%extend VectorFileReaderNode {
-    static VectorFileReaderNode *cast(Node* node) { return dynamic_cast<VectorFileReaderNode*>(node); }
-};
-
-%ignore VectorFileReaderNodeType;
-%ignore parseColumns;
-
-} } // namespaces
-
-%include "scave/vectorfilereader.h"
-
-/* ------------- indexedvectorfilereadernode.h  ----------------- */
-%include "scave/indexedvectorfilereadernode.h"
-
-namespace omnetpp { namespace scave {
-%extend IndexedVectorFileReaderNode {
-    static IndexedVectorFileReaderNode *cast(Node* node) { return dynamic_cast<IndexedVectorFileReaderNode*>(node); }
-};
-} } // namespaces
-
-/* ------------- sqlitevectorreadernode.h  ----------------- */
-%include "scave/sqlitevectorreadernode.h"
-
-namespace omnetpp { namespace scave {
-%extend SqliteVectorReaderNode {
-    static SqliteVectorReaderNode *cast(Node* node) { return dynamic_cast<SqliteVectorReaderNode*>(node); }
-};
-} } // namespaces
 
 /* ------------------ fields.h --------------------- */
 namespace omnetpp { namespace scave {
@@ -630,3 +569,5 @@ namespace omnetpp { namespace scave {
 
 %include "scave/sqliteresultfileutils.h"
 
+/* ------------------ xyarray.h ----------------------- */
+%include "scave/xyarray.h"

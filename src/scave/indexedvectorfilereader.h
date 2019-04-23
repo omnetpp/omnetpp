@@ -26,8 +26,6 @@
 #include <cstdarg>
 #include "common/filereader.h"
 #include "scavedefs.h"
-#include "node.h"
-#include "nodetype.h"
 #include "resultfilemanager.h"
 #include "vectorfileindex.h"
 

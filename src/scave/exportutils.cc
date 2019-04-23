@@ -26,11 +26,6 @@
 #include "indexedvectorfilereader.h"
 #include "datasorter.h"
 #include "datatable.h"
-#include "dataflowmanager.h"
-#include "nodetype.h"
-#include "nodetyperegistry.h"
-#include "arraybuilder.h"
-#include "vectorfilereader.h"
 #include "exportutils.h"
 
 #include "exportutils.h"

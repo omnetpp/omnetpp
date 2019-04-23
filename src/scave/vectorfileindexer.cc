@@ -26,10 +26,8 @@
 #include "omnetpp/platdep/platmisc.h"
 #include "scaveutils.h"
 #include "scaveexception.h"
-#include "dataflowmanager.h"
 #include "indexfileutils.h"
-#include "indexedvectorfilewriternode.h"
-#include "nodetyperegistry.h"
+#include "indexfilewriter.h"
 #include "vectorfileindexer.h"
 #include "indexedvectorfilereader.h"
 #include "vectorfileindex.h"
@@ -284,6 +282,7 @@ void VectorFileIndexer::rebuildVectorFile(const char *vectorFileName, IProgressM
             throw opp_runtime_error("Multiple runs found in %s", vectorFileName);
         const Run *runPtr = runList[0];
 
+/* // TODO rewrite
         //
         // assemble dataflow network for vectors
         //
@@ -330,6 +329,8 @@ void VectorFileIndexer::rebuildVectorFile(const char *vectorFileName, IProgressM
 
             // dataflowManager deleted here, and its destructor closes the files
         }
+
+        */
 
         // rename temp to orig
         if (unlink(indexFileName.c_str()) != 0 && errno != ENOENT)

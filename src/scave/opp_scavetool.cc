@@ -24,16 +24,8 @@
 #include "common/formattedprinter.h"
 #include "common/stlutil.h"
 #include "resultfilemanager.h"
-#include "nodetype.h"
-#include "nodetyperegistry.h"
-#include "dataflowmanager.h"
 #include "indexfileutils.h"
-#include "vectorfilereader.h"
-#include "vectorfilewriter.h"
 #include "vectorfileindexer.h"
-#include "filternodes.h"
-#include "filewriter.h"
-#include "arraybuilder.h"
 #include "fields.h"
 #include "scaveutils.h"
 #include "sqliteresultfileutils.h"
@@ -195,6 +187,8 @@ void ScaveTool::printHelpPage(const std::string& page)
                         "scalar selected for the X axis. Additional arguments identify the "
                         "iso attributes; they are (module, scalar) pairs, or names of run attributes.");
         help.para("Vector operations:");
+
+        /* // TODO rewrite or delete
         NodeTypeRegistry *registry = NodeTypeRegistry::getInstance();
         NodeTypeVector nodeTypes = registry->getNodeTypes();
         for (int i = 0; i < (int)nodeTypes.size(); i++) {
@@ -214,6 +208,7 @@ void ScaveTool::printHelpPage(const std::string& page)
             if (!attrs.empty())
                 help.line();
         }
+        */
     }
     else {
         throw opp_runtime_error("No help topic '%s'", page.c_str());

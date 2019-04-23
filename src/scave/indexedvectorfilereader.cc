@@ -21,7 +21,6 @@
 #include "common/stringutil.h"
 #include "common/stlutil.h"
 #include "omnetpp/platdep/platmisc.h"
-#include "channel.h"
 #include "indexedvectorfilereader.h"
 #include "indexfilereader.h"
 #include "indexfileutils.h"

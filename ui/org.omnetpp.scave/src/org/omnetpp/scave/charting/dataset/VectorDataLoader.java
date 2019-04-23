@@ -14,7 +14,7 @@ import org.omnetpp.scave.engine.ScaveEngine;
 import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.scave.engine.XYArrayVector;
 
-public class VectorDataLoader {
+public class VectorDataLoader { // TODO: deduplicate with VectorFileUtil
     public static XYVector[] getDataOfVectors(ResultFileManager manager, IDList idlist, IProgressMonitor progressMonitor) {
 
         XYVector[] vectors = new XYVector[idlist.size()];

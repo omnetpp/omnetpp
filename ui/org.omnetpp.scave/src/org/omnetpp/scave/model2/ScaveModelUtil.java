@@ -46,8 +46,6 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.properties.ChartProperties;
 import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
-import org.omnetpp.scave.engine.NodeType;
-import org.omnetpp.scave.engine.NodeTypeRegistry;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ResultItemField;
@@ -560,43 +558,6 @@ public class ScaveModelUtil {
             Assert.isTrue(false, "Unknown result item: "+item);
             return null;
         }
-    }
-
-    public static boolean isFilterOperation(String operation) {
-        NodeType nodeType = getNodeType(operation);
-        return nodeType != null && isFilterOperation(nodeType);
-    }
-
-    public static boolean isFilterOperation(NodeType nodeType) {
-        return hasCategory(nodeType, "filter");
-    }
-
-    public static boolean isMergerOperation(String operation) {
-        NodeType nodeType = getNodeType(operation);
-        return nodeType != null && isMergerOperation(nodeType);
-    }
-
-    public static boolean isMergerOperation(NodeType nodeType) {
-        return hasCategory(nodeType, "merger");
-    }
-
-    public static NodeType getNodeType(String name) {
-        Assert.isNotNull(name);
-        NodeTypeRegistry registry = NodeTypeRegistry.getInstance();
-        return registry.exists(name) ? registry.getNodeType(name) : null;
-    }
-
-    public static boolean hasCategory(String nodeTypeName, String category) {
-        Assert.isNotNull(nodeTypeName);
-        Assert.isNotNull(category);
-        NodeType nodeType = getNodeType(nodeTypeName);
-        return nodeType != null ? hasCategory(nodeType, category) : false;
-    }
-
-    public static boolean hasCategory(NodeType nodeType, String category) {
-        Assert.isNotNull(nodeType);
-        Assert.isNotNull(category);
-        return nodeType.getCategory().equals(category);
     }
 
     public static IFile getFileOfEObject(EObject object) {

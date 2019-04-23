@@ -35,19 +35,14 @@ COPTS+= -DTHREADED $(PTHREAD_CFLAGS)
 IMPLIBS+= $(PTHREAD_LIBS)
 endif
 
-OBJS= $O/arraybuilder.o $O/channel.o $O/commonnodes.o $O/compoundfilter.o \
-      $O/dataflowmanager.o $O/datasorter.o $O/diffquot.o \
-      $O/filewriter.o $O/filternodes.o $O/customfilter.o $O/stddev.o \
-      $O/idlist.o $O/mergernodes.o $O/nodetype.o $O/nodetyperegistry.o \
+OBJS=  $O/datasorter.o  \
+      $O/idlist.o  \
       $O/omnetppresultfileloader.o $O/sqliteresultfileloader.o \
-      $O/resultfilemanager.o $O/slidingwinavg.o \
-      $O/vectorfilereader.o $O/vectorfilewriter.o $O/windowavg.o \
-      $O/xyplotnode.o $O/indexedvectorfilereader.o $O/indexedvectorfilewriternode.o \
+      $O/resultfilemanager.o $O/indexedvectorfilereader.o  \
       $O/vectorfileindexer.o $O/vectorfileindex.o $O/indexfileutils.o \
       $O/indexfilereader.o  $O/indexfilewriter.o \
-      $O/scaveutils.o $O/scaveexception.o $O/enumtype.o $O/teenode.o \
-      $O/indexedvectorfilereadernode.o $O/xyarray.o $O/fields.o \
-      $O/sqlitevectorreadernode.o $O/vectorreaderbyfiletype.o \
+      $O/scaveutils.o $O/scaveexception.o $O/enumtype.o \
+       $O/xyarray.o $O/fields.o \
       $O/sqliteresultfileutils.o \
       $O/datatable.o $O/exporter.o $O/exportutils.o \
       $O/csvrecexporter.o $O/csvspreadexporter.o $O/jsonexporter.o \
