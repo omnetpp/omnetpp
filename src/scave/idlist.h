@@ -63,7 +63,7 @@ class SCAVE_API IDList
     public:
         IDList()  {v = new V;}
         IDList(unsigned int sz)  {v = new V(sz);}
-        IDList(const IDList& ids); // transfer of ownership semantics!
+        IDList(const IDList& ids); // transfer of ownership semantics! this is really a move constructor, but SWIG cannot use actual move constructors.
         ~IDList()  {delete v;}
         int size() const  {checkV(); return (int)v->size();}
         bool isEmpty() const  {checkV(); return v->empty();}
