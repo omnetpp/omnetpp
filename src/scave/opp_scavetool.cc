@@ -147,7 +147,6 @@ void ScaveTool::printHelpPage(const std::string& page)
                   "create indices for loaded vector files if they are missing or out of date, "
                   "unless indexing is explicitly disabled.");
         help.line("Options:");
-        help.option("-r, --rebuild", "Rebuild vector files (rearrange their content into blocks) in addition to indexing them");
         help.option("-v, --verbose", "Print info about progress (verbose)");
         help.line();
     }
@@ -748,14 +747,11 @@ void ScaveTool::indexCommand(int argc, char **argv)
 {
     // process args
     bool opt_verbose = false;
-    bool opt_rebuild = false;
     vector<string> opt_fileNames;
     for (int i = 0; i < argc; i++) {
         string opt = argv[i];
         if (opt == "-v" || opt == "--verbose")
             opt_verbose = true;
-        else if (opt == "-r" || opt == "--rebuild")
-            opt_rebuild = true;
         else if (opt[0] != '-')
             opt_fileNames.push_back(argv[i]);
         else
@@ -768,17 +764,14 @@ void ScaveTool::indexCommand(int argc, char **argv)
         const char *fileName = opt_fileNames[i].c_str();
         if (opt_verbose)
             cout << "indexing " << fileName << "... " << std::flush;
-        if (opt_rebuild)
-            indexer.rebuildVectorFile(fileName);
-        else
-            indexer.generateIndex(fileName);
+        indexer.generateIndex(fileName);
         count++;
     }
 
     if (opt_verbose)
         cout << "done\n";
 
-    cout << (opt_rebuild ? "Rebuilt and indexed " : "Indexed ") << count << " file(s)\n";
+    cout << "Indexed " << count << " file(s)\n";
 }
 
 int ScaveTool::main(int argc, char **argv)

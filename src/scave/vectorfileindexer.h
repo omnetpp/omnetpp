@@ -35,9 +35,8 @@ class SCAVE_API VectorFileIndexer
 
     public:
         typedef omnetpp::common::IProgressMonitor IProgressMonitor;
-    public:
+
         void generateIndex(const char *filename, IProgressMonitor *monitor = nullptr);
-        void rebuildVectorFile(const char *filename, IProgressMonitor *monitor = nullptr);
 };
 
 } // namespace scave
