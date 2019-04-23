@@ -40,7 +40,6 @@ class SCAVE_API CsvForSpreadsheetExporter : public Exporter
         bool columnNames = true;
         bool allowMixedContent = false;
         ResultItemFields scalarsGroupBy;
-        std::vector<std::string> vectorFilters;
         VectorLayout vectorLayout = VERTICAL;
 
         std::vector<std::string> itervarNames;
@@ -64,8 +63,6 @@ class SCAVE_API CsvForSpreadsheetExporter : public Exporter
         const ResultItemFields& getScalarsGroupBy() const {return scalarsGroupBy;}
         void setVectorLayout(VectorLayout d) {vectorLayout = d;}
         VectorLayout getVectorLayout() {return vectorLayout;}
-        void setVectorFilters(const std::vector<std::string>& filters) {vectorFilters = filters;}
-        const std::vector<std::string>& getVectorFilters() const {return vectorFilters;}
 
         virtual void setOption(const std::string& key, const std::string& value);
         virtual void saveResults(const std::string& fileName, ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor=nullptr);

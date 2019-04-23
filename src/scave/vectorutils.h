@@ -33,7 +33,7 @@ class IDList;
  * Read the VectorResult items in the IDList into the XYArrays.
  * TODO: ProgressMonitor support.
  */
-SCAVE_API std::vector<XYArray*> readVectorsIntoArrays(ResultFileManager *manager, const IDList& idlist, bool includeEventNumbers, const std::vector<std::string>& filters = {});
+SCAVE_API std::vector<XYArray*> readVectorsIntoArrays(ResultFileManager *manager, const IDList& idlist, bool includeEventNumbers);
 
 } // namespace scave
 }  // namespace omnetpp

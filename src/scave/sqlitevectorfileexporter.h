@@ -35,7 +35,6 @@ class SCAVE_API SqliteVectorFileExporter : public Exporter
 {
     private:
         SqliteVectorFileWriter writer;
-        std::vector<std::string> vectorFilters;
         int simtimeScaleExp = -12;
         bool skipSpecialValues = false;
         size_t perVectorMemoryLimit = 0;
@@ -43,8 +42,6 @@ class SCAVE_API SqliteVectorFileExporter : public Exporter
     public:
         SqliteVectorFileExporter() {}
 
-        void setVectorFilters(const std::vector<std::string>& filters) {vectorFilters = filters;}
-        const std::vector<std::string>& getVectorFilters() const {return vectorFilters;}
         void setSimtimeScaleExp(int d) {simtimeScaleExp = d;}
         int getSimtimeScaleExp() const {return simtimeScaleExp;}
         void setSkipSpecialValues(bool b) {skipSpecialValues = b;}

@@ -123,7 +123,6 @@ StringMap CsvRecordsExporterType::getSupportedOptions() const
         {"separator", "Separator character. Values: 'tab', 'comma', 'semicolon', 'colon'"},
         {"quoteChar", "Quote character. Values: 'doublequote', 'singlequote'"},
         {"quoteEscaping", "How to escape the quote character within quoted values. Values: 'doubling', 'backslash'"},
-        {"vectorFilters", "A semicolon-separated list of operations to be applied to the vectors to be exported. See the 'operations' help page. Example value: 'winavg(10);mean'"},
     };
     return options;
 }
@@ -151,8 +150,6 @@ void CsvRecordsExporter::setOption(const std::string& key, const std::string& va
         setColumnNames(translateOptionValue(BOOLS,value));
     else if (key == "omitBlankColumns")
         setOmitBlankColumns(translateOptionValue(BOOLS,value));
-    else if (key == "vectorFilters")
-        setVectorFilters(StringTokenizer(value.c_str(), ";").asVector());
     else
         throw opp_runtime_error("Exporter: unhandled option '%s'", key.c_str());
 }
@@ -272,7 +269,7 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
     if (haveVectors) {
         // load vector data
         IDList vectorIDs = idlist.filterByTypes(ResultFileManager::VECTOR);
-        std::vector<XYArray *> xyArrays = readVectorsIntoArrays(manager, vectorIDs, true, vectorFilters);
+        std::vector<XYArray *> xyArrays = readVectorsIntoArrays(manager, vectorIDs, true);
         assert((int)xyArrays.size() == vectorIDs.size());
 
         // write vectors

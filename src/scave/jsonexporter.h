@@ -39,7 +39,6 @@ class SCAVE_API JsonExporter : public Exporter
 {
     private:
         JsonWriter writer;
-        std::vector<std::string> vectorFilters;
         bool pythonFlavoured = false;
         bool useNumpy = true;
         bool skipResultAttributes = false;
@@ -68,8 +67,6 @@ class SCAVE_API JsonExporter : public Exporter
         int getIndentSize() const {return writer.getIndentSize();}
         void setSkipResultAttributes(bool b) {skipResultAttributes = b;}
         bool getSkipResultAttributes() const {return skipResultAttributes;}
-        void setVectorFilters(const std::vector<std::string>& filters) {vectorFilters = filters;}
-        const std::vector<std::string>& getVectorFilters() const {return vectorFilters;}
 
         virtual void setOption(const std::string& key, const std::string& value);
         virtual void saveResults(const std::string& fileName, ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor=nullptr);

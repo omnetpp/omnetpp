@@ -139,7 +139,6 @@ StringMap CsvForSpreadsheetExporterType::getSupportedOptions() const
         {"quoteChar", "Quote character. Values: 'doublequote', 'singlequote'"},
         {"quoteEscaping", "How to escape the quote character within quoted values. Values: 'doubling', 'backslash'"},
         {"scalarsGroupBy", "Group scalars by the given fields. Accepts a comma-separated list of field names: 'file', 'run', 'module', 'name', etc."},
-        {"vectorFilters", "A semicolon-separated list of operations to be applied to the vectors to be exported. See the 'operations' help page. Example value: 'winavg(10);mean'"},
         {"vectorLayout", "The layout (format) in which vectors are exported. Values: 'horizontal','vertical', 'vertical-joined'"},
     };
     return options;
@@ -170,8 +169,6 @@ void CsvForSpreadsheetExporter::setOption(const std::string& key, const std::str
         setMixedContentAllowed(translateOptionValue(BOOLS,value));
     else if (key == "scalarsGroupBy")
         setScalarsGroupBy(ResultItemFields(StringTokenizer(value.c_str(),",").asVector()));
-    else if (key == "vectorFilters")
-        setVectorFilters(StringTokenizer(value.c_str(), ";").asVector());
     else if (key == "vectorLayout")
         setVectorLayout(translateOptionValue(VECTORLAYOUTS,value));
     else
@@ -272,7 +269,7 @@ void CsvForSpreadsheetExporter::saveVectors(ResultFileManager *manager, const ID
 {
     //TODO use monitor
     collectItervars(manager, idlist);
-    std::vector<XYArray *> xyArrays = readVectorsIntoArrays(manager, idlist, true, vectorFilters);
+    std::vector<XYArray *> xyArrays = readVectorsIntoArrays(manager, idlist, true);
     assert((int)xyArrays.size() == idlist.size());
 
     int numVectors = (int)idlist.size();

@@ -35,15 +35,12 @@ class SCAVE_API OmnetppVectorFileExporter : public Exporter
 {
     private:
         OmnetppVectorFileWriter writer;
-        std::vector<std::string> vectorFilters;
         bool skipSpecialValues = false;
         size_t perVectorMemoryLimit = 0;
 
     public:
         OmnetppVectorFileExporter() {}
 
-        void setVectorFilters(const std::vector<std::string>& filters) {vectorFilters = filters;}
-        const std::vector<std::string>& getVectorFilters() const {return vectorFilters;}
         void setPrecision(int prec) {writer.setPrecision(prec);}
         int getPrecision() const {return writer.getPrecision();}
         void setSkipSpecialValues(bool b) {skipSpecialValues = b;}

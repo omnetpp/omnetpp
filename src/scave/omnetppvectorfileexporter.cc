@@ -86,7 +86,6 @@ string OmnetppVectorFileExporterType::getXswtForm() const
 StringMap OmnetppVectorFileExporterType::getSupportedOptions() const
 {
     StringMap options {
-        {"vectorFilters", "A semicolon-separated list of operations to be applied to the vectors to be exported. See the 'operations' help page. Example value: 'winavg(10);mean'"},
         {"skipSpecialValues", "Allow and skip NaN and +/-Inf values as simulation time in vectors."},
         {"precision", "The number of significant digits for floating-point values (double). The maximum value is ~15."},
         {"overallMemoryLimitMB", "Maximum amount of memory allowed to use, in megabytes. Use zero for no limit."},
@@ -108,8 +107,6 @@ void OmnetppVectorFileExporter::setOption(const std::string& key, const std::str
     checkOptionKey(getDescription(), key);
     if (key == "precision")
         setPrecision(opp_atol(value.c_str()));
-    else if (key == "vectorFilters")
-        setVectorFilters(StringTokenizer(value.c_str(), ";").asVector());
     else if (key == "skipSpecialValues")
         setSkipSpecialValues(translateOptionValue(BOOLS,value));
     else if (key == "overallMemoryLimitMB")
@@ -149,7 +146,7 @@ void OmnetppVectorFileExporter::saveResults(const std::string& fileName, ResultF
         }
 
         // write data for all vectors
-        std::vector<XYArray *> xyArrays = readVectorsIntoArrays(manager, filteredList, true, vectorFilters);
+        std::vector<XYArray *> xyArrays = readVectorsIntoArrays(manager, filteredList, true);
         Assert((int)xyArrays.size() == filteredList.size());
 
         for (int i = 0; i < filteredList.size(); i++) {

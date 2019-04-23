@@ -85,7 +85,6 @@ string SqliteVectorFileExporterType::getXswtForm() const
 StringMap SqliteVectorFileExporterType::getSupportedOptions() const
 {
     StringMap options {
-        {"vectorFilters", "A semicolon-separated list of operations to be applied to the vectors to be exported. See the 'operations' help page. Example value: 'winavg(10);mean'"},
         {"simtimeScaleExp", "Simulation time scale exponent. "}, //TODO explain: simtime-resolution, raw int64's in the db, etc
         {"skipSpecialValues", "Allow and skip NaN and +/-Inf values as simulation time in vectors."},
         {"overallMemoryLimitMB", "Maximum amount of memory allowed to use, in megabytes. Use zero for no limit."},
@@ -105,9 +104,7 @@ ExporterType *SqliteVectorFileExporter::getDescription()
 void SqliteVectorFileExporter::setOption(const std::string& key, const std::string& value)
 {
     checkOptionKey(getDescription(), key);
-    if (key == "vectorFilters")
-        setVectorFilters(StringTokenizer(value.c_str(), ";").asVector());
-    else if (key == "simtimeScaleExp")
+    if (key == "simtimeScaleExp")
         setSimtimeScaleExp(opp_atol(value.c_str()));
     else if (key == "skipSpecialValues")
         setSkipSpecialValues(translateOptionValue(BOOLS,value));
@@ -143,7 +140,7 @@ void SqliteVectorFileExporter::saveResults(const std::string& fileName, ResultFi
         }
 
         // write data for all vectors
-        std::vector<XYArray *> xyArrays = readVectorsIntoArrays(manager, filteredList, true, vectorFilters);
+        std::vector<XYArray *> xyArrays = readVectorsIntoArrays(manager, filteredList, true);
         Assert((int)xyArrays.size() == filteredList.size());
 
         //NOTE if there's no event number, order of values belonging to the same t will be undefined...

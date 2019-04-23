@@ -36,7 +36,6 @@ class SCAVE_API CsvRecordsExporter : public Exporter
         CsvWriter csv;
         bool columnNames = true;
         bool omitBlankColumns = true;
-        std::vector<std::string> vectorFilters;
 
     public:
         CsvRecordsExporter() {}
@@ -53,8 +52,6 @@ class SCAVE_API CsvRecordsExporter : public Exporter
         bool getColumnNames() {return columnNames;}
         void setOmitBlankColumns(bool b) {omitBlankColumns = b;}
         bool getOmitBlankColumns() const {return omitBlankColumns;}
-        void setVectorFilters(const std::vector<std::string>& filters) {vectorFilters = filters;}
-        const std::vector<std::string>& getVectorFilters() const {return vectorFilters;}
 
         virtual void setOption(const std::string& key, const std::string& value);
         virtual void saveResults(const std::string& fileName, ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor=nullptr);

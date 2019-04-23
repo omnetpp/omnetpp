@@ -54,11 +54,8 @@ XYArray *convertVectorData(const std::vector<VectorDatum>& data, bool includeEve
     return new XYArray(l, xv, yv, xpv, ev);
 }
 
-vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList& idlist, bool includeEventNumbers, const std::vector<std::string>& filters)
+vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList& idlist, bool includeEventNumbers)
 {
-    if (!filters.empty())
-        throw opp_runtime_error("Vector filters not supported.");
-
     std::vector<std::vector<VectorDatum>> result;
     result.resize(idlist.size());
 

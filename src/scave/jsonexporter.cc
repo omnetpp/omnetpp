@@ -99,7 +99,6 @@ StringMap PythonExporterType::getSupportedOptions() const
         {"useNumpy", "Use NumPy arrays in the output."},
         {"indentSize", "Number of spaces to indent with. Set to 0 or 1 to reduce file size."},
         {"skipResultAttributes", "Do not export result attributes."},
-        {"vectorFilters", "A semicolon-separated list of operations to be applied to the vectors to be exported. See the 'operations' help page. Example value: 'winavg(10);mean'"},
     };
     return options;
 }
@@ -125,8 +124,6 @@ void JsonExporter::setOption(const std::string& key, const std::string& value)
         setIndentSize(opp_atol(value.c_str()));
     else if (key == "skipResultAttributes")
         setSkipResultAttributes(translateOptionValue(BOOLS,value));
-    else if (key == "vectorFilters")
-        setVectorFilters(StringTokenizer(value.c_str(), ";").asVector());
     else
         throw opp_runtime_error("Exporter: unhandled option '%s'", key.c_str());
 }
@@ -362,7 +359,7 @@ void JsonExporter::saveResults(const std::string& fileName, ResultFileManager *m
         IDList vectors = idlist.filterByTypes(ResultFileManager::VECTOR);
         if (!vectors.isEmpty()) {
             // compute vector data
-            std::vector<XYArray *> xyArrays = readVectorsIntoArrays(manager, vectors, true, vectorFilters);
+            std::vector<XYArray *> xyArrays = readVectorsIntoArrays(manager, vectors, true);
             Assert((int)xyArrays.size() == vectors.size());
 
             // export

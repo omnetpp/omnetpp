@@ -185,29 +185,6 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.indentPara("Create scatter plot dataset. The first two arguments identify the "
                         "scalar selected for the X axis. Additional arguments identify the "
                         "iso attributes; they are (module, scalar) pairs, or names of run attributes.");
-        help.para("Vector operations:");
-
-        /* // TODO rewrite or delete
-        NodeTypeRegistry *registry = NodeTypeRegistry::getInstance();
-        NodeTypeVector nodeTypes = registry->getNodeTypes();
-        for (int i = 0; i < (int)nodeTypes.size(); i++) {
-            NodeType *nodeType = nodeTypes[i];
-            if (nodeType->isHidden())
-                continue;
-
-            // query parameters
-            StringMap attrs, attrDefaults;
-            nodeType->getAttributes(attrs);
-            nodeType->getAttrDefaults(attrDefaults);
-
-            help.para((string)nodeType->getName() + "(" + opp_join(keys(attrs), ", ") + ")");
-            help.indentPara(nodeType->getDescription());
-            for (auto pair : attrs)
-                help.option(pair.first, pair.second);
-            if (!attrs.empty())
-                help.line();
-        }
-        */
     }
     else {
         throw opp_runtime_error("No help topic '%s'", page.c_str());
