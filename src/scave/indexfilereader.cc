@@ -155,27 +155,27 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
         VectorInfo *vector = index->getVectorById(id);
         CHECK(vector, "missing vector definition", lineNum);
 
-        Block block;
-        block.vectorId = id;
-        block.startSerial = !vector->blocks.empty() ? vector->blocks.back()->endSerial() : 0;
+        Block *block = new Block();
+        block->vectorId = id;
+        block->startSerial = !vector->blocks.empty() ? vector->blocks.back()->endSerial() : 0;
         int i = 1;  // column index
-        CHECK(parseInt64(tokens[i++], block.startOffset), "invalid file offset", lineNum);
-        CHECK(parseInt64(tokens[i++], block.size), "invalid block size", lineNum);
+        CHECK(parseInt64(tokens[i++], block->startOffset), "invalid file offset", lineNum);
+        CHECK(parseInt64(tokens[i++], block->size), "invalid block size", lineNum);
         if (vector->hasColumn('E')) {
-            CHECK(parseInt64(tokens[i++], block.startEventNum) && parseInt64(tokens[i++], block.endEventNum),
+            CHECK(parseInt64(tokens[i++], block->startEventNum) && parseInt64(tokens[i++], block->endEventNum),
                     "invalid event numbers", lineNum);
         }
         if (vector->hasColumn('T')) {
-            CHECK(parseSimtime(tokens[i++], block.startTime) && parseSimtime(tokens[i++], block.endTime),
+            CHECK(parseSimtime(tokens[i++], block->startTime) && parseSimtime(tokens[i++], block->endTime),
                     "invalid simulation time", lineNum);
         }
         if (vector->hasColumn('V')) {
             CHECK(parseLong(tokens[i++], count) && parseDouble(tokens[i++], min) && parseDouble(tokens[i++], max) &&
                     parseDouble(tokens[i++], sum) && parseDouble(tokens[i++], sumSqr), "invalid statistics data", lineNum);
-            block.stat = Statistics::makeUnweighted(count, min, max, sum, sumSqr);
+            block->stat = Statistics::makeUnweighted(count, min, max, sum, sumSqr);
         }
-        Block *bp = index->addBlock(block);
-        vector->addBlock(bp);
+        index->addBlock(block);
+        vector->addBlock(block);
     }
 }
 

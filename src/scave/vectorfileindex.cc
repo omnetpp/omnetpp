@@ -49,10 +49,10 @@ const Block *VectorInfo::getBlockBySerial(long serial) const
     Block blockToFind;
     blockToFind.startSerial = serial;
     auto first = std::upper_bound(blocks.begin(), blocks.end(), &blockToFind, serialLess);
-    assert(first == blocks.end() || first->endSerial() > serial);  // first block ending after serial
+    assert(first == blocks.end() || (*first)->endSerial() > serial);  // first block ending after serial
 
     if (first != blocks.end()) {
-        assert(first->contains(serial));
+        assert((*first)->contains(serial));
         return *first;
     }
     else
@@ -96,8 +96,8 @@ std::vector<Block>::size_type VectorInfo::getBlocksInSimtimeInterval(simultime_t
     auto first = std::lower_bound(blocks.begin(), blocks.end(), &blockToFind, simtimeLess);
     auto last = std::upper_bound(blocks.begin(), blocks.end(), &blockToFind, simtimeLess);
 
-    assert(first == blocks.end() || first->endTime >= startTime);
-    assert(last == blocks.end() || last->startTime > endTime);
+    assert(first == blocks.end() || (*first)->endTime >= startTime);
+    assert(last == blocks.end() || (*last)->startTime > endTime);
     assert(first <= last);
 
     startIndex = first - blocks.begin();
@@ -142,8 +142,8 @@ std::vector<Block>::size_type VectorInfo::getBlocksInEventnumInterval(eventnumbe
     auto first = std::lower_bound(blocks.begin(), blocks.end(), &blockToFind, eventnumLess);
     auto last = std::upper_bound(blocks.begin(), blocks.end(), &blockToFind, eventnumLess);
 
-    assert(first == blocks.end() || first->endEventNum >= startEventNum);
-    assert(last == blocks.end() || last->startEventNum > endEventNum);
+    assert(first == blocks.end() || (*first)->endEventNum >= startEventNum);
+    assert(last == blocks.end() || (*last)->startEventNum > endEventNum);
     assert(first <= last);
 
     startIndex = first - blocks.begin();

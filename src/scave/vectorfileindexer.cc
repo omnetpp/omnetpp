@@ -72,7 +72,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
     int numTokens, numOfUnrecognizedLines = 0;
     VectorInfo *currentVectorRef = nullptr;
     VectorInfo *lastVectorDecl = nullptr;
-    Block currentBlock;
+    Block *currentBlock = new Block();
 
     int64_t onePercentFileSize = reader.getFileSize() / 100;
     int readPercentage = 0;
@@ -158,14 +158,15 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
 
                 if (currentVectorRef == nullptr || vectorId != currentVectorRef->vectorId) {
                     if (currentVectorRef != nullptr) {
-                        currentBlock.size = (int64_t)(reader.getCurrentLineStartOffset() - currentBlock.startOffset);
-                        if (currentBlock.size > currentVectorRef->blockSize)
-                            currentVectorRef->blockSize = currentBlock.size;
-                        currentVectorRef->addBlock(index.addBlock(currentBlock));
+                        currentBlock->size = (int64_t)(reader.getCurrentLineStartOffset() - currentBlock->startOffset);
+                        if (currentBlock->size > currentVectorRef->blockSize)
+                            currentVectorRef->blockSize = currentBlock->size;
+                        currentVectorRef->addBlock(currentBlock);
+                        index.addBlock(currentBlock);
                     }
 
-                    currentBlock = Block();
-                    currentBlock.startOffset = reader.getCurrentLineStartOffset();
+                    currentBlock = new Block();
+                    currentBlock->startOffset = reader.getCurrentLineStartOffset();
                     currentVectorRef = index.getVectorById(vectorId);
                     if (currentVectorRef == nullptr)
                         throw ResultFileFormatException("Vector file indexer: Missing vector declaration", vectorFileName, lineNo);
@@ -195,17 +196,18 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
                     }
                 }
 
-                currentBlock.collect(eventNum, simTime, value);
+                currentBlock->collect(eventNum, simTime, value);
             }
         }
 
         // finish last block
-        if (currentBlock.getCount() > 0) {
+        if (currentBlock->getCount() > 0) {
             assert(currentVectorRef != nullptr);
-            currentBlock.size = (int64_t)(reader.getFileSize() - currentBlock.startOffset);
-            if (currentBlock.size > currentVectorRef->blockSize)
-                currentVectorRef->blockSize = currentBlock.size;
-            currentVectorRef->addBlock(index.addBlock(currentBlock));
+            currentBlock->size = (int64_t)(reader.getFileSize() - currentBlock->startOffset);
+            if (currentBlock->size > currentVectorRef->blockSize)
+                currentVectorRef->blockSize = currentBlock->size;
+            currentVectorRef->addBlock(currentBlock);
+            index.addBlock(currentBlock);
         }
 
         if (numOfUnrecognizedLines > 0) {

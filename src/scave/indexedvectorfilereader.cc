@@ -181,10 +181,10 @@ VectorDatum *IndexedVectorFileReader::getEntryByEventnum(int vectorId, eventnumb
 
 void IndexedVectorFileReader::collectEntries(const std::set<int>& vectorIds)
 {
-    for (const auto &block : index->getBlocks()) {
-        if (contains(vectorIds, block.vectorId)) {
-            std::vector<VectorDatum> data = loadBlock(block);
-            adapterLambda(block.vectorId, data);
+    for (auto block : index->getBlocks()) {
+        if (contains(vectorIds, block->vectorId)) {
+            std::vector<VectorDatum> data = loadBlock(*block);
+            adapterLambda(block->vectorId, data);
         }
     }
 }
@@ -192,14 +192,14 @@ void IndexedVectorFileReader::collectEntries(const std::set<int>& vectorIds)
 void IndexedVectorFileReader::collectEntriesInSimtimeInterval(const std::set<int>& vectorIds, simultime_t startTime, simultime_t endTime)
 {
     for (const auto &block : index->getBlocks()) {
-        if (contains(vectorIds, block.vectorId)) {
-            if (block.endTime < startTime || block.startTime >= endTime) {
+        if (contains(vectorIds, block->vectorId)) {
+            if (block->endTime < startTime || block->startTime >= endTime) {
                 // no-op, block is completely out of filtered range
             }
-            else if (block.startTime >= startTime && block.endTime < endTime) {
+            else if (block->startTime >= startTime && block->endTime < endTime) {
                 // no need for filter, completely in range
-                std::vector<VectorDatum> data = loadBlock(block);
-                adapterLambda(block.vectorId, data);
+                std::vector<VectorDatum> data = loadBlock(*block);
+                adapterLambda(block->vectorId, data);
             }
             else {
                 // block is partially in range
@@ -207,8 +207,8 @@ void IndexedVectorFileReader::collectEntriesInSimtimeInterval(const std::set<int
                     return datum.simtime >= startTime && datum.simtime < endTime;
                 };
 
-                std::vector<VectorDatum> data = loadBlock(block, filter);
-                adapterLambda(block.vectorId, data);
+                std::vector<VectorDatum> data = loadBlock(*block, filter);
+                adapterLambda(block->vectorId, data);
             }
         }
     }
@@ -216,15 +216,15 @@ void IndexedVectorFileReader::collectEntriesInSimtimeInterval(const std::set<int
 
 void IndexedVectorFileReader::collectEntriesInEventnumInterval(const std::set<int>& vectorIds, eventnumber_t startEventNum, eventnumber_t endEventNum)
 {
-    for (const auto &block : index->getBlocks()) {
-        if (contains(vectorIds, block.vectorId)) {
-            if (block.endEventNum < startEventNum || block.startEventNum >= endEventNum) {
+    for (auto block : index->getBlocks()) {
+        if (contains(vectorIds, block->vectorId)) {
+            if (block->endEventNum < startEventNum || block->startEventNum >= endEventNum) {
                 // no-op, block is completely out of filtered range
             }
-            else if (block.startEventNum >= startEventNum && block.endEventNum < endEventNum) {
+            else if (block->startEventNum >= startEventNum && block->endEventNum < endEventNum) {
                 // no need for filter, completely in range
-                std::vector<VectorDatum> data = loadBlock(block);
-                adapterLambda(block.vectorId, data);
+                std::vector<VectorDatum> data = loadBlock(*block);
+                adapterLambda(block->vectorId, data);
             }
             else {
                 // block is partially in range
@@ -232,8 +232,8 @@ void IndexedVectorFileReader::collectEntriesInEventnumInterval(const std::set<in
                     return datum.eventNumber >= startEventNum && datum.eventNumber < endEventNum;
                 };
 
-                std::vector<VectorDatum> data = loadBlock(block, filter);
-                adapterLambda(block.vectorId, data);
+                std::vector<VectorDatum> data = loadBlock(*block, filter);
+                adapterLambda(block->vectorId, data);
             }
         }
     }

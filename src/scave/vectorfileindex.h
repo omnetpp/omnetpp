@@ -193,13 +193,13 @@ private:
     std::vector<VectorInfo> vectors;
     typedef std::map<int,int> VectorIdToIndexMap;
     VectorIdToIndexMap map; // maps vectorId to index in the vectors array
-    std::vector<Block> blocks; // all the blocks in the vector file
+    std::vector<Block *> blocks; // all the blocks in the vector file
 
 public:
 
-    Block *addBlock(const Block &block) { blocks.push_back(block); return &blocks.back(); }
+    void addBlock(Block *block) { blocks.push_back(block); }
 
-    const std::vector<Block>& getBlocks() const { return blocks; }
+    const std::vector<Block *>& getBlocks() const { return blocks; }
 
     int getNumberOfVectors() const { return vectors.size(); }
 
