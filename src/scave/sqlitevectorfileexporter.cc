@@ -143,7 +143,7 @@ void SqliteVectorFileExporter::saveResults(const std::string& fileName, ResultFi
         }
 
         // write data for all vectors
-        std::vector<XYArray *> xyArrays = readVectorsIntoArrays(manager, filteredList, vectorFilters); //TODO rather: set up vectorFileWriter as consumer in the dataflow network
+        std::vector<XYArray *> xyArrays = readVectorsIntoArrays(manager, filteredList, true, vectorFilters);
         Assert((int)xyArrays.size() == filteredList.size());
 
         //NOTE if there's no event number, order of values belonging to the same t will be undefined...

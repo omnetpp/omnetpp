@@ -14,12 +14,12 @@ import org.omnetpp.scave.engine.ScaveEngine;
 import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.scave.engine.XYArrayVector;
 
-public class VectorDataLoader { // TODO: deduplicate with VectorFileUtil
+public class VectorDataLoader {
     public static XYVector[] getDataOfVectors(ResultFileManager manager, IDList idlist, IProgressMonitor progressMonitor) {
 
         XYVector[] vectors = new XYVector[idlist.size()];
 
-        XYArrayVector out = ScaveEngine.readVectorsIntoArrays(manager, idlist);
+        XYArrayVector out = ScaveEngine.readVectorsIntoArrays(manager, idlist, false);
 
         for (int i = 0; i < out.size(); ++i) {
             XYArray xyArray = out.get(i);

@@ -149,7 +149,7 @@ void OmnetppVectorFileExporter::saveResults(const std::string& fileName, ResultF
         }
 
         // write data for all vectors
-        std::vector<XYArray *> xyArrays = readVectorsIntoArrays(manager, filteredList, vectorFilters); //TODO rather: set up vectorFileWriter as consumer in the dataflow network
+        std::vector<XYArray *> xyArrays = readVectorsIntoArrays(manager, filteredList, true, vectorFilters);
         Assert((int)xyArrays.size() == filteredList.size());
 
         for (int i = 0; i < filteredList.size(); i++) {

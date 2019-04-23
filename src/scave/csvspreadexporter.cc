@@ -272,7 +272,7 @@ void CsvForSpreadsheetExporter::saveVectors(ResultFileManager *manager, const ID
 {
     //TODO use monitor
     collectItervars(manager, idlist);
-    std::vector<XYArray *> xyArrays = readVectorsIntoArrays(manager, idlist, vectorFilters);
+    std::vector<XYArray *> xyArrays = readVectorsIntoArrays(manager, idlist, true, vectorFilters);
     assert((int)xyArrays.size() == idlist.size());
 
     int numVectors = (int)idlist.size();

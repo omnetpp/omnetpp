@@ -70,17 +70,18 @@ class SCAVE_API IndexedVectorFileReader
 
         std::string fname;  // file name of the vector file
         VectorFileIndex *index; // index of the vector file, loaded fully into the memory
+        bool includeEventNumbers;
 
     protected:
         /** reads a block from the vector file */
         Entries loadBlock(const Block& block, std::function<bool(const VectorDatum&)> filter = nullptr);
 
     public:
-        explicit IndexedVectorFileReader(const char* filename, Adapter *adapter) :
-            IndexedVectorFileReader(filename, [adapter](int vectorId, const std::vector<VectorDatum>& data) { adapter->process(vectorId, data); })
+        explicit IndexedVectorFileReader(const char* filename, bool includeEventNumbers, Adapter *adapter) :
+            IndexedVectorFileReader(filename, includeEventNumbers, [adapter](int vectorId, const std::vector<VectorDatum>& data) { adapter->process(vectorId, data); })
         { }
 
-        explicit IndexedVectorFileReader(const char* filename, AdapterLambdaType adapter);
+        explicit IndexedVectorFileReader(const char* filename, bool includeEventNumbers, AdapterLambdaType adapter);
         ~IndexedVectorFileReader();
 
         /**

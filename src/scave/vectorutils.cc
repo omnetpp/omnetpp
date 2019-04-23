@@ -33,27 +33,28 @@ namespace omnetpp {
 using namespace common;
 namespace scave {
 
-XYArray *convertVectorData(const std::vector<VectorDatum>& data)
+XYArray *convertVectorData(const std::vector<VectorDatum>& data, bool includeEventNumbers)
 {
     int l = data.size();
 
     double* xv = new double[l];
     double* yv = new double[l];
     BigDecimal* xpv = new BigDecimal[l];
-    eventnumber_t* ev = new eventnumber_t[l];
+    eventnumber_t* ev = includeEventNumbers ? new eventnumber_t[l] : nullptr;
 
     for (int i = 0; i < data.size(); ++i) {
         const VectorDatum &vd = data[i];
         xv[i] = vd.simtime.dbl();
         yv[i] = vd.value;
         xpv[i] = vd.simtime;
-        ev[i] = vd.eventNumber;
+        if (includeEventNumbers)
+            ev[i] = vd.eventNumber;
     }
 
     return new XYArray(l, xv, yv, xpv, ev);
 }
 
-vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList& idlist, const std::vector<std::string>& filters)
+vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList& idlist, bool includeEventNumbers, const std::vector<std::string>& filters)
 {
     if (!filters.empty())
         throw opp_runtime_error("Vector filters not supported.");
@@ -90,13 +91,13 @@ vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList
             addAll(result[vectorIdToIndex.at(vectorId)], data);
         };
 
-        IndexedVectorFileReader reader(resultFile->getFileSystemFilePath().c_str(), adapter);
+        IndexedVectorFileReader reader(resultFile->getFileSystemFilePath().c_str(), includeEventNumbers, adapter);
         reader.collectEntries(vectorIdsInFile);
     }
 
     vector<XYArray *> xyArrays;
     for (int i = 0; i < idlist.size(); i++) {
-        xyArrays.push_back(convertVectorData(result[i]));
+        xyArrays.push_back(convertVectorData(result[i], includeEventNumbers));
         result[i].clear();
     }
 

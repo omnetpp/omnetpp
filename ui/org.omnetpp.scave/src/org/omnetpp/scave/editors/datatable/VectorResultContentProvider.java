@@ -145,7 +145,7 @@ public class VectorResultContentProvider implements IVirtualTableContentProvider
                 String filename = vector.getFileRun().getFile().getFileSystemFilePath();
 
                 try {
-                    reader = new IndexedVectorFileReader(filename, (Adapter)null);
+                    reader = new IndexedVectorFileReader(filename, true, (Adapter)null);
                 }
                 catch (Exception e) {
                     ScavePlugin.logError("Cannot open index file: "+filename, e);

@@ -35,8 +35,8 @@ namespace scave {
 
 //=========================================================================
 
-IndexedVectorFileReader::IndexedVectorFileReader(const char *filename, AdapterLambdaType adapterLambda)
-    : adapterLambda(adapterLambda), fname(filename), index(nullptr)
+IndexedVectorFileReader::IndexedVectorFileReader(const char *filename, bool includeEventNumbers, AdapterLambdaType adapterLambda)
+    : adapterLambda(adapterLambda), fname(filename), index(nullptr), includeEventNumbers(includeEventNumbers)
 {
     std::string ifname = IndexFileUtils::getIndexFileName(filename);
     IndexFileReader indexReader(ifname.c_str());
@@ -100,7 +100,7 @@ Entries IndexedVectorFileReader::loadBlock(const Block& block, std::function<boo
         entry.serial = block.startSerial+i;
         for (int j = 0; j < columnsNo; ++j) {
             switch (columns[j]) {
-                case 'E': CHECK(parseInt64(tokens[j+1], entry.eventNumber), "Malformed event number", block, i); break;
+                case 'E': if (includeEventNumbers) { CHECK(parseInt64(tokens[j+1], entry.eventNumber), "Malformed event number", block, i); } break;
                 case 'T': CHECK(parseSimtime(tokens[j+1], entry.simtime), "Malformed simulation time", block, i); break;
                 case 'V': CHECK(parseDouble(tokens[j+1], entry.value), "Malformed vector value", block, i); break;
                 default: CHECK(false, "Unknown column", block, i); break;

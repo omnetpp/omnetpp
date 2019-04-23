@@ -22,7 +22,7 @@ import org.omnetpp.scave.engine.XYArrayVector;
  *
  * @author Andras
  */
-public class VectorFileUtil { // TODO deduplicate with VectorDataLoader
+public class VectorFileUtil {
     // all functions are static
     private VectorFileUtil() {
     }
@@ -39,7 +39,7 @@ public class VectorFileUtil { // TODO deduplicate with VectorDataLoader
         IDList idList = new IDList();
         idList.add(id);
 
-        XYArrayVector out = ScaveEngine.readVectorsIntoArrays(resultfileManager, idList);
+        XYArrayVector out = ScaveEngine.readVectorsIntoArrays(resultfileManager, idList, includeEventNumbers);
 
         assertEquals(out.size(), 1);
 
