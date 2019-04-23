@@ -27,6 +27,7 @@
 #include "xyarray.h"
 #include "resultfilemanager.h"
 #include "exportutils.h"
+#include "vectorutils.h"
 
 using namespace std;
 using namespace omnetpp::common;

@@ -17,6 +17,7 @@
 #include "scave/resultfilemanager.h"
 #include "scave/fields.h"
 #include "scave/exportutils.h"
+#include "scave/vectorutils.h"
 #include "scave/datasorter.h"
 #include "scave/vectorfileindex.h"
 #include "scave/indexfileutils.h"
@@ -571,3 +572,6 @@ namespace omnetpp { namespace scave {
 
 /* ------------------ xyarray.h ----------------------- */
 %include "scave/xyarray.h"
+
+/* ------------------ vectorutils.h ----------------------- */
+%include "scave/vectorutils.h"

@@ -27,6 +27,7 @@
 #include "datasorter.h"
 #include "datatable.h"
 #include "exportutils.h"
+#include "vectorutils.h"
 #include "sqlitevectorfileexporter.h"
 
 using namespace std;
