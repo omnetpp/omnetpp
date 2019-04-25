@@ -92,22 +92,30 @@ class SIM_API cXMLElement : public cObject, noncopyable
     };
 
   private:
-    std::string ename;
-    std::string srcloc;
-    std::string value;
-    cXMLAttributeMap attrs;
-    cXMLElement *parent;
-    cXMLElement *firstChild;
-    cXMLElement *lastChild;
-    cXMLElement *prevSibling;
-    cXMLElement *nextSibling;
+    const char *ename = nullptr;
+    const char *value = nullptr;
+    const char **attrs = nullptr; // name,value,name,value,...,nullptr
+    cXMLElement *parent = nullptr;
+    cXMLElement *firstChild = nullptr;
+    cXMLElement *lastChild = nullptr;
+    cXMLElement *prevSibling = nullptr;
+    cXMLElement *nextSibling = nullptr;
+    const char *filename = nullptr;
+    int lineNumber = -1;
+    int numAttrs = 0;
 
   private:
      void doGetElementsByTagName(const char *tagname, cXMLElementList& list) const;
 
   public:
     // internal: Constructor
-    cXMLElement(const char *tagname, const char *srcloc, cXMLElement *parent);
+    cXMLElement(const char *tagname, cXMLElement *parent);
+
+    // internal: sets source location
+    virtual void setSourceLocation(const char *fname, int line);
+
+    // internal: sets text node within element
+    virtual void setNodeValue(const char *s);
 
     // internal: sets text node within element
     virtual void setNodeValue(const char *s, int len);
@@ -120,6 +128,9 @@ class SIM_API cXMLElement : public cObject, noncopyable
 
     // internal: Sets the value of the attribute with the given name.
     virtual void setAttribute(const char *attr, const char *value);
+
+    // internal: Set attributes of the element: name,value,name,value,...,nullptr
+    virtual void setAttributes(const char **attrs);
 
     // internal: Appends the given element at the end of the child element list.
     virtual void appendChild(cXMLElement *node);
@@ -137,11 +148,19 @@ class SIM_API cXMLElement : public cObject, noncopyable
 
   private:
     // internal
+    void deleteAttrs();
+    const char **findAttr(const char *attr) const;
+    const char **addAttr(const char *attr);
+    static const char *getPooledName(const char *s);
+    static const char *makeValue(const char *s);
+    static void freeValue(const char *s);
     virtual void print(std::ostream& os, int indentLevel) const;
 
     // internal, for inspectors only; O(n) complexity!
     int getNumAttrs() const;
-    std::string getAttr(int index) const;
+    const char *getAttrName(int index) const;
+    const char *getAttrValue(int index) const;
+    std::string getAttrDesc(int index) const;
     int getNumChildren() const;
     cXMLElement *getChild(int index) const;
 
@@ -186,7 +205,7 @@ class SIM_API cXMLElement : public cObject, noncopyable
      * Returns a string containing a file/line position showing where this
      * element originally came from.
      */
-    virtual const char *getSourceLocation() const;
+    virtual std::string getSourceLocation() const;
 
     /**
      * Returns text node in the element, or nullptr otherwise.
@@ -206,9 +225,9 @@ class SIM_API cXMLElement : public cObject, noncopyable
     virtual bool hasAttributes() const;
 
     /**
-     * Returns attributes as a const (immutable) std::map.
+     * Returns attributes in an a std::map.
      */
-    virtual const cXMLAttributeMap& getAttributes() const;
+    virtual cXMLAttributeMap getAttributes() const;
 
     /**
      * Returns the subtree as an XML fragment.

@@ -933,7 +933,7 @@ class cXMLElement extends cObject
     string tagName @hint("XML element tag");
     string nodeValue @hint("Contents of text node inside this XML element");
     string sourceLocation @hint("Location this XML element was parsed from");
-    string attributes[] @getter(getAttr) @sizeGetter(getNumAttrs) @hint("Attributes");
+    string attributes[] @getter(getAttrDesc) @sizeGetter(getNumAttrs) @hint("Attributes");
     cXMLElement *children[] @getter(getChild) @sizeGetter(getNumChildren) @hint("Child elements");
     string xml @getter(getXML) @hint("Element tree as XML fragment");
 }

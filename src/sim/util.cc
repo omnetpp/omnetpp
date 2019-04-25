@@ -341,7 +341,7 @@ void _sim_dummy_func()
     cStringTokenizer tok("");
     tok.nextToken();
     std_sim_descriptor_dummy();
-    cXMLElement a(nullptr, nullptr, nullptr);
+    cXMLElement a(nullptr, nullptr);
     (void)a;
     cDelayChannel dc(nullptr);
     (void)dc;
