@@ -74,7 +74,7 @@ class cXMLSAXHandler : public SAXHandler
 
 cXMLSAXHandler::cXMLSAXHandler(const char *fname)
 {
-    root = current = new cXMLElement("/", "", nullptr);  // "Document node" (used as sort of a sentry)
+    root = current = new cXMLElement("/", nullptr);  // "Document node" (used as sort of a sentry)
     sourcefilename = fname;
 }
 
@@ -86,23 +86,18 @@ cXMLSAXHandler::~cXMLSAXHandler()
 cXMLElement *cXMLSAXHandler::getTree()
 {
     cXMLElement *tree = root;
-    root = current = new cXMLElement("/", "", nullptr);
+    root = current = new cXMLElement("/", nullptr);
     return tree;
 }
 
 void cXMLSAXHandler::startElement(const char *name, const char **atts)
 {
-    // source location
-    char srcloc[500];
-    sprintf(srcloc, "%s:%d", sourcefilename, parser->getCurrentLineNumber());
+    cXMLElement *node = new cXMLElement(name, current);
+    node->setSourceLocation(sourcefilename, parser->getCurrentLineNumber());
+    if (atts)
+        node->setAttributes(atts);
 
-    // create element
-    cXMLElement *node = new cXMLElement(name, srcloc, current);
     current = node;
-
-    // set attributes
-    for (int i = 0; atts && atts[i]; i += 2)
-        node->setAttribute(atts[i], atts[i+1]);
 }
 
 void cXMLSAXHandler::endElement(const char *name)

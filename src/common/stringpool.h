@@ -53,6 +53,7 @@ class COMMON_API StringPool
     StringPool();
     ~StringPool();
     const char *get(const char *s);
+    bool contains(const char *s) const;
     void clear();
 };
 

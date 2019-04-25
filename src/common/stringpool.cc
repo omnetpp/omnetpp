@@ -49,6 +49,11 @@ const char *StringPool::get(const char *s)
     return str;
 }
 
+bool StringPool::contains(const char *s) const
+{
+    return s == nullptr ? true : pool.find(const_cast<char *>(s)) != pool.end();
+}
+
 }  // namespace common
 }  // namespace omnetpp
 

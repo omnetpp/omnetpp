@@ -22,6 +22,7 @@
 #include <string>
 #include "common/opp_ctype.h"
 #include "common/stringutil.h"
+#include "common/stringpool.h"
 #include "omnetpp/cxmlelement.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/cenvir.h"
@@ -35,17 +36,8 @@ namespace omnetpp {
 
 using std::ostream;
 
-cXMLElement::cXMLElement(const char *tagName, const char *srclocation, cXMLElement *parent)
+cXMLElement::cXMLElement(const char *tagName, cXMLElement *parent) : ename(getPooledName(tagName))
 {
-    ename = tagName;
-    srcloc = srclocation;
-
-    this->parent = nullptr;
-    firstChild = nullptr;
-    lastChild = nullptr;
-    prevSibling = nullptr;
-    nextSibling = nullptr;
-
     if (parent)
         parent->appendChild(this);
 }
@@ -57,21 +49,24 @@ cXMLElement::~cXMLElement()
 
     while (firstChild)
         delete removeChild(firstChild);
+
+    freeValue(value);
+    deleteAttrs();
 }
 
 std::string cXMLElement::str() const
 {
     std::stringstream os;
     os << "<" << getTagName();
-    for (auto & attr : getAttributes())
-        os << " " << attr.first << "=\"" << opp_xmlQuote(attr.second.c_str()) << "\"";
+    for (int i = 0; i < getNumAttrs(); i++)
+        os << " " << getAttrName(i) << "=\"" << opp_xmlQuote(getAttrValue(i)) << "\"";
     if (!*getNodeValue() && !getFirstChild())
         os << "/>";
     else
         os << ">...</" << getTagName() << ">";
 
-    const char *loc = getSourceLocation();
-    if (!opp_isempty(loc))
+    std::string loc = getSourceLocation();
+    if (!loc.empty())
         os << " at " << loc;
     return os.str();
 }
@@ -82,42 +77,137 @@ void cXMLElement::forEachChild(cVisitor *v)
         v->visit(child);
 }
 
-const char *cXMLElement::getTagName() const
+const char *cXMLElement::getPooledName(const char *s)
 {
-    return ename.c_str();
+    static StringPool namePool;
+    return namePool.get(s);
 }
 
-const char *cXMLElement::getSourceLocation() const
+static StringPool valuePool;
+
+const char *cXMLElement::makeValue(const char *s)
 {
-    return srcloc.c_str();
+    bool poolable = strlen(s) <= 5; // short strings are more likely occur multiple times in XML files, and there's little penalty for pooling them if they do not
+    return poolable ? valuePool.get(s) : opp_strdup(s);
+}
+
+void cXMLElement::freeValue(const char *s)
+{
+    if (!valuePool.contains(s))
+        delete [] s;
+}
+
+const char *cXMLElement::getTagName() const
+{
+    return ename;
+}
+
+void cXMLElement::setSourceLocation(const char *fname, int line)
+{
+    filename = getPooledName(fname);
+    lineNumber = line;
+}
+
+std::string cXMLElement::getSourceLocation() const
+{
+    if (filename == nullptr)
+        return "";
+    std::stringstream os;
+    os << filename << ":" << lineNumber;
+    return os.str();
 }
 
 const char *cXMLElement::getNodeValue() const
 {
-    return value.c_str();
+    return opp_nulltoempty(value);
+}
+
+void cXMLElement::setNodeValue(const char *s)
+{
+    freeValue(value);
+    value = makeValue(s);
 }
 
 void cXMLElement::setNodeValue(const char *s, int len)
 {
-    value.assign(s, len);
+    std::string tmp(s, len);
+    setNodeValue(tmp.c_str());
 }
 
 void cXMLElement::appendNodeValue(const char *s, int len)
 {
-    value.append(s, len);
+    std::string tmp(opp_nulltoempty(value));
+    tmp.append(s, len);
+    setNodeValue(tmp.c_str());
+}
+
+const char **cXMLElement::findAttr(const char *attr) const
+{
+    if (attrs)
+        for (const char **p = attrs; *p; p += 2)
+            if (strcmp(*p, attr) == 0)
+                return p+1;
+    return nullptr;
+}
+
+const char **cXMLElement::addAttr(const char *attr)
+{
+    // append new attr
+    const char **newAttrs = new const char *[2*numAttrs+2+1];
+    for (int i = 0; i < 2*numAttrs; i++)
+        newAttrs[i] = attrs[i];
+    const char **newAttr = attrs + 2*numAttrs;
+    newAttr[0] = getPooledName(attr);
+    newAttr[1] = nullptr; // value
+    newAttr[2] = nullptr; // end marker
+    delete [] attrs;
+    attrs = newAttrs;
+    numAttrs++;
+    return &newAttr[1];
+}
+
+void cXMLElement::deleteAttrs()
+{
+    if (attrs) {
+        for (const char **p = attrs; *p; p += 2)
+            freeValue(*(p+1));
+        delete [] attrs;
+        attrs = nullptr;
+        numAttrs = 0;
+    }
 }
 
 const char *cXMLElement::getAttribute(const char *attr) const
 {
-    cXMLAttributeMap::const_iterator it = attrs.find(std::string(attr));
-    if (it == attrs.end())
-        return nullptr;
-    return it->second.c_str();
+    const char **pval = findAttr(attr);
+    return pval == nullptr ? nullptr : opp_nulltoempty(*pval);
 }
 
 void cXMLElement::setAttribute(const char *attr, const char *value)
 {
-    attrs[std::string(attr)] = std::string(value);
+    const char **pval = findAttr(attr);
+    if (!pval)
+        pval = addAttr(attr);
+
+    freeValue(*pval);
+    *pval = makeValue(value);
+}
+
+void cXMLElement::setAttributes(const char **newAttrs)
+{
+    deleteAttrs();
+
+    if (newAttrs && newAttrs[0]) {
+        numAttrs = 0;
+        for (const char **p = newAttrs; *p; p += 2)
+            numAttrs++;
+        attrs = new const char *[2*numAttrs+1];
+        for (int i = 0; i < numAttrs; i++) {
+            attrs[2*i] = getPooledName(newAttrs[2*i]);
+            attrs[2*i+1] = makeValue(newAttrs[2*i+1]);
+        }
+        attrs[2*numAttrs] = nullptr;
+    }
 }
 
 cXMLElement *cXMLElement::getParentNode() const
@@ -194,12 +284,16 @@ bool cXMLElement::hasChildren() const
 
 bool cXMLElement::hasAttributes() const
 {
-    return !attrs.empty();
+    return attrs != nullptr;
 }
 
-const cXMLAttributeMap& cXMLElement::getAttributes() const
+cXMLAttributeMap cXMLElement::getAttributes() const
 {
-    return attrs;
+    cXMLAttributeMap map;
+    if (attrs)
+        for (const char **p = attrs; *p; p += 2)
+            map[*p] = opp_nulltoempty(*(p+1));
+    return map;
 }
 
 cXMLElement *cXMLElement::getFirstChildWithTag(const char *tagName) const
@@ -332,17 +426,26 @@ void cXMLElement::print(std::ostream& os, int indentLevel) const
 
 int cXMLElement::getNumAttrs() const
 {
-    return getAttributes().size();
+    return numAttrs;
 }
 
-std::string cXMLElement::getAttr(int index) const
+const char *cXMLElement::getAttrName(int index) const
 {
-    cXMLAttributeMap map = getAttributes();
-    cXMLAttributeMap::iterator it = map.begin();
-    for (int i = 0; i < index && it != map.end(); i++)
-        ++it;
-    ASSERT(it != map.end());
-    return it->first + "=\"" + opp_xmlQuote(it->second.c_str()) + "\"";
+    ASSERT(index < numAttrs);
+    return attrs[2*index];
+}
+
+const char *cXMLElement::getAttrValue(int index) const
+{
+    ASSERT(index < numAttrs);
+    return opp_nulltoempty(attrs[2*index+1]);
+}
+
+std::string cXMLElement::getAttrDesc(int index) const
+{
+    std::stringstream out;
+    out << getAttrName(index) << "=\"" + opp_xmlQuote(getAttrValue(index)) << "\"";
+    return out.str();
 }
 
 int cXMLElement::getNumChildren() const
