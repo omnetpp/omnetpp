@@ -142,11 +142,11 @@ public class OnClosingWelcomeView implements IPageListener, IPartListener {
     }
 
     protected void onCloseOrResize(final IWorkbenchPart part, final boolean closed) {
-        Display.getCurrent().asyncExec(new Runnable() {
+        Display.getCurrent().syncExec(new Runnable() {
             @Override
             public void run() {
                 IWorkbenchPage page = part.getSite().getPage();
-                int partState = page.getPartState(page.getReference(part));
+                int partState = page == null ? IWorkbenchPage.STATE_MAXIMIZED : page.getPartState(page.getReference(part));
                 // KLUDGE: we need to delay this check because the part state will change only after the control resize event is handled
                 if (!hasBeenRun && (closed || partState != IWorkbenchPage.STATE_MAXIMIZED) && !PlatformUI.getWorkbench().isClosing()) {
                     try {
