@@ -11,6 +11,7 @@
 #include "OsgEarthScene.h"
 
 #include <osgDB/ReadFile>
+#include <osgEarth/Version>
 #include <osgEarth/Viewpoint>
 #include <osgEarth/MapNode>
 #include <osgEarth/Capabilities>
@@ -69,12 +70,18 @@ void OsgEarthScene::initialize()
     rectStyle.getOrCreate<AltitudeSymbol>()->clamping() = AltitudeSymbol::CLAMP_TO_TERRAIN;
     rectStyle.getOrCreate<AltitudeSymbol>()->technique() = AltitudeSymbol::TECHNIQUE_DRAPE;
         RectangleNode *rect = new RectangleNode(
+#if OSGEARTH_VERSION_LESS_THAN(2, 10, 0)
         mapNode,
+#endif
         GeoPoint(geoSRS, centerLongitude, centerLatitude),
         Linear(playgroundWidth, Units::METERS),
         Linear(playgroundHeight, Units::METERS),
         rectStyle);
+#if OSGEARTH_VERSION_GREATER_OR_EQUAL(2, 10, 0)
+    mapNode->addChild(rect);
+#else
     mapNode->getModelLayerGroup()->addChild(rect);
+#endif
 }
 
 OsgEarthScene *OsgEarthScene::getInstance()

@@ -11,6 +11,7 @@
 #include "ChannelController.h"
 
 #include <osg/PositionAttitudeTransform>
+#include <osgEarth/Version>
 
 
 using namespace osgEarth;
@@ -81,9 +82,17 @@ void ChannelController::initialize(int stage)
 
         if (showConnections) {
             auto geoSRS = mapNode->getMapSRS()->getGeographicSRS();
+#if OSGEARTH_VERSION_GREATER_OR_EQUAL(2, 10, 0)
+            connectionGraphNode = new FeatureNode(new Feature(new LineString(), geoSRS));
+#else
             connectionGraphNode = new FeatureNode(mapNode.get(), new Feature(new LineString(), geoSRS));
+#endif
             connectionGraphNode->getOrCreateStateSet()->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+#if OSGEARTH_VERSION_GREATER_OR_EQUAL(2, 10, 0)
+            mapNode->addChild(connectionGraphNode);
+#else
             mapNode->getModelLayerGroup()->addChild(connectionGraphNode);
+#endif
         }
         break;
     }

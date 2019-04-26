@@ -17,6 +17,7 @@
 #include <osg/Node>
 #include <osg/PositionAttitudeTransform>
 #include <osgEarth/Capabilities>
+#include <osgEarth/Version>
 #include <osgEarthAnnotation/LabelNode>
 #include <osgEarthSymbology/Geometry>
 #include <osgEarthFeatures/Feature>
@@ -102,8 +103,14 @@ void MobileNode::initialize(int stage)
             rangeStyle.getOrCreate<PolygonSymbol>()->fill()->color() = osgEarth::Color(rangeColor);
             rangeStyle.getOrCreate<AltitudeSymbol>()->clamping() = AltitudeSymbol::CLAMP_TO_TERRAIN;
             rangeStyle.getOrCreate<AltitudeSymbol>()->technique() = AltitudeSymbol::TECHNIQUE_DRAPE;
+#if OSGEARTH_VERSION_GREATER_OR_EQUAL(2, 10, 0)
+            rangeNode = new CircleNode();
+            rangeNode->set(GeoPoint::INVALID, Linear(txRange, Units::METERS), rangeStyle);
+            mapNode->addChild(rangeNode);
+#else
             rangeNode = new CircleNode(mapNode.get(), GeoPoint::INVALID, Linear(txRange, Units::METERS), rangeStyle);
             mapNode->getModelLayerGroup()->addChild(rangeNode);
+#endif
         }
 
         // create a node containing a track showing the past trail of the model
@@ -113,12 +120,21 @@ void MobileNode::initialize(int stage)
             trailStyle.getOrCreate<AltitudeSymbol>()->clamping() = AltitudeSymbol::CLAMP_RELATIVE_TO_TERRAIN;
             trailStyle.getOrCreate<AltitudeSymbol>()->technique() = AltitudeSymbol::TECHNIQUE_DRAPE;
             auto geoSRS = mapNode->getMapSRS()->getGeographicSRS();
+#if OSGEARTH_VERSION_GREATER_OR_EQUAL(2, 10, 0)
+            trailNode = new FeatureNode(new Feature(new LineString(), geoSRS));
+            mapNode->addChild(trailNode);
+#else
             trailNode = new FeatureNode(mapNode.get(), new Feature(new LineString(), geoSRS));
             mapNode->getModelLayerGroup()->addChild(trailNode);
+#endif
         }
 
         // add the locator node to the scene
+#if OSGEARTH_VERSION_GREATER_OR_EQUAL(2, 10, 0)
+        mapNode->addChild(geoTransform);
+#else
         mapNode->getModelLayerGroup()->addChild(geoTransform);
+#endif
 
         // this will make the animation smoother, and the playback speed slider effective
         getParentModule()->getCanvas()->setAnimationSpeed(10, this);
