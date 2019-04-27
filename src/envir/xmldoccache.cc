@@ -18,6 +18,8 @@
 #include "xmldoccache.h"
 
 #include "common/fileutil.h"
+#include "common/stringutil.h"
+#include "common/opp_ctype.h"
 #include "nedxml/saxparser.h"
 #include "omnetpp/cobject.h"
 #include "omnetpp/cxmlelement.h"
@@ -105,9 +107,26 @@ void cXMLSAXHandler::endElement(const char *name)
     current = current->getParentNode();
 }
 
+inline bool isBlank(const char *s, int len)
+{
+    for (int i=0; i<len; i++)
+        if (!opp_isspace(s[i]))
+            return false;
+    return true;
+}
+
 void cXMLSAXHandler::characterData(const char *s, int len)
 {
-    current->appendNodeValue(s, len);
+    // Ignore pure whitespace content between and inside elements, as it has no
+    // significance but may significantly slow down parsing due to repeated calls
+    // to cXMLElement::appendNodeValue(), a costly operation.
+    //
+    // The following simple solution has the side effect of possibly losing
+    // leading whitespace before significant content, but it is acceptable,
+    // given that the main use of XML files in OMNeT++ is configuration.
+    //
+    if (!opp_isempty(current->getNodeValue()) || !isBlank(s, len))
+        current->appendNodeValue(s, len);
 }
 
 void cXMLSAXHandler::processingInstruction(const char *target, const char *data)
