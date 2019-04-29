@@ -29,9 +29,9 @@ O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/nedxml
 
 INCL_FLAGS= -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)"
 
-COPTS=$(CFLAGS) $(XML_CFLAGS) $(INCL_FLAGS)
+COPTS=$(CFLAGS) $(LIBXML_CFLAGS) $(INCL_FLAGS)
 
-IMPLIBS= -loppcommon$D $(XML_LIBS)
+IMPLIBS= -loppcommon$D $(LIBXML_LIBS)
 
 OBJS= $O/astnode.o $O/sourcedocument.o $O/errorstore.o $O/exception.o \
       $O/nedelements.o $O/nedvalidator.o $O/neddtdvalidator.o $O/dtdvalidationutils.o \
@@ -40,7 +40,7 @@ OBJS= $O/astnode.o $O/sourcedocument.o $O/errorstore.o $O/exception.o \
       $O/nedparser.o $O/nedyyutil.o $O/msgparser.o $O/msgyyutil.o $O/yyutil.o\
       $O/ned2.tab.o $O/lex.ned2yy.o $O/nedtools.o $O/nedutil.o \
       $O/nedgenerator.o $O/msggenerator.o $O/xmlgenerator.o \
-      $O/xmlastparser.o $O/astbuilder.o $O/saxparser_$(XMLPARSER).o \
+      $O/xmlastparser.o $O/astbuilder.o \
       $O/msg2.tab.o $O/lex.msg2yy.o \
       $O/msgcompiler.o $O/msgtypetable.o $O/msganalyzer.o $O/msgcodegenerator.o \
       $O/msgcompilerold.o $O/sim_std_msg.o \

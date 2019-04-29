@@ -20,7 +20,7 @@
 
 #include "errorstore.h"
 #include "astnode.h"
-#include "saxparser.h"
+#include "common/saxparser.h"
 
 namespace omnetpp {
 namespace nedxml {
@@ -45,7 +45,7 @@ namespace nedxml {
  *
  * @ingroup XMLParser
  */
-class NEDXML_API ASTBuilder : public SAXHandler
+class NEDXML_API ASTBuilder : public omnetpp::common::SaxHandler
 {
     ASTNode *root;
     ASTNode *current;
@@ -74,9 +74,6 @@ class NEDXML_API ASTBuilder : public SAXHandler
     virtual void endElement(const char *name) override;
     virtual void characterData(const char *s, int len) override;
     virtual void processingInstruction(const char *target, const char *data) override;
-    virtual void comment(const char *data) override;
-    virtual void startCdataSection() override;
-    virtual void endCdataSection() override;
     //@}
 };
 

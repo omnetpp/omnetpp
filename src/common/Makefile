@@ -26,9 +26,9 @@ O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/common
 
 INCL_FLAGS= -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)"
 
-COPTS=-Wno-unused-function $(CFLAGS) $(INCL_FLAGS)
+COPTS=-Wno-unused-function $(CFLAGS) $(LIBXML_CFLAGS) $(INCL_FLAGS)
 
-IMPLIBS=
+IMPLIBS= $(LIBXML_LIBS)
 
 OBJS= $O/lcgrandom.o $O/filereader.o $O/linetokenizer.o \
       $O/stringpool.o $O/stringtokenizer.o $O/fnamelisttokenizer.o \
@@ -40,7 +40,8 @@ OBJS= $O/lcgrandom.o $O/filereader.o $O/linetokenizer.o \
       $O/formattedprinter.o $O/csvwriter.o $O/jsonwriter.o $O/sqliteresultfileschema.o \
       $O/sqlitescalarfilewriter.o  $O/sqlitevectorfilewriter.o \
       $O/omnetppscalarfilewriter.o $O/omnetppvectorfilewriter.o \
-      $O/exprnode.o $O/exprnodes.o $O/exprvalue.o $O/intutil.o
+      $O/exprnode.o $O/exprnodes.o $O/exprvalue.o $O/intutil.o \
+      $O/saxparser_default.o $O/saxparser_libxml.o $O/saxparser_yxml.o $O/yxml.o
 
 GENERATED_SOURCES= expression.tab.hh expression.tab.cc lex.expressionyy.cc \
                    matchexpression.tab.hh matchexpression.tab.cc
@@ -109,6 +110,11 @@ $O/sqlite3.o: sqlite3.c
 	@mkdir -p $O
 	$(qecho) "$<"
 	$(Q)$(CC) -c $(COPTS) -Wno-deprecated-declarations $(EXPORT_DEFINES) -DSQLITE_THREADSAFE=0 -DSQLITE_OMIT_LOAD_EXTENSION -DSQLITE_DEFAULT_FOREIGN_KEYS=1 -o $@ $<
+
+$O/yxml.o: yxml.c
+	@mkdir -p $O
+	$(qecho) "$<"
+	$(Q)$(CC) -c -I. $(COPTS) $(EXPORT_DEFINES) -o $@ $<
 
 # copy files to the bin and lib directories from the out directory
 $(OMNETPP_BIN_DIR)/% $(OMNETPP_LIB_DIR)/%: $O/% $(CONFIGFILE)

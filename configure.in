@@ -952,81 +952,62 @@ else
 fi
 
 #----------------------
-# Check for XML parsers: EXPAT and/or LIBXML
+# Check for LibXML2
 #----------------------
-if test -n "$LIBXML_LIBS"; then
-    OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS $LIBXML_CFLAGS, $LIBXML_LIBS, libxml_ok)
-else
-    OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS $LIBXML_CFLAGS, -lxml2,
-                  libxml_ok, LIBXML_LIBS="-lxml2")
+if test "$WITH_LIBXML" = "yes"; then
+  if test -n "$LIBXML_LIBS"; then
+      OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS $LIBXML_CFLAGS, $LIBXML_LIBS, libxml_ok)
+  else
+      OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS $LIBXML_CFLAGS, -lxml2,
+                    libxml_ok, LIBXML_LIBS="-lxml2")
 
-    if test $libxml_ok = no; then
-        OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS -I/usr/include/libxml2, -lxml2,
-                      libxml_ok, LIBXML_CFLAGS="-I/usr/include/libxml2" LIBXML_LIBS="-lxml2")
-    fi
+      if test $libxml_ok = no; then
+          OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS -I/usr/include/libxml2, -lxml2,
+                        libxml_ok, LIBXML_CFLAGS="-I/usr/include/libxml2" LIBXML_LIBS="-lxml2")
+      fi
 
-    # test also in the /mingw32 directory because on MSYS2 this is the default
-    if test $libxml_ok = no; then
-        OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS -I/mingw32/include/libxml2, -lxml2,
-                      libxml_ok, LIBXML_CFLAGS="-I/mingw32/include/libxml2" LIBXML_LIBS="-lxml2")
-    fi
-    if test $libxml_ok = no; then
-        OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS -I/mingw64/include/libxml2, -lxml2,
-                      libxml_ok, LIBXML_CFLAGS="-I/mingw64/include/libxml2" LIBXML_LIBS="-lxml2")
-    fi
-    # msys/visualc version
-    if test $libxml_ok = no; then
-        OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS_ARCH $CFLAGS -I/visualc/include/libxml2, $LDFLAGS_ARCH -llibxml2,
-                      libxml_ok, LIBXML_CFLAGS="-I/visualc/include/libxml2" LIBXML_LIBS="-llibxml2")
-    fi
-fi
+      # test also in the /mingw32 directory because on MSYS2 this is the default
+      if test $libxml_ok = no; then
+          OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS -I/mingw32/include/libxml2, -lxml2,
+                        libxml_ok, LIBXML_CFLAGS="-I/mingw32/include/libxml2" LIBXML_LIBS="-lxml2")
+      fi
+      if test $libxml_ok = no; then
+          OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS -I/mingw64/include/libxml2, -lxml2,
+                        libxml_ok, LIBXML_CFLAGS="-I/mingw64/include/libxml2" LIBXML_LIBS="-lxml2")
+      fi
+      # msys/visualc version
+      if test $libxml_ok = no; then
+          OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS_ARCH $CFLAGS -I/visualc/include/libxml2, $LDFLAGS_ARCH -llibxml2,
+                        libxml_ok, LIBXML_CFLAGS="-I/visualc/include/libxml2" LIBXML_LIBS="-llibxml2")
+      fi
+  fi
 
-expat_ok=no
-if test $libxml_ok = no; then
-    if test -n "$EXPAT_LIBS"; then
-      OPP_CHECK_LIB(Expat XML parser, expat.h, XML_ParserCreate(0), $CFLAGS $EXPAT_CFLAGS, $EXPAT_LIBS, expat_ok)
-    else
-      expatlibs="-lexpat"
-      OPP_CHECK_LIB(Expat XML parser, expat.h, XML_ParserCreate(0), $CFLAGS $EXPAT_CFLAGS, $expatlibs, expat_ok, EXPAT_LIBS=$expatlibs)
-    fi
-fi
+  if test $libxml_ok = yes; then
+      AC_MSG_NOTICE([Found LibXML])
+  else
+      AC_MSG_ERROR([LibXML or the LibXML header file not found, please install it])
+  fi
 
-if test $libxml_ok = yes; then
-    AC_MSG_NOTICE([Using LibXML for XML parsing])
-    XMLPARSER=libxml
-    XML_CFLAGS=$LIBXML_CFLAGS
-    XML_LIBS=$LIBXML_LIBS
-elif test $expat_ok = yes; then
-    AC_MSG_NOTICE([Using Expat for XML parsing])
-    AC_MSG_WARN([DTD validation is not supported with Expat, only with LibXML!])
-    XMLPARSER=expat
-    XML_CFLAGS=$EXPAT_CFLAGS
-    XML_LIBS=$EXPAT_LIBS
-else
-    XMLPARSER=none
-    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  LibXML/Expat"
-    AC_MSG_WARN([No suitable XML parser found: no support for XML input])
-fi
-
-# zlib is required by the XML parsers
-if test $libxml_ok = yes -o $expat_ok = yes ; then
-    if test "$ZLIB_LIBS" = ""; then
-        ZLIB_LIBS=-lz
-    fi
-    OPP_CHECK_LIB(zlib, zlib.h, gzopen("",""), $CFLAGS $ZLIB_CFLAGS, $ZLIB_LIBS, zlib_ok)
-    # on mingw/msys try a different library name
-    if test $zlib_ok = no -a "$mingw" = yes; then
-        ZLIB_LIBS="-lzlib1"
-        OPP_CHECK_LIB(zlib, zlib.h, gzopen("",""), $CFLAGS $ZLIB_CFLAGS, $ZLIB_LIBS, zlib_ok)
-    fi
-    # on clang-msabi with msys try a different library name
-    if test $zlib_ok = no; then
-        ZLIB_LIBS="-lzlib"
-        OPP_CHECK_LIB(zlib, zlib.h, gzopen("",""), $CFLAGS_ARCH $CFLAGS $ZLIB_CFLAGS, $LDFLAGS_ARCH $ZLIB_LIBS, zlib_ok)
-    fi
-    if test $zlib_ok = no; then
-        AC_MSG_ERROR([zlib or zlib header file not found, please install it])
-    fi
+  # zlib is required by the XML parsers
+  if test $libxml_ok = yes ; then
+      if test "$ZLIB_LIBS" = ""; then
+          ZLIB_LIBS=-lz
+      fi
+      OPP_CHECK_LIB(zlib, zlib.h, gzopen("",""), $CFLAGS $ZLIB_CFLAGS, $ZLIB_LIBS, zlib_ok)
+      # on mingw/msys try a different library name
+      if test $zlib_ok = no -a "$mingw" = yes; then
+          ZLIB_LIBS="-lzlib1"
+          OPP_CHECK_LIB(zlib, zlib.h, gzopen("",""), $CFLAGS $ZLIB_CFLAGS, $ZLIB_LIBS, zlib_ok)
+      fi
+      # on clang-msabi with msys try a different library name
+      if test $zlib_ok = no; then
+          ZLIB_LIBS="-lzlib"
+          OPP_CHECK_LIB(zlib, zlib.h, gzopen("",""), $CFLAGS_ARCH $CFLAGS $ZLIB_CFLAGS, $LDFLAGS_ARCH $ZLIB_LIBS, zlib_ok)
+      fi
+      if test $zlib_ok = no; then
+          AC_MSG_ERROR([zlib or zlib header file not found, please install it])
+      fi
+  fi
 fi
 
 #----------------------
@@ -1120,6 +1101,8 @@ AC_SUBST(HAVE_DLOPEN)
 AC_SUBST(QT_CFLAGS)
 AC_SUBST(QT_LIBS)
 AC_SUBST(QTENV_LDFLAGS)
+AC_SUBST(LIBXML_CFLAGS)
+AC_SUBST(LIBXML_LIBS)
 AC_SUBST(OSG_CFLAGS)
 AC_SUBST(OSG_LIBS)
 AC_SUBST(OSGEARTH_CFLAGS)
@@ -1132,16 +1115,13 @@ AC_SUBST(SYS_LIBS)
 AC_SUBST(PTHREAD_CFLAGS)
 AC_SUBST(PTHREAD_LIBS)
 
-AC_SUBST(XMLPARSER)
-AC_SUBST(XML_CFLAGS)
-AC_SUBST(XML_LIBS)
-
 AC_SUBST(AKAROA_CFLAGS)
 AC_SUBST(AKAROA_LIBS)
 
 AC_SUBST(JNILIBS_IF_POSSIBLE)
 
 AC_SUBST(WITH_NETBUILDER)
+AC_SUBST(WITH_LIBXML)
 AC_SUBST(WITH_PARSIM)
 AC_SUBST(WITH_QTENV)
 AC_SUBST(WITH_OSG)

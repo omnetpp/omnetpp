@@ -1,1 +1,2 @@
 OMNETPP_LIBS += -loppcommon$D
+COPTS += $(LIBXML_CFLAGS)

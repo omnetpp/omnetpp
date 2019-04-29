@@ -593,13 +593,11 @@ WITH_OSGEARTH
 WITH_OSG
 WITH_QTENV
 WITH_PARSIM
+WITH_LIBXML
 WITH_NETBUILDER
 JNILIBS_IF_POSSIBLE
 AKAROA_LIBS
 AKAROA_CFLAGS
-XML_LIBS
-XML_CFLAGS
-XMLPARSER
 PTHREAD_LIBS
 PTHREAD_CFLAGS
 SYS_LIBS
@@ -611,6 +609,8 @@ OSGEARTH_LIBS
 OSGEARTH_CFLAGS
 OSG_LIBS
 OSG_CFLAGS
+LIBXML_LIBS
+LIBXML_CFLAGS
 QTENV_LDFLAGS
 QT_LIBS
 QT_CFLAGS
@@ -5403,9 +5403,10 @@ else
 fi
 
 #----------------------
-# Check for XML parsers: EXPAT and/or LIBXML
+# Check for LibXML2
 #----------------------
-if test -n "$LIBXML_LIBS"; then
+if test "$WITH_LIBXML" = "yes"; then
+  if test -n "$LIBXML_LIBS"; then
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -5440,7 +5441,7 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-else
+  else
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -5476,7 +5477,7 @@ rm -f core conftest.err conftest.$ac_objext \
    LIBS=$save_LIBS
 
 
-    if test $libxml_ok = no; then
+      if test $libxml_ok = no; then
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -5511,10 +5512,10 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-    fi
+      fi
 
-    # test also in the /mingw32 directory because on MSYS2 this is the default
-    if test $libxml_ok = no; then
+      # test also in the /mingw32 directory because on MSYS2 this is the default
+      if test $libxml_ok = no; then
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -5549,8 +5550,8 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-    fi
-    if test $libxml_ok = no; then
+      fi
+      if test $libxml_ok = no; then
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -5585,9 +5586,9 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-    fi
-    # msys/visualc version
-    if test $libxml_ok = no; then
+      fi
+      # msys/visualc version
+      if test $libxml_ok = no; then
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -5622,111 +5623,21 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-    fi
-fi
+      fi
+  fi
 
-expat_ok=no
-if test $libxml_ok = no; then
-    if test -n "$EXPAT_LIBS"; then
+  if test $libxml_ok = yes; then
+      { $as_echo "$as_me:${as_lineno-$LINENO}: Found LibXML" >&5
+$as_echo "$as_me: Found LibXML" >&6;}
+  else
+      as_fn_error $? "LibXML or the LibXML header file not found, please install it" "$LINENO" 5
+  fi
 
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS="$CFLAGS $EXPAT_CFLAGS"
-   LIBS="$EXPAT_LIBS"
-
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Expat XML parser with CFLAGS=\"$CFLAGS $EXPAT_CFLAGS\" LIBS=\"$EXPAT_LIBS\"" >&5
-$as_echo_n "checking for Expat XML parser with CFLAGS=\"$CFLAGS $EXPAT_CFLAGS\" LIBS=\"$EXPAT_LIBS\"... " >&6; }
-
-   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <expat.h>
-int
-main ()
-{
-XML_ParserCreate(0);
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; expat_ok=yes;
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }; expat_ok=no;
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-    else
-      expatlibs="-lexpat"
-
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS="$CFLAGS $EXPAT_CFLAGS"
-   LIBS="$expatlibs"
-
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Expat XML parser with CFLAGS=\"$CFLAGS $EXPAT_CFLAGS\" LIBS=\"$expatlibs\"" >&5
-$as_echo_n "checking for Expat XML parser with CFLAGS=\"$CFLAGS $EXPAT_CFLAGS\" LIBS=\"$expatlibs\"... " >&6; }
-
-   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <expat.h>
-int
-main ()
-{
-XML_ParserCreate(0);
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; expat_ok=yes; EXPAT_LIBS=$expatlibs
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }; expat_ok=no;
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-    fi
-fi
-
-if test $libxml_ok = yes; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: Using LibXML for XML parsing" >&5
-$as_echo "$as_me: Using LibXML for XML parsing" >&6;}
-    XMLPARSER=libxml
-    XML_CFLAGS=$LIBXML_CFLAGS
-    XML_LIBS=$LIBXML_LIBS
-elif test $expat_ok = yes; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: Using Expat for XML parsing" >&5
-$as_echo "$as_me: Using Expat for XML parsing" >&6;}
-    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: DTD validation is not supported with Expat, only with LibXML!" >&5
-$as_echo "$as_me: WARNING: DTD validation is not supported with Expat, only with LibXML!" >&2;}
-    XMLPARSER=expat
-    XML_CFLAGS=$EXPAT_CFLAGS
-    XML_LIBS=$EXPAT_LIBS
-else
-    XMLPARSER=none
-    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  LibXML/Expat"
-    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: No suitable XML parser found: no support for XML input" >&5
-$as_echo "$as_me: WARNING: No suitable XML parser found: no support for XML input" >&2;}
-fi
-
-# zlib is required by the XML parsers
-if test $libxml_ok = yes -o $expat_ok = yes ; then
-    if test "$ZLIB_LIBS" = ""; then
-        ZLIB_LIBS=-lz
-    fi
+  # zlib is required by the XML parsers
+  if test $libxml_ok = yes ; then
+      if test "$ZLIB_LIBS" = ""; then
+          ZLIB_LIBS=-lz
+      fi
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -5761,9 +5672,9 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-    # on mingw/msys try a different library name
-    if test $zlib_ok = no -a "$mingw" = yes; then
-        ZLIB_LIBS="-lzlib1"
+      # on mingw/msys try a different library name
+      if test $zlib_ok = no -a "$mingw" = yes; then
+          ZLIB_LIBS="-lzlib1"
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -5798,10 +5709,10 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-    fi
-    # on clang-msabi with msys try a different library name
-    if test $zlib_ok = no; then
-        ZLIB_LIBS="-lzlib"
+      fi
+      # on clang-msabi with msys try a different library name
+      if test $zlib_ok = no; then
+          ZLIB_LIBS="-lzlib"
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -5836,10 +5747,11 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-    fi
-    if test $zlib_ok = no; then
-        as_fn_error $? "zlib or zlib header file not found, please install it" "$LINENO" 5
-    fi
+      fi
+      if test $zlib_ok = no; then
+          as_fn_error $? "zlib or zlib header file not found, please install it" "$LINENO" 5
+      fi
+  fi
 fi
 
 #----------------------
@@ -5907,7 +5819,6 @@ ac_config_files="$ac_config_files Makefile.inc src/qtenv/qtenv.pri"
 #----------------------
 # Substitutions.
 #----------------------
-
 
 
 

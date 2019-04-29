@@ -237,6 +237,10 @@ static const char *buildOptions = ""
     " WITH_PARSIM"
     #endif
 
+    #ifdef WITH_LIBXML
+    " WITH_LIBXML"
+    #endif
+
     #ifdef WITH_MPI
     " WITH_MPI"
     #endif
@@ -259,10 +263,6 @@ static const char *buildOptions = ""
 
     #ifdef WITH_AKAROA
     " WITH_AKAROA"
-    #endif
-
-    #ifdef XMLPARSER
-    " XMLPARSER=" STRINGIZE(XMLPARSER)
     #endif
     ;
 

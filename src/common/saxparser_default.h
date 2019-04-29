@@ -1,6 +1,5 @@
 //==========================================================================
-//  XMLASTPARSER.CC - part of
-//
+//  SAXPARSER_DEFAULT.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -14,26 +13,28 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "common/saxparser_default.h"
-#include "errorstore.h"
-#include "xmlastparser.h"
-#include "astbuilder.h"
+#ifndef __OMNETPP_COMMON_SAXPARSER_DEFAULT_H
+#define __OMNETPP_COMMON_SAXPARSER_DEFAULT_H
+
+#include <vector>
+#include <string>
+#include "saxparser.h"
 
 namespace omnetpp {
-namespace nedxml {
+namespace common {
 
-using namespace omnetpp::common;
-
-ASTNode *parseXML(const char *filename, ErrorStore *errors)
+class COMMON_API DefaultSaxParser : public SaxParser
 {
-    ASTBuilder sh(filename, errors);
-    DefaultSaxParser parser;
+  protected:
+    bool containsDoctype(const char *s);
+  public:
+    virtual void parseFile(const char *filename) override;
+    virtual void parseContent(const char *content) override;
+    virtual int getCurrentLineNumber() override {return -1;} // unused
+};
 
-    parser.setHandler(&sh);
-    parser.parseFile(filename);
-    return sh.getTree();
-}
-
-}  // namespace nedxml
+} // namespace common
 }  // namespace omnetpp
+
+#endif
 

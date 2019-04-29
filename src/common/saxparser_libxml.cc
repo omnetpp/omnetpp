@@ -1,5 +1,5 @@
 //==========================================================================
-//  SAXPARSERLIBXML.CC - part of
+//  SAXPARSER_LIBXML.CC - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,48 +14,27 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <libxml/parser.h>
-#include <libxml/xinclude.h>
-#include <libxml/SAX.h>
 #include <string>
 #include <cstring>
 #include <cstdio>
 #include <cassert>
 #include <cstdio>
 #include <cstdarg>
-#include "common/stringutil.h"
-#include "common/fileutil.h"
-#include "saxparser.h"
+#include "stringutil.h"
+#include "fileutil.h"
+#include "saxparser_libxml.h"
+
+#ifdef WITH_LIBXML
 
 namespace omnetpp {
-namespace nedxml {
+namespace common {
 
-using namespace omnetpp::common;
-
-//
-// Validating is supperted only if LibXML is at least 2.6.0
-//
 #if LIBXML_VERSION < 20600
 #error At least libXML2 v2.6 is required for XML DTD validation support.
 #endif
 
-SAXParser::SAXParser()
-{
-    saxHandler = nullptr;
-}
 
-void SAXParser::setHandler(SAXHandler *sh)
-{
-    saxHandler = sh;
-    sh->setParser(this);
-}
-
-static int nodeLine;  // line number of current node
-static xmlParserCtxtPtr ctxt;  // parser context
-
-// static void dontPrintError(void *, xmlErrorPtr) {} // an xmlStructuredErrorFunc
-
-static void generateSAXEvents(xmlNode *node, SAXHandler *sh)
+void LibxmlSaxParser::generateSAXEvents(xmlNode *node, SaxHandler *sh)
 {
     nodeLine = node->line;
     switch (node->type) {
@@ -113,18 +92,18 @@ static void generateSAXEvents(xmlNode *node, SAXHandler *sh)
             break;
         }
 
-        case XML_TEXT_NODE:
-            sh->characterData((const char *)node->content, strlen((const char *)node->content));
+        case XML_TEXT_NODE: {
+            const char *content = (const char *)node->content;
+            if (!discardIgnorableWhiteSpace || !opp_isblank(content))
+                sh->characterData(content, strlen(content));
             break;
+        }
 
         case XML_PI_NODE:
-            // ignored: sh->processingInstruction((const char *)target,(const char *)data);
+            sh->processingInstruction((const char *)node->name,(const char *)node->content); //TODO verify!
             break;
 
         case XML_COMMENT_NODE:
-            sh->comment((const char *)node->content);
-            break;
-
         case XML_XINCLUDE_START:
         case XML_XINCLUDE_END:
             break;  // ignore
@@ -144,25 +123,22 @@ static void generateSAXEvents(xmlNode *node, SAXHandler *sh)
     }
 }
 
-bool SAXParser::parse(const char *filename)
+void LibxmlSaxParser::parseFile(const char *filename)
 {
-    return doParse(filename, nullptr);
+    doParse(filename, nullptr);
 }
 
-bool SAXParser::parseContent(const char *content)
+void LibxmlSaxParser::parseContent(const char *content)
 {
-    return doParse(nullptr, content);
+    doParse(nullptr, content);
 }
 
-bool SAXParser::doParse(const char *filename, const char *content)
+void LibxmlSaxParser::doParse(const char *filename, const char *content)
 {
-    assert((filename == nullptr) != (content == nullptr));  // exactly one of them is non-nullptr
-    strcpy(errorText, "<error msg unfilled>");
+    Assert((filename == nullptr) != (content == nullptr));  // exactly one of them is non-nullptr
 
-    if (filename && !fileExists(filename)) {
-        sprintf(errorText, "File not found");
-        return false;
-    }
+    if (filename && !fileExists(filename))
+        throw opp_runtime_error("File not found: '%s'", filename);
 
     //
     // When there's a DTD given, we *must* use it, and complete default attrs from it.
@@ -172,10 +148,8 @@ bool SAXParser::doParse(const char *filename, const char *content)
     // (as of 09/2004)
     //
     ctxt = xmlNewParserCtxt();
-    if (!ctxt) {
-        strcpy(errorText, "Failed to allocate parser context");
-        return false;
-    }
+    if (!ctxt)
+        throw opp_runtime_error("Failed to allocate parser context");
 
     // parse the file
     unsigned options = XML_PARSE_DTDVALID  // validate with the DTD (but we'll have to revalidate after XInclude processing anyway)
@@ -196,10 +170,11 @@ bool SAXParser::doParse(const char *filename, const char *content)
 
     // check if parsing succeeded
     if (!doc) {
-        sprintf(errorText, "Parse error: %s at line %s:%d",
-                opp_trim(ctxt->lastError.message).c_str(), ctxt->lastError.file, ctxt->lastError.line);
+        opp_runtime_error ex("Parse error: %s at line %s:%d",
+                opp_trim(ctxt->lastError.message).c_str(),
+                ctxt->lastError.file, ctxt->lastError.line);
         xmlFreeParserCtxt(ctxt);
-        return false;
+        throw ex;
     }
 
     // perform XInclude substitution. Note: errors will be dumped on stderr (these messages
@@ -208,10 +183,9 @@ bool SAXParser::doParse(const char *filename, const char *content)
     // xmlStructuredError = dontPrintError;
     int xincludeResult = xmlXIncludeProcess(doc);
     if (xincludeResult == -1) {  // error
-        sprintf(errorText, "XInclude substitution error");  // further details unavailable from libXML without much pain
         xmlFreeParserCtxt(ctxt);
         xmlFreeDoc(doc);
-        return false;
+        throw opp_runtime_error("XInclude substitution error");  // further details unavailable from libXML without much pain
     }
 
     // validate with the DTD again, because the document only becomes complete
@@ -224,16 +198,16 @@ bool SAXParser::doParse(const char *filename, const char *content)
 
     if (hasDTD) {
         xmlValidCtxtPtr vctxt = xmlNewValidCtxt();
+        char errorText[1024];
         vctxt->userData = errorText;
         vctxt->error = (xmlValidityErrorFunc)sprintf;
         vctxt->warning = (xmlValidityWarningFunc)sprintf;
 
         if (!xmlValidateDocument(vctxt, doc)) {
-            strcpy(errorText, opp_trim(errorText).c_str());
             xmlFreeValidCtxt(vctxt);
             xmlFreeParserCtxt(ctxt);
             xmlFreeDoc(doc);
-            return false;
+            throw opp_runtime_error("%s", opp_trim(errorText).c_str());
         }
         xmlFreeValidCtxt(vctxt);
     }
@@ -245,15 +219,14 @@ bool SAXParser::doParse(const char *filename, const char *content)
     // free parser context and document tree
     xmlFreeParserCtxt(ctxt);
     xmlFreeDoc(doc);
-    return true;
 }
 
-int SAXParser::getCurrentLineNumber()
+int LibxmlSaxParser::getCurrentLineNumber()
 {
     return nodeLine;
 }
 
-
-}  // namespace nedxml
+}  // namespace common
 }  // namespace omnetpp
 
+#endif //WITH_LIBXML

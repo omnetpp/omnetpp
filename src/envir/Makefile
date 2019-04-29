@@ -46,7 +46,7 @@ endif
 
 COPTS=$(CFLAGS) $(AKAROA_CFLAGS) $(INCL_FLAGS) -DHAVE_DLOPEN=$(HAVE_DLOPEN) -DSHARED_LIB_SUFFIX="\"$(SHARED_LIB_SUFFIX)\"" -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\""
 
-IMPLIBS= -loppsim$D -loppnedxml$D -loppcommon$D $(XML_LIBS)
+IMPLIBS= -loppsim$D -loppnedxml$D -loppcommon$D
 
 OBJS= $O/appreg.o $O/args.o $O/startup.o $O/evmain.o $O/logformatter.o $O/envirbase.o $O/fsutils.o \
       $O/sectionbasedconfig.o $O/inifilereader.o $O/scenario.o $O/valueiterator.o \

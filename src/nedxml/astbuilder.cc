@@ -102,21 +102,6 @@ void ASTBuilder::processingInstruction(const char *target, const char *data)
     // ignore
 }
 
-void ASTBuilder::comment(const char *data)
-{
-    // ignore
-}
-
-void ASTBuilder::startCdataSection()
-{
-    // ignore
-}
-
-void ASTBuilder::endCdataSection()
-{
-    // ignore
-}
-
 }  // namespace nedxml
 }  // namespace omnetpp
 

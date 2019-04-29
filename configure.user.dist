@@ -65,6 +65,13 @@ WITH_OSGEARTH=yes
 WITH_NETBUILDER=yes
 
 #
+# Set to "yes" to allow the use of LibXML2. OMNeT++ will only use LibXML for loading
+# XML files that have a DOCTYPE declaration such as an associated DTD. All other XML files 
+# are loaded using an embedded XML parser, which is both faster and more and memory-efficient.
+#
+WITH_LIBXML=yes
+
+#
 # Set to "yes" to enable the parallel distributed simulation feature.
 #
 WITH_PARSIM=yes
@@ -156,17 +163,6 @@ SHARED_LIBS=yes
 #MPI_CFLAGS="-I /usr/include"
 #MPI_LIBS="-pthread -llammpio -llammpi++ -llamf77mpi -lmpi -llam -laio -laio -lutil"
 #MPI_LIBS="-lmpi++ -lmpi"   #SGI
-
-#
-# Compiler and linker options for Expat (optional component)
-#
-# With MinGW I use the following:
-#   EXPAT_CFLAGS="-I/d/home/tools/expat-1.95.2/Source/lib"
-#   EXPAT_LIBS="-L/d/home/tools/expat-1.95.2/libs -lexpat"
-# If commented out, the configure script will try to autodetect it
-#
-#EXPAT_CFLAGS=
-#EXPAT_LIBS=
 
 #
 # Compiler and linker options for LIBXML (optional component)

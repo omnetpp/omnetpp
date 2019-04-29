@@ -18,25 +18,20 @@
 #include "xmldoccache.h"
 
 #include "common/fileutil.h"
-#include "nedxml/saxparser.h"
+#include "common/saxparser_default.h"
 #include "omnetpp/cobject.h"
 #include "omnetpp/cxmlelement.h"
 #include "omnetpp/cexception.h"
 
 using namespace omnetpp::common;
-using namespace omnetpp::nedxml;
 
 namespace omnetpp {
 namespace envir {
 
-// We depend on WITH_NETBUILDER because it brings the nedxml library which
-// contains the XML parser. TBD XML parser should be an independent library
-#ifdef WITH_NETBUILDER
-
 /**
- * SAX handler (to be used with SAXParser) that builds a cXMLElement tree.
+ * SAX handler that builds a cXMLElement tree.
  */
-class cXMLSAXHandler : public SAXHandler
+class cXmlSaxHandler : public SaxHandler
 {
     cXMLElement *root;
     cXMLElement *current;
@@ -46,12 +41,12 @@ class cXMLSAXHandler : public SAXHandler
     /**
      * Constructor. Filename is necessary to create correct src-loc info.
      */
-    cXMLSAXHandler(const char *filename);
+    cXmlSaxHandler(const char *filename);
 
     /**
      * Destructor
      */
-    virtual ~cXMLSAXHandler();
+    virtual ~cXmlSaxHandler();
 
     /**
      * Returns the object tree that was built up during XML parsing.
@@ -64,33 +59,30 @@ class cXMLSAXHandler : public SAXHandler
     virtual void endElement(const char *name) override;
     virtual void characterData(const char *s, int len) override;
     virtual void processingInstruction(const char *target, const char *data) override;
-    virtual void comment(const char *data) override;
-    virtual void startCdataSection() override;
-    virtual void endCdataSection() override;
     //@}
 };
 
 //---
 
-cXMLSAXHandler::cXMLSAXHandler(const char *fname)
+cXmlSaxHandler::cXmlSaxHandler(const char *fname)
 {
     root = current = new cXMLElement("/", nullptr);  // "Document node" (used as sort of a sentry)
     sourcefilename = fname;
 }
 
-cXMLSAXHandler::~cXMLSAXHandler()
+cXmlSaxHandler::~cXmlSaxHandler()
 {
     delete root;
 }
 
-cXMLElement *cXMLSAXHandler::getTree()
+cXMLElement *cXmlSaxHandler::getTree()
 {
     cXMLElement *tree = root;
     root = current = new cXMLElement("/", nullptr);
     return tree;
 }
 
-void cXMLSAXHandler::startElement(const char *name, const char **atts)
+void cXmlSaxHandler::startElement(const char *name, const char **atts)
 {
     cXMLElement *node = new cXMLElement(name, current);
     node->setSourceLocation(sourcefilename, parser->getCurrentLineNumber());
@@ -100,37 +92,20 @@ void cXMLSAXHandler::startElement(const char *name, const char **atts)
     current = node;
 }
 
-void cXMLSAXHandler::endElement(const char *name)
+void cXmlSaxHandler::endElement(const char *name)
 {
     current = current->getParentNode();
 }
 
-void cXMLSAXHandler::characterData(const char *s, int len)
+void cXmlSaxHandler::characterData(const char *s, int len)
 {
     current->appendNodeValue(s, len);
 }
 
-void cXMLSAXHandler::processingInstruction(const char *target, const char *data)
+void cXmlSaxHandler::processingInstruction(const char *target, const char *data)
 {
     // ignore
 }
-
-void cXMLSAXHandler::comment(const char *data)
-{
-    // ignore
-}
-
-void cXMLSAXHandler::startCdataSection()
-{
-    // ignore
-}
-
-void cXMLSAXHandler::endCdataSection()
-{
-    // ignore
-}
-
-#endif  // WITH_NETBUILDER
 
 //=========================================================
 
@@ -148,40 +123,22 @@ XMLDocCache::~XMLDocCache()
 
 cXMLElement *XMLDocCache::parseDocument(const char *filename)
 {
-#ifndef WITH_NETBUILDER
-    throw cRuntimeError("Cannot load '%s': XML config file support currently requires "
-                        "WITH_NETBUILDER option (check configure.user or configuser.vc, then "
-                        "rebuild OMNeT++)", filename);
-#else
-    cXMLSAXHandler sh(filename);
-    SAXParser parser;
+    cXmlSaxHandler sh(filename);
+    DefaultSaxParser parser;
 
     parser.setHandler(&sh);
-    bool ok = parser.parse(filename);
-    if (!ok)
-        throw cRuntimeError("Cannot load '%s': %s", filename, parser.getErrorMessage());
-
+    parser.parseFile(filename);
     return sh.getTree();
-#endif
 }
 
 cXMLElement *XMLDocCache::parseContent(const char *content)
 {
-#ifndef WITH_NETBUILDER
-    throw cRuntimeError("Cannot parse XML string: XML support currently requires "
-                        "WITH_NETBUILDER option (check configure.user or configuser.vc, then "
-                        "rebuild OMNeT++)");
-#else
-    cXMLSAXHandler sh("content");
-    SAXParser parser;
+    cXmlSaxHandler sh("content");
+    DefaultSaxParser parser;
 
     parser.setHandler(&sh);
-    bool ok = parser.parseContent(content);
-    if (!ok)
-        throw cRuntimeError("Cannot parse XML string: %s", parser.getErrorMessage());
-
+    parser.parseContent(content);
     return sh.getTree();
-#endif
 }
 
 cXMLElement *XMLDocCache::getDocument(const char *filename)
