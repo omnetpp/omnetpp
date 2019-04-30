@@ -1117,20 +1117,19 @@ std::string opp_markup2Latex(const std::string& str)
 
 std::string opp_xmlQuote(const std::string& str)
 {
-    if (!strchr(str.c_str(), '<') && !strchr(str.c_str(), '>') && !strchr(str.c_str(), '"'))
+    if (!strchr(str.c_str(), '<') && !strchr(str.c_str(), '>') && !strchr(str.c_str(), '&') && !strchr(str.c_str(), '"'))
         return str;
 
     std::stringstream out;
     for (const char *s = str.c_str(); *s; s++) {
         char c = *s;
-        if (c == '<')
-            out << "&lt;";
-        else if (c == '>')
-            out << "&gt;";
-        else if (c == '"')
-            out << "&quot;";
-        else
-            out << c;
+        switch(c) {
+            case '<': out << "&lt;"; break;
+            case '>': out << "&gt;"; break;
+            case '&': out << "&amp;"; break;
+            case '"': out << "&quot;"; break;
+            default: out << c;
+        }
     }
     return out.str();
 }
