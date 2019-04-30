@@ -1000,8 +1000,8 @@ const char *MatchableRunattr::getAsString(const char *attribute) const
 
 std::vector<std::pair<std::string, std::string>> ResultFileManager::getMatchingItervars(const char *pattern) const
 {
-    if (pattern == nullptr || pattern[0] == '\0')  // no filter
-        pattern = "*";
+    if (opp_isblank(pattern))  // no filter
+        throw opp_runtime_error("Empty filter expression is not allowed");
 
     MatchExpression matchExpr(pattern, false  /*dottedpath*/, true  /*fullstring*/, true  /*casesensitive*/);
 
@@ -1027,8 +1027,8 @@ std::vector<std::pair<std::string, std::string>> ResultFileManager::getMatchingI
 
 std::vector<std::pair<std::string, std::string>> ResultFileManager::getMatchingRunattrs(const char *pattern) const
 {
-    if (pattern == nullptr || pattern[0] == '\0')  // no filter
-        pattern = "*";
+    if (opp_isblank(pattern))  // no filter
+        throw opp_runtime_error("Empty filter expression is not allowed");
 
     MatchExpression matchExpr(pattern, false  /*dottedpath*/, true  /*fullstring*/, true  /*casesensitive*/);
 
@@ -1054,8 +1054,8 @@ std::vector<std::pair<std::string, std::string>> ResultFileManager::getMatchingR
 
 IDList ResultFileManager::filterIDList(const IDList& idlist, const char *pattern) const
 {
-    if (pattern == nullptr || pattern[0] == '\0')  // no filter
-        pattern = "*";
+    if (opp_isblank(pattern))  // no filter
+        throw opp_runtime_error("Empty filter expression is not allowed");
 
     MatchExpression matchExpr(pattern, false  /*dottedpath*/, true  /*fullstring*/, true  /*casesensitive*/);
 
@@ -1074,8 +1074,8 @@ IDList ResultFileManager::filterIDList(const IDList& idlist, const char *pattern
 
 RunList ResultFileManager::filterRunList(const RunList& runlist, const char *pattern) const
 {
-    if (pattern == nullptr || pattern[0] == '\0')  // no filter
-        pattern = "*";
+    if (opp_isblank(pattern))  // no filter
+        throw opp_runtime_error("Empty filter expression is not allowed");
 
     MatchExpression matchExpr(pattern, false  /*dottedpath*/, true  /*fullstring*/, true  /*casesensitive*/);
 
@@ -1091,8 +1091,8 @@ RunList ResultFileManager::filterRunList(const RunList& runlist, const char *pat
 
 void ResultFileManager::checkPattern(const char *pattern)
 {
-    if (pattern == nullptr || pattern[0] == '\0')  // no filter
-        return;
+    if (opp_isblank(pattern))  // no filter
+        throw opp_runtime_error("Empty filter expression is not allowed");
 
     // parse it
     // XXX after successful parsing, we could also check that attribute names in it are valid
