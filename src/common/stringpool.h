@@ -46,7 +46,7 @@ class COMMON_API StringPool
                 return strcmp(s1, s2)<0;
         }
     };
-    typedef std::set<char *,strless> StringSet;
+    typedef std::set<const char *,strless> StringSet;
     StringSet pool;
 
   public:
