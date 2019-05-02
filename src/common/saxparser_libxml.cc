@@ -99,13 +99,11 @@ void LibxmlSaxParser::generateSAXEvents(xmlNode *node, SaxHandler *sh)
             break;
         }
 
-        case XML_PI_NODE:
-            sh->processingInstruction((const char *)node->name,(const char *)node->content); //TODO verify!
+        case XML_PI_NODE:  // TODO apparently, such nodes don't occur in the DOM tree...
+            sh->processingInstruction((const char *)node->name,(const char *)node->content);
             break;
 
         case XML_COMMENT_NODE:
-        case XML_XINCLUDE_START:
-        case XML_XINCLUDE_END:
             break;  // ignore
 
         case XML_CDATA_SECTION_NODE:
@@ -152,69 +150,55 @@ void LibxmlSaxParser::doParse(const char *filename, const char *content)
         throw opp_runtime_error("Failed to allocate parser context");
 
     // parse the file
-    unsigned options = XML_PARSE_DTDVALID  // validate with the DTD (but we'll have to revalidate after XInclude processing anyway)
+    unsigned options =
+         XML_PARSE_DTDVALID  // validate with the DTD
         |XML_PARSE_DTDATTR  // complete default attributes from DTD
         |XML_PARSE_NOENT  // substitute entities
         |XML_PARSE_NONET  // forbid network access
         |XML_PARSE_NOBLANKS  // discard ignorable white space
         |XML_PARSE_NOCDATA  // merge CDATA as text nodes
-        |XML_PARSE_NOERROR  // suppress error reports
-        |  // XML_PARSE_XINCLUDE |  // would be nice, but does not work
-        XML_PARSE_NOWARNING;  // suppress warning reports
+        |XML_PARSE_NOERROR  // suppress error reports -- needed in order to suppress stupid "Validation failed: no DTD found !" messages when document in fact contains no DOCTYPE
+        |XML_PARSE_NOWARNING;  // suppress warning reports
+        ;
 
     xmlDocPtr doc;
     if (filename)
         doc = xmlCtxtReadFile(ctxt, filename, nullptr, options);
     else
-        doc = xmlCtxtReadMemory(ctxt, content, strlen(content), "string-literal", nullptr, options);
+        doc = xmlCtxtReadMemory(ctxt, content, strlen(content), "string-content", nullptr, options);
+
+    filename = opp_emptytodefault(filename, "string-content"); // simplify error reporting
 
     // check if parsing succeeded
     if (!doc) {
-        opp_runtime_error ex("Parse error: %s at line %s:%d",
-                opp_trim(ctxt->lastError.message).c_str(),
-                ctxt->lastError.file, ctxt->lastError.line);
+        const char *message = opp_emptytodefault(ctxt->lastError.message, "Document is empty"); // lastError appears to be unfilled when the document was empty
+        opp_runtime_error ex("Parse error: %s at %s:%d", opp_trim(message).c_str(), filename, ctxt->lastError.line);
         xmlFreeParserCtxt(ctxt);
         throw ex;
     }
 
-    // perform XInclude substitution. Note: errors will be dumped on stderr (these messages
-    // cannot be captured via the public libXML2 API, as xmlXIncludeCtxt doesn't have
-    // error/warning function ptrs as other ctxts)
-    // xmlStructuredError = dontPrintError;
-    int xincludeResult = xmlXIncludeProcess(doc);
-    if (xincludeResult == -1) {  // error
+    // Note: validation error (ctxt->valid=false) is reported if the doc doesn't even have a DTD!
+    bool hasDtd = doc->intSubset || doc->extSubset;
+    if (hasDtd && !ctxt->valid) {
+        // validate again, this time printing the error messages
+        xmlValidCtxtPtr vctxt = xmlNewValidCtxt();
+        xmlValidateDocument(vctxt, doc);
+        xmlFreeValidCtxt(vctxt);
         xmlFreeParserCtxt(ctxt);
         xmlFreeDoc(doc);
-        throw opp_runtime_error("XInclude substitution error");  // further details unavailable from libXML without much pain
-    }
-
-    // validate with the DTD again, because the document only becomes complete
-    // after XInclude processing. Must check whether we have a DTD first, otherwise
-    // there'll be a XML_ERR_NO_DTD error (ctxt->errNo).
-    bool hasDTD = false;
-    for (xmlNode *child = doc->children; child; child = child->next)
-        if (child->type == XML_DTD_NODE)
-            hasDTD = true;
-
-    if (hasDTD) {
-        xmlValidCtxtPtr vctxt = xmlNewValidCtxt();
-        char errorText[1024];
-        vctxt->userData = errorText;
-        vctxt->error = (xmlValidityErrorFunc)sprintf;
-        vctxt->warning = (xmlValidityWarningFunc)sprintf;
-
-        if (!xmlValidateDocument(vctxt, doc)) {
-            xmlFreeValidCtxt(vctxt);
-            xmlFreeParserCtxt(ctxt);
-            xmlFreeDoc(doc);
-            throw opp_runtime_error("%s", opp_trim(errorText).c_str());
-        }
-        xmlFreeValidCtxt(vctxt);
+        throw opp_runtime_error("'%s': DTD validation failed, see stderr for detailed report", filename);
     }
 
     // traverse tree and generate SAX events
-    xmlNode *root = xmlDocGetRootElement(doc);
-    generateSAXEvents(root, saxHandler);
+    try {
+        xmlNode *root = xmlDocGetRootElement(doc);
+        generateSAXEvents(root, saxHandler);
+    }
+    catch (std::exception&) {
+        xmlFreeParserCtxt(ctxt);
+        xmlFreeDoc(doc);
+        throw;
+    }
 
     // free parser context and document tree
     xmlFreeParserCtxt(ctxt);
