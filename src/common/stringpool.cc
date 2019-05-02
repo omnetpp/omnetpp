@@ -25,14 +25,14 @@ StringPool::StringPool()
 
 StringPool::~StringPool()
 {
-    for (char *str : pool)
-        delete[] str;
+    for (const char *str : pool)
+        delete[] const_cast<char *>(str);
 }
 
 void StringPool::clear()
 {
-    for (char *str : pool)
-        delete[] str;
+    for (const char *str : pool)
+        delete[] const_cast<char *>(str);
     pool.clear();
 }
 
@@ -40,13 +40,18 @@ const char *StringPool::get(const char *s)
 {
     if (s == nullptr)
         return "";  // must not be nullptr because SWIG-generated code will crash!
-    StringSet::iterator it = pool.find(const_cast<char *>(s));
+    StringSet::iterator it = pool.find(s);
     if (it != pool.end())
         return *it;
     char *str = new char[strlen(s)+1];
     strcpy(str, s);
     pool.insert(str);
     return str;
+}
+
+bool StringPool::contains(const char *s) const
+{
+    return s == nullptr ? true : pool.find(s) != pool.end();
 }
 
 }  // namespace common
