@@ -35,8 +35,8 @@ class COMMON_API UnitConversion
     struct UnitDesc { const char *unit; double mult; Mapping mapping; const char *baseUnit; const char *longName; };
     static UnitDesc unitTable[];
 
-    static const int HTSIZE = 2048; // must be power of 2
-    static UnitDesc *hashTable[HTSIZE];
+    static const int HASHTABLESIZE = 2048; // must be power of 2
+    static UnitDesc *hashTable[HASHTABLESIZE];
     static int numCollisions;
 
   protected:

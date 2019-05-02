@@ -130,7 +130,7 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {  // note: imperial unit
 #undef _
 };
 
-UnitConversion::UnitDesc *UnitConversion::hashTable[HTSIZE];
+UnitConversion::UnitDesc *UnitConversion::hashTable[HASHTABLESIZE];
 int UnitConversion::numCollisions = 0;
 
 inline bool equal(const char *a, const char *b) {return strcmp(a,b)==0;}
@@ -170,7 +170,7 @@ UnitConversion::UnitDesc *UnitConversion::lookupUnit(const char *unit)
 
     // hash table lookup
     int hash = hashCode(unit);
-    for (int pos = hash & (HTSIZE-1); hashTable[pos]; pos = (pos+1) & (HTSIZE-1))
+    for (int pos = hash & (HASHTABLESIZE-1); hashTable[pos]; pos = (pos+1) & (HASHTABLESIZE-1))
         if (matches(hashTable[pos], unit))
             return hashTable[pos];
 
@@ -187,7 +187,7 @@ void UnitConversion::insert(const char *key, UnitDesc *desc)
     int localCollisions = 0;
     int hash = hashCode(key);
     int pos;
-    for (pos = hash & (HTSIZE-1); hashTable[pos]; pos = (pos+1) & (HTSIZE-1))
+    for (pos = hash & (HASHTABLESIZE-1); hashTable[pos]; pos = (pos+1) & (HASHTABLESIZE-1))
         localCollisions++;
     hashTable[pos] = desc;
     numCollisions += localCollisions;
