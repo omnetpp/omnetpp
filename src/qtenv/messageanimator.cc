@@ -560,6 +560,9 @@ void MessageAnimator::removeMessagePointer(cMessage *msg)
     for (auto a : animations)
         a->removeMessagePointer(msg);
 
+    if (currentMethodCall)
+        currentMethodCall->removeMessagePointer(msg);
+
     if (deliveries)
         deliveries->removeMessagePointer(msg);
 }
