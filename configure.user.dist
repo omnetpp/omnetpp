@@ -67,9 +67,9 @@ WITH_NETBUILDER=yes
 #
 # Set to "yes" to allow the use of LibXML2. OMNeT++ will only use LibXML for loading
 # XML files that have a DOCTYPE declaration such as an associated DTD. All other XML files 
-# are loaded using an embedded XML parser, which is both faster and more and memory-efficient.
+# are loaded using an embedded XML parser, which is both faster and more memory-efficient.
 #
-WITH_LIBXML=yes
+WITH_LIBXML=no
 
 #
 # Set to "yes" to enable the parallel distributed simulation feature.
