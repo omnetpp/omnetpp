@@ -1,12 +1,9 @@
 %description:
-Tests the XML parser
+This is a copy of saxparser_1.test, for configurations where LibXML is not present.
 
 %includes:
 
 #include <common/saxparser_yxml.h>
-#ifdef WITH_LIBXML
-#include <common/saxparser_libxml.h>
-#endif
 
 %global:
 using namespace omnetpp::common;
@@ -44,24 +41,17 @@ static void parse(SaxParser& parser, const char *parserName, const char *text)
     }
 }
 
-static void parse2(SaxParser& yxmlParser, SaxParser& libxmlParser, const char *text)
+static void parse2(YxmlSaxParser& yxmlParser, const char *text)
 {
     EV << "----------------\n";
     parse(yxmlParser, "Yxml", text);
-#ifdef WITH_LIBXML
-    parse(libxmlParser, "Libxml", text);
-#endif
 }
 
 %activity:
 
-#ifndef WITH_LIBXML
-  EV << "#UNRESOLVED: No LibXML parser.";
-#else
-
 YxmlSaxParser yxmlParser;
-LibxmlSaxParser libxmlParser;
-#define P(s)  parse2(yxmlParser, libxmlParser, (s));
+
+#define P(s)  parse2(yxmlParser, (s));
 
 // xml declaration
 P("<?xml version=\"1.0\"?> <foo/>");
@@ -127,43 +117,26 @@ P( XMLDECL EXAMPLE_DTD "<root>&greeting;</root>");
 
 EV << ".\n";
 
-#endif  // WITH_LIBXML
 
 %contains: stdout
 ----------------
 Yxml on ``<?xml version="1.0"?> <foo/>'':
 - <foo>
 - </foo>
-Libxml on ``<?xml version="1.0"?> <foo/>'':
-- <foo>
-- </foo>
 ----------------
 Yxml on ``<?xml version="1.0" encoding="UTF-8" standalone="no" ?> <foo/>'':
-- <foo>
-- </foo>
-Libxml on ``<?xml version="1.0" encoding="UTF-8" standalone="no" ?> <foo/>'':
 - <foo>
 - </foo>
 ----------------
 Yxml on ``<foo/>'':
 - <foo>
 - </foo>
-Libxml on ``<foo/>'':
-- <foo>
-- </foo>
 ----------------
 Yxml on ``<foo></foo>'':
 - <foo>
 - </foo>
-Libxml on ``<foo></foo>'':
-- <foo>
-- </foo>
 ----------------
 Yxml on ``<foo>hello</foo>'':
-- <foo>
-- ``hello''
-- </foo>
-Libxml on ``<foo>hello</foo>'':
 - <foo>
 - ``hello''
 - </foo>
@@ -175,18 +148,8 @@ Yxml on ``<foo>one<bar/>two</foo>'':
 - </bar>
 - ``two''
 - </foo>
-Libxml on ``<foo>one<bar/>two</foo>'':
-- <foo>
-- ``one''
-- <bar>
-- </bar>
-- ``two''
-- </foo>
 ----------------
 Yxml on ``<foo attr1='Foo' attr2="Bar" a:foo='x'/>'':
-- <foo attr1=``Foo'' attr2=``Bar'' a:foo=``x''>
-- </foo>
-Libxml on ``<foo attr1='Foo' attr2="Bar" a:foo='x'/>'':
 - <foo attr1=``Foo'' attr2=``Bar'' a:foo=``x''>
 - </foo>
 ----------------
@@ -194,25 +157,13 @@ Yxml on ``<foo> Hello <!--  this is a comment --> World</foo>'':
 - <foo>
 - `` Hello  World''
 - </foo>
-Libxml on ``<foo> Hello <!--  this is a comment --> World</foo>'':
-- <foo>
-- `` Hello ''
-- `` World''
-- </foo>
 ----------------
 Yxml on ``<?proc foo=1 bar?> <foo/>'':
 - <?proc ``foo=1 bar''?>
 - <foo>
 - </foo>
-Libxml on ``<?proc foo=1 bar?> <foo/>'':
-- <foo>
-- </foo>
 ----------------
 Yxml on ``<foo>entities: x&lt;0, y&gt;=1, R&amp;D, don&apos;t, &quot;Hi&quot;.</foo>'':
-- <foo>
-- ``entities: x<0, y>=1, R&D, don't, "Hi".''
-- </foo>
-Libxml on ``<foo>entities: x&lt;0, y&gt;=1, R&amp;D, don&apos;t, &quot;Hi&quot;.</foo>'':
 - <foo>
 - ``entities: x<0, y>=1, R&D, don't, "Hi".''
 - </foo>
@@ -221,27 +172,13 @@ Yxml on ``<foo entities="x&lt;0, y&gt;=1, R&amp;D, don&apos;t, &quot;Hi&quot;.">
 - <foo entities=``x<0, y>=1, R&D, don't, "Hi".''>
 - ``YES!''
 - </foo>
-Libxml on ``<foo entities="x&lt;0, y&gt;=1, R&amp;D, don&apos;t, &quot;Hi&quot;.">YES!</foo>'':
-- <foo entities=``x<0, y>=1, R&D, don't, "Hi".''>
-- ``YES!''
-- </foo>
 ----------------
 Yxml on ``<foo>
     </foo>'':
 - <foo>
 - </foo>
-Libxml on ``<foo>
-    </foo>'':
-- <foo>
-- </foo>
 ----------------
 Yxml on ``<foo>  x
-    </foo>'':
-- <foo>
-- ``  x
-    ''
-- </foo>
-Libxml on ``<foo>  x
     </foo>'':
 - <foo>
 - ``  x
@@ -260,58 +197,30 @@ Yxml on ``<f:foo xmlns:f="https://www.hello.com/example" name="plain" f:name="na
 - ``namespaced''
 - </f:name>
 - </f:foo>
-Libxml on ``<f:foo xmlns:f="https://www.hello.com/example" name="plain" f:name="namespaced" >
-  <name>plain</name>
-  <f:name>namespaced</f:name>
-</f:foo>'':
-- <f:foo name=``plain'' f:name=``namespaced''>
-- <name>
-- ``plain''
-- </name>
-- <f:name>
-- ``namespaced''
-- </name>
-- </foo>
 ----------------
 Yxml on ``'':
  ERROR: Parse error: Unexpected end of document at string-content:1
-Libxml on ``'':
- ERROR: Parse error: Document is empty at string-content:0
 ----------------
 Yxml on ``foo'':
  ERROR: Parse error: Syntax error at string-content:1
-Libxml on ``foo'':
- ERROR: Parse error: Start tag expected, '<' not found at string-content:1
 ----------------
 Yxml on ``<foo'':
  ERROR: Parse error: Unexpected end of document at string-content:1
-Libxml on ``<foo'':
- ERROR: Parse error: Couldn't find end of Start Tag foo line 1 at string-content:1
 ----------------
 Yxml on ``<foo>'':
  ERROR: Parse error: Unexpected end of document at string-content:1
-Libxml on ``<foo>'':
- ERROR: Parse error: Premature end of data in tag foo line 1 at string-content:1
 ----------------
 Yxml on ``</foo>'':
  ERROR: Parse error: Syntax error at string-content:1
-Libxml on ``</foo>'':
- ERROR: Parse error: Extra content at the end of the document at string-content:1
 ----------------
 Yxml on ``<foo></bar>'':
  ERROR: Parse error: Close tag does not match open tag at string-content:1
-Libxml on ``<foo></bar>'':
- ERROR: Parse error: Opening and ending tag mismatch: foo line 1 and bar at string-content:1
 ----------------
 Yxml on ``<foo attr='R&D'></foo>'':
  ERROR: Parse error: Syntax error at string-content:1
-Libxml on ``<foo attr='R&D'></foo>'':
- ERROR: Parse error: EntityRef: expecting ';' at string-content:1
 ----------------
 Yxml on ``<foo>&whatever;</foo>'':
  ERROR: Parse error: Invalid character reference or entity reference at string-content:1
-Libxml on ``<foo>&whatever;</foo>'':
- ERROR: Parse error: Entity 'whatever' not defined at string-content:1
 ----------------
 Yxml on ``<?xml version='1.0' standalone='yes' ?><!DOCTYPE root [         <!ELEMENT root (foo,bar)>         <!ATTLIST foo             label  CDATA      #REQUIRED             id     NMTOKEN    #IMPLIED             print  (yes | no) 'yes'         >         <!ENTITY greeting 'Good day!'>         ]>
     <root><whatever/></root>'':
@@ -319,9 +228,6 @@ Yxml on ``<?xml version='1.0' standalone='yes' ?><!DOCTYPE root [         <!ELEM
 - <whatever>
 - </whatever>
 - </root>
-Libxml on ``<?xml version='1.0' standalone='yes' ?><!DOCTYPE root [         <!ELEMENT root (foo,bar)>         <!ATTLIST foo             label  CDATA      #REQUIRED             id     NMTOKEN    #IMPLIED             print  (yes | no) 'yes'         >         <!ENTITY greeting 'Good day!'>         ]>
-    <root><whatever/></root>'':
- ERROR: 'string-content': DTD validation failed, see stderr for detailed report
 ----------------
 Yxml on ``<?xml version='1.0' standalone='yes' ?><!DOCTYPE root [         <!ELEMENT root (foo,bar)>         <!ATTLIST foo             label  CDATA      #REQUIRED             id     NMTOKEN    #IMPLIED             print  (yes | no) 'yes'         >         <!ENTITY greeting 'Good day!'>         ]>
     <root><foo whatever='x'/></root>'':
@@ -329,15 +235,9 @@ Yxml on ``<?xml version='1.0' standalone='yes' ?><!DOCTYPE root [         <!ELEM
 - <foo whatever=``x''>
 - </foo>
 - </root>
-Libxml on ``<?xml version='1.0' standalone='yes' ?><!DOCTYPE root [         <!ELEMENT root (foo,bar)>         <!ATTLIST foo             label  CDATA      #REQUIRED             id     NMTOKEN    #IMPLIED             print  (yes | no) 'yes'         >         <!ENTITY greeting 'Good day!'>         ]>
-    <root><foo whatever='x'/></root>'':
- ERROR: 'string-content': DTD validation failed, see stderr for detailed report
 ----------------
 Yxml on ``<?xml version='1.0' standalone='yes' ?><!DOCTYPE root [         <!ELEMENT root (foo,bar)>         <!ATTLIST foo             label  CDATA      #REQUIRED             id     NMTOKEN    #IMPLIED             print  (yes | no) 'yes'         >         <!ENTITY greeting 'Good day!'>         ]>
     <root>&greeting;</root>'':
  ERROR: Parse error: Invalid character reference or entity reference at string-content:2
-Libxml on ``<?xml version='1.0' standalone='yes' ?><!DOCTYPE root [         <!ELEMENT root (foo,bar)>         <!ATTLIST foo             label  CDATA      #REQUIRED             id     NMTOKEN    #IMPLIED             print  (yes | no) 'yes'         >         <!ENTITY greeting 'Good day!'>         ]>
-    <root>&greeting;</root>'':
- ERROR: 'string-content': DTD validation failed, see stderr for detailed report
 .
 
