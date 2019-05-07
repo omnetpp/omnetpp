@@ -12,7 +12,7 @@ import org.eclipse.jface.text.IDocumentListener;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.scave.model.ModelChangeEvent;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.IAnalysisListener;
+import org.omnetpp.scave.model.IModelChangeListener;
 import org.omnetpp.scave.model.commands.ICommand;
 import org.omnetpp.scave.model.commands.SetChartScriptCommand;
 
@@ -22,7 +22,7 @@ import org.omnetpp.scave.model.commands.SetChartScriptCommand;
  * This class also listens on changes in the model, and refreshes the chart accordingly
  * by asking the editor to execute the script again.
  */
-public class ChartUpdater implements IAnalysisListener, IDocumentListener {
+public class ChartUpdater implements IModelChangeListener, IDocumentListener {
     private static final int CHART_SCRIPT_TYPING_DELAY_MS = 1500;
     private static final int CHART_SCRIPT_EXECUTION_DELAY_MS = 100;
 
@@ -63,7 +63,7 @@ public class ChartUpdater implements IAnalysisListener, IDocumentListener {
     }
 
     @Override
-    public void analysisChanged(ModelChangeEvent event) {
+    public void modelChanged(ModelChangeEvent event) {
         rerunChartScriptJob.restartTimer();
     }
 }

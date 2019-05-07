@@ -5,17 +5,17 @@ import org.eclipse.core.runtime.ListenerList;
 public abstract class ModelObject implements Cloneable {
     protected ModelObject parent;
 
-    ListenerList<IAnalysisListener> listeners = new ListenerList<IAnalysisListener>();
+    ListenerList<IModelChangeListener> listeners = new ListenerList<IModelChangeListener>();
 
     public ModelObject getParent() {
         return parent;
     }
 
-    public void addListener(IAnalysisListener listener) {
+    public void addListener(IModelChangeListener listener) {
         listeners.add(listener);
     }
 
-    public void removeListener(IAnalysisListener listener) {
+    public void removeListener(IModelChangeListener listener) {
         listeners.remove(listener);
     }
 
@@ -24,7 +24,7 @@ public abstract class ModelObject implements Cloneable {
     }
 
     protected void notifyListeners(ModelChangeEvent event) {
-        listeners.forEach((l) -> l.analysisChanged(event) );
+        listeners.forEach((l) -> l.modelChanged(event) );
         if (parent != null)
             parent.notifyListeners(event);
     }
@@ -41,7 +41,7 @@ public abstract class ModelObject implements Cloneable {
     @Override
     protected ModelObject clone() throws CloneNotSupportedException {
         ModelObject clone = (ModelObject)super.clone();
-        clone.listeners = new ListenerList<IAnalysisListener>();
+        clone.listeners = new ListenerList<IModelChangeListener>();
         return clone;
     }
 }

@@ -124,7 +124,7 @@ import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Chart.DialogPage;
-import org.omnetpp.scave.model.IAnalysisListener;
+import org.omnetpp.scave.model.IModelChangeListener;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.commands.AddInputFileCommand;
@@ -251,10 +251,10 @@ public class ScaveEditor extends MultiPageEditorPartExt
     /**
      * Updates pages when the model changed.
      */
-    private IAnalysisListener pageUpdater = new IAnalysisListener() {
+    private IModelChangeListener pageUpdater = new IModelChangeListener() {
 
         @Override
-        public void analysisChanged(ModelChangeEvent event) {
+        public void modelChanged(ModelChangeEvent event) {
             updatePages(event);
         }
     };
@@ -1750,9 +1750,9 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
         ChartScriptEditorInput input = new ChartScriptEditorInput(chart);
 
-        chart.addListener(new IAnalysisListener() {
+        chart.addListener(new IModelChangeListener() {
             @Override
-            public void analysisChanged(ModelChangeEvent event) {
+            public void modelChanged(ModelChangeEvent event) {
                 if (event.getSubject() == chart && !editor.getDocument().get().equals(chart.getScript()))
                     editor.getDocument().set(chart.getScript());
             }
