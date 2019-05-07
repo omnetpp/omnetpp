@@ -13,139 +13,100 @@ import static org.omnetpp.scave.engine.ResultItemField.NAME;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.common.command.CompoundCommand;
-import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.Enumerator;
-import org.eclipse.emf.common.util.TreeIterator;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.EStructuralFeature.Setting;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.emf.edit.command.AddCommand;
-import org.eclipse.emf.edit.command.MoveCommand;
-import org.eclipse.emf.edit.command.SetCommand;
-import org.eclipse.emf.edit.domain.EditingDomain;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.scave.charting.properties.ChartProperties;
+import org.omnetpp.scave.charting.properties.ChartVisualProperties;
+import org.omnetpp.scave.charttemplates.ChartTemplate;
+import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ResultItemField;
+import org.omnetpp.scave.engine.Run;
+import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.StatisticsResult;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.model.Analysis;
+import org.omnetpp.scave.model.AnalysisEvent;
 import org.omnetpp.scave.model.AnalysisItem;
-import org.omnetpp.scave.model.BarChart;
+import org.omnetpp.scave.model.AnalysisObject;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.Chart.ChartType;
+import org.omnetpp.scave.model.Chart.DialogPage;
 import org.omnetpp.scave.model.Charts;
-import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
-import org.omnetpp.scave.model.LineChart;
-import org.omnetpp.scave.model.MatplotlibChart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ResultType;
-import org.omnetpp.scave.model.ScatterChart;
-import org.omnetpp.scave.model.ScaveModelFactory;
-import org.omnetpp.scave.model.ScaveModelPackage;
-import org.omnetpp.scave.python.ChartTemplate;
-import org.omnetpp.scave.python.ChartTemplateRegistry;
+import org.omnetpp.scave.model.commands.AddChartPropertyCommand;
+import org.omnetpp.scave.model.commands.AddInputFileCommand;
+import org.omnetpp.scave.model.commands.CommandStack;
+import org.omnetpp.scave.model.commands.CompoundCommand;
+import org.omnetpp.scave.model.commands.ICommand;
+import org.omnetpp.scave.model.commands.MoveChartCommand;
+import org.omnetpp.scave.model.commands.SetChartPropertyCommand;
+import org.omnetpp.scave.model.commands.SetInputFileCommand;
 
 /**
  * A collection of static methods to manipulate model objects
  * @author andras
  */
 public class ScaveModelUtil {
-    private static final ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
-    private static final ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
 
     public static InputFile createInput(String name) {
-        InputFile input = factory.createInputFile();
-        input.setName(name);
+        InputFile input = new InputFile(name);
         return input;
     }
 
     public static Chart createChart(String name, String title, ResultType type) {
         Chart chart;
+        // XXX STATISTICS type? MATPLOTLIB chart?
         if (type==ResultType.SCALAR_LITERAL)
-            chart = createBarChart(name);
+            chart = new Chart(ChartType.BAR, name);
         else if (type==ResultType.VECTOR_LITERAL)
-            chart = createLineChart(name);
+            chart = new Chart(ChartType.LINE, name);
         else if (type==ResultType.HISTOGRAM_LITERAL)
-            chart = createHistogramChart(name);
+            chart = new Chart(ChartType.HISTOGRAM, name);
         else
             throw new IllegalArgumentException();
 
-        Property property = factory.createProperty();
-        property.setName(ChartProperties.PROP_GRAPH_TITLE);
-        property.setValue(title);
-        chart.getProperties().add(property);
+        Property property = new Property(ChartVisualProperties.PROP_GRAPH_TITLE, title);
+        chart.addProperty(property);
 
-        return chart;
-    }
-
-    public static BarChart createBarChart(String name) {
-        BarChart chart = factory.createBarChart();
-        chart.setName(name);
-        return chart;
-    }
-
-    public static LineChart createLineChart(String name) {
-        LineChart chart = factory.createLineChart();
-        chart.setName(name);
-        return chart;
-    }
-
-    public static HistogramChart createHistogramChart(String name) {
-        HistogramChart chart = factory.createHistogramChart();
-        chart.setName(name);
-        return chart;
-    }
-
-    public static MatplotlibChart createMatplotlibChart(String name) {
-        MatplotlibChart chart = factory.createMatplotlibChart();
-        chart.setName(name);
         return chart;
     }
 
     public static Chart createChartFromTemplate(String templateId) {
-        return createChartFromTemplate(ChartTemplateRegistry.findTemplateByID(templateId));
+        return createChartFromTemplate(ChartTemplateRegistry.getTemplateByID(templateId));
     }
 
     public static Chart createChartFromTemplate(ChartTemplate template) {
-        Chart chart = null;
-        switch (template.getChartType()) {
-            case BAR:        chart = ScaveModelFactory.eINSTANCE.createBarChart();        break;
-            case HISTOGRAM:  chart = ScaveModelFactory.eINSTANCE.createHistogramChart();  break;
-            case LINE:       chart = ScaveModelFactory.eINSTANCE.createLineChart();       break;
-            case MATPLOTLIB: chart = ScaveModelFactory.eINSTANCE.createMatplotlibChart(); break;
-            case SCATTER:    chart = ScaveModelFactory.eINSTANCE.createScatterChart();    break;
-        }
-        chart.setScript(template.getPythonScript());
-        chart.setForm(template.getXswtForm());
-        chart.setName("created from template: " + template.getName());
+        Chart chart = new Chart(template.getChartType());
         chart.setTemplateID(template.getID());
+
+        chart.setScript(template.getPythonScript());
+
+        List<DialogPage> templatePages = template.getDialogPages();
+        List<Chart.DialogPage> pages = new ArrayList<Chart.DialogPage>(templatePages.size());
+
+        for (int i = 0; i < templatePages.size(); ++i)
+            pages.add(new DialogPage(templatePages.get(i)));
+
+        chart.setDialogPages(pages);
+
+        chart.setName("created from template: " + template.getName());
         chart.setTemporary(false);
+        chart.setIconPath(template.getIconPath());
         return chart;
     }
 
@@ -161,7 +122,7 @@ public class ScaveModelUtil {
         return filters;
     }
 
-    public static String getIDListAsChartInput(IDList ids, String[] runidFields, ResultFileManager manager) {
+    public static String getIDListAsFilterExpression(IDList ids, String[] runidFields, ResultFileManager manager) {
         Assert.isNotNull(runidFields);
         String[] filterFields = getFilterFieldsFor(runidFields);
         StringBuilder sb = new StringBuilder();
@@ -175,23 +136,20 @@ public class ScaveModelUtil {
     }
 
 
-    public static void addInputFiles(EditingDomain domain, Analysis analysis, List<String> list) {
-        ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
-        ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
-        Inputs inputs = analysis.getInputs();
-        List<InputFile> inputFiles = new ArrayList<>();
+    public static void addInputFiles(CommandStack commandStack, Analysis analysis, List<String> list) {
+        List<ICommand> addCommands = new ArrayList<ICommand>();
+
         for (String item : list) {
-            InputFile inputFile = factory.createInputFile();
-            inputFile.setName(item);
-            inputFiles.add(inputFile);
+            InputFile inputFile = new InputFile(item);
+            addCommands.add(new AddInputFileCommand(analysis, inputFile));
         }
-        Command command = AddCommand.create(domain, inputs, pkg.getInputs_Inputs(), inputFiles);
-        domain.getCommandStack().execute(command);
+        ICommand command = new CompoundCommand("Add input files", addCommands);
+        commandStack.execute(command);
     }
 
-    public static void setInputFile(EditingDomain domain, InputFile inputFile, String value) {
-        Command command = SetCommand.create(domain, inputFile, pkg.getInputFile_Name(), value);
-        domain.getCommandStack().execute(command);
+    public static void setInputFile(CommandStack commandStack, InputFile inputFile, String value) {
+        ICommand command = new SetInputFileCommand(inputFile, value);
+        commandStack.execute(command);
     }
 
     public static String[] getFilterFieldsFor(String[] runidFields) {
@@ -204,102 +162,30 @@ public class ScaveModelUtil {
         return filterFields;
     }
 
-    /**
-     * Returns the data types displayed on the chart.
-     */
-    public static ResultType[] getDataTypesOfChart(Chart chart) {
-        if (chart instanceof BarChart)
-            return new ResultType[] {ResultType.SCALAR_LITERAL};
-        else if (chart instanceof LineChart)
-            return new ResultType[] {ResultType.VECTOR_LITERAL};
-        else if (chart instanceof HistogramChart)
-            return new ResultType[] {ResultType.HISTOGRAM_LITERAL};
-        else if (chart instanceof ScatterChart)
-            return new ResultType[] {ResultType.SCALAR_LITERAL,ResultType.VECTOR_LITERAL,ResultType.HISTOGRAM_LITERAL};
-        else
-            throw new IllegalArgumentException("Unknown chart type: " + chart.getClass().getName());
-    }
-
-    /**
-     * Returns the names of result types.
-     */
-    public static String[] getResultTypeNames() {
-        return getEnumNames(ResultType.VALUES);
-    }
-
-    /**
-     * Returns the names of an EMF enum members.
-     */
-    public static String[] getEnumNames(List<? extends Enumerator> enumValues) {
-        String[] names = new String[enumValues.size()];
-        int i = 0;
-        for (Enumerator value : enumValues) {
-            names[i++] = value.getName();
-        }
-        return names;
-    }
-
-    public static void moveElements(EditingDomain domain, Charts charts, Object[] elements, int index) {
+    public static void moveElements(CommandStack commandStack, Charts charts, Object[] elements, int index) {
         // the elements[] array contains the elements in no particular order. We need to keep
         // the order they are in the model (Charts object). Plus, we need reverse order due to
         // the order we insert them back.
         List<AnalysisItem> itemsToMove = new ArrayList<>();
-        for (AnalysisItem item : charts.getItems())
+        for (AnalysisItem item : charts.getCharts())
             if (ArrayUtils.contains(elements, item))
                 itemsToMove.add(0, item); // reverse order
 
         // do a series of "Move" commands
-        CompoundCommand command = new CompoundCommand();
-        for (AnalysisItem item : itemsToMove) {
-            if (charts.getItems().indexOf(item) < index)
-                index--; // insertion element will shift up because we removed an item from before it in the list
-            command.append(MoveCommand.create(domain, charts, pkg.getCharts_Items(), item, index));
-        }
-        domain.getCommandStack().execute(command);
+        CompoundCommand command = new CompoundCommand("Move analysis items");
+        for (AnalysisItem item : itemsToMove)
+            command.append(new MoveChartCommand(charts, item, index));
+        commandStack.execute(command);
     }
-
-    /**
-     * Returns the analysis node of the specified resource.
-     * It is assumed that the resource contains exactly one analysis node as
-     * content.
-     */
-    public static Analysis getAnalysis(Resource resource) {
-        Assert.isTrue(resource.getContents().size() == 1 && resource.getContents().get(0) instanceof Analysis,
-                "Analysis node not found in: " + resource.getURI().toString());
-        return (Analysis)resource.getContents().get(0);
-    }
-
-    /**
-     * Returns the analysis node containing <code>eobject</code>.
-     */
-    public static Analysis getAnalysis(EObject eobject) {
-        Assert.isTrue(eobject.eClass().getEPackage() == pkg,
-                "Scave model object expected, received: " + eobject.toString());
-        return findEnclosingOrSelf(eobject, Analysis.class);
-    }
-
-    public static EObject getPreviousSibling(EObject eobject) {
-        EObject parent = eobject.eContainer();
-        EStructuralFeature feature = eobject.eContainingFeature();
-        if (parent != null && feature != null) {
-            @SuppressWarnings("unchecked")
-            EList<EObject> siblings = ((EList<EObject>)parent.eGet(feature));
-            int index = siblings.indexOf(eobject);
-            if (index > 0)
-                return siblings.get(index - 1);
-        }
-        return null;
-    }
-
 
     /**
      * Finds an enclosing object having type {@code type}.
      * If the {@code object} itself has the type, it is returned.
      */
     @SuppressWarnings("unchecked")
-    public static <T extends EObject> T findEnclosingOrSelf(EObject object, Class<T> type) {
+    public static <T extends AnalysisObject> T findEnclosingOrSelf(AnalysisObject object, Class<T> type) {
         while (object != null && !type.isInstance(object))
-            object = object.eContainer();
+            object = object.getParent();
         return (T)object;
     }
 
@@ -307,29 +193,16 @@ public class ScaveModelUtil {
      * Returns all object in the container having the specified type.
      */
     @SuppressWarnings("unchecked")
-    public static <T extends EObject> List<T> findObjects(EObject container, Class<T> type) {
+    public static <T> List<T> findObjects(AnalysisObject container, Class<T> type) {
         ArrayList<T> objects = new ArrayList<>();
-        if (container == null)
-            return objects;
-        for (TreeIterator<EObject> iterator = container.eAllContents(); iterator.hasNext(); ) {
-            EObject object = iterator.next();
-            if (type.isInstance(object))
-                objects.add((T)object);
-        }
-        return objects;
-    }
-
-    /**
-     * Returns all objects in the resource having the specified type.
-     */
-    @SuppressWarnings("unchecked")
-    public static <T extends EObject> List<T> findObjects(Resource resource, Class<T> type) {
-        ArrayList<T> objects = new ArrayList<>();
-        for (TreeIterator<EObject> iterator = resource.getAllContents(); iterator.hasNext(); ) {
-            EObject object = iterator.next();
-            if (type.isInstance(object))
-                objects.add((T)object);
-        }
+        // TODO
+//        if (container == null)
+//            return objects;
+//        for (TreeIterator<AnalysisObject> iterator = container.eAllContents(); iterator.hasNext(); ) {
+//            AnalysisObject object = iterator.next();
+//            if (type.isInstance(object))
+//                objects.add((T)object);
+//        }
         return objects;
     }
 
@@ -344,59 +217,9 @@ public class ScaveModelUtil {
         return charts;
     }
 
-    /**
-     * Collect unreferenced charts from the given collection.
-     */
-    public static Collection<Chart> collectUnreferencedCharts(Collection<?> items) {
-        List<Chart> charts = collectCharts(items);
-        if (charts.size() > 0) {
-            Map<EObject,Collection<Setting>> references = ScaveCrossReferencer.find(charts.get(0).eResource());
-            charts.removeAll(references.keySet());
-        }
-        return charts;
-    }
-
-    public static boolean isInputsChange(Notification notification) {
-        if (notification.isTouch())
-            return false;
-        switch (notification.getEventType()) {
-            case Notification.ADD:
-            case Notification.ADD_MANY:
-            case Notification.REMOVE:
-            case Notification.REMOVE_MANY:
-            case Notification.MOVE:
-            case Notification.SET:
-            case Notification.UNSET:
-                Object notifier = notification.getNotifier();
-                if (notifier instanceof Inputs || notifier instanceof InputFile)
-                    return true;
-        }
-        return false;
-    }
-
-
-    /**
-     * Collect references to scave objects.
-     * Currently the only references are from chart sheets to charts,
-     * so the scope of the search is limited to chart sheets.
-     */
-    static class ScaveCrossReferencer extends EcoreUtil.CrossReferencer {
-
-        private static final long serialVersionUID = 2380168634189516829L;
-
-        protected ScaveCrossReferencer(Collection<?> eobjects) {
-            super(eobjects);
-        }
-
-        public static Map<EObject, Collection<EStructuralFeature.Setting>> find(Resource resource) {
-            return EcoreUtil.CrossReferencer.find(Collections.singleton(resource));
-        }
-
-        @Override
-        protected boolean containment(EObject eObject) {
-            return eObject instanceof Resource ||
-                   eObject instanceof Analysis;
-        }
+    public static boolean isInputsChange(AnalysisEvent event) {
+        AnalysisObject subject = event.getSubject();
+        return subject instanceof Inputs || subject instanceof InputFile;
     }
 
     public static Property getChartProperty(Chart chart, String propertyName) {
@@ -408,38 +231,28 @@ public class ScaveModelUtil {
         return null;
     }
 
-    public static void setChartProperty(EditingDomain ed, Chart chart, String propertyName, String propertyValue) {
+    public static void setChartProperty(CommandStack commandStack, Chart chart, String propertyName, String propertyValue) {
         Property property = getChartProperty(chart, propertyName);
-        Command command;
+        ICommand command;
         if (property == null) {
-            property = factory.createProperty();
-            property.setName(propertyName);
-            property.setValue(propertyValue);
-            command = AddCommand.create(
-                        ed,
-                        chart,
-                        pkg.getChart_Properties(),
-                        property);
+            property = new Property(propertyName, propertyValue);
+            command = new AddChartPropertyCommand(chart, property);
         }
         else {
-            command = SetCommand.create(
-                        ed,
-                        property,
-                        pkg.getProperty_Value(),
-                        propertyValue);
+            command = new SetChartPropertyCommand(property, propertyValue);
         }
-        ed.getCommandStack().execute(command);
+        commandStack.execute(command);
     }
 
     public static IDList getAllIDs(ResultFileManager manager, ResultType type) {
         if (type == null)
             return manager.getAllItems(true, true);
 
-        switch (type.getValue()) {
-        case ResultType.SCALAR: return manager.getAllScalars(true, true);
-        case ResultType.VECTOR: return manager.getAllVectors();
-        case ResultType.STATISTICS: return manager.getAllStatistics();
-        case ResultType.HISTOGRAM: return manager.getAllHistograms();
+        switch (type) {
+        case SCALAR_LITERAL: return manager.getAllScalars(true, true);
+        case VECTOR_LITERAL: return manager.getAllVectors();
+        case STATISTICS_LITERAL: return manager.getAllStatistics();
+        case HISTOGRAM_LITERAL: return manager.getAllHistograms();
         }
         Assert.isTrue(false, "Unknown dataset type: " + type);
         return null;
@@ -521,11 +334,11 @@ public class ScaveModelUtil {
      *
      */
     public static int asInternalResultType(ResultType type) {
-        switch (type.getValue()) {
-        case ResultType.SCALAR: return ResultFileManager.SCALAR;
-        case ResultType.VECTOR: return ResultFileManager.VECTOR;
-        case ResultType.STATISTICS: return ResultFileManager.STATISTICS;
-        case ResultType.HISTOGRAM: return ResultFileManager.HISTOGRAM;
+        switch (type) {
+        case SCALAR_LITERAL: return ResultFileManager.SCALAR;
+        case VECTOR_LITERAL: return ResultFileManager.VECTOR;
+        case STATISTICS_LITERAL: return ResultFileManager.STATISTICS;
+        case HISTOGRAM_LITERAL: return ResultFileManager.HISTOGRAM;
         default: Assert.isTrue(false, "Unknown ResultType:"+type); return 0;
         }
     }
@@ -560,33 +373,30 @@ public class ScaveModelUtil {
         }
     }
 
-    public static IFile getFileOfEObject(EObject object) {
-        if (object == null || object.eResource() == null)
-            return null;
-        URI uri = object.eResource().getURI();// itt van egy error sokszor TODO
-        if (uri.isPlatformResource())
-            return (IFile) ResourcesPlugin.getWorkspace().getRoot().findMember(uri.toPlatformString(true));
-        return null;
-    }
-
-    public static String getDescription(EClass c) {
-        ScaveModelPackage e = ScaveModelPackage.eINSTANCE;
-        if (c == e.getAnalysis())
+    public static String getDescription(AnalysisObject c) {
+        if (c instanceof Analysis)
             return "";
-        if (c == e.getInputs())
+        if (c instanceof Inputs)
             return "Contains the input files of the analysis.";
-        if (c == e.getInputFile())
+        if (c instanceof InputFile)
             return "Specifies a result file (output vector or scalar file), or a sets of files using wildcards, to be used as input for the analysis.";
-        if (c == e.getLineChart())
-            return "A LineChart object creates a line chart from (a subset of the) the vector results in the dataset.";
-        if (c == e.getBarChart())
-            return "A BarChart object creates a bar chart from (a subset of the) the scalar results in the dataset.";
-        if (c == e.getHistogramChart())
-            return "A HistogramChart object creates a histogram chart from (a subset of the) the histogram results in the dataset.";
-        if (c == e.getScatterChart())
-            return "A ScatterChart object interprets scalars generated by different runs " +
-                    "as (x,y) coordinates, and plots them on a line chart.";
-        if (c == e.getProperty())
+        if (c instanceof Chart) {
+            Chart chart = (Chart)c;
+            switch (chart.getType()) {
+            case BAR:
+                return "A BarChart object creates a bar chart from (a subset of the) the scalar results in the dataset.";
+            case HISTOGRAM:
+                return "A HistogramChart object creates a histogram chart from (a subset of the) the histogram results in the dataset.";
+            case LINE:
+                return "A LineChart object creates a line chart from (a subset of the) the vector results in the dataset.";
+            case MATPLOTLIB:
+                return "A MatplotLibChart object is very cool TODO.";
+            default:
+                break;
+
+            }
+        }
+        if (c instanceof Property)
             return "";
         return null;
     }

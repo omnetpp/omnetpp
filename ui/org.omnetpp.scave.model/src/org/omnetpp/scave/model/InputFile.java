@@ -1,51 +1,23 @@
-/**
- */
 package org.omnetpp.scave.model;
 
-import org.eclipse.emf.ecore.EObject;
+public class InputFile extends AnalysisObject {
+    protected String name;
 
-/**
- * <!-- begin-user-doc -->
- * A representation of the model object '<em><b>Input File</b></em>'.
- * <!-- end-user-doc -->
- *
- * <p>
- * The following features are supported:
- * </p>
- * <ul>
- *   <li>{@link org.omnetpp.scave.model.InputFile#getName <em>Name</em>}</li>
- * </ul>
- *
- * @see org.omnetpp.scave.model.ScaveModelPackage#getInputFile()
- * @model
- * @generated
- */
-public interface InputFile extends EObject {
-    /**
-     * Returns the value of the '<em><b>Name</b></em>' attribute.
-     * The default value is <code>""</code>.
-     * <!-- begin-user-doc -->
-     * <p>
-     * If the meaning of the '<em>Name</em>' attribute isn't clear,
-     * there really should be more of a description here...
-     * </p>
-     * <!-- end-user-doc -->
-     * @return the value of the '<em>Name</em>' attribute.
-     * @see #setName(String)
-     * @see org.omnetpp.scave.model.ScaveModelPackage#getInputFile_Name()
-     * @model default=""
-     * @generated
-     */
-    String getName();
+    public InputFile(String name) {
+        this.name = name;
+    }
 
-    /**
-     * Sets the value of the '{@link org.omnetpp.scave.model.InputFile#getName <em>Name</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @param value the new value of the '<em>Name</em>' attribute.
-     * @see #getName()
-     * @generated
-     */
-    void setName(String value);
+    public String getName() {
+        return name;
+    }
 
-} // InputFile
+    public void setName(String name) {
+        this.name = name;
+        notifyListeners();
+    }
+
+    @Override
+    protected InputFile clone() throws CloneNotSupportedException {
+        return (InputFile)super.clone();
+    }
+}

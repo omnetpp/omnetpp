@@ -6,15 +6,13 @@ Bundle-Version: 6.0.0.qualifier
 Bundle-ClassPath: .
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Bundle-Activator: org.omnetpp.scave.model.provider.ScaveEditPlugin$Implementation
+Bundle-Activator: org.omnetpp.scave.model.ScaveModelPlugin
 Bundle-Vendor: OpenSim Ltd.
 Bundle-Localization: plugin
 Export-Package: org.omnetpp.scave.model,
- org.omnetpp.scave.model.impl,
- org.omnetpp.scave.model.provider,
- org.omnetpp.scave.model.util
+ org.omnetpp.scave.model.commands
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources;visibility:=reexport,
- org.eclipse.emf.ecore.xmi;visibility:=reexport,
- org.eclipse.emf.edit.ui;visibility:=reexport,
- org.eclipse.ui.ide;visibility:=reexport
+ org.eclipse.ui.ide;visibility:=reexport,
+ org.eclipse.ui.workbench;bundle-version="3.110.1"
+Import-Package: org.apache.commons.collections

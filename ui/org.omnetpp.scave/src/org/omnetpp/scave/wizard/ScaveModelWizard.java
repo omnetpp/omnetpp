@@ -16,7 +16,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -34,6 +33,7 @@ import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.ISetSelectionTarget;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.model.Analysis;
 
 
 /**
@@ -142,7 +142,7 @@ public class ScaveModelWizard extends Wizard implements INewWizard {
     /**
      * Create a new analysis file.
      */
-    protected EObject createAnalysisNode() {
+    protected Analysis createAnalysisNode() {
         return ScaveWizardUtil.createAnalysisNode(initialInputFiles);
     }
 
@@ -161,7 +161,7 @@ public class ScaveModelWizard extends Wizard implements INewWizard {
                     @Override
                     protected void execute(IProgressMonitor progressMonitor) {
                         try {
-                            EObject rootObject = createAnalysisNode();
+                            Analysis rootObject = createAnalysisNode();
                             ScaveWizardUtil.saveAnfFile(modelFile, rootObject);
                         }
                         catch (Exception exception) {

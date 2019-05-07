@@ -1,149 +1,161 @@
-/**
- */
+
 package org.omnetpp.scave.model;
 
-import org.eclipse.emf.common.util.EList;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * <!-- begin-user-doc -->
- * A representation of the model object '<em><b>Chart</b></em>'.
- * <!-- end-user-doc -->
- *
- * <p>
- * The following features are supported:
- * </p>
- * <ul>
- *   <li>{@link org.omnetpp.scave.model.Chart#getScript <em>Script</em>}</li>
- *   <li>{@link org.omnetpp.scave.model.Chart#getProperties <em>Properties</em>}</li>
- *   <li>{@link org.omnetpp.scave.model.Chart#isTemporary <em>Temporary</em>}</li>
- *   <li>{@link org.omnetpp.scave.model.Chart#getForm <em>Form</em>}</li>
- *   <li>{@link org.omnetpp.scave.model.Chart#getTemplateID <em>Template ID</em>}</li>
- * </ul>
- *
- * @see org.omnetpp.scave.model.ScaveModelPackage#getChart()
- * @model abstract="true"
- * @generated
- */
-public interface Chart extends AnalysisItem {
-    /**
-     * Returns the value of the '<em><b>Script</b></em>' attribute.
-     * <!-- begin-user-doc -->
-     * <p>
-     * If the meaning of the '<em>Script</em>' attribute isn't clear,
-     * there really should be more of a description here...
-     * </p>
-     * <!-- end-user-doc -->
-     * @return the value of the '<em>Script</em>' attribute.
-     * @see #setScript(String)
-     * @see org.omnetpp.scave.model.ScaveModelPackage#getChart_Script()
-     * @model
-     * @generated
-     */
-    String getScript();
+import java.util.Collections;
 
-    /**
-     * Sets the value of the '{@link org.omnetpp.scave.model.Chart#getScript <em>Script</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @param value the new value of the '<em>Script</em>' attribute.
-     * @see #getScript()
-     * @generated
-     */
-    void setScript(String value);
+public class Chart extends AnalysisItem {
 
-    /**
-     * Returns the value of the '<em><b>Properties</b></em>' containment reference list.
-     * The list contents are of type {@link org.omnetpp.scave.model.Property}.
-     * <!-- begin-user-doc -->
-     * <p>
-     * If the meaning of the '<em>Properties</em>' containment reference list isn't clear,
-     * there really should be more of a description here...
-     * </p>
-     * <!-- end-user-doc -->
-     * @return the value of the '<em>Properties</em>' containment reference list.
-     * @see org.omnetpp.scave.model.ScaveModelPackage#getChart_Properties()
-     * @model containment="true"
-     * @generated
-     */
-    EList<Property> getProperties();
+    public static class DialogPage {
 
-    /**
-     * Returns the value of the '<em><b>Temporary</b></em>' attribute.
-     * The default value is <code>"false"</code>.
-     * <!-- begin-user-doc -->
-     * <p>
-     * If the meaning of the '<em>Temporary</em>' attribute isn't clear,
-     * there really should be more of a description here...
-     * </p>
-     * <!-- end-user-doc -->
-     * @return the value of the '<em>Temporary</em>' attribute.
-     * @see #setTemporary(boolean)
-     * @see org.omnetpp.scave.model.ScaveModelPackage#getChart_Temporary()
-     * @model default="false" required="true"
-     * @generated
-     */
-    boolean isTemporary();
+        public DialogPage(DialogPage other) {
+            this.id = other.id;
+            this.label = other.label;
+            this.xswtForm = other.xswtForm;
+        }
 
-    /**
-     * Sets the value of the '{@link org.omnetpp.scave.model.Chart#isTemporary <em>Temporary</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @param value the new value of the '<em>Temporary</em>' attribute.
-     * @see #isTemporary()
-     * @generated
-     */
-    void setTemporary(boolean value);
+        public DialogPage(String id, String label, String xswtForm) {
+            this.id = id;
+            this.label = label;
+            this.xswtForm = xswtForm;
+        }
 
-    /**
-     * Returns the value of the '<em><b>Form</b></em>' attribute.
-     * <!-- begin-user-doc -->
-     * <p>
-     * If the meaning of the '<em>Form</em>' attribute isn't clear,
-     * there really should be more of a description here...
-     * </p>
-     * <!-- end-user-doc -->
-     * @return the value of the '<em>Form</em>' attribute.
-     * @see #setForm(String)
-     * @see org.omnetpp.scave.model.ScaveModelPackage#getChart_Form()
-     * @model
-     * @generated
-     */
-    String getForm();
+        public String id;
+        public String label;
+        public String xswtForm;
+    }
 
-    /**
-     * Sets the value of the '{@link org.omnetpp.scave.model.Chart#getForm <em>Form</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @param value the new value of the '<em>Form</em>' attribute.
-     * @see #getForm()
-     * @generated
-     */
-    void setForm(String value);
+    public static enum ChartType {
+        BAR,
+        HISTOGRAM,
+        LINE,
+        MATPLOTLIB
+    }
 
-    /**
-     * Returns the value of the '<em><b>Template ID</b></em>' attribute.
-     * <!-- begin-user-doc -->
-     * <p>
-     * If the meaning of the '<em>Template ID</em>' attribute isn't clear,
-     * there really should be more of a description here...
-     * </p>
-     * <!-- end-user-doc -->
-     * @return the value of the '<em>Template ID</em>' attribute.
-     * @see #setTemplateID(String)
-     * @see org.omnetpp.scave.model.ScaveModelPackage#getChart_TemplateID()
-     * @model
-     * @generated
-     */
-    String getTemplateID();
+    protected String script;
+    protected List<Property> properties = new ArrayList<Property>();
+    protected boolean temporary;
+    protected String templateID;
+    protected List<DialogPage> dialogPages = new ArrayList<>();
+    protected ChartType type;
+    protected String iconPath = "";
 
-    /**
-     * Sets the value of the '{@link org.omnetpp.scave.model.Chart#getTemplateID <em>Template ID</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @param value the new value of the '<em>Template ID</em>' attribute.
-     * @see #getTemplateID()
-     * @generated
-     */
-    void setTemplateID(String value);
+    public Chart() {
+    }
 
-} // Chart
+    public Chart(ChartType type) {
+        this.type = type;
+    }
+
+    public Chart(ChartType type, String name) {
+        this.type = type;
+        this.name = name;
+    }
+
+    public String getScript() {
+        return script;
+    }
+
+    public void setScript(String script) {
+        this.script = script;
+        notifyListeners();
+    }
+
+    public List<Property> getProperties() {
+        return Collections.unmodifiableList(properties);
+    }
+
+    public Property lookupProperty(String name) {
+        for (Property p : properties) {
+            if (name.equals(p.getName()))
+                return p;
+        }
+        return null;
+    }
+
+    public void setProperties(List<Property> properties) {
+        for (Property p : this.properties)
+            p.parent = null;
+        this.properties = properties;
+        for (Property p : this.properties)
+            p.parent = this;
+        notifyListeners();
+    }
+
+    public void addProperty(Property property) {
+        property.parent = this;
+        properties.add(property);
+        notifyListeners();
+    }
+
+    public void removeProperty(Property property) {
+        property.parent = null;
+        properties.remove(property);
+        notifyListeners();
+    }
+
+    public boolean isTemporary() {
+        return temporary;
+    }
+
+    public void setTemporary(boolean temporary) {
+        this.temporary = temporary;
+        notifyListeners();
+    }
+
+    public String getTemplateID() {
+        return templateID;
+    }
+
+    public void setTemplateID(String templateID) {
+        this.templateID = templateID;
+        notifyListeners();
+    }
+
+    public List<DialogPage> getDialogPages() {
+        return Collections.unmodifiableList(dialogPages);
+    }
+
+    public void setDialogPages(List<DialogPage> dialogPages) {
+        this.dialogPages = dialogPages;
+        notifyListeners();
+    }
+
+    public ChartType getType() {
+        return type;
+    }
+
+    public void setType(ChartType type) {
+        this.type = type;
+        notifyListeners();
+    }
+
+    public String getIconPath() {
+        return iconPath;
+    }
+
+    public void setIconPath(String iconPath) {
+        this.iconPath = iconPath;
+        notifyListeners();
+    }
+
+
+    @Override
+    protected Chart clone() throws CloneNotSupportedException {
+        Chart clone = (Chart) super.clone();
+
+        clone.properties = new ArrayList<Property>(properties.size());
+
+        for (int i = 0; i < properties.size(); ++i)
+            clone.properties.add(properties.get(i).clone());
+
+        clone.dialogPages = new ArrayList<Chart.DialogPage>(dialogPages.size());
+
+        for (int i = 0; i < dialogPages.size(); ++i)
+            clone.dialogPages.add(new Chart.DialogPage(dialogPages.get(i)));
+
+        return clone;
+    }
+}

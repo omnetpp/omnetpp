@@ -6,5 +6,5 @@ public class Markers {
         COMPUTESCALAR_PROBLEMMARKER_ID = "org.omnetpp.scave.computescalarproblem";
 
     public static final String
-        EOBJECT_MARKERATTR_ID = "EObject";
+        EOBJECT_MARKERATTR_ID = "AnalysisObject";
 }

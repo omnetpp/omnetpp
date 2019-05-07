@@ -1,77 +1,34 @@
-/**
- */
 package org.omnetpp.scave.model;
 
-import org.eclipse.emf.ecore.EObject;
+public class Property extends AnalysisObject {
+    protected String name;
+    protected String value;
 
-/**
- * <!-- begin-user-doc -->
- * A representation of the model object '<em><b>Property</b></em>'.
- * <!-- end-user-doc -->
- *
- * <p>
- * The following features are supported:
- * </p>
- * <ul>
- *   <li>{@link org.omnetpp.scave.model.Property#getName <em>Name</em>}</li>
- *   <li>{@link org.omnetpp.scave.model.Property#getValue <em>Value</em>}</li>
- * </ul>
- *
- * @see org.omnetpp.scave.model.ScaveModelPackage#getProperty()
- * @model
- * @generated
- */
-public interface Property extends EObject {
-    /**
-     * Returns the value of the '<em><b>Name</b></em>' attribute.
-     * <!-- begin-user-doc -->
-     * <p>
-     * If the meaning of the '<em>Name</em>' attribute isn't clear,
-     * there really should be more of a description here...
-     * </p>
-     * <!-- end-user-doc -->
-     * @return the value of the '<em>Name</em>' attribute.
-     * @see #setName(String)
-     * @see org.omnetpp.scave.model.ScaveModelPackage#getProperty_Name()
-     * @model
-     * @generated
-     */
-    String getName();
+    public Property(String name, String value) {
+        this.name = name;
+        this.value = value;
+    }
 
-    /**
-     * Sets the value of the '{@link org.omnetpp.scave.model.Property#getName <em>Name</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @param value the new value of the '<em>Name</em>' attribute.
-     * @see #getName()
-     * @generated
-     */
-    void setName(String value);
+    public String getName() {
+        return name;
+    }
 
-    /**
-     * Returns the value of the '<em><b>Value</b></em>' attribute.
-     * <!-- begin-user-doc -->
-     * <p>
-     * If the meaning of the '<em>Value</em>' attribute isn't clear,
-     * there really should be more of a description here...
-     * </p>
-     * <!-- end-user-doc -->
-     * @return the value of the '<em>Value</em>' attribute.
-     * @see #setValue(String)
-     * @see org.omnetpp.scave.model.ScaveModelPackage#getProperty_Value()
-     * @model
-     * @generated
-     */
-    String getValue();
+    public void setName(String name) {
+        this.name = name;
+        notifyListeners();
+    }
 
-    /**
-     * Sets the value of the '{@link org.omnetpp.scave.model.Property#getValue <em>Value</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @param value the new value of the '<em>Value</em>' attribute.
-     * @see #getValue()
-     * @generated
-     */
-    void setValue(String value);
+    public String getValue() {
+        return value;
+    }
 
-} // Property
+    public void setValue(String value) {
+        this.value = value;
+        notifyListeners();
+    }
+
+    @Override
+    protected Property clone() throws CloneNotSupportedException {
+        return (Property)super.clone();
+    }
+}

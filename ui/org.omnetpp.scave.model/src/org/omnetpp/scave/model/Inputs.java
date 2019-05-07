@@ -1,42 +1,46 @@
-/**
- */
 package org.omnetpp.scave.model;
 
-import org.eclipse.emf.common.util.EList;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import org.eclipse.emf.ecore.EObject;
+public class Inputs extends AnalysisObject {
+    protected List<InputFile> inputs = new ArrayList<InputFile>();
 
-/**
- * <!-- begin-user-doc -->
- * A representation of the model object '<em><b>Inputs</b></em>'.
- * <!-- end-user-doc -->
- *
- * <p>
- * The following features are supported:
- * </p>
- * <ul>
- *   <li>{@link org.omnetpp.scave.model.Inputs#getInputs <em>Inputs</em>}</li>
- * </ul>
- *
- * @see org.omnetpp.scave.model.ScaveModelPackage#getInputs()
- * @model
- * @generated
- */
-public interface Inputs extends EObject {
-    /**
-     * Returns the value of the '<em><b>Inputs</b></em>' containment reference list.
-     * The list contents are of type {@link org.omnetpp.scave.model.InputFile}.
-     * <!-- begin-user-doc -->
-     * <p>
-     * If the meaning of the '<em>Inputs</em>' containment reference list isn't clear,
-     * there really should be more of a description here...
-     * </p>
-     * <!-- end-user-doc -->
-     * @return the value of the '<em>Inputs</em>' containment reference list.
-     * @see org.omnetpp.scave.model.ScaveModelPackage#getInputs_Inputs()
-     * @model containment="true"
-     * @generated
-     */
-    EList<InputFile> getInputs();
+    public List<InputFile> getInputs() {
+        return Collections.unmodifiableList(inputs);
+    }
 
-} // Inputs
+    public void setInputs(List<InputFile> inputs) {
+        for (InputFile i : this.inputs)
+            i.parent = null;
+        this.inputs = inputs;
+        for (InputFile i : this.inputs)
+            i.parent = this;
+        notifyListeners();
+    }
+
+    public void addInput(InputFile input) {
+        input.parent = this;
+        inputs.add(input);
+        notifyListeners();
+    }
+
+    public void removeInput(InputFile input) {
+        input.parent = null;
+        inputs.remove(input);
+        notifyListeners();
+    }
+
+    @Override
+    protected Inputs clone() throws CloneNotSupportedException {
+        Inputs clone = (Inputs)super.clone();
+
+        clone.inputs = new ArrayList<InputFile>(inputs.size());
+
+        for (int i = 0; i < inputs.size(); ++i)
+            clone.inputs.add(inputs.get(i).clone());
+
+        return clone;
+    }
+}

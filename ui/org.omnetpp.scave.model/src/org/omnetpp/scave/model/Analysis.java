@@ -1,77 +1,43 @@
-/**
- */
 package org.omnetpp.scave.model;
 
-import org.eclipse.emf.ecore.EObject;
+public class Analysis extends AnalysisObject {
+    protected Inputs inputs = new Inputs();
+    protected Charts charts = new Charts(); // TODO rename to items
 
-/**
- * <!-- begin-user-doc -->
- * A representation of the model object '<em><b>Analysis</b></em>'.
- * <!-- end-user-doc -->
- *
- * <p>
- * The following features are supported:
- * </p>
- * <ul>
- *   <li>{@link org.omnetpp.scave.model.Analysis#getInputs <em>Inputs</em>}</li>
- *   <li>{@link org.omnetpp.scave.model.Analysis#getCharts <em>Charts</em>}</li>
- * </ul>
- *
- * @see org.omnetpp.scave.model.ScaveModelPackage#getAnalysis()
- * @model
- * @generated
- */
-public interface Analysis extends EObject {
-    /**
-     * Returns the value of the '<em><b>Inputs</b></em>' containment reference.
-     * <!-- begin-user-doc -->
-     * <p>
-     * If the meaning of the '<em>Inputs</em>' containment reference isn't clear,
-     * there really should be more of a description here...
-     * </p>
-     * <!-- end-user-doc -->
-     * @return the value of the '<em>Inputs</em>' containment reference.
-     * @see #setInputs(Inputs)
-     * @see org.omnetpp.scave.model.ScaveModelPackage#getAnalysis_Inputs()
-     * @model containment="true"
-     * @generated
-     */
-    Inputs getInputs();
+    public Analysis() {
+        inputs.parent = this;
+        charts.parent = this;
+    }
 
-    /**
-     * Sets the value of the '{@link org.omnetpp.scave.model.Analysis#getInputs <em>Inputs</em>}' containment reference.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @param value the new value of the '<em>Inputs</em>' containment reference.
-     * @see #getInputs()
-     * @generated
-     */
-    void setInputs(Inputs value);
+    public Inputs getInputs() {
+        return inputs;
+    }
 
-    /**
-     * Returns the value of the '<em><b>Charts</b></em>' containment reference.
-     * <!-- begin-user-doc -->
-     * <p>
-     * If the meaning of the '<em>Charts</em>' containment reference isn't clear,
-     * there really should be more of a description here...
-     * </p>
-     * <!-- end-user-doc -->
-     * @return the value of the '<em>Charts</em>' containment reference.
-     * @see #setCharts(Charts)
-     * @see org.omnetpp.scave.model.ScaveModelPackage#getAnalysis_Charts()
-     * @model containment="true"
-     * @generated
-     */
-    Charts getCharts();
+    public void setInputs(Inputs inputs) {
+        this.inputs.parent = null;
+        this.inputs = inputs;
+        this.inputs.parent = this;
 
-    /**
-     * Sets the value of the '{@link org.omnetpp.scave.model.Analysis#getCharts <em>Charts</em>}' containment reference.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @param value the new value of the '<em>Charts</em>' containment reference.
-     * @see #getCharts()
-     * @generated
-     */
-    void setCharts(Charts value);
+        notifyListeners();
+    }
 
-} // Analysis
+    public Charts getCharts() {
+        return charts;
+    }
+
+    public void setCharts(Charts charts) {
+        this.charts.parent = null;
+        this.charts = charts;
+        this.charts.parent = this;
+        notifyListeners();
+    }
+
+    @Override
+    public Analysis clone() throws CloneNotSupportedException {
+        Analysis clone = (Analysis)super.clone();
+        clone.inputs = inputs.clone();
+        clone.charts = charts.clone();
+        return clone;
+    }
+}
+

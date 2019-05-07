@@ -1,42 +1,57 @@
-/**
- */
 package org.omnetpp.scave.model;
 
-import org.eclipse.emf.common.util.EList;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import org.eclipse.emf.ecore.EObject;
+import org.eclipse.core.runtime.Assert;
 
-/**
- * <!-- begin-user-doc -->
- * A representation of the model object '<em><b>Charts</b></em>'.
- * <!-- end-user-doc -->
- *
- * <p>
- * The following features are supported:
- * </p>
- * <ul>
- *   <li>{@link org.omnetpp.scave.model.Charts#getItems <em>Items</em>}</li>
- * </ul>
- *
- * @see org.omnetpp.scave.model.ScaveModelPackage#getCharts()
- * @model
- * @generated
- */
-public interface Charts extends EObject {
-    /**
-     * Returns the value of the '<em><b>Items</b></em>' containment reference list.
-     * The list contents are of type {@link org.omnetpp.scave.model.AnalysisItem}.
-     * <!-- begin-user-doc -->
-     * <p>
-     * If the meaning of the '<em>Items</em>' containment reference list isn't clear,
-     * there really should be more of a description here...
-     * </p>
-     * <!-- end-user-doc -->
-     * @return the value of the '<em>Items</em>' containment reference list.
-     * @see org.omnetpp.scave.model.ScaveModelPackage#getCharts_Items()
-     * @model containment="true"
-     * @generated
-     */
-    EList<AnalysisItem> getItems();
+public class Charts extends AnalysisObject {
+    protected List<AnalysisItem> charts = new ArrayList<AnalysisItem>();
 
-} // Charts
+    public List<AnalysisItem> getCharts() {
+        return Collections.unmodifiableList(charts);
+    }
+
+    public void setCharts(List<AnalysisItem> charts) {
+        for (AnalysisItem i : this.charts)
+            i.parent = null;
+        this.charts = charts;
+        for (AnalysisItem i : this.charts)
+            i.parent = this;
+
+        for (int i = 0; i < charts.size(); ++i) {
+            Assert.isTrue(i == charts.indexOf(charts.get(i)));
+        }
+
+        notifyListeners();
+    }
+
+    public void addChart(AnalysisItem chart) {
+        addChart(chart, charts.size());
+    }
+
+    public void addChart(AnalysisItem chart, int index) {
+        chart.parent = this;
+        charts.add(index, chart);
+        notifyListeners();
+    }
+
+    public void removeChart(AnalysisItem chart) {
+        chart.parent = null;
+        charts.remove(chart);
+        notifyListeners();
+    }
+
+    @Override
+    protected Charts clone() throws CloneNotSupportedException {
+        Charts clone = (Charts)super.clone();
+
+        clone.charts = new ArrayList<AnalysisItem>(charts.size());
+
+        for (int i = 0; i < charts.size(); ++i)
+            clone.charts.add(charts.get(i).clone());
+
+        return clone;
+    }
+}
