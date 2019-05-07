@@ -43,5 +43,5 @@ void Test::activity()
 %exitcode: 1
 
 %contains: stderr
-Cannot parse XML string:
+xml(): Parse error
 

@@ -2,7 +2,6 @@
 Check ev.getXMLDocument()'s optional path expression
 
 %file: test.xml
-<!DOCTYPE hello bubu !>
 <foo id="1">
     <foo id="2" color="red">one</foo>
     <bar id="3" color="red">

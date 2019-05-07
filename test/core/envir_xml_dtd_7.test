@@ -2,8 +2,6 @@
 If document has DTD, parser must use it for validation and attribute completion.
 Document doesn't conform to DTD: missing attribute -- should be an error.
 
-THIS TEST DOES NOT PASS WITH EXPAT -- IT DOES NOT SUPPORT DTD VALIDATION.
-
 %file: test.dtd
 <!ELEMENT foo ( bar )>
 <!ATTLIST foo
@@ -24,11 +22,19 @@ THIS TEST DOES NOT PASS WITH EXPAT -- IT DOES NOT SUPPORT DTD VALIDATION.
 </foo>
 
 %activity:
+#ifndef WITH_LIBXML
+EV << "#UNRESOLVED: No LibXML parser, required for DTD validation.\n";
+return;
+#endif
+
 cXMLElement *node = getEnvir()->getXMLDocument("test.xml");
 EV << node->getXML();
 
 %exitcode: 1
 
-%contains-regex: stderr
-Cannot load 'test.xml': Element bar does not carry attribute reqAttr
+%contains: stderr
+DTD validation failed, see stderr for detailed report
+
+%contains: stderr
+Element bar does not carry attribute reqAttr
 

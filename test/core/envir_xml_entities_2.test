@@ -1,8 +1,6 @@
 %description:
 Entities declared within the DOCTYPE are substituted.
 
-THIS TEST DOES NOT PASS WITH EXPAT -- IT DOES NOT SUPPORT DTD VALIDATION.
-
 %file: test.xml
 <?xml version="1.0"?>
 <!DOCTYPE foo [
@@ -12,6 +10,11 @@ THIS TEST DOES NOT PASS WITH EXPAT -- IT DOES NOT SUPPORT DTD VALIDATION.
 <foo>&greeting;</foo>
 
 %activity:
+#ifndef WITH_LIBXML
+EV << "#UNRESOLVED: No LibXML parser, required for DTD validation.\n";
+return;
+#endif
+
 cXMLElement *node = getEnvir()->getXMLDocument("test.xml");
 EV << node->getXML();
 

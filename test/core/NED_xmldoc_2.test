@@ -54,5 +54,5 @@ void Test::activity()
 %exitcode: 1
 
 %contains: stderr
-Cannot load 'nosuchfile.xml': File not found
+xmldoc(): Cannot open file
 

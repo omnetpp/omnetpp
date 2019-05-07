@@ -1,8 +1,6 @@
 %description:
 Entities declared in an external DTD are substituted.
 
-THIS TEST DOES NOT PASS WITH EXPAT -- IT DOES NOT SUPPORT DTD VALIDATION.
-
 %file: test.dtd
 <!ENTITY xrul "xml rulez">
 <!ELEMENT foo ANY>
@@ -19,6 +17,11 @@ THIS TEST DOES NOT PASS WITH EXPAT -- IT DOES NOT SUPPORT DTD VALIDATION.
 </foo>
 
 %activity:
+#ifndef WITH_LIBXML
+EV << "#UNRESOLVED: No LibXML parser, required for DTD validation.\n";
+return;
+#endif
+
 cXMLElement *node = getEnvir()->getXMLDocument("test.xml");
 EV << node->getXML();
 

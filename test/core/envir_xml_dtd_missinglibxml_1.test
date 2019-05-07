@@ -1,0 +1,24 @@
+%description:
+Report error if document contains DOCTYPE and LibXML is not present
+
+%file: test.dtd
+<!ELEMENT foo EMPTY>
+
+%file: test.xml
+<?xml version="1.0" ?>
+<!DOCTYPE foo SYSTEM "./test.dtd">
+<foo/>
+
+%activity:
+#ifdef WITH_LIBXML
+EV << "#UNRESOLVED: LibXML present, and test is for checking its absence.\n";
+return;
+#endif
+
+cXMLElement *node = getEnvir()->getXMLDocument("test.xml");
+EV << node->getXML();
+
+%exitcode: 1
+
+%contains: stderr
+Cannot load 'test.xml': Refusing to parse XML documents with DTDs with the embedded non-DTD-aware parser

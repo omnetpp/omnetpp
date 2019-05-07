@@ -12,4 +12,5 @@ else
 %exitcode: 1
 
 %contains: stderr
-Cannot load '@TESTNAME@qwerty.xml': File not found
+Cannot open file
+

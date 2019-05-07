@@ -2,8 +2,6 @@
 If document has DTD, parser must use it for validation and attribute completion.
 Test that completion takes place.
 
-THIS TEST DOES NOT PASS WITH EXPAT -- IT DOES NOT SUPPORT DTD VALIDATION.
-
 %file: test.dtd
 <!ELEMENT foo ( bar )>
 <!ATTLIST foo
@@ -24,6 +22,11 @@ THIS TEST DOES NOT PASS WITH EXPAT -- IT DOES NOT SUPPORT DTD VALIDATION.
 </foo>
 
 %activity:
+#ifndef WITH_LIBXML
+EV << "#UNRESOLVED: No LibXML parser, required for DTD validation.\n";
+return;
+#endif
+
 cXMLElement *node = getEnvir()->getXMLDocument("test.xml");
 EV << node->getXML();
 
