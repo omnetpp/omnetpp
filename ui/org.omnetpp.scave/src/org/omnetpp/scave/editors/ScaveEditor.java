@@ -108,6 +108,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.common.util.XmlUtils;
 import org.omnetpp.scave.AnalysisLoader;
+import org.omnetpp.scave.AnalysisSaver;
 import org.omnetpp.scave.LegacyAnalysisLoader;
 import org.omnetpp.scave.Markers;
 import org.omnetpp.scave.ScavePlugin;
@@ -1513,93 +1514,17 @@ public class ScaveEditor extends MultiPageEditorPartExt
         // Save only resources that have actually changed.
         //
 
-        // Do the work within an operation because this is a long running activity that
-        // modifies the workbench.
-        WorkspaceModifyOperation operation = new WorkspaceModifyOperation() {
-            // This is the method that gets invoked when the operation runs.
-            public void execute(IProgressMonitor monitor) {
-                IFileEditorInput modelFile = (IFileEditorInput) getEditorInput();
-                DocumentBuilder db;
-                try {
-                    db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-
-                    Document d = db.newDocument();
-
-                    Element anal = d.createElement("analysis");
-                    anal.setAttribute("version", "2");
-                    d.appendChild(anal);
-
-                    Element inputs = d.createElement("inputs");
-                    anal.appendChild(inputs);
-
-                    Element charts = d.createElement("charts");
-                    anal.appendChild(charts);
-
-                    for (InputFile i : analysis.getInputs().getInputs()) {
-                        Element elem = d.createElement("input");
-                        inputs.appendChild(elem);
-                        elem.setAttribute("pattern", i.getName());
-                    }
-
-                    for (AnalysisItem a : analysis.getCharts().getCharts()) {
-                        if (a instanceof Chart) {
-                            Chart chart = (Chart) a;
-                            Element chartElem = d.createElement("chart");
-                            charts.appendChild(chartElem);
-
-                            chartElem.setAttribute("id", Integer.toString(chart.getId()));
-                            chartElem.setAttribute("name", chart.getName());
-                            chartElem.setAttribute("template", chart.getTemplateID());
-
-                            Element script = d.createElement("script");
-                            script.appendChild(d.createCDATASection(chart.getScript()));
-                            chartElem.appendChild(script);
-
-                            for (DialogPage page : chart.getDialogPages()) {
-                                Element pg = d.createElement("dialogPage");
-                                pg.setAttribute("id", page.id);
-                                pg.setAttribute("label", page.label);
-                                pg.appendChild(d.createCDATASection(page.xswtForm));
-                                chartElem.appendChild(pg);
-                            }
-
-                            chartElem.setAttribute("type", chart.getType().toString());
-                            chartElem.setAttribute("icon", chart.getIconPath());
-
-                            for (Property p : chart.getProperties()) {
-                                Element e = d.createElement("property");
-                                e.setAttribute("name", p.getName());
-                                e.setAttribute("value", p.getValue());
-                                chartElem.appendChild(e);
-                            }
-                        } else {
-                            // TODO: handle better
-                            Debug.println("Analysis item '" + a.getName()
-                                    + "' is not a chart, ignored (dropped) upon saving");
-                        }
-                    }
-
-                    IFile f = modelFile.getFile();
-                    String content = XmlUtils.serialize(d);
-                    if (!f.exists())
-                        f.create(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
-                    else
-                        f.setContents(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
-                } catch (ParserConfigurationException | TransformerException | CoreException e) {
-                    ScavePlugin.logError(e);
-                }
-            }
-        };
+        IFileEditorInput modelFile = (IFileEditorInput) getEditorInput();
+        IFile f = modelFile.getFile();
 
         try {
-            // This runs the options, and shows progress.
-            new ProgressMonitorDialog(getSite().getShell()).run(true, false, operation);
+            AnalysisSaver.saveAnalysis(analysis, f);
 
             // Refresh the necessary state.
             commandStack.saved();
             firePropertyChange(IEditorPart.PROP_DIRTY);
-        } catch (Exception exception) {
-            ScavePlugin.logError(exception);
+        } catch (CoreException e) {
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Cannot save .anf file", e.getMessage());
         }
     }
 

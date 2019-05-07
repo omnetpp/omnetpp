@@ -32,6 +32,7 @@ import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.commands.AddChartPropertyCommand;
 import org.omnetpp.scave.model.commands.CompoundCommand;
+import org.omnetpp.scave.model.commands.RemoveChartPropertyCommand;
 import org.omnetpp.scave.model.commands.SetChartNameCommand;
 import org.omnetpp.scave.model.commands.SetChartPropertyCommand;
 
@@ -175,13 +176,19 @@ public class EditDialog extends TitleAreaDialog {
                     command.append(new SetChartNameCommand(chart, props.get(ChartEditForm.CHART_NAME_PROPERTY_KEY)));
                 else {
                     Property prop = chart.lookupProperty(k);
+                    String newValue = props.get(k);
 
-                    if (prop == null)
-                        command.append(new AddChartPropertyCommand(chart, new Property(k, props.get(k))));
+                    if (prop == null) {
+                        if (newValue != null)
+                            command.append(new AddChartPropertyCommand(chart, new Property(k, newValue)));
+                    }
                     else {
-                        String newValue = props.get(k);
-                        if (!prop.getValue().equals(newValue))
-                            command.append(new SetChartPropertyCommand(prop, newValue));
+                        if (newValue != null) {
+                            if (!prop.getValue().equals(newValue))
+                                command.append(new SetChartPropertyCommand(prop, newValue));
+                        }
+                        else
+                            command.append(new RemoveChartPropertyCommand(chart, prop));
                     }
                 }
             }

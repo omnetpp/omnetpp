@@ -219,23 +219,6 @@ public class ScaveModelUtil {
     }
 
     /**
-     * Returns all object in the container having the specified type.
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> List<T> findObjects(ModelObject container, Class<T> type) {
-        ArrayList<T> objects = new ArrayList<>();
-        // TODO
-//        if (container == null)
-//            return objects;
-//        for (TreeIterator<AnalysisObject> iterator = container.eAllContents(); iterator.hasNext(); ) {
-//            AnalysisObject object = iterator.next();
-//            if (type.isInstance(object))
-//                objects.add((T)object);
-//        }
-        return objects;
-    }
-
-    /**
      * Collect charts from the given collection.
      */
     public static List<Chart> collectCharts(Collection<?> items) {

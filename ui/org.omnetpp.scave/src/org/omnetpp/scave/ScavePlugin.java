@@ -12,7 +12,9 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashSet;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
@@ -271,5 +273,14 @@ public class ScavePlugin extends AbstractUIPlugin {
 
     public static IStatus getStatus(int severity, int code, String message, Throwable exception) {
         return new Status(severity, PLUGIN_ID, code, message, exception);
+    }
+
+    public static CoreException wrapIntoCoreException(Throwable exception) {
+        String msg = StringUtils.defaultIfEmpty(exception.getMessage(), exception.getClass().getSimpleName());
+        return wrapIntoCoreException(msg, exception);
+    }
+
+    public static CoreException wrapIntoCoreException(String message, Throwable exception) {
+        return new CoreException(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));
     }
 }

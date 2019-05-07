@@ -12,6 +12,7 @@ import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.common.color.ColorFactory;
 
 /**
  * Some useful conversion between fonts, colors, strings, etc.
@@ -145,5 +146,24 @@ public class Converter {
         catch (NumberFormatException e) {
             return null;
         }
+    }
+
+
+    public static String objectToString(Object value) {
+        if (value == null)
+            return null;
+
+        if (value instanceof FontData)
+            return fontdataToString((FontData)value);
+        else if (value instanceof Boolean)
+            return booleanToString((Boolean)value);
+        else if (value instanceof Double)
+            return doubleToString((Double)value);
+        else if (value instanceof Integer)
+            return integerToString((Integer)value);
+        else if (value instanceof RGB)
+            return ColorFactory.asString((RGB)value);
+
+        return value.toString();
     }
 }

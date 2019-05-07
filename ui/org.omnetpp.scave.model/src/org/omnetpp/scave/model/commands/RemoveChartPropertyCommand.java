@@ -12,7 +12,7 @@ public class RemoveChartPropertyCommand implements ICommand {
     private Chart chart;
     private Property property;
 
-    public RemoveChartPropertyCommand(Chart chart, Property property) {
+    public RemoveChartPropertyCommand(Chart chart, Property property) { // TODO remove chart parameter
         this.chart = chart;
         this.property = property;
     }

@@ -42,6 +42,7 @@ import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.wizard.XSWTDataBinding;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.assist.FilterContentProposalProvider;
+import org.omnetpp.scave.charting.properties.ChartDefaults;
 import org.omnetpp.scave.charting.properties.ChartVisualProperties;
 import org.omnetpp.scave.charttemplates.ChartTemplate;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
@@ -239,13 +240,30 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
             }
         }
 
-        for (Property prop : chart.getProperties())
-            if (xswtWidgetMap.containsKey(prop.getName()))
-                XSWTDataBinding.putValueIntoControl(xswtWidgetMap.get(prop.getName()), prop.getValue(), null);
+        ChartVisualProperties propertySource = null;
+        IPropertySource2 ps = ChartVisualProperties.createPropertySource(chart);
+        if (ps instanceof ChartVisualProperties)
+            propertySource = (ChartVisualProperties)ps;
 
-        if (xswtWidgetMap.containsKey(CHART_NAME_PROPERTY_KEY))
-            XSWTDataBinding.putValueIntoControl(xswtWidgetMap.get(CHART_NAME_PROPERTY_KEY), chart.getName(), null);
+        for (String propId : xswtWidgetMap.keySet()) {
+            String value = null;
 
+            if (propId.equals(CHART_NAME_PROPERTY_KEY))
+               value = chart.getName();
+            else {
+                Property prop = chart.lookupProperty(propId);
+                if (prop != null)
+                    value = prop.getValue();
+                else if (propertySource != null) {
+                    Object defaultPropertyValue = ChartDefaults.getDefaultPropertyValue(propId);
+                    if (defaultPropertyValue != null)
+                        value = defaultPropertyValue.toString();
+                }
+            }
+
+            if (value != null)
+                XSWTDataBinding.putValueIntoControl(xswtWidgetMap.get(propId), value, null);
+        }
     }
 
     private TabFolder createTabFolder(Composite parent) {
@@ -293,7 +311,10 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
         for (String k : xswtWidgetMap.keySet()) {
             Control control = xswtWidgetMap.get(k);
             Object value = XSWTDataBinding.getValueFromControl(control, null);
-            result.put(k, value.toString());
+            if (!Converter.objectToString(value).equals(Converter.objectToString(ChartDefaults.getDefaultPropertyValue(k))))
+                result.put(k, value.toString());
+            else
+                result.put(k, null);
         }
         return result;
     }

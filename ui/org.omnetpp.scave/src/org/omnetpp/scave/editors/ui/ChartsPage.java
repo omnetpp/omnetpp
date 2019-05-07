@@ -120,12 +120,11 @@ public class ChartsPage extends FormEditorPage {
     @Override
     public boolean gotoObject(Object object) {
         if (object instanceof ModelObject) {
-            ModelObject eobject = (ModelObject)object;
-            /*// TODO
-            if (ScaveModelUtil.findEnclosingOrSelf(eobject, Charts.class) != null) {
-                getViewer().reveal(eobject);
+            ModelObject modelObject = (ModelObject)object;
+            if (ScaveModelUtil.findEnclosingOrSelf(modelObject, Charts.class) != null) {
+                getViewer().reveal(modelObject);
                 return true;
-            }*/
+            }
         }
         return false;
     }
@@ -140,10 +139,6 @@ public class ChartsPage extends FormEditorPage {
     }
 
     protected void configureViewer(IconGridViewer modelViewer) {
-//        ILabelProvider labelProvider =
-//            new DecoratingLabelProvider(
-//                new ScaveModelLabelProvider(new AdapterFactoryLabelProvider(adapterFactory)),
-//                new ScaveModelLabelDecorator());
 
         ILabelProvider labelProvider = new LabelProvider() {
             @Override

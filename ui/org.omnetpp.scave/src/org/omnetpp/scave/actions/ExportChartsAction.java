@@ -30,13 +30,13 @@ public class ExportChartsAction extends AbstractScaveAction {
     @Override
     protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
         // we'll display the list of all charts, and check the selected one(s) and those under selected ones
-        final List<Chart> allCharts = ScaveModelUtil.findObjects(editor.getAnalysis(), Chart.class);
+        final List<Chart> allCharts = ScaveModelUtil.collectCharts(editor.getAnalysis().getCharts().getCharts());
         List<Chart> initialSelection = new ArrayList<Chart>();
         for (Object obj : selection.toArray()) {
             if (obj instanceof Chart)
                 initialSelection.add((Chart)obj);
             if (obj instanceof ModelObject)
-                initialSelection.addAll(ScaveModelUtil.findObjects((ModelObject)obj, Chart.class)); // findObject() does not search the object itself
+                initialSelection.addAll(ScaveModelUtil.collectCharts(editor.getAnalysis().getCharts().getCharts()));
         }
         if (initialSelection.isEmpty())
             initialSelection = allCharts;
@@ -63,7 +63,7 @@ public class ExportChartsAction extends AbstractScaveAction {
 
     @Override
     protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-        final List<Chart> charts = ScaveModelUtil.findObjects(editor.getAnalysis(), Chart.class);
+        final List<Chart> charts = ScaveModelUtil.collectCharts(editor.getAnalysis().getCharts().getCharts());
         return !charts.isEmpty();
     }
 
