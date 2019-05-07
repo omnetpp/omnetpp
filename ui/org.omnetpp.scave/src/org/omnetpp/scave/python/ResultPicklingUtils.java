@@ -1,9 +1,11 @@
 package org.omnetpp.scave.python;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.engine.ILock;
 import org.omnetpp.scave.engine.ResultFileManager;
 
@@ -46,8 +48,37 @@ public class ResultPicklingUtils {
         l.lock();
         Pickler p = new Pickler(true);
         Pickler.registerCustomPickler(ResultFileManager.class, resultsPickler);
-        byte[] pickle = p.dumps(resultManager);
+
+        ByteArrayOutputStream bo = new ByteArrayOutputStream() {
+
+            static final int SIZE_LIMIT = 100 * 1024 * 1024; // TODO make configurable
+
+            protected void checkSizeLimit() {
+                if (buf.length > SIZE_LIMIT)
+                    throw new RuntimeException("Pickle size limit exceeded.");
+            }
+
+            @Override
+            public synchronized void write(byte[] b, int off, int len) {
+                super.write(b, off, len);
+                checkSizeLimit();
+            }
+
+            @Override
+            public synchronized void write(int b) {
+                super.write(b);
+                checkSizeLimit();
+            }
+        };
+
+        p.dump(resultManager, bo);
+        bo.flush();
+
+        byte[] pickle = bo.toByteArray();
+
         l.unlock();
+
+        Debug.println("Pickle size: " + pickle.length);
         return pickle;
     }
 }
