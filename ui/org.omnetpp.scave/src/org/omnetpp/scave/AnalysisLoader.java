@@ -82,6 +82,9 @@ public class AnalysisLoader {
                             }
                         }
 
+                        Node idNode = chartNode.getAttributes().getNamedItem("id");
+                        if (idNode != null)
+                            chart.setId(Integer.parseInt(idNode.getNodeValue()));
                         chart.setName(chartNode.getAttributes().getNamedItem("name").getNodeValue());
 
                         Node templateNode = chartNode.getAttributes().getNamedItem("template");

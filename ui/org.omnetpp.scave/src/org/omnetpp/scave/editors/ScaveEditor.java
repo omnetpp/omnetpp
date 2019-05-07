@@ -134,6 +134,7 @@ import org.omnetpp.scave.model.commands.ICommand;
 import org.omnetpp.scave.model2.ResultItemRef;
 import org.omnetpp.scave.pychart.PythonProcessPool;
 import org.omnetpp.scave.python.MatplotlibChartViewer;
+import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -1561,32 +1562,33 @@ public class ScaveEditor extends MultiPageEditorPartExt
                     for (AnalysisItem a : analysis.getCharts().getCharts()) {
                         if (a instanceof Chart) {
                             Chart chart = (Chart) a;
-                            Element elem = d.createElement("chart");
-                            charts.appendChild(elem);
+                            Element chartElem = d.createElement("chart");
+                            charts.appendChild(chartElem);
 
-                            elem.setAttribute("name", chart.getName());
-                            elem.setAttribute("template", chart.getTemplateID());
+                            chartElem.setAttribute("id", Integer.toString(chart.getId()));
+                            chartElem.setAttribute("name", chart.getName());
+                            chartElem.setAttribute("template", chart.getTemplateID());
 
                             Element script = d.createElement("script");
-                            script.setTextContent(chart.getScript());
-                            elem.appendChild(script);
+                            script.appendChild(d.createCDATASection(chart.getScript()));
+                            chartElem.appendChild(script);
 
                             for (DialogPage page : chart.getDialogPages()) {
                                 Element pg = d.createElement("dialogPage");
                                 pg.setAttribute("id", page.id);
                                 pg.setAttribute("label", page.label);
-                                pg.setTextContent(page.xswtForm);
-                                elem.appendChild(pg);
+                                pg.appendChild(d.createCDATASection(page.xswtForm));
+                                chartElem.appendChild(pg);
                             }
 
-                            elem.setAttribute("type", chart.getType().toString());
-                            elem.setAttribute("icon", chart.getIconPath());
+                            chartElem.setAttribute("type", chart.getType().toString());
+                            chartElem.setAttribute("icon", chart.getIconPath());
 
                             for (Property p : chart.getProperties()) {
                                 Element e = d.createElement("property");
                                 e.setAttribute("name", p.getName());
                                 e.setAttribute("value", p.getValue());
-                                elem.appendChild(e);
+                                chartElem.appendChild(e);
                             }
                         } else {
                             // TODO: handle better
