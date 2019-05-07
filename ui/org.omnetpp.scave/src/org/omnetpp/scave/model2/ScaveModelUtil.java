@@ -125,12 +125,41 @@ public class ScaveModelUtil {
     public static String getIDListAsFilterExpression(IDList ids, String[] runidFields, ResultFileManager manager) {
         Assert.isNotNull(runidFields);
         String[] filterFields = getFilterFieldsFor(runidFields);
+
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < ids.size(); ++i) {
-            long id = ids.get(i);
-            ResultItem item = manager.getItem(id);
-            String filter = new FilterUtil(item, filterFields).getFilterPattern();
-            sb.append(filter + " \n");
+
+        RunList runs = manager.getUniqueRuns(ids);
+
+        if (runs.size() < ids.size() / 2) {
+
+            boolean first = true;
+
+            for (Run r :runs.toArray()) {
+                if (!first)
+                    sb.append("\n OR \n");
+                sb.append("( run(\"" + r.getRunName() + "\") AND (\n");
+
+                IDList idsInRun = manager.filterIDList(ids, r, null, null);
+
+                for (int i = 0; i < idsInRun.size(); ++i) {
+                    long id = ids.get(i);
+                    ResultItem item = manager.getItem(id);
+                    String filter = new FilterUtil(item, filterFields).getFilterPattern();
+                    sb.append(filter + " \n");
+                }
+                sb.append(") )");
+
+                first = false;
+            }
+        }
+        else {
+
+            for (int i = 0; i < ids.size(); ++i) {
+                long id = ids.get(i);
+                ResultItem item = manager.getItem(id);
+                String filter = new FilterUtil(item, filterFields).getFilterPattern();
+                sb.append(filter + " \n");
+            }
         }
         return sb.toString();
     }
