@@ -10,15 +10,15 @@ package org.omnetpp.scave.charting.properties;
 import org.omnetpp.common.properties.ColorPropertyDescriptor;
 import org.omnetpp.common.properties.PropertySource;
 
-public class BarProperties extends PropertySource {
+public class BarVisualProperties extends PropertySource {
 
     public static final String
         PROP_BAR_COLOR          = "Bar.Color";
 
-    private final ChartProperties chartProps;
+    private final ChartVisualProperties chartProps;
     private String barId;
 
-    public BarProperties(ChartProperties chartProps, String barId) {
+    public BarVisualProperties(ChartVisualProperties chartProps, String barId) {
         this.chartProps = chartProps;
         this.barId = barId;
     }

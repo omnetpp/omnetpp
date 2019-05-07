@@ -22,7 +22,7 @@ import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.charting.dataset.IScalarDataset;
 import org.omnetpp.scave.charting.properties.ChartDefaults;
-import org.omnetpp.scave.charting.properties.ScalarChartProperties.BarPlacement;
+import org.omnetpp.scave.charting.properties.BarChartVisualProperties.BarPlacement;
 
 /**
  * Draws the bars of the bar chart.

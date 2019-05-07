@@ -9,16 +9,13 @@ package org.omnetpp.scave.charting.properties;
 
 import java.util.List;
 
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
-import org.eclipse.ui.views.properties.IPropertySource;
-import org.omnetpp.common.properties.BasePropertySource;
-import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
+import org.omnetpp.scave.model.commands.CommandStack;
 
-public class ScalarChartProperties extends ChartProperties
+public class BarChartVisualProperties extends ChartVisualProperties
 {
-    private static final String DEFAULT_BAR_PROPERTIES_ID = "default";
+    // private static final String DEFAULT_BAR_PROPERTIES_ID = "default";
 
     public static final String
         // Titles
@@ -34,8 +31,16 @@ public class ScalarChartProperties extends ChartProperties
         Stacked,
     }
 
-    public ScalarChartProperties(Chart chart, List<Property> properties, ResultFileManager manager) {
-        super(chart, properties, manager);
+    public BarChartVisualProperties(Chart chart) {
+        this(chart, null);
+    }
+
+    public BarChartVisualProperties(Chart chart, CommandStack commandStack) {
+        this(chart, chart.getProperties(), commandStack);
+    }
+
+    public BarChartVisualProperties(Chart chart, List<Property> properties, CommandStack commandStack) {
+        super(chart, properties, commandStack);
     }
 
     /*======================================================================
@@ -62,16 +67,16 @@ public class ScalarChartProperties extends ChartProperties
     public void setBarPlacement(BarPlacement placement) { setProperty(PROP_BAR_PLACEMENT, placement); }
     public BarPlacement defaultBarPlacement() { return ChartDefaults.DEFAULT_BAR_PLACEMENT; }
 
-    @org.omnetpp.common.properties.Property(category="Plot",id="Bars",displayName="Bars",
-            description="Properties of individual bars. Default is applied to all properties not set individually.")
-    public IPropertySource getBarProperties() {
-        IPropertyDescriptor[] descriptors = new IPropertyDescriptor[0];
-        return new BasePropertySource(descriptors) {
-            @Override
-            public Object getPropertyValue(Object id) {
-                return new BarProperties(ScalarChartProperties.this,
-                        id == DEFAULT_BAR_PROPERTIES_ID ? null : (String)id);
-            }
-        };
-    }
+//    @org.omnetpp.common.properties.Property(category="Plot",id="Bars",displayName="Bars",
+//            description="Properties of individual bars. Default is applied to all properties not set individually.")
+//    public IPropertySource getBarProperties() {
+//        IPropertyDescriptor[] descriptors = new IPropertyDescriptor[0];
+//        return new BasePropertySource(descriptors) {
+//            @Override
+//            public Object getPropertyValue(Object id) {
+//                return new BarVisualProperties(BarChartVisualProperties.this,
+//                        id == DEFAULT_BAR_PROPERTIES_ID ? null : (String)id);
+//            }
+//        };
+//    }
 }

@@ -10,15 +10,15 @@ package org.omnetpp.scave.charting.properties;
 import org.omnetpp.common.properties.ColorPropertyDescriptor;
 import org.omnetpp.common.properties.PropertySource;
 
-public class HistogramProperties extends PropertySource {
+public class HistogramVisualProperties extends PropertySource {
 
     public static final String
         PROP_HIST_COLOR         = "Hist.Color";
 
-    private final ChartProperties chartProps;
+    private final ChartVisualProperties chartProps;
     private String histogramId;
 
-    public HistogramProperties(ChartProperties chartProps, String histogramId) {
+    public HistogramVisualProperties(ChartVisualProperties chartProps, String histogramId) {
         this.chartProps = chartProps;
         this.histogramId = histogramId;
     }

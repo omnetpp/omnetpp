@@ -12,17 +12,17 @@ import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_LABELS
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_Y_AXIS_TITLE;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_AXIS_TITLE_FONT;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_LABEL_FONT;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_X_AXIS_TITLE;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_X_LABELS_ROTATE_BY;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_TITLE;
-import static org.omnetpp.scave.charting.properties.HistogramChartProperties.PROP_HIST_BAR;
-import static org.omnetpp.scave.charting.properties.HistogramChartProperties.PROP_HIST_DATA;
-import static org.omnetpp.scave.charting.properties.HistogramChartProperties.PROP_SHOW_OVERFLOW_CELL;
-import static org.omnetpp.scave.charting.properties.HistogramProperties.PROP_HIST_COLOR;
-import static org.omnetpp.scave.charting.properties.ScalarChartProperties.PROP_BAR_BASELINE;
+import static org.omnetpp.scave.charting.properties.ChartVisualProperties.PROP_AXIS_TITLE_FONT;
+import static org.omnetpp.scave.charting.properties.ChartVisualProperties.PROP_LABEL_FONT;
+import static org.omnetpp.scave.charting.properties.ChartVisualProperties.PROP_X_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.ChartVisualProperties.PROP_X_LABELS_ROTATE_BY;
+import static org.omnetpp.scave.charting.properties.ChartVisualProperties.PROP_Y_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave.charting.properties.ChartVisualProperties.PROP_Y_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.HistogramChartVisualProperties.PROP_HIST_BAR;
+import static org.omnetpp.scave.charting.properties.HistogramChartVisualProperties.PROP_HIST_DATA;
+import static org.omnetpp.scave.charting.properties.HistogramChartVisualProperties.PROP_SHOW_OVERFLOW_CELL;
+import static org.omnetpp.scave.charting.properties.HistogramVisualProperties.PROP_HIST_COLOR;
+import static org.omnetpp.scave.charting.properties.BarChartVisualProperties.PROP_BAR_BASELINE;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Graphics;
@@ -42,8 +42,8 @@ import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IHistogramDataset;
 import org.omnetpp.scave.charting.properties.ChartDefaults;
-import org.omnetpp.scave.charting.properties.HistogramChartProperties.HistogramBar;
-import org.omnetpp.scave.charting.properties.HistogramChartProperties.HistogramDataType;
+import org.omnetpp.scave.charting.properties.HistogramChartVisualProperties.HistogramBar;
+import org.omnetpp.scave.charting.properties.HistogramChartVisualProperties.HistogramDataType;
 
 public class HistogramChartViewer extends ChartViewer {
 

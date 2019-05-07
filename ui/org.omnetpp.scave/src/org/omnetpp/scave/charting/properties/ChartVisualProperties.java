@@ -10,37 +10,28 @@ package org.omnetpp.scave.charting.properties;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.emf.edit.command.AddCommand;
-import org.eclipse.emf.edit.command.RemoveCommand;
-import org.eclipse.emf.edit.command.SetCommand;
-import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
-import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
+import org.eclipse.ui.views.properties.IPropertySource2;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.properties.ColorPropertyDescriptor;
 import org.omnetpp.common.properties.PropertySource;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.HistogramChart;
-import org.omnetpp.scave.model.LineChart;
-import org.omnetpp.scave.model.MatplotlibChart;
 import org.omnetpp.scave.model.Property;
-import org.omnetpp.scave.model.ScatterChart;
-import org.omnetpp.scave.model.ScaveModelFactory;
-import org.omnetpp.scave.model.ScaveModelPackage;
+import org.omnetpp.scave.model.commands.AddChartPropertyCommand;
+import org.omnetpp.scave.model.commands.CommandStack;
+import org.omnetpp.scave.model.commands.RemoveChartPropertyCommand;
+import org.omnetpp.scave.model.commands.SetChartPropertyCommand;
 
 /**
  * Property source for charts.
  * @author tomi
  */
-public class ChartProperties extends PropertySource {
+public class ChartVisualProperties extends PropertySource {
 
     /**
      * Property names used in the model.
@@ -95,36 +86,37 @@ public class ChartProperties extends PropertySource {
         All,
     }
 
-    public static ChartProperties createPropertySource(Chart chart, ResultFileManager manager) {
-        return createPropertySource(chart, chart.getProperties(), manager);
-    }
-
-    public static ChartProperties createPropertySource(Chart chart, List<Property> properties, ResultFileManager manager) {
-        if (chart instanceof BarChart)
-            return new ScalarChartProperties(chart, properties, manager);
-        else if (chart instanceof LineChart)
-            return new VectorChartProperties(chart, properties, manager);
-        else if (chart instanceof HistogramChart)
-            return new HistogramChartProperties(chart, properties, manager);
-        else if (chart instanceof ScatterChart)
-            return new ScatterChartProperties(chart, properties, manager);
-        else if (chart instanceof MatplotlibChart)
-            return new ChartProperties(chart, properties, manager);
-        else
-            ScavePlugin.logError(new IllegalArgumentException("chart type unrecognized"));
-        return new ChartProperties(chart, properties, manager);
+    public static IPropertySource2 createPropertySource(Chart chart) {
+        switch (chart.getType()) {
+        case BAR:
+            return new BarChartVisualProperties(chart);
+        case HISTOGRAM:
+            return new HistogramChartVisualProperties(chart);
+        case LINE:
+            return new LineChartVisualProperties(chart);
+        case MATPLOTLIB:
+            return new MatplotlibChartProperties(chart);
+        default:
+            return null;
+        }
     }
 
     protected Chart chart;               // the chart what the properties belongs to
     protected List<Property> properties; // the chart properties, might not be contained by the chart yet
-    protected ResultFileManager manager; // result file manager to access chart content (for line properties)
-    protected EditingDomain domain;      // editing domain to execute changes, if null the property list changed directly
+    protected CommandStack commandStack; // result file manager to access chart content (for line properties)
 
-    public ChartProperties(Chart chart, List<Property> properties, ResultFileManager manager) {
+    public ChartVisualProperties(Chart chart) {
+        this(chart, null);
+    }
+
+    public ChartVisualProperties(Chart chart, CommandStack commandStack) {
+        this(chart, chart.getProperties(), commandStack);
+    }
+
+    public ChartVisualProperties(Chart chart, List<Property> properties, CommandStack commandStack) {
         this.properties = properties;
         this.chart = chart;
-        this.manager = manager;
-        this.domain = properties == chart.getProperties() ? AdapterFactoryEditingDomain.getEditingDomainFor(chart) : null;
+        this.commandStack = commandStack;
     }
 
     public List<Property> getProperties() {
@@ -280,7 +272,7 @@ public class ChartProperties extends PropertySource {
 
     public <T extends Enum<T>> T getEnumProperty(String propertyName, Class<T> type) {
         Property property = getProperty(propertyName);
-        return property != null && property.getValue() != null ? Enum.valueOf(type, property.getValue()) :
+        return property != null && property.getValue() != null ? Converter.stringToEnum(property.getValue(), type) :
                                                                  getDefaultEnumProperty(propertyName, type);
     }
 
@@ -316,33 +308,17 @@ public class ChartProperties extends PropertySource {
      * otherwise it modifies the list directly.
      */
     protected void doSetProperty(String propertyName, String propertyValue) {
-        ScaveModelPackage model = ScaveModelPackage.eINSTANCE;
-        ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
         Property property = getProperty(propertyName);
 
         if (property == null && propertyValue != null ) { // add new property
-            property = factory.createProperty();
-            property.setName(propertyName);
-            property.setValue(propertyValue);
-            if (domain == null)
-                properties.add(property);
-            else
-                domain.getCommandStack().execute(
-                    AddCommand.create(domain, chart, model.getChart_Properties(), property));
+            property = new Property(propertyName, propertyValue);
+            commandStack.execute(new AddChartPropertyCommand(chart, property));
         }
         else if (property != null && propertyValue != null) { // change existing property
-            if (domain == null)
-                property.setValue(propertyValue);
-            else
-                domain.getCommandStack().execute(
-                    SetCommand.create(domain, property, model.getProperty_Value(), propertyValue));
+            commandStack.execute(new SetChartPropertyCommand(property, propertyValue));
         }
         else if (property != null && propertyValue == null){ // delete existing property
-            if (domain == null)
-                properties.remove(property);
-            else
-                domain.getCommandStack().execute(
-                    RemoveCommand.create(domain, chart, model.getChart_Properties(), property));
+            commandStack.execute(new RemoveChartPropertyCommand(chart, property));
         }
     }
 

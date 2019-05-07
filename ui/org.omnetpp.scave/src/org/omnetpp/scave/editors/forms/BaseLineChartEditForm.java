@@ -7,12 +7,12 @@
 
 package org.omnetpp.scave.editors.forms;
 
-import static org.omnetpp.scave.charting.properties.LineProperties.PROP_DISPLAY_LINE;
-import static org.omnetpp.scave.charting.properties.LineProperties.PROP_DISPLAY_NAME;
-import static org.omnetpp.scave.charting.properties.LineProperties.PROP_LINE_COLOR;
-import static org.omnetpp.scave.charting.properties.LineProperties.PROP_LINE_TYPE;
-import static org.omnetpp.scave.charting.properties.LineProperties.PROP_SYMBOL_SIZE;
-import static org.omnetpp.scave.charting.properties.LineProperties.PROP_SYMBOL_TYPE;
+import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_DISPLAY_LINE;
+import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_DISPLAY_NAME;
+import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_LINE_COLOR;
+import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_LINE_TYPE;
+import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_SYMBOL_SIZE;
+import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_SYMBOL_TYPE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,11 +70,11 @@ import org.omnetpp.scave.charting.plotter.ChartSymbolFactory;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
 import org.omnetpp.scave.charting.plotter.IVectorPlotter;
 import org.omnetpp.scave.charting.plotter.VectorPlotterFactory;
-import org.omnetpp.scave.charting.properties.ChartProperties;
-import org.omnetpp.scave.charting.properties.LineProperties;
-import org.omnetpp.scave.charting.properties.LineProperties.LineType;
-import org.omnetpp.scave.charting.properties.LineProperties.SymbolType;
-import org.omnetpp.scave.charting.properties.VectorChartProperties;
+import org.omnetpp.scave.charting.properties.ChartVisualProperties;
+import org.omnetpp.scave.charting.properties.LineVisualProperties;
+import org.omnetpp.scave.charting.properties.LineVisualProperties.LineType;
+import org.omnetpp.scave.charting.properties.LineVisualProperties.SymbolType;
+import org.omnetpp.scave.charting.properties.LineChartVisualProperties;
 import org.omnetpp.scave.editors.ui.ResultItemNamePatternField;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
@@ -137,7 +137,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
     protected List<Line> selectedLines;
     // A copy of the chart properties, that stores the properties of all lines.
     // These properties are updated with the content of the fields whenever the selection changes.
-    protected VectorChartProperties lineProps; // only line properties must be filled in
+    protected LineChartVisualProperties lineProps; // only line properties must be filled in
 
     // "Axes" page controls
     private Text xAxisMinText;
@@ -386,12 +386,12 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 
     /*
     @Override
-    protected void collectProperties(ChartProperties newProps) {
+    protected void collectProperties(ChartVisualProperties newProps) {
         // fill newProps (initially empty) with the updated chart properties from the dialog;
         // when this returns, newProps will be set on the model (overwriting existing properties).
         super.collectProperties(newProps);
 
-        VectorChartProperties newProperties = (VectorChartProperties)newProps;
+        LineChartVisualProperties newProperties = (LineChartVisualProperties)newProps;
 
         // Axis properties
         newProperties.setXAxisMin(Converter.stringToDouble(xAxisMinText.getText()));
@@ -403,7 +403,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
     }
     */
 
-    protected void collectLineProperties(ChartProperties newProps, ChartProperties origProps, List<?> selection) {
+    protected void collectLineProperties(ChartVisualProperties newProps, ChartVisualProperties origProps, List<?> selection) {
         // read dialog contents
         boolean applyToAll = (selection.size() == ((Object[])linesTableViewer.getInput()).length);
 
@@ -455,7 +455,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
         }
     }
 
-    private void setLineProperties(ChartProperties newProps, String lineId, String symbolType, String symbolSize, String lineType, String lineColor) {
+    private void setLineProperties(ChartVisualProperties newProps, String lineId, String symbolType, String symbolSize, String lineType, String lineColor) {
         String suffix = (lineId == null) ? "" : "/"+lineId;
         if (!symbolType.equals(NO_CHANGE))
             newProps.setProperty(PROP_SYMBOL_TYPE+suffix, isAutoOrEmpty(symbolType) ? null : resolveEnum(symbolType, SymbolType.class).name());
@@ -472,11 +472,11 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
     }
 
     @Override
-    protected void setProperties(ChartProperties props) {
+    protected void setProperties(ChartVisualProperties props) {
         // initializes form contents from the model (i.e. props)
         super.setProperties(props);
 
-        VectorChartProperties properties = (VectorChartProperties)props;
+        LineChartVisualProperties properties = (LineChartVisualProperties)props;
         // Axis properties
         xAxisMinText.setText(StringUtils.defaultString(Converter.doubleToString(properties.getXAxisMin())));
         xAxisMaxText.setText(StringUtils.defaultString(Converter.doubleToString(properties.getXAxisMax())));
@@ -486,7 +486,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
         updateLineTitlesFromProperties(lineProps);
     }
 
-    private void updateLinePropertyEditFields(VectorChartProperties props) {
+    private void updateLinePropertyEditFields(LineChartVisualProperties props) {
         // initializes form contents from the model (i.e. props)
         IStructuredSelection selection = (IStructuredSelection) linesTableViewer.getSelection();
 
@@ -503,7 +503,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
             @SuppressWarnings("unchecked")
             List<Line> selectedLines = selection.toList();
             Line firstLine = selectedLines.get(0);
-            LineProperties lineProps = props.getLineProperties(firstLine.key);
+            LineVisualProperties lineProps = props.getLineProperties(firstLine.key);
             boolean displayLine = lineProps.getDisplayLine();
             String displayName = lineProps.getDisplayName();
             SymbolType symbolType = lineProps.getSymbolType();
@@ -526,7 +526,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
             }
 
             // use default if not set for the lines
-            LineProperties defaultProps = props.getLineProperties(null);
+            LineVisualProperties defaultProps = props.getLineProperties(null);
             if (sameSymbolType && symbolType == null)
                 symbolType = defaultProps.getSymbolType();
             if (sameSymbolSize && symbolSize == null)
@@ -547,10 +547,10 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
         }
     }
 
-    private void updateLineTitlesFromProperties(VectorChartProperties properties) {
+    private void updateLineTitlesFromProperties(LineChartVisualProperties properties) {
         if (xydataset != null) {
             for (Line line : lines) {
-                LineProperties lineProps = properties.getLineProperties(line.key);
+                LineVisualProperties lineProps = properties.getLineProperties(line.key);
                 updateLineTitle(line, lineProps.getDisplayName());
             }
         }

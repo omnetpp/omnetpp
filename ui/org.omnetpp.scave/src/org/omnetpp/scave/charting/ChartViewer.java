@@ -19,18 +19,18 @@ import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_LEGEND
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_LEGEND_POSITION;
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_TITLE;
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_TITLE_FONT;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_ANTIALIAS;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_BACKGROUND_COLOR;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_CACHING;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_DISPLAY_LEGEND;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_GRAPH_TITLE;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_GRAPH_TITLE_FONT;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_LEGEND_ANCHORING;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_LEGEND_BORDER;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_LEGEND_FONT;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_LEGEND_POSITION;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_MAX;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_MIN;
+import static org.omnetpp.scave.charting.properties.ChartVisualProperties.PROP_ANTIALIAS;
+import static org.omnetpp.scave.charting.properties.ChartVisualProperties.PROP_BACKGROUND_COLOR;
+import static org.omnetpp.scave.charting.properties.ChartVisualProperties.PROP_CACHING;
+import static org.omnetpp.scave.charting.properties.ChartVisualProperties.PROP_DISPLAY_LEGEND;
+import static org.omnetpp.scave.charting.properties.ChartVisualProperties.PROP_GRAPH_TITLE;
+import static org.omnetpp.scave.charting.properties.ChartVisualProperties.PROP_GRAPH_TITLE_FONT;
+import static org.omnetpp.scave.charting.properties.ChartVisualProperties.PROP_LEGEND_ANCHORING;
+import static org.omnetpp.scave.charting.properties.ChartVisualProperties.PROP_LEGEND_BORDER;
+import static org.omnetpp.scave.charting.properties.ChartVisualProperties.PROP_LEGEND_FONT;
+import static org.omnetpp.scave.charting.properties.ChartVisualProperties.PROP_LEGEND_POSITION;
+import static org.omnetpp.scave.charting.properties.ChartVisualProperties.PROP_Y_AXIS_MAX;
+import static org.omnetpp.scave.charting.properties.ChartVisualProperties.PROP_Y_AXIS_MIN;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.core.runtime.ListenerList;
@@ -64,8 +64,8 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.properties.ChartDefaults;
-import org.omnetpp.scave.charting.properties.ChartProperties.LegendAnchor;
-import org.omnetpp.scave.charting.properties.ChartProperties.LegendPosition;
+import org.omnetpp.scave.charting.properties.ChartVisualProperties.LegendAnchor;
+import org.omnetpp.scave.charting.properties.ChartVisualProperties.LegendPosition;
 import org.omnetpp.scave.editors.ScaveEditorContributor;
 
 /**

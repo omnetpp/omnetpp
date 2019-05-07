@@ -11,7 +11,7 @@ import org.omnetpp.common.properties.ColorPropertyDescriptor;
 import org.omnetpp.common.properties.PropertySource;
 import org.omnetpp.scave.ScaveImages;
 
-public class LineProperties extends PropertySource {
+public class LineVisualProperties extends PropertySource {
 
     public static final String
         PROP_DISPLAY_NAME       = "Line.Name",
@@ -74,10 +74,10 @@ public class LineProperties extends PropertySource {
             return imageId;
         }
     }
-    private final ChartProperties chartProps;
+    private final ChartVisualProperties chartProps;
     private String lineId;
 
-    public LineProperties(ChartProperties chartProps, String lineId) {
+    public LineVisualProperties(ChartVisualProperties chartProps, String lineId) {
         this.chartProps = chartProps;
         this.lineId = lineId;
     }

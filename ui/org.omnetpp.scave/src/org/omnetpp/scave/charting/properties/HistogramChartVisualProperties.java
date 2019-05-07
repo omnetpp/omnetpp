@@ -9,16 +9,13 @@ package org.omnetpp.scave.charting.properties;
 
 import java.util.List;
 
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
-import org.eclipse.ui.views.properties.IPropertySource;
-import org.omnetpp.common.properties.BasePropertySource;
 import org.omnetpp.common.properties.Property;
-import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.commands.CommandStack;
 
-public class HistogramChartProperties extends ChartProperties
+public class HistogramChartVisualProperties extends ChartVisualProperties
 {
-    private static final String DEFAULT_HIST_PROPERTIES_ID = "default";
+    // private static final String DEFAULT_HIST_PROPERTIES_ID = "default";
 
     public static final String
         PROP_HIST_BAR           = "Hist.Bar",
@@ -47,8 +44,16 @@ public class HistogramChartProperties extends ChartProperties
         }
     }
 
-    public HistogramChartProperties(Chart chart, List<org.omnetpp.scave.model.Property> properties, ResultFileManager manager) {
-        super(chart, properties, manager);
+    public HistogramChartVisualProperties(Chart chart) {
+        this(chart, null);
+    }
+
+    public HistogramChartVisualProperties(Chart chart, CommandStack commandStack) {
+        this(chart, chart.getProperties(), commandStack);
+    }
+
+    public HistogramChartVisualProperties(Chart chart, List<org.omnetpp.scave.model.Property> properties, CommandStack commandStack) {
+        super(chart, properties, commandStack);
     }
 
     @Property(category="Plot",id=PROP_HIST_BAR,description="Histogram drawing method.")
@@ -71,19 +76,19 @@ public class HistogramChartProperties extends ChartProperties
     public void setShowOverflowCell(boolean value) { setProperty(PROP_SHOW_OVERFLOW_CELL, value); }
     public boolean defaultShowOverflowCell() { return ChartDefaults.DEFAULT_SHOW_OVERFLOW_CELL; }
 
-    /*======================================================================
-     *                             Histograms
-     *======================================================================*/
-    @Property(category="Plot",id="Histograms",displayName="Histograms",
-            description="Histogram plot properties.")
-    public IPropertySource getHistogramProperties()
-    {
-        IPropertyDescriptor[] descriptors = new IPropertyDescriptor[0];
-        return new BasePropertySource(descriptors) {
-            @Override public Object getPropertyValue(Object id) {
-                return new HistogramProperties(HistogramChartProperties.this,
-                        id == DEFAULT_HIST_PROPERTIES_ID ? null : (String)id);
-            }
-        };
-    }
+//    /*======================================================================
+//     *                             Histograms
+//     *======================================================================*/
+//    @Property(category="Plot",id="Histograms",displayName="Histograms",
+//            description="Histogram plot properties.")
+//    public IPropertySource getHistogramProperties()
+//    {
+//        IPropertyDescriptor[] descriptors = new IPropertyDescriptor[0];
+//        return new BasePropertySource(descriptors) {
+//            @Override public Object getPropertyValue(Object id) {
+//                return new HistogramVisualProperties(HistogramChartVisualProperties.this,
+//                        id == DEFAULT_HIST_PROPERTIES_ID ? null : (String)id);
+//            }
+//        };
+//    }
 }
