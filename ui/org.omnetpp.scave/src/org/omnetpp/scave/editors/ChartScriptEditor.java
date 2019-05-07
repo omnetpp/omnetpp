@@ -122,13 +122,12 @@ public class ChartScriptEditor extends PyEdit {
 
     ToggleAutoUpdateAction toggleAutoUpdateAction;
     boolean autoUpdateEnabled = true;
+    boolean scriptNotYetExecuted = true;
 
     ToggleShowSourceAction toggleShowSourceAction = new ToggleShowSourceAction();
     boolean showSource = false;
 
     ChartScriptEditor(ScaveEditor scaveEditor, Chart chart) {
-
-
         this.chart = chart;
         this.scaveEditor = scaveEditor;
 
@@ -448,7 +447,6 @@ public class ChartScriptEditor extends PyEdit {
 
                 setShowSource(showSource);
 
-                runChartScript();
                 return obj;
             }
 
@@ -467,6 +465,8 @@ public class ChartScriptEditor extends PyEdit {
     }
 
     public void runChartScript() {
+        scriptNotYetExecuted = false;
+
         Display.getDefault().syncExec(() -> {
             console.clearConsole();
             documentProvider.annotationModel.removeAnnotation(errorMarkerAnnotation);
@@ -742,6 +742,8 @@ public class ChartScriptEditor extends PyEdit {
     }
 
     public void pageActivated() {
+        if (scriptNotYetExecuted)
+            runChartScript();
         scaveEditor.setSelection(new StructuredSelection(chart));
         console.activate();
     }

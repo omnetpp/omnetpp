@@ -38,7 +38,7 @@ public class OpenChartAction extends AbstractScaveAction {
         }
 
         if (charts.size() == 1)
-            scaveEditor.openChart(charts.get(0));
+            scaveEditor.openPage(charts.get(0));
         else if (charts.size() > 1) {
             // make temporary chart sheet for them
             // note: code is similar to that it CreateTempChartAction

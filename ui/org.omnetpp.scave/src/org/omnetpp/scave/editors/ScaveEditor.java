@@ -740,29 +740,11 @@ public class ScaveEditor extends MultiPageEditorPartExt
     }
 
     /**
-     * Opens a new editor page for the object, or switches to it if already opened.
-     */
-    public FormEditorPage open(Object object) {
-        if (object instanceof Chart)
-            return openChart((Chart) object);
-        else
-            return null;
-    }
-
-    /**
-     * Opens the given chart on a new editor page, or switches to it if already
-     * opened.
-     */
-    public FormEditorPage openChart(Chart chart) {
-        return openClosablePage(chart);
-    }
-
-    /**
-     * Opens the given <code>object</code> (dataset/chart/chartsheet), or switches
+     * Opens the given <code>item</code> (chart), or switches
      * to it if already opened.
      */
-    private FormEditorPage openClosablePage(AnalysisItem object) {
-        int pageIndex = getOrCreateClosablePage(object);
+    public FormEditorPage openPage(AnalysisItem item) {
+        int pageIndex = getOrCreateClosablePage(item);
         setActivePage(pageIndex);
         return getEditorPage(pageIndex);
     }
@@ -851,18 +833,18 @@ public class ScaveEditor extends MultiPageEditorPartExt
      * displayed object (chart) is removed from the model. Their tabs contain a
      * small (x), so the user can also close them.
      */
-    private int createClosablePage(AnalysisItem object) {
-        if (object instanceof Chart)
+    private int createClosablePage(AnalysisItem item) {
+        if (item instanceof Chart)
             try {
-                int index = openChartScriptEditor((Chart) object);
-                closablePages.put(object, getControl(index));
+                int index = openChartScriptEditor((Chart) item);
+                closablePages.put(item, getControl(index));
                 return index;
             } catch (PartInitException e) {
                 ScavePlugin.logError(e);
                 return -1;
             }
         else
-            throw new IllegalArgumentException("Cannot create editor page for " + object);
+            throw new IllegalArgumentException("Cannot create editor page for " + item);
     }
 
     @Override
@@ -879,20 +861,19 @@ public class ScaveEditor extends MultiPageEditorPartExt
     }
 
     /**
-     * Returns the page displaying {@code object}. The {@code object} expected to be
-     * a Chart.
+     * Returns the page displaying {@code item}.
      */
-    protected FormEditorPage getClosableEditorPage(ModelObject object) {
-        return (FormEditorPage) closablePages.get(object);
+    public FormEditorPage getClosableEditorPage(AnalysisItem item) {
+        return (FormEditorPage) closablePages.get(item);
     }
 
     /**
      * Returns the page displaying <code>object</code>. If the object already has a
      * page it is returned, otherwise a new page created.
      */
-    private int getOrCreateClosablePage(AnalysisItem object) {
-        Control page = closablePages.get(object);
-        int pageIndex = page != null ? findPage(page) : createClosablePage(object);
+    public int getOrCreateClosablePage(AnalysisItem item) {
+        Control page = closablePages.get(item);
+        int pageIndex = page != null ? findPage(page) : createClosablePage(item);
         Assert.isTrue(pageIndex >= 0);
         return pageIndex;
     }
@@ -940,8 +921,9 @@ public class ScaveEditor extends MultiPageEditorPartExt
                     @Override
                     public void widgetDefaultSelected(SelectionEvent e) {
                         if (e.item instanceof TreeItem) {
-                            TreeItem item = (TreeItem) e.item;
-                            open(item.getData());
+                            Object object = ((TreeItem) e.item).getData();
+                            if (object instanceof AnalysisItem)
+                                openPage((AnalysisItem)object);
                         }
                     }
                 });
@@ -1233,7 +1215,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
         AnalysisItem object = charts.get(index);
 
         if (object != null) {
-            open(object);
+            createClosablePage(object);
             Control p = closablePages.get(object);
             int pageIndex = findPage(p);
             IEditorPart editor = getEditor(pageIndex);
@@ -1746,10 +1728,9 @@ public class ScaveEditor extends MultiPageEditorPartExt
         return processPool;
     }
 
-    public int openChartScriptEditor(Chart chart) throws PartInitException {
+    protected int openChartScriptEditor(Chart chart) throws PartInitException {
 
         ChartScriptEditor editor = new ChartScriptEditor(this, chart);
-
         ChartScriptEditorInput input = new ChartScriptEditorInput(chart);
 
         chart.addListener(new IModelChangeListener() {
@@ -1765,8 +1746,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
         IMemento editorMemento = getMementoFor(editor);
         if (editorMemento != null)
             editor.restoreState(editorMemento);
-
-        setActivePage(index);
 
         return index;
     }

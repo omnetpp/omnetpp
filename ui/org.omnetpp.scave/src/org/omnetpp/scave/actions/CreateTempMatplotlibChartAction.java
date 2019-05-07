@@ -80,9 +80,8 @@ public class CreateTempMatplotlibChartAction extends AbstractScaveAction {
         chart.setName(name);
         chart.setTemporary(true);
 
-        editor.openChart(chart);
+        editor.openPage(chart);
     }
-
 
     @Override
     protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {

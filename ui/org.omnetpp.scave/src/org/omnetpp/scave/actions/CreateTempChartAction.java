@@ -77,7 +77,7 @@ public class CreateTempChartAction extends AbstractScaveAction {
 
         chart.setName(name);
         chart.setTemporary(true);
-        editor.openChart(chart);
+        editor.openPage(chart);
     }
 
     @Override
