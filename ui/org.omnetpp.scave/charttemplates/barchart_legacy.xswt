@@ -11,15 +11,15 @@
   <x:children>
     <group text=''>
 
-      <layoutData x:class='GridData' horizontalAlignment='FILL' verticalAlignment='FILL' grabExcessHorizontalSpace='true'/>
+      <layoutData x:class='GridData' horizontalAlignment='FILL' verticalAlignment='FILL' grabExcessHorizontalSpace='true' grabExcessVerticalSpace="true"/>
       <layout x:class='GridLayout' numColumns='2'/>
 
       <x:children>
             <label text="Filter expression:"/>
-            <combo x:id="filter" x:style="BORDER" x:id.content="scalarnames,itervarnames,runattrnames"> 
-                <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
-            </combo>
-            
+            <text x:id="filter" x:style="BORDER|WRAP|MULTI" x:id.isFilter="true"> 
+                <layoutData x:class="GridData" horizontalAlignment="FILL" verticalAlignment="FILL" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true"/>
+            </text>
+
             <label text="Groups:"/>
             <combo x:id="groups" x:style="BORDER" x:id.content="itervarnames,runattrnames"> 
                 <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>

@@ -1,0 +1,216 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xswt xmlns:x='http://sweet_swt.sf.net/xswt'>
+  <import xmlns='http://sweet_swt.sf.net/xswt'>
+    <package name='java.lang'/>
+    <package name='org.eclipse.swt.widgets' />
+    <package name='org.eclipse.swt.graphics' />
+    <package name='org.eclipse.swt.layout' />
+    <package name='org.eclipse.swt.custom' />
+  </import>
+  <layout x:class='GridLayout' numColumns='1'/>
+  <x:children>
+    <group text=''>
+
+      <layoutData x:class='GridData' horizontalAlignment='FILL' verticalAlignment='FILL' grabExcessHorizontalSpace='true'/>
+      <layout x:class='GridLayout' numColumns='2'/>
+
+      <x:children>
+            <label text="Attribute for X axis data:"/>
+            <combo x:id="x_attr" x:id.content="itervarnames,runattrnames" x:style="BORDER">
+                <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+            </combo>
+
+            <label text="Attribute for Y axis data:"/>
+            <combo x:id="y_attr" x:id.content="itervarnames,runattrnames" x:style="BORDER">
+                <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+            </combo>
+
+            <label text="Scalar filter:"/>
+            <combo x:id="scalar_filter" x:id.content="scalarnames" x:style="BORDER">
+                <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+            </combo>
+
+            <label text="Chart type:"/>
+            <combo x:id="chart_type" x:style="BORDER|READ_ONLY">
+                <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+                <add x:p0="surface"/>
+                <add x:p0="trisurf"/>
+                <add x:p0="points"/>
+                <add x:p0="bar"/>
+            </combo>
+
+            <label text="Colormap:"/>
+            <combo x:id="colormap" x:style="BORDER">
+                <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+                
+                <!-- TODO: sort by category and add separators -->
+                
+                <add x:p0="Accent"/>
+                <add x:p0="Accent_r"/>
+                <add x:p0="Blues"/>
+                <add x:p0="Blues_r"/>
+                <add x:p0="BrBG"/>
+                <add x:p0="BrBG_r"/>
+                <add x:p0="BuGn"/>
+                <add x:p0="BuGn_r"/>
+                <add x:p0="BuPu"/>
+                <add x:p0="BuPu_r"/>
+                <add x:p0="CMRmap"/>
+                <add x:p0="CMRmap_r"/>
+                <add x:p0="Dark2"/>
+                <add x:p0="Dark2_r"/>
+                <add x:p0="GnBu"/>
+                <add x:p0="GnBu_r"/>
+                <add x:p0="Greens"/>
+                <add x:p0="Greens_r"/>
+                <add x:p0="Greys"/>
+                <add x:p0="Greys_r"/>
+                <add x:p0="OrRd"/>
+                <add x:p0="OrRd_r"/>
+                <add x:p0="Oranges"/>
+                <add x:p0="Oranges_r"/>
+                <add x:p0="PRGn"/>
+                <add x:p0="PRGn_r"/>
+                <add x:p0="Paired"/>
+                <add x:p0="Paired_r"/>
+                <add x:p0="Pastel1"/>
+                <add x:p0="Pastel1_r"/>
+                <add x:p0="Pastel2"/>
+                <add x:p0="Pastel2_r"/>
+                <add x:p0="PiYG"/>
+                <add x:p0="PiYG_r"/>
+                <add x:p0="PuBu"/>
+                <add x:p0="PuBuGn"/>
+                <add x:p0="PuBuGn_r"/>
+                <add x:p0="PuBu_r"/>
+                <add x:p0="PuOr"/>
+                <add x:p0="PuOr_r"/>
+                <add x:p0="PuRd"/>
+                <add x:p0="PuRd_r"/>
+                <add x:p0="Purples"/>
+                <add x:p0="Purples_r"/>
+                <add x:p0="RdBu"/>
+                <add x:p0="RdBu_r"/>
+                <add x:p0="RdGy"/>
+                <add x:p0="RdGy_r"/>
+                <add x:p0="RdPu"/>
+                <add x:p0="RdPu_r"/>
+                <add x:p0="RdYlBu"/>
+                <add x:p0="RdYlBu_r"/>
+                <add x:p0="RdYlGn"/>
+                <add x:p0="RdYlGn_r"/>
+                <add x:p0="Reds"/>
+                <add x:p0="Reds_r"/>
+                <add x:p0="Set1"/>
+                <add x:p0="Set1_r"/>
+                <add x:p0="Set2"/>
+                <add x:p0="Set2_r"/>
+                <add x:p0="Set3"/>
+                <add x:p0="Set3_r"/>
+                <add x:p0="Spectral"/>
+                <add x:p0="Spectral_r"/>
+                <add x:p0="Wistia"/>
+                <add x:p0="Wistia_r"/>
+                <add x:p0="YlGn"/>
+                <add x:p0="YlGnBu"/>
+                <add x:p0="YlGnBu_r"/>
+                <add x:p0="YlGn_r"/>
+                <add x:p0="YlOrBr"/>
+                <add x:p0="YlOrBr_r"/>
+                <add x:p0="YlOrRd"/>
+                <add x:p0="YlOrRd_r"/>
+                <add x:p0="afmhot"/>
+                <add x:p0="afmhot_r"/>
+                <add x:p0="autumn"/>
+                <add x:p0="autumn_r"/>
+                <add x:p0="binary"/>
+                <add x:p0="binary_r"/>
+                <add x:p0="bone"/>
+                <add x:p0="bone_r"/>
+                <add x:p0="brg"/>
+                <add x:p0="brg_r"/>
+                <add x:p0="bwr"/>
+                <add x:p0="bwr_r"/>
+                <add x:p0="cividis"/>
+                <add x:p0="cividis_r"/>
+                <add x:p0="cool"/>
+                <add x:p0="cool_r"/>
+                <add x:p0="coolwarm"/>
+                <add x:p0="coolwarm_r"/>
+                <add x:p0="copper"/>
+                <add x:p0="copper_r"/>
+                <add x:p0="cubehelix"/>
+                <add x:p0="cubehelix_r"/>
+                <add x:p0="flag"/>
+                <add x:p0="flag_r"/>
+                <add x:p0="gist_earth"/>
+                <add x:p0="gist_earth_r"/>
+                <add x:p0="gist_gray"/>
+                <add x:p0="gist_gray_r"/>
+                <add x:p0="gist_heat"/>
+                <add x:p0="gist_heat_r"/>
+                <add x:p0="gist_ncar"/>
+                <add x:p0="gist_ncar_r"/>
+                <add x:p0="gist_rainbow"/>
+                <add x:p0="gist_rainbow_r"/>
+                <add x:p0="gist_stern"/>
+                <add x:p0="gist_stern_r"/>
+                <add x:p0="gist_yarg"/>
+                <add x:p0="gist_yarg_r"/>
+                <add x:p0="gnuplot"/>
+                <add x:p0="gnuplot2"/>
+                <add x:p0="gnuplot2_r"/>
+                <add x:p0="gnuplot_r"/>
+                <add x:p0="gray"/>
+                <add x:p0="gray_r"/>
+                <add x:p0="hot"/>
+                <add x:p0="hot_r"/>
+                <add x:p0="hsv"/>
+                <add x:p0="hsv_r"/>
+                <add x:p0="inferno"/>
+                <add x:p0="inferno_r"/>
+                <add x:p0="jet"/>
+                <add x:p0="jet_r"/>
+                <add x:p0="magma"/>
+                <add x:p0="magma_r"/>
+                <add x:p0="nipy_spectral"/>
+                <add x:p0="nipy_spectral_r"/>
+                <add x:p0="ocean"/>
+                <add x:p0="ocean_r"/>
+                <add x:p0="pink"/>
+                <add x:p0="pink_r"/>
+                <add x:p0="plasma"/>
+                <add x:p0="plasma_r"/>
+                <add x:p0="prism"/>
+                <add x:p0="prism_r"/>
+                <add x:p0="rainbow"/>
+                <add x:p0="rainbow_r"/>
+                <add x:p0="seismic"/>
+                <add x:p0="seismic_r"/>
+                <add x:p0="spring"/>
+                <add x:p0="spring_r"/>
+                <add x:p0="summer"/>
+                <add x:p0="summer_r"/>
+                <add x:p0="tab10"/>
+                <add x:p0="tab10_r"/>
+                <add x:p0="tab20"/>
+                <add x:p0="tab20_r"/>
+                <add x:p0="tab20b"/>
+                <add x:p0="tab20b_r"/>
+                <add x:p0="tab20c"/>
+                <add x:p0="tab20c_r"/>
+                <add x:p0="terrain"/>
+                <add x:p0="terrain_r"/>
+                <add x:p0="twilight"/>
+                <add x:p0="twilight_r"/>
+                <add x:p0="twilight_shifted"/>
+                <add x:p0="twilight_shifted_r"/>
+                <add x:p0="viridis"/>
+                <add x:p0="viridis_r"/>
+                <add x:p0="winter"/>
+                <add x:p0="winter_r"/>
+             </combo>
+      </x:children>
+    </group>
+  </x:children>
+</xswt>

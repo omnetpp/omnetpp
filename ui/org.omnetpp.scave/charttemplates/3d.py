@@ -28,8 +28,10 @@ print(df)
 
 X,Y = np.meshgrid(df.columns, df.index)
 
-
-cmap = cm.get_cmap('RdYlGn') # Get desired colormap - you can change this!
+colormap = params["colormap"]
+if not colormap:
+    colormap = None
+cmap = cm.get_cmap(colormap) # Get desired colormap - you can change this!
 max_height = np.max(df.values)   # get range of colorbars so we can normalize
 min_height = np.min(df.values)
 top = df.values.ravel()
@@ -43,11 +45,11 @@ if type == "bar":
     width = depth = 0.5
     ax.bar3d(X.ravel() - width/2, Y.ravel() - depth/2, bottom, width, depth, top, shade=True, color=rgba)
 elif type == "points":
-    ax.scatter(X, Y, df, c=top, cmap='RdYlGn', depthshade=True)
+    ax.scatter(X, Y, df, c=top, cmap=cmap, depthshade=True)
 elif type == "surface":
-    ax.plot_surface(X, Y, df, cmap='RdYlGn', shade=True)
+    ax.plot_surface(X, Y, df, cmap=cmap, shade=True)
 elif type == "trisurf":
-    ax.plot_trisurf(X.ravel(), Y.ravel(), df.values.ravel(), cmap='RdYlGn', shade=True)
+    ax.plot_trisurf(X.ravel(), Y.ravel(), df.values.ravel(), cmap=cmap, shade=True)
 
 
 ax.set_xticks(df.columns)

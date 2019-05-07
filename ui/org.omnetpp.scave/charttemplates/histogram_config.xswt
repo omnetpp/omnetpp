@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2"/>
+
+  <x:children>
+
+    <!-- page generated from the following spec:
+Baseline,
+Bar type:Solid/Outline,
+Data type:Count/Probability density/Cumulative density,
+Show over_underflow cell?    
+    -->
+    
+    <!-- Baseline -->
+    <label text="Baseline:"/>
+    <text x:id="Bars.Baseline" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <!-- Bar type:Solid/Outline -->
+    <label text="Bar type:"/>
+    <combo x:id="Hist.Bar" x:style="BORDER|READ_ONLY">
+      <add x:p0="Solid"/>
+      <add x:p0="Outline"/>
+    </combo>
+
+    <!-- Data type:Count/Probability density/Cumulative density -->
+    <label text="Data type:"/>
+    <combo x:id="Hist.Data" x:style="BORDER|READ_ONLY">
+      <add x:p0="Count"/>
+      <add x:p0="Probability density"/>
+      <add x:p0="Cumulative density"/>
+    </combo>
+
+    <!-- Show over_underflow cell? -->
+    <button x:id="Hist.ShowOverflowCell" text="Show over_underflow cell" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+  </x:children>
+</xswt>

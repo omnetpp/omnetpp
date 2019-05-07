@@ -16,10 +16,16 @@
 
       <x:children>
             <label text="Filter expression:"/>
-            <combo x:id="filter" x:style="BORDER" x:id.content="vectornames,itervarnames,runattrnames"> 
-                <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
-            </combo>
+            <text x:id="filter" x:style="BORDER" x:id.isFilter="true"> 
+                <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true"/>
+            </text>
+
+            <label text="Chart Title:"/>
+            <text x:id="title" x:style="BORDER">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </text>
       </x:children>
+
     </group>
   </x:children>
 </xswt>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2"/>
+
+  <x:children>
+
+    <!-- page generated from the following spec:
+Display Legend?,
+Appearance {
+	Border?,
+	Logend font
+},
+Positioning {
+	Position:inside/above/below/left/right,
+	Anchoring:north/northeast/east/southeast/south/southwest/west/northwest
+}
+    
+    -->
+    
+    <!-- Display Legend? -->
+    <button x:id="Legend.Display" text="Display legend" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <!-- Appearance { -->
+    <group text="Appearance">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- Border? -->
+    <button x:id="Legend.Border" text="Border" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <!-- Legend font -->
+    <label text="Legend font:"/>
+    <FontChooser x:id="Legend.Font" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </FontChooser>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+    <!-- Positioning { -->
+    <group text="Positioning">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- Position:inside/above/below/left/right -->
+    <label text="Position:"/>
+    <combo x:id="Legend.Position" x:style="BORDER|READ_ONLY">
+      <add x:p0="inside"/>
+      <add x:p0="above"/>
+      <add x:p0="below"/>
+      <add x:p0="left"/>
+      <add x:p0="right"/>
+    </combo>
+
+    <!-- Anchoring:north/northeast/east/southeast/south/southwest/west/northwest -->
+    <label text="Anchoring:"/>
+    <combo x:id="Legend.Anchoring" x:style="BORDER|READ_ONLY">
+      <add x:p0="north"/>
+      <add x:p0="northeast"/>
+      <add x:p0="east"/>
+      <add x:p0="southeast"/>
+      <add x:p0="south"/>
+      <add x:p0="southwest"/>
+      <add x:p0="west"/>
+      <add x:p0="northwest"/>
+    </combo>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+    <!--  -->
+
+  </x:children>
+</xswt>

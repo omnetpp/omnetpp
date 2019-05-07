@@ -1,0 +1,13 @@
+3d.properties
+barchart_legacy.properties
+barchart_mpl.properties
+barchart.properties
+boxwhiskers.properties
+histogram_legacy.properties
+histogram_mpl.properties
+histogram.properties
+linechart_legacy.properties
+linechart_mpl.properties
+linechart.properties
+scatterchart_legacy.properties
+scatterchart.properties
