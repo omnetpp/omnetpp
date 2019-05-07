@@ -145,7 +145,7 @@ public class FilterUtil {
     }
 
     public static boolean needsQuotes(String pattern) {
-        return Common.needsQuotes(pattern) || StringUtils.indexOfAny(pattern, " \t\n()") >= 0;
+        return Common.needsQuotes(pattern) || StringUtils.indexOfAny(pattern, " \t\n()$#[]-") >= 0;
     }
 
     public static String quoteStringIfNeeded(String str) {
