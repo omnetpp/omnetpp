@@ -31,7 +31,7 @@ public class RunsPickler implements IObjectPickler {
         out.write(Opcodes.MARK);
         {
             out.write(Opcodes.MARK);
-            {
+            if (filterExpression != null && !filterExpression.trim().isEmpty()) {
                 RunList runs = resultManager.getRuns();
                 runs = resultManager.filterRunList(runs, filterExpression);
 

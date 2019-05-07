@@ -42,7 +42,7 @@ public class RunAttrsPickler implements IObjectPickler {
         ResultFileManager resultManager = (ResultFileManager)obj;
 
         out.write(Opcodes.MARK);
-        {
+        if (filterExpression != null && !filterExpression.trim().isEmpty()) {
             RunList runs = null;
             if (filterMode == FilterMode.FILTER_RUNATTRS) {
                 OrderedKeyValueList runattrs = resultManager.getMatchingRunattrs(filterExpression);

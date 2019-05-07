@@ -54,7 +54,7 @@ public class ScalarResultsPickler implements IObjectPickler {
         out.write(Opcodes.MARK);
         {
             out.write(Opcodes.MARK);
-            {
+            if (filterExpression != null && !filterExpression.trim().isEmpty()) {
                 IDList scalars = resultManager.getAllScalars(false, false);
                 scalars = resultManager.filterIDList(scalars, filterExpression);
 

@@ -38,10 +38,10 @@ public class ResultAttrsPickler implements IObjectPickler {
         }
     }
 
-    String filter;
+    String filterExpression;
 
     public ResultAttrsPickler(String filter) {
-        this.filter = filter;
+        this.filterExpression = filter;
     }
 
     @Override
@@ -49,9 +49,9 @@ public class ResultAttrsPickler implements IObjectPickler {
         ResultFileManager resultManager = (ResultFileManager)obj;
 
         out.write(Opcodes.MARK);
-        {
+        if (filterExpression != null && !filterExpression.trim().isEmpty()) {
             IDList items = resultManager.getAllItems(false, false);
-            items = resultManager.filterIDList(items, filter);
+            items = resultManager.filterIDList(items, filterExpression);
 
             Debug.println("pickling attrs of " + items.size() + " items");
 

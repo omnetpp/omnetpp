@@ -60,10 +60,10 @@ public class StatisticsResultsPickler implements IObjectPickler {
         out.write(Opcodes.MARK);
         {
             out.write(Opcodes.MARK);
-            {
+            if (filterExpression != null && !filterExpression.trim().isEmpty()) {
                 IDList statistics = resultManager.getAllStatistics();
-
                 statistics = resultManager.filterIDList(statistics, filterExpression);
+
                 Debug.println("pickling " + statistics.size() + " statistics");
 
                 for (int i = 0; i < statistics.size(); ++i)

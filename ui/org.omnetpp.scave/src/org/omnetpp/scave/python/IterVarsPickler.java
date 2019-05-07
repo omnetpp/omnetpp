@@ -9,7 +9,6 @@ import org.omnetpp.scave.engine.OrderedKeyValueList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunList;
-import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.StringMap;
 import org.omnetpp.scave.engine.StringPair;
 import org.omnetpp.scave.engine.StringVector;
@@ -40,7 +39,7 @@ public class IterVarsPickler implements IObjectPickler {
         ResultFileManager resultManager = (ResultFileManager)obj;
 
         out.write(Opcodes.MARK);
-        {
+        if (filterExpression != null && !filterExpression.trim().isEmpty()) {
             RunList runs = null;
             if (filterMode == FilterMode.FILTER_ITERVARS) {
                 OrderedKeyValueList itervars = resultManager.getMatchingItervars(filterExpression);

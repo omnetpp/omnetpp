@@ -58,10 +58,10 @@ public class VectorResultsPickler implements IObjectPickler {
         out.write(Opcodes.MARK);
         {
             out.write(Opcodes.MARK);
-            {
+            if (filterExpression != null && !filterExpression.trim().isEmpty()) {
                 IDList vectors = resultManager.getAllVectors();
-
                 vectors = resultManager.filterIDList(vectors, filterExpression);
+
                 Debug.println("pickling " + vectors.size() + " vectors");
 
                 XYVector[] vectorsData = VectorDataLoader.getDataOfVectors(resultManager, vectors, null);

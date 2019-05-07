@@ -248,7 +248,7 @@ public class CsvResultsPickler implements IObjectPickler {
 
         // TODO: rowTypes and omitUnusedColumns is currently ignored here, filtering is done in Python.
         out.write(Opcodes.MARK);
-        {
+        if (filterExpression != null && !filterExpression.trim().isEmpty()) {
             IDList results = resultManager.getAllItems();
             results = resultManager.filterIDList(results, filterExpression);
 
