@@ -18,8 +18,6 @@ import java.util.List;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
-import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
@@ -59,6 +57,8 @@ import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.ui.GenericTreeUtils;
 import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;
+import org.omnetpp.common.ui.LocalTransfer;
+import org.omnetpp.common.ui.ViewerDragAdapter;
 import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.actions.AddInifileKeysAction;
@@ -268,7 +268,7 @@ public class SectionsPage extends FormPage {
                     list.add(payload);
             }
         }
-        return (String[]) list.toArray(new String[]{});
+        return list.toArray(new String[]{});
     }
 
     protected static String getSectionNameFromTreeNode(Object data) {

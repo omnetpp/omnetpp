@@ -20,8 +20,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.omnetpp.common,
  org.omnetpp.ned.model,
  org.omnetpp.ned.core,
- org.omnetpp.ide.nativelibs,
- org.eclipse.emf.edit.ui
+ org.omnetpp.ide.nativelibs
 Export-Package: org.omnetpp.inifile.editor.editors,
  org.omnetpp.inifile.editor.form,
  org.omnetpp.inifile.editor.model,
