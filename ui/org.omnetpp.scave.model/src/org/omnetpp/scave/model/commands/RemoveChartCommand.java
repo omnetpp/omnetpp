@@ -4,13 +4,13 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.omnetpp.scave.model.AnalysisItem;
-import org.omnetpp.scave.model.AnalysisObject;
+import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Charts;
 
 public class RemoveChartCommand implements ICommand {
 
     private int index;
-    private AnalysisObject parent;
+    private ModelObject parent;
     private AnalysisItem chart;
 
     public RemoveChartCommand(AnalysisItem chart) {
@@ -20,7 +20,7 @@ public class RemoveChartCommand implements ICommand {
 
     @Override
     public void execute() {
-        AnalysisObject parent = chart.getParent();
+        ModelObject parent = chart.getParent();
 
         if (parent instanceof Charts) {
             index = ((Charts)parent).getCharts().indexOf(chart);
@@ -51,7 +51,7 @@ public class RemoveChartCommand implements ICommand {
     }
 
     @Override
-    public Collection<AnalysisObject> getAffectedObjects() {
+    public Collection<ModelObject> getAffectedObjects() {
         return Arrays.asList(parent, chart);
     }
 

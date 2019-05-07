@@ -5,7 +5,7 @@ import java.util.Collection;
 
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.AnalysisItem;
-import org.omnetpp.scave.model.AnalysisObject;
+import org.omnetpp.scave.model.ModelObject;
 
 public class AddChartCommand implements ICommand {
 
@@ -45,7 +45,7 @@ public class AddChartCommand implements ICommand {
     }
 
     @Override
-    public Collection<AnalysisObject> getAffectedObjects() {
+    public Collection<ModelObject> getAffectedObjects() {
         return Arrays.asList(analysis.getCharts(), chart);
     }
 

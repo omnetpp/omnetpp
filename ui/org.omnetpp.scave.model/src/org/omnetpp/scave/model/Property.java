@@ -1,6 +1,6 @@
 package org.omnetpp.scave.model;
 
-public class Property extends AnalysisObject {
+public class Property extends ModelObject {
     protected String name;
     protected String value;
 

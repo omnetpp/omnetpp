@@ -40,7 +40,7 @@ import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartViewer;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.model.AnalysisEvent;
+import org.omnetpp.scave.model.ModelChangeEvent;
 
 /**
  * Common functionality of Scave multi-page editor pages with title and toolbar.
@@ -129,7 +129,7 @@ public class FormEditorPage extends Composite {
      * Updates the page title, etc.
      * Called when the model changed.
      */
-    public void updatePage(AnalysisEvent event) {
+    public void updatePage(ModelChangeEvent event) {
     }
 
     public void addToToolbar(IAction action) {

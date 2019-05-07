@@ -13,7 +13,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.omnetpp.scave.model.AnalysisObject;
+import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.InputFile;
 
 /**
@@ -31,7 +31,7 @@ public class InputFileEditForm extends BaseScaveObjectEditForm {
     // edit controls of the features
     private Text nameText;
 
-    public InputFileEditForm(InputFile inputFile, AnalysisObject parent) {
+    public InputFileEditForm(InputFile inputFile, ModelObject parent) {
         super(inputFile);
         //this.inputFile = inputFile;
     }

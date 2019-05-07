@@ -119,9 +119,9 @@ import org.omnetpp.scave.editors.ui.InputsPage;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Analysis;
-import org.omnetpp.scave.model.AnalysisEvent;
+import org.omnetpp.scave.model.ModelChangeEvent;
 import org.omnetpp.scave.model.AnalysisItem;
-import org.omnetpp.scave.model.AnalysisObject;
+import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Chart.DialogPage;
 import org.omnetpp.scave.model.IAnalysisListener;
@@ -254,7 +254,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
     private IAnalysisListener pageUpdater = new IAnalysisListener() {
 
         @Override
-        public void analysisChanged(AnalysisEvent event) {
+        public void analysisChanged(ModelChangeEvent event) {
             updatePages(event);
         }
     };
@@ -881,7 +881,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
      * Returns the page displaying {@code object}. The {@code object} expected to be
      * a Chart.
      */
-    protected FormEditorPage getClosableEditorPage(AnalysisObject object) {
+    protected FormEditorPage getClosableEditorPage(ModelObject object) {
         return (FormEditorPage) closablePages.get(object);
     }
 
@@ -1080,7 +1080,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
      * Updates the pages. Registered as a listener on model changes.
      */
     @SuppressWarnings("unchecked")
-    private void updatePages(AnalysisEvent event) {
+    private void updatePages(ModelChangeEvent event) {
 
         // close pages whose content was deleted, except temporary datasets/charts
         // (temporary objects are not deleted, but they can be moved into the persistent
@@ -1382,7 +1382,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
         try {
             if (marker.getType().equals(Markers.COMPUTESCALAR_PROBLEMMARKER_ID)) {
                 Object object = marker.getAttribute(Markers.EOBJECT_MARKERATTR_ID);
-                if (object instanceof AnalysisObject && chartsPage != null) {
+                if (object instanceof ModelObject && chartsPage != null) {
                     gotoObject(object);
                     // TODO
                     // setSelectionToViewer(Collections.singleton(editingDomain.getWrapper(object)));
@@ -1752,7 +1752,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
         chart.addListener(new IAnalysisListener() {
             @Override
-            public void analysisChanged(AnalysisEvent event) {
+            public void analysisChanged(ModelChangeEvent event) {
                 if (event.getSubject() == chart && !editor.getDocument().get().equals(chart.getScript()))
                     editor.getDocument().set(chart.getScript());
             }

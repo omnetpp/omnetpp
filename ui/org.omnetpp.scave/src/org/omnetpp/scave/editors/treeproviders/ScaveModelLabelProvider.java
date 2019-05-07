@@ -20,7 +20,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.scave.Markers;
 import org.omnetpp.scave.model.Analysis;
-import org.omnetpp.scave.model.AnalysisObject;
+import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
@@ -90,7 +90,7 @@ public class ScaveModelLabelProvider extends LabelProvider implements IColorProv
         return null;
     }
 
-    private boolean hasError(IFile file, AnalysisObject object) {
+    private boolean hasError(IFile file, ModelObject object) {
         try {
             IMarker problems[] = file.findMarkers(Markers.ANALYSISFILE_PROBLEMMARKER_ID, true, IResource.DEPTH_ZERO);
             for (IMarker problem : problems) {

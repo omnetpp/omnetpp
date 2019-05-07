@@ -11,7 +11,7 @@ import java.util.Map;
 
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.AnalysisItem;
-import org.omnetpp.scave.model.AnalysisObject;
+import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Property;
@@ -35,7 +35,7 @@ public class ScaveObjectEditFormFactory {
     /**
      * Returns true if this factory can create an edit form for this object
      */
-    public boolean canCreateForm(AnalysisObject object) {
+    public boolean canCreateForm(ModelObject object) {
         if (object instanceof AnalysisItem || object instanceof InputFile || object instanceof Property)
             return true;
         return false;
@@ -44,7 +44,7 @@ public class ScaveObjectEditFormFactory {
     /**
      * Creates a form containing all editable features of the object.
      */
-    public IScaveObjectEditForm createForm(AnalysisObject object, Map<String,Object> formParameters, ResultFileManager manager) {
+    public IScaveObjectEditForm createForm(ModelObject object, Map<String,Object> formParameters, ResultFileManager manager) {
         return createForm(object, object.getParent(), -1, formParameters, manager);
     }
 
@@ -53,7 +53,7 @@ public class ScaveObjectEditFormFactory {
      * @param object the edited object
      * @param parent the parent node of the object where it is placed or will be placed
      */
-    public IScaveObjectEditForm createForm(AnalysisObject object, AnalysisObject parent, int index, Map<String,Object> formParameters, ResultFileManager manager) {
+    public IScaveObjectEditForm createForm(ModelObject object, ModelObject parent, int index, Map<String,Object> formParameters, ResultFileManager manager) {
 
         /* if (object instanceof BarChart)
             return new BarChartEditForm((BarChart)object, formParameters, manager);

@@ -20,7 +20,7 @@ import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.forms.ScaveObjectEditFormFactory;
 import org.omnetpp.scave.editors.ui.EditDialog;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.model.AnalysisObject;
+import org.omnetpp.scave.model.ModelObject;
 
 /**
  * Opens an edit dialog for the selected dataset, chart, chart sheet, etc.
@@ -59,7 +59,7 @@ public class EditAction extends AbstractScaveAction {
         ResultFileManager.callWithReadLock(scaveEditor.getResultFileManager(), new Callable<Object>() {
             public Object call() throws Exception {
                 if (isApplicable(scaveEditor, selection)) {
-                    AnalysisObject editedObject = getEditedObject(scaveEditor, selection);
+                    ModelObject editedObject = getEditedObject(scaveEditor, selection);
                     Object selectedObject = selection.getFirstElement();
                     setFormParameter(PARAM_SELECTED_OBJECT, selectedObject);
                     EditDialog dialog = new EditDialog(scaveEditor.getSite().getShell(), editedObject, scaveEditor, formParameters);
@@ -72,13 +72,13 @@ public class EditAction extends AbstractScaveAction {
 
     @Override
     public boolean isApplicable(final ScaveEditor editor, final IStructuredSelection selection) {
-        AnalysisObject editedObject = getEditedObject(editor, selection);
+        ModelObject editedObject = getEditedObject(editor, selection);
         return editedObject != null && ScaveObjectEditFormFactory.instance().canCreateForm(editedObject);
     }
 
-    private AnalysisObject getEditedObject(ScaveEditor editor, IStructuredSelection selection) {
-        if (selection.size() == 1 && selection.getFirstElement() instanceof AnalysisObject)
-            return (AnalysisObject)selection.getFirstElement();
+    private ModelObject getEditedObject(ScaveEditor editor, IStructuredSelection selection) {
+        if (selection.size() == 1 && selection.getFirstElement() instanceof ModelObject)
+            return (ModelObject)selection.getFirstElement();
         return null;
     }
 }

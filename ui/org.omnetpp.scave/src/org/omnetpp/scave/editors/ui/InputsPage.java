@@ -46,7 +46,7 @@ import org.omnetpp.scave.editors.ScaveEditorContributor;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
 import org.omnetpp.scave.engineext.ResultFileManagerChangeEvent;
-import org.omnetpp.scave.model.AnalysisEvent;
+import org.omnetpp.scave.model.ModelChangeEvent;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model2.ScaveModelUtil;
@@ -185,7 +185,7 @@ public class InputsPage extends FormEditorPage {
     }
 
     @Override
-    public void updatePage(AnalysisEvent event) {
+    public void updatePage(ModelChangeEvent event) {
         if (ScaveModelUtil.isInputsChange(event))
             getTreeViewer().refresh();
     }

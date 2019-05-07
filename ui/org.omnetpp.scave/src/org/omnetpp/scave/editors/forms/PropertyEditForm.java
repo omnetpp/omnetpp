@@ -13,7 +13,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.omnetpp.scave.model.AnalysisObject;
+import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Property;
 
 /**
@@ -32,7 +32,7 @@ public class PropertyEditForm extends BaseScaveObjectEditForm {
     private Text nameText;
     private Text valueText;
 
-    public PropertyEditForm(Property property, AnalysisObject parent) {
+    public PropertyEditForm(Property property, ModelObject parent) {
         super(property);
         //this.property = property;
     }

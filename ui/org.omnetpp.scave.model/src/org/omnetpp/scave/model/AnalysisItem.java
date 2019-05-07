@@ -1,6 +1,6 @@
 package org.omnetpp.scave.model;
 
-public abstract class AnalysisItem extends AnalysisObject {
+public abstract class AnalysisItem extends ModelObject {
     // TODO: add ID
     protected String name;
 

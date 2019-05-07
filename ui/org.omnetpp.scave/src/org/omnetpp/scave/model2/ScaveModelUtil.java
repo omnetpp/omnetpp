@@ -37,9 +37,9 @@ import org.omnetpp.scave.engine.StatisticsResult;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.model.Analysis;
-import org.omnetpp.scave.model.AnalysisEvent;
+import org.omnetpp.scave.model.ModelChangeEvent;
 import org.omnetpp.scave.model.AnalysisItem;
-import org.omnetpp.scave.model.AnalysisObject;
+import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Chart.ChartType;
 import org.omnetpp.scave.model.Chart.DialogPage;
@@ -212,7 +212,7 @@ public class ScaveModelUtil {
      * If the {@code object} itself has the type, it is returned.
      */
     @SuppressWarnings("unchecked")
-    public static <T extends AnalysisObject> T findEnclosingOrSelf(AnalysisObject object, Class<T> type) {
+    public static <T extends ModelObject> T findEnclosingOrSelf(ModelObject object, Class<T> type) {
         while (object != null && !type.isInstance(object))
             object = object.getParent();
         return (T)object;
@@ -222,7 +222,7 @@ public class ScaveModelUtil {
      * Returns all object in the container having the specified type.
      */
     @SuppressWarnings("unchecked")
-    public static <T> List<T> findObjects(AnalysisObject container, Class<T> type) {
+    public static <T> List<T> findObjects(ModelObject container, Class<T> type) {
         ArrayList<T> objects = new ArrayList<>();
         // TODO
 //        if (container == null)
@@ -246,8 +246,8 @@ public class ScaveModelUtil {
         return charts;
     }
 
-    public static boolean isInputsChange(AnalysisEvent event) {
-        AnalysisObject subject = event.getSubject();
+    public static boolean isInputsChange(ModelChangeEvent event) {
+        ModelObject subject = event.getSubject();
         return subject instanceof Inputs || subject instanceof InputFile;
     }
 
@@ -402,7 +402,7 @@ public class ScaveModelUtil {
         }
     }
 
-    public static String getDescription(AnalysisObject c) {
+    public static String getDescription(ModelObject c) {
         if (c instanceof Analysis)
             return "";
         if (c instanceof Inputs)

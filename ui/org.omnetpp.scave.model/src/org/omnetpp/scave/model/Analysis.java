@@ -1,6 +1,6 @@
 package org.omnetpp.scave.model;
 
-public class Analysis extends AnalysisObject {
+public class Analysis extends ModelObject {
     protected Inputs inputs = new Inputs();
     protected Charts charts = new Charts(); // TODO rename to items
 

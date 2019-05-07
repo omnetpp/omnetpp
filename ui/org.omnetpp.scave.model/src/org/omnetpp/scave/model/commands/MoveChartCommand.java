@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.scave.model.AnalysisItem;
-import org.omnetpp.scave.model.AnalysisObject;
+import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Charts;
 
 public class MoveChartCommand implements ICommand { // TODO AnalysisItem ?
@@ -58,7 +58,7 @@ public class MoveChartCommand implements ICommand { // TODO AnalysisItem ?
     }
 
     @Override
-    public Collection<AnalysisObject> getAffectedObjects() {
+    public Collection<ModelObject> getAffectedObjects() {
         return Arrays.asList(charts, chart);
     }
 

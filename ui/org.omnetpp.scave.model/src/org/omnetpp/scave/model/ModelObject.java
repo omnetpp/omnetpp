@@ -2,12 +2,12 @@ package org.omnetpp.scave.model;
 
 import org.eclipse.core.runtime.ListenerList;
 
-public abstract class AnalysisObject implements Cloneable {
-    protected AnalysisObject parent;
+public abstract class ModelObject implements Cloneable {
+    protected ModelObject parent;
 
     ListenerList<IAnalysisListener> listeners = new ListenerList<IAnalysisListener>();
 
-    public AnalysisObject getParent() {
+    public ModelObject getParent() {
         return parent;
     }
 
@@ -20,16 +20,16 @@ public abstract class AnalysisObject implements Cloneable {
     }
 
     protected void notifyListeners() {
-        notifyListeners(new AnalysisEvent(this));
+        notifyListeners(new ModelChangeEvent(this));
     }
 
-    protected void notifyListeners(AnalysisEvent event) {
+    protected void notifyListeners(ModelChangeEvent event) {
         listeners.forEach((l) -> l.analysisChanged(event) );
         if (parent != null)
             parent.notifyListeners(event);
     }
 
-    public AnalysisObject pubClone() {
+    public ModelObject dup() {
         try {
             return clone();
         } catch (CloneNotSupportedException e) {
@@ -39,8 +39,8 @@ public abstract class AnalysisObject implements Cloneable {
     }
 
     @Override
-    protected AnalysisObject clone() throws CloneNotSupportedException {
-        AnalysisObject clone = (AnalysisObject)super.clone();
+    protected ModelObject clone() throws CloneNotSupportedException {
+        ModelObject clone = (ModelObject)super.clone();
         clone.listeners = new ListenerList<IAnalysisListener>();
         return clone;
     }

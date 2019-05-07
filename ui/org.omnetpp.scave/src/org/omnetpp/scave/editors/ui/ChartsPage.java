@@ -39,9 +39,9 @@ import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ScaveEditorContributor;
 import org.omnetpp.scave.model.Analysis;
-import org.omnetpp.scave.model.AnalysisEvent;
+import org.omnetpp.scave.model.ModelChangeEvent;
 import org.omnetpp.scave.model.AnalysisItem;
-import org.omnetpp.scave.model.AnalysisObject;
+import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Charts;
 import org.omnetpp.scave.model.Folder;
@@ -119,8 +119,8 @@ public class ChartsPage extends FormEditorPage {
 
     @Override
     public boolean gotoObject(Object object) {
-        if (object instanceof AnalysisObject) {
-            AnalysisObject eobject = (AnalysisObject)object;
+        if (object instanceof ModelObject) {
+            ModelObject eobject = (ModelObject)object;
             /*// TODO
             if (ScaveModelUtil.findEnclosingOrSelf(eobject, Charts.class) != null) {
                 getViewer().reveal(eobject);
@@ -135,7 +135,7 @@ public class ChartsPage extends FormEditorPage {
         setViewerSelectionNoNotify(getViewer(), selection);
     }
 
-    public void updatePage(AnalysisEvent event) {
+    public void updatePage(ModelChangeEvent event) {
         viewer.refresh();
     }
 

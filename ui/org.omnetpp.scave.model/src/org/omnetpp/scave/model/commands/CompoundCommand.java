@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
-import org.omnetpp.scave.model.AnalysisObject;
+import org.omnetpp.scave.model.ModelObject;
 
 public class CompoundCommand implements ICommand {
 
@@ -55,8 +55,8 @@ public class CompoundCommand implements ICommand {
     }
 
     @Override
-    public Collection<AnalysisObject> getAffectedObjects() {
-        Set<AnalysisObject> objs = new HashSet<AnalysisObject>();
+    public Collection<ModelObject> getAffectedObjects() {
+        Set<ModelObject> objs = new HashSet<ModelObject>();
         for (ICommand c : commands)
             objs.addAll(c.getAffectedObjects());
         return objs;

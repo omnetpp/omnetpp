@@ -34,7 +34,7 @@ import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.IndexFileUtils;
 import org.omnetpp.scave.jobs.ResultFileManagerUpdaterJob;
-import org.omnetpp.scave.model.AnalysisEvent;
+import org.omnetpp.scave.model.ModelChangeEvent;
 import org.omnetpp.scave.model.IAnalysisListener;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
@@ -73,7 +73,7 @@ public class ResultFilesTracker implements IResourceChangeListener, IAnalysisLis
     /**
      * Listen to EMF model changes.
      */
-    public void analysisChanged(AnalysisEvent event) {
+    public void analysisChanged(ModelChangeEvent event) {
         if (ScaveModelUtil.isInputsChange(event))
             synchronize(false);
     }

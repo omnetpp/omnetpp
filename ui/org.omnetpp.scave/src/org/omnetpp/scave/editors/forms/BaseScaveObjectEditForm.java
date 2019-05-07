@@ -4,7 +4,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
-import org.omnetpp.scave.model.AnalysisObject;
+import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
@@ -15,10 +15,10 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  */
 abstract class BaseScaveObjectEditForm implements IScaveObjectEditForm {
 
-    protected AnalysisObject object; // the edited or created object
+    protected ModelObject object; // the edited or created object
     private ListenerList listeners = new ListenerList();
 
-    protected BaseScaveObjectEditForm(AnalysisObject object) {
+    protected BaseScaveObjectEditForm(ModelObject object) {
         Assert.isNotNull(object);
         this.object = object;
     }

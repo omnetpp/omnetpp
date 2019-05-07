@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 
-public class Charts extends AnalysisObject {
+public class Charts extends ModelObject {
     protected List<AnalysisItem> charts = new ArrayList<AnalysisItem>();
 
     public List<AnalysisItem> getCharts() {

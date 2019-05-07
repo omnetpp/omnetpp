@@ -27,7 +27,7 @@ import org.omnetpp.scave.editors.forms.ChartEditForm;
 import org.omnetpp.scave.editors.forms.IScaveObjectEditForm;
 import org.omnetpp.scave.editors.forms.ScaveObjectEditFormFactory;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.model.AnalysisObject;
+import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.commands.AddChartPropertyCommand;
@@ -47,7 +47,7 @@ import org.omnetpp.scave.model.commands.SetChartPropertyCommand;
 public class EditDialog extends TitleAreaDialog {
 
     private ScaveEditor editor;
-    private AnalysisObject object;
+    private ModelObject object;
     private IScaveObjectEditForm form;
     private Object[] values;
 
@@ -62,7 +62,7 @@ public class EditDialog extends TitleAreaDialog {
      * @param editor         the editor
      * @param formParameters key-value pairs understood by the form; may be null
      */
-    public EditDialog(Shell parentShell, AnalysisObject object, ScaveEditor editor, Map<String,Object> formParameters) {
+    public EditDialog(Shell parentShell, ModelObject object, ScaveEditor editor, Map<String,Object> formParameters) {
         super(parentShell);
         setShellStyle(getShellStyle() | SWT.RESIZE);
         this.editor = editor;
@@ -190,7 +190,7 @@ public class EditDialog extends TitleAreaDialog {
         editor.executeCommand(command);
     }
 
-    private static IScaveObjectEditForm createForm(AnalysisObject object, ResultFileManager manager, Map<String,Object> formParameters) {
+    private static IScaveObjectEditForm createForm(ModelObject object, ResultFileManager manager, Map<String,Object> formParameters) {
         return ScaveObjectEditFormFactory.instance().createForm(object, formParameters, manager);
     }
 }

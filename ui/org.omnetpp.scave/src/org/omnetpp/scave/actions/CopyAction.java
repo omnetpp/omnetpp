@@ -20,7 +20,7 @@ import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.model.AnalysisObject;
+import org.omnetpp.scave.model.ModelObject;
 
 /**
  * Copy model objects to the clipboard.
@@ -49,8 +49,8 @@ public class CopyAction extends AbstractScaveAction {
         else {
             Object[] objects = selection.toArray();
             for (int i = 0; i < objects.length; ++i)
-                if (objects[i] instanceof AnalysisObject)
-                    objects[i] = ((AnalysisObject)objects[i]).pubClone();
+                if (objects[i] instanceof ModelObject)
+                    objects[i] = ((ModelObject)objects[i]).dup();
             // TODO filter out non-AnalysisObject objects
             Clipboard clipboard = new Clipboard(Display.getCurrent());
             clipboard.setContents(new Object[] { objects }, new Transfer[] {LocalTransfer.getInstance()});

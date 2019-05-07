@@ -27,7 +27,7 @@ public class NewAnalysisItemAction extends AbstractScaveAction {
     protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
         AnalysisItem element = elementPrototype;
 
-        ICommand command = new AddChartCommand(editor.getAnalysis(), (AnalysisItem)elementPrototype.pubClone());
+        ICommand command = new AddChartCommand(editor.getAnalysis(), (AnalysisItem)elementPrototype.dup());
 
         editor.executeCommand(command);
         editor.showAnalysisItem(element);

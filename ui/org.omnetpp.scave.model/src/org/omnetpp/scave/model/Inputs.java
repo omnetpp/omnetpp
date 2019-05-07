@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Inputs extends AnalysisObject {
+public class Inputs extends ModelObject {
     protected List<InputFile> inputs = new ArrayList<InputFile>();
 
     public List<InputFile> getInputs() {

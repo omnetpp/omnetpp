@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.omnetpp.scave.model.Analysis;
-import org.omnetpp.scave.model.AnalysisObject;
+import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.InputFile;
 
 public class AddInputFileCommand implements ICommand {
@@ -40,7 +40,7 @@ public class AddInputFileCommand implements ICommand {
     }
 
     @Override
-    public Collection<AnalysisObject> getAffectedObjects() {
+    public Collection<ModelObject> getAffectedObjects() {
         return Arrays.asList(analysis.getInputs(), inputFile);
     }
 

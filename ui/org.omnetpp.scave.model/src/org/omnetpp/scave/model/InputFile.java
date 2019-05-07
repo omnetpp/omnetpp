@@ -1,6 +1,6 @@
 package org.omnetpp.scave.model;
 
-public class InputFile extends AnalysisObject {
+public class InputFile extends ModelObject {
     protected String name;
 
     public InputFile(String name) {

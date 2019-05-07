@@ -10,7 +10,7 @@ package org.omnetpp.scave.editors;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocumentListener;
 import org.omnetpp.common.util.DelayedJob;
-import org.omnetpp.scave.model.AnalysisEvent;
+import org.omnetpp.scave.model.ModelChangeEvent;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.IAnalysisListener;
 import org.omnetpp.scave.model.commands.ICommand;
@@ -63,7 +63,7 @@ public class ChartUpdater implements IAnalysisListener, IDocumentListener {
     }
 
     @Override
-    public void analysisChanged(AnalysisEvent event) {
+    public void analysisChanged(ModelChangeEvent event) {
         rerunChartScriptJob.restartTimer();
     }
 }

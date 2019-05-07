@@ -16,7 +16,7 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.AnalysisItem;
-import org.omnetpp.scave.model.AnalysisObject;
+import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.commands.CompoundCommand;
 import org.omnetpp.scave.model.commands.ICommand;
 import org.omnetpp.scave.model.commands.RemoveChartCommand;
@@ -44,7 +44,7 @@ public class RemoveAction extends AbstractScaveAction {
         Iterator<Object> elements = selection.iterator();
         while (elements.hasNext()) {
             Object element = elements.next();
-            if (!(element instanceof AnalysisObject))  //TODO || editor.isTemporaryObject((AnalysisObject)element)
+            if (!(element instanceof ModelObject))  //TODO || editor.isTemporaryObject((AnalysisObject)element)
                 return false;
         }
         return true; // only non-temporary EObjects selected

@@ -3,7 +3,7 @@ package org.omnetpp.scave.model.commands;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.omnetpp.scave.model.AnalysisObject;
+import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Chart;
 
 public class SetChartScriptCommand implements ICommand {
@@ -39,7 +39,7 @@ public class SetChartScriptCommand implements ICommand {
     }
 
     @Override
-    public Collection<AnalysisObject> getAffectedObjects() {
+    public Collection<ModelObject> getAffectedObjects() {
         return Arrays.asList(chart);
     }
 

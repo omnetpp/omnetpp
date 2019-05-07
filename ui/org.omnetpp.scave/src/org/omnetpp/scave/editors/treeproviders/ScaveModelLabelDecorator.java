@@ -28,7 +28,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.Markers;
-import org.omnetpp.scave.model.AnalysisObject;
+import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.InputFile;
 
@@ -113,7 +113,7 @@ public class ScaveModelLabelDecorator extends BaseLabelProvider implements ILabe
         return maxLevel;
     }
 
-    private boolean hasError(IFile file, AnalysisObject object) {
+    private boolean hasError(IFile file, ModelObject object) {
         try {
             IMarker problems[] = file.findMarkers(Markers.ANALYSISFILE_PROBLEMMARKER_ID, true, IResource.DEPTH_ZERO);
             for (IMarker problem : problems) {
