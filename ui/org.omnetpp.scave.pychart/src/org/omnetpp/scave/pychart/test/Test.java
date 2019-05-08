@@ -68,7 +68,7 @@ public class Test {
         killButton.addSelectionListener(new SelectionListener() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                proc.dispose();
+                proc.kill();
             }
 
             @Override
@@ -181,7 +181,7 @@ public class Test {
         finally {
             display.dispose();
             for (PythonProcess proc : pythonProcesses)
-                proc.dispose();
+                proc.kill();
             processPool.dispose();
         }
     }

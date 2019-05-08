@@ -7,6 +7,7 @@ import py4j.ClientServer;
 public class PythonProcess {
     private Process process;
     private ClientServer clientServer = null;
+    boolean killedByUs = false;
 
     public PythonOutputMonitoringThread outputMonitoringThread;
     public PythonOutputMonitoringThread errorMonitoringThread;
@@ -25,7 +26,7 @@ public class PythonProcess {
 
         // this does not have any references to anything, the Runnable
         // instances passed to it later do
-        pythonCallerThread = new PythonCallerThread();
+        pythonCallerThread = new PythonCallerThread(this);
         pythonCallerThread.start();
     }
 
@@ -66,15 +67,25 @@ public class PythonProcess {
         return entryPoint;
     }
 
-    public void dispose() {
+    public void kill() {
         if (process != null) {
             clientServer.shutdown();
             process.destroyForcibly();
-            process = null;
+            killedByUs = true;
         }
     }
 
-    public boolean isDisposed() {
-        return process == null || !process.isAlive();
+    public boolean isAlive() {
+        return process != null && process.isAlive();
     }
+
+    public boolean isKilledByUs() {
+        return killedByUs;
+    }
+
+    @Override
+    public String toString() {
+        return "Python process: " + process + " isAlive: " + isAlive() + " killed by us: " + killedByUs + " exitCode: " + (process.isAlive() ? "none" : Integer.toString(process.exitValue()));
+    }
+
 }

@@ -94,7 +94,7 @@ public class PythonProcessPool {
         threadExit = true;
         launcherThread.interrupt();
         for (PythonProcess pr : availableProcesses)
-            pr.dispose();
+            pr.kill();
         availableProcesses.clear();
     }
 

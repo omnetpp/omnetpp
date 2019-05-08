@@ -132,6 +132,7 @@ import org.omnetpp.scave.model.commands.ICommand;
 import org.omnetpp.scave.model2.ResultItemRef;
 import org.omnetpp.scave.pychart.PythonProcessPool;
 import org.omnetpp.scave.python.MatplotlibChartViewer;
+import org.omnetpp.scave.python.NativeChartViewer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -719,9 +720,10 @@ public class ScaveEditor extends MultiPageEditorPartExt
             return activePage.getActiveChartViewer();
         ChartScriptEditor activeEditor = getActiveChartScriptEditor();
 
-        if (activeEditor != null)
-            return activeEditor.getNativeChartViewer() != null ? activeEditor.getNativeChartViewer().getChartViewer()
-                    : null;
+        if (activeEditor != null) {
+            NativeChartViewer nativeChartViewer = activeEditor.getNativeChartViewer();
+            return (nativeChartViewer != null) ? nativeChartViewer.getChartViewer() : null;
+        }
 
         return null;
     }

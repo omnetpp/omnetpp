@@ -1,8 +1,6 @@
 package org.omnetpp.scave.python;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -18,16 +16,11 @@ import org.omnetpp.scave.charting.properties.ChartDefaults;
 import org.omnetpp.scave.charting.properties.ChartVisualProperties;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
-import org.omnetpp.scave.pychart.IChartPropertiesProvider;
 import org.omnetpp.scave.pychart.INativeChartPlotter;
-import org.omnetpp.scave.pychart.IScaveResultsPickleProvider;
 import org.omnetpp.scave.pychart.PythonCallerThread.ExceptionHandler;
-import org.omnetpp.scave.pychart.PythonOutputMonitoringThread.IOutputListener;
-import org.omnetpp.scave.pychart.PythonProcess;
 import org.omnetpp.scave.pychart.PythonProcessPool;
-import org.omnetpp.scave.python.MatplotlibChartViewer.IStateChangeListener;
 
-public class NativeChartViewer {
+public class NativeChartViewer extends ChartViewerBase {
 
     class ChartPlotter implements INativeChartPlotter {
         PythonScalarDataset scalarDataset = new PythonScalarDataset(null);
@@ -68,14 +61,9 @@ public class NativeChartViewer {
     ChartPlotter chartPlotter = new ChartPlotter();
     ChartViewer chartView;
 
-    PythonProcess proc;
-    PythonProcessPool processPool;
-
     public NativeChartViewer(Chart chart, PythonProcessPool pool, Composite parent) {
+        super(pool);
         this.chart = chart;
-        processPool = pool;
-
-        proc = null;
 
         switch (chart.getType()) {
         case BAR:
@@ -93,20 +81,11 @@ public class NativeChartViewer {
         }
     }
 
-
-    List<IOutputListener> outputListeners = new ArrayList<IOutputListener>();
-    List<IStateChangeListener> stateChangeListeners = new ArrayList<IStateChangeListener>();
-
-    IScaveResultsPickleProvider resultsProvider = null;
-    IChartPropertiesProvider propertiesProvider = null;
-
-
-    public void runPythonScript(File workingDir, Runnable runAfterDone, ExceptionHandler runAfterError) {
-
+    public void runPythonScript(String script, File workingDir, Runnable runAfterDone, ExceptionHandler runAfterError) {
         if (chartView.isDisposed())
             return;
 
-        String script = chart.getScript();
+        killPythonProcess();
 
         if (script == null || script.isEmpty()) {
             chartView.setStatusText("No Python script given");
@@ -126,97 +105,58 @@ public class NativeChartViewer {
                 chartView.setProperty(id, Converter.objectToString(ChartDefaults.getDefaultPropertyValue(id)));
         }
 
-        if (proc != null) {
-            proc.dispose();
-
-            for (MatplotlibChartViewer.IStateChangeListener l : stateChangeListeners)
-                l.pythonProcessLivenessChanged(false);
-        }
-
-        proc = processPool.getProcess();
-
-        for (MatplotlibChartViewer.IStateChangeListener l : stateChangeListeners)
-            l.pythonProcessLivenessChanged(true);
-
-        proc.getEntryPoint().setResultsProvider(resultsProvider);
-        proc.getEntryPoint().setChartPropertiesProvider(propertiesProvider);
+        acquireNewProcess();
         proc.getEntryPoint().setNativeChartPlotter(chartPlotter);
-
-
-        for (IOutputListener l : outputListeners) {
-            proc.outputMonitoringThread.addOutputListener(l);
-            proc.errorMonitoringThread.addOutputListener(l);
-        }
 
         chartPlotter.reset();
 
-        if (script != null && !script.isEmpty()) {
-            proc.pythonCallerThread.asyncExec(() -> {
-                if (workingDir != null) {
-                    proc.getEntryPoint().execute("import os; os.chdir(\"\"\"" + workingDir.getAbsolutePath() + "\"\"\"); del os;");
-                    proc.getEntryPoint().execute("import site; site.addsitedir(\"\"\"" + workingDir.getAbsolutePath() + "\"\"\"); del site;");
+        Runnable ownRunAfterDone = () -> {
+            runAfterDone.run();
+
+            Display.getDefault().syncExec(() -> {
+                chartView.setStatusText("Rendering chart...");
+                chartView.update();
+
+                switch (chart.getType()) {
+                case BAR:
+                    chartView.setDataset(chartPlotter.scalarDataset);
+                    break;
+                case HISTOGRAM:
+                    chartView.setDataset(chartPlotter.histogramDataset);
+                    break;
+                case LINE:
+                    chartView.setDataset(chartPlotter.xyDataset);
+                    break;
+                case MATPLOTLIB:
+                default:
+                    throw new RuntimeException("Wrong chart type.");
                 }
-                proc.getEntryPoint().execute(script);
-            },() -> {
-                runAfterDone.run();
 
+                chartView.setStatusText("");
+                chartView.update();
+
+                killPythonProcess();
+            });
+        };
+
+        ExceptionHandler ownRunAfterError = (proc, e) -> {
+            runAfterError.handle(proc, e);
+            if (!proc.isKilledByUs()) {
                 Display.getDefault().syncExec(() -> {
-
-                    chartView.setStatusText("Rendering chart...");
+                    chartView.setStatusText("An exception occurred during Python execution.");
                     chartView.update();
-
-                    switch (chart.getType()) {
-                    case BAR:
-                        chartView.setDataset(chartPlotter.scalarDataset);
-                        break;
-                    case HISTOGRAM:
-                        chartView.setDataset(chartPlotter.histogramDataset);
-                        break;
-                    case LINE:
-                        chartView.setDataset(chartPlotter.xyDataset);
-                        break;
-                    case MATPLOTLIB:
-                    default:
-                        throw new RuntimeException("Wrong chart type.");
-                    }
-
-
-                    chartView.setStatusText("");
-                    chartView.update();
-
-                    proc.dispose();
-
-                    for (MatplotlibChartViewer.IStateChangeListener l : stateChangeListeners)
-                        l.pythonProcessLivenessChanged(false);
                 });
-            }, runAfterError);
-        }
+            }
+        };
 
+        proc.pythonCallerThread.asyncExec(() -> {
+            changePythonIntoDirectory(workingDir);
+            proc.getEntryPoint().execute(script);
+        }, ownRunAfterDone, ownRunAfterError);
     }
 
     public void setVisible(boolean visible) {
         chartView.setVisible(visible);
-    }
-
-    public void setResultsProvider(IScaveResultsPickleProvider resultsProvider) {
-        this.resultsProvider = resultsProvider;
-    }
-
-    public void setChartPropertiesProvider(IChartPropertiesProvider propertiesProvider) {
-        this.propertiesProvider = propertiesProvider;
-    }
-
-    public void addOutputListener(IOutputListener listener) {
-        outputListeners.add(listener);
-    }
-
-    public void addStateChangeListener(IStateChangeListener listener) {
-        stateChangeListeners.add(listener);
-    }
-
-    public void killPythonProcess() {
-        if (proc != null && !proc.isDisposed())
-            proc.dispose();
     }
 
 //
@@ -251,18 +191,15 @@ public class NativeChartViewer {
 //        return zoomSubmenuManager;
 //    }
 
-    public void dispose() {
-        killPythonProcess();
-
-        if (chartView != null)
-            chartView.dispose();
-    }
 
     public ChartViewer getChartViewer() {
         return chartView;
     }
 
-    public boolean isAlive() {
-        return proc != null && !proc.isDisposed();
+    public void dispose() {
+        super.dispose();
+
+        if (chartView != null)
+            chartView.dispose();
     }
 }

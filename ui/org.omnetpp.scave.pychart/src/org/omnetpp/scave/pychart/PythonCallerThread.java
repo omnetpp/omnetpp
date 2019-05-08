@@ -6,12 +6,15 @@ import py4j.Py4JException;
 
 public class PythonCallerThread extends Thread {
 
+    PythonProcess proc;
+
     public interface ExceptionHandler {
-        void handle(Exception e);
+        void handle(PythonProcess proc, Exception e);
     }
 
-    public PythonCallerThread() {
+    public PythonCallerThread(PythonProcess proc) {
         super("Python executor");
+        this.proc = proc;
     }
 
     ConcurrentLinkedQueue<CustomRunnable> queue = new ConcurrentLinkedQueue<CustomRunnable>();
@@ -87,9 +90,9 @@ public class PythonCallerThread extends Thread {
                 runnable.run();
             } catch (RuntimeException e) {
                 if (errorHandler != null)
-                    errorHandler.handle(e);
+                    errorHandler.handle(proc, e);
                 else
-                    System.out.println("NO ERROR HANDLER");
+                    Debug.println("NO ERROR HANDLER");
                 return;
             }
 
@@ -128,8 +131,7 @@ public class PythonCallerThread extends Thread {
                         r.run();
                     }
                     catch (Py4JException e) {
-                        System.err.println("P4J Exception: " + e.getMessage());
-                        // TODO signal this somehow? Via a listener?
+                        PyChartPlugin.logError(e);
                         break outer;
                     }
                 }

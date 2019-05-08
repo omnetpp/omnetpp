@@ -110,7 +110,7 @@ public class PlotWidget extends Canvas implements IPlotWidget {
 
         addMouseMoveListener(e -> {
             int sy = getSize().y;
-            if (pythonProcess != null && !pythonProcess.isDisposed()) {
+            if (pythonProcess != null && pythonProcess.isAlive()) {
                 pythonProcess.pythonCallerThread.asyncExec(() -> getCanvas().mouseMoveEvent(e.x, sy - e.y),
                         figureNumber * 100 + EVENTSTREAM_MOUSEMOVE);
             }
@@ -123,7 +123,7 @@ public class PlotWidget extends Canvas implements IPlotWidget {
 
             @Override
             public void mouseExit(MouseEvent arg0) {
-                if (pythonProcess != null && !pythonProcess.isDisposed()) {
+                if (pythonProcess != null && pythonProcess.isAlive()) {
                     pythonProcess.pythonCallerThread.asyncExec(() -> getCanvas().leaveEvent());
                     mouseIsOverMe = false;
                     redraw();
@@ -132,7 +132,7 @@ public class PlotWidget extends Canvas implements IPlotWidget {
 
             @Override
             public void mouseEnter(MouseEvent arg0) {
-                if (pythonProcess != null && !pythonProcess.isDisposed()) {
+                if (pythonProcess != null && pythonProcess.isAlive()) {
                     pythonProcess.pythonCallerThread.asyncExec(() -> getCanvas().enterEvent());
                     mouseIsOverMe = true;
                     redraw();
@@ -143,7 +143,7 @@ public class PlotWidget extends Canvas implements IPlotWidget {
         addMouseListener(new MouseListener() {
             @Override
             public void mouseUp(MouseEvent e) {
-                if (pythonProcess != null && !pythonProcess.isDisposed()) {
+                if (pythonProcess != null && pythonProcess.isAlive()) {
                     int sy = getSize().y;
                     pythonProcess.pythonCallerThread.asyncExec(() -> getCanvas().mouseReleaseEvent(e.x, sy - e.y, e.button));
                 }
@@ -151,7 +151,7 @@ public class PlotWidget extends Canvas implements IPlotWidget {
 
             @Override
             public void mouseDown(MouseEvent e) {
-                if (pythonProcess != null && !pythonProcess.isDisposed()) {
+                if (pythonProcess != null && pythonProcess.isAlive()) {
                     int sy = getSize().y;
                     if (e.button == 3 && cursorType == SWT.CURSOR_ARROW) {
                         if (contextMenu != null)
@@ -164,7 +164,7 @@ public class PlotWidget extends Canvas implements IPlotWidget {
 
             @Override
             public void mouseDoubleClick(MouseEvent e) {
-                if (pythonProcess != null && !pythonProcess.isDisposed()) {
+                if (pythonProcess != null && pythonProcess.isAlive()) {
                     int sy = getSize().y;
                     pythonProcess.pythonCallerThread
                             .asyncExec(() -> getCanvas().mouseDoubleClickEvent(e.x, sy - e.y, e.button));
@@ -175,7 +175,7 @@ public class PlotWidget extends Canvas implements IPlotWidget {
         addControlListener(new ControlListener() {
             @Override
             public void controlResized(ControlEvent e) {
-                if (pythonProcess != null && !pythonProcess.isDisposed()) {
+                if (pythonProcess != null && pythonProcess.isAlive()) {
                     int x = getSize().x;
                     int y = getSize().y;
                     if (x > 2 && y > 2)

@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -56,7 +57,9 @@ import org.omnetpp.scave.model.commands.SetChartScriptCommand;
 import org.omnetpp.scave.pychart.PlotWidget;
 import org.omnetpp.scave.pychart.PythonCallerThread.ExceptionHandler;
 import org.omnetpp.scave.pychart.PythonOutputMonitoringThread.IOutputListener;
+import org.omnetpp.scave.pychart.PythonProcess;
 import org.omnetpp.scave.python.BackAction;
+import org.omnetpp.scave.python.ChartViewerBase;
 import org.omnetpp.scave.python.ExportAction;
 import org.omnetpp.scave.python.ForwardAction;
 import org.omnetpp.scave.python.GotoChartDefinitionAction;
@@ -485,18 +488,16 @@ public class ChartScriptEditor extends PyEdit {
                 });
             };
 
-            ExceptionHandler errorHandler = (e) -> {
+            ExceptionHandler errorHandler = (proc, e) -> {
                 Display.getDefault().syncExec(() -> {
-                    annotatePythonException(e);
-                    revealErrorAnnotation();
+                    if (!proc.isKilledByUs()) {
+                        annotatePythonException(e);
+                        revealErrorAnnotation();
+                    }
                 });
             };
 
-            if (chart.getType() == ChartType.MATPLOTLIB)
-                matplotlibChartViewer.runPythonScript(chart.getScript(), scaveEditor.getAnfFileDirectory(), afterRun,
-                        errorHandler);
-            else
-                nativeChartViewer.runPythonScript(scaveEditor.getAnfFileDirectory(), afterRun, errorHandler);
+            getChartViewer().runPythonScript(chart.getScript(), scaveEditor.getAnfFileDirectory(), afterRun, errorHandler);
         });
     }
 
@@ -645,6 +646,10 @@ public class ChartScriptEditor extends PyEdit {
 
     public NativeChartViewer getNativeChartViewer() {
         return nativeChartViewer;
+    }
+
+    public ChartViewerBase getChartViewer() {
+        return (chart.getType() == ChartType.MATPLOTLIB) ? matplotlibChartViewer : nativeChartViewer;
     }
 
     @Override

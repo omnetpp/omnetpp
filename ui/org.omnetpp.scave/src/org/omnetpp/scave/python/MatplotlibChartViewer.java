@@ -20,18 +20,14 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.image.ImageUtils;
 import org.omnetpp.scave.pychart.ActionDescription;
-import org.omnetpp.scave.pychart.IChartPropertiesProvider;
 import org.omnetpp.scave.pychart.IPlotWidget;
 import org.omnetpp.scave.pychart.IPlotWidgetProvider;
 import org.omnetpp.scave.pychart.IPyFigureCanvas;
-import org.omnetpp.scave.pychart.IScaveResultsPickleProvider;
 import org.omnetpp.scave.pychart.PlotWidget;
 import org.omnetpp.scave.pychart.PythonCallerThread.ExceptionHandler;
-import org.omnetpp.scave.pychart.PythonProcess;
 import org.omnetpp.scave.pychart.PythonProcessPool;
-import org.omnetpp.scave.pychart.PythonOutputMonitoringThread.IOutputListener;
 
-public class MatplotlibChartViewer {
+public class MatplotlibChartViewer extends ChartViewerBase {
 
     public interface IStateChangeListener {
         void activeActionChanged(String action);
@@ -66,63 +62,42 @@ public class MatplotlibChartViewer {
         }
     };
 
-    private PythonProcess proc = null;
-
     int figureNumber = -1;
     private PlotWidget plotWidget;
-
-    private PythonProcessPool processPool;
-
     String lastActiveAction = "";
 
-    List<IOutputListener> outputListeners = new ArrayList<IOutputListener>();
-    List<IStateChangeListener> stateChangeListeners = new ArrayList<IStateChangeListener>();
-
-    IScaveResultsPickleProvider resultsProvider = null;
-    IChartPropertiesProvider propertiesProvider = null;
-
-
     public MatplotlibChartViewer(PythonProcessPool processPool, Composite parent) {
-        this.processPool = processPool;
-
-        proc = null;
+        super(processPool);
         plotWidget = new PlotWidget(parent, SWT.DOUBLE_BUFFERED, proc, null);
     }
 
     public void runPythonScript(String script, File workingDir, Runnable runAfterDone, ExceptionHandler runAfterError) {
-        if (proc != null)
-            proc.dispose();
+        if (plotWidget.isDisposed())
+            return;
 
-        proc = processPool.getProcess();
+        killPythonProcess();
 
-        for (IStateChangeListener l : stateChangeListeners) {
-            l.pythonProcessLivenessChanged(true);
+        if (script == null || script.isEmpty()) {
+            plotWidget.setMessage("No Python script given");
+            return;
+        }
+
+        acquireNewProcess();
+        proc.getEntryPoint().setPlotWidgetProvider(widgetProvider);
+
+        lastActiveAction = "";
+        for (IStateChangeListener l : stateChangeListeners)
             l.activeActionChanged("");
-            lastActiveAction = "";
-        }
 
-        for (IOutputListener l : outputListeners) {
-            proc.outputMonitoringThread.addOutputListener(l);
-            proc.errorMonitoringThread.addOutputListener(l);
-        }
+        ExceptionHandler ownRunAfterError = (proc, e ) -> {
+            runAfterError.handle(proc, e);
+            plotWidget.setMessage("An exception occurred during Python execution.");
+        };
 
-        if (script != null && !script.isEmpty()) {
-            proc.pythonCallerThread.asyncExec(() -> {
-                proc.getEntryPoint().setPlotWidgetProvider(widgetProvider);
-                proc.getEntryPoint().setResultsProvider(resultsProvider);
-                proc.getEntryPoint().setChartPropertiesProvider(propertiesProvider);
-
-                if (workingDir != null) {
-                    proc.getEntryPoint().execute("import os; os.chdir(\"\"\"" + workingDir.getAbsolutePath() + "\"\"\"); del os;");
-                    proc.getEntryPoint().execute("import site; site.addsitedir(\"\"\"" + workingDir.getAbsolutePath() + "\"\"\"); del site;");
-                }
-                proc.getEntryPoint().execute(script);
-            }, runAfterDone, runAfterError);
-        }
-    }
-
-    public boolean isAlive() {
-        return proc != null && !proc.isDisposed();
+        proc.pythonCallerThread.asyncExec(() -> {
+            changePythonIntoDirectory(workingDir);
+            proc.getEntryPoint().execute(script);
+        }, runAfterDone, ownRunAfterError);
     }
 
     public void setVisible(boolean visible) {
@@ -131,22 +106,6 @@ public class MatplotlibChartViewer {
 
     public PlotWidget getPlotWidget() {
         return plotWidget;
-    }
-
-    public void addOutputListener(IOutputListener listener) {
-        outputListeners.add(listener);
-    }
-
-    public void addStateChangeListener(IStateChangeListener listener) {
-        stateChangeListeners.add(listener);
-    }
-
-    public void setResultsProvider(IScaveResultsPickleProvider resultsProvider) {
-        this.resultsProvider = resultsProvider;
-    }
-
-    public void setChartPropertiesProvider(IChartPropertiesProvider propertiesProvider) {
-        this.propertiesProvider = propertiesProvider;
     }
 
     public void interact() {
@@ -284,13 +243,8 @@ public class MatplotlibChartViewer {
         cp.setContents(new ImageTransferable(ImageUtils.convertToAWT(image)), owner);
     }
 
-    public void killPythonProcess() {
-        if (proc != null && !proc.isDisposed())
-            proc.dispose();
-    }
-
     public void dispose() {
-        killPythonProcess();
+        super.dispose();
 
         if (plotWidget != null)
             plotWidget.dispose();
