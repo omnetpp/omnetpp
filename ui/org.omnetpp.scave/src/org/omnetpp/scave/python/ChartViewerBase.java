@@ -28,12 +28,8 @@ public abstract class ChartViewerBase {
     }
 
     public void killPythonProcess() {
-        if (proc != null && proc.isAlive()) {
+        if (proc != null && proc.isAlive())
             proc.kill();
-
-            for (IStateChangeListener listener : stateChangeListeners)
-                listener.pythonProcessLivenessChanged(false);
-        }
     }
 
     public boolean isAlive() {
@@ -63,6 +59,11 @@ public abstract class ChartViewerBase {
 
         for (MatplotlibChartViewer.IStateChangeListener l : stateChangeListeners)
             l.pythonProcessLivenessChanged(true);
+
+        proc.outputMonitoringThread.addDeathListener(() -> {
+            for (MatplotlibChartViewer.IStateChangeListener l : stateChangeListeners)
+                l.pythonProcessLivenessChanged(false);
+        });
 
         for (IOutputListener l : outputListeners) {
             proc.outputMonitoringThread.addOutputListener(l);

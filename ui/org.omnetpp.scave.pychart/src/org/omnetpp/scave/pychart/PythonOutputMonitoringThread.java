@@ -19,10 +19,7 @@ public class PythonOutputMonitoringThread extends Thread {
     }
 
     List<IOutputListener> outputListeners = new ArrayList<IOutputListener>();
-
-    public void addOutputListener(IOutputListener listener) {
-        outputListeners.add(listener);
-    }
+    List<Runnable> deathListeners = new ArrayList<Runnable>();
 
     public PythonOutputMonitoringThread(Process process, boolean monitorStdErr) {
         super("Python output monitoring");
@@ -30,13 +27,21 @@ public class PythonOutputMonitoringThread extends Thread {
         this.monitorStdErr = monitorStdErr;
     }
 
+    public void addDeathListener(Runnable listener) {
+        deathListeners.add(listener);
+    }
+
+    public void addOutputListener(IOutputListener listener) {
+        outputListeners.add(listener);
+    }
+
     @Override
     public void run() {
         byte[] readBuffer = new byte[4096];
 
-        InputStream inputStream = monitorStdErr ? process.getErrorStream() : process.getInputStream();
-
         try {
+            InputStream inputStream = monitorStdErr ? process.getErrorStream() : process.getInputStream();
+
             while (numBytesRead != -1) {
                 numBytesRead = inputStream.read(readBuffer);
                 if (numBytesRead >= 0) {
@@ -50,7 +55,9 @@ public class PythonOutputMonitoringThread extends Thread {
         catch (IOException e) {
             PyChartPlugin.logError(e);
         }
-        // TODO: notify PythonProcess of Process death?
+
+        for (Runnable l : deathListeners)
+            l.run();
     }
 
     public String getOutputSoFar() {

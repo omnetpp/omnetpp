@@ -627,17 +627,11 @@ public class ChartScriptEditor extends PyEdit {
     }
 
     public boolean isPythonProcessAlive() {
-        return (matplotlibChartViewer != null && matplotlibChartViewer.isAlive())
-                || (nativeChartViewer != null && nativeChartViewer.isAlive());
+        return getChartViewer().isAlive();
     }
 
     public void killPythonProcess() {
-        if (matplotlibChartViewer != null)
-            matplotlibChartViewer.killPythonProcess();
-        if (nativeChartViewer != null)
-            nativeChartViewer.killPythonProcess();
-
-        updateActions();
+        getChartViewer().killPythonProcess();
     }
 
     public MatplotlibChartViewer getMatplotlibChartViewer() {
