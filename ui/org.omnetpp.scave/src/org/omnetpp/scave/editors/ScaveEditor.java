@@ -7,21 +7,21 @@
 
 package org.omnetpp.scave.editors;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -37,7 +37,6 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelection;
@@ -83,7 +82,6 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.ActionFactory;
-import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.ide.IGotoMarker;
@@ -98,7 +96,6 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheet;
 import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetSorter;
-import org.omnetpp.common.Debug;
 import org.omnetpp.common.ui.LocalTransfer;
 import org.omnetpp.common.ui.MultiPageEditorPartExt;
 import org.omnetpp.common.ui.ViewerDragAdapter;
@@ -106,7 +103,6 @@ import org.omnetpp.common.util.DetailedPartInitException;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
-import org.omnetpp.common.util.XmlUtils;
 import org.omnetpp.scave.AnalysisLoader;
 import org.omnetpp.scave.AnalysisSaver;
 import org.omnetpp.scave.LegacyAnalysisLoader;
@@ -120,13 +116,14 @@ import org.omnetpp.scave.editors.ui.InputsPage;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Analysis;
-import org.omnetpp.scave.model.ModelChangeEvent;
 import org.omnetpp.scave.model.AnalysisItem;
-import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.Chart.DialogPage;
+import org.omnetpp.scave.model.Charts;
 import org.omnetpp.scave.model.IModelChangeListener;
 import org.omnetpp.scave.model.InputFile;
+import org.omnetpp.scave.model.Inputs;
+import org.omnetpp.scave.model.ModelChangeEvent;
+import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.commands.AddInputFileCommand;
 import org.omnetpp.scave.model.commands.CommandStack;
@@ -135,9 +132,7 @@ import org.omnetpp.scave.model.commands.ICommand;
 import org.omnetpp.scave.model2.ResultItemRef;
 import org.omnetpp.scave.pychart.PythonProcessPool;
 import org.omnetpp.scave.python.MatplotlibChartViewer;
-import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -280,7 +275,20 @@ public class ScaveEditor extends MultiPageEditorPartExt
                         //
                         ICommand mostRecentCommand = commandStack.getMostRecentCommand();
                         if (mostRecentCommand != null) {
-                            setSelectionToViewer(mostRecentCommand.getAffectedObjects());
+                            Collection<ModelObject> affectedObjects = mostRecentCommand.getAffectedObjects();
+
+                            Set<ModelObject> selection = new HashSet<ModelObject>();
+
+                            for (ModelObject obj : affectedObjects) {
+                                if (obj instanceof Property)
+                                    selection.add(obj.getParent());
+                                else if (obj instanceof Charts || obj instanceof Inputs)
+                                    ; // skip
+                                else
+                                    selection.add(obj);
+                            }
+
+                            setSelectionToViewer(selection);
                         }
                         for (Iterator<PropertySheetPage> i = propertySheetPages.iterator(); i.hasNext();) {
                             PropertySheetPage propertySheetPage = i.next();
@@ -635,7 +643,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
                 else if (selection instanceof StructuredSelection) {
                     StructuredSelection structured = (StructuredSelection)selection;
                     structured.toList();
-                    System.out.println(structured);
                 }
                 super.selectionChanged(part, selection);
             }
