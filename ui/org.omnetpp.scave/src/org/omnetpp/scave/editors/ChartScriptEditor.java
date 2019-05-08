@@ -121,7 +121,6 @@ public class ChartScriptEditor extends PyEdit {
     KillPythonProcessAction killAction;
 
     ToggleAutoUpdateAction toggleAutoUpdateAction;
-    boolean autoUpdateEnabled = true;
     boolean scriptNotYetExecuted = true;
 
     ToggleShowSourceAction toggleShowSourceAction = new ToggleShowSourceAction();
@@ -715,13 +714,13 @@ public class ChartScriptEditor extends PyEdit {
 
     public void setAutoUpdateEnabled(boolean enabled) {
         toggleAutoUpdateAction.setChecked(enabled);
-        autoUpdateEnabled = enabled;
+        chartUpdater.setAutoUpdateChart(enabled);
     }
 
     @Override
     public void saveState(IMemento memento) {
         super.saveState(memento);
-        memento.putBoolean("autoupdate", autoUpdateEnabled);
+        memento.putBoolean("autoupdate", chartUpdater.isAutoUpdateChart());
         memento.putBoolean("sourcevisible", isSourceShown());
         int[] weights = sashForm.getWeights();
         memento.putInteger("sashweight_left", weights[0]);

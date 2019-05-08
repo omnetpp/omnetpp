@@ -29,6 +29,8 @@ public class ChartUpdater implements IModelChangeListener, IDocumentListener {
     private final Chart chart;
     private final ChartScriptEditor editor;
 
+    private boolean autoUpdateChart = true;
+
     private final DelayedJob setChartScriptJob = new DelayedJob(CHART_SCRIPT_TYPING_DELAY_MS) {
         @Override
         public void run() {
@@ -59,11 +61,24 @@ public class ChartUpdater implements IModelChangeListener, IDocumentListener {
 
     @Override
     public void documentChanged(DocumentEvent event) {
-        setChartScriptJob.restartTimer();
+            setChartScriptJob.restartTimer();
     }
 
     @Override
     public void modelChanged(ModelChangeEvent event) {
-        rerunChartScriptJob.restartTimer();
+        if (autoUpdateChart)
+            rerunChartScriptJob.restartTimer();
+    }
+
+    public boolean isAutoUpdateChart() {
+        return autoUpdateChart;
+    }
+
+    public void setAutoUpdateChart(boolean autoUpdateChart) {
+        if (this.autoUpdateChart != autoUpdateChart) {
+            this.autoUpdateChart = autoUpdateChart;
+            if (autoUpdateChart)
+                rerunChartScriptJob.restartTimer();
+        }
     }
 }
