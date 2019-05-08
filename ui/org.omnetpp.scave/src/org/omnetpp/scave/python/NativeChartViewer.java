@@ -7,10 +7,15 @@ import java.util.List;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
+import org.eclipse.ui.views.properties.IPropertySource2;
+import org.omnetpp.common.util.Converter;
 import org.omnetpp.scave.charting.ChartViewer;
 import org.omnetpp.scave.charting.HistogramChartViewer;
 import org.omnetpp.scave.charting.ScalarChartViewer;
 import org.omnetpp.scave.charting.VectorChartViewer;
+import org.omnetpp.scave.charting.properties.ChartDefaults;
+import org.omnetpp.scave.charting.properties.ChartVisualProperties;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.pychart.IChartPropertiesProvider;
@@ -110,8 +115,16 @@ public class NativeChartViewer {
 
         chartView.setStatusText("Running Python script...");
 
-        for (Property prop : chart.getProperties())
-            chartView.setProperty(prop.getName(), prop.getValue());
+        IPropertySource2 propSource = ChartVisualProperties.createPropertySource(chart);
+
+        for (IPropertyDescriptor desc : propSource.getPropertyDescriptors()) {
+            String id = (String)desc.getId();
+            Property prop = chart.lookupProperty(id);
+            if (prop != null)
+                chartView.setProperty(id, prop.getValue());
+            else
+                chartView.setProperty(id, Converter.objectToString(ChartDefaults.getDefaultPropertyValue(id)));
+        }
 
         if (proc != null) {
             proc.dispose();

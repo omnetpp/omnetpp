@@ -311,10 +311,16 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
         for (String k : xswtWidgetMap.keySet()) {
             Control control = xswtWidgetMap.get(k);
             Object value = XSWTDataBinding.getValueFromControl(control, null);
-            if (!Converter.objectToString(value).equals(Converter.objectToString(ChartDefaults.getDefaultPropertyValue(k))))
-                result.put(k, value.toString());
-            else
+
+            Property chartProperty = chart.lookupProperty(k);
+            String chartValueString = chartProperty == null ? null : chartProperty.getValue();
+            String formValueString = Converter.objectToString(value);
+            String defaultString = Converter.objectToString(ChartDefaults.getDefaultPropertyValue(k));
+
+            if (formValueString.equals(defaultString))
                 result.put(k, null);
+            else if (!formValueString.equals(chartValueString))
+                result.put(k, formValueString);
         }
         return result;
     }
