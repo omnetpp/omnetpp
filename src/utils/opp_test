@@ -639,7 +639,6 @@ Supported .test file entry types:
             if inifilenames == '':
                 fail('Not found any inifile key')   # at least the implicit _defaults.ini should be there
 
-
             if 'testprog(1)' in self.values:
                 cmdline = self.values['testprog(1)'] + " " +myargs+" "+(" ".join(self.args.extraargs))
                 runscript += cmdline + ' "$@"\n'
@@ -654,11 +653,21 @@ Supported .test file entry types:
                 runscript += cmdline + ' "$@"\n'
                 exitcode = self.exec_program(cmdline, os.path.join(self.args.workdir,self.testname), outfname, errfname)
 
-        # check exitcode
             if (exitcode == 127):
                 self.testunresolved(testfilename, "could not execute test program")
                 return
 
+        # if stdout contains "#UNRESOLVED" or "#UNRESOLVED: some explanation", count this test as unresolved;
+        # must be done BEFORE checking the exit code
+        with open(os.path.join(self.args.workdir, self.testname, outfname), 'r') as f:
+            for line in f:
+                m=re.match(r'^#UNRESOLVED:? *(.*)', line)
+                if (m):
+                    self.testunresolved(testfilename, "test program says UNRESOLVED: {}".format(m.group(1)))
+                    return
+
+        # check exitcode against expected one
+        if (self.args.mode == 'run'):
             exitCodeFail = True
             insteadOf = ''
 
@@ -683,14 +692,6 @@ Supported .test file entry types:
                     self.print_tail("stdout", os.path.join(self.args.workdir, self.testname, outfname))
                     self.print_tail("stderr", os.path.join(self.args.workdir, self.testname, errfname))
                 return
-
-        # if stdout contains "#UNRESOLVED" or "#UNRESOLVED: some explanation", count this test as unresolved
-        with open(os.path.join(self.args.workdir, self.testname, outfname), 'r') as f:
-            for line in f:
-                m=re.match(r'^#UNRESOLVED:? *(.*)', line)
-                if (m):
-                    self.testunresolved(testfilename, "test program says UNRESOLVED: {}".format(m.group(1)))
-                    return
 
         # execute post-run commands
         if (self.args.mode == 'run'):
