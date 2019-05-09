@@ -40,8 +40,7 @@ class ChartScriptDocumentProvider extends AbstractDocumentProvider {
     @Override
     protected void doSaveDocument(IProgressMonitor monitor, Object element, IDocument document, boolean overwrite)
             throws CoreException {
-        Chart chart = ((ChartScriptEditorInput)element).chart;
-        chart.setScript(document.get());
+        // this is not used, should not be called
     }
 
     @Override

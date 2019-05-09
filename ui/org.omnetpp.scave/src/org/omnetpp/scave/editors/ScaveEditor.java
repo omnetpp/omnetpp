@@ -110,6 +110,7 @@ import org.omnetpp.scave.Markers;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartViewer;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
+import org.omnetpp.scave.editors.ui.ChartPage;
 import org.omnetpp.scave.editors.ui.ChartsPage;
 import org.omnetpp.scave.editors.ui.FormEditorPage;
 import org.omnetpp.scave.editors.ui.InputsPage;
@@ -1479,8 +1480,8 @@ public class ScaveEditor extends MultiPageEditorPartExt
             addFixedPage(new FormEditorPage(getContainer(), SWT.NONE, this) {
                 {
                     // set up UI
-                    setPageTitle("No convert");
-                    setFormTitle("No convert");
+                    setPageTitle("Cannot Edit Old Analysis Format");
+                    setFormTitle("Error");
 
                     getContent().setLayout(new GridLayout());
 
@@ -1520,8 +1521,11 @@ public class ScaveEditor extends MultiPageEditorPartExt
      * This is for implementing {@link IEditorPart} and simply saves the model file.
      */
     public void doSave(IProgressMonitor progressMonitor) {
-        // Save only resources that have actually changed.
-        //
+        for (int i = 0; i < getPageCount(); ++i) {
+            Composite page = (Composite)getControl(i);
+            if (page.getChildren()[0] instanceof ChartPage)
+                ((ChartPage)page.getChildren()[0]).prepareForSave();
+        }
 
         IFileEditorInput modelFile = (IFileEditorInput) getEditorInput();
         IFile f = modelFile.getFile();

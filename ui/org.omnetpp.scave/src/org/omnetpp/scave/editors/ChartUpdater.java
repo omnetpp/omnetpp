@@ -23,8 +23,8 @@ import org.omnetpp.scave.model.commands.SetChartScriptCommand;
  * by asking the editor to execute the script again.
  */
 public class ChartUpdater implements IModelChangeListener, IDocumentListener {
-    private static final int CHART_SCRIPT_TYPING_DELAY_MS = 1500;
-    private static final int CHART_SCRIPT_EXECUTION_DELAY_MS = 100;
+    private static final int CHART_SCRIPT_TYPING_DELAY_MS = 240;
+    private static final int CHART_SCRIPT_EXECUTION_DELAY_MS = 1500;
 
     private final Chart chart;
     private final ChartScriptEditor editor;
@@ -34,8 +34,9 @@ public class ChartUpdater implements IModelChangeListener, IDocumentListener {
     private final DelayedJob setChartScriptJob = new DelayedJob(CHART_SCRIPT_TYPING_DELAY_MS) {
         @Override
         public void run() {
+            String oldCode = chart.getScript();
             String newCode = editor.getDocument().get();
-            if (!newCode.equals(chart.getScript())) {
+            if (!newCode.equals(oldCode)) {
                 ICommand command = new SetChartScriptCommand(chart, newCode);
                 editor.getScaveEditor().executeCommand(command);
             }
@@ -54,6 +55,13 @@ public class ChartUpdater implements IModelChangeListener, IDocumentListener {
         this.editor = editor;
     }
 
+    public void prepareForSave() {
+        if (setChartScriptJob.isScheduled())
+            setChartScriptJob.runNow();
+        if (rerunChartScriptJob.isScheduled())
+            rerunChartScriptJob.runNow();
+    }
+
     @Override
     public void documentAboutToBeChanged(DocumentEvent event) {
         // no-op
@@ -61,7 +69,7 @@ public class ChartUpdater implements IModelChangeListener, IDocumentListener {
 
     @Override
     public void documentChanged(DocumentEvent event) {
-            setChartScriptJob.restartTimer();
+        setChartScriptJob.restartTimer();
     }
 
     @Override

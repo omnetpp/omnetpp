@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -49,6 +48,7 @@ import org.omnetpp.scave.actions.RefreshChartAction;
 import org.omnetpp.scave.actions.SaveTempChartAction;
 import org.omnetpp.scave.actions.ToggleShowSourceAction;
 import org.omnetpp.scave.actions.ZoomChartAction;
+import org.omnetpp.scave.editors.ui.ChartPage;
 import org.omnetpp.scave.editors.ui.FormEditorPage;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Chart.ChartType;
@@ -57,7 +57,6 @@ import org.omnetpp.scave.model.commands.SetChartScriptCommand;
 import org.omnetpp.scave.pychart.PlotWidget;
 import org.omnetpp.scave.pychart.PythonCallerThread.ExceptionHandler;
 import org.omnetpp.scave.pychart.PythonOutputMonitoringThread.IOutputListener;
-import org.omnetpp.scave.pychart.PythonProcess;
 import org.omnetpp.scave.python.BackAction;
 import org.omnetpp.scave.python.ChartViewerBase;
 import org.omnetpp.scave.python.ExportAction;
@@ -157,7 +156,7 @@ public class ChartScriptEditor extends PyEdit {
                     }
                 });
 
-                formEditor = new FormEditorPage(obj, SWT.NONE, scaveEditor);
+                formEditor = new ChartPage(obj, SWT.NONE, scaveEditor, ChartScriptEditor.this);
                 Composite content = formEditor.getContent();
 
                 saveTempChartAction = new SaveTempChartAction();
@@ -667,6 +666,10 @@ public class ChartScriptEditor extends PyEdit {
     @Override
     public boolean isSaveAsAllowed() {
         return false;
+    }
+
+    public void prepareForSave() {
+        chartUpdater.prepareForSave();
     }
 
     @Override
