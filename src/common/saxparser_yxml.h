@@ -37,8 +37,10 @@ class COMMON_API YxmlSaxParser : public SaxParser
     bool insideElementOpenTag = false;
     bool insideContent = false;
     bool insidePI = false;
+    int fakeLineNumber = -1;
 
     std::string name; // element name / PI target
+    int elemStartLine = -1;
     std::vector<std::string> attrs;
     std::vector<const char *> attrptrs;
     std::string stringbuf;

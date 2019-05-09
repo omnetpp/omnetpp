@@ -123,22 +123,32 @@ XMLDocCache::~XMLDocCache()
 
 cXMLElement *XMLDocCache::parseDocument(const char *filename)
 {
-    cXmlSaxHandler sh(filename);
-    DefaultSaxParser parser;
+    try {
+        cXmlSaxHandler saxHandler(filename);
+        DefaultSaxParser parser;
 
-    parser.setHandler(&sh);
-    parser.parseFile(filename);
-    return sh.getTree();
+        parser.setHandler(&saxHandler);
+        parser.parseFile(filename);
+        return saxHandler.getTree();
+    }
+    catch (std::exception& e) {
+        throw cRuntimeError("%s", e.what()); // just convert
+    }
 }
 
 cXMLElement *XMLDocCache::parseContent(const char *content)
 {
-    cXmlSaxHandler sh("content");
-    DefaultSaxParser parser;
+    try {
+        cXmlSaxHandler saxHandler("content");
+        DefaultSaxParser parser;
 
-    parser.setHandler(&sh);
-    parser.parseContent(content);
-    return sh.getTree();
+        parser.setHandler(&saxHandler);
+        parser.parseContent(content);
+        return saxHandler.getTree();
+    }
+    catch (std::exception& e) {
+        throw cRuntimeError("%s", e.what()); // just convert
+    }
 }
 
 cXMLElement *XMLDocCache::getDocument(const char *filename)

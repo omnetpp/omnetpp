@@ -59,14 +59,16 @@ void YxmlSaxParser::parseContent(const char *content)
 
 int YxmlSaxParser::getCurrentLineNumber()
 {
-    return parserState.line;
+    return fakeLineNumber >= 0 ? fakeLineNumber : parserState.line;
 }
 
 void YxmlSaxParser::resetState()
 {
     yxml_init(&parserState, parserMemory, MEMSIZE);
     insideElementOpenTag = insideContent = insidePI = false;
+    fakeLineNumber = -1;
     name.clear();
+    elemStartLine = -1;
     attrs.clear();
     attrptrs.clear();
     stringbuf.clear();
@@ -92,7 +94,9 @@ void YxmlSaxParser::parseChunk(const char *chunk, int chunklen)
             for (int i = 0; i < attrs.size(); i++)
                 attrptrs[i] = attrs[i].c_str();
             attrptrs[attrs.size()] = nullptr;
+            fakeLineNumber = elemStartLine;
             saxHandler->startElement(name.c_str(), attrptrs.data());
+            fakeLineNumber = -1;
             stringbuf.clear();
             attrs.clear();
             attrptrs.clear();
@@ -117,6 +121,7 @@ void YxmlSaxParser::parseChunk(const char *chunk, int chunklen)
             case YXML_ELEMSTART:
                 insideElementOpenTag = true;
                 name = x->elem;
+                elemStartLine = x->line;
                 elemStack.push_back(x->elem);
                 assert(attrs.empty());
                 break;
