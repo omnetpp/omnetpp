@@ -746,10 +746,14 @@ public class ScaveEditor extends MultiPageEditorPartExt
         editor.prepareForSave();
 
         Chart chart = editor.getChart();
+
+        if (!commandStack.wasObjectAffected(chart))
+            return true;
+
         if (chart.isTemporary()) {
             int result = MessageDialog.open(MessageDialog.QUESTION_WITH_CANCEL, Display.getCurrent().getActiveShell(),
                     "Keep Temporary Chart?",
-                    "Keep chart as part of the analysis? If you choose 'No', it will be lost.",
+                    "Keep chart as part of the analysis? If you choose 'No', your edits will be lost.",
                     SWT.NONE, "Yes", "No", "Cancel");
 
             switch (result) {

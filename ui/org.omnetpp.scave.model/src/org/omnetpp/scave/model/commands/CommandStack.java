@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.ListenerList;
+import org.omnetpp.scave.model.ModelObject;
 
 public class CommandStack {
     private List<ICommand> commands = new ArrayList<ICommand>();
@@ -60,6 +61,14 @@ public class CommandStack {
     public ICommand getMostRecentCommand() {
         return mostRecentCommand;
     }
+
+    public boolean wasObjectAffected(ModelObject object) {
+        for (int i = 0; i < numExecutedCommands; ++i)
+            if (commands.get(i).getAffectedObjects().contains(object))
+                return true;
+        return false;
+    }
+
     public void addListener(CommandStackListener listener) {
         listeners.add(listener);
     }
