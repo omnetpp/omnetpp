@@ -704,8 +704,6 @@ public class ChartScriptEditor extends PyEdit {
     }
 
     public void refreshChart() {
-        updateActions();
-
         if (!chart.getScript().equals(getDocument().get())) {
             ICommand command = new SetChartScriptCommand(chart, getDocument().get());
             scaveEditor.executeCommand(command);

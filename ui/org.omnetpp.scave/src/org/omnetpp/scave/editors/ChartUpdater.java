@@ -23,30 +23,21 @@ import org.omnetpp.scave.model.commands.SetChartScriptCommand;
  * by asking the editor to execute the script again.
  */
 public class ChartUpdater implements IModelChangeListener, IDocumentListener {
-    private static final int CHART_SCRIPT_TYPING_DELAY_MS = 240;
-    private static final int CHART_SCRIPT_EXECUTION_DELAY_MS = 1500;
+    private static final int CHART_SCRIPT_EXECUTION_DELAY_MS = 2000;
 
     private final Chart chart;
     private final ChartScriptEditor editor;
 
     private boolean autoUpdateChart = true;
 
-    private final DelayedJob setChartScriptJob = new DelayedJob(CHART_SCRIPT_TYPING_DELAY_MS) {
-        @Override
-        public void run() {
-            String oldCode = chart.getScript();
-            String newCode = editor.getDocument().get();
-            if (!newCode.equals(oldCode)) {
-                ICommand command = new SetChartScriptCommand(chart, newCode);
-                editor.getScaveEditor().executeCommand(command);
-            }
-        }
-    };
-
     private final DelayedJob rerunChartScriptJob = new DelayedJob(CHART_SCRIPT_EXECUTION_DELAY_MS) {
         @Override
         public void run() {
-            editor.refreshChart();
+            if (autoUpdateChart) {
+                editor.refreshChart();
+                // so the model change notification caused by refreshing doesn't trigger us again
+                cancel();
+            }
         }
     };
 
@@ -56,10 +47,12 @@ public class ChartUpdater implements IModelChangeListener, IDocumentListener {
     }
 
     public void prepareForSave() {
-        if (setChartScriptJob.isScheduled())
-            setChartScriptJob.runNow();
-        if (rerunChartScriptJob.isScheduled())
-            rerunChartScriptJob.runNow();
+        String oldCode = chart.getScript();
+        String newCode = editor.getDocument().get();
+        if (!newCode.equals(oldCode)) {
+            ICommand command = new SetChartScriptCommand(chart, newCode);
+            editor.getScaveEditor().executeCommand(command);
+        }
     }
 
     @Override
@@ -69,7 +62,8 @@ public class ChartUpdater implements IModelChangeListener, IDocumentListener {
 
     @Override
     public void documentChanged(DocumentEvent event) {
-        setChartScriptJob.restartTimer();
+        if (autoUpdateChart)
+            rerunChartScriptJob.restartTimer();
     }
 
     @Override
@@ -86,7 +80,9 @@ public class ChartUpdater implements IModelChangeListener, IDocumentListener {
         if (this.autoUpdateChart != autoUpdateChart) {
             this.autoUpdateChart = autoUpdateChart;
             if (autoUpdateChart)
-                rerunChartScriptJob.restartTimer();
+                rerunChartScriptJob.runNow();
+            else
+                rerunChartScriptJob.cancel();
         }
     }
 }
