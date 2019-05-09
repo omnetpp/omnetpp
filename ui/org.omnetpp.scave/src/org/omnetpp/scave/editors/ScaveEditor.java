@@ -108,6 +108,7 @@ import org.omnetpp.scave.AnalysisSaver;
 import org.omnetpp.scave.LegacyAnalysisLoader;
 import org.omnetpp.scave.Markers;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.actions.SaveTempChartAction;
 import org.omnetpp.scave.charting.ChartViewer;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
 import org.omnetpp.scave.editors.ui.ChartPage;
@@ -126,6 +127,7 @@ import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.ModelChangeEvent;
 import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Property;
+import org.omnetpp.scave.model.commands.AddChartCommand;
 import org.omnetpp.scave.model.commands.AddInputFileCommand;
 import org.omnetpp.scave.model.commands.CommandStack;
 import org.omnetpp.scave.model.commands.CommandStackListener;
@@ -583,10 +585,12 @@ public class ScaveEditor extends MultiPageEditorPartExt
                 pageChangedByUser(newPageIndex);
             }
         });
+
         tabfolder.addCTabFolder2Listener(new CTabFolder2Adapter() {
             @Override
             public void close(CTabFolderEvent event) {
-                saveState();
+                ChartScriptEditor editor = (ChartScriptEditor)event.item.getData();
+                event.doit = canCloseChartEditor(editor);
             }
         });
     }
@@ -738,6 +742,34 @@ public class ScaveEditor extends MultiPageEditorPartExt
         return null;
     }
 
+    private boolean canCloseChartEditor(ChartScriptEditor editor) {
+        editor.prepareForSave();
+
+        Chart chart = editor.getChart();
+        if (chart.isTemporary()) {
+            int result = MessageDialog.open(MessageDialog.QUESTION_WITH_CANCEL, Display.getCurrent().getActiveShell(),
+                    "Keep Temporary Chart?",
+                    "Keep chart as part of the analysis? If you choose 'No', it will be lost.",
+                    SWT.NONE, "Yes", "No", "Cancel");
+
+            switch (result) {
+            case 0:
+                chart.setTemporary(false);
+                ICommand command = new AddChartCommand(getAnalysis(), chart);
+                executeCommand(command);
+                showAnalysisItem(chart);
+                return true;
+            case 1:
+                // no-op
+                return true;
+            case 2:
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public Analysis getAnalysis() {
         return analysis;
     }
@@ -869,6 +901,8 @@ public class ScaveEditor extends MultiPageEditorPartExt
             if (control.equals(entry.getValue()))
                 entries.remove();
         }
+
+        saveState();
     }
 
     /**
