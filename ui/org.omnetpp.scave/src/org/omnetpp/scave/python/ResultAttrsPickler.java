@@ -53,7 +53,8 @@ public class ResultAttrsPickler implements IObjectPickler {
             IDList items = resultManager.getAllItems(false, false);
             items = resultManager.filterIDList(items, filterExpression);
 
-            Debug.println("pickling attrs of " + items.size() + " items");
+            if (ResultPicklingUtils.debug)
+                Debug.println("pickling attrs of " + items.size() + " items");
 
             for (int i = 0; i < items.size(); ++i)
                 pickleResultAttr(resultManager, items.get(i), pickler, out);

@@ -62,7 +62,8 @@ public class VectorResultsPickler implements IObjectPickler {
                 IDList vectors = resultManager.getAllVectors();
                 vectors = resultManager.filterIDList(vectors, filterExpression);
 
-                Debug.println("pickling " + vectors.size() + " vectors");
+                if (ResultPicklingUtils.debug)
+                    Debug.println("pickling " + vectors.size() + " vectors");
 
                 XYVector[] vectorsData = VectorDataLoader.getDataOfVectors(resultManager, vectors, null);
 

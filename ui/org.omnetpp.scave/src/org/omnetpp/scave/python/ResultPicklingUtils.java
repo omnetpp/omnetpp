@@ -16,6 +16,8 @@ import net.razorvine.pickle.Pickler;
 
 public class ResultPicklingUtils {
 
+    public static boolean debug = false;
+
     public static double[] bytesToDoubles(byte[] bytes) {
         ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
         double[] doubles = new double[bytes.length / 8];
@@ -78,7 +80,8 @@ public class ResultPicklingUtils {
 
         l.unlock();
 
-        Debug.println("Pickle size: " + pickle.length);
+        if (debug)
+            Debug.println("Pickle size: " + pickle.length);
         return pickle;
     }
 }

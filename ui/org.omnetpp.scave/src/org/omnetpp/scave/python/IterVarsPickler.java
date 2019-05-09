@@ -63,13 +63,15 @@ public class IterVarsPickler implements IObjectPickler {
                 if (filterMode == FilterMode.FILTER_RUNS) {
                     runs = resultManager.getRuns();
                     runs = resultManager.filterRunList(runs, filterExpression);
-                    Debug.println("pickling itervars of " + runs.size() + " runs");
+                    if (ResultPicklingUtils.debug)
+                        Debug.println("pickling itervars of " + runs.size() + " runs");
                 }
                 else {
                     IDList items = resultManager.getAllItems(false, false);
                     items = resultManager.filterIDList(items, filterExpression);
                     runs = resultManager.getUniqueRuns(items);
-                    Debug.println("pickling itervars of " + runs.size() + " runs (for " + items.size() + " items)");
+                    if (ResultPicklingUtils.debug)
+                        Debug.println("pickling itervars of " + runs.size() + " runs (for " + items.size() + " items)");
                 }
 
                 for (Run r : runs.toArray()) {

@@ -252,7 +252,8 @@ public class CsvResultsPickler implements IObjectPickler {
             IDList results = resultManager.getAllItems();
             results = resultManager.filterIDList(results, filterExpression);
 
-            Debug.println("pickling " + results.size() + " items");
+            if (ResultPicklingUtils.debug)
+                Debug.println("pickling " + results.size() + " items");
 
             pickleRunsOfResults(resultManager, results, pickler, out);
 

@@ -58,7 +58,8 @@ public class ScalarResultsPickler implements IObjectPickler {
                 IDList scalars = resultManager.getAllScalars(false, false);
                 scalars = resultManager.filterIDList(scalars, filterExpression);
 
-                Debug.println("pickling " + scalars.size() + " scalars");
+                if (ResultPicklingUtils.debug)
+                    Debug.println("pickling " + scalars.size() + " scalars");
                 for (int i = 0; i < scalars.size(); ++i)
                     pickleScalarResult(resultManager, scalars.get(i), pickler, out);
             }

@@ -35,7 +35,8 @@ public class RunsPickler implements IObjectPickler {
                 RunList runs = resultManager.getRuns();
                 runs = resultManager.filterRunList(runs, filterExpression);
 
-                Debug.println("pickling " + runs.size() + " runs");
+                if (ResultPicklingUtils.debug)
+                    Debug.println("pickling " + runs.size() + " runs");
 
                 for (Run r : runs.toArray())
                     pickler.save(r.getRunName());

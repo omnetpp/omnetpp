@@ -88,7 +88,8 @@ public class HistogramResultsPickler implements IObjectPickler {
                 IDList histograms = resultManager.getAllHistograms();
                 histograms = resultManager.filterIDList(histograms, filterExpression);
 
-                Debug.println("pickling " + histograms.size() + " histograms");
+                if (ResultPicklingUtils.debug)
+                    Debug.println("pickling " + histograms.size() + " histograms");
 
                 for (int i = 0; i < histograms.size(); ++i)
                     pickleHistogramResult(resultManager, histograms.get(i), pickler, out);

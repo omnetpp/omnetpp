@@ -35,7 +35,8 @@ public class PythonProcessPool {
                         errorMessage = e.getMessage();
                         threadExit = true;
                     }
-                    Debug.println("We have " + availableProcesses.size() + " processes.");
+                    if (PythonProcess.debug)
+                        Debug.println("We have " + availableProcesses.size() + " processes.");
                 }
                 try {
                     Thread.sleep(1000);
@@ -51,12 +52,14 @@ public class PythonProcessPool {
     }
 
     private PythonProcess createProcess() throws IOException {
-        Debug.println("connecting...");
+        if (PythonProcess.debug)
+            Debug.println("connecting...");
         ClientServer clientServer = new ClientServer.ClientServerBuilder().javaPort(0).pythonPort(0).readTimeout(1000)
                 .build();
 
         int javaPort = clientServer.getJavaServer().getListeningPort();
-        Debug.println("listening port in Java: " + javaPort);
+        if (PythonProcess.debug)
+            Debug.println("listening port in Java: " + javaPort);
 
         // This only worked with the internal test app, and not when used from within the IDE.
         //String location = PythonProcessPool.class.getResource("python").getPath();
@@ -83,7 +86,8 @@ public class PythonProcessPool {
         else
             env.put("PYTHONPATH", location);
 
-        Debug.println("starting python process... with path " + env.get("PYTHONPATH"));
+        if (PythonProcess.debug)
+            Debug.println("starting python process... with path " + env.get("PYTHONPATH"));
 
         Process process = pb.start();
 

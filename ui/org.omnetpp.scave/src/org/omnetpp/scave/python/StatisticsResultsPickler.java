@@ -64,7 +64,8 @@ public class StatisticsResultsPickler implements IObjectPickler {
                 IDList statistics = resultManager.getAllStatistics();
                 statistics = resultManager.filterIDList(statistics, filterExpression);
 
-                Debug.println("pickling " + statistics.size() + " statistics");
+                if (ResultPicklingUtils.debug)
+                    Debug.println("pickling " + statistics.size() + " statistics");
 
                 for (int i = 0; i < statistics.size(); ++i)
                     pickleStatisticsResult(resultManager, statistics.get(i), pickler, out);
