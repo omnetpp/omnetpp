@@ -19,7 +19,7 @@ public class ToggleAutoUpdateAction extends AbstractScaveAction {
     protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
         ChartScriptEditor editor = scaveEditor.getActiveChartScriptEditor();
         if (editor != null)
-            editor.setAutoUpdateEnabled(isChecked());
+            editor.setAutoUpdateChart(isChecked());
     }
 
     @Override

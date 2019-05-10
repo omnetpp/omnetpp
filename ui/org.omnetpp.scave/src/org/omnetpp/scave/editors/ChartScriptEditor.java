@@ -9,7 +9,9 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -35,6 +37,7 @@ import org.eclipse.ui.texteditor.MarkerAnnotation;
 import org.omnetpp.common.canvas.LargeScrollableCanvas;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
+import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
@@ -51,6 +54,8 @@ import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.editors.ui.ChartPage;
 import org.omnetpp.scave.editors.ui.FormEditorPage;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.IModelChangeListener;
+import org.omnetpp.scave.model.ModelChangeEvent;
 import org.omnetpp.scave.model.Chart.ChartType;
 import org.omnetpp.scave.model.commands.ICommand;
 import org.omnetpp.scave.model.commands.SetChartScriptCommand;
@@ -88,7 +93,7 @@ public class ChartScriptEditor extends PyEdit {
     NativeChartViewer nativeChartViewer;
     MatplotlibChartViewer matplotlibChartViewer;
 
-    ChartUpdater chartUpdater;
+    ChangeListener changeListener;
     ChartScriptEditorInput editorInput;
 
     IOConsole console;
@@ -122,11 +127,45 @@ public class ChartScriptEditor extends PyEdit {
 
     KillPythonProcessAction killAction;
 
-    ToggleAutoUpdateAction toggleAutoUpdateAction;
     boolean scriptNotYetExecuted = true;
 
     ToggleShowSourceAction toggleShowSourceAction = new ToggleShowSourceAction();
     boolean showSource = false;
+
+    private static final int CHART_SCRIPT_EXECUTION_DELAY_MS = 2000;
+    private boolean autoUpdateChart = true;
+    ToggleAutoUpdateAction toggleAutoUpdateAction;
+
+    private final DelayedJob rerunChartScriptJob = new DelayedJob(CHART_SCRIPT_EXECUTION_DELAY_MS) {
+        @Override
+        public void run() {
+            if (autoUpdateChart) {
+                refreshChart();
+                // so the model change notification caused by refreshing doesn't trigger us again
+                cancel();
+            }
+        }
+    };
+
+    private class ChangeListener implements IModelChangeListener, IDocumentListener {
+
+        @Override
+        public void documentAboutToBeChanged(DocumentEvent event) {
+            // no-op
+        }
+
+        @Override
+        public void documentChanged(DocumentEvent event) {
+            if (autoUpdateChart)
+                rerunChartScriptJob.restartTimer();
+        }
+
+        @Override
+        public void modelChanged(ModelChangeEvent event) {
+            if (autoUpdateChart)
+                rerunChartScriptJob.restartTimer();
+        }
+    }
 
     ChartScriptEditor(ScaveEditor scaveEditor, Chart chart) {
         this.chart = chart;
@@ -455,10 +494,9 @@ public class ChartScriptEditor extends PyEdit {
 
         editorInput = new ChartScriptEditorInput(chart);
 
-        chartUpdater = new ChartUpdater(chart, this);
-
-        getDocumentProvider().getDocument(editorInput).addDocumentListener(chartUpdater);
-        chart.addListener(chartUpdater);
+        changeListener = new ChangeListener();
+        getDocumentProvider().getDocument(editorInput).addDocumentListener(changeListener);
+        chart.addListener(changeListener);
     }
 
     public ScaveEditor getScaveEditor() {
@@ -669,14 +707,19 @@ public class ChartScriptEditor extends PyEdit {
     }
 
     public void prepareForSave() {
-        chartUpdater.prepareForSave();
+        String oldCode = chart.getScript();
+        String newCode = getDocument().get();
+        if (!newCode.equals(oldCode)) {
+            ICommand command = new SetChartScriptCommand(chart, newCode);
+            getScaveEditor().executeCommand(command);
+        }
     }
 
     @Override
     public void dispose() {
 
-        getDocumentProvider().getDocument(editorInput).removeDocumentListener(chartUpdater);
-        chart.removeListener(chartUpdater);
+        getDocumentProvider().getDocument(editorInput).removeDocumentListener(changeListener);
+        chart.removeListener(changeListener);
 
         if (matplotlibChartViewer != null)
             matplotlibChartViewer.dispose();
@@ -704,23 +747,30 @@ public class ChartScriptEditor extends PyEdit {
     }
 
     public void refreshChart() {
-        if (!chart.getScript().equals(getDocument().get())) {
-            ICommand command = new SetChartScriptCommand(chart, getDocument().get());
-            scaveEditor.executeCommand(command);
-        }
-
+        prepareForSave();
+        rerunChartScriptJob.cancel();
         runChartScript();
     }
 
-    public void setAutoUpdateEnabled(boolean enabled) {
-        toggleAutoUpdateAction.setChecked(enabled);
-        chartUpdater.setAutoUpdateChart(enabled);
+    public boolean isAutoUpdateChart() {
+        return autoUpdateChart;
+    }
+
+    public void setAutoUpdateChart(boolean autoUpdateChart) {
+        toggleAutoUpdateAction.setChecked(autoUpdateChart);
+        if (this.autoUpdateChart != autoUpdateChart) {
+            this.autoUpdateChart = autoUpdateChart;
+            if (autoUpdateChart)
+                rerunChartScriptJob.runNow();
+            else
+                rerunChartScriptJob.cancel();
+        }
     }
 
     @Override
     public void saveState(IMemento memento) {
         super.saveState(memento);
-        memento.putBoolean("autoupdate", chartUpdater.isAutoUpdateChart());
+        memento.putBoolean("autoupdate", isAutoUpdateChart());
         memento.putBoolean("sourcevisible", isSourceShown());
         int[] weights = sashForm.getWeights();
         memento.putInteger("sashweight_left", weights[0]);
@@ -731,7 +781,7 @@ public class ChartScriptEditor extends PyEdit {
     public void restoreState(IMemento memento) {
         super.restoreState(memento);
 
-        setAutoUpdateEnabled(memento.getBoolean("autoupdate"));
+        setAutoUpdateChart(memento.getBoolean("autoupdate"));
         setShowSource(memento.getBoolean("sourcevisible"));
 
         int[] weights = new int[2];

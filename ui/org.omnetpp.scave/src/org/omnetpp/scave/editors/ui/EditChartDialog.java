@@ -175,7 +175,6 @@ public class EditChartDialog extends TitleAreaDialog {
         FormEditorPage editorPage = editor.getEditorPage(chart);
         if (editorPage instanceof ChartPage)
             ((ChartPage)editorPage).chartScriptEditor.refreshChart();
-
     }
 
 }

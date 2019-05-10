@@ -108,7 +108,6 @@ import org.omnetpp.scave.AnalysisSaver;
 import org.omnetpp.scave.LegacyAnalysisLoader;
 import org.omnetpp.scave.Markers;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.actions.SaveTempChartAction;
 import org.omnetpp.scave.charting.ChartViewer;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
 import org.omnetpp.scave.editors.ui.ChartPage;
@@ -714,9 +713,15 @@ public class ScaveEditor extends MultiPageEditorPartExt
     }
 
     public FormEditorPage getEditorPage(int pageIndex) {
-        Control page = getControl(pageIndex);
-        if (page instanceof FormEditorPage)
-            return (FormEditorPage) page;
+        Control control = getControl(pageIndex);
+        if (control instanceof FormEditorPage)
+            return (FormEditorPage)control;
+        else if (control instanceof Composite) {
+            Composite composite = (Composite)control;
+            Control[] children = composite.getChildren();
+            if (children.length > 0 && children[0] instanceof FormEditorPage)
+                return (FormEditorPage)children[0];
+        }
         return null;
     }
 
@@ -912,7 +917,16 @@ public class ScaveEditor extends MultiPageEditorPartExt
      * Returns the page displaying {@code item}.
      */
     public FormEditorPage getEditorPage(AnalysisItem item) {
-        return (FormEditorPage) closablePages.get(item);
+        Control control = closablePages.get(item);
+        if (control instanceof FormEditorPage)
+            return (FormEditorPage)control;
+        else if (control instanceof Composite) {
+            Composite composite = (Composite)control;
+            Control[] children = composite.getChildren();
+            if (children.length > 0 && children[0] instanceof FormEditorPage)
+                return (FormEditorPage)children[0];
+        }
+        return null;
     }
 
     /**
@@ -1559,9 +1573,9 @@ public class ScaveEditor extends MultiPageEditorPartExt
      */
     public void doSave(IProgressMonitor progressMonitor) {
         for (int i = 0; i < getPageCount(); ++i) {
-            Composite page = (Composite)getControl(i);
-            if (page.getChildren()[0] instanceof ChartPage)
-                ((ChartPage)page.getChildren()[0]).prepareForSave();
+            FormEditorPage editorPage = getEditorPage(i);
+            if (editorPage instanceof ChartPage)
+                ((ChartPage)editorPage).prepareForSave();
         }
 
         IFileEditorInput modelFile = (IFileEditorInput) getEditorInput();
