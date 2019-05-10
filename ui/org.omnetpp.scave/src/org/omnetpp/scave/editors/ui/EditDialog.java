@@ -24,11 +24,9 @@ import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.forms.ChartEditForm;
-import org.omnetpp.scave.editors.forms.IScaveObjectEditForm;
-import org.omnetpp.scave.editors.forms.ScaveObjectEditFormFactory;
-import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.model.ModelObject;
+import org.omnetpp.scave.editors.forms.BaseScaveObjectEditForm;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.commands.AddChartPropertyCommand;
 import org.omnetpp.scave.model.commands.CompoundCommand;
@@ -49,7 +47,7 @@ public class EditDialog extends TitleAreaDialog {
 
     private ScaveEditor editor;
     private ModelObject object;
-    private IScaveObjectEditForm form;
+    private ChartEditForm form;
     private Object[] values;
 
 
@@ -68,10 +66,10 @@ public class EditDialog extends TitleAreaDialog {
         setShellStyle(getShellStyle() | SWT.RESIZE);
         this.editor = editor;
         this.object = object;
-        this.form = createForm(object, editor.getResultFileManager(), formParameters);
+        this.form = new ChartEditForm((Chart)object, formParameters, editor.getResultFileManager());
 
-        this.form.addChangeListener(new IScaveObjectEditForm.Listener() {
-            public void editFormChanged(IScaveObjectEditForm form) {
+        this.form.addChangeListener(new BaseScaveObjectEditForm.Listener() {
+            public void editFormChanged(BaseScaveObjectEditForm form) {
                 updateButtonsAndErrorMessage();
             }});
     }
@@ -168,7 +166,7 @@ public class EditDialog extends TitleAreaDialog {
         if (form instanceof ChartEditForm) {
             Chart chart = (Chart)object;
 
-            ChartEditForm chartForm = (ChartEditForm)form;
+            ChartEditForm chartForm = form;
             Map<String, String> props = chartForm.collectProperties();
 
             for (String k : props.keySet()) {
@@ -195,9 +193,11 @@ public class EditDialog extends TitleAreaDialog {
         }
 
         editor.executeCommand(command);
+
+        FormEditorPage editorPage = editor.getEditorPage((Chart)object);
+        if (editorPage instanceof ChartPage)
+            ((ChartPage)editorPage).chartScriptEditor.refreshChart();
+
     }
 
-    private static IScaveObjectEditForm createForm(ModelObject object, ResultFileManager manager, Map<String,Object> formParameters) {
-        return ScaveObjectEditFormFactory.instance().createForm(object, formParameters, manager);
-    }
 }

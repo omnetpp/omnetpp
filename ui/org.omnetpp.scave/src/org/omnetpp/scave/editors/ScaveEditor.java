@@ -911,7 +911,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
     /**
      * Returns the page displaying {@code item}.
      */
-    public FormEditorPage getClosableEditorPage(AnalysisItem item) {
+    public FormEditorPage getEditorPage(AnalysisItem item) {
         return (FormEditorPage) closablePages.get(item);
     }
 

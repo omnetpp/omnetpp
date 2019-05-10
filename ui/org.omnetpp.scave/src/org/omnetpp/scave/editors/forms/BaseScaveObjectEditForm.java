@@ -13,7 +13,16 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  *
  * @author tomi
  */
-abstract class BaseScaveObjectEditForm implements IScaveObjectEditForm {
+public abstract class BaseScaveObjectEditForm {
+
+    public static final String PARAM_SELECTED_OBJECT = "SelectedObject";
+
+    /**
+     * Interface to receive change notifications.
+     */
+    public interface Listener {
+        void editFormChanged(BaseScaveObjectEditForm form);
+    }
 
     protected ModelObject object; // the edited or created object
     private ListenerList listeners = new ListenerList();

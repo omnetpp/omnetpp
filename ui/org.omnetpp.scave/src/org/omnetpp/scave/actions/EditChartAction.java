@@ -7,7 +7,7 @@
 
 package org.omnetpp.scave.actions;
 
-import static org.omnetpp.scave.editors.forms.IScaveObjectEditForm.PARAM_SELECTED_OBJECT;
+import static org.omnetpp.scave.editors.forms.BaseScaveObjectEditForm.PARAM_SELECTED_OBJECT;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,23 +17,23 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.editors.forms.ScaveObjectEditFormFactory;
 import org.omnetpp.scave.editors.ui.EditDialog;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ModelObject;
 
 /**
- * Opens an edit dialog for the selected dataset, chart, chart sheet, etc.
+ * Opens an edit dialog for the selected chart
  */
-public class EditAction extends AbstractScaveAction {
+public class EditChartAction extends AbstractScaveAction {
     private Map<String,Object> formParameters = null;
 
     /**
      * Creates the action with an default title and icon, and without parameters.
      */
-    public EditAction() {
+    public EditChartAction() {
         setText("Edit properties");
-        setToolTipText("Edit Selected Item");
+        setToolTipText("Edit Chart");
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_PROPERTIES));
     }
 
@@ -42,9 +42,9 @@ public class EditAction extends AbstractScaveAction {
      * with a specific page selected, use the the following parameter:
      * formParameters.put(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_MAIN);
      */
-    public EditAction(String text, Map<String,Object> formParameters) {
+    public EditChartAction(String text, Map<String,Object> formParameters) {
         setText(text);
-        setToolTipText("Edit the properties of the selected item");
+        setToolTipText("Edit the properties of the selected chart");
         this.formParameters = formParameters;
     }
 
@@ -73,7 +73,7 @@ public class EditAction extends AbstractScaveAction {
     @Override
     public boolean isApplicable(final ScaveEditor editor, final IStructuredSelection selection) {
         ModelObject editedObject = getEditedObject(editor, selection);
-        return editedObject != null && ScaveObjectEditFormFactory.instance().canCreateForm(editedObject);
+        return editedObject instanceof Chart;
     }
 
     private ModelObject getEditedObject(ScaveEditor editor, IStructuredSelection selection) {

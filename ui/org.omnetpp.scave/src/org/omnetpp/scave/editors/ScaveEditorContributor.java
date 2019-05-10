@@ -50,7 +50,7 @@ import org.omnetpp.scave.actions.CopyToClipboardAction;
 import org.omnetpp.scave.actions.CreateTempChartAction;
 import org.omnetpp.scave.actions.CreateTempMatplotlibChartAction;
 import org.omnetpp.scave.actions.CutAction;
-import org.omnetpp.scave.actions.EditAction;
+import org.omnetpp.scave.actions.EditChartAction;
 import org.omnetpp.scave.actions.EditInputFileAction;
 import org.omnetpp.scave.actions.ExportChartsAction;
 import org.omnetpp.scave.actions.ExportDataAction;
@@ -109,7 +109,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
 
     // generic actions
     private OpenChartAction openAction;
-    private EditAction editAction;
+    private EditChartAction editAction;
     private EditInputFileAction editInputFileAction;
     private RemoveAction removeAction; // action handler of deleteRetargetAction
     private SelectAllAction selectAllAction;
@@ -177,7 +177,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     @Override
     public void init(IActionBars bars, IWorkbenchPage page) {
         registerAction(page, openAction = new OpenChartAction());
-        registerAction(page, editAction = new EditAction());
+        registerAction(page, editAction = new EditChartAction());
         registerAction(page, editInputFileAction = new EditInputFileAction());
         registerAction(page, selectAllAction = new SelectAllAction());
         registerAction(page, exportChartsAction = new ExportChartsAction());
@@ -227,7 +227,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         return openAction;
     }
 
-    public EditAction getEditAction() {
+    public EditChartAction getEditAction() {
         return editAction;
     }
 

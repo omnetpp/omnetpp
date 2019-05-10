@@ -42,7 +42,7 @@ import org.omnetpp.scave.actions.AddVectorOperationAction;
 import org.omnetpp.scave.actions.ChartMouseModeAction;
 import org.omnetpp.scave.actions.ClosePageAction;
 import org.omnetpp.scave.actions.CopyChartToClipboardAction;
-import org.omnetpp.scave.actions.EditAction;
+import org.omnetpp.scave.actions.EditChartAction;
 import org.omnetpp.scave.actions.ExportToSVGAction;
 import org.omnetpp.scave.actions.RefreshChartAction;
 import org.omnetpp.scave.actions.SaveTempChartAction;
@@ -171,7 +171,7 @@ public class ChartScriptEditor extends PyEdit {
                 formEditor.addSeparatorToToolbar();
 
                 formEditor.addToToolbar(toggleShowSourceAction);
-                formEditor.addToToolbar(new EditAction());
+                formEditor.addToToolbar(new EditChartAction());
 
                 toggleAutoUpdateAction = new ToggleAutoUpdateAction();
                 toggleAutoUpdateAction.setChecked(true);
@@ -351,7 +351,7 @@ public class ChartScriptEditor extends PyEdit {
                     manager.add(new Separator());
 
                     manager.add(toggleShowSourceAction);
-                    manager.add(new EditAction());
+                    manager.add(new EditChartAction());
                     manager.add(new Separator());
 
                     // TODO: buttons to control RLE and halfres interaction? Or maybe only in a
@@ -417,7 +417,7 @@ public class ChartScriptEditor extends PyEdit {
 
                     manager.add(new GotoChartDefinitionAction());
                     manager.add(toggleShowSourceAction);
-                    manager.add(new EditAction());
+                    manager.add(new EditChartAction());
 
                     if (chart.getType() == ChartType.LINE) {
                         manager.add(new Separator());
