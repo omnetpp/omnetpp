@@ -743,7 +743,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
         return null;
     }
 
-    private boolean canCloseChartEditor(ChartScriptEditor editor) {
+    public boolean canCloseChartEditor(ChartScriptEditor editor) {
         editor.prepareForSave();
 
         Chart chart = editor.getChart();

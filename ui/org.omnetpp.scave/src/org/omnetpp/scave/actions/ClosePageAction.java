@@ -10,6 +10,7 @@ package org.omnetpp.scave.actions;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
 
 /**
@@ -29,7 +30,9 @@ public class ClosePageAction extends AbstractScaveAction {
     protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
         int page = scaveEditor.getActivePage();
         scaveEditor.saveState();
-        scaveEditor.removePage(page);
+        ChartScriptEditor editor = scaveEditor.getActiveChartScriptEditor();
+        if (scaveEditor.canCloseChartEditor(editor))
+            scaveEditor.removePage(page);
     }
 
     @Override
