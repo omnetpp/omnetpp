@@ -27,7 +27,6 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  * Creates a temporary chart from the selection on the BrowseDataPage, and opens it.
  */
 public class CreateTempMatplotlibChartAction extends AbstractScaveAction {
-    static int counter = 0;
 
     public CreateTempMatplotlibChartAction() {
         setText("Plot with Matplotlib");
@@ -62,14 +61,12 @@ public class CreateTempMatplotlibChartAction extends AbstractScaveAction {
         String[] filterFields = new String[] { RunAttribute.EXPERIMENT, RunAttribute.MEASUREMENT, RunAttribute.REPLICATION,
                 ResultItemField.MODULE, ResultItemField.NAME };
 
-        String name = "MatplotlibChart" + (++counter);
-
         Chart chart = null;
         switch (type) {
             case HISTOGRAM_LITERAL: chart = ScaveModelUtil.createChartFromTemplate("histogram_mpl"); break;
             case SCALAR_LITERAL: chart = ScaveModelUtil.createChartFromTemplate("barchart_mpl"); break;
             case VECTOR_LITERAL: chart = ScaveModelUtil.createChartFromTemplate("linechart_mpl"); break;
-            case STATISTICS_LITERAL: chart = ScaveModelUtil.createChartFromTemplate("boxwhiskers_mpl"); break;
+            case STATISTICS_LITERAL: chart = ScaveModelUtil.createChartFromTemplate("boxwhiskers"); break;
             default: Assert.isLegal(false, "invalid enum value"); break;
         }
 
@@ -77,7 +74,6 @@ public class CreateTempMatplotlibChartAction extends AbstractScaveAction {
         Property property = new Property("filter", filter);
         chart.addProperty(property);
 
-        chart.setName(name);
         chart.setTemporary(true);
 
         editor.openPage(chart);

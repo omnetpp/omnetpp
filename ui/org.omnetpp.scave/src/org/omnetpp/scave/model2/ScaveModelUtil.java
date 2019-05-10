@@ -100,7 +100,7 @@ public class ScaveModelUtil {
 
         chart.setDialogPages(pages);
 
-        chart.setName("created from template: " + template.getName());
+        chart.setName(template.getName());
         chart.setTemporary(false);
         chart.setIconPath(template.getIconPath());
         return chart;

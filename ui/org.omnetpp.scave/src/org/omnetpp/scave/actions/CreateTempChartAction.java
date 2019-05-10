@@ -10,11 +10,8 @@ package org.omnetpp.scave.actions;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.charting.dataset.VectorDataLoader;
-import org.omnetpp.scave.charting.properties.ChartVisualProperties;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.IDList;
@@ -30,8 +27,6 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  * Creates a temporary chart from the selection on the BrowseDataPage, and opens it.
  */
 public class CreateTempChartAction extends AbstractScaveAction {
-    static int counter = 0;
-
     public CreateTempChartAction() {
         setText("Plot");
         setToolTipText("Plot");
@@ -57,8 +52,6 @@ public class CreateTempChartAction extends AbstractScaveAction {
     }
 
     protected void openChart(ScaveEditor editor, final ResultFileManager manager, final ResultType type, final IDList idList) {
-        String name = "Chart" + (++counter);
-
         String[] filterFields = new String[] { RunAttribute.EXPERIMENT, RunAttribute.MEASUREMENT, RunAttribute.REPLICATION,
                 ResultItemField.MODULE, ResultItemField.NAME };
 
@@ -75,7 +68,6 @@ public class CreateTempChartAction extends AbstractScaveAction {
         Property property = new Property("filter", filter);
         chart.addProperty(property);
 
-        chart.setName(name);
         chart.setTemporary(true);
         editor.openPage(chart);
     }
