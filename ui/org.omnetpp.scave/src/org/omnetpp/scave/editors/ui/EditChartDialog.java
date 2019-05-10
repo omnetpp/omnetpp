@@ -15,7 +15,6 @@ import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
@@ -24,9 +23,7 @@ import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.forms.ChartEditForm;
-import org.omnetpp.scave.editors.forms.BaseScaveObjectEditForm;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.commands.AddChartPropertyCommand;
 import org.omnetpp.scave.model.commands.CompoundCommand;
@@ -35,43 +32,34 @@ import org.omnetpp.scave.model.commands.SetChartNameCommand;
 import org.omnetpp.scave.model.commands.SetChartPropertyCommand;
 
 /**
- * This is the edit dialog for scave model objects.
- *
- * It receives an object and optionally a set of features to be edited
- * (defaults to all editable features).
- * It replies with the changed values.
- *
- * @author tomi
+ * This is the edit dialog for charts.
  */
-public class EditDialog extends TitleAreaDialog {
+public class EditChartDialog extends TitleAreaDialog {
 
     private ScaveEditor editor;
-    private ModelObject object;
+    private Chart chart;
     private ChartEditForm form;
-    private Object[] values;
-
 
     /**
-     * Creates the dialog. The form in the dialog will be chosen based on the object type.
-     * The form can be customized via the formParameters, like which page of the
-     * chart dialog should be displayed by default.
+     * Creates the dialog.
      *
      * @param parentShell    the parent shell
-     * @param object         object to be edited
+     * @param chart          chart to be edited
      * @param editor         the editor
      * @param formParameters key-value pairs understood by the form; may be null
      */
-    public EditDialog(Shell parentShell, ModelObject object, ScaveEditor editor, Map<String,Object> formParameters) {
+    public EditChartDialog(Shell parentShell, Chart chart, ScaveEditor editor) {
         super(parentShell);
         setShellStyle(getShellStyle() | SWT.RESIZE);
         this.editor = editor;
-        this.object = object;
-        this.form = new ChartEditForm((Chart)object, formParameters, editor.getResultFileManager());
+        this.chart = chart;
+        this.form = new ChartEditForm(chart, editor.getResultFileManager());
 
-        this.form.addChangeListener(new BaseScaveObjectEditForm.Listener() {
-            public void editFormChanged(BaseScaveObjectEditForm form) {
-                updateButtonsAndErrorMessage();
-            }});
+        // TODO
+//        this.form.addChangeListener(new BaseScaveObjectEditForm.Listener() {
+//            public void editFormChanged(BaseScaveObjectEditForm form) {
+//                updateButtonsAndErrorMessage();
+//            }});
     }
 
     @Override
@@ -79,14 +67,10 @@ public class EditDialog extends TitleAreaDialog {
         return UIUtils.getDialogSettings(ScavePlugin.getDefault(), getClass().getName());
     }
 
-    public Object getValue(int index) {
-        return values[index];
-    }
-
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-        newShell.setText("Edit " + object.toString());
+        newShell.setText("Edit " + chart.toString());
     }
 
     @Override
@@ -111,13 +95,11 @@ public class EditDialog extends TitleAreaDialog {
         Composite panel = new Composite(composite, SWT.NONE);
         panel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-        setTitle(form.getTitle());
-        setMessage(form.getDescription());
+        setTitle("Edit Chart");
+
+        // setMessage(chart.getDescription()); // TODO
+
         form.populatePanel(panel);
-        // TODO
-//        features = form.getFeatures();
-//        for (int i = 0; i < features.length; ++i)
-//            form.setValue(features[i], object.eGet(features[i]));
         return composite;
     }
 
@@ -131,17 +113,18 @@ public class EditDialog extends TitleAreaDialog {
         applyChanges();
     }
 
-    protected void updateButtonsAndErrorMessage() {
-        IStatus status = form.validate();
-        boolean enabled = !status.matches(IStatus.ERROR);
-        Button okButton = getButton(IDialogConstants.OK_ID);
-        if (okButton != null)
-            okButton.setEnabled(enabled);
-        Button applyButton = getButton(IDialogConstants.APPLY_ID);
-        if (applyButton != null)
-            applyButton.setEnabled(enabled);
-        setErrorMessage(status);
-    }
+    // TODO
+//    protected void updateButtonsAndErrorMessage() {
+//        IStatus status = form.validate();
+//        boolean enabled = !status.matches(IStatus.ERROR);
+//        Button okButton = getButton(IDialogConstants.OK_ID);
+//        if (okButton != null)
+//            okButton.setEnabled(enabled);
+//        Button applyButton = getButton(IDialogConstants.APPLY_ID);
+//        if (applyButton != null)
+//            applyButton.setEnabled(enabled);
+//        setErrorMessage(status);
+//    }
 
     private void setErrorMessage(IStatus status) {
         String message = null;
@@ -163,38 +146,34 @@ public class EditDialog extends TitleAreaDialog {
     private void applyChanges() {
 
         CompoundCommand command = new CompoundCommand("Edit Chart Properties");
-        if (form instanceof ChartEditForm) {
-            Chart chart = (Chart)object;
 
-            ChartEditForm chartForm = form;
-            Map<String, String> props = chartForm.collectProperties();
+        Map<String, String> props = form.collectProperties();
 
-            for (String k : props.keySet()) {
-                if (k.equals(ChartEditForm.CHART_NAME_PROPERTY_KEY))
-                    command.append(new SetChartNameCommand(chart, props.get(ChartEditForm.CHART_NAME_PROPERTY_KEY)));
+        for (String k : props.keySet()) {
+            if (k.equals(ChartEditForm.CHART_NAME_PROPERTY_KEY))
+                command.append(new SetChartNameCommand(chart, props.get(ChartEditForm.CHART_NAME_PROPERTY_KEY)));
+            else {
+                Property prop = chart.lookupProperty(k);
+                String newValue = props.get(k);
+
+                if (prop == null) {
+                    if (newValue != null)
+                        command.append(new AddChartPropertyCommand(chart, new Property(k, newValue)));
+                }
                 else {
-                    Property prop = chart.lookupProperty(k);
-                    String newValue = props.get(k);
-
-                    if (prop == null) {
-                        if (newValue != null)
-                            command.append(new AddChartPropertyCommand(chart, new Property(k, newValue)));
+                    if (newValue != null) {
+                        if (!prop.getValue().equals(newValue))
+                            command.append(new SetChartPropertyCommand(prop, newValue));
                     }
-                    else {
-                        if (newValue != null) {
-                            if (!prop.getValue().equals(newValue))
-                                command.append(new SetChartPropertyCommand(prop, newValue));
-                        }
-                        else
-                            command.append(new RemoveChartPropertyCommand(chart, prop));
-                    }
+                    else
+                        command.append(new RemoveChartPropertyCommand(chart, prop));
                 }
             }
         }
 
         editor.executeCommand(command);
 
-        FormEditorPage editorPage = editor.getEditorPage((Chart)object);
+        FormEditorPage editorPage = editor.getEditorPage(chart);
         if (editorPage instanceof ChartPage)
             ((ChartPage)editorPage).chartScriptEditor.refreshChart();
 

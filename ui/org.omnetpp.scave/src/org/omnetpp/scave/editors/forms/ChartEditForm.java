@@ -51,7 +51,6 @@ import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Chart.DialogPage;
 import org.omnetpp.scave.model.Property;
-import org.omnetpp.scave.model2.ChartLine;
 
 import com.swtworkbench.community.xswt.XSWT;
 
@@ -65,7 +64,7 @@ import com.swtworkbench.community.xswt.XSWT;
  */
 // TODO use validator for font and number fields
 // TODO: split into super class containing only "Main" (for Matplotlib), and "NativeWidgetChartEditForm" to add the rest
-public class ChartEditForm extends BaseScaveObjectEditForm {
+public class ChartEditForm {
 
     public static final String PROP_DEFAULT_TAB = "default-page";
 
@@ -74,7 +73,6 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
      * The edited chart.
      */
     protected Chart chart;
-    protected Map<String, Object> formParameters;
     protected ResultFileManager manager;
     protected Map<String,Control> xswtWidgetMap = new HashMap<>();
 
@@ -87,10 +85,8 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
 
     protected static final String USER_DATA_KEY = "ChartEditForm";
 
-    public ChartEditForm(Chart chart, Map<String,Object> formParameters, ResultFileManager manager) {
-        super(chart);
+    public ChartEditForm(Chart chart, ResultFileManager manager) {
         this.chart = chart;
-        this.formParameters = formParameters;
         this.manager = manager;
     }
 
@@ -108,15 +104,16 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
         validatePropertyNames();
 
         // switch to the requested page
-        String defaultPage = formParameters==null ? null : (String) formParameters.get(PROP_DEFAULT_TAB);
-        if (defaultPage == null)
-            defaultPage = getDialogSettings().get(PROP_DEFAULT_TAB);
-        if (defaultPage != null)
-            for (TabItem tabItem : tabfolder.getItems())
-                if (tabItem.getText().equals(defaultPage)) {
-                    tabfolder.setSelection(tabItem);
-                    break;
-                }
+        // TODO
+//        String defaultPage = formParameters==null ? null : (String) formParameters.get(PROP_DEFAULT_TAB);
+//        if (defaultPage == null)
+//            defaultPage = getDialogSettings().get(PROP_DEFAULT_TAB);
+//        if (defaultPage != null)
+//            for (TabItem tabItem : tabfolder.getItems())
+//                if (tabItem.getText().equals(defaultPage)) {
+//                    tabfolder.setSelection(tabItem);
+//                    break;
+//                }
 
         // save current tab as dialog setting (the code is here because there's no convenient function that is invoked on dialog close (???))
         tabfolder.addSelectionListener(new SelectionAdapter() {
@@ -176,44 +173,48 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
     List<String> getComboContents(String contentString) {
         List<String> result = new ArrayList<String>();
 
-        for (String part : contentString.split(",")) {
-            switch (part) {
-            case "scalarnames":
-                for (String name : manager.getUniqueNames(manager.getAllScalars(false, false)).keys().toArray())
-                    result.add(name);
-                break;
-            case "vectornames":
-                for (String name : manager.getUniqueNames(manager.getAllVectors()).keys().toArray())
-                    result.add(name);
-                break;
-            case "histogramnames":
-                for (String name : manager.getUniqueNames(manager.getAllHistograms()).keys().toArray())
-                    result.add(name);
-                break;
-            case "statisticnames":
-                for (String name : manager.getUniqueNames(manager.getAllStatistics()).keys().toArray())
-                    result.add(name);
-                break;
-            case "itervarnames":
-                Set<String> itervars = new HashSet<String>();
+        ResultFileManager.callWithReadLock(manager, () -> {
 
-                for (Run run : manager.getRuns().toArray())
-                    for (String itervar : run.getIterationVariables().keys().toArray())
-                        itervars.add(itervar);
+            for (String part : contentString.split(",")) {
+                switch (part) {
+                case "scalarnames":
+                    for (String name : manager.getUniqueNames(manager.getAllScalars(false, false)).keys().toArray())
+                        result.add(name);
+                    break;
+                case "vectornames":
+                    for (String name : manager.getUniqueNames(manager.getAllVectors()).keys().toArray())
+                        result.add(name);
+                    break;
+                case "histogramnames":
+                    for (String name : manager.getUniqueNames(manager.getAllHistograms()).keys().toArray())
+                        result.add(name);
+                    break;
+                case "statisticnames":
+                    for (String name : manager.getUniqueNames(manager.getAllStatistics()).keys().toArray())
+                        result.add(name);
+                    break;
+                case "itervarnames":
+                    Set<String> itervars = new HashSet<String>();
 
-                result.addAll(itervars);
-                break;
-            case "runattrnames":
-                Set<String> runattrs = new HashSet<String>();
+                    for (Run run : manager.getRuns().toArray())
+                        for (String itervar : run.getIterationVariables().keys().toArray())
+                            itervars.add(itervar);
 
-                for (Run run : manager.getRuns().toArray())
-                    for (String runattr : run.getAttributes().keys().toArray())
-                        runattrs.add(runattr);
+                    result.addAll(itervars);
+                    break;
+                case "runattrnames":
+                    Set<String> runattrs = new HashSet<String>();
 
-                result.addAll(runattrs);
-                break;
+                    for (Run run : manager.getRuns().toArray())
+                        for (String runattr : run.getAttributes().keys().toArray())
+                            runattrs.add(runattr);
+
+                    result.addAll(runattrs);
+                    break;
+                }
             }
-        }
+            return null; // unused
+        });
 
         return result;
     }

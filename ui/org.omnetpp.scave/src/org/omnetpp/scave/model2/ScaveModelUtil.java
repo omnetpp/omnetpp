@@ -25,27 +25,23 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.properties.ChartVisualProperties;
 import org.omnetpp.scave.charttemplates.ChartTemplate;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
-import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ResultItemField;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunList;
-import org.omnetpp.scave.engine.ScalarResult;
-import org.omnetpp.scave.engine.StatisticsResult;
 import org.omnetpp.scave.engine.StringVector;
-import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.model.Analysis;
-import org.omnetpp.scave.model.ModelChangeEvent;
 import org.omnetpp.scave.model.AnalysisItem;
-import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Chart.ChartType;
 import org.omnetpp.scave.model.Chart.DialogPage;
 import org.omnetpp.scave.model.Charts;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
+import org.omnetpp.scave.model.ModelChangeEvent;
+import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.commands.AddChartPropertyCommand;
@@ -368,49 +364,6 @@ public class ScaveModelUtil {
             Assert.isTrue(false, "Unknown internal ResultType:"+internalResultType);
             return null;
         }
-    }
-
-    public static ResultType getTypeOf(ResultItem item) {
-        if (item instanceof ScalarResult)
-            return ResultType.SCALAR_LITERAL;
-        else if (item instanceof VectorResult)
-            return ResultType.VECTOR_LITERAL;
-        else if (item instanceof HistogramResult) // must precede StatisticsResult test
-            return ResultType.HISTOGRAM_LITERAL;
-        else if (item instanceof StatisticsResult)
-            return ResultType.STATISTICS_LITERAL;
-        else {
-            Assert.isTrue(false, "Unknown result item: "+item);
-            return null;
-        }
-    }
-
-    public static String getDescription(ModelObject c) {
-        if (c instanceof Analysis)
-            return "";
-        if (c instanceof Inputs)
-            return "Contains the input files of the analysis.";
-        if (c instanceof InputFile)
-            return "Specifies a result file (output vector or scalar file), or a sets of files using wildcards, to be used as input for the analysis.";
-        if (c instanceof Chart) {
-            Chart chart = (Chart)c;
-            switch (chart.getType()) {
-            case BAR:
-                return "A BarChart object creates a bar chart from (a subset of the) the scalar results in the dataset.";
-            case HISTOGRAM:
-                return "A HistogramChart object creates a histogram chart from (a subset of the) the histogram results in the dataset.";
-            case LINE:
-                return "A LineChart object creates a line chart from (a subset of the) the vector results in the dataset.";
-            case MATPLOTLIB:
-                return "A MatplotLibChart object is very cool TODO.";
-            default:
-                break;
-
-            }
-        }
-        if (c instanceof Property)
-            return "";
-        return null;
     }
 
 }
