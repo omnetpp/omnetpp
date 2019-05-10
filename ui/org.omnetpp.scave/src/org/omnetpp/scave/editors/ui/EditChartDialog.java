@@ -22,7 +22,6 @@ import org.omnetpp.common.util.StatusUtil;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.editors.forms.ChartEditForm;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.commands.AddChartPropertyCommand;

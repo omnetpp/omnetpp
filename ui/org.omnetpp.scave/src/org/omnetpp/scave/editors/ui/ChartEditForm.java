@@ -5,7 +5,7 @@
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-package org.omnetpp.scave.editors.forms;
+package org.omnetpp.scave.editors.ui;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
@@ -22,7 +22,6 @@ import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -54,34 +53,14 @@ import org.omnetpp.scave.model.Property;
 
 import com.swtworkbench.community.xswt.XSWT;
 
-/**
- * Edit form of charts.
- *
- * The properties of the chart are organized into groups
- * each group is displayed in a tab of the main tab folder.
- *
- * @author tomi
- */
-// TODO use validator for font and number fields
-// TODO: split into super class containing only "Main" (for Matplotlib), and "NativeWidgetChartEditForm" to add the rest
 public class ChartEditForm {
 
     public static final String PROP_DEFAULT_TAB = "default-page";
-
     public static final String CHART_NAME_PROPERTY_KEY = "chart_name";
-    /**
-     * The edited chart.
-     */
+
     protected Chart chart;
     protected ResultFileManager manager;
     protected Map<String,Control> xswtWidgetMap = new HashMap<>();
-
-    /**
-     * Number of visible items in combo boxes.
-     */
-    protected static final int VISIBLE_ITEM_COUNT = 15;
-
-    protected static final String NO_CHANGE = "(no change)";
 
     protected static final String USER_DATA_KEY = "ChartEditForm";
 
@@ -341,19 +320,6 @@ public class ChartEditForm {
             if (values[i].toString().equals(text))
                 return values[i];
         return null;
-    }
-
-    /**
-     * Sets the values of the controls from the given <code>props</code>.
-     * @param props
-     */
-    protected void setProperties(ChartVisualProperties props) {
-        // TODO
-    }
-
-    private static String asString(FontData fontData) {
-        String str = Converter.fontdataToString(fontData);
-        return str != null ? str : "";
     }
 
     /**

@@ -7,8 +7,6 @@
 
 package org.omnetpp.scave.charting.properties;
 
-import java.util.List;
-
 import org.omnetpp.common.properties.Property;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.commands.CommandStack;
@@ -49,11 +47,7 @@ public class HistogramChartVisualProperties extends ChartVisualProperties
     }
 
     public HistogramChartVisualProperties(Chart chart, CommandStack commandStack) {
-        this(chart, chart.getProperties(), commandStack);
-    }
-
-    public HistogramChartVisualProperties(Chart chart, List<org.omnetpp.scave.model.Property> properties, CommandStack commandStack) {
-        super(chart, properties, commandStack);
+        super(chart, commandStack);
     }
 
     @Property(category="Plot",id=PROP_HIST_BAR,description="Histogram drawing method.")

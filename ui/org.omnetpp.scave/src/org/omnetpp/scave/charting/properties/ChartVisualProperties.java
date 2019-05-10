@@ -7,8 +7,6 @@
 
 package org.omnetpp.scave.charting.properties;
 
-import java.util.List;
-
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.RGB;
@@ -102,7 +100,6 @@ public class ChartVisualProperties extends PropertySource {
     }
 
     protected Chart chart;               // the chart what the properties belongs to
-    protected List<Property> properties; // the chart properties, might not be contained by the chart yet
     protected CommandStack commandStack; // result file manager to access chart content (for line properties)
 
     public ChartVisualProperties(Chart chart) {
@@ -110,17 +107,8 @@ public class ChartVisualProperties extends PropertySource {
     }
 
     public ChartVisualProperties(Chart chart, CommandStack commandStack) {
-        this(chart, chart.getProperties(), commandStack);
-    }
-
-    public ChartVisualProperties(Chart chart, List<Property> properties, CommandStack commandStack) {
-        this.properties = properties;
         this.chart = chart;
         this.commandStack = commandStack;
-    }
-
-    public List<Property> getProperties() {
-        return properties;
     }
 
     /*======================================================================
@@ -252,10 +240,7 @@ public class ChartVisualProperties extends PropertySource {
      *---------------------------------------------------------------*/
 
     public Property getProperty(String propertyName) {
-        for (Property property : properties)
-            if (property.getName().equals(propertyName))
-                return property;
-        return null;
+        return chart.lookupProperty(propertyName);
     }
 
     public String getStringProperty(String propertyName) {

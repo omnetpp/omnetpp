@@ -7,10 +7,7 @@
 
 package org.omnetpp.scave.charting.properties;
 
-import java.util.List;
-
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.commands.CommandStack;
 
 public class LineChartVisualProperties extends ChartVisualProperties
@@ -28,11 +25,7 @@ public class LineChartVisualProperties extends ChartVisualProperties
     }
 
     public LineChartVisualProperties(Chart chart, CommandStack commandStack) {
-        this(chart, chart.getProperties(), commandStack);
-    }
-
-    public LineChartVisualProperties(Chart chart, List<Property> properties, CommandStack commandStack) {
-        super(chart, properties, commandStack);
+        super(chart, commandStack);
     }
 
     /*======================================================================

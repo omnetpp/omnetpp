@@ -7,10 +7,7 @@
 
 package org.omnetpp.scave.charting.properties;
 
-import java.util.List;
-
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.commands.CommandStack;
 
 public class BarChartVisualProperties extends ChartVisualProperties
@@ -36,11 +33,7 @@ public class BarChartVisualProperties extends ChartVisualProperties
     }
 
     public BarChartVisualProperties(Chart chart, CommandStack commandStack) {
-        this(chart, chart.getProperties(), commandStack);
-    }
-
-    public BarChartVisualProperties(Chart chart, List<Property> properties, CommandStack commandStack) {
-        super(chart, properties, commandStack);
+        super(chart, commandStack);
     }
 
     /*======================================================================
