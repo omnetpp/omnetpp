@@ -589,6 +589,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
         tabfolder.addCTabFolder2Listener(new CTabFolder2Adapter() {
             @Override
             public void close(CTabFolderEvent event) {
+                saveState();
                 ChartScriptEditor editor = (ChartScriptEditor)event.item.getData();
                 event.doit = canCloseChartEditor(editor);
             }
@@ -905,8 +906,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
             if (control.equals(entry.getValue()))
                 entries.remove();
         }
-
-        saveState();
     }
 
     /**
