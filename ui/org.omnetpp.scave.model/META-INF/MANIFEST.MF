@@ -12,7 +12,5 @@ Bundle-Localization: plugin
 Export-Package: org.omnetpp.scave.model,
  org.omnetpp.scave.model.commands
 Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.core.resources;visibility:=reexport,
- org.eclipse.ui.ide;visibility:=reexport,
- org.eclipse.ui.workbench;bundle-version="3.110.1"
-Import-Package: org.apache.commons.collections
+ org.eclipse.ui.ide,
+ org.eclipse.ui.workbench

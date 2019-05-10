@@ -39,10 +39,9 @@ Require-Bundle: org.eclipse.ui,
  org.python.pydev.parser,
  org.python.pydev.refactoring,
  org.python.pydev.shared_interactive_console,
- org.eclipse.emf.common
+ org.eclipse.ui.console
 Export-Package: org.omnetpp.scave,
  org.omnetpp.scave.charting,
  org.omnetpp.scave.model2,
  org.omnetpp.scave.wizard
 Eclipse-BuddyPolicy: global
-Import-Package: org.eclipse.ui.console
