@@ -13,6 +13,10 @@ public class ChartPage extends FormEditorPage {
         this.chartScriptEditor = chartScriptEditor;
     }
 
+    public ChartScriptEditor getChartScriptEditor() {
+        return chartScriptEditor;
+    }
+
     public void prepareForSave() {
         chartScriptEditor.prepareForSave();
     }

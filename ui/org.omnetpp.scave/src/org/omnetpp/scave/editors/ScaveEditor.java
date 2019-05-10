@@ -759,7 +759,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
         if (chart.isTemporary()) {
             int result = MessageDialog.open(MessageDialog.QUESTION_WITH_CANCEL, Display.getCurrent().getActiveShell(),
                     "Keep Temporary Chart?",
-                    "Keep chart as part of the analysis? If you choose 'No', your edits will be lost.",
+                    "Keep chart '" + chart.getName() + "' as part of the analysis? If you choose 'No', your edits will be lost.",
                     SWT.NONE, "Yes", "No", "Cancel");
 
             switch (result) {
@@ -1565,6 +1565,18 @@ public class ScaveEditor extends MultiPageEditorPartExt
      * stack.
      */
     public boolean isDirty() {
+        for (int i = 0; i < getPageCount(); ++i) {
+            FormEditorPage editorPage = getEditorPage(i);
+            if (editorPage instanceof ChartPage) {
+                ChartPage chartPage = (ChartPage)editorPage;
+                chartPage.prepareForSave();
+
+                Chart chart = chartPage.getChartScriptEditor().getChart();
+                if (chart.isTemporary() && commandStack.wasObjectAffected(chart))
+                    return true;
+            }
+        }
+
         return commandStack.isSaveNeeded();
     }
 
@@ -1574,8 +1586,11 @@ public class ScaveEditor extends MultiPageEditorPartExt
     public void doSave(IProgressMonitor progressMonitor) {
         for (int i = 0; i < getPageCount(); ++i) {
             FormEditorPage editorPage = getEditorPage(i);
-            if (editorPage instanceof ChartPage)
-                ((ChartPage)editorPage).prepareForSave();
+            if (editorPage instanceof ChartPage) {
+                ChartPage chartPage = (ChartPage)editorPage;
+                chartPage.prepareForSave();
+                canCloseChartEditor(chartPage.getChartScriptEditor());
+            }
         }
 
         IFileEditorInput modelFile = (IFileEditorInput) getEditorInput();
