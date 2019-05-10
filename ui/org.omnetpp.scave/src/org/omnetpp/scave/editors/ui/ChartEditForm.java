@@ -235,7 +235,7 @@ public class ChartEditForm {
                 else if (propertySource != null) {
                     Object defaultPropertyValue = ChartDefaults.getDefaultPropertyValue(propId);
                     if (defaultPropertyValue != null)
-                        value = defaultPropertyValue.toString();
+                        value = Converter.objectToString(defaultPropertyValue);
                 }
             }
 
