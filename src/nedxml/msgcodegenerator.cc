@@ -263,11 +263,11 @@ void MsgCodeGenerator::generateProlog(const std::string& msgFileName, const std:
 
     H << "//\n// Generated file, do not edit! Created by " PROGRAM " " << (OMNETPP_VERSION / 0x100) << "." << (OMNETPP_VERSION % 0x100)
                   << " from " << msgFileName << ".\n//\n\n";
+    H << "#ifndef " << headerGuard << "\n";
+    H << "#define " << headerGuard << "\n\n";
     H << "#if defined(__clang__)\n";
     H << "#  pragma clang diagnostic ignored \"-Wreserved-id-macro\"\n";
     H << "#endif\n";
-    H << "#ifndef " << headerGuard << "\n";
-    H << "#define " << headerGuard << "\n\n";
     H << "#include <omnetpp.h>\n";
     H << "\n";
     H << "// " PROGRAM " version check\n";

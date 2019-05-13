@@ -15,15 +15,15 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#ifndef __OMNETPP_H
+#define __OMNETPP_H
+
 // make this a system header and supress warnings
 #if defined(__clang__)
 #pragma clang system_header
 #elif defined(__GNUC__)
 #pragma GCC system_header
 #endif
-
-#ifndef __OMNETPP_H
-#define __OMNETPP_H
 
 #include "omnetpp/carray.h"
 #include "omnetpp/cboolparimpl.h"
