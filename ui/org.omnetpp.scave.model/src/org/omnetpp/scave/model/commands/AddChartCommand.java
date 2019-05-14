@@ -31,7 +31,6 @@ public class AddChartCommand implements ICommand {
     @Override
     public void undo() {
         analysis.getCharts().removeChart(chart);
-
     }
 
     @Override

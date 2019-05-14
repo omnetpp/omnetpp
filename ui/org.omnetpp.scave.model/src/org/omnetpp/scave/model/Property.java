@@ -31,4 +31,16 @@ public class Property extends ModelObject {
     protected Property clone() throws CloneNotSupportedException {
         return (Property)super.clone();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof Property))
+            return false;
+
+        Property other = (Property)obj;
+
+        return name.equals(other.name) && value.equals(other.value);
+    }
 }

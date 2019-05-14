@@ -2,9 +2,8 @@
 package org.omnetpp.scave.model;
 
 import java.util.ArrayList;
-import java.util.List;
-
 import java.util.Collections;
+import java.util.List;
 
 public class Chart extends AnalysisItem {
 
@@ -37,6 +36,7 @@ public class Chart extends AnalysisItem {
     protected String script;
     protected List<Property> properties = new ArrayList<Property>();
     protected boolean temporary;
+
     protected String templateID;
     protected List<DialogPage> dialogPages = new ArrayList<>();
     protected ChartType type;
@@ -52,6 +52,25 @@ public class Chart extends AnalysisItem {
     public Chart(ChartType type, String name) {
         this.type = type;
         this.name = name;
+    }
+
+    public void copyFrom(Chart other) {
+        try {
+            name = other.name;
+            script = other.script;
+            temporary = other.temporary;
+
+            properties = new ArrayList<Property>(other.properties.size());
+
+            for (int i = 0; i < other.properties.size(); ++i)
+                    properties.add(other.properties.get(i).clone());
+
+            // other fields are copied from the template upon creation and are never changed
+            notifyListeners();
+
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getScript() {
@@ -141,7 +160,6 @@ public class Chart extends AnalysisItem {
         notifyListeners();
     }
 
-
     @Override
     protected Chart clone() throws CloneNotSupportedException {
         Chart clone = (Chart) super.clone();
@@ -157,5 +175,22 @@ public class Chart extends AnalysisItem {
             clone.dialogPages.add(new Chart.DialogPage(dialogPages.get(i)));
 
         return clone;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof Chart))
+            return false;
+        Chart other = (Chart)obj;
+
+        if (!name.equals(other.name) || !script.equals(other.script) || !temporary == other.temporary)
+            return false;
+
+        if (properties.size() != other.properties.size())
+            return false;
+
+        return properties.equals(other.properties); // TODO refine, allow different ordering
     }
 }

@@ -31,8 +31,10 @@ public class ClosePageAction extends AbstractScaveAction {
         int page = scaveEditor.getActivePage();
         scaveEditor.saveState();
         ChartScriptEditor editor = scaveEditor.getActiveChartScriptEditor();
-        if (scaveEditor.canCloseChartEditor(editor))
+        if (scaveEditor.askToKeepEditedTemporaryChart(editor)) {
+            scaveEditor.applyChartEdits(editor);
             scaveEditor.removePage(page);
+        }
     }
 
     @Override

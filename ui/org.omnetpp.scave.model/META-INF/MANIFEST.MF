@@ -13,4 +13,5 @@ Export-Package: org.omnetpp.scave.model,
  org.omnetpp.scave.model.commands
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.ide,
- org.eclipse.ui.workbench
+ org.eclipse.ui.workbench,
+ org.omnetpp.common.core

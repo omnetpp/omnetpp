@@ -56,7 +56,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 //TODO under each Run, display: "12 vectors", "35 scalars", etc.
 public class InputsPage extends FormEditorPage {
     private InputsTree treeViewer;
-    protected CommandStack commandStack = new CommandStack();
+    protected CommandStack commandStack = new CommandStack("InputsPage");
     
     private Runnable scheduledUpdate;
 

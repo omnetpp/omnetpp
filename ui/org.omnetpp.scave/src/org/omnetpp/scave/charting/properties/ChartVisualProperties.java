@@ -286,25 +286,8 @@ public class ChartVisualProperties extends PropertySource {
                                     getDefaultDoubleProperty(propertyName);
     }
 
-    /**
-     * Sets the property value in the property list.
-     * If the value is null then the property node is deleted.
-     * If the editing domain was set it will change the list by executing a command,
-     * otherwise it modifies the list directly.
-     */
     protected void doSetProperty(String propertyName, String propertyValue) {
-        Property property = getProperty(propertyName);
-
-        if (property == null && propertyValue != null ) { // add new property
-            property = new Property(propertyName, propertyValue);
-            commandStack.execute(new AddChartPropertyCommand(chart, property));
-        }
-        else if (property != null && propertyValue != null) { // change existing property
-            commandStack.execute(new SetChartPropertyCommand(property, propertyValue));
-        }
-        else if (property != null && propertyValue == null){ // delete existing property
-            commandStack.execute(new RemoveChartPropertyCommand(chart, property));
-        }
+        commandStack.execute(new SetChartPropertyCommand(chart, propertyName, propertyValue));
     }
 
     public void setProperty(String propertyName, String propertyValue) {

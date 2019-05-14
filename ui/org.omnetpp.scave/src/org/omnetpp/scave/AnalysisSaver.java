@@ -1,6 +1,8 @@
 package org.omnetpp.scave;
 
 import java.io.ByteArrayInputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -22,6 +24,10 @@ import org.w3c.dom.Element;
 
 public class AnalysisSaver {
     public static void saveAnalysis(Analysis analysis, IFile file) throws CoreException {
+        saveAnalysis(analysis, file, new HashMap<Chart, String>());
+    }
+
+    public static void saveAnalysis(Analysis analysis, IFile file, Map<Chart, String> editedChartScripts) throws CoreException {
 
         DocumentBuilder db;
         try {
@@ -55,9 +61,10 @@ public class AnalysisSaver {
                     chartElem.setAttribute("name", chart.getName());
                     chartElem.setAttribute("template", chart.getTemplateID());
 
-                    Element script = d.createElement("script");
-                    script.appendChild(d.createCDATASection(chart.getScript()));
-                    chartElem.appendChild(script);
+                    Element scriptElem = d.createElement("script");
+                    String script = editedChartScripts.containsKey(chart) ? editedChartScripts.get(chart) : chart.getScript();
+                    scriptElem.appendChild(d.createCDATASection(script));
+                    chartElem.appendChild(scriptElem);
 
                     for (DialogPage page : chart.getDialogPages()) {
                         Element pg = d.createElement("dialogPage");

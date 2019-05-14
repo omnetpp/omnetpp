@@ -54,6 +54,10 @@ public class CompoundCommand implements ICommand {
         return label;
     }
 
+    public boolean isEmpty() {
+        return commands.isEmpty();
+    }
+
     @Override
     public Collection<ModelObject> getAffectedObjects() {
         Set<ModelObject> objs = new HashSet<ModelObject>();

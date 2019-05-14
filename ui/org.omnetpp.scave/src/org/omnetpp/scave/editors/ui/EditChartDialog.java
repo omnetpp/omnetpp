@@ -24,10 +24,7 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.Property;
-import org.omnetpp.scave.model.commands.AddChartPropertyCommand;
 import org.omnetpp.scave.model.commands.CompoundCommand;
-import org.omnetpp.scave.model.commands.RemoveChartPropertyCommand;
 import org.omnetpp.scave.model.commands.SetChartNameCommand;
 import org.omnetpp.scave.model.commands.SetChartPropertyCommand;
 
@@ -153,30 +150,18 @@ public class EditChartDialog extends TitleAreaDialog {
             if (k.equals(ChartEditForm.CHART_NAME_PROPERTY_KEY))
                 command.append(new SetChartNameCommand(chart, props.get(ChartEditForm.CHART_NAME_PROPERTY_KEY)));
             else {
-                Property prop = chart.lookupProperty(k);
                 String newValue = props.get(k);
-
-                if (prop == null) {
-                    if (newValue != null)
-                        command.append(new AddChartPropertyCommand(chart, new Property(k, newValue)));
-                }
-                else {
-                    if (newValue != null) {
-                        if (!prop.getValue().equals(newValue))
-                            command.append(new SetChartPropertyCommand(prop, newValue));
-                    }
-                    else
-                        command.append(new RemoveChartPropertyCommand(chart, prop));
-                }
+                command.append(new SetChartPropertyCommand(chart, k, newValue));
             }
         }
 
         FormEditorPage editorPage = editor.getEditorPage(chart);
         if (editorPage instanceof ChartPage) {
             ChartScriptEditor chartScriptEditor = ((ChartPage)editorPage).chartScriptEditor;
-			chartScriptEditor.refreshChart();
             chartScriptEditor.getCommandStack().execute(command);
+            chartScriptEditor.refreshChart();
         } // TODO else
+
     }
 
 }

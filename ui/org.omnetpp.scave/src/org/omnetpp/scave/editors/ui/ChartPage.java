@@ -16,8 +16,4 @@ public class ChartPage extends FormEditorPage {
     public ChartScriptEditor getChartScriptEditor() {
         return chartScriptEditor;
     }
-
-    public void prepareForSave() {
-        chartScriptEditor.prepareForSave();
-    }
 }

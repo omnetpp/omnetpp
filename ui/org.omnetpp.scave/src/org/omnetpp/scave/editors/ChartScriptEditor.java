@@ -58,8 +58,6 @@ import org.omnetpp.scave.model.IModelChangeListener;
 import org.omnetpp.scave.model.ModelChangeEvent;
 import org.omnetpp.scave.model.Chart.ChartType;
 import org.omnetpp.scave.model.commands.CommandStack;
-import org.omnetpp.scave.model.commands.ICommand;
-import org.omnetpp.scave.model.commands.SetChartScriptCommand;
 import org.omnetpp.scave.pychart.PlotWidget;
 import org.omnetpp.scave.pychart.PythonCallerThread.ExceptionHandler;
 import org.omnetpp.scave.pychart.PythonOutputMonitoringThread.IOutputListener;
@@ -82,6 +80,7 @@ import org.python.pydev.shared_core.callbacks.ICallbackListener;
 
 public class ChartScriptEditor extends PyEdit {
     Chart chart;
+    Chart originalChart;
     ScaveEditor scaveEditor;
 
     FormEditorPage formEditor;
@@ -102,7 +101,7 @@ public class ChartScriptEditor extends PyEdit {
     IOConsoleOutputStream errorStream;
 
     ChartScriptDocumentProvider documentProvider;
-    protected CommandStack commandStack = new CommandStack();
+    protected CommandStack commandStack = new CommandStack("ChartPage");
 
 	IMarker errorMarker;
     MarkerAnnotation errorMarkerAnnotation;
@@ -141,11 +140,7 @@ public class ChartScriptEditor extends PyEdit {
     private final DelayedJob rerunChartScriptJob = new DelayedJob(CHART_SCRIPT_EXECUTION_DELAY_MS) {
         @Override
         public void run() {
-            if (autoUpdateChart) {
-                refreshChart();
-                // so the model change notification caused by refreshing doesn't trigger us again
-                cancel();
-            }
+            refreshChart();
         }
     };
 
@@ -171,6 +166,7 @@ public class ChartScriptEditor extends PyEdit {
 
     ChartScriptEditor(ScaveEditor scaveEditor, Chart chart) {
         this.chart = chart;
+        this.originalChart = (Chart)chart.dup();
         this.scaveEditor = scaveEditor;
 
         this.documentProvider = new ChartScriptDocumentProvider();
@@ -540,7 +536,7 @@ public class ChartScriptEditor extends PyEdit {
                 });
             };
 
-            getChartViewer().runPythonScript(chart.getScript(), scaveEditor.getAnfFileDirectory(), afterRun, errorHandler);
+            getChartViewer().runPythonScript(getDocument().get(), scaveEditor.getAnfFileDirectory(), afterRun, errorHandler);
         });
     }
 
@@ -698,28 +694,32 @@ public class ChartScriptEditor extends PyEdit {
         return chart;
     }
 
+    public Chart getOriginalChart() {
+        return originalChart;
+    }
+
     public String getChartName() {
         return (chart.getName() == null || chart.getName().isEmpty()) ? "<unnamed>" : chart.getName();
     }
 
     @Override
     public boolean isDirty() {
-        return getDocument().get() != chart.getScript();
+        return !getDocument().get().equals(chart.getScript()) || commandStack.isSaveNeeded();
     }
 
     @Override
     public boolean isSaveAsAllowed() {
         return false;
     }
-
-    public void prepareForSave() {
-        String oldCode = chart.getScript();
-        String newCode = getDocument().get();
-        if (!newCode.equals(oldCode)) {
-            ICommand command = new SetChartScriptCommand(chart, newCode);
-            commandStack.execute(command);
-        }
-    }
+//
+//    public void prepareForSave() {
+//        String oldCode = chart.getScript();
+//        String newCode = getDocument().get();
+//        if (!newCode.equals(oldCode)) {
+//            ICommand command = new SetChartScriptCommand(chart, newCode);
+//            commandStack.execute(command);
+//        }
+//    }
 
     @Override
     public void dispose() {
@@ -753,7 +753,7 @@ public class ChartScriptEditor extends PyEdit {
     }
 
     public void refreshChart() {
-        prepareForSave();
+        //prepareForSave();
         rerunChartScriptJob.cancel();
         runChartScript();
     }

@@ -34,14 +34,14 @@ public class AddVectorOperationAction extends AbstractScaveAction {
 
         ChartScriptEditor scriptEditor = scaveEditor.getActiveChartScriptEditor();
 
-        String script = scriptEditor.getChart().getScript();
+        String script = scriptEditor.getDocument().get();
         script = script.replace(marker, codeFragment + "\n" + marker);
-        scriptEditor.getChart().setScript(script);
+        scriptEditor.getDocument().set(script); // TODO only change the inserted portion, without replacing the whole text
         scriptEditor.refreshChart();
     }
 
     @Override
     protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-        return editor.getActiveChartScriptEditor().getChart().getScript().contains(marker);
+        return editor.getActiveChartScriptEditor().getDocument().get().contains(marker);
     }
 }

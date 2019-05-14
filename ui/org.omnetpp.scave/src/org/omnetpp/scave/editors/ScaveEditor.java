@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -131,6 +132,7 @@ import org.omnetpp.scave.model.commands.AddInputFileCommand;
 import org.omnetpp.scave.model.commands.CommandStack;
 import org.omnetpp.scave.model.commands.CommandStackListener;
 import org.omnetpp.scave.model.commands.ICommand;
+import org.omnetpp.scave.model.commands.SetChartContentsCommand;
 import org.omnetpp.scave.model2.ResultItemRef;
 import org.omnetpp.scave.pychart.PythonProcessPool;
 import org.omnetpp.scave.python.MatplotlibChartViewer;
@@ -235,7 +237,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
         public void partOpened(IWorkbenchPart p) {
         }
     };
-    
+
     // TODO: do this locally in each page
     CommandStackListener commandStackListener = new CommandStackListener() {
         @Override
@@ -588,7 +590,10 @@ public class ScaveEditor extends MultiPageEditorPartExt
             public void close(CTabFolderEvent event) {
                 saveState();
                 ChartScriptEditor editor = (ChartScriptEditor)event.item.getData();
-                event.doit = canCloseChartEditor(editor);
+                boolean allowClose = askToKeepEditedTemporaryChart(editor);
+                event.doit = allowClose;
+                if (allowClose)
+                    applyChartEdits(editor);
             }
         });
     }
@@ -746,12 +751,22 @@ public class ScaveEditor extends MultiPageEditorPartExt
         return null;
     }
 
-    public boolean canCloseChartEditor(ChartScriptEditor editor) {
-        editor.prepareForSave();
+    public void applyChartEdits(ChartScriptEditor editor) {
 
+        Chart orig = editor.getOriginalChart();
         Chart chart = editor.getChart();
 
-        if (!editor.getCommandStack().wasObjectAffected(chart))
+        chart.setScript(editor.getDocument().get());
+
+        SetChartContentsCommand command = new SetChartContentsCommand(chart, orig, (Chart)chart.dup());
+        if (!command.isEmpty())
+            getChartsPage().getCommandStack().addExecuted(command);
+    }
+
+    public boolean askToKeepEditedTemporaryChart(ChartScriptEditor editor) {
+        Chart chart = editor.getChart();
+
+        if (!editor.getCommandStack().wasObjectAffected(chart) && !editor.isDirty())
             return true;
 
         if (chart.isTemporary()) {
@@ -1552,16 +1567,19 @@ public class ScaveEditor extends MultiPageEditorPartExt
      * stack.
      */
     public boolean isDirty() {
-    	
+
         for (int i = 0; i < getPageCount(); ++i) {
             FormEditorPage editorPage = getEditorPage(i);
             if (editorPage instanceof ChartPage) {
                 ChartPage chartPage = (ChartPage)editorPage;
-                chartPage.prepareForSave();
 
                 ChartScriptEditor chartScriptEditor = chartPage.getChartScriptEditor();
+
+                if (chartScriptEditor.isDirty())
+                    return true;
+
 				Chart chart = chartScriptEditor.getChart();
-				
+
 				// TODO: check fixed commandstacks too
                 CommandStack commandStack = chartScriptEditor.getCommandStack();
 				if ((commandStack.isSaveNeeded()) || (chart.isTemporary() && commandStack.wasObjectAffected(chart)))
@@ -1576,12 +1594,16 @@ public class ScaveEditor extends MultiPageEditorPartExt
      * This is for implementing {@link IEditorPart} and simply saves the model file.
      */
     public void doSave(IProgressMonitor progressMonitor) {
+
+        Map<Chart, String> editedScripts = new HashMap<Chart, String>();
+
         for (int i = 0; i < getPageCount(); ++i) {
             FormEditorPage editorPage = getEditorPage(i);
             if (editorPage instanceof ChartPage) {
                 ChartPage chartPage = (ChartPage)editorPage;
-                chartPage.prepareForSave();
-                canCloseChartEditor(chartPage.getChartScriptEditor());
+                ChartScriptEditor chartScriptEditor = chartPage.getChartScriptEditor();
+                askToKeepEditedTemporaryChart(chartScriptEditor);
+                editedScripts.put(chartScriptEditor.getChart(), chartScriptEditor.getDocument().get());
             }
         }
 
@@ -1589,11 +1611,11 @@ public class ScaveEditor extends MultiPageEditorPartExt
         IFile f = modelFile.getFile();
 
         try {
-            AnalysisSaver.saveAnalysis(analysis, f);
-            
+            AnalysisSaver.saveAnalysis(analysis, f, editedScripts);
+
             // Refresh the necessary state.
             //commandStack.saved();
-            
+
             firePropertyChange(IEditorPart.PROP_DIRTY);
         } catch (CoreException e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), "Cannot save .anf file", e.getMessage());
@@ -1730,13 +1752,13 @@ public class ScaveEditor extends MultiPageEditorPartExt
         ChartScriptEditor editor = new ChartScriptEditor(this, chart);
         ChartScriptEditorInput input = new ChartScriptEditorInput(chart);
 
-        chart.addListener(new IModelChangeListener() {
-            @Override
-            public void modelChanged(ModelChangeEvent event) {
-                if (event.getSubject() == chart && !editor.getDocument().get().equals(chart.getScript()))
-                    editor.getDocument().set(chart.getScript());
-            }
-        });
+//        chart.addListener(new IModelChangeListener() {
+//            @Override
+//            public void modelChanged(ModelChangeEvent event) {
+//                if (event.getSubject() == chart && !editor.getDocument().get().equals(chart.getScript()))
+//                    editor.getDocument().set(chart.getScript());
+//            }
+//        });
 
         int index = addClosablePage(editor, input, editor.getChartName());
 

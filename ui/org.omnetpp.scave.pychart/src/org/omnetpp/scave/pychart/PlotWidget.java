@@ -160,6 +160,7 @@ public class PlotWidget extends Canvas implements IPlotWidget {
                     else
                         pythonProcess.pythonCallerThread.asyncExec(() -> getCanvas().mousePressEvent(e.x, sy - e.y, e.button));
                 }
+                setFocus();
             }
 
             @Override

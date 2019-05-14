@@ -671,7 +671,7 @@ public class IconGridViewer extends ContentViewer {
 
     @Override
     public void refresh() {
-        Debug.println("IconGridViewer.refresh()");
+        //Debug.println("IconGridViewer.refresh()");
 
         IStructuredContentProvider contentProvider = (IStructuredContentProvider)getContentProvider();
         Object[] elements = contentProvider.getElements(getInput());

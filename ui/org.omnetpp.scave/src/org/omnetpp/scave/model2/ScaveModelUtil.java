@@ -234,19 +234,6 @@ public class ScaveModelUtil {
         return null;
     }
 
-    public static void setChartProperty(CommandStack commandStack, Chart chart, String propertyName, String propertyValue) {
-        Property property = getChartProperty(chart, propertyName);
-        ICommand command;
-        if (property == null) {
-            property = new Property(propertyName, propertyValue);
-            command = new AddChartPropertyCommand(chart, property);
-        }
-        else {
-            command = new SetChartPropertyCommand(property, propertyValue);
-        }
-        commandStack.execute(command);
-    }
-
     public static IDList getAllIDs(ResultFileManager manager, ResultType type) {
         if (type == null)
             return manager.getAllItems(true, true);

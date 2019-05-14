@@ -4,17 +4,40 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.ListenerList;
+import org.omnetpp.common.Debug;
 import org.omnetpp.scave.model.ModelObject;
 
 public class CommandStack {
+
+    public static boolean debug = true;
+
+    private String name;
+
     private List<ICommand> commands = new ArrayList<ICommand>();
     private int numExecutedCommands = 0;
     private int savedPosition = 0; // the value of numExecutedCommands when the last save was done, or -1
     private ICommand mostRecentCommand; // the last command which was executed, undone, or redone
     private ListenerList<CommandStackListener> listeners = new ListenerList<CommandStackListener>();
 
+    public CommandStack(String name) {
+        this.name = name;
+    }
+
+    private void log(String msg, ICommand command) {
+        if (debug)
+            Debug.println("CommandStack " + name + " " + msg + " command: " + command.getLabel());
+    }
+
     public void execute(ICommand command) {
+        log("executing", command);
+
         command.execute();
+        addExecuted(command);
+    }
+
+    public void addExecuted(ICommand command) {
+        log("adding executed", command);
+
         while (numExecutedCommands < commands.size())
             commands.remove(commands.size() - 1);
 
@@ -31,6 +54,9 @@ public class CommandStack {
     public void undo() {
         if (canUndo()) {
             ICommand command = commands.get(numExecutedCommands - 1);
+
+            log("undoing", command);
+
             command.undo();
             mostRecentCommand = command;
             numExecutedCommands--;
@@ -42,6 +68,9 @@ public class CommandStack {
     public void redo() {
         if (canRedo()) {
             ICommand command = commands.get(numExecutedCommands);
+
+            log("redoing executed", command);
+
             command.redo();
             mostRecentCommand = command;
             numExecutedCommands++;
