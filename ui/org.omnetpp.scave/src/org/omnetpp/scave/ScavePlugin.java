@@ -31,6 +31,7 @@ import org.python.pydev.ast.interpreter_managers.InterpreterInfo;
 import org.python.pydev.ast.interpreter_managers.InterpreterManagersAPI;
 import org.python.pydev.core.IInterpreterInfo;
 import org.python.pydev.core.IInterpreterManager;
+import org.python.pydev.plugin.preferences.PydevRootPrefs;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -73,6 +74,7 @@ public class ScavePlugin extends AbstractUIPlugin {
     }
 
     static public void ensurePyDevInterpreterConfigured() {
+        PydevRootPrefs.setCheckPreferredPydevSettings(false);
 
         // This is here to configure a default Python interpreter for PyDev if there are none.
         // Without a configured interpreter, PyDev places an error marker into every project that
