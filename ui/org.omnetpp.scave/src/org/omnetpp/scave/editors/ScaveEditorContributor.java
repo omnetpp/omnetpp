@@ -169,7 +169,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
      * Creates a multi-page contributor.
      */
     public ScaveEditorContributor() {
-        System.out.println("CONTRIBUTOR CTOR");
         if (instance == null)
             instance = this;
     }
