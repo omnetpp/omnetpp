@@ -45,6 +45,7 @@ import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Charts;
 import org.omnetpp.scave.model.Folder;
+import org.omnetpp.scave.model.commands.CommandStack;
 import org.omnetpp.scave.model.commands.SetChartNameCommand;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
@@ -56,8 +57,10 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 //TODO add "Rename" to context menu
 public class ChartsPage extends FormEditorPage {
     private IconGridViewer viewer;
+    protected CommandStack commandStack = new CommandStack();
 
-    /**
+
+	/**
      * Constructor
      */
     public ChartsPage(Composite parent, ScaveEditor scaveEditor) {
@@ -117,6 +120,10 @@ public class ChartsPage extends FormEditorPage {
         return viewer;
     }
 
+    public CommandStack getCommandStack() {
+		return commandStack;
+	}
+    
     @Override
     public boolean gotoObject(Object object) {
         if (object instanceof ModelObject) {
@@ -181,7 +188,7 @@ public class ChartsPage extends FormEditorPage {
                 if (insertionPoint == null ||!ArrayUtils.contains(draggedElements, insertionPoint)) {
                     List<AnalysisItem> charts = scaveEditor.getAnalysis().getCharts().getCharts();
                     int index = insertionPoint == null ? charts.size() - 1 : charts.indexOf(insertionPoint);
-                    ScaveModelUtil.moveElements(scaveEditor.getCommandStack(), scaveEditor.getAnalysis().getCharts(), draggedElements, index);
+                    ScaveModelUtil.moveElements(commandStack, scaveEditor.getAnalysis().getCharts(), draggedElements, index);
                     viewer.refresh();
                 }
 
@@ -206,7 +213,7 @@ public class ChartsPage extends FormEditorPage {
 
             @Override
             public void setName(Object element, String name) {
-                scaveEditor.executeCommand(new SetChartNameCommand((AnalysisItem)element, name));
+                commandStack.execute(new SetChartNameCommand((AnalysisItem)element, name));
             }
         });
 

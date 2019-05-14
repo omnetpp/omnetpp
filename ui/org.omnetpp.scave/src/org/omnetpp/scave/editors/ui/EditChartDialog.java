@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.util.StatusUtil;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
@@ -170,11 +171,12 @@ public class EditChartDialog extends TitleAreaDialog {
             }
         }
 
-        editor.executeCommand(command);
-
         FormEditorPage editorPage = editor.getEditorPage(chart);
-        if (editorPage instanceof ChartPage)
-            ((ChartPage)editorPage).chartScriptEditor.refreshChart();
+        if (editorPage instanceof ChartPage) {
+            ChartScriptEditor chartScriptEditor = ((ChartPage)editorPage).chartScriptEditor;
+			chartScriptEditor.refreshChart();
+            chartScriptEditor.getCommandStack().execute(command);
+        } // TODO else
     }
 
 }

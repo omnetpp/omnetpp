@@ -15,6 +15,9 @@ import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.InputFile;
+import org.omnetpp.scave.model.commands.CommandStack;
+import org.omnetpp.scave.model.commands.ICommand;
+import org.omnetpp.scave.model.commands.SetInputFileCommand;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
@@ -33,7 +36,8 @@ public class EditInputFileAction extends AbstractScaveAction {
         InputFileDialog dialog = new InputFileDialog(editor.getSite().getShell(), "Edit Input", inputFile.getName(), false, baseDir);
         if (dialog.open() == Window.OK) {
             String value = dialog.getValue();
-            ScaveModelUtil.setInputFile(editor.getCommandStack(), inputFile, value);
+            ICommand command = new SetInputFileCommand(inputFile, value);
+            editor.getInputsPage().getCommandStack().execute(command);
         }
     }
 

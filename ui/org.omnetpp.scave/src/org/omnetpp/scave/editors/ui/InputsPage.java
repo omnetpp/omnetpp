@@ -47,6 +47,7 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
 import org.omnetpp.scave.engineext.ResultFileManagerChangeEvent;
 import org.omnetpp.scave.model.ModelChangeEvent;
+import org.omnetpp.scave.model.commands.CommandStack;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model2.ScaveModelUtil;
@@ -55,7 +56,8 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 //TODO under each Run, display: "12 vectors", "35 scalars", etc.
 public class InputsPage extends FormEditorPage {
     private InputsTree treeViewer;
-
+    protected CommandStack commandStack = new CommandStack();
+    
     private Runnable scheduledUpdate;
 
     public InputsPage(Composite parent, ScaveEditor scaveEditor) {
@@ -170,6 +172,10 @@ public class InputsPage extends FormEditorPage {
     public InputsTree getTreeViewer() {
         return treeViewer;
     }
+    
+    public CommandStack getCommandStack() {
+		return commandStack;
+	}
 
     @Override
     public boolean gotoObject(Object object) {
@@ -216,7 +222,7 @@ public class InputsPage extends FormEditorPage {
         }
 
         // add them
-        ScaveModelUtil.addInputFiles(scaveEditor.getCommandStack(), scaveEditor.getAnalysis(), list);
+        ScaveModelUtil.addInputFiles(commandStack, scaveEditor.getAnalysis(), list);
     }
 
     protected IPath makeRelative(IPath path) {

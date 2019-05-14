@@ -21,8 +21,12 @@ public class Inputs extends ModelObject {
     }
 
     public void addInput(InputFile input) {
+        addInput(input, inputs.size());
+    }
+
+    public void addInput(InputFile input, int index) {
         input.parent = this;
-        inputs.add(input);
+        inputs.add(index, input);
         notifyListeners();
     }
 

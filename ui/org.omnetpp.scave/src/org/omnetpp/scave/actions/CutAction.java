@@ -42,7 +42,7 @@ public class CutAction extends AbstractScaveAction {
         clipboard.setContents(new Object[] { objects }, new Transfer[] {LocalTransfer.getInstance()});
         clipboard.dispose();
 
-        editor.getCommandStack().execute(command);
+        editor.getChartsPage().getCommandStack().execute(command);
 
     }
 

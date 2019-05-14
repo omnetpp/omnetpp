@@ -157,7 +157,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
     PythonProcessPool processPool = new PythonProcessPool(2);
 
-    protected CommandStack commandStack;
 
     /**
      * This is the content outline page.
@@ -236,6 +235,47 @@ public class ScaveEditor extends MultiPageEditorPartExt
         public void partOpened(IWorkbenchPart p) {
         }
     };
+    
+    // TODO: do this locally in each page
+    CommandStackListener commandStackListener = new CommandStackListener() {
+        @Override
+        public void commandStackChanged(CommandStack commandStack) {
+            getContainer().getDisplay().asyncExec(new Runnable() {
+                @Override
+                public void run() {
+                    firePropertyChange(IEditorPart.PROP_DIRTY);
+
+                    // Try to select the affected objects.
+                    //
+                    ICommand mostRecentCommand = commandStack.getMostRecentCommand();
+                    if (mostRecentCommand != null) {
+                        Collection<ModelObject> affectedObjects = mostRecentCommand.getAffectedObjects();
+
+                        Set<ModelObject> selection = new HashSet<ModelObject>();
+
+                        for (ModelObject obj : affectedObjects) {
+                            if (obj instanceof Property)
+                                selection.add(obj.getParent());
+                            else if (obj instanceof Charts || obj instanceof Inputs)
+                                ; // skip
+                            else
+                                selection.add(obj);
+                        }
+
+                        setSelectionToViewer(selection);
+                    }
+                    for (Iterator<PropertySheetPage> i = propertySheetPages.iterator(); i.hasNext();) {
+                        PropertySheetPage propertySheetPage = i.next();
+                        if (propertySheetPage.getControl().isDisposed()) {
+                            i.remove();
+                        } else {
+                            propertySheetPage.refresh();
+                        }
+                    }
+                }
+            });
+        }
+    };
 
     /**
      * ResultFileManager containing all files of the analysis.
@@ -263,48 +303,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
      * The constructor.
      */
     public ScaveEditor() {
-
-        this.commandStack = new CommandStack();
-
-        commandStack.addListener(new CommandStackListener() {
-            @Override
-            public void commandStackChanged() {
-                getContainer().getDisplay().asyncExec(new Runnable() {
-                    @Override
-                    public void run() {
-                        firePropertyChange(IEditorPart.PROP_DIRTY);
-
-                        // Try to select the affected objects.
-                        //
-                        ICommand mostRecentCommand = commandStack.getMostRecentCommand();
-                        if (mostRecentCommand != null) {
-                            Collection<ModelObject> affectedObjects = mostRecentCommand.getAffectedObjects();
-
-                            Set<ModelObject> selection = new HashSet<ModelObject>();
-
-                            for (ModelObject obj : affectedObjects) {
-                                if (obj instanceof Property)
-                                    selection.add(obj.getParent());
-                                else if (obj instanceof Charts || obj instanceof Inputs)
-                                    ; // skip
-                                else
-                                    selection.add(obj);
-                            }
-
-                            setSelectionToViewer(selection);
-                        }
-                        for (Iterator<PropertySheetPage> i = propertySheetPages.iterator(); i.hasNext();) {
-                            PropertySheetPage propertySheetPage = i.next();
-                            if (propertySheetPage.getControl().isDisposed()) {
-                                i.remove();
-                            } else {
-                                propertySheetPage.refresh();
-                            }
-                        }
-                    }
-                });
-            }
-        });
     }
 
     public ResultFileManagerEx getResultFileManager() {
@@ -657,7 +655,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
         propertySheetPages.add(propertySheetPage);
 
         if (propertySheetPage instanceof PropertySheetPage) {
-            propertySheetPage.setPropertySourceProvider(new ScavePropertySourceProvider(manager, commandStack));
+            propertySheetPage.setPropertySourceProvider(new ScavePropertySourceProvider(manager));
         }
         return propertySheetPage;
 
@@ -753,7 +751,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
         Chart chart = editor.getChart();
 
-        if (!commandStack.wasObjectAffected(chart))
+        if (!editor.getCommandStack().wasObjectAffected(chart))
             return true;
 
         if (chart.isTemporary()) {
@@ -766,7 +764,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
             case 0:
                 chart.setTemporary(false);
                 ICommand command = new AddChartCommand(getAnalysis(), chart);
-                executeCommand(command);
+                chartsPage.getCommandStack().execute(command);
                 showAnalysisItem(chart);
                 return true;
             case 1:
@@ -1075,7 +1073,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
         if (!found) {
             InputFile inputFile = new InputFile(resourcePath);
-            executeCommand(new AddInputFileCommand(analysis, inputFile));
+            inputsPage.getCommandStack().execute(new AddInputFileCommand(analysis, inputFile));
         }
     }
 
@@ -1108,13 +1106,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
             }
         }
         return null;
-    }
-
-    /**
-     * Utility method.
-     */
-    public void executeCommand(ICommand command) {
-        commandStack.execute(command);
     }
 
     public ISelectionChangedListener getSelectionChangedListener() {
@@ -1297,10 +1288,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
             return ((IFileEditorInput) input).getFile();
         else
             return null;
-    }
-
-    public CommandStack getCommandStack() {
-        return commandStack;
     }
 
     IMemento getMementoFor(ChartScriptEditor editor) {
@@ -1565,19 +1552,24 @@ public class ScaveEditor extends MultiPageEditorPartExt
      * stack.
      */
     public boolean isDirty() {
+    	
         for (int i = 0; i < getPageCount(); ++i) {
             FormEditorPage editorPage = getEditorPage(i);
             if (editorPage instanceof ChartPage) {
                 ChartPage chartPage = (ChartPage)editorPage;
                 chartPage.prepareForSave();
 
-                Chart chart = chartPage.getChartScriptEditor().getChart();
-                if (chart.isTemporary() && commandStack.wasObjectAffected(chart))
+                ChartScriptEditor chartScriptEditor = chartPage.getChartScriptEditor();
+				Chart chart = chartScriptEditor.getChart();
+				
+				// TODO: check fixed commandstacks too
+                CommandStack commandStack = chartScriptEditor.getCommandStack();
+				if ((commandStack.isSaveNeeded()) || (chart.isTemporary() && commandStack.wasObjectAffected(chart)))
                     return true;
             }
         }
 
-        return commandStack.isSaveNeeded();
+        return false;
     }
 
     /**
@@ -1598,9 +1590,10 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
         try {
             AnalysisSaver.saveAnalysis(analysis, f);
-
+            
             // Refresh the necessary state.
-            commandStack.saved();
+            //commandStack.saved();
+            
             firePropertyChange(IEditorPart.PROP_DIRTY);
         } catch (CoreException e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), "Cannot save .anf file", e.getMessage());
@@ -1753,4 +1746,15 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
         return index;
     }
+
+	public CommandStack getActiveCommandStack() {
+		FormEditorPage activeEditorPage = getActiveEditorPage();
+		if (activeEditorPage == inputsPage)
+			return inputsPage.getCommandStack();
+		else if (activeEditorPage == chartsPage)
+			return chartsPage.getCommandStack();
+		else if (activeEditorPage instanceof ChartPage)
+			return ((ChartPage)activeEditorPage).getChartScriptEditor().getCommandStack();
+		return null;
+	}
 }

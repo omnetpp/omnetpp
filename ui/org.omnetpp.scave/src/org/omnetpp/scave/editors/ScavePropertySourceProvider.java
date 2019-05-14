@@ -34,11 +34,9 @@ import org.omnetpp.scave.model2.RunPayload;
 public class ScavePropertySourceProvider implements IPropertySourceProvider {
 
     ResultFileManager manager;
-    CommandStack commandStack;
 
-    public ScavePropertySourceProvider(ResultFileManager manager, CommandStack commandStack) {
+    public ScavePropertySourceProvider(ResultFileManager manager) {
         this.manager = manager;
-        this.commandStack = commandStack;
     }
 
     @Override

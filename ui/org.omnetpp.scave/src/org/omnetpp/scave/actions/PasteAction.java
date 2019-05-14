@@ -56,12 +56,13 @@ public class PasteAction extends AbstractScaveAction {
             if (pasteIndex < 0)
                 pasteIndex = charts.size();
 
-            for (Object o : objects)
+            for (Object o : objects) {
                 if (o instanceof AnalysisItem) {
                     command.append(new AddChartCommand(editor.getAnalysis(), (AnalysisItem)o, pasteIndex));
                     pasteIndex += 1;
                 }
-            editor.getCommandStack().execute(command);
+            }
+            editor.getChartsPage().getCommandStack().execute(command);
         }
     }
 

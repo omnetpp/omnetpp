@@ -29,7 +29,7 @@ public class NewAnalysisItemAction extends AbstractScaveAction {
 
         ICommand command = new AddChartCommand(editor.getAnalysis(), (AnalysisItem)elementPrototype.dup());
 
-        editor.executeCommand(command);
+        editor.getChartsPage().getCommandStack().execute(command);
         editor.showAnalysisItem(element);
     }
 

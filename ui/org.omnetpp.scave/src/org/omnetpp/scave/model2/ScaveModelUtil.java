@@ -172,11 +172,6 @@ public class ScaveModelUtil {
         commandStack.execute(command);
     }
 
-    public static void setInputFile(CommandStack commandStack, InputFile inputFile, String value) {
-        ICommand command = new SetInputFileCommand(inputFile, value);
-        commandStack.execute(command);
-    }
-
     public static String[] getFilterFieldsFor(String[] runidFields) {
         Assert.isNotNull(runidFields);
         int runidFieldCount = runidFields.length;

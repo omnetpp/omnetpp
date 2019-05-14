@@ -25,7 +25,7 @@ public class CommandStack {
         mostRecentCommand = command;
         numExecutedCommands = commands.size();
 
-        listeners.forEach((l) -> { l.commandStackChanged(); });
+        listeners.forEach((l) -> { l.commandStackChanged(this); });
     }
 
     public void undo() {
@@ -35,7 +35,7 @@ public class CommandStack {
             mostRecentCommand = command;
             numExecutedCommands--;
 
-            listeners.forEach((l) -> { l.commandStackChanged(); });
+            listeners.forEach((l) -> { l.commandStackChanged(this); });
         }
     }
 
@@ -46,7 +46,7 @@ public class CommandStack {
             mostRecentCommand = command;
             numExecutedCommands++;
 
-            listeners.forEach((l) -> { l.commandStackChanged(); });
+            listeners.forEach((l) -> { l.commandStackChanged(this); });
         }
     }
 

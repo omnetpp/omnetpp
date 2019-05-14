@@ -16,10 +16,12 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.AnalysisItem;
+import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.commands.CompoundCommand;
 import org.omnetpp.scave.model.commands.ICommand;
 import org.omnetpp.scave.model.commands.RemoveChartCommand;
+import org.omnetpp.scave.model.commands.RemoveInputFileCommand;
 
 /**
  * Removes selected elements.
@@ -33,7 +35,7 @@ public class RemoveAction extends AbstractScaveAction {
     @Override
     protected void doRun(ScaveEditor scaveEditor, IStructuredSelection structuredSelection) {
         ICommand command = createCommand(structuredSelection);
-        scaveEditor.getCommandStack().execute(command);
+        scaveEditor.getActiveCommandStack().execute(command);
     }
 
     @SuppressWarnings("unchecked")
@@ -70,8 +72,8 @@ public class RemoveAction extends AbstractScaveAction {
             Object object = i.next();
             if (object instanceof AnalysisItem)
                 command.append(new RemoveChartCommand((AnalysisItem)object));
-            else
-                Assert.isTrue(false); // TODO
+            else if (object instanceof InputFile)
+                command.append(new RemoveInputFileCommand((InputFile)object));
         }
         return command;
     }

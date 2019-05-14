@@ -57,6 +57,7 @@ import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.IModelChangeListener;
 import org.omnetpp.scave.model.ModelChangeEvent;
 import org.omnetpp.scave.model.Chart.ChartType;
+import org.omnetpp.scave.model.commands.CommandStack;
 import org.omnetpp.scave.model.commands.ICommand;
 import org.omnetpp.scave.model.commands.SetChartScriptCommand;
 import org.omnetpp.scave.pychart.PlotWidget;
@@ -101,8 +102,9 @@ public class ChartScriptEditor extends PyEdit {
     IOConsoleOutputStream errorStream;
 
     ChartScriptDocumentProvider documentProvider;
+    protected CommandStack commandStack = new CommandStack();
 
-    IMarker errorMarker;
+	IMarker errorMarker;
     MarkerAnnotation errorMarkerAnnotation;
 
     SaveTempChartAction saveTempChartAction;
@@ -503,6 +505,10 @@ public class ChartScriptEditor extends PyEdit {
         return scaveEditor;
     }
 
+    public CommandStack getCommandStack() {
+		return commandStack;
+	}
+
     public void runChartScript() {
         scriptNotYetExecuted = false;
 
@@ -711,7 +717,7 @@ public class ChartScriptEditor extends PyEdit {
         String newCode = getDocument().get();
         if (!newCode.equals(oldCode)) {
             ICommand command = new SetChartScriptCommand(chart, newCode);
-            getScaveEditor().executeCommand(command);
+            commandStack.execute(command);
         }
     }
 

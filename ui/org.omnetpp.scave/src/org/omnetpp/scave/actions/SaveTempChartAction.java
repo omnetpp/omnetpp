@@ -37,8 +37,9 @@ public class SaveTempChartAction extends AbstractScaveAction {
         if (chart != null) {
             chart.setTemporary(false);
             ICommand command = new AddChartCommand(scaveEditor.getAnalysis(), chart);
-            scaveEditor.executeCommand(command);
-            scaveEditor.getActiveChartScriptEditor().updateActions();
+            ChartScriptEditor activeChartScriptEditor = scaveEditor.getActiveChartScriptEditor();
+			activeChartScriptEditor.updateActions();
+			scaveEditor.getChartsPage().getCommandStack().execute(command);
             scaveEditor.showAnalysisItem(chart);
 
 //TODO offer dialog to simplify input filters
