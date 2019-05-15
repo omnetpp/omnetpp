@@ -6,6 +6,16 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
+OMNeT++ 5.5 (June 2019)
+-----------------------
+This release contains minor fixes. See the individual ChangeLogs for details.
+
+  - Several Qtenv related fixes and improvements
+  - Optimized XML parameter reading to use less memory
+  - Added support for osgEarth 2.10 and above
+  - Updated IDE to Eclipse 4.11 (to avoid issues with JDK 11)
+  - Workaround for long CDT indexing times.
+
 OMNeT++ 5.4.1 (June 2018)
 -------------------------
 
