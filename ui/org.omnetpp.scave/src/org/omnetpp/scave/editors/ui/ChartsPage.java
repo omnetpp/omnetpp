@@ -37,14 +37,14 @@ import org.omnetpp.scave.actions.NewChartFromTemplateAction;
 import org.omnetpp.scave.charttemplates.ChartTemplate;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.editors.ScaveEditorContributor;
+import org.omnetpp.scave.editors.ScaveEditorActions;
 import org.omnetpp.scave.model.Analysis;
-import org.omnetpp.scave.model.ModelChangeEvent;
 import org.omnetpp.scave.model.AnalysisItem;
-import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Charts;
 import org.omnetpp.scave.model.Folder;
+import org.omnetpp.scave.model.ModelChangeEvent;
+import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.commands.CommandStack;
 import org.omnetpp.scave.model.commands.SetChartNameCommand;
 import org.omnetpp.scave.model2.ScaveModelUtil;
@@ -83,7 +83,7 @@ public class ChartsPage extends FormEditorPage {
         viewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         viewer.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
 
-        ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
+        ScaveEditorActions actions = scaveEditor.getActions();
 
         List<ChartTemplate> templates = new ArrayList<ChartTemplate>();
 
@@ -99,9 +99,9 @@ public class ChartsPage extends FormEditorPage {
             addToToolbar(new NewChartFromTemplateAction(templ));
 
         addSeparatorToToolbar();
-        addToToolbar(contributor.getEditAction());
-        addToToolbar(contributor.getRemoveAction());
-        addToToolbar(contributor.getOpenAction());
+        addToToolbar(actions.getEditAction());
+        addToToolbar(actions.getRemoveAction());
+        addToToolbar(actions.getOpenAction());
 
         viewer.setFocus();
 
@@ -123,7 +123,7 @@ public class ChartsPage extends FormEditorPage {
     public CommandStack getCommandStack() {
 		return commandStack;
 	}
-    
+
     @Override
     public boolean gotoObject(Object object) {
         if (object instanceof ModelObject) {
@@ -222,7 +222,7 @@ public class ChartsPage extends FormEditorPage {
         IMenuListener menuListener = new IMenuListener() {
             @Override
             public void menuAboutToShow(IMenuManager menuManager) {
-                scaveEditor.getActionBarContributor().populateContextMenu(menuManager);
+                scaveEditor.getActions().populateContextMenu(menuManager);
             }
         };
 
@@ -232,13 +232,12 @@ public class ChartsPage extends FormEditorPage {
         modelViewer.addDoubleClickListener(new IDoubleClickListener() {
             @Override
             public void doubleClick(DoubleClickEvent event) {
-                ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
-                if (contributor != null) {
-                    if (contributor.getOpenAction().isEnabled())
-                        contributor.getOpenAction().run();
-                    else if (contributor.getEditAction().isEnabled())
-                        contributor.getEditAction().run();
-                }
+                ScaveEditorActions actions = scaveEditor.getActions();
+
+                if (actions.getOpenAction().isEnabled())
+                    actions.getOpenAction().run();
+                else if (actions.getEditAction().isEnabled())
+                    actions.getEditAction().run();
             }
         });
 

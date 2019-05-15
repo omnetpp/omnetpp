@@ -8,7 +8,6 @@
             name="OMNeT++ Analysis"
             extensions="anf"
             icon="icons/scavefile.png"
-            contributorClass="org.omnetpp.scave.editors.ScaveEditorContributor"
             class="org.omnetpp.scave.editors.ScaveEditor"
             id="org.omnetpp.scave.editors.ScaveEditor">
       </editor>

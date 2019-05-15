@@ -206,22 +206,22 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
     Analysis analysis;
 
+    ScaveEditorActions actions;
+
     /**
      * This listens for when the outline becomes active
      */
     protected IPartListener partListener = new IPartListener() {
+        // TODO probably not needed
         public void partActivated(IWorkbenchPart p) {
             if (p instanceof ContentOutline) {
                 if (((ContentOutline) p).getCurrentPage() == contentOutlinePage) {
-                    getActionBarContributor().setActiveEditor(ScaveEditor.this);
+                    //getActionBarContributor().setActiveEditor(ScaveEditor.this);
                 }
             } else if (p instanceof PropertySheet) {
                 if (propertySheetPages.contains(((PropertySheet) p).getCurrentPage())) {
-                    getActionBarContributor().setActiveEditor(ScaveEditor.this);
-                    handleActivate();
+                    //getActionBarContributor().setActiveEditor(ScaveEditor.this);
                 }
-            } else if (p == ScaveEditor.this) {
-                handleActivate();
             }
         }
 
@@ -247,7 +247,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
                 public void run() {
                     firePropertyChange(IEditorPart.PROP_DIRTY);
 
-                    ScaveEditorContributor.getDefault().updateActions();
+                    actions.updateActions();
 
                     // Try to select the affected objects.
                     //
@@ -379,6 +379,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
         site.setSelectionProvider(this);
         site.getPage().addPartListener(partListener);
 
+        actions = new ScaveEditorActions(this);
     }
 
     @Override
@@ -408,9 +409,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
         if (getSite() != null && getSite().getPage() != null)
             getSite().getPage().removePartListener(partListener);
-
-        if (getActionBarContributor() != null && getActionBarContributor().getActiveEditor() == this)
-            getActionBarContributor().setActiveEditor(null);
 
         for (PropertySheetPage propertySheetPage : propertySheetPages)
             propertySheetPage.dispose();
@@ -635,7 +633,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
             @Override
             public void setActionBars(IActionBars actionBars) {
                 super.setActionBars(actionBars);
-                getActionBarContributor().shareGlobalActions(this, actionBars);
+                //getActionBarContributor().shareGlobalActions(this, actionBars);
             }
 
             @Override
@@ -969,7 +967,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
                     // setViewerSelectionNoNotify(contentOutlineViewer, selection);
                     updateStatusLineManager(contentOutlineStatusLineManager, selection);
                 }
-                updateStatusLineManager(getActionBarContributor().getActionBars().getStatusLineManager(), selection);
+                updateStatusLineManager(getEditorSite().getActionBars().getStatusLineManager(), selection);
                 fireSelectionChangedEvent(selection);
             } finally {
                 selectionChangeInProgress = false;
@@ -1023,7 +1021,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
             UIUtils.createContextMenuFor(contentOutlineViewer.getControl(), true, new IMenuListener() {
                 @Override
                 public void menuAboutToShow(IMenuManager menuManager) {
-                    getActionBarContributor().populateContextMenu(menuManager);
+                    actions.populateContextMenu(menuManager);
                 }
             });
 
@@ -1045,7 +1043,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
         public void setActionBars(IActionBars actionBars) {
             super.setActionBars(actionBars);
-            getActionBarContributor().shareGlobalActions(this, actionBars);
+            actions.shareGlobalActions(this, actionBars);
         }
     }
 
@@ -1164,6 +1162,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
         if (editor != null) {
             ITextEditor editorPart = ((ITextEditor) editor);
 
+            // TODO is this needed?
             getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.DELETE.getId(),
                     editorPart.getAction(ActionFactory.DELETE.getId()));
             getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.SELECT_ALL.getId(),
@@ -1181,14 +1180,12 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
             if (editor instanceof ChartScriptEditor)
                 ((ChartScriptEditor) editor).pageActivated();
-        } else {
+        }
+        else {
             Control page = getControl(newPageIndex);
 
             if (page instanceof FormEditorPage) {
                 ((FormEditorPage) page).pageActivated();
-
-                getActionBarContributor().shareGlobalActions(null /* this is not very nice */,
-                        getEditorSite().getActionBars());
             }
         }
         fakeSelectionChange();
@@ -1443,16 +1440,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
         }
     }
 
-    protected void handleActivate() {
-    }
-
-    /**
-     * This is here for the listener to be able to call it.
-     */
-    protected void firePropertyChange(int action) {
-        super.firePropertyChange(action);
-    }
-
     /**
      * This sets the selection into whichever viewer is active.
      */
@@ -1629,7 +1616,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
     protected void doSaveAs(IEditorInput editorInput) {
         setInputWithNotify(editorInput);
         setPartName(editorInput.getName());
-        IStatusLineManager statusLineManager = getActionBarContributor().getActionBars().getStatusLineManager();
+        IStatusLineManager statusLineManager = getEditorSite().getActionBars().getStatusLineManager();
         IProgressMonitor progressMonitor = statusLineManager != null ? statusLineManager.getProgressMonitor()
                 : new NullProgressMonitor();
         doSave(progressMonitor);
@@ -1712,11 +1699,8 @@ public class ScaveEditor extends MultiPageEditorPartExt
         }
     }
 
-    public ScaveEditorContributor getActionBarContributor() {
-        if (getEditorSite() != null)
-            return (ScaveEditorContributor) getEditorSite().getActionBarContributor();
-        else
-            return null;
+    public ScaveEditorActions getActions() {
+        return actions;
     }
 
     protected boolean showOutlineView() {

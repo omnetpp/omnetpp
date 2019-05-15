@@ -42,7 +42,7 @@ import org.omnetpp.scave.actions.CollapseTreeAction;
 import org.omnetpp.scave.actions.ExpandSubtreeAction;
 import org.omnetpp.scave.actions.NewInputFileAction;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.editors.ScaveEditorContributor;
+import org.omnetpp.scave.editors.ScaveEditorActions;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
 import org.omnetpp.scave.engineext.ResultFileManagerChangeEvent;
@@ -81,10 +81,10 @@ public class InputsPage extends FormEditorPage {
         treeViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         // toolbar
-        ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
+        ScaveEditorActions actions = scaveEditor.getActions();
         addToToolbar(new NewInputFileAction());
-        addToToolbar(contributor.getEditInputFileAction());
-        addToToolbar(contributor.getRemoveAction());
+        addToToolbar(actions.getEditInputFileAction());
+        addToToolbar(actions.getRemoveAction());
         addSeparatorToToolbar();
         addToToolbar(new CollapseTreeAction(treeViewer));
 
@@ -97,11 +97,11 @@ public class InputsPage extends FormEditorPage {
             @Override
             public void menuAboutToShow(IMenuManager menuManager) {
                 menuManager.add(new NewInputFileAction());
-                menuManager.add(contributor.getEditInputFileAction());
-                menuManager.add(contributor.getRemoveAction());
+                menuManager.add(actions.getEditInputFileAction());
+                menuManager.add(actions.getRemoveAction());
                 menuManager.add(new Separator());
-                menuManager.add(contributor.getUndoAction());
-                menuManager.add(contributor.getRedoAction());
+                menuManager.add(actions.getUndoAction());
+                menuManager.add(actions.getRedoAction());
                 menuManager.add(new Separator());
                 menuManager.add(new ExpandSubtreeAction(treeViewer));
                 menuManager.add(new CollapseSubtreeAction(treeViewer));

@@ -38,9 +38,6 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
@@ -61,12 +58,10 @@ import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.properties.ChartDefaults;
 import org.omnetpp.scave.charting.properties.ChartVisualProperties.LegendAnchor;
 import org.omnetpp.scave.charting.properties.ChartVisualProperties.LegendPosition;
-import org.omnetpp.scave.editors.ScaveEditorContributor;
 
 /**
  * Base class for all chart widgets.
@@ -124,24 +119,6 @@ public abstract class ChartViewer extends ZoomableCachingCanvas implements IChar
                 layoutChart();
             }
         });
-
-        ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
-        if (contributor != null) {
-            final IAction hzoomOutAction = contributor.getHZoomOutAction();
-            final IAction vzoomOutAction = contributor.getVZoomOutAction();
-            final IAction zoomToFitAction = contributor.getZoomToFitAction();
-            addPropertyChangeListener(new IPropertyChangeListener() {
-                public void propertyChange(PropertyChangeEvent event) {
-                    if (event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_X)
-                        ((ZoomChartAction)hzoomOutAction).updateEnabled();
-                    if (event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_Y)
-                        ((ZoomChartAction)vzoomOutAction).updateEnabled();
-                    if (event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_X ||
-                            event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_Y)
-                        ((ZoomChartAction)zoomToFitAction).updateEnabled();
-                }
-            });
-        }
     }
 
     /**
@@ -603,7 +580,7 @@ public abstract class ChartViewer extends ZoomableCachingCanvas implements IChar
     public ZoomableCachingCanvas getCanvas() {
         return this;
     }
-    
+
 
     @Override
     public Point computeSize(int wHint, int hHint) {

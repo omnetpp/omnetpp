@@ -28,22 +28,18 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.IPage;
-import org.eclipse.ui.part.MultiPageEditorActionBarContributor;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.ChartMouseModeAction;
 import org.omnetpp.scave.actions.CopyAction;
-import org.omnetpp.scave.actions.CopyChartToClipboardAction;
-import org.omnetpp.scave.actions.CopyToClipboardAction;
+import org.omnetpp.scave.actions.CopyChartImageToClipboardAction;
+import org.omnetpp.scave.actions.CopyDataToClipboardAction;
 import org.omnetpp.scave.actions.CreateTempChartAction;
 import org.omnetpp.scave.actions.CreateTempMatplotlibChartAction;
 import org.omnetpp.scave.actions.CutAction;
@@ -70,12 +66,11 @@ import org.omnetpp.scave.charttemplates.ChartTemplate;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.python.KillPythonProcessAction;
 
-public class ScaveEditorContributor extends MultiPageEditorActionBarContributor implements IPropertyListener, ISelectionChangedListener {
+public class ScaveEditorActions implements IPropertyListener, ISelectionChangedListener {
 
-    private static ScaveEditorContributor instance;
     protected ISelectionProvider selectionProvider; // current selection provider
 
-    protected IEditorPart activeEditor;
+    protected ScaveEditor editor;
 
 
     ISelectionListener selectionListener = new ISelectionListener() {
@@ -87,50 +82,55 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
 
     protected List<IScaveAction> actions = new ArrayList<>();
 
-    protected CutAction cutAction;
-    protected CopyAction copyAction;
-    protected PasteAction pasteAction;
-    protected UndoAction undoAction;
-    protected RedoAction redoAction;
 
-
-    // generic actions
-    private OpenChartAction openAction;
-    private EditChartAction editAction;
-    private EditInputFileAction editInputFileAction;
-    private RemoveAction removeAction; // action handler of deleteRetargetAction
-    private SelectAllAction selectAllAction;
-    private ExportChartsAction exportChartsAction;
+    public final EditChartAction editAction = registerAction(new EditChartAction());
+    public final EditInputFileAction editInputFileAction = registerAction(new EditInputFileAction());
+    public final SelectAllAction selectAllAction = registerAction(new SelectAllAction());
+    public final ExportChartsAction exportChartsAction = registerAction(new ExportChartsAction());
+    public final RemoveAction removeAction = registerAction(new RemoveAction());
 
     // ChartPage actions
-    private ZoomChartAction hzoomInAction;
-    private ZoomChartAction hzoomOutAction;
-    private ZoomChartAction vzoomInAction;
-    private ZoomChartAction vzoomOutAction;
-    private ZoomChartAction zoomToFitAction;
-    private ChartMouseModeAction switchChartToPanModeAction;
-    private ChartMouseModeAction switchChartToZoomModeAction;
-    private CopyChartToClipboardAction copyChartToClipboardAction;
-    private RefreshChartAction refreshChartAction;
-    private GotoChartDefinitionAction gotoChartDefinitionAction;
+    public final ZoomChartAction hzoomInAction = registerAction(new ZoomChartAction(true, false, 2.0));
+    public final ZoomChartAction hzoomOutAction = registerAction(new ZoomChartAction(true, false, 1/2.0));
+    public final ZoomChartAction vzoomInAction = registerAction(new ZoomChartAction(false, true, 2.0));
+    public final ZoomChartAction vzoomOutAction = registerAction(new ZoomChartAction(false, true, 1/2.0));
+    public final ZoomChartAction zoomToFitAction = registerAction(new ZoomChartAction(true, true, 0.0));
+    public final ChartMouseModeAction switchChartToPanModeAction = registerAction(new ChartMouseModeAction(ZoomableCanvasMouseSupport.PAN_MODE));
+    public final ChartMouseModeAction switchChartToZoomModeAction = registerAction(new ChartMouseModeAction(ZoomableCanvasMouseSupport.ZOOM_MODE));
+    public final CopyChartImageToClipboardAction copyChartToClipboardAction = registerAction(new CopyChartImageToClipboardAction());
+    public final RefreshChartAction refreshChartAction = registerAction(new RefreshChartAction());
+    public final GotoChartDefinitionAction gotoChartDefinitionAction = registerAction(new GotoChartDefinitionAction());
+
+
+    public final CutAction cutAction = registerAction(new CutAction());
+    public final CopyAction copyAction = registerAction(new CopyAction());
+    public final PasteAction pasteAction = registerAction(new PasteAction());
+    public final UndoAction undoAction = registerAction(new UndoAction());
+    public final RedoAction redoAction = registerAction(new RedoAction());
+
+    // generic actions
+    public final OpenChartAction openAction = registerAction(new OpenChartAction());
+
+    public final CopyDataToClipboardAction copyToClipboardAction = registerAction(new CopyDataToClipboardAction());
+    public final ExportToSVGAction exportToSVGAction = registerAction(new ExportToSVGAction());
+    public final CreateTempChartAction createTempChartAction = registerAction(new CreateTempChartAction());
+    public final CreateTempMatplotlibChartAction createTempMatplotlibChartAction = registerAction(new CreateTempMatplotlibChartAction());
+    public final SaveTempChartAction saveTempChartAction = registerAction(new SaveTempChartAction());
+    public final ShowOutputVectorViewAction showOutputVectorViewAction = registerAction(new ShowOutputVectorViewAction());
+
+    public final KillPythonProcessAction killAction = registerAction(new KillPythonProcessAction());
+
 
     // BrowseDataPage actions
-    private CopyToClipboardAction copyToClipboardAction;
-    private ExportToSVGAction exportToSVGAction;
-    private CreateTempChartAction createTempChartAction;
-    private CreateTempMatplotlibChartAction createTempMatplotlibChartAction;
-    private SaveTempChartAction saveTempChartAction;
-    private ShowOutputVectorViewAction showOutputVectorViewAction;
+
     private Map<String,ExportDataAction> exportActions;
 
-    // Python actions
-    private KillPythonProcessAction killAction;
 
     protected IAction showPropertiesViewAction = new Action("Show Properties View") {
         @Override
         public void run() {
             try {
-                getPage().showView("org.eclipse.ui.views.PropertySheet");
+                editor.getEditorSite().getPage().showView("org.eclipse.ui.views.PropertySheet");
             }
             catch (PartInitException exception) {
                 ScavePlugin.logError(exception);
@@ -145,66 +145,35 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
                 hzoomOutAction.updateEnabled();
             if (event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_Y)
                 vzoomOutAction.updateEnabled();
+            if (event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_X ||
+                    event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_Y)
+                zoomToFitAction.updateEnabled();
         }
     };
 
-    public static ScaveEditorContributor getDefault() {
-        return instance;
-    }
-
-    /**
-     * Creates a multi-page contributor.
-     */
-    public ScaveEditorContributor() {
-        if (instance == null)
-            instance = this;
-    }
-
-    @Override
-    public void init(IActionBars bars, IWorkbenchPage page) {
-        registerAction(page, openAction = new OpenChartAction());
-        registerAction(page, editAction = new EditChartAction());
-        registerAction(page, editInputFileAction = new EditInputFileAction());
-        registerAction(page, selectAllAction = new SelectAllAction());
-        registerAction(page, exportChartsAction = new ExportChartsAction());
-        registerAction(page, removeAction = new RemoveAction());
-
-        // ChartPage actions
-        registerAction(page, hzoomInAction = new ZoomChartAction(true, false, 2.0));
-        registerAction(page, hzoomOutAction = new ZoomChartAction(true, false, 1/2.0));
-        registerAction(page, vzoomInAction = new ZoomChartAction(false, true, 2.0));
-        registerAction(page, vzoomOutAction = new ZoomChartAction(false, true, 1/2.0));
-        registerAction(page, zoomToFitAction = new ZoomChartAction(true, true, 0.0));
-        registerAction(page, switchChartToPanModeAction = new ChartMouseModeAction(ZoomableCanvasMouseSupport.PAN_MODE));
-        registerAction(page, switchChartToZoomModeAction = new ChartMouseModeAction(ZoomableCanvasMouseSupport.ZOOM_MODE));
-        registerAction(page, copyChartToClipboardAction = new CopyChartToClipboardAction());
-        registerAction(page, refreshChartAction = new RefreshChartAction());
-        registerAction(page, gotoChartDefinitionAction = new GotoChartDefinitionAction());
+    public ScaveEditorActions(ScaveEditor editor) {
+        this.editor = editor;
 
         // BrowseDataPage actions
         exportActions = new HashMap<>();
         for (String format : ExportDataAction.FORMATS) {
             ExportDataAction action = new ExportDataAction(format);
-            registerAction(page, action);
+            registerAction(action);
             exportActions.put(format, action);
         }
-        registerAction(page, copyToClipboardAction = new CopyToClipboardAction());
-        registerAction(page, exportToSVGAction = new ExportToSVGAction());
-        registerAction(page, createTempChartAction = new CreateTempChartAction());
-        registerAction(page, createTempMatplotlibChartAction = new CreateTempMatplotlibChartAction());
-        registerAction(page, saveTempChartAction = new SaveTempChartAction());
-        registerAction(page, showOutputVectorViewAction = new ShowOutputVectorViewAction());
 
-        registerAction(page, killAction = new KillPythonProcessAction());
-
-        super.init(bars, page);
+        IActionBars bars = editor.getEditorSite().getActionBars();
 
         bars.setGlobalActionHandler(ActionFactory.DELETE.getId(), removeAction);
         bars.setGlobalActionHandler(ActionFactory.SELECT_ALL.getId(), selectAllAction);
+        bars.setGlobalActionHandler(ActionFactory.CUT.getId(), cutAction);
+        bars.setGlobalActionHandler(ActionFactory.COPY.getId(), copyAction);
+        bars.setGlobalActionHandler(ActionFactory.PASTE.getId(), pasteAction);
+        bars.setGlobalActionHandler(ActionFactory.UNDO.getId(), undoAction);
+        bars.setGlobalActionHandler(ActionFactory.REDO.getId(), redoAction);
     }
 
-    // TODO:
-    private IScaveAction registerAction(IWorkbenchPage page, final IScaveAction action) {
+    private <T extends IScaveAction> T registerAction(T action) {
         actions.add(action);
         return action;
     }
@@ -269,11 +238,11 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         return gotoChartDefinitionAction;
     }
 
-    public CopyChartToClipboardAction  getCopyChartToClipboardAction() {
+    public CopyChartImageToClipboardAction  getCopyChartToClipboardAction() {
         return copyChartToClipboardAction;
     }
 
-    public CopyToClipboardAction getCopyToClipboardAction() {
+    public CopyDataToClipboardAction getCopyToClipboardAction() {
         return copyToClipboardAction;
     }
 
@@ -310,12 +279,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
      */
     public void registerChart(final IChartView chartView) {
         chartView.addPropertyChangeListener(zoomListener);
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
-        instance = null;
     }
 
     public void populateContextMenu(IMenuManager menuManager) {
@@ -373,11 +336,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         menuManager.insertAfter("ui-actions", showPropertiesViewAction);
     }
 
-    @Override
-    public void setActivePage(IEditorPart part) {
-        // nothing
-    }
-
     public IMenuManager createExportMenu() {
         return createExportMenu(new MenuManager("Export Data"));
     }
@@ -393,44 +351,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         return exportMenu;
     }
 
-    /**
-     * When the active editor changes, this remembers the change and registers with it as a selection provider.
-     */
-    @Override
-    public void setActiveEditor(IEditorPart part) {
-        super.setActiveEditor(part);
-
-        if (part != activeEditor) {
-            if (activeEditor != null)
-                deactivate();
-
-            if (part instanceof ScaveEditor) {
-                activeEditor = part;
-                activate();
-            }
-        }
-
-        activeEditor = part;
-
-        // Switch to the new selection provider.
-        if (selectionProvider != null) {
-            selectionProvider.removeSelectionChangedListener(this);
-        }
-        if (part == null) {
-            selectionProvider = null;
-        }
-        else {
-            selectionProvider = part.getSite().getSelectionProvider();
-            if (selectionProvider != null) { // this may also happen
-                selectionProvider.addSelectionChangedListener(this);
-
-                // Fake a selection changed event to update the menus.
-                if (selectionProvider.getSelection() != null)
-                    selectionChanged(new SelectionChangedEvent(selectionProvider, selectionProvider.getSelection()));
-            }
-        }
-    }
-
     public void selectionChanged(SelectionChangedEvent event) {
     }
 
@@ -441,44 +361,18 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         return true;
     }
 
-    @Override
-    public void init(IActionBars actionBars) {
-        super.init(actionBars);
-        ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
-
-        cutAction = new CutAction();
-        cutAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_CUT));
-        actionBars.setGlobalActionHandler(ActionFactory.CUT.getId(), cutAction);
-
-        copyAction = new CopyAction();
-        copyAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
-        actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(), copyAction);
-
-        pasteAction = new PasteAction();
-        pasteAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
-        actionBars.setGlobalActionHandler(ActionFactory.PASTE.getId(), pasteAction);
-
-        undoAction = new UndoAction();
-        undoAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_UNDO));
-        actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), undoAction);
-
-        redoAction = new RedoAction();
-        redoAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
-        actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), redoAction);
-    }
-
     public IEditorPart getActiveEditor() {
-        return activeEditor;
+        return editor;
     }
 
     public void deactivate() {
-        activeEditor.removePropertyListener(this);
+        editor.removePropertyListener(this);
         //((ScaveEditor)activeEditor).getCommandStack().removeListener(this);
         // TODO: remove all actions from workbench selection listener lists
     }
 
     public void activate() {
-        activeEditor.addPropertyListener(this);
+        editor.addPropertyListener(this);
 
         // getA .getWorkbenchWindow().getSelectionService().addSelectionListener(selectionListener);
         //((ScaveEditor)activeEditor).getCommandStack().addListener(this);

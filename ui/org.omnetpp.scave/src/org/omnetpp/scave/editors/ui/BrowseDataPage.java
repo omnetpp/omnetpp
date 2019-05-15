@@ -29,7 +29,7 @@ import org.omnetpp.scave.actions.IncreaseDecimalPlacesAction;
 import org.omnetpp.scave.actions.SetFilterAction2;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.editors.ScaveEditorContributor;
+import org.omnetpp.scave.editors.ScaveEditorActions;
 import org.omnetpp.scave.editors.datatable.ChooseTableColumnsAction;
 import org.omnetpp.scave.editors.datatable.DataTable;
 import org.omnetpp.scave.editors.datatable.DataTree;
@@ -135,11 +135,11 @@ public class BrowseDataPage extends FormEditorPage {
         setFocusManager(new FocusManager(this));
 
         // add actions to the toolbar
-        ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
-        addToToolbar(contributor.getCopyToClipboardAction());
+        ScaveEditorActions actions = scaveEditor.getActions();
+        addToToolbar(actions.copyToClipboardAction);
 
         DropdownAction exportDataAction = new DropdownAction("Export Data", "Export In: ", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_EXPORT), false);
-        ScaveEditorContributor.getDefault().createExportMenu(exportDataAction.getMenuManager());
+        actions.createExportMenu(exportDataAction.getMenuManager());
         addToToolbar(exportDataAction);
 
         addSeparatorToToolbar();
@@ -160,8 +160,8 @@ public class BrowseDataPage extends FormEditorPage {
         addToToolbar(new IncreaseDecimalPlacesAction());
         addToToolbar(new DecreaseDecimalPlacesAction());  //TODO get these refreshed when min/max precision is reached
         addSeparatorToToolbar();
-        addToToolbar(contributor.getCreateTempChartAction());
-        addToToolbar(contributor.getCreateTempMatplotlibChartAction());
+        addToToolbar(actions.getCreateTempChartAction());
+        addToToolbar(actions.getCreateTempMatplotlibChartAction());
 
         // show/hide actions that are specific to tab pages
         tabFolder.addSelectionListener(new SelectionAdapter() {
@@ -184,13 +184,13 @@ public class BrowseDataPage extends FormEditorPage {
     private void configureContextMenu(FilteredDataPanel panel) {
         // populate the popup menu of the panel
         IMenuManager contextMenuManager = panel.getDataControl().getContextMenuManager();
-        ScaveEditorContributor editorContributor = ScaveEditorContributor.getDefault();
-        if (editorContributor != null) {
-            contextMenuManager.add(editorContributor.getCreateTempChartAction());
-            contextMenuManager.add(editorContributor.getCreateTempMatplotlibChartAction());
+        ScaveEditorActions actions = scaveEditor.getActions();
+        if (actions != null) {
+            contextMenuManager.add(actions.getCreateTempChartAction());
+            contextMenuManager.add(actions.getCreateTempMatplotlibChartAction());
             contextMenuManager.add(new Separator());
-            contextMenuManager.add(editorContributor.createExportMenu());
-            contextMenuManager.add(editorContributor.getCopyToClipboardAction());
+            contextMenuManager.add(actions.createExportMenu());
+            contextMenuManager.add(actions.getCopyToClipboardAction());
             contextMenuManager.add(new Separator());
             contextMenuManager.add(setFilterAction);
             if (panel.getDataControl() instanceof DataTable)
@@ -199,7 +199,7 @@ public class BrowseDataPage extends FormEditorPage {
                 ((DataTree)panel.getDataControl()).contributeToContextMenu(contextMenuManager);
             if (ResultType.VECTOR_LITERAL.equals(panel.getType())) {
                 contextMenuManager.add(new Separator());
-                contextMenuManager.add(editorContributor.getShowOutputVectorViewAction());
+                contextMenuManager.add(actions.getShowOutputVectorViewAction());
             }
         }
         // XXX call getSite().registerContexMenu() ?
@@ -279,13 +279,11 @@ public class BrowseDataPage extends FormEditorPage {
 
             @Override
             public void widgetDefaultSelected(SelectionEvent e) {
-                ScaveEditorContributor editorContributor = ScaveEditorContributor.getDefault();
-                if (editorContributor != null) {
-                    if (editorContributor.getCreateTempChartAction().isEnabled())
-                        editorContributor.getCreateTempChartAction().run();
-                    else
-                        editorContributor.getCreateTempMatplotlibChartAction().run();
-                }
+                ScaveEditorActions actions = scaveEditor.getActions();
+                if (actions.getCreateTempChartAction().isEnabled())
+                    actions.getCreateTempChartAction().run();
+                else
+                    actions.getCreateTempMatplotlibChartAction().run();
             }
         };
 

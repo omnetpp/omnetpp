@@ -1411,7 +1411,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         return new SequenceChartAction("Copy to Clipboard", Action.AS_PUSH_BUTTON) {
             @Override
             protected void doRun() {
-                sequenceChart.copyToClipboard();
+                sequenceChart.copyImageToClipboard();
             }
         };
     }

@@ -49,7 +49,7 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.AddVectorOperationAction;
 import org.omnetpp.scave.actions.ChartMouseModeAction;
 import org.omnetpp.scave.actions.ClosePageAction;
-import org.omnetpp.scave.actions.CopyChartToClipboardAction;
+import org.omnetpp.scave.actions.CopyChartImageToClipboardAction;
 import org.omnetpp.scave.actions.EditChartAction;
 import org.omnetpp.scave.actions.ExportToSVGAction;
 import org.omnetpp.scave.actions.RefreshChartAction;
@@ -235,7 +235,7 @@ public class ChartScriptEditor extends PyEdit {
                     formEditor.addToToolbar(new RefreshChartAction());
                     formEditor.addToToolbar(killAction = new KillPythonProcessAction());
                     formEditor.addSeparatorToToolbar();
-                    formEditor.addToToolbar(new CopyChartToClipboardAction());
+                    formEditor.addToToolbar(new CopyChartImageToClipboardAction());
                     formEditor.addToToolbar(exportAction);
                     formEditor.addSeparatorToToolbar();
                     formEditor.addToToolbar(new ClosePageAction());
@@ -258,7 +258,7 @@ public class ChartScriptEditor extends PyEdit {
                     formEditor.addToToolbar(new RefreshChartAction());
                     formEditor.addToToolbar(killAction = new KillPythonProcessAction());
                     formEditor.addSeparatorToToolbar();
-                    formEditor.addToToolbar(new CopyChartToClipboardAction());
+                    formEditor.addToToolbar(new CopyChartImageToClipboardAction());
                     formEditor.addToToolbar(new ExportToSVGAction());
                     formEditor.addSeparatorToToolbar();
                     formEditor.addToToolbar(new ClosePageAction());
@@ -398,7 +398,7 @@ public class ChartScriptEditor extends PyEdit {
                 computeSubmenuManager.add(new AddVectorOperationAction("Time window average", "df = ops.compute(df, ops.vector_timewinavg, window_size=0.1) # Average of all values in every window_size long interval (in seconds)"));
                 computeSubmenuManager.add(new AddVectorOperationAction("Window average", "df = ops.compute(df, ops.vector_winavg, window_size=10) # Average of every window_size long batch of values"));
 
-                ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
+                ScaveEditorActions actions = scaveEditor.getActions();
 
                 if (chart.getType() == ChartType.MATPLOTLIB) {
                     matplotlibChartViewer = new MatplotlibChartViewer(scaveEditor.processPool, sashForm);
@@ -417,8 +417,8 @@ public class ChartScriptEditor extends PyEdit {
                     manager.add(new EditChartAction());
                     manager.add(new Separator());
 
-                    manager.add(contributor.getUndoAction());
-                    manager.add(contributor.getRedoAction());
+                    manager.add(actions.undoAction);
+                    manager.add(actions.redoAction);
                     manager.add(new Separator());
 
                     // TODO: buttons to control RLE and halfres interaction? Or maybe only in a
@@ -447,7 +447,7 @@ public class ChartScriptEditor extends PyEdit {
                     manager.add(killAction);
                     manager.add(new Separator());
 
-                    manager.add(new CopyChartToClipboardAction());
+                    manager.add(new CopyChartImageToClipboardAction());
                     manager.add(exportAction);
 
                     PlotWidget plotWidget = matplotlibChartViewer.getPlotWidget();
@@ -487,8 +487,8 @@ public class ChartScriptEditor extends PyEdit {
                     manager.add(new EditChartAction());
                     manager.add(new Separator());
 
-                    manager.add(contributor.getUndoAction());
-                    manager.add(contributor.getRedoAction());
+                    manager.add(actions.undoAction);
+                    manager.add(actions.redoAction);
                     manager.add(new Separator());
 
                     if (chart.getType() == ChartType.LINE) {
@@ -506,7 +506,7 @@ public class ChartScriptEditor extends PyEdit {
                     manager.add(killAction);
 
                     manager.add(new Separator());
-                    manager.add(new CopyChartToClipboardAction());
+                    manager.add(new CopyChartImageToClipboardAction());
                     manager.add(new ExportToSVGAction());
 
                     nativeChartViewer.getChartViewer().setMenu(manager.createContextMenu(nativeChartViewer.getChartViewer()));
@@ -523,8 +523,8 @@ public class ChartScriptEditor extends PyEdit {
                     @Override
                     public void focusGained(FocusEvent e) {
                         final IActionBars actionBars = getEditorSite().getActionBars();
-                        actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), ScaveEditorContributor.getDefault().undoAction);
-                        actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), ScaveEditorContributor.getDefault().redoAction);
+                        actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), scaveEditor.getActions().undoAction);
+                        actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), scaveEditor.getActions().redoAction);
                         actionBars.updateActionBars();
                     }
                 });

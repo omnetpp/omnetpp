@@ -19,8 +19,8 @@ import org.omnetpp.scave.python.MatplotlibChartViewer;
 /**
  * Copy chart contents to the clipboard.
  */
-public class CopyChartToClipboardAction extends AbstractScaveAction {
-    public CopyChartToClipboardAction() {
+public class CopyChartImageToClipboardAction extends AbstractScaveAction {
+    public CopyChartImageToClipboardAction() {
         setText("Copy Image to Clipboard");
         setToolTipText("Copy Chart Image to Clipboard");
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_COPY));
@@ -28,12 +28,15 @@ public class CopyChartToClipboardAction extends AbstractScaveAction {
 
     @Override
     protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
+
+        // TODO: lift copyImageToClipboard to the common ViewerBase class, use that instead of dispatching here
+
         final ChartViewer nativeChart = editor.getActiveChartViewer();
 
         if (nativeChart != null) {
             BusyIndicator.showWhile(Display.getDefault(), new Runnable() {
                 public void run() {
-                    nativeChart.copyToClipboard();
+                    nativeChart.copyImageToClipboard();
                 }
             });
         }
@@ -43,7 +46,7 @@ public class CopyChartToClipboardAction extends AbstractScaveAction {
         if (matplotlibChart != null) {
             BusyIndicator.showWhile(Display.getDefault(), new Runnable() {
                 public void run() {
-                    matplotlibChart.copyToClipboard();
+                    matplotlibChart.copyImageToClipboard();
                 }
             });
         }

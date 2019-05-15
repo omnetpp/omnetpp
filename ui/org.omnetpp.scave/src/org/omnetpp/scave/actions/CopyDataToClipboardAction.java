@@ -20,8 +20,8 @@ import org.omnetpp.scave.engine.ResultFileManager;
 /**
  * Copy data from the Browse Data page to the clipboard.
  */
-public class CopyToClipboardAction extends AbstractScaveAction {
-    public CopyToClipboardAction() {
+public class CopyDataToClipboardAction extends AbstractScaveAction {
+    public CopyDataToClipboardAction() {
         setText("Copy to Clipboard");
         setImageDescriptor(ScavePlugin.getSharedImageDescriptor(ISharedImages.IMG_TOOL_COPY));
     }

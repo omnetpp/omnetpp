@@ -7,7 +7,6 @@
 
 package org.omnetpp.common.canvas;
 
-import java.awt.RenderingHints;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
@@ -106,7 +105,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
      * Uses AWT functionality, because SWT does not support ImageTransfer yet.
      * See: https://bugs.eclipse.org/bugs/show_bug.cgi?id=78856.
      */
-    public void copyToClipboard() {
+    public void copyImageToClipboard() {
         Clipboard cp = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
         ClipboardOwner owner = new java.awt.datatransfer.ClipboardOwner() {
             public void lostOwnership(Clipboard clipboard, Transferable contents) {

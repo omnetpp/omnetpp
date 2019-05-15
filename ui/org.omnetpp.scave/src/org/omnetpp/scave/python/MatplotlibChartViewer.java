@@ -215,7 +215,7 @@ public class MatplotlibChartViewer extends ChartViewerBase {
         }
     }
 
-    public void copyToClipboard() {
+    public void copyImageToClipboard() {
         Clipboard cp = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
         ClipboardOwner owner = new java.awt.datatransfer.ClipboardOwner() {
             public void lostOwnership(Clipboard clipboard, Transferable contents) {
