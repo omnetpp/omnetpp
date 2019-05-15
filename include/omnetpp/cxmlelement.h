@@ -111,6 +111,9 @@ class SIM_API cXMLElement : public cObject, noncopyable
     // internal: Constructor
     cXMLElement(const char *tagname, cXMLElement *parent);
 
+    // internal: Constructor - for backward compatibility
+    cXMLElement(const char *tagname, const char *ignored, cXMLElement *parent) : cXMLElement(tagname, parent) {}
+
     // internal: sets source location
     virtual void setSourceLocation(const char *fname, int line);
 
