@@ -1,3 +1,5 @@
+2019-05-15  ------ omnetpp-5.5 released ------
+
 2019-04-25  Andras Varga
 
 	cXMLElement: optimize for memory usage (some users have GiB files...)

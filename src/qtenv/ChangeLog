@@ -1,3 +1,5 @@
+2019-05-15  ------ omnetpp-5.5 released ------
+
 2019-03-21  TÖRÖK Attila
 
 	* Fix connection info string (dest gate name) in context menus.

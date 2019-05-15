@@ -1,3 +1,5 @@
+2019-05-15  ------ omnetpp-5.5 released ------
+
 2018-11-05  Zoltan Bojthe
 
 	* fix: event number printf format: remove extra tail "d"

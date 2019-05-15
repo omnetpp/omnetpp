@@ -1,3 +1,5 @@
+2019-05-15  ------ omnetpp-5.5 released ------
+
 2019-04-27  Andras Varga
 
 	* XML: fix the issue of accumulating whitespace node content slowing

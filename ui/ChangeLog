@@ -1,3 +1,5 @@
+2019-05-15  ------ omnetpp-5.5 released ------
+
 2019-04-26  Rudolf Hornig
 
 	* fix NPE in workspace import when the initial welcome screen closed
