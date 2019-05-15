@@ -247,6 +247,8 @@ public class ScaveEditor extends MultiPageEditorPartExt
                 public void run() {
                     firePropertyChange(IEditorPart.PROP_DIRTY);
 
+                    ScaveEditorContributor.getDefault().updateActions();
+
                     // Try to select the affected objects.
                     //
                     ICommand mostRecentCommand = commandStack.getMostRecentCommand();
@@ -1137,33 +1139,11 @@ public class ScaveEditor extends MultiPageEditorPartExt
         // (temporary objects are not deleted, but they can be moved into the persistent
         // analysis)
 
-        // TODO: instead: check all pages, and close the ones the chart of which is no longer in the model
-
-//        List<Object> deletedObjects = null;
-//        switch (event.getEventType()) {
-//        case Notification.REMOVE:
-//            deletedObjects = new ArrayList<Object>();
-//            deletedObjects.add(event.getOldValue());
-//            break;
-//        case Notification.REMOVE_MANY:
-//            deletedObjects = (List<Object>) event.getOldValue();
-//            break;
-//        }
-
-//        if (deletedObjects != null) {
-//            for (Object object : deletedObjects) {
-//                if (object instanceof AnalysisObject) {
-//                    TreeIterator<AnalysisObject> contents = ((AnalysisObject) object).eAllContents();
-//                    // iterate on contents including object
-//                    for (Object next = object; next != null; next = contents.hasNext() ? contents.next() : null) {
-//                        if (next instanceof Chart) {
-//                            closePage((Chart) next);
-//                            contents.prune();
-//                        }
-//                    }
-//                }
-//            }
-//        }
+        for (AnalysisItem item : closablePages.keySet()) {
+            // XXX: when folders are introduced, revise this
+            if (!analysis.getCharts().getCharts().contains(item))
+                removePage(closablePages.get(item));
+        }
 
         // update contents of pages
         int pageCount = getPageCount();

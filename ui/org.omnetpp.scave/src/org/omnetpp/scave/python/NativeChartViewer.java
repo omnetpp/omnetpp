@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
@@ -153,6 +154,11 @@ public class NativeChartViewer extends ChartViewerBase {
             changePythonIntoDirectory(workingDir);
             proc.getEntryPoint().execute(script);
         }, ownRunAfterDone, ownRunAfterError);
+    }
+
+    @Override
+    public Control getWidget() {
+        return chartView;
     }
 
     public void setVisible(boolean visible) {

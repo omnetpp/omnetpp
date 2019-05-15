@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -21,12 +22,16 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IMemento;
+import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
@@ -54,9 +59,9 @@ import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.editors.ui.ChartPage;
 import org.omnetpp.scave.editors.ui.FormEditorPage;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.Chart.ChartType;
 import org.omnetpp.scave.model.IModelChangeListener;
 import org.omnetpp.scave.model.ModelChangeEvent;
-import org.omnetpp.scave.model.Chart.ChartType;
 import org.omnetpp.scave.model.commands.CommandStack;
 import org.omnetpp.scave.pychart.PlotWidget;
 import org.omnetpp.scave.pychart.PythonCallerThread.ExceptionHandler;
@@ -168,6 +173,7 @@ public class ChartScriptEditor extends PyEdit {
         this.chart = chart;
         this.originalChart = (Chart)chart.dup();
         this.scaveEditor = scaveEditor;
+
 
         this.documentProvider = new ChartScriptDocumentProvider();
 
@@ -284,6 +290,25 @@ public class ChartScriptEditor extends PyEdit {
                 Assert.isTrue(sashForm.getChildren().length == 1 && sashForm.getChildren()[0] instanceof Composite);
                 sourceEditorContainer = (Composite) (sashForm.getChildren()[0]);
 
+                final IActionBars actionBars = getEditorSite().getActionBars();
+                final IAction undoActionHandler = actionBars.getGlobalActionHandler(ActionFactory.UNDO.getId());
+                final IAction redoActionHandler = actionBars.getGlobalActionHandler(ActionFactory.REDO.getId());
+
+
+                obj.getTextWidget().addFocusListener(new FocusListener() {
+
+                    @Override
+                    public void focusLost(FocusEvent e) {
+                    }
+
+                    @Override
+                    public void focusGained(FocusEvent e) {
+                        actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), undoActionHandler);
+                        actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), redoActionHandler);
+                        actionBars.updateActionBars();
+                    }
+                });
+
                 IOutputListener outputListener = (output, err) -> {
                     Display.getDefault().asyncExec(() -> {
                         try {
@@ -373,6 +398,7 @@ public class ChartScriptEditor extends PyEdit {
                 computeSubmenuManager.add(new AddVectorOperationAction("Time window average", "df = ops.compute(df, ops.vector_timewinavg, window_size=0.1) # Average of all values in every window_size long interval (in seconds)"));
                 computeSubmenuManager.add(new AddVectorOperationAction("Window average", "df = ops.compute(df, ops.vector_winavg, window_size=10) # Average of every window_size long batch of values"));
 
+                ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
 
                 if (chart.getType() == ChartType.MATPLOTLIB) {
                     matplotlibChartViewer = new MatplotlibChartViewer(scaveEditor.processPool, sashForm);
@@ -389,6 +415,10 @@ public class ChartScriptEditor extends PyEdit {
 
                     manager.add(toggleShowSourceAction);
                     manager.add(new EditChartAction());
+                    manager.add(new Separator());
+
+                    manager.add(contributor.getUndoAction());
+                    manager.add(contributor.getRedoAction());
                     manager.add(new Separator());
 
                     // TODO: buttons to control RLE and halfres interaction? Or maybe only in a
@@ -455,14 +485,19 @@ public class ChartScriptEditor extends PyEdit {
                     manager.add(new GotoChartDefinitionAction());
                     manager.add(toggleShowSourceAction);
                     manager.add(new EditChartAction());
+                    manager.add(new Separator());
+
+                    manager.add(contributor.getUndoAction());
+                    manager.add(contributor.getRedoAction());
+                    manager.add(new Separator());
 
                     if (chart.getType() == ChartType.LINE) {
-                        manager.add(new Separator());
+
                         manager.add(applySubmenuManager);
                         manager.add(computeSubmenuManager);
+                        manager.add(new Separator());
                     }
 
-                    manager.add(new Separator());
                     manager.add(zoomSubmenuManager);
 
                     manager.add(new Separator());
@@ -477,6 +512,23 @@ public class ChartScriptEditor extends PyEdit {
                     nativeChartViewer.getChartViewer().setMenu(manager.createContextMenu(nativeChartViewer.getChartViewer()));
 
                 }
+
+
+                getChartViewer().getWidget().addFocusListener(new FocusListener() {
+
+                    @Override
+                    public void focusLost(FocusEvent e) {
+                    }
+
+                    @Override
+                    public void focusGained(FocusEvent e) {
+                        final IActionBars actionBars = getEditorSite().getActionBars();
+                        actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), ScaveEditorContributor.getDefault().undoAction);
+                        actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), ScaveEditorContributor.getDefault().redoAction);
+                        actionBars.updateActionBars();
+                    }
+                });
+
 
                 sashForm.layout();
 

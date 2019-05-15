@@ -18,7 +18,7 @@ import org.omnetpp.scave.model.commands.CommandStack;
  */
 public class RedoAction extends AbstractScaveAction {
     public RedoAction() {
-        setText("Redo");
+        setText("Redo Scave Operation");
         setImageDescriptor(ScavePlugin.getSharedImageDescriptor(ISharedImages.IMG_TOOL_REDO));
     }
 

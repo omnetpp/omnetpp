@@ -18,7 +18,9 @@ import org.omnetpp.scave.model.commands.CommandStack;
  */
 public class UndoAction extends AbstractScaveAction {
     public UndoAction() {
-        setText("Undo");
+        setText("Undo Scave Operation text");
+        setDescription("Undo Scave Operation desc");
+        setToolTipText("Undo Scave Operation tt");
         setImageDescriptor(ScavePlugin.getSharedImageDescriptor(ISharedImages.IMG_TOOL_UNDO));
     }
 

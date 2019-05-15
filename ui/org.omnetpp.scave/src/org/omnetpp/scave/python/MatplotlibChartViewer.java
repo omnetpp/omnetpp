@@ -14,6 +14,7 @@ import java.util.List;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
@@ -98,6 +99,11 @@ public class MatplotlibChartViewer extends ChartViewerBase {
             changePythonIntoDirectory(workingDir);
             proc.getEntryPoint().execute(script);
         }, runAfterDone, ownRunAfterError);
+    }
+
+    @Override
+    public Control getWidget() {
+        return plotWidget;
     }
 
     public void setVisible(boolean visible) {

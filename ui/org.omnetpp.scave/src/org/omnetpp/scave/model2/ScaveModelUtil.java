@@ -44,14 +44,11 @@ import org.omnetpp.scave.model.ModelChangeEvent;
 import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ResultType;
-import org.omnetpp.scave.model.commands.AddChartPropertyCommand;
 import org.omnetpp.scave.model.commands.AddInputFileCommand;
 import org.omnetpp.scave.model.commands.CommandStack;
 import org.omnetpp.scave.model.commands.CompoundCommand;
 import org.omnetpp.scave.model.commands.ICommand;
 import org.omnetpp.scave.model.commands.MoveChartCommand;
-import org.omnetpp.scave.model.commands.SetChartPropertyCommand;
-import org.omnetpp.scave.model.commands.SetInputFileCommand;
 
 /**
  * A collection of static methods to manipulate model objects

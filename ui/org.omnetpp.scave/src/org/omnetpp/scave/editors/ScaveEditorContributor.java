@@ -16,8 +16,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.IStatusLineManager;
-import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -36,7 +34,6 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
-import org.eclipse.ui.actions.RetargetAction;
 import org.eclipse.ui.part.IPage;
 import org.eclipse.ui.part.MultiPageEditorActionBarContributor;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
@@ -73,11 +70,6 @@ import org.omnetpp.scave.charttemplates.ChartTemplate;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.python.KillPythonProcessAction;
 
-/**
- * Editor contributor for ScaveEditor.
- *
- * @author andras, tomi
- */
 public class ScaveEditorContributor extends MultiPageEditorActionBarContributor implements IPropertyListener, ISelectionChangedListener {
 
     private static ScaveEditorContributor instance;
@@ -101,11 +93,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     protected UndoAction undoAction;
     protected RedoAction redoAction;
 
-
-    // global retarget actions
-    private RetargetAction undoRetargetAction;
-    private RetargetAction redoRetargetAction;
-    private RetargetAction deleteRetargetAction;
 
     // generic actions
     private OpenChartAction openAction;
@@ -234,6 +221,14 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         return editInputFileAction;
     }
 
+    public UndoAction getUndoAction() {
+        return undoAction;
+    }
+
+    public RedoAction getRedoAction() {
+        return redoAction;
+    }
+
     public RemoveAction getRemoveAction() {
         return removeAction;
     }
@@ -306,14 +301,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         return showOutputVectorViewAction;
     }
 
-    public RetargetAction getUndoRetargetAction() {
-        return undoRetargetAction;
-    }
-
-    public RetargetAction getRedoRetargetAction() {
-        return redoRetargetAction;
-    }
-
     public KillPythonProcessAction getKillAction() {
         return killAction;
     }
@@ -328,51 +315,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     @Override
     public void dispose() {
         super.dispose();
-        // FIXME remove the selection listener from the other actions
-        getPage().removePartListener(undoRetargetAction);
-        getPage().removePartListener(redoRetargetAction);
-        getPage().removePartListener(deleteRetargetAction);
-        undoRetargetAction.dispose();
-        redoRetargetAction.dispose();
-        deleteRetargetAction.dispose();
-
         instance = null;
-    }
-
-    @Override
-    public void contributeToMenu(IMenuManager manager) {
-        // do not contribute to the menu bar
-    }
-
-    @Override
-    public void contributeToToolBar(IToolBarManager manager) {
-        // note: most actions are displayed on toolbars inside the editor area
-        manager.add(new Separator("scavemodel-settings"));
-        manager.add(new Separator("scavemodel-additions"));
-
-        undoRetargetAction = new RetargetAction(ActionFactory.UNDO.getId(), "Undo");
-        redoRetargetAction = new RetargetAction(ActionFactory.REDO.getId(), "Redo");
-        deleteRetargetAction = new RetargetAction(ActionFactory.DELETE.getId(), "Delete");
-
-        ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
-        undoRetargetAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_UNDO));
-        undoRetargetAction.setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_UNDO_DISABLED));
-        redoRetargetAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
-        redoRetargetAction.setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_REDO_DISABLED));
-        deleteRetargetAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
-        deleteRetargetAction.setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE_DISABLED));
-
-        getPage().addPartListener(undoRetargetAction);
-        getPage().addPartListener(redoRetargetAction);
-        getPage().addPartListener(deleteRetargetAction);
-
-        manager.add(undoRetargetAction);
-        manager.add(redoRetargetAction);
-    }
-
-    @Override
-    public void contributeToStatusLine(IStatusLineManager statusLineManager) {
-        // nothing
     }
 
     public void populateContextMenu(IMenuManager menuManager) {
@@ -421,8 +364,8 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
             actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(), copyAction);
             actionBars.setGlobalActionHandler(ActionFactory.PASTE.getId(), pasteAction);
         }
-        actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), undoAction);
-        actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), redoAction);
+//        actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), undoAction);
+//        actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), redoAction);
     }
 
     protected void addGlobalActions(IMenuManager menuManager) {

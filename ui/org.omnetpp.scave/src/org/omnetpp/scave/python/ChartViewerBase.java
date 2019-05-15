@@ -4,12 +4,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.swt.widgets.Control;
 import org.omnetpp.scave.pychart.IChartPropertiesProvider;
 import org.omnetpp.scave.pychart.IScaveResultsPickleProvider;
-import org.omnetpp.scave.pychart.PythonProcess;
-import org.omnetpp.scave.pychart.PythonProcessPool;
 import org.omnetpp.scave.pychart.PythonCallerThread.ExceptionHandler;
 import org.omnetpp.scave.pychart.PythonOutputMonitoringThread.IOutputListener;
+import org.omnetpp.scave.pychart.PythonProcess;
+import org.omnetpp.scave.pychart.PythonProcessPool;
 import org.omnetpp.scave.python.MatplotlibChartViewer.IStateChangeListener;
 
 public abstract class ChartViewerBase {
@@ -89,6 +90,9 @@ public abstract class ChartViewerBase {
 
     public abstract void runPythonScript(String script, File workingDir, Runnable runAfterDone, ExceptionHandler runAfterError);
 
+    public abstract Control getWidget();
+
     public abstract void setVisible(boolean visible);
+
 
 }

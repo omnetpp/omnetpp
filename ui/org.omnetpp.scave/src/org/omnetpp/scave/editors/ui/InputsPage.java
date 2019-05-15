@@ -46,10 +46,10 @@ import org.omnetpp.scave.editors.ScaveEditorContributor;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
 import org.omnetpp.scave.engineext.ResultFileManagerChangeEvent;
-import org.omnetpp.scave.model.ModelChangeEvent;
-import org.omnetpp.scave.model.commands.CommandStack;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
+import org.omnetpp.scave.model.ModelChangeEvent;
+import org.omnetpp.scave.model.commands.CommandStack;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 //TODO remove page description; display "empty-table message" instead (stacklayout?)
@@ -57,7 +57,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 public class InputsPage extends FormEditorPage {
     private InputsTree treeViewer;
     protected CommandStack commandStack = new CommandStack("InputsPage");
-    
+
     private Runnable scheduledUpdate;
 
     public InputsPage(Composite parent, ScaveEditor scaveEditor) {
@@ -100,7 +100,8 @@ public class InputsPage extends FormEditorPage {
                 menuManager.add(contributor.getEditInputFileAction());
                 menuManager.add(contributor.getRemoveAction());
                 menuManager.add(new Separator());
-                menuManager.add(contributor.getUndoRetargetAction());
+                menuManager.add(contributor.getUndoAction());
+                menuManager.add(contributor.getRedoAction());
                 menuManager.add(new Separator());
                 menuManager.add(new ExpandSubtreeAction(treeViewer));
                 menuManager.add(new CollapseSubtreeAction(treeViewer));
@@ -172,7 +173,7 @@ public class InputsPage extends FormEditorPage {
     public InputsTree getTreeViewer() {
         return treeViewer;
     }
-    
+
     public CommandStack getCommandStack() {
 		return commandStack;
 	}
