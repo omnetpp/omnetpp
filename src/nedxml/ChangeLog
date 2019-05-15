@@ -1,3 +1,21 @@
+2019-05-15  ------ omnetpp-5.5 released ------
+
+2019-05-13  Rudolf Hornig
+
+	* Message compiler: moved the header guard to the beginning of the generated
+	files. The CDT Indexer gets confused and parses the same file several times
+	if anything (except comments) precedes the header guard #ifdef in the file.
+	This triggered a bug in CDT Indexer and caused extreme slowdown and	eventually
+	memory exhaustion.
+
+2019-03-11  Andras Varga
+
+	* dtdclassgen: added attribute ID constants
+
+2019-02-07  Andras Varga
+
+	* nedxml: Let the validator know about the new intuniformexcl() NED function.
+
 2018-06-25  ------ omnetpp-5.4.1 released ------
 
 2018-06-13  Attila Torok

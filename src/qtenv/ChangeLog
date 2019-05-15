@@ -1,3 +1,72 @@
+2019-05-15  ------ omnetpp-5.5 released ------
+
+2019-03-21  Attila Torok
+
+	* Fix connection info string (dest gate name) in context menus.
+
+2019-03-20  Andras Varga
+
+	* Fix: search in lists brought up by the Inspect->Available Components command
+	was not possible. The Find Objects dialog did not find the object to search in.
+
+2019-03-20  Andras Varga
+
+	* Prevent the Debug dialog from kicking in when inputting a wrong
+	value in the Object Inspector.
+
+2019-03-07  Attila Torok
+
+	* Catch cRuntimeErrors coming from message printers in TextViewerProvider
+	of LogInspector.
+
+2019-01-28  Attila Torok
+
+	* Fix a crash in MessageAnimator when a marked module is deleted.
+
+2019-01-25  Andras Varga
+
+	* HistogramInspector: tolerate inf as bin value
+	* ChartTickDecimal: reject conversion from inf/nan; fix comparison with inf
+
+2018-11-30  Attila Torok
+
+	* Make sure video crop area is never invalid (out of bounds). By clipping
+	it to the content area of the module inspector.
+
+2018-10-04  Attila Torok
+
+	* Rework video recording dialog, with added options.
+	
+	* Only resize the MainWindow to a multiple of 2, not 4, when
+	recording video. Turns out, this is enough for yuv420p subsampling, and
+	we don't plan to use any other.
+
+2018-10-09  Attila Torok
+
+	* Fix video recording getting stuck with holding built-in animations.
+	* Do not animate messages from different sources concurrently.
+	* Add getSourceModuleId() to Animations.
+
+2018-10-04  Attila Torok
+
+	* Store the settings in the .qtenvrc file when the preferences
+	dialog is accepted.
+
+	Not only on exit. This fixes the issue where an improper shutdown
+	(crash on network teardown, etc) will not save the settings changes.
+
+2018-11-05  Attila Torok
+
+	* Fix crash when Qtenv is closed with an OutputVectorInspector open.
+
+2018-10-04  Attila Torok
+
+	* Always update the next event marker on inspector refresh.
+
+	This fixes the "red rectangle lagging behind" problem with moving
+	submodules, when stopping after express mode, or when running in normal
+	mode at higher speeds.
+
 2018-06-25  ------ omnetpp-5.4.1 released ------
 
 2018-06-21  Attila Torok

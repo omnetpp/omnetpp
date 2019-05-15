@@ -1,3 +1,26 @@
+2019-05-15  ------ omnetpp-5.5 released ------
+
+2018-12-03  Andras Varga
+
+	* histograms: improved to be a better demo
+
+	- change config so that all (distribution, histogram) pairs make sense,
+	  e.g. not generate [0,1) and collect a histogram on [10,20)
+	- added hint text on canvas
+	- updated fingeprint tests
+
+2019-01-24  Andras Varga
+
+	* histograms: eliminate AutoRangeStrategyBuilder for code
+	simplicity
+
+2018-12-03  TÖRÖK Attila
+
+	* histograms: Remove a lot of configs and histogram setups.
+
+	As this sample is no longer used for fingerprint testing, there is no
+	need to have it so complicated.
+
 2018-06-25  ------ omnetpp-5.4.1 released ------
 
 2018-06-11  ------ omnetpp-5.4 released ------

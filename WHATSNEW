@@ -28,6 +28,48 @@ Samples:
     using the data from the resultfiles sample.
 
 
+OMNeT++ 5.5 (June 2019)
+-----------------------
+
+This release contains minor fixes. See the individual ChangeLogs for details.
+
+Core:
+
+  - Added the intuniformexcl() NED and C++ function. It returns a random integer
+    with uniform distribution over [a,b). that is, including a and excluding b.
+
+  - The contents of resultfilters.h and resultrecorders.h are now public API,
+    i.e. part of <omnetpp.h>. This change allows one to derive new result filters/
+    recorders by subclassing the built-in ones.
+
+  - A description string can now be specified when registering new result filters
+    and recorders. New registration macros have been added for this purpose.
+    
+  - cXMLElement was optimized to use less memory when large files are loaded.
+
+  - cHistogram: Now collects the number of positive and negative infinity values
+    separately.
+
+  - SimTime: Added preciseDiv() for a precise division of an integer and a 
+    simulation time.
+
+  - cQueue, cPacketQueue: added a constructor that accepts a comparator 
+    object (not just a function).
+
+  - cModule: Added containsModule() method.
+
+Other:
+
+  - Several Qtenv-related fixes and improvements
+
+  - Added support for osgEarth 2.10 and above
+
+  - Updated IDE to Eclipse 4.11. This resolves compatibility issues with JDK 11.
+
+  - Workaround for long C++ indexer runtimes in the IDE.
+
+
+
 OMNeT++ 5.4.1 (June 2018)
 -------------------------
 

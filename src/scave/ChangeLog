@@ -1,3 +1,13 @@
+2019-05-15  ------ omnetpp-5.5 released ------
+
+2018-09-21  Attila Torok
+
+	* Replace $* with "$@" in a couple of scripts.
+
+2018-11-05  Attila Torok
+
+	* Fix build with C++17. Contribution by tomasz.jankowski.mail@gmail.com.
+
 2018-06-25  ------ omnetpp-5.4.1 released ------
 
 2018-06-20  Rudolf Hornig
