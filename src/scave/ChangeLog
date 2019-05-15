@@ -1,3 +1,11 @@
+2018-09-21  TÖRÖK Attila
+
+	* Replace $* with "$@" in a couple scripts.
+
+2018-11-05  TÖRÖK Attila
+
+	* Fix build with C++17. Contribution by tomasz.jankowski.mail@gmail.com.
+
 2018-06-25  ------ omnetpp-5.4.1 released ------
 
 2018-06-20  Rudolf Hornig

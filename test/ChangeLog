@@ -1,3 +1,45 @@
+2019-03-20  Andras Varga
+
+	* update test for recently added intuniformexcl() function
+
+2019-02-08  Andras Varga
+
+	* added cSimpleModule_activity_n2.test
+
+2017-05-03  Andras Varga
+
+	* added activity-related test cases
+
+2019-02-08  Andras Varga
+
+	* additional test for preciseDiv()
+
+2019-02-06  Andras Varga
+
+	* Makefile: MAKE IT THE OFFICIAL LIST OF TESTS THAT MUST PASS
+
+2019-02-05  Andras Varga
+
+	* sqliteresultfiles: turned into automated test
+
+2018-12-20  TÖRÖK Attila
+
+	* Tests updated for collecting infinite values in histograms
+
+		- Two new test cases for ensuring that infinities are accepted and they do
+		not affect the histogram layout.
+
+		- Updated histogram save/load tests for changed file file format.
+
+		- Updated fingerprint of empty histogram test (it was out of date already).
+
+		- Also, fingerprint of SineWeightedLinear yielded two different values on
+		two different computers (Attila's laptop and Giga)
+
+2018-08-17  Zoltan Bojthe
+
+	* added NED inheritance test with two namespace for @class without namespace
+
 2018-06-25  ------ omnetpp-5.4.1 released ------
 
 2018-06-11  ------ omnetpp-5.4 released ------

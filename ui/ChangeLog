@@ -1,3 +1,35 @@
+2019-04-26  Rudolf Hornig
+
+	* fix NPE in workspace import when the initial welcome screen closed
+	on the latest eclipse
+
+2019-03-25  Rudolf Hornig
+
+	* Updated tycho/antrunner/pomless plugin versions + fixed version
+	number replacements
+
+2019-03-21  Rudolf Hornig
+
+	* Use Eclipse 4.11 cdt 9.7
+
+2019-02-09  Andras Varga
+
+	* ide: removing "bgl" display string tag
+
+	Store seed in the figure instead of the display string tag. Change
+	Relayout action accordingly.
+
+	The "bgl" could be used to specify the layout seed for the compound
+	module. It has not been supported by Qtenv, as it was unclear how it was
+	supposed to coexist with Qtenv's "Relayout" button. We are now removing
+	it altogether.
+
+2018-07-06  Rudolf Hornig
+
+	* Fixed the trashy cursors during connection drag and new module
+	creation with GTK3. The IDE now runs with GTK3. Both the cursor issue
+	and the missing 3-state checkbox issue in the launcher dialog has been fixed.
+
 2018-06-25  ------ omnetpp-5.4.1 released ------
 
 2018-06-13  Andras Varga

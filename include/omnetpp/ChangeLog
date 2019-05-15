@@ -1,3 +1,76 @@
+2019-04-25  Andras Varga
+
+	cXMLElement: optimize for memory usage (some users have GiB files...)
+
+2019-03-20  Andras Varga
+
+	fix: @statistic signal checking used wrong isSimple()
+
+2019-03-13  Andras Varga
+
+	added new result recorders/filters: totalCount, errorNan, nanCount
+
+2019-03-13  Andras Varga
+
+	fix RemoveRepeatsFilter (repeated NaNs were not filtered out)
+
+2019-02-27  Andras Varga
+
+	added user-accessible descriptions for result filter/recorder types
+	  - new macro: Register_ResultFilter2(), Register_ResultRecorder2()
+	  - documentation is  accessible via opp_run -h resultfilters / resultrecorders
+
+2019-02-26  Andras Varga
+
+	fix: prevent NaN coming from filters expressions like
+	count(foo)+count(bar)
+	solution: count(),sum(),etc. and are now able to provide the initial
+	value via getInitialDoubleValue()
+
+2019-03-12  Andras Varga
+
+	* cQueue: added possibility to use comparator object (not just function)
+	* cQueue: move CompareFunc inside cQueue
+
+2019-03-12  Andras Varga
+
+	cQueue refactoring: rename n to len
+
+2019-02-07  Andras Varga
+
+	* added TimeFilter
+	* added preciseDiv(int64_t, SimTime)
+	* added intuniformexcl() as NED function, global function, as cComponent method, as object
+	(cIntUniformExcl)
+
+2019-01-27  Andras Varga
+
+	* cModule: added containsModule()
+	* cSimpleModule: remove deprecated legacy constructor
+
+2019-01-22  TÖRÖK Attila
+
+	* Add infinity counting to cAbstractHistogram and subclasses.
+	* fix: cKSplit, cPSquare: added missing clear() implementation
+
+2019-01-16  TÖRÖK Attila
+
+	* Remove old and unused (internal) plotline function from cPrecollDensityEst.
+	* Added cAbstractHistogram::dup() override. Just so the return type is correct.
+
+2018-12-03  Andras Varga
+
+	include: envirext.h: use noncopyable
+
+2018-06-28  Andras Varga
+
+	resultfilters.h and resultrecorders.h made public
+
+2018-09-19  TÖRÖK Attila
+
+	#define NOGDI as well before #include <windows.h> to further reduce bloat
+	Original reason: Name conflict with PC_NONE, see 7b3042a
+
 2018-06-25  ------ omnetpp-5.4.1 released ------
 
 2018-06-18  Rudolf Hornig

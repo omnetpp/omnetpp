@@ -1,3 +1,7 @@
+2018-07-02  TÖRÖK Attila
+
+	* Fix build when only OSG is installed, osgEarth is not.
+
 2018-06-25  ------ omnetpp-5.4.1 released ------
 
 2018-06-11  ------ omnetpp-5.4 released ------
@@ -34,4 +38,3 @@
 2015-11-30  Rudolf Hornig
 
 	* renamed Canvas3d -> osg-intro
-

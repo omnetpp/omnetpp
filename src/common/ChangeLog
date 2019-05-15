@@ -1,3 +1,33 @@
+2019-04-25  Andras Varga
+
+	* cXMLElement: optimize for memory usage (some users have GiB files...)
+	* StringPool: added contains()
+
+2019-04-30  Andras Varga
+
+	* opp_xmlQuote() fix: ampersand must be quoted too
+
+2019-03-03  Andras Varga
+
+	* PatternMatcher: added str()
+
+2019-02-21  TÖRÖK Attila
+
+	* LineTokenizer now reallocates its internal buffer for longer lines.
+
+2019-03-08  Andras Varga
+
+	* SQLite scheme: fix inet-#417: remove NOT NULL from vector values
+
+2019-01-29  Andras Varga
+
+	* SqliteVectorFileWriter:fix occasional "db==nullptr" error
+	It happens when Envir calls flush() when the file was not yet opened
+
+2018-12-17  Andras Varga
+
+	* OmnetppVectorFileWriter: fix VectorData leak
+
 2018-06-25  ------ omnetpp-5.4.1 released ------
 
 2018-06-15  Andras Varga

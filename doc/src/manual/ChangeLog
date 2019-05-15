@@ -1,3 +1,27 @@
+2016-12-21  Rudolf Hornig
+
+	* Removing "bgl" display string tag
+
+2018-11-27  Andras Varga
+
+	* ltoh: fixes; allow the definition of b/e verbatim etc to be
+	overridden from the specs file
+
+2018-05-08  Andras Varga
+
+	* ltoh fixes and improvements:
+	math: support $$...$$ notation; recognize \bar{}, \infty etc; added \b
+	(matches word boundary) support command names that end in '*', e.g.
+	\subsection*{}
+
+2018-05-08  Andras Varga
+
+	* usman.tex: latex definitions harmonized with inet user guide
+
+2018-06-18  Rudolf Hornig
+
+	* use qpdf instead of pdftk for building documentation
+
 2018-06-25  ------ omnetpp-5.4.1 released ------
 
 2018-06-11  ------ omnetpp-5.4 released ------

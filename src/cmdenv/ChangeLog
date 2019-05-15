@@ -1,3 +1,7 @@
+2019-01-29  Andras Varga
+
+	* startrunDone -> startrunCalled, based on the definition of LF_ON_RUN_END
+
 2018-06-25  ------ omnetpp-5.4.1 released ------
 
 2018-06-11  ------ omnetpp-5.4 released ------
