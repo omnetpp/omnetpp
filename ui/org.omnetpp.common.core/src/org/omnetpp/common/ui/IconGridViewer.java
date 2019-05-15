@@ -66,7 +66,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
-import org.omnetpp.common.Debug;
 import org.omnetpp.common.color.ColorFactory;
 
 
@@ -150,6 +149,7 @@ public class IconGridViewer extends ContentViewer {
                 return;
             }
 
+            // TODO: double selection change notification (first for clear, second for add)
             if (!ctrl && !selectionContainsPoint(mouseDownPos)) // note: allow multi-selection to be drag'n'dropped
                 clearSelection();
             if (element != null) {
