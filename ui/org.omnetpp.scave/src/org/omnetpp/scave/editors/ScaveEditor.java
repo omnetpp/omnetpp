@@ -49,7 +49,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabFolder2Adapter;
@@ -82,12 +81,10 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
-import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
@@ -97,6 +94,7 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheet;
 import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetSorter;
+import org.omnetpp.common.ui.ArrayTreeContentProvider;
 import org.omnetpp.common.ui.LocalTransfer;
 import org.omnetpp.common.ui.MultiPageEditorPartExt;
 import org.omnetpp.common.ui.ViewerDragAdapter;
@@ -295,11 +293,12 @@ public class ScaveEditor extends MultiPageEditorPartExt
     /**
      * Updates pages when the model changed.
      */
-    private IModelChangeListener pageUpdater = new IModelChangeListener() {
+    private IModelChangeListener modelChangeListener = new IModelChangeListener() {
 
         @Override
         public void modelChanged(ModelChangeEvent event) {
             updatePages(event);
+            actions.updateActions();
         }
     };
 
@@ -542,7 +541,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
         IFile inputFile = ((IFileEditorInput) getEditorInput()).getFile();
         tracker = new ResultFilesTracker(manager, analysis.getInputs(), inputFile.getParent().getFullPath());
-        analysis.addListener(pageUpdater);
+        analysis.addListener(modelChangeListener);
         analysis.addListener(tracker);
 
         // listen to resource changes: create, delete, modify
@@ -600,10 +599,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
     protected CTabFolder getTabFolder() {
         return (CTabFolder) getContainer();
-    }
-
-    protected void initializeContentOutlineViewer(Viewer contentOutlineViewer) {
-        contentOutlineViewer.setInput(getAnalysis());
     }
 
     public IPropertySheetPage getPropertySheetPage() {
@@ -968,22 +963,13 @@ public class ScaveEditor extends MultiPageEditorPartExt
                     updateStatusLineManager(contentOutlineStatusLineManager, selection);
                 }
                 updateStatusLineManager(getEditorSite().getActionBars().getStatusLineManager(), selection);
+                actions.updateActions();
+                System.out.println("selection changed: " + selection);
                 fireSelectionChangedEvent(selection);
             } finally {
                 selectionChangeInProgress = false;
             }
         }
-
-        if (inputsPage != null)
-            inputsPage.selectionChanged(selection);
-        if (browseDataPage != null)
-            browseDataPage.selectionChanged(selection);
-        if (chartsPage != null)
-            chartsPage.selectionChanged(selection);
-
-        /*
-         * ((FormEditorPage)page).selectionChanged(selection);
-         */
     }
 
     class ScaveEditorContentOutlinePage extends ContentOutlinePage {
@@ -1160,45 +1146,17 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
         IEditorPart editor = getEditor(newPageIndex);
         if (editor != null) {
-            ITextEditor editorPart = ((ITextEditor) editor);
-
-            // TODO is this needed?
-            getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.DELETE.getId(),
-                    editorPart.getAction(ActionFactory.DELETE.getId()));
-            getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.SELECT_ALL.getId(),
-                    editorPart.getAction(ActionFactory.SELECT_ALL.getId()));
-            getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.COPY.getId(),
-                    editorPart.getAction(ActionFactory.COPY.getId()));
-            getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.PASTE.getId(),
-                    editorPart.getAction(ActionFactory.PASTE.getId()));
-            getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.CUT.getId(),
-                    editorPart.getAction(ActionFactory.CUT.getId()));
-            getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.UNDO.getId(),
-                    editorPart.getAction(ActionFactory.UNDO.getId()));
-            getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.REDO.getId(),
-                    editorPart.getAction(ActionFactory.REDO.getId()));
-
             if (editor instanceof ChartScriptEditor)
                 ((ChartScriptEditor) editor).pageActivated();
         }
         else {
             Control page = getControl(newPageIndex);
 
-            if (page instanceof FormEditorPage) {
+            if (page instanceof FormEditorPage)
                 ((FormEditorPage) page).pageActivated();
-            }
         }
-        fakeSelectionChange();
-    }
 
-    /**
-     * Pretends that a selection change has taken place. This is e.g. useful for
-     * updating the enabled/disabled/pushed etc state of actions
-     * (AbstractScaveAction) whose isApplicable() method is hooked on selection
-     * changes.
-     */
-    public void fakeSelectionChange() {
-        setSelection(getSelection());
+        actions.updateActions();
     }
 
     /*
@@ -1445,18 +1403,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
      */
     public void setSelectionToViewer(Collection<?> collection) {
         handleSelectionChange(new StructuredSelection(collection.toArray()));
-    }
-
-    /**
-     * Utility function to update selection in a viewer without generating further
-     * notifications.
-     */
-    public void setViewerSelectionNoNotify(Viewer target, ISelection selection) {
-        if (target != null) {
-            target.removeSelectionChangedListener(selectionChangedListener);
-            target.setSelection(selection, true);
-            target.addSelectionChangedListener(selectionChangedListener);
-        }
     }
 
     /**

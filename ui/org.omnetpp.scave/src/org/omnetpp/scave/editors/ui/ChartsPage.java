@@ -16,7 +16,6 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
@@ -99,9 +98,9 @@ public class ChartsPage extends FormEditorPage {
             addToToolbar(new NewChartFromTemplateAction(templ));
 
         addSeparatorToToolbar();
-        addToToolbar(actions.getEditAction());
-        addToToolbar(actions.getRemoveAction());
-        addToToolbar(actions.getOpenAction());
+        addToToolbar(actions.editAction);
+        addToToolbar(actions.removeAction);
+        addToToolbar(actions.openAction);
 
         viewer.setFocus();
 
@@ -134,11 +133,6 @@ public class ChartsPage extends FormEditorPage {
             }
         }
         return false;
-    }
-
-    @Override
-    public void selectionChanged(ISelection selection) {
-        setViewerSelectionNoNotify(getViewer(), selection);
     }
 
     public void updatePage(ModelChangeEvent event) {
@@ -234,10 +228,10 @@ public class ChartsPage extends FormEditorPage {
             public void doubleClick(DoubleClickEvent event) {
                 ScaveEditorActions actions = scaveEditor.getActions();
 
-                if (actions.getOpenAction().isEnabled())
-                    actions.getOpenAction().run();
-                else if (actions.getEditAction().isEnabled())
-                    actions.getEditAction().run();
+                if (actions.openAction.isEnabled())
+                    actions.openAction.run();
+                else if (actions.editAction.isEnabled())
+                    actions.editAction.run();
             }
         });
 

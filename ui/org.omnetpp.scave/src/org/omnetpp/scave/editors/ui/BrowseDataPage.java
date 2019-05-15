@@ -160,8 +160,8 @@ public class BrowseDataPage extends FormEditorPage {
         addToToolbar(new IncreaseDecimalPlacesAction());
         addToToolbar(new DecreaseDecimalPlacesAction());  //TODO get these refreshed when min/max precision is reached
         addSeparatorToToolbar();
-        addToToolbar(actions.getCreateTempChartAction());
-        addToToolbar(actions.getCreateTempMatplotlibChartAction());
+        addToToolbar(actions.createTempChartAction);
+        addToToolbar(actions.createTempMatplotlibChartAction);
 
         // show/hide actions that are specific to tab pages
         tabFolder.addSelectionListener(new SelectionAdapter() {
@@ -186,11 +186,11 @@ public class BrowseDataPage extends FormEditorPage {
         IMenuManager contextMenuManager = panel.getDataControl().getContextMenuManager();
         ScaveEditorActions actions = scaveEditor.getActions();
         if (actions != null) {
-            contextMenuManager.add(actions.getCreateTempChartAction());
-            contextMenuManager.add(actions.getCreateTempMatplotlibChartAction());
+            contextMenuManager.add(actions.createTempChartAction);
+            contextMenuManager.add(actions.createTempMatplotlibChartAction);
             contextMenuManager.add(new Separator());
             contextMenuManager.add(actions.createExportMenu());
-            contextMenuManager.add(actions.getCopyToClipboardAction());
+            contextMenuManager.add(actions.copyToClipboardAction);
             contextMenuManager.add(new Separator());
             contextMenuManager.add(setFilterAction);
             if (panel.getDataControl() instanceof DataTable)
@@ -199,7 +199,7 @@ public class BrowseDataPage extends FormEditorPage {
                 ((DataTree)panel.getDataControl()).contributeToContextMenu(contextMenuManager);
             if (ResultType.VECTOR_LITERAL.equals(panel.getType())) {
                 contextMenuManager.add(new Separator());
-                contextMenuManager.add(actions.getShowOutputVectorViewAction());
+                contextMenuManager.add(actions.showOutputVectorViewAction);
             }
         }
         // XXX call getSite().registerContexMenu() ?
@@ -280,10 +280,10 @@ public class BrowseDataPage extends FormEditorPage {
             @Override
             public void widgetDefaultSelected(SelectionEvent e) {
                 ScaveEditorActions actions = scaveEditor.getActions();
-                if (actions.getCreateTempChartAction().isEnabled())
-                    actions.getCreateTempChartAction().run();
+                if (actions.createTempChartAction.isEnabled())
+                    actions.createTempChartAction.run();
                 else
-                    actions.getCreateTempMatplotlibChartAction().run();
+                    actions.createTempMatplotlibChartAction.run();
             }
         };
 

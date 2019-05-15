@@ -511,6 +511,7 @@ public class ChartScriptEditor extends PyEdit {
 
                     nativeChartViewer.getChartViewer().setMenu(manager.createContextMenu(nativeChartViewer.getChartViewer()));
 
+                    actions.registerChart(nativeChartViewer.getChartViewer());
                 }
 
 

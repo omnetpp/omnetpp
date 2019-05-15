@@ -20,19 +20,11 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.ISelectionProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.ui.IActionBars;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IPropertyListener;
-import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.IPage;
-import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.scave.ScavePlugin;
@@ -66,19 +58,9 @@ import org.omnetpp.scave.charttemplates.ChartTemplate;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.python.KillPythonProcessAction;
 
-public class ScaveEditorActions implements IPropertyListener, ISelectionChangedListener {
-
-    protected ISelectionProvider selectionProvider; // current selection provider
+public class ScaveEditorActions {
 
     protected ScaveEditor editor;
-
-
-    ISelectionListener selectionListener = new ISelectionListener() {
-        @Override
-        public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-            updateActions();
-        }
-    };
 
     protected List<IScaveAction> actions = new ArrayList<>();
 
@@ -119,9 +101,6 @@ public class ScaveEditorActions implements IPropertyListener, ISelectionChangedL
     public final ShowOutputVectorViewAction showOutputVectorViewAction = registerAction(new ShowOutputVectorViewAction());
 
     public final KillPythonProcessAction killAction = registerAction(new KillPythonProcessAction());
-
-
-    // BrowseDataPage actions
 
     private Map<String,ExportDataAction> exportActions;
 
@@ -178,102 +157,9 @@ public class ScaveEditorActions implements IPropertyListener, ISelectionChangedL
         return action;
     }
 
-    public OpenChartAction getOpenAction() {
-        return openAction;
-    }
-
-    public EditChartAction getEditAction() {
-        return editAction;
-    }
-
-    public EditInputFileAction getEditInputFileAction() {
-        return editInputFileAction;
-    }
-
-    public UndoAction getUndoAction() {
-        return undoAction;
-    }
-
-    public RedoAction getRedoAction() {
-        return redoAction;
-    }
-
-    public RemoveAction getRemoveAction() {
-        return removeAction;
-    }
-
-    public ZoomChartAction getHZoomInAction() {
-        return hzoomInAction;
-    }
-
-    public ZoomChartAction getHZoomOutAction() {
-        return hzoomOutAction;
-    }
-
-    public ZoomChartAction getVZoomInAction() {
-        return vzoomInAction;
-    }
-
-    public ZoomChartAction getVZoomOutAction() {
-        return vzoomOutAction;
-    }
-
-    public ZoomChartAction getZoomToFitAction() {
-        return zoomToFitAction;
-    }
-
-    public ChartMouseModeAction getSwitchChartToPanModeAction() {
-        return switchChartToPanModeAction;
-    }
-
-    public ChartMouseModeAction getSwitchChartToZoomModeAction() {
-        return switchChartToZoomModeAction;
-    }
-
-    public RefreshChartAction getRefreshChartAction() {
-        return refreshChartAction;
-    }
-
-    public GotoChartDefinitionAction getGotoChartDefinitionAction() {
-        return gotoChartDefinitionAction;
-    }
-
-    public CopyChartImageToClipboardAction  getCopyChartToClipboardAction() {
-        return copyChartToClipboardAction;
-    }
-
-    public CopyDataToClipboardAction getCopyToClipboardAction() {
-        return copyToClipboardAction;
-    }
-
-    public ExportToSVGAction getExportToSVGAction() {
-        return exportToSVGAction;
-    }
-
     public Map<String, ExportDataAction> getExportActions() {
         return exportActions;
     }
-
-    public CreateTempChartAction getCreateTempChartAction() {
-        return createTempChartAction;
-    }
-
-    public CreateTempMatplotlibChartAction getCreateTempMatplotlibChartAction() {
-        return createTempMatplotlibChartAction;
-    }
-
-    public SaveTempChartAction getSaveTempChartAction() {
-        return saveTempChartAction;
-    }
-
-    public ShowOutputVectorViewAction getShowOutputVectorViewAction() {
-        return showOutputVectorViewAction;
-    }
-
-    public KillPythonProcessAction getKillAction() {
-        return killAction;
-    }
-
     /**
      * Listen on zoom state changes of the chart.
      */
@@ -320,15 +206,13 @@ public class ScaveEditorActions implements IPropertyListener, ISelectionChangedL
     }
 
     public void shareGlobalActions(IPage page, IActionBars actionBars) {
-        if (!(page instanceof IPropertySheetPage)) {
-            actionBars.setGlobalActionHandler(ActionFactory.DELETE.getId(), removeAction);
-            actionBars.setGlobalActionHandler(ActionFactory.SELECT_ALL.getId(), selectAllAction);
-            actionBars.setGlobalActionHandler(ActionFactory.CUT.getId(), cutAction);
-            actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(), copyAction);
-            actionBars.setGlobalActionHandler(ActionFactory.PASTE.getId(), pasteAction);
-        }
-//        actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), undoAction);
-//        actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), redoAction);
+        actionBars.setGlobalActionHandler(ActionFactory.DELETE.getId(), removeAction);
+        actionBars.setGlobalActionHandler(ActionFactory.SELECT_ALL.getId(), selectAllAction);
+        actionBars.setGlobalActionHandler(ActionFactory.CUT.getId(), cutAction);
+        actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(), copyAction);
+        actionBars.setGlobalActionHandler(ActionFactory.PASTE.getId(), pasteAction);
+        actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), undoAction);
+        actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), redoAction);
     }
 
     protected void addGlobalActions(IMenuManager menuManager) {
@@ -351,47 +235,9 @@ public class ScaveEditorActions implements IPropertyListener, ISelectionChangedL
         return exportMenu;
     }
 
-    public void selectionChanged(SelectionChangedEvent event) {
-    }
-
-    /**
-     * This ensures that a delete action will clean up all references to deleted objects.
-     */
-    protected boolean removeAllReferencesOnDelete() {
-        return true;
-    }
-
-    public IEditorPart getActiveEditor() {
-        return editor;
-    }
-
-    public void deactivate() {
-        editor.removePropertyListener(this);
-        //((ScaveEditor)activeEditor).getCommandStack().removeListener(this);
-        // TODO: remove all actions from workbench selection listener lists
-    }
-
-    public void activate() {
-        editor.addPropertyListener(this);
-
-        // getA .getWorkbenchWindow().getSelectionService().addSelectionListener(selectionListener);
-        //((ScaveEditor)activeEditor).getCommandStack().addListener(this);
-
-     // TODO: add all actions to workbench selection listener lists
-    }
-
     public void updateActions() {
-        for (IScaveAction action : actions) {
+        Debug.println("ScaveEditorActions::updateActions");
+        for (IScaveAction action : actions)
             action.updateEnabled();
-        }
     }
-//    public void update() {
-//        undoAction.update();
-//        redoAction.update();
-//    }
-
-    public void propertyChanged(Object source, int id) {
-        //update();
-    }
-
 }

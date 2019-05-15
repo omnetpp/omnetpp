@@ -16,8 +16,6 @@ import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.ErrorDialog;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -219,18 +217,6 @@ public class FormEditorPage extends Composite {
      * multipage editor.
      */
     public void pageActivated() {
-    }
-
-    /**
-     * Notification about the change of the workbench selection.
-     * Pages are synchronizing their selection of their viewers
-     * by calling {@link #setViewerSelectionNoNotify(Viewer, ISelection)}.
-     */
-    public void selectionChanged(ISelection selection) {
-    }
-
-    protected void setViewerSelectionNoNotify(Viewer viewer, ISelection selection) {
-        scaveEditor.setViewerSelectionNoNotify(viewer, selection);
     }
 
     /**

@@ -20,7 +20,6 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.util.LocalSelectionTransfer;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -83,8 +82,8 @@ public class InputsPage extends FormEditorPage {
         // toolbar
         ScaveEditorActions actions = scaveEditor.getActions();
         addToToolbar(new NewInputFileAction());
-        addToToolbar(actions.getEditInputFileAction());
-        addToToolbar(actions.getRemoveAction());
+        addToToolbar(actions.editInputFileAction);
+        addToToolbar(actions.removeAction);
         addSeparatorToToolbar();
         addToToolbar(new CollapseTreeAction(treeViewer));
 
@@ -97,11 +96,11 @@ public class InputsPage extends FormEditorPage {
             @Override
             public void menuAboutToShow(IMenuManager menuManager) {
                 menuManager.add(new NewInputFileAction());
-                menuManager.add(actions.getEditInputFileAction());
-                menuManager.add(actions.getRemoveAction());
+                menuManager.add(actions.editInputFileAction);
+                menuManager.add(actions.removeAction);
                 menuManager.add(new Separator());
-                menuManager.add(actions.getUndoAction());
-                menuManager.add(actions.getRedoAction());
+                menuManager.add(actions.undoAction);
+                menuManager.add(actions.redoAction);
                 menuManager.add(new Separator());
                 menuManager.add(new ExpandSubtreeAction(treeViewer));
                 menuManager.add(new CollapseSubtreeAction(treeViewer));
@@ -195,12 +194,6 @@ public class InputsPage extends FormEditorPage {
     public void updatePage(ModelChangeEvent event) {
         if (ScaveModelUtil.isInputsChange(event))
             getTreeViewer().refresh();
-    }
-
-    @Override
-    public void selectionChanged(ISelection selection) {
-        //Debug.println(selection.toString());
-        //TODO if selection contains InputFiles, select them in the tree?
     }
 
     protected void handleDrop(IStructuredSelection droppedItems) {
