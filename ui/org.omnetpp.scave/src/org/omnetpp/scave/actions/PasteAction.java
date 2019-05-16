@@ -64,6 +64,7 @@ public class PasteAction extends AbstractScaveAction {
             for (Object o : objects) {
                 if (o instanceof AnalysisItem) {
                     AnalysisItem itemToPaste = (AnalysisItem)((AnalysisItem)o).dup();
+                    itemToPaste.assignNewId();
                     String newName = ScaveModelUtil.makeItemCopyName(existingNames, itemToPaste.getName());
                     itemToPaste.setName(newName);
                     existingNames.add(newName);

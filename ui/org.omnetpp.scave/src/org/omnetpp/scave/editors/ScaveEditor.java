@@ -872,7 +872,8 @@ public class ScaveEditor extends MultiPageEditorPartExt
     }
 
     public void setPageTitle(FormEditorPage page, String title) {
-        int pageIndex = findPage(page);
+        // TODO: eewwww
+        int pageIndex = (page instanceof ChartPage) ? findPage(page.getParent()) : findPage(page);
         if (pageIndex >= 0)
             setPageText(pageIndex, title);
     }
@@ -1141,11 +1142,8 @@ public class ScaveEditor extends MultiPageEditorPartExt
         // update contents of pages
         int pageCount = getPageCount();
         for (int pageIndex = 0; pageIndex < pageCount; ++pageIndex) {
-            Control control = getControl(pageIndex);
-            if (control instanceof FormEditorPage) {
-                FormEditorPage page = (FormEditorPage) control;
-                page.updatePage(event);
-            }
+            FormEditorPage editorPage = getEditorPage(pageIndex);
+            editorPage.updatePage(event);
         }
     }
 

@@ -181,7 +181,7 @@ public class Chart extends AnalysisItem {
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
-        if (!(obj instanceof Chart))
+        if (obj.getClass() != getClass())
             return false;
         Chart other = (Chart)obj;
 

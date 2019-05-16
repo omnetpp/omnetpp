@@ -26,10 +26,33 @@ public abstract class AnalysisItem extends ModelObject {
         notifyListeners();
     }
 
+    public void assignNewId() {
+        setId(nextId++);
+    }
+
     @Override
     protected AnalysisItem clone() throws CloneNotSupportedException {
-        AnalysisItem clone = (AnalysisItem)super.clone();
-        clone.setId(nextId++);
-        return clone;
+        return (AnalysisItem)super.clone();
     }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        AnalysisItem other = (AnalysisItem)obj;
+        if (id != other.id)
+            return false;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        return true;
+    }
+
 }

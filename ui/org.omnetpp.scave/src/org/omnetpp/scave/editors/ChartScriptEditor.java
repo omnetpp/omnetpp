@@ -264,7 +264,7 @@ public class ChartScriptEditor extends PyEdit {
                     formEditor.addToToolbar(new ClosePageAction());
                 }
 
-                formEditor.setFormTitle("Chart: " + getChartName());
+                formEditor.setFormTitle(getChartName());
                 GridLayout layout = new GridLayout(1, true);
                 layout.marginWidth = 0;
                 layout.marginHeight = 0;
@@ -756,7 +756,7 @@ public class ChartScriptEditor extends PyEdit {
     }
 
     public String getChartName() {
-        return (chart.getName() == null || chart.getName().isEmpty()) ? "<unnamed>" : chart.getName();
+        return StringUtils.defaultIfEmpty(chart.getName(), "<unnamed>");
     }
 
     @Override
@@ -768,15 +768,6 @@ public class ChartScriptEditor extends PyEdit {
     public boolean isSaveAsAllowed() {
         return false;
     }
-//
-//    public void prepareForSave() {
-//        String oldCode = chart.getScript();
-//        String newCode = getDocument().get();
-//        if (!newCode.equals(oldCode)) {
-//            ICommand command = new SetChartScriptCommand(chart, newCode);
-//            commandStack.execute(command);
-//        }
-//    }
 
     @Override
     public void dispose() {

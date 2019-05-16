@@ -18,6 +18,8 @@ public class SetChartContentsCommand implements ICommand {
         this.oldContents = oldContents;
         this.newContents = newContents;
 
+        oldContents.setName(chart.getName());
+
         Assert.isTrue(chart.equals(oldContents) || chart.equals(newContents));
         Assert.isTrue(chart != oldContents && chart != newContents);
     }
