@@ -29,7 +29,7 @@ public interface IScaveAction extends IAction {
     /**
      * Updates the Enabled property of this action.
      */
-    public void updateEnabled();
+    public void update();
 
     /**
      * When set, the action will operate on the selection of the viewer,

@@ -81,6 +81,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.ide.IGotoMarker;
@@ -298,6 +299,8 @@ public class ScaveEditor extends MultiPageEditorPartExt
         @Override
         public void modelChanged(ModelChangeEvent event) {
             updatePages(event);
+            // strictly speaking, some actions (undo, redo) should be updated when the
+            // command stack changes, but there are more of those.
             actions.updateActions();
         }
     };
@@ -1097,7 +1100,8 @@ public class ScaveEditor extends MultiPageEditorPartExt
     /**
      * Utility function to access the active editor in the workbench.
      */
-    public static ScaveEditor getActiveScaveEditor(IWorkbench workbench) {
+    public static ScaveEditor getActiveScaveEditor() {
+        IWorkbench workbench = PlatformUI.getWorkbench();
         if (workbench.getActiveWorkbenchWindow() != null) {
             IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
             if (page != null) {
@@ -1107,6 +1111,11 @@ public class ScaveEditor extends MultiPageEditorPartExt
             }
         }
         return null;
+    }
+
+    public static CommandStack getActiveScaveCommandStack() {
+        ScaveEditor activeEditor = getActiveScaveEditor();
+        return activeEditor == null ? null : activeEditor.getActiveCommandStack();
     }
 
     public ISelectionChangedListener getSelectionChangedListener() {

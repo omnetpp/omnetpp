@@ -299,6 +299,10 @@ public class ChartScriptEditor extends PyEdit {
 
                     @Override
                     public void focusLost(FocusEvent e) {
+                        final IActionBars actionBars = getEditorSite().getActionBars();
+                        actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), scaveEditor.getActions().undoAction);
+                        actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), scaveEditor.getActions().redoAction);
+                        actionBars.updateActionBars();
                     }
 
                     @Override
@@ -662,25 +666,25 @@ public class ChartScriptEditor extends PyEdit {
         formEditor.setToolbarActionVisible(saveTempChartAction, chart.isTemporary());
         formEditor.setToolbarActionVisible(gotoChartDefinitionAction, !chart.isTemporary());
 
-        saveTempChartAction.updateEnabled();
-        gotoChartDefinitionAction.updateEnabled();
+        saveTempChartAction.update();
+        gotoChartDefinitionAction.update();
 
-        zoomInHorizAction.updateEnabled();
-        zoomOutHorizAction.updateEnabled();
-        zoomInVertAction.updateEnabled();
-        zoomOutVertAction.updateEnabled();
+        zoomInHorizAction.update();
+        zoomOutHorizAction.update();
+        zoomInVertAction.update();
+        zoomOutVertAction.update();
 
-        killAction.updateEnabled();
+        killAction.update();
 
-        interactAction.updateEnabled();
-        panAction.updateEnabled();
-        zoomAction.updateEnabled();
+        interactAction.update();
+        panAction.update();
+        zoomAction.update();
 
-        homeAction.updateEnabled();
-        backAction.updateEnabled();
-        forwardAction.updateEnabled();
+        homeAction.update();
+        backAction.update();
+        forwardAction.update();
 
-        exportAction.updateEnabled();
+        exportAction.update();
     }
 
     public void setShowSource(boolean show) {

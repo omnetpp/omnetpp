@@ -12,6 +12,7 @@ import org.eclipse.ui.ISharedImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.commands.CommandStack;
+import org.omnetpp.scave.model.commands.ICommand;
 
 /**
  * Perform Redo action on the ScaveEditor.
@@ -25,6 +26,19 @@ public class RedoAction extends AbstractScaveAction {
     @Override
     protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
         editor.getActiveCommandStack().redo();
+    }
+
+    @Override
+    public void update() {
+        super.update();
+
+        CommandStack activeCommandStack = ScaveEditor.getActiveScaveCommandStack();
+        ICommand commandToRedo = activeCommandStack == null ? null : activeCommandStack.getCommandToRedo();
+        String label = commandToRedo == null ? "Can't Redo" : ("Redo " + commandToRedo.getLabel());
+
+        setText(label);
+        setDescription(label);
+        setToolTipText(label);
     }
 
     @Override

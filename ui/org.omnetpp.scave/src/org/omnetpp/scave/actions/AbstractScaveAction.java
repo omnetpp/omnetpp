@@ -91,11 +91,9 @@ public abstract class AbstractScaveAction extends Action implements IScaveAction
     }
 
     /**
-     * Updates the Enabled property of this action.
-     * To be called when some state changed which the enabled property
-     * the action depends on.
+     * To be called when some state changed which the action depends on.
      */
-    public void updateEnabled() {
+    public void update() {
         IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
         if (page != null) {
             IEditorPart editor = page.getActiveEditor();

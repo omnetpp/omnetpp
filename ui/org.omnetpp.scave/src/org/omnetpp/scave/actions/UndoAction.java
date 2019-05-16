@@ -12,21 +12,35 @@ import org.eclipse.ui.ISharedImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.commands.CommandStack;
+import org.omnetpp.scave.model.commands.ICommand;
 
 /**
  * Perform Undo action on the ScaveEditor.
  */
 public class UndoAction extends AbstractScaveAction {
     public UndoAction() {
-        setText("Undo Scave Operation text");
-        setDescription("Undo Scave Operation desc");
-        setToolTipText("Undo Scave Operation tt");
+        setText("Undo Scave Operation");
+        setDescription("Undo Scave Operation");
+        setToolTipText("Undo Scave Operation");
         setImageDescriptor(ScavePlugin.getSharedImageDescriptor(ISharedImages.IMG_TOOL_UNDO));
     }
 
     @Override
     protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
         editor.getActiveCommandStack().undo();
+    }
+
+    @Override
+    public void update() {
+        super.update();
+
+        CommandStack activeCommandStack = ScaveEditor.getActiveScaveCommandStack();
+        ICommand commandToUndo = activeCommandStack == null ? null : activeCommandStack.getCommandToUndo();
+        String label = commandToUndo == null ? "Can't Undo" : ("Undo " + commandToUndo.getLabel());
+
+        setText(label);
+        setDescription(label);
+        setToolTipText(label);
     }
 
     @Override

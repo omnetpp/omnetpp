@@ -121,12 +121,12 @@ public class ScaveEditorActions {
         @Override
         public void propertyChange(PropertyChangeEvent event) {
             if (event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_X)
-                hzoomOutAction.updateEnabled();
+                hzoomOutAction.update();
             if (event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_Y)
-                vzoomOutAction.updateEnabled();
+                vzoomOutAction.update();
             if (event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_X ||
                     event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_Y)
-                zoomToFitAction.updateEnabled();
+                zoomToFitAction.update();
         }
     };
 
@@ -150,6 +150,8 @@ public class ScaveEditorActions {
         bars.setGlobalActionHandler(ActionFactory.PASTE.getId(), pasteAction);
         bars.setGlobalActionHandler(ActionFactory.UNDO.getId(), undoAction);
         bars.setGlobalActionHandler(ActionFactory.REDO.getId(), redoAction);
+
+        bars.updateActionBars();
     }
 
     private <T extends IScaveAction> T registerAction(T action) {
@@ -238,7 +240,7 @@ public class ScaveEditorActions {
     public void updateActions() {
         Debug.println("ScaveEditorActions::updateActions");
         for (IScaveAction action : actions)
-            action.updateEnabled();
+            action.update();
         editor.getEditorSite().getActionBars().updateActionBars();
     }
 }

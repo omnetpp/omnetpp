@@ -31,8 +31,10 @@ public class CommandStack {
     public void execute(ICommand command) {
         log("executing", command);
 
-        command.execute();
+        // we add the command before executing it, so that the command stack
+        // is in the final state when the model changes happen
         addExecuted(command);
+        command.execute();
     }
 
     public void addExecuted(ICommand command) {
@@ -57,11 +59,13 @@ public class CommandStack {
 
             log("undoing", command);
 
-            command.undo();
             mostRecentCommand = command;
             numExecutedCommands--;
-
             listeners.forEach((l) -> { l.commandStackChanged(this); });
+
+            // this should be the last, so that the command stack
+            // is in the final state when the model changes happen
+            command.undo();
         }
     }
 
@@ -71,11 +75,13 @@ public class CommandStack {
 
             log("redoing executed", command);
 
-            command.redo();
             mostRecentCommand = command;
             numExecutedCommands++;
-
             listeners.forEach((l) -> { l.commandStackChanged(this); });
+
+            // this should be the last, so that the command stack
+            // is in the final state when the model changes happen
+            command.redo();
         }
     }
 
@@ -89,6 +95,14 @@ public class CommandStack {
 
     public ICommand getMostRecentCommand() {
         return mostRecentCommand;
+    }
+
+    public ICommand getCommandToUndo() {
+        return (numExecutedCommands > 0) ? commands.get(numExecutedCommands - 1) : null;
+    }
+
+    public ICommand getCommandToRedo() {
+        return (numExecutedCommands < commands.size()) ? commands.get(numExecutedCommands) : null;
     }
 
     public boolean wasObjectAffected(ModelObject object) {

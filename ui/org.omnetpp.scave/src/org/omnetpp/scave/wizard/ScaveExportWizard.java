@@ -104,7 +104,7 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
         else if (selection.size() == 1 && selection.getFirstElement() instanceof Chart) {
             // get IDList from selected Chart
             Object selected = selection.getFirstElement();
-            ScaveEditor editor = ScaveEditor.getActiveScaveEditor(workbench);
+            ScaveEditor editor = ScaveEditor.getActiveScaveEditor();
             if (editor != null && selected instanceof Chart) {
                 resultFileManager = editor.getResultFileManager();
                 selectedIDs = null; //TODO DatasetManager.getIDListFromDataset(resultFileManager, selectedDataset, selectedDatasetItem, null);
