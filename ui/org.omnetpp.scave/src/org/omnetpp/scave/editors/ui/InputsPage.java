@@ -20,6 +20,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.util.LocalSelectionTransfer;
+import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -31,10 +32,12 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.part.FileEditorInput;
 import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.common.ui.LocalTransfer;
+import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.actions.CollapseSubtreeAction;
 import org.omnetpp.scave.actions.CollapseTreeAction;
@@ -49,6 +52,7 @@ import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.ModelChangeEvent;
 import org.omnetpp.scave.model.commands.CommandStack;
+import org.omnetpp.scave.model.commands.SetInputFileCommand;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 //TODO remove page description; display "empty-table message" instead (stacklayout?)
@@ -129,6 +133,36 @@ public class InputsPage extends FormEditorPage {
             public void drop(DropTargetEvent event) {
                 if (event.data instanceof IStructuredSelection)
                     handleDrop((IStructuredSelection)event.data);
+            }
+        });
+
+        // set up cell editing
+        treeViewer.setColumnProperties(new String[] { "pattern" });
+        final TableTextCellEditor editors[] = new TableTextCellEditor[1];
+        editors[0] = new TableTextCellEditor(treeViewer, 0);
+
+        treeViewer.setCellEditors(editors);
+        treeViewer.setCellModifier(new ICellModifier() {
+            public boolean canModify(Object element, String property) {
+                return element instanceof InputFile;
+            }
+
+            public Object getValue(Object element, String property) {
+                if (!(element instanceof InputFile))
+                    return null;
+                return ((InputFile)element).getName();
+            }
+
+            public void modify(Object element, String property, Object value) {
+                if (element instanceof Item)
+                    element = ((Item) element).getData();
+                if (!(element instanceof InputFile))
+                    return;
+
+                String newValue = value.toString();
+                InputFile inputFile = (InputFile)element;
+                if (!inputFile.getName().equals(newValue))
+                    commandStack.execute(new SetInputFileCommand(inputFile, newValue));
             }
         });
 

@@ -16,13 +16,18 @@ import java.util.concurrent.Callable;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScaveImages;
@@ -239,4 +244,16 @@ public class InputsTree extends TreeViewer {
         }
     }
 
+    protected void hookEditingSupport(Control control) {
+        control.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.keyCode == SWT.F2 && getTree().getSelectionCount() == 1) {
+                    ViewerCell cell = getViewerRowFromItem(getTree().getSelection()[0]).getCell(0);
+                    if (cell != null)
+                        triggerEditorActivationEvent(new ColumnViewerEditorActivationEvent(cell, e));
+                }
+            }
+        });
+    }
 }
