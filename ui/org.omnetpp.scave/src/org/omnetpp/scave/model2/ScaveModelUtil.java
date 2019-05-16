@@ -17,6 +17,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
@@ -167,6 +169,28 @@ public class ScaveModelUtil {
         }
         ICommand command = new CompoundCommand("Add input files", addCommands);
         commandStack.execute(command);
+    }
+
+    public static String makeItemCopyName(List<String> existingNames, String name) {
+        String nameWithoutNumber = name.replaceAll(" \\(\\d+\\)$", "");
+        String pattern = "^" + Pattern.quote(nameWithoutNumber) + " \\((\\d+)\\)$";
+
+        int maxNum = -1;
+        for (String existing : existingNames) {
+            int num = -1;
+
+            if (existing.equals(nameWithoutNumber))
+                num = 0;
+
+            Matcher matcher = Pattern.compile(pattern).matcher(existing);
+            if (matcher.matches())
+                num = Integer.parseInt(matcher.group(1));
+
+            if (num > maxNum)
+                maxNum = num;
+        }
+
+        return nameWithoutNumber + (maxNum == -1 ? "" : maxNum == 0 ? " (2)" : (" (" + (maxNum + 1) + ")"));
     }
 
     public static String[] getFilterFieldsFor(String[] runidFields) {

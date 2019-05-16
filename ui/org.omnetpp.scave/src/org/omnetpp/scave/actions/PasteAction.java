@@ -7,9 +7,11 @@
 
 package org.omnetpp.scave.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.ISharedImages;
@@ -19,7 +21,7 @@ import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.commands.AddChartCommand;
 import org.omnetpp.scave.model.commands.CompoundCommand;
-import org.omnetpp.scave.model.commands.RemoveChartCommand;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * Copy model objects to the clipboard.
@@ -45,24 +47,34 @@ public class PasteAction extends AbstractScaveAction {
             List<AnalysisItem> charts = editor.getAnalysis().getCharts().getCharts();
             int pasteIndex = -1;
 
-            for (Object o : selection.toArray()) {
+            for (Object o : selection.toArray())
                 if (o instanceof AnalysisItem) {
-                    command.append(new RemoveChartCommand((AnalysisItem)o));
-                    if (pasteIndex < 0)
-                        pasteIndex = charts.indexOf(o);
+                    pasteIndex = charts.indexOf(o) + 1;
                 }
-            }
 
             if (pasteIndex < 0)
                 pasteIndex = charts.size();
 
+            List<String> existingNames = new ArrayList<String>();
+
+            for (AnalysisItem i : editor.getAnalysis().getCharts().getCharts())
+                existingNames.add(i.getName());
+
+            List<Object> toSelect = new ArrayList<Object>();
             for (Object o : objects) {
                 if (o instanceof AnalysisItem) {
-                    command.append(new AddChartCommand(editor.getAnalysis(), (AnalysisItem)o, pasteIndex));
+                    AnalysisItem itemToPaste = (AnalysisItem)((AnalysisItem)o).dup();
+                    String newName = ScaveModelUtil.makeItemCopyName(existingNames, itemToPaste.getName());
+                    itemToPaste.setName(newName);
+                    existingNames.add(newName);
+                    command.append(new AddChartCommand(editor.getAnalysis(), itemToPaste, pasteIndex));
+                    toSelect.add(itemToPaste);
                     pasteIndex += 1;
                 }
             }
+
             editor.getChartsPage().getCommandStack().execute(command);
+            editor.getChartsPage().getViewer().setSelection(new StructuredSelection(toSelect));
         }
     }
 
