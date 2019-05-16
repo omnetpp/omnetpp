@@ -239,5 +239,6 @@ public class ScaveEditorActions {
         Debug.println("ScaveEditorActions::updateActions");
         for (IScaveAction action : actions)
             action.updateEnabled();
+        editor.getEditorSite().getActionBars().updateActionBars();
     }
 }
