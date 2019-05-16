@@ -20,9 +20,8 @@ public class Charts extends ModelObject {
         for (AnalysisItem i : this.charts)
             i.parent = this;
 
-        for (int i = 0; i < charts.size(); ++i) {
+        for (int i = 0; i < charts.size(); ++i)
             Assert.isTrue(i == charts.indexOf(charts.get(i)));
-        }
 
         notifyListeners();
     }
@@ -32,6 +31,7 @@ public class Charts extends ModelObject {
     }
 
     public void addChart(AnalysisItem chart, int index) {
+        Assert.isTrue(findById(chart.getId()) == null, "ID not unique");
         chart.parent = this;
         charts.add(index, chart);
         notifyListeners();
@@ -41,6 +41,13 @@ public class Charts extends ModelObject {
         chart.parent = null;
         charts.remove(chart);
         notifyListeners();
+    }
+
+    public AnalysisItem findById(int id) {
+        for (AnalysisItem chart : charts)
+            if (chart.getId() == id)
+                return chart;
+        return null;
     }
 
     @Override

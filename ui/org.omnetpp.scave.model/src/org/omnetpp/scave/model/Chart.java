@@ -185,6 +185,9 @@ public class Chart extends AnalysisItem {
             return false;
         Chart other = (Chart)obj;
 
+        if (!super.equals(other))
+            return false;
+
         if (!name.equals(other.name) || !script.equals(other.script) || !temporary == other.temporary)
             return false;
 
@@ -192,5 +195,10 @@ public class Chart extends AnalysisItem {
             return false;
 
         return properties.equals(other.properties); // TODO refine, allow different ordering
+    }
+
+    @Override
+    public String toString() {
+        return getId() + ": '" + getName() + "'";
     }
 }
