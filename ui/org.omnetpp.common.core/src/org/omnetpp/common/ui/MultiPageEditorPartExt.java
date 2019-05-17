@@ -75,6 +75,20 @@ public abstract class MultiPageEditorPartExt extends MultiPageEditorPart {
                 client.dispose();
             }
         });
+
+        item.addDisposeListener(new DisposeListener() {
+            public void widgetDisposed(DisposeEvent e) {
+                CTabItem tabItem = (CTabItem)e.widget;
+
+                Control client = tabItem.getControl();
+                pageClosed(client);
+                client.dispose();
+
+                IEditorPart nestedEditor = (IEditorPart)tabItem.getData();
+                if (nestedEditor != null)
+                    nestedEditor.dispose();
+            }
+        });
     }
 
     private void removeRootCompositeFromTab(int index) {

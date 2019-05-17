@@ -20,8 +20,6 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.graphics.Color;
@@ -194,13 +192,6 @@ public class ChartScriptEditor extends PyEdit {
 
                 formEditor = new ChartPage(obj, SWT.NONE, scaveEditor, ChartScriptEditor.this);
                 Composite content = formEditor.getContent();
-
-                formEditor.addDisposeListener(new DisposeListener() {
-                    @Override
-                    public void widgetDisposed(DisposeEvent e) {
-                        ChartScriptEditor.this.dispose();
-                    }
-                });
 
                 saveTempChartAction = new SaveTempChartAction();
                 gotoChartDefinitionAction = new GotoChartDefinitionAction();
@@ -771,6 +762,8 @@ public class ChartScriptEditor extends PyEdit {
 
     @Override
     public void dispose() {
+        if (isDisposed())
+            return;
 
         getDocumentProvider().getDocument(editorInput).removeDocumentListener(changeListener);
         chart.removeListener(changeListener);
@@ -798,6 +791,8 @@ public class ChartScriptEditor extends PyEdit {
         }
         catch (CoreException e) {
         }
+
+        super.dispose();
     }
 
     public void refreshChart() {
