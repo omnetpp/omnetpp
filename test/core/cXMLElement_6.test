@@ -46,9 +46,8 @@ bar:"",no attrs, nothing=nullptr.
 bar:"some  text",no attrs, nothing=nullptr.
 bar:"  some  text",no attrs, nothing=nullptr.
 bar:"some  text  ",no attrs, nothing=nullptr.
-bar:"  ",no attrs, nothing=nullptr.
-bar:"
-    ",no attrs, nothing=nullptr.
+bar:"",no attrs, nothing=nullptr.
+bar:"",no attrs, nothing=nullptr.
 bar:"&><"",no attrs, nothing=nullptr.
 bar:"",has attrs, id="15"/"15" nothing=nullptr.
 bar:"",has attrs, color="red"/"red" weight="12"/"12" nothing=nullptr.

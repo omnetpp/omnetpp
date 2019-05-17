@@ -55,7 +55,9 @@ fclose(f);
 2	 #= range_ext_factor
 0 0	 #= range
 0 0	 #= cell_under, cell_over
-0 0	 #= sumweights_underflow, sum_weights_overflow
+0 0	 #= num_neg_infs, num_pos_infs
+0 0	 #= sum_weights_underflow, sum_weights_overflow
+0 0	 #= sum_weights_neg_inf, sum_weights_pos_inf
 5	 #= num_firstvals
 1	 #= firstvals[] exists
  10
@@ -78,7 +80,9 @@ fclose(f);
 2	 #= range_ext_factor
 0 0	 #= range
 0 0	 #= cell_under, cell_over
-0 0	 #= sumweights_underflow, sum_weights_overflow
+0 0	 #= num_neg_infs, num_pos_infs
+0 0	 #= sum_weights_underflow, sum_weights_overflow
+0 0	 #= sum_weights_neg_inf, sum_weights_pos_inf
 5	 #= num_firstvals
 1	 #= firstvals[] exists
  10
@@ -101,7 +105,9 @@ fclose(f);
 2	 #= range_ext_factor
 4 24	 #= range
 0 0	 #= cell_under, cell_over
-0 0	 #= sumweights_underflow, sum_weights_overflow
+0 0	 #= num_neg_infs, num_pos_infs
+0 0	 #= sum_weights_underflow, sum_weights_overflow
+0 0	 #= sum_weights_neg_inf, sum_weights_pos_inf
 5	 #= num_firstvals
 0	 #= firstvals[] exists
 10	 #= num_cells
@@ -131,7 +137,9 @@ fclose(f);
 2	 #= range_ext_factor
 4 24	 #= range
 0 0	 #= cell_under, cell_over
-0 0	 #= sumweights_underflow, sum_weights_overflow
+0 0	 #= num_neg_infs, num_pos_infs
+0 0	 #= sum_weights_underflow, sum_weights_overflow
+0 0	 #= sum_weights_neg_inf, sum_weights_pos_inf
 5	 #= num_firstvals
 0	 #= firstvals[] exists
 10	 #= num_cells
