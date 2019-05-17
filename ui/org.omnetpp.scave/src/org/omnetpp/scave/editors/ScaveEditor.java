@@ -600,10 +600,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
         });
     }
 
-    protected CTabFolder getTabFolder() {
-        return (CTabFolder) getContainer();
-    }
-
     public IPropertySheetPage getPropertySheetPage() {
 
         PropertySheetPage propertySheetPage = new PropertySheetPage() {
@@ -673,13 +669,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
         return index;
     }
 
-    public int addClosablePage(IEditorPart editor, IEditorInput input, String pageTitle) throws PartInitException {
-        int index = getPageCount();
-        addClosablePage(index, editor, input);
-        setPageText(index, pageTitle);
-        return index;
-    }
-
     /**
      * Adds a closable editor page at the last position
      */
@@ -692,6 +681,13 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
     public int addClosablePage(FormEditorPage page) {
         return addClosablePage(page, page.getPageTitle());
+    }
+
+    public int addClosablePage(IEditorPart editor, IEditorInput input, String pageTitle) throws PartInitException {
+        int index = getPageCount();
+        addClosablePage(index, editor, input);
+        setPageText(index, pageTitle);
+        return index;
     }
 
     public FormEditorPage getActiveEditorPage() {
@@ -717,12 +713,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
         Control control = getControl(pageIndex);
         if (control instanceof FormEditorPage)
             return (FormEditorPage)control;
-        else if (control instanceof Composite) {
-            Composite composite = (Composite)control;
-            Control[] children = composite.getChildren();
-            if (children.length > 0 && children[0] instanceof FormEditorPage)
-                return (FormEditorPage)children[0];
-        }
         return null;
     }
 
@@ -872,8 +862,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
     }
 
     public void setPageTitle(FormEditorPage page, String title) {
-        // TODO: eewwww
-        int pageIndex = (page instanceof ChartPage) ? findPage(page.getParent()) : findPage(page);
+        int pageIndex = findPage(page);
         if (pageIndex >= 0)
             setPageText(pageIndex, title);
     }
@@ -932,12 +921,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
         Control control = closablePages.get(item);
         if (control instanceof FormEditorPage)
             return (FormEditorPage)control;
-        else if (control instanceof Composite) {
-            Composite composite = (Composite)control;
-            Control[] children = composite.getChildren();
-            if (children.length > 0 && children[0] instanceof FormEditorPage)
-                return (FormEditorPage)children[0];
-        }
         return null;
     }
 

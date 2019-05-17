@@ -7,19 +7,12 @@
 
 package org.omnetpp.common.ui;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorInput;
@@ -62,6 +55,10 @@ public abstract class MultiPageEditorPartExt extends MultiPageEditorPart {
     public void addClosablePage(int index, IEditorPart editorPart, IEditorInput editorInput) throws PartInitException {
         // hack: add it in the normal way, then replace CTabItem with one with SWT.CLOSE set
         super.addPage(index, editorPart, editorInput);
+
+        // second hack: super.addPage(index, editor, input); (called above) adds a Composite we don't need, remove it
+        removeRootCompositeFromTab(index);
+
         Control control = getControl(index);
         CTabFolder ctabFolder = (CTabFolder) control.getParent();
         ctabFolder.getItem(index).dispose();
@@ -78,6 +75,27 @@ public abstract class MultiPageEditorPartExt extends MultiPageEditorPart {
                 client.dispose();
             }
         });
+    }
+
+    private void removeRootCompositeFromTab(int index) {
+        // unfortunately, when adding a closable page as an IEditorPart,
+        // the MultiPageEditorPart adds a Composite to the parent,
+        // and builds the inner editor within that Composite.
+        // We don't need that intermediate container, in fact, it gets in the way.
+        // So we get rid of it by putting the FormEditor itself in its place,
+        // as a direct child of the CTabFolder (like all the fixed pages).
+        Composite toDispose = (Composite)getControl(index); // this is the unnecessary container
+        CTabFolder tabFolder = getTabFolder();
+        Assert.isTrue(toDispose.getParent() == tabFolder);
+
+        Assert.isTrue(toDispose.getChildren().length == 1);
+        Control content = toDispose.getChildren()[0]; // this is the FormEditorPage
+
+        content.setParent(tabFolder);
+        setControl(index, content);
+
+        Assert.isTrue(toDispose.getChildren().length == 0);
+        toDispose.dispose();
     }
 
     public boolean isClosablePage(int page) {
@@ -117,6 +135,10 @@ public abstract class MultiPageEditorPartExt extends MultiPageEditorPart {
             if (getControl(i)==control)
                 return i;
         return -1;
+    }
+
+    protected CTabFolder getTabFolder() {
+        return (CTabFolder) getContainer();
     }
 
     /**

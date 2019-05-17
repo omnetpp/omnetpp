@@ -192,15 +192,15 @@ public class ChartScriptEditor extends PyEdit {
             @Override
             public Object call(Composite obj) {
 
-                obj.addDisposeListener(new DisposeListener() {
+                formEditor = new ChartPage(obj, SWT.NONE, scaveEditor, ChartScriptEditor.this);
+                Composite content = formEditor.getContent();
+
+                formEditor.addDisposeListener(new DisposeListener() {
                     @Override
                     public void widgetDisposed(DisposeEvent e) {
                         ChartScriptEditor.this.dispose();
                     }
                 });
-
-                formEditor = new ChartPage(obj, SWT.NONE, scaveEditor, ChartScriptEditor.this);
-                Composite content = formEditor.getContent();
 
                 saveTempChartAction = new SaveTempChartAction();
                 gotoChartDefinitionAction = new GotoChartDefinitionAction();
@@ -801,7 +801,6 @@ public class ChartScriptEditor extends PyEdit {
     }
 
     public void refreshChart() {
-        //prepareForSave();
         rerunChartScriptJob.cancel();
         runChartScript();
     }
