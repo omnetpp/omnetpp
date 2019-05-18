@@ -59,13 +59,15 @@ public class ChartEditForm {
     public static final String CHART_NAME_PROPERTY_KEY = "chart_name";
 
     protected Chart chart;
+    protected ChartTemplateRegistry chartTemplateRegistry;
     protected ResultFileManager manager;
     protected Map<String,Control> xswtWidgetMap = new HashMap<>();
 
     protected static final String USER_DATA_KEY = "ChartEditForm";
 
-    public ChartEditForm(Chart chart, ResultFileManager manager) {
+    public ChartEditForm(Chart chart, ChartTemplateRegistry chartTemplateRegistry, ResultFileManager manager) {
         this.chart = chart;
+        this.chartTemplateRegistry = chartTemplateRegistry;
         this.manager = manager;
     }
 
@@ -106,7 +108,7 @@ public class ChartEditForm {
     }
 
     private void validatePropertyNames() {
-        ChartTemplate template = ChartTemplateRegistry.findTemplateByID(chart.getTemplateID());
+        ChartTemplate template = chartTemplateRegistry.findTemplateByID(chart.getTemplateID());
 
         if (template == null)
             return;

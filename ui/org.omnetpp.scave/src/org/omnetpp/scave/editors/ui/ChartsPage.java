@@ -86,7 +86,7 @@ public class ChartsPage extends FormEditorPage {
 
         List<ChartTemplate> templates = new ArrayList<ChartTemplate>();
 
-        for (ChartTemplate templ : ChartTemplateRegistry.getAllTemplates())
+        for (ChartTemplate templ : scaveEditor.getChartTemplateRegistry().getAllTemplates())
             if (templ.getToolbarOrder() >= 0)
                 templates.add(templ);
 

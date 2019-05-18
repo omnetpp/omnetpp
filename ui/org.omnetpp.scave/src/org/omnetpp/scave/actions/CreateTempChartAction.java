@@ -12,6 +12,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.IDList;
@@ -54,12 +55,13 @@ public class CreateTempChartAction extends AbstractScaveAction {
     protected void openChart(ScaveEditor editor, final ResultFileManager manager, final ResultType type, final IDList idList) {
         String[] filterFields = new String[] { RunAttribute.EXPERIMENT, RunAttribute.MEASUREMENT, RunAttribute.REPLICATION,
                 ResultItemField.MODULE, ResultItemField.NAME };
+        ChartTemplateRegistry templateRegistry = editor.getChartTemplateRegistry();
 
         Chart chart = null;
         switch (type) {
-            case HISTOGRAM_LITERAL: chart = ScaveModelUtil.createChartFromTemplate("histogram"); break;
-            case SCALAR_LITERAL: chart = ScaveModelUtil.createChartFromTemplate("barchart"); break;
-            case VECTOR_LITERAL: chart = ScaveModelUtil.createChartFromTemplate("linechart"); break;
+            case HISTOGRAM_LITERAL: chart = ScaveModelUtil.createChartFromTemplate(templateRegistry, "histogram"); break;
+            case SCALAR_LITERAL: chart = ScaveModelUtil.createChartFromTemplate(templateRegistry, "barchart"); break;
+            case VECTOR_LITERAL: chart = ScaveModelUtil.createChartFromTemplate(templateRegistry, "linechart"); break;
             case STATISTICS_LITERAL: Assert.isLegal(false, "unsupported result type"); break;
             default: Assert.isLegal(false, "invalid enum value"); break;
         }

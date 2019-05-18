@@ -19,7 +19,7 @@ import org.w3c.dom.NodeList;
 
 public class AnalysisLoader {
 
-    public static Analysis loadNewAnalysis(Node rootNode) {
+    public static Analysis loadNewAnalysis(Node rootNode, ChartTemplateRegistry chartTemplateRegistry) {
 
         Analysis analysis = new Analysis();
 
@@ -95,7 +95,7 @@ public class AnalysisLoader {
                         if (iconPathNode != null)
                             chart.setIconPath(iconPathNode.getNodeValue());
                         else {
-                            ChartTemplate template = ChartTemplateRegistry.findTemplateByID(chart.getTemplateID());
+                            ChartTemplate template = chartTemplateRegistry.findTemplateByID(chart.getTemplateID());
                             if (template != null)
                                 chart.setIconPath(template.getIconPath());
                         }

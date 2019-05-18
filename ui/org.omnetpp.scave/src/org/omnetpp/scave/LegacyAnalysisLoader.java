@@ -1,11 +1,5 @@
 package org.omnetpp.scave;
 
-import static org.omnetpp.scave.charttemplates.ChartTemplateRegistry.BARCHART_ID;
-import static org.omnetpp.scave.charttemplates.ChartTemplateRegistry.HISTOGRAMCHART_ID;
-import static org.omnetpp.scave.charttemplates.ChartTemplateRegistry.LINECHART_ID;
-import static org.omnetpp.scave.charttemplates.ChartTemplateRegistry.SCATTERCHART_ID;
-import static org.omnetpp.scave.charttemplates.ChartTemplateRegistry.getTemplateByID;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +7,7 @@ import java.util.Map;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.XmlUtils;
+import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.InputFile;
@@ -72,8 +67,15 @@ public class LegacyAnalysisLoader {
         }
     }
 
+    private ChartTemplateRegistry chartTemplateRegistry;
+    private ArrayList<String> errors;
 
-    private static String makeFilterString(ArrayList<DataOp> ops, ArrayList<DataFilter> filters) {
+    public LegacyAnalysisLoader(ChartTemplateRegistry chartTemplateRegistry, ArrayList<String> errors) {
+        this.chartTemplateRegistry = chartTemplateRegistry;
+        this.errors = errors;
+    }
+
+    private String makeFilterString(ArrayList<DataOp> ops, ArrayList<DataFilter> filters) {
         String opsExpr = "";
         for (DataOp o : ops) {
             // TODO: take data type into account
@@ -108,17 +110,17 @@ public class LegacyAnalysisLoader {
             return "(" + opsExpr + ")  AND  (" + filtersExpr + ")";
     }
 
-    private static Chart makeLegacyChart(ArrayList<DataOp> ops, ArrayList<DataVecOp> vecOps, String datasetName, Node chartNode, String chartType, ArrayList<String> errors) {
+    private Chart makeLegacyChart(ArrayList<DataOp> ops, ArrayList<DataVecOp> vecOps, String datasetName, Node chartNode, String chartType) {
         Chart chart = null;
 
         if ("scave:BarChart".equals(chartType))
-            chart = ScaveModelUtil.createChartFromTemplate(getTemplateByID(BARCHART_ID));
+            chart = ScaveModelUtil.createChartFromTemplate(chartTemplateRegistry, ChartTemplateRegistry.BARCHART_ID);
         else if ("scave:HistogramChart".equals(chartType))
-            chart = ScaveModelUtil.createChartFromTemplate(getTemplateByID(HISTOGRAMCHART_ID));
+            chart = ScaveModelUtil.createChartFromTemplate(chartTemplateRegistry, ChartTemplateRegistry.HISTOGRAMCHART_ID);
         else if ("scave:ScatterChart".equals(chartType))
-            chart = ScaveModelUtil.createChartFromTemplate(getTemplateByID(SCATTERCHART_ID));
+            chart = ScaveModelUtil.createChartFromTemplate(chartTemplateRegistry, ChartTemplateRegistry.SCATTERCHART_ID);
         else if ("scave:LineChart".equals(chartType))
-            chart = ScaveModelUtil.createChartFromTemplate(getTemplateByID(LINECHART_ID));
+            chart = ScaveModelUtil.createChartFromTemplate(chartTemplateRegistry, ChartTemplateRegistry.LINECHART_ID);
         else
             throw new RuntimeException("unknown chart type: " + chartType);
 
@@ -185,7 +187,7 @@ public class LegacyAnalysisLoader {
         return chart;
     }
 
-    private static void setProperty(Chart chart, String name, String value) {
+    private void setProperty(Chart chart, String name, String value) {
         Property prop = ScaveModelUtil.getChartProperty(chart, name);
         if (prop == null) {
             prop = new Property(name, value);
@@ -194,7 +196,7 @@ public class LegacyAnalysisLoader {
             prop.setValue(value);
     }
 
-    static Map<String, String> extractVectorOpParams(Node operationNode) {
+    private Map<String, String> extractVectorOpParams(Node operationNode) {
         Map<String, String> result = new HashMap<String, String>();
 
         NodeList paramNodes = operationNode.getChildNodes();
@@ -210,11 +212,11 @@ public class LegacyAnalysisLoader {
         return result;
     }
 
-    public static void loadItems(Node parentNode, Analysis analysis, ArrayList<String> errors) {
-        loadItems(parentNode, analysis, errors, new ArrayList<DataOp>(), new ArrayList<DataVecOp>());
+    private void loadItems(Node parentNode, Analysis analysis) {
+        loadItems(parentNode, analysis, new ArrayList<DataOp>(), new ArrayList<DataVecOp>());
     }
 
-    public static void loadItems(Node parentNode, Analysis analysis, ArrayList<String> errors, ArrayList<DataOp> startingOps, ArrayList<DataVecOp> startingVecOps) {
+    private void loadItems(Node parentNode, Analysis analysis, ArrayList<DataOp> startingOps, ArrayList<DataVecOp> startingVecOps) {
 
         Node nameNode = parentNode.getAttributes().getNamedItem("name");
 
@@ -249,9 +251,9 @@ public class LegacyAnalysisLoader {
                     vecOps.add(new DataVecOp("scave:Apply".equals(itemType) ? "apply" : "compute", operationNode.getNodeValue(), extractVectorOpParams(itemNode)));
                 }
                 else if ("scave:BarChart".equals(itemType) || "scave:HistogramChart".equals(itemType) || "scave:ScatterChart".equals(itemType) || "scave:LineChart".equals(itemType))
-                    analysis.getCharts().addChart(makeLegacyChart(ops, vecOps, datasetName, itemNode, itemType, errors));
+                    analysis.getCharts().addChart(makeLegacyChart(ops, vecOps, datasetName, itemNode, itemType));
                 else if ("scave:Group".equals(itemType)) {
-                    loadItems(itemNode, analysis, errors, ops, vecOps);
+                    loadItems(itemNode, analysis, ops, vecOps);
                 }
                 else {
                     // TODO: handle better
@@ -267,7 +269,7 @@ public class LegacyAnalysisLoader {
         }
     }
 
-    public static Analysis loadLegacyAnalysis(Node rootNode, ArrayList<String> errors) {
+    public Analysis loadLegacyAnalysis(Node rootNode) {
 
         Analysis analysis = new Analysis();
 
@@ -304,7 +306,7 @@ public class LegacyAnalysisLoader {
                     Node datasetNode = datasetNodes.item(j);
 
                     if ("datasets".equals(datasetNode.getNodeName()))
-                        loadItems(datasetNode, analysis, errors);
+                        loadItems(datasetNode, analysis);
                     else if ("#text".equals(datasetNode.getNodeName())) {
                         if (!datasetNode.getNodeValue().trim().isEmpty())
                             throw new RuntimeException("unexpected text content: " + datasetNode.getNodeValue());

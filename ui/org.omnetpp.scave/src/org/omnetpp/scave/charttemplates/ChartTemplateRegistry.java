@@ -11,9 +11,9 @@ import java.util.Properties;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.omnetpp.common.Debug;
+import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.model.Chart;
@@ -28,16 +28,20 @@ public class ChartTemplateRegistry {
     public static final String HISTOGRAMCHART_ID = "histogramchart_legacy";
     public static final String SCATTERCHART_ID = "scatterchart_legacy";
 
-    private static ArrayList<ChartTemplate> templates = new ArrayList<ChartTemplate>();
+    private IProject project = null;
+    private ArrayList<ChartTemplate> templates = null;
 
-    private static long lastTimeLoaded = 0;
+    private long lastTimeLoaded = 0;
 
-    static {
-        reloadTemplates();
+    public void setProject(IProject project) {
+        if (project != this.project) {
+            this.project = project;
+            templates = null; // invalidate
+        }
     }
 
-    public static void reloadTemplates() {
-        templates.clear();
+    public void reloadTemplates() {
+        templates = new ArrayList<>();
 
         try {
             // load from the plugin
@@ -45,7 +49,8 @@ public class ChartTemplateRegistry {
                 registerChartTemplate(propertiesFile, null);
 
             // load from projects
-            for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects())
+            IProject[] projectsToScan = ProjectUtils.getAllReferencedProjects(project, true, true);
+            for (IProject project : projectsToScan)
                 if (project.getFolder(CHARTTEMPLATES_FOLDER).exists())
                     for (IResource member : project.getFolder(CHARTTEMPLATES_FOLDER).members())
                         if (member instanceof IFile && member.getName().endsWith(".properties"))
@@ -58,7 +63,7 @@ public class ChartTemplateRegistry {
         lastTimeLoaded = System.currentTimeMillis();
     }
 
-    private static void registerChartTemplate(String propertiesFile, IProject fromProject) {
+    private void registerChartTemplate(String propertiesFile, IProject fromProject) {
         try {
             ChartTemplate chartTemplate = loadChartTemplate(propertiesFile, fromProject);
             templates.add(chartTemplate);
@@ -69,7 +74,7 @@ public class ChartTemplateRegistry {
         }
     }
 
-    private static ChartTemplate loadChartTemplate(String propertiesFile, IProject fromProject) throws IOException, CoreException {
+    private ChartTemplate loadChartTemplate(String propertiesFile, IProject fromProject) throws IOException, CoreException {
         Properties props = new Properties();
         props.load(new StringReader(readFile(propertiesFile, fromProject)));
 
@@ -113,7 +118,7 @@ public class ChartTemplateRegistry {
         return template;
     }
 
-    public static String readFile(String name, IProject fromProject) throws IOException, CoreException {
+    public String readFile(String name, IProject fromProject) throws IOException, CoreException {
         InputStream stream;
         if (fromProject == null) {
             String path = "/" + CHARTTEMPLATES_FOLDER + "/" + name;
@@ -132,20 +137,24 @@ public class ChartTemplateRegistry {
         return contents.replace("\r\n", "\n");
     }
 
-    public static ArrayList<ChartTemplate> getAllTemplates() {
+    public ArrayList<ChartTemplate> getAllTemplates() {
+        if (templates == null) {
+            templates = new ArrayList<ChartTemplate>();
+            reloadTemplates();
+        }
         if (Debug.isDebugging() && (System.currentTimeMillis() > lastTimeLoaded + 1000))
             reloadTemplates();
         return templates;
     }
 
-    public static ChartTemplate findTemplateByID(String id) {
+    public ChartTemplate findTemplateByID(String id) {
         for (ChartTemplate templ : getAllTemplates())
             if (templ.getID().equals(id))
                 return templ;
         return null;
     }
 
-    public static ChartTemplate getTemplateByID(String id) {
+    public ChartTemplate getTemplateByID(String id) {
         ChartTemplate templ = findTemplateByID(id);
         if (templ == null)
             throw new RuntimeException("No such chart template: " + id);

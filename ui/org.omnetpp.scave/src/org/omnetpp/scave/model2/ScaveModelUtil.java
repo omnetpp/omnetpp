@@ -81,8 +81,8 @@ public class ScaveModelUtil {
         return chart;
     }
 
-    public static Chart createChartFromTemplate(String templateId) {
-        return createChartFromTemplate(ChartTemplateRegistry.getTemplateByID(templateId));
+    public static Chart createChartFromTemplate(ChartTemplateRegistry chartTemplateRegistry, String templateId) {
+        return createChartFromTemplate(chartTemplateRegistry.getTemplateByID(templateId));
     }
 
     public static Chart createChartFromTemplate(ChartTemplate template) {

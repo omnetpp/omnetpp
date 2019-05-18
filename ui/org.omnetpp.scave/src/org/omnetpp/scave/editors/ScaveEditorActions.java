@@ -193,7 +193,7 @@ public class ScaveEditorActions {
 
         MenuManager submenuManager = new MenuManager("New From Template");
 
-        for (ChartTemplate t : ChartTemplateRegistry.getAllTemplates())
+        for (ChartTemplate t : editor.getChartTemplateRegistry().getAllTemplates())
             submenuManager.add(new NewChartFromTemplateAction(t));
 
         menuManager.insertBefore("edit", submenuManager);

@@ -109,6 +109,7 @@ import org.omnetpp.scave.LegacyAnalysisLoader;
 import org.omnetpp.scave.Markers;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartViewer;
+import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
 import org.omnetpp.scave.editors.ui.ChartPage;
 import org.omnetpp.scave.editors.ui.ChartsPage;
@@ -158,6 +159,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
     PythonProcessPool processPool = new PythonProcessPool(2);
 
+    ChartTemplateRegistry chartTemplateRegistry = new ChartTemplateRegistry();
 
     /**
      * This is the content outline page.
@@ -339,11 +341,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
                     "Please make sure the project is open before trying to open a file in it.");
         IFile fileInput = ((IFileEditorInput) editorInput).getFile();
         if (!editorInput.exists())
-            throw new PartInitException(
-                    "Missing Input: Resource '" + fileInput.getFullPath().toString() + "' does not exists");
-        File javaFile = fileInput.getLocation().toFile();
-        if (!javaFile.exists())
-            throw new PartInitException("Missing Input: Scave file '" + javaFile.toString() + "' does not exists");
+            throw new PartInitException("File '" + fileInput.getFullPath().toString() + "' does not exist");
 
         // add part listener to save the editor state *before* it is disposed
         final IWorkbenchPage page = site.getPage();
@@ -382,6 +380,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
         site.getPage().addPartListener(partListener);
 
         actions = new ScaveEditorActions(this);
+        chartTemplateRegistry.setProject(fileInput.getProject());
     }
 
     @Override
@@ -519,7 +518,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
                     return;
                 case SWT.OK:
                     ArrayList<String> errors = new ArrayList<>();
-                    analysis = LegacyAnalysisLoader.loadLegacyAnalysis(rootNode, errors);
+                    analysis = new LegacyAnalysisLoader(getChartTemplateRegistry(), errors).loadLegacyAnalysis(rootNode);
 
                     if (!errors.isEmpty()) {
                         ListDialog errorDialog = new ListDialog(Display.getCurrent().getActiveShell());
@@ -533,7 +532,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
                     break;
                 }
             } else if ("analysis".equals(rootNode.getNodeName()))
-                analysis = AnalysisLoader.loadNewAnalysis(rootNode);
+                analysis = AnalysisLoader.loadNewAnalysis(rootNode, getChartTemplateRegistry());
             else
                 throw new RuntimeException("Invalid top level node: " + rootNode.getNodeName());
         } catch (SAXException | IOException | CoreException | ParserConfigurationException | RuntimeException e) {
@@ -1553,8 +1552,9 @@ public class ScaveEditor extends MultiPageEditorPartExt
         setInputWithNotify(editorInput);
         setPartName(editorInput.getName());
         IStatusLineManager statusLineManager = getEditorSite().getActionBars().getStatusLineManager();
-        IProgressMonitor progressMonitor = statusLineManager != null ? statusLineManager.getProgressMonitor()
-                : new NullProgressMonitor();
+        IProgressMonitor progressMonitor = statusLineManager != null ? statusLineManager.getProgressMonitor() : new NullProgressMonitor();
+        IFile fileInput = ((FileEditorInput)editorInput).getFile();
+        chartTemplateRegistry.setProject(fileInput.getProject());
         doSave(progressMonitor);
     }
 
@@ -1582,7 +1582,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
     /**
      * This implements {@link org.eclipse.jface.viewers.ISelectionProvider} to set
-     * this editor's overall selection. Calling this will result in notifing the
+     * this editor's overall selection. Calling this will result in notifying the
      * listeners.
      */
     public void setSelection(ISelection selection) {
@@ -1645,6 +1645,10 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
     public PythonProcessPool getPythonProcessPool() {
         return processPool;
+    }
+
+    public ChartTemplateRegistry getChartTemplateRegistry() {
+        return chartTemplateRegistry;
     }
 
     protected int openChartScriptEditor(Chart chart) throws PartInitException {

@@ -50,7 +50,7 @@ public class EditChartDialog extends TitleAreaDialog {
         setShellStyle(getShellStyle() | SWT.RESIZE);
         this.editor = editor;
         this.chart = chart;
-        this.form = new ChartEditForm(chart, editor.getResultFileManager());
+        this.form = new ChartEditForm(chart, editor.getChartTemplateRegistry(), editor.getResultFileManager());
 
         // TODO
 //        this.form.addChangeListener(new BaseScaveObjectEditForm.Listener() {

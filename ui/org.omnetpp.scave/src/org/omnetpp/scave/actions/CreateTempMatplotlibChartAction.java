@@ -12,6 +12,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.IDList;
@@ -60,13 +61,14 @@ public class CreateTempMatplotlibChartAction extends AbstractScaveAction {
 
         String[] filterFields = new String[] { RunAttribute.EXPERIMENT, RunAttribute.MEASUREMENT, RunAttribute.REPLICATION,
                 ResultItemField.MODULE, ResultItemField.NAME };
+        ChartTemplateRegistry templateRegistry = editor.getChartTemplateRegistry();
 
         Chart chart = null;
         switch (type) {
-            case HISTOGRAM_LITERAL: chart = ScaveModelUtil.createChartFromTemplate("histogram_mpl"); break;
-            case SCALAR_LITERAL: chart = ScaveModelUtil.createChartFromTemplate("barchart_mpl"); break;
-            case VECTOR_LITERAL: chart = ScaveModelUtil.createChartFromTemplate("linechart_mpl"); break;
-            case STATISTICS_LITERAL: chart = ScaveModelUtil.createChartFromTemplate("boxwhiskers"); break;
+            case HISTOGRAM_LITERAL: chart = ScaveModelUtil.createChartFromTemplate(templateRegistry, "histogram_mpl"); break;
+            case SCALAR_LITERAL: chart = ScaveModelUtil.createChartFromTemplate(templateRegistry, "barchart_mpl"); break;
+            case VECTOR_LITERAL: chart = ScaveModelUtil.createChartFromTemplate(templateRegistry, "linechart_mpl"); break;
+            case STATISTICS_LITERAL: chart = ScaveModelUtil.createChartFromTemplate(templateRegistry, "boxwhiskers"); break;
             default: Assert.isLegal(false, "invalid enum value"); break;
         }
 
