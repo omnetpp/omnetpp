@@ -205,10 +205,20 @@ class SIM_API cXMLElement : public cObject, noncopyable
     virtual const char *getTagName() const;
 
     /**
+     * Returns the file name this element originally came from.
+     */
+    virtual const char *getSourceFileName() const {return filename;}
+
+    /**
+     * Returns the line number in the file this element originally came from.
+     */
+    virtual int getSourceLineNumber() const {return lineNumber;}
+
+    /**
      * Returns a string containing a file/line position showing where this
      * element originally came from.
      */
-    virtual std::string getSourceLocation() const;
+    virtual const char *getSourceLocation() const;
 
     /**
      * Returns text node in the element, or nullptr otherwise.

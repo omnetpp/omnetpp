@@ -108,13 +108,13 @@ void cXMLElement::setSourceLocation(const char *fname, int line)
     lineNumber = line;
 }
 
-std::string cXMLElement::getSourceLocation() const
+const char *cXMLElement::getSourceLocation() const
 {
     if (filename == nullptr)
         return "";
     std::stringstream os;
     os << filename << ":" << lineNumber;
-    return os.str();
+    return getPooledName(os.str().c_str());
 }
 
 const char *cXMLElement::getNodeValue() const
