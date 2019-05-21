@@ -10,8 +10,9 @@ import org.omnetpp.scave.model.Chart.DialogPage;
 
 public class ChartTemplate {
 
-    private String ID;
+    private String id;
     private String name;
+    private String description;
     private ChartType chartType;
     private String iconPath;
     private String pythonScript;
@@ -20,9 +21,10 @@ public class ChartTemplate {
     private String toolbarIconPath;
     private List<String> propertyNames = new ArrayList<String>();
 
-    public ChartTemplate(String ID, String name, ChartType chartType, String iconPath, String pythonScript, List<DialogPage> dialogPages, int toolbarOrder, String toolbarIconPath) {
-        this.ID = ID;
+    public ChartTemplate(String id, String name, String description, ChartType chartType, String iconPath, String pythonScript, List<DialogPage> dialogPages, int toolbarOrder, String toolbarIconPath) {
+        this.id = id;
         this.name = name;
+        this.description = description;
         this.chartType = chartType;
         this.iconPath = iconPath;
         this.pythonScript = pythonScript;
@@ -32,11 +34,11 @@ public class ChartTemplate {
     }
 
     public String getID() {
-        return ID;
+        return id;
     }
 
-    public void setID(String iD) {
-        ID = iD;
+    public void setID(String id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -45,6 +47,14 @@ public class ChartTemplate {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Chart.ChartType getChartType() {

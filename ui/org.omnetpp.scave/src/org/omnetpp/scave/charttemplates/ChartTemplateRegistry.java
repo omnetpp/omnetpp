@@ -80,6 +80,7 @@ public class ChartTemplateRegistry {
 
         String id = props.getProperty("id");
         String name = props.getProperty("name");
+        String description = props.getProperty("description");
         String type = props.getProperty("type");
         String icon = props.getProperty("icon");
         String scriptFile = props.getProperty("scriptFile");
@@ -107,7 +108,7 @@ public class ChartTemplateRegistry {
             pages.add(page);
         }
 
-        ChartTemplate template = new ChartTemplate(id, name, Chart.ChartType.valueOf(type), icon, readFile(scriptFile, fromProject), pages, toolbarOrder, toolbarIcon);
+        ChartTemplate template = new ChartTemplate(id, name, description, Chart.ChartType.valueOf(type), icon, readFile(scriptFile, fromProject), pages, toolbarOrder, toolbarIcon);
 
         String propertyNamesProp = props.getProperty("propertyNames");
         if (propertyNamesProp != null) {
