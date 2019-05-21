@@ -33,11 +33,11 @@ public class ChartTemplate {
         this.toolbarIconPath = toolbarIconPath;
     }
 
-    public String getID() {
+    public String getId() {
         return id;
     }
 
-    public void setID(String id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -111,6 +111,11 @@ public class ChartTemplate {
 
     public void setPropertyNames(List<String> propertyNames) {
         this.propertyNames = propertyNames;
+    }
+
+    @Override
+    public String toString() {
+        return "'" + getName() + "' (id=" + getId() + ")";
     }
 
 }

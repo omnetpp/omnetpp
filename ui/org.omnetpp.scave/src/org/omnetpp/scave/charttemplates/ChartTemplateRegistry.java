@@ -8,15 +8,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.lang3.EnumUtils;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.FileUtils;
+import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.scave.Markers;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.Chart.ChartType;
 import org.omnetpp.scave.model.Chart.DialogPage;
 
 public class ChartTemplateRegistry {
@@ -65,12 +70,19 @@ public class ChartTemplateRegistry {
 
     private void registerChartTemplate(String propertiesFile, IProject fromProject) {
         try {
+            if (fromProject != null)
+                fromProject.getFolder(CHARTTEMPLATES_FOLDER).getFile(propertiesFile).deleteMarkers(Markers.CHARTTEMPLATE_PROBLEMMARKER_ID, true, IResource.DEPTH_ZERO);
             ChartTemplate chartTemplate = loadChartTemplate(propertiesFile, fromProject);
+            if (doFindTemplateByID(templates, chartTemplate.getId()) != null)
+                throw new RuntimeException("template ID is not unique");
             templates.add(chartTemplate);
+            Debug.println("Loaded chart template " + chartTemplate);
         }
         catch (Exception e) {
             String location = fromProject == null ? "plugin " + ScavePlugin.PLUGIN_ID : "project " + fromProject.getName();
             ScavePlugin.logError("Cannot load chart template " + propertiesFile + " from " + location, e);
+            if (fromProject != null)
+                addErrorMarker(fromProject.getFolder(CHARTTEMPLATES_FOLDER).getFile(propertiesFile), e.getMessage());
         }
     }
 
@@ -101,14 +113,23 @@ public class ChartTemplateRegistry {
             if (pageId == null)
                 break;
 
-            String pageLabel = props.getProperty("dialogPage." + i + ".label");
+            String pageLabel = props.getProperty("dialogPage." + i + ".label", "");
             String xswtFile = props.getProperty("dialogPage." + i + ".xswtFile");
 
-            Chart.DialogPage page = new DialogPage(pageId, pageLabel, readFile(xswtFile, fromProject));
+            String xswtContent = xswtFile != null ? readFile(xswtFile, fromProject) : "";
+            Chart.DialogPage page = new DialogPage(pageId, pageLabel, xswtContent);
             pages.add(page);
         }
 
-        ChartTemplate template = new ChartTemplate(id, name, description, Chart.ChartType.valueOf(type), icon, readFile(scriptFile, fromProject), pages, toolbarOrder, toolbarIcon);
+        ChartType chartType = EnumUtils.getEnum(Chart.ChartType.class, type);
+        if (chartType == null) {
+            addErrorMarker(fromProject.getFolder(CHARTTEMPLATES_FOLDER).getFile(propertiesFile),
+                    "Not a valid chart type '" + type + "', use one of: " + StringUtils.join(Chart.ChartType.values(), ","));
+            chartType = Chart.ChartType.MATPLOTLIB;
+        }
+
+        String script = scriptFile != null ? readFile(scriptFile, fromProject) : "";
+        ChartTemplate template = new ChartTemplate(id, name, description, chartType, icon, script, pages, toolbarOrder, toolbarIcon);
 
         String propertyNamesProp = props.getProperty("propertyNames");
         if (propertyNamesProp != null) {
@@ -130,12 +151,26 @@ public class ChartTemplateRegistry {
         else {
             IFile file = fromProject.getFolder(CHARTTEMPLATES_FOLDER).getFile(name);
             stream = file.getContents();
-            if (stream == null)
-                throw new IOException("Could not read file: " + file.getFullPath());
+            if (stream == null) {
+                addErrorMarker(file, "Could not read file: " + file.getFullPath());
+                return "";
+            }
         }
 
         String contents = FileUtils.readTextFile(stream, null);
         return contents.replace("\r\n", "\n");
+    }
+
+    private void addErrorMarker(IFile file, String message) {
+        try {
+            IMarker marker = file.createMarker(Markers.CHARTTEMPLATE_PROBLEMMARKER_ID);
+            marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+            marker.setAttribute(IMarker.LINE_NUMBER, 1);
+            marker.setAttribute(IMarker.MESSAGE, message);
+        }
+        catch (CoreException e) {
+            ScavePlugin.logError("Cannot create error marker", e);
+        }
     }
 
     public ArrayList<ChartTemplate> getAllTemplates() {
@@ -148,11 +183,15 @@ public class ChartTemplateRegistry {
         return templates;
     }
 
-    public ChartTemplate findTemplateByID(String id) {
-        for (ChartTemplate templ : getAllTemplates())
-            if (templ.getID().equals(id))
+    private ChartTemplate doFindTemplateByID(List<ChartTemplate> templates, String id) {
+        for (ChartTemplate templ : templates)
+            if (templ.getId().equals(id))
                 return templ;
         return null;
+    }
+
+    public ChartTemplate findTemplateByID(String id) {
+        return doFindTemplateByID(getAllTemplates(), id);
     }
 
     public ChartTemplate getTemplateByID(String id) {

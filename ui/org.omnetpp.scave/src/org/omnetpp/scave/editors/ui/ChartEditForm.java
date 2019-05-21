@@ -8,6 +8,7 @@
 package org.omnetpp.scave.editors.ui;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,10 +16,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -29,6 +35,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
@@ -38,6 +45,7 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.contentassist.ContentAssistUtil;
 import org.omnetpp.common.ui.SWTFactory;
 import org.omnetpp.common.util.Converter;
+import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.common.wizard.XSWTDataBinding;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.assist.FilterContentProposalProvider;
@@ -50,6 +58,7 @@ import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Chart.DialogPage;
 import org.omnetpp.scave.model.Property;
+import org.xml.sax.SAXException;
 
 import com.swtworkbench.community.xswt.XSWT;
 
@@ -260,18 +269,32 @@ public class ChartEditForm {
         try {
             Composite xswtHolder = SWTFactory.createComposite(tabfolder, 1, 1, SWTFactory.GRAB_AND_FILL_HORIZONTAL);
             tabitem.setControl(xswtHolder);
+            validateXml(xswtForm); // because XSWT is not very good at it
             Map<String,Control> tempWidgetMap = XSWT.create(xswtHolder, new ByteArrayInputStream(xswtForm.getBytes()));
             xswtWidgetMap.putAll(tempWidgetMap);
             return xswtHolder;
-        } catch (Exception e) {
-            IStatus status = new Status(IStatus.ERROR, ScavePlugin.PLUGIN_ID, "Error showing the XSWT form of chart '" + chart.getName() + "'", e);
-            ScavePlugin.log(status);
-            ErrorDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Cannot add chart options to Edit dialog.", status);
         }
+        catch (Exception e) {
+            // log
+            IStatus status = new Status(IStatus.ERROR, ScavePlugin.PLUGIN_ID, "Cannot create dialog page '" + label + "' for chart template '" + chart.getTemplateID() + "'", e);
+            ScavePlugin.log(status);
 
-        return null;
+            // show error page
+            tabitem.setImage(UIUtils.ICON_ERROR);
+            tabitem.getControl().dispose();
+            Composite composite = SWTFactory.createComposite(tabfolder, 1, 1, SWTFactory.GRAB_AND_FILL_HORIZONTAL);
+            tabitem.setControl(composite);
+            Label heading = SWTFactory.createWrapLabel(composite, "An error occurred while setting up page from XSWT source", 1);
+            heading.setFont(JFaceResources.getHeaderFont());
+            SWTFactory.createWrapLabel(composite, e.getMessage(), 1);
+            return null;
+        }
     }
 
+    protected void validateXml(String xswtForm) throws SAXException, IOException, ParserConfigurationException {
+        DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        db.parse(new ByteArrayInputStream(xswtForm.getBytes()));
+    }
 
 //
 //    /**

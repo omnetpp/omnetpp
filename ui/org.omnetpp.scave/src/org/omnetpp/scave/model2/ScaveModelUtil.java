@@ -87,7 +87,7 @@ public class ScaveModelUtil {
 
     public static Chart createChartFromTemplate(ChartTemplate template) {
         Chart chart = new Chart(template.getChartType());
-        chart.setTemplateID(template.getID());
+        chart.setTemplateID(template.getId());
 
         chart.setScript(template.getPythonScript());
 

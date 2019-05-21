@@ -199,6 +199,6 @@ public class Chart extends AnalysisItem {
 
     @Override
     public String toString() {
-        return getId() + ": '" + getName() + "'";
+        return "'" + getName() + "' (id=" + getId() + ")";
     }
 }

@@ -132,10 +132,6 @@
     <super type="org.eclipse.core.resources.problemmarker"/>
     <persistent value="false"/>
   </extension>
-  <extension id="computescalarproblem" point="org.eclipse.core.resources.markers" name="Compute Scalars Problem">
-    <super type="org.omnetpp.scave.analysisfileproblem"/>
-    <persistent value="false"/>
-  </extension>
 
   <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -162,6 +158,17 @@
            id="org.omnetpp.scave.preferences.ScavePreferencePage"
            name="Result Analysis">
      </page>
+  </extension>
+  <extension
+        id="charttemplateproblem"
+        name="Chart Template Problem"
+        point="org.eclipse.core.resources.markers">
+     <super
+           type="org.eclipse.core.resources.problemmarker">
+     </super>
+     <persistent
+           value="false">
+     </persistent>
   </extension>
 
 </plugin>

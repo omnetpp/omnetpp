@@ -148,9 +148,10 @@ public class ChartsPage extends FormEditorPage {
                     String iconPath = ((Chart)element).getIconPath();
                     if (iconPath == null || iconPath.isEmpty())
                         iconPath = ScaveImages.IMG_OBJ_CHART;
-                    return ScavePlugin.getImage(iconPath);
-                } else if (element instanceof Folder)
-                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_FOLDER);
+                    return ScavePlugin.getCachedImage(iconPath);
+                }
+                else if (element instanceof Folder)
+                    return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ_FOLDER);
                 else
                     return null;
             }

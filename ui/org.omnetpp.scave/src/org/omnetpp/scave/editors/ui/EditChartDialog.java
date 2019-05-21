@@ -67,7 +67,7 @@ public class EditChartDialog extends TitleAreaDialog {
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-        newShell.setText("Edit " + chart.toString());
+        newShell.setText("Edit " + chart.getName());
     }
 
     @Override

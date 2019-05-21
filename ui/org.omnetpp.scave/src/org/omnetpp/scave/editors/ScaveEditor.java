@@ -1351,15 +1351,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
     @Override
     public void gotoMarker(IMarker marker) {
         try {
-            if (marker.getType().equals(Markers.COMPUTESCALAR_PROBLEMMARKER_ID)) {
-                Object object = marker.getAttribute(Markers.EOBJECT_MARKERATTR_ID);
-                if (object instanceof ModelObject && chartsPage != null) {
-                    gotoObject(object);
-                    // TODO
-                    // setSelectionToViewer(Collections.singleton(editingDomain.getWrapper(object)));
-                }
-            }
-
             String sourceId = marker.getAttribute(IMarker.SOURCE_ID).toString();
             boolean sourceIdIsInteger = sourceId != null && sourceId.matches("[\\d]+");
 
