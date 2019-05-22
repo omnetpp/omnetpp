@@ -22,6 +22,7 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetAdapter;
@@ -214,7 +215,7 @@ public class InputsPage extends FormEditorPage {
     @Override
     public boolean gotoObject(Object object) {
         if (object instanceof InputFile) {
-            getTreeViewer().reveal(object);
+            getTreeViewer().setSelection(new StructuredSelection(object));
             return true;
         }
         else if (object instanceof Inputs) {

@@ -18,6 +18,7 @@ import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -128,7 +129,7 @@ public class ChartsPage extends FormEditorPage {
         if (object instanceof ModelObject) {
             ModelObject modelObject = (ModelObject)object;
             if (ScaveModelUtil.findEnclosingOrSelf(modelObject, Charts.class) != null) {
-                getViewer().reveal(modelObject);
+                getViewer().setSelection(new StructuredSelection(modelObject), true);
                 return true;
             }
         }
