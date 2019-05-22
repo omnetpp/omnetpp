@@ -531,15 +531,20 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
                     break;
                 }
-            } else if ("analysis".equals(rootNode.getNodeName()))
+            }
+            else {
                 analysis = AnalysisLoader.loadNewAnalysis(rootNode, getChartTemplateRegistry());
-            else
-                throw new RuntimeException("Invalid top level node: " + rootNode.getNodeName());
-        } catch (SAXException | IOException | CoreException | ParserConfigurationException | RuntimeException e) {
+            }
+        }
+        catch (SAXException | IOException | CoreException | ParserConfigurationException | RuntimeException e) {
             MessageDialog.openError(getSite().getShell(), "Error",
                     "Could not open resource " + modelFile.getFile().getFullPath() + "\n\n" + e.getMessage());
             ScavePlugin.logError("could not load resource", e);
+            analysis = null;
         }
+
+        if (analysis == null)
+            return;
 
         IFile inputFile = ((IFileEditorInput) getEditorInput()).getFile();
         tracker = new ResultFilesTracker(manager, analysis.getInputs(), inputFile.getParent().getFullPath());
@@ -1148,9 +1153,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
         actions.updateActions();
     }
 
-    /*
-     * PageId
-     */
     String getPageId(FormEditorPage page) {
         if (page == null)
             return null;
@@ -1426,13 +1428,13 @@ public class ScaveEditor extends MultiPageEditorPartExt
             addFixedPage(new FormEditorPage(getContainer(), SWT.NONE, this) {
                 {
                     // set up UI
-                    setPageTitle("Cannot Edit Old Analysis Format");
+                    setPageTitle("Error");
                     setFormTitle("Error");
 
                     getContent().setLayout(new GridLayout());
 
                     Label label = new Label(getContent(), SWT.WRAP);
-                    label.setText("You chose not to convert the old file to a new format.");
+                    label.setText("Analysis could not be opened.");
                     label.setBackground(this.getBackground());
                     label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
                 }

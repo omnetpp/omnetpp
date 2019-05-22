@@ -21,12 +21,15 @@ public class AnalysisLoader {
 
     public static Analysis loadNewAnalysis(Node rootNode, ChartTemplateRegistry chartTemplateRegistry) {
 
+        if (!rootNode.getNodeName().equals("analysis"))
+            throw new RuntimeException("Invalid top level node: " + rootNode.getNodeName());
+
         Analysis analysis = new Analysis();
 
         Node versionNode = rootNode.getAttributes().getNamedItem("version");
 
         if (versionNode == null)
-            throw new RuntimeException("unspecified analysis file version");
+            throw new RuntimeException("Unspecified analysis file version");
 
         if (!"2".equals(versionNode.getNodeValue()))
             throw new RuntimeException("invalid analysis file version: " + versionNode.getNodeValue());
@@ -47,9 +50,9 @@ public class AnalysisLoader {
                         analysis.getInputs().addInput(input);
                     } else if ("#text".equals(inputNode.getNodeName())) {
                         if (!inputNode.getNodeValue().trim().isEmpty())
-                            throw new RuntimeException("unexpected text content: " + inputNode.getNodeValue());
+                            throw new RuntimeException("Unexpected text content: " + inputNode.getNodeValue());
                     } else {
-                        throw new RuntimeException("invalid child node: " + inputNode.getNodeName());
+                        throw new RuntimeException("Invalid child node: " + inputNode.getNodeName());
                     }
                 }
             }
@@ -78,7 +81,7 @@ public class AnalysisLoader {
                                 case "LineChart": chart.setType(ChartType.LINE); break;
                                 case "ScatterChart": chart.setType(ChartType.LINE); break; // for backward compatibility
                                 case "HistogramChart": chart.setType(ChartType.HISTOGRAM); break;
-                                default: throw new RuntimeException("unknown chart type: " + chartType);
+                                default: throw new RuntimeException("Unknown chart type: " + chartType);
                             }
                         }
 
@@ -147,18 +150,18 @@ public class AnalysisLoader {
                     }
                     else if ("#text".equals(chartNode.getNodeName())) {
                         if (!chartNode.getNodeValue().trim().isEmpty())
-                            throw new RuntimeException("unexpected text content: " + chartNode.getNodeValue());
+                            throw new RuntimeException("Unexpected text content: " + chartNode.getNodeValue());
                     } else {
-                        throw new RuntimeException("invalid child node: " + chartNode.getNodeName());
+                        throw new RuntimeException("Invalid child node: " + chartNode.getNodeName());
                     }
                 }
             }
             else if ("#text".equals(node.getNodeName())) {
                 if (!node.getNodeValue().trim().isEmpty())
-                    throw new RuntimeException("unexpected text content: " + node.getNodeValue());
+                    throw new RuntimeException("Unexpected text content: " + node.getNodeValue());
             }
             else {
-                throw new RuntimeException("invalid child node: " + node.getNodeName());
+                throw new RuntimeException("Invalid child node: " + node.getNodeName());
             }
         }
 
