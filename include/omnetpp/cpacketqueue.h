@@ -57,6 +57,11 @@ class SIM_API cPacketQueue : public cQueue
     cPacketQueue(const char *name=nullptr, Comparator *cmp=nullptr) : cQueue(name, cmp) {}
 
     /**
+     * Constructor. Sets up cPacketQueue as a priority queue.
+     */
+    cPacketQueue(const char *name, CompareFunc cmp) : cQueue(name, cmp) {}
+
+    /**
      * Copy constructor. Contained objects that are owned by the queue
      * will be duplicated so that the new queue will have its own copy
      * of them.
