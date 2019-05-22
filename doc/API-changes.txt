@@ -21,6 +21,49 @@ Legend:
 (i)     information
 
 
+OMNeT++ 5.5
+~~~~~~~~~~~
+
+(+)     API in resultfiltes.h and resultrecorders.h made public:
+
+        filters: WarmupPeriodFilter, CountFilter, TotalCountFilter, ConstantFilter,
+        Constant0Filter, Constant1Filter, IdentityFilter, SkipNanFilter, SumFilter,
+        MeanFilter, MinFilter, MaxFilter, AverageFilter, TimeAverageFilter,
+        RemoveRepeatsFilter, PacketBytesFilter, SumPerDurationFilter, TimeFilter,
+        ErrorNanFilter, CountNanFilter
+
+        recorders: VectorRecorder, CountRecorder, LastValueRecorder, SumRecorder,
+        MeanRecorder, Minrecorder, MaxRecorder, AverageRecorder, TimeAverageRecorder,
+        StatisticsRecorder, StatsRecorder, HistogramRecorder, TimeWeightedHistoramrecorder,
+        PSquareRecorder, KSplitRecorder, ErrorNanRecorder
+
+(+)     cKSplit, cPSquare: added clear() method.
+
+(+)     cHistogram: Now collects the number of positive and negative infinity values.
+        getNumNegInfs(), getNumPosInfs(), getNumNegInfSumWeights(),
+        getNumPosInfSumWeights()
+
+(x)     cSimpleModule: Removed a legacy, deprecated constructor.
+        cSimpleModule(const char *dummy1, cModule *dummy2, unsigned stacksize)
+
+(+)     cModule: Added containsModule() method.
+
+(+)     cComponent: Added iniuniformexcl() returning a random integer with
+        uniform distribution over [a,b) (i.e. [a,b-1]).
+
+(+)     SimTime: Added preciseDiv() for a precise division of an integer 
+        and a simulation time.
+
+(+)     cQueue, cPacketQueue: added a constructor that accepts a comparator 
+        object (not just a function).
+
+(+)     Register_ResultFilter2(): Added a new macro that registers a result filter
+        with a description string.
+
+(!)     cXMLElement: internally used constructor now ignores the source location parameter.
+        It should be set separately using the setSourceLocation() method.
+
+
 OMNeT++ 5.4
 ~~~~~~~~~~~
 
