@@ -1057,7 +1057,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
                     else if (element instanceof InputFile)
                         return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_INPUTFILE);
                     else if (element instanceof Chart)
-                        return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_DATASET); //FIXME
+                        return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_CHART);
                     else if (element instanceof AnalysisItem)
                         return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_FOLDER);
                     else

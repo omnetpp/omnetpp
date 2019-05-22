@@ -68,6 +68,7 @@ public class ScaveImages {
     public static final String IMG_EVIEW16_OUTVECTOR = "icons/full/eview16/outvector.png";
     public static final String IMG_OBJ16_ADVANCEDFILTER = "icons/full/obj16/advancedfilter.png";
     public static final String IMG_OBJ16_BASICFILTER = "icons/full/obj16/basicfilter.png";
+    public static final String IMG_OBJ16_CHART = "icons/full/obj16/chart.png";
     public static final String IMG_OBJ16_CONFIGURATION = "icons/full/obj16/configuration.png";
     public static final String IMG_OBJ16_DATASET = "icons/full/obj16/dataset.png";
     public static final String IMG_OBJ16_EXPERIMENT = "icons/full/obj16/experiment.png";
