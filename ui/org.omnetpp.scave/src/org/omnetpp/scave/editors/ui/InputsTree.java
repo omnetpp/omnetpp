@@ -251,7 +251,7 @@ public class InputsTree extends TreeViewer {
                 if (e.keyCode == SWT.F2 && getTree().getSelectionCount() == 1) {
                     ViewerCell cell = getViewerRowFromItem(getTree().getSelection()[0]).getCell(0);
                     if (cell != null)
-                        triggerEditorActivationEvent(new ColumnViewerEditorActivationEvent(cell, e));
+                        triggerEditorActivationEvent(new ColumnViewerEditorActivationEvent(cell));
                 }
             }
         });
