@@ -2,24 +2,24 @@
 
 2019-04-25  Andras Varga
 
-	* cXMLElement: optimize for memory usage (some users have GiB files...)
+	* cXMLElement: optimize for memory usage to allow loading large XML files.
 
 2019-03-20  Andras Varga
 
-	* fix: @statistic signal checking used wrong isSimple()
+	* Fix: @statistic signal checking used the wrong isSimple() method
 
 2019-03-13  Andras Varga
 
-	* added new result recorders/filters: totalCount, errorNan, nanCount
-	* fix RemoveRepeatsFilter (repeated NaNs were not filtered out)
+	* Added new result recorders/filters: totalCount, errorNan, nanCount
+	* Fixed RemoveRepeatsFilter (repeated NaNs were not filtered out)
 
 2019-02-27  Andras Varga
 
-	* added user-accessible descriptions for result filter/recorder types
-  	- new macro: Register_ResultFilter2(), Register_ResultRecorder2()
-		- documentation is  accessible via opp_run -h resultfilters /
-		resultrecorders
-	* fix: prevent NaN coming from filters expressions like
+	* Added user-accessible descriptions for result filter/recorder types.
+	New registration macros were introduced to allow specifying documentation:
+	Register_ResultFilter2(), Register_ResultRecorder2()
+		
+	* Fix: prevent initial NaNs coming from filters expressions like
 	count(foo)+count(bar)
 
 2019-03-12  Andras Varga
@@ -28,14 +28,17 @@
 
 2019-02-12  Andras Varga
 
-	* added TimeFilter
-	* added preciseDiv(int64_t, SimTime)
-	* added intuniformexcl() as NED function, global function, as cComponent
+	* Added TimeFilter, a result filter that replaces the value with its
+	timestamp.
+	
+	* Added preciseDiv(int64_t, SimTime)
+	
+	* Added intuniformexcl() as NED function, global function, as cComponent
 	method, as object (cIntUniformExcl)
 
 2019-01-29  Andras Varga
 
-	* cDefaultList: do not leave dangling owner pointer in undisposed
+	* Fix: cDefaultList: do not leave dangling owner pointer in undisposed
 	objects
 
 2019-01-27  Andras Varga
@@ -46,12 +49,7 @@
 
 	* cSimpleModule: remove deprecated legacy constructor
 
-2019-03-19  Andras Varga
-
-	* updated cLegacyHistogram and cVarHistogram for collecting infinite
-	values in histograms
-
-2019-01-22  TÖRÖK Attila
+2019-01-22  Attila Torok
 
 	* Add infinity counting to cAbstractHistogram and subclasses.
 
@@ -65,20 +63,18 @@
 
 2019-01-22  Andras Varga
 
-	* fix: cKSplit, cPSquare: added missing clear() implementation
+	* Fix in cKSplit, cPSquare: added missing clear() implementation
 
-2019-01-17  TÖRÖK Attila
+2019-01-17  Attila Torok
 
 	* Fix cAutoRangeHistogramStrategy::clear().
 
-2019-01-17  TÖRÖK Attila
+2019-01-17  Attila Torok
 
 	* Replace an incorrect ASSERT with a more precise one in
-	cAutoRangeHistogramStrategy.
+	cAutoRangeHistogramStrategy. This fixes some fingerprint tests involving histograms.
 
-	This fixes some fingerprint tests involving histograms.
-
-2019-01-16  TÖRÖK Attila
+2019-01-16  Attila Torok
 
 	* Prevent a use-after-free crash in StatisticRecorderParser.
 	This surfaced while running test/core/statistic_record_1.test

@@ -48,7 +48,7 @@ OMNeT++ 5.5
 
 (+)     cModule: Added containsModule() method.
 
-(+)     cComponent: Added iniuniformexcl() returning a random integer with
+(+)     cComponent: Added intuniformexcl() returning a random integer with
         uniform distribution over [a,b) (i.e. [a,b-1]).
 
 (+)     SimTime: Added preciseDiv() for a precise division of an integer 
@@ -57,8 +57,9 @@ OMNeT++ 5.5
 (+)     cQueue, cPacketQueue: added a constructor that accepts a comparator 
         object (not just a function).
 
-(+)     Register_ResultFilter2(): Added a new macro that registers a result filter
-        with a description string.
+(+)     Register_ResultFilter2(), Register_ResultRecorder2(): new macros that 
+        allow for registering result filters and recorders together with a
+        description string.
 
 (!)     cXMLElement: internally used constructor now ignores the source location parameter.
         It should be set separately using the setSourceLocation() method.

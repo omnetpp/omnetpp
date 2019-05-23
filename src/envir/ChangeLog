@@ -5,51 +5,40 @@
 	* XML: fix the issue of accumulating whitespace node content slowing
 	down the parsing process
 
-2019-04-25  Andras Varga
-
-	* cXMLElement: optimize for memory usage (some users have GiB files...)
-
 2019-03-20  Andras Varga
 
 	* Fix: @statistic signal checking used wrong isSimple()
 
 2019-03-14  Andras Varga
 
-	* allow parameters to be specified on the command line
+	* Feature: Allow module parameter values to be specified on the command line,
+	and they take precedence over values specified in the ini file.	The syntax
+	is similar to that of options. Example:
+	"opp_run --**.serviceTime=100ms --sim-time-limit=1000s"
 
 2019-02-27  Andras Varga
 
-	* improve -h <topic> output
+	* Slightly improved -h <topic> output
 
 2019-02-27  Andras Varga
 
-	* Added user-accessible descriptions for result filter/recorder types
-		- new macro: Register_ResultFilter2(), Register_ResultRecorder2()
-		- documentation is  accessible via opp_run -h resultfilters /
-	resultrecorders
+	* Feature: Output of opp_run -h resultfilters / resultrecorders now includes
+	the descriptions of result filter and recorder types.
 
 2019-03-11  Andras Varga
 
 	* Fix broken dependencies in Makefiles
 
-2019-01-29  Andras Varga
-
-	* startrunDone -> startrunCalled, based on the definition of LF_ON_RUN_END
-
 2019-01-30  Andras Varga
 
-	SqliteOutputScalarManager: fix: there is no longer need to record
+	* SqliteOutputScalarManager: fix: there is no longer need to record
 	itervars as scalars. The same change for the native file format was
-	done for version 5.2
+	done for version 5.2.
 
 2019-01-28  Andras Varga
 
-	* Check for existence of eventlogManager because the 'record eventlog'
+	* Fix: Check for existence of eventlogManager because the 'record eventlog'
 	button caused crash in Qtenv if there was no network set up.
-
-2018-06-28  Andras Varga
-
-	* resultfilters.h and resultrecorders.h made public
 
 2018-06-25  ------ omnetpp-5.4.1 released ------
 

@@ -2,10 +2,11 @@
 
 2019-05-13  Rudolf Hornig
 
-	* msgcompiler: moved the header guard to the beginning of the generated
-	files. The CDT Indexer got confused and parsed several times the same file if
-	the header guard is not the first #ifdef in the file. This triggered a
-	bug in CDT Indexer and caused extreme slowdowns.
+	* Message compiler: moved the header guard to the beginning of the generated
+	files. The CDT Indexer gets confused and parses the same file several times
+	if anything (except comments) precedes the header guard #ifdef in the file.
+	This triggered a bug in CDT Indexer and caused extreme slowdown and	eventually
+	memory exhaustion.
 
 2019-03-11  Andras Varga
 
@@ -13,8 +14,7 @@
 
 2019-02-07  Andras Varga
 
-	* Added intuniformexcl() as NED function, global function, as
-	cComponent method, as object (cIntUniformExcl)
+	* nedxml: Let the validator know about the new intuniformexcl() NED function.
 
 2018-06-25  ------ omnetpp-5.4.1 released ------
 

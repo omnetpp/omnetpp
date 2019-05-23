@@ -2,7 +2,6 @@
 
 2019-04-25  Andras Varga
 
-	* cXMLElement: optimize for memory usage (some users have GiB files...)
 	* StringPool: added contains()
 
 2019-04-30  Andras Varga
@@ -13,7 +12,7 @@
 
 	* PatternMatcher: added str()
 
-2019-02-21  TÖRÖK Attila
+2019-02-21  Attila Torok
 
 	* LineTokenizer now reallocates its internal buffer for longer lines.
 

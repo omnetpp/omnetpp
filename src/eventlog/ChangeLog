@@ -2,7 +2,7 @@
 
 2018-11-05  Zoltan Bojthe
 
-	* fix: event number printf format: remove extra tail "d"
+	* Fix: event number printf format: remove extra tail "d"
 
 2018-06-25  ------ omnetpp-5.4.1 released ------
 
