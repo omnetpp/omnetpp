@@ -295,7 +295,7 @@ double UnitConversion::tryGetConversionFactor(UnitDesc *unitDesc, UnitDesc *targ
         return unitDesc->mult;
     if (equal(unitDesc->unit, targetUnitDesc->baseUnit) && targetUnitDesc->mapping == LINEAR)
         return 1.0 / targetUnitDesc->mult;
-    
+
     // convert unit to the base, and try again
     if (!equal(unitDesc->unit, unitDesc->baseUnit) && unitDesc->mapping == LINEAR) {
         UnitDesc *baseUnitDesc = lookupUnit(unitDesc->baseUnit);
@@ -307,7 +307,7 @@ double UnitConversion::tryGetConversionFactor(UnitDesc *unitDesc, UnitDesc *targ
         UnitDesc *targetBaseDesc = lookupUnit(targetUnitDesc->baseUnit);
         return tryGetConversionFactor(unitDesc, targetBaseDesc) / targetUnitDesc->mult;
     }
-    
+
     return 0; // no conversion found
 }
 
@@ -323,11 +323,18 @@ double UnitConversion::convertToBase(double value, UnitDesc *unitDesc)
 double UnitConversion::convertFromBase(double value, UnitDesc *unitDesc)
 {
     switch (unitDesc->mapping) {
-        case LINEAR: return value / unitDesc->mult;
-        case LOG10:  return unitDesc->mult * log10(value);
-        default: throw opp_runtime_error("UnitConversion: invalid unit type");
+        case LINEAR:
+            return value / unitDesc->mult;
+        case LOG10:
+            if (value <= 0)
+                throw opp_runtime_error("Cannot convert a zero or negative quantity (%g) to a logarithmic unit (%s)", value, unitDesc->longName);
+            return unitDesc->mult * log10(value);
+        default:
+            throw opp_runtime_error("UnitConversion: invalid mapping type");
     }
 }
+
+class UnrelatedUnits {};
 
 double UnitConversion::convertUnit(double value, const char *unit, const char *targetUnit)
 {
@@ -354,10 +361,7 @@ double UnitConversion::convertUnit(double value, const char *unit, const char *t
         cannotConvert(unit, targetUnit); // one of them is custom unit
 
     // convert
-    double res = tryConvert(value, unitDesc, targetUnitDesc);
-    if (std::isnan(res) && !std::isnan(value))
-        cannotConvert(unit, targetUnit);
-    return res;
+    return tryConvert(value, unitDesc, targetUnitDesc, unit, targetUnit);
 }
 
 void UnitConversion::cannotConvert(const char *unit, const char *targetUnit)
@@ -367,7 +371,7 @@ void UnitConversion::cannotConvert(const char *unit, const char *targetUnit)
             (opp_isempty(targetUnit) ? "none" : getUnitDescription(targetUnit).c_str()));
 }
 
-double UnitConversion::tryConvert(double value, UnitDesc *unitDesc, UnitDesc *targetUnitDesc)
+double UnitConversion::tryConvert(double value, UnitDesc *unitDesc, UnitDesc *targetUnitDesc, const char *origUnit, const char *origTargetUnit)
 {
     // if they are the same units, or one is the base unit of the other, we're done
     if (unitDesc == targetUnitDesc)
@@ -376,20 +380,22 @@ double UnitConversion::tryConvert(double value, UnitDesc *unitDesc, UnitDesc *ta
         return convertToBase(value, unitDesc);
     if (equal(unitDesc->unit, targetUnitDesc->baseUnit))
         return convertFromBase(value, targetUnitDesc);
-    
+
     // convert unit to the base, and try again
     if (!equal(unitDesc->unit, unitDesc->baseUnit)) {
         UnitDesc *baseUnitDesc = lookupUnit(unitDesc->baseUnit);
-        return tryConvert(convertToBase(value, unitDesc), baseUnitDesc, targetUnitDesc);
+        return tryConvert(convertToBase(value, unitDesc), baseUnitDesc, targetUnitDesc, origUnit, origTargetUnit);
     }
 
     // try converting via the target unit's base
     if (!equal(targetUnitDesc->unit, targetUnitDesc->baseUnit)) {
         UnitDesc *targetBaseDesc = lookupUnit(targetUnitDesc->baseUnit);
-        return convertFromBase(tryConvert(value, unitDesc, targetBaseDesc), targetUnitDesc);
+        return convertFromBase(tryConvert(value, unitDesc, targetBaseDesc, origUnit, origTargetUnit), targetUnitDesc);
     }
-    
-    return NaN;
+
+    // note: we cannot simply return nan, as we need to distinguish between nan W -> nan mW (legal), and nan W -> nan s (illegal)
+    cannotConvert(origUnit, origTargetUnit);
+    return 0; // to suppress warning
 }
 
 const char *UnitConversion::getLongName(const char *unit)

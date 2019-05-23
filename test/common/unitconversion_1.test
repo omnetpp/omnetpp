@@ -217,7 +217,7 @@ EV << ".\n";
 '1s 550ms 700us ' (as W) ==> ERROR: Cannot convert unit 'us' (microsecond) to 'W' (watt)
 ' 1s 550ms 700us ' (as W) ==> ERROR: Cannot convert unit 'us' (microsecond) to 'W' (watt)
 '17s 71ggg' (as W) ==> ERROR: Error in quantity '17s 71ggg': Unit 'ggg' does not match 's' (second)
-'nan s' (as W) ==> -nan
+'nan s' (as W) ==> ERROR: Cannot convert unit 's' (second) to 'W' (watt)
 'inf s' (as W) ==> ERROR: Cannot convert unit 's' (second) to 'W' (watt)
 '-inf s' (as W) ==> ERROR: Cannot convert unit 's' (second) to 'W' (watt)
 

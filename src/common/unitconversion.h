@@ -41,7 +41,7 @@ class COMMON_API UnitConversion
     static bool readUnit(const char *&s, std::string& unit);
     static double convertToBase(double value, UnitDesc *unitDesc);
     static double convertFromBase(double value, UnitDesc *unitDesc);
-    static double tryConvert(double d, UnitDesc *unitDesc, UnitDesc *targetUnitDesc);
+    static double tryConvert(double d, UnitDesc *unitDesc, UnitDesc *targetUnitDesc, const char *origUnit, const char *origTargetUnit);
     static void cannotConvert(const char *unit, const char *targetUnit);
     static double tryGetConversionFactor(UnitDesc *unitDesc, UnitDesc *targetUnitDesc);
 
@@ -117,7 +117,7 @@ class COMMON_API UnitConversion
     static const char *getBaseUnit(const char *unit);
 
     /**
-     * Returns true if the given unit is linear (e.g. W and KiB), and false 
+     * Returns true if the given unit is linear (e.g. W and KiB), and false
      * if not (dBm, dbW). Unknown (custom) units are assumed to be linear.
      */
     static bool isLinearUnit(const char *unit);

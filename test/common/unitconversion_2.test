@@ -129,8 +129,8 @@ EV << ".\n";
 30dBm = 1000mW (= 30dBm)
 33dBm = 1995.26mW (= 33dBm)
 
-0mW = -infdBm (= 0mW)
--1mW to dBm ==> ERROR: Cannot convert unit 'mW' (milliwatt) to 'dBm' (decibel-milliwatt)
+0mW to dBm ==> ERROR: Cannot convert a zero or negative quantity (0) to a logarithmic unit (decibel-milliwatt)
+-1mW to dBm ==> ERROR: Cannot convert a zero or negative quantity (-1) to a logarithmic unit (decibel-milliwatt)
 1mW to A ==> ERROR: Cannot convert unit 'mW' (milliwatt) to 'A' (ampere)
 
 -10dBm = 0.0001W (= -10dBm)
