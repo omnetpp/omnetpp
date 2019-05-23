@@ -1,6 +1,8 @@
 package org.omnetpp.scave.editors;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IMarker;
@@ -11,6 +13,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.BadPositionCategoryException;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentListener;
@@ -29,15 +32,25 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IMemento;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
+import org.eclipse.ui.console.IHyperlink;
 import org.eclipse.ui.console.IOConsole;
 import org.eclipse.ui.console.IOConsoleOutputStream;
+import org.eclipse.ui.console.IPatternMatchListener;
+import org.eclipse.ui.console.PatternMatchEvent;
+import org.eclipse.ui.console.TextConsole;
+import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.internal.console.ConsoleHyperlinkPosition;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.MarkerAnnotation;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.canvas.LargeScrollableCanvas;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
@@ -81,7 +94,12 @@ import org.omnetpp.scave.python.ToggleAutoUpdateAction;
 import org.omnetpp.scave.python.ZoomAction;
 import org.python.pydev.editor.PyEdit;
 import org.python.pydev.shared_core.callbacks.ICallbackListener;
+import org.python.pydev.shared_ui.editor_input.PydevFileEditorInput;
 
+//TODO ScaveEditor remains dirty after hitting Ctrl+S in edited script editor
+//TODO vector operations via chart properties not text insertion
+//TODO on errors, display stack trace somewhere (in log?)
+//TODO @title not used by chart
 
 public class ChartScriptEditor extends PyEdit {
     Chart chart;
@@ -142,6 +160,73 @@ public class ChartScriptEditor extends PyEdit {
     private boolean autoUpdateChart = true;
     ToggleAutoUpdateAction toggleAutoUpdateAction;
 
+    private class StackFrameHyperlink implements IHyperlink {
+        private final String file;
+        private final int lineNumber;
+
+        public StackFrameHyperlink(String file, int lineNumber) {
+            this.file = file;
+            this.lineNumber = lineNumber;
+        }
+
+        @Override
+        public void linkExited() {
+        }
+
+        @Override
+        public void linkEntered() {
+        }
+
+        @Override
+        public void linkActivated() {
+            showSourceForStackFrame(file, lineNumber);
+        }
+    }
+
+    public class PatternMatchListener implements IPatternMatchListener {
+        @Override
+        public void connect(TextConsole console) {
+        }
+
+        @Override
+        public void disconnect() {
+        }
+
+        @Override
+        public void matchFound(PatternMatchEvent event) {
+            try {
+                IDocument document = console.getDocument();
+                String fileAndLine = document.get(event.getOffset(), event.getLength());
+                Matcher matcher = Pattern.compile("File \"(.*?)\", line (\\d+)").matcher(fileAndLine);
+                Assert.isTrue(matcher.matches());
+                if (matcher.matches()) {
+                    String fileName = matcher.group(1);
+                    int lineNumber = Integer.parseInt(matcher.group(2));
+                    console.addHyperlink(new StackFrameHyperlink(fileName, lineNumber), event.getOffset(), event.getLength());
+                }
+            }
+            catch (BadLocationException e) {
+                ScavePlugin.logError(e);
+            }
+        }
+
+        @Override
+        public String getPattern() {
+            return "File \".*?\", line \\d+";
+        }
+
+        @Override
+        public int getCompilerFlags() {
+            return 0;
+        }
+
+        @Override
+        public String getLineQualifier() {
+            return null;
+        }
+
+    }
+
     private final DelayedJob rerunChartScriptJob = new DelayedJob(CHART_SCRIPT_EXECUTION_DELAY_MS) {
         @Override
         public void run() {
@@ -186,6 +271,8 @@ public class ChartScriptEditor extends PyEdit {
         outputStream = console.newOutputStream();
         errorStream = console.newOutputStream();
         errorStream.setColor(new Color(Display.getCurrent(), 220, 10, 10));
+
+        console.addPatternMatchListener(new PatternMatchListener());
 
         onCreatePartControl.registerListener(new ICallbackListener<Composite>() {
 
@@ -866,5 +953,30 @@ public class ChartScriptEditor extends PyEdit {
     public void gotoMarker(IMarker marker) {
         Assert.isTrue(this.errorMarker.equals(marker));
         gotoErrorAnnotation();
+    }
+
+    protected void showSourceForStackFrame(String filename, int lineNumber) {
+        Debug.println("Opening location for: " + filename + ":" + lineNumber);
+        try {
+            if (filename.equals("<string>")) {
+                getEditorSite().getPage().activate(scaveEditor);
+                scaveEditor.showPage(formEditor);
+                gotoLine(this, lineNumber);
+            }
+            else {
+                IEditorInput editorInput = new PydevFileEditorInput(new File(filename));
+                PyEdit pyedit = (PyEdit) IDE.openEditor(getSite().getPage(), editorInput, PyEdit.EDITOR_ID);
+                gotoLine(pyedit, lineNumber);
+            }
+        }
+        catch (PartInitException|BadLocationException e) {
+            ScavePlugin.logError(e);
+        }
+    }
+
+    protected void gotoLine(PyEdit pyedit, int lineNumber) throws BadLocationException {
+            IDocument document = pyedit.getDocument();
+            int offset = document.getLineOffset(lineNumber-1);
+            getSourceViewer().setSelectedRange(offset, 0);
     }
 }
