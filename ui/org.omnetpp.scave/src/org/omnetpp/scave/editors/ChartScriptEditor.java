@@ -578,6 +578,11 @@ public class ChartScriptEditor extends PyEdit {
             ExceptionHandler errorHandler = (proc, e) -> {
                 Display.getDefault().syncExec(() -> {
                     if (!proc.isKilledByUs()) {
+                        try {
+                            errorStream.write(e.getMessage());
+                        } catch (IOException e1) {
+                            ScavePlugin.logError(e);
+                        }
                         annotatePythonException(e);
                         revealErrorAnnotation();
                     }
