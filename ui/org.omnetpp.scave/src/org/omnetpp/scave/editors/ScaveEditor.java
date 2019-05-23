@@ -1178,19 +1178,13 @@ public class ScaveEditor extends MultiPageEditorPartExt
         return selectionChangedListener;
     }
 
-    /**
-     * Updates the pages. Registered as a listener on model changes.
-     */
-    @SuppressWarnings("unchecked")
+    //TODO temp chart name changes currently do not propagate to the tabitem text, as we do not receive model change notification about their change!
     private void updatePages(ModelChangeEvent event) {
 
-        // close pages whose content was deleted, except temporary datasets/charts
-        // (temporary objects are not deleted, but they can be moved into the persistent
-        // analysis)
-
-        for (AnalysisItem item : closablePages.keySet()) {
-            // XXX: when folders are introduced, revise this
-            if (!analysis.getCharts().getCharts().contains(item))
+        // close pages whose content was deleted, except temporary charts
+        for (AnalysisItem item : closablePages.keySet().toArray(new AnalysisItem[0])) { // toArray() is for preventing ConcurrentModificationException
+            // TODO: when folders are introduced, revise this
+            if (!analysis.getCharts().getCharts().contains(item) && !(item instanceof Chart && ((Chart)item).isTemporary()))
                 removePage(closablePages.get(item));
         }
 
