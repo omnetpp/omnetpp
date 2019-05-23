@@ -22,6 +22,9 @@ def extract_label_columns(df):
         if title in df and len(df[title].unique()) == 1:
             title_col = title
             break
+    if title_col == None:
+        if "name" in titles:
+            title_col = "name"
 
     legend_cols = []
 
@@ -62,7 +65,11 @@ def make_legend_label(legend_cols, row):
     return ", ".join([col + "=" + str(row[i]) for i, col in legend_cols])
 
 def make_chart_title(df, title_col, legend_cols):
-    return str(list(df[title_col])[0]) + ((" (by " + ", ".join([id[1] for id in legend_cols]) + ")") if legend_cols else "")
+    what = str(list(df[title_col])[0]) if title_col else "Data"
+    if title_col and len(df[title_col].unique()) > 1:
+        what +=  " and other variables"
+    by_what = (" (by " + ", ".join([id[1] for id in legend_cols]) + ")") if legend_cols else ""
+    return what + by_what
 
 def _list_to_bytes(l):
     return np.array(np.array(l), dtype=np.dtype('>f8')).tobytes()
