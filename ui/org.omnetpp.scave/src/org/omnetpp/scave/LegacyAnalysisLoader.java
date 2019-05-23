@@ -110,7 +110,7 @@ public class LegacyAnalysisLoader {
             return "(" + opsExpr + ")  AND  (" + filtersExpr + ")";
     }
 
-    private Chart makeLegacyChart(ArrayList<DataOp> ops, ArrayList<DataVecOp> vecOps, String datasetName, Node chartNode, String chartType) {
+    private Chart makeLegacyChart(ArrayList<DataOp> ops, ArrayList<DataVecOp> vecOps, Node chartNode, String chartType) {
         Chart chart = null;
 
         if ("scave:BarChart".equals(chartType))
@@ -217,10 +217,6 @@ public class LegacyAnalysisLoader {
     }
 
     private void loadItems(Node parentNode, Analysis analysis, ArrayList<DataOp> startingOps, ArrayList<DataVecOp> startingVecOps) {
-
-        Node nameNode = parentNode.getAttributes().getNamedItem("name");
-
-        String datasetName = nameNode.getNodeValue();
         NodeList itemNodes = parentNode.getChildNodes();
 
         @SuppressWarnings("unchecked")
@@ -251,7 +247,7 @@ public class LegacyAnalysisLoader {
                     vecOps.add(new DataVecOp("scave:Apply".equals(itemType) ? "apply" : "compute", operationNode.getNodeValue(), extractVectorOpParams(itemNode)));
                 }
                 else if ("scave:BarChart".equals(itemType) || "scave:HistogramChart".equals(itemType) || "scave:ScatterChart".equals(itemType) || "scave:LineChart".equals(itemType))
-                    analysis.getCharts().addChart(makeLegacyChart(ops, vecOps, datasetName, itemNode, itemType));
+                    analysis.getCharts().addChart(makeLegacyChart(ops, vecOps, itemNode, itemType));
                 else if ("scave:Group".equals(itemType)) {
                     loadItems(itemNode, analysis, ops, vecOps);
                 }
