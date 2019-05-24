@@ -59,8 +59,8 @@ public class ExportDataAction extends AbstractScaveAction {
         if (selection.isEmpty())
             return false;
         if (selection instanceof IDListSelection) {
-            IDList selectedIDs = ((IDListSelection)selection).toIDList();
-            int selectionItemTypes = selectedIDs.getItemTypes(); // TODO IDListSelection should have this method!
+            IDList selectedIDs = ((IDListSelection)selection).getIDList();
+            int selectionItemTypes = selectedIDs.getItemTypes();
             int supportedTypes = ExporterFactory.getByFormat(format).getSupportedResultTypes();
             int unsupportedTypes = selectionItemTypes & ~supportedTypes;
             return unsupportedTypes == 0;

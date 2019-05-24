@@ -7,37 +7,34 @@
 
 package org.omnetpp.scave.editors;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.omnetpp.common.Debug;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.model.ResultType;
-import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * Represents a selection of result item IDs in the editor.
- * The <code>ResultFileManager</code> is available from the
- * selection for the purpose of performing operations on the selected ids.
- *
- * @author tomi
  */
+//FIXME this should NOT be an IStructuredSelection!!! Then we could spare most methods,including toArray() and toList!!!
 public class IDListSelection implements IStructuredSelection {
-    Long[] elements;   //TODO why Long[]? store IDList in the first place!
+    IDList idlist;
     ResultFileManager manager;
     ResultType type;
 
-    public IDListSelection(IDList idlist, ResultFileManager manager) {
+    public IDListSelection(IDList idlist, ResultFileManager manager) { //TODO we do NOT copy the idlist!!! check call sites!
         Assert.isNotNull(idlist);
         Assert.isNotNull(manager);
 
-        this.elements = idlist.toArray();
+        this.idlist = idlist;
         this.manager = manager;
         if (idlist.areAllScalars())
             type = ResultType.SCALAR_LITERAL;
@@ -52,8 +49,10 @@ public class IDListSelection implements IStructuredSelection {
     public IDListSelection(long id, ResultFileManager manager) {
         Assert.isNotNull(manager);
 
-        this.elements = new Long[] { id };
+        this.idlist = new IDList();
         this.manager = manager;
+        idlist.add(id);
+
         int internalType = ResultFileManager.getTypeOf(id);
         if (internalType == ResultFileManager.SCALAR)
             type = ResultType.SCALAR_LITERAL;
@@ -74,115 +73,104 @@ public class IDListSelection implements IStructuredSelection {
     }
 
     public VectorResult getFirstAsVector() {
-        if (elements.length > 0) {
-            ResultItem item = manager.getItem(elements[0]);
+        if (!idlist.isEmpty()) {
+            ResultItem item = manager.getItem(idlist.get(0));
             if (item instanceof VectorResult)
                 return (VectorResult)item;
         }
         return null;
     }
 
-    public Long[] getScalarIDs() {
-        return getIDs(ResultType.SCALAR_LITERAL);
+    public IDList getScalarIDs() {
+        return idlist.filterByTypes(ResultFileManager.SCALAR); //TODO or self, if it's all scalars!
     }
 
-    public Long[] getVectorIDs() {
-        return getIDs(ResultType.VECTOR_LITERAL);
+    public IDList getVectorIDs() {
+        return idlist.filterByTypes(ResultFileManager.VECTOR);
     }
 
-    public Long[] getHistogramIDs() {
-        return getIDs(ResultType.HISTOGRAM_LITERAL);
+    public IDList getStatisticIDs() {
+        return idlist.filterByTypes(ResultFileManager.STATISTICS);
     }
 
-    public Long[] getStatisticIDs() {
-        return getIDs(ResultType.STATISTICS_LITERAL);
-    }
-
-    // andras
-    public Long[] getIDs() {
-        return elements;
-    }
-
-    private Long[] getIDs(ResultType type) {
-        if (this.type == type)
-            return elements;
-        else {
-            int type2 = ScaveModelUtil.asInternalResultType(type);
-            List<Long> ids = new ArrayList<Long>();
-            for (Long id : elements)
-                if (ResultFileManager.getTypeOf(id) == type2)
-                    ids.add(id);
-            return ids.toArray(new Long[ids.size()]);
-        }
+    public IDList getHistogramIDs() {
+        return idlist.filterByTypes(ResultFileManager.HISTOGRAM);
     }
 
     public int getScalarsCount() {
-        return getCount(ResultType.SCALAR_LITERAL);
+        return idlist.countByTypes(ResultFileManager.SCALAR);  //TODO or size() if it's all scalars, or 0 if it contains no scalar!
     }
 
     public int getVectorsCount() {
-        return getCount(ResultType.VECTOR_LITERAL);
+        return idlist.countByTypes(ResultFileManager.VECTOR);
     }
 
     public int getStatisticsCount() {
-        return getCount(ResultType.STATISTICS_LITERAL);
+        return idlist.countByTypes(ResultFileManager.STATISTICS);
     }
 
     public int getHistogramsCount() {
-        return getCount(ResultType.HISTOGRAM_LITERAL);
-    }
-
-    private int getCount(ResultType type) {
-        if (this.type == type)
-            return elements.length;
-        else {
-            int type2 = ScaveModelUtil.asInternalResultType(type);
-            int c = 0;
-            for (Long id : elements)
-                if (ResultFileManager.getTypeOf(id) == type2)
-                    c++;
-            return c;
-        }
+        return idlist.countByTypes(ResultFileManager.HISTOGRAM);
     }
 
     public Object getFirstElement() {
-        return elements.length > 0 ? elements[0] : null;
-    }
-
-    public Iterator<Long> iterator() {
-        return toList().iterator();
+        return idlist.isEmpty() ? null : idlist.get(0);
     }
 
     public int size() {
-        return elements.length;
+        return idlist.size();
     }
 
     public Object[] toArray() {
-        return elements;
+        Debug.println("INEFFICIENT METHOD CALLED: IDListSelection.toArray()");
+        return idlist.toArray();
     }
 
     public List<Long> toList() {
-        return Arrays.asList(elements);
+        Debug.println("INEFFICIENT METHOD CALLED: IDListSelection.toList()");
+        return Arrays.asList(idlist.toArray());
     }
 
-    public IDList toIDList() {
-        return IDList.fromArray(elements);
+    public IDList getIDList() {
+        return idlist;
     }
 
     public boolean isEmpty() {
-        return elements.length == 0;
+        return idlist.isEmpty();
+    }
+
+    @Override
+    public Iterator<Long> iterator() {
+        return new Iterator<Long>() {
+            private int pos = 0;
+
+            @Override
+            public boolean hasNext() {
+                return pos < idlist.size();
+            }
+
+            @Override
+            public Long next() {
+                if (pos >= idlist.size())
+                    throw new NoSuchElementException();
+                return idlist.get(pos++);
+            }
+        };
     }
 
     public boolean equals(Object other) {
+        Debug.println("UNIMPLEMENTED METHOD CALLED: IDListSelection.equals()");
         if (this == other)
             return true;
         if (other == null || getClass() != other.getClass())
             return false;
         IDListSelection otherSelection = (IDListSelection)other;
-        return manager == otherSelection.manager && Arrays.equals(elements, otherSelection.elements);
+        return manager == otherSelection.manager && idlist.size() == otherSelection.size(); //TODO
     }
 
     public int hashCode() {
-        return 31 * manager.hashCode() + Arrays.hashCode(elements);
+        Debug.println("INEFFICIENT METHOD CALLED: IDListSelection.hashCode()");
+        return 31 * manager.hashCode() + Arrays.hashCode(idlist.toArray());  //TODO optimize if needed, or implement in C++
     }
+
 }

@@ -98,7 +98,7 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
 
         if (selection instanceof IDListSelection) {
             IDListSelection idlistSelection = (IDListSelection)selection;
-            selectedIDs = idlistSelection.toIDList();
+            selectedIDs = idlistSelection.getIDList();
             resultFileManager = idlistSelection.getResultFileManager();
         }
         else if (selection.size() == 1 && selection.getFirstElement() instanceof Chart) {

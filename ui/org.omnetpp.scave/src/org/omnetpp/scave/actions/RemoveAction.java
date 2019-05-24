@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.ISharedImages;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.AnalysisItem;
@@ -41,7 +42,7 @@ public class RemoveAction extends AbstractScaveAction {
     @SuppressWarnings("unchecked")
     @Override
     public boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-        if (selection.isEmpty())
+        if (selection.isEmpty() || selection instanceof IDListSelection)
             return false;
         Iterator<Object> elements = selection.iterator();
         while (elements.hasNext()) {

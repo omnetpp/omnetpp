@@ -40,19 +40,19 @@ public class CreateTempMatplotlibChartAction extends AbstractScaveAction {
         IDListSelection idListSelection = (IDListSelection)selection;
         ResultFileManager manager = idListSelection.getResultFileManager();
         if (idListSelection.getScalarsCount() != 0) {
-            IDList idList = IDList.fromArray(idListSelection.getScalarIDs());
+            IDList idList = idListSelection.getScalarIDs();
             openMatplotlibChart(editor, manager, ResultType.SCALAR_LITERAL, idList);
         }
         if (idListSelection.getVectorsCount() != 0) {
-            IDList idList = IDList.fromArray(idListSelection.getVectorIDs());
+            IDList idList = idListSelection.getVectorIDs();
             openMatplotlibChart(editor, manager, ResultType.VECTOR_LITERAL, idList);
         }
         if (idListSelection.getHistogramsCount() != 0) {
-            IDList idList = IDList.fromArray(idListSelection.getHistogramIDs());
+            IDList idList = idListSelection.getHistogramIDs();
             openMatplotlibChart(editor, manager, ResultType.HISTOGRAM_LITERAL, idList);
         }
         if (idListSelection.getStatisticsCount() != 0) {
-            IDList idList = IDList.fromArray(idListSelection.getStatisticIDs());
+            IDList idList = idListSelection.getStatisticIDs();
             openMatplotlibChart(editor, manager, ResultType.STATISTICS_LITERAL, idList);
         }
     }
