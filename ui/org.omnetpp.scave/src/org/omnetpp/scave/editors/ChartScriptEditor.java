@@ -1,6 +1,7 @@
 package org.omnetpp.scave.editors;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
@@ -80,6 +81,7 @@ import org.omnetpp.scave.python.ToggleAutoUpdateAction;
 import org.omnetpp.scave.python.ZoomAction;
 import org.python.pydev.editor.PyEdit;
 import org.python.pydev.shared_core.callbacks.ICallbackListener;
+
 
 public class ChartScriptEditor extends PyEdit {
     Chart chart;
@@ -579,7 +581,7 @@ public class ChartScriptEditor extends PyEdit {
                 Display.getDefault().syncExec(() -> {
                     if (!proc.isKilledByUs()) {
                         try {
-                            errorStream.write(e.getMessage());
+                            errorStream.write(tweakStacktrace(e.getMessage()));
                         } catch (IOException e1) {
                             ScavePlugin.logError(e);
                         }
@@ -591,6 +593,17 @@ public class ChartScriptEditor extends PyEdit {
 
             getChartViewer().runPythonScript(getDocument().get(), scaveEditor.getAnfFileDirectory(), afterRun, errorHandler);
         });
+    }
+
+    private String tweakStacktrace(String msg) {
+        // Tweak the exception message to remove stack frames related to Py4J.
+        // Only tweak if the message conforms to the expected pattern, otherwise leave it alone.
+        String expectedFirstLine = "An exception was raised by the Python Proxy. Return Message: Traceback (most recent call last):";
+        String replacementFirstLine = "An error occurred. Traceback (most recent call last):";
+        String startOfFirstRelevantFrame = "  File \"<string>\", line ";
+
+        String pattern = "(?s)" + Pattern.quote(expectedFirstLine) + "\\n.*?\\n" + Pattern.quote(startOfFirstRelevantFrame);
+        return msg.replaceFirst(pattern, replacementFirstLine + "\n" + startOfFirstRelevantFrame);
     }
 
     private void annotatePythonException(Exception e) {
