@@ -8,7 +8,7 @@
 package org.omnetpp.scave.actions;
 
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.ui.part.FileEditorInput;
 import org.omnetpp.scave.ScaveImages;
@@ -30,8 +30,8 @@ public class EditInputFileAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
-        InputFile inputFile = (InputFile)selection.getFirstElement();
+    protected void doRun(ScaveEditor editor, ISelection selection) {
+        InputFile inputFile = (InputFile) asStructuredOrEmpty(selection).getFirstElement();
         IContainer baseDir = ((FileEditorInput)editor.getEditorInput()).getFile().getParent();
         InputFileDialog dialog = new InputFileDialog(editor.getSite().getShell(), "Edit Input", inputFile.getName(), false, baseDir);
         if (dialog.open() == Window.OK) {
@@ -42,7 +42,7 @@ public class EditInputFileAction extends AbstractScaveAction {
     }
 
     @Override
-    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-        return selection.getFirstElement() instanceof InputFile;
+    protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
+        return asStructuredOrEmpty(selection).getFirstElement() instanceof InputFile;
     }
 }

@@ -9,7 +9,7 @@
 package org.omnetpp.scave.actions;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
@@ -35,7 +35,7 @@ public class CreateTempChartAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor editor, final IStructuredSelection selection) {
+    protected void doRun(ScaveEditor editor, ISelection selection) {
         IDListSelection idListSelection = (IDListSelection)selection;
         ResultFileManager manager = idListSelection.getResultFileManager();
         if (idListSelection.getScalarsCount() != 0) {
@@ -75,7 +75,7 @@ public class CreateTempChartAction extends AbstractScaveAction {
     }
 
     @Override
-    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+    protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
         return selection instanceof IDListSelection && !selection.isEmpty() && ((IDListSelection)selection).getStatisticsCount() == 0;
     }
 }

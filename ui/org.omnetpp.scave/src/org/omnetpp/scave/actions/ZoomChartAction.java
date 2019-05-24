@@ -8,7 +8,7 @@
 package org.omnetpp.scave.actions;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartViewer;
@@ -46,7 +46,7 @@ public class ZoomChartAction extends AbstractScaveAction {
 
 
     @Override
-    protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
+    protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
         Assert.isTrue(isEnabled());
         ChartViewer canvas = scaveEditor.getActiveChartViewer();
         if (canvas != null) {
@@ -66,7 +66,7 @@ public class ZoomChartAction extends AbstractScaveAction {
     }
 
     @Override
-    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+    protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
         ChartViewer canvas = editor.getActiveChartViewer();
         if (canvas != null) {
             boolean res = zoomFactor > 1.0 && horizontally && canvas.getZoomX() < canvas.getMaxZoomX() ||

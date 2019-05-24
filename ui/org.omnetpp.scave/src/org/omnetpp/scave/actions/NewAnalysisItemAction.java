@@ -7,7 +7,7 @@
 
 package org.omnetpp.scave.actions;
 
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.commands.AddChartCommand;
@@ -24,7 +24,7 @@ public class NewAnalysisItemAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
+    protected void doRun(ScaveEditor editor, ISelection selection) {
         AnalysisItem element = elementPrototype;
 
         AnalysisItem newItem = (AnalysisItem)elementPrototype.dup();
@@ -36,7 +36,7 @@ public class NewAnalysisItemAction extends AbstractScaveAction {
     }
 
     @Override
-    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+    protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
         return true;
     }
 

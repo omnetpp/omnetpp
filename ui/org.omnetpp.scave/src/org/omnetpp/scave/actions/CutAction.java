@@ -7,7 +7,7 @@
 
 package org.omnetpp.scave.actions;
 
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Display;
@@ -29,11 +29,11 @@ public class CutAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
+    protected void doRun(ScaveEditor editor, ISelection selection) {
 
         CompoundCommand command = new CompoundCommand("Cut objects");
 
-        Object[] objects = selection.toArray();
+        Object[] objects = asStructuredOrEmpty(selection).toArray();
         for (int i = 0; i < objects.length; ++i)
             if (objects[i] instanceof AnalysisItem)
                 command.append(new RemoveChartCommand((AnalysisItem)objects[i]));
@@ -47,7 +47,7 @@ public class CutAction extends AbstractScaveAction {
     }
 
     @Override
-    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+    protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
         return !selection.isEmpty(); // TODO check selected content
     }
 }

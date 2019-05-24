@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.util.StringUtils;
@@ -28,11 +28,11 @@ public class ExportChartsAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
+    protected void doRun(ScaveEditor editor, ISelection selection) {
         // we'll display the list of all charts, and check the selected one(s) and those under selected ones
         final List<Chart> allCharts = ScaveModelUtil.collectCharts(editor.getAnalysis().getCharts().getCharts());
         List<Chart> initialSelection = new ArrayList<Chart>();
-        for (Object obj : selection.toArray()) {
+        for (Object obj : asStructuredOrEmpty(selection).toArray()) {
             if (obj instanceof Chart)
                 initialSelection.add((Chart)obj);
             if (obj instanceof ModelObject)
@@ -62,7 +62,7 @@ public class ExportChartsAction extends AbstractScaveAction {
     }
 
     @Override
-    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+    protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
         final List<Chart> charts = ScaveModelUtil.collectCharts(editor.getAnalysis().getCharts().getCharts());
         return !charts.isEmpty();
     }

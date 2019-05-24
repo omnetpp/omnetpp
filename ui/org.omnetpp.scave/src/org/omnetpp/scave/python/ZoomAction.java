@@ -1,7 +1,7 @@
 package org.omnetpp.scave.python;
 
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.actions.AbstractScaveAction;
 import org.omnetpp.scave.editors.ChartScriptEditor;
@@ -19,14 +19,14 @@ public class ZoomAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
+    protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
         ChartScriptEditor editor = scaveEditor.getActiveChartScriptEditor();
         if (editor != null)
             editor.getMatplotlibChartViewer().zoom();
     }
 
     @Override
-    protected boolean isApplicable(ScaveEditor scaveEditor, IStructuredSelection selection) {
+    protected boolean isApplicable(ScaveEditor scaveEditor, ISelection selection) {
         ChartScriptEditor editor = scaveEditor.getActiveChartScriptEditor();
         return (editor != null) && editor.isPythonProcessAlive();
     }

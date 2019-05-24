@@ -8,7 +8,7 @@
 package org.omnetpp.scave.actions;
 
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Combo;
@@ -36,7 +36,7 @@ public class SelectAllAction extends AbstractScaveAction {
     protected int limit = 10000;
 
     @Override
-    protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
+    protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
         Composite activePage = scaveEditor.getActiveEditorPage();
         if (activePage == null)
             return;
@@ -98,7 +98,7 @@ public class SelectAllAction extends AbstractScaveAction {
     }
 
     @Override
-    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+    protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
         Control focusControl = Display.getDefault().getFocusControl();
         Composite activePage = editor.getActiveEditorPage();
         return activePage != null &&

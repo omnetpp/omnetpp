@@ -7,7 +7,7 @@
 
 package org.omnetpp.scave.actions;
 
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.scave.ScaveImages;
@@ -27,7 +27,7 @@ public class CopyChartImageToClipboardAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
+    protected void doRun(ScaveEditor editor, ISelection selection) {
 
         // TODO: lift copyImageToClipboard to the common ViewerBase class, use that instead of dispatching here
 
@@ -54,7 +54,7 @@ public class CopyChartImageToClipboardAction extends AbstractScaveAction {
     }
 
     @Override
-    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+    protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
         return editor.getActiveChartViewer() != null || editor.getActiveMatplotlibChartViewer() != null;
     }
 }

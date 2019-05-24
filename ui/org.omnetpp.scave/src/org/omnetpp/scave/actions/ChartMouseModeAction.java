@@ -9,7 +9,7 @@ package org.omnetpp.scave.actions;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.charting.ChartViewer;
@@ -42,7 +42,7 @@ public class ChartMouseModeAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
+    protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
         ChartViewer canvas = scaveEditor.getActiveChartViewer();
         if (isChecked() && canvas != null) {
             canvas.setMouseMode(destMode);
@@ -50,7 +50,7 @@ public class ChartMouseModeAction extends AbstractScaveAction {
     }
 
     @Override
-    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+    protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
         ChartViewer canvas = editor.getActiveChartViewer();
         return canvas != null;
     }

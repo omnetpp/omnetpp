@@ -12,6 +12,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
@@ -58,11 +59,8 @@ public abstract class AbstractScaveAction extends Action implements IScaveAction
             IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
             IEditorPart editor = page.getActiveEditor();
             ISelection selection = viewer != null ? viewer.getSelection() : page.getSelection();
-            if (editor instanceof ScaveEditor && selection instanceof IStructuredSelection && isApplicable((ScaveEditor)editor, (IStructuredSelection)selection)) {
-                ScaveEditor scaveEditor = (ScaveEditor)editor;
-                IStructuredSelection structuredSelection = (IStructuredSelection)selection;
-                doRun(scaveEditor, structuredSelection);
-            }
+            if (editor instanceof ScaveEditor && isApplicable((ScaveEditor)editor, selection))
+                doRun((ScaveEditor)editor, selection);
         }
         catch (Exception e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Internal error: " + e.toString());
@@ -71,10 +69,9 @@ public abstract class AbstractScaveAction extends Action implements IScaveAction
     }
 
     /**
-     * Gets invoked from run() if the editor is ScaveEditor and selection is
-     * an IStructuredSelection -- redefine it to do the real work.
+     * Gets invoked from run() if the editor is ScaveEditor -- redefine it to do the real work.
      */
-    protected abstract void doRun(ScaveEditor scaveEditor, IStructuredSelection selection);
+    protected abstract void doRun(ScaveEditor scaveEditor, ISelection selection);
 
     /**
      * To be called from a JFace {@link ISelectionChangedListener} or the selection service's
@@ -86,7 +83,7 @@ public abstract class AbstractScaveAction extends Action implements IScaveAction
         IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
         if (page==null) return;
         IEditorPart editor = page.getActiveEditor();
-        boolean isApplicable = editor instanceof ScaveEditor && selection instanceof IStructuredSelection && isApplicable((ScaveEditor)editor, (IStructuredSelection)selection);
+        boolean isApplicable = editor instanceof ScaveEditor && isApplicable((ScaveEditor)editor, selection);
         setEnabled(isApplicable);
     }
 
@@ -98,7 +95,7 @@ public abstract class AbstractScaveAction extends Action implements IScaveAction
         if (page != null) {
             IEditorPart editor = page.getActiveEditor();
             ISelection selection = viewer != null ? viewer.getSelection() : page.getSelection();
-            boolean isApplicable = editor instanceof ScaveEditor && selection instanceof IStructuredSelection && isApplicable((ScaveEditor)editor, (IStructuredSelection)selection);
+            boolean isApplicable = editor instanceof ScaveEditor && isApplicable((ScaveEditor)editor, selection);
             setEnabled(isApplicable);
         }
     }
@@ -106,5 +103,12 @@ public abstract class AbstractScaveAction extends Action implements IScaveAction
     /**
      * Redefine this method to control when the action should be enabled.
      */
-    abstract protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection);
+    abstract protected boolean isApplicable(ScaveEditor editor, ISelection selection);
+
+    /**
+     * Utility method.
+     */
+    protected static IStructuredSelection asStructuredOrEmpty(ISelection selection) {
+        return selection instanceof IStructuredSelection ? (IStructuredSelection)selection : StructuredSelection.EMPTY;
+    }
 }

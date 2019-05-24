@@ -10,7 +10,7 @@ package org.omnetpp.scave.actions;
 import static org.omnetpp.scave.engine.ResultItemField.FILE;
 import static org.omnetpp.scave.engine.ResultItemField.RUN;
 
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
@@ -35,8 +35,8 @@ public class SetFilterAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
-        Object selected = selection.getFirstElement();
+    protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
+        Object selected = asStructuredOrEmpty(selection).getFirstElement();
         FilterUtil filterUtil = getFilterParams(selected);
         if (filterUtil != null) {
             Filter filter = new Filter(filterUtil.getFilterPattern());
@@ -50,7 +50,7 @@ public class SetFilterAction extends AbstractScaveAction {
     }
 
     @Override
-    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+    protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
         return true;
     }
 

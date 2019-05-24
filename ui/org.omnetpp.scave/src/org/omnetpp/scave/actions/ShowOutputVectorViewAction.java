@@ -9,7 +9,7 @@ package org.omnetpp.scave.actions;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.ErrorDialog;
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -25,7 +25,7 @@ public class ShowOutputVectorViewAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
+    protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
         try {
             IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
             workbenchPage.showView(VectorBrowserView.ID);
@@ -38,7 +38,7 @@ public class ShowOutputVectorViewAction extends AbstractScaveAction {
     }
 
     @Override
-    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+    protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
         return true;
     }
 }

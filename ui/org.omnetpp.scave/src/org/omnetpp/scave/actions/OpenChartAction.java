@@ -10,7 +10,7 @@ package org.omnetpp.scave.actions;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
@@ -29,10 +29,10 @@ public class OpenChartAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
+    protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
         // collect charts and chartsheets from the selection
         List<Chart> charts = new ArrayList<>();
-        for (Object element : selection.toArray()) {
+        for (Object element : asStructuredOrEmpty(selection).toArray()) {
             if (element instanceof Chart)
                 charts.add((Chart)element);
         }
@@ -47,8 +47,8 @@ public class OpenChartAction extends AbstractScaveAction {
     }
 
     @Override
-    public boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-        for (Object element : selection.toArray())
+    public boolean isApplicable(ScaveEditor editor, ISelection selection) {
+        for (Object element : asStructuredOrEmpty(selection).toArray())
             if (element instanceof Chart)
                 return true;
         return false;

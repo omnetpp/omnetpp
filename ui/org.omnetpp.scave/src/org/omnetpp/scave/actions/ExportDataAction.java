@@ -7,23 +7,20 @@
 
 package org.omnetpp.scave.actions;
 
-import java.util.concurrent.Callable;
-
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
-import org.eclipse.ui.IWorkbenchWizard;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.ExporterFactory;
 import org.omnetpp.scave.engine.IDList;
-import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.wizard.ScaveExportWizard;
 
 /**
  * Exports the selected result items in various formats.
  *
- * @author tomi, andras
+ * @author andras
  */
 public class ExportDataAction extends AbstractScaveAction {
 
@@ -37,25 +34,17 @@ public class ExportDataAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(final ScaveEditor scaveEditor, final IStructuredSelection selection) {
+    protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
         if (selection != null) {
-            final IWorkbenchWizard wizard = new ScaveExportWizard(format);
-            if (wizard != null) {
-                ResultFileManager.callWithReadLock(scaveEditor.getResultFileManager(), new Callable<Object>() {
-                    @Override
-                    public Object call() throws Exception {
-                        wizard.init(scaveEditor.getSite().getWorkbenchWindow().getWorkbench(), selection);
-                        return null;
-                    }
-                });
-                WizardDialog dialog = new WizardDialog(scaveEditor.getSite().getShell(), wizard);
-                dialog.open();
-            }
+            ScaveExportWizard wizard = new ScaveExportWizard(format);
+            wizard.init(scaveEditor.getSite().getWorkbenchWindow().getWorkbench(), selection);
+            WizardDialog dialog = new WizardDialog(scaveEditor.getSite().getShell(), wizard);
+            dialog.open();
         }
     }
 
     @Override
-    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+    protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
         if (selection.isEmpty())
             return false;
         if (selection instanceof IDListSelection) {
@@ -66,7 +55,7 @@ public class ExportDataAction extends AbstractScaveAction {
             return unsupportedTypes == 0;
         }
         if (selection instanceof IStructuredSelection) {
-            Object firstElement = selection.getFirstElement();
+            Object firstElement = ((IStructuredSelection) selection).getFirstElement();
             return firstElement instanceof Chart;
         }
         return false;

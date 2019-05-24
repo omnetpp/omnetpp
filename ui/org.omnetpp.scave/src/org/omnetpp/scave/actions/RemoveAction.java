@@ -9,13 +9,11 @@ package org.omnetpp.scave.actions;
 
 import java.util.Iterator;
 
-import org.eclipse.core.runtime.Assert;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.ISharedImages;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.ModelObject;
@@ -34,23 +32,17 @@ public class RemoveAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor scaveEditor, IStructuredSelection structuredSelection) {
-        ICommand command = createCommand(structuredSelection);
+    protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
+        ICommand command = createCommand((IStructuredSelection)selection);
         scaveEditor.getActiveCommandStack().execute(command);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-        if (selection.isEmpty() || selection instanceof IDListSelection)
-            return false;
-        Iterator<Object> elements = selection.iterator();
-        while (elements.hasNext()) {
-            Object element = elements.next();
+    public boolean isApplicable(ScaveEditor editor, ISelection selection) {
+        for (Object element : asStructuredOrEmpty(selection).toArray())
             if (!(element instanceof ModelObject))  //TODO || editor.isTemporaryObject((AnalysisObject)element)
                 return false;
-        }
-        return true; // only non-temporary EObjects selected
+        return true;
     }
 
     /**

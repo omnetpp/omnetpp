@@ -234,11 +234,11 @@ public class VectorBrowserView extends ViewWithMessagePart {
         int dataPointIndex = -1;
 
         if (selection instanceof IDListSelection) {
-            IDListSelection sel = (IDListSelection)selection;
-            if (!sel.isEmpty()) {
-                long id = (Long)sel.getFirstElement();
+            IDListSelection idlistSelection = (IDListSelection)selection;
+            if (!idlistSelection.isEmpty()) {
+                long id = idlistSelection.getIDList().get(0);
                 if (ResultFileManager.getTypeOf(id) == ResultFileManager.VECTOR)
-                    selectedVector = new ResultItemRef(id, sel.getResultFileManager());
+                    selectedVector = new ResultItemRef(id, idlistSelection.getResultFileManager());
             }
         }
         else if (selection instanceof IStructuredSelection) {

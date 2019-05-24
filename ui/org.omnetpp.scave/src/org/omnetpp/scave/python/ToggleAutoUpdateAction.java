@@ -1,6 +1,6 @@
 package org.omnetpp.scave.python;
 
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.AbstractScaveAction;
@@ -16,14 +16,14 @@ public class ToggleAutoUpdateAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
+    protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
         ChartScriptEditor editor = scaveEditor.getActiveChartScriptEditor();
         if (editor != null)
             editor.setAutoUpdateChart(isChecked());
     }
 
     @Override
-    protected boolean isApplicable(ScaveEditor scaveEditor, IStructuredSelection selection) {
+    protected boolean isApplicable(ScaveEditor scaveEditor, ISelection selection) {
         ChartScriptEditor editor = scaveEditor.getActiveChartScriptEditor();
         return editor != null;
     }

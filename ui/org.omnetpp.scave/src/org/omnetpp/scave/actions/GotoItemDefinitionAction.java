@@ -7,6 +7,7 @@
 
 package org.omnetpp.scave.actions;
 
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.AnalysisItem;
@@ -20,22 +21,26 @@ public class GotoItemDefinitionAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
+    protected void doRun(ScaveEditor editor, ISelection selection) {
         AnalysisItem item = getActiveNontemporaryAnalysisItem(editor, selection);
         if (item != null)
         editor.showAnalysisItem(item);
     }
 
     @Override
-    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+    protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
         AnalysisItem item = getActiveNontemporaryAnalysisItem(editor, selection);
         return item != null;
     }
 
-    protected AnalysisItem getActiveNontemporaryAnalysisItem(ScaveEditor editor, IStructuredSelection selection) {
+    protected AnalysisItem getActiveNontemporaryAnalysisItem(ScaveEditor editor, ISelection selection) {
+        if (!(selection instanceof IStructuredSelection))
+            return null;
+        IStructuredSelection structuredSelection = (IStructuredSelection)selection;
+
         AnalysisItem item = null;
-        if (selection.getFirstElement() instanceof AnalysisItem)
-            item = (AnalysisItem) selection.getFirstElement();
+        if (structuredSelection.getFirstElement() instanceof AnalysisItem)
+            item = (AnalysisItem) structuredSelection.getFirstElement();
         else if (editor.getActiveChartScriptEditor() != null)
             item = editor.getActiveChartScriptEditor().getChart();
 

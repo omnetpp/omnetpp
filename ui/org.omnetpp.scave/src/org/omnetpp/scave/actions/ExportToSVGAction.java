@@ -10,7 +10,7 @@ package org.omnetpp.scave.actions;
 import java.io.File;
 
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
@@ -32,7 +32,7 @@ public class ExportToSVGAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(final ScaveEditor editor, IStructuredSelection selection) {
+    protected void doRun(final ScaveEditor editor, ISelection selection) {
         final ChartViewer chart = editor.getActiveChartViewer();
         if (chart != null) {
             BusyIndicator.showWhile(Display.getDefault(), new Runnable() {
@@ -46,7 +46,7 @@ public class ExportToSVGAction extends AbstractScaveAction {
     }
 
     @Override
-    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+    protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
         return editor.getActiveChartViewer() != null;
     }
 

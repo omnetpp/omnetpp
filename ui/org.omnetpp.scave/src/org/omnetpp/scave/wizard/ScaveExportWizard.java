@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
@@ -89,26 +90,25 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
         setDialogSettings(UIUtils.getDialogSettings(ScavePlugin.getDefault(), getClass().getName()));
     }
 
-    /**
-     * Sets the IDs of data to be exported and the ResultFileManager that owns them.
-     */
     @Override
     public void init(IWorkbench workbench, IStructuredSelection selection) {
-        // TODO use the selection of the active Scave editor instead of passed parameter?
+        throw new UnsupportedOperationException();
+    }
 
+    public void init(IWorkbench workbench, ISelection selection) {
         if (selection instanceof IDListSelection) {
             IDListSelection idlistSelection = (IDListSelection)selection;
             selectedIDs = idlistSelection.getIDList();
             resultFileManager = idlistSelection.getResultFileManager();
         }
-        else if (selection.size() == 1 && selection.getFirstElement() instanceof Chart) {
-            // get IDList from selected Chart
-            Object selected = selection.getFirstElement();
+        else if (selection instanceof IStructuredSelection && ((IStructuredSelection)selection).size() == 1 && ((IStructuredSelection)selection).getFirstElement() instanceof Chart) {
+            // get IDList from selected Chart's filter
+            Object selected = ((IStructuredSelection)selection).getFirstElement();
             ScaveEditor editor = ScaveEditor.getActiveScaveEditor();
             if (editor != null && selected instanceof Chart) {
                 resultFileManager = editor.getResultFileManager();
-                selectedIDs = null; //TODO DatasetManager.getIDListFromDataset(resultFileManager, selectedDataset, selectedDatasetItem, null);
-                MessageDialog.openError(getShell(), "Error", "Exporting data from charts is not implemented yet");
+                selectedIDs = null; //TODO DatasetManager.getIDListFromDataset(resultFileManager, selectedDataset, selectedDatasetItem, null), MUST BE PROTECTED WITH ResultFileManager.callWithReadLock()!
+                MessageDialog.openError(getShell(), "Error", "Exporting data from charts is not implemented");
             }
         }
         else {
@@ -161,7 +161,10 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
                 Job exportJob = new WorkspaceJob(format + " Export") {
                     @Override
                     public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
-                        exporter.saveResults(filename, resultFileManager, selectedIDs, monitor);
+                        ResultFileManager.callWithReadLock(resultFileManager, () -> {
+                            exporter.saveResults(filename, resultFileManager, selectedIDs, monitor); return null;
+                        });
+
                         if (openAfterwards)
                             Display.getDefault().asyncExec(() -> openResult(filename));
                         return Status.OK_STATUS;

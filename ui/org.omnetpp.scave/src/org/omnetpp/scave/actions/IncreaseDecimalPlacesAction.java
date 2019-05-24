@@ -7,7 +7,7 @@
 
 package org.omnetpp.scave.actions;
 
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
@@ -26,14 +26,14 @@ public class IncreaseDecimalPlacesAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
+    protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
         int prec = scaveEditor.getBrowseDataPage().getNumericPrecision();
         if (prec < MAX_PRECISION)
             scaveEditor.getBrowseDataPage().setNumericPrecision(prec + 1);
     }
 
     @Override
-    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+    protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
         int prec = editor.getBrowseDataPage().getNumericPrecision();
         return prec < MAX_PRECISION;
     }

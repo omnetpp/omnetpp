@@ -644,10 +644,10 @@ public class ScaveEditor extends MultiPageEditorPartExt
                     // re-package element into ResultItemRef, otherwise property sheet
                     // only gets a Long due to sel.toArray() in base class. We only want
                     // to show properties if there's only one item in the selection.
-                    IDListSelection idList = (IDListSelection) selection;
-                    if (idList.size() == 1) {
-                        long id = (Long) idList.getFirstElement();
-                        ResultItemRef resultItemRef = new ResultItemRef(id, idList.getResultFileManager());
+                    IDListSelection idListSelection = (IDListSelection) selection;
+                    if (idListSelection.size() == 1) {
+                        long id = idListSelection.getIDList().get(0);
+                        ResultItemRef resultItemRef = new ResultItemRef(id, idListSelection.getResultFileManager());
                         selection = new StructuredSelection(resultItemRef);
                     }
                 }

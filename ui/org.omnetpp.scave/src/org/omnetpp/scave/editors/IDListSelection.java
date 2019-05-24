@@ -8,12 +8,9 @@
 package org.omnetpp.scave.editors;
 
 import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.common.Debug;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -23,14 +20,16 @@ import org.omnetpp.scave.model.ResultType;
 
 /**
  * Represents a selection of result item IDs in the editor.
+ *
+ * Note: This class is intentionally NOT an IStructuredSelection. Calls IStructuredSelection.toArray()
+ * can cause serious performance issues when IDList contains many thousands of IDs.
  */
-//FIXME this should NOT be an IStructuredSelection!!! Then we could spare most methods,including toArray() and toList!!!
-public class IDListSelection implements IStructuredSelection {
+public class IDListSelection implements ISelection {
     IDList idlist;
     ResultFileManager manager;
     ResultType type;
 
-    public IDListSelection(IDList idlist, ResultFileManager manager) { //TODO we do NOT copy the idlist!!! check call sites!
+    public IDListSelection(IDList idlist, ResultFileManager manager) {
         Assert.isNotNull(idlist);
         Assert.isNotNull(manager);
 
@@ -113,22 +112,8 @@ public class IDListSelection implements IStructuredSelection {
         return idlist.countByTypes(ResultFileManager.HISTOGRAM);
     }
 
-    public Object getFirstElement() {
-        return idlist.isEmpty() ? null : idlist.get(0);
-    }
-
     public int size() {
         return idlist.size();
-    }
-
-    public Object[] toArray() {
-        Debug.println("INEFFICIENT METHOD CALLED: IDListSelection.toArray()");
-        return idlist.toArray();
-    }
-
-    public List<Long> toList() {
-        Debug.println("INEFFICIENT METHOD CALLED: IDListSelection.toList()");
-        return Arrays.asList(idlist.toArray());
     }
 
     public IDList getIDList() {
@@ -139,25 +124,6 @@ public class IDListSelection implements IStructuredSelection {
         return idlist.isEmpty();
     }
 
-    @Override
-    public Iterator<Long> iterator() {
-        return new Iterator<Long>() {
-            private int pos = 0;
-
-            @Override
-            public boolean hasNext() {
-                return pos < idlist.size();
-            }
-
-            @Override
-            public Long next() {
-                if (pos >= idlist.size())
-                    throw new NoSuchElementException();
-                return idlist.get(pos++);
-            }
-        };
-    }
-
     public boolean equals(Object other) {
         Debug.println("UNIMPLEMENTED METHOD CALLED: IDListSelection.equals()");
         if (this == other)
@@ -165,7 +131,9 @@ public class IDListSelection implements IStructuredSelection {
         if (other == null || getClass() != other.getClass())
             return false;
         IDListSelection otherSelection = (IDListSelection)other;
-        return manager == otherSelection.manager && idlist.size() == otherSelection.size(); //TODO
+        boolean result = manager == otherSelection.manager && idlist.size() == otherSelection.size();
+        Debug.println("IDListSelection.equals() done");
+        return result; //TODO
     }
 
     public int hashCode() {

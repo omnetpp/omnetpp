@@ -9,7 +9,7 @@ package org.omnetpp.scave.actions;
 
 import java.util.concurrent.Callable;
 
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.ISharedImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
@@ -27,7 +27,7 @@ public class CopyDataToClipboardAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
+    protected void doRun(ScaveEditor editor, ISelection selection) {
         final FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
         if (activePanel != null) {
             ResultFileManager.callWithReadLock(activePanel.getResultFileManager(), new Callable<Object>() {
@@ -40,7 +40,7 @@ public class CopyDataToClipboardAction extends AbstractScaveAction {
     }
 
     @Override
-    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+    protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
         BrowseDataPage browseDataPage = editor.getBrowseDataPage();
         return browseDataPage != null && browseDataPage.getActivePanel() != null;
     }

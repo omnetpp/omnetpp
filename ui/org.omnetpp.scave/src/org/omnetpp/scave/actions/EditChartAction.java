@@ -7,6 +7,7 @@
 
 package org.omnetpp.scave.actions;
 
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
@@ -29,7 +30,7 @@ public class EditChartAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(final ScaveEditor scaveEditor, final IStructuredSelection selection) {
+    protected void doRun(final ScaveEditor scaveEditor, ISelection selection) {
         if (isApplicable(scaveEditor, selection)) {
             Chart editedChart = getEditedChart(scaveEditor, selection);
             EditChartDialog dialog = new EditChartDialog(scaveEditor.getSite().getShell(), editedChart, scaveEditor);
@@ -38,14 +39,15 @@ public class EditChartAction extends AbstractScaveAction {
     }
 
     @Override
-    public boolean isApplicable(final ScaveEditor editor, final IStructuredSelection selection) {
+    public boolean isApplicable(final ScaveEditor editor, ISelection selection) {
         ModelObject editedObject = getEditedChart(editor, selection);
         return editedObject instanceof Chart;
     }
 
-    private Chart getEditedChart(ScaveEditor editor, IStructuredSelection selection) {
-        if (selection.size() == 1 && selection.getFirstElement() instanceof Chart)
-            return (Chart)selection.getFirstElement();
+    private Chart getEditedChart(ScaveEditor editor, ISelection selection) {
+        IStructuredSelection structuredSelection = asStructuredOrEmpty(selection);
+        if (structuredSelection.size() == 1 && structuredSelection.getFirstElement() instanceof Chart)
+            return (Chart)structuredSelection.getFirstElement();
         return null;
     }
 }

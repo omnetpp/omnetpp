@@ -7,7 +7,7 @@
 
 package org.omnetpp.scave.actions;
 
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.ISharedImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
@@ -26,7 +26,7 @@ public class UndoAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
+    protected void doRun(ScaveEditor editor, ISelection selection) {
         editor.getActiveCommandStack().undo();
     }
 
@@ -44,7 +44,7 @@ public class UndoAction extends AbstractScaveAction {
     }
 
     @Override
-    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+    protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
         CommandStack activeCommandStack = editor.getActiveCommandStack();
 		return activeCommandStack != null && activeCommandStack.canUndo();
     }

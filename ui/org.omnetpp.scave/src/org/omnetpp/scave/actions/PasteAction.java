@@ -10,7 +10,7 @@ package org.omnetpp.scave.actions;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.widgets.Display;
@@ -33,7 +33,7 @@ public class PasteAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
+    protected void doRun(ScaveEditor editor, ISelection selection) {
 
         Clipboard clipboard = new Clipboard(Display.getCurrent());
         Object content = clipboard.getContents(LocalTransfer.getInstance());
@@ -47,10 +47,9 @@ public class PasteAction extends AbstractScaveAction {
             List<AnalysisItem> charts = editor.getAnalysis().getCharts().getCharts();
             int pasteIndex = -1;
 
-            for (Object o : selection.toArray())
-                if (o instanceof AnalysisItem) {
+            for (Object o : asStructuredOrEmpty(selection).toArray())
+                if (o instanceof AnalysisItem)
                     pasteIndex = charts.indexOf(o) + 1;
-                }
 
             if (pasteIndex < 0)
                 pasteIndex = charts.size();
@@ -80,7 +79,7 @@ public class PasteAction extends AbstractScaveAction {
     }
 
     @Override
-    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+    protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
 //        BrowseDataPage browseDataPage = editor.getBrowseDataPage();
 //        return browseDataPage != null && browseDataPage.getActivePanel() != null;
         return true;
