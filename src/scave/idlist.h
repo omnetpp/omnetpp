@@ -68,8 +68,10 @@ class SCAVE_API IDList
         int size() const  {checkV(); return (int)v->size();}
         bool isEmpty() const  {checkV(); return v->empty();}
         void clear()  {checkV(); v->clear();}
+        bool equals(IDList& other);
         void set(const IDList& ids);
-        void add(ID x);
+        void add(ID x); // checks for uniqueness (costly)
+        void bulkAdd(ID *array, int n);
         ID get(int i) const {checkV(); return v->at(i);} // at() includes bounds check
         // void set(int i, ID x);
         void erase(int i);

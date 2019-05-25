@@ -69,6 +69,12 @@ import java.util.EventListener;
           array[i] = Long.valueOf(get(i));
       return array;
   }
+  
+  @Override
+  public int hashCode() {
+    return size(); // results in poor hashing, but IDLists are not supposed to be used as keys 
+  }
+
 %}
 
 %define ADD_NOTIFY(METHOD)

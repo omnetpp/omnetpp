@@ -7,11 +7,8 @@
 
 package org.omnetpp.scave.editors;
 
-import java.util.Arrays;
-
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ISelection;
-import org.omnetpp.common.Debug;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
@@ -125,20 +122,22 @@ public class IDListSelection implements ISelection {
     }
 
     public boolean equals(Object other) {
-        Debug.println("UNIMPLEMENTED METHOD CALLED: IDListSelection.equals()");
         if (this == other)
             return true;
         if (other == null || getClass() != other.getClass())
             return false;
         IDListSelection otherSelection = (IDListSelection)other;
-        boolean result = manager == otherSelection.manager && idlist.size() == otherSelection.size();
-        Debug.println("IDListSelection.equals() done");
-        return result; //TODO
+        return manager == otherSelection.manager && idlist.equals(otherSelection.idlist);
     }
 
+    @Override
     public int hashCode() {
-        Debug.println("INEFFICIENT METHOD CALLED: IDListSelection.hashCode()");
-        return 31 * manager.hashCode() + Arrays.hashCode(idlist.toArray());  //TODO optimize if needed, or implement in C++
+        return 31 * manager.hashCode() + idlist.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(len=" + idlist.size() + ")";
     }
 
 }

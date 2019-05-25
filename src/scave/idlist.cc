@@ -61,17 +61,20 @@ void IDList::add(ID x)
         v->push_back(x);
 }
 
-/* XXX it is not used, and bogus anyway
-void IDList::set(int i, ID x)
+void IDList::bulkAdd(ID *array, int length)
 {
-    checkV();
-    V::iterator it = std::find(v->begin(), v->end(), x);
-    if (it==v->end())
-        v->at(i) = x;  // at() includes bounds check
-    else
-        v->erase(it); // x is already in there -- just delete the element it replaces
+    v->reserve(v->size() + length);
+    for (int i = 0; i < length; i++)
+        v->push_back(array[i]);
+    discardDuplicates();
 }
-*/
+
+void IDList::discardDuplicates()
+{
+    std::sort(v->begin(), v->end());
+    auto last = std::unique(v->begin(), v->end());
+    v->erase(last, v->end());
+}
 
 void IDList::erase(int i)
 {
@@ -178,7 +181,7 @@ void IDList::checkIntegrity(ResultFileManager *mgr) const
 {
     checkV();
     for (V::const_iterator i = v->begin(); i != v->end(); ++i)
-        mgr->getItem(*i);  // this will thow exception if id is not valid
+        mgr->getItem(*i);  // this will throw exception if id is not valid
 }
 
 void IDList::checkIntegrityAllScalars(ResultFileManager *mgr) const
@@ -570,6 +573,19 @@ void IDList::fromByteArray(char *array, int n)
     v->resize(n/8);
     ID *a = (ID *)array;
     std::copy(a, a+n/8, v->begin());
+}
+
+bool IDList::equals(IDList& other)
+{
+    checkV();
+    other.checkV();
+    if (v->size() != other.v->size())
+        return false;
+    if (*v == *other.v)
+        return true;
+    std::sort(v->begin(), v->end());
+    std::sort(other.v->begin(), other.v->end());
+    return *v == *other.v;
 }
 
 }  // namespace scave
