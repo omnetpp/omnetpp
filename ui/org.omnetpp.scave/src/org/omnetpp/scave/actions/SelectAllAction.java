@@ -7,7 +7,6 @@
 
 package org.omnetpp.scave.actions;
 
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -19,7 +18,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
-import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.editors.datatable.IDataControl;
@@ -33,7 +31,6 @@ import org.omnetpp.scave.editors.ui.BrowseDataPage;
  * @author tomi
  */
 public class SelectAllAction extends AbstractScaveAction {
-    protected int limit = 10000;
 
     @Override
     protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
@@ -48,21 +45,16 @@ public class SelectAllAction extends AbstractScaveAction {
                 && hasAncestor(focusControl, activePage)) {
             if (focusControl instanceof IDataControl) {
                 IDataControl control = (IDataControl)focusControl;
-                // note: getItemCount() is not good for a tree: it tells the number of root items.
-                if (control.getIDList().size() <= limit || confirm(focusControl.getShell(), "table")) {
-                    control.setFocus();
-                    control.selectAll();
-                    control.notifyListeners(SWT.Selection, null);
-                }
+                control.setFocus();
+                control.selectAll();
+                control.notifyListeners(SWT.Selection, null);
             }
             else if (focusControl instanceof Table) {
                 Table table = (Table)focusControl;
-                if (table.getItemCount() <= limit || confirm(table.getShell(), "table"))
-                    table.selectAll();
+                table.selectAll();
             }
             else if (focusControl instanceof Tree) {
                 Tree tree = (Tree)focusControl;
-                if (tree.getItemCount() <= limit || confirm(tree.getShell(), "tree")) // note:
                     tree.selectAll();
             }
             else if (focusControl instanceof Text)
@@ -79,22 +71,15 @@ public class SelectAllAction extends AbstractScaveAction {
                 IDataControl control = panel.getDataControl();
                 if (control != null) {
                     // note: getItemCount() is not good for a tree: it tells the number of root items.
-                    if (control.getIDList().size() <= limit || confirm(panel.getShell(), "table")) {
-                        control.setFocus();
-                        control.selectAll();
-                        control.notifyListeners(SWT.Selection, null);
-                    }
+                    control.setFocus();
+                    control.selectAll();
+                    control.notifyListeners(SWT.Selection, null);
                 }
             }
         }
         else if (activePage == scaveEditor.getChartsPage()) {
             scaveEditor.getChartsPage().getViewer().selectAll();
         }
-    }
-
-    protected boolean confirm(Shell shell, String controlName) {
-        String message = StringUtils.capitalize(controlName) + " contains more than " + limit + " items, and selection may take a long time. Do you want to continue?";
-        return MessageDialog.openConfirm(shell, "Confirm", message);
     }
 
     @Override

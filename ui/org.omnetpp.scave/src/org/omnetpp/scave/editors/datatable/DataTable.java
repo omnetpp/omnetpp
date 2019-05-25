@@ -41,7 +41,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
@@ -50,8 +49,8 @@ import org.eclipse.swt.widgets.TableItem;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.util.CsvWriter;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.engine.Histogram;
 import org.omnetpp.scave.editors.ui.ScaveUtil;
+import org.omnetpp.scave.engine.Histogram;
 import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -318,12 +317,7 @@ public class DataTable extends Table implements IDataControl {
 
     public IDList getSelectedIDs() {
         int[] selectionIndices = getSelectionIndices();
-        IDList items = new IDList();
-
-        for (int i = 0; i < selectionIndices.length; ++i)
-            items.add(idList.get(selectionIndices[i]));
-
-        return items;
+        return idList.getSubsetByIndices(selectionIndices);
     }
 
     public ResultItem[] getSelectedItems() {
