@@ -44,7 +44,7 @@ class OmnetppVectorFileExporterType : public ExporterType
     public:
         virtual std::string getFormatName() const {return "OmnetppVectorFile";}
         virtual std::string getDisplayName() const {return "OMNeT++ Vector File";}
-        virtual std::string getDescription() const {return "Export results in OMNeT++ vector file (.vec) format.";}
+        virtual std::string getDescription() const {return "OMNeT++ vector file (.vec) format";}
         virtual int getSupportedResultTypes() {return ResultFileManager::VECTOR;}
         virtual std::string getFileExtension() {return "vec";}
         virtual StringMap getSupportedOptions() const;

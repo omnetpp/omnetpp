@@ -42,7 +42,7 @@ class PythonExporterType : public ExporterType
     public:
         virtual std::string getFormatName() const {return "JSON";}
         virtual std::string getDisplayName() const {return "JSON";}
-        virtual std::string getDescription() const {return "Export results as JSON (optionally with Python flavour).";}
+        virtual std::string getDescription() const {return "JSON format, optionally with Python flavour";}
         virtual int getSupportedResultTypes() {return ResultFileManager::SCALAR | ResultFileManager::VECTOR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM;}
         virtual std::string getFileExtension() {return "json"; }
         virtual StringMap getSupportedOptions() const;

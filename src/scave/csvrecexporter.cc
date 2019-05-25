@@ -46,7 +46,7 @@ class CsvRecordsExporterType : public ExporterType
     public:
         virtual std::string getFormatName() const {return "CSV-R";}
         virtual std::string getDisplayName() const {return "CSV Records";}
-        virtual std::string getDescription() const {return "Export results in CSV format as a table of records, suitable for importing into Python's Pandas or R.";}
+        virtual std::string getDescription() const {return "CSV format that contains a table of records, suitable for importing into Python's Pandas or R";}
         virtual int getSupportedResultTypes() {return ResultFileManager::SCALAR | ResultFileManager::VECTOR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM;}
         virtual std::string getFileExtension() {return "csv"; }
         virtual StringMap getSupportedOptions() const;

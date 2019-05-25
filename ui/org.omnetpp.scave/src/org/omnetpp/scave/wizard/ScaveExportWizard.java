@@ -234,8 +234,10 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
         private Button openAfterwardsCheckbox;
 
         public Page() {
-            super(format + " Export");
-            setTitle(StringUtils.breakLines(exporterType.getDescription().trim(),80) + "\n" + getSelectionInfoString());
+            super("Export");
+            String formatName = exporterType.getDisplayName();
+            setTitle("Export " + getSelectionInfoString() + " to " + formatName + " (" + format + ")");
+            setDescription(formatName + ": " + exporterType.getDescription().trim());
         }
 
         @Override
@@ -307,7 +309,7 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
                 items.add(StringUtils.formatCounted(numHistograms, "histogram"));
             if (selectedIDs.isEmpty())
                 items.add("Empty set");
-            return StringUtils.join(items, ", ", " and ") + " selected.";
+            return StringUtils.join(items, ", ", " and ");
         }
 
         private String itemTypesAsString(int types) {

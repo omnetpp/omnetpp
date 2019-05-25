@@ -40,7 +40,7 @@ class OmnetppScalarFileExporterType : public ExporterType
     public:
         virtual std::string getFormatName() const {return "OmnetppScalarFile";}
         virtual std::string getDisplayName() const {return "OMNeT++ Scalar File";}
-        virtual std::string getDescription() const {return "Export results in OMNeT++ scalar file (.sca) format.";}
+        virtual std::string getDescription() const {return "OMNeT++ scalar file (.sca) format";}
         virtual int getSupportedResultTypes() {return ResultFileManager::SCALAR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM;}
         virtual std::string getFileExtension() {return "sca";}
         virtual StringMap getSupportedOptions() const;

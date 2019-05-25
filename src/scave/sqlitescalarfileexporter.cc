@@ -40,7 +40,7 @@ class SqliteScalarFileExporterType : public ExporterType
     public:
         virtual std::string getFormatName() const {return "SqliteScalarFile";}
         virtual std::string getDisplayName() const {return "SQLite Scalar File";}
-        virtual std::string getDescription() const {return "Export results in SQLite scalar file (.sca) format.";}
+        virtual std::string getDescription() const {return "OMNeT++ SQLite scalar file (.sca) format";}
         virtual int getSupportedResultTypes() {return ResultFileManager::SCALAR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM;}
         virtual std::string getFileExtension() {return "sca";}
         virtual StringMap getSupportedOptions() const;

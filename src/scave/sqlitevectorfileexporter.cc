@@ -43,7 +43,7 @@ class SqliteVectorFileExporterType : public ExporterType
     public:
         virtual std::string getFormatName() const {return "SqliteVectorFile";}
         virtual std::string getDisplayName() const {return "SQLite Vector File";}
-        virtual std::string getDescription() const {return "Export results in SQLite vector file (.vec) format.";}
+        virtual std::string getDescription() const {return "OMNeT++ SQLite vector file (.vec) format";}
         virtual int getSupportedResultTypes() {return ResultFileManager::VECTOR;}
         virtual std::string getFileExtension() {return "vec";}
         virtual StringMap getSupportedOptions() const;

@@ -46,7 +46,7 @@ class CsvForSpreadsheetExporterType : public ExporterType
     public:
         virtual std::string getFormatName() const {return "CSV-S";}
         virtual std::string getDisplayName() const {return "CSV for Spreadsheets";}
-        virtual std::string getDescription() const {return "Export results in a CSV format best suited for processing in spreadsheets.";}
+        virtual std::string getDescription() const {return "CSV format best suited for processing in spreadsheets";}
         virtual int getSupportedResultTypes() {return ResultFileManager::SCALAR | ResultFileManager::VECTOR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM;}
         virtual std::string getFileExtension() {return "csv"; }
         virtual StringMap getSupportedOptions() const;
