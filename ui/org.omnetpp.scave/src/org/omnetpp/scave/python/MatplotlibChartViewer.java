@@ -20,6 +20,8 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.image.ImageUtils;
+import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.pychart.ActionDescription;
 import org.omnetpp.scave.pychart.IPlotWidget;
 import org.omnetpp.scave.pychart.IPlotWidgetProvider;
@@ -67,8 +69,8 @@ public class MatplotlibChartViewer extends ChartViewerBase {
     private PlotWidget plotWidget;
     String lastActiveAction = "";
 
-    public MatplotlibChartViewer(PythonProcessPool processPool, Composite parent) {
-        super(processPool);
+    public MatplotlibChartViewer(PythonProcessPool processPool, Chart chart, ResultFileManager rfm, Composite parent) {
+        super(processPool, chart, rfm);
         plotWidget = new PlotWidget(parent, SWT.DOUBLE_BUFFERED, proc, null);
     }
 

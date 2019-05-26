@@ -13,6 +13,7 @@ import org.omnetpp.scave.engine.FileRun;
 import org.omnetpp.scave.engine.FileRunList;
 import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.InterruptedFlag;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileList;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -195,9 +196,9 @@ public class ResultFileManagerEx extends ResultFileManager {
      */
 
     @Override
-    public IDList filterIDList(IDList idlist, String pattern) {
+    public IDList filterIDList(IDList idlist, String pattern, InterruptedFlag interrupted) {
         checkNotDeleted();
-        IDList result = super.filterIDList(idlist, pattern);
+        IDList result = super.filterIDList(idlist, pattern, interrupted);
         return wrap(result);
     }
 

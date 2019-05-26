@@ -19,6 +19,7 @@
 #define __OMNETPP_SCAVE_VECTORUTILS_H
 
 #include "scavedefs.h"
+#include "resultfilemanager.h"
 #include "common/stlutil.h"
 #include "common/stringutil.h"
 
@@ -26,14 +27,11 @@ namespace omnetpp {
 namespace scave {
 
 class XYArray;
-class ResultFileManager;
-class IDList;
 
 /**
  * Read the VectorResult items in the IDList into the XYArrays.
- * TODO: ProgressMonitor support.
  */
-SCAVE_API std::vector<XYArray*> readVectorsIntoArrays(ResultFileManager *manager, const IDList& idlist, bool includeEventNumbers);
+SCAVE_API std::vector<XYArray*> readVectorsIntoArrays(ResultFileManager *manager, const IDList& idlist, bool includeEventNumbers, const InterruptedFlag& interrupted = InterruptedFlag());
 
 } // namespace scave
 }  // namespace omnetpp

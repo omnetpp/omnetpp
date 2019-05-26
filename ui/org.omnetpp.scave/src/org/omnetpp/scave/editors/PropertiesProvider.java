@@ -3,20 +3,14 @@ package org.omnetpp.scave.editors;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.RGB;
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
-import org.omnetpp.common.util.Converter;
-import org.omnetpp.scave.charting.properties.ChartDefaults;
-import org.omnetpp.scave.charting.properties.ChartVisualProperties;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.pychart.IChartPropertiesProvider;
 
-class PropertiesProvider implements IChartPropertiesProvider {
+public class PropertiesProvider implements IChartPropertiesProvider {
     Chart chart;
 
-    PropertiesProvider(Chart chart) {
+    public PropertiesProvider(Chart chart) {
         this.chart = chart;
     }
 

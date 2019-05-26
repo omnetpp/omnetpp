@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Control;
-import org.omnetpp.scave.pychart.IChartPropertiesProvider;
-import org.omnetpp.scave.pychart.IScaveResultsPickleProvider;
+import org.omnetpp.scave.editors.PropertiesProvider;
+import org.omnetpp.scave.editors.ResultsProvider;
+import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.pychart.PythonCallerThread.ExceptionHandler;
 import org.omnetpp.scave.pychart.PythonOutputMonitoringThread.IOutputListener;
 import org.omnetpp.scave.pychart.PythonProcess;
@@ -15,17 +17,19 @@ import org.omnetpp.scave.python.MatplotlibChartViewer.IStateChangeListener;
 
 public abstract class ChartViewerBase {
 
+    protected Chart chart;
+    protected ResultFileManager rfm;
+
     protected PythonProcess proc = null;
     protected PythonProcessPool processPool;
 
     protected List<IOutputListener> outputListeners = new ArrayList<IOutputListener>();
     protected List<IStateChangeListener> stateChangeListeners = new ArrayList<IStateChangeListener>();
 
-    private IScaveResultsPickleProvider resultsProvider = null;
-    private IChartPropertiesProvider propertiesProvider = null;
-
-    public ChartViewerBase(PythonProcessPool processPool) {
+    public ChartViewerBase(PythonProcessPool processPool, Chart chart, ResultFileManager rfm) {
         this.processPool = processPool;
+        this.chart = chart;
+        this.rfm = rfm;
     }
 
     public void killPythonProcess() {
@@ -43,14 +47,6 @@ public abstract class ChartViewerBase {
 
     public void addStateChangeListener(IStateChangeListener listener) {
         stateChangeListeners.add(listener);
-    }
-
-    public void setResultsProvider(IScaveResultsPickleProvider resultsProvider) {
-        this.resultsProvider = resultsProvider;
-    }
-
-    public void setChartPropertiesProvider(IChartPropertiesProvider propertiesProvider) {
-        this.propertiesProvider = propertiesProvider;
     }
 
     protected void acquireNewProcess() {
@@ -71,8 +67,8 @@ public abstract class ChartViewerBase {
             proc.errorMonitoringThread.addOutputListener(l);
         }
 
-        proc.getEntryPoint().setResultsProvider(resultsProvider);
-        proc.getEntryPoint().setChartPropertiesProvider(propertiesProvider);
+        proc.getEntryPoint().setResultsProvider(new ResultsProvider(rfm, proc.getInterruptedFlag()));
+        proc.getEntryPoint().setChartPropertiesProvider(new PropertiesProvider(chart));
     }
 
     protected void changePythonIntoDirectory(File workingDir) {

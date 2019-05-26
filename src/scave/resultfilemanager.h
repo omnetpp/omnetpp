@@ -311,6 +311,12 @@ class SCAVE_API Run
     //TODO const std::string& getConfigOption(const std::string& key) const;
 };
 
+
+class SCAVE_API InterruptedFlag {
+  public:
+    bool flag = false;
+};
+
 /**
  * Loads and efficiently stores OMNeT++ output scalar files and output
  * vector files. (Actual vector contents in vector files are not read
@@ -465,7 +471,7 @@ class SCAVE_API ResultFileManager
                         const char *moduleFilter,
                         const char *nameFilter) const;
 
-    IDList filterIDList(const IDList& idlist, const char *pattern) const;
+    IDList filterIDList(const IDList& idlist, const char *pattern, const InterruptedFlag& interrupted = InterruptedFlag()) const;
 
     /**
      * Get a filtered subset of the input set.

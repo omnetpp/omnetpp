@@ -7,19 +7,19 @@
 
 package org.omnetpp.scave.charting.dataset;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.InterruptedFlag;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ScaveEngine;
 import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.scave.engine.XYArrayVector;
 
 public class VectorDataLoader {
-    public static XYVector[] getDataOfVectors(ResultFileManager manager, IDList idlist, IProgressMonitor progressMonitor) {
+    public static XYVector[] getDataOfVectors(ResultFileManager manager, IDList idlist, InterruptedFlag interruptedFlag) {
 
         XYVector[] vectors = new XYVector[idlist.size()];
 
-        XYArrayVector out = ScaveEngine.readVectorsIntoArrays(manager, idlist, false);
+        XYArrayVector out = ScaveEngine.readVectorsIntoArrays(manager, idlist, false, interruptedFlag);
 
         for (int i = 0; i < out.size(); ++i) {
             XYArray xyArray = out.get(i);

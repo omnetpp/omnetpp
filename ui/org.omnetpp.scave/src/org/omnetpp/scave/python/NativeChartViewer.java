@@ -15,6 +15,7 @@ import org.omnetpp.scave.charting.ScalarChartViewer;
 import org.omnetpp.scave.charting.VectorChartViewer;
 import org.omnetpp.scave.charting.properties.ChartDefaults;
 import org.omnetpp.scave.charting.properties.ChartVisualProperties;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.pychart.INativeChartPlotter;
@@ -58,13 +59,11 @@ public class NativeChartViewer extends ChartViewerBase {
         }
     }
 
-    Chart chart;
     ChartPlotter chartPlotter = new ChartPlotter();
     ChartViewer chartView;
 
-    public NativeChartViewer(Chart chart, PythonProcessPool pool, Composite parent) {
-        super(pool);
-        this.chart = chart;
+    public NativeChartViewer(PythonProcessPool pool, Chart chart, ResultFileManager rfm, Composite parent) {
+        super(pool, chart, rfm);
 
         switch (chart.getType()) {
         case BAR:

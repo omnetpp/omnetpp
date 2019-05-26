@@ -13,7 +13,6 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.BadPositionCategoryException;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentListener;
@@ -33,7 +32,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.ActionFactory;
@@ -47,7 +45,6 @@ import org.eclipse.ui.console.IPatternMatchListener;
 import org.eclipse.ui.console.PatternMatchEvent;
 import org.eclipse.ui.console.TextConsole;
 import org.eclipse.ui.ide.IDE;
-import org.eclipse.ui.internal.console.ConsoleHyperlinkPosition;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.MarkerAnnotation;
 import org.omnetpp.common.Debug;
@@ -109,9 +106,6 @@ public class ChartScriptEditor extends PyEdit {
     FormEditorPage formEditor;
     SashForm sashForm;
     Composite sourceEditorContainer;
-
-    ResultsProvider resultsProvider;
-    PropertiesProvider propertiesProvider;
 
     NativeChartViewer nativeChartViewer;
     MatplotlibChartViewer matplotlibChartViewer;
@@ -261,9 +255,6 @@ public class ChartScriptEditor extends PyEdit {
 
 
         this.documentProvider = new ChartScriptDocumentProvider();
-
-        propertiesProvider = new PropertiesProvider(chart);
-        resultsProvider = new ResultsProvider(scaveEditor.getResultFileManager());
 
         console = new IOConsole("Chart script output of " + getChartName(), null);
         IConsoleManager consoleManager = ConsolePlugin.getDefault().getConsoleManager();
@@ -485,9 +476,7 @@ public class ChartScriptEditor extends PyEdit {
                 ScaveEditorActions actions = scaveEditor.getActions();
 
                 if (chart.getType() == ChartType.MATPLOTLIB) {
-                    matplotlibChartViewer = new MatplotlibChartViewer(scaveEditor.processPool, sashForm);
-                    matplotlibChartViewer.setResultsProvider(resultsProvider);
-                    matplotlibChartViewer.setChartPropertiesProvider(propertiesProvider);
+                    matplotlibChartViewer = new MatplotlibChartViewer(scaveEditor.processPool, chart, scaveEditor.getResultFileManager(), sashForm);
 
                     matplotlibChartViewer.addOutputListener(outputListener);
                     matplotlibChartViewer.addStateChangeListener(stateChangeListener);
@@ -538,9 +527,7 @@ public class ChartScriptEditor extends PyEdit {
                     plotWidget.setMenu(manager.createContextMenu(plotWidget));
                 }
                 else {
-                    nativeChartViewer = new NativeChartViewer(chart, scaveEditor.processPool, sashForm);
-                    nativeChartViewer.setResultsProvider(resultsProvider);
-                    nativeChartViewer.setChartPropertiesProvider(propertiesProvider);
+                    nativeChartViewer = new NativeChartViewer(scaveEditor.getPythonProcessPool(), chart, scaveEditor.getResultFileManager(), sashForm);
 
                     nativeChartViewer.addOutputListener(outputListener);
                     nativeChartViewer.addStateChangeListener(stateChangeListener);

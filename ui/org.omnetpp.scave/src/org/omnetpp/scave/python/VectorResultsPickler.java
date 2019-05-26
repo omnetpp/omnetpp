@@ -7,6 +7,7 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.scave.charting.dataset.VectorDataLoader;
 import org.omnetpp.scave.charting.dataset.XYVector;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.InterruptedFlag;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.VectorResult;
 
@@ -42,13 +43,15 @@ public class VectorResultsPickler implements IObjectPickler {
     boolean includeRunattrs;
     boolean includeItervars;
     boolean mergeModuleAndName;
+    InterruptedFlag interruptedFlag;
 
-    public VectorResultsPickler(String filterExpression, boolean includeAttrs, boolean includeRunattrs, boolean includeItervars, boolean mergeModuleAndName) {
+    public VectorResultsPickler(String filterExpression, boolean includeAttrs, boolean includeRunattrs, boolean includeItervars, boolean mergeModuleAndName, InterruptedFlag interruptedFlag) {
         this.filterExpression = filterExpression;
         this.includeAttrs = includeAttrs;
         this.includeRunattrs = includeRunattrs;
         this.includeItervars = includeItervars;
         this.mergeModuleAndName = mergeModuleAndName;
+        this.interruptedFlag = interruptedFlag;
     }
 
     @Override
@@ -60,30 +63,33 @@ public class VectorResultsPickler implements IObjectPickler {
             out.write(Opcodes.MARK);
             if (filterExpression != null && !filterExpression.trim().isEmpty()) {
                 IDList vectors = resultManager.getAllVectors();
-                vectors = resultManager.filterIDList(vectors, filterExpression);
+                vectors = resultManager.filterIDList(vectors, filterExpression, interruptedFlag);
 
                 if (ResultPicklingUtils.debug)
                     Debug.println("pickling " + vectors.size() + " vectors");
 
-                XYVector[] vectorsData = VectorDataLoader.getDataOfVectors(resultManager, vectors, null);
+                XYVector[] vectorsData = VectorDataLoader.getDataOfVectors(resultManager, vectors, interruptedFlag);
 
-                for (int i = 0; i < vectors.size(); ++i)
+                for (int i = 0; i < vectors.size(); ++i) {
                     pickleVectorResult(resultManager, vectors.get(i), vectorsData[i], pickler, out);
+                    if (interruptedFlag.getFlag())
+                        throw new RuntimeException("Result pickling interrupted");
+                }
             }
             out.write(Opcodes.LIST);
 
             if (includeAttrs)
-                new ResultAttrsPickler(filterExpression).pickle(resultManager, out, pickler);
+                new ResultAttrsPickler(filterExpression, interruptedFlag).pickle(resultManager, out, pickler);
             else
                 out.write(Opcodes.NONE);
 
             if (includeRunattrs)
-                new RunAttrsPickler(filterExpression, RunAttrsPickler.FilterMode.FILTER_RESULTS).pickle(resultManager, out, pickler);
+                new RunAttrsPickler(filterExpression, RunAttrsPickler.FilterMode.FILTER_RESULTS, interruptedFlag).pickle(resultManager, out, pickler);
             else
                 out.write(Opcodes.NONE);
 
             if (includeItervars)
-                new IterVarsPickler(filterExpression, IterVarsPickler.FilterMode.FILTER_RESULTS).pickle(resultManager, out, pickler);
+                new IterVarsPickler(filterExpression, IterVarsPickler.FilterMode.FILTER_RESULTS, interruptedFlag).pickle(resultManager, out, pickler);
             else
                 out.write(Opcodes.NONE);
         }

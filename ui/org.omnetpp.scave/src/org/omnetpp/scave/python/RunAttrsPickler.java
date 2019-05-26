@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.omnetpp.common.Debug;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.InterruptedFlag;
 import org.omnetpp.scave.engine.OrderedKeyValueList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.Run;
@@ -31,10 +32,12 @@ public class RunAttrsPickler implements IObjectPickler {
 
     FilterMode filterMode;
     String filterExpression;
+    InterruptedFlag interruptedFlag;
 
-    public RunAttrsPickler(String filterExpression, FilterMode filterMode) {
+    public RunAttrsPickler(String filterExpression, FilterMode filterMode, InterruptedFlag interruptedFlag) {
         this.filterExpression = filterExpression;
         this.filterMode = filterMode;
+        this.interruptedFlag = interruptedFlag;
     }
 
     @Override
@@ -87,7 +90,7 @@ public class RunAttrsPickler implements IObjectPickler {
                 }
                 else {
                     IDList items = resultManager.getAllItems(false, false);
-                    items = resultManager.filterIDList(items, filterExpression);
+                    items = resultManager.filterIDList(items, filterExpression, interruptedFlag);
                     runs = resultManager.getUniqueRuns(items);
                     if (ResultPicklingUtils.debug)
                         Debug.println("pickling attrs of " + runs.size() + " runs (for " + items.size() + " items)");

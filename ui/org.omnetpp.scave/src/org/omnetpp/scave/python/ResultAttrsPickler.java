@@ -5,6 +5,7 @@ import java.io.OutputStream;
 
 import org.omnetpp.common.Debug;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.InterruptedFlag;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.StringMap;
@@ -39,9 +40,11 @@ public class ResultAttrsPickler implements IObjectPickler {
     }
 
     String filterExpression;
+    InterruptedFlag interruptedFlag;
 
-    public ResultAttrsPickler(String filter) {
+    public ResultAttrsPickler(String filter, InterruptedFlag interruptedFlag) {
         this.filterExpression = filter;
+        this.interruptedFlag = interruptedFlag;
     }
 
     @Override
@@ -51,13 +54,16 @@ public class ResultAttrsPickler implements IObjectPickler {
         out.write(Opcodes.MARK);
         if (filterExpression != null && !filterExpression.trim().isEmpty()) {
             IDList items = resultManager.getAllItems(false, false);
-            items = resultManager.filterIDList(items, filterExpression);
+            items = resultManager.filterIDList(items, filterExpression, interruptedFlag);
 
             if (ResultPicklingUtils.debug)
                 Debug.println("pickling attrs of " + items.size() + " items");
 
-            for (int i = 0; i < items.size(); ++i)
+            for (int i = 0; i < items.size(); ++i) {
                 pickleResultAttr(resultManager, items.get(i), pickler, out);
+                if (i % 10 == 0 && interruptedFlag.getFlag())
+                    throw new RuntimeException("Result attribute pickling interrupted");
+            }
         }
         out.write(Opcodes.LIST);
     }

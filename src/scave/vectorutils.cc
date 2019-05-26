@@ -54,7 +54,7 @@ XYArray *convertVectorData(const std::vector<VectorDatum>& data, bool includeEve
     return new XYArray(l, xv, yv, xpv, ev);
 }
 
-vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList& idlist, bool includeEventNumbers)
+vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList& idlist, bool includeEventNumbers, const InterruptedFlag& interrupted)
 {
     std::vector<std::vector<VectorDatum>> result;
     result.resize(idlist.size());
@@ -84,8 +84,10 @@ vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList
             vectorIdToIndex[vectorID] = idlist.indexOf(id);
         }
 
-        auto adapter = [&result, &vectorIdToIndex](int vectorId, const std::vector<VectorDatum>& data) {
+        auto adapter = [&result, &vectorIdToIndex, &interrupted](int vectorId, const std::vector<VectorDatum>& data) {
             addAll(result[vectorIdToIndex.at(vectorId)], data);
+            if (interrupted.flag)
+                throw opp_runtime_error("Vector loading interrupted");
         };
 
         IndexedVectorFileReader reader(resultFile->getFileSystemFilePath().c_str(), includeEventNumbers, adapter);

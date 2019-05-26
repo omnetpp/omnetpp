@@ -7,6 +7,7 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.scave.engine.Histogram;
 import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.InterruptedFlag;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.Statistics;
@@ -68,13 +69,15 @@ public class HistogramResultsPickler implements IObjectPickler {
     boolean includeRunattrs;
     boolean includeItervars;
     boolean mergeModuleAndName;
+    InterruptedFlag interruptedFlag;
 
-    public HistogramResultsPickler(String filterExpression, boolean includeAttrs, boolean includeRunattrs, boolean includeItervars, boolean mergeModuleAndName) {
+    public HistogramResultsPickler(String filterExpression, boolean includeAttrs, boolean includeRunattrs, boolean includeItervars, boolean mergeModuleAndName, InterruptedFlag interruptedFlag) {
         this.filterExpression = filterExpression;
         this.includeAttrs = includeAttrs;
         this.includeRunattrs = includeRunattrs;
         this.includeItervars = includeItervars;
         this.mergeModuleAndName = mergeModuleAndName;
+        this.interruptedFlag = interruptedFlag;
     }
 
     @Override
@@ -86,28 +89,32 @@ public class HistogramResultsPickler implements IObjectPickler {
             out.write(Opcodes.MARK);
             if (filterExpression != null && !filterExpression.trim().isEmpty()) {
                 IDList histograms = resultManager.getAllHistograms();
-                histograms = resultManager.filterIDList(histograms, filterExpression);
+                histograms = resultManager.filterIDList(histograms, filterExpression, interruptedFlag);
 
                 if (ResultPicklingUtils.debug)
                     Debug.println("pickling " + histograms.size() + " histograms");
 
-                for (int i = 0; i < histograms.size(); ++i)
+                for (int i = 0; i < histograms.size(); ++i) {
                     pickleHistogramResult(resultManager, histograms.get(i), pickler, out);
+
+                    if (i % 10 == 0 && interruptedFlag.getFlag())
+                        throw new RuntimeException("Result pickling interrupted");
+                }
             }
             out.write(Opcodes.LIST);
 
             if (includeAttrs) // TODO: add this type(...) to all column groups in all picklers
-                new ResultAttrsPickler("type(histogram) AND (" + filterExpression + ")").pickle(resultManager, out, pickler);
+                new ResultAttrsPickler("type(histogram) AND (" + filterExpression + ")", interruptedFlag).pickle(resultManager, out, pickler);
             else
                 out.write(Opcodes.NONE);
 
             if (includeRunattrs)
-                new RunAttrsPickler(filterExpression, RunAttrsPickler.FilterMode.FILTER_RESULTS).pickle(resultManager, out, pickler);
+                new RunAttrsPickler(filterExpression, RunAttrsPickler.FilterMode.FILTER_RESULTS, interruptedFlag).pickle(resultManager, out, pickler);
             else
                 out.write(Opcodes.NONE);
 
             if (includeItervars)
-                new IterVarsPickler(filterExpression, IterVarsPickler.FilterMode.FILTER_RESULTS).pickle(resultManager, out, pickler);
+                new IterVarsPickler(filterExpression, IterVarsPickler.FilterMode.FILTER_RESULTS, interruptedFlag).pickle(resultManager, out, pickler);
             else
                 out.write(Opcodes.NONE);
         }

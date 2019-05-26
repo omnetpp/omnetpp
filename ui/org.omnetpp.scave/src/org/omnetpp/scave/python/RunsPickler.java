@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.omnetpp.common.Debug;
+import org.omnetpp.scave.engine.InterruptedFlag;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunList;
@@ -18,11 +19,13 @@ public class RunsPickler implements IObjectPickler {
     String filterExpression;
     boolean includeRunattrs;
     boolean includeItervars;
+    InterruptedFlag interruptedFlag;
 
-    public RunsPickler(String filterExpression, boolean includeRunattrs, boolean includeItervars) {
+    public RunsPickler(String filterExpression, boolean includeRunattrs, boolean includeItervars, InterruptedFlag interruptedFlag) {
         this.filterExpression = filterExpression;
         this.includeRunattrs = includeRunattrs;
         this.includeItervars = includeItervars;
+        this.interruptedFlag = interruptedFlag;
     }
 
     @Override
@@ -38,18 +41,22 @@ public class RunsPickler implements IObjectPickler {
                 if (ResultPicklingUtils.debug)
                     Debug.println("pickling " + runs.size() + " runs");
 
-                for (Run r : runs.toArray())
+                for (Run r : runs.toArray()) {
                     pickler.save(r.getRunName());
+
+                    if (interruptedFlag.getFlag())
+                        throw new RuntimeException("Run pickling interrupted");
+                }
             }
             out.write(Opcodes.LIST);
 
             if (includeRunattrs)
-                new RunAttrsPickler(filterExpression, RunAttrsPickler.FilterMode.FILTER_RUNS).pickle(resultManager, out, pickler);
+                new RunAttrsPickler(filterExpression, RunAttrsPickler.FilterMode.FILTER_RUNS, interruptedFlag).pickle(resultManager, out, pickler);
             else
                 out.write(Opcodes.NONE);
 
             if (includeItervars)
-                new IterVarsPickler(filterExpression, IterVarsPickler.FilterMode.FILTER_RUNS).pickle(resultManager, out, pickler);
+                new IterVarsPickler(filterExpression, IterVarsPickler.FilterMode.FILTER_RUNS, interruptedFlag).pickle(resultManager, out, pickler);
             else
                 out.write(Opcodes.NONE);
         }

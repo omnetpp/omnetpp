@@ -10,6 +10,7 @@ import org.omnetpp.scave.charting.dataset.XYVector;
 import org.omnetpp.scave.engine.Histogram;
 import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.InterruptedFlag;
 import org.omnetpp.scave.engine.OrderedKeyValueList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
@@ -30,17 +31,19 @@ import net.razorvine.pickle.Pickler;
 
 public class CsvResultsPickler implements IObjectPickler {
 
-    String filterExpression;
-    List<String> rowTypes;
-    boolean omitUnusedColumns;
+    protected String filterExpression;
+    protected List<String> rowTypes;
+    protected boolean omitUnusedColumns;
+    protected InterruptedFlag interruptedFlag;
 
-    public CsvResultsPickler(String filterExpression, List<String> rowTypes, boolean omitUnusedColumns) {
+    public CsvResultsPickler(String filterExpression, List<String> rowTypes, boolean omitUnusedColumns, InterruptedFlag interruptedFlag) {
         this.filterExpression = filterExpression;
         this.rowTypes = rowTypes;
         this.omitUnusedColumns = omitUnusedColumns;
+        this.interruptedFlag = interruptedFlag;
     }
 
-    public static void pickleResultAttributes(ResultItem result, Pickler pickler, OutputStream out) throws IOException {
+    public void pickleResultAttributes(ResultItem result, Pickler pickler, OutputStream out) throws IOException {
         StringMap attrs = result.getAttributes();
         StringVector attrKeys = attrs.keys();
         for (int i = 0; i < attrKeys.size(); ++i) {
@@ -59,7 +62,7 @@ public class CsvResultsPickler implements IObjectPickler {
         }
     }
 
-    public static void pickleRunsOfResults(ResultFileManager resultManager, IDList results, Pickler pickler,
+    public void pickleRunsOfResults(ResultFileManager resultManager, IDList results, Pickler pickler,
             OutputStream out) throws IOException {
         RunList runs = resultManager.getUniqueRuns(results);
 
@@ -127,10 +130,13 @@ public class CsvResultsPickler implements IObjectPickler {
                 }
                 out.write(Opcodes.TUPLE);
             }
+
+            if (interruptedFlag.getFlag())
+                throw new RuntimeException("Result pickling interrupted");
         }
     }
 
-    static void pickleScalarResult(ResultFileManager resultManager, long ID, Pickler pickler, OutputStream out)
+    void pickleScalarResult(ResultFileManager resultManager, long ID, Pickler pickler, OutputStream out)
             throws PickleException, IOException {
         ScalarResult result = resultManager.getScalar(ID);
 
@@ -153,12 +159,12 @@ public class CsvResultsPickler implements IObjectPickler {
     }
 
 
-    static void pickleVectorResult(ResultFileManager resultManager, long ID, Pickler pickler,
+    void pickleVectorResult(ResultFileManager resultManager, long ID, Pickler pickler,
             OutputStream out) throws PickleException, IOException {
         VectorResult result = resultManager.getVector(ID);
         Long[] ids = new Long[1];
         ids[0] = ID;
-        XYVector data = VectorDataLoader.getDataOfVectors(resultManager, IDList.fromArray(ids), null)[0];
+        XYVector data = VectorDataLoader.getDataOfVectors(resultManager, IDList.fromArray(ids), interruptedFlag)[0];
 
         out.write(Opcodes.MARK);
         {
@@ -178,7 +184,7 @@ public class CsvResultsPickler implements IObjectPickler {
         pickleResultAttributes(result, pickler, out);
     }
 
-    static void pickleStatisticsResult(ResultFileManager resultManager, long ID, Pickler pickler, OutputStream out)
+    void pickleStatisticsResult(ResultFileManager resultManager, long ID, Pickler pickler, OutputStream out)
             throws PickleException, IOException {
         StatisticsResult result = resultManager.getStatistics(ID);
         Statistics stats = result.getStatistics();
@@ -209,7 +215,7 @@ public class CsvResultsPickler implements IObjectPickler {
         pickleResultAttributes(result, pickler, out);
     }
 
-    static void pickleHistogramResult(ResultFileManager resultManager, long ID, Pickler pickler, OutputStream out)
+    void pickleHistogramResult(ResultFileManager resultManager, long ID, Pickler pickler, OutputStream out)
             throws PickleException, IOException {
         HistogramResult result = resultManager.getHistogram(ID);
         Statistics stats = result.getStatistics();
@@ -250,28 +256,40 @@ public class CsvResultsPickler implements IObjectPickler {
         out.write(Opcodes.MARK);
         if (filterExpression != null && !filterExpression.trim().isEmpty()) {
             IDList results = resultManager.getAllItems();
-            results = resultManager.filterIDList(results, filterExpression);
+            results = resultManager.filterIDList(results, filterExpression, interruptedFlag);
 
             if (ResultPicklingUtils.debug)
                 Debug.println("pickling " + results.size() + " items");
 
             pickleRunsOfResults(resultManager, results, pickler, out);
 
-            for (int i = 0; i < results.size(); ++i)
+            for (int i = 0; i < results.size(); ++i) {
                 if (ResultFileManager.getTypeOf(results.get(i)) == ResultFileManager.SCALAR)
                     pickleScalarResult(resultManager, results.get(i), pickler, out);
+                if (i % 10 == 0 && interruptedFlag.getFlag())
+                    throw new RuntimeException("Result pickling interrupted");
+            }
 
-            for (int i = 0; i < results.size(); ++i)
+            for (int i = 0; i < results.size(); ++i) {
                 if (ResultFileManager.getTypeOf(results.get(i)) == ResultFileManager.VECTOR)
                     pickleVectorResult(resultManager, results.get(i), pickler, out);
+                if (i % 10 == 0 && interruptedFlag.getFlag())
+                    throw new RuntimeException("Result pickling interrupted");
+            }
 
-            for (int i = 0; i < results.size(); ++i)
+            for (int i = 0; i < results.size(); ++i) {
                 if (ResultFileManager.getTypeOf(results.get(i)) == ResultFileManager.STATISTICS)
                     pickleStatisticsResult(resultManager, results.get(i), pickler, out);
+                if (i % 10 == 0 && interruptedFlag.getFlag())
+                    throw new RuntimeException("Result pickling interrupted");
+            }
 
-            for (int i = 0; i < results.size(); ++i)
+            for (int i = 0; i < results.size(); ++i) {
                 if (ResultFileManager.getTypeOf(results.get(i)) == ResultFileManager.HISTOGRAM)
                     pickleHistogramResult(resultManager, results.get(i), pickler, out);
+                if (i % 10 == 0 && interruptedFlag.getFlag())
+                    throw new RuntimeException("Result pickling interrupted");
+            }
         }
         out.write(Opcodes.LIST);
     }

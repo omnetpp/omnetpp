@@ -5,6 +5,7 @@ import java.io.OutputStream;
 
 import org.omnetpp.common.Debug;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.InterruptedFlag;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ScalarResult;
 
@@ -20,13 +21,15 @@ public class ScalarResultsPickler implements IObjectPickler {
     boolean includeRunattrs;
     boolean includeItervars;
     boolean mergeModuleAndName;
+    InterruptedFlag interruptedFlag;
 
-    public ScalarResultsPickler(String filterExpression, boolean includeAttrs, boolean includeRunattrs, boolean includeItervars, boolean mergeModuleAndName) {
+    public ScalarResultsPickler(String filterExpression, boolean includeAttrs, boolean includeRunattrs, boolean includeItervars, boolean mergeModuleAndName, InterruptedFlag interruptedFlag) {
         this.filterExpression = filterExpression;
         this.includeAttrs = includeAttrs;
         this.includeRunattrs = includeRunattrs;
         this.includeItervars = includeItervars;
         this.mergeModuleAndName = mergeModuleAndName;
+        this.interruptedFlag = interruptedFlag;
     }
 
     void pickleScalarResult(ResultFileManager resultManager, long ID, Pickler pickler, OutputStream out)
@@ -56,27 +59,30 @@ public class ScalarResultsPickler implements IObjectPickler {
             out.write(Opcodes.MARK);
             if (filterExpression != null && !filterExpression.trim().isEmpty()) {
                 IDList scalars = resultManager.getAllScalars(false, false);
-                scalars = resultManager.filterIDList(scalars, filterExpression);
+                scalars = resultManager.filterIDList(scalars, filterExpression, interruptedFlag);
 
                 if (ResultPicklingUtils.debug)
                     Debug.println("pickling " + scalars.size() + " scalars");
-                for (int i = 0; i < scalars.size(); ++i)
+                for (int i = 0; i < scalars.size(); ++i) {
                     pickleScalarResult(resultManager, scalars.get(i), pickler, out);
+                    if (i % 10 == 0 && interruptedFlag.getFlag())
+                        throw new RuntimeException("Result pickling interrupted");
+                }
             }
             out.write(Opcodes.LIST);
 
             if (includeAttrs)
-                new ResultAttrsPickler(filterExpression).pickle(resultManager, out, pickler);
+                new ResultAttrsPickler(filterExpression, interruptedFlag).pickle(resultManager, out, pickler);
             else
                 out.write(Opcodes.NONE);
 
             if (includeRunattrs)
-                new RunAttrsPickler(filterExpression, RunAttrsPickler.FilterMode.FILTER_RESULTS).pickle(resultManager, out, pickler);
+                new RunAttrsPickler(filterExpression, RunAttrsPickler.FilterMode.FILTER_RESULTS, interruptedFlag).pickle(resultManager, out, pickler);
             else
                 out.write(Opcodes.NONE);
 
             if (includeItervars)
-                new IterVarsPickler(filterExpression, IterVarsPickler.FilterMode.FILTER_RESULTS).pickle(resultManager, out, pickler);
+                new IterVarsPickler(filterExpression, IterVarsPickler.FilterMode.FILTER_RESULTS, interruptedFlag).pickle(resultManager, out, pickler);
             else
                 out.write(Opcodes.NONE);
         }

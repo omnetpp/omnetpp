@@ -1,6 +1,7 @@
 package org.omnetpp.scave.pychart;
 
 import org.omnetpp.common.Debug;
+import org.omnetpp.scave.engine.InterruptedFlag;
 
 import py4j.ClientServer;
 
@@ -10,6 +11,8 @@ public class PythonProcess {
     private Process process;
     private ClientServer clientServer = null;
     boolean killedByUs = false;
+
+    protected InterruptedFlag interruptedFlag = new InterruptedFlag();
 
     public PythonOutputMonitoringThread outputMonitoringThread;
     public PythonOutputMonitoringThread errorMonitoringThread;
@@ -76,6 +79,7 @@ public class PythonProcess {
 
     public void kill() {
         if (process != null) {
+            interruptedFlag.setFlag(true);
             clientServer.shutdown();
             process.destroyForcibly();
             killedByUs = true;
@@ -93,6 +97,10 @@ public class PythonProcess {
     @Override
     public String toString() {
         return "Python process: " + process + " isAlive: " + isAlive() + " killed by us: " + killedByUs + " exitCode: " + (process.isAlive() ? "none" : Integer.toString(process.exitValue()));
+    }
+
+    public InterruptedFlag getInterruptedFlag() {
+        return interruptedFlag;
     }
 
 }

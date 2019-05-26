@@ -5,6 +5,7 @@ import java.io.OutputStream;
 
 import org.omnetpp.common.Debug;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.InterruptedFlag;
 import org.omnetpp.scave.engine.OrderedKeyValueList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.Run;
@@ -28,10 +29,12 @@ public class IterVarsPickler implements IObjectPickler {
 
     FilterMode filterMode;
     String filterExpression;
+    InterruptedFlag interruptedFlag;
 
-    public IterVarsPickler(String filterExpression, FilterMode filterMode) {
+    public IterVarsPickler(String filterExpression, FilterMode filterMode, InterruptedFlag interruptedFlag) {
         this.filterExpression = filterExpression;
         this.filterMode = filterMode;
+        this.interruptedFlag = interruptedFlag;
     }
 
     @Override
@@ -57,6 +60,9 @@ public class IterVarsPickler implements IObjectPickler {
                         pickler.save(run.getIterationVariable(ivName));
                     }
                     out.write(Opcodes.TUPLE);
+
+                    if (i % 10 == 0 && interruptedFlag.getFlag())
+                        throw new RuntimeException("Itervar pickling interrupted");
                 }
             }
             else {
@@ -68,7 +74,7 @@ public class IterVarsPickler implements IObjectPickler {
                 }
                 else {
                     IDList items = resultManager.getAllItems(false, false);
-                    items = resultManager.filterIDList(items, filterExpression);
+                    items = resultManager.filterIDList(items, filterExpression, interruptedFlag);
                     runs = resultManager.getUniqueRuns(items);
                     if (ResultPicklingUtils.debug)
                         Debug.println("pickling itervars of " + runs.size() + " runs (for " + items.size() + " items)");
@@ -88,6 +94,9 @@ public class IterVarsPickler implements IObjectPickler {
                             pickler.save(itervars.get(key));
                         }
                         out.write(Opcodes.TUPLE);
+
+                        if (i % 10 == 0 && interruptedFlag.getFlag())
+                            throw new RuntimeException("Result pickling interrupted");
                     }
                 }
             }
