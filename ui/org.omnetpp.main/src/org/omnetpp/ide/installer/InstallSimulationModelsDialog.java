@@ -50,8 +50,8 @@ import org.omnetpp.common.OmnetppDirs;
 import org.omnetpp.ide.OmnetppMainPlugin;
 
 public class InstallSimulationModelsDialog extends TitleAreaDialog {
-    public static final String DESCRIPTORS_URL = "http://omnetpp.org/download/contrib/descriptors";
-    public static final String COMMUNITY_MODEL_CATALOG_URL = "http://www.omnetpp.org/models/catalog";
+    public static final String DESCRIPTORS_URL = "https://models.omnetpp.org/descriptors";
+    public static final String COMMUNITY_MODEL_CATALOG_URL = "https://omnetpp.org/download/models-and-tools";
 
     protected ArrayList<ProjectDescription> projectDescriptions;
     protected ArrayList<URL> projectDescriptionURLs;
