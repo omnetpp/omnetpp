@@ -25,7 +25,7 @@ import org.omnetpp.common.CommonPlugin;
  */
 @SuppressWarnings("restriction")
 public class ReportBugHandler extends AbstractHandler {
-    private static final String BUGTRACKER_URL = "http://bugs.omnetpp.org";
+    private static final String BUGTRACKER_URL = "https://bugs.omnetpp.org";
 
     /**
      * the command has been executed, so extract extract the needed information
