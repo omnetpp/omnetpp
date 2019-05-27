@@ -259,9 +259,11 @@ public abstract class ChartViewer extends ZoomableCachingCanvas implements IChar
     }
 
     public void setSelection(IChartSelection selection) {
-        this.selection = selection;
-        chartChanged();
-        fireChartSelectionChange(selection);
+        if (!ObjectUtils.equals(this.selection, selection)) {
+            this.selection = selection;
+            chartChanged();
+            fireChartSelectionChange(selection);
+        }
     }
 
     public void addChartSelectionListener(IChartSelectionListener listener) {
