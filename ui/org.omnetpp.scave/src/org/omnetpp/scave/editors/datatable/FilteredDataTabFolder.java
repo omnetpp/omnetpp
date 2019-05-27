@@ -47,9 +47,9 @@ public class FilteredDataTabFolder extends TabFolder {
     protected void initialize() {
         // create pages
         allPanel = new FilteredDataPanel(this, SWT.NONE, null);
-        vectorsPanel = new FilteredDataPanel(this, SWT.NONE, ResultType.VECTOR_LITERAL);
-        scalarsPanel = new FilteredDataPanel(this, SWT.NONE, ResultType.SCALAR_LITERAL);
-        histogramsPanel = new FilteredDataPanel(this, SWT.NONE, ResultType.HISTOGRAM_LITERAL);
+        vectorsPanel = new FilteredDataPanel(this, SWT.NONE, ResultType.VECTOR);
+        scalarsPanel = new FilteredDataPanel(this, SWT.NONE, ResultType.SCALAR);
+        histogramsPanel = new FilteredDataPanel(this, SWT.NONE, ResultType.HISTOGRAM);
 
         // create tabs (note: tab labels will be refreshed from initialize())
         allTab = addItem(allPanel);
@@ -144,11 +144,11 @@ public class FilteredDataTabFolder extends TabFolder {
     }
 
     public void setActivePanel(ResultType type) {
-        if (type == ResultType.VECTOR_LITERAL)
+        if (type == ResultType.VECTOR)
             setActivePanel(vectorsPanel);
-        else if (type == ResultType.SCALAR_LITERAL)
+        else if (type == ResultType.SCALAR)
             setActivePanel(scalarsPanel);
-        else if (type == ResultType.HISTOGRAM_LITERAL)
+        else if (type == ResultType.HISTOGRAM)
             setActivePanel(histogramsPanel);
         else
             setActivePanel(allPanel);
@@ -160,11 +160,11 @@ public class FilteredDataTabFolder extends TabFolder {
         if (activePanel == allPanel)
             return null;
         else if (activePanel == vectorsPanel)
-            return ResultType.VECTOR_LITERAL;
+            return ResultType.VECTOR;
         else if (activePanel == scalarsPanel)
-            return ResultType.SCALAR_LITERAL;
+            return ResultType.SCALAR;
         else if (activePanel == histogramsPanel)
-            return ResultType.HISTOGRAM_LITERAL;
+            return ResultType.HISTOGRAM;
         else
             throw new IllegalStateException();
     }

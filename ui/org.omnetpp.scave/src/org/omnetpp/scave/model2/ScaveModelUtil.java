@@ -66,11 +66,11 @@ public class ScaveModelUtil {
     public static Chart createChart(String name, String title, ResultType type) {
         Chart chart;
         // XXX STATISTICS type? MATPLOTLIB chart?
-        if (type==ResultType.SCALAR_LITERAL)
+        if (type==ResultType.SCALAR)
             chart = new Chart(ChartType.BAR, name);
-        else if (type==ResultType.VECTOR_LITERAL)
+        else if (type==ResultType.VECTOR)
             chart = new Chart(ChartType.LINE, name);
-        else if (type==ResultType.HISTOGRAM_LITERAL)
+        else if (type==ResultType.HISTOGRAM)
             chart = new Chart(ChartType.HISTOGRAM, name);
         else
             throw new IllegalArgumentException();
@@ -117,7 +117,7 @@ public class ScaveModelUtil {
         return filters;
     }
 
-    public static String getIDListAsFilterExpression(IDList ids, String[] runidFields, ResultFileManager manager) {
+    public static String getIDListAsFilterExpression(IDList ids, String[] runidFields, ResultType resultType, String viewFilter, ResultFileManager manager) {
         Assert.isNotNull(runidFields);
         String[] filterFields = getFilterFieldsFor(runidFields);
 
@@ -260,10 +260,10 @@ public class ScaveModelUtil {
             return manager.getAllItems(true, true);
 
         switch (type) {
-        case SCALAR_LITERAL: return manager.getAllScalars(true, true);
-        case VECTOR_LITERAL: return manager.getAllVectors();
-        case STATISTICS_LITERAL: return manager.getAllStatistics();
-        case HISTOGRAM_LITERAL: return manager.getAllHistograms();
+        case SCALAR: return manager.getAllScalars(true, true);
+        case VECTOR: return manager.getAllVectors();
+        case STATISTICS: return manager.getAllStatistics();
+        case HISTOGRAM: return manager.getAllHistograms();
         }
         Assert.isTrue(false, "Unknown dataset type: " + type);
         return null;
@@ -338,34 +338,6 @@ public class ScaveModelUtil {
                     return null;
                 }
             });
-        }
-    }
-
-    /**
-     *
-     */
-    public static int asInternalResultType(ResultType type) {
-        switch (type) {
-        case SCALAR_LITERAL: return ResultFileManager.SCALAR;
-        case VECTOR_LITERAL: return ResultFileManager.VECTOR;
-        case STATISTICS_LITERAL: return ResultFileManager.STATISTICS;
-        case HISTOGRAM_LITERAL: return ResultFileManager.HISTOGRAM;
-        default: Assert.isTrue(false, "Unknown ResultType:"+type); return 0;
-        }
-    }
-
-    public static ResultType asResultType(int internalResultType) {
-        if (internalResultType == ResultFileManager.SCALAR)
-            return ResultType.SCALAR_LITERAL;
-        else if (internalResultType == ResultFileManager.VECTOR)
-            return ResultType.VECTOR_LITERAL;
-        else if (internalResultType == ResultFileManager.STATISTICS)
-            return ResultType.STATISTICS_LITERAL;
-        else if (internalResultType == ResultFileManager.HISTOGRAM)
-            return ResultType.HISTOGRAM_LITERAL;
-        else {
-            Assert.isTrue(false, "Unknown internal ResultType:"+internalResultType);
-            return null;
         }
     }
 

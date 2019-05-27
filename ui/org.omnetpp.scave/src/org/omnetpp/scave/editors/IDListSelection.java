@@ -33,11 +33,11 @@ public class IDListSelection implements ISelection {
         this.idlist = idlist;
         this.manager = manager;
         if (idlist.areAllScalars())
-            type = ResultType.SCALAR_LITERAL;
+            type = ResultType.SCALAR;
         else if (idlist.areAllVectors())
-            type = ResultType.VECTOR_LITERAL;
+            type = ResultType.VECTOR;
         else if (idlist.areAllHistograms())
-            type = ResultType.HISTOGRAM_LITERAL;
+            type = ResultType.HISTOGRAM;
         else
             type = null;
     }
@@ -51,13 +51,13 @@ public class IDListSelection implements ISelection {
 
         int internalType = ResultFileManager.getTypeOf(id);
         if (internalType == ResultFileManager.SCALAR)
-            type = ResultType.SCALAR_LITERAL;
+            type = ResultType.SCALAR;
         else if (internalType == ResultFileManager.VECTOR)
-            type = ResultType.VECTOR_LITERAL;
+            type = ResultType.VECTOR;
         else if (internalType == ResultFileManager.STATISTICS)
-            type = ResultType.STATISTICS_LITERAL;
+            type = ResultType.STATISTICS;
         else if (internalType == ResultFileManager.HISTOGRAM)
-            type = ResultType.HISTOGRAM_LITERAL;
+            type = ResultType.HISTOGRAM;
     }
 
     public ResultFileManager getResultFileManager() {

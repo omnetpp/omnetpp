@@ -27,6 +27,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 /**
  * Creates a temporary chart from the selection on the BrowseDataPage, and opens it.
  */
+// TODO merge with CreateTempChartAction (common base?)
 public class CreateTempMatplotlibChartAction extends AbstractScaveAction {
 
     public CreateTempMatplotlibChartAction() {
@@ -41,19 +42,19 @@ public class CreateTempMatplotlibChartAction extends AbstractScaveAction {
         ResultFileManager manager = idListSelection.getResultFileManager();
         if (idListSelection.getScalarsCount() != 0) {
             IDList idList = idListSelection.getScalarIDs();
-            openMatplotlibChart(editor, manager, ResultType.SCALAR_LITERAL, idList);
+            openMatplotlibChart(editor, manager, ResultType.SCALAR, idList);
         }
         if (idListSelection.getVectorsCount() != 0) {
             IDList idList = idListSelection.getVectorIDs();
-            openMatplotlibChart(editor, manager, ResultType.VECTOR_LITERAL, idList);
+            openMatplotlibChart(editor, manager, ResultType.VECTOR, idList);
         }
         if (idListSelection.getHistogramsCount() != 0) {
             IDList idList = idListSelection.getHistogramIDs();
-            openMatplotlibChart(editor, manager, ResultType.HISTOGRAM_LITERAL, idList);
+            openMatplotlibChart(editor, manager, ResultType.HISTOGRAM, idList);
         }
         if (idListSelection.getStatisticsCount() != 0) {
             IDList idList = idListSelection.getStatisticIDs();
-            openMatplotlibChart(editor, manager, ResultType.STATISTICS_LITERAL, idList);
+            openMatplotlibChart(editor, manager, ResultType.STATISTICS, idList);
         }
     }
 
@@ -65,14 +66,16 @@ public class CreateTempMatplotlibChartAction extends AbstractScaveAction {
 
         Chart chart = null;
         switch (type) {
-            case HISTOGRAM_LITERAL: chart = ScaveModelUtil.createChartFromTemplate(templateRegistry, "histogram_mpl"); break;
-            case SCALAR_LITERAL: chart = ScaveModelUtil.createChartFromTemplate(templateRegistry, "barchart_mpl"); break;
-            case VECTOR_LITERAL: chart = ScaveModelUtil.createChartFromTemplate(templateRegistry, "linechart_mpl"); break;
-            case STATISTICS_LITERAL: chart = ScaveModelUtil.createChartFromTemplate(templateRegistry, "boxwhiskers"); break;
+            case HISTOGRAM: chart = ScaveModelUtil.createChartFromTemplate(templateRegistry, "histogram_mpl"); break;
+            case SCALAR: chart = ScaveModelUtil.createChartFromTemplate(templateRegistry, "barchart_mpl"); break;
+            case VECTOR: chart = ScaveModelUtil.createChartFromTemplate(templateRegistry, "linechart_mpl"); break;
+            case STATISTICS: chart = ScaveModelUtil.createChartFromTemplate(templateRegistry, "boxwhiskers"); break;
             default: Assert.isLegal(false, "invalid enum value"); break;
         }
 
-        String filter = ResultFileManager.callWithReadLock(manager, () -> { return ScaveModelUtil.getIDListAsFilterExpression(idList, filterFields, manager); });
+        ResultType resultType = editor.getBrowseDataPage().getActivePanelType();
+        String viewFilter = editor.getBrowseDataPage().getActivePanel().getFilter().getFilterPattern();
+        String filter = ResultFileManager.callWithReadLock(manager, () -> { return ScaveModelUtil.getIDListAsFilterExpression(idList, filterFields, resultType, viewFilter, manager); });
         Property property = new Property("filter", filter);
         chart.addProperty(property);
 

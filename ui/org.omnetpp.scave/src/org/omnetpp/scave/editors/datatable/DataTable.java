@@ -186,7 +186,7 @@ public class DataTable extends Table implements IDataControl {
 
     public DataTable(Composite parent, int style, ResultType type) {
         super(parent, style | SWT.VIRTUAL | SWT.FULL_SELECTION);
-        Assert.isTrue(type==ResultType.SCALAR_LITERAL || type==ResultType.VECTOR_LITERAL || type==ResultType.HISTOGRAM_LITERAL);
+        Assert.isTrue(type==ResultType.SCALAR || type==ResultType.VECTOR || type==ResultType.HISTOGRAM);
         this.type = type;
         setHeaderVisible(true);
         setLinesVisible(true);
@@ -266,9 +266,9 @@ public class DataTable extends Table implements IDataControl {
 
     protected Column[] getAllColumns() {
         switch (type) {
-        case SCALAR_LITERAL:     return allScalarColumns;
-        case VECTOR_LITERAL:     return allVectorColumns;
-        case HISTOGRAM_LITERAL:  return allHistogramColumns;
+        case SCALAR:     return allScalarColumns;
+        case VECTOR:     return allVectorColumns;
+        case HISTOGRAM:  return allHistogramColumns;
         default: return null;
         }
     }
@@ -564,12 +564,12 @@ public class DataTable extends Table implements IDataControl {
                 String replication = result.getFileRun().getRun().getAttribute(REPLICATION);
                 return replication != null ? replication : NA;
             }
-            else if (type == ResultType.SCALAR_LITERAL) {
+            else if (type == ResultType.SCALAR) {
                 ScalarResult scalar = (ScalarResult)result;
                 if (COL_VALUE.equals(column))
                     return formatNumber(scalar.getValue());
             }
-            else if (type == ResultType.VECTOR_LITERAL) {
+            else if (type == ResultType.VECTOR) {
                 VectorResult vector = (VectorResult)result;
                 if (COL_VECTOR_ID.equals(column)) {
                     return String.valueOf(vector.getVectorId());
@@ -607,7 +607,7 @@ public class DataTable extends Table implements IDataControl {
                     return maxTime == null || maxTime.isNaN() ? NA : formatNumber(maxTime);
                 }
             }
-            else if (type == ResultType.HISTOGRAM_LITERAL) {
+            else if (type == ResultType.HISTOGRAM) {
                 StatisticsResult stats = (StatisticsResult)result;
                 if (COL_KIND.equals(column)) {
                     boolean isHistogram = result instanceof HistogramResult;

@@ -197,7 +197,7 @@ public class BrowseDataPage extends FormEditorPage {
                 contextMenuManager.add(new ChooseTableColumnsAction((DataTable)panel.getDataControl()));
             if (panel.getDataControl() instanceof DataTree)
                 ((DataTree)panel.getDataControl()).contributeToContextMenu(contextMenuManager);
-            if (ResultType.VECTOR_LITERAL.equals(panel.getType())) {
+            if (ResultType.VECTOR.equals(panel.getType())) {
                 contextMenuManager.add(new Separator());
                 contextMenuManager.add(actions.showOutputVectorViewAction);
             }
