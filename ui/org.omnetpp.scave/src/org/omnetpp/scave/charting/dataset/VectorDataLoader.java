@@ -19,7 +19,7 @@ public class VectorDataLoader {
 
         XYVector[] vectors = new XYVector[idlist.size()];
 
-        XYArrayVector out = ScaveEngine.readVectorsIntoArrays(manager, idlist, false, interruptedFlag);
+        XYArrayVector out = ScaveEngine.readVectorsIntoArrays2(manager, idlist, false, interruptedFlag);
 
         for (int i = 0; i < out.size(); ++i) {
             XYArray xyArray = out.get(i);

@@ -39,7 +39,7 @@ public class VectorFileUtil {
         IDList idList = new IDList();
         idList.add(id);
 
-        XYArrayVector out = ScaveEngine.readVectorsIntoArrays(resultfileManager, idList, includeEventNumbers);
+        XYArrayVector out = ScaveEngine.readVectorsIntoArrays2(resultfileManager, idList, includeEventNumbers);
 
         assertEquals(out.size(), 1);
 

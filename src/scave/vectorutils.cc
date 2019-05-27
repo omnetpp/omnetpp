@@ -37,21 +37,27 @@ XYArray *convertVectorData(const std::vector<VectorDatum>& data, bool includeEve
 {
     int l = data.size();
 
-    double* xv = new double[l];
-    double* yv = new double[l];
-    BigDecimal* xpv = new BigDecimal[l];
-    eventnumber_t* ev = includeEventNumbers ? new eventnumber_t[l] : nullptr;
+    std::vector<double> xs;
+    std::vector<double> ys;
+    std::vector<BigDecimal> xps;
+    std::vector<eventnumber_t> ens;
+
+    xs.resize(l);
+    ys.resize(l);
+    xps.resize(l);
+    if (includeEventNumbers)
+        ens.resize(l);
 
     for (int i = 0; i < data.size(); ++i) {
         const VectorDatum &vd = data[i];
-        xv[i] = vd.simtime.dbl();
-        yv[i] = vd.value;
-        xpv[i] = vd.simtime;
+        xs[i] = vd.simtime.dbl();
+        ys[i] = vd.value;
+        xps[i] = vd.simtime;
         if (includeEventNumbers)
-            ev[i] = vd.eventNumber;
+            ens[i] = vd.eventNumber;
     }
 
-    return new XYArray(l, xv, yv, xpv, ev);
+    return new XYArray(std::move(xs), std::move(ys), std::move(xps), std::move(ens));
 }
 
 vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList& idlist, bool includeEventNumbers, const InterruptedFlag& interrupted)
@@ -101,6 +107,10 @@ vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList
     }
 
     return xyArrays;
+}
+
+XYArrayVector *readVectorsIntoArrays2(ResultFileManager *manager, const IDList& idlist, bool includeEventNumbers, const InterruptedFlag& interrupted) {
+    return new XYArrayVector(readVectorsIntoArrays(manager, idlist, includeEventNumbers, interrupted));
 }
 
 } // namespace scave

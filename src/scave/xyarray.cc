@@ -25,39 +25,16 @@ namespace scave {
 
 using namespace std;
 
-template<typename T> static void permute(T *& array, int size, const vector<int>& permutation)
-{
-    // XXX could it be performed in place?
-    T *oldArray = array;
-    array = new T[size];
-    for (int i = 0; i < size; ++i)
-        array[i] = oldArray[permutation[i]];
-    delete[] oldArray;
-}
+XYArray::XYArray(std::vector<double> &&xs, std::vector<double> &&ys, std::vector<BigDecimal> &&xps, std::vector<eventnumber_t> &&ens) {
 
-void XYArray::sortByX()
-{
-    if (x) {
-        vector<pair<double, int> > xCoords;
-        for (int i = 0; i < len; ++i)
-            xCoords.push_back(make_pair(x[i], i));
+    Assert(xs.size() == ys.size());
+    Assert(xps.empty() || xps.size() == xs.size());
+    Assert(ens.empty() || ens.size() == xs.size());
 
-        sort(xCoords.begin(), xCoords.end());
-        vector<int> permutation;
-        for (int i = 0; i < len; ++i) {
-            x[i] = xCoords[i].first;
-            permutation.push_back(xCoords[i].second);
-        }
-
-        if (y)
-            permute(y, len, permutation);
-
-        if (xp)
-            permute(xp, len, permutation);
-
-        if (evec)
-            permute(evec, len, permutation);
-    }
+    this->xs = xs;
+    this->ys = ys;
+    this->xps = xps;
+    this->ens = ens;
 }
 
 }  // namespace scave

@@ -503,7 +503,6 @@ CHECK_RESULTFILE_FORMAT_EXCEPTION(VectorFileIndexer::generateIndex)
 namespace omnetpp { namespace scave {
 
 %template(EntryVector) ::std::vector<omnetpp::scave::VectorDatum>;
-%template(XYArrayVector) ::std::vector<omnetpp::scave::XYArray*>;
 
 } } // namespaces
 
@@ -595,4 +594,11 @@ namespace omnetpp { namespace scave {
 %include "scave/xyarray.h"
 
 /* ------------------ vectorutils.h ----------------------- */
+
+namespace omnetpp { namespace scave {
+%ignore readVectorsIntoArrays;
+%newobject readVectorsIntoArrays2;
+
+} } // namespaces
+
 %include "scave/vectorutils.h"

@@ -29,23 +29,24 @@ namespace scave {
 class SCAVE_API XYArray
 {
     private:
-        double *x;
-        double *y;
-        int len;
-        BigDecimal *xp; // precise x value
-        eventnumber_t *evec; // event numbers
+        std::vector<double> xs;
+        std::vector<double> ys;
+        std::vector<BigDecimal> xps;
+        std::vector<eventnumber_t> ens;
     public:
-        XYArray(int l, double *xv, double *yv, BigDecimal *xpv = nullptr, eventnumber_t *ev = nullptr) {len = l; x = xv; y = yv; xp = xpv; evec = ev;}
-        XYArray(int l, bool precise, bool eventnum) {len = l; x = new double[l]; y = new double[l]; xp = precise ? new BigDecimal[l] : nullptr; evec = eventnum ? new eventnumber_t[l] : nullptr;}
-        ~XYArray() {delete [] x; delete [] y; delete [] xp; delete [] evec;}
-        bool hasPreciseX() const  {return xp != nullptr;}
-        bool hasEventNumbers() const  {return evec != nullptr;}
-        int length() const  {return len;}
-        //TODO change all range checks below to assert()
-        double getX(int i) const  {return (i>=0 && i<len) ? x[i] : NaN;}
-        double getY(int i) const  {return (i>=0 && i<len) ? y[i] : NaN;}
-        const BigDecimal& getPreciseX(int i) const {return ((xp != nullptr && i>=0 && i < len) ? xp[i] : BigDecimal::Nil);}
-        eventnumber_t getEventNumber(int i) const {return ((evec != nullptr && i>=0 && i<len) ? evec[i] : -1);}
+        XYArray(std::vector<double> &&xs, std::vector<double> &&ys, std::vector<BigDecimal> &&xps = std::vector<BigDecimal>(), std::vector<eventnumber_t> &&ens = std::vector<eventnumber_t>());
+
+        XYArray(const XYArray&) = delete;
+        XYArray(XYArray&&) = default;
+
+        bool hasPreciseX() const  {return !xps.empty();}
+        bool hasEventNumbers() const  {return !ens.empty();}
+        int length() const  {return xs.size();}
+
+        double getX(int i) const  {return xs.at(i);}
+        double getY(int i) const  {return ys.at(i);}
+        const BigDecimal& getPreciseX(int i) const {return xps.at(i); }
+        eventnumber_t getEventNumber(int i) const {return ens.at(i); }
         void sortByX();
 };
 
