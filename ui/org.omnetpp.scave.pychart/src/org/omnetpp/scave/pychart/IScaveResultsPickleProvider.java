@@ -14,11 +14,11 @@ public interface IScaveResultsPickleProvider {
     // TODO: getItervarsForRunAttrsPickle, similar to getRunAttrsForItervarsPickle
 
     // CSV format
-    byte[] getResultsPickle(String filterExpression, List<String> rowTypes, boolean omitUnusedColumns) throws PickleException, IOException;
+    byte[] getResultsPickle(String filterExpression, List<String> rowTypes, boolean omitUnusedColumns, double simTimeStart, double simTimeEnd) throws PickleException, IOException;
 
     // simple format
     byte[] getScalarsPickle(String filterExpression, boolean include_attrs, boolean includeRunattrs, boolean includeItervars, boolean mergeModuleAndName) throws PickleException, IOException;
-    byte[] getVectorsPickle(String filterExpression, boolean includeAttrs, boolean includeRunattrs, boolean includeItervars, boolean mergeModuleAndName) throws PickleException, IOException;
+    byte[] getVectorsPickle(String filterExpression, boolean includeAttrs, boolean includeRunattrs, boolean includeItervars, boolean mergeModuleAndName, double simTimeStart, double simTimeEnd) throws PickleException, IOException;
     byte[] getStatisticsPickle(String filterExpression, boolean includeAttrs, boolean includeRunattrs, boolean includeItervars, boolean mergeModuleAndName) throws PickleException, IOException;
     byte[] getHistogramsPickle(String filterExpression, boolean includeAttrs, boolean includeRunattrs, boolean includeItervars, boolean mergeModuleAndName) throws PickleException, IOException;
 

@@ -34,8 +34,8 @@ public class ResultsProvider implements IScaveResultsPickleProvider {
     }
 
     @Override
-    public byte[] getResultsPickle(String filterExpression, List<String> rowTypes, boolean omitUnusedColumns) throws PickleException, IOException {
-        return ResultPicklingUtils.pickleResultsUsing(rfm, new CsvResultsPickler(filterExpression, rowTypes, omitUnusedColumns, interruptedFlag));
+    public byte[] getResultsPickle(String filterExpression, List<String> rowTypes, boolean omitUnusedColumns, double simTimeStart, double simTimeEnd) throws PickleException, IOException {
+        return ResultPicklingUtils.pickleResultsUsing(rfm, new CsvResultsPickler(filterExpression, rowTypes, omitUnusedColumns, simTimeStart, simTimeEnd, interruptedFlag));
     }
 
     @Override
@@ -64,8 +64,8 @@ public class ResultsProvider implements IScaveResultsPickleProvider {
     }
 
     @Override
-    public byte[] getVectorsPickle(String filterExpression, boolean includeAttrs, boolean includeRunattrs, boolean includeItervars, boolean mergeModuleAndName) throws PickleException, IOException {
-        return ResultPicklingUtils.pickleResultsUsing(rfm, new VectorResultsPickler(filterExpression, includeAttrs, includeRunattrs, includeItervars, mergeModuleAndName, interruptedFlag));
+    public byte[] getVectorsPickle(String filterExpression, boolean includeAttrs, boolean includeRunattrs, boolean includeItervars, boolean mergeModuleAndName, double simTimeStart, double simTimeEnd) throws PickleException, IOException {
+        return ResultPicklingUtils.pickleResultsUsing(rfm, new VectorResultsPickler(filterExpression, includeAttrs, includeRunattrs, includeItervars, mergeModuleAndName, simTimeStart, simTimeEnd, interruptedFlag));
     }
 
     @Override

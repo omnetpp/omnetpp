@@ -60,10 +60,12 @@ XYArray *convertVectorData(const std::vector<VectorDatum>& data, bool includeEve
     return new XYArray(std::move(xs), std::move(ys), std::move(xps), std::move(ens));
 }
 
-vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList& idlist, bool includeEventNumbers, const InterruptedFlag& interrupted)
+vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList& idlist, bool includeEventNumbers, size_t memoryLimitBytes, double simTimeStart, double simTimeEnd, const InterruptedFlag& interrupted)
 {
     std::vector<std::vector<VectorDatum>> result;
     result.resize(idlist.size());
+
+    size_t memoryUsedBytes = 0;
 
     ResultFileList *filteredVectorFileList = manager->getUniqueFiles(idlist);
 
@@ -90,14 +92,22 @@ vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList
             vectorIdToIndex[vectorID] = idlist.indexOf(id);
         }
 
-        auto adapter = [&result, &vectorIdToIndex, &interrupted](int vectorId, const std::vector<VectorDatum>& data) {
+        auto adapter = [&result, &vectorIdToIndex, &memoryUsedBytes, memoryLimitBytes, &interrupted](int vectorId, const std::vector<VectorDatum>& data) {
+            memoryUsedBytes += data.size() * sizeof(VectorDatum);
+            if (memoryUsedBytes > memoryLimitBytes)
+                throw opp_runtime_error("Memory limit exceeded during vector data loading");
+
             addAll(result[vectorIdToIndex.at(vectorId)], data);
             if (interrupted.flag)
                 throw opp_runtime_error("Vector loading interrupted");
         };
 
         IndexedVectorFileReader reader(resultFile->getFileSystemFilePath().c_str(), includeEventNumbers, adapter);
-        reader.collectEntries(vectorIdsInFile);
+
+        if (simTimeStart == -INFINITY && simTimeEnd == INFINITY)
+            reader.collectEntries(vectorIdsInFile);
+        else
+            reader.collectEntriesInSimtimeInterval(vectorIdsInFile, simTimeStart, simTimeEnd);
     }
 
     vector<XYArray *> xyArrays;
@@ -109,8 +119,8 @@ vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList
     return xyArrays;
 }
 
-XYArrayVector *readVectorsIntoArrays2(ResultFileManager *manager, const IDList& idlist, bool includeEventNumbers, const InterruptedFlag& interrupted) {
-    return new XYArrayVector(readVectorsIntoArrays(manager, idlist, includeEventNumbers, interrupted));
+XYArrayVector *readVectorsIntoArrays2(ResultFileManager *manager, const IDList& idlist, bool includeEventNumbers, size_t memoryLimitBytes, double simTimeStart, double simTimeEnd, const InterruptedFlag& interrupted) {
+    return new XYArrayVector(readVectorsIntoArrays(manager, idlist, includeEventNumbers, memoryLimitBytes, simTimeStart, simTimeEnd, interrupted));
 }
 
 } // namespace scave

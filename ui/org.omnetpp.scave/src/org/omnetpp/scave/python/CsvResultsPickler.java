@@ -34,12 +34,16 @@ public class CsvResultsPickler implements IObjectPickler {
     protected String filterExpression;
     protected List<String> rowTypes;
     protected boolean omitUnusedColumns;
+    protected double simTimeStart;
+    protected double simTimeEnd;
     protected InterruptedFlag interruptedFlag;
 
-    public CsvResultsPickler(String filterExpression, List<String> rowTypes, boolean omitUnusedColumns, InterruptedFlag interruptedFlag) {
+    public CsvResultsPickler(String filterExpression, List<String> rowTypes, boolean omitUnusedColumns, double simTimeStart, double simTimeEnd, InterruptedFlag interruptedFlag) {
         this.filterExpression = filterExpression;
         this.rowTypes = rowTypes;
         this.omitUnusedColumns = omitUnusedColumns;
+        this.simTimeStart = simTimeStart;
+        this.simTimeEnd = simTimeEnd;
         this.interruptedFlag = interruptedFlag;
     }
 
@@ -164,7 +168,7 @@ public class CsvResultsPickler implements IObjectPickler {
         VectorResult result = resultManager.getVector(ID);
         Long[] ids = new Long[1];
         ids[0] = ID;
-        XYVector data = VectorDataLoader.getDataOfVectors(resultManager, IDList.fromArray(ids), interruptedFlag)[0];
+        XYVector data = VectorDataLoader.getDataOfVectors(resultManager, IDList.fromArray(ids), simTimeStart, simTimeEnd, interruptedFlag)[0];
 
         out.write(Opcodes.MARK);
         {

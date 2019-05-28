@@ -7,6 +7,7 @@ from omnetpp.internal import Gateway
 from omnetpp.internal.TimeAndGuard import TimeAndGuard
 
 import functools
+from math import inf
 print = functools.partial(print, flush=True)
 
 
@@ -217,9 +218,9 @@ def get_transformed_results(filter):
 
 
 # CSV format
-def get_results(filter_expression="", row_types=['runattr', 'itervar', 'param', 'scalar', 'vector', 'statistics', 'histogram', 'attr'], omit_unused_columns=True):
+def get_results(filter_expression="", row_types=['runattr', 'itervar', 'param', 'scalar', 'vector', 'statistics', 'histogram', 'attr'], omit_unused_columns=True, start_time=-inf, end_time=inf):
 
-    pk = Gateway.results_provider.getResultsPickle(filter_expression, row_types, omit_unused_columns)
+    pk = Gateway.results_provider.getResultsPickle(filter_expression, row_types, omit_unused_columns, start_time, end_time)
 
     df = pd.DataFrame(pickle.loads(pk), columns=[
         "runID", "type", "module", "name", "attrname", "attrvalue",
@@ -301,8 +302,8 @@ def get_scalars(filter_expression="", include_attrs=False, include_runattrs=Fals
 
     return _append_additional_data(df, attrs, runattrs, itervars)
 
-def get_vectors(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, merge_module_and_name=False):
-    pk = Gateway.results_provider.getVectorsPickle(filter_expression, include_attrs, include_runattrs, include_itervars, merge_module_and_name)
+def get_vectors(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, merge_module_and_name=False, start_time=-inf, end_time=inf):
+    pk = Gateway.results_provider.getVectorsPickle(filter_expression, include_attrs, include_runattrs, include_itervars, merge_module_and_name, float(start_time), float(end_time))
 
     scalars, attrs, runattrs, itervars = pickle.loads(pk)
     df = pd.DataFrame(scalars, columns=["runID", "module", "name", "vectime", "vecvalue"])

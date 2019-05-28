@@ -43,14 +43,18 @@ public class VectorResultsPickler implements IObjectPickler {
     boolean includeRunattrs;
     boolean includeItervars;
     boolean mergeModuleAndName;
+    double simTimeStart;
+    double simTimeEnd;
     InterruptedFlag interruptedFlag;
 
-    public VectorResultsPickler(String filterExpression, boolean includeAttrs, boolean includeRunattrs, boolean includeItervars, boolean mergeModuleAndName, InterruptedFlag interruptedFlag) {
+    public VectorResultsPickler(String filterExpression, boolean includeAttrs, boolean includeRunattrs, boolean includeItervars, boolean mergeModuleAndName, double simTimeStart, double simTimeEnd, InterruptedFlag interruptedFlag) {
         this.filterExpression = filterExpression;
         this.includeAttrs = includeAttrs;
         this.includeRunattrs = includeRunattrs;
         this.includeItervars = includeItervars;
         this.mergeModuleAndName = mergeModuleAndName;
+        this.simTimeStart = simTimeStart;
+        this.simTimeEnd = simTimeEnd;
         this.interruptedFlag = interruptedFlag;
     }
 
@@ -68,7 +72,7 @@ public class VectorResultsPickler implements IObjectPickler {
                 if (ResultPicklingUtils.debug)
                     Debug.println("pickling " + vectors.size() + " vectors");
 
-                XYVector[] vectorsData = VectorDataLoader.getDataOfVectors(resultManager, vectors, interruptedFlag);
+                XYVector[] vectorsData = VectorDataLoader.getDataOfVectors(resultManager, vectors, simTimeStart, simTimeEnd, interruptedFlag);
 
                 for (int i = 0; i < vectors.size(); ++i) {
                     pickleVectorResult(resultManager, vectors.get(i), vectorsData[i], pickler, out);

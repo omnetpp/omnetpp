@@ -15,11 +15,11 @@ import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.scave.engine.XYArrayVector;
 
 public class VectorDataLoader {
-    public static XYVector[] getDataOfVectors(ResultFileManager manager, IDList idlist, InterruptedFlag interruptedFlag) {
+    public static XYVector[] getDataOfVectors(ResultFileManager manager, IDList idlist, double simTimeStart, double simTimeEnd, InterruptedFlag interruptedFlag) {
 
         XYVector[] vectors = new XYVector[idlist.size()];
 
-        XYArrayVector out = ScaveEngine.readVectorsIntoArrays2(manager, idlist, false, interruptedFlag);
+        XYArrayVector out = ScaveEngine.readVectorsIntoArrays2(manager, idlist, false, 1 * 1024 * 1024 * 1024, simTimeStart, simTimeEnd, interruptedFlag);
 
         for (int i = 0; i < out.size(); ++i) {
             XYArray xyArray = out.get(i);
