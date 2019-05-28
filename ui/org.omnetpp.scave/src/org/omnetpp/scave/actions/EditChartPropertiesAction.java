@@ -11,21 +11,21 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ui.EditChartDialog;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.ModelObject;
 
 /**
  * Opens an edit dialog for the selected chart
  */
-public class EditChartAction extends AbstractScaveAction {
+public class EditChartPropertiesAction extends AbstractScaveAction {
     /**
      * Creates the action with an default title and icon, and without parameters.
      */
-    public EditChartAction() {
+    public EditChartPropertiesAction() {
         setText("Edit properties");
-        setToolTipText("Edit Chart");
+        setToolTipText("Edit Chart Properties");
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_PROPERTIES));
     }
 
@@ -40,11 +40,14 @@ public class EditChartAction extends AbstractScaveAction {
 
     @Override
     public boolean isApplicable(final ScaveEditor editor, ISelection selection) {
-        ModelObject editedObject = getEditedChart(editor, selection);
-        return editedObject instanceof Chart;
+        return getEditedChart(editor, selection) != null;
     }
 
     private Chart getEditedChart(ScaveEditor editor, ISelection selection) {
+        ChartScriptEditor activeChartScriptEditor = editor.getActiveChartScriptEditor();
+        if (activeChartScriptEditor != null)
+            return activeChartScriptEditor.getChart();
+
         IStructuredSelection structuredSelection = asStructuredOrEmpty(selection);
         if (structuredSelection.size() == 1 && structuredSelection.getFirstElement() instanceof Chart)
             return (Chart)structuredSelection.getFirstElement();

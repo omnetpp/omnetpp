@@ -35,7 +35,7 @@ import org.omnetpp.scave.actions.CopyDataToClipboardAction;
 import org.omnetpp.scave.actions.CreateTempChartAction;
 import org.omnetpp.scave.actions.CreateTempMatplotlibChartAction;
 import org.omnetpp.scave.actions.CutAction;
-import org.omnetpp.scave.actions.EditChartAction;
+import org.omnetpp.scave.actions.EditChartPropertiesAction;
 import org.omnetpp.scave.actions.EditInputFileAction;
 import org.omnetpp.scave.actions.ExportChartsAction;
 import org.omnetpp.scave.actions.ExportDataAction;
@@ -65,7 +65,7 @@ public class ScaveEditorActions {
     protected List<IScaveAction> actions = new ArrayList<>();
 
 
-    public final EditChartAction editAction = registerAction(new EditChartAction());
+    public final EditChartPropertiesAction editAction = registerAction(new EditChartPropertiesAction());
     public final EditInputFileAction editInputFileAction = registerAction(new EditInputFileAction());
     public final SelectAllAction selectAllAction = registerAction(new SelectAllAction());
     public final ExportChartsAction exportChartsAction = registerAction(new ExportChartsAction());

@@ -59,7 +59,7 @@ import org.omnetpp.scave.actions.AddVectorOperationAction;
 import org.omnetpp.scave.actions.ChartMouseModeAction;
 import org.omnetpp.scave.actions.ClosePageAction;
 import org.omnetpp.scave.actions.CopyChartImageToClipboardAction;
-import org.omnetpp.scave.actions.EditChartAction;
+import org.omnetpp.scave.actions.EditChartPropertiesAction;
 import org.omnetpp.scave.actions.ExportToSVGAction;
 import org.omnetpp.scave.actions.RefreshChartAction;
 import org.omnetpp.scave.actions.SaveTempChartAction;
@@ -285,7 +285,7 @@ public class ChartScriptEditor extends PyEdit {
                 formEditor.addSeparatorToToolbar();
 
                 formEditor.addToToolbar(toggleShowSourceAction);
-                formEditor.addToToolbar(new EditChartAction());
+                formEditor.addToToolbar(new EditChartPropertiesAction());
 
                 toggleAutoUpdateAction = new ToggleAutoUpdateAction();
                 toggleAutoUpdateAction.setChecked(true);
@@ -487,7 +487,7 @@ public class ChartScriptEditor extends PyEdit {
                     manager.add(new Separator());
 
                     manager.add(toggleShowSourceAction);
-                    manager.add(new EditChartAction());
+                    manager.add(new EditChartPropertiesAction());
                     manager.add(new Separator());
 
                     manager.add(actions.undoAction);
@@ -555,7 +555,7 @@ public class ChartScriptEditor extends PyEdit {
 
                     manager.add(new GotoChartDefinitionAction());
                     manager.add(toggleShowSourceAction);
-                    manager.add(new EditChartAction());
+                    manager.add(new EditChartPropertiesAction());
                     manager.add(new Separator());
 
                     manager.add(actions.undoAction);
