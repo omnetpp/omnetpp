@@ -16,6 +16,9 @@ print(df)
 
 title, legend = chart.extract_label_columns(df)
 
+for i, c in legend:
+    df[c] = pd.to_numeric(df[c], errors="ignore")
+
 df.sort_values(by=[l for i, l in legend], axis='index', inplace=True)
 
 plt.title(chart.make_chart_title(df, title, legend))
