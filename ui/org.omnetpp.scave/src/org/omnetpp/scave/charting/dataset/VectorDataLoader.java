@@ -29,6 +29,12 @@ public class VectorDataLoader {
                 vectors[i].y[k] = xyArray.getY(k);
             }
         }
+
+        out.delete();
+        out = null;
+        System.gc();
+        ScaveEngine.malloc_trim();
+
         return vectors;
     }
 }

@@ -33,6 +33,10 @@ namespace omnetpp {
 using namespace common;
 namespace scave {
 
+int malloc_trim() {
+  return ::malloc_trim(0);
+}
+
 XYArray *convertVectorData(const std::vector<VectorDatum>& data, bool includeEventNumbers)
 {
     int l = data.size();
@@ -94,12 +98,20 @@ vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList
 
         auto adapter = [&result, &vectorIdToIndex, &memoryUsedBytes, memoryLimitBytes, &interrupted](int vectorId, const std::vector<VectorDatum>& data) {
             memoryUsedBytes += data.size() * sizeof(VectorDatum);
-            if (memoryUsedBytes > memoryLimitBytes)
+            if (memoryUsedBytes > memoryLimitBytes) {
+                result.clear();
+                result.shrink_to_fit();
+                malloc_trim();
                 throw opp_runtime_error("Memory limit exceeded during vector data loading");
+            }
 
             addAll(result[vectorIdToIndex.at(vectorId)], data);
-            if (interrupted.flag)
+            if (interrupted.flag) {
+                result.clear();
+                result.shrink_to_fit();
+                malloc_trim();
                 throw opp_runtime_error("Vector loading interrupted");
+            }
         };
 
         IndexedVectorFileReader reader(resultFile->getFileSystemFilePath().c_str(), includeEventNumbers, adapter);

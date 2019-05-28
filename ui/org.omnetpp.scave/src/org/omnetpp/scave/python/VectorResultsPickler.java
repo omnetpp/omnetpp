@@ -78,6 +78,9 @@ public class VectorResultsPickler implements IObjectPickler {
                     pickleVectorResult(resultManager, vectors.get(i), vectorsData[i], pickler, out);
                     if (interruptedFlag.getFlag())
                         throw new RuntimeException("Result pickling interrupted");
+
+                    vectorsData[i] = null;
+                    System.gc();
                 }
             }
             out.write(Opcodes.LIST);

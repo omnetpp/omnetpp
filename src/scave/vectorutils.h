@@ -18,6 +18,7 @@
 #ifndef __OMNETPP_SCAVE_VECTORUTILS_H
 #define __OMNETPP_SCAVE_VECTORUTILS_H
 
+#include <malloc.h>
 #include <limits>
 #include "scavedefs.h"
 #include "resultfilemanager.h"
@@ -28,6 +29,7 @@
 namespace omnetpp {
 namespace scave {
 
+SCAVE_API int malloc_trim();
 
 /**
  * Read the VectorResult items in the IDList into the XYArrays.

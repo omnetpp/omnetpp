@@ -185,6 +185,9 @@ public class CsvResultsPickler implements IObjectPickler {
         }
         out.write(Opcodes.TUPLE);
 
+        data = null;
+        System.gc();
+
         pickleResultAttributes(result, pickler, out);
     }
 
