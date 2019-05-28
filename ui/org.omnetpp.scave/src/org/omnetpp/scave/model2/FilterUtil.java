@@ -22,11 +22,11 @@ import java.util.Set;
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.util.MatchExpressionSyntax;
-import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.MatchExpressionSyntax.INodeVisitor;
 import org.omnetpp.common.util.MatchExpressionSyntax.Node;
 import org.omnetpp.common.util.MatchExpressionSyntax.Token;
 import org.omnetpp.common.util.MatchExpressionSyntax.TokenType;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
@@ -56,6 +56,9 @@ public class FilterUtil {
     }
 
     public FilterUtil(String filterPattern, boolean lossyAllowed) {
+        if (filterPattern == null || filterPattern.trim().isEmpty())
+            filterPattern = "*";
+
         if (!isANDPattern(filterPattern)) {
             if (!lossyAllowed)
                 throw new IllegalArgumentException("Not an AND pattern: "+filterPattern);

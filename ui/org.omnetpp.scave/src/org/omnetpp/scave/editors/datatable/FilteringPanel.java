@@ -169,6 +169,10 @@ public class FilteringPanel extends Composite {
         advancedFilterText.setFocus();
     }
 
+    private String asteriskToEmpty(String filter) {
+        return filter.trim().equals("*") ? "" : filter;
+    }
+
     /**
      * Switches the filter from "Advanced" to "Basic" mode. If this cannot be done
      * (filter string invalid or too complex), the user is prompted with a dialog,
@@ -196,11 +200,11 @@ public class FilteringPanel extends Composite {
                 return false;  // user cancelled
         }
 
-        experimentCombo.setText(filterUtil.getField(EXPERIMENT.getName()));
-        measurementCombo.setText(filterUtil.getField(MEASUREMENT.getName()));
-        replicationCombo.setText(filterUtil.getField(REPLICATION.getName()));
-        moduleCombo.setText(filterUtil.getField(MODULE.getName()));
-        nameCombo.setText(filterUtil.getField(NAME.getName()));
+        experimentCombo.setText(asteriskToEmpty(filterUtil.getField(EXPERIMENT.getName())));
+        measurementCombo.setText(asteriskToEmpty(filterUtil.getField(MEASUREMENT.getName())));
+        replicationCombo.setText(asteriskToEmpty(filterUtil.getField(REPLICATION.getName())));
+        moduleCombo.setText(asteriskToEmpty(filterUtil.getField(MODULE.getName())));
+        nameCombo.setText(asteriskToEmpty(filterUtil.getField(NAME.getName())));
 
         showSimpleFilter();
         return true;

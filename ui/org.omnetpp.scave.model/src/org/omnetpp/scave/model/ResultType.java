@@ -37,16 +37,4 @@ public enum ResultType {
         }
     }
 
-    /**
-     *
-     */
-    public static int asInternalResultType(ResultType type) {
-        switch (type) {
-        case SCALAR: return ResultFileManager.SCALAR;
-        case VECTOR: return ResultFileManager.VECTOR;
-        case STATISTICS: return ResultFileManager.STATISTICS;
-        case HISTOGRAM: return ResultFileManager.HISTOGRAM;
-        default: Assert.isTrue(false, "Unknown ResultType:"+type); return 0;
-        }
-    }
 }

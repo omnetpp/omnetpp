@@ -118,6 +118,15 @@ public class ScaveModelUtil {
     }
 
     public static String getIDListAsFilterExpression(IDList ids, String[] runidFields, ResultType resultType, String viewFilter, ResultFileManager manager) {
+
+        IDList allItemsOfType = manager.getAllItems(false, false).filterByTypes(resultType.getValue());
+        IDList itemsMatchingViewFilter = manager.filterIDList(allItemsOfType, viewFilter);
+
+        boolean allSelected = ids.equals(itemsMatchingViewFilter);
+
+        if (allSelected)
+            return StringUtils.defaultIfEmpty(viewFilter, "*");
+
         Assert.isNotNull(runidFields);
         String[] filterFields = getFilterFieldsFor(runidFields);
 

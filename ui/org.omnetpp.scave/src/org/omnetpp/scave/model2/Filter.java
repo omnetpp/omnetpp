@@ -20,7 +20,7 @@ public class Filter {
     }
 
     public Filter(String filterText) {
-        this.filterPattern = filterText==null ? "" : filterText;
+        this.filterPattern = (filterText==null || filterText.trim().isEmpty()) ? "*" : filterText;
     }
 
     public String getFilterPattern() {
