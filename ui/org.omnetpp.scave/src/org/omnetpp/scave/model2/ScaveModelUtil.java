@@ -117,6 +117,7 @@ public class ScaveModelUtil {
         return filters;
     }
 
+    // filtering for the given result type will not be part of the returned expression!!!
     public static String getIDListAsFilterExpression(IDList ids, String[] runidFields, ResultType resultType, String viewFilter, ResultFileManager manager) {
 
         IDList allItemsOfType = manager.getAllItems(false, false).filterByTypes(resultType.getValue());
@@ -124,46 +125,72 @@ public class ScaveModelUtil {
 
         boolean allSelected = ids.equals(itemsMatchingViewFilter);
 
-        if (allSelected)
+        if (allSelected) {
             return StringUtils.defaultIfEmpty(viewFilter, "*");
+        }
+
+
+        IDList invisibleSelected = ids.dup();
+        invisibleSelected.subtract(itemsMatchingViewFilter);
+        Assert.isTrue(invisibleSelected.isEmpty());
+
+        IDList unselected = itemsMatchingViewFilter.dup();
+        unselected.subtract(ids);
 
         Assert.isNotNull(runidFields);
         String[] filterFields = getFilterFieldsFor(runidFields);
 
-        StringBuilder sb = new StringBuilder();
-
-        RunList runs = manager.getUniqueRuns(ids);
-
-        if (runs.size() < ids.size() / 2) {
-
-            boolean first = true;
-
-            for (Run r :runs.toArray()) {
-                if (!first)
-                    sb.append("\n OR \n");
-                sb.append("( run(\"" + r.getRunName() + "\") AND (\n");
-
-                IDList idsInRun = manager.filterIDList(ids, r, null, null);
-
-                for (int i = 0; i < idsInRun.size(); ++i) {
-                    long id = ids.get(i);
-                    ResultItem item = manager.getItem(id);
-                    String filter = new FilterUtil(item, filterFields).getFilterPattern();
-                    sb.append(filter + " \n");
-                }
-                sb.append(") )");
-
-                first = false;
-            }
+        String result;
+        if (ids.size() > 10 && unselected.size() < (ids.size() / 3)) {
+            result = "(" + viewFilter + ")\nAND NOT (\n" + StringUtils.indentLines(getIDListAsDumbFilter(unselected, manager, filterFields), "    ") + ")";
         }
         else {
+            RunList runs = manager.getUniqueRuns(ids);
+            if (runs.size() < ids.size() / 2)
+                result = getIDListAsRunGroupedFilter(ids, manager, filterFields);
+            else
+                result = getIDListAsDumbFilter(ids, manager, filterFields);
+        }
 
-            for (int i = 0; i < ids.size(); ++i) {
+        // debug check:
+        Assert.isTrue(manager.filterIDList(allItemsOfType, result).equals(ids), "Filter created from IDList does not reproduce the given IDs");
+
+        return result;
+    }
+
+    private static String getIDListAsRunGroupedFilter(IDList ids, ResultFileManager manager, String[] filterFields) {
+
+        RunList runs = manager.getUniqueRuns(ids);
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+
+        for (Run r :runs.toArray()) {
+            if (!first)
+                sb.append("\n OR \n");
+            sb.append("( run(\"" + r.getRunName() + "\") AND (\n");
+
+            IDList idsInRun = manager.filterIDList(ids, r, null, null);
+
+            for (int i = 0; i < idsInRun.size(); ++i) {
                 long id = ids.get(i);
                 ResultItem item = manager.getItem(id);
                 String filter = new FilterUtil(item, filterFields).getFilterPattern();
-                sb.append(filter + " \n");
+                sb.append("    " + filter + " \n");
             }
+            sb.append(") )");
+
+            first = false;
+        }
+        return sb.toString();
+    }
+
+    private static String getIDListAsDumbFilter(IDList ids, ResultFileManager manager, String[] filterFields) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < ids.size(); ++i) {
+            long id = ids.get(i);
+            ResultItem item = manager.getItem(id);
+            String filter = new FilterUtil(item, filterFields).getFilterPattern();
+            sb.append(filter + " \n");
         }
         return sb.toString();
     }

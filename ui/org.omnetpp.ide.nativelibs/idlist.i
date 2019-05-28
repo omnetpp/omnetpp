@@ -7,16 +7,8 @@ namespace omnetpp { namespace scave {
 %ignore IDList::IDList(unsigned int);
 %ignore IDList::IDList(const IDList&);
 
-%ignore IDList::clear;
-%ignore IDList::set(const IDList&);
-%ignore IDList::erase;
-%ignore IDList::dup;
-%ignore IDList::sortByFileAndRun;
-%ignore IDList::sortByRunAndFile;
-%ignore IDList::reverse;
 %ignore IDList::toByteArray;
 %ignore IDList::fromByteArray;
-%ignore IDList::getSubsetByIndeces;
 %ignore IDList::begin;
 %ignore IDList::end;
 
@@ -69,10 +61,10 @@ import java.util.EventListener;
           array[i] = Long.valueOf(get(i));
       return array;
   }
-  
+
   @Override
   public int hashCode() {
-    return size(); // results in poor hashing, but IDLists are not supposed to be used as keys 
+    return size(); // results in poor hashing, but IDLists are not supposed to be used as keys
   }
 
 %}
