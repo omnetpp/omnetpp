@@ -154,6 +154,9 @@ public class ChartScriptEditor extends PyEdit {
     private boolean autoUpdateChart = true;
     ToggleAutoUpdateAction toggleAutoUpdateAction;
 
+    // if the document has changed since last saving (independent of the Chart object in the model)
+    boolean scriptChangedFlag = false;
+
     private class StackFrameHyperlink implements IHyperlink {
         private final String file;
         private final int lineNumber;
@@ -237,6 +240,8 @@ public class ChartScriptEditor extends PyEdit {
 
         @Override
         public void documentChanged(DocumentEvent event) {
+            scriptChangedFlag = true;
+            firePropertyChange(ScaveEditor.PROP_DIRTY);
             if (autoUpdateChart)
                 rerunChartScriptJob.restartTimer();
         }
@@ -844,7 +849,7 @@ public class ChartScriptEditor extends PyEdit {
 
     @Override
     public boolean isDirty() {
-        return !getDocument().get().equals(chart.getScript()) || commandStack.isSaveNeeded();
+        return scriptChangedFlag || commandStack.isSaveNeeded();
     }
 
     @Override
@@ -965,5 +970,10 @@ public class ChartScriptEditor extends PyEdit {
             IDocument document = pyedit.getDocument();
             int offset = document.getLineOffset(lineNumber-1);
             getSourceViewer().setSelectedRange(offset, 0);
+    }
+
+    public void saved() {
+        commandStack.saved();
+        scriptChangedFlag = false;
     }
 }

@@ -1527,7 +1527,21 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
         for (int i = 0; i < getPageCount(); ++i) {
             FormEditorPage editorPage = getEditorPage(i);
-            if (editorPage instanceof ChartPage) {
+            if (editorPage instanceof InputsPage) {
+                InputsPage inputsPage = (InputsPage)editorPage;
+
+                CommandStack commandStack = inputsPage.getCommandStack();
+                if (commandStack.isSaveNeeded())
+                    return true;
+            }
+            else if (editorPage instanceof ChartsPage) {
+                ChartsPage chartsPage = (ChartsPage)editorPage;
+
+                CommandStack commandStack = chartsPage.getCommandStack();
+                if (commandStack.isSaveNeeded())
+                    return true;
+            }
+            else if (editorPage instanceof ChartPage) {
                 ChartPage chartPage = (ChartPage)editorPage;
 
                 ChartScriptEditor chartScriptEditor = chartPage.getChartScriptEditor();
@@ -1537,7 +1551,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
 				Chart chart = chartScriptEditor.getChart();
 
-				// TODO: check fixed commandstacks too
                 CommandStack commandStack = chartScriptEditor.getCommandStack();
 				if ((commandStack.isSaveNeeded()) || (chart.isTemporary() && commandStack.wasObjectAffected(chart)))
                     return true;
@@ -1571,7 +1584,27 @@ public class ScaveEditor extends MultiPageEditorPartExt
             AnalysisSaver.saveAnalysis(analysis, f, editedScripts);
 
             // Refresh the necessary state.
-            //commandStack.saved();
+
+            for (int i = 0; i < getPageCount(); ++i) {
+                FormEditorPage editorPage = getEditorPage(i);
+                if (editorPage instanceof InputsPage) {
+                    InputsPage inputsPage = (InputsPage)editorPage;
+
+                    CommandStack commandStack = inputsPage.getCommandStack();
+                    commandStack.saved();
+                }
+                else if (editorPage instanceof ChartsPage) {
+                    ChartsPage chartsPage = (ChartsPage)editorPage;
+
+                    CommandStack commandStack = chartsPage.getCommandStack();
+                    commandStack.saved();
+                }
+                else if (editorPage instanceof ChartPage) {
+                    ChartPage chartPage = (ChartPage)editorPage;
+                    ChartScriptEditor chartScriptEditor = chartPage.getChartScriptEditor();
+                    chartScriptEditor.saved();
+                }
+            }
 
             firePropertyChange(IEditorPart.PROP_DIRTY);
         } catch (CoreException e) {
