@@ -226,6 +226,17 @@ void ModuleCanvasViewer::mousePressEvent(QMouseEvent *event)
         rubberBand->setGeometry(QRect(rubberBandStartPos, QSize()));
         rubberBand->show();
     }
+    else if (event->modifiers() & Qt::ShiftModifier) {
+        auto objects = getObjectsAt(event->pos());
+        for (cObject *o : objects)
+            if (dynamic_cast<cModule *>(o)) {
+                cModule *sm = dynamic_cast<cModule *>(o);
+                if (sm->getParentModule() == object) {
+                    draggedSubmod = sm;
+                    break;
+                }
+            }
+    }
     else
         QGraphicsView::mousePressEvent(event);
     viewport()->setCursor(Qt::ArrowCursor);
@@ -234,6 +245,8 @@ void ModuleCanvasViewer::mousePressEvent(QMouseEvent *event)
 void ModuleCanvasViewer::mouseReleaseEvent(QMouseEvent *event)
 {
     QGraphicsView::mouseReleaseEvent(event);
+
+    draggedSubmod = nullptr;
     if (rubberBand->isVisible()) {
         QRect rect = rubberBand->geometry().normalized();
         if (event->button() == Qt::RightButton) {
@@ -257,6 +270,22 @@ void ModuleCanvasViewer::mouseMoveEvent(QMouseEvent *event)
 
     if (rubberBand->isVisible() && (event->modifiers() & Qt::ControlModifier))
         rubberBand->setGeometry(QRect(rubberBandStartPos, event->pos()).normalized());
+    else if (draggedSubmod && (event->modifiers() & Qt::ShiftModifier)) {
+        cDisplayString ds = draggedSubmod->getDisplayString();
+        QPointF sp = mapToScene(event->localPos().toPoint());
+        ds.setTagArg("p", 0, std::to_string(sp.rx() / zoomFactor).c_str());
+        ds.setTagArg("p", 1, std::to_string(sp.ry() / zoomFactor).c_str());
+        ds.setTagArg("p", 2, nullptr);
+        ds.setTagArg("p", 3, nullptr);
+        ds.setTagArg("p", 4, nullptr);
+        ds.setTagArg("p", 5, nullptr);
+
+        draggedSubmod->setDisplayString(ds);
+        getQtenv()->getModuleLayouter()->refreshPositionFromDS(draggedSubmod);
+        submoduleGraphicsItems[draggedSubmod]->setPos(getSubmodCoords(draggedSubmod));
+        getQtenv()->callRefreshDisplaySafe();
+        getQtenv()->refreshInspectors();
+    }
     else
         QGraphicsView::mouseMoveEvent(event);
 }
@@ -478,6 +507,9 @@ void ModuleCanvasViewer::redrawModules()
 
     for (cModule::SubmoduleIterator it(parentModule); !it.end(); ++it)
         drawSubmodule(*it);
+
+    if (!containsKey(submoduleGraphicsItems, draggedSubmod))
+        draggedSubmod = nullptr;
 
     // draw the inside of the inspected module
     redrawEnclosingModule();

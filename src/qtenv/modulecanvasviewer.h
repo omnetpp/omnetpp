@@ -56,6 +56,10 @@ private:
     QRubberBand *rubberBand;
     QPoint rubberBandStartPos;
 
+    // If this is non-null, there is a submodule captured and moved under the
+    // mouse cursor, due to the user previously Shift+clicking on it.
+    cModule *draggedSubmod = nullptr;
+
     // see setLayoutingScene()
     QGraphicsScene *moduleScene; // this is used to show the module usually
     QGraphicsScene *layoutingScene = nullptr; // borrowed from ModuleLayouter during layout visualization, not owned
