@@ -57,12 +57,14 @@ public class ScaveImages {
     public static final String IMG_ETOOL16_SPLITTERLEFT = "icons/full/etool16/splitterleft.png";
     public static final String IMG_ETOOL16_SPLITTER = "icons/full/etool16/splitter.png";
     public static final String IMG_ETOOL16_SPLITTERRIGHT = "icons/full/etool16/splitterright.png";
+    public static final String IMG_ETOOL16_TRASHCAN = "icons/full/etool16/trashcan.png";
     public static final String IMG_ETOOL16_TREELEVELS = "icons/full/etool16/treelevels.png";
     public static final String IMG_ETOOL16_VZOOMIN = "icons/full/etool16/vzoomin.png";
     public static final String IMG_ETOOL16_VZOOMOUT = "icons/full/etool16/vzoomout.png";
     public static final String IMG_ETOOL16_ZOOMIN = "icons/full/etool16/zoomin.png";
     public static final String IMG_ETOOL16_ZOOMOUT = "icons/full/etool16/zoomout.png";
     public static final String IMG_ETOOL16_ZOOM = "icons/full/etool16/zoom.png";
+    public static final String IMG_ETOOL16_ZOOMTOFIT_OLD = "icons/full/etool16/zoomtofit_old.png";
     public static final String IMG_ETOOL16_ZOOMTOFIT = "icons/full/etool16/zoomtofit.png";
     public static final String IMG_EVIEW16_DATASET = "icons/full/eview16/dataset.gif";
     public static final String IMG_EVIEW16_OUTVECTOR = "icons/full/eview16/outvector.png";
@@ -97,10 +99,10 @@ public class ScaveImages {
     public static final String IMG_OBJ16_SYM_SQUARE = "icons/full/obj16/sym_square.png";
     public static final String IMG_OBJ16_SYM_TRIANGLE = "icons/full/obj16/sym_triangle.png";
     public static final String IMG_OBJ_BARCHART = "icons/full/obj/barchart.png";
+    public static final String IMG_OBJ_CHART = "icons/full/obj/chart.png";
     public static final String IMG_OBJ_CHARTSHEET = "icons/full/obj/chartsheet.png";
     public static final String IMG_OBJ_DATASET = "icons/full/obj/dataset.png";
     public static final String IMG_OBJ_FOLDER = "icons/full/obj/folder.png";
-    public static final String IMG_OBJ_CHART = "icons/full/obj/chart.png";
     public static final String IMG_OBJ_HISTOGRAMCHART = "icons/full/obj/histogramchart.png";
     public static final String IMG_OBJ_LINECHART = "icons/full/obj/linechart.png";
     public static final String IMG_OBJ_MATPLOTLIBCHART = "icons/full/obj/matplotlibchart.png";

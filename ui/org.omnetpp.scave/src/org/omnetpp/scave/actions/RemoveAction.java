@@ -11,7 +11,7 @@ import java.util.Iterator;
 
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.ui.ISharedImages;
+import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.AnalysisItem;
@@ -28,7 +28,7 @@ import org.omnetpp.scave.model.commands.RemoveInputFileCommand;
 public class RemoveAction extends AbstractScaveAction {
     public RemoveAction() {
         setText("Remove");
-        setImageDescriptor(ScavePlugin.getImageDescriptor(ISharedImages.IMG_ELCL_REMOVE));
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_TRASHCAN));
     }
 
     @Override
@@ -42,7 +42,7 @@ public class RemoveAction extends AbstractScaveAction {
         for (Object element : asStructuredOrEmpty(selection).toArray())
             if (!(element instanceof ModelObject))  //TODO || editor.isTemporaryObject((AnalysisObject)element)
                 return false;
-        return true;
+        return !selection.isEmpty();
     }
 
     /**
