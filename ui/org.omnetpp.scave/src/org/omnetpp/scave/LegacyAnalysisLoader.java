@@ -35,6 +35,10 @@ public class LegacyAnalysisLoader {
         String operation; // winavg, movingavg, mean, etc...
         Map<String, String> params; // often empty, casting to double might be necessary
 
+        public static String mapOperationName(String operation) {
+            return operation.replace("-", "_");
+        }
+
         DataVecOp(String type, String operation, Map<String, String> params) {
             this.type = type;
             this.operation = operation;
@@ -45,7 +49,7 @@ public class LegacyAnalysisLoader {
             StringBuilder sb = new StringBuilder();
             sb.append(type);
             sb.append(":");
-            sb.append(operation);
+            sb.append(mapOperationName(operation));
 
             for (String k: params.keySet()) {
                 sb.append(",");
