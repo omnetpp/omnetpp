@@ -1,6 +1,7 @@
 package org.omnetpp.scave.python;
 
 import java.io.File;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -49,6 +50,14 @@ public class NativeChartViewer extends ChartViewerBase {
         public void setChartProperty(String key, String value) {
             Display.getDefault().syncExec(() -> {
                 chartView.setProperty(key, value);
+            });
+        }
+
+        @Override
+        public void setChartProperties(Map<String, String> properties) {
+            Display.getDefault().syncExec(() -> {
+                for (String k : properties.keySet())
+                    chartView.setProperty(k, properties.get(k));
             });
         }
 
@@ -110,6 +119,15 @@ public class NativeChartViewer extends ChartViewerBase {
 
         chartPlotter.reset();
 
+        // clearing existing (old) dataset from chartView
+        switch (chart.getType()) {
+        case BAR: chartView.setDataset(new PythonScalarDataset(null)); break;
+        case HISTOGRAM: chartView.setDataset(new PythonHistogramDataset(null)); break;
+        case LINE: chartView.setDataset(new PythonXYDataset(null)); break;
+        case MATPLOTLIB: // fallthrough
+        default: throw new RuntimeException("Wrong chart type.");
+        }
+
         Runnable ownRunAfterDone = () -> {
             runAfterDone.run();
 
@@ -118,18 +136,11 @@ public class NativeChartViewer extends ChartViewerBase {
                 chartView.update();
 
                 switch (chart.getType()) {
-                case BAR:
-                    chartView.setDataset(chartPlotter.scalarDataset);
-                    break;
-                case HISTOGRAM:
-                    chartView.setDataset(chartPlotter.histogramDataset);
-                    break;
-                case LINE:
-                    chartView.setDataset(chartPlotter.xyDataset);
-                    break;
-                case MATPLOTLIB:
-                default:
-                    throw new RuntimeException("Wrong chart type.");
+                case BAR: chartView.setDataset(chartPlotter.scalarDataset); break;
+                case HISTOGRAM: chartView.setDataset(chartPlotter.histogramDataset); break;
+                case LINE: chartView.setDataset(chartPlotter.xyDataset); break;
+                case MATPLOTLIB: // fallthrough
+                default: throw new RuntimeException("Wrong chart type.");
                 }
 
                 chartView.setStatusText("");

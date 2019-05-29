@@ -196,18 +196,21 @@ def _plot_vectors_DF_scave(df):
         for i, row in enumerate(df.itertuples(index=False))
     ]))
 
+    properties = dict()
     for i, t in enumerate(df.itertuples(index=False)):
         key = str(i)
-        interp = t.interpolationmode if 'interpolationmode' in df else 'sample-hold' if 'enum' in df else None
-        if interp:
-            if interp == "none":
-                set_property("Line.Type/" + key, "Dots")
-            elif interp == "linear":
-                set_property("Line.Type/" + key, "Linear")
-            elif interp == "sample-hold":
-                set_property("Line.Type/" + key, "SampleHold")
-            elif interp == "backward-sample-hold":
-                set_property("Line.Type/" + key, "BackwardSampleHold")
+        interpolation = t.interpolationmode if 'interpolationmode' in df else 'sample-hold' if 'enum' in df else None
+        if interpolation:
+            if interpolation == "none":
+                properties["Line.Type/" + key] = "Dots"
+            elif interpolation == "linear":
+                properties["Line.Type/" + key] = "Linear"
+            elif interpolation == "sample-hold":
+                properties["Line.Type/" + key] = "SampleHold"
+            elif interpolation == "backward-sample-hold":
+                properties["Line.Type/" + key] = "BackwardSampleHold"
+    
+    set_properties(properties)
 
 
 def _plot_vectors_DF_2(df):
@@ -400,17 +403,21 @@ def plot_histograms(df):
         _plot_histograms_DF(df)
 
 
+def do_set_properties(props):
+    Gateway.chart_plotter.setChartProperties(props)
+    
 def set_property(key, value):
     Gateway.chart_plotter.setChartProperty(key, value)
 
-
 def set_properties(*vargs, **kwargs):
+    props = dict()
     for a in vargs:
-        for k, v in a.items():
-            Gateway.chart_plotter.setChartProperty(k, v)  # TODO: could be optimized
+        if type(a) != dict:
+            raise Exception("dictionary expected")
+        props.update(a)
     for k, v in kwargs.items():
-        Gateway.chart_plotter.setChartProperty(k, v)
-
+        props[k] = v
+    do_set_properties(props)
 
 def get_properties():
     return Gateway.properties_provider.getChartProperties()
