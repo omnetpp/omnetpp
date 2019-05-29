@@ -223,8 +223,11 @@ public class DataTree extends Tree implements IDataControl {
     }
 
     public void setSelectedIDs(IDList idList) {
+        List<Long> ids = new ArrayList<Long>(idList.size());
+        for (int i = 0; i < idList.size(); i++)
+            ids.add(idList.get(i));
+
         ArrayList<TreeItem> treeItems = new ArrayList<TreeItem>();
-        List<Long> ids = Arrays.asList(idList.toArray());
         long begin = System.currentTimeMillis();
         // find the topmost tree items that cover the whole idList set, but not more
         while (ids.size() > 0) {

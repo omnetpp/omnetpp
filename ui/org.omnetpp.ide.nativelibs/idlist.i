@@ -27,7 +27,6 @@ import java.util.EventListener;
 
   private ArrayList<IChangeListener> listeners = new ArrayList<IChangeListener>();
 
-  // TODO ensure that immutable
   public static final IDList EMPTY = new IDList();
 
   public void addListener(IChangeListener listener) {
@@ -45,21 +44,6 @@ import java.util.EventListener;
 
   public void swigDisown() {
       swigCMemOwn = false;
-  }
-
-  public static IDList fromArray(Long[] array) {
-      IDList list = new IDList();
-      for (int i=0; i<array.length; i++)
-          list.add(array[i].longValue());
-      return list;
-  }
-
-  public Long[] toArray() {
-      int sz = (int) size();
-      Long[] array = new Long[sz];
-      for (int i=0; i<sz; i++)
-          array[i] = Long.valueOf(get(i));
-      return array;
   }
 
   @Override

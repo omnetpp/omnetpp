@@ -104,7 +104,6 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.eclipse.ui.texteditor.StatusLineContributionItem;
 import org.eclipse.ui.views.navigator.ResourceComparator;
-import org.omnetpp.common.IConstants;
 import org.omnetpp.common.eventlog.EventLogFilterParameters;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.FilterEventLogDialog;
@@ -132,7 +131,6 @@ import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.sequencechart.SequenceChartPlugin;
-import org.omnetpp.sequencechart.editors.SequenceChartContributor.CustomNonlinearOptionsDialog;
 import org.omnetpp.sequencechart.widgets.SequenceChart;
 import org.omnetpp.sequencechart.widgets.SequenceChart.AxisSpacingMode;
 import org.omnetpp.sequencechart.widgets.axisrenderer.AxisLineRenderer;
@@ -1334,8 +1332,11 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                             return resultItem.getModuleName() + ":" + resultItem.getName();
                         }
                     });
+                    Long[] ids = new Long[idList.size()];
+                    for (int i = 0; i < idList.size(); i++)
+                        ids[i] = idList.get(i);
                     dialog.setFilter(axisModule.getModuleFullPath());
-                    dialog.setElements(idList.toArray());
+                    dialog.setElements(ids);
                     dialog.setTitle("Vector selection");
                     dialog.setMessage("Select a vector to attach:");
                     if (dialog.open() == ListDialog.CANCEL)

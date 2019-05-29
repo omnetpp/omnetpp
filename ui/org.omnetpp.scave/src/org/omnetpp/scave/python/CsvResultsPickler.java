@@ -140,7 +140,7 @@ public class CsvResultsPickler implements IObjectPickler {
         }
     }
 
-    void pickleScalarResult(ResultFileManager resultManager, long ID, Pickler pickler, OutputStream out)
+    protected void pickleScalarResult(ResultFileManager resultManager, long ID, Pickler pickler, OutputStream out)
             throws PickleException, IOException {
         ScalarResult result = resultManager.getScalar(ID);
 
@@ -163,12 +163,12 @@ public class CsvResultsPickler implements IObjectPickler {
     }
 
 
-    void pickleVectorResult(ResultFileManager resultManager, long ID, Pickler pickler,
+    protected void pickleVectorResult(ResultFileManager resultManager, long ID, Pickler pickler,
             OutputStream out) throws PickleException, IOException {
         VectorResult result = resultManager.getVector(ID);
-        Long[] ids = new Long[1];
-        ids[0] = ID;
-        XYVector data = VectorDataLoader.getDataOfVectors(resultManager, IDList.fromArray(ids), simTimeStart, simTimeEnd, interruptedFlag)[0];
+        IDList idAsList = new IDList();
+        idAsList.add(ID);
+        XYVector data = VectorDataLoader.getDataOfVectors(resultManager, idAsList, simTimeStart, simTimeEnd, interruptedFlag)[0];
 
         out.write(Opcodes.MARK);
         {
@@ -191,7 +191,7 @@ public class CsvResultsPickler implements IObjectPickler {
         pickleResultAttributes(result, pickler, out);
     }
 
-    void pickleStatisticsResult(ResultFileManager resultManager, long ID, Pickler pickler, OutputStream out)
+    protected void pickleStatisticsResult(ResultFileManager resultManager, long ID, Pickler pickler, OutputStream out)
             throws PickleException, IOException {
         StatisticsResult result = resultManager.getStatistics(ID);
         Statistics stats = result.getStatistics();
@@ -222,7 +222,7 @@ public class CsvResultsPickler implements IObjectPickler {
         pickleResultAttributes(result, pickler, out);
     }
 
-    void pickleHistogramResult(ResultFileManager resultManager, long ID, Pickler pickler, OutputStream out)
+    protected void pickleHistogramResult(ResultFileManager resultManager, long ID, Pickler pickler, OutputStream out)
             throws PickleException, IOException {
         HistogramResult result = resultManager.getHistogram(ID);
         Statistics stats = result.getStatistics();
