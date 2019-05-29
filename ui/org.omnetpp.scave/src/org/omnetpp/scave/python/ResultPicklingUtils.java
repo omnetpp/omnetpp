@@ -16,7 +16,7 @@ import net.razorvine.pickle.Pickler;
 
 public class ResultPicklingUtils {
 
-    public static boolean debug = false;
+    public static boolean debug = Debug.isChannelEnabled("pickling");
 
     public static double[] bytesToDoubles(byte[] bytes) {
         ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);

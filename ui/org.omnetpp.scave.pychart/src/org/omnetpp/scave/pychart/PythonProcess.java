@@ -6,7 +6,7 @@ import org.omnetpp.scave.engine.InterruptedFlag;
 import py4j.ClientServer;
 
 public class PythonProcess {
-    public static boolean debug = false;
+    public static boolean debug = Debug.isChannelEnabled("pythonprocess");
 
     private Process process;
     private ClientServer clientServer = null;

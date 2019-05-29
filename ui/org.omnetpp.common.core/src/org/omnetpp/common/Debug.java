@@ -7,6 +7,11 @@
 
 package org.omnetpp.common;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.omnetpp.common.util.StringUtils;
 
 /**
  * Debug helper class, to be used instead of System.out.println().
@@ -19,15 +24,28 @@ package org.omnetpp.common;
  */
 public class Debug {
     public static boolean debug;
+    public static final String DEBUG_ENVVAR = "OMNETPP_DEBUG";
+
+    private static Set<String> queriedChannels = new HashSet<String>();
 
     public static boolean isDebugging() {
         return debug;
     }
 
+    public static boolean isChannelEnabled(String channel) {
+        String[] channels = StringUtils.nullToEmpty(System.getenv(DEBUG_ENVVAR)).split(",");
+        boolean result = ArrayUtils.contains(channels, channel) || ArrayUtils.contains(channels, "all");
+        if (!queriedChannels.contains(channel)) {
+            println("debug channel: " + channel + (result ? " : enabled" : " : disabled"));
+            queriedChannels.add(channel);
+        }
+        return result;
+    }
+
     static {
         // test property: eclipse.launcher=C:\eclipse\eclipse.exe
         String launcher = System.getProperty("eclipse.launcher");
-        debug = launcher!=null && (launcher.endsWith("eclipse") || launcher.endsWith("eclipse.exe"));
+        debug = StringUtils.isNotEmpty(System.getenv(DEBUG_ENVVAR)) || (launcher!=null && (launcher.endsWith("eclipse") || launcher.endsWith("eclipse.exe")));
     }
 
     public static void print(String text) {

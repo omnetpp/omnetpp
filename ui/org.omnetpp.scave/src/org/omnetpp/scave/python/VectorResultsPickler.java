@@ -66,6 +66,9 @@ public class VectorResultsPickler implements IObjectPickler {
         {
             out.write(Opcodes.MARK);
             if (filterExpression != null && !filterExpression.trim().isEmpty()) {
+                if (ResultPicklingUtils.debug)
+                    Debug.println("vector pickling start");
+
                 IDList vectors = resultManager.getAllVectors();
                 vectors = resultManager.filterIDList(vectors, filterExpression, interruptedFlag);
 
@@ -82,6 +85,8 @@ public class VectorResultsPickler implements IObjectPickler {
                     // give the GC a chance to free memory, without explicitly triggering it - that was really slow.
                     vectorsData[i] = null;
                 }
+                if (ResultPicklingUtils.debug)
+                    Debug.println("vector pickling done");
             }
             out.write(Opcodes.LIST);
 

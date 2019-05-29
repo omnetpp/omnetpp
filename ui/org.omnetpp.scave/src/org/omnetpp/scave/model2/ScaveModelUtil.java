@@ -58,6 +58,8 @@ import org.omnetpp.scave.model.commands.MoveChartCommand;
  */
 public class ScaveModelUtil {
 
+    public static boolean debug = Debug.isChannelEnabled("scavemodelutil");
+
     public static InputFile createInput(String name) {
         InputFile input = new InputFile(name);
         return input;
@@ -123,9 +125,21 @@ public class ScaveModelUtil {
         IDList allItemsOfType = manager.getAllItems(false, false).filterByTypes(resultType.getValue());
         IDList itemsMatchingViewFilter = manager.filterIDList(allItemsOfType, viewFilter);
 
+        if(debug)
+            Debug.println("allitems: " + itemsMatchingViewFilter.toString());
+        if(debug)
+            Debug.println("selected: " + ids.toString());
+
+        if(debug)
+            Debug.println("selected: " + ids.size() + " matching: " + itemsMatchingViewFilter.size());
         boolean allSelected = ids.equals(itemsMatchingViewFilter);
 
+        if(debug)
+            Debug.println("allselected: " + allSelected);
+
         if (allSelected) {
+            if(debug)
+                Debug.println("returning the view filter: " + viewFilter);
             return StringUtils.defaultIfEmpty(viewFilter, "*");
         }
 
@@ -136,6 +150,8 @@ public class ScaveModelUtil {
 
         IDList unselected = itemsMatchingViewFilter.dup();
         unselected.subtract(ids);
+        if(debug)
+            Debug.println("number of unselected: " + unselected.size());
 
         Assert.isNotNull(runidFields);
         String[] filterFields = getFilterFieldsFor(runidFields);
@@ -153,6 +169,8 @@ public class ScaveModelUtil {
         }
 
         // debug check:
+        if(debug)
+            Debug.println("filter expression: " + result);
         Assert.isTrue(manager.filterIDList(allItemsOfType, result).equals(ids), "Filter created from IDList does not reproduce the given IDs");
 
         return result;

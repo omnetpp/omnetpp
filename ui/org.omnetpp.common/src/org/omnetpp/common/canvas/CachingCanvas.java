@@ -56,7 +56,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 
     private boolean doCaching = true;
     private ITileCache tileCache = new XYTileCache();
-    private boolean debug = false;
+    private boolean debug = Debug.isChannelEnabled("cachingcanvas");
 
     /**
      * Constructor.
@@ -66,7 +66,11 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 
         addPaintListener(new PaintListener() {
             public void paintControl(final PaintEvent e) {
+                if (debug)
+                    Debug.println("actually painting chart");
                 paint(e.gc);
+                if (debug)
+                    Debug.println("actual painting done");
             }
         });
     }

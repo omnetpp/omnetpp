@@ -12,7 +12,6 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.widgets.Composite;
-import org.omnetpp.common.Debug;
 
 /**
  * Extends CachingCanvas with zoom handling capabilities. Dragging and mouse wheel

@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.scave.charting.ChartViewer;
 import org.omnetpp.scave.charting.HistogramChartViewer;
@@ -24,6 +25,8 @@ import org.omnetpp.scave.pychart.PythonCallerThread.ExceptionHandler;
 import org.omnetpp.scave.pychart.PythonProcessPool;
 
 public class NativeChartViewer extends ChartViewerBase {
+
+    public static boolean debug = Debug.isChannelEnabled("nativechartviewer");
 
     class ChartPlotter implements INativeChartPlotter {
         PythonScalarDataset scalarDataset = new PythonScalarDataset(null);
@@ -48,17 +51,25 @@ public class NativeChartViewer extends ChartViewerBase {
 
         @Override
         public void setChartProperty(String key, String value) {
+            if(debug)
+                Debug.println("setProperty syncExec begin: " + key + " : " + value);
             Display.getDefault().syncExec(() -> {
                 chartView.setProperty(key, value);
             });
+            if(debug)
+                Debug.println("setProperty syncExec end");
         }
 
         @Override
         public void setChartProperties(Map<String, String> properties) {
+            if(debug)
+                Debug.println("setProperties syncExec begin");
             Display.getDefault().syncExec(() -> {
                 for (String k : properties.keySet())
                     chartView.setProperty(k, properties.get(k));
             });
+            if(debug)
+                Debug.println("setProperties syncExec end");
         }
 
         public void reset() {
@@ -132,8 +143,14 @@ public class NativeChartViewer extends ChartViewerBase {
             runAfterDone.run();
 
             Display.getDefault().syncExec(() -> {
+
+                if(debug)
+                    Debug.println("data received, starting drawing");
+
                 chartView.setStatusText("Rendering chart...");
                 chartView.update();
+                if(debug)
+                    Debug.println("status text updated");
 
                 switch (chart.getType()) {
                 case BAR: chartView.setDataset(chartPlotter.scalarDataset); break;
