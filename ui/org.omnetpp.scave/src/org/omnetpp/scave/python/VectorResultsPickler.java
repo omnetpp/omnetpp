@@ -79,8 +79,8 @@ public class VectorResultsPickler implements IObjectPickler {
                     if (interruptedFlag.getFlag())
                         throw new RuntimeException("Result pickling interrupted");
 
+                    // give the GC a chance to free memory, without explicitly triggering it - that was really slow.
                     vectorsData[i] = null;
-                    System.gc();
                 }
             }
             out.write(Opcodes.LIST);
