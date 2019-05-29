@@ -28,7 +28,7 @@ namespace scave {
  */
 class SCAVE_API XYArray
 {
-    private:
+    public:
         std::vector<double> xs;
         std::vector<double> ys;
         std::vector<BigDecimal> xps;
@@ -36,6 +36,7 @@ class SCAVE_API XYArray
     public:
         XYArray(std::vector<double> &&xs, std::vector<double> &&ys, std::vector<BigDecimal> &&xps = std::vector<BigDecimal>(), std::vector<eventnumber_t> &&ens = std::vector<eventnumber_t>());
 
+        XYArray() = default;
         XYArray(const XYArray&) = delete;
         XYArray(XYArray&&) = default;
 

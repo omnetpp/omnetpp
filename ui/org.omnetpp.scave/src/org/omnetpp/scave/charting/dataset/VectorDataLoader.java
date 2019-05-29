@@ -25,7 +25,7 @@ public class VectorDataLoader {
 
         XYVector[] vectors = new XYVector[idlist.size()];
 
-        XYArrayVector out = ScaveEngine.readVectorsIntoArrays2(manager, idlist, false, 1 * 1024 * 1024 * 1024, simTimeStart, simTimeEnd, interruptedFlag);
+        XYArrayVector out = ScaveEngine.readVectorsIntoArrays2(manager, idlist, false, false, 512 * 1024 * 1024, simTimeStart, simTimeEnd, interruptedFlag);
 
         if (debug)
             Debug.println("converting vector data");

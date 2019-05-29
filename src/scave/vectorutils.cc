@@ -37,37 +37,15 @@ int malloc_trim() {
   return ::malloc_trim(0);
 }
 
-XYArray *convertVectorData(const std::vector<VectorDatum>& data, bool includeEventNumbers)
+vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList& idlist, bool includePreciseX, bool includeEventNumbers, size_t memoryLimitBytes, double simTimeStart, double simTimeEnd, const InterruptedFlag& interrupted)
 {
-    int l = data.size();
-
-    std::vector<double> xs;
-    std::vector<double> ys;
-    std::vector<BigDecimal> xps;
-    std::vector<eventnumber_t> ens;
-
-    xs.resize(l);
-    ys.resize(l);
-    xps.resize(l);
-    if (includeEventNumbers)
-        ens.resize(l);
-
-    for (int i = 0; i < data.size(); ++i) {
-        const VectorDatum &vd = data[i];
-        xs[i] = vd.simtime.dbl();
-        ys[i] = vd.value;
-        xps[i] = vd.simtime;
-        if (includeEventNumbers)
-            ens[i] = vd.eventNumber;
-    }
-
-    return new XYArray(std::move(xs), std::move(ys), std::move(xps), std::move(ens));
-}
-
-vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList& idlist, bool includeEventNumbers, size_t memoryLimitBytes, double simTimeStart, double simTimeEnd, const InterruptedFlag& interrupted)
-{
-    std::vector<std::vector<VectorDatum>> result;
+    std::vector<XYArray *> result;
     result.resize(idlist.size());
+
+    for (int i = 0; i < result.size(); ++i) {
+        result[i] = new XYArray();
+        // TODO: reserve vectors, only those that are needed, taking time limit into account
+    }
 
     size_t memoryUsedBytes = 0;
 
@@ -96,43 +74,52 @@ vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList
             vectorIdToIndex[vectorID] = idlist.indexOf(id);
         }
 
-        auto adapter = [&result, &vectorIdToIndex, &memoryUsedBytes, memoryLimitBytes, &interrupted](int vectorId, const std::vector<VectorDatum>& data) {
-            memoryUsedBytes += data.size() * sizeof(VectorDatum);
-            if (memoryUsedBytes > memoryLimitBytes) {
-                result.clear();
-                result.shrink_to_fit();
-                malloc_trim();
+        const int elementSize = sizeof(double) + sizeof(double) + (includePreciseX ? sizeof(BigDecimal) : 0) + (includeEventNumbers ? sizeof(eventnumber_t) : 0);
+
+        auto adapter = [&](int vectorId, const std::vector<VectorDatum>& data) {
+            memoryUsedBytes += data.size() * elementSize;
+            if (memoryUsedBytes > memoryLimitBytes)
                 throw opp_runtime_error("Memory limit exceeded during vector data loading");
+
+            XYArray *array = result[vectorIdToIndex.at(vectorId)];
+            for (const VectorDatum &vd : data) {
+                array->xs.push_back(vd.simtime.dbl());
+                array->ys.push_back(vd.value);
+                if (includePreciseX)
+                    array->xps.push_back(vd.simtime);
+                if (includeEventNumbers)
+                    array->ens.push_back(vd.eventNumber);
             }
 
-            addAll(result[vectorIdToIndex.at(vectorId)], data);
-            if (interrupted.flag) {
-                result.clear();
-                result.shrink_to_fit();
-                malloc_trim();
+            if (interrupted.flag)
                 throw opp_runtime_error("Vector loading interrupted");
-            }
         };
 
         IndexedVectorFileReader reader(resultFile->getFileSystemFilePath().c_str(), includeEventNumbers, adapter);
 
-        if (simTimeStart == -INFINITY && simTimeEnd == INFINITY)
-            reader.collectEntries(vectorIdsInFile);
-        else
-            reader.collectEntriesInSimtimeInterval(vectorIdsInFile, simTimeStart, simTimeEnd);
+        try {
+            if (simTimeStart == -INFINITY && simTimeEnd == INFINITY)
+                reader.collectEntries(vectorIdsInFile);
+            else
+                reader.collectEntriesInSimtimeInterval(vectorIdsInFile, simTimeStart, simTimeEnd);
+        }
+        catch (std::exception &e) {
+
+            for (XYArray *a : result)
+                delete a;
+            result.clear();
+            result.shrink_to_fit();
+            malloc_trim();
+
+            throw;
+        }
     }
 
-    vector<XYArray *> xyArrays;
-    for (int i = 0; i < idlist.size(); i++) {
-        xyArrays.push_back(convertVectorData(result[i], includeEventNumbers));
-        result[i].clear();
-    }
-
-    return xyArrays;
+    return result;
 }
 
-XYArrayVector *readVectorsIntoArrays2(ResultFileManager *manager, const IDList& idlist, bool includeEventNumbers, size_t memoryLimitBytes, double simTimeStart, double simTimeEnd, const InterruptedFlag& interrupted) {
-    return new XYArrayVector(readVectorsIntoArrays(manager, idlist, includeEventNumbers, memoryLimitBytes, simTimeStart, simTimeEnd, interrupted));
+XYArrayVector *readVectorsIntoArrays2(ResultFileManager *manager, const IDList& idlist, bool includePreciseX, bool includeEventNumbers, size_t memoryLimitBytes, double simTimeStart, double simTimeEnd, const InterruptedFlag& interrupted) {
+    return new XYArrayVector(readVectorsIntoArrays(manager, idlist, includePreciseX, includeEventNumbers, memoryLimitBytes, simTimeStart, simTimeEnd, interrupted));
 }
 
 } // namespace scave

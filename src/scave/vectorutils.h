@@ -34,7 +34,7 @@ SCAVE_API int malloc_trim();
 /**
  * Read the VectorResult items in the IDList into the XYArrays.
  */
-SCAVE_API std::vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList& idlist, bool includeEventNumbers, size_t memoryLimitBytes = std::numeric_limits<size_t>::max(), double simTimeStart = -INFINITY, double simTimeEnd = INFINITY, const InterruptedFlag& interrupted = InterruptedFlag());
+SCAVE_API std::vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList& idlist, bool includePreciseX, bool includeEventNumbers, size_t memoryLimitBytes = std::numeric_limits<size_t>::max(), double simTimeStart = -INFINITY, double simTimeEnd = INFINITY, const InterruptedFlag& interrupted = InterruptedFlag());
 
 class SCAVE_API XYArrayVector {
 
@@ -54,7 +54,7 @@ class SCAVE_API XYArrayVector {
     }
 };
 
-SCAVE_API XYArrayVector *readVectorsIntoArrays2(ResultFileManager *manager, const IDList& idlist, bool includeEventNumbers, size_t memoryLimitBytes = std::numeric_limits<size_t>::max(), double simTimeStart = -INFINITY, double simTimeEnd = INFINITY, const InterruptedFlag& interrupted = InterruptedFlag());
+SCAVE_API XYArrayVector *readVectorsIntoArrays2(ResultFileManager *manager, const IDList& idlist, bool includePreciseX, bool includeEventNumbers, size_t memoryLimitBytes = std::numeric_limits<size_t>::max(), double simTimeStart = -INFINITY, double simTimeEnd = INFINITY, const InterruptedFlag& interrupted = InterruptedFlag());
 
 } // namespace scave
 }  // namespace omnetpp

@@ -1345,7 +1345,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
                 // attach vector data
                 ResultItem resultItem = resultFileManager.getItem(id);
-                XYArray data = VectorFileUtil.getDataOfVector(resultFileManager, id, true);
+                XYArray data = VectorFileUtil.getDataOfVector(resultFileManager, id, true, true);
                 sequenceChart.setAxisRenderer(axisModule,
                     new AxisVectorBarRenderer(sequenceChart, vectorFileName, vectorRunName, resultItem.getModuleName(), resultItem.getName(), resultItem, data));
             }

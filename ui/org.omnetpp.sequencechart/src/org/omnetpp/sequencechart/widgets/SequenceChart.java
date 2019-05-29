@@ -1319,7 +1319,7 @@ public class SequenceChart
                                 long id = resultFileManager.getItemByName(fileRun, axisState.vectorModuleFullPath, axisState.vectorName);
                                 // TODO: compare vector's run against log file's run
                                 ResultItem resultItem = resultFileManager.getItem(id);
-                                XYArray data = VectorFileUtil.getDataOfVector(resultFileManager, id, true);
+                                XYArray data = VectorFileUtil.getDataOfVector(resultFileManager, id, true, true);
                                 setAxisRenderer(eventLogInput.getModuleTreeRoot().findDescendantModule(axisState.moduleFullPath),
                                     new AxisVectorBarRenderer(this, axisState.vectorFileName, axisState.vectorRunName, axisState.vectorModuleFullPath, axisState.vectorName, resultItem, data));
                             }

@@ -27,19 +27,15 @@ public class VectorFileUtil {
     private VectorFileUtil() {
     }
 
-    public static XYArray getDataOfVector(ResultFileManager resultfileManager, long id) {
-        return getDataOfVector(resultfileManager, id, false);
-    }
-
     /**
      * Returns data from an output vector given with its ID.
      */
-    public static XYArray getDataOfVector(ResultFileManager resultfileManager, long id, boolean includeEventNumbers) {
+    public static XYArray getDataOfVector(ResultFileManager resultfileManager, long id, boolean includePreciseX, boolean includeEventNumbers) {
 
         IDList idList = new IDList();
         idList.add(id);
 
-        XYArrayVector out = ScaveEngine.readVectorsIntoArrays2(resultfileManager, idList, includeEventNumbers);
+        XYArrayVector out = ScaveEngine.readVectorsIntoArrays2(resultfileManager, idList, includePreciseX, includeEventNumbers);
 
         assertEquals(out.size(), 1);
 

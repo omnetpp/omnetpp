@@ -140,7 +140,7 @@ void SqliteVectorFileExporter::saveResults(const std::string& fileName, ResultFi
         }
 
         // write data for all vectors
-        std::vector<XYArray *> xyArrays = readVectorsIntoArrays(manager, filteredList, true);
+        std::vector<XYArray *> xyArrays = readVectorsIntoArrays(manager, filteredList, true, true);
         Assert((int)xyArrays.size() == filteredList.size());
 
         //NOTE if there's no event number, order of values belonging to the same t will be undefined...
