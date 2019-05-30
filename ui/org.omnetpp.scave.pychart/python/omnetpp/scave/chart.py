@@ -2,9 +2,22 @@ import numpy as np
 import pandas as pd
 import math
 import pickle as pl
+import os
+import platform
+
+# posix_ipc is required for POSIX shm on Linux and Mac
+if platform.system() in ['Linux', 'Darwin']:
+    import posix_ipc
+import mmap
+
+import functools
+from math import inf
+print = functools.partial(print, flush=True)
 
 from omnetpp.scave import results
 from omnetpp.internal import Gateway
+
+vector_data_counter = 0
 
 def extract_label_columns(df):
     titles = ["title", "name", "module", "experiment", "measurement", "replication"]
@@ -181,20 +194,59 @@ def _plot_vectors_DF_simple(df):
         for column in df if column != "time"
     ]))
 
-
 def _plot_vectors_DF_scave(df):
 
     title_col, legend_cols = extract_label_columns(df)
+
+    # only used on posix, to unlink them later
+    shm_objs = list()
+    # only used on windows, to prevent gc
+    mmap_objs = list()
+
+    def share(arr):
+        global vector_data_counter
+        # the only need to start with a / on POSIX, but Windows doesn't seem to mind, so just putting it there always...
+        name = "/vecdata-" + str(os.getpid()) + "-" + str(vector_data_counter)
+        vector_data_counter += 1
+
+        system = platform.system()
+
+        if system in ['Linux', 'Darwin']:
+            mem = posix_ipc.SharedMemory(name, posix_ipc.O_CREAT | posix_ipc.O_EXCL, size=arr.nbytes)
+
+            shm_objs.append(mem)
+
+            if system == 'Darwin':
+                # for some reason we can't write to the shm fd directly on mac, only after mmap-ing it
+                with mmap.mmap(mem.fd, length=mem.size) as mf:
+                    mf.write(arr.astype(np.dtype('>f8')).tobytes())
+            else:
+                with open(mem.fd, 'wb') as mf:
+                    arr.astype(np.dtype('>f8')).tofile(mf)
+
+        elif system == 'Windows':
+            # on Windows, the mmap module in itself provides shared memory functionality
+            mm = mmap.mmap(-1, arr.nbytes, tagname=name)
+            mmap_objs.append(mm)
+            mm.write(arr.astype(np.dtype('>f8')).tobytes())
+        else:
+            raise RuntimeError("unsupported platform")
+
+        return name + " " + str(arr.nbytes)
 
     Gateway.chart_plotter.plotVectors(pl.dumps([
         {
             "title": make_legend_label(legend_cols, row),
             "key": str(i),
-            "xs": _list_to_bytes(row.vectime),
-            "ys": _list_to_bytes(row.vecvalue)
+            "xs": share(row.vectime),
+            "ys": share(row.vecvalue)
         }
         for i, row in enumerate(df.itertuples(index=False))
     ]))
+
+    # this is a no-op on Windows
+    for o in shm_objs:
+        o.unlink()
 
     properties = dict()
     for i, t in enumerate(df.itertuples(index=False)):
@@ -209,7 +261,7 @@ def _plot_vectors_DF_scave(df):
                 properties["Line.Type/" + key] = "SampleHold"
             elif interpolation == "backward-sample-hold":
                 properties["Line.Type/" + key] = "BackwardSampleHold"
-    
+
     set_properties(properties)
 
 
@@ -405,7 +457,7 @@ def plot_histograms(df):
 
 def do_set_properties(props):
     Gateway.chart_plotter.setChartProperties(props)
-    
+
 def set_property(key, value):
     Gateway.chart_plotter.setChartProperty(key, value)
 

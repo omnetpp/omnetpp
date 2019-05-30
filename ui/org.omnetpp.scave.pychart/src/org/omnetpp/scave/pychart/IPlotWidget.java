@@ -10,6 +10,11 @@ import java.util.ArrayList;
  */
 public interface IPlotWidget {
 
+
+    void setSharedMemoryNameAndSize(String name, long size);
+    void setPixelsShared(int w, int h, boolean halfRes);
+
+
     /**
      * This is the main drawing method. Calling it will replace
      * the entire contents of the PlotWidget canvas. RLE decoding

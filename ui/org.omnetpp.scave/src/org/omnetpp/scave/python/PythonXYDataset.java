@@ -1,6 +1,7 @@
 package org.omnetpp.scave.python;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import java.util.Map;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
+import org.omnetpp.scave.engine.ScaveEngine;
 
 import net.razorvine.pickle.PickleException;
 import net.razorvine.pickle.Unpickler;
@@ -18,14 +20,34 @@ public class PythonXYDataset implements IXYDataset {
     class SeriesData {
         String key;
         String title;
-        double[] xs;
-        double[] ys;
+        ByteBuffer xs;
+        ByteBuffer ys;
+
+        public void dispose() {
+            if (xs != null)
+                ScaveEngine.unmapSharedMemory(xs);
+            if (ys != null)
+                ScaveEngine.unmapSharedMemory(ys);
+        }
     }
 
     ArrayList<SeriesData> series = new ArrayList<SeriesData>();
 
+    public void dispose() {
+        for (SeriesData sd : series)
+            sd.dispose();
+        series.clear();
+    }
+
     public PythonXYDataset(String title) {
         this.title = title;
+    }
+
+    private ByteBuffer map(String nameAndSize) {
+        String[] parts = nameAndSize.split(" ");
+        String name = parts[0];
+        long size = Long.parseLong(parts[1]);
+        return (ByteBuffer)ScaveEngine.mapSharedMemory(name, size);
     }
 
     public void addVectors(byte[] pickledData) {
@@ -42,8 +64,11 @@ public class PythonXYDataset implements IXYDataset {
                 seriesData.key = (String) d.get("key");
                 seriesData.title = (String) d.get("title");
 
-                seriesData.xs = ResultPicklingUtils.bytesToDoubles((byte[]) d.get("xs"));
-                seriesData.ys = ResultPicklingUtils.bytesToDoubles((byte[]) d.get("ys"));
+                String xName = (String)d.get("xs");
+                String yName = (String)d.get("ys");
+
+                seriesData.xs = map(xName);
+                seriesData.ys = map(yName);
 
                 series.add(seriesData);
             }
@@ -86,12 +111,12 @@ public class PythonXYDataset implements IXYDataset {
 
     @Override
     public int getItemCount(int series) {
-        return this.series.get(series).xs.length;
+        return this.series.get(series).xs.capacity() / 8;
     }
 
     @Override
     public double getX(int series, int item) {
-        return this.series.get(series).xs[item];
+        return this.series.get(series).xs.getDouble(item*8);
     }
 
     @Override
@@ -104,9 +129,11 @@ public class PythonXYDataset implements IXYDataset {
         double min = Double.POSITIVE_INFINITY;
 
         for (SeriesData sd : series)
-            for (double x : sd.xs)
+            for (int i = 0; i < sd.xs.capacity() / 8; ++i) {
+                double x = sd.xs.getDouble(i*8);
                 if (x < min)
                     min = x;
+            }
 
         return min;
     }
@@ -116,16 +143,18 @@ public class PythonXYDataset implements IXYDataset {
         double max = Double.NEGATIVE_INFINITY;
 
         for (SeriesData sd : series)
-            for (double x : sd.xs)
+            for (int i = 0; i < sd.xs.capacity() / 8; ++i) {
+                double x = sd.xs.getDouble(i*8);
                 if (x > max)
                     max = x;
+            }
 
         return max;
     }
 
     @Override
     public double getY(int series, int item) {
-        return this.series.get(series).ys[item];
+        return this.series.get(series).ys.getDouble(item*8);
     }
 
     @Override
@@ -138,9 +167,11 @@ public class PythonXYDataset implements IXYDataset {
         double min = Double.POSITIVE_INFINITY;
 
         for (SeriesData sd : series)
-            for (double y : sd.ys)
+            for (int i = 0; i < sd.ys.capacity() / 8; ++i) {
+                double y = sd.ys.getDouble(i*8);
                 if (y < min)
                     min = y;
+            }
 
         return min;
     }
@@ -150,9 +181,11 @@ public class PythonXYDataset implements IXYDataset {
         double max = Double.NEGATIVE_INFINITY;
 
         for (SeriesData sd : series)
-            for (double y : sd.ys)
+            for (int i = 0; i < sd.ys.capacity() / 8; ++i) {
+                double y = sd.ys.getDouble(i*8);
                 if (y > max)
                     max = y;
+            }
 
         return max;
     }

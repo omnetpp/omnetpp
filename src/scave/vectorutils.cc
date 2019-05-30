@@ -18,14 +18,12 @@
 #include "vectorutils.h"
 
 #include <set>
-#if defined(__linux__)
-#include <malloc.h>
-#endif
 #include "common/opp_ctype.h"
 #include "common/commonutil.h"
 #include "common/stringutil.h"
 #include "common/stlutil.h"
 #include "scaveutils.h"
+#include "memoryutils.h"
 #include "xyarray.h"
 #include "resultfilemanager.h"
 #include "indexedvectorfilereader.h"
@@ -35,14 +33,6 @@ using namespace std;
 namespace omnetpp {
 using namespace common;
 namespace scave {
-
-int malloc_trim() {
-#if defined(__linux__)
-  return ::malloc_trim(0);
-#else
-  return 0;
-#endif
-}
 
 vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList& idlist, bool includePreciseX, bool includeEventNumbers, size_t memoryLimitBytes, double simTimeStart, double simTimeEnd, const InterruptedFlag& interrupted)
 {
@@ -75,7 +65,7 @@ vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList
         std::set<int> vectorIdsInFile;
         std::map<int, int> vectorIdToIndex;
 
-        for (long id : idsInFile) {
+        for (ID id : idsInFile) {
             int vectorID = manager->getVector(id).getVectorId();
             vectorIdsInFile.insert(vectorID);
             vectorIdToIndex[vectorID] = idlist.indexOf(id);
@@ -116,7 +106,7 @@ vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList
                 delete a;
             result.clear();
             result.shrink_to_fit();
-            malloc_trim();
+            malloc_trim(); // TODO needed? effective?
 
             throw;
         }

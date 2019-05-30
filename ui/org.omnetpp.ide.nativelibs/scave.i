@@ -18,6 +18,7 @@
 #include "scave/fields.h"
 #include "scave/exportutils.h"
 #include "scave/vectorutils.h"
+#include "scave/memoryutils.h"
 #include "scave/datasorter.h"
 #include "scave/vectorfileindex.h"
 #include "scave/indexfileutils.h"
@@ -602,3 +603,20 @@ namespace omnetpp { namespace scave {
 } } // namespaces
 
 %include "scave/vectorutils.h"
+
+/* ------------------ memoryutils.h ----------------------- */
+%include "scave/memoryutils.h"
+
+/* ------------------ sharedmemory.cc ----------------------- */
+
+%native(createSharedMemory) void createSharedMemory(jstring name, jlong size);
+
+%typemap(jstype) ByteBuffer mapSharedMemory "java.nio.ByteBuffer"
+%typemap(jtype) ByteBuffer mapSharedMemory "java.nio.ByteBuffer"
+%typemap(javaout) ByteBuffer mapSharedMemory { return $jnicall; }
+%native(mapSharedMemory) ByteBuffer mapSharedMemory(jstring name, jlong size);
+
+// TODO figure out how to replace jobject with java.nio.ByteBuffer here as well
+%native(unmapSharedMemory) void unmapSharedMemory(jobject buf);
+
+%native(removeSharedMemory) void removeSharedMemory(jstring name);

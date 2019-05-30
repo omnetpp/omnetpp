@@ -15,6 +15,7 @@ import org.omnetpp.scave.charting.ChartViewer;
 import org.omnetpp.scave.charting.HistogramChartViewer;
 import org.omnetpp.scave.charting.ScalarChartViewer;
 import org.omnetpp.scave.charting.VectorChartViewer;
+import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.properties.ChartDefaults;
 import org.omnetpp.scave.charting.properties.ChartVisualProperties;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -73,9 +74,18 @@ public class NativeChartViewer extends ChartViewerBase {
         }
 
         public void reset() {
+
+            if (xyDataset != null)
+                xyDataset.dispose();
+
             scalarDataset = new PythonScalarDataset(null);
             xyDataset = new PythonXYDataset(null);
             histogramDataset = new PythonHistogramDataset(null);
+        }
+
+        public void dispose() {
+            if (xyDataset != null)
+                xyDataset.dispose();
         }
     }
 
@@ -232,6 +242,7 @@ public class NativeChartViewer extends ChartViewerBase {
     public void dispose() {
         super.dispose();
 
+        chartPlotter.dispose();
         if (chartView != null)
             chartView.dispose();
     }

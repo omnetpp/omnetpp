@@ -7,49 +7,41 @@
 
 package org.omnetpp.scave.charting.dataset;
 
+
 import org.omnetpp.common.Debug;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.InterruptedFlag;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ScaveEngine;
-import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.scave.engine.XYArrayVector;
 
 public class VectorDataLoader {
     public static boolean debug = Debug.isChannelEnabled("vectordataloader");
 
-    public static XYVector[] getDataOfVectors(ResultFileManager manager, IDList idlist, double simTimeStart, double simTimeEnd, InterruptedFlag interruptedFlag) {
+    public static XYArrayVector getDataOfVectors(ResultFileManager manager, IDList idlist, double simTimeStart, double simTimeEnd, InterruptedFlag interruptedFlag) {
 
-        if (debug)
-            Debug.println("getting data of vectors");
-
-        XYVector[] vectors = new XYVector[idlist.size()];
-
-        XYArrayVector out = ScaveEngine.readVectorsIntoArrays2(manager, idlist, false, false, 512 * 1024 * 1024, simTimeStart, simTimeEnd, interruptedFlag);
-
-        if (debug)
-            Debug.println("converting vector data");
-
-        for (int i = 0; i < out.size(); ++i) {
-            XYArray xyArray = out.get(i);
-            vectors[i] = new XYVector(xyArray.length());
-            for (int k = 0; k < xyArray.length(); ++k) {
-                vectors[i].x[k] = xyArray.getX(k);
-                vectors[i].y[k] = xyArray.getY(k);
-            }
-        }
-
-        if (debug)
-            Debug.println("vector data loaded, cleaning up memory");
-
-        out.delete();
-        out = null;
         System.gc();
         ScaveEngine.malloc_trim();
 
-        if (debug)
-            Debug.println("vector data memory cleanup done");
+        long availableSystemMemoryBytes = ScaveEngine.getAvailableMemoryBytes();
 
-        return vectors;
+        if (debug) {
+            Debug.println("getting data of vectors");
+            Debug.println("available system memory is: " + ( availableSystemMemoryBytes / 1024 / 1024 ) + " MiB");
+        }
+
+        // vector data never touches the JVM heap now, but we add a generous safety margin,
+        // because on Windows and Mac, we will have to copy the data instead of simply sharing it
+        long memoryLimitBytes = availableSystemMemoryBytes / 2;
+
+        if (debug)
+            Debug.println("memory limit MiB: " + memoryLimitBytes / 1024 / 1024);
+
+        XYArrayVector out = ScaveEngine.readVectorsIntoArrays2(manager, idlist, false, false, memoryLimitBytes, simTimeStart, simTimeEnd, interruptedFlag);
+
+        if (debug)
+            Debug.println("vector data loaded");
+
+        return out;
     }
 }

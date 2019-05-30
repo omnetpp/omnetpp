@@ -28,13 +28,14 @@
 namespace omnetpp {
 namespace scave {
 
-SCAVE_API int malloc_trim();
-
 /**
  * Read the VectorResult items in the IDList into the XYArrays.
  */
 SCAVE_API std::vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList& idlist, bool includePreciseX, bool includeEventNumbers, size_t memoryLimitBytes = std::numeric_limits<size_t>::max(), double simTimeStart = -INFINITY, double simTimeEnd = INFINITY, const InterruptedFlag& interrupted = InterruptedFlag());
 
+/**
+  * This class simply wraps the std::vector<XYArray *> to make it usable from Java.
+ */
 class SCAVE_API XYArrayVector {
 
     std::vector<XYArray *> data;
@@ -53,6 +54,10 @@ class SCAVE_API XYArrayVector {
     }
 };
 
+/*
+ * The same as readVectorsIntoArrays, except the result is wrapped into an XYArrayVector.
+ * This is just to make the data usable from Java.
+ */
 SCAVE_API XYArrayVector *readVectorsIntoArrays2(ResultFileManager *manager, const IDList& idlist, bool includePreciseX, bool includeEventNumbers, size_t memoryLimitBytes = std::numeric_limits<size_t>::max(), double simTimeStart = -INFINITY, double simTimeEnd = INFINITY, const InterruptedFlag& interrupted = InterruptedFlag());
 
 } // namespace scave

@@ -41,7 +41,7 @@ OBJS= $O/datasorter.o $O/idlist.o \
       $O/vectorfileindexer.o $O/vectorfileindex.o $O/indexfileutils.o \
       $O/indexfilereader.o  $O/indexfilewriter.o \
       $O/scaveutils.o $O/scaveexception.o $O/enumtype.o \
-      $O/xyarray.o $O/fields.o $O/vectorutils.o $O/sqliteresultfileutils.o \
+      $O/xyarray.o $O/fields.o $O/vectorutils.o $O/memoryutils.o $O/sqliteresultfileutils.o \
       $O/datatable.o $O/exporter.o $O/exportutils.o \
       $O/csvrecexporter.o $O/csvspreadexporter.o $O/jsonexporter.o \
       $O/omnetppscalarfileexporter.o $O/sqlitescalarfileexporter.o \

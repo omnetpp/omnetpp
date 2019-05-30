@@ -1,5 +1,6 @@
 package org.omnetpp.scave.pychart;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
@@ -23,8 +24,11 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
+import org.omnetpp.scave.engine.ScaveEngine;
 
 public class PlotWidget extends Canvas implements IPlotWidget {
+    ByteBuffer buf;
+    ImageData imageData;
     Image image;
     boolean imageIsHalfRes;
 
@@ -188,6 +192,66 @@ public class PlotWidget extends Canvas implements IPlotWidget {
             public void controlMoved(ControlEvent arg0) {
             }
         });
+    }
+
+    @Override
+    public void setSharedMemoryNameAndSize(String name, long size) {
+        if (buf != null)
+            ScaveEngine.unmapSharedMemory(buf);
+        buf = ScaveEngine.mapSharedMemory(name, size);
+    }
+
+    @Override
+    public void setPixelsShared(int w, int h, boolean halfRes) {
+        if (isRefreshing)
+            setMessage(null);
+        isRefreshing = false;
+
+        if (buf == null || buf.capacity() == 0)
+            return; // avoids InvalidArgumentException
+
+
+        // copy the data synchronously
+        Display.getDefault().syncExec(() -> {
+            if (imageData == null || w != imageData.width || h != imageData.height) {
+                PaletteData palette = new PaletteData(0xFF000000, 0xFF0000, 0xFF00);
+                imageData = new ImageData(w, h, 32, palette);
+            }
+            // Have to up-cast buf because Java 9 added a covariant
+            // override of rewind to ByteBuffer, so we weren't always
+            // compatible (got NoSuchMethodException).
+            // see: https://github.com/eclipse/jetty.project/issues/3244
+            ((Buffer)buf).rewind();
+            buf.get(imageData.data);
+
+        });
+
+        // then update the image itself and redraw asynchronously, because this part takes longer
+        Display.getDefault().asyncExec(() -> {
+            if (!isDisposed()) {
+                if (image != null)
+                    image.dispose();
+
+                // this is actually the slowest part... consider using BufferedImage or
+                // something like that?
+                image = new Image(getDisplay(), imageData);
+                imageIsHalfRes = halfRes;
+
+                redraw();
+                update();
+            }
+
+        });
+
+    }
+
+    @Override
+    public void dispose() {
+        if (buf != null)
+            ScaveEngine.unmapSharedMemory(buf);
+        if (image != null)
+            image.dispose();
+        super.dispose();
     }
 
     @Override

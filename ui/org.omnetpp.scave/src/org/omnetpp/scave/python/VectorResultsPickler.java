@@ -5,11 +5,13 @@ import java.io.OutputStream;
 
 import org.omnetpp.common.Debug;
 import org.omnetpp.scave.charting.dataset.VectorDataLoader;
-import org.omnetpp.scave.charting.dataset.XYVector;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.InterruptedFlag;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engine.ScaveEngine;
 import org.omnetpp.scave.engine.VectorResult;
+import org.omnetpp.scave.engine.XYArray;
+import org.omnetpp.scave.engine.XYArrayVector;
 
 import net.razorvine.pickle.IObjectPickler;
 import net.razorvine.pickle.Opcodes;
@@ -18,7 +20,7 @@ import net.razorvine.pickle.Pickler;
 
 public class VectorResultsPickler implements IObjectPickler {
 
-    void pickleVectorResult(ResultFileManager resultManager, long ID, XYVector data, Pickler pickler,
+    void pickleVectorResult(ResultFileManager resultManager, long ID, XYArray data, Pickler pickler,
             OutputStream out) throws PickleException, IOException {
         VectorResult result = resultManager.getVector(ID);
 
@@ -32,8 +34,7 @@ public class VectorResultsPickler implements IObjectPickler {
             else
                 pickler.save(result.getName());
 
-            ResultPicklingUtils.pickleDoubleArray(data.x, out);
-            ResultPicklingUtils.pickleDoubleArray(data.y, out);
+            ResultPicklingUtils.pickleXYArray(data, out);
         }
         out.write(Opcodes.TUPLE);
     }
@@ -75,18 +76,23 @@ public class VectorResultsPickler implements IObjectPickler {
                 if (ResultPicklingUtils.debug)
                     Debug.println("pickling " + vectors.size() + " vectors");
 
-                XYVector[] vectorsData = VectorDataLoader.getDataOfVectors(resultManager, vectors, simTimeStart, simTimeEnd, interruptedFlag);
+                XYArrayVector vectorsData = VectorDataLoader.getDataOfVectors(resultManager, vectors, simTimeStart, simTimeEnd, interruptedFlag);
 
                 for (int i = 0; i < vectors.size(); ++i) {
-                    pickleVectorResult(resultManager, vectors.get(i), vectorsData[i], pickler, out);
+                    pickleVectorResult(resultManager, vectors.get(i), vectorsData.get(i), pickler, out);
                     if (interruptedFlag.getFlag())
                         throw new RuntimeException("Result pickling interrupted");
-
-                    // give the GC a chance to free memory, without explicitly triggering it - that was really slow.
-                    vectorsData[i] = null;
                 }
                 if (ResultPicklingUtils.debug)
-                    Debug.println("vector pickling done");
+                    Debug.println("vector pickling done, cleaning up memory");
+
+                vectorsData.delete();
+                vectorsData = null;
+                System.gc();
+                ScaveEngine.malloc_trim();
+
+                if (ResultPicklingUtils.debug)
+                    Debug.println("vector data cleanup done");
             }
             out.write(Opcodes.LIST);
 

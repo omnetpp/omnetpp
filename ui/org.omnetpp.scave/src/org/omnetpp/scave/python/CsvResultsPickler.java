@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.omnetpp.common.Debug;
 import org.omnetpp.scave.charting.dataset.VectorDataLoader;
-import org.omnetpp.scave.charting.dataset.XYVector;
 import org.omnetpp.scave.engine.Histogram;
 import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
@@ -23,6 +22,7 @@ import org.omnetpp.scave.engine.StringMap;
 import org.omnetpp.scave.engine.StringPair;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.VectorResult;
+import org.omnetpp.scave.engine.XYArray;
 
 import net.razorvine.pickle.IObjectPickler;
 import net.razorvine.pickle.Opcodes;
@@ -168,7 +168,8 @@ public class CsvResultsPickler implements IObjectPickler {
         VectorResult result = resultManager.getVector(ID);
         IDList idAsList = new IDList();
         idAsList.add(ID);
-        XYVector data = VectorDataLoader.getDataOfVectors(resultManager, idAsList, simTimeStart, simTimeEnd, interruptedFlag)[0];
+        // TODO optimize: load all the vectors at once
+        XYArray data = VectorDataLoader.getDataOfVectors(resultManager, idAsList, simTimeStart, simTimeEnd, interruptedFlag).get(0);
 
         out.write(Opcodes.MARK);
         {
@@ -180,8 +181,7 @@ public class CsvResultsPickler implements IObjectPickler {
             for (int j = 0; j < 11; ++j)
                 pickler.save(null);
 
-            ResultPicklingUtils.pickleDoubleArray(data.x, out);
-            ResultPicklingUtils.pickleDoubleArray(data.y, out);
+            ResultPicklingUtils.pickleXYArray(data, out);
         }
         out.write(Opcodes.TUPLE);
 

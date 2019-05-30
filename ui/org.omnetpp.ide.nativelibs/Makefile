@@ -22,7 +22,7 @@ SCAVE_JAVADIR = src/$(subst .,/,$(SCAVE_JAVAPKG))
 LAYOUT_JAVADIR = src/$(subst .,/,$(LAYOUT_JAVAPKG))
 EVENTLOG_JAVADIR = src/$(subst .,/,$(EVENTLOG_JAVAPKG))
 
-OBJS = $O/nedxml.o $O/scave.o $O/layout.o $O/eventlog.o $O/common.o $O/jprogressmonitor.o
+OBJS = $O/nedxml.o $O/scave.o $O/layout.o $O/eventlog.o $O/common.o $O/jprogressmonitor.o $O/sharedmemory.o
 LIBS= -loppnedxml$D -loppscave$D -lopplayout$D -loppeventlog$D -loppcommon$D
 
 ifeq ("$(JNI_LIB_SUFFIX)",".dll")
@@ -33,6 +33,11 @@ LDFLAGS+= -Wl,--kill-at
 LIBS+= -lversion
 else
 DLL = $(LIB_PREFIX)opplibs$(JNI_LIB_SUFFIX)
+endif
+
+# on Linux, we need to link with this library for the POSIX shm_* functions
+ifeq ("$(JNI_LIB_SUFFIX)",".so")
+LIBS+= -lrt
 endif
 
 # on MAC OS X we should strip only the non-public symbols
@@ -46,7 +51,7 @@ DLL_TARGET_DIR = ../org.omnetpp.ide.nativelibs.$(PLATFORM)
 # Local definitions
 #
 INCLUDES=-I$(OMNETPP_INCL_DIR) -I$(OMNETPP_SRC_DIR)
-COPTS=$(CFLAGS) $(CXXFLAGS) $(JAVA_CFLAGS) $(INCLUDES) -DTHREADED $(PTHREAD_CFLAGS) 
+COPTS=$(CFLAGS) $(CXXFLAGS) $(JAVA_CFLAGS) $(INCLUDES) -DTHREADED $(PTHREAD_CFLAGS)
 
 #
 # Automatic rules

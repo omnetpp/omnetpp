@@ -72,8 +72,8 @@ public abstract class ChartViewerBase {
     }
 
     protected void changePythonIntoDirectory(File workingDir) {
-        proc.getEntryPoint().execute("import os; os.chdir(\"\"\"" + workingDir.getAbsolutePath() + "\"\"\"); del os;");
-        proc.getEntryPoint().execute("import site; site.addsitedir(\"\"\"" + workingDir.getAbsolutePath() + "\"\"\"); del site;");
+        proc.getEntryPoint().execute("import os; os.chdir(r\"\"\"" + workingDir.getAbsolutePath() + "\"\"\"); del os;");
+        proc.getEntryPoint().execute("import site; site.addsitedir(r\"\"\"" + workingDir.getAbsolutePath() + "\"\"\"); del site;");
     }
 
     public PythonProcess getPythonProcess() {

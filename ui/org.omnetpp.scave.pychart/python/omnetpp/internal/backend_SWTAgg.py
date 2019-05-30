@@ -86,6 +86,11 @@ import time
 import traceback
 import numpy as np  # mostly for RLE
 
+# posix_ipc is required for POSIX shm on Linux and Mac
+if os.name != 'nt':
+    import posix_ipc
+import mmap
+
 from omnetpp.internal import Gateway
 from omnetpp.internal.TimeAndGuard import TimeAndGuard, for_all_methods
 
@@ -219,6 +224,7 @@ class FigureManagerSWT(FigureManagerBase):
         # TODO override with pass just to avoid the exception, or actually redraw the figure/widget?
         pass
 
+figure_counter = 1
 
 # By Thomas Browne, Taken from http://techqa.info/programming/question/1066758/find-length-of-sequences-of-identical-values-in-a-numpy-array
 def rle3(inarray):
@@ -365,13 +371,20 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
     def __init__(self, figure, num):
         self.num = num
 
+        self.useSharedMemory = True
         self.useRle = True
         self.halfResDynamic = False
+
+        self.shmMmap = None
 
         super().__init__(figure)
         self._agg_draw_pending = False
 
         self.draw_idle()
+
+    def __del__(self):
+        if self.shmMmap:
+            self.shmMmap.close()
 
     class Java:
         implements = ["org.omnetpp.scave.pychart.IPyFigureCanvas"]
@@ -435,32 +448,69 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
         # endTime = time.perf_counter()
         # print("rasterizing with Agg took " + str((endTime - startTime) * 1000.0) + " ms")
 
-        pixelBuffer = self.buffer_rgba()
-        bytes = pixelBuffer
+        bytes = self.buffer_rgba()
 
-        # doing the rle coding in 4byte units, so all colors will be compressed
-        # well, not only those where r = b = g = a (those are rare)
+        bl = len(bytes)
+        try:
+            # it might be a bytes or a memoryview object, and in the latter case, len() returns the number of rows
+            bl = bytes.nbytes
+        except:
+            pass
+        
+        if self.useSharedMemory:
+            
+            global figure_counter
+            name = "/plot-" + str(os.getpid()) + "-" + str(self.num) + "-" + str(figure_counter)
+            figure_counter += 1
 
-        # f = open('output.rgba', 'wb')
-        # f.write(stringBuffer)
+            if not self.shmMmap or self.shmMmap.size() < bl:
+                if self.shmMmap:
+                    self.shmMmap.close()
 
-        if self.useRle:
-            # rleStart = time.perf_counter()
+                if os.name == 'nt':
+                    # on Windows, the mmap module in itself provides shared memory functionality
+                    self.shmMmap = mmap.mmap(-1, bl, tagname=name)
 
-            intPixels = np.frombuffer(pixelBuffer, dtype=np.uint8)
+                    self.widget.setSharedMemoryNameAndSize(name, bl)
+                else:
+                    shm = posix_ipc.SharedMemory(name, posix_ipc.O_CREAT, size=bl)
 
-            dt = np.dtype(np.int32)
-            dt = dt.newbyteorder('>')
+                    self.shmMmap = mmap.mmap(shm.fd, bl)
 
-            rleInts = rle3(intPixels.view(dtype=dt))
-            # TODO: could refrain from sending it with RLE encoding if we find
-            # that it got bigger (or just a tiny bit smaller)
-            bytes = rleInts.view(dtype=np.int8).tobytes()
+                    self.widget.setSharedMemoryNameAndSize(name, bl)
+    
+                    # the mapping from Java will keep it alive until the async drawing occurs
+                    shm.close_fd()
+                    shm.unlink()
 
-            # rleEnd = time.perf_counter()
-            # print("RLE encoding took " + str((rleEnd - rleStart) * 1000) + " ms.")
+            self.shmMmap.seek(0)
+            self.shmMmap.write(bytes)
+            self.widget.setPixelsShared(w, h, half)
 
-        self.widget.setPixels(bytes, w, h, self.useRle, half)
+        else:
+            # doing the rle coding in 4byte units, so all colors will be compressed
+            # well, not only those where r = b = g = a (those are rare)
+    
+            # f = open('output.rgba', 'wb')
+            # f.write(stringBuffer)
+    
+            if self.useRle:
+                # rleStart = time.perf_counter()
+    
+                intPixels = np.frombuffer(pixelBuffer, dtype=np.uint8)
+    
+                dt = np.dtype(np.int32)
+                dt = dt.newbyteorder('>')
+    
+                rleInts = rle3(intPixels.view(dtype=dt))
+                # TODO: could refrain from sending it with RLE encoding if we find
+                # that it got bigger (or just a tiny bit smaller)
+                bytes = rleInts.view(dtype=np.int8).tobytes()
+    
+                # rleEnd = time.perf_counter()
+                # print("RLE encoding took " + str((rleEnd - rleStart) * 1000) + " ms.")
+    
+            self.widget.setPixels(bytes, w, h, self.useRle, half)
 
 
 FigureCanvas = FigureCanvasSWTAgg

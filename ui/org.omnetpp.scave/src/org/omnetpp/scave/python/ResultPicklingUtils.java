@@ -8,10 +8,13 @@ import java.nio.ByteBuffer;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.engine.ILock;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engine.ScaveEngine;
+import org.omnetpp.scave.engine.XYArray;
 
 import net.razorvine.pickle.IObjectPickler;
 import net.razorvine.pickle.Opcodes;
 import net.razorvine.pickle.PickleException;
+import net.razorvine.pickle.PickleUtils;
 import net.razorvine.pickle.Pickler;
 
 public class ResultPicklingUtils {
@@ -29,6 +32,48 @@ public class ResultPicklingUtils {
         ByteBuffer byteBuffer = ByteBuffer.allocate(doubles.length * 8);
         byteBuffer.asDoubleBuffer().put(doubles);
         return byteBuffer.array();
+    }
+
+    static int shmSerial = 0;
+
+    public static void pickleXYArray(XYArray array, OutputStream out) throws IOException {
+        int l = array.length();
+        // number of bytes
+        long s = l * 8;
+
+        String nameX = "/vectordata-" + shmSerial + "-x";
+        String nameY = "/vectordata-" + shmSerial + "-y";
+        shmSerial += 1;
+
+        // X
+        byte[] encodedX = (nameX + " " + s).getBytes("UTF-8");
+        out.write(Opcodes.BINUNICODE);
+        out.write(PickleUtils.integer_to_bytes(encodedX.length));
+        out.write(encodedX);
+
+        ScaveEngine.createSharedMemory(nameX, s);
+
+        ByteBuffer shmX = ScaveEngine.mapSharedMemory(nameX, s);
+
+        // actual data
+        for (int i = 0; i < l; ++i)
+            shmX.putDouble(array.getX(i));
+
+        ScaveEngine.unmapSharedMemory(shmX);
+        // Y
+        byte[] encodedY = (nameY + " " + s).getBytes("UTF-8");
+        out.write(Opcodes.BINUNICODE);
+        out.write(PickleUtils.integer_to_bytes(encodedY.length));
+        out.write(encodedY);
+
+        ScaveEngine.createSharedMemory(nameY, s);
+        ByteBuffer shmY = ScaveEngine.mapSharedMemory(nameY, s);
+
+        // actual data
+        for (int i = 0; i < l; ++i)
+            shmY.putDouble(array.getY(i));
+
+        ScaveEngine.unmapSharedMemory(shmY);
     }
 
     public static void pickleDoubleArray(double[] array, OutputStream out) throws IOException {
@@ -51,9 +96,14 @@ public class ResultPicklingUtils {
         Pickler p = new Pickler(true);
         Pickler.registerCustomPickler(ResultFileManager.class, resultsPickler);
 
-        ByteArrayOutputStream bo = new ByteArrayOutputStream() {
+        // We need to limit the size of the pickle, because:
+        // Py4J will Base64 encode it (1.25x) into a UTF-16 String (x2), then
+        // it will be sent to the Python process (x2), and depickled (+1), so overall,
+        // the used memory is at least 1 + 1.25*2*2 + 1 = 7x the size of the pickle we produce.
+        // Note that vector data is not pickled (we use shared memory for that).
+        long SIZE_LIMIT = ScaveEngine.getAvailableMemoryBytes() / 10;
 
-            static final int SIZE_LIMIT = 100 * 1024 * 1024; // TODO make configurable
+        ByteArrayOutputStream bo = new ByteArrayOutputStream() {
 
             protected void checkSizeLimit() {
                 if (buf.length > SIZE_LIMIT)

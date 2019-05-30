@@ -1,7 +1,13 @@
 import pandas as pd
 import numpy as np
+import platform
 import pickle
 import time
+
+# posix_ipc is required for POSIX shm on Linux and Mac
+if platform.system() in ['Linux', 'Darwin']:
+    import posix_ipc
+import mmap
 
 from omnetpp.internal import Gateway
 from omnetpp.internal.TimeAndGuard import TimeAndGuard
@@ -152,6 +158,7 @@ def get_vectors(filter):
 
     df["vectime"] = df["vectime"].map(lambda v: np.frombuffer(v, dtype=np.dtype('>f8')), na_action='ignore')
     df["vecvalue"] = df["vecvalue"].map(lambda v: np.frombuffer(v, dtype=np.dtype('>f8')), na_action='ignore')
+
     df["attrvalue"] = pd.to_numeric(df["attrvalue"], errors='ignore')
 
     time3 = time.perf_counter()
@@ -302,14 +309,45 @@ def get_scalars(filter_expression="", include_attrs=False, include_runattrs=Fals
 
     return _append_additional_data(df, attrs, runattrs, itervars)
 
+
+def _get_array_from_shm(name):
+    system = platform.system()
+
+    name, size = name.split(" ")
+    size = int(size)
+
+    if system in ['Linux', 'Darwin']:
+        mem = posix_ipc.SharedMemory(name)
+
+        if system == 'Darwin':
+            # for some reason we can't directly np.memmap the shm file, because it is "unseekable"
+            # but the mmap module works with it, so we just copy the data into np, and release the shared memory
+            with mmap.mmap(mem.fd, length=mem.size) as mf:
+                arr = np.frombuffer(mf.read(), dtype=np.dtype('>f8'))
+        else:
+            # on Linux, we can just continue to use the existing shm memory without copying
+            with open(mem.fd, 'wb') as mf:
+                arr = np.memmap(mf, dtype=np.dtype('>f8'))
+
+        # on Mac we are done with shm (data is copied), on Linux we can delete the name even though the mapping is still in use
+        mem.unlink()
+    elif system == 'Windows':
+        # on Windows, the mmap module in itself provides shared memory functionality. and we copy the data here as well.
+        with mmap.mmap(-1, size, tagname=name) as mf:
+            arr = np.frombuffer(mf.read(), dtype=np.dtype('>f8'))
+    else:
+        raise RuntimeError("unsupported platform")
+
+    return arr
+
 def get_vectors(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, merge_module_and_name=False, start_time=-inf, end_time=inf):
     pk = Gateway.results_provider.getVectorsPickle(filter_expression, include_attrs, include_runattrs, include_itervars, merge_module_and_name, float(start_time), float(end_time))
 
     scalars, attrs, runattrs, itervars = pickle.loads(pk)
     df = pd.DataFrame(scalars, columns=["runID", "module", "name", "vectime", "vecvalue"])
 
-    df["vectime"] = df["vectime"].map(lambda v: np.frombuffer(v, dtype=np.dtype('>f8')), na_action='ignore')
-    df["vecvalue"] = df["vecvalue"].map(lambda v: np.frombuffer(v, dtype=np.dtype('>f8')), na_action='ignore')
+    df["vectime"] = df["vectime"].map(_get_array_from_shm)
+    df["vecvalue"] = df["vecvalue"].map(_get_array_from_shm)
 
     return _append_additional_data(df, attrs, runattrs, itervars)
 
