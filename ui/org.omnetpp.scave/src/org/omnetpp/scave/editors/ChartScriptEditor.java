@@ -408,7 +408,8 @@ public class ChartScriptEditor extends PyEdit {
                     @Override
                     public void pythonProcessLivenessChanged(boolean alive) {
                         Display.getDefault().syncExec(() -> {
-                            updateActions();
+                            if (!isDisposed())
+                                updateActions();
                         });
                     }
 
