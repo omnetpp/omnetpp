@@ -301,6 +301,8 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
         @Override
         public void modelChanged(ModelChangeEvent event) {
+            firePropertyChange(ScaveEditor.PROP_DIRTY);
+
             updatePages(event);
             // strictly speaking, some actions (undo, redo) should be updated when the
             // command stack changes, but there are more of those.
