@@ -73,9 +73,8 @@ public class CreateTempMatplotlibChartAction extends AbstractScaveAction {
             default: Assert.isLegal(false, "invalid enum value"); break;
         }
 
-        ResultType resultType = editor.getBrowseDataPage().getActivePanelType();
         String viewFilter = editor.getBrowseDataPage().getActivePanel().getFilter().getFilterPattern();
-        String filter = ResultFileManager.callWithReadLock(manager, () -> { return ScaveModelUtil.getIDListAsFilterExpression(idList, filterFields, resultType, viewFilter, manager); });
+        String filter = ResultFileManager.callWithReadLock(manager, () -> { return ScaveModelUtil.getIDListAsFilterExpression(idList, filterFields, type, viewFilter, manager); });
         Property property = new Property("filter", filter);
         chart.addProperty(property);
 
