@@ -44,6 +44,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -58,6 +59,7 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -95,7 +97,6 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheet;
 import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetSorter;
-import org.omnetpp.common.ui.ArrayTreeContentProvider;
 import org.omnetpp.common.ui.LocalTransfer;
 import org.omnetpp.common.ui.MultiPageEditorPartExt;
 import org.omnetpp.common.ui.ViewerDragAdapter;
@@ -106,7 +107,7 @@ import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.AnalysisLoader;
 import org.omnetpp.scave.AnalysisSaver;
 import org.omnetpp.scave.LegacyAnalysisLoader;
-import org.omnetpp.scave.Markers;
+import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartViewer;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
@@ -164,7 +165,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
     /**
      * This is the content outline page.
      */
-    protected IContentOutlinePage contentOutlinePage;
+    protected ScaveEditorContentOutlinePage contentOutlinePage;
 
     /**
      * This is a kludge...
@@ -304,6 +305,9 @@ public class ScaveEditor extends MultiPageEditorPartExt
             // strictly speaking, some actions (undo, redo) should be updated when the
             // command stack changes, but there are more of those.
             actions.updateActions();
+
+            if (contentOutlinePage != null)
+                contentOutlinePage.refresh();
         }
     };
 
@@ -515,7 +519,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
                 switch (result) {
                 case SWT.CANCEL:
                     analysis = null;
-                    return;
+                    break;
                 case SWT.OK:
                     ArrayList<String> errors = new ArrayList<>();
                     analysis = new LegacyAnalysisLoader(getChartTemplateRegistry(), errors).loadLegacyAnalysis(rootNode);
@@ -846,6 +850,14 @@ public class ScaveEditor extends MultiPageEditorPartExt
         if (getAnalysis() == null)
             return;
 
+        if (object instanceof AnalysisItem) {
+            FormEditorPage editorPage = getEditorPage((AnalysisItem)object);
+            if (editorPage != null) {
+                showPage(editorPage);
+                return;
+            }
+        }
+
         FormEditorPage activePage = getActiveEditorPage();
         if (activePage != null) {
             if (activePage.gotoObject(object))
@@ -986,12 +998,73 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
             // Set up the tree viewer.
 
-            // TODO
-            // contentOutlineViewer.setContentProvider(new
-            // AdapterFactoryContentProvider(adapterFactory));
-            // contentOutlineViewer.setLabelProvider(new ScaveModelLabelProvider(new
-            // AdapterFactoryLabelProvider(adapterFactory)));
-            initializeContentOutlineViewer(contentOutlineViewer); // should call setInput()
+            contentOutlineViewer.setContentProvider(new ITreeContentProvider() {
+
+                @Override
+                public boolean hasChildren(Object element) {
+                    return getChildren(element).length > 0;
+                }
+
+                @Override
+                public Object getParent(Object element) {
+                    if (element instanceof ModelObject)
+                        return ((ModelObject) element).getParent();
+                    return null;
+                }
+
+                @Override
+                public Object[] getElements(Object inputElement) {
+                    return getChildren(inputElement);
+                }
+
+                @Override
+                public Object[] getChildren(Object element) {
+                    if (element instanceof Analysis)
+                        return new Object[] { ((Analysis)element).getInputs(), ((Analysis)element).getCharts() };
+                    else if (element instanceof Inputs)
+                        return ((Inputs) element).getInputs().toArray();
+                    else if (element instanceof Charts)
+                        return ((Charts) element).getCharts().toArray();
+                    else
+                        return new Object[0];
+                }
+            });
+            contentOutlineViewer.setLabelProvider(new LabelProvider() {
+                @Override
+                public String getText(Object element) {
+                    if (element instanceof Analysis)
+                        return "Analysis";
+                    else if (element instanceof Inputs)
+                        return "Inputs";
+                    else if (element instanceof Charts)
+                        return "Charts";
+                    else if (element instanceof InputFile)
+                        return ((InputFile) element).getName();
+                    else if (element instanceof AnalysisItem)
+                        return ((AnalysisItem) element).getName();
+                    else
+                        return element.toString();
+                }
+
+                @Override
+                public Image getImage(Object element) {
+                    if (element instanceof Analysis)
+                        return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_FOLDER);
+                    else if (element instanceof Inputs)
+                        return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_FOLDER);
+                    else if (element instanceof Charts)
+                        return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_FOLDER);
+                    else if (element instanceof InputFile)
+                        return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_INPUTFILE);
+                    else if (element instanceof Chart)
+                        return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_DATASET); //FIXME
+                    else if (element instanceof AnalysisItem)
+                        return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_FOLDER);
+                    else
+                        return null;
+                }
+            });
+            contentOutlineViewer.setInput(getAnalysis());
             contentOutlineViewer.expandToLevel(3);
 
             // Make sure our popups work.
@@ -1001,15 +1074,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
                     actions.populateContextMenu(menuManager);
                 }
             });
-
-            /*
-             * // TODO if (!editingDomain.getResourceSet().getResources().isEmpty()) { //
-             * Select the root object in the view. ArrayList<Object> selection = new
-             * ArrayList<Object>();
-             * selection.add(editingDomain.getResourceSet().getResources().get(0));
-             * contentOutlineViewer.setSelection(new StructuredSelection(selection), true);
-             * }
-             */
         }
 
         public void makeContributions(IMenuManager menuManager, IToolBarManager toolBarManager,
@@ -1021,6 +1085,10 @@ public class ScaveEditor extends MultiPageEditorPartExt
         public void setActionBars(IActionBars actionBars) {
             super.setActionBars(actionBars);
             actions.shareGlobalActions(this, actionBars);
+        }
+
+        public void refresh() {
+            getTreeViewer().refresh();
         }
     }
 
