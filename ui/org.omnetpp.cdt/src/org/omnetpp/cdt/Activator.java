@@ -42,7 +42,6 @@ public class Activator extends AbstractUIPlugin {
 
     private ProjectFeaturesListener projectFeaturesListener = new ProjectFeaturesListener();
     private NewConfigConfigurer newConfigConfigurer = new NewConfigConfigurer();
-    private CProjectChecker cprojectChecker = new CProjectChecker();
     private BuildSpecFolderRenameDetector folderRenameDetector = new BuildSpecFolderRenameDetector();
     private MsgFileRemoveDetector msgFileRemoveDetector = new MsgFileRemoveDetector();
 
@@ -62,11 +61,8 @@ public class Activator extends AbstractUIPlugin {
 
         projectFeaturesListener.hookListeners();
         newConfigConfigurer.hookListeners();
-        cprojectChecker.hookListeners();
         folderRenameDetector.hookListeners();
         msgFileRemoveDetector.hookListeners();
-
-        cprojectChecker.checkAllOpenProjects();
 
         // Set the default settings ifor CDT editors.
         // We will use spaces instead of tabs. This hack is needed because the
@@ -85,7 +81,6 @@ public class Activator extends AbstractUIPlugin {
     public void stop(BundleContext context) throws Exception {
         projectFeaturesListener.unhookListeners();
         newConfigConfigurer.unhookListeners();
-        cprojectChecker.unhookListeners();
         folderRenameDetector.unhookListeners();
         msgFileRemoveDetector.unhookListeners();
 
