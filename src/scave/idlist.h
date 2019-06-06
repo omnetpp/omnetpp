@@ -78,7 +78,8 @@ class SCAVE_API IDList
         void subtract(ID x); // this -= {x}
         int indexOf(ID x) const;
         void merge(IDList& ids);  // this += ids
-        void subtract(IDList& ids);  // this -= ids
+        void subtract(const IDList& ids);  // this -= ids
+        IDList getDifference(const IDList& ids) const;  // return this - ids
         void intersect(IDList& ids);  // this = intersection(this,ids)
         IDList getSubsetByIndices(int *array, int n) const;
         IDList dup() const;

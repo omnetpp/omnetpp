@@ -121,7 +121,7 @@ void IDList::merge(IDList& ids)
     v = v2;
 }
 
-void IDList::subtract(IDList& ids)
+void IDList::subtract(const IDList& ids)
 {
     checkV();
     ids.checkV();
@@ -139,6 +139,13 @@ void IDList::subtract(IDList& ids)
     // replace the vector with the result
     delete v;
     v = v2;
+}
+
+IDList IDList::getDifference(const IDList& ids) const
+{
+    IDList result = dup();
+    result.subtract(ids);
+    return result;
 }
 
 void IDList::intersect(IDList& ids)

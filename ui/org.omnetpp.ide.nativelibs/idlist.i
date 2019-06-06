@@ -51,6 +51,19 @@ import java.util.EventListener;
     return size(); // results in poor hashing, but IDLists are not supposed to be used as keys
   }
 
+  @Override
+    public String toString() {
+        String result = "IDList of size " + size() + ", first elements: ";
+
+        for (int i = 0; i < 10; ++i) {
+            if (i < size())
+                result += get(i) + ", ";
+        }
+
+        return result;
+    }
+
+
 %}
 
 %define ADD_NOTIFY(METHOD)

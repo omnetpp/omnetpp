@@ -7,9 +7,6 @@
 
 package org.omnetpp.scave.model2;
 
-import static org.omnetpp.scave.engine.ResultItemField.MODULE;
-import static org.omnetpp.scave.engine.ResultItemField.NAME;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,8 +28,6 @@ import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ResultItemField;
-import org.omnetpp.scave.engine.Run;
-import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.AnalysisItem;
@@ -107,109 +102,6 @@ public class ScaveModelUtil {
         return chart;
     }
 
-    public static List<String> getIDListAsFilters(IDList ids, String[] runidFields, ResultFileManager manager) {
-        Assert.isNotNull(runidFields);
-        String[] filterFields = getFilterFieldsFor(runidFields);
-        List<String> filters = new ArrayList<String>(ids.size());
-        for (int i = 0; i < ids.size(); ++i) {
-            long id = ids.get(i);
-            String filter = new FilterUtil(manager.getItem(id), filterFields).getFilterPattern(); //TODO include: getTypeOf(item)
-            filters.add(filter);
-        }
-        return filters;
-    }
-
-    // filtering for the given result type will not be part of the returned expression!!!
-    public static String getIDListAsFilterExpression(IDList ids, String[] runidFields, ResultType resultType, String viewFilter, ResultFileManager manager) {
-
-        IDList allItemsOfType = manager.getAllItems(false, false).filterByTypes(resultType.getValue());
-        IDList itemsMatchingViewFilter = manager.filterIDList(allItemsOfType, viewFilter);
-
-        boolean allSelected = ids.equals(itemsMatchingViewFilter);
-
-        if (debug) {
-            Debug.println("allitems: " + itemsMatchingViewFilter.toString());
-            Debug.println("selected: " + ids.toString());
-            Debug.println("selected: " + ids.size() + " matching: " + itemsMatchingViewFilter.size());
-            Debug.println("allselected: " + allSelected);
-        }
-
-        if (allSelected) {
-            if (debug)
-                Debug.println("returning the view filter: " + viewFilter);
-            return StringUtils.defaultIfEmpty(viewFilter, "*");
-        }
-
-        IDList invisibleSelected = ids.dup();
-        invisibleSelected.subtract(itemsMatchingViewFilter);
-        Assert.isTrue(invisibleSelected.isEmpty());
-
-        IDList unselected = itemsMatchingViewFilter.dup();
-        unselected.subtract(ids);
-        if (debug)
-            Debug.println("number of unselected: " + unselected.size());
-
-        Assert.isNotNull(runidFields);
-        String[] filterFields = getFilterFieldsFor(runidFields);
-
-        String result;
-        if (ids.size() > 10 && unselected.size() < (ids.size() / 3)) {
-            result = "(" + viewFilter + ")\nAND NOT (\n" + StringUtils.indentLines(getIDListAsDumbFilter(unselected, manager, filterFields), "    ") + ")";
-        }
-        else {
-            RunList runs = manager.getUniqueRuns(ids);
-            if (runs.size() < ids.size() / 2)
-                result = getIDListAsRunGroupedFilter(ids, manager, filterFields);
-            else
-                result = getIDListAsDumbFilter(ids, manager, filterFields);
-        }
-
-        // debug check:
-        if (debug)
-            Debug.println("filter expression: " + result);
-        Assert.isTrue(manager.filterIDList(allItemsOfType, result).equals(ids), "Filter created from IDList does not reproduce the given IDs");
-
-        return result;
-    }
-
-    private static String getIDListAsRunGroupedFilter(IDList ids, ResultFileManager manager, String[] filterFields) {
-
-        RunList runs = manager.getUniqueRuns(ids);
-        StringBuilder sb = new StringBuilder();
-        boolean first = true;
-
-        for (Run r :runs.toArray()) {
-            if (!first)
-                sb.append("\n OR \n");
-            sb.append("( run(\"" + r.getRunName() + "\") AND (\n");
-
-            IDList idsInRun = manager.filterIDList(ids, r, null, null);
-
-            for (int i = 0; i < idsInRun.size(); ++i) {
-                long id = ids.get(i);
-                ResultItem item = manager.getItem(id);
-                String filter = new FilterUtil(item, filterFields).getFilterPattern();
-                sb.append("    " + filter + " \n");
-            }
-            sb.append(") )");
-
-            first = false;
-        }
-        return sb.toString();
-    }
-
-    private static String getIDListAsDumbFilter(IDList ids, ResultFileManager manager, String[] filterFields) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < ids.size(); ++i) {
-            long id = ids.get(i);
-            ResultItem item = manager.getItem(id);
-            String filter = new FilterUtil(item, filterFields).getFilterPattern();
-            sb.append(filter + " \n");
-        }
-        return sb.toString();
-    }
-
-
     public static void addInputFiles(CommandStack commandStack, Analysis analysis, List<String> list) {
         List<ICommand> addCommands = new ArrayList<ICommand>();
 
@@ -243,15 +135,6 @@ public class ScaveModelUtil {
         return nameWithoutNumber + (maxNum == -1 ? "" : maxNum == 0 ? " (2)" : (" (" + (maxNum + 1) + ")"));
     }
 
-    public static String[] getFilterFieldsFor(String[] runidFields) {
-        Assert.isNotNull(runidFields);
-        int runidFieldCount = runidFields.length;
-        String[] filterFields = new String[runidFieldCount+2];
-        System.arraycopy(runidFields, 0, filterFields, 0, runidFieldCount);
-        filterFields[runidFieldCount] = MODULE;
-        filterFields[runidFieldCount + 1] = NAME;
-        return filterFields;
-    }
 
     public static void moveElements(CommandStack commandStack, Charts charts, Object[] elements, int index) {
         // the elements[] array contains the elements in no particular order. We need to keep

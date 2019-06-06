@@ -22,6 +22,7 @@ import org.omnetpp.scave.engine.RunAttribute;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ResultType;
+import org.omnetpp.scave.model2.ResultSelectionFilterGenerator;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
@@ -68,7 +69,7 @@ public class CreateTempChartAction extends AbstractScaveAction {
         }
 
         String viewFilter = editor.getBrowseDataPage().getActivePanel().getFilter().getFilterPattern();
-        String filter = ResultFileManager.callWithReadLock(manager, () -> { return ScaveModelUtil.getIDListAsFilterExpression(idList, filterFields, type, viewFilter, manager); });
+        String filter = ResultFileManager.callWithReadLock(manager, () -> { return ResultSelectionFilterGenerator.getIDListAsFilterExpression(idList, filterFields, type, viewFilter, manager); });
         Property property = new Property("filter", filter);
         chart.addProperty(property);
 

@@ -81,13 +81,13 @@ public class FilterUtil {
         ResultFile file = item.getFileRun().getFile();
         Run run = item.getFileRun().getRun();
         for (String field : filterFields) {
-            if (field == FILE)
+            if (field.equals(FILE))
                 setField(field, file.getFilePath());
-            else if (field == RUN)
+            else if (field.equals(RUN))
                 setField(field, run.getRunName());
-            else if (field == MODULE)
+            else if (field.equals(MODULE))
                 setField(MODULE, item.getModuleName());
-            else if (field == NAME)
+            else if (field.equals(NAME))
                 setField(NAME, item.getName());
             else if (RunAttribute.isAttributeName(field))
                 setField(field, run.getAttribute(field));
@@ -131,8 +131,11 @@ public class FilterUtil {
 
     private String buildPattern() {
         StringBuffer sb = new StringBuffer();
-        for (String name : fields.keySet())
-            appendField(sb, name, getField(name));
+        for (String name : fields.keySet()) {
+            String f = getField(name);
+            if (!f.equals("*"))
+                appendField(sb, name, f);
+        }
         if (sb.length() == 0) sb.append("*");
         return sb.toString();
     }
