@@ -250,9 +250,14 @@ public class DataTable extends Table implements IDataControl {
     }
 
     public void setIDList(IDList idlist) {
+        IDList selectedIDs = null;
+        if (this.idList != null)
+            selectedIDs = getSelectedIDs();
         this.idList = idlist;
         restoreSortOrder();
         refresh();
+        if (selectedIDs != null)
+            setSelectedIDs(selectedIDs);
         fireContentChangedEvent();
     }
 
@@ -381,12 +386,17 @@ public class DataTable extends Table implements IDataControl {
             public void widgetSelected(SelectionEvent e) {
                 TableColumn tableColumn = (TableColumn)e.widget;
                 if (!tableColumn.isDisposed()) {
+                    IDList selectedIDs = null;
+                    if (idList != null)
+                        selectedIDs = getSelectedIDs();
                     Column column = (Column)tableColumn.getData(COLUMN_KEY);
                     int sortDirection = (getSortColumn() == tableColumn && getSortDirection() == SWT.UP ? SWT.DOWN : SWT.UP);
                     setSortColumn(tableColumn);
                     setSortDirection(sortDirection);
                     sortBy(column, sortDirection);
                     refresh();
+                    if (selectedIDs != null)
+                        setSelectedIDs(selectedIDs);
                     fireContentChangedEvent();
                 }
             }
