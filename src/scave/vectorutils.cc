@@ -18,6 +18,9 @@
 #include "vectorutils.h"
 
 #include <set>
+#if defined(__linux__)
+#include <malloc.h>
+#endif
 #include "common/opp_ctype.h"
 #include "common/commonutil.h"
 #include "common/stringutil.h"
@@ -34,7 +37,11 @@ using namespace common;
 namespace scave {
 
 int malloc_trim() {
+#if defined(__linux__)
   return ::malloc_trim(0);
+#else
+  return 0;
+#endif
 }
 
 vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList& idlist, bool includePreciseX, bool includeEventNumbers, size_t memoryLimitBytes, double simTimeStart, double simTimeEnd, const InterruptedFlag& interrupted)

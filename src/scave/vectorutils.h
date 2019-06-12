@@ -18,7 +18,6 @@
 #ifndef __OMNETPP_SCAVE_VECTORUTILS_H
 #define __OMNETPP_SCAVE_VECTORUTILS_H
 
-#include <malloc.h>
 #include <limits>
 #include "scavedefs.h"
 #include "resultfilemanager.h"
