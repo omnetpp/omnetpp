@@ -156,7 +156,7 @@ const char **cXMLElement::addAttr(const char *attr)
     const char **newAttrs = new const char *[2*numAttrs+2+1];
     for (int i = 0; i < 2*numAttrs; i++)
         newAttrs[i] = attrs[i];
-    const char **newAttr = attrs + 2*numAttrs;
+    const char **newAttr = newAttrs + 2*numAttrs;
     newAttr[0] = getPooledName(attr);
     newAttr[1] = nullptr; // value
     newAttr[2] = nullptr; // end marker
