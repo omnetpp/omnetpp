@@ -48,7 +48,6 @@ class SCAVE_API XYArray
         double getY(int i) const  {return ys.at(i);}
         const BigDecimal& getPreciseX(int i) const {return xps.at(i); }
         eventnumber_t getEventNumber(int i) const {return ens.at(i); }
-        void sortByX();
 };
 
 } // namespace scave
@@ -56,5 +55,3 @@ class SCAVE_API XYArray
 
 
 #endif
-
-
