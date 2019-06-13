@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/org.omnetpp.ide.academic_5.5.0.qualifier.jar" id="org.omnetpp.ide.academic" version="5.5.0.qualifier" os="linux,macosx,win32" ws="cocoa,gtk,win32" arch="x86,x86_64">
+   <feature url="features/org.omnetpp.ide.academic_5.5.1.qualifier.jar" id="org.omnetpp.ide.academic" version="5.5.1.qualifier" os="linux,macosx,win32" ws="cocoa,gtk,win32" arch="x86,x86_64">
       <category name="org.omnetpp.ide"/>
    </feature>
-   <feature url="features/org.omnetpp.ide.linuxtools_5.2.0.jar" id="org.omnetpp.ide.linuxtools" version="5.5.0.qualifier" os="linux">
+   <feature url="features/org.omnetpp.ide.linuxtools_5.2.0.jar" id="org.omnetpp.ide.linuxtools" version="5.5.1.qualifier" os="linux">
       <category name="org.omnetpp.ide"/>
    </feature>
-   <feature url="features/org.omnetpp.ide.source_5.5.0.qualifier.jar" id="org.omnetpp.ide.source" version="5.5.0.qualifier">
+   <feature url="features/org.omnetpp.ide.source_5.5.1.qualifier.jar" id="org.omnetpp.ide.source" version="5.5.1.qualifier">
       <category name="org.omnetpp.ide"/>
    </feature>
    <category-def name="org.omnetpp.ide" label="OMNeT++ Modeling Tools">
