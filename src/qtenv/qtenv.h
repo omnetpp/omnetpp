@@ -77,6 +77,7 @@ struct QtenvOptions : public EnvirOptions
     bool printInitBanners = true;          // print "initializing..." banners
     bool printEventBanners = true;         // print event banners
     bool shortBanners = false;             // controls detail of event banners
+    bool noLoggingRefreshDisplay = false;  // suppresses logging in refreshDisplay() calls
     bool animationEnabled = true;          // msg animation
     bool showNextEventMarkers = true;      // display next event marker (red frame around modules)
     bool showSendDirectArrows = true;      // flash arrows when doing sendDirect() animation

@@ -58,6 +58,7 @@ void PreferencesDialog::init()
     ui->initBanners->setChecked(getQtenv()->opt->printInitBanners);
     ui->eventBanners->setChecked(getQtenv()->opt->printEventBanners);
     ui->shortBanners->setChecked(getQtenv()->opt->shortBanners);
+    ui->noLoggingRefreshDisplay->setChecked(getQtenv()->opt->noLoggingRefreshDisplay);
     ui->logPrefix->setText(getQtenv()->opt->logFormat.c_str());
     ui->scrollback->setText(QString::number(getQtenv()->opt->scrollbackLimit));
     ui->overall->setText(QString::number(getQtenv()->getLogBuffer()->getMaxNumEntries()));
@@ -162,6 +163,7 @@ void PreferencesDialog::accept()
     getQtenv()->opt->printEventBanners = ui->eventBanners->isChecked();
     getQtenv()->opt->printInitBanners = ui->initBanners->isChecked();
     getQtenv()->opt->shortBanners = ui->shortBanners->isChecked();
+    getQtenv()->opt->noLoggingRefreshDisplay = ui->noLoggingRefreshDisplay->isChecked();
 
     std::string logFormat = ui->logPrefix->text().toStdString();
     getQtenv()->setLogFormat(logFormat.c_str());
