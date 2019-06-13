@@ -24,7 +24,7 @@ void SignalSource::initialize()
     for (cXMLElement *elem = script->getFirstChild(); elem; elem = elem->getNextSibling()) {
         const char *atAttr = elem->getAttribute("at");
         if (!atAttr)
-            error("attribute 'at' missing at %s", elem->getSourceLocation().c_str());
+            error("attribute 'at' missing at %s", elem->getSourceLocation());
 
         if (strcmp(atAttr, "init") == 0) {
             emitSignal(elem);
