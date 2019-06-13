@@ -144,6 +144,7 @@ void Qtenv::storeOptsInPrefs()
     setPref("event_banners", opt->printEventBanners);
     setPref("init_banners", opt->printInitBanners);
     setPref("short_banners", opt->shortBanners);
+    setPref("no_logging_refreshdisplay", opt->noLoggingRefreshDisplay);
     setPref("animation_enabled", opt->animationEnabled);
     setPref("nexteventmarkers", opt->showNextEventMarkers);
     setPref("senddirect_arrows", opt->showSendDirectArrows);
@@ -200,6 +201,10 @@ void Qtenv::restoreOptsFromPrefs()
     pref = getPref("short_banners");
     if (pref.isValid())
         opt->shortBanners = pref.toBool();
+
+    pref = getPref("no_logging_refreshdisplay");
+    if (pref.isValid())
+        opt->noLoggingRefreshDisplay = pref.toBool();
 
     pref = getPref("animation_enabled");
     if (pref.isValid())
@@ -1285,11 +1290,24 @@ void Qtenv::deleteInspector(Inspector *insp)
 void Qtenv::callRefreshDisplay()
 {
     ASSERT(simulationState != SIM_ERROR && simulationState != SIM_NONET);
-    cModule *systemModule = getSimulation()->getSystemModule();
-    if (systemModule)
-        systemModule->callRefreshDisplay();
-    ++refreshDisplayCount;
+
+    LogLevel oldLogLevel = cLog::logLevel;
+    if (opt->noLoggingRefreshDisplay)
+        setLogLevel(LOGLEVEL_OFF);
+
+    try {
+        cModule *systemModule = getSimulation()->getSystemModule();
+        if (systemModule)
+            systemModule->callRefreshDisplay();
+        ++refreshDisplayCount;
+    } catch (std::exception&) {
+        inspectorsFresh = false;
+        setLogLevel(oldLogLevel);
+        throw;
+    }
+
     inspectorsFresh = false;
+    setLogLevel(oldLogLevel);
 }
 
 void Qtenv::callRefreshDisplaySafe()
