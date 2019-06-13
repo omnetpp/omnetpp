@@ -309,7 +309,7 @@ void ScaveTool::queryCommand(int argc, char **argv)
 
     QueryMode opt_mode = PRINT_SUMMARY;
     vector<string> opt_fileNames;
-    string opt_filterExpression;
+    string opt_filterExpression = "*";
     string opt_resultTypeFilterStr;
     string opt_runDisplayModeStr;
     int opt_resultTypeFilter = ResultFileManager::SCALAR | ResultFileManager::VECTOR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM;
@@ -607,7 +607,7 @@ inline void pushCountIfPositive(vector<string>& v, int count, const string& noun
 void ScaveTool::exportCommand(int argc, char **argv)
 {
     vector<string> opt_fileNames;
-    string opt_filterExpression;
+    string opt_filterExpression = "*";
     string opt_resultTypeFilterStr;
     int opt_resultTypeFilter = ResultFileManager::SCALAR | ResultFileManager::VECTOR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM;
     bool opt_verbose = false;
