@@ -1,5 +1,72 @@
+import re
+import sys
+import importlib
 import numpy as np
 import pandas as pd
+
+
+def perform_vector_ops(df, operations : str): 
+    if not operations:
+        return df
+    
+    def convert(name):
+        s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+        lower = str(re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower())
+    
+        try:
+            return int(lower)
+        except:
+            pass
+    
+        try:
+            return float(lower)
+        except:
+            pass
+    
+        return lower
+
+    for line in operations.splitlines():
+        if not line.strip():
+            continue
+
+        if "#" in line:
+            op, comment = line.split("#")
+        else:
+            op = line
+
+        op = op.strip()
+
+        type, oper = op.split(':')
+        fun = oper.split(",")
+
+        params = dict()
+        for p in fun[1:]:
+            key, value = p.split("=")
+            key = key.strip()
+            value = value.strip()
+            params[convert(key)] = convert(value)
+
+        op_fun = None
+        if '.' in fun[0]:
+            modname, funname = fun[0].rsplit('.', 1)
+            mod = importlib.import_module(modname)
+            op_fun = mod.__dict__[funname]
+        else:
+            op_fun = sys.modules[__name__].__dict__["vector_" + fun[0]]
+
+        if type == "apply":
+            df = apply(df, op_fun, **params)
+        elif type == "compute":
+            df = compute(df, op_fun, **params)
+            
+    
+    return df
+
+
+def _unquote(param):
+    if param and (param[0] == "'" and param[-1] == "'") or (param[0] == '"' and param[-1] == '"'):
+        return param[1:-1]
+    return param
 
 
 def apply(dataframe, operation, *args, **kwargs):
@@ -266,6 +333,8 @@ def vector_expression(r, expression):
     t = r['vectime']
     y = r['vecvalue']
 
+    expression = _unquote(expression)
+
     tprev = np.concatenate([np.array([0]), t[:-1]])
     yprev = np.concatenate([np.array([0]), y[:-1]])
 
@@ -287,7 +356,7 @@ def _integrate_helper(t, v, interpolation):
     elif interpolation == 'linear':
         increments = dt * (v + vprev) / 2
     else:
-        raise Exception("unknown interpolation")
+        raise Exception("unknown interpolation: " + interpolation)
 
     return np.cumsum(increments)
 
@@ -295,6 +364,8 @@ def _integrate_helper(t, v, interpolation):
 def vector_integrate(r, interpolation='sample-hold'):
     t = r['vectime']
     v = r['vecvalue']
+
+    interpolation = _unquote(interpolation)
 
     r['vecvalue'] = _integrate_helper(t, v, interpolation)
 
@@ -314,18 +385,18 @@ def vector_lineartrend(r, a):
     return r
 
 
-def vector_modulo(r, a):
+def vector_modulo(r, m):
     v = r['vecvalue']
-    r['vecvalue'] = np.remainder(v, a)
+    r['vecvalue'] = np.remainder(v, m)
     if "title" in r:
-        r['title'] = r['title'] + " mod " + str(a)
+        r['title'] = r['title'] + " mod " + str(m)
     return r
 
 
 def vector_movingavg(r, alpha):
     v = r['vecvalue']
     s = pd.Series(v, dtype=np.dtype('f8'))
-    r['vecvalue'] = s.ewm(alpha=alpha).mean()
+    r['vecvalue'] = s.ewm(alpha=alpha).mean().values
     if "title" in r:
         r['title'] = r['title'] + " mean " + str(alpha)
     return r
@@ -357,7 +428,7 @@ def vector_removerepeats(r):
 def vector_slidingwinavg(r, window_size):
     v = r['vecvalue']
     s = pd.Series(v, dtype=np.dtype('f8'))
-    r['vecvalue'] = s.rolling(window_size).mean()
+    r['vecvalue'] = s.rolling(window_size).mean().values
     if "title" in r:
         r['title'] = r['title'] + " windowmean " + str(window_size)
     return r
@@ -375,6 +446,8 @@ def vector_timeavg(r, interpolation):
     # TODO: add "auto" - where we choose interpolation based on interpolationmode and enum
     t = r['vectime']
     v = r['vecvalue']
+
+    interpolation = _unquote(interpolation)
 
     integrated = _integrate_helper(t, v, interpolation)
 
@@ -448,5 +521,5 @@ def vector_winavg(r, window_size=10):
     r['vecvalue'] = grouped.values
 
     if "title" in r:
-        r['title'] = r['title'] + " timewinavg"
+        r['title'] = r['title'] + " winavg"
     return r

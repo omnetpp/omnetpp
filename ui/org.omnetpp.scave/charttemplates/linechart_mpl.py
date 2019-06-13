@@ -1,5 +1,6 @@
 from omnetpp.scave import results, chart, vectorops as ops
 import matplotlib.pyplot as plt
+import math
 
 params = chart.get_properties()
 
@@ -7,11 +8,13 @@ params = chart.get_properties()
 
 filter_expression = params["filter"]
 
-# The data is returned as a Pandas DataFrame
-df = results.get_vectors(filter_expression, include_attrs=True, include_itervars=True)
+start_time = float(params["vector_start_time"] or -math.inf)
+end_time = float(params["vector_end_time"] or math.inf)
 
-# This is where the vector operations will be added:
-# <|> vectorops marker <|>
+# The data is returned as a Pandas DataFrame
+df = results.get_vectors(filter_expression, include_attrs=True, include_itervars=True, start_time=start_time, end_time=end_time)
+
+df = ops.perform_vector_ops(df, params["vector_operations"])
 
 # You can perform any transformations on the data here
 
@@ -37,7 +40,10 @@ for t in df.itertuples(index=False):
 
     plt.plot(t.vectime, t.vecvalue, label=chart.make_legend_label(legend, t), **style)
 
-plt.title(chart.make_chart_title(df, title, legend))
+if 'title' in params and params['title']:
+    plt.title(params['title'])
+else:
+    plt.title(chart.make_chart_title(df, title, legend))
 
 plt.legend()
 plt.grid()

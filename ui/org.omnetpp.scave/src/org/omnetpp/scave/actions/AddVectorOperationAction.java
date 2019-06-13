@@ -7,24 +7,38 @@
 
 package org.omnetpp.scave.actions;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.charttemplates.ChartTemplate;
 import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.Property;
+import org.omnetpp.scave.model.commands.SetChartPropertyCommand;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 
 public class AddVectorOperationAction extends AbstractScaveAction {
-    String codeFragment;
-    String marker = "# <|> vectorops marker <|>";
+    String operation;
+    String comment;
 
-    public AddVectorOperationAction(String name, String codeFragment) {
-        this.codeFragment = codeFragment;
+    public AddVectorOperationAction(String name, String operation) {
+        this(name, operation, "");
+    }
+
+    public AddVectorOperationAction(String name, String operation, String comment) {
+        this.operation = operation;
+        this.comment = comment;
 
         setText(name);
-        setDescription("Apply " + name + " operation to vector data");
 
-        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_APPLY));
+        setDescription("Add " + name + " operation to vector");
+        setImageDescriptor(ScavePlugin.getImageDescriptor(
+                operation.startsWith("compute:") ? ScaveImages.IMG_ETOOL16_COMPUTE : ScaveImages.IMG_ETOOL16_APPLY));
     }
 
 
@@ -34,14 +48,45 @@ public class AddVectorOperationAction extends AbstractScaveAction {
 
         ChartScriptEditor scriptEditor = scaveEditor.getActiveChartScriptEditor();
 
-        String script = scriptEditor.getDocument().get();
-        script = script.replace(marker, codeFragment + "\n" + marker);
-        scriptEditor.getDocument().set(script); // TODO only change the inserted portion, without replacing the whole text
+        Chart chart = scriptEditor.getChart();
+
+        Property chartProperty = ScaveModelUtil.getChartProperty(chart, "vector_operations");
+
+        String operations = "";
+        if (chartProperty != null)
+            operations = chartProperty.getValue();
+
+        String append = operation;
+        if (!comment.isEmpty())
+            append += " # " + comment;
+
+        if (operations.isEmpty())
+            operations = append;
+        else
+            operations += "\n" + append;
+
+        scriptEditor.getCommandStack().execute(new SetChartPropertyCommand(chart, "vector_operations", operations));
+
         scriptEditor.refreshChart();
     }
 
     @Override
     protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
-        return editor.getActiveChartScriptEditor().getDocument().get().contains(marker);
+        if (editor.getActiveChartScriptEditor() == null)
+            return false;
+
+        Chart chart = editor.getActiveChartScriptEditor().getChart();
+        Property operationsProperty = ScaveModelUtil.getChartProperty(chart, "vector_operations");
+
+        if (operationsProperty != null)
+            return true;
+
+        ChartTemplate template = editor.getChartTemplateRegistry().findTemplateByID(chart.getTemplateID());
+        if (template == null)
+            return false;
+
+        Set<String> templatePropertyNames = new HashSet<String>(template.getPropertyNames());
+
+        return templatePropertyNames.contains("vector_operations");
     }
 }

@@ -13,5 +13,10 @@
     <text x:id="filter" x:style="BORDER|MULTI" x:id.isFilter="true"> 
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true"/>
     </text>
+    
+    <label text="Vector operations:"/>
+    <text x:id="vector_operations" x:style="BORDER|MULTI"> 
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true"/>
+    </text>
   </x:children>
 </xswt>

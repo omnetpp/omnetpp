@@ -183,7 +183,7 @@ public class LegacyAnalysisLoader {
             for (DataVecOp vo : vecOps)
                 vecOpStrings.add(vo.toString());
 
-            setProperty(chart, "vector_operations", StringUtils.join(vecOps, ";"));
+            setProperty(chart, "vector_operations", StringUtils.join(vecOps, "\n"));
         }
         else
             throw new RuntimeException("unknown chart type: " + chartType);

@@ -1,5 +1,7 @@
 package org.omnetpp.scave.editors;
 
+import static org.omnetpp.common.util.Triplet.triplet;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -53,6 +55,7 @@ import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.util.Triplet;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.AddVectorOperationAction;
@@ -419,65 +422,47 @@ public class ChartScriptEditor extends PyEdit {
                     }
                 };
 
+                @SuppressWarnings("unchecked")
+                Triplet<String, String, String>[] vectorOpData = new Triplet[] {
+                    triplet("Mean", "mean", ""),
+                    triplet("Aggregator", "aggregator, function=average", "Possible parameter values: 'sum', 'average', 'count', 'maximum', 'minimum'"),
+                    triplet("Merger", "merger", ""),
+                    triplet("Sum", "sum", ""),
+                    triplet("Add constant", "add, c=100", "Adds a constant to all values in the vectors"),
+                    triplet("Compare with threshold", "compare, threshold=9000, less=-1, equal=0, greater=1", "The last three parameters are all optional"),
+                    triplet("Crop in time", "crop, from_time=10, to_time=100)", "The time values are in seconds"),
+                    triplet("Difference", "difference", "The difference of each value compared to the previous"),
+                    triplet("Difference quotient", "diffquot", "The difference quotient at each value"),
+                    triplet("Divide by constant", "divide_by, a=1000", "Divides every value in each vector by a constant"),
+                    triplet("Divide by time", "divtime", ""),
+                    triplet("Expression", "expression, expression='y + (t - tprev) * 100'", "The following identifiers are available: t, y, tprev, yprev"),
+                    triplet("Integrate", "integrate, interpolation='linear'", "Possible parameter values: 'sample-hold', 'backward-sample-hold', 'linear'"),
+                    triplet("Linear trend", "lineartrend, a=0.5", "Add a linear trend to the values, with the given steepness"),
+                    triplet("Modulo", "modulo, m=256.0", "Floating point remainder with the given divisor"),
+                    triplet("Moving average", "movingavg, alpha=0.1", "Moving average using the given smoothing constant in range (0.0, 1.0]"),
+                    triplet("Multiply by constant", "multiply_by, a=2", "You can change the multiplier constant"),
+                    triplet("Remove repeating values", "removerepeats", "Removes consequtive equal values"),
+                    triplet("Sliding window average", "slidingwinavg, window_size=10", "The average of the last window_size values"),
+                    triplet("Subtract first value", "subtractfirstval", "Subtracts the first value from all values"),
+                    triplet("Time average", "timeavg, interpolation='linear'", "Average over time (integral divided by time), possible parameter values: 'sample-hold', 'backward-sample-hold', 'linear'"),
+                    triplet("Time difference", "timediff", "The elapsed time (delta) since the previous value"),
+                    triplet("Time shift", "timeshift, dt=100", "Shifts all values with the given time delta (in seconds)"),
+                    triplet("Time to serial", "timetoserial", "Replaces all times with a serial number: 0, 1, 2, ..."),
+                    triplet("Time window average", "timewinavg, window_size=0.1", "Average of all values in every window_size long interval (in seconds)"),
+                    triplet("Window average", "winavg, window_size=10", "Average of every window_size long batch of values"),
+                };
+
 
                 IMenuManager applySubmenuManager = new MenuManager("Apply...", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_APPLY), null);
-                applySubmenuManager.add(new AddVectorOperationAction("Aggregator", "df = ops.apply(df, ops.vector_aggregator, 'average') # Possible parameter values: 'sum', 'average', 'count', 'maximum', 'minimum'"));
-                applySubmenuManager.add(new AddVectorOperationAction("Merger", "df = ops.apply(df, ops.vector_merger)"));
-                applySubmenuManager.add(new AddVectorOperationAction("Mean", "df = ops.apply(df, ops.vector_mean)"));
-                applySubmenuManager.add(new AddVectorOperationAction("Sum", "df = ops.apply(df, ops.vector_sum)"));
-                applySubmenuManager.add(new AddVectorOperationAction("Add constant", "df = ops.apply(df, ops.vector_add, 100) # Feel free to change the constant right here"));
-                applySubmenuManager.add(new AddVectorOperationAction("Compare with threshold", "df = ops.apply(df, ops.vector_compare, threshold=9000, less=-1, equal=0, greater=1) # The last three parameters are all optional"));
-                applySubmenuManager.add(new AddVectorOperationAction("Crop in time", "df = ops.apply(df, ops.vector_crop, from_time=10, to_time=100) # The time values are in seconds, feel free to change them"));
-                applySubmenuManager.add(new AddVectorOperationAction("Difference", "df = ops.apply(df, ops.vector_difference) # The difference of each value compared to the previous"));
-                applySubmenuManager.add(new AddVectorOperationAction("Difference quotient", "df = ops.apply(df, ops.vector_diffquot) # The difference quotient at each value"));
-                applySubmenuManager.add(new AddVectorOperationAction("Divide by constant", "df = ops.apply(df, ops.vector_divide_by, 1000) # Feel free to change the constant right here"));
-                applySubmenuManager.add(new AddVectorOperationAction("Divide by time", "df = ops.apply(df, ops.vector_divtime)"));
-                applySubmenuManager.add(new AddVectorOperationAction("Expression", "df = ops.apply(df, ops.vector_expression, 'y + (t - tprev) * 100') # The following identifiers are available: t, y, tprev, yprev"));
-                applySubmenuManager.add(new AddVectorOperationAction("Integrate", "df = ops.apply(df, ops.vector_integrate, interpolation='linear') # Possible parameter values: 'sample-hold', 'backward-sample-hold', 'linear'"));
-                applySubmenuManager.add(new AddVectorOperationAction("Linear trend", "df = ops.apply(df, ops.vector_lineartrend, 0.5) # Add a linear trend to the values, with the given steepness"));
-                applySubmenuManager.add(new AddVectorOperationAction("Modulo", "df = ops.apply(df, ops.vector_modulo, 256.0) # Floating point remainder with the given divisor"));
-                applySubmenuManager.add(new AddVectorOperationAction("Moving average", "df = ops.apply(df, ops.vector_movingavg, alpha=0.1) # Moving average using the given smoothing constant in range (0.0, 1.0]"));
-                applySubmenuManager.add(new AddVectorOperationAction("Multiply by constant", "df = ops.apply(df, ops.vector_multiply_by, 2) # You can change the multiplier constant"));
-                applySubmenuManager.add(new AddVectorOperationAction("Remove repeating values", "df = ops.apply(df, ops.vector_removerepeats) # Removes consequtive equal values"));
-                applySubmenuManager.add(new AddVectorOperationAction("Sliding window average", "df = ops.apply(df, ops.vector_slidingwinavg, window_size=10) # The average of the last window_size values"));
-                applySubmenuManager.add(new AddVectorOperationAction("Subtract first value", "df = ops.apply(df, ops.vector_subtractfirstval) # Subtracts the first value from all values"));
-                applySubmenuManager.add(new AddVectorOperationAction("Time average", "df = ops.apply(df, ops.vector_timeavg, interpolation='linear') # Average over time (integral divided by time), possible parameter values: 'sample-hold', 'backward-sample-hold', 'linear'"));
-                applySubmenuManager.add(new AddVectorOperationAction("Time difference", "df = ops.apply(df, ops.vector_timediff) # The elapsed time (delta) since the previous value"));
-                applySubmenuManager.add(new AddVectorOperationAction("Time shift", "df = ops.apply(df, ops.vector_timeshift, dt=100) # Shifts all values with the given time delta (in seconds)"));
-                applySubmenuManager.add(new AddVectorOperationAction("Time to serial", "df = ops.apply(df, ops.vector_timetoserial) # Replaces all times with a serial number: 0, 1, 2, ..."));
-                applySubmenuManager.add(new AddVectorOperationAction("Time window average", "df = ops.apply(df, ops.vector_timewinavg, window_size=0.1) # Average of all values in every window_size long interval (in seconds)"));
-                applySubmenuManager.add(new AddVectorOperationAction("Window average", "df = ops.apply(df, ops.vector_winavg, window_size=10) # Average of every window_size long batch of values"));
 
-
-
+                for (Triplet<String, String, String> t : vectorOpData)
+                    applySubmenuManager.add(new AddVectorOperationAction(t.first, "apply:" + t.second, t.third));
 
                 IMenuManager computeSubmenuManager = new MenuManager("Compute...", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_COMPUTE), null);
-                computeSubmenuManager.add(new AddVectorOperationAction("Aggregator", "df = ops.compute(df, ops.vector_aggregator, 'average') # Possible parameter values: 'sum', 'average', 'count', 'maximum', 'minimum'"));
-                computeSubmenuManager.add(new AddVectorOperationAction("Merger", "df = ops.compute(df, ops.vector_merger)"));
-                computeSubmenuManager.add(new AddVectorOperationAction("Mean", "df = ops.compute(df, ops.vector_mean)"));
-                computeSubmenuManager.add(new AddVectorOperationAction("Sum", "df = ops.compute(df, ops.vector_sum)"));
-                computeSubmenuManager.add(new AddVectorOperationAction("Add constant", "df = ops.compute(df, ops.vector_add, 100) # Feel free to change the constant right here"));
-                computeSubmenuManager.add(new AddVectorOperationAction("Compare with threshold", "df = ops.compute(df, ops.vector_compare, threshold=9000, less=-1, equal=0, greater=1) # The last three parameters are all optional"));
-                computeSubmenuManager.add(new AddVectorOperationAction("Crop in time", "df = ops.compute(df, ops.vector_crop, from_time=10, to_time=100) # The time values are in seconds, feel free to change them"));
-                computeSubmenuManager.add(new AddVectorOperationAction("Difference", "df = ops.compute(df, ops.vector_difference) # The difference of each value compared to the previous"));
-                computeSubmenuManager.add(new AddVectorOperationAction("Difference quotient", "df = ops.compute(df, ops.vector_diffquot) # The difference quotient at each value"));
-                computeSubmenuManager.add(new AddVectorOperationAction("Divide by constant", "df = ops.compute(df, ops.vector_divide_by, 1000) # Feel free to change the constant right here"));
-                computeSubmenuManager.add(new AddVectorOperationAction("Divide by time", "df = ops.compute(df, ops.vector_divtime)"));
-                computeSubmenuManager.add(new AddVectorOperationAction("Expression", "df = ops.compute(df, ops.vector_expression, 'y + (t - tprev) * 100') # The following identifiers are available: t, y, tprev, yprev"));
-                computeSubmenuManager.add(new AddVectorOperationAction("Integrate", "df = ops.compute(df, ops.vector_integrate, interpolation='linear') # Possible parameter values: 'sample-hold', 'backward-sample-hold', 'linear'"));
-                computeSubmenuManager.add(new AddVectorOperationAction("Linear trend", "df = ops.compute(df, ops.vector_lineartrend, 0.5) # Add a linear trend to the values, with the given steepness"));
-                computeSubmenuManager.add(new AddVectorOperationAction("Modulo", "df = ops.compute(df, ops.vector_modulo, 256.0) # Floating point remainder with the given divisor"));
-                computeSubmenuManager.add(new AddVectorOperationAction("Moving average", "df = ops.compute(df, ops.vector_movingavg, alpha=0.1) # Moving average using the given smoothing constant in range (0.0, 1.0]"));
-                computeSubmenuManager.add(new AddVectorOperationAction("Multiply by constant", "df = ops.compute(df, ops.vector_multiply_by, 2) # You can change the multiplier constant"));
-                computeSubmenuManager.add(new AddVectorOperationAction("Remove repeating values", "df = ops.compute(df, ops.vector_removerepeats) # Removes consequtive equal values"));
-                computeSubmenuManager.add(new AddVectorOperationAction("Sliding window average", "df = ops.compute(df, ops.vector_slidingwinavg, window_size=10) # The average of the last window_size values"));
-                computeSubmenuManager.add(new AddVectorOperationAction("Subtract first value", "df = ops.compute(df, ops.vector_subtractfirstval) # Subtracts the first value from all values"));
-                computeSubmenuManager.add(new AddVectorOperationAction("Time average", "df = ops.compute(df, ops.vector_timeavg, interpolation='linear') # Average over time (integral divided by time), possible parameter values: 'sample-hold', 'backward-sample-hold', 'linear'"));
-                computeSubmenuManager.add(new AddVectorOperationAction("Time difference", "df = ops.compute(df, ops.vector_timediff) # The elapsed time (delta) since the previous value"));
-                computeSubmenuManager.add(new AddVectorOperationAction("Time shift", "df = ops.compute(df, ops.vector_timeshift, dt=100) # Shifts all values with the given time delta (in seconds)"));
-                computeSubmenuManager.add(new AddVectorOperationAction("Time to serial", "df = ops.compute(df, ops.vector_timetoserial) # Replaces all times with a serial number: 0, 1, 2, ..."));
-                computeSubmenuManager.add(new AddVectorOperationAction("Time window average", "df = ops.compute(df, ops.vector_timewinavg, window_size=0.1) # Average of all values in every window_size long interval (in seconds)"));
-                computeSubmenuManager.add(new AddVectorOperationAction("Window average", "df = ops.compute(df, ops.vector_winavg, window_size=10) # Average of every window_size long batch of values"));
+
+                for (Triplet<String, String, String> t : vectorOpData)
+                    computeSubmenuManager.add(new AddVectorOperationAction(t.first, "compute:" + t.second, t.third));
+
 
                 ScaveEditorActions actions = scaveEditor.getActions();
 

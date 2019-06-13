@@ -282,7 +282,7 @@ def plot_vectors(df_or_list):
     """
     if isinstance(df_or_list, pd.DataFrame):
         df = df_or_list
-        if "vectime" in df.columns and "vecvalue" in df.columns and "module" in df.columns and "name" in df.columns:
+        if "vectime" in df.columns and "vecvalue" in df.columns:
             _plot_vectors_DF_scave(df)
         elif "experiment" in df.index.names and "measurement" in df.index.names and "replication" in df.index.names and "module" in df.index.names and "name" in df.index.names:
             _plot_vectors_DF_2(df)
