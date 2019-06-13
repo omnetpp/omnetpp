@@ -73,14 +73,14 @@ void LogBuffer::addInitialize(cComponent *component, const char *banner)
     Entry *entry = entries.back();
     cComponent *contextComponent = getSimulation()->getContext();
     int contextComponentId = contextComponent ? contextComponent->getId() : 0;
-    entry->lines.push_back(Line(contextComponentId, nullptr, opp_strdup(banner)));
+    entry->lines.push_back(Line(contextComponentId, LogLevel::LOGLEVEL_INFO, nullptr, opp_strdup(banner)));
 
     emit logLineAdded();
 }
 
 
 
-void LogBuffer::addLogLine(const char *prefix, const char *text, int len)
+void LogBuffer::addLogLine(LogLevel logLevel, const char *prefix, const char *text, int len)
 {
     if (entries.empty()) {
         Entry *entry = new Entry();
@@ -93,7 +93,7 @@ void LogBuffer::addLogLine(const char *prefix, const char *text, int len)
     Entry *entry = entries.back();
     cComponent *contextComponent = getSimulation()->getContext();
     int contextComponentId = contextComponent ? contextComponent->getId() : 0;
-    entry->lines.push_back(Line(contextComponentId, opp_strdup(prefix), opp_strdup(text, len)));
+    entry->lines.push_back(Line(contextComponentId, logLevel, opp_strdup(prefix), opp_strdup(text, len)));
 
     emit logLineAdded();
 }

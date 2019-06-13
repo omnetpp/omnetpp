@@ -40,10 +40,11 @@ class QTENV_API LogBuffer : public QObject
   public:
     struct Line {
         int contextComponentId;
+        LogLevel logLevel;
         const char *prefix;
         const char *line;  // including newline
-        Line(int contextComponentId, const char *prefix, const char *line) :
-            contextComponentId(contextComponentId), prefix(prefix), line(line) {}
+        Line(int contextComponentId, LogLevel logLevel, const char *prefix, const char *line) :
+            contextComponentId(contextComponentId), logLevel(logLevel), prefix(prefix), line(line) {}
     };
     struct MessageSend {
         cMessage *msg;
@@ -80,8 +81,8 @@ class QTENV_API LogBuffer : public QObject
 
     void addInitialize(cComponent *component, const char *banner);
     void addEvent(eventnumber_t e, simtime_t t, cModule *moduleIds, const char *banner);
-    void addLogLine(const char *prefix, const char *text) { addLogLine(prefix, text, strlen(text)); }
-    void addLogLine(const char *prefix, const char *text, int len);
+    void addLogLine(LogLevel logLevel, const char *prefix, const char *text) { addLogLine(logLevel, prefix, text, strlen(text)); }
+    void addLogLine(LogLevel logLevel, const char *prefix, const char *text, int len);
     void addInfo(const char *text) { addInfo(text, strlen(text)); }
     void addInfo(const char *text, int len);
 

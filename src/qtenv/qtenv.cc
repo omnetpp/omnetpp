@@ -2233,7 +2233,7 @@ void Qtenv::log(cLogEntry *entry)
     // insert into log buffer
     cModule *module = getSimulation()->getContextModule();
     if (module)
-        logBuffer.addLogLine(prefix.c_str(), s, n);
+        logBuffer.addLogLine(entry->logLevel, prefix.c_str(), s, n);
     else
         logBuffer.addInfo(s, n);
 }

@@ -337,7 +337,13 @@ QString EventEntryLinesProvider::getLineText(LogBuffer::Entry *entry, int lineIn
 
         QString text;
         if (line.prefix) {
-            text += "\x1b[37m";
+            switch (entry->lines[lineIndex].logLevel) {
+                case LOGLEVEL_WARN: text += "\x1b[33m"; break;
+                case LOGLEVEL_ERROR: text += "\x1b[31m"; break;
+                case LOGLEVEL_FATAL: text += "\x1b[91m"; break;
+                default: text += "\x1b[37m"; break;
+            }
+
             text += line.prefix;
             text += "\x1b[0m";
         }
