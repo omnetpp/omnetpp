@@ -15,7 +15,10 @@
       <layout x:class='GridLayout' numColumns='2'/>
 
       <x:children>
-            <label text="Filter expression:"/>
+            <!-- TODO should not be combos, but multiline texts -->
+            <label text="Filter expression:">
+                <layoutData x:class="GridData" horizontalAlignment="BEGINNING" verticalAlignment="BEGINNING"/>
+            </label>
             <combo x:id="filter" x:style="BORDER" x:id.isFilter="true"> 
                 <layoutData x:class="GridData" horizontalAlignment="FILL"  verticalAlignment='FILL'  grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true"/>
             </combo>

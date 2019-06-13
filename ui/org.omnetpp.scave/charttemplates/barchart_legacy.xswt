@@ -15,7 +15,9 @@
       <layout x:class='GridLayout' numColumns='2'/>
 
       <x:children>
-            <label text="Filter expression:"/>
+            <label text="Filter expression:">
+            	<layoutData x:class="GridData" horizontalAlignment="BEGINNING" verticalAlignment="BEGINNING"/>
+            </label>
             <text x:id="filter" x:style="BORDER|WRAP|MULTI" x:id.isFilter="true"> 
                 <layoutData x:class="GridData" horizontalAlignment="FILL" verticalAlignment="FILL" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true"/>
             </text>

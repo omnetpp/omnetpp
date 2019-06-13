@@ -11,14 +11,16 @@
   <x:children>
     <group text=''>
 
-      <layoutData x:class='GridData' horizontalAlignment='FILL' verticalAlignment='FILL' grabExcessHorizontalSpace='true'/>
+      <layoutData x:class='GridData' horizontalAlignment='FILL' verticalAlignment='FILL' grabExcessHorizontalSpace='true' grabExcessVerticalSpace='true'/>
       <layout x:class='GridLayout' numColumns='2'/>
 
       <x:children>
-            <label text="Common filter part:"/>
-            <combo x:id="common_filter" x:style="BORDER"> <!-- x:id.content="scalarnames,itervarnames,runattrnames" --> 
-                <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
-            </combo>
+            <label text="Common filter part:">
+            	<layoutData x:class="GridData" horizontalAlignment="BEGINNING" verticalAlignment="BEGINNING"/>
+            </label>
+			<text x:id="common_filter" x:style="BORDER|WRAP|MULTI" x:id.isFilter="true"> 
+                <layoutData x:class="GridData" horizontalAlignment="FILL" verticalAlignment="FILL" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true"/>
+            </text>
 
             <label text="Filter for X axis data:"/>
             <combo x:id="xaxis_filter" x:id.content="scalarnames,itervarnames,runattrnames" x:style="BORDER">
