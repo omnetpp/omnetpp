@@ -57,6 +57,8 @@ struct SCAVE_API ExporterType
 class SCAVE_API Exporter
 {
     protected:
+        double vectorStartTime = -INFINITY, vectorEndTime = INFINITY;
+    protected:
         virtual void checkOptionKey(ExporterType *desc, const std::string& key);
         virtual void checkItemTypes(const IDList& idlist, int supportedTypes);
     public:
@@ -64,6 +66,8 @@ class SCAVE_API Exporter
         virtual ~Exporter() {}
         virtual void setOption(const std::string& key, const std::string& value) = 0;
         virtual void setOptions(const StringMap& options);
+        virtual void setVectorStartTime(double startTime) {vectorStartTime = startTime;}
+        virtual void setVectorEndTime(double endTime) {vectorEndTime = endTime;}
         virtual void saveResults(const std::string& fileName, ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor=nullptr) = 0;
 };
 

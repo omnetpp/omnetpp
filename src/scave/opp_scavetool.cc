@@ -22,6 +22,7 @@
 #include "common/stringutil.h"
 #include "common/stringtokenizer.h"
 #include "common/formattedprinter.h"
+#include "common/unitconversion.h"
 #include "common/stlutil.h"
 #include "resultfilemanager.h"
 #include "indexfileutils.h"
@@ -112,6 +113,8 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.option("-f, --filter <filter>", "Filter for result items (vectors, scalars, statistics, histograms) matched by filter expression (try 'help filter')");
         help.option("-w, --add-fields-as-scalars", "Add statistics fields (count, sum, mean, stddev, min, max, etc) as scalars");
         help.option("-y, --add-itervars-as-scalars", "Add iteration variables as scalars");
+        help.option("--start-time", "Limit vector data to after the given simulation time (inclusive)");
+        help.option("--end-time", "Limit vector data to before the given simulation time (exclusive)");
         help.option("-o <filename>", "Output file name, or '-' for the standard output. This option is mandatory.");
         help.option("-F <format>", "Selects the exporter. The exporter's operation may further be customized via -x options.");
         help.option("-x <key>=<value>", "Option for the exporter. This option may occur multiple times.");
@@ -604,6 +607,16 @@ inline void pushCountIfPositive(vector<string>& v, int count, const string& noun
     }
 }
 
+inline double parseTime(const char *str)
+{
+    std::string actualUnit;
+    double d = UnitConversion::parseQuantity(str, actualUnit);
+    if (actualUnit.empty())
+        return d;
+    else
+        return UnitConversion::convertUnit(d, actualUnit.c_str(), "s");
+}
+
 void ScaveTool::exportCommand(int argc, char **argv)
 {
     vector<string> opt_fileNames;
@@ -614,6 +627,8 @@ void ScaveTool::exportCommand(int argc, char **argv)
     bool opt_indexingAllowed = true;
     bool opt_includeFields = false;
     bool opt_includeItervars = false;
+    double opt_vectorStartTime = -INFINITY;
+    double opt_vectorEndTime = INFINITY;
     string opt_fileName;
     string opt_exporter;
     vector<string> opt_exporterOptions;
@@ -636,6 +651,10 @@ void ScaveTool::exportCommand(int argc, char **argv)
             opt_includeFields = true;
         else if (opt == "-y" || opt == "--add-itervars-as-scalars")
             opt_includeItervars = true;
+        else if (opt == "--start-time" && i != argc-1)
+            opt_vectorStartTime = parseTime(argv[++i]);
+        else if (opt == "--end-time" && i != argc-1)
+            opt_vectorEndTime = parseTime(argv[++i]);
         else if (opt == "-o" && i != argc-1)
             opt_fileName = argv[++i];
         else if (opt == "-F" && i != argc-1)
@@ -675,6 +694,9 @@ void ScaveTool::exportCommand(int argc, char **argv)
             throw opp_runtime_error("Invalid exporter option '%s': <option>=<value> expected", item.c_str());
         exporterOptions[opp_substringbefore(item, "=")] = opp_substringafter(item, "=");
     }
+
+    exporter->setVectorStartTime(opt_vectorStartTime);
+    exporter->setVectorEndTime(opt_vectorEndTime);
 
     // resolve -T, filter by result type
     if (opt_resultTypeFilterStr != "")

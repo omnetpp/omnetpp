@@ -359,7 +359,7 @@ void JsonExporter::saveResults(const std::string& fileName, ResultFileManager *m
         IDList vectors = idlist.filterByTypes(ResultFileManager::VECTOR);
         if (!vectors.isEmpty()) {
             // compute vector data
-            std::vector<XYArray *> xyArrays = readVectorsIntoArrays(manager, vectors, true, true);
+            std::vector<XYArray *> xyArrays = readVectorsIntoArrays(manager, vectors, true, true, std::numeric_limits<size_t>::max(), vectorStartTime, vectorEndTime);
             Assert((int)xyArrays.size() == vectors.size());
 
             // export

@@ -44,6 +44,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IExportWizard;
@@ -53,6 +54,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.ide.IDE;
+import org.omnetpp.common.engine.UnitConversion;
 import org.omnetpp.common.ui.SWTFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
@@ -137,6 +139,11 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
         return page != null && resultFileManager != null && super.canFinish();
     }
 
+    private static double parseTime(String str) {
+        String unit = UnitConversion.parseQuantityForUnit(str);
+        return UnitConversion.parseQuantity(str, unit.isEmpty() ? "" : "s");
+    }
+
     @Override
     public boolean performFinish() {
         if (page != null && resultFileManager != null) {
@@ -152,6 +159,17 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
                         // log but otherwise ignore the error
                         ScavePlugin.logError("Cannot set option " + widgetName + "=" + value + " on " + format + " exporter", e);
                     }
+                }
+
+                // set vector time limits if applicable
+                if (page.startTimeText != null) {
+                    String startText = page.startTimeText.getText();
+                    if (!startText.trim().isEmpty())
+                        exporter.setVectorStartTime(parseTime(startText));
+
+                    String endText = page.endTimeText.getText();
+                    if (!endText.trim().isEmpty())
+                        exporter.setVectorEndTime(parseTime(endText));
                 }
 
                 final String filename = page.getFilePath().toOSString();
@@ -199,7 +217,7 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
                 long fileSize = new File(filename).length();
                 long MiB = 1024*1024;
                 if (fileSize >= 10*MiB) {
-                    boolean ok = MessageDialog.openConfirm(getShell(), "Confirm", "Exported file is relatively large (~" + (long)(fileSize/MiB) + "MB), still open it?");
+                    boolean ok = MessageDialog.openConfirm(getShell(), "Confirm", "Exported file is relatively large (~" + fileSize/MiB + "MB), still open it?");
                     if (!ok)
                         return;
                 }
@@ -230,6 +248,8 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
     class Page extends WizardPage
     {
         private Text filenameText;
+        private Text startTimeText;
+        private Text endTimeText;
         private Map<String,Control> widgetMap;
         private Button openAfterwardsCheckbox;
 
@@ -245,6 +265,7 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
             Composite panel = SWTFactory.createComposite(parent, 1, 1, SWTFactory.GRAB_AND_FILL_BOTH);
             addCommonFields(panel);
             addXswtForm(panel);
+            addCommonBottomFields(panel);
             openAfterwardsCheckbox = SWTFactory.createCheckButton(panel, "Open with default editor afterwards", null, false, 1);
             ((GridData)openAfterwardsCheckbox.getLayoutData()).horizontalIndent = 8;
             restoreDialogSettings();
@@ -290,6 +311,16 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
                 IStatus status = new Status(IStatus.ERROR, ScavePlugin.PLUGIN_ID, "Error showing the XSWT form of exporter '" + format + "'", e);
                 ScavePlugin.log(status);
                 ErrorDialog.openError(getShell(), "Error", "Cannot add exporter options to Export dialog.", status);
+            }
+        }
+
+        protected void addCommonBottomFields(Composite parent) {
+            if ((exporterType.getSupportedResultTypes() & resultFileManager.VECTOR) > 0) {
+                Group vectorLimit = SWTFactory.createGroup(parent, "Vector time limits", 2, 1, SWTFactory.GRAB_AND_FILL_HORIZONTAL);
+                SWTFactory.createLabel(vectorLimit, "Start time:", 1);
+                startTimeText = SWTFactory.createText(vectorLimit, SWT.BORDER, 1, SWTFactory.GRAB_AND_FILL_HORIZONTAL);
+                SWTFactory.createLabel(vectorLimit, "End time:", 1);
+                endTimeText = SWTFactory.createText(vectorLimit, SWT.BORDER, 1, SWTFactory.GRAB_AND_FILL_HORIZONTAL);
             }
         }
 
@@ -358,7 +389,7 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
             IPath path = getFilePath();
             if (path.isEmpty()) {
                 directory = getDefaultExportDirectory();
-                fileName = "Untitled." + getDefaultExportDirectory();
+                fileName = "Untitled." + exporterType.getFileExtension();
             } else {
                 directory = path.removeLastSegments(1).toOSString();
                 fileName = path.lastSegment();
@@ -368,6 +399,7 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
             dialog.setText("Save to File");
             dialog.setFilterPath(directory);
             dialog.setFileName(fileName);
+            dialog.setOverwrite(true);
             dialog.setFilterExtensions(new String[] {"*." + exporterType.getFileExtension(), "*.*"});
             String selectedFileName = dialog.open();
             if (selectedFileName != null)

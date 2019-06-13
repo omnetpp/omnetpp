@@ -146,7 +146,7 @@ void OmnetppVectorFileExporter::saveResults(const std::string& fileName, ResultF
         }
 
         // write data for all vectors
-        std::vector<XYArray *> xyArrays = readVectorsIntoArrays(manager, filteredList, true, true);
+        std::vector<XYArray *> xyArrays = readVectorsIntoArrays(manager, filteredList, true, true, std::numeric_limits<size_t>::max(), vectorStartTime, vectorEndTime);
         Assert((int)xyArrays.size() == filteredList.size());
 
         for (int i = 0; i < filteredList.size(); i++) {

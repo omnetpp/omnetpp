@@ -269,7 +269,7 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
     if (haveVectors) {
         // load vector data
         IDList vectorIDs = idlist.filterByTypes(ResultFileManager::VECTOR);
-        std::vector<XYArray *> xyArrays = readVectorsIntoArrays(manager, vectorIDs, true, false);
+        std::vector<XYArray *> xyArrays = readVectorsIntoArrays(manager, vectorIDs, true, false, std::numeric_limits<size_t>::max(), vectorStartTime, vectorEndTime);
         assert((int)xyArrays.size() == vectorIDs.size());
 
         // write vectors
