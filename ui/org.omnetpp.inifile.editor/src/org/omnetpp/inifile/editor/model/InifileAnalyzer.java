@@ -127,6 +127,7 @@ public final class InifileAnalyzer {
     private InifileProblemMarkerSynchronizer markers; // only used during analyze()
     private ListenerList<IPropertyChangeListener> propertyChangeListeners = new ListenerList<>();
     private ListenerList<IAnalysisListener> analysisListeners = new ListenerList<>();
+
     // InifileDocument, InifileAnalyzer, and NedResources are all accessed from
     // background threads (must be synchronized), and the analyze procedure needs
     // NedResources -- so use NedResources as lock to prevent deadlocks
@@ -471,6 +472,7 @@ public final class InifileAnalyzer {
                 switch (res.type) {
                 case UNASSIGNED: sectionData.unassignedParams.add(res); break;
                 case IMPLICITDEFAULT: sectionData.implicitlyAssignedParams.add(res); break;
+                default: // nothing to do
                 }
 
                 if (res.key != null) {
@@ -1058,7 +1060,10 @@ public final class InifileAnalyzer {
         case CFG_FILENAME:
         case CFG_FILENAMES:
         case CFG_PATH:
-            //XXX
+            //TODO
+            break;
+        case CFG_CUSTOM:
+            // cannot validate
             break;
         }
         return null;
