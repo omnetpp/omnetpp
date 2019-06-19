@@ -20,6 +20,8 @@
 #include "IPlace.h"
 #include "ITransition.h"
 
+using namespace omnetpp;
+
 /**
  * Implements a Petri Net place
  */

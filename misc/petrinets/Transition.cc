@@ -13,6 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
+#include <algorithm>
 #include "Transition.h"
 #include "IPlace.h"
 
@@ -35,7 +36,7 @@ void TransitionRegistry::registerTransition(ITransition *t)
 
 void TransitionRegistry::deregisterTransition(ITransition *t)
 {
-    std::vector<ITransition*>::iterator it = transitions.find(t);
+    std::vector<ITransition*>::iterator it = std::find(transitions.begin(), transitions.end(), t);
     ASSERT(it != transitions.end());
     transitions.erase(it);
 }
@@ -49,7 +50,7 @@ void TransitionRegistry::scheduleNextFiring()
         if (transitions[i]->canFire())
             armedList.push_back(transitions[i]);
     if (!armedList.empty()) {
-        int k = intrand(armedList.size());
+        int k = getSimulation()->getSystemModule()->intrand(armedList.size());
         armedList[k]->scheduleFiring();
     }
 }
@@ -164,7 +165,7 @@ void Transition::startFire()
     if (transitionTime==0)
         endFire();
     else {
-        TransitionRegistry->getInstance()->scheduleNextFiring();
+        TransitionRegistry::getInstance()->scheduleNextFiring();
         scheduleAt(simTime()+transitionTime, endTransitionEvent); // with strongest priority, i.e. zero
     }
 }
@@ -180,15 +181,17 @@ void Transition::endFire()
         outputPlaces[i].place->addTokens(outputPlaces[i].multiplicity);
     }
 
-    // during firing we didn't listen to notifications, so we need to check again
-    if (canFire())
-        arm();
-    TransitionRegistry->getInstance()->scheduleNextFiring();
+    TransitionRegistry::getInstance()->scheduleNextFiring();
+}
+
+void Transition::scheduleFiring()
+{
+    scheduleAt(simTime(), fireEvent);
 }
 
 void Transition::updateGUI()
 {
-    if (ev.isGUI()) {
+    if (hasGUI()) {
         if (endTransitionEvent->isScheduled())
             getDisplayString().setTagArg("b", 3, "yellow");  // firing
         else if (fireEvent->isScheduled())

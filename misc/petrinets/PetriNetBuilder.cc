@@ -14,6 +14,9 @@
 //
 
 #include <omnetpp.h>
+#include "Transition.h"
+
+using namespace omnetpp;
 
 /**
  * Builds a network dynamically, with the topology coming from a
@@ -194,6 +197,8 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
                 more = true;
         }
     }
+
+    TransitionRegistry::getInstance()->scheduleNextFiring();
 
 }
 

@@ -12,6 +12,8 @@
 
 #include <omnetpp.h>
 
+using namespace omnetpp;
+
 class IPlace;
 
 /**
@@ -26,6 +28,11 @@ class ITransition
          * A transition gets notified when number of tokens changes on its input places
          */
         virtual void numTokensChanged(IPlace *inputPlace) = 0;
+
+        virtual bool canFire() = 0;
+
+        virtual void scheduleFiring() = 0;
+
 };
 
 #endif

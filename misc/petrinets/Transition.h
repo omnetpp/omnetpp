@@ -19,6 +19,8 @@
 #include <omnetpp.h>
 #include "ITransition.h"
 
+using namespace omnetpp;
+
 //FIXME to separate file
 class TransitionRegistry
 {
@@ -29,11 +31,11 @@ class TransitionRegistry
     TransitionRegistry() {}
     ~TransitionRegistry() {}
   public:
-    TransitionRegistry *getInstance();
+    static TransitionRegistry *getInstance();
     void registerTransition(ITransition *t);
     void deregisterTransition(ITransition *t);
     void scheduleNextFiring();
-}
+};
 
 /**
  * A transition in a Petri net
@@ -70,6 +72,7 @@ class Transition : public cSimpleModule, public ITransition
     virtual void endFire();
     virtual void discoverNeighbours();
     virtual void updateGUI();
+    virtual void scheduleFiring();
 
   public:
     virtual void numTokensChanged(IPlace *inputPlace);

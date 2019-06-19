@@ -31,7 +31,7 @@ Created with Workflow PetriNet Designer Version 1.0 (woped.org)
     </place>
     <place id="p5">
       <name>
-        <text>p4</text>
+        <text>p5</text>
         <graphics>
           <offset y="240" x="270"/>
         </graphics>
@@ -43,7 +43,7 @@ Created with Workflow PetriNet Designer Version 1.0 (woped.org)
     </place>
     <place id="p4">
       <name>
-        <text>p3</text>
+        <text>p4</text>
         <graphics>
           <offset y="100" x="270"/>
         </graphics>
@@ -55,7 +55,7 @@ Created with Workflow PetriNet Designer Version 1.0 (woped.org)
     </place>
     <place id="p3">
       <name>
-        <text>p2</text>
+        <text>p3</text>
         <graphics>
           <offset y="240" x="150"/>
         </graphics>
@@ -67,7 +67,7 @@ Created with Workflow PetriNet Designer Version 1.0 (woped.org)
     </place>
     <place id="p2">
       <name>
-        <text>p1</text>
+        <text>p2</text>
         <graphics>
           <offset y="100" x="150"/>
         </graphics>
@@ -79,7 +79,7 @@ Created with Workflow PetriNet Designer Version 1.0 (woped.org)
     </place>
     <place id="p1">
       <name>
-        <text>start</text>
+        <text>start-p1</text>
         <graphics>
           <offset y="170" x="30"/>
         </graphics>
@@ -94,7 +94,7 @@ Created with Workflow PetriNet Designer Version 1.0 (woped.org)
     </place>
     <place id="p10">
       <name>
-        <text>end</text>
+        <text>end-p10</text>
         <graphics>
           <offset y="230" x="800"/>
         </graphics>
@@ -238,7 +238,7 @@ Created with Workflow PetriNet Designer Version 1.0 (woped.org)
         </graphics>
       </name>
       <graphics>
-        <position y="188" x="501"/>
+        <position y="258" x="501"/>
         <dimension y="40" x="40"/>
       </graphics>
       <toolspecific version="1.0" tool="WoPeD">
@@ -263,11 +263,11 @@ Created with Workflow PetriNet Designer Version 1.0 (woped.org)
       <name>
         <text>check</text>
         <graphics>
-          <offset y="230" x="500"/>
+          <offset y="230" x="550"/>
         </graphics>
       </name>
       <graphics>
-        <position y="188" x="501"/>
+        <position y="118" x="501"/>
         <dimension y="40" x="40"/>
       </graphics>
       <toolspecific version="1.0" tool="WoPeD">

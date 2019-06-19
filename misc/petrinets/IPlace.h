@@ -12,6 +12,8 @@
 
 #include <omnetpp.h>
 
+using namespace omnetpp;
+
 /**
  * The following interface must be implemented by a Petri Net place.
  */

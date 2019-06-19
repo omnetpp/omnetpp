@@ -57,7 +57,7 @@ void Place::removeTokens(int n)
 
 void Place::numTokensChanged()
 {
-    if (ev.isGUI())
+    if (hasGUI())
         getDisplayString().setTagArg("t", 0, numTokens);
 
     // notify output transitions
