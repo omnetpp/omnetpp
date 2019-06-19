@@ -39,7 +39,7 @@ To install the required packages, type in the terminal:
 
   $ sudo apt-get install build-essential gcc g++ bison flex perl \
        python python3 qt5-default libqt5opengl5-dev \
-       libxml2-dev zlib1g-dev default-jre doxygen graphviz libwebkitgtk-1.0
+       libxml2-dev zlib1g-dev default-jre doxygen graphviz libwebkitgtk-3.0-0
 
 To use Qtenv with 3D visualization support, install the development packages
 for OpenSceneGraph (3.2 or later) and the osgEarth (2.7 or later) packages. (You
