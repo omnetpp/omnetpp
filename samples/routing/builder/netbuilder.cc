@@ -132,23 +132,7 @@ void NetBuilder::buildNetwork(cModule *parent)
         connect(destOut, srcIn, delay, error, datarate);
     }
 
-    std::map<long, cModule *>::iterator it;
-
-    // final touches: buildinside, initialize()
-    for (it = nodeid2mod.begin(); it != nodeid2mod.end(); ++it) {
-        cModule *mod = it->second;
-        mod->buildInside();
-    }
-
-    // multi-stage init
-    bool more = true;
-    for (int stage = 0; more; stage++) {
-        more = false;
-        for (it = nodeid2mod.begin(); it != nodeid2mod.end(); ++it) {
-            cModule *mod = it->second;
-            if (mod->callInitialize(stage))
-                more = true;
-        }
-    }
+    // initialization will simply skip already-initialized modules instead of causing error
+    parent->callInitialize();
 }
 
