@@ -21,6 +21,7 @@
 *.vci
 *.pyc
 .ccls-cache
+.vscode/ipch
 */__pycache__/*
 *.gdb_history
 *.last-copts

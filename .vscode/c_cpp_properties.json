@@ -1,0 +1,28 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/include/**",
+                "${workspaceFolder}/src/**",
+                "${workspaceFolder}/samples/**"
+            ],
+            "defines": [
+                "HAVE_SWAPCONTEXT",
+                "WITH_MPI",
+                "PREFER_QTENV",
+                "WITH_QTENV",
+                "WITH_PARSIM",
+                "WITH_NETBUILDER",
+                "WITH_LIBXML",
+                "WITH_OSG",
+                "WITH_OSGEARTH"
+            ],
+            "compilerPath": "/usr/lib/ccache/clang",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 4
+}
