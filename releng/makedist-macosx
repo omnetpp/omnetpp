@@ -55,7 +55,7 @@ echo "Preparing to create distribution package: $what, version: $VERSION platfor
 cp -r ide/macosx/* ide
 mv ide/features ide/Eclipse.app/Contents/Eclipse
 mv ide/plugins ide/Eclipse.app/Contents/Eclipse
-mv ide/Eclipse.app ide/$what.app
+mv ide/Eclipse.app ide/opp_ide.app
 rm -rf ide/win32 ide/win64 ide/linux ide/linux64 ide/macosx
 
 # copy the self extracting toolchain file into the distro
