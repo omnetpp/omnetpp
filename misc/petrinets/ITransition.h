@@ -29,10 +29,15 @@ class ITransition
          */
         virtual void numTokensChanged(IPlace *inputPlace) = 0;
 
+        /**
+         * Return true if the transition can fire (is armed).
+         */
         virtual bool canFire() = 0;
 
+        /**
+         * Fire, or schedule immediate (zero-delay) firing of the transition.
+         */
         virtual void scheduleFiring() = 0;
-
 };
 
 #endif

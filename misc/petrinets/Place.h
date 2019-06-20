@@ -31,9 +31,10 @@ class Place : public cSimpleModule, public IPlace
     int numTokens;
 
   protected:
-    virtual int numInitStages() const {return 2;}
-    virtual void initialize(int stage);
-    virtual void handleMessage(cMessage *msg);
+    virtual int numInitStages() const override {return 2;}
+    virtual void initialize(int stage) override;
+    virtual void handleMessage(cMessage *msg) override;
+    virtual void refreshDisplay() const override;
 
     // helpers
     virtual void numTokensChanged();
@@ -41,9 +42,9 @@ class Place : public cSimpleModule, public IPlace
 
   public:
     // IPlace methods:
-    virtual int getNumTokens();
-    virtual void addTokens(int n);
-    virtual void removeTokens(int n);
+    virtual int getNumTokens() override;
+    virtual void addTokens(int n) override;
+    virtual void removeTokens(int n) override;
 };
 
 #endif

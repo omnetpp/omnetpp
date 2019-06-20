@@ -18,24 +18,9 @@
 
 #include <omnetpp.h>
 #include "ITransition.h"
+#include "TransitionScheduler.h"
 
 using namespace omnetpp;
-
-//FIXME to separate file
-class TransitionRegistry
-{
-  protected:
-    static TransitionRegistry *instance;
-    std::vector<ITransition*> transitions;
-  protected:
-    TransitionRegistry() {}
-    ~TransitionRegistry() {}
-  public:
-    static TransitionRegistry *getInstance();
-    void registerTransition(ITransition *t);
-    void deregisterTransition(ITransition *t);
-    void scheduleNextFiring();
-};
 
 /**
  * A transition in a Petri net
@@ -53,6 +38,7 @@ class Transition : public cSimpleModule, public ITransition
     bool canFireIsValid;
 */
 
+    TransitionScheduler *transitionScheduler = nullptr;
     struct Neighbour { IPlace *place; int multiplicity; }; // multiplicity is negative for inhibitor arcs
     std::vector<Neighbour> inputPlaces;
     std::vector<Neighbour> outputPlaces;
@@ -62,20 +48,20 @@ class Transition : public cSimpleModule, public ITransition
     virtual ~Transition();
 
   protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
+    virtual void refreshDisplay() const override;
 
     // utility methods
-    virtual bool canFire();
     virtual bool evaluateGuardCondition() {return true;} // override if needed!
     virtual void startFire();
     virtual void endFire();
     virtual void discoverNeighbours();
-    virtual void updateGUI();
-    virtual void scheduleFiring();
 
   public:
-    virtual void numTokensChanged(IPlace *inputPlace);
+    virtual bool canFire() override;
+    virtual void scheduleFiring() override;
+    virtual void numTokensChanged(IPlace *inputPlace) override;
 
 };
 

@@ -13,18 +13,13 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
+
 //
-// Represents a transition in a Petri net.
-// Guard condition is to be expressed in C++.
+// Required for the correct operation of the Petri Net model. Exactly one
+// instance of this module type must be present in the network. 
 //
-simple Transition
+simple TransitionScheduler
 {
     parameters:
-        int priority = default(0);
-        double transitionTime @unit(s) = default(0s);
-        string transitionSchedulerModule = default("scheduler");
-        @display("b=10,40,rect,grey,,1");
-    gates:
-        input in[];
-        output out[];
+        @display("i=block/cogwheel_s");
 }

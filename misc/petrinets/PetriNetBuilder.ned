@@ -24,4 +24,8 @@ simple PetriNetBuilder
         @display("i=block/cogwheel_s");
         xml pnmlFile;  // PNML file to read the network from
         string id = default(""); // id of the network in the file; if empty, the first network will be chosen
+        string placeNedType = default("Place");
+        string transitionNedType = default("Transition");
+        string arcNedType = default("Arc");
+        string transitionSchedulerModule = default("scheduler");
 }

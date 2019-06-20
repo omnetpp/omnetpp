@@ -15,6 +15,7 @@
 
 #include <omnetpp.h>
 #include "Transition.h"
+#include "TransitionScheduler.h"
 
 using namespace omnetpp;
 
@@ -25,8 +26,8 @@ using namespace omnetpp;
 class PetriNetBuilder : public cSimpleModule
 {
   protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
     void buildNetwork(cModule *parent);
 };
 
@@ -53,14 +54,14 @@ void PetriNetBuilder::handleMessage(cMessage *msg)
 inline const char *getTextFrom(cXMLElement *node, const char *xpath, const char *defaultValue)
 {
     cXMLElement *element = node->getElementByPath(xpath);
-    const char *s = element ? element->getNodeValue() : NULL;
+    const char *s = element ? element->getNodeValue() : nullptr;
     return s ? s : defaultValue;
 }
 
 inline const char *getAttributeFrom(cXMLElement *node, const char *xpath, const char *attrName, const char *defaultValue)
 {
     cXMLElement *element = node->getElementByPath(xpath);
-    const char *s = element ? element->getAttribute(attrName) : NULL;
+    const char *s = element ? element->getAttribute(attrName) : nullptr;
     return s ? s : defaultValue;
 }
 
@@ -81,9 +82,9 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
         error("Petri net description not found in %s", root->getSourceLocation());
 
     // find module types
-    const char *placeTypeName = "Place"; //XXX parameter
-    const char *transitionTypeName = "Transition"; //XXX parameter
-    const char *arcTypeName = "Arc"; //XXX parameter
+    const char *placeTypeName = par("placeNedType");
+    const char *transitionTypeName = par("transitionNedType");
+    const char *arcTypeName = par("arcNedType");
     cModuleType *placeModuleType = cModuleType::find(placeTypeName);
     if (!placeModuleType)
         throw cRuntimeError("module type `%s' not found", placeTypeName);
@@ -114,7 +115,7 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
         placeModule->getDisplayString().setTagArg("p", 0, xPos);
         placeModule->getDisplayString().setTagArg("p", 1, yPos);
 
-        const char *marking = getTextFrom(place, "initialMarking/text", NULL);
+        const char *marking = getTextFrom(place, "initialMarking/text", nullptr);
         if (marking)
             placeModule->par("numInitialTokens").parse(marking);
 
@@ -177,29 +178,34 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
 
     EV << "}\n";
 
-    std::map<std::string,cModule *>::iterator it;
-
-    // final touches: buildinside, initialize()
-    for (it=id2mod.begin(); it!=id2mod.end(); ++it)
-    {
-        cModule *mod = it->second;
-        mod->buildInside();
+    // final touches: buildInside(), initialize()
+    if (OMNETPP_VERSION >= 0x0600) {
+    	// initialization will simply skip already-initialized modules instead of causing error
+        getSystemModule()->callInitialize();
     }
-
-    // multi-stage init
-    bool more = true;
-    //TODO initialize channels too!!!
-    for (int stage=0; more; stage++) {
-        more = false;
-        for (it=id2mod.begin(); it!=id2mod.end(); ++it) {
+    else {
+    	std::map<std::string,cModule *>::iterator it;
+        for (it=id2mod.begin(); it!=id2mod.end(); ++it)
+        {
             cModule *mod = it->second;
-            if (mod->callInitialize(stage))
-                more = true;
+            mod->buildInside();
+        }
+
+        // multi-stage init
+        bool more = true;
+        //TODO initialize channels too!
+        for (int stage=0; more; stage++) {
+            more = false;
+            for (it=id2mod.begin(); it!=id2mod.end(); ++it) {
+                cModule *mod = it->second;
+                if (mod->callInitialize(stage))
+                    more = true;
+            }
         }
     }
 
-    TransitionRegistry::getInstance()->scheduleNextFiring();
-
+    TransitionScheduler *transitionScheduler = dynamic_cast<TransitionScheduler*>(getModuleByPath(par("transitionSchedulerModule").stringValue()));
+    transitionScheduler->scheduleNextFiring();
 }
 
 

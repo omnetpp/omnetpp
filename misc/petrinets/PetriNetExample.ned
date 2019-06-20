@@ -17,6 +17,9 @@
 network Counter
 {
     submodules:
+        scheduler : TransitionScheduler {
+            @display("p=50,50");
+        }
         transition: Transition {
             @display("p=165,194");
         }
@@ -49,6 +52,9 @@ network VendingMachine
 {
     @display("bgb=470,259");
     submodules:
+        scheduler : TransitionScheduler {
+            @display("p=50,50");
+        }
         hot: Place {
             @display("p=106,207");
         }
@@ -102,6 +108,9 @@ network FromPNML
 {
     submodules:
         builder: PetriNetBuilder {
-            pnmlFile = xmldoc("examples/CapacityPlanning.pnml");
+            @display("p=50,50");
+        }
+        scheduler : TransitionScheduler {
+            @display("p=120,50");
         }
 }

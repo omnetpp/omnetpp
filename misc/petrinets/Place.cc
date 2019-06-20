@@ -21,6 +21,7 @@ void Place::initialize(int stage)
 {
     if (stage==0) {
         numTokens = par("numInitialTokens");
+        EV << "Setting up with " << numTokens << " tokens.\n";
         WATCH(numTokens);
     }
     else if (stage==1) {
@@ -31,6 +32,15 @@ void Place::initialize(int stage)
 void Place::handleMessage(cMessage *msg)
 {
     error("this module does not process messages");
+}
+
+void Place::refreshDisplay() const
+{
+    getDisplayString().setTagArg("t", 0, numTokens);
+
+    static char buf[] = "placeX";
+    const char *icon = numTokens <= 4 ? (buf[5]='0'+numTokens, buf) : "placemany";
+    getDisplayString().setTagArg("i", 0, icon);
 }
 
 int Place::getNumTokens()
@@ -57,9 +67,6 @@ void Place::removeTokens(int n)
 
 void Place::numTokensChanged()
 {
-    if (hasGUI())
-        getDisplayString().setTagArg("t", 0, numTokens);
-
     // notify output transitions
     int n = gateSize("out");
     for (int i=0; i<n; i++) {
@@ -72,7 +79,7 @@ void Place::numTokensChanged()
 ITransition *Place::getOutputTransition(int i)
 {
     cGate *g = gate("out", i);
-    if (g->getNextGate() == NULL)
-        return NULL; // not connected
+    if (g->getNextGate() == nullptr)
+        return nullptr; // not connected
     return check_and_cast<ITransition *>(g->getPathEndGate()->getOwnerModule());
 }

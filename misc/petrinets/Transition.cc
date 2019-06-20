@@ -19,54 +19,16 @@
 
 Define_Module(Transition);
 
-TransitionRegistry *TransitionRegistry::instance = NULL;
-
-//FIXME: store only armed transitions!! and: armed(t), disarmed(t)!!!
-TransitionRegistry *TransitionRegistry::getInstance()
-{
-    if (!instance)
-        instance = new TransitionRegistry();
-    return instance;
-}
-
-void TransitionRegistry::registerTransition(ITransition *t)
-{
-    transitions.push_back(t);
-}
-
-void TransitionRegistry::deregisterTransition(ITransition *t)
-{
-    std::vector<ITransition*>::iterator it = std::find(transitions.begin(), transitions.end(), t);
-    ASSERT(it != transitions.end());
-    transitions.erase(it);
-}
-
-void TransitionRegistry::scheduleNextFiring()
-{
-    // choose one randomly among the ones that can fire
-    std::vector<ITransition*> armedList;
-    int n = transitions.size();
-    for (int i=0; i<n; i++)
-        if (transitions[i]->canFire())
-            armedList.push_back(transitions[i]);
-    if (!armedList.empty()) {
-        int k = getSimulation()->getSystemModule()->intrand(armedList.size());
-        armedList[k]->scheduleFiring();
-    }
-}
-
-//----------
-
-
 Transition::Transition()
 {
     fireEvent = endTransitionEvent = NULL;
-    TransitionRegistry::getInstance()->registerTransition(this);
 }
 
 Transition::~Transition()
 {
-    TransitionRegistry::getInstance()->deregisterTransition(this);
+    transitionScheduler = dynamic_cast<TransitionScheduler*>(getModuleByPath(par("transitionSchedulerModule").stringValue()));
+    if (transitionScheduler) // still exists
+        transitionScheduler->deregisterTransition(this);
     cancelAndDelete(fireEvent);
     cancelAndDelete(endTransitionEvent);
 }
@@ -83,6 +45,9 @@ void Transition::initialize()
     endTransitionEvent = new cMessage("endTransition");
 
     discoverNeighbours(); // to be called on every topology change
+
+    transitionScheduler = check_and_cast<TransitionScheduler*>(getModuleByPath(par("transitionSchedulerModule").stringValue()));
+    transitionScheduler->registerTransition(this);
 }
 
 void Transition::discoverNeighbours()
@@ -95,7 +60,7 @@ void Transition::discoverNeighbours()
     inputPlaces.reserve(ni);
     for (int i=0; i<ni; i++) {
         cGate *g = gate("in", i);
-        if (g->getPreviousGate() != NULL) {
+        if (g->getPreviousGate() != nullptr) {
             Neighbour neighbour;
             neighbour.place = check_and_cast<IPlace *>(g->getPathStartGate()->getOwnerModule());
             neighbour.multiplicity = 1; //FIXME read arc's parameter
@@ -107,7 +72,7 @@ void Transition::discoverNeighbours()
     outputPlaces.reserve(no);
     for (int i=0; i<no; i++) {
         cGate *g = gate("out", i);
-        if (g->getNextGate() != NULL) {
+        if (g->getNextGate() != nullptr) {
             Neighbour neighbour;
             neighbour.place = check_and_cast<IPlace *>(g->getPathEndGate()->getOwnerModule());
             neighbour.multiplicity = 1; //FIXME read arc's parameter
@@ -126,17 +91,28 @@ void Transition::handleMessage(cMessage *msg)
         endFire();
     else
         error("unexpected message received");
+}
 
-    updateGUI();
+void Transition::refreshDisplay() const
+{
+    if (endTransitionEvent->isScheduled())
+        getDisplayString().setTagArg("b", 3, "yellow");  // firing
+    else if (fireEvent->isScheduled())
+        getDisplayString().setTagArg("b", 3, "lightblue"); // armed
+    else
+        getDisplayString().setTagArg("b", 3, "grey");  // disabled
 }
 
 void Transition::numTokensChanged(IPlace *)
 {
+    Enter_Method_Silent("numTokensChanged");
     //TODO inputsChanged = true;
 }
 
 bool Transition::canFire()
 {
+    Enter_Method_Silent("canFire");
+
     //TODO cache state
 
     // check if all inputs have enough tokens
@@ -147,6 +123,12 @@ bool Transition::canFire()
             inputPlaces[i].place->getNumTokens() > -inputPlaces[i].multiplicity) // inhibitor arc
             return false;
     return evaluateGuardCondition();
+}
+
+void Transition::scheduleFiring()
+{
+    Enter_Method_Silent("scheduleFiring");
+    scheduleAt(simTime(), fireEvent);
 }
 
 void Transition::startFire()
@@ -165,7 +147,7 @@ void Transition::startFire()
     if (transitionTime==0)
         endFire();
     else {
-        TransitionRegistry::getInstance()->scheduleNextFiring();
+        transitionScheduler->scheduleNextFiring();
         scheduleAt(simTime()+transitionTime, endTransitionEvent); // with strongest priority, i.e. zero
     }
 }
@@ -181,25 +163,5 @@ void Transition::endFire()
         outputPlaces[i].place->addTokens(outputPlaces[i].multiplicity);
     }
 
-    TransitionRegistry::getInstance()->scheduleNextFiring();
+    transitionScheduler->scheduleNextFiring();
 }
-
-void Transition::scheduleFiring()
-{
-    scheduleAt(simTime(), fireEvent);
-}
-
-void Transition::updateGUI()
-{
-    if (hasGUI()) {
-        if (endTransitionEvent->isScheduled())
-            getDisplayString().setTagArg("b", 3, "yellow");  // firing
-        else if (fireEvent->isScheduled())
-            getDisplayString().setTagArg("b", 3, "lightblue"); // armed
-        else
-            getDisplayString().setTagArg("b", 3, "grey");  // disabled
-    }
-}
-
-
-

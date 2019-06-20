@@ -13,18 +13,26 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-//
-// Represents a transition in a Petri net.
-// Guard condition is to be expressed in C++.
-//
-simple Transition
+#ifndef __TRANSITIONSCHEDULER_H__
+#define __TRANSITIONSCHEDULER_H__
+
+#include <omnetpp.h>
+#include "ITransition.h"
+
+using namespace omnetpp;
+
+class TransitionScheduler : public cSimpleModule
 {
-    parameters:
-        int priority = default(0);
-        double transitionTime @unit(s) = default(0s);
-        string transitionSchedulerModule = default("scheduler");
-        @display("b=10,40,rect,grey,,1");
-    gates:
-        input in[];
-        output out[];
-}
+  protected:
+    std::vector<ITransition*> transitions;
+  public:
+    virtual int numInitStages() const override {return 3;}
+    virtual void initialize(int stage) override;
+    void registerTransition(ITransition *t);
+    void deregisterTransition(ITransition *t);
+    bool scheduleNextFiring();
+};
+
+#endif
+
+
