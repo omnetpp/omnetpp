@@ -1372,18 +1372,15 @@ bool cModule::initializeModules(int stage)
         throw cRuntimeError("Internal function initializeModules() may only be called via callInitialize()");
 
     if (stage == 0) {
-        if (initialized())
-            throw cRuntimeError(this, "initialize() already called for this module");
-
         // call buildInside() if user has forgotten to do it; this is needed
         // to make dynamic module creation more robust
         if (!buildInsideCalled())
             buildInside();
     }
 
-    // first call initialize(stage) for this module...
+    // call initialize(stage) for this module, provided it has not been been initialized yet
     int numStages = numInitStages();
-    if (stage < numStages) {
+    if (!initialized() && stage < numStages) {
         // switch context for the duration of the call
         Enter_Method_Silent("initialize(%d)", stage);
         getEnvir()->componentInitBegin(this, stage);
@@ -1403,7 +1400,6 @@ bool cModule::initializeModules(int stage)
     for (SubmoduleIterator it(this); !it.end(); ++it)
         if ((*it)->initializeModules(stage))
             moreStages = true;
-
 
     // as a last step, call handleParameterChange() to notify the component about
     // parameter changes that occured during initialization phase

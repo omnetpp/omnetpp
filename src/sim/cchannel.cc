@@ -110,9 +110,6 @@ bool cChannel::initializeChannel(int stage)
         throw cRuntimeError("Internal function initializeChannel() may only be called via callInitialize()");
 
     if (stage == 0) {
-        if (initialized())
-            throw cRuntimeError(this, "Channel already initialized");
-
         // call finalizeParameters() if user has forgotten to do it; this is needed
         // to make dynamic module/channel creation more robust
         if (!parametersFinalized())
@@ -120,7 +117,7 @@ bool cChannel::initializeChannel(int stage)
     }
 
     int numStages = numInitStages();
-    if (stage < numStages) {
+    if (!initialized() && stage < numStages) {
         // switch context for the duration of the call
         cContextSwitcher tmp(this);
         getEnvir()->componentInitBegin(this, stage);
