@@ -19,12 +19,12 @@ Define_Module(Place);
 
 void Place::initialize(int stage)
 {
-    if (stage==0) {
+    if (stage == 0) {
         numTokens = par("numInitialTokens");
         EV << "Setting up with " << numTokens << " tokens.\n";
         WATCH(numTokens);
     }
-    else if (stage==1) {
+    else if (stage == 1) {
         numTokensChanged();
     }
 }
@@ -68,8 +68,8 @@ void Place::removeTokens(int n)
 void Place::numTokensChanged()
 {
     // notify output transitions
-    int n = gateSize("out");
-    for (int i=0; i<n; i++) {
+    int numOutputs = gateSize("out");
+    for (int i = 0; i < numOutputs; i++) {
         ITransition *transition = getOutputTransition(i);
         if (transition)
             transition->numTokensChanged(this);

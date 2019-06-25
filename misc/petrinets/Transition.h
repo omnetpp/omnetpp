@@ -33,11 +33,6 @@ class Transition : public cSimpleModule, public ITransition
     cMessage *fireEvent;
     cMessage *endTransitionEvent;
 
-/*TODO
-    bool canFireValue;
-    bool canFireIsValid;
-*/
-
     TransitionScheduler *transitionScheduler = nullptr;
     struct Neighbour { IPlace *place; int multiplicity; }; // multiplicity is negative for inhibitor arcs
     std::vector<Neighbour> inputPlaces;

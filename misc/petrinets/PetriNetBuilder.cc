@@ -36,19 +36,12 @@ Define_Module(PetriNetBuilder);
 
 void PetriNetBuilder::initialize()
 {
-    // build the network in event 1, because it is undefined whether the simkernel
-    // will implicitly initialize modules created *during* initialization, or this needs
-    // to be done manually.
-    scheduleAt(0, new cMessage());
+    buildNetwork(getParentModule());
 }
 
 void PetriNetBuilder::handleMessage(cMessage *msg)
 {
-    if (!msg->isSelfMessage())
-        error("This modules does not process messages.");
-
-    delete msg;
-    buildNetwork(getParentModule());
+    throw cRuntimeError("This modules does not process messages.");
 }
 
 inline const char *getTextFrom(cXMLElement *node, const char *xpath, const char *defaultValue)
@@ -65,10 +58,17 @@ inline const char *getAttributeFrom(cXMLElement *node, const char *xpath, const 
     return s ? s : defaultValue;
 }
 
+inline int parseInt(const char *s)
+{
+    return std::stoi(s);
+
+}
 void PetriNetBuilder::buildNetwork(cModule *parent)
 {
     cXMLElement *root = par("pnmlFile");
     const char *netId = par("id");
+    int xOrigin = 100;
+    int yOrigin = 80;
 
     // find the <net> element that contains the network
     cXMLElement *net;
@@ -79,7 +79,7 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
     else
         net = root->getFirstChildWithTag("net");
     if (!net)
-        error("Petri net description not found in %s", root->getSourceLocation());
+        throw cRuntimeError("Petri net description not found in %s", root->getSourceLocation());
 
     // find module types
     const char *placeTypeName = par("placeNedType");
@@ -102,22 +102,21 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
 
     // create places
     cXMLElementList places = net->getChildrenByTagName("place");
-    for (int i=0; i<(int)places.size(); i++)
-    {
+    for (int i = 0; i < (int)places.size(); i++) {
         cXMLElement *place = places[i];
         const char *id = place->getAttribute("id");
         const char *name = getTextFrom(place, "name/text", id);
         cModule *placeModule = placeModuleType->create(name, parent);
-        placeModule->finalizeParameters();
 
         const char *xPos = getAttributeFrom(place, "graphics/position", "x", "");
         const char *yPos = getAttributeFrom(place, "graphics/position", "y", "");
-        placeModule->getDisplayString().setTagArg("p", 0, xPos);
-        placeModule->getDisplayString().setTagArg("p", 1, yPos);
+        placeModule->getDisplayString().setTagArg("p", 0, xOrigin + parseInt(xPos));
+        placeModule->getDisplayString().setTagArg("p", 1, yOrigin + parseInt(yPos));
 
         const char *marking = getTextFrom(place, "initialMarking/text", nullptr);
         if (marking)
             placeModule->par("numInitialTokens").parse(marking);
+        placeModule->finalizeParameters();
 
         id2mod[id] = placeModule;
 
@@ -131,18 +130,24 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
 
     // create transitions
     cXMLElementList transitions = net->getChildrenByTagName("transition");
-    for (int i=0; i<(int)transitions.size(); i++)
-    {
+    std::map<std::string,int> counts; // some files contain multiple transitions with the same name at the same place, nudge them to make them stand out
+    for (int i = 0; i < (int)transitions.size(); i++) {
         cXMLElement *transition = transitions[i];
         const char *id = transition->getAttribute("id");
         const char *name = getTextFrom(transition, "name/text", id);
         cModule *transitionModule = transitionModuleType->create(name, parent);
         transitionModule->finalizeParameters();
 
+        if (counts.find(name) == counts.end())
+            counts[name] = 1;
+        else
+            counts[name]++;
+        int nudge = 2 * (counts[name]-1);
+
         const char *xPos = getAttributeFrom(transition, "graphics/position", "x", "");
         const char *yPos = getAttributeFrom(transition, "graphics/position", "y", "");
-        transitionModule->getDisplayString().setTagArg("p", 0, xPos);
-        transitionModule->getDisplayString().setTagArg("p", 1, yPos);
+        transitionModule->getDisplayString().setTagArg("p", 0, xOrigin + parseInt(xPos) + nudge);
+        transitionModule->getDisplayString().setTagArg("p", 1, yOrigin + parseInt(yPos) + nudge);
 
         id2mod[id] = transitionModule;
 
@@ -155,8 +160,7 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
     // create arcs
     EV << "    connections:\n";
     cXMLElementList arcs = net->getChildrenByTagName("arc");
-    for (int i=0; i<(int)arcs.size(); i++)
-    {
+    for (int i = 0; i < (int)arcs.size(); i++) {
         cXMLElement *arc = arcs[i];
         const char *name = arc->getAttribute("id");
         const char *source = arc->getAttribute("source");
@@ -170,6 +174,7 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
 
         cChannel *arcChannel = arcChannelType->create(name);
         sourceGate->connectTo(targetGate, arcChannel, true);
+        sourceGate->getChannel()->finalizeParameters();
 
         EV << "        " << sourceModule->getFullName() << ".out++"
            << " --> " << arcChannelType->getName() << " --> "
@@ -178,34 +183,10 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
 
     EV << "}\n";
 
-    // final touches: buildInside(), initialize()
-    if (OMNETPP_VERSION >= 0x0600) {
-    	// initialization will simply skip already-initialized modules instead of causing error
-        getSystemModule()->callInitialize();
-    }
-    else {
-    	std::map<std::string,cModule *>::iterator it;
-        for (it=id2mod.begin(); it!=id2mod.end(); ++it)
-        {
-            cModule *mod = it->second;
-            mod->buildInside();
-        }
+    // Note: Newly created modules and channels need to be initialized. Currently it is
+    // done implicitly: since this function is called in init stage 0, the OMNeT++ kernel
+    // will "fall through" to initializing the newly created modules as well.
 
-        // multi-stage init
-        bool more = true;
-        //TODO initialize channels too!
-        for (int stage=0; more; stage++) {
-            more = false;
-            for (it=id2mod.begin(); it!=id2mod.end(); ++it) {
-                cModule *mod = it->second;
-                if (mod->callInitialize(stage))
-                    more = true;
-            }
-        }
-    }
-
-    TransitionScheduler *transitionScheduler = dynamic_cast<TransitionScheduler*>(getModuleByPath(par("transitionSchedulerModule").stringValue()));
-    transitionScheduler->scheduleNextFiring();
 }
 
 

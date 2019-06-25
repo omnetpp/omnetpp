@@ -18,5 +18,5 @@
 //
 channel Arc extends ned.IdealChannel
 {
-    int multiplicity= default(1);
+    int multiplicity = default(1); // Arc multiplicity. Use negative values to create a inhibitor arc.
 }

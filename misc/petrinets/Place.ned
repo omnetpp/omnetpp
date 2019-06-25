@@ -20,7 +20,7 @@ simple Place
 {
     parameters:
         int numInitialTokens = default(0);
-        @display("b=40,,oval,white");
+        @display("i=place0");
     gates:
         input in[];
         output out[];

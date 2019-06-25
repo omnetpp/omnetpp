@@ -36,7 +36,7 @@ Transition::~Transition()
 void Transition::initialize()
 {
     priority = par("priority");
-    if (priority<0 || priority>=32)
+    if (priority < 0 || priority >= 32)
         error("priority=%d is out of range, must be 0..32", priority);
 
     transitionTimePar = &par("transitionTime");
@@ -44,7 +44,7 @@ void Transition::initialize()
     fireEvent = new cMessage("fire");
     endTransitionEvent = new cMessage("endTransition");
 
-    discoverNeighbours(); // to be called on every topology change
+    discoverNeighbours();
 
     transitionScheduler = check_and_cast<TransitionScheduler*>(getModuleByPath(par("transitionSchedulerModule").stringValue()));
     transitionScheduler->registerTransition(this);
@@ -55,27 +55,30 @@ void Transition::discoverNeighbours()
     inputPlaces.clear();
     outputPlaces.clear();
 
-    // TODO merge multiple arcs to the same place
-    int ni = gateSize("in");
-    inputPlaces.reserve(ni);
-    for (int i=0; i<ni; i++) {
+    int numInputs = gateSize("in");
+    inputPlaces.reserve(numInputs);
+    for (int i = 0; i < numInputs; i++) {
         cGate *g = gate("in", i);
         if (g->getPreviousGate() != nullptr) {
             Neighbour neighbour;
             neighbour.place = check_and_cast<IPlace *>(g->getPathStartGate()->getOwnerModule());
-            neighbour.multiplicity = 1; //FIXME read arc's parameter
+            cChannel *arc = g->getPreviousGate()->getChannel();
+            neighbour.multiplicity = arc->par("multiplicity");
+            if (std::find_if(inputPlaces.begin(), inputPlaces.end(), [&] (const Neighbour& j) { return j.place == neighbour.place; }) != inputPlaces.end())
+                throw cRuntimeError("Multiple input arcs from place '%s'", g->getPathStartGate()->getOwnerModule()->getFullPath().c_str());
             inputPlaces.push_back(neighbour);
         }
     }
 
-    int no = gateSize("out");
-    outputPlaces.reserve(no);
-    for (int i=0; i<no; i++) {
+    int numOutputs = gateSize("out");
+    outputPlaces.reserve(numOutputs);
+    for (int i = 0; i < numOutputs; i++) {
         cGate *g = gate("out", i);
         if (g->getNextGate() != nullptr) {
             Neighbour neighbour;
             neighbour.place = check_and_cast<IPlace *>(g->getPathEndGate()->getOwnerModule());
-            neighbour.multiplicity = 1; //FIXME read arc's parameter
+            cChannel *arc = g->getChannel();
+            neighbour.multiplicity = arc->par("multiplicity");
             outputPlaces.push_back(neighbour);
         }
     }
@@ -85,12 +88,12 @@ void Transition::discoverNeighbours()
 
 void Transition::handleMessage(cMessage *msg)
 {
-    if (msg==fireEvent)
+    if (msg == fireEvent)
         startFire();
-    else if (msg==endTransitionEvent)
+    else if (msg == endTransitionEvent)
         endFire();
     else
-        error("unexpected message received");
+        error("Unexpected message received");
 }
 
 void Transition::refreshDisplay() const
@@ -106,21 +109,18 @@ void Transition::refreshDisplay() const
 void Transition::numTokensChanged(IPlace *)
 {
     Enter_Method_Silent("numTokensChanged");
-    //TODO inputsChanged = true;
+    // currently ignored -- may be used for caching
 }
 
 bool Transition::canFire()
 {
     Enter_Method_Silent("canFire");
 
-    //TODO cache state
-
     // check if all inputs have enough tokens
-    int n = inputPlaces.size();
-    for (int i = 0; i < n; i++)
-        if (inputPlaces[i].multiplicity > 0 ?
-            inputPlaces[i].place->getNumTokens() < inputPlaces[i].multiplicity : // normal arc
-            inputPlaces[i].place->getNumTokens() > -inputPlaces[i].multiplicity) // inhibitor arc
+    for (auto& inputPlace : inputPlaces)
+        if (inputPlace.multiplicity > 0 ?
+            inputPlace.place->getNumTokens() < inputPlace.multiplicity : // normal arc
+            inputPlace.place->getNumTokens() > -inputPlace.multiplicity) // inhibitor arc
             return false;
     return evaluateGuardCondition();
 }
@@ -137,14 +137,13 @@ void Transition::startFire()
 
     EV << "startFire: removing tokens from input places\n";
 
-    int n = inputPlaces.size();
-    for (int i = 0; i < n; i++)
-        if (inputPlaces[i].multiplicity > 0)
-            inputPlaces[i].place->removeTokens(inputPlaces[i].multiplicity);
+    for (auto& inputPlace : inputPlaces)
+        if (inputPlace.multiplicity > 0)
+            inputPlace.place->removeTokens(inputPlace.multiplicity);
 
     // do or schedule endFire()
     simtime_t transitionTime = transitionTimePar->doubleValue();
-    if (transitionTime==0)
+    if (transitionTime == 0)
         endFire();
     else {
         transitionScheduler->scheduleNextFiring();
@@ -157,10 +156,9 @@ void Transition::endFire()
     EV << "endFire: adding tokens to output places\n";
 
     // add tokens to output places
-    int n = outputPlaces.size();
-    for (int i = 0; i < n; i++) {
-        ASSERT(outputPlaces[i].multiplicity > 0); // outgoing inhibitor arcs don't exist
-        outputPlaces[i].place->addTokens(outputPlaces[i].multiplicity);
+    for (auto& outputPlace : outputPlaces) {
+        ASSERT(outputPlace.multiplicity > 0); // outgoing inhibitor arcs don't exist
+        outputPlace.place->addTokens(outputPlace.multiplicity);
     }
 
     transitionScheduler->scheduleNextFiring();
