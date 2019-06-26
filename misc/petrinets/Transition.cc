@@ -1,16 +1,10 @@
 //
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+// This file is part of an OMNeT++/OMNEST simulation example.
 //
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
+// Copyright (C) 1992-2019 Andras Varga
 //
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program.  If not, see http://www.gnu.org/licenses/.
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
 //
 
 #include <algorithm>
@@ -19,9 +13,10 @@
 
 Define_Module(Transition);
 
+simsignal_t Transition::firingSignal = cComponent::registerSignal("firing");
+
 Transition::Transition()
 {
-    fireEvent = endTransitionEvent = NULL;
 }
 
 Transition::~Transition()
@@ -30,24 +25,26 @@ Transition::~Transition()
     if (transitionScheduler) // still exists
         transitionScheduler->deregisterTransition(this);
     cancelAndDelete(fireEvent);
-    cancelAndDelete(endTransitionEvent);
+    cancelAndDelete(endFireEvent);
+    cancelAndDelete(endFire2Event);
 }
 
 void Transition::initialize()
 {
-    priority = par("priority");
-    if (priority < 0 || priority >= 32)
-        error("priority=%d is out of range, must be 0..32", priority);
-
+    animating = par("animation");
     transitionTimePar = &par("transitionTime");
 
     fireEvent = new cMessage("fire");
-    endTransitionEvent = new cMessage("endTransition");
+    endFireEvent = new cMessage("endFire");
+    endFire2Event = new cMessage("endFire2");
 
     discoverNeighbours();
 
     transitionScheduler = check_and_cast<TransitionScheduler*>(getModuleByPath(par("transitionSchedulerModule").stringValue()));
     transitionScheduler->registerTransition(this);
+
+    if (animating)
+        canvas = getParentModule()->getCanvas();
 }
 
 void Transition::discoverNeighbours()
@@ -90,26 +87,19 @@ void Transition::handleMessage(cMessage *msg)
 {
     if (msg == fireEvent)
         startFire();
-    else if (msg == endTransitionEvent)
+    else if (msg == endFireEvent)
         endFire();
+    else if (msg == endFire2Event)
+        endFire2();
     else
         error("Unexpected message received");
 }
 
 void Transition::refreshDisplay() const
 {
-    if (endTransitionEvent->isScheduled())
-        getDisplayString().setTagArg("b", 3, "yellow");  // firing
-    else if (fireEvent->isScheduled())
-        getDisplayString().setTagArg("b", 3, "lightblue"); // armed
-    else
-        getDisplayString().setTagArg("b", 3, "grey");  // disabled
-}
-
-void Transition::numTokensChanged(IPlace *)
-{
-    Enter_Method_Silent("numTokensChanged");
-    // currently ignored -- may be used for caching
+    updateDisplayString();
+    if (animating)
+        drawAnimationFrame();
 }
 
 bool Transition::canFire()
@@ -125,7 +115,7 @@ bool Transition::canFire()
     return evaluateGuardCondition();
 }
 
-void Transition::scheduleFiring()
+void Transition::triggerFiring()
 {
     Enter_Method_Silent("scheduleFiring");
     scheduleAt(simTime(), fireEvent);
@@ -141,19 +131,44 @@ void Transition::startFire()
         if (inputPlace.multiplicity > 0)
             inputPlace.place->removeTokens(inputPlace.multiplicity);
 
+    emit(firingSignal, 1);
+
+    if (animating) {
+        EV << "endFire: initiating inbounbound token animation\n";
+        inboundAnimationStartAnimTime = getEnvir()->getAnimationTime();
+        inboundAnimationEndAnimTime = inboundAnimationStartAnimTime + 0.5;
+        canvas->holdSimulationFor(0.5);
+    }
+
     // do or schedule endFire()
     simtime_t transitionTime = transitionTimePar->doubleValue();
     if (transitionTime == 0)
         endFire();
     else {
         transitionScheduler->scheduleNextFiring();
-        scheduleAt(simTime()+transitionTime, endTransitionEvent); // with strongest priority, i.e. zero
+        scheduleAt(simTime()+transitionTime, endFireEvent);
     }
 }
 
 void Transition::endFire()
 {
-    EV << "endFire: adding tokens to output places\n";
+    if (animating) {
+        EV << "endFire: initiating outbound token animation\n";
+        double animTime = getEnvir()->getAnimationTime();
+        outboundAnimationStartAnimTime = std::max(inboundAnimationEndAnimTime, animTime);
+        outboundAnimationEndAnimTime = outboundAnimationStartAnimTime + 0.5;
+        canvas->holdSimulationFor(outboundAnimationEndAnimTime - animTime);
+    }
+
+    if (animating)
+        scheduleAt(simTime(), endFire2Event);
+    else
+        endFire2();
+}
+
+void Transition::endFire2()
+{
+    EV << "endFire2: adding tokens to output places\n";
 
     // add tokens to output places
     for (auto& outputPlace : outputPlaces) {
@@ -161,5 +176,102 @@ void Transition::endFire()
         outputPlace.place->addTokens(outputPlace.multiplicity);
     }
 
+    emit(firingSignal, 0);
+
     transitionScheduler->scheduleNextFiring();
+}
+
+void Transition::updateDisplayString() const
+{
+    bool timed = transitionTimePar->isExpression() || transitionTimePar->doubleValue() != 0;
+    if (timed)
+        getDisplayString().setTagArg("t", 0, transitionTimePar->str().c_str());
+
+    if (endFireEvent->isScheduled() || endFire2Event->isScheduled()) // firing
+        getDisplayString().setTagArg("i", 1, "yellow");  // firing
+    else {
+        clearTokenAnimations(tokenAnimations);
+
+        if (fireEvent->isScheduled())
+            getDisplayString().setTagArg("i", 1, "green"); // armed
+        else
+            getDisplayString().setTagArg("i", 1, "dimgrey");  // disabled
+    }
+}
+
+void Transition::drawAnimationFrame() const
+{
+    clearTokenAnimations(tokenAnimations);
+
+    if (endFireEvent->isScheduled() || endFire2Event->isScheduled()) { // firing
+        double animTime = getEnvir()->getAnimationTime();
+        if (animTime <= inboundAnimationEndAnimTime) {
+            addInboundTokenAnimations(tokenAnimations);
+            double alpha = std::min(1.0, (animTime-inboundAnimationStartAnimTime) / (inboundAnimationEndAnimTime-inboundAnimationStartAnimTime));
+            setAnimationPosition(tokenAnimations, alpha);
+        }
+        else if (animTime >= outboundAnimationStartAnimTime && endFire2Event->isScheduled()) {
+            addOutboundTokenAnimations(tokenAnimations);
+            double alpha = std::min(1.0, (animTime-outboundAnimationStartAnimTime) / (outboundAnimationEndAnimTime-outboundAnimationStartAnimTime));
+            setAnimationPosition(tokenAnimations, alpha);
+        }
+    }
+}
+
+void Transition::addInboundTokenAnimations(std::vector<TokenAnimation>& tokenAnimations) const
+{
+    ASSERT(tokenAnimations.empty());
+    auto thisPos = getEnvir()->getSubmoduleBounds(this).getCenter();
+
+    for (const auto& inputPlace : inputPlaces) {
+        if (inputPlace.multiplicity > 0) {
+            auto figure = createTokenFigure();
+            Point startPos = getEnvir()->getSubmoduleBounds(dynamic_cast<cModule*>(inputPlace.place)).getCenter();
+            tokenAnimations.push_back(TokenAnimation { startPos, thisPos, figure});
+            canvas->addFigure(figure);
+        }
+    }
+}
+
+void Transition::addOutboundTokenAnimations(std::vector<TokenAnimation>& tokenAnimations) const
+{
+    ASSERT(tokenAnimations.empty());
+    auto thisPos = getEnvir()->getSubmoduleBounds(this).getCenter();
+
+    for (const auto& outputPlace : outputPlaces) {
+        ASSERT(outputPlace.multiplicity > 0);
+        auto figure = createTokenFigure();
+        Point endPos = getEnvir()->getSubmoduleBounds(dynamic_cast<cModule*>(outputPlace.place)).getCenter();
+        tokenAnimations.push_back(TokenAnimation { thisPos, endPos, figure});
+        canvas->addFigure(figure);
+    }
+
+}
+
+void Transition::clearTokenAnimations(std::vector<TokenAnimation>& tokenAnimations) const
+{
+    if (tokenAnimations.empty())
+        return;
+    for (auto anim : tokenAnimations) {
+        anim.figure->removeFromParent();
+        delete anim.figure;
+    }
+    tokenAnimations.clear();
+}
+
+cOvalFigure *Transition::createTokenFigure() const
+{
+    cOvalFigure *oval = new cOvalFigure();
+    oval->setBounds(cFigure::Rectangle(0,0,10,10));
+    oval->setFillColor(cFigure::GREY);
+    oval->setFilled(true);
+    return oval;
+}
+
+void Transition::setAnimationPosition(std::vector<TokenAnimation>& tokenAnimations, double alpha) const
+{
+    for (auto anim : tokenAnimations) {
+        Point pos = anim.start*(1-alpha) + anim.end*alpha;
+        anim.figure->setPosition(pos, cFigure::ANCHOR_CENTER);
+    }
 }

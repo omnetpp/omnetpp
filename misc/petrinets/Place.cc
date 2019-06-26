@@ -1,32 +1,23 @@
 //
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+// This file is part of an OMNeT++/OMNEST simulation example.
 //
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
+// Copyright (C) 1992-2019 Andras Varga
 //
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program.  If not, see http://www.gnu.org/licenses/.
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
 //
 
 #include "Place.h"
 
 Define_Module(Place);
 
-void Place::initialize(int stage)
+simsignal_t Place::numTokensSignal = cComponent::registerSignal("numTokens");
+
+void Place::initialize()
 {
-    if (stage == 0) {
-        numTokens = par("numInitialTokens");
-        EV << "Setting up with " << numTokens << " tokens.\n";
-        WATCH(numTokens);
-    }
-    else if (stage == 1) {
-        numTokensChanged();
-    }
+    numTokens = par("numInitialTokens");
+    EV << "Setting up with " << numTokens << " tokens.\n";
+    WATCH(numTokens);
 }
 
 void Place::handleMessage(cMessage *msg)
@@ -67,13 +58,7 @@ void Place::removeTokens(int n)
 
 void Place::numTokensChanged()
 {
-    // notify output transitions
-    int numOutputs = gateSize("out");
-    for (int i = 0; i < numOutputs; i++) {
-        ITransition *transition = getOutputTransition(i);
-        if (transition)
-            transition->numTokensChanged(this);
-    }
+    emit(numTokensSignal, numTokens);
 }
 
 ITransition *Place::getOutputTransition(int i)

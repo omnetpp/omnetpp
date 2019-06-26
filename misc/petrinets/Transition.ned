@@ -1,17 +1,12 @@
 //
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+// This file is part of an OMNeT++/OMNEST simulation example.
 //
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
+// Copyright (C) 1992-2019 Andras Varga
 //
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program.  If not, see http://www.gnu.org/licenses/.
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
 //
+
 
 //
 // Represents a transition in a Petri net.
@@ -20,10 +15,12 @@
 simple Transition
 {
     parameters:
-        int priority = default(0);
-        double transitionTime @unit(s) = default(0s);
+        volatile double transitionTime @unit(s) = default(0s);
         string transitionSchedulerModule = default("scheduler");
-        @display("b=10,40,rect,grey,,1");
+        bool animation = default(true); // note: turning on animation introduces extra simulation events
+        @display("i=transition,,60");
+        @signal[firing](type=long);
+        @statistic[firing](record=vector;interpolationmode=sample-hold);
     gates:
         input in[];
         output out[];

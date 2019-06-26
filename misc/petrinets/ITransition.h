@@ -1,7 +1,7 @@
 //
 // This file is part of an OMNeT++/OMNEST simulation example.
 //
-// Copyright (C) 2006-2015 OpenSim Ltd.
+// Copyright (C) 1992-2019 Andras Varga
 //
 // This file is distributed WITHOUT ANY WARRANTY. See the file
 // `license' for details on this and other legal matters.
@@ -25,11 +25,6 @@ class ITransition
         virtual ~ITransition() {}
 
         /**
-         * A transition gets notified when number of tokens changes on its input places
-         */
-        virtual void numTokensChanged(IPlace *inputPlace) = 0;
-
-        /**
          * Return true if the transition can fire (is armed).
          */
         virtual bool canFire() = 0;
@@ -37,7 +32,7 @@ class ITransition
         /**
          * Fire, or schedule immediate (zero-delay) firing of the transition.
          */
-        virtual void scheduleFiring() = 0;
+        virtual void triggerFiring() = 0;
 };
 
 #endif

@@ -1,16 +1,10 @@
 //
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+// This file is part of an OMNeT++/OMNEST simulation example.
 //
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
+// Copyright (C) 1992-2019 Andras Varga
 //
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program.  If not, see http://www.gnu.org/licenses/.
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
 //
 
 #ifndef __TRANSITION_H__
@@ -28,15 +22,26 @@ using namespace omnetpp;
 class Transition : public cSimpleModule, public ITransition
 {
   protected:
-    int priority;
-    cPar *transitionTimePar;
-    cMessage *fireEvent;
-    cMessage *endTransitionEvent;
+    cPar *transitionTimePar = nullptr;
+    cMessage *fireEvent = nullptr;
+    cMessage *endFireEvent = nullptr;
+    cMessage *endFire2Event = nullptr;
+    static simsignal_t firingSignal;
 
     TransitionScheduler *transitionScheduler = nullptr;
     struct Neighbour { IPlace *place; int multiplicity; }; // multiplicity is negative for inhibitor arcs
     std::vector<Neighbour> inputPlaces;
     std::vector<Neighbour> outputPlaces;
+
+    // animation
+    typedef cFigure::Point Point;
+    typedef cFigure::Rectangle Rectangle;
+    bool animating = true;
+    cCanvas *canvas = nullptr;
+    double inboundAnimationStartAnimTime = -1, inboundAnimationEndAnimTime = -1;
+    double outboundAnimationStartAnimTime = -1, outboundAnimationEndAnimTime = -1;
+    struct TokenAnimation {Point start, end; cOvalFigure *figure; };
+    mutable std::vector<TokenAnimation> tokenAnimations;
 
   public:
     Transition();
@@ -46,18 +51,24 @@ class Transition : public cSimpleModule, public ITransition
     virtual void initialize() override;
     virtual void handleMessage(cMessage *msg) override;
     virtual void refreshDisplay() const override;
+    virtual void updateDisplayString() const;
+    virtual void drawAnimationFrame() const;
 
     // utility methods
     virtual bool evaluateGuardCondition() {return true;} // override if needed!
     virtual void startFire();
     virtual void endFire();
+    virtual void endFire2();
     virtual void discoverNeighbours();
+    virtual void addInboundTokenAnimations(std::vector<TokenAnimation>& tokenAnimations) const;
+    virtual void addOutboundTokenAnimations(std::vector<TokenAnimation>& tokenAnimations) const;
+    virtual void clearTokenAnimations(std::vector<TokenAnimation>& tokenAnimations) const;
+    virtual void setAnimationPosition(std::vector<TokenAnimation>& tokenAnimations, double alpha) const;
+    virtual cOvalFigure *createTokenFigure() const;
 
   public:
     virtual bool canFire() override;
-    virtual void scheduleFiring() override;
-    virtual void numTokensChanged(IPlace *inputPlace) override;
-
+    virtual void triggerFiring() override;
 };
 
 #endif
