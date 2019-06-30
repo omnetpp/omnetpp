@@ -59,7 +59,10 @@ bool SelectionStrategy::isSelectable(cModule *module)
 {
     IPassiveQueue *pqueue = dynamic_cast<IPassiveQueue *>(module);
     if (pqueue != nullptr)
-        return pqueue->length() > 0;
+        if (isInputGate)
+            return pqueue->length() > 0;
+        else
+            return true;
 
     IServer *server = dynamic_cast<IServer *>(module);
     if (server != nullptr)
@@ -178,4 +181,3 @@ int LongestQueueSelectionStrategy::select()
 }
 
 }; //namespace
-
