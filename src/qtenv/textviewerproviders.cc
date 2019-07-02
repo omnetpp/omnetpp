@@ -351,8 +351,6 @@ QString EventEntryLinesProvider::getLineText(LogBuffer::Entry *entry, int lineIn
         // TODO: This still prints the context component path twice for some reason,
         // like in the initialization phaseof samples/routing. There is a mismatch
         // between the stored [context]Component IDs and the stored/formatted texts.
-        if (entry->componentId != line.contextComponentId && line.contextComponentId != 0)
-            text += (componentHistory->getComponentFullPath(line.contextComponentId)+": ").c_str();
 
         if (entry->lines[lineIndex].line)
             text += entry->lines[lineIndex].line;
