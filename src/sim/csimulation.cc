@@ -840,6 +840,7 @@ class StaticEnv : public cEnvir
     virtual void appendToImagePath(const char *directory) override {unsupported();}
     virtual void loadImage(const char *fileName, const char *imageName=nullptr) override {unsupported();}
     virtual cFigure::Rectangle getSubmoduleBounds(const cModule *submodule) override {return cFigure::Rectangle(NAN, NAN, NAN, NAN);}
+    virtual std::vector<cFigure::Point> getConnectionLine(const cGate *sourceGate) override {return {};}
     virtual double getZoomLevel(const cModule *module) override {return NAN;}
     virtual double getAnimationTime() const override {return 0;}
     virtual double getAnimationSpeed() const override {return 0;}

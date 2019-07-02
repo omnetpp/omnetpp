@@ -2100,6 +2100,33 @@ cFigure::Rectangle Qtenv::getSubmoduleBounds(const cModule *submodule)
     return cFigure::Rectangle(r.x(), r.y(), r.width(), r.height());
 }
 
+std::vector<cFigure::Point> Qtenv::getConnectionLine(const cGate *sourceGate)
+{
+    const cGate *nextGate = sourceGate ? sourceGate->getNextGate() : nullptr;
+    if (!nextGate)
+        return {};
+
+    cModule *parentObject = (sourceGate->getType() == cGate::OUTPUT)
+        ? sourceGate->getOwnerModule()->getParentModule()
+        : sourceGate->getOwnerModule();
+
+    ModuleInspector *primaryInsp = (mainNetworkView->getObject() == parentObject)
+            ? mainNetworkView
+            : dynamic_cast<ModuleInspector*>(findFirstInspector(parentObject, INSP_GRAPHICAL, true));
+
+    if (!primaryInsp)
+        return {};
+
+    double zoomFactor = primaryInsp->getZoomFactor();
+
+    QLineF line = primaryInsp->getConnectionLine(const_cast<cGate *>(sourceGate));
+
+    if (line.isNull())
+        return {};
+
+    return {cFigure::Point(line.x1(), line.y1()) / zoomFactor, cFigure::Point(line.x2(), line.y2()) / zoomFactor };
+}
+
 double Qtenv::getZoomLevel(const cModule *module)
 {
     const cObject *object = static_cast<const cObject*>(module);

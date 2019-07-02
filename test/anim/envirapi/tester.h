@@ -23,6 +23,7 @@ using namespace omnetpp;
 class Tester : public cSimpleModule
 {
     cRectangleFigure *bounds;
+    cLineFigure *line;
     cTextFigure *zoom;
 
   protected:

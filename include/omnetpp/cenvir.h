@@ -573,7 +573,7 @@ class SIM_API cEnvir
      * or (NAN,NAN,NAN,NAN) if such a rectangle is not available. This method
      * is the only way to access positions of "floating" modules, i.e. those
      * placed by a layouting algorithm that runs as part of the UI. The method
-     * may unconditionally return (NAN,NAN,NAN,NAN) if the simulation is
+     * may unconditionally return (NAN,NAN,NAN,NAN) when the simulation is
      * running under Cmdenv or another non-graphical user interface.
      *
      * Also note that this method may return different values at different
@@ -585,6 +585,28 @@ class SIM_API cEnvir
      * changed since last time.
      */
     virtual cFigure::Rectangle getSubmoduleBounds(const cModule *submodule) = 0;
+
+    /*
+     * Returns the characteristic points (currently the start and end points)
+     * of the connection arrow denoted by its source gate when it is visualized
+     * in the graphical inspector of its containing compound module,
+     * or an empty vector if the connection arrow is not available. This method
+     * is the only way to access the coordinates of connection arrows.
+     * The method may unconditionally return an empty vector when the simulation
+     * is running under Cmdenv or another non-graphical user interface. It is
+     * recommended to use the front() and back() methods of std::vector for
+     * accessing the start and end points in order to be compatible with potential
+     * future OMNeT++ versions that support splines or breakpoints in the arrows.
+     *
+     * Also note that this method may return different values at different
+     * times, e.g. as a result of the user opening and closing inspectors,
+     * hitting the "Relayout" button, or even changing the zoom level or icon
+     * size of graphical module inspectors displaying the parent module.
+     * Visualization code relying on this method is advised to re-read
+     * coordinates in every refreshDisplay() call, and check whether they
+     * changed since last time.
+     */
+    virtual std::vector<cFigure::Point> getConnectionLine(const cGate *sourceGate) = 0;
 
     /**
      * Returns the current zoom level of a graphical module inspector displaying

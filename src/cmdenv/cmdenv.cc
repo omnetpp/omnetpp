@@ -688,6 +688,11 @@ cFigure::Rectangle Cmdenv::getSubmoduleBounds(const cModule *submodule)
     return cFigure::Rectangle(NAN, NAN, NAN, NAN);
 }
 
+std::vector<cFigure::Point> Cmdenv::getConnectionLine(const cGate *sourceGate)
+{
+    return {};
+}
+
 double Cmdenv::getZoomLevel(const cModule *module)
 {
      return NAN;

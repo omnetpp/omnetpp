@@ -243,6 +243,7 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       virtual void appendToImagePath(const char *directory) override;
       virtual void loadImage(const char *fileName, const char *imageName=nullptr) override;
       virtual cFigure::Rectangle getSubmoduleBounds(const cModule *submodule) override;
+      virtual std::vector<cFigure::Point> getConnectionLine(const cGate *sourceGate) override;
       virtual double getZoomLevel(const cModule *module) override;
 
       // smooth animation API

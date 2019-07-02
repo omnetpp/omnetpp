@@ -38,6 +38,13 @@ void Tester::initialize()
     bounds->setZIndex(2);
     getParentModule()->getCanvas()->addFigure(bounds);
 
+    // This line will always be placed on the connection between the two modules
+    line = new cLineFigure();
+    line->setLineWidth(3);
+    line->setLineColor("purple");
+    line->setZIndex(2);
+    getParentModule()->getCanvas()->addFigure(line);
+
     zoom = new cTextFigure();
     zoom->setPosition({50, 350});
     zoom->setText("Zoom level: ?");
@@ -55,5 +62,15 @@ void Tester::handleMessage(cMessage *msg)
 void Tester::refreshDisplay() const
 {
     bounds->setBounds(getEnvir()->getSubmoduleBounds(this));
+    auto cl = getEnvir()->getConnectionLine(gate("dummy$o"));
+
+    if (cl.empty())
+        line->setVisible(false);
+    else {
+        line->setVisible(true);
+        line->setStart(cl.front());
+        line->setEnd(cl.back());
+    }
+
     zoom->setText(("Zoom level: " + std::to_string(getEnvir()->getZoomLevel(getParentModule()))).c_str());
 }
