@@ -59,6 +59,7 @@ void Transition::discoverNeighbours()
         if (g->getPreviousGate() != nullptr) {
             Neighbour neighbour;
             neighbour.place = check_and_cast<IPlace *>(g->getPathStartGate()->getOwnerModule());
+            neighbour.arcSourceGate = g->getPreviousGate();
             cChannel *arc = g->getPreviousGate()->getChannel();
             neighbour.multiplicity = arc->par("multiplicity");
             if (std::find_if(inputPlaces.begin(), inputPlaces.end(), [&] (const Neighbour& j) { return j.place == neighbour.place; }) != inputPlaces.end())
@@ -74,6 +75,7 @@ void Transition::discoverNeighbours()
         if (g->getNextGate() != nullptr) {
             Neighbour neighbour;
             neighbour.place = check_and_cast<IPlace *>(g->getPathEndGate()->getOwnerModule());
+            neighbour.arcSourceGate = g;
             cChannel *arc = g->getChannel();
             neighbour.multiplicity = arc->par("multiplicity");
             outputPlaces.push_back(neighbour);
@@ -134,7 +136,7 @@ void Transition::startFire()
     emit(firingSignal, 1);
 
     if (animating) {
-        EV << "endFire: initiating inbounbound token animation\n";
+        EV << "endFire: initiating inbound token animation\n";
         inboundAnimationStartAnimTime = getEnvir()->getAnimationTime();
         inboundAnimationEndAnimTime = inboundAnimationStartAnimTime + 0.5;
         canvas->holdSimulationFor(0.5);
@@ -190,8 +192,6 @@ void Transition::updateDisplayString() const
     if (endFireEvent->isScheduled() || endFire2Event->isScheduled()) // firing
         getDisplayString().setTagArg("i", 1, "yellow");  // firing
     else {
-        clearTokenAnimations(tokenAnimations);
-
         if (fireEvent->isScheduled())
             getDisplayString().setTagArg("i", 1, "green"); // armed
         else
@@ -202,7 +202,6 @@ void Transition::updateDisplayString() const
 void Transition::drawAnimationFrame() const
 {
     clearTokenAnimations(tokenAnimations);
-
     if (endFireEvent->isScheduled() || endFire2Event->isScheduled()) { // firing
         double animTime = getEnvir()->getAnimationTime();
         if (animTime <= inboundAnimationEndAnimTime) {
@@ -221,14 +220,15 @@ void Transition::drawAnimationFrame() const
 void Transition::addInboundTokenAnimations(std::vector<TokenAnimation>& tokenAnimations) const
 {
     ASSERT(tokenAnimations.empty());
-    auto thisPos = getEnvir()->getSubmoduleBounds(this).getCenter();
 
     for (const auto& inputPlace : inputPlaces) {
         if (inputPlace.multiplicity > 0) {
-            auto figure = createTokenFigure();
-            Point startPos = getEnvir()->getSubmoduleBounds(dynamic_cast<cModule*>(inputPlace.place)).getCenter();
-            tokenAnimations.push_back(TokenAnimation { startPos, thisPos, figure});
-            canvas->addFigure(figure);
+            auto line = getEnvir()->getConnectionLine(inputPlace.arcSourceGate);
+            if (!line.empty()) {
+                auto figure = createTokenFigure(inputPlace.multiplicity);
+                tokenAnimations.push_back(TokenAnimation { line.front(), line.back(), figure});
+                canvas->addFigure(figure);
+            }
         }
     }
 }
@@ -236,14 +236,15 @@ void Transition::addInboundTokenAnimations(std::vector<TokenAnimation>& tokenAni
 void Transition::addOutboundTokenAnimations(std::vector<TokenAnimation>& tokenAnimations) const
 {
     ASSERT(tokenAnimations.empty());
-    auto thisPos = getEnvir()->getSubmoduleBounds(this).getCenter();
 
     for (const auto& outputPlace : outputPlaces) {
         ASSERT(outputPlace.multiplicity > 0);
-        auto figure = createTokenFigure();
-        Point endPos = getEnvir()->getSubmoduleBounds(dynamic_cast<cModule*>(outputPlace.place)).getCenter();
-        tokenAnimations.push_back(TokenAnimation { thisPos, endPos, figure});
-        canvas->addFigure(figure);
+        auto line = getEnvir()->getConnectionLine(outputPlace.arcSourceGate);
+        if (!line.empty()) {
+            auto figure = createTokenFigure(outputPlace.multiplicity);
+            tokenAnimations.push_back(TokenAnimation { line.front(), line.back(), figure});
+            canvas->addFigure(figure);
+        }
     }
 
 }
@@ -259,12 +260,13 @@ void Transition::clearTokenAnimations(std::vector<TokenAnimation>& tokenAnimatio
     tokenAnimations.clear();
 }
 
-cOvalFigure *Transition::createTokenFigure() const
+cOvalFigure *Transition::createTokenFigure(int numTokens) const
 {
     cOvalFigure *oval = new cOvalFigure();
     oval->setBounds(cFigure::Rectangle(0,0,10,10));
     oval->setFillColor(cFigure::GREY);
     oval->setFilled(true);
+    oval->setLineWidth(std::min(8, numTokens)); // for now
     return oval;
 }
 

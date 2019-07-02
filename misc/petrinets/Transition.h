@@ -29,7 +29,7 @@ class Transition : public cSimpleModule, public ITransition
     static simsignal_t firingSignal;
 
     TransitionScheduler *transitionScheduler = nullptr;
-    struct Neighbour { IPlace *place; int multiplicity; }; // multiplicity is negative for inhibitor arcs
+    struct Neighbour { IPlace *place; cGate *arcSourceGate; int multiplicity; }; // multiplicity is negative for inhibitor arcs
     std::vector<Neighbour> inputPlaces;
     std::vector<Neighbour> outputPlaces;
 
@@ -64,7 +64,7 @@ class Transition : public cSimpleModule, public ITransition
     virtual void addOutboundTokenAnimations(std::vector<TokenAnimation>& tokenAnimations) const;
     virtual void clearTokenAnimations(std::vector<TokenAnimation>& tokenAnimations) const;
     virtual void setAnimationPosition(std::vector<TokenAnimation>& tokenAnimations, double alpha) const;
-    virtual cOvalFigure *createTokenFigure() const;
+    virtual cOvalFigure *createTokenFigure(int numTokens) const;
 
   public:
     virtual bool canFire() override;
