@@ -94,7 +94,7 @@ void LogFormatter::parseFormat(const char *format)
 LogFormatter::FormatDirective LogFormatter::getDirective(char ch)
 {
     if (strchr("lcetgvanmosqNMOSQGRXYZpbdzuxyfiwWHIEUCKJL", ch) == nullptr)
-        throw cRuntimeError("Unknown log format character '%c'", ch);
+        throw opp_runtime_error("Unknown log format character '%c'", ch);
     return (LogFormatter::FormatDirective)ch;
 }
 
@@ -420,7 +420,7 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
             }
 
             default:
-                throw cRuntimeError("Unknown format directive '%d'", part.directive);
+                throw opp_runtime_error("Unknown format directive '%d'", part.directive);
         }
     }
     return stream.str();
