@@ -166,8 +166,13 @@ void PreferencesDialog::accept()
     getQtenv()->opt->noLoggingRefreshDisplay = ui->noLoggingRefreshDisplay->isChecked();
 
     std::string logFormat = ui->logPrefix->text().toStdString();
-    getQtenv()->setLogFormat(logFormat.c_str());
-    getQtenv()->opt->logFormat = logFormat.c_str();
+    try {
+        getQtenv()->setLogFormat(logFormat.c_str());
+        getQtenv()->opt->logFormat = logFormat.c_str();
+    }
+    catch (std::exception& e) {
+        getQtenv()->confirm(Qtenv::ERROR, (std::string("Error in log prefix format: ") + e.what()).c_str());
+    }
 
     LogLevel logLevel = LogLevel(ui->logLevel->currentData().toInt());
     getQtenv()->opt->logLevel = logLevel;
