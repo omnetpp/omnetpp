@@ -95,6 +95,7 @@ namespace envir {
  *  - %[0-9]+ add spaces until specified column
  *  - %| adaptive tabstop: add padding until longest prefix seen so far
  *  - %> function call depth times 2-space indentation (see Enter_Method, Enter_Method_Silent)
+ *  - %< remove preceding whitespace characters
  *
  * Conditional constant text:
  *  - %? ignore the following constant part if the preceding directive didn't print anything (useful for separators)
@@ -107,6 +108,7 @@ class ENVIR_API LogFormatter
         PADDING,
         ADAPTIVE_TAB = '|',
         INDENT = '>',
+        TRIM = '<',
 
         // log statement related
         LOGLEVEL = 'l',
