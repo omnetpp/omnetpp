@@ -94,7 +94,7 @@ struct QtenvOptions : public EnvirOptions
     long updateFreqExpress = 1000;         // Express Run updates display every N milliseconds
     bool autoupdateInExpress = true;       // update inspectors at every display refresh in EXPRESS mode or not
     StripNamespace stripNamespace = STRIPNAMESPACE_ALL; // whether to display type names with full C++ namespace prefix or not
-    std::string logFormat = "%l %K: ";     // format of the log prefix, see the LogFormatter class
+    std::string logFormat = "%l %K%<:";     // format of the log prefix, see the LogFormatter class
     LogLevel logLevel = LOGLEVEL_TRACE;    // global log level
     int scrollbackLimit = 10000;           // global setting for all LogInspectors
 };

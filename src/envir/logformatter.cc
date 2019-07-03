@@ -70,6 +70,10 @@ void LogFormatter::parseFormat(const char *format)
                 addPart(INDENT, nullptr, nullptr, conditional);
                 conditional = false;
             }
+            else if (ch == '<') {
+                addPart(TRIM, nullptr, nullptr, conditional);
+                conditional = false;
+            }
             else if (ch == '?')
                 conditional = true;
             else if ('0' <= ch && ch <= '9') {
@@ -155,6 +159,16 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
                 int depth = cMethodCallContextSwitcher::getDepth();
                 if (depth > 0)
                     stream << std::string(2*depth, ' ');
+                break;
+            }
+
+            case TRIM: {
+                while (true) {
+                    stream.seekg(stream.tellp()-1L, stream.beg);
+                    if (stream.peek() != ' ')
+                        break;
+                    stream.seekp(-1, stream.cur); // note: this does NOT truncate the stream, only moves the write pointer
+                }
                 break;
             }
 
@@ -423,7 +437,8 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
                 throw cRuntimeError("Unknown format directive '%d'", part.directive);
         }
     }
-    return stream.str();
+
+    return stream.str().substr(0, stream.tellp()); // use tellp() and substr() is required for "%<" (TRIM) -- apparently there is no way to truncate std::stringstream
 }
 
 void LogFormatter::resetAdaptiveTabs()
