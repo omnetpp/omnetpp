@@ -165,8 +165,13 @@ void PreferencesDialog::accept()
     getQtenv()->opt->shortBanners = ui->shortBanners->isChecked();
 
     std::string logFormat = ui->logPrefix->text().toStdString();
-    getQtenv()->setLogFormat(logFormat.c_str());
-    getQtenv()->opt->logFormat = logFormat.c_str();
+    try {
+        getQtenv()->setLogFormat(logFormat.c_str());
+        getQtenv()->opt->logFormat = logFormat.c_str();
+    }
+    catch (std::exception& e) {
+        getQtenv()->confirm(Qtenv::ERROR, (std::string("Error in log prefix format: ") + e.what()).c_str());
+    }
 
     // TODO: this conversion is fragile, it depends on the order of the enum which might change
     LogLevel logLevel = LogLevel(ui->logLevel->currentIndex());

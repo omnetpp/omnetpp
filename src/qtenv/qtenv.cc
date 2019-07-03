@@ -427,7 +427,12 @@ void Qtenv::doRun()
 
         connect(mainNetworkView, SIGNAL(inspectedObjectChanged(cObject*)), mainLogView, SLOT(setObject(cObject*)));
 
-        setLogFormat(opt->logFormat.c_str());
+        try {
+            setLogFormat(opt->logFormat.c_str());
+        }
+        catch (std::exception&) {
+            // ignore
+        }
 
         //
         // RUN
