@@ -635,7 +635,12 @@ void Qtenv::doRun()
         // needs to be set here too, the setting in the Designer wasn't enough on Mac
         QApplication::setWindowIcon(QIcon(":/logo/logo128m"));
 
-        setLogFormat(opt->logFormat.c_str());
+        try {
+            setLogFormat(opt->logFormat.c_str());
+        }
+        catch (std::exception&) {
+            // ignore
+        }
 
         //
         // RUN
