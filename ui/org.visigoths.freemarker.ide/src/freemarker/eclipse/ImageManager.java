@@ -29,7 +29,7 @@ public class ImageManager {
 
     public static ImageDescriptor getImageDescriptor(String filename) {
         try {
-        URL url = new URL(FreemarkerPlugin.getInstance().getDescriptor().getInstallURL(),
+        URL url = new URL(FreemarkerPlugin.getInstance().getBundle().getEntry("/"),
                   filename);
                   return ImageDescriptor.createFromURL(url);
         } catch (MalformedURLException mue) {
