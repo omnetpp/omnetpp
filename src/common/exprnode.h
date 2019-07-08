@@ -80,7 +80,7 @@ protected:
     virtual ExprValue evaluate(Context *context) const = 0; // do not call directly! only via tryEvaluate()
     virtual std::string makeErrorMessage(std::exception& e) const;
     virtual void print(std::ostream& out, int spaciousness) const = 0; // helper for str(); in subclasses, call printChild() instead of this
-    virtual void printFunction(std::ostream& out, int spaciousness) const;
+    virtual void printFunction(std::ostream& out, int spaciousness, int startIndex=0) const;
     virtual void printChild(std::ostream& out, ExprNode *child, int spaciousness) const;
     virtual bool needSpaces(int spaciousness) const {return spaciousness >= (LASTPREC-getPrecedence());}
     static void bringToCommonTypeAndUnit(ExprValue& a, ExprValue& b);

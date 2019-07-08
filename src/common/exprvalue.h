@@ -70,6 +70,7 @@ class COMMON_API ExprValue
     friend class MathFunc3Node;
     friend class MathFunc4Node;
     friend class FunctionNode;
+    friend class MethodNode;
     friend class omnetpp::common::MatchExpression;
 
   public:

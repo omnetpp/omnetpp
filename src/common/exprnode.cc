@@ -144,16 +144,14 @@ void ExprNode::errorWrongArgType(int index, ExprValue::Type expected, const Expr
             expectedTypeName, index, ExprValue::getTypeName(actual.getType()), note);
 }
 
-void ExprNode::printFunction(std::ostream& out, int spaciousness) const
+void ExprNode::printFunction(std::ostream& out, int spaciousness, int startIndex) const
 {
     out << getName() << "(";
-    bool first = true;
-    for (ExprNode *child : getChildren()) {
-        if (first)
-            first = false;
-        else
+    std::vector<ExprNode*> children = getChildren();
+    for (size_t i = startIndex; i < children.size(); i++) {
+        if (i != startIndex)
             out << (spaciousness >= LASTPREC-ARITHM_LAST ? ", " : ",");
-        child->print(out, spaciousness);
+        children[i]->print(out, spaciousness);
     }
     out << ")";
 }

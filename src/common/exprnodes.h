@@ -72,6 +72,60 @@ public:
     virtual std::string getName() const override {return value.str();}
 };
 
+class VariableNode : public ValueNode {
+protected:
+    std::string name;
+protected:
+    virtual void print(std::ostream& out, int spaciousness) const override;
+    virtual ExprValue evaluate(Context *context) const override;
+    virtual ExprValue getValue(Context *context) const = 0;
+public:
+    VariableNode(const char *name) : name(name) {}
+    virtual std::string getName() const override {return name;}
+    virtual Precedence getPrecedence() const override {return ELEM;}
+};
+
+class IndexedVariableNode : public UnaryNode
+{
+protected:
+    std::string name;
+protected:
+    virtual void print(std::ostream& out, int spaciousness) const override;
+    virtual ExprValue evaluate(Context *context) const override;
+    virtual ExprValue getValue(Context *context, intpar_t index) const = 0;
+public:
+    IndexedVariableNode(const char *name) : name(name) {}
+    virtual std::string getName() const override {return name;}
+    virtual Precedence getPrecedence() const override {return ELEM;}
+};
+
+class MemberNode : public UnaryNode {
+protected:
+    std::string name;
+protected:
+    virtual void print(std::ostream& out, int spaciousness) const override;
+    virtual ExprValue evaluate(Context *context) const override;
+    virtual ExprValue getValue(Context *context, const ExprValue& object) const = 0;
+public:
+    MemberNode(const char *name) : name(name) {}
+    virtual std::string getName() const override {return name;}
+    virtual Precedence getPrecedence() const override {return ELEM;}
+};
+
+class IndexedMemberNode : public BinaryNode
+{
+protected:
+    std::string name;
+protected:
+    virtual void print(std::ostream& out, int spaciousness) const override;
+    virtual ExprValue evaluate(Context *context) const override;
+    virtual ExprValue getValue(Context *context, const ExprValue& object, intpar_t index) const = 0;
+public:
+    IndexedMemberNode(const char *name) : name(name) {}
+    virtual std::string getName() const override {return name;}
+    virtual Precedence getPrecedence() const override {return ELEM;}
+};
+
 class NegateNode : public UnaryOperatorNode {
 protected:
     virtual ExprValue evaluate(Context *context) const override;
@@ -453,15 +507,29 @@ public:
 class FunctionNode : public NaryNode {
 protected:
     std::string name;
-    ExprValue (*f)(ExprValue*, int);
     mutable ExprValue *values = nullptr; // preallocated buffer
 protected:
     virtual void print(std::ostream& out, int spaciousness) const override;
     virtual ExprValue evaluate(Context *context) const override;
+    virtual ExprValue compute(Context *context, ExprValue argv[], int argc) const = 0;
 public:
-    FunctionNode(const char *name, ExprValue (*f)(ExprValue*, int)) : name(name), f(f) {}
+    FunctionNode(const char *name) : name(name) {}
     ~FunctionNode() {delete[] values;}
-    virtual ExprNode *dup() const override {return new FunctionNode(name.c_str(), f);}
+    virtual std::string getName() const override {return name;}
+    virtual Precedence getPrecedence() const override {return ELEM;}
+};
+
+class MethodNode : public NaryNode {
+protected:
+    std::string name;
+    mutable ExprValue *values = nullptr; // preallocated buffer
+protected:
+    virtual void print(std::ostream& out, int spaciousness) const override;
+    virtual ExprValue evaluate(Context *context) const override;
+    virtual ExprValue compute(Context *context, ExprValue& object, ExprValue argv[], int argc) const = 0;
+public:
+    MethodNode(const char *name) : name(name) {}
+    ~MethodNode() {delete[] values;}
     virtual std::string getName() const override {return name;}
     virtual Precedence getPrecedence() const override {return ELEM;}
 };

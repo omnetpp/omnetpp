@@ -130,6 +130,68 @@ ExprNode *ExprNodeFactory::createMathFunction(const char *name, double (*f3)(dou
 
 //---
 
+void VariableNode::print(std::ostream& out, int spaciousness) const
+{
+    out << name;
+}
+
+ExprValue VariableNode::evaluate(Context *context) const
+{
+    return getValue(context);
+}
+
+ExprValue IndexedVariableNode::evaluate(Context *context) const
+{
+    ExprValue indexValue = child->tryEvaluate(context);
+    intpar_t index = indexValue.intValue();
+    if (indexValue.getUnit() != nullptr)
+        throw opp_runtime_error("Index must be dimensionless");
+
+    return getValue(context, index);
+}
+
+void IndexedVariableNode::print(std::ostream& out, int spaciousness) const
+{
+    out << name << "[";
+    printChild(out, child, spaciousness);
+    out<< "]";
+}
+
+ExprValue MemberNode::evaluate(Context *context) const
+{
+    ExprValue object = child->tryEvaluate(context);
+    return getValue(context, object);
+}
+
+void MemberNode::print(std::ostream& out, int spaciousness) const
+{
+    printChild(out, child, spaciousness);
+    out << "." << name;
+}
+
+ExprValue IndexedMemberNode::evaluate(Context *context) const
+{
+    ExprValue object = child1->tryEvaluate(context);
+
+    ExprValue indexValue = child2->tryEvaluate(context);
+    intpar_t index = indexValue.intValue();
+    if (indexValue.getUnit() != nullptr)
+        throw opp_runtime_error("Index must be dimensionless");
+
+    return getValue(context, object, index);
+}
+
+void IndexedMemberNode::print(std::ostream& out, int spaciousness) const
+{
+    printChild(out, child1, spaciousness);
+    out << "." << name;
+    out << name << "[";
+    printChild(out, child2, spaciousness);
+    out<< "]";
+}
+
+//---
+
 ExprValue NegateNode::evaluate(Context *context) const
 {
     ExprValue value = child->tryEvaluate(context);
@@ -637,7 +699,29 @@ ExprValue FunctionNode::evaluate(Context *context) const
             return ExprValue();
         i++;
     }
-    return f(values, n);
+    return compute(context, values, n);
+}
+
+void MethodNode::print(std::ostream& out, int spaciousness) const
+{
+    printChild(out, children[0], spaciousness);
+    out << ".";
+    printFunction(out, spaciousness, 1);
+}
+
+ExprValue MethodNode::evaluate(Context *context) const
+{
+    int n = children.size();
+    if (values == nullptr)
+        values = new ExprValue[n]; // spare per-call allocation
+    int i = 0;
+    for (ExprNode *child : children) {
+        values[i] = child->tryEvaluate(context);
+        if (values[i].type == ExprValue::UNDEF)
+            return ExprValue();
+        i++;
+    }
+    return compute(context, values[0], values+1, n-1);
 }
 
 
