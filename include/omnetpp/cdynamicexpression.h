@@ -37,8 +37,66 @@ class cNedFunction;
  */
 class SIM_API cDynamicExpression : public cExpression
 {
+  public:
+    /**
+     * Interface for extending cDynamicExpression with support for variables, member access,
+     * (extra) function calls, and method calls.
+     */
+    class SIM_API IResolver {
+      public:
+        virtual ~IResolver();
+        virtual IResolver *dup() const = 0;
+
+        /** @name Evaluator methods. */
+        //@{
+        /** Return the value of a variable with the given name. */
+        virtual cNedValue readVariable(Context *context, const char *name) = 0;
+
+        /** Return the value of an element of an array variable with the given name. Expression syntax: name[index] */
+        virtual cNedValue readVariable(Context *context, const char *name, intpar_t index) = 0;
+
+        /** Return the value of a member of the given object. Expression syntax: object.name */
+        virtual cNedValue readMember(Context *context, const cNedValue& object, const char *name) = 0;
+
+        /** Return the value of an element of an array member of the given object. Expression syntax: object.name[index] */
+        virtual cNedValue readMember(Context *context, const cNedValue& object, const char *name, intpar_t index) = 0;
+
+        /** Evaluate a function call with the given arguments. Expression syntax: name(argv0, argv1,...) */
+        virtual cNedValue callFunction(Context *context, const char *name, cNedValue argv[], int argc) = 0;
+
+        /** Evaluate a method call on the given object with the given arguments. Expression syntax: object.name(argv0, argv1,...) */
+        virtual cNedValue callMethod(Context *context, const cNedValue& object, const char *name, cNedValue argv[], int argc) = 0;
+        //@}
+    };
+
+    /**
+     * A base resolver implementation where all methods throws an "unknown variable/member/function/method" exception.
+     */
+    class SIM_API ResolverBase : public IResolver {
+      public:
+        virtual cNedValue readVariable(Context *context, const char *name) override;
+        virtual cNedValue readVariable(Context *context, const char *name, intpar_t index) override;
+        virtual cNedValue readMember(Context *context, const cNedValue& object, const char *name) override;
+        virtual cNedValue readMember(Context *context, const cNedValue& object, const char *name, intpar_t index) override;
+        virtual cNedValue callFunction(Context *context, const char *name, cNedValue argv[], int argc) override;
+        virtual cNedValue callMethod(Context *context, const cNedValue& object, const char *name, cNedValue argv[], int argc) override;
+    };
+
+    /**
+     * A resolver that serves variables from an std::map-based symbol table
+     */
+    class SIM_API SymbolTable : public ResolverBase {
+      private:
+        std::map<std::string, cNedValue> symbolTable;
+      public:
+        SymbolTable(const std::map<std::string, cNedValue>& symbolTable) : symbolTable(symbolTable) {}
+        virtual SymbolTable *dup() const override {return new SymbolTable(symbolTable);}
+        virtual cNedValue readVariable(Context *context, const char *name) override;
+    };
+
   protected:
     common::Expression *expression = nullptr;
+    IResolver *resolver = nullptr;
 
   private:
     void copy(const cDynamicExpression& other);
@@ -88,9 +146,35 @@ class SIM_API cDynamicExpression : public cExpression
     /** @name Setter and evaluator methods. */
     //@{
     /**
+     * Interprets the string as a generic expression, and stores it.
+     */
+    virtual void parse(const char *text) override {parse(text, nullptr);}
+
+    /**
+     * Interprets the string as a generic expression, and stores it.
+     * The resolver object allows variables, member accesses,
+     * function calls and method calls to be handled in a custom way.
+     * The expression object will take ownership of the resolver object.
+     */
+    virtual void parse(const char *text, IResolver *resolver);
+
+    /**
+     * Interprets the string as a generic expression, and stores it.
+     * Values for variables used in the expression can be passed in the
+     * symbolTable argument. This method is simply delegates to
+     * parse(const char *text, IResolver *resolver) while using
+     * cDynamicExpression::SymbolTable as resolver.
+     */
+    virtual void parse(const char *text, const std::map<std::string,cNedValue>& symbolTable) {parse(text, new SymbolTable(symbolTable));}
+
+    /**
+     * Interprets the string as a NED expression, and stores it.
+     */
+    virtual void parseNedExpr(const char *text, bool inSubcomponentScope, bool inInifile);
+
+    /**
      * Evaluate the expression, and return the results as a cNedValue.
-     * Throws an error if the expression has some problem (i.e. stack
-     * overflow/underflow, "cannot cast", "function not found", etc.)
+     * Evaluation errors result in exceptions.
      */
     virtual cNedValue evaluate(Context *context) const override;
 
@@ -135,16 +219,6 @@ class SIM_API cDynamicExpression : public cExpression
 
     /** @name Miscellaneous utility functions. */
     //@{
-    /**
-     * Interprets the string as an expression, and stores it.
-     */
-    virtual void parse(const char *text) override {parse(text, true, true);}
-
-    /**
-     * Interprets the string as an expression, and stores it.
-     */
-    virtual void parse(const char *text, bool inSubcomponentScope, bool inInifile);
-
     /**
      * Compares two expressions.
      */

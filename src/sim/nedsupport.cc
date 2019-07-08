@@ -70,6 +70,15 @@ ExprValue makeExprValue(const cPar& par)
     Assert(false);
 }
 
+cNedValue *makeNedValues(cNedValue *&buffer, const ExprValue argv[], int argc)
+{
+    if (!buffer)
+        buffer = new cNedValue[argc];
+    for (int i = 0; i < argc; i++)
+        buffer[i] = makeNedValue(argv[i]);
+    return buffer;
+}
+
 //----
 
 std::string NedFunctionNode::getName() const

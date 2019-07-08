@@ -34,6 +34,7 @@ using omnetpp::common::expression::Context;
 cNedValue makeNedValue(const ExprValue& value);
 ExprValue makeExprValue(const cNedValue& value);
 ExprValue makeExprValue(const cPar& par);
+cNedValue *makeNedValues(cNedValue *&buffer, const ExprValue argv[], int argc);
 
 class NedExpressionContext : public cExpression::Context
 {

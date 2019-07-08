@@ -182,7 +182,7 @@ void cXMLParImpl::parse(const char *text)
     // try parsing it as an expression
     cDynamicExpression *dynexpr = new cDynamicExpression();
     try {
-        dynexpr->parse(text);
+        dynexpr->parseNedExpr(text, true, true);
     }
     catch (std::exception& e) {
         delete dynexpr;
