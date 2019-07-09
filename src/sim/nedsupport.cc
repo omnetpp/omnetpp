@@ -40,7 +40,7 @@ cNedValue makeNedValue(const ExprValue& value)
     case ExprValue::INT: return cNedValue(value.intValue(), value.getUnit());
     case ExprValue::DOUBLE: return cNedValue(value.doubleValue(), value.getUnit());
     case ExprValue::STRING: return cNedValue(value.stringValue());
-    case ExprValue::OBJECT: return cNedValue(check_and_cast<cXMLElement*>(value.objectValue()));
+    case ExprValue::OBJECT: return cNedValue(value.objectValue());
     }
     Assert(false);
 }
@@ -53,7 +53,7 @@ ExprValue makeExprValue(const cNedValue& value)
     case cNedValue::INT: return ExprValue(value.intValue(), value.getUnit());
     case cNedValue::DOUBLE: return ExprValue(value.doubleValue(), value.getUnit());
     case cNedValue::STRING: return ExprValue(value.stringValue());
-    case cNedValue::XML: return ExprValue(value.xmlValue());
+    case cNedValue::OBJECT: return ExprValue(value.objectValue());
     }
     Assert(false);
 }

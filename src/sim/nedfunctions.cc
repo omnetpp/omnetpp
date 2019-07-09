@@ -29,6 +29,7 @@
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cmodule.h"
+#include "omnetpp/cxmlelement.h"
 
 using namespace omnetpp::common;
 
@@ -426,8 +427,8 @@ cNedValue nedf_bool(cComponent *contextComponent, cNedValue argv[], int argc)
             return !std::isnan(argv[0].doubleValue()) && argv[0].doubleValue() != 0;
         case cNedValue::STRING:
             return argv[0].stdstringValue() == "true";
-        case cNedValue::XML:
-            throw cRuntimeError("Cannot convert xml to bool");
+        case cNedValue::OBJECT:
+            throw cRuntimeError("Cannot convert object to bool");
         default:
             throw cRuntimeError("Internal error: Invalid cNedValue type");
     }
@@ -436,7 +437,7 @@ cNedValue nedf_bool(cComponent *contextComponent, cNedValue argv[], int argc)
 DEF(nedf_int,
     "intquantity int(any x)",
     "conversion",
-    "Converts x to int, and returns the result. A boolean argument becomes 0 or 1; a double is converted using floor(); a string is interpreted as number; an XML argument causes an error. Units are preserved.")
+    "Converts x to int, and returns the result. A boolean argument becomes 0 or 1; a double is converted using floor(); a string is interpreted as number; an object argument causes an error. Units are preserved.")
 
 cNedValue nedf_int(cComponent *contextComponent, cNedValue argv[], int argc)
 {
@@ -452,8 +453,8 @@ cNedValue nedf_int(cComponent *contextComponent, cNedValue argv[], int argc)
             double d = UnitConversion::parseQuantity(argv[0].stringValue(), unit);
             return cNedValue(checked_int_cast<intpar_t>(floor(d)), cNedValue::getPooled(unit.c_str()));
         }
-        case cNedValue::XML:
-            throw cRuntimeError("Cannot convert xml to int");
+        case cNedValue::OBJECT:
+            throw cRuntimeError("Cannot convert object to int");
         default:
             throw cRuntimeError("Internal error: Invalid cNedValue type");
     }
@@ -462,7 +463,7 @@ cNedValue nedf_int(cComponent *contextComponent, cNedValue argv[], int argc)
 DEF(nedf_double,
     "quantity double(any x)",
     "conversion",
-    "Converts x to double, and returns the result. A boolean argument becomes 0 or 1; a string is interpreted as number; an XML argument causes an error. Units are preserved.")
+    "Converts x to double, and returns the result. A boolean argument becomes 0 or 1; a string is interpreted as number; an object argument causes an error. Units are preserved.")
 
 cNedValue nedf_double(cComponent *contextComponent, cNedValue argv[], int argc)
 {
@@ -478,8 +479,8 @@ cNedValue nedf_double(cComponent *contextComponent, cNedValue argv[], int argc)
             double d = UnitConversion::parseQuantity(argv[0].stringValue(), unit);
             return cNedValue(d, cNedValue::getPooled(unit.c_str()));
         }
-        case cNedValue::XML:
-            throw cRuntimeError("Cannot convert xml to double");
+        case cNedValue::OBJECT:
+            throw cRuntimeError("Cannot convert object to double");
         default:
             throw cRuntimeError("Internal error: Bad cNedValue type");
     }
@@ -840,7 +841,7 @@ cNedValue nedf_xmldoc(cComponent *contextComponent, cNedValue argv[], int argc)
         else
             throw cRuntimeError("Element \"%s\" in file \"%s\" not found", xpath, filename);
     }
-    return node;
+    return static_cast<cObject*>(node);
 }
 
 DEF(nedf_xml,
@@ -861,7 +862,7 @@ cNedValue nedf_xml(cComponent *contextComponent, cNedValue argv[], int argc)
         else
             throw cRuntimeError("Element \"%s\" not found in XML document string", xpath);
     }
-    return node;
+    return static_cast<cObject*>(node);
 }
 
 

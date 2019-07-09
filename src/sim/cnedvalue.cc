@@ -24,6 +24,7 @@
 #include "omnetpp/cxmlelement.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/cpar.h"
+#include "omnetpp/checkandcast.h"
 
 using namespace omnetpp::common;
 
@@ -40,7 +41,7 @@ void cNedValue::operator=(const cNedValue& other)
         case INT: intv = other.intv; unit = other.unit; break;
         case DOUBLE: dbl = other.dbl; unit = other.unit; break;
         case STRING: s = other.s; break;
-        case XML: xml = other.xml; break;
+        case OBJECT: obj = other.obj; break;
     }
 }
 
@@ -52,7 +53,7 @@ const char *cNedValue::getTypeName(Type t)
         case INT:    return "integer";
         case DOUBLE: return "double";
         case STRING: return "string";
-        case XML:    return "xml";
+        case OBJECT: return "object";
         default:     return "???";
     }
 }
@@ -156,6 +157,11 @@ void cNedValue::setUnit(const char* unit)
     this->unit = unit;
 }
 
+cXMLElement *cNedValue::xmlValue() const
+{
+    assertType(OBJECT);
+    return check_and_cast_nullable<cXMLElement*>(obj);
+}
 
 double cNedValue::convertUnit(double d, const char *unit, const char *targetUnit)
 {
@@ -193,7 +199,7 @@ std::string cNedValue::str() const
                 strcat(buf, unit);
             return buf;
         case STRING: return opp_quotestr(s);
-        case XML: return xml->str();
+        case OBJECT: return obj->str();
         default: throw cRuntimeError("Internal error: Invalid cNedValue type");
     }
 }

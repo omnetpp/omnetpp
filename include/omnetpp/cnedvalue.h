@@ -55,7 +55,7 @@ class SIM_API cNedValue
      * Type of the value stored in a cNedValue object.
      */
     // Note: char codes need to be present and be consistent with cNedFunction::getArgTypes()!
-    enum Type {UNDEF=0, BOOL='B', INT='L', DOUBLE='D', STRING='S', XML='X', DBL=DOUBLE, STR=STRING} type;
+    enum Type {UNDEF=0, BOOL='B', INT='L', DOUBLE='D', STRING='S', OBJECT='O', DBL=DOUBLE /*compat*/, STR=STRING /*compat*/} type;
 
   private:
     bool bl;
@@ -63,7 +63,7 @@ class SIM_API cNedValue
     double dbl;
     const char *unit; // for INT/DOUBLE; must point to string constant or pooled string; may be nullptr
     std::string s;
-    cXMLElement *xml;
+    cObject *obj;
     static const char *OVERFLOW_MSG;
 
   private:
@@ -87,7 +87,7 @@ class SIM_API cNedValue
     cNedValue(double d, const char *unit)  {set(d,unit);}
     cNedValue(const char *s)  {set(s);}
     cNedValue(const std::string& s)  {set(s);}
-    cNedValue(cXMLElement *x)  {set(x);}
+    cNedValue(cObject *obj)  {set(obj);}
     cNedValue(const cPar& par) {set(par);}
     //@}
 
@@ -242,7 +242,7 @@ class SIM_API cNedValue
     /**
      * Sets the value to the given cXMLElement.
      */
-    void set(cXMLElement *x) {type=XML; xml=x;}
+    void set(cObject *obj) {type=OBJECT; this->obj=obj;}
 
     /**
      * Copies the value from a cPar.
@@ -299,9 +299,15 @@ class SIM_API cNedValue
     const std::string& stdstringValue() const {assertType(STRING); return s;}
 
     /**
-     * Returns value as pointer to cXMLElement. The type must be XML.
+     * Returns value as pointer to cObject. The type must be OBJECT.
      */
-    cXMLElement *xmlValue() const {assertType(XML); return xml;}
+    cObject *objectValue() const {assertType(OBJECT); return obj;}
+
+    /**
+     * Returns value as pointer to cXMLElement. The type must be OBJECT, and the
+     * stored object must be an instance of cXMLElement or nullptr.
+     */
+    cXMLElement *xmlValue() const;
     //@}
 
     /** @name Overloaded assignment and conversion operators. */
@@ -383,9 +389,9 @@ class SIM_API cNedValue
     cNedValue& operator=(const std::string& s)  {set(s); return *this;}
 
     /**
-     * Equivalent to set(cXMLElement *).
+     * Equivalent to set(cObject *).
      */
-    cNedValue& operator=(cXMLElement *node)  {set(node); return *this;}
+    cNedValue& operator=(cObject *obj)  {set(obj); return *this;}
 
     /**
      * Equivalent to set(const cPar&).
@@ -477,6 +483,11 @@ class SIM_API cNedValue
      * Equivalent to stdstringValue().
      */
     operator std::string() const  {return stdstringValue();}
+
+    /**
+     * Equivalent to objectValue().
+     */
+    operator cObject *() const  {return objectValue();}
 
     /**
      * Equivalent to xmlValue(). NOTE: The lifetime of the returned object tree
