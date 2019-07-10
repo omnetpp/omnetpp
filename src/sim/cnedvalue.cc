@@ -19,6 +19,7 @@
 #include "common/stringutil.h"
 #include "common/stringpool.h"
 #include "common/unitconversion.h"
+#include "common/intutil.h"
 #include "omnetpp/cnedvalue.h"
 #include "omnetpp/cxmlelement.h"
 #include "omnetpp/cexception.h"
@@ -101,24 +102,6 @@ void cNedValue::convertToDouble()
     }
     else if (type != DOUBLE)
         cannotCastError(DOUBLE);
-}
-
-//TODO these should be in some utils.cc file
-
-#ifndef __has_builtin
-  #define __has_builtin(x) 0  // Compatibility for compilers without the __has_builtin macro
-#endif
-
-inline intpar_t safeMul(intpar_t a, intpar_t b)
-{
-#if (__has_builtin(__builtin_mul_overflow) && !defined(__c2__)) || (defined(__GNUC__) && !defined(__clang__) && __GNUC__ >= 5)
-    intpar_t res;
-    if ( __builtin_mul_overflow(a, b, &res))
-        throw cRuntimeError("Integer overflow multiplying %" PRId64 " and %" PRId64 ", try converting to doubles", (int64_t)a, (int64_t)b);
-    return res;
-#else
-    return a * b;  // unchecked
-#endif
 }
 
 intpar_t cNedValue::intValueInUnit(const char *targetUnit) const
