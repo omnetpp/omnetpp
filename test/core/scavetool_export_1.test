@@ -67,7 +67,7 @@ run x        # -> error, -o is mandatory
 run x -o out.csv
 run x -o out.json
 run x -o out.vec -Tv #ERROR: multiple runs per vector file not supported
-run x -o out.vec -Tv -f 'attr:repetition(0)' #OK
+run x -o out.vec -Tv -f 'runattr:repetition(0)' #OK
 run x -o out.sca -Tsth
 
 #
@@ -80,7 +80,7 @@ run x -o out-Fcsv-s.csv -F CSV-S -x allowMixed=true
 run x -o out-Fjson.json -F JSON
 run x -o out-Fjson-py.py -F JSON -x pythonFlavoured=true
 run x -o out-Foppvec.vec -F OmnetppVectorFile -Tv #ERROR: multiple runs per vector file not supported
-run x -o out-Foppvec.vec -F OmnetppVectorFile -Tv -f 'attr:repetition(0)' #OK
+run x -o out-Foppvec.vec -F OmnetppVectorFile -Tv -f 'runattr:repetition(0)' #OK
 run x -o out-Foppsca.sca -F OmnetppScalarFile -Tsth
 run x -o out-Fsqlvec.vec -F SqliteVectorFile -Tv
 run x -o out-Fsqlsca.sca -F SqliteScalarFile -Tsth
@@ -125,8 +125,8 @@ run x -o out-x.csv -x separator=tab -x quoteEscaping=backslash
 run x -o out-k1.vec -Tv -k  #ERROR: multiple runs per vector file not supported
 run x -o out-k2.vec -Tv --no-indexing #ERROR: multiple runs per vector file not supported
 
-run x -o out-k1.vec -Tv -k -f 'attr:repetition(0)'  #OK
-run x -o out-k2.vec -Tv --no-indexing -f 'attr:repetition(0)' #OK
+run x -o out-k1.vec -Tv -k -f 'runattr:repetition(0)'  #OK
+run x -o out-k2.vec -Tv --no-indexing -f 'runattr:repetition(0)' #OK
 
 
 #
@@ -194,7 +194,7 @@ $ opp_scavetool x -o out.vec -Tv <files>
 opp_scavetool: Exporter: OMNeT++ vec files currently do not support multiple runs per file
 ERROR
 ---------------------------------------------------------------
-$ opp_scavetool x -o out.vec -Tv -f attr:repetition(0) <files>
+$ opp_scavetool x -o out.vec -Tv -f runattr:repetition(0) <files>
 Exported 1 vector
 ---------------------------------------------------------------
 $ opp_scavetool x -o out.sca -Tsth <files>
@@ -216,7 +216,7 @@ $ opp_scavetool x -o out-Foppvec.vec -F OmnetppVectorFile -Tv <files>
 opp_scavetool: Exporter: OMNeT++ vec files currently do not support multiple runs per file
 ERROR
 ---------------------------------------------------------------
-$ opp_scavetool x -o out-Foppvec.vec -F OmnetppVectorFile -Tv -f attr:repetition(0) <files>
+$ opp_scavetool x -o out-Foppvec.vec -F OmnetppVectorFile -Tv -f runattr:repetition(0) <files>
 Exported 1 vector
 ---------------------------------------------------------------
 $ opp_scavetool x -o out-Foppsca.sca -F OmnetppScalarFile -Tsth <files>
@@ -275,10 +275,10 @@ $ opp_scavetool x -o out-k2.vec -Tv --no-indexing <files>
 opp_scavetool: Exporter: OMNeT++ vec files currently do not support multiple runs per file
 ERROR
 ---------------------------------------------------------------
-$ opp_scavetool x -o out-k1.vec -Tv -k -f attr:repetition(0) <files>
+$ opp_scavetool x -o out-k1.vec -Tv -k -f runattr:repetition(0) <files>
 Exported 1 vector
 ---------------------------------------------------------------
-$ opp_scavetool x -o out-k2.vec -Tv --no-indexing -f attr:repetition(0) <files>
+$ opp_scavetool x -o out-k2.vec -Tv --no-indexing -f runattr:repetition(0) <files>
 Exported 1 vector
 ---------------------------------------------------------------
 $ opp_scavetool x -o out-v1.csv -v <files>
