@@ -29,14 +29,14 @@ RUN /usr/bin/printf '\xfe\xed\xfe\xed\x00\x00\x00\x02\x00\x00\x00\x00\xe2\x68\x6
     /var/lib/dpkg/info/ca-certificates-java.postinst configure
 
 # getting only the dependnecies does not work correctly (not everything is cached unfortunately, so a full build is required)
-#RUN git checkout 4f05766d && (cd $OMNETPP_DIR/ui && (mvn dependency:go-offline -Dwhat=omnetpp -fn || true)) ; rm -rf $OMNETPP_DIR
+#RUN git checkout master && (cd $OMNETPP_DIR/ui && (mvn dependency:go-offline -Dwhat=omnetpp -fn || true)) ; rm -rf $OMNETPP_DIR
 
 # we dummy build the IDE and then delete the whole OMNeT++ source, so as a side effect the maven cache will be updated
-RUN git checkout 4f05766d && \
+RUN git checkout master && \
     cp configure.user.dist configure.user && \
     ./configure WITH_QTENV=no WITH_OSG=no WITH_OSGEARTH=no && \
     make MODE=release ui -j$(nproc) && \
-    releng/ide/java/build-ide-java && \
+    OFFLINE=no releng/ide/java/build-ide-java && \
     rm -rf $OMNETPP_DIR
 
 # while running this image you should either map a local OMNeT++ repo from the host to the /root/omnetpp-repo dir

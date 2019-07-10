@@ -6,6 +6,10 @@
 # - the 'omnetpp-repo' bare repository as a base to be able to pre-load and cache maven artifacts.
 #   can be created with: 'git clone -n ../../../.git omnetpp-repo'
 #
-# NOTE: you need to rebuild this image whenever the Windows/macOS toolchain or Eclipse is updated
+# NOTE: you need to rebuild this image and the image tag whenever the Windows/macOS toolchain or Eclipse is updated
 
+rm -rf omnetpp-repo
+# copy the current state of the repo to the context dir
+git clone -n ../../../.git omnetpp-repo
 docker build -t omnetpp/distrobuild:eclipse4.12-tools190710-190710 .
+rm -rf omnetpp-repo
