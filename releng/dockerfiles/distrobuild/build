@@ -8,4 +8,4 @@
 #
 # NOTE: you need to rebuild this image whenever the Windows/macOS toolchain or Eclipse is updated
 
-docker build -t omnetpp/distrobuild:eclipse4.11-tools180301-190328 .
+docker build -t omnetpp/distrobuild:eclipse4.12-tools190710-190710 .

@@ -3,7 +3,7 @@ MAINTAINER Rudolf Hornig <rudi@omnetpp.org>
 
 # during docker image builds, the 'tools' directory in the context dir should contain the Windows and macOS toolchains (i.e. ./tools/170717/...)
 ENV TOOLS_DIR /root/tools
-ENV TOOLS_VERSION 180301
+ENV TOOLS_VERSION 190710
 ENV OMNETPP_DIR /root/omnetpp
 ENV PATH $PATH:$OMNETPP_DIR/bin
 
