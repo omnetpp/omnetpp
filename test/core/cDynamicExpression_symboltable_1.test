@@ -1,0 +1,38 @@
+%description:
+Test cDynamicExpression::parse() with its SymbolTable inner class.
+
+%global:
+typedef std::map<std::string, cNedValue> Variables;
+
+void test(const char *expr, const Variables& variables)
+{
+    std::string result;
+    try {
+        cDynamicExpression e;
+        e.parse(expr, variables);
+        cNedValue v = e.evaluate();
+        result = v.str();
+    } catch (std::exception& e) {
+        result = e.what();
+    }
+    EV << expr << " ==> " << result << "\n";
+}
+
+%activity:
+std::map<std::string, cNedValue> variables;
+variables["a"] = 2;
+variables["b"] = 1;
+
+test("3*a+b", variables);
+test("3*double(a) + cos(b-1)", variables); // make sure functions remain accessible
+test("3*a+b+c", variables); // unknown variable
+
+EV << ".\n";
+
+%contains: stdout
+3*a+b ==> 7
+3*double(a) + cos(b-1) ==> 7
+3*a+b+c ==> Cannot resolve variable 'c'
+.
+
+

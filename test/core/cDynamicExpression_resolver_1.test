@@ -1,0 +1,83 @@
+%description:
+Test cDynamicExpression::parse() with a custom resolver.
+
+%global:
+
+std::string str(const char *s) {return std::string(s);}
+std::string str(intpar_t x) {return std::to_string(x);}
+
+static cExpression::Context gContext(nullptr);
+
+
+class TestResolver : public cDynamicExpression::ResolverBase {
+public:
+    typedef cExpression::Context Context;
+
+    virtual TestResolver *dup() const override {return new TestResolver();}
+
+    virtual cNedValue readVariable(Context *context, const char *name) override {
+        ASSERT(context == &gContext);
+        return str(name);
+    }
+
+    virtual cNedValue readVariable(Context *context, const char *name, intpar_t index) override {
+        ASSERT(context == &gContext);
+        return str(name) + str(index);
+    }
+
+    virtual cNedValue readMember(Context *context, const cNedValue& object, const char *name) override {
+        ASSERT(context == &gContext);
+        return object.str() + "->" + name;
+    }
+
+    virtual cNedValue readMember(Context *context, const cNedValue& object, const char *name, intpar_t index) override {
+        ASSERT(context == &gContext);
+        return object.str() + "->" + name + str(index);
+    }
+
+    virtual cNedValue callFunction(Context *context, const char *name, cNedValue argv[], int argc) override {
+        ASSERT(context == &gContext);
+        return str(name) + "(....)";
+    }
+
+    virtual cNedValue callMethod(Context *context, const cNedValue& object, const char *name, cNedValue argv[], int argc) override {
+        ASSERT(context == &gContext);
+        return object.str() + "->" + name + "(....)";
+    }
+};
+
+void test(const char *expr)
+{
+    std::string result;
+    try {
+        cDynamicExpression e;
+        e.parse(expr, new TestResolver());
+        cNedValue v = e.evaluate(&gContext);
+        result = v.str();
+    } catch (std::exception& e) {
+        result = e.what();
+    }
+    EV << expr << " ==> " << result << "\n";
+}
+
+%activity:
+test("foo");
+test("foo[3]");
+test("obj.foo");
+test("obj.foo[3]");
+test("fun(1,2,3)");
+test("obj.fun(1,2,3)");
+
+test("(foo + bar[99] + baz).fun()");
+
+EV << ".\n";
+
+%contains: stdout
+foo ==> "foo"
+foo[3] ==> "foo3"
+obj.foo ==> "\"obj\"->foo"
+obj.foo[3] ==> "\"obj\"->foo3"
+fun(1,2,3) ==> "fun(....)"
+obj.fun(1,2,3) ==> "\"obj\"->fun(....)"
+(foo + bar[99] + baz).fun() ==> "\"foobar99baz\"->fun(....)"
+.
