@@ -359,10 +359,12 @@ void Cmdenv::simulate()
 
     Speedometer speedometer;  // only used by Express mode, but we need it in catch blocks too
 
+    cSimulation *simulation = getSimulation();
+
     try {
         if (!opt->expressMode) {
             while (true) {
-                cEvent *event = getSimulation()->takeNextEvent();
+                cEvent *event = simulation->takeNextEvent();
                 if (!event)
                     throw cTerminationException("Scheduler interrupted while waiting");
 
@@ -372,38 +374,40 @@ void Cmdenv::simulate()
                     out.flush();
 
                 // execute event
-                getSimulation()->executeEvent(event);
+                simulation->executeEvent(event);
 
                 // flush so that output from different modules don't get mixed
                 cLogProxy::flushLastLine();
 
                 checkTimeLimits();
+
                 if (sigintReceived)
                     throw cTerminationException("SIGINT or SIGTERM received, exiting");
             }
         }
         else {
-            speedometer.start(getSimulation()->getSimTime());
+            speedometer.start(simulation->getSimTime());
 
             int64_t last_update = opp_get_monotonic_clock_usecs();
 
             doStatusUpdate(speedometer);
 
             while (true) {
-                cEvent *event = getSimulation()->takeNextEvent();
+                cEvent *event = simulation->takeNextEvent();
                 if (!event)
                     throw cTerminationException("Scheduler interrupted while waiting");
 
-                speedometer.addEvent(getSimulation()->getSimTime());  // XXX potential performance hog
+                speedometer.addEvent(simulation->getSimTime());  // XXX potential performance hog
 
                 // print event banner from time to time
-                if ((getSimulation()->getEventNumber()&0xff) == 0 && elapsed(opt->statusFrequencyMs, last_update))
+                if ((simulation->getEventNumber()&0xff) == 0 && elapsed(opt->statusFrequencyMs, last_update))
                     doStatusUpdate(speedometer);
 
                 // execute event
-                getSimulation()->executeEvent(event);
+                simulation->executeEvent(event);
 
                 checkTimeLimits();  // XXX potential performance hog (maybe check every 256 events, unless "cmdenv-strict-limits" is on?)
+
                 if (sigintReceived)
                     throw cTerminationException("SIGINT or SIGTERM received, exiting");
             }
