@@ -130,7 +130,6 @@ Cmdenv::Cmdenv() : opt((CmdenvOptions *&)EnvirBase::opt)
     // the class may be instantiated only for the purpose of calling
     // printUISpecificHelp() on it
 
-    logging = true;
     logStream = fopen(".cmdenv-log", "w");
     if (!logStream)
         logStream = stdout;

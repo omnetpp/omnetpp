@@ -59,11 +59,11 @@ class CMDENV_API Cmdenv : public EnvirBase
      static bool sigintReceived;
 
      // the number of runs already started (>1 if multiple runs are running in the same process)
-     int runsTried;
-     int numRuns;
+     int runsTried = 0;
+     int numRuns = 0;
 
      // logging
-     bool logging;
+     bool logging = true;
      FILE *logStream;
 
    protected:
