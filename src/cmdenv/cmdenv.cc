@@ -74,6 +74,7 @@ Register_PerRunConfigOption(CFGID_CMDENV_EVENT_BANNER_DETAILS, "cmdenv-event-ban
 Register_PerRunConfigOptionU(CFGID_CMDENV_STATUS_FREQUENCY, "cmdenv-status-frequency", "s", "2s", "When `cmdenv-express-mode=true`: print status update every n seconds.")
 Register_PerRunConfigOption(CFGID_CMDENV_PERFORMANCE_DISPLAY, "cmdenv-performance-display", CFG_BOOL, "true", "When `cmdenv-express-mode=true`: print detailed performance information. Turning it on results in a 3-line entry printed on each update, containing ev/sec, simsec/sec, ev/simsec, number of messages created/still present/currently scheduled in FES.")
 Register_PerRunConfigOption(CFGID_CMDENV_LOG_PREFIX, "cmdenv-log-prefix", CFG_STRING, "[%l]\t", "Specifies the format string that determines the prefix of each log line. The format string may contain format directives in the syntax `%x` (a `%` followed by a single format character).  For example `%l` stands for log level, and `%J` for source component. See the manual for the list of available format characters.");
+Register_PerRunConfigOption(CFGID_CMDENV_FAKE_GUI, "cmdenv-fake-gui", CFG_BOOL, "false", "Causes Cmdenv to lie to simulations that is a GUI (isGui()=true), and to periodically invoke refreshDisplay() during simulation execution.");
 Register_PerObjectConfigOption(CFGID_CMDENV_LOGLEVEL, "cmdenv-log-level", KIND_MODULE, CFG_STRING, "TRACE", "Specifies the per-component level of detail recorded by log statements, output below the specified level is omitted. Available values are (case insensitive): `off`, `fatal`, `error`, `warn`, `info`, `detail`, `debug` or `trace`. Note that the level of detail is also controlled by the globally specified runtime log level and the `COMPILETIME_LOGLEVEL` macro that is used to completely remove log statements from the executable.")
 
 //
@@ -122,6 +123,7 @@ CmdenvOptions::CmdenvOptions()
     detailedEventBanners = false;
     statusFrequencyMs = 2000;
     printPerformanceData = false;
+    fakeGUI = false;
 }
 
 Cmdenv::Cmdenv() : opt((CmdenvOptions *&)EnvirBase::opt)
@@ -168,6 +170,13 @@ void Cmdenv::readPerRunOptions()
     setLogFormat(getConfig()->getAsString(CFGID_CMDENV_LOG_PREFIX).c_str());
     opt->outputFile = cfg->getAsFilename(CFGID_CMDENV_OUTPUT_FILE).c_str();
     opt->redirectOutput = cfg->getAsBool(CFGID_CMDENV_REDIRECT_OUTPUT);
+    opt->fakeGUI = cfg->getAsBool(CFGID_CMDENV_FAKE_GUI);
+    delete fakeGUI;
+    fakeGUI = nullptr;
+    if (opt->fakeGUI) {
+        fakeGUI = new FakeGUI();
+        fakeGUI->readConfigOptions(cfg);
+    }
 }
 
 void Cmdenv::doRun()
@@ -373,8 +382,14 @@ void Cmdenv::simulate()
                 if (opt->autoflush)
                     out.flush();
 
+                if (fakeGUI)
+                    fakeGUI->beforeEvent(event);
+
                 // execute event
                 simulation->executeEvent(event);
+
+                if (fakeGUI)
+                    fakeGUI->afterEvent();
 
                 // flush so that output from different modules don't get mixed
                 cLogProxy::flushLastLine();
@@ -403,8 +418,14 @@ void Cmdenv::simulate()
                 if ((simulation->getEventNumber()&0xff) == 0 && elapsed(opt->statusFrequencyMs, last_update))
                     doStatusUpdate(speedometer);
 
+                if (fakeGUI)
+                    fakeGUI->beforeEvent(event);
+
                 // execute event
                 simulation->executeEvent(event);
+
+                if (fakeGUI)
+                    fakeGUI->afterEvent();
 
                 checkTimeLimits();  // potential place to gain a few cycles
 
@@ -661,44 +682,67 @@ bool Cmdenv::idle()
     return sigintReceived;
 }
 
+double Cmdenv::getAnimationTime() const
+{
+    return fakeGUI ? fakeGUI->getAnimationTime() : 0;
+}
+
+double Cmdenv::getAnimationSpeed() const
+{
+    return fakeGUI ? fakeGUI->getAnimationSpeed() : 0;
+}
+
+double Cmdenv::getRemainingAnimationHoldTime() const
+{
+    return fakeGUI ? fakeGUI->getRemainingAnimationHoldTime() : 0;
+}
+
 void Cmdenv::getImageSize(const char *imageName, double& outWidth, double& outHeight)
 {
-    outWidth = outHeight = 32;
+    if (fakeGUI)
+        fakeGUI->getImageSize(imageName, outWidth, outHeight);
+    else
+        outWidth = outHeight = 32;
 }
 
 void Cmdenv::getTextExtent(const cFigure::Font& font, const char *text, double& outWidth, double& outHeight, double& outAscent)
 {
-    if (!*text) {
+    if (!*text)
         outWidth = outHeight = outAscent = 0;
-        return;
+    else if (fakeGUI)
+        fakeGUI->getTextExtent(font, text, outWidth, outHeight, outAscent);
+    else {
+        outWidth = 10 * strlen(text);
+        outHeight = 12;
+        outAscent = 8;
     }
-
-    outWidth = 10 * strlen(text);
-    outHeight = 12;
-    outAscent = 8;
 }
 
 void Cmdenv::appendToImagePath(const char *directory)
 {
+    if (fakeGUI)
+        fakeGUI->appendToImagePath(directory);
 }
 
 void Cmdenv::loadImage(const char *fileName, const char *imageName)
 {
+    if (fakeGUI)
+        fakeGUI->loadImage(fileName, imageName);
 }
 
 cFigure::Rectangle Cmdenv::getSubmoduleBounds(const cModule *submodule)
 {
-    return cFigure::Rectangle(NAN, NAN, NAN, NAN);
+    return fakeGUI ? fakeGUI->getSubmoduleBounds(submodule) : cFigure::Rectangle(NAN, NAN, NAN, NAN);
 }
 
 std::vector<cFigure::Point> Cmdenv::getConnectionLine(const cGate *sourceGate)
 {
-    return {};
+    return fakeGUI ? fakeGUI->getConnectionLine(sourceGate) : std::vector<cFigure::Point>();
 }
 
 double Cmdenv::getZoomLevel(const cModule *module)
 {
-     return NAN;
+    return fakeGUI ? fakeGUI->getZoomLevel(module) : NAN;
 }
 
 void Cmdenv::printUISpecificHelp()

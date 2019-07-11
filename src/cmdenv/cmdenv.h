@@ -22,6 +22,7 @@
 #include "envir/envirbase.h"
 #include "envir/speedometer.h"
 #include "omnetpp/csimulation.h"
+#include "fakegui.h"
 
 namespace omnetpp {
 namespace cmdenv {
@@ -45,6 +46,7 @@ struct CMDENV_API CmdenvOptions : public EnvirOptions
     bool detailedEventBanners; // if normal mode
     long statusFrequencyMs; // if express mode
     bool printPerformanceData; // if express mode
+    bool fakeGUI; // all modes
 };
 
 /**
@@ -66,6 +68,8 @@ class CMDENV_API Cmdenv : public EnvirBase
      bool logging = true;
      FILE *logStream;
 
+     FakeGUI *fakeGUI = nullptr;
+
    protected:
      virtual void log(cLogEntry *entry) override;
      virtual void alert(const char *msg) override;
@@ -77,11 +81,10 @@ class CMDENV_API Cmdenv : public EnvirBase
      Cmdenv();
      virtual ~Cmdenv();
 
-     // redefined virtual funcs:
      virtual void componentInitBegin(cComponent *component, int stage) override;
      virtual void simulationEvent(cEvent *event) override;
 
-     virtual bool isGUI() const override {return false;}
+     virtual bool isGUI() const override {return opt->fakeGUI;}
      virtual bool isExpressMode() const override {return opt->expressMode;}
      virtual std::string gets(const char *prompt, const char *defaultReply) override;
      virtual bool idle() override;
@@ -94,9 +97,9 @@ class CMDENV_API Cmdenv : public EnvirBase
      virtual cFigure::Rectangle getSubmoduleBounds(const cModule *submodule) override;
      virtual std::vector<cFigure::Point> getConnectionLine(const cGate *sourceGate) override;
      virtual double getZoomLevel(const cModule *module) override;
-     virtual double getAnimationTime() const override {return 0;}
-     virtual double getAnimationSpeed() const override {return 0;}
-     virtual double getRemainingAnimationHoldTime() const override {return 0;}
+     virtual double getAnimationTime() const override;
+     virtual double getAnimationSpeed() const override;
+     virtual double getRemainingAnimationHoldTime() const override;
 
    protected:
      virtual void displayException(std::exception& ex) override;

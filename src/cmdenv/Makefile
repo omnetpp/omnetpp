@@ -29,7 +29,7 @@ COPTS=$(CFLAGS) $(INCL_FLAGS)
 
 IMPLIBS= -loppsim$D -loppenvir$D -loppcommon$D
 
-OBJS = $O/cmdenv.o
+OBJS = $O/cmdenv.o $O/fakegui.o
 
 # macro is used in $(EXPORT_DEFINES) with clang-msabi when building a shared lib
 EXPORT_MACRO = -DCMDENV_EXPORT
