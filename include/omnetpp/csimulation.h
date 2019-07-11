@@ -449,6 +449,11 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     void executeEvent(cEvent *event);
 
     /**
+     * Invoke callRefreshDisplay() on the system module.
+     */
+    void callRefreshDisplay();
+
+    /**
      * Switches to the given simple module's coroutine. This method is invoked
      * from executeEvent() for activity()-based modules.
      */

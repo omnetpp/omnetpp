@@ -442,6 +442,12 @@ void cSimulation::callFinish()
     }
 }
 
+void cSimulation::callRefreshDisplay()
+{
+    if (systemModule)
+        systemModule->callRefreshDisplay();
+}
+
 void cSimulation::deleteNetwork()
 {
     if (!systemModule)
