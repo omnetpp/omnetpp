@@ -397,7 +397,7 @@ void Cmdenv::simulate()
                 if (!event)
                     throw cTerminationException("Scheduler interrupted while waiting");
 
-                speedometer.addEvent(simulation->getSimTime());  // XXX potential performance hog
+                speedometer.addEvent(simulation->getSimTime());
 
                 // print event banner from time to time
                 if ((simulation->getEventNumber()&0xff) == 0 && elapsed(opt->statusFrequencyMs, last_update))
@@ -406,7 +406,7 @@ void Cmdenv::simulate()
                 // execute event
                 simulation->executeEvent(event);
 
-                checkTimeLimits();  // XXX potential performance hog (maybe check every 256 events, unless "cmdenv-strict-limits" is on?)
+                checkTimeLimits();  // potential place to gain a few cycles
 
                 if (sigintReceived)
                     throw cTerminationException("SIGINT or SIGTERM received, exiting");
