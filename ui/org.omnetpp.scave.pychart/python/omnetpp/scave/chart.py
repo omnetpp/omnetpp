@@ -73,8 +73,8 @@ def extract_label_columns(df):
 
 
 def make_legend_label(legend_cols, row):
-    # if len(legend_cols) == 1:
-    #    return str(row[legend_cols[0][0]])
+    if len(legend_cols) == 1:
+        return str(row[legend_cols[0][0]])
     return ", ".join([col + "=" + str(row[i]) for i, col in legend_cols])
 
 def make_chart_title(df, title_col, legend_cols):
@@ -125,17 +125,6 @@ def _plot_scalars_DF_scave(df):
     _plot_scalars_DF_simple(pd.pivot_table(df, index="module", columns="name", values="value"))
 
 
-def _plot_scalars_DF_2(df):
-    names = df.index.get_level_values('name').tolist()
-    modules = df.index.get_level_values('module').tolist()
-
-    paths = list(map(lambda t: '.'.join(t), zip(modules, names)))
-
-    values = df[('result', 'value')]
-
-    _plot_scalars_lists(None, paths, values)
-
-
 def plot_scalars(df_or_values, labels=None, row_label=None):
     """
     This method only does dynamic dispatching based on its first argument.
@@ -145,36 +134,86 @@ def plot_scalars(df_or_values, labels=None, row_label=None):
         df = df_or_values
         if "value" in df.columns and "module" in df.columns and "name" in df.columns:
             _plot_scalars_DF_scave(df)
-        elif "experiment" in df.index.names and "measurement" in df.index.names and "replication" in df.index.names and "module" in df.index.names and "name" in df.index.names:
-            _plot_scalars_DF_2(df)
         else:
             _plot_scalars_DF_simple(df)
     else:
         _plot_scalars_lists(row_label, labels, df_or_values)
 
 
+def _put_array_in_shm(arr, shm_objs, mmap_objs):
+    global vector_data_counter
+    # the only need to start with a / on POSIX, but Windows doesn't seem to mind, so just putting it there always...
+    name = "/vecdata-" + str(os.getpid()) + "-" + str(vector_data_counter)
+    vector_data_counter += 1
+
+    system = platform.system()
+
+    if system in ['Linux', 'Darwin']:
+        mem = posix_ipc.SharedMemory(name, posix_ipc.O_CREAT | posix_ipc.O_EXCL, size=arr.nbytes)
+
+        shm_objs.append(mem)
+
+        if system == 'Darwin':
+            # for some reason we can't write to the shm fd directly on mac, only after mmap-ing it
+            with mmap.mmap(mem.fd, length=mem.size) as mf:
+                mf.write(arr.astype(np.dtype('>f8')).tobytes())
+        else:
+            with open(mem.fd, 'wb') as mf:
+                arr.astype(np.dtype('>f8')).tofile(mf)
+
+    elif system == 'Windows':
+        # on Windows, the mmap module in itself provides shared memory functionality
+        mm = mmap.mmap(-1, arr.nbytes, tagname=name)
+        mmap_objs.append(mm)
+        mm.write(arr.astype(np.dtype('>f8')).tobytes())
+    else:
+        raise RuntimeError("unsupported platform")
+
+    return name + " " + str(arr.nbytes)
+
+
 def plot_vector(label, xs, ys):
+
+    # only used on posix, to unlink them later
+    shm_objs = list()
+    # only used on windows, to prevent gc
+    mmap_objs = list()
+
     Gateway.chart_plotter.plotVectors(pl.dumps([
         {
             "title": str(label),
             "key": str(label),
-            "xs": _list_to_bytes(xs),
-            "ys": _list_to_bytes(ys)
+            "xs": _put_array_in_shm(np.array(xs), shm_objs, mmap_objs),
+            "ys": _put_array_in_shm(np.array(ys), shm_objs, mmap_objs)
         }
     ]))
 
+    # this is a no-op on Windows
+    for o in shm_objs:
+        o.unlink()
+
 
 def _plot_vectors_tuplelist(vectors):
+
+    # only used on posix, to unlink them later
+    shm_objs = list()
+    # only used on windows, to prevent gc
+    mmap_objs = list()
+
     """ vectors is a list of (label, xs, ys) tuples """
     Gateway.chart_plotter.plotVectors(pl.dumps([
         {
             "title": str(v[0]),
             "key": str(v[0]),
-            "xs": _list_to_bytes(v[1]),
-            "ys": _list_to_bytes(v[2])
+            "xs": _put_array_in_shm(np.array(v[1]), shm_objs, mmap_objs),
+            "ys": _put_array_in_shm(np.array(v[2]), shm_objs, mmap_objs)
         }
         for v in vectors
     ]))
+
+    # this is a no-op on Windows
+    for o in shm_objs:
+        o.unlink()
 
 
 def _plot_vectors_DF_simple(df):
@@ -184,15 +223,25 @@ def _plot_vectors_DF_simple(df):
     else:
         xs = range(len(df[df.columns[0]]))
 
+    # only used on posix, to unlink them later
+    shm_objs = list()
+    # only used on windows, to prevent gc
+    mmap_objs = list()
+
     Gateway.chart_plotter.plotVectors(pl.dumps([
         {
             "title": str(column),
             "key": str(column),
-            "xs": _list_to_bytes(xs[~np.isnan(df[column])]),
-            "ys": _list_to_bytes(df[column].values[~np.isnan(df[column])])
+            "xs": _put_array_in_shm(xs[~np.isnan(df[column])], shm_objs, mmap_objs),
+            "ys": _put_array_in_shm(df[column].values[~np.isnan(df[column])], shm_objs, mmap_objs)
         }
         for column in df if column != "time"
     ]))
+
+    # this is a no-op on Windows
+    for o in shm_objs:
+        o.unlink()
+
 
 def _plot_vectors_DF_scave(df):
 
@@ -203,43 +252,12 @@ def _plot_vectors_DF_scave(df):
     # only used on windows, to prevent gc
     mmap_objs = list()
 
-    def share(arr):
-        global vector_data_counter
-        # the only need to start with a / on POSIX, but Windows doesn't seem to mind, so just putting it there always...
-        name = "/vecdata-" + str(os.getpid()) + "-" + str(vector_data_counter)
-        vector_data_counter += 1
-
-        system = platform.system()
-
-        if system in ['Linux', 'Darwin']:
-            mem = posix_ipc.SharedMemory(name, posix_ipc.O_CREAT | posix_ipc.O_EXCL, size=arr.nbytes)
-
-            shm_objs.append(mem)
-
-            if system == 'Darwin':
-                # for some reason we can't write to the shm fd directly on mac, only after mmap-ing it
-                with mmap.mmap(mem.fd, length=mem.size) as mf:
-                    mf.write(arr.astype(np.dtype('>f8')).tobytes())
-            else:
-                with open(mem.fd, 'wb') as mf:
-                    arr.astype(np.dtype('>f8')).tofile(mf)
-
-        elif system == 'Windows':
-            # on Windows, the mmap module in itself provides shared memory functionality
-            mm = mmap.mmap(-1, arr.nbytes, tagname=name)
-            mmap_objs.append(mm)
-            mm.write(arr.astype(np.dtype('>f8')).tobytes())
-        else:
-            raise RuntimeError("unsupported platform")
-
-        return name + " " + str(arr.nbytes)
-
     Gateway.chart_plotter.plotVectors(pl.dumps([
         {
             "title": make_legend_label(legend_cols, row),
             "key": str(i),
-            "xs": share(row.vectime),
-            "ys": share(row.vecvalue)
+            "xs": _put_array_in_shm(row.vectime, shm_objs, mmap_objs),
+            "ys": _put_array_in_shm(row.vecvalue, shm_objs, mmap_objs)
         }
         for i, row in enumerate(df.itertuples(index=False))
     ]))
@@ -264,18 +282,6 @@ def _plot_vectors_DF_scave(df):
 
     set_properties(properties)
 
-
-def _plot_vectors_DF_2(df):
-    Gateway.chart_plotter.plotVectors(pl.dumps([
-        {
-            "title": row[('attr', 'title')],
-            "key": "-".join(row.name) + row[('attr', 'title')],
-            "xs": _list_to_bytes(row[('result', 'vectime')]),
-            "ys": _list_to_bytes(row[('result', 'vecvalue')])
-        }
-        for index, row in df.iterrows()
-    ]))
-
 def plot_vectors(df_or_list):
     """
     TODO: styling in-place?
@@ -284,8 +290,6 @@ def plot_vectors(df_or_list):
         df = df_or_list
         if "vectime" in df.columns and "vecvalue" in df.columns:
             _plot_vectors_DF_scave(df)
-        elif "experiment" in df.index.names and "measurement" in df.index.names and "replication" in df.index.names and "module" in df.index.names and "name" in df.index.names:
-            _plot_vectors_DF_2(df)
         else:
             _plot_vectors_DF_simple(df)
     else:
@@ -429,28 +433,9 @@ def _plot_histograms_DF_scave(df):
     if not get_property("Graph.Title"):
         set_property("Graph.Title", title)
 
-
-
-def _plot_histograms_DF_2(df):
-    Gateway.chart_plotter.plotHistograms(pl.dumps([
-        {
-            "title": row[('attr', 'title')],  # row[2] + ":" + row[3],
-            "key": "-".join(row.name) + row[('attr', 'title')],  # row[2] + ":" + row[3],
-            "count": int(row[('result', 'count')]),
-            "min": float(row[('result', 'min')]),
-            "max": float(row[('result', 'max')]),
-            "edges": _list_to_bytes(list(row[('result', 'binedges')]) + [float('inf')]),
-            "values": _list_to_bytes(row[('result', 'binvalues')])
-        }
-        for index, row in df.iterrows()
-    ]))
-
-
 def plot_histograms(df):
     if "binedges" in df and "binvalues" in df and "module" in df and "name" in df:
         _plot_histograms_DF_scave(df)
-    if "experiment" in df.index.names and "measurement" in df.index.names and "replication" in df.index.names and "module" in df.index.names and "name" in df.index.names:
-        _plot_histograms_DF_2(df)
     else:
         _plot_histograms_DF(df)
 
