@@ -23,6 +23,7 @@
 #include "omnetpp/cproperty.h"
 #include "omnetpp/cproperties.h"
 #include "omnetpp/csimulation.h"  // getEnvir()
+#include "omnetpp/chasher.h"
 #include "omnetpp/cstringtokenizer.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "omnetpp/globals.h"
@@ -1304,6 +1305,26 @@ void cFigure::move(double dx, double dy)
         child->move(dx, dy);
 }
 
+void cFigure::hashGeometryRec(cHasher *hasher) const
+{
+    hashGeometry(hasher);
+    for (auto & child : children)
+        child->hashGeometryRec(hasher);
+}
+
+void cFigure::hashGeometry(cHasher *hasher) const
+{
+    hasher->add(getClassName());
+
+    const Transform& t = getTransform();
+    hasher->add(t.a);
+    hasher->add(t.b);
+    hasher->add(t.c);
+    hasher->add(t.d);
+    hasher->add(t.t1);
+    hasher->add(t.t2);
+}
+
 //----
 
 cGroupFigure& cGroupFigure::operator=(const cGroupFigure& other)
@@ -1371,6 +1392,27 @@ void cPanelFigure::updateParentTransform(Transform& transform)
 
     // then apply our own transform in the normal way (like all other figures do)
     transform.rightMultiply(getTransform());
+}
+
+inline void addToHash(const cFigure::Point& p, cHasher *hasher)
+{
+    hasher->add(p.x);
+    hasher->add(p.y);
+}
+
+inline void addToHash(const cFigure::Rectangle& r, cHasher *hasher)
+{
+    hasher->add(r.x);
+    hasher->add(r.y);
+    hasher->add(r.width);
+    hasher->add(r.height);
+}
+
+void cPanelFigure::hashGeometry(cHasher *hasher) const
+{
+    cFigure::hashGeometry(hasher);
+    addToHash(getPosition(), hasher);
+    addToHash(getAnchorPoint(), hasher);
 }
 
 //----
@@ -1568,6 +1610,13 @@ void cLineFigure::setEnd(const Point& end)
     fireGeometryChange();
 }
 
+void cLineFigure::hashGeometry(cHasher *hasher) const
+{
+    cAbstractLineFigure::hashGeometry(hasher);
+    addToHash(getStart(), hasher);
+    addToHash(getEnd(), hasher);
+}
+
 //----
 
 void cArcFigure::copy(const cArcFigure& other)
@@ -1652,6 +1701,14 @@ void cArcFigure::setEndAngle(double endAngle)
         return;
     this->endAngle = endAngle;
     fireGeometryChange();
+}
+
+void cArcFigure::hashGeometry(cHasher *hasher) const
+{
+    cAbstractLineFigure::hashGeometry(hasher);
+    addToHash(getBounds(), hasher);
+    hasher->add(getStartAngle());
+    hasher->add(getEndAngle());
 }
 
 //----
@@ -1775,6 +1832,13 @@ void cPolylineFigure::setJoinStyle(JoinStyle joinStyle)
         return;
     this->joinStyle = joinStyle;
     fireVisualChange();
+}
+
+void cPolylineFigure::hashGeometry(cHasher *hasher) const
+{
+    cAbstractLineFigure::hashGeometry(hasher);
+    for (const Point& point : getPoints())
+        addToHash(point, hasher);
 }
 
 //----
@@ -2005,6 +2069,12 @@ void cRectangleFigure::setCornerRy(double cornerRy)
     fireGeometryChange();
 }
 
+void cRectangleFigure::hashGeometry(cHasher *hasher) const
+{
+    cAbstractShapeFigure::hashGeometry(hasher);
+    addToHash(getBounds(), hasher);
+}
+
 //----
 
 void cOvalFigure::copy(const cOvalFigure& other)
@@ -2065,6 +2135,12 @@ void cOvalFigure::setBounds(const Rectangle& bounds)
 void cOvalFigure::setPosition(const Point& position, Anchor anchor)
 {
     setBounds(computeBoundingBox(position, Point(bounds.width, bounds.height), bounds.height, anchor));
+}
+
+void cOvalFigure::hashGeometry(cHasher *hasher) const
+{
+    cAbstractShapeFigure::hashGeometry(hasher);
+    addToHash(getBounds(), hasher);
 }
 
 //----
@@ -2156,6 +2232,14 @@ void cRingFigure::setInnerRy(double innerRy)
     fireGeometryChange();
 }
 
+void cRingFigure::hashGeometry(cHasher *hasher) const
+{
+    cAbstractShapeFigure::hashGeometry(hasher);
+    addToHash(getBounds(), hasher);
+    hasher->add(getInnerRx());
+    hasher->add(getInnerRy());
+}
+
 //----
 
 void cPieSliceFigure::copy(const cPieSliceFigure& other)
@@ -2240,6 +2324,14 @@ void cPieSliceFigure::setEndAngle(double endAngle)
         return;
     this->endAngle = endAngle;
     fireGeometryChange();
+}
+
+void cPieSliceFigure::hashGeometry(cHasher *hasher) const
+{
+    cAbstractShapeFigure::hashGeometry(hasher);
+    addToHash(getBounds(), hasher);
+    hasher->add(getStartAngle());
+    hasher->add(getEndAngle());
 }
 
 //----
@@ -2374,6 +2466,13 @@ void cPolygonFigure::setFillRule(FillRule fillRule)
         return;
     this->fillRule = fillRule;
     fireVisualChange();
+}
+
+void cPolygonFigure::hashGeometry(cHasher *hasher) const
+{
+    cAbstractShapeFigure::hashGeometry(hasher);
+    for (const Point& point : getPoints())
+        addToHash(point, hasher);
 }
 
 //----
@@ -2943,6 +3042,115 @@ void cPathFigure::setFillRule(FillRule fillRule)
     fireVisualChange();
 }
 
+void cPathFigure::hashGeometry(cHasher *hasher) const
+{
+    cAbstractShapeFigure::hashGeometry(hasher);
+    for (auto base : path) {
+        hasher->add((char)base->code);
+        switch (base->code) {
+            case 'M': {
+                MoveTo *item = static_cast<MoveTo*>(base);
+                hasher->add(item->x); hasher->add(item->y);
+                break;
+            }
+            case 'm': {
+                MoveRel *item = static_cast<MoveRel*>(base);
+                hasher->add(item->dx); hasher->add(item->dy);
+                break;
+            }
+            case 'L': {
+                LineTo *item = static_cast<LineTo*>(base);
+                hasher->add(item->x); hasher->add(item->y);
+                break;
+            }
+            case 'l': {
+                LineRel *item = static_cast<LineRel*>(base);
+                hasher->add(item->dx); hasher->add(item->dy);
+                break;
+            }
+            case 'H': {
+                HorizontalLineTo *item = static_cast<HorizontalLineTo*>(base);
+                hasher->add(item->x);
+                break;
+            }
+            case 'h': {
+                HorizontalLineRel *item = static_cast<HorizontalLineRel*>(base);
+                hasher->add(item->dx);
+                break;
+            }
+            case 'V': {
+                VerticalLineTo *item = static_cast<VerticalLineTo*>(base);
+                hasher->add(item->y);
+                break;
+            }
+            case 'v': {
+                VerticalLineRel *item = static_cast<VerticalLineRel*>(base);
+                hasher->add(item->dy);
+                break;
+            }
+            case 'A': {
+                ArcTo *item = static_cast<ArcTo*>(base);
+                hasher->add(item->rx); hasher->add(item->ry);
+                hasher->add(item->phi); hasher->add(item->largeArc); hasher->add(item->sweep);
+                hasher->add(item->x); hasher->add(item->y);
+                break;
+            }
+            case 'a': {
+                ArcRel *item = static_cast<ArcRel*>(base);
+                hasher->add(item->rx); hasher->add(item->ry);
+                hasher->add(item->phi); hasher->add(item->largeArc); hasher->add(item->sweep);
+                hasher->add(item->dx); hasher->add(item->dy);
+                break;
+            }
+            case 'Q': {
+                CurveTo *item = static_cast<CurveTo*>(base);
+                hasher->add(item->x1); hasher->add(item->y1); hasher->add(item->x); hasher->add(item->y);
+                break;
+            }
+            case 'q': {
+                CurveRel *item = static_cast<CurveRel*>(base);
+                hasher->add(item->dx1); hasher->add(item->dy1); hasher->add(item->dx); hasher->add(item->dy);
+                break;
+            }
+            case 'T': {
+                SmoothCurveTo *item = static_cast<SmoothCurveTo*>(base);
+                hasher->add(item->x); hasher->add(item->y);
+                break;
+            }
+            case 't': {
+                SmoothCurveRel *item = static_cast<SmoothCurveRel*>(base);
+                hasher->add(item->dx); hasher->add(item->dy);
+                break;
+            }
+            case 'C': {
+                CubicBezierCurveTo *item = static_cast<CubicBezierCurveTo*>(base);
+                hasher->add(item->x1); hasher->add(item->y1); hasher->add(item->x2); hasher->add(item->y2); hasher->add(item->x); hasher->add(item->y);
+                break;
+            }
+            case 'c': {
+                CubicBezierCurveRel *item = static_cast<CubicBezierCurveRel*>(base);
+                hasher->add(item->dx1); hasher->add(item->dy1); hasher->add(item->dx2); hasher->add(item->dy2); hasher->add(item->dx); hasher->add(item->dy);
+                break;
+            }
+            case 'S': {
+                SmoothCubicBezierCurveTo *item = static_cast<SmoothCubicBezierCurveTo*>(base);
+                hasher->add(item->x2); hasher->add(item->y2); hasher->add(item->x); hasher->add(item->y);
+                break;
+            }
+            case 's': {
+                SmoothCubicBezierCurveRel *item = static_cast<SmoothCubicBezierCurveRel*>(base);
+                hasher->add(item->dx2); hasher->add(item->dy2); hasher->add(item->dx); hasher->add(item->dy);
+                break;
+            }
+            case 'Z': {
+                break;
+            }
+            default:
+                throw cRuntimeError(this, "Unknown path item '%c'", base->code);
+        }
+    }
+}
+
 //----
 
 void cAbstractTextFigure::copy(const cAbstractTextFigure& other)
@@ -3072,6 +3280,12 @@ cFigure::Rectangle cAbstractTextFigure::getBounds() const
     double width, height, ascent;
     getEnvir()->getTextExtent(getFont(), getText(), width, height, ascent);
     return computeBoundingBox(position, Point(width, height), ascent, anchor);
+}
+
+void cAbstractTextFigure::hashGeometry(cHasher *hasher) const
+{
+    cFigure::hashGeometry(hasher);
+    addToHash(getPosition(), hasher);
 }
 
 //----
@@ -3255,6 +3469,12 @@ cFigure::Rectangle cAbstractImageFigure::getBounds() const
             size.y = defaultSize.y;
     }
     return computeBoundingBox(position, size, size.y, anchor);
+}
+
+void cAbstractImageFigure::hashGeometry(cHasher *hasher) const
+{
+    cFigure::hashGeometry(hasher);
+    addToHash(getPosition(), hasher);
 }
 
 //----

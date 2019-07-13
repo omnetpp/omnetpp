@@ -27,6 +27,7 @@ class cCanvas;
 class cProperty;
 class cProperties;
 class cObjectFactory;
+class cHasher;
 
 //TODO: doc: default values as precise enum names
 //TODO: doc: @figure attributes for each figure type
@@ -371,6 +372,8 @@ class SIM_API cFigure : public cOwnedObject
         // internal, mostly used by runtime GUIs:
         virtual void updateParentTransform(Transform& transform) {transform.rightMultiply(getTransform());}
         virtual void callRefreshDisplay(); // call refreshDisplay(), and recurse to its children
+        virtual void hashGeometry(cHasher *hasher) const;
+        virtual void hashGeometryRec(cHasher *hasher) const;
         uint8_t getLocalChangeFlags() const {return localChanges;}
         uint8_t getSubtreeChangeFlags() const {return subtreeChanges;}
         void clearChangeFlags();
@@ -890,6 +893,8 @@ class SIM_API cPanelFigure : public cFigure
     protected:
         virtual const char **getAllowedPropertyKeys() const override;
         virtual void parse(cProperty *property) override;
+        virtual void hashGeometry(cHasher *hasher) const override;
+
     private:
         void copy(const cPanelFigure& other);
     public:
@@ -1087,6 +1092,7 @@ class SIM_API cLineFigure : public cAbstractLineFigure
         void copy(const cLineFigure& other);
     protected:
         virtual const char **getAllowedPropertyKeys() const override;
+        virtual void hashGeometry(cHasher *hasher) const override;
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
@@ -1156,6 +1162,7 @@ class SIM_API cArcFigure : public cAbstractLineFigure
         void copy(const cArcFigure& other);
     protected:
         virtual const char **getAllowedPropertyKeys() const override;
+        virtual void hashGeometry(cHasher *hasher) const override;
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
@@ -1248,6 +1255,7 @@ class SIM_API cPolylineFigure : public cAbstractLineFigure
         void checkInsIndex(int i) const;
     protected:
         virtual const char **getAllowedPropertyKeys() const override;
+        virtual void hashGeometry(cHasher *hasher) const override;
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
@@ -1519,6 +1527,7 @@ class SIM_API cRectangleFigure : public cAbstractShapeFigure
         double cornerRx, cornerRy;
     protected:
         virtual const char **getAllowedPropertyKeys() const override;
+        virtual void hashGeometry(cHasher *hasher) const override;
     private:
         void copy(const cRectangleFigure& other);
     public:
@@ -1603,6 +1612,7 @@ class SIM_API cOvalFigure : public cAbstractShapeFigure
         void copy(const cOvalFigure& other);
     protected:
         virtual const char **getAllowedPropertyKeys() const override;
+        virtual void hashGeometry(cHasher *hasher) const override;
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
@@ -1659,6 +1669,7 @@ class SIM_API cRingFigure : public cAbstractShapeFigure
         void copy(const cRingFigure& other);
     protected:
         virtual const char **getAllowedPropertyKeys() const override;
+        virtual void hashGeometry(cHasher *hasher) const override;
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
@@ -1759,6 +1770,7 @@ class SIM_API cPieSliceFigure : public cAbstractShapeFigure
         void copy(const cPieSliceFigure& other);
     protected:
         virtual const char **getAllowedPropertyKeys() const override;
+        virtual void hashGeometry(cHasher *hasher) const override;
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
@@ -1848,6 +1860,7 @@ class SIM_API cPolygonFigure : public cAbstractShapeFigure
         void checkInsIndex(int i) const;
     protected:
         virtual const char **getAllowedPropertyKeys() const override;
+        virtual void hashGeometry(cHasher *hasher) const override;
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
@@ -2010,6 +2023,7 @@ class SIM_API cPathFigure : public cAbstractShapeFigure
 
     protected:
         virtual const char **getAllowedPropertyKeys() const override;
+        virtual void hashGeometry(cHasher *hasher) const override;
 
     public:
         /** @name Constructors, destructor, assignment. */
@@ -2357,6 +2371,7 @@ class SIM_API cAbstractTextFigure : public cFigure
         void copy(const cAbstractTextFigure& other);
     protected:
         virtual const char **getAllowedPropertyKeys() const override;
+        virtual void hashGeometry(cHasher *hasher) const override;
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
@@ -2586,6 +2601,7 @@ class SIM_API cAbstractImageFigure : public cFigure
         void copy(const cAbstractImageFigure& other);
     protected:
         virtual const char **getAllowedPropertyKeys() const override;
+        virtual void hashGeometry(cHasher *hasher) const override;
         virtual Point getDefaultSize() const = 0;
     public:
         /** @name Constructors, destructor, assignment. */
