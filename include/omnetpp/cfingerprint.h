@@ -269,21 +269,19 @@ class SIM_API cMultiFingerprintCalculator : public cFingerprintCalculator
     virtual void addStatisticResult(const cComponent *component, const char *name, const cStatistic *value) override;
     virtual void addVectorResult(const cComponent *component, const char *name, const simtime_t& t, double value) override;
 
-#define for_each_element(CODE) for (std::vector<cFingerprintCalculator *>::iterator it = elements.begin(); it != elements.end(); ++it) { cFingerprintCalculator *element = *it; CODE; }
-    virtual void addExtraData(const char *data, size_t length) override { for_each_element(element->addExtraData(data, length)); }
-    virtual void addExtraData(char data) override { for_each_element(element->addExtraData(data)); }
-    virtual void addExtraData(short data) override { for_each_element(element->addExtraData(data)); }
-    virtual void addExtraData(int data) override { for_each_element(element->addExtraData(data)); }
-    virtual void addExtraData(long data) override { for_each_element(element->addExtraData(data)); }
-    virtual void addExtraData(long long data) override { for_each_element(element->addExtraData(data)); }
-    virtual void addExtraData(unsigned char data) override { for_each_element(element->addExtraData(data)); }
-    virtual void addExtraData(unsigned short data) override { for_each_element(element->addExtraData(data)); }
-    virtual void addExtraData(unsigned int data) override { for_each_element(element->addExtraData(data)); }
-    virtual void addExtraData(unsigned long data) override { for_each_element(element->addExtraData(data)); }
-    virtual void addExtraData(unsigned long long data) override { for_each_element(element->addExtraData(data)); }
-    virtual void addExtraData(double data) override { for_each_element(element->addExtraData(data)); }
-    virtual void addExtraData(const char *data) override { for_each_element(element->addExtraData(data)); }
-#undef for_each_element
+    virtual void addExtraData(const char *data, size_t length) override { for (auto element: elements) element->addExtraData(data, length); }
+    virtual void addExtraData(char data) override { for (auto element: elements) element->addExtraData(data); }
+    virtual void addExtraData(short data) override { for (auto element: elements) element->addExtraData(data); }
+    virtual void addExtraData(int data) override { for (auto element: elements) element->addExtraData(data); }
+    virtual void addExtraData(long data) override { for (auto element: elements) element->addExtraData(data); }
+    virtual void addExtraData(long long data) override { for (auto element: elements) element->addExtraData(data); }
+    virtual void addExtraData(unsigned char data) override { for (auto element: elements) element->addExtraData(data); }
+    virtual void addExtraData(unsigned short data) override { for (auto element: elements) element->addExtraData(data); }
+    virtual void addExtraData(unsigned int data) override { for (auto element: elements) element->addExtraData(data); }
+    virtual void addExtraData(unsigned long data) override { for (auto element: elements) element->addExtraData(data); }
+    virtual void addExtraData(unsigned long long data) override { for (auto element: elements) element->addExtraData(data); }
+    virtual void addExtraData(double data) override { for (auto element: elements) element->addExtraData(data); }
+    virtual void addExtraData(const char *data) override { for (auto element: elements) element->addExtraData(data); }
 
     virtual bool checkFingerprint() const override;
 };

@@ -390,10 +390,6 @@ bool cSingleFingerprintCalculator::checkFingerprint() const
 
 //----
 
-// Note: This is basically equivalent to "for (auto & element : elements)", but we don't want to rely on C++11 yet...
-#define for_each_element(CODE) for (std::vector<cFingerprintCalculator *>::iterator it = elements.begin(); it != elements.end(); ++it) { cFingerprintCalculator *element = *it; CODE; }
-#define for_each_element_const(CODE) for (std::vector<cFingerprintCalculator *>::const_iterator it = elements.begin(); it != elements.end(); ++it) { cFingerprintCalculator *element = *it; CODE; }
-
 cMultiFingerprintCalculator::cMultiFingerprintCalculator(cFingerprintCalculator *prototype) :
     prototype(prototype)
 {
@@ -402,9 +398,8 @@ cMultiFingerprintCalculator::cMultiFingerprintCalculator(cFingerprintCalculator 
 cMultiFingerprintCalculator::~cMultiFingerprintCalculator()
 {
     delete prototype;
-    for_each_element(
+    for (auto& element: elements)
         delete element;
-    )
 }
 
 void cMultiFingerprintCalculator::initialize(const char *expectedFingerprintsList, cConfiguration *cfg, int index)
@@ -422,51 +417,43 @@ void cMultiFingerprintCalculator::initialize(const char *expectedFingerprintsLis
 
 void cMultiFingerprintCalculator::addEvent(cEvent *event)
 {
-    for_each_element(
+    for (auto& element: elements)
         element->addEvent(event);
-    )
 }
 
 void cMultiFingerprintCalculator::addScalarResult(const cComponent *component, const char *name, double value)
 {
-    for_each_element(
+    for (auto& element: elements)
         element->addScalarResult(component, name, value);
-    )
 }
 
 void cMultiFingerprintCalculator::addStatisticResult(const cComponent *component, const char *name, const cStatistic *value)
 {
-    for_each_element(
+    for (auto& element: elements)
         element->addStatisticResult(component, name, value);
-    )
 }
 
 void cMultiFingerprintCalculator::addVectorResult(const cComponent *component, const char *name, const simtime_t& t, double value)
 {
-    for_each_element(
+    for (auto& element: elements)
         element->addVectorResult(component, name, t, value);
-    )
 }
 
 bool cMultiFingerprintCalculator::checkFingerprint() const
 {
-    for_each_element_const(
+    for (auto element: elements)
         if (!element->checkFingerprint())
             return false;
-    )
     return true;
 }
 
 std::string cMultiFingerprintCalculator::str() const
 {
     std::stringstream stream;
-    for_each_element_const(
+    for (auto element: elements)
         stream << ", " << element->str();
-    );
     return stream.str().substr(2);
 }
-
-#undef for_each_element
 
 #endif // !USE_OMNETPP4x_FINGERPRINTS
 
