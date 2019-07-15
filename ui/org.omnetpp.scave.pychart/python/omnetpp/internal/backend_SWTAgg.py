@@ -491,9 +491,6 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
             # doing the rle coding in 4byte units, so all colors will be compressed
             # well, not only those where r = b = g = a (those are rare)
     
-            # f = open('output.rgba', 'wb')
-            # f.write(stringBuffer)
-    
             if self.useRle:
                 # rleStart = time.perf_counter()
     

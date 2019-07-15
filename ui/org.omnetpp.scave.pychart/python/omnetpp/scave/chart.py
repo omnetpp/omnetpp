@@ -440,9 +440,6 @@ def plot_histograms(df):
         _plot_histograms_DF(df)
 
 
-def do_set_properties(props):
-    Gateway.chart_plotter.setChartProperties(props)
-
 def set_property(key, value):
     Gateway.chart_plotter.setChartProperty(key, value)
 
@@ -454,7 +451,8 @@ def set_properties(*vargs, **kwargs):
         props.update(a)
     for k, v in kwargs.items():
         props[k] = v
-    do_set_properties(props)
+    Gateway.chart_plotter.setChartProperties(props)
+
 
 def get_properties():
     return Gateway.properties_provider.getChartProperties()
