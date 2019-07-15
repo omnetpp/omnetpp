@@ -2,9 +2,7 @@ package org.omnetpp.scave.pychart;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
@@ -30,7 +28,6 @@ public class PlotWidget extends Canvas implements IPlotWidget {
     ByteBuffer buf;
     ImageData imageData;
     Image image;
-    boolean imageIsHalfRes;
 
     // this seems to improve responsiveness by "cheating", but can sometimes
     // draw ugly glitches for a short time when resizing is too quick
@@ -54,19 +51,6 @@ public class PlotWidget extends Canvas implements IPlotWidget {
     static final int EVENTSTREAM_MOUSEMOVE = 1;
     static final int EVENTSTREAM_RESIZE = 2;
 
-    private static byte[] intsToBytes(int[] ints) {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(ints.length * 4);
-        byteBuffer.asIntBuffer().put(ints);
-        return byteBuffer.array();
-    }
-
-    private static int[] bytesToInts(byte[] bytes) {
-        ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
-        int[] ints = new int[bytes.length / 4];
-        byteBuffer.asIntBuffer().get(ints);
-        return ints;
-    }
-
     public PlotWidget(Composite parent, int style, PythonProcess proc, IPyFigureCanvas canvas) {
         super(parent, style);
 
@@ -84,12 +68,8 @@ public class PlotWidget extends Canvas implements IPlotWidget {
                     else
                         e.gc.drawImage(image, 0, 0, width, height, 0, 0, getSize().x, getSize().y);
                 }
-                else {
-                    if (imageIsHalfRes)
-                        e.gc.drawImage(image, 0, 0, width, height, 0, 0, width * 2, height * 2);
-                    else
-                        e.gc.drawImage(image, 0, 0);
-                }
+                else
+                    e.gc.drawImage(image, 0, 0);
             }
 
             if ((isRefreshing || mouseIsOverMe) && message != null && !message.isEmpty()) {
@@ -202,14 +182,13 @@ public class PlotWidget extends Canvas implements IPlotWidget {
     }
 
     @Override
-    public void setPixelsShared(int w, int h, boolean halfRes) {
+    public void setPixelsShared(int w, int h) {
         if (isRefreshing)
             setMessage(null);
         isRefreshing = false;
 
         if (buf == null || buf.capacity() == 0)
             return; // avoids InvalidArgumentException
-
 
         // copy the data synchronously
         Display.getDefault().syncExec(() -> {
@@ -235,7 +214,6 @@ public class PlotWidget extends Canvas implements IPlotWidget {
                 // this is actually the slowest part... consider using BufferedImage or
                 // something like that?
                 image = new Image(getDisplay(), imageData);
-                imageIsHalfRes = halfRes;
 
                 redraw();
                 update();
@@ -255,39 +233,18 @@ public class PlotWidget extends Canvas implements IPlotWidget {
     }
 
     @Override
-    public void setPixels(byte[] pixels, int w, int h, boolean rleCoded, boolean halfRes) {
+    public void setPixels(byte[] pixels, int w, int h) {
         if (isRefreshing)
             setMessage(null);
         isRefreshing = false;
 
         Display.getDefault().asyncExec(() -> {
             if (!isDisposed()) {
-                // just to capture, and be able to overwrite it
-                byte[] m_pixels = pixels;
-
-                if (rleCoded) {
-                    int[] intPixels = bytesToInts(pixels);
-                    IntBuffer decodedInts = IntBuffer.allocate(w * h);
-
-                    // decoding RLE
-                    for (int i = 0; i < intPixels.length / 2; ++i) {
-                        // might be _slightly_ faster if we only allocated one big array
-                        // once in the beginning, and always used that, with explicit length
-                        // parameters to fill and put... but it's also more complicated.
-                        // (measurements so far did not show any significant speedup)
-                        int[] arr = new int[intPixels[i * 2]];
-                        Arrays.fill(arr, intPixels[i * 2 + 1]);
-                        decodedInts.put(arr);
-                    }
-
-                    m_pixels = intsToBytes(decodedInts.array());
-                }
-
-                if (m_pixels.length == 0)
+                if (pixels.length == 0)
                     return; // avoids InvalidArgumentException
 
                 PaletteData palette = new PaletteData(0xFF000000, 0xFF0000, 0xFF00);
-                ImageData imageData = new ImageData(w, h, 32, palette, 1, m_pixels);
+                ImageData imageData = new ImageData(w, h, 32, palette, 1, pixels);
 
                 if (image != null)
                     image.dispose();
@@ -295,7 +252,6 @@ public class PlotWidget extends Canvas implements IPlotWidget {
                 // this is actually the slowest part... consider using BufferedImage or
                 // something like that?
                 image = new Image(getDisplay(), imageData);
-                imageIsHalfRes = halfRes;
 
                 redraw();
                 update();

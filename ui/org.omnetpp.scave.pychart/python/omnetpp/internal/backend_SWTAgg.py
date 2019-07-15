@@ -84,7 +84,6 @@ import os
 import sys
 import time
 import traceback
-import numpy as np  # mostly for RLE
 
 # posix_ipc is required for POSIX shm on Linux and Mac
 if os.name != 'nt':
@@ -226,27 +225,6 @@ class FigureManagerSWT(FigureManagerBase):
 
 figure_counter = 1
 
-# By Thomas Browne, Taken from http://techqa.info/programming/question/1066758/find-length-of-sequences-of-identical-values-in-a-numpy-array
-def rle3(inarray):
-        """ run length encoding. Partial credit to R rle function.
-            Multi datatype arrays catered for including non Numpy
-            returns: tuple (runlengths, startpositions, values) """
-        ia = np.array(inarray)  # force numpy
-        n = len(ia)
-        if n == 0:
-            return np.array([0, 0])
-        else:
-            y = np.array(ia[1:] != ia[:-1])  # pairwise unequal (string safe)
-            i = np.append(np.where(y), n - 1)  # must include last element posi
-            z = np.diff(np.append(-1, i))  # run lengths
-            v = ia[i]  # values
-
-            l = np.empty((z.size + v.size,), dtype=v.dtype)
-            l[0::2] = z
-            l[1::2] = v
-            return l
-
-
 # @for_all_methods(TimeAndGuard())
 class FigureCanvasSWT(FigureCanvasBase):
 
@@ -372,8 +350,6 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
         self.num = num
 
         self.useSharedMemory = True
-        self.useRle = True
-        self.halfResDynamic = False
 
         self.shmMmap = None
 
@@ -389,19 +365,8 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
     class Java:
         implements = ["org.omnetpp.scave.pychart.IPyFigureCanvas"]
 
-    def setUseRle(self, enabled):
-        self.useRle = enabled
-
-    def setHalfResDynamic(self, enabled):
-        self.halfResDynamic = enabled
-
-    def draw_idle(self):
-        # TODO: make this asynchronous, and group consequent calls to just one redraw
-        if (self.draw_enabled):
-            self.draw()
-
     def blit(self, bbox=None):
-        # TODO: use RLE? halfres? any other optimizations?
+        # TODO use SHM here as well!
         if bbox is None and self.figure:
             bbox = self.figure.bbox
 
@@ -421,44 +386,21 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
         FigureCanvasAgg.print_figure(self, *args, **kwargs)
         self.draw()
 
-    def dynamic_update(self):
-        if self.halfResDynamic:
-            width, height = self.get_width_height()
-            dpi = self.figure.dpi
-
-            # resizing the agg canvas to half size and dpi
-            self.figure.dpi = dpi / 2
-            self._resize(width / 2, height / 2)
-
-            self.draw(half=True)
-
-            # restoring the agg canvas to original size and dpi
-            self.figure.dpi = dpi
-            self._resize(width, height)
-        else:  # full res dynamic updates
-            self.draw(half=False)
-
-    def draw(self, half=False):
+    def draw(self):
 
         w, h = self.get_width_height()
 
-        # print("rasterizing with Agg at " + str(w) + "x" + str(h) + " and halfRes? " + str(half) + " ...")
-        # startTime = time.perf_counter()
         FigureCanvasAgg.draw(self)
-        # endTime = time.perf_counter()
-        # print("rasterizing with Agg took " + str((endTime - startTime) * 1000.0) + " ms")
 
-        bytes = self.buffer_rgba()
-
-        bl = len(bytes)
-        try:
-            # it might be a bytes or a memoryview object, and in the latter case, len() returns the number of rows
-            bl = bytes.nbytes
-        except:
-            pass
+        buffer = self.buffer_rgba()
+        
+        if isinstance(buffer, bytes):
+            bl = len(buffer)
+        else:
+            # it is assumed to be a memoryview
+            bl = buffer.nbytes
         
         if self.useSharedMemory:
-            
             global figure_counter
             name = "/plot-" + str(os.getpid()) + "-" + str(self.num) + "-" + str(figure_counter)
             figure_counter += 1
@@ -484,30 +426,10 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
                     shm.unlink()
 
             self.shmMmap.seek(0)
-            self.shmMmap.write(bytes)
-            self.widget.setPixelsShared(w, h, half)
-
+            self.shmMmap.write(buffer)
+            self.widget.setPixelsShared(w, h)
         else:
-            # doing the rle coding in 4byte units, so all colors will be compressed
-            # well, not only those where r = b = g = a (those are rare)
-    
-            if self.useRle:
-                # rleStart = time.perf_counter()
-    
-                intPixels = np.frombuffer(pixelBuffer, dtype=np.uint8)
-    
-                dt = np.dtype(np.int32)
-                dt = dt.newbyteorder('>')
-    
-                rleInts = rle3(intPixels.view(dtype=dt))
-                # TODO: could refrain from sending it with RLE encoding if we find
-                # that it got bigger (or just a tiny bit smaller)
-                bytes = rleInts.view(dtype=np.int8).tobytes()
-    
-                # rleEnd = time.perf_counter()
-                # print("RLE encoding took " + str((rleEnd - rleStart) * 1000) + " ms.")
-    
-            self.widget.setPixels(bytes, w, h, self.useRle, half)
+            self.widget.setPixels(buffer, w, h)
 
 
 FigureCanvas = FigureCanvasSWTAgg

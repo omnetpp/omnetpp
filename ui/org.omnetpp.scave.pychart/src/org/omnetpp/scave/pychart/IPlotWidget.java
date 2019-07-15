@@ -4,30 +4,27 @@ import java.util.ArrayList;
 
 /**
  * This is the interface that Python expects from a PlotWidget.
- * 
+ *
  * @author attila
  *
  */
 public interface IPlotWidget {
 
-
-    void setSharedMemoryNameAndSize(String name, long size);
-    void setPixelsShared(int w, int h, boolean halfRes);
-
-
     /**
      * This is the main drawing method. Calling it will replace
-     * the entire contents of the PlotWidget canvas. RLE decoding
-     * and 2x upscaling is optionally available. 'w' and 'h' always
-     * indicate the size of the actual (optionally RLE-d) image data
-     * in 'pixels', even if 'halfRes' is true.
+     * the entire contents of the PlotWidget canvas.
+     *
+     * Note that this is not used at the moment, as we utilize SHM.
      * */
-    void setPixels(byte[] pixels, int w, int h, boolean rleCoded, boolean halfRes);
+    void setPixels(byte[] pixels, int w, int h);
+
+    void setSharedMemoryNameAndSize(String name, long size);
+    void setPixelsShared(int w, int h);
 
     /**
      * This is used for updating the canvas partially.
      * It paints on top of the already existing canvas contents.
-     * Can be used by MPL cursors, and animations. 
+     * Can be used by MPL cursors, and animations.
      * */
     void blit(byte[] pixels, int x, int y, int w, int h);
 
