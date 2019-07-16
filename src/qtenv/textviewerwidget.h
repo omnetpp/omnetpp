@@ -182,11 +182,6 @@ protected:
     void handleContentChange();
     bool contentChangedFlag = true; // initially we should update
 
-    /**
-     * Scroll the caret into view
-     */
-    void revealCaret();
-
 protected slots:
 
     void onAutoScrollTimer();
@@ -203,6 +198,11 @@ public slots:
 
     void scrolledHorizontally(int value);
     void scrolledVertically(int value);
+
+    /**
+     * Scroll the caret into view
+     */
+    void revealCaret();
 
 signals:
     void caretMoved(int lineIndex, int column);
