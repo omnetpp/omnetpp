@@ -302,22 +302,12 @@ Padding with spaces:
             <item row="0" column="1">
              <widget class="QLineEdit" name="overall"/>
             </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="scrollbackText">
-              <property name="text">
-               <string>Scrollback buffer (lines):</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QLineEdit" name="scrollback"/>
-            </item>
            </layout>
           </item>
           <item>
            <widget class="QLabel" name="applies">
             <property name="text">
-             <string>Applies to main window and module log windows. Leave blank for unlimited. Minimum value is 500 lines.</string>
+             <string>Log is not stored in Express mode. Filtered views (e.g. those belonging to submodules) naturally contain fewer events.</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>

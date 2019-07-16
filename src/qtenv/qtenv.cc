@@ -180,7 +180,6 @@ void Qtenv::storeOptsInPrefs()
     setPref("logformat", opt->logFormat.c_str());
     setPref("loglevel", cLog::getLogLevelName(opt->logLevel));
 
-    setPref("scrollbacklimit", opt->scrollbackLimit);
     setPref("logbuffer_maxnumevents", logBuffer.getMaxNumEntries());
 }
 
@@ -295,10 +294,6 @@ void Qtenv::restoreOptsFromPrefs()
     try { // level is stored as string, so we have to convert there and back. also have to store in opt, also forward to cLog via setter
         opt->logLevel = cLog::resolveLogLevel(getPref("loglevel", cLog::getLogLevelName(opt->logLevel)).toByteArray());
     } catch (cRuntimeError &) { } // resolveLogLevel might throw, but we can ignore it, and not change the factory default
-
-    pref = getPref("scrollbacklimit");
-    if (pref.isValid())
-        opt->scrollbackLimit = pref.toInt();
 
     pref = getPref("logbuffer_maxnumevents");
     if (pref.isValid())
