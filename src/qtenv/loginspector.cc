@@ -230,6 +230,12 @@ QStringList LogInspector::gatherAllMessagePrinterTags()
 
 void LogInspector::setMode(Mode mode)
 {
+    eventnumber_t caretAtEvent = -1;
+    if (textWidget && textWidget->getContentProvider()) {
+        Pos caretPos = textWidget->getCaretPosition();
+        caretAtEvent = textWidget->getContentProvider()->getEventNumberAtLine(caretPos.line);
+    }
+
     if (this->mode == MESSAGES)
         saveColumnWidths();
 
@@ -248,6 +254,12 @@ void LogInspector::setMode(Mode mode)
     configureMessagePrinterAction->setEnabled(mode == MESSAGES);
 
     setPref(PREF_MODE, mode);
+
+    if (caretAtEvent >= 0) {
+        int lineNumber = textWidget->getContentProvider()->getLineAtEvent(caretAtEvent);
+        textWidget->setCaretPosition(lineNumber, 0);
+        textWidget->revealCaret();
+    }
 }
 
 void LogInspector::doSetObject(cObject *obj)

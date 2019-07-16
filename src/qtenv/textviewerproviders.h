@@ -72,6 +72,9 @@ public:
     // Or it can be a nullptr, prepare for it!
     virtual void *getUserData(int lineIndex) { return nullptr; }
 
+    virtual eventnumber_t getEventNumberAtLine(int lineIndex) { return 0; };
+    virtual int getLineAtEvent(eventnumber_t eventNumber) { return 0; };
+
 signals:
     void textChanged();
     // This is used to move the cursor and anchor up in the viewer
@@ -214,6 +217,9 @@ public:
     bool showHeaders() override;
     QStringList getHeaders() override;
     void *getUserData(int lineIndex) override;
+
+    eventnumber_t getEventNumberAtLine(int lineIndex) override;
+    int getLineAtEvent(eventnumber_t eventNumber) override;
 
 protected:
     int getIndexOfEntryAt(int lineIndex);

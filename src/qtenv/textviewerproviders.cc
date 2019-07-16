@@ -191,6 +191,22 @@ void *ModuleOutputContentProvider::getUserData(int lineIndex)
     return eventEntry->msgs[lineIndex - entryStartLineNumbers[entryIndex]].msg;
 }
 
+eventnumber_t ModuleOutputContentProvider::getEventNumberAtLine(int lineIndex)
+{
+    int entryIndex = getIndexOfEntryAt(lineIndex);
+    LogBuffer::Entry *eventEntry = logBuffer->getEntries()[entryIndex];
+    Q_ASSERT(!filter || filter->matches(eventEntry));
+    return eventEntry->eventNumber;
+};
+
+int ModuleOutputContentProvider::getLineAtEvent(eventnumber_t eventNumber)
+{
+    int entryIndex = logBuffer->findEntryByEventNumber(eventNumber);
+    if (!isIndexValid())
+        rebuildIndex();
+    return entryStartLineNumbers[entryIndex];
+};
+
 int ModuleOutputContentProvider::getIndexOfEntryAt(int lineIndex)
 {
     // The lineIndex parameter here is already corrected for the single
