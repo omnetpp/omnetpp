@@ -96,7 +96,6 @@ struct QtenvOptions : public EnvirOptions
     StripNamespace stripNamespace = STRIPNAMESPACE_ALL; // whether to display type names with full C++ namespace prefix or not
     std::string logFormat = "%l %K%<:";     // format of the log prefix, see the LogFormatter class
     LogLevel logLevel = LOGLEVEL_TRACE;    // global log level
-    int scrollbackLimit = 10000;           // global setting for all LogInspectors
 };
 
 /**

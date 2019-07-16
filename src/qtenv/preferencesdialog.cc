@@ -60,7 +60,6 @@ void PreferencesDialog::init()
     ui->shortBanners->setChecked(getQtenv()->opt->shortBanners);
     ui->noLoggingRefreshDisplay->setChecked(getQtenv()->opt->noLoggingRefreshDisplay);
     ui->logPrefix->setText(getQtenv()->opt->logFormat.c_str());
-    ui->scrollback->setText(QString::number(getQtenv()->opt->scrollbackLimit));
     ui->overall->setText(QString::number(getQtenv()->getLogBuffer()->getMaxNumEntries()));
 
     for (int i = 0; i < ui->logLevel->count(); ++i)
@@ -150,14 +149,6 @@ void PreferencesDialog::accept()
         if (!n.isEmpty() && historySize < 100)
             historySize = 100;
         getQtenv()->getLogBuffer()->setMaxNumEntries(historySize);
-    }
-
-    n = ui->scrollback->text();
-    if (n.isEmpty() || n.toInt() != 0) {
-        int scrollBack = n.toInt();
-        if (!n.isEmpty() && scrollBack < 500)
-            scrollBack = 500;
-        getQtenv()->opt->scrollbackLimit = scrollBack;
     }
 
     getQtenv()->opt->printEventBanners = ui->eventBanners->isChecked();
