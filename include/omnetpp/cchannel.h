@@ -24,6 +24,7 @@
 namespace omnetpp {
 
 class cGate;
+class cModule;
 
 
 /**
@@ -33,9 +34,13 @@ class cGate;
  */
 class SIM_API cChannel : public cComponent //implies noncopyable
 {
+    friend class cModule; // for setting prevSibling/nextSibling
   protected:
     cGate *srcGate; // gate the channel is attached to
     int nedConnectionElementId;  // for cChannel::getProperties(); usually the NED connection element's id
+
+    // Note: the containing compound module can be derived from the srcGate pointer.
+    cChannel *prevSibling, *nextSibling; // pointers to other channels in the same compound module
 
   public:
     // internal: called from cGate
@@ -54,6 +59,10 @@ class SIM_API cChannel : public cComponent //implies noncopyable
 
     // internal: calls refreshDisplay() recursively
     virtual void callRefreshDisplay() override;
+
+    // internal: for cModule::ChannelIterator
+    cChannel *getPreviousSibling() const {return prevSibling;}
+    cChannel *getNextSibling() const {return nextSibling;}
 
   public:
     /**

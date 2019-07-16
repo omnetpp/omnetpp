@@ -46,6 +46,7 @@ cChannel::cChannel(const char *name) : cComponent(name)
 {
     srcGate = nullptr;
     nedConnectionElementId = -1;
+    prevSibling = nextSibling = nullptr;
 }
 
 cChannel::~cChannel()

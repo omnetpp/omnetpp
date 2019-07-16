@@ -334,6 +334,9 @@ void cGate::installChannel(cChannel *chan)
     channel = chan;
     channel->setSourceGate(this);
     take(channel);
+
+    cModule *parentModule = channel->getParentModule();
+    parentModule->insertChannel(chan);
 }
 
 void cGate::disconnect()
@@ -365,13 +368,18 @@ void cGate::disconnect()
     EVCB.connectionDeleted(this);
 
     // remove connection (but preserve channel object for the notification)
-    cGate *oldnextgatep = nextGate;
+    cChannel *oldChannel = channel;
+    if (channel) {
+        cModule *parentModule = channel->getParentModule();
+        parentModule->removeChannel(channel);
+        channel = nullptr;
+    }
+
+    cGate *oldNextGate = nextGate;
     nextGate->prevGate = nullptr;
     nextGate = nullptr;
     connectionId = -1;
 
-    cChannel *oldchannelp = channel;
-    channel = nullptr;
 
 #ifdef SIMFRONTEND_SUPPORT
     mod->updateLastChangeSerial();
@@ -381,8 +389,8 @@ void cGate::disconnect()
     if (mod->hasListeners(POST_MODEL_CHANGE)) {
         cPostGateDisconnectNotification tmp;
         tmp.gate = this;
-        tmp.targetGate = oldnextgatep;
-        tmp.channel = oldchannelp;
+        tmp.targetGate = oldNextGate;
+        tmp.channel = oldChannel;
         mod->emit(POST_MODEL_CHANGE, &tmp);
     }
     if (pathStartModule->hasListeners(POST_MODEL_CHANGE) || pathEndModule->hasListeners(POST_MODEL_CHANGE)) {
@@ -395,9 +403,9 @@ void cGate::disconnect()
     }
 
     // delete channel object
-    if (oldchannelp) {
-        oldchannelp->setFlag(cComponent::FL_DELETING, true);
-        dropAndDelete(oldchannelp);
+    if (oldChannel) {
+        oldChannel->setFlag(cComponent::FL_DELETING, true);
+        dropAndDelete(oldChannel);
     }
 }
 

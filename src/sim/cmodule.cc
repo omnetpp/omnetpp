@@ -64,6 +64,7 @@ cModule::cModule()
     fullName = nullptr;
 
     prevSibling = nextSibling = firstSubmodule = lastSubmodule = nullptr;
+    firstChannel = lastChannel = nullptr;
 
     gateDescArraySize = 0;
     gateDescArray = nullptr;
@@ -196,6 +197,36 @@ void cModule::removeSubmodule(cModule *mod)
 
     // cached module getFullPath() possibly became invalid
     lastModuleFullPathModule = nullptr;
+}
+
+void cModule::insertChannel(cChannel *channel)
+{
+    // note: no take(channel), as channels are owned by their src gates.
+
+    // append at end of channel list
+    channel->nextSibling = nullptr;
+    channel->prevSibling = lastChannel;
+    if (channel->prevSibling)
+        channel->prevSibling->nextSibling = channel;
+    if (!firstChannel)
+        firstChannel = channel;
+    lastChannel = channel;
+}
+
+void cModule::removeChannel(cChannel *channel)
+{
+    // remove from channel list
+    if (channel->nextSibling)
+        channel->nextSibling->prevSibling = channel->prevSibling;
+    if (channel->prevSibling)
+        channel->prevSibling->nextSibling = channel->nextSibling;
+    if (firstChannel == channel)
+        firstChannel = channel->nextSibling;
+    if (lastChannel == channel)
+        lastChannel = channel->prevSibling;
+
+    // this is not strictly needed but makes it cleaner
+    channel->prevSibling = channel->nextSibling = nullptr;
 }
 
 cModule *cModule::getParentModule() const
@@ -1546,32 +1577,14 @@ void cModule::GateIterator::advance()
     } while (!end() && current() == nullptr);
 }
 
-//----
-
-cModule::ChannelIterator::ChannelIterator(const cModule *parentModule)
+void cModule::ChannelIterator::advance()
 {
-    init(parentModule);
+    p = p->getNextSibling();
 }
 
-void cModule::ChannelIterator::init(const cModule *parentModule)
+void cModule::ChannelIterator::retreat()
 {
-    // loop through the gates of parentModule and its submodules
-    // to fill in the channels[] vector
-    bool atParent = false;
-    channels.clear();
-    for (SubmoduleIterator it(parentModule); !atParent; ++it) {
-        const cModule *module = !it.end() ? *it : (atParent = true, parentModule);
-
-        for (GateIterator gateIt(module); !gateIt.end(); ++gateIt) {
-            const cGate *gate = *gateIt;
-            cGate::Type wantedGateType = atParent ? cGate::INPUT : cGate::OUTPUT;
-            if (gate && gate->getChannel() && gate->getType() == wantedGateType)
-                channels.push_back(gate->getChannel());
-        }
-    }
-
-    // reset iterator position too
-    k = 0;
+    p = p->getPreviousSibling();
 }
 
 }  // namespace omnetpp

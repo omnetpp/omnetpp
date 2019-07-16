@@ -191,15 +191,6 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * This is the same set of channels whose getParentModule() would return
      * the iterated module.
      *
-     * Implementation note:
-     *
-     * This iterator precollects the channels into an internal std::vector, then
-     * iterates over that. This means that (1) changes made during the iterator's
-     * lifetime will not be reflected in the iterator, and (2) copying the iterator
-     * is expensive. As a result of (2), no postfix increment/decrement iterators
-     * are provided to prevent their accidental use instead of the prefix operators.
-     * (Their lack can be trivially circumvented where needed.)
-     *
      * Usage:
      * \code
      * for (cModule::ChannelIterator it(module); !it.end(); ++it) {
@@ -211,50 +202,61 @@ class SIM_API cModule : public cComponent //implies noncopyable
     class SIM_API ChannelIterator
     {
       private:
-        std::vector<cChannel *> channels;
-        int k;
+        cChannel *p;
+
+      private:
+        void advance();
+        void retreat();
 
       public:
         /**
-         * Constructor. The iterator will walk on the module passed as argument.
+         * Constructor. It takes the parent module on which to iterate.
          */
-        ChannelIterator(const cModule *parentModule);
+        ChannelIterator(const cModule *m)  {init(m);}
 
         /**
-         * Reinitializes the iterator object.
+         * Reinitializes the iterator.
          */
-        void init(const cModule *parentModule);
+        void init(const cModule *m)  {p = m ? const_cast<cChannel *>(m->firstChannel) : nullptr;}
 
         /**
          * Returns a pointer to the current channel. Returns nullptr if the iterator
          * has reached the end of the list.
          */
-        cChannel *operator*() const {return end() ? nullptr : channels[k];}
+        cChannel *operator*() const {return p;}
 
         /**
-         * Returns true if the iterator has reached the end.
+         * Returns true if the iterator reached the end of the list.
          */
-        bool end() const {return k < 0 || k >= (int)channels.size();}
+        bool end() const  {return p==nullptr;}
 
         /**
          * Prefix increment operator (++it). Moves the iterator to the next
-         * channel in the list. It has no effect if the iterator has
-         * reached either end of the list.
-         *
-         * Note: postfix increment/decrement operators are not provided, to avoid
-         * large unnecessary copying overhead resulting from accidental use.
+         * channel. It has no effect if the iterator has reached either
+         * end of the list.
          */
-        ChannelIterator& operator++() {if (!end()) k++; return *this;}
+        ChannelIterator& operator++() {if (!end()) advance(); return *this;}
+
+        /**
+         * Postfix increment operator (it++). Moves the iterator to the next
+         * channel, and returns the iterator's previous state. It has no effect
+         * if the iterator has reached either end of the list.
+         */
+        ChannelIterator operator++(int) {ChannelIterator tmp(*this); if (!end()) advance(); return tmp;}
 
         /**
          * Prefix decrement operator (--it). Moves the iterator to the previous
-         * channel in the list. It has no effect if the iterator has
-         * reached either end of the list.
-         *
-         * Note: postfix increment/decrement operators are not provided, to avoid
-         * large unnecessary copying overhead resulting from accidental use.
+         * channel. It has no effect if the iterator has reached either end
+         * of the list.
          */
-        ChannelIterator& operator--() {if (!end()) k--; return *this;}
+        ChannelIterator& operator--() {if (!end()) retreat(); return *this;}
+
+        /**
+         * Postfix decrement operator (it--). Moves the iterator to the previous
+         * channel, and returns the iterator's previous state. It has no effect
+         * if the iterator has reached either end of the list.
+         */
+        ChannelIterator operator--(int) {ChannelIterator tmp(*this); if (!end()) retreat(); return tmp;}
     };
 
   private:
@@ -279,6 +281,8 @@ class SIM_API cModule : public cComponent //implies noncopyable
     cModule *prevSibling, *nextSibling; // pointers to sibling submodules
     cModule *firstSubmodule;  // pointer to first submodule
     cModule *lastSubmodule;   // pointer to last submodule (needed for efficient append operation)
+    cChannel *firstChannel;  // pointer to first channel in this compound module (list is needed for ChannelIterator)
+    cChannel *lastChannel;   // pointer to last channel (needed for efficient append operation)
 
     typedef std::set<cGate::Name> NamePool;
     static NamePool namePool;
@@ -332,6 +336,12 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     // internal: removes a submodule
     void removeSubmodule(cModule *mod);
+
+    // internal: inserts a channel. Called from cGate::connectTo()
+    void insertChannel(cChannel *channel);
+
+    // internal: removes a channel
+    void removeChannel(cChannel *channel);
 
     // internal: "virtual ctor" for cGate, because in cPlaceholderModule we need
     // different gate objects; type should be INPUT or OUTPUT, but not INOUT
