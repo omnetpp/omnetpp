@@ -19,7 +19,6 @@
 #include "cownedobject.h"
 #include "cexpression.h"
 #include "cexception.h"
-#include "simutil.h"
 
 namespace omnetpp {
 

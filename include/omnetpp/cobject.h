@@ -18,7 +18,6 @@
 
 #include <string>
 #include "simkerneldefs.h"
-#include "simutil.h"
 #include "cvisitor.h"
 
 // Note: we include regmacros.h here in order to prevent the compiler from
@@ -122,7 +121,7 @@ class SIM_API cObject
      /**
      * Returns true if the object's name is identical to the string passed.
      */
-    bool isName(const char *s) const {return !opp_strcmp(getName(),s);}
+    bool isName(const char *s) const;
 
     /**
      * When this object is part of a vector (like a submodule can be part of

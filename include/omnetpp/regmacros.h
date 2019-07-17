@@ -17,6 +17,7 @@
 #define __OMNETPP_REGMACROS_H
 
 #include "simkerneldefs.h"
+#include "simutil.h"  // opp_typename
 
 namespace omnetpp {
 

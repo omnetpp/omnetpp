@@ -16,10 +16,10 @@
 #ifndef __OMNETPP_CSTRINGPOOL_H
 #define __OMNETPP_CSTRINGPOOL_H
 
+#include <cstring>
 #include <string>
 #include <map>
 #include "simkerneldefs.h"
-#include "simutil.h"
 
 namespace omnetpp {
 

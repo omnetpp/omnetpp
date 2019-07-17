@@ -23,6 +23,7 @@
 #include "omnetpp/cclassdescriptor.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cenvir.h"
+#include "omnetpp/simutil.h"
 
 namespace omnetpp {
 
@@ -33,6 +34,11 @@ int64_t cObject::changeCounter = 0;
 cObject::~cObject()
 {
     cSimulation::getActiveEnvir()->objectDeleted(this);
+}
+
+bool cObject::isName(const char *s) const
+{
+    return !opp_strcmp(getName(),s);
 }
 
 const char *cObject::getClassName() const
