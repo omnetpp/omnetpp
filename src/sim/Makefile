@@ -36,7 +36,7 @@ OBJS_STD=\
     $O/ccanvas.o $O/ccoroutine.o $O/cdefaultlist.o $O/cabstracthistogram.o $O/cfutureeventset.o \
     $O/cdisplaystring.o $O/cdoubleparimpl.o $O/cdynamicexpression.o $O/cexpression.o $O/cenvir.o \
     $O/cenum.o $O/cevent.o $O/cexception.o $O/cfsm.o $O/cnedmathfunction.o $O/cgate.o \
-    $O/chistogram.o $O/chistogramstrategy.o $O/cksplit.o \
+    $O/ccontextswitcher.o $O/chistogram.o $O/chistogramstrategy.o $O/cksplit.o \
     $O/clcg32.o $O/clistener.o $O/clog.o $O/cintparimpl.o $O/cmersennetwister.o \
     $O/cmessage.o $O/cpacket.o $O/cmsgpar.o $O/cmodule.o $O/ceventheap.o $O/chasher.o $O/cfingerprint.o $O/ctimestampedvalue.o \
     $O/cmatchexpression.o $O/cpatternmatcher.o $O/cmessageprinter.o $O/cnullenvir.o $O/envirext.o \

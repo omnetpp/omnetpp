@@ -17,6 +17,7 @@
 #include "common/stringutil.h"
 #include "omnetpp/ccomponent.h"
 #include "omnetpp/ccomponenttype.h"
+#include "omnetpp/ccontextswitcher.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cchannel.h"
 #include "omnetpp/cmodelchange.h"

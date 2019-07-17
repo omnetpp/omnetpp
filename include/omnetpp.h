@@ -18,7 +18,7 @@
 #ifndef __OMNETPP_H
 #define __OMNETPP_H
 
-// make this a system header and supress warnings
+// make this a system header and suppress warnings
 #if defined(__clang__)
 #pragma clang system_header
 #elif defined(__GNUC__)
@@ -32,6 +32,7 @@
 #include "omnetpp/ccommbuffer.h"
 #include "omnetpp/ccomponent.h"
 #include "omnetpp/ccomponenttype.h"
+#include "omnetpp/ccontextswitcher.h"
 #include "omnetpp/cchannel.h"
 #include "omnetpp/cdelaychannel.h"
 #include "omnetpp/cdataratechannel.h"

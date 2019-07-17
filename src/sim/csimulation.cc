@@ -34,6 +34,7 @@
 #include "omnetpp/ceventheap.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/ccomponenttype.h"
+#include "omnetpp/ccontextswitcher.h"
 #include "omnetpp/cstatistic.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/cparimpl.h"

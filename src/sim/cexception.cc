@@ -30,6 +30,7 @@
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cconfiguration.h"
+#include "omnetpp/ccontextswitcher.h"
 #include "omnetpp/platdep/platmisc.h"  // PRId64 and DEBUG_TRAP
 
 using namespace omnetpp::common;

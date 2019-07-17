@@ -29,6 +29,7 @@
 #include "omnetpp/cpacket.h"
 #include "omnetpp/ccoroutine.h"
 #include "omnetpp/csimulation.h"
+#include "omnetpp/ccontextswitcher.h"
 #include "omnetpp/cfutureeventset.h"
 #include "omnetpp/carray.h"
 #include "omnetpp/cmsgpar.h"

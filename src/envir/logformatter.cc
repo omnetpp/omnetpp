@@ -18,6 +18,7 @@
 #include "common/commonutil.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/ccomponenttype.h"
+#include "omnetpp/ccontextswitcher.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cfingerprint.h"
 #include "omnetpp/simutil.h"

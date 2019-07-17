@@ -18,6 +18,7 @@
 #include <cstring>
 #include "common/patternmatcher.h"
 #include "omnetpp/ccomponenttype.h"
+#include "omnetpp/ccontextswitcher.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/csimplemodule.h"
 #include "omnetpp/cchannel.h"

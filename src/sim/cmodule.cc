@@ -21,8 +21,8 @@
 #include <algorithm>
 #include "common/stringutil.h"
 #include "omnetpp/cmodule.h"
-
 #include "omnetpp/csimplemodule.h"
+#include "omnetpp/ccontextswitcher.h"
 #include "omnetpp/cgate.h"
 #include "omnetpp/cmessage.h"
 #include "omnetpp/csimulation.h"

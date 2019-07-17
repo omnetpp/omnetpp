@@ -23,6 +23,7 @@
 #include "omnetpp/cproperty.h"
 #include "omnetpp/ccomponent.h"
 #include "omnetpp/ccomponenttype.h"
+#include "omnetpp/ccontextswitcher.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cenvir.h"

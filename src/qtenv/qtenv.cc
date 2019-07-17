@@ -55,6 +55,7 @@
 #include "omnetpp/cproperty.h"
 #include "omnetpp/cfutureeventset.h"
 #include "omnetpp/platdep/platmisc.h"
+#include "omnetpp/ccontextswitcher.h"
 #include "qtenvdefs.h"
 #include "qtenv.h"
 #include "inspector.h"

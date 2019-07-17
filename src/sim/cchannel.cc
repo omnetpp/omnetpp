@@ -26,6 +26,7 @@
 #include "omnetpp/csimulation.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/cexception.h"
+#include "omnetpp/ccontextswitcher.h"
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"
