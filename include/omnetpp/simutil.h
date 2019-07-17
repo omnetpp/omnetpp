@@ -261,7 +261,7 @@ class SIM_API cMethodCallContextSwitcher : public cContextSwitcher
 class SIM_API cContextTypeSwitcher
 {
   private:
-    int savedcontexttype;
+    int savedContextType;
 
   public:
     /**

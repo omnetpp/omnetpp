@@ -210,8 +210,9 @@ const char *opp_typename(const std::type_info& t)
 cContextSwitcher::cContextSwitcher(const cComponent *newContext)
 {
     // save current context and switch to new
-    callerContext = getSimulation()->getContext();
-    getSimulation()->setContext(const_cast<cComponent *>(newContext));
+    cSimulation *simulation = getSimulation();
+    callerContext = simulation->getContext();
+    simulation->setContext(const_cast<cComponent *>(newContext));
 }
 
 cContextSwitcher::~cContextSwitcher()
@@ -274,16 +275,17 @@ cMethodCallContextSwitcher::~cMethodCallContextSwitcher()
 
 //----
 
-cContextTypeSwitcher::cContextTypeSwitcher(int contexttype)
+cContextTypeSwitcher::cContextTypeSwitcher(int contextType)
 {
     // save current context type and switch to new one
-    savedcontexttype = getSimulation()->getContextType();
-    getSimulation()->setContextType(contexttype);
+    cSimulation *simulation = getSimulation();
+    savedContextType = simulation->getContextType();
+    simulation->setContextType(contextType);
 }
 
 cContextTypeSwitcher::~cContextTypeSwitcher()
 {
-    getSimulation()->setContextType(savedcontexttype);
+    getSimulation()->setContextType(savedContextType);
 }
 
 }  // namespace omnetpp
