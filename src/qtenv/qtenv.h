@@ -379,8 +379,8 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       void setSilentEventFilters(const char *filterLines);
       bool isSilentEvent(cMessage *msg);
 
-      void performAnimations(); // after an event, will run all holding anims, not moving simTime
-      void endAnimations(); // terminates the above. if not running, no-op.
+      void performHoldAnimations(); // after an event, will run all holding anims, not moving simTime
+      void skipHoldAnimations(); // terminates the above. if not running, no-op.
 
       void channelDisplayStringChanged(cChannel *channel);
       void moduleDisplayStringChanged(cModule *module);

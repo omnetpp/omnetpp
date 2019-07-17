@@ -800,7 +800,7 @@ void Qtenv::setSimulationRunMode(RunMode mode)
 {
     if (mode == RUNMODE_STEP) { // if the user wants to step,
         // first quitting any holding animations in progress
-        endAnimations();
+        skipHoldAnimations();
         // then if we are in between events, not stopped right before the next event, jumping there
         displayUpdateController->skipToNextEvent();
         // finally we indicate that the next event should be executed, and we should not stop before that
@@ -853,7 +853,7 @@ bool Qtenv::doRunSimulation()
 
         displayUpdateController->setRunMode(runMode);
         bool reached = displayUpdateController->animateUntilNextEvent();
-        performAnimations();
+        performHoldAnimations();
 
         // if there is no event, we have to let the control through to
         // takeNextEvent, and it will terminate the simulation with an exception.
@@ -902,7 +902,7 @@ bool Qtenv::doRunSimulation()
         inspectorsFresh = false;
 
         if (animating)
-            performAnimations();
+            performHoldAnimations();
 
         messageAnimator->setMarkedModule(sim->guessNextModule());
 
@@ -1365,14 +1365,14 @@ void Qtenv::createSnapshot(const char *label)
     getSimulation()->snapshot(getSimulation(), label);
 }
 
-void Qtenv::performAnimations()
+void Qtenv::performHoldAnimations()
 {
     displayUpdateController->setRunMode(runMode);
     messageAnimator->updateAnimations();
     displayUpdateController->animateUntilHoldEnds();
 }
 
-void Qtenv::endAnimations()
+void Qtenv::skipHoldAnimations()
 {
     // TODO
 
@@ -1789,7 +1789,7 @@ void Qtenv::simulationEvent(cEvent *event)
             // deliveries must be played immediately, since we
             // are right before the processing of the message,
             // and it would disappear otherwise
-            performAnimations();
+            performHoldAnimations();
         }
     }
 }
