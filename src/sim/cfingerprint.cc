@@ -18,12 +18,14 @@
 #include "omnetpp/cfingerprint.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cmodule.h"
+#include "omnetpp/cchannel.h"
 #include "omnetpp/cpacket.h"
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/cclassdescriptor.h"
 #include "omnetpp/crng.h"
 #include "omnetpp/cstatistic.h"
 #include "omnetpp/cabstracthistogram.h"
+#include "omnetpp/cdisplaystring.h"
 #include "omnetpp/cstringtokenizer.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigoption.h"
@@ -170,7 +172,7 @@ std::string cSingleFingerprintCalculator::str() const
 
 cSingleFingerprintCalculator::FingerprintIngredient cSingleFingerprintCalculator::validateIngredient(char ch)
 {
-    if (strchr("etncklodimparszvx0", ch) == nullptr)
+    if (strchr("etncklodimparszvyfx0", ch) == nullptr)
         throw cRuntimeError("Unknown fingerprint ingredient character '%c'", ch);
     return (FingerprintIngredient) ch;
 }
@@ -300,6 +302,8 @@ void cSingleFingerprintCalculator::addEvent(cEvent *event)
                             case RESULT_SCALAR:
                             case RESULT_STATISTIC:
                             case RESULT_VECTOR:
+                            case DISPLAY_STRINGS:
+                            case CANVAS_FIGURES:
                             case EXTRA_DATA:
                                 // not processed here
                                 break;
@@ -375,6 +379,29 @@ void cSingleFingerprintCalculator::addVectorResult(const cComponent *component, 
     }
 }
 
+void cSingleFingerprintCalculator::addVisuals()
+{
+    bool displayStrings = ingredients.find(DISPLAY_STRINGS) != std::string::npos;
+    bool figures = ingredients.find(CANVAS_FIGURES) != std::string::npos;
+    if (displayStrings || figures)
+        addModuleVisuals(getSimulation()->getSystemModule(), displayStrings, figures);
+}
+
+void cSingleFingerprintCalculator::addModuleVisuals(cModule *module, bool displayStrings, bool figures)
+{
+    // add this module
+    if (displayStrings && module->hasDisplayString())
+        hasher->add(module->getDisplayString().str());
+    if (figures && module->getCanvasIfExists())
+        module->getCanvas()->getRootFigure()->hashGeometryRec(hasher);
+
+    // and recurse
+    for (cModule::SubmoduleIterator it(module); !it.end(); ++it)
+        addModuleVisuals(*it, displayStrings, figures);
+    for (cModule::ChannelIterator it(module); !it.end(); ++it)
+        hasher->add((*it)->getDisplayString().str());
+}
+
 bool cSingleFingerprintCalculator::checkFingerprint() const
 {
     cStringTokenizer tokenizer(expectedFingerprints.c_str());
@@ -439,6 +466,12 @@ void cMultiFingerprintCalculator::addVectorResult(const cComponent *component, c
         element->addVectorResult(component, name, t, value);
 }
 
+void cMultiFingerprintCalculator::addVisuals()
+{
+    for (auto& element: elements)
+        element->addVisuals();
+}
+
 bool cMultiFingerprintCalculator::checkFingerprint() const
 {
     for (auto element: elements)
@@ -454,6 +487,7 @@ std::string cMultiFingerprintCalculator::str() const
         stream << ", " << element->str();
     return stream.str().substr(2);
 }
+
 
 #endif // !USE_OMNETPP4x_FINGERPRINTS
 

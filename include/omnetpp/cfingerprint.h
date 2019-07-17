@@ -50,6 +50,7 @@ class SIM_API cFingerprintCalculator : public cObject, noncopyable
     virtual void addScalarResult(const cComponent *component, const char *name, double value) = 0;
     virtual void addStatisticResult(const cComponent *component, const char *name, const cStatistic *value) = 0;
     virtual void addVectorResult(const cComponent *component, const char *name, const simtime_t& t, double value) = 0;
+    virtual void addVisuals() = 0;
 
     virtual void addExtraData(const char *data, size_t length) = 0;
     virtual void addExtraData(char data) = 0;
@@ -102,6 +103,7 @@ class SIM_API cOmnetpp4xFingerprintCalculator : public cFingerprintCalculator
     virtual void addScalarResult(const cComponent *component, const char *name, double value) override {}
     virtual void addStatisticResult(const cComponent *component, const char *name, const cStatistic *value) override {}
     virtual void addVectorResult(const cComponent *component, const char *name, const simtime_t& t, double value) override {}
+    virtual void addVisuals() override {}
 
     virtual void addExtraData(const char *buffer, size_t length) override { hasher->add(buffer, length); }
     virtual void addExtraData(char data) override { hasher->add(data); }
@@ -148,6 +150,8 @@ class SIM_API cOmnetpp4xFingerprintCalculator : public cFingerprintCalculator
  *  - 's' scalar results
  *  - 'z' statistic results
  *  - 'v' vector results
+ *  - 'y' display strings of all modules, added on refreshDisplay() calls (see cmdenv-fake-gui config option)
+ *  - 'f' essential properties (geometry) of all figures on all module canvases, added on refreshDisplay() calls (see cmdenv-fake-gui config option)
  *  - 'x' extra data provided by modules
  *
  * @ingroup Internals
@@ -172,6 +176,8 @@ class SIM_API cSingleFingerprintCalculator : public cFingerprintCalculator
         RESULT_SCALAR        = 's',
         RESULT_STATISTIC     = 'z',
         RESULT_VECTOR        = 'v',
+        DISPLAY_STRINGS      = 'y',
+        CANVAS_FIGURES       = 'f',
         EXTRA_DATA           = 'x',
         CLEAN_HASHER         = '0'
     };
@@ -209,6 +215,7 @@ class SIM_API cSingleFingerprintCalculator : public cFingerprintCalculator
     virtual void parseModuleMatcher(const char *s);
     virtual void parseResultMatcher(const char *s);
     virtual bool addEventIngredient(cEvent *event, FingerprintIngredient ingredient);
+    virtual void addModuleVisuals(cModule *module, bool displayStrings, bool figures);
 
   public:
     cSingleFingerprintCalculator();
@@ -222,6 +229,7 @@ class SIM_API cSingleFingerprintCalculator : public cFingerprintCalculator
     virtual void addScalarResult(const cComponent *component, const char *name, double value) override;
     virtual void addStatisticResult(const cComponent *component, const char *name, const cStatistic *value) override;
     virtual void addVectorResult(const cComponent *component, const char *name, const simtime_t& t, double value) override;
+    virtual void addVisuals() override;
 
     virtual void addExtraData(const char *buffer, size_t length) override { if (addExtraData_) hasher->add(buffer, length); }
     virtual void addExtraData(char data) override { if (addExtraData_) hasher->add(data); }
@@ -268,6 +276,7 @@ class SIM_API cMultiFingerprintCalculator : public cFingerprintCalculator
     virtual void addScalarResult(const cComponent *component, const char *name, double value) override;
     virtual void addStatisticResult(const cComponent *component, const char *name, const cStatistic *value) override;
     virtual void addVectorResult(const cComponent *component, const char *name, const simtime_t& t, double value) override;
+    virtual void addVisuals() override;
 
     virtual void addExtraData(const char *data, size_t length) override { for (auto element: elements) element->addExtraData(data, length); }
     virtual void addExtraData(char data) override { for (auto element: elements) element->addExtraData(data); }

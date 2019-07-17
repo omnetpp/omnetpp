@@ -445,8 +445,11 @@ void cSimulation::callFinish()
 
 void cSimulation::callRefreshDisplay()
 {
-    if (systemModule)
+    if (systemModule) {
         systemModule->callRefreshDisplay();
+        if (getFingerprintCalculator())
+            getFingerprintCalculator()->addVisuals();
+    }
 }
 
 void cSimulation::deleteNetwork()
