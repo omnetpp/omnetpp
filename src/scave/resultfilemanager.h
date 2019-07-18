@@ -289,14 +289,12 @@ class SCAVE_API Run
     ResultFileManager *resultFileManager; // backref to containing ResultFileManager
     StringMap attributes;  // run attributes, such as configname, runnumber, network, datetime, processid, etc.
     StringMap itervars;  // iteration variables (${} notation in omnetpp.ini)
-    OrderedKeyValueList paramAssignments; // module parameter assignments from the ini file and command line
-    //TODO: OrderedKeyValueList configEntries; // TODO configuration entries from the ini file and command line
+    OrderedKeyValueList configEntries; // configuration entries from the ini file and command line
 
   private:
     Run(const std::string& runName, ResultFileManager *manager) : runName(runName), resultFileManager(manager) {}
     void setAttribute(const std::string& attrName, const std::string& value) {attributes[attrName] = value;}
-    void addParamAssignmentEntry(const std::string& key, const std::string& value) {paramAssignments.push_back(std::make_pair(key,value));}
-    //TODO void addConfigEntry(const std::string& key, const std::string& value) {configEntries.push_back(std::make_pair(key,value));}
+    void addConfigEntry(const std::string& key, const std::string& value) {configEntries.push_back(std::make_pair(key,value));}
 
   public:
     ResultFileManager *getResultFileManager() const {return resultFileManager;}
@@ -305,10 +303,8 @@ class SCAVE_API Run
     const std::string& getAttribute(const std::string& attrName) const;
     const StringMap& getIterationVariables() const {return itervars;}
     const std::string& getIterationVariable(const std::string& name) const;
-    const OrderedKeyValueList& getParamAssignments() const {return paramAssignments;}
-    const std::string& getParamAssignment(const std::string& key) const;
-    //TODO const OrderedKeyValueList& getConfigEntries() const {return configEntries;}
-    //TODO const std::string& getConfigOption(const std::string& key) const;
+    const OrderedKeyValueList& getConfigEntries() const {return configEntries;}
+    const std::string& getConfigValue(const std::string& key) const;
 };
 
 
@@ -443,8 +439,8 @@ class SCAVE_API ResultFileManager
     StringSet *getUniqueRunAttributeValues(const RunList& runList, const char *attrName) const;
     StringSet *getUniqueIterationVariableNames(const RunList *runList) const;
     StringSet *getUniqueIterationVariableValues(const RunList& runList, const char *itervarName) const;
-    StringSet *getUniqueParamAssignmentKeys(const RunList *runList) const;
-    StringSet *getUniqueParamAssignmentValues(const RunList& runList, const char *key) const;
+    StringSet *getUniqueConfigKeys(const RunList *runList) const;
+    StringSet *getUniqueConfigValues(const RunList& runList, const char *key) const;
 
     // getting lists of data items
     IDList getAllScalars(bool includeFields = true, bool includeItervars = true) const;
@@ -528,7 +524,7 @@ class SCAVE_API ResultFileManager
     StringVector *getResultItemAttributeFilterHints(const IDList& idlist, const char *attrName) const;
     StringVector *getRunAttributeFilterHints(const RunList& runList, const char *attrName) const;
     StringVector *getIterationVariableFilterHints(const RunList& runList, const char *itervarName) const;
-    StringVector *getParamAssignmentFilterHints(const RunList& runList, const char *key) const;
+    StringVector *getConfigEntryFilterHints(const RunList& runList, const char *key) const;
 
     const char *getRunAttribute(ID id, const char *attribute) const;
 };

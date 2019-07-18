@@ -112,7 +112,7 @@ int ResultItemField::getFieldID(const string& fieldName)
     else if (ResultItemAttribute::isAttributeName(fieldName))
         return ResultItemField::ATTR_ID;
     else if (fieldName.find_first_of('.') != string::npos)
-        return ResultItemField::RUN_PARAM_ID;
+        return ResultItemField::RUN_CONFIG_ID;
     else if (RunAttribute::isAttributeName(fieldName))
         return ResultItemField::RUN_ATTR_ID;
     else

@@ -47,7 +47,7 @@ class SCAVE_API ResultItemField
         static const int ATTR_ID        = 5;
         static const int RUN_ATTR_ID    = 6;
         static const int RUN_ITERVAR_ID = 7;
-        static const int RUN_PARAM_ID   = 8;
+        static const int RUN_CONFIG_ID   = 8;
 
     private:
         int id;
@@ -110,9 +110,9 @@ inline const std::string& getRunIterationVariable(const ResultItem &d, const std
     return d.getRun()->getIterationVariable(name);
 }
 
-inline const std::string& getParamAssignment(const ResultItem& d, const std::string& key)
+inline const std::string& getConfigValue(const ResultItem& d, const std::string& key)
 {
-    return d.getRun()->getParamAssignment(key);
+    return d.getRun()->getConfigValue(key);
 }
 
 inline const std::string& ResultItemField::getFieldValue(const ResultItem& d) const
@@ -125,7 +125,7 @@ inline const std::string& ResultItemField::getFieldValue(const ResultItem& d) co
         case ATTR_ID:       return getAttribute(d, name);
         case RUN_ATTR_ID:   return getRunAttribute(d, name);
         case RUN_ITERVAR_ID:return getRunIterationVariable(d, name);
-        case RUN_PARAM_ID:  return getParamAssignment(d, name);
+        case RUN_CONFIG_ID: return getConfigValue(d, name);
         default: throw opp_runtime_error("unknown result item");
     }
 }
@@ -140,7 +140,7 @@ inline bool ResultItemField::equal(const ResultItem& d1, const ResultItem& d2) c
         case ATTR_ID:       return getAttribute(d1, name) == getAttribute(d2, name);
         case RUN_ATTR_ID:   return getRunAttribute(d1, name) == getRunAttribute(d2, name);
         case RUN_ITERVAR_ID:return getRunIterationVariable(d1, name) == getRunIterationVariable(d2, name);
-        case RUN_PARAM_ID:  return getParamAssignment(d1, name) == getParamAssignment(d2, name);
+        case RUN_CONFIG_ID: return getConfigValue(d1, name) == getConfigValue(d2, name);
         default: throw opp_runtime_error("unknown result item");
     }
 }
@@ -156,7 +156,7 @@ inline int ResultItemField::compare(const ResultItem& d1, const ResultItem& d2) 
         case ATTR_ID:       return strdictcmp(getAttribute(d1, name).c_str(), getAttribute(d2, name).c_str());
         case RUN_ATTR_ID:   return strdictcmp(getRunAttribute(d1, name).c_str(), getRunAttribute(d2, name).c_str());
         case RUN_ITERVAR_ID:return strdictcmp(getRunIterationVariable(d1, name).c_str(), getRunIterationVariable(d2, name).c_str());
-        case RUN_PARAM_ID:  return strdictcmp(getParamAssignment(d1, name).c_str(), getParamAssignment(d2, name).c_str());
+        case RUN_CONFIG_ID: return strdictcmp(getConfigValue(d1, name).c_str(), getConfigValue(d2, name).c_str());
         default: throw opp_runtime_error("unknown result item");
     }
 }

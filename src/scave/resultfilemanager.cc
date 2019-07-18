@@ -174,9 +174,9 @@ const std::string& Run::getIterationVariable(const std::string& name) const
     return it==itervars.end() ? NULLSTRING : it->second;
 }
 
-const std::string& Run::getParamAssignment(const std::string& key) const
+const std::string& Run::getConfigValue(const std::string& key) const
 {
-    for (auto& p : paramAssignments)  // TODO some kind of ordered map would be better (e.g. std::map plus an std::vector<string> to store the order)
+    for (auto& p : configEntries)  // TODO some kind of ordered map would be better (e.g. std::map plus an std::vector<string> to store the order)
         if (p.first == key)
             return p.second;
     return NULLSTRING;
@@ -410,23 +410,23 @@ StringSet *ResultFileManager::getUniqueIterationVariableValues(const RunList& ru
 }
 
 
-StringSet *ResultFileManager::getUniqueParamAssignmentKeys(const RunList *runList) const
+StringSet *ResultFileManager::getUniqueConfigKeys(const RunList *runList) const
 {
     READER_MUTEX
     StringSet *set = new StringSet;
     for (auto runRef : *runList)
-        for (auto& p : runRef->getParamAssignments())
+        for (auto& p : runRef->getConfigEntries())
             set->insert(p.first);
     return set;
 }
 
 
-StringSet *ResultFileManager::getUniqueParamAssignmentValues(const RunList& runList, const char *key) const
+StringSet *ResultFileManager::getUniqueConfigValues(const RunList& runList, const char *key) const
 {
     READER_MUTEX
     StringSet *values = new StringSet;
     for (auto runRef : runList) {
-        const string& value = runRef->getParamAssignment(key);
+        const string& value = runRef->getConfigValue(key);
         if (&value != &NULLSTRING)
             values->insert(value);
     }
@@ -859,7 +859,7 @@ class MatchableResultItem : public MatchExpression::Matchable
         const char *getResultItemAttribute(const char *attrName) const { return item.getAttribute(attrName).c_str(); }
         const char *getRunAttribute(const char *attrName) const { return item.getRun()->getAttribute(attrName).c_str(); }
         const char *getIterationVariable(const char *name) const { return item.getRun()->getIterationVariable(name).c_str(); }
-        const char *getParamAssignment(const char *key) const { return item.getRun()->getParamAssignment(key).c_str(); }
+        const char *getConfigValue(const char *key) const { return item.getRun()->getConfigValue(key).c_str(); }
 };
 
 const char *MatchableResultItem::getAsString(const char *attribute) const
@@ -880,8 +880,8 @@ const char *MatchableResultItem::getAsString(const char *attribute) const
         return getRunAttribute(attribute+8);
     else if (strncasecmp("itervar:", attribute, 8) == 0)
         return getIterationVariable(attribute+8);
-    else if (strncasecmp("param:", attribute, 6) == 0)
-        return getParamAssignment(attribute+6);
+    else if (strncasecmp("config:", attribute, 7) == 0)
+        return getConfigValue(attribute+7);
     else
         return getResultItemAttribute(attribute);
 }
@@ -910,7 +910,7 @@ class MatchableRun : public MatchExpression::Matchable
         const char *getName() const { return run->getRunName().c_str(); }
         const char *getAttribute(const char *attrName) const { return run->getAttribute(attrName).c_str(); }
         const char *getIterationVariable(const char *name) const { return run->getIterationVariable(name).c_str(); }
-        const char *getParamAssignment(const char *key) const { return run->getParamAssignment(key).c_str(); }
+        const char *getConfigValue(const char *key) const { return run->getConfigValue(key).c_str(); }
 };
 
 const char *MatchableRun::getAsString(const char *attribute) const
@@ -921,8 +921,8 @@ const char *MatchableRun::getAsString(const char *attribute) const
         return getAttribute(attribute+5);
     else if (strncasecmp("itervar:", attribute, 8) == 0)
         return getIterationVariable(attribute+8);
-    else if (strncasecmp("param:", attribute, 6) == 0)
-        return getParamAssignment(attribute+6);
+    else if (strncasecmp("config:", attribute, 7) == 0)
+        return getConfigValue(attribute+7);
     else
         return getAttribute(attribute);
 }
@@ -942,7 +942,7 @@ class MatchableItervar : public MatchExpression::Matchable
         const char *getRunName() const { return run->getRunName().c_str(); }
         const char *getRunAttribute(const char *attrName) const { return run->getAttribute(attrName).c_str(); }
         const char *getIterationVariable(const char *name) const { return run->getIterationVariable(name).c_str(); }
-        const char *getParamAssignment(const char *key) const { return run->getParamAssignment(key).c_str(); }
+        const char *getConfigValue(const char *key) const { return run->getConfigValue(key).c_str(); }
 };
 
 const char *MatchableItervar::getAsString(const char *attribute) const
@@ -955,8 +955,8 @@ const char *MatchableItervar::getAsString(const char *attribute) const
         return getRunAttribute(attribute+8);
     else if (strncasecmp("itervar:", attribute, 8) == 0)
         return getIterationVariable(attribute+8);
-    else if (strncasecmp("param:", attribute, 6) == 0)
-        return getParamAssignment(attribute+6);
+    else if (strncasecmp("config:", attribute, 7) == 0)
+        return getConfigValue(attribute+7);
     else
         return getName();
 }
@@ -977,7 +977,7 @@ class MatchableRunattr : public MatchExpression::Matchable
         const char *getRunName() const { return run->getRunName().c_str(); }
         const char *getRunAttribute(const char *attrName) const { return run->getAttribute(attrName).c_str(); }
         const char *getIterationVariable(const char *name) const { return run->getIterationVariable(name).c_str(); }
-        const char *getParamAssignment(const char *key) const { return run->getParamAssignment(key).c_str(); }
+        const char *getConfigValue(const char *key) const { return run->getConfigValue(key).c_str(); }
 };
 
 const char *MatchableRunattr::getAsString(const char *attribute) const
@@ -990,8 +990,8 @@ const char *MatchableRunattr::getAsString(const char *attribute) const
         return getRunAttribute(attribute+8);
     else if (strncasecmp("itervar:", attribute, 8) == 0)
         return getIterationVariable(attribute+8);
-    else if (strncasecmp("param:", attribute, 6) == 0)
-        return getParamAssignment(attribute+6);
+    else if (strncasecmp("config:", attribute, 7) == 0)
+        return getConfigValue(attribute+7);
     else
         return getName();
 }
@@ -1510,10 +1510,10 @@ StringVector *ResultFileManager::getIterationVariableFilterHints(const RunList& 
     return filterHints;
 }
 
-StringVector *ResultFileManager::getParamAssignmentFilterHints(const RunList& runList, const char *key) const
+StringVector *ResultFileManager::getConfigEntryFilterHints(const RunList& runList, const char *key) const
 {
     READER_MUTEX
-    StringSet *paramValues = getUniqueParamAssignmentValues(runList, key);
+    StringSet *paramValues = getUniqueConfigValues(runList, key);
     StringVector *filterHints = new StringVector(paramValues->begin(), paramValues->end());
     std::sort(filterHints->begin(), filterHints->end(), strdictLess);
     filterHints->insert(filterHints->begin(), "*");

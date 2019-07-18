@@ -197,14 +197,24 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
         std::string value = vec[2];
         ctx.itervars[name] = value;
     }
+    else if (vec[0][0] == 'c' && !strcmp(vec[0], "config")) {
+        // syntax: "config <key> <value>"
+        CHECK(ctx.currentItemType == ParseContext::RUN, "stray 'config' line, must be under a 'run' line");
+        CHECK(numTokens == 3, "incorrect 'config' line -- config <key> <value> expected");
+
+        std::string key = vec[1];
+        std::string value = vec[2];
+        ctx.configEntries.push_back(std::make_pair(key, value));
+    }
     else if (vec[0][0] == 'p' && !strcmp(vec[0], "param")) {
-        // syntax: "param <namePattern> <value>"
+        // "param" is an obsolete form of "config", just for parameter values; we treat it exactly like "config".
+        // syntax: "param <key> <value>"
         CHECK(ctx.currentItemType == ParseContext::RUN, "stray 'param' line, must be under a 'run' line");
         CHECK(numTokens == 3, "incorrect 'param' line -- param <namePattern> <value> expected");
 
         std::string paramName = vec[1];
         std::string paramValue = vec[2];
-        ctx.moduleParams.push_back(std::make_pair(paramName, paramValue));
+        ctx.configEntries.push_back(std::make_pair(paramName, paramValue));
     }
     else if (opp_isdigit(vec[0][0]) && numTokens >= 3) {
         // this looks like a vector data line, skip it this time
@@ -232,7 +242,7 @@ void OmnetppResultFileLoader::flush(ParseContext& ctx)
         separateItervarsFromAttrs(ctx.attrs, ctx.itervars);
         addAll(runRef->attributes, ctx.attrs);  // note: merge/overwrite attributes if run already existed
         addAll(runRef->itervars, ctx.itervars);
-        addAll(runRef->paramAssignments, ctx.moduleParams);
+        addAll(runRef->configEntries, ctx.configEntries);
         break;
     }
     case ParseContext::SCALAR: {

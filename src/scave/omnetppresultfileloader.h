@@ -57,7 +57,7 @@ class SCAVE_API OmnetppResultFileLoader : public IResultFileLoader
 
         enum {NONE, RUN, SCALAR, VECTOR, STATISTICS, HISTOGRAM} currentItemType = NONE;
         std::string runName;
-        OrderedKeyValueList moduleParams;
+        OrderedKeyValueList configEntries;
         std::string moduleName;
         std::string resultName;
         StringMap attrs;

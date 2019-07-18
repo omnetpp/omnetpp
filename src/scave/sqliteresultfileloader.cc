@@ -132,9 +132,9 @@ void SqliteResultFileLoader::loadRunItervars()
     finalizeStatement();
 }
 
-void SqliteResultFileLoader::loadRunParams()
+void SqliteResultFileLoader::loadRunConfigEntries()
 {
-    prepareStatement("SELECT runId, paramKey, paramValue FROM runParam ORDER BY paramOrder ASC;");
+    prepareStatement("SELECT runId, configKey, configValue FROM runConfig ORDER BY configOrder ASC;");
 
     for (int row=1; ; row++) {
         int resultCode = sqlite3_step (stmt);
@@ -142,11 +142,11 @@ void SqliteResultFileLoader::loadRunParams()
             break;
         checkRow(resultCode);
         sqlite3_int64 runId = sqlite3_column_int64(stmt, 0);
-        std::string paramKey = (const char *) sqlite3_column_text(stmt, 1);
-        std::string paramValue = (const char *) sqlite3_column_text(stmt, 2);
+        std::string configKey = (const char *) sqlite3_column_text(stmt, 1);
+        std::string configValue = (const char *) sqlite3_column_text(stmt, 2);
 
         FileRun *fileRunRef = fileRunMap.at(runId);
-        fileRunRef->runRef->addParamAssignmentEntry(paramKey, paramValue); //FIXME if not already exists
+        fileRunRef->runRef->addConfigEntry(configKey, configValue);
     }
     finalizeStatement();
 }
@@ -366,7 +366,7 @@ ResultFile *SqliteResultFileLoader::loadFile(const char *fileName, const char *f
         checkOK(sqlite3_open_v2(fileSystemFileName, &db, SQLITE_OPEN_READONLY, 0));
         loadRuns();
         loadRunAttrs();
-        loadRunParams();
+        loadRunConfigEntries();
         loadRunItervars();
         loadScalars();
         loadVectors();

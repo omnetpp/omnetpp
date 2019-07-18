@@ -298,7 +298,7 @@ void JsonExporter::saveResults(const std::string& fileName, ResultFileManager *m
         // run metadata
         writeStringMap("attributes", run->getAttributes());
         writeStringMap("itervars", run->getIterationVariables());
-        writeOrderedKeyValueList("moduleparams", run->getParamAssignments());
+        writeOrderedKeyValueList("moduleparams", run->getConfigEntries());
 
         // scalars
         IDList scalars = idlist.filterByTypes(ResultFileManager::SCALAR);
