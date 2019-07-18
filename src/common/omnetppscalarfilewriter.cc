@@ -42,7 +42,7 @@ void OmnetppScalarFileWriter::open(const char *filename)
 
     // Seek to the end of the file. This is needed because on Windows ftell() returns 0 even after
     // opening the file in append mode. On other systems ftell() correctly points to the end of the file.
-    opp_fseek(f, 0, SEEK_END);  
+    opp_fseek(f, 0, SEEK_END);
 
     if (opp_ftell(f) == 0)
         check(fprintf(f, "version %d\n", SCALAR_FILE_VERSION));
@@ -154,10 +154,11 @@ void OmnetppScalarFileWriter::recordHistogram(const std::string& componentFullPa
         check(fprintf(f, "bin\t%.*g\t%.*g\n", prec, bin.lowerBound, prec, bin.count));
 }
 
-void OmnetppScalarFileWriter::recordParameter(const std::string& componentFullPath, const std::string& name, const std::string& value)
+void OmnetppScalarFileWriter::recordParameter(const std::string& componentFullPath, const std::string& name, const std::string& value, const StringMap& attributes)
 {
     Assert(isOpen());
     check(fprintf(f, "par %s %s %s\n", QUOTE(componentFullPath.c_str()), QUOTE(name.c_str()), value.c_str()));
+    writeAttributes(attributes);
 }
 
 void OmnetppScalarFileWriter::flush()

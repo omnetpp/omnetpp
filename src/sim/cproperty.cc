@@ -127,18 +127,23 @@ std::string cProperty::str() const
     os << "@" << getFullName();
     if (!keyv.empty()) {
         os << "(";
-        int n = keyv.size();
-        for (int i = 0; i < n; i++) {
-            if (i != 0)
-                os << ";";
-            if (keyv[i] && *keyv[i])
-                os << keyv[i] << "=";
-            for (int j = 0; j < (int)valuesv[i].size(); j++)
-                os << (j == 0 ? "" : ",") << valuesv[i][j];  //FIXME value may need quoting
-        }
+        printValues(os);
         os << ")";
     }
     return os.str();
+}
+
+void cProperty::printValues(std::ostream& os) const
+{
+    int n = keyv.size();
+    for (int i = 0; i < n; i++) {
+        if (i != 0)
+            os << ";";
+        if (keyv[i] && *keyv[i])
+            os << keyv[i] << "=";
+        for (int j = 0; j < (int)valuesv[i].size(); j++)
+            os << (j == 0 ? "" : ",") << valuesv[i][j];  //FIXME value may need quoting
+    }
 }
 
 void cProperty::parsimPack(cCommBuffer *buffer) const

@@ -25,6 +25,9 @@
 #include "envirdefs.h"
 
 namespace omnetpp {
+
+class cProperties;
+
 namespace envir {
 
 typedef std::map<std::string, std::string> StringMap;
@@ -36,6 +39,7 @@ class ResultFileUtils {
     static StringMap getRunAttributes();
     static StringMap getIterationVariables();
     static OrderedKeyValueList getConfigEntries();
+    static StringMap convertProperties(const cProperties *properties);
 };
 
 } // namespace envir

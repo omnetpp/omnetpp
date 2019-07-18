@@ -47,6 +47,7 @@ class COMMON_API SqliteScalarFileWriter
     sqlite3_stmt *add_statistic_attr_stmt;
     sqlite3_stmt *add_statistic_bin_stmt;
     sqlite3_stmt *add_parameter_stmt;
+    sqlite3_stmt *add_parameter_attr_stmt;
 
     int commitFreq=100000; // we COMMIT after every commitFreq INSERT statements
     int insertCount;
@@ -60,6 +61,8 @@ class COMMON_API SqliteScalarFileWriter
     sqlite_int64 writeStatistic(const std::string& componentFullPath, const std::string& name, const Statistics& statistic, bool isHistogram);
     void writeStatisticAttr(sqlite_int64 statisticId, const char *name, const char *value);
     void writeStatisticBin(sqlite_int64 statisticId, double lowerEdge, double binValue);
+    sqlite_int64 writeParameter(const std::string& componentFullPath, const std::string& name, const std::string& value);
+    void writeParameterAttr(sqlite_int64 parameterId, const char *name, size_t nameLength, const char *value, size_t valueLength);
     void prepareStatement(sqlite3_stmt *&stmt, const char *sql);
     void finalizeStatement(sqlite3_stmt *&stmt);
     void checkOK(int sqlite3_result);
@@ -82,7 +85,7 @@ class COMMON_API SqliteScalarFileWriter
     void recordScalar(const std::string& componentFullPath, const std::string& name, double value, const StringMap& attributes);
     void recordStatistic(const std::string& componentFullPath, const std::string& name, const Statistics& statistic, const StringMap& attributes);
     void recordHistogram(const std::string& componentFullPath, const std::string& name, const Statistics& statistic, const Histogram& bins, const StringMap& attributes);
-    void recordParameter(const std::string& componentFullPath, const std::string& name, const std::string& value);
+    void recordParameter(const std::string& componentFullPath, const std::string& name, const std::string& value, const StringMap& attributes);
     void flush();
 };
 

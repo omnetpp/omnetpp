@@ -102,7 +102,8 @@ void OmnetppOutputScalarManager::endRun()
     }
 }
 
-inline StringMap convertMap(const opp_string_map *m) {
+inline StringMap convertMap(const opp_string_map *m)
+{
     StringMap result;
     if (m)
         for (auto pair : *m)
@@ -210,7 +211,7 @@ void OmnetppOutputScalarManager::recordParameter(cPar *par)
     const char *name = par->getName();
     bool enabled = getEnvir()->getConfig()->getAsBool((componentFullPath+"."+name).c_str(), CFGID_PARAM_RECORDING);
     if (enabled)
-        writer.recordParameter(componentFullPath, name, par->str());
+        writer.recordParameter(componentFullPath, name, par->str(), ResultFileUtils::convertProperties(par->getProperties()));
 }
 
 const char *OmnetppOutputScalarManager::getFileName() const

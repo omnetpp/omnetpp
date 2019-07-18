@@ -63,7 +63,7 @@ class COMMON_API OmnetppScalarFileWriter
     void recordScalar(const std::string& componentFullPath, const std::string& name, double value, const StringMap& attributes);
     void recordStatistic(const std::string& componentFullPath, const std::string& name, const Statistics& statistic, const StringMap& attributes);
     void recordHistogram(const std::string& componentFullPath, const std::string& name, const Statistics& statistic, const Histogram& bins, const StringMap& attributes); //TODO should be done by recordStatistic; do recordWeightedStatistic instead!
-    void recordParameter(const std::string& componentFullPath, const std::string& name, const std::string& value);
+    void recordParameter(const std::string& componentFullPath, const std::string& name, const std::string& value, const StringMap& attributes);
     void flush();
 };
 

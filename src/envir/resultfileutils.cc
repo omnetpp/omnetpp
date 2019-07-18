@@ -23,6 +23,8 @@
 #include "common/stringutil.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/csimulation.h"
+#include "omnetpp/cproperties.h"
+#include "omnetpp/cproperty.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "envirbase.h"
 
@@ -67,6 +69,22 @@ OrderedKeyValueList ResultFileUtils::getConfigEntries()
         result.push_back(std::make_pair(keysValues[i], keysValues[i+1]));
     return result;
 }
+
+StringMap ResultFileUtils::convertProperties(const cProperties *properties)
+{
+    StringMap result;
+    if (properties) {
+        for (int i = 0; i < properties->getNumProperties(); i++) {
+            cProperty *property = properties->get(i);
+            const char *name = property->getFullName();
+            std::stringstream os;
+            property->printValues(os);
+            result[name] = os.str();
+        }
+    }
+    return result;
+}
+
 
 }  // namespace envir
 }  // namespace omnetpp

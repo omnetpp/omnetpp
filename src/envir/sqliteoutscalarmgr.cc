@@ -201,7 +201,7 @@ void SqliteOutputScalarManager::recordParameter(cPar *par)
     const char *name = par->getName();
     bool enabled = getEnvir()->getConfig()->getAsBool((componentFullPath+"."+name).c_str(), CFGID_PARAM_RECORDING);
     if (enabled)
-        writer.recordParameter(componentFullPath, name, par->str());
+        writer.recordParameter(componentFullPath, name, par->str(), ResultFileUtils::convertProperties(par->getProperties()));
 }
 
 const char *SqliteOutputScalarManager::getFileName() const

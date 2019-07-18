@@ -82,6 +82,9 @@ class SIM_API cProperty : public cNamedObject
     // internal: set the containing cProperties
     virtual void setOwner(cProperties *p) {ownerp = p;}
 
+    // internal: print values in NED syntax
+    virtual void printValues(std::ostream& os) const;
+
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
@@ -126,7 +129,8 @@ class SIM_API cProperty : public cNamedObject
     virtual cProperty *dup() const override   {return new cProperty(*this);}
 
     /**
-     * Produces a one-line description of the object's contents.
+     * Returns the property's representation approximately in NED syntax.
+     * Example: "@statistic[delay](source=delay;record=mean,max)"
      */
     virtual std::string str() const override;
 
