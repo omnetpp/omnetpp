@@ -69,16 +69,12 @@ public class HistogramResultsPickler implements IObjectPickler {
 
     String filterExpression;
     boolean includeAttrs;
-    boolean includeRunattrs;
-    boolean includeItervars;
     boolean mergeModuleAndName;
     InterruptedFlag interruptedFlag;
 
-    public HistogramResultsPickler(String filterExpression, boolean includeAttrs, boolean includeRunattrs, boolean includeItervars, boolean mergeModuleAndName, InterruptedFlag interruptedFlag) {
+    public HistogramResultsPickler(String filterExpression, boolean includeAttrs, boolean mergeModuleAndName, InterruptedFlag interruptedFlag) {
         this.filterExpression = filterExpression;
         this.includeAttrs = includeAttrs;
-        this.includeRunattrs = includeRunattrs;
-        this.includeItervars = includeItervars;
         this.mergeModuleAndName = mergeModuleAndName;
         this.interruptedFlag = interruptedFlag;
     }
@@ -89,9 +85,11 @@ public class HistogramResultsPickler implements IObjectPickler {
 
         out.write(Opcodes.MARK);
         {
+            IDList histograms = null;
+
             out.write(Opcodes.MARK);
             if (filterExpression != null && !filterExpression.trim().isEmpty()) {
-                IDList histograms = resultManager.getAllHistograms();
+                histograms = resultManager.getAllHistograms();
                 histograms = resultManager.filterIDList(histograms, filterExpression, interruptedFlag);
 
                 if (ResultPicklingUtils.debug)
@@ -106,18 +104,8 @@ public class HistogramResultsPickler implements IObjectPickler {
             }
             out.write(Opcodes.LIST);
 
-            if (includeAttrs) // TODO: add this type(...) to all column groups in all picklers
-                new ResultAttrsPickler("type(histogram) AND (" + filterExpression + ")", interruptedFlag).pickle(resultManager, out, pickler);
-            else
-                out.write(Opcodes.NONE);
-
-            if (includeRunattrs)
-                new RunAttrsPickler(filterExpression, RunAttrsPickler.FilterMode.FILTER_RESULTS, interruptedFlag).pickle(resultManager, out, pickler);
-            else
-                out.write(Opcodes.NONE);
-
-            if (includeItervars)
-                new IterVarsPickler(filterExpression, IterVarsPickler.FilterMode.FILTER_RESULTS, interruptedFlag).pickle(resultManager, out, pickler);
+            if (histograms != null && includeAttrs)
+                new ResultAttrsPickler(histograms, interruptedFlag).pickle(resultManager, out, pickler);
             else
                 out.write(Opcodes.NONE);
         }

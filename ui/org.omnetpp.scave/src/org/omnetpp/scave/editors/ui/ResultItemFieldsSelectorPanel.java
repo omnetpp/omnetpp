@@ -90,7 +90,7 @@ public class ResultItemFieldsSelectorPanel extends Composite {
         treeItems = new ArrayList<TreeItem>();
         createTreeItems("general", -1, true);
         createTreeItems("run attributes", RUN_ATTR_ID, false);
-        createTreeItems("module parameters", RUN_PARAM_ID, false);
+        createTreeItems("config entries", RUN_CONFIG_ID, false);
         return tree;
     }
 

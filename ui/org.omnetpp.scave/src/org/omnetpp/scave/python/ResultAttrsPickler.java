@@ -39,11 +39,11 @@ public class ResultAttrsPickler implements IObjectPickler {
         }
     }
 
-    String filterExpression;
+    IDList resultIDs;
     InterruptedFlag interruptedFlag;
 
-    public ResultAttrsPickler(String filter, InterruptedFlag interruptedFlag) {
-        this.filterExpression = filter;
+    public ResultAttrsPickler(IDList resultIDs, InterruptedFlag interruptedFlag) {
+        this.resultIDs = resultIDs;
         this.interruptedFlag = interruptedFlag;
     }
 
@@ -52,19 +52,16 @@ public class ResultAttrsPickler implements IObjectPickler {
         ResultFileManager resultManager = (ResultFileManager)obj;
 
         out.write(Opcodes.MARK);
-        if (filterExpression != null && !filterExpression.trim().isEmpty()) {
-            IDList items = resultManager.getAllItems(false, false);
-            items = resultManager.filterIDList(items, filterExpression, interruptedFlag);
 
-            if (ResultPicklingUtils.debug)
-                Debug.println("pickling attrs of " + items.size() + " items");
+        if (ResultPicklingUtils.debug)
+            Debug.println("pickling attrs of " + resultIDs.size() + " items");
 
-            for (int i = 0; i < items.size(); ++i) {
-                pickleResultAttr(resultManager, items.get(i), pickler, out);
-                if (i % 10 == 0 && interruptedFlag.getFlag())
-                    throw new RuntimeException("Result attribute pickling interrupted");
-            }
+        for (int i = 0; i < resultIDs.size(); ++i) {
+            pickleResultAttr(resultManager, resultIDs.get(i), pickler, out);
+            if (i % 10 == 0 && interruptedFlag.getFlag())
+                throw new RuntimeException("Result attribute pickling interrupted");
         }
+
         out.write(Opcodes.LIST);
     }
 }

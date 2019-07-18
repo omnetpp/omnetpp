@@ -42,16 +42,12 @@ public class StatisticsResultsPickler implements IObjectPickler {
 
     String filterExpression;
     boolean includeAttrs;
-    boolean includeRunattrs;
-    boolean includeItervars;
     boolean mergeModuleAndName;
     InterruptedFlag interruptedFlag;
 
-    public StatisticsResultsPickler(String filterExpression, boolean includeAttrs, boolean includeRunattrs, boolean includeItervars, boolean mergeModuleAndName, InterruptedFlag interruptedFlag) {
+    public StatisticsResultsPickler(String filterExpression, boolean includeAttrs, boolean mergeModuleAndName, InterruptedFlag interruptedFlag) {
         this.filterExpression = filterExpression;
         this.includeAttrs = includeAttrs;
-        this.includeRunattrs = includeRunattrs;
-        this.includeItervars = includeItervars;
         this.mergeModuleAndName = mergeModuleAndName;
         this.interruptedFlag = interruptedFlag;
     }
@@ -62,9 +58,11 @@ public class StatisticsResultsPickler implements IObjectPickler {
 
         out.write(Opcodes.MARK);
         {
+            IDList statistics = null;
+
             out.write(Opcodes.MARK);
             if (filterExpression != null && !filterExpression.trim().isEmpty()) {
-                IDList statistics = resultManager.getAllStatistics();
+                statistics = resultManager.getAllStatistics();
                 statistics = resultManager.filterIDList(statistics, filterExpression, interruptedFlag);
 
                 if (ResultPicklingUtils.debug)
@@ -79,18 +77,8 @@ public class StatisticsResultsPickler implements IObjectPickler {
             }
             out.write(Opcodes.LIST);
 
-            if (includeAttrs)
-                new ResultAttrsPickler(filterExpression, interruptedFlag).pickle(resultManager, out, pickler);
-            else
-                out.write(Opcodes.NONE);
-
-            if (includeRunattrs)
-                new RunAttrsPickler(filterExpression, RunAttrsPickler.FilterMode.FILTER_RESULTS, interruptedFlag).pickle(resultManager, out, pickler);
-            else
-                out.write(Opcodes.NONE);
-
-            if (includeItervars)
-                new IterVarsPickler(filterExpression, IterVarsPickler.FilterMode.FILTER_RESULTS, interruptedFlag).pickle(resultManager, out, pickler);
+            if (statistics != null && includeAttrs)
+                new ResultAttrsPickler(statistics, interruptedFlag).pickle(resultManager, out, pickler);
             else
                 out.write(Opcodes.NONE);
         }

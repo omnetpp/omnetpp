@@ -311,6 +311,7 @@ class SCAVE_API Run
   private:
     Run(const std::string& runName, ResultFileManager *manager) : runName(runName), resultFileManager(manager) {}
     void setAttribute(const std::string& attrName, const std::string& value) {attributes[attrName] = value;}
+    void addParamAssignmentEntry(const std::string& key, const std::string& value) { addConfigEntry(key, value); /* TODO remove */ }
     void addConfigEntry(const std::string& key, const std::string& value) {configEntries.push_back(std::make_pair(key,value));}
 
   public:
@@ -320,8 +321,16 @@ class SCAVE_API Run
     const std::string& getAttribute(const std::string& attrName) const;
     const StringMap& getIterationVariables() const {return itervars;}
     const std::string& getIterationVariable(const std::string& name) const;
+
     const OrderedKeyValueList& getConfigEntries() const {return configEntries;}
     const std::string& getConfigValue(const std::string& key) const;
+
+    // a subset of the ones above
+    const OrderedKeyValueList getParamAssignments() const;
+    const std::string& getParamAssignment(const std::string& key) const;
+    // the other subset of all config entries (global and per-object options, not param assignments)
+    const OrderedKeyValueList getNonParamAssignmentConfigEntries() const;
+    const std::string& getNonParamAssignmentConfigEntry(const std::string& key) const;
 };
 
 
@@ -460,6 +469,7 @@ class SCAVE_API ResultFileManager
     StringSet *getUniqueIterationVariableValues(const RunList& runList, const char *itervarName) const;
     StringSet *getUniqueConfigKeys(const RunList *runList) const;
     StringSet *getUniqueConfigValues(const RunList& runList, const char *key) const;
+    StringSet *getUniqueParamAssignmentKeys(const RunList *runList) const;
 
     // getting lists of data items
     IDList getAllScalars(bool includeFields = true, bool includeItervars = true) const;
@@ -476,6 +486,9 @@ class SCAVE_API ResultFileManager
 
     std::vector< std::pair<std::string, std::string> > getMatchingItervars(const char *pattern) const;
     std::vector< std::pair<std::string, std::string> > getMatchingRunattrs(const char *pattern) const;
+    std::vector< std::pair<std::string, std::string> > getMatchingConfigEntries(const char *pattern) const;
+    std::vector< std::pair<std::string, std::string> > getMatchingParamAssignments(const char *pattern) const;
+    std::vector< std::pair<std::string, std::string> > getMatchingNonParamAssignmentConfigEntries(const char *pattern) const;
 
     /**
      * Get a filtered subset of the input set (of scalars or vectors).
@@ -546,6 +559,7 @@ class SCAVE_API ResultFileManager
     StringVector *getRunAttributeFilterHints(const RunList& runList, const char *attrName) const;
     StringVector *getIterationVariableFilterHints(const RunList& runList, const char *itervarName) const;
     StringVector *getConfigEntryFilterHints(const RunList& runList, const char *key) const;
+    StringVector *getParamAssignmentFilterHints(const RunList& runList, const char *key) const;
 
     const char *getRunAttribute(ID id, const char *attribute) const;
 };

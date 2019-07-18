@@ -10,7 +10,6 @@ import org.omnetpp.scave.engine.OrderedKeyValueList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunList;
-import org.omnetpp.scave.engine.StringMap;
 import org.omnetpp.scave.engine.StringPair;
 
 import net.razorvine.pickle.IObjectPickler;
@@ -18,43 +17,47 @@ import net.razorvine.pickle.Opcodes;
 import net.razorvine.pickle.PickleException;
 import net.razorvine.pickle.Pickler;
 
-public class RunAttrsPickler implements IObjectPickler {
+public class ConfigEntriesPickler implements IObjectPickler {
 
     String filterExpression;
     List<String> runIDs;
     InterruptedFlag interruptedFlag;
 
-    public RunAttrsPickler(String filterExpression, InterruptedFlag interruptedFlag) {
+    public ConfigEntriesPickler(String filterExpression, InterruptedFlag interruptedFlag) {
         this.filterExpression = filterExpression;
         this.interruptedFlag = interruptedFlag;
     }
 
-    public RunAttrsPickler(List<String> runIDs, InterruptedFlag interruptedFlag) {
+    public ConfigEntriesPickler(List<String> runIDs, InterruptedFlag interruptedFlag) {
         this.runIDs = runIDs;
         this.interruptedFlag = interruptedFlag;
     }
 
     @Override
     public void pickle(Object obj, OutputStream out, Pickler pickler) throws PickleException, IOException {
-        ResultFileManager resultManager = (ResultFileManager)obj;
+        ResultFileManager resultManager = (ResultFileManager) obj;
 
         out.write(Opcodes.MARK);
         if (filterExpression != null && !filterExpression.trim().isEmpty()) {
-            OrderedKeyValueList runattrs = resultManager.getMatchingRunattrs(filterExpression);
 
-            for (int i = 0; i < runattrs.size(); ++i) {
-                StringPair ra = runattrs.get(i);
+            OrderedKeyValueList entries = resultManager.getMatchingConfigEntries(filterExpression);
 
-                Run run = resultManager.getRunByName(ra.getFirst());
-                String raName = ra.getSecond();
+            for (int i = 0; i < entries.size(); ++i) {
+                StringPair ei = entries.get(i);
+
+                Run run = resultManager.getRunByName(ei.getFirst());
+                String key = ei.getSecond();
 
                 out.write(Opcodes.MARK);
                 {
                     pickler.save(run.getRunName());
-                    pickler.save(raName);
-                    pickler.save(run.getAttribute(raName));
+                    pickler.save(key);
+                    pickler.save(run.getConfigValue(key));
                 }
                 out.write(Opcodes.TUPLE);
+
+                if (i % 10 == 0 && interruptedFlag.getFlag())
+                    throw new RuntimeException("ConfigEntry pickling interrupted");
             }
         }
         else {
@@ -65,10 +68,10 @@ public class RunAttrsPickler implements IObjectPickler {
             for (int i = 0; i < allRuns.size(); ++i) {
                 Run r = allRuns.get(i);
                 if (runsSet.contains(r.getRunName())) {
-                    StringMap runattrs = r.getAttributes();
-                    String[] runattrKeys = runattrs.keys().toArray();
-                    for (String key : runattrKeys) {
-                        String value = runattrs.get(key);
+                    OrderedKeyValueList entries = r.getConfigEntries();
+                    for (int j = 0; j < entries.size(); ++j) {
+                        String key = entries.get(j).getFirst();
+                        String value = entries.get(j).getSecond();
 
                         out.write(Opcodes.MARK);
                         {
@@ -79,7 +82,7 @@ public class RunAttrsPickler implements IObjectPickler {
                         out.write(Opcodes.TUPLE);
 
                         if (i % 10 == 0 && interruptedFlag.getFlag())
-                            throw new RuntimeException("Runattr pickling interrupted");
+                            throw new RuntimeException("Config entry pickling interrupted");
                     }
                 }
             }

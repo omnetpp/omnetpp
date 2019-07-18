@@ -29,6 +29,7 @@ import org.omnetpp.scave.engine.FileRun;
 import org.omnetpp.scave.engine.Histogram;
 import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.ParameterResult;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
@@ -255,6 +256,10 @@ public class DataTreeContentProvider {
                                         }
                                     }
                                 }
+                                else if (resultItem instanceof ParameterResult) {
+                                    ParameterResult parameter = (ParameterResult)resultItem;
+                                    nodeIdsMap.put(new ResultItemAttributeNode("Value", parameter.getValue()), id);
+                                }
                                 else {
                                     throw new IllegalArgumentException();
                                 }
@@ -372,6 +377,10 @@ public class DataTreeContentProvider {
             StatisticsResult histogram = (StatisticsResult)resultItem;
             Statistics stat = histogram.getStatistics();
             return formatNumber(stat.getMean()) + " (" + String.valueOf(stat.getCount()) + ")";
+        }
+        else if (resultItem instanceof ParameterResult) {
+            ParameterResult parameter = (ParameterResult)resultItem;
+            return parameter.getValue();
         }
         else
             throw new IllegalArgumentException();
@@ -1237,6 +1246,8 @@ public class DataTreeContentProvider {
                     return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWSTATISTICS);
                 else if (allType == ResultFileManager.HISTOGRAM)
                     return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWHISTOGRAMS);
+                else if (allType == ResultFileManager.PARAMETER)
+                    return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_PROPERTIES); // TODO: which icon? new one?
                 else
                     return ImageFactory.global().getIconImage(ImageFactory.DEFAULT);
             }
@@ -1250,6 +1261,8 @@ public class DataTreeContentProvider {
                     return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWHISTOGRAMS);
                 else if (resultItem instanceof StatisticsResult)
                     return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWSTATISTICS);
+                else if (resultItem instanceof ParameterResult)
+                    return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_PROPERTIES); // TODO: which icon? new one?
                 else
                     return ImageFactory.global().getIconImage(ImageFactory.DEFAULT);
             }

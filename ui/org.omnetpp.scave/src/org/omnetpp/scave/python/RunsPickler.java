@@ -17,14 +17,10 @@ import net.razorvine.pickle.Pickler;
 public class RunsPickler implements IObjectPickler {
 
     String filterExpression;
-    boolean includeRunattrs;
-    boolean includeItervars;
     InterruptedFlag interruptedFlag;
 
-    public RunsPickler(String filterExpression, boolean includeRunattrs, boolean includeItervars, InterruptedFlag interruptedFlag) {
+    public RunsPickler(String filterExpression, InterruptedFlag interruptedFlag) {
         this.filterExpression = filterExpression;
-        this.includeRunattrs = includeRunattrs;
-        this.includeItervars = includeItervars;
         this.interruptedFlag = interruptedFlag;
     }
 
@@ -49,16 +45,6 @@ public class RunsPickler implements IObjectPickler {
                 }
             }
             out.write(Opcodes.LIST);
-
-            if (includeRunattrs)
-                new RunAttrsPickler(filterExpression, RunAttrsPickler.FilterMode.FILTER_RUNS, interruptedFlag).pickle(resultManager, out, pickler);
-            else
-                out.write(Opcodes.NONE);
-
-            if (includeItervars)
-                new IterVarsPickler(filterExpression, IterVarsPickler.FilterMode.FILTER_RUNS, interruptedFlag).pickle(resultManager, out, pickler);
-            else
-                out.write(Opcodes.NONE);
         }
         out.write(Opcodes.TUPLE);
     }

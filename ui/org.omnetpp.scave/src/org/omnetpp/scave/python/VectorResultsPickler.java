@@ -41,18 +41,14 @@ public class VectorResultsPickler implements IObjectPickler {
 
     String filterExpression;
     boolean includeAttrs;
-    boolean includeRunattrs;
-    boolean includeItervars;
     boolean mergeModuleAndName;
     double simTimeStart;
     double simTimeEnd;
     InterruptedFlag interruptedFlag;
 
-    public VectorResultsPickler(String filterExpression, boolean includeAttrs, boolean includeRunattrs, boolean includeItervars, boolean mergeModuleAndName, double simTimeStart, double simTimeEnd, InterruptedFlag interruptedFlag) {
+    public VectorResultsPickler(String filterExpression, boolean includeAttrs, boolean mergeModuleAndName, double simTimeStart, double simTimeEnd, InterruptedFlag interruptedFlag) {
         this.filterExpression = filterExpression;
         this.includeAttrs = includeAttrs;
-        this.includeRunattrs = includeRunattrs;
-        this.includeItervars = includeItervars;
         this.mergeModuleAndName = mergeModuleAndName;
         this.simTimeStart = simTimeStart;
         this.simTimeEnd = simTimeEnd;
@@ -65,12 +61,14 @@ public class VectorResultsPickler implements IObjectPickler {
 
         out.write(Opcodes.MARK);
         {
+            IDList vectors = null;
+
             out.write(Opcodes.MARK);
             if (filterExpression != null && !filterExpression.trim().isEmpty()) {
                 if (ResultPicklingUtils.debug)
                     Debug.println("vector pickling start");
 
-                IDList vectors = resultManager.getAllVectors();
+                vectors = resultManager.getAllVectors();
                 vectors = resultManager.filterIDList(vectors, filterExpression, interruptedFlag);
 
                 if (ResultPicklingUtils.debug)
@@ -96,18 +94,8 @@ public class VectorResultsPickler implements IObjectPickler {
             }
             out.write(Opcodes.LIST);
 
-            if (includeAttrs)
-                new ResultAttrsPickler(filterExpression, interruptedFlag).pickle(resultManager, out, pickler);
-            else
-                out.write(Opcodes.NONE);
-
-            if (includeRunattrs)
-                new RunAttrsPickler(filterExpression, RunAttrsPickler.FilterMode.FILTER_RESULTS, interruptedFlag).pickle(resultManager, out, pickler);
-            else
-                out.write(Opcodes.NONE);
-
-            if (includeItervars)
-                new IterVarsPickler(filterExpression, IterVarsPickler.FilterMode.FILTER_RESULTS, interruptedFlag).pickle(resultManager, out, pickler);
+            if (vectors != null && includeAttrs)
+                new ResultAttrsPickler(vectors, interruptedFlag).pickle(resultManager, out, pickler);
             else
                 out.write(Opcodes.NONE);
         }
