@@ -87,8 +87,8 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.option("-c, --list-configs", "List unique configuration names");
         help.line();
         help.line("Options:");
-        help.option("-T, --type <types>", "Limit item types; <types> is concatenation of type characters (v=vector, s=scalar, t=statistic, h=histogram).");
-        help.option("-f, --filter <filter>", "Filter for result items (vectors, scalars, statistics, histograms) matched by filter expression (try 'help filter')");
+        help.option("-T, --type <types>", "Limit item types; <types> is concatenation of type characters (v=vector, s=scalar, t=statistic, h=histogram, p=parameter).");
+        help.option("-f, --filter <filter>", "Filter for result items (vectors, scalars, statistics, histograms, parameters) matched by filter expression (try 'help filter')");
         help.option("-p, --per-run", "Per-run reporting (where applicable)");
         help.option("-b, --bare", "Suppress labels (more suitable for machine processing)");
         help.option("-g, --grep-friendly", "Grep-friendly: with -p, put run names at the start of each line, not above groups as headings.");
@@ -109,8 +109,8 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.para("Usage: opp_scavetool export [<options>] <output-vector-and-scalar-files>");
         help.para("Export results in various formats.");
         help.line("Options:");
-        help.option("-T, --type <types>", "Limit item types; <types> is concatenation of type characters (v=vector, s=scalar, t=statistic, h=histogram).");
-        help.option("-f, --filter <filter>", "Filter for result items (vectors, scalars, statistics, histograms) matched by filter expression (try 'help filter')");
+        help.option("-T, --type <types>", "Limit item types; <types> is concatenation of type characters (v=vector, s=scalar, t=statistic, h=histogram, p=parameter).");
+        help.option("-f, --filter <filter>", "Filter for result items (vectors, scalars, statistics, histograms, parameters) matched by filter expression (try 'help filter')");
         help.option("-w, --add-fields-as-scalars", "Add statistics fields (count, sum, mean, stddev, min, max, etc) as scalars");
         help.option("-y, --add-itervars-as-scalars", "Add iteration variables as scalars");
         help.option("--start-time", "Limit vector data to after the given simulation time (inclusive)");
@@ -235,6 +235,7 @@ int ScaveTool::resolveResultTypeFilter(const std::string& filter)
             case 'v': result |= ResultFileManager::VECTOR; break;
             case 't': result |= ResultFileManager::STATISTICS; break;
             case 'h': result |= ResultFileManager::HISTOGRAM; break;
+            case 'p': result |= ResultFileManager::PARAMETER; break;
             default: throw opp_runtime_error("Invalid result type '%c' in '-T' option", c);
             }
         }
@@ -250,6 +251,8 @@ int ScaveTool::resolveResultTypeFilter(const std::string& filter)
                 result |= ResultFileManager::STATISTICS;
             else if (token == "histograms")
                 result |= ResultFileManager::HISTOGRAM;
+            else if (token == "parameters")
+                result |= ResultFileManager::PARAMETER;
             else
                 throw opp_runtime_error("Invalid result type '%s' in '-T' option", token.c_str());
         }
@@ -315,7 +318,7 @@ void ScaveTool::queryCommand(int argc, char **argv)
     string opt_filterExpression = "*";
     string opt_resultTypeFilterStr;
     string opt_runDisplayModeStr;
-    int opt_resultTypeFilter = ResultFileManager::SCALAR | ResultFileManager::VECTOR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM;
+    int opt_resultTypeFilter = ResultFileManager::SCALAR | ResultFileManager::VECTOR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM | ResultFileManager::PARAMETER;
     RunDisplayMode opt_runDisplayMode = RUNDISPLAY_RUNID;
     bool opt_includeFields = false;
     bool opt_includeItervars = false;
@@ -414,6 +417,7 @@ void ScaveTool::queryCommand(int argc, char **argv)
     RunList *runs = resultFileManager.getUniqueRuns(results);
     std::sort(runs->begin(), runs->end(), [](Run *a, Run *b)  {return a->getRunName() < b->getRunName();}); // sort runs by runId, for consistent output
     IDList scalars = results.filterByTypes(ResultFileManager::SCALAR);
+    IDList parameters = results.filterByTypes(ResultFileManager::PARAMETER);
     IDList vectors = results.filterByTypes(ResultFileManager::VECTOR);
     IDList statistics = results.filterByTypes(ResultFileManager::STATISTICS);
     IDList histograms = results.filterByTypes(ResultFileManager::HISTOGRAM);
@@ -428,6 +432,8 @@ void ScaveTool::queryCommand(int argc, char **argv)
             out << L("runs: ") << runs->size() << " ";
             if ((opt_resultTypeFilter & ResultFileManager::SCALAR) != 0)
                 out << L("\tscalars: ") << scalars.size();
+            if ((opt_resultTypeFilter & ResultFileManager::PARAMETER) != 0)
+                out << L("\tparameters: ") << parameters.size();
             if ((opt_resultTypeFilter & ResultFileManager::VECTOR) != 0)
                 out << L("\tvectors: ") << vectors.size();
             if ((opt_resultTypeFilter & ResultFileManager::STATISTICS) != 0)
@@ -442,6 +448,10 @@ void ScaveTool::queryCommand(int argc, char **argv)
                 if ((opt_resultTypeFilter & ResultFileManager::SCALAR) != 0) {
                     IDList runScalars = resultFileManager.filterIDList(scalars, run, nullptr, nullptr);
                     out << L("\tscalars: ") << runScalars.size();
+                }
+                if ((opt_resultTypeFilter & ResultFileManager::PARAMETER) != 0) {
+                    IDList runParameters = resultFileManager.filterIDList(parameters, run, nullptr, nullptr);
+                    out << L("\tparameters: ") << runParameters.size();
                 }
                 if ((opt_resultTypeFilter & ResultFileManager::VECTOR) != 0) {
                     IDList runVectors = resultFileManager.filterIDList(vectors, run, nullptr, nullptr);
@@ -470,6 +480,7 @@ void ScaveTool::queryCommand(int argc, char **argv)
                 out << runName << ":" << endl << endl;
 #define L(label) (opt_bare ? "\t" : "\t" #label "=")
             IDList runScalars = resultFileManager.filterIDList(scalars, run, nullptr, nullptr);
+            IDList runParameters = resultFileManager.filterIDList(parameters, run, nullptr, nullptr);
             IDList runVectors = resultFileManager.filterIDList(vectors, run, nullptr, nullptr);
             IDList runStatistics = resultFileManager.filterIDList(statistics, run, nullptr, nullptr);
             IDList runHistograms = resultFileManager.filterIDList(histograms, run, nullptr, nullptr);
@@ -477,6 +488,11 @@ void ScaveTool::queryCommand(int argc, char **argv)
             for (int i = 0; i < runScalars.size(); i++) {
                 const ScalarResult& s = resultFileManager.getScalar(runScalars.get(i));
                 out << maybeRunColumnWithTab << "scalar\t" << s.getModuleName() << "\t" << s.getName() << "\t" << s.getValue() << endl;
+            }
+
+            for (int i = 0; i < runParameters.size(); i++) {
+                const ParameterResult& s = resultFileManager.getParameter(runParameters.get(i));
+                out << maybeRunColumnWithTab << "parameter\t" << s.getModuleName() << "\t" << s.getName() << "\t" << s.getValue() << endl;
             }
 
             for (int i = 0; i < runVectors.size(); i++) {
@@ -622,7 +638,7 @@ void ScaveTool::exportCommand(int argc, char **argv)
     vector<string> opt_fileNames;
     string opt_filterExpression = "*";
     string opt_resultTypeFilterStr;
-    int opt_resultTypeFilter = ResultFileManager::SCALAR | ResultFileManager::VECTOR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM;
+    int opt_resultTypeFilter = ResultFileManager::SCALAR | ResultFileManager::VECTOR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM | ResultFileManager::PARAMETER;
     bool opt_verbose = false;
     bool opt_indexingAllowed = true;
     bool opt_includeFields = false;
@@ -731,6 +747,7 @@ void ScaveTool::exportCommand(int argc, char **argv)
     if (opt_fileName != "-") {
         vector<string> v;
         pushCountIfPositive(v, results.countByTypes(ResultFileManager::SCALAR), "scalar");
+        pushCountIfPositive(v, results.countByTypes(ResultFileManager::PARAMETER), "parameter");
         pushCountIfPositive(v, results.countByTypes(ResultFileManager::VECTOR), "vector");
         pushCountIfPositive(v, results.countByTypes(ResultFileManager::STATISTICS), "statistics", "");
         pushCountIfPositive(v, results.countByTypes(ResultFileManager::HISTOGRAM), "histogram");
