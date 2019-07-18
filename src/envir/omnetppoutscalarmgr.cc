@@ -214,6 +214,25 @@ void OmnetppOutputScalarManager::recordParameter(cPar *par)
         writer.recordParameter(componentFullPath, name, par->str(), ResultFileUtils::convertProperties(par->getProperties()));
 }
 
+void OmnetppOutputScalarManager::recordComponentType(cComponent *component)
+{
+    if (!initialized) {
+        initialized = true;
+        initialize();
+    }
+
+    if (isBad())
+        return;
+
+    std::string componentFullPath = component->getFullPath();
+    const char *name = "typename";
+    bool enabled = getEnvir()->getConfig()->getAsBool((componentFullPath+"."+name).c_str(), CFGID_PARAM_RECORDING);
+    if (enabled) {
+        const char *nedType = component->getComponentType()->getFullName();
+        writer.recordParameter(componentFullPath, name, opp_quotestr(nedType), StringMap());
+    }
+}
+
 const char *OmnetppOutputScalarManager::getFileName() const
 {
     return fname.c_str();

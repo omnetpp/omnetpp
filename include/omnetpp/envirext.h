@@ -212,9 +212,14 @@ class SIM_API cIOutputScalarManager : public cObject, public cISimulationLifecyc
     virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=nullptr) = 0;
 
     /**
-     * Records a component parameter, in a default configuration into the scalar result file.
+     * Records a module or channel parameter, in a default configuration into the scalar result file.
      */
     virtual void recordParameter(cPar *par) = 0;
+
+    /**
+     * Records the runtime NED type of module or channel, in a default configuration into the scalar result file.
+     */
+    virtual void recordComponentType(cComponent *component) = 0;
 
     /**
      * Returns the output scalar file name. Returns nullptr if this object is not

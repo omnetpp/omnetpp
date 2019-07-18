@@ -320,9 +320,13 @@ void cComponent::recordParameters()
     cEnvir *envir = getEnvir();
     cConfiguration *config = envir->getConfig();
 
+    envir->recordComponentType(this);
+
     for (int i = 0; i < n; i++) {
         cPar *p = &par(i);
         envir->recordParameter(p); // enablement is handled inside
+
+        // legacy recording
         if (config->getAsBool(p->getFullPath().c_str(), CFGID_PARAM_RECORD_AS_SCALAR, false))
             recordParameterAsScalar(p);
     }

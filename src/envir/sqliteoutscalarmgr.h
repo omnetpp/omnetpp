@@ -91,9 +91,14 @@ class SqliteOutputScalarManager : public cIOutputScalarManager
     virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=nullptr) override;
 
     /**
-     * Records a component parameter into the scalar result file.
+     * Records a module or channel parameter into the scalar result file.
      */
     virtual void recordParameter(cPar *par) override;
+
+    /**
+     * Records the runtime NED type of module or channel into the scalar result file.
+     */
+    virtual void recordComponentType(cComponent *component) override;
 
     /**
      * Returns the file name.

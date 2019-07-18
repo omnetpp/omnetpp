@@ -1639,6 +1639,12 @@ void EnvirBase::recordParameter(cPar *par)
     outScalarManager->recordParameter(par);
 }
 
+void EnvirBase::recordComponentType(cComponent *component)
+{
+    assert(outScalarManager);
+    outScalarManager->recordComponentType(component);
+}
+
 //-------------------------------------------------------------
 
 std::ostream *EnvirBase::getStreamForSnapshot()
