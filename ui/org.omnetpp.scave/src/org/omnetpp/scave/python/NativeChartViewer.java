@@ -7,6 +7,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
 import org.omnetpp.common.Debug;
@@ -15,7 +16,6 @@ import org.omnetpp.scave.charting.ChartViewer;
 import org.omnetpp.scave.charting.HistogramChartViewer;
 import org.omnetpp.scave.charting.ScalarChartViewer;
 import org.omnetpp.scave.charting.VectorChartViewer;
-import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.properties.ChartDefaults;
 import org.omnetpp.scave.charting.properties.ChartVisualProperties;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -135,8 +135,16 @@ public class NativeChartViewer extends ChartViewerBase {
                 chartView.setProperty(id, Converter.objectToString(ChartDefaults.getDefaultPropertyValue(id)));
         }
 
-        acquireNewProcess();
-        proc.getEntryPoint().setNativeChartPlotter(chartPlotter);
+        try {
+            acquireNewProcess();
+            proc.getEntryPoint().setNativeChartPlotter(chartPlotter);
+        }
+        catch (RuntimeException e) {
+            MessageBox mb = new MessageBox(Display.getCurrent().getActiveShell(), SWT.ICON_ERROR);
+            mb.setMessage(e.getMessage());
+            mb.open();
+            return;
+        }
 
         chartPlotter.reset();
 

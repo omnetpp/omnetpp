@@ -84,9 +84,16 @@ public class MatplotlibChartViewer extends ChartViewerBase {
             plotWidget.setMessage("No Python script given");
             return;
         }
-
-        acquireNewProcess();
-        proc.getEntryPoint().setPlotWidgetProvider(widgetProvider);
+        try {
+            acquireNewProcess();
+            proc.getEntryPoint().setPlotWidgetProvider(widgetProvider);
+        }
+        catch (RuntimeException e) {
+            MessageBox mb = new MessageBox(Display.getCurrent().getActiveShell(), SWT.ICON_ERROR);
+            mb.setMessage(e.getMessage());
+            mb.open();
+            return;
+        }
 
         lastActiveAction = "";
         for (IStateChangeListener l : stateChangeListeners)
