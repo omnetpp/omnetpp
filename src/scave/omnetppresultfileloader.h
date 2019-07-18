@@ -55,7 +55,7 @@ class SCAVE_API OmnetppResultFileLoader : public IResultFileLoader
         int64_t lineNo = 0;
         FileRun *fileRunRef = nullptr;
 
-        enum {NONE, RUN, SCALAR, VECTOR, STATISTICS, HISTOGRAM} currentItemType = NONE;
+        enum {NONE, RUN, SCALAR, PARAMETER, VECTOR, STATISTICS, HISTOGRAM} currentItemType = NONE;
         std::string runName;
         OrderedKeyValueList configEntries;
         std::string moduleName;
@@ -65,6 +65,7 @@ class SCAVE_API OmnetppResultFileLoader : public IResultFileLoader
         int vectorId = -1;
         std::string vectorColumns; //TODO switch to 'bool hasEventNumber'
         double scalarValue;
+        std::string paramValue;
         struct {
             int64_t count;
             double minValue;

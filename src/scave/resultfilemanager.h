@@ -157,6 +157,22 @@ class SCAVE_API ScalarResult : public ResultItem
 };
 
 /**
+ * Represents a recorded module or channel parameter
+ */
+class SCAVE_API ParameterResult : public ResultItem
+{
+    friend class ResultFileManager;
+  private:
+    std::string value; //TODO stringpool
+  protected:
+    ParameterResult(FileRun *fileRun, const std::string& moduleName, const std::string& name, const StringMap& attrs, const std::string& value) :
+        ResultItem(fileRun, moduleName, name, attrs), value(value) {}
+  public:
+    virtual int getItemType() const;
+    const char *getValue() const {return value.c_str();}
+};
+
+/**
  * Represents an output vector. This is only the declaration,
  * actual vector data are not kept in memory.
  */
@@ -230,6 +246,7 @@ class SCAVE_API HistogramResult : public StatisticsResult
 };
 
 typedef std::vector<ScalarResult> ScalarResults;
+typedef std::vector<ParameterResult> ParameterResults;
 typedef std::vector<VectorResult> VectorResults;
 typedef std::vector<StatisticsResult> StatisticsResults;
 typedef std::vector<HistogramResult> HistogramResults;
@@ -260,6 +277,7 @@ class SCAVE_API ResultFile
     std::string fileSystemFilePath; // directory+fileName of underlying file (for fopen())
     FileType fileType;
     ScalarResults scalarResults;
+    ParameterResults parameterResults;
     VectorResults vectorResults;
     StatisticsResults statisticsResults;
     HistogramResults histogramResults;
@@ -356,7 +374,7 @@ class SCAVE_API ResultFileManager
 #endif
 
   public:
-    enum {SCALAR = 1<<0, VECTOR = 1<<1, STATISTICS = 1<<2, HISTOGRAM = 1<<3}; // must be 1,2,4,8 etc, because of IDList::getItemTypes()
+    enum {SCALAR = 1<<0, VECTOR = 1<<1, STATISTICS = 1<<2, HISTOGRAM = 1<<3, PARAMETER = 1<<4}; // must be 1,2,4,8 etc, because of IDList::getItemTypes()
 
   private:
     // ID: 8 bit type, 24 bit fileid, 32 bit pos
@@ -376,6 +394,7 @@ class SCAVE_API ResultFileManager
     FileRun *getOrAddFileRun(ResultFile *file, Run *run);
 
     int addScalar(FileRun *fileRunRef, const char *moduleName, const char *scalarName, const StringMap& attrs, double value, bool isField);
+    int addParameter(FileRun *fileRunRef, const char *moduleName, const char *paramName, const StringMap& attrs, const std::string& value);
     int addVector(FileRun *fileRunRef, int vectorId, const char *moduleName, const char *vectorName, const StringMap& attrs, const char *columns);
     int addStatistics(FileRun *fileRunRef, const char *moduleName, const char *statisticsName, const Statistics& stat, const StringMap& attrs);
     int addHistogram(FileRun *fileRunRef, const char *moduleName, const char *histogramName, const Statistics& stat, const Histogram& bins, const StringMap& attrs);
@@ -415,6 +434,7 @@ class SCAVE_API ResultFileManager
 
     const ResultItem& getItem(ID id) const;
     const ScalarResult& getScalar(ID id) const;
+    const ParameterResult& getParameter(ID id) const;
     const VectorResult& getVector(ID id) const;
     const StatisticsResult& getStatistics(ID id) const;
     const HistogramResult& getHistogram(ID id) const;
@@ -444,11 +464,13 @@ class SCAVE_API ResultFileManager
 
     // getting lists of data items
     IDList getAllScalars(bool includeFields = true, bool includeItervars = true) const;
+    IDList getAllParameters() const;
     IDList getAllVectors() const;
     IDList getAllStatistics() const;
     IDList getAllHistograms() const;
     IDList getAllItems(bool includeFields = true, bool includeItervars = true) const;
     IDList getScalarsInFileRun(FileRun *fileRun) const;
+    IDList getParametersInFileRun(FileRun *fileRun) const;
     IDList getVectorsInFileRun(FileRun *fileRun) const;
     IDList getStatisticsInFileRun(FileRun *fileRun) const;
     IDList getHistogramsInFileRun(FileRun *fileRun) const;

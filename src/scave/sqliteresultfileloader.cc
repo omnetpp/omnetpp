@@ -197,6 +197,47 @@ void SqliteResultFileLoader::loadScalars()
     finalizeStatement();
 }
 
+void SqliteResultFileLoader::loadParameters()
+{
+    typedef std::map<sqlite3_int64,int> SqliteParamIdToParamIdx;
+    SqliteParamIdToParamIdx sqliteParamIdToParamIdx;
+    const StringMap emptyAttrs;
+
+    prepareStatement("SELECT paramId, runId, moduleName, paramName, paramValue FROM parameter;");
+    for (int row=1; ; row++) {
+        int resultCode = sqlite3_step(stmt);
+        if (resultCode == SQLITE_DONE)
+            break;
+        checkRow(resultCode);
+        sqlite3_int64 paramId = sqlite3_column_int64(stmt, 0);
+        sqlite3_int64 runId = sqlite3_column_int64(stmt, 1);
+        std::string moduleName = (const char *)sqlite3_column_text(stmt, 2);
+        std::string paramName = (const char *)sqlite3_column_text(stmt, 3);
+        std::string paramValue = (const char *)sqlite3_column_text(stmt, 4);
+        int i = resultFileManager->addParameter(fileRunMap.at(runId), moduleName.c_str(), paramName.c_str(), emptyAttrs, paramValue);
+        sqliteParamIdToParamIdx[paramId] = i;
+    }
+    finalizeStatement();
+
+    prepareStatement("SELECT paramId, runId, attrName, attrValue FROM paramAttr JOIN parameter USING (paramId) ORDER BY runId, paramId;");
+    for (int row=1; ; row++) {
+        int resultCode = sqlite3_step(stmt);
+        if (resultCode == SQLITE_DONE)
+            break;
+        checkRow(resultCode);
+        sqlite3_int64 paramId = sqlite3_column_int64(stmt, 0);
+        sqlite3_int64 runId = sqlite3_column_int64(stmt, 1);
+        std::string attrName = (const char *)sqlite3_column_text(stmt, 2);
+        std::string attrValue = (const char *)sqlite3_column_text(stmt, 3);
+        SqliteParamIdToParamIdx::iterator it = sqliteParamIdToParamIdx.find(paramId);
+        if (it == sqliteParamIdToParamIdx.end())
+            error("Invalid paramId in paramAttr table");
+        ParameterResult& param = fileRunMap.at(runId)->fileRef->parameterResults.at(sqliteParamIdToParamIdx.at(paramId));
+        param.setAttribute(attrName, attrValue);
+    }
+    finalizeStatement();
+}
+
 void SqliteResultFileLoader::loadHistograms()
 {
     std::map<sqlite3_int64,int> sqliteStatIdToStatisticsIdx;

@@ -337,6 +337,7 @@ namespace omnetpp { namespace scave {
 %ignore ResultFile::fileName;
 %ignore ResultFile::fileSystemFilePath;
 %ignore ResultFile::scalarResults;
+%ignore ResultFile::parameterResults;
 %ignore ResultFile::vectorResults;
 %ignore ResultFile::statisticsResults;
 %ignore ResultFile::histogramResults;
@@ -370,6 +371,8 @@ namespace omnetpp { namespace scave {
       int type = getTypeOf(id);
       if (type==SCALAR)
           return getScalar(id);
+      else if (type==PARAMETER)
+          return getParameter(id);
       else if (type==VECTOR)
           return getVector(id);
       else if (type==STATISTICS)

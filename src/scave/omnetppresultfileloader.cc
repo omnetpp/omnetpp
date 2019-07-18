@@ -106,6 +106,18 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
         ctx.resultName = vec[2];
         ctx.scalarValue = value;
     }
+    else if (vec[0][0] == 'p' && !strcmp(vec[0], "par")) {
+        flush(ctx);
+
+        // syntax: "par <module> <paramname> <value>"
+        CHECK(ctx.currentItemType != ParseContext::NONE, "stray 'par' line, must be under a 'run'");
+        CHECK(numTokens == 4, "incorrect 'par' line -- par <module> <paramname> <value> expected");
+
+        ctx.currentItemType = ParseContext::PARAMETER;
+        ctx.moduleName = vec[1];
+        ctx.resultName = vec[2];
+        ctx.paramValue = vec[3];
+    }
     else if (vec[0][0] == 'v' && !strcmp(vec[0], "vector")) {
         flush(ctx);
 
@@ -249,6 +261,10 @@ void OmnetppResultFileLoader::flush(ParseContext& ctx)
         resultFileManager->addScalar(ctx.fileRunRef, ctx.moduleName.c_str(), ctx.resultName.c_str(), ctx.attrs, ctx.scalarValue, false);
         break;
     }
+    case ParseContext::PARAMETER: {
+        resultFileManager->addParameter(ctx.fileRunRef, ctx.moduleName.c_str(), ctx.resultName.c_str(), ctx.attrs, ctx.paramValue);
+        break;
+    }
     case ParseContext::VECTOR: {
         resultFileManager->addVector(ctx.fileRunRef, ctx.vectorId,ctx.moduleName.c_str(), ctx.resultName.c_str(), ctx.attrs, ctx.vectorColumns.c_str());
         break;
@@ -274,6 +290,7 @@ void OmnetppResultFileLoader::flush(ParseContext& ctx)
     ctx.resultName.clear();
     ctx.vectorId = -1;
     ctx.scalarValue = NaN;
+    ctx.paramValue.clear();
     ctx.attrs.clear();
     resetFields(ctx);
     ctx.bins.clear();

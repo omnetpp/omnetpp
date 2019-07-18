@@ -121,6 +121,11 @@ int ScalarResult::getItemType() const
     return ResultFileManager::SCALAR;
 }
 
+int ParameterResult::getItemType() const
+{
+    return ResultFileManager::PARAMETER;
+}
+
 int VectorResult::getItemType() const
 {
     return ResultFileManager::VECTOR;
@@ -256,6 +261,7 @@ const ResultItem& ResultFileManager::getItem(ID id) const
     {
         switch (_type(id)) {
             case SCALAR: return getFileForID(id)->scalarResults.at(_pos(id));
+            case PARAMETER: return getFileForID(id)->parameterResults.at(_pos(id));
             case VECTOR: return getFileForID(id)->vectorResults.at(_pos(id));
             case STATISTICS: return getFileForID(id)->statisticsResults.at(_pos(id));
             case HISTOGRAM: return getFileForID(id)->histogramResults.at(_pos(id));
@@ -442,6 +448,14 @@ const ScalarResult& ResultFileManager::getScalar(ID id) const
     return getFileForID(id)->scalarResults.at(_pos(id));
 }
 
+const ParameterResult& ResultFileManager::getParameter(ID id) const
+{
+    READER_MUTEX
+    if (_type(id) != PARAMETER)
+        throw opp_runtime_error("ResultFileManager::getParameter(id): This item is not a parameter");
+    return getFileForID(id)->parameterResults.at(_pos(id));
+}
+
 const VectorResult& ResultFileManager::getVector(ID id) const
 {
     READER_MUTEX
@@ -490,6 +504,7 @@ IDList ResultFileManager::getAllItems(bool includeFields, bool includeItervars) 
     READER_MUTEX
     IDList out;
     collectIDs(out, &ResultFile::scalarResults, SCALAR, includeFields, includeItervars);
+    collectIDs(out, &ResultFile::parameterResults, PARAMETER, includeFields, includeItervars);
     collectIDs(out, &ResultFile::vectorResults, VECTOR, includeFields, includeItervars);
     collectIDs(out, &ResultFile::statisticsResults, STATISTICS, includeFields, includeItervars);
     collectIDs(out, &ResultFile::histogramResults, HISTOGRAM, includeFields, includeItervars);
@@ -501,6 +516,14 @@ IDList ResultFileManager::getAllScalars(bool includeFields, bool includeItervars
     READER_MUTEX
     IDList out;
     collectIDs(out, &ResultFile::scalarResults, SCALAR, includeFields, includeItervars);
+    return out;
+}
+
+IDList ResultFileManager::getAllParameters() const
+{
+    READER_MUTEX
+    IDList out;
+    collectIDs(out, &ResultFile::parameterResults, PARAMETER, true, true);
     return out;
 }
 
@@ -537,6 +560,19 @@ IDList ResultFileManager::getScalarsInFileRun(FileRun *fileRun) const
     for (int i = 0; i < (int)v.size(); i++)
         if (v[i].getFileRun() == fileRun)
             out.uncheckedAdd(_mkID(SCALAR, fileId, i));
+
+    return out;
+}
+
+IDList ResultFileManager::getParametersInFileRun(FileRun *fileRun) const
+{
+    READER_MUTEX
+    IDList out;
+    int fileId = fileRun->fileRef->id;
+    ParameterResults& v = fileRun->fileRef->parameterResults;
+    for (int i = 0; i < (int)v.size(); i++)
+        if (v[i].getFileRun() == fileRun)
+            out.uncheckedAdd(_mkID(PARAMETER, fileId, i));
 
     return out;
 }
@@ -642,6 +678,13 @@ ID ResultFileManager::getItemByName(FileRun *fileRunRef, const char *module, con
         const ResultItem& d = scalarResults[i];
         if (d.getModuleName() == *moduleNameRef && d.getName() == *nameRef && d.getFileRun() == fileRunRef)
             return _mkID(SCALAR, fileRunRef->fileRef->id, i);
+    }
+
+    ParameterResults& parameterResults = fileRunRef->fileRef->parameterResults;
+    for (int i = 0; i < (int)parameterResults.size(); i++) {
+        const ResultItem& d = parameterResults[i];
+        if (d.getModuleName() == *moduleNameRef && d.getName() == *nameRef && d.getFileRun() == fileRunRef)
+            return _mkID(PARAMETER, fileRunRef->fileRef->id, i);
     }
 
     VectorResults& vectorResults = fileRunRef->fileRef->vectorResults;
@@ -1154,6 +1197,14 @@ int ResultFileManager::addScalar(FileRun *fileRunRef, const char *moduleName, co
     ScalarResults& scalars = fileRunRef->fileRef->scalarResults;
     scalars.push_back(scalar);
     return scalars.size() - 1;
+}
+
+int ResultFileManager::addParameter(FileRun *fileRunRef, const char *moduleName, const char *paramName, const StringMap& attrs, const std::string& value)
+{
+    ParameterResult param(fileRunRef, moduleName, paramName, attrs, value);
+    ParameterResults& params = fileRunRef->fileRef->parameterResults;
+    params.push_back(param);
+    return params.size() - 1;
 }
 
 int ResultFileManager::addVector(FileRun *fileRunRef, int vectorId, const char *moduleName, const char *vectorName, const StringMap& attrs, const char *columns)
