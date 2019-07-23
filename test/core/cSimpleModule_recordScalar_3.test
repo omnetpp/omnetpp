@@ -54,6 +54,7 @@ void Node::finish()
 network = Test
 output-scalar-file = "results/General-#0.sca"
 output-scalar-precision = 10
+**.param-recording=false
 
 # Test.defaults: left at default
 

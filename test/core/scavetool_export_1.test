@@ -156,13 +156,15 @@ echo .
 %contains: postrun-command(1).out
 ---------------------------------------------------------------
 $ opp_scavetool q <files>
-runs: 2   scalars: 4  vectors: 2  statistics: 2  histograms: 2
+runs: 2   scalars: 4  parameters: 4  vectors: 2  statistics: 2  histograms: 2
 ---------------------------------------------------------------
 $ opp_scavetool q -l <files>
 General-0-xxxx:
 
 scalar      Test.node  foo:mean       19.84
 scalar      Test.node  foo:last       17
+parameter   Test.node  typename       Node
+parameter   Test       typename       Test
 vector      Test.node  foo:vector     vectorId=0  count=100   mean=19.84  min=12  max=28
 statistics  Test.node  foo:stats      count=100   mean=19.84  min=12      max=28
 histogram   Test.node  foo:histogram  count=100   mean=19.84  min=12      max=28  #bins=26
@@ -171,6 +173,8 @@ General-1-xxxx:
 
 scalar      Test.node  foo:mean       19.65
 scalar      Test.node  foo:last       19
+parameter   Test.node  typename       Node
+parameter   Test       typename       Test
 vector      Test.node  foo:vector     vectorId=0  count=100   mean=19.65  min=13  max=27
 statistics  Test.node  foo:stats      count=100   mean=19.65  min=13      max=27
 histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=24
@@ -185,10 +189,10 @@ opp_scavetool: Output file name must be specified (-o option)
 ERROR
 ---------------------------------------------------------------
 $ opp_scavetool x -o out.csv <files>
-Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
+Exported 4 scalars, 4 parameters, 2 vectors, 2 statistics, 2 histograms
 ---------------------------------------------------------------
 $ opp_scavetool x -o out.json <files>
-Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
+Exported 4 scalars, 4 parameters, 2 vectors, 2 statistics, 2 histograms
 ---------------------------------------------------------------
 $ opp_scavetool x -o out.vec -Tv <files>
 opp_scavetool: Exporter: OMNeT++ vec files currently do not support multiple runs per file
@@ -201,16 +205,16 @@ $ opp_scavetool x -o out.sca -Tsth <files>
 Exported 4 scalars, 2 statistics, 2 histograms
 ---------------------------------------------------------------
 $ opp_scavetool x -o out-Fcsv-r.csv -F CSV-R <files>
-Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
+Exported 4 scalars, 4 parameters, 2 vectors, 2 statistics, 2 histograms
 ---------------------------------------------------------------
 $ opp_scavetool x -o out-Fcsv-s.csv -F CSV-S -x allowMixed=true <files>
-Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
+Exported 4 scalars, 4 parameters, 2 vectors, 2 statistics, 2 histograms
 ---------------------------------------------------------------
 $ opp_scavetool x -o out-Fjson.json -F JSON <files>
-Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
+Exported 4 scalars, 4 parameters, 2 vectors, 2 statistics, 2 histograms
 ---------------------------------------------------------------
 $ opp_scavetool x -o out-Fjson-py.py -F JSON -x pythonFlavoured=true <files>
-Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
+Exported 4 scalars, 4 parameters, 2 vectors, 2 statistics, 2 histograms
 ---------------------------------------------------------------
 $ opp_scavetool x -o out-Foppvec.vec -F OmnetppVectorFile -Tv <files>
 opp_scavetool: Exporter: OMNeT++ vec files currently do not support multiple runs per file
@@ -265,7 +269,7 @@ $ opp_scavetool x -o out-w2.csv -Tsth -w <files>
 Exported 28 scalars, 2 statistics, 2 histograms
 ---------------------------------------------------------------
 $ opp_scavetool x -o out-x.csv -x separator=tab -x quoteEscaping=backslash <files>
-Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
+Exported 4 scalars, 4 parameters, 2 vectors, 2 statistics, 2 histograms
 ---------------------------------------------------------------
 $ opp_scavetool x -o out-k1.vec -Tv -k <files>
 opp_scavetool: Exporter: OMNeT++ vec files currently do not support multiple runs per file
@@ -289,7 +293,7 @@ reading ../results/General-#0.vec... done
 reading ../results/General-#1.vec... done
 4 file(s) loaded
 exporting to out-v1.csv... done
-Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
+Exported 4 scalars, 4 parameters, 2 vectors, 2 statistics, 2 histograms
 ---------------------------------------------------------------
 $ opp_scavetool x -o out-v2.csv --verbose <files>
 inferred export format from file name: CSV-R
@@ -299,22 +303,22 @@ reading ../results/General-#0.vec... done
 reading ../results/General-#1.vec... done
 4 file(s) loaded
 exporting to out-v2.csv... done
-Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
+Exported 4 scalars, 4 parameters, 2 vectors, 2 statistics, 2 histograms
 ===============================================================
 $ opp_scavetool out-Foppsca.sca
-runs: 2   scalars: 4  vectors: 0  statistics: 2  histograms: 2
+runs: 2   scalars: 4  parameters: 0  vectors: 0  statistics: 2  histograms: 2
 $ opp_scavetool out-Foppvec.vec
-runs: 1   scalars: 0  vectors: 1  statistics: 0  histograms: 0
+runs: 1   scalars: 0  parameters: 0  vectors: 1  statistics: 0  histograms: 0
 $ opp_scavetool out-Fsqlsca.sca
-runs: 2   scalars: 4  vectors: 0  statistics: 2  histograms: 2
+runs: 2   scalars: 4  parameters: 0  vectors: 0  statistics: 2  histograms: 2
 $ opp_scavetool out-Fsqlvec.vec
-runs: 2   scalars: 0  vectors: 2  statistics: 0  histograms: 0
+runs: 2   scalars: 0  parameters: 0  vectors: 2  statistics: 0  histograms: 0
 $ opp_scavetool out-k1.vec
-runs: 1   scalars: 0  vectors: 1  statistics: 0  histograms: 0
+runs: 1   scalars: 0  parameters: 0  vectors: 1  statistics: 0  histograms: 0
 $ opp_scavetool out-k2.vec
-runs: 1   scalars: 0  vectors: 1  statistics: 0  histograms: 0
+runs: 1   scalars: 0  parameters: 0  vectors: 1  statistics: 0  histograms: 0
 $ opp_scavetool out.sca
-runs: 2   scalars: 4  vectors: 0  statistics: 2  histograms: 2
+runs: 2   scalars: 4  parameters: 0  vectors: 0  statistics: 2  histograms: 2
 $ opp_scavetool out.vec
-runs: 1   scalars: 0  vectors: 1  statistics: 0  histograms: 0
+runs: 1   scalars: 0  parameters: 0  vectors: 1  statistics: 0  histograms: 0
 .

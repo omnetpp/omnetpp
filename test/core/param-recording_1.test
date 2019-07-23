@@ -1,0 +1,32 @@
+%description:
+**.param-recording basic test. (param-recording is the successor of param-record-as-scalar)
+
+%file: test.ned
+
+network Test
+{
+    parameters:
+        bool b = false;
+        int i = 4;
+        double d = 120 + 3.45;
+        double t @unit(s) = 1 hour;
+        volatile double x = 1 + exponential(10);
+        string hello = "Hello " + "world";
+}
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+output-scalar-file = test.sca
+**.param-recording = true
+
+%contains: test.sca
+par Test typename "Test"
+par Test b false
+par Test i 4
+par Test d 123.45
+par Test t 3600s
+attr unit s
+par Test x 1+exponential(10)
+par Test hello "Hello world"

@@ -18,6 +18,7 @@ network = Test
 cmdenv-express-mode = false
 output-scalar-file = test.sca
 **.param-record-as-scalar = true
+**.param-recording = false
 
 %contains: test.sca
 scalar Test bt 1
