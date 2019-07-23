@@ -47,7 +47,7 @@ class CsvRecordsExporterType : public ExporterType
         virtual std::string getFormatName() const {return "CSV-R";}
         virtual std::string getDisplayName() const {return "CSV Records";}
         virtual std::string getDescription() const {return "CSV format that contains a table of records, suitable for importing into Python's Pandas or R";}
-        virtual int getSupportedResultTypes() {return ResultFileManager::SCALAR | ResultFileManager::VECTOR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM;}
+        virtual int getSupportedResultTypes() {return ResultFileManager::SCALAR | ResultFileManager::PARAMETER | ResultFileManager::VECTOR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM;}
         virtual std::string getFileExtension() {return "csv"; }
         virtual StringMap getSupportedOptions() const;
         virtual std::string getXswtForm() const;
@@ -228,6 +228,18 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
             csv.writeDouble(scalar.getValue());
             finishRecord(numColumns);
             writeResultAttrRecords(scalar, numColumns);
+        }
+    }
+
+    // record parameters
+    if (haveScalars) {
+        IDList paramIDs = idlist.filterByTypes(ResultFileManager::PARAMETER);
+        for (int i = 0; i < (int)paramIDs.size(); ++i) {
+            const ParameterResult& param = manager->getParameter(paramIDs.get(i));
+            writeResultItemBase(param, "param", numColumns);
+            csv.writeString(param.getValue());
+            finishRecord(numColumns);
+            writeResultAttrRecords(param, numColumns);
         }
     }
 

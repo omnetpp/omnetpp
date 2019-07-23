@@ -41,7 +41,7 @@ class OmnetppScalarFileExporterType : public ExporterType
         virtual std::string getFormatName() const {return "OmnetppScalarFile";}
         virtual std::string getDisplayName() const {return "OMNeT++ Scalar File";}
         virtual std::string getDescription() const {return "OMNeT++ scalar file (.sca) format";}
-        virtual int getSupportedResultTypes() {return ResultFileManager::SCALAR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM;}
+        virtual int getSupportedResultTypes() {return ResultFileManager::SCALAR | ResultFileManager::PARAMETER | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM;}
         virtual std::string getFileExtension() {return "sca";}
         virtual StringMap getSupportedOptions() const;
         virtual std::string getXswtForm() const;
@@ -120,6 +120,10 @@ void OmnetppScalarFileExporter::saveResults(const std::string& fileName, ResultF
             if (ResultFileManager::getTypeOf(id) == ResultFileManager::SCALAR) {
                 const ScalarResult& scalar = manager->getScalar(id);
                 writer.recordScalar(scalar.getModuleName(), scalar.getName(), scalar.getValue(), scalar.getAttributes());
+            }
+            else if (ResultFileManager::getTypeOf(id) == ResultFileManager::PARAMETER) {
+                const ParameterResult& parameter = manager->getParameter(id);
+                writer.recordParameter(parameter.getModuleName(), parameter.getName(), parameter.getValue(), parameter.getAttributes());
             }
             else if (ResultFileManager::getTypeOf(id) == ResultFileManager::STATISTICS) {
                 const StatisticsResult& statistics = manager->getStatistics(id);

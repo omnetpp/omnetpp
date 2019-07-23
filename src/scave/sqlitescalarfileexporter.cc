@@ -41,7 +41,7 @@ class SqliteScalarFileExporterType : public ExporterType
         virtual std::string getFormatName() const {return "SqliteScalarFile";}
         virtual std::string getDisplayName() const {return "SQLite Scalar File";}
         virtual std::string getDescription() const {return "OMNeT++ SQLite scalar file (.sca) format";}
-        virtual int getSupportedResultTypes() {return ResultFileManager::SCALAR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM;}
+        virtual int getSupportedResultTypes() {return ResultFileManager::SCALAR | ResultFileManager::PARAMETER | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM;}
         virtual std::string getFileExtension() {return "sca";}
         virtual StringMap getSupportedOptions() const;
         virtual std::string getXswtForm() const;
@@ -104,7 +104,7 @@ void SqliteScalarFileExporter::setOption(const std::string& key, const std::stri
 void SqliteScalarFileExporter::saveResults(const std::string& fileName, ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor)
 {
     //TODO progress reporting
-    checkItemTypes(idlist, ResultFileManager::SCALAR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM);
+    checkItemTypes(idlist, ResultFileManager::SCALAR | ResultFileManager::PARAMETER | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM);
 
     removeFile(fileName.c_str(), "existing file"); // remove existing file, as open() appends
     writer.open(fileName.c_str());
@@ -120,6 +120,10 @@ void SqliteScalarFileExporter::saveResults(const std::string& fileName, ResultFi
             if (ResultFileManager::getTypeOf(id) == ResultFileManager::SCALAR) {
                 const ScalarResult& scalar = manager->getScalar(id);
                 writer.recordScalar(scalar.getModuleName(), scalar.getName(), scalar.getValue(), scalar.getAttributes());
+            }
+            else if (ResultFileManager::getTypeOf(id) == ResultFileManager::PARAMETER) {
+                const ParameterResult& parameter = manager->getParameter(id);
+                writer.recordParameter(parameter.getModuleName(), parameter.getName(), parameter.getValue(), parameter.getAttributes());
             }
             else if (ResultFileManager::getTypeOf(id) == ResultFileManager::STATISTICS) {
                 const StatisticsResult& statistics = manager->getStatistics(id);

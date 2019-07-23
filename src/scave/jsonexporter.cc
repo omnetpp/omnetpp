@@ -43,7 +43,7 @@ class PythonExporterType : public ExporterType
         virtual std::string getFormatName() const {return "JSON";}
         virtual std::string getDisplayName() const {return "JSON";}
         virtual std::string getDescription() const {return "JSON format, optionally with Python flavour";}
-        virtual int getSupportedResultTypes() {return ResultFileManager::SCALAR | ResultFileManager::VECTOR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM;}
+        virtual int getSupportedResultTypes() {return ResultFileManager::SCALAR | ResultFileManager::PARAMETER | ResultFileManager::VECTOR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM;}
         virtual std::string getFileExtension() {return "json"; }
         virtual StringMap getSupportedOptions() const;
         virtual std::string getXswtForm() const;
@@ -298,7 +298,7 @@ void JsonExporter::saveResults(const std::string& fileName, ResultFileManager *m
         // run metadata
         writeStringMap("attributes", run->getAttributes());
         writeStringMap("itervars", run->getIterationVariables());
-        writeOrderedKeyValueList("moduleparams", run->getConfigEntries());
+        writeOrderedKeyValueList("config", run->getConfigEntries());
 
         // scalars
         IDList scalars = idlist.filterByTypes(ResultFileManager::SCALAR);
@@ -310,6 +310,23 @@ void JsonExporter::saveResults(const std::string& fileName, ResultFileManager *m
                 writer.writeString("module", scalar.getModuleName());
                 writer.writeString("name", scalar.getName());
                 writer.writeDouble("value", scalar.getValue());
+                if (!skipResultAttributes && !scalar.getAttributes().empty())
+                    writeStringMap("attributes", scalar.getAttributes());
+                writer.closeObject();
+            }
+            writer.closeArray();
+        }
+
+        // parameters
+        IDList parameters = idlist.filterByTypes(ResultFileManager::PARAMETER);
+        if (!parameters.isEmpty()) {
+            writer.openArray("parameters");
+            for (ID id : parameters) {
+                const ParameterResult& scalar = manager->getParameter(id);
+                writer.openObject();
+                writer.writeString("module", scalar.getModuleName());
+                writer.writeString("name", scalar.getName());
+                writer.writeString("value", scalar.getValue());
                 if (!skipResultAttributes && !scalar.getAttributes().empty())
                     writeStringMap("attributes", scalar.getAttributes());
                 writer.closeObject();
