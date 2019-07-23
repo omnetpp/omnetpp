@@ -27,7 +27,6 @@ namespace omnetpp {
 namespace scave {
 
 class XYArray;
-class DataTable;
 class ResultFileManager;
 class IDList;
 
@@ -39,16 +38,6 @@ T translateOptionValue(const std::map<std::string,T>& mapping, const std::string
         throw opp_runtime_error("bad option value \"%s\", allowed ones are %s", value.c_str(), opp_join(keys(mapping), ", ", '"').c_str());
     return it->second;
 }
-
-/**
- * Save the given table into CSV.
- */
-SCAVE_API void saveTable(common::CsvWriter& csv, const DataTable& table, bool columnNames);
-
-/**
- * Save the given table cell into CSV.
- */
-SCAVE_API void writeTableCell(common::CsvWriter& csv, const DataTable& table, int row, int col);
 
 } // namespace scave
 }  // namespace omnetpp

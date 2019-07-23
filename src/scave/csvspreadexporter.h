@@ -33,13 +33,12 @@ using common::CsvWriter;
 class SCAVE_API CsvForSpreadsheetExporter : public Exporter
 {
     public:
-        enum VectorLayout {HORIZONTAL, VERTICAL, JOINED_VERTICAL};
+        enum VectorLayout {HORIZONTAL, VERTICAL};
 
     private:
         CsvWriter csv;
         bool columnNames = true;
         bool allowMixedContent = false;
-        ResultItemFields scalarsGroupBy;
         VectorLayout vectorLayout = VERTICAL;
 
         std::vector<std::string> itervarNames;
@@ -59,8 +58,6 @@ class SCAVE_API CsvForSpreadsheetExporter : public Exporter
         bool getColumnNames() {return columnNames;}
         void setMixedContentAllowed(bool b) {allowMixedContent = b;}
         bool getMixedContentAllowed() const {return allowMixedContent;}
-        void setScalarsGroupBy(const ResultItemFields& fields) {scalarsGroupBy=fields;}
-        const ResultItemFields& getScalarsGroupBy() const {return scalarsGroupBy;}
         void setVectorLayout(VectorLayout d) {vectorLayout = d;}
         VectorLayout getVectorLayout() {return vectorLayout;}
 
@@ -71,6 +68,7 @@ class SCAVE_API CsvForSpreadsheetExporter : public Exporter
 
     private:
         void saveScalars(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor);
+        void saveParameters(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor);
         void saveVectors(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor);
         void saveStatistics(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor);
         void saveHistograms(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor);

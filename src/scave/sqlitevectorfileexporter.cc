@@ -24,8 +24,6 @@
 #include "common/fileutil.h"
 #include "xyarray.h"
 #include "resultfilemanager.h"
-#include "datasorter.h"
-#include "datatable.h"
 #include "exportutils.h"
 #include "vectorutils.h"
 #include "sqlitevectorfileexporter.h"

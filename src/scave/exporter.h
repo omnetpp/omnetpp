@@ -27,8 +27,6 @@
 #include "common/progressmonitor.h"
 #include "xyarray.h"
 #include "resultfilemanager.h"
-#include "datasorter.h"
-#include "datatable.h"
 
 namespace omnetpp {
 namespace scave {

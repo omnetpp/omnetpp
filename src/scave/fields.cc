@@ -167,9 +167,9 @@ ResultItemFields ResultItemFields::complement() const
 {
     StringVector complementFields;
     StringVector fieldNames = getFieldNames();
-    for (StringVector::const_iterator fieldName = fieldNames.begin(); fieldName != fieldNames.end(); ++fieldName)
-        if (!hasField(*fieldName))
-            complementFields.push_back(*fieldName);
+    for (const auto& fieldName : fieldNames)
+        if (!hasField(fieldName))
+            complementFields.push_back(fieldName);
     return ResultItemFields(complementFields);
 }
 

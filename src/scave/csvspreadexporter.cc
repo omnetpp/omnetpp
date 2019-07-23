@@ -24,10 +24,9 @@
 #include "csvspreadexporter.h"
 #include "xyarray.h"
 #include "resultfilemanager.h"
-#include "datasorter.h"
-#include "datatable.h"
 #include "exportutils.h"
 #include "vectorutils.h"
+#include "fields.h"
 
 using namespace std;
 using namespace omnetpp::common;
@@ -39,7 +38,7 @@ static const std::map<std::string,CsvWriter::QuoteEscapingMethod> QUOTEMETHODS =
 static const std::map<std::string,char> SEPARATORS = {{"tab", '\t'}, {"comma", ','}, {"semicolon", ';'}, {"colon", ':'}};
 static const std::map<std::string,char> QUOTECHARS = {{"doublequote", '"'}, {"singlequote", '\''}};
 static const std::map<std::string,bool> BOOLS = {{"true", true}, {"false", false}};
-static const std::map<std::string,CsvForSpreadsheetExporter::VectorLayout> VECTORLAYOUTS = {{"horizontal", CsvForSpreadsheetExporter::HORIZONTAL}, {"vertical", CsvForSpreadsheetExporter::VERTICAL}, {"vertical-joined", CsvForSpreadsheetExporter::JOINED_VERTICAL}};
+static const std::map<std::string,CsvForSpreadsheetExporter::VectorLayout> VECTORLAYOUTS = {{"horizontal", CsvForSpreadsheetExporter::HORIZONTAL}, {"vertical", CsvForSpreadsheetExporter::VERTICAL}};
 
 class CsvForSpreadsheetExporterType : public ExporterType
 {
@@ -47,7 +46,7 @@ class CsvForSpreadsheetExporterType : public ExporterType
         virtual std::string getFormatName() const {return "CSV-S";}
         virtual std::string getDisplayName() const {return "CSV for Spreadsheets";}
         virtual std::string getDescription() const {return "CSV format best suited for processing in spreadsheets";}
-        virtual int getSupportedResultTypes() {return ResultFileManager::SCALAR | ResultFileManager::VECTOR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM;}
+        virtual int getSupportedResultTypes() {return ResultFileManager::SCALAR | ResultFileManager::PARAMETER | ResultFileManager::VECTOR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM;}
         virtual std::string getFileExtension() {return "csv"; }
         virtual StringMap getSupportedOptions() const;
         virtual std::string getXswtForm() const;
@@ -78,19 +77,10 @@ string CsvForSpreadsheetExporterType::getXswtForm() const
             "         <button x:id='allowMixed' text='Allow mixed content' x:style='CHECK' selection='true'>\n"
             "           <layoutData x:class='GridData' horizontalSpan='2'/>\n"
             "         </button>\n"
-            "         <label text='Expand to columns (scalars only):'/>\n"
-            "         <combo x:id='scalarsGroupBy' x:style='BORDER|READ_ONLY'>\n"
-            "           <add x:p0=''/>\n"
-            "           <add x:p0='name'/>\n"
-            "           <add x:p0='module,name'/>\n"
-            "           <add x:p0='module'/>\n"
-            "           <text x:p0='name'/>\n"
-            "         </combo>\n"
             "         <label text='Vector arrangement:'/>\n"
             "         <combo x:id='vectorLayout' x:style='BORDER|READ_ONLY'>\n"
             "           <add x:p0='horizontal'/>\n"
             "           <add x:p0='vertical'/>\n"
-            "           <add x:p0='vertical-joined'/>\n"
             "           <text x:p0='vertical'/>\n"
             "         </combo>\n"
             "         <label text='Data precision:'/>\n"
@@ -138,8 +128,7 @@ StringMap CsvForSpreadsheetExporterType::getSupportedOptions() const
         {"separator", "Separator character. Values: 'tab', 'comma', 'semicolon', 'colon'"},
         {"quoteChar", "Quote character. Values: 'doublequote', 'singlequote'"},
         {"quoteEscaping", "How to escape the quote character within quoted values. Values: 'doubling', 'backslash'"},
-        {"scalarsGroupBy", "Group scalars by the given fields. Accepts a comma-separated list of field names: 'file', 'run', 'module', 'name', etc."},
-        {"vectorLayout", "The layout (format) in which vectors are exported. Values: 'horizontal','vertical', 'vertical-joined'"},
+        {"vectorLayout", "The layout (format) in which vectors are exported. Values: 'horizontal','vertical'"},
     };
     return options;
 }
@@ -167,8 +156,6 @@ void CsvForSpreadsheetExporter::setOption(const std::string& key, const std::str
         setColumnNames(translateOptionValue(BOOLS,value));
     else if (key == "allowMixed")
         setMixedContentAllowed(translateOptionValue(BOOLS,value));
-    else if (key == "scalarsGroupBy")
-        setScalarsGroupBy(ResultItemFields(StringTokenizer(value.c_str(),",").asVector()));
     else if (key == "vectorLayout")
         setVectorLayout(translateOptionValue(VECTORLAYOUTS,value));
     else
@@ -180,6 +167,7 @@ void CsvForSpreadsheetExporter::saveResults(const std::string& fileName, ResultF
     int itemTypes = idlist.getItemTypes();
     bool mixedContent = itemTypes != 0 &&
             itemTypes != ResultFileManager::SCALAR &&
+            itemTypes != ResultFileManager::PARAMETER &&
             itemTypes != ResultFileManager::VECTOR &&
             itemTypes != ResultFileManager::STATISTICS &&
             itemTypes != ResultFileManager::HISTOGRAM;
@@ -196,6 +184,10 @@ void CsvForSpreadsheetExporter::saveResults(const std::string& fileName, ResultF
     if ((itemTypes & ResultFileManager::SCALAR) != 0) {
         if (mixedContent) {csv.writeNewLine(); csv.writeString("**** SCALARS ****"); csv.writeNewLine();}
         saveScalars(manager, idlist.filterByTypes(ResultFileManager::SCALAR), monitor);
+    }
+    if ((itemTypes & ResultFileManager::PARAMETER) != 0) {
+        if (mixedContent) {csv.writeNewLine(); csv.writeString("**** PARAMETERS ****"); csv.writeNewLine();}
+        saveParameters(manager, idlist.filterByTypes(ResultFileManager::PARAMETER), monitor);
     }
     if ((itemTypes & ResultFileManager::VECTOR) != 0) {
         if (mixedContent) {csv.writeNewLine(); csv.writeString("**** VECTORS ****"); csv.writeNewLine();}
@@ -245,25 +237,51 @@ void CsvForSpreadsheetExporter::saveScalars(ResultFileManager *manager, const ID
 {
     //TODO use monitor
     collectItervars(manager, idlist);
-    const ScalarDataTable table(idlist, scalarsGroupBy.complement(), *manager);
 
     // write header
     if (columnNames) {
         writeRunColumnNames();
-        for (int col = 0; col < table.getNumColumns(); ++col)
-            csv.writeString(table.getColumn(col).name);
+        csv.writeString("module");
+        csv.writeString("name");
+        csv.writeString("value");
         csv.writeNewLine();
     }
 
     // write data
-    for (int row = 0; row < table.getNumRows(); ++row) {
-        writeRunColumns(table.getAnyScalarInRow(row).getRun());
-        for (int col = 0; col < table.getNumColumns(); ++col)
-            writeTableCell(csv, table, row, col);
+    for (int i = 0; i < (int)idlist.size(); ++i) {
+        const ScalarResult& param = manager->getScalar(idlist.get(i));
+        writeRunColumns(param.getRun());
+        csv.writeString(param.getModuleName());
+        csv.writeString(param.getName());
+        csv.writeDouble(param.getValue());
         csv.writeNewLine();
     }
 }
 
+void CsvForSpreadsheetExporter::saveParameters(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor)
+{
+    //TODO use monitor
+    collectItervars(manager, idlist);
+
+    // write header
+    if (columnNames) {
+        writeRunColumnNames();
+        csv.writeString("module");
+        csv.writeString("name");
+        csv.writeString("value");
+        csv.writeNewLine();
+    }
+
+    // write data
+    for (int i = 0; i < (int)idlist.size(); ++i) {
+        const ParameterResult& param = manager->getParameter(idlist.get(i));
+        writeRunColumns(param.getRun());
+        csv.writeString(param.getModuleName());
+        csv.writeString(param.getName());
+        csv.writeString(param.getValue());
+        csv.writeNewLine();
+    }
+}
 
 void CsvForSpreadsheetExporter::saveVectors(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor)
 {
@@ -350,20 +368,8 @@ void CsvForSpreadsheetExporter::saveVectors(ResultFileManager *manager, const ID
         }
 
     }
-    else if (vectorLayout == JOINED_VERTICAL) {
-        // collect vectors
-        vector<DataTable *> tables;
-        for (int i = 0; i < numVectors; ++i) {
-            const VectorResult& vector = manager->getVector(idlist.get(i));
-            std::string columnTitle = vector.getName() + " " + vector.getModuleName() + "(" + makeRunTag(vector.getRun()) +")";
-            tables.push_back(new XYDataTable("t", columnTitle, xyArrays[i]));
-        }
-
-        // join them on the time column
-        JoinedDataTable table(tables, 0);
-
-        // save the result
-        saveTable(csv, table, columnNames);
+    else {
+        throw opp_runtime_error("Invalid vector layout");
     }
 
     for (auto xyArray : xyArrays)

@@ -35,14 +35,14 @@ COPTS+= -DTHREADED $(PTHREAD_CFLAGS)
 IMPLIBS+= $(PTHREAD_LIBS)
 endif
 
-OBJS= $O/datasorter.o $O/idlist.o \
+OBJS= $O/idlist.o \
       $O/omnetppresultfileloader.o $O/sqliteresultfileloader.o \
       $O/resultfilemanager.o $O/indexedvectorfilereader.o \
       $O/vectorfileindexer.o $O/vectorfileindex.o $O/indexfileutils.o \
       $O/indexfilereader.o  $O/indexfilewriter.o \
       $O/scaveutils.o $O/scaveexception.o $O/enumtype.o \
       $O/xyarray.o $O/fields.o $O/vectorutils.o $O/memoryutils.o $O/sqliteresultfileutils.o \
-      $O/datatable.o $O/exporter.o $O/exportutils.o \
+      $O/exporter.o $O/exportutils.o \
       $O/csvrecexporter.o $O/csvspreadexporter.o $O/jsonexporter.o \
       $O/omnetppscalarfileexporter.o $O/sqlitescalarfileexporter.o \
       $O/omnetppvectorfileexporter.o $O/sqlitevectorfileexporter.o
