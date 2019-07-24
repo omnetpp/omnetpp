@@ -8,14 +8,6 @@ LAUNCHER=opp_ide
 
 echo Starting the OMNeT++ IDE...
 
-if java -version 2>&1 | grep -i "libgcj" >/dev/null 2>/dev/null; then
-  echo "A compatible JRE is required to run the IDE. "
-  echo "Found GNU GIJ which is not supported. Please use Oracle JRE or Open JRE 1.8+"
-  echo "If you have several JDKs installed on you machine, change the default JVM."
-  echo "You can switch between Java VMs with the 'sudo update-alternatives --config java' command."
-  exit 1;
-fi
-
 if test ! -d $IDEDIR/configuration -a ! -d $IDEDIR/$LAUNCHER.app/Contents/Eclipse/configuration; then
   echo "The OMNeT++ IDE is not installed!"
   exit 1;
