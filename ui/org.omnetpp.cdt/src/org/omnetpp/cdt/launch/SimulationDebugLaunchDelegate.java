@@ -138,7 +138,7 @@ public class SimulationDebugLaunchDelegate extends GdbLaunchDelegate {
      * Convert pre-4.3 launch configs to 4.3+. This code can be removed once we are well past version 4.3.
      */
     protected ILaunchConfiguration offerUpgradingLaunchConfig(final ILaunchConfiguration config) throws CoreException {
-        String gdbInitFile = config.getAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_GDB_INIT, "");
+        String gdbInitFile = config.getAttribute(IOmnetppLaunchConstants.ATTR_GDB_INIT, "");
 
         if (gdbInitFile.equals(".gdbinit")) {
             // offer user to replace it with the right setting
@@ -174,7 +174,7 @@ public class SimulationDebugLaunchDelegate extends GdbLaunchDelegate {
 
     protected ILaunchConfigurationWorkingCopy upgradeLaunchConfig(ILaunchConfiguration config) throws CoreException {
         ILaunchConfigurationWorkingCopy workingCopy = config.getWorkingCopy();
-        workingCopy.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_GDB_INIT, IOmnetppLaunchConstants.OPP_GDB_INIT_FILE);
+        workingCopy.setAttribute(IOmnetppLaunchConstants.ATTR_GDB_INIT, IOmnetppLaunchConstants.OPP_GDB_INIT_FILE);
         workingCopy.doSave();
         return workingCopy;
     }
