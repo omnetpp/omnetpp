@@ -18,6 +18,10 @@
 &quot;OMNeT++ IDE&quot;
 --launcher.appendVmargs
       </programArgs>
+      <programArgsMac>
+-vm
+jre/lib/jli/libjli.dylib
+      </programArgsMac>
       <vmArgs>--add-modules=ALL-SYSTEM
       </vmArgs>
    </launcherArgs>

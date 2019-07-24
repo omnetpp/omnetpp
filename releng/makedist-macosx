@@ -57,6 +57,7 @@ mv ide/features ide/Eclipse.app/Contents/Eclipse
 mv ide/plugins ide/Eclipse.app/Contents/Eclipse
 mv ide/Eclipse.app ide/opp_ide.app
 rm -rf ide/win32 ide/win64 ide/linux ide/linux64 ide/macosx
+tar xfz $TOOLS_DIR/$TOOLS_VERSION/macosx/jre-*-macosx.tar.gz --directory=ide/opp_ide.app/Contents/MacOS || { echo --- error extracting JRE directory ---; exit 1;}
 
 # copy the self extracting toolchain file into the distro
 mkdir -p tools

@@ -61,7 +61,7 @@ echo "Preparing to create distribution package: $what, version: $VERSION platfor
 cp -r ide/win64/* ide
 rm -rf ide/win32 ide/win64 ide/linux ide/linux64 ide/macosx
 # extract JRE
-tar xfz $TOOLS_DIR/$TOOLS_VERSION/win64/jre-8u102-private.tar.gz --directory=ide || { echo --- error extracting JRE directory ---; exit 1;}
+tar xfz $TOOLS_DIR/$TOOLS_VERSION/win64/jre-*-win64.tar.gz --directory=ide || { echo --- error extracting JRE directory ---; exit 1;}
 
 # copy the self extracting toolchain file into the distro
 mkdir -p tools
