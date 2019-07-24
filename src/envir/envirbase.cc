@@ -2008,6 +2008,12 @@ void EnvirBase::checkFingerprint()
     if (!getSimulation()->getFingerprintCalculator())
         return;
 
+    auto flags = opp_substringafterlast(fingerprint->str(), "/");
+    if (strchr(flags.c_str(), 'f') || strchr(flags.c_str(), 'y')) {
+        printfmsg("EXPERIMENTAL FINGERPRINT COMPUTATION! Refusing to generate fingerprint with 'f' or 'y' flag until code is finalized.");
+        return;
+    }
+
     if (fingerprint->checkFingerprint())
         printfmsg("Fingerprint successfully verified: %s", fingerprint->str().c_str());
     else

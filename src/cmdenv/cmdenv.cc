@@ -174,6 +174,7 @@ void Cmdenv::readPerRunOptions()
     delete fakeGUI;
     fakeGUI = nullptr;
     if (opt->fakeGUI) {
+        out << "\n*** WARNING: FAKEGUI IS AN EXPERIMENTAL FEATURE -- DO NOT RELY ON FINGERPRINTS GENERATED UNDER FAKEGUI UNTIL CODE IS FINALIZED!\n" << endl;
         fakeGUI = new FakeGUI();
         fakeGUI->readConfigOptions(cfg);
     }
