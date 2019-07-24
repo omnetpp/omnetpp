@@ -57,15 +57,18 @@ cGate *SelectionStrategy::selectableGate(int i)
 
 bool SelectionStrategy::isSelectable(cModule *module)
 {
-    IPassiveQueue *pqueue = dynamic_cast<IPassiveQueue *>(module);
-    if (pqueue != nullptr)
-        return pqueue->length() > 0;
+    if (isInputGate) {
+        IPassiveQueue *pqueue = dynamic_cast<IPassiveQueue *>(module);
+        if (pqueue != nullptr)
+            return pqueue->length() > 0;
+    }
+    else {
+        IServer *server = dynamic_cast<IServer *>(module);
+        if (server != nullptr)
+            return server->isIdle();
+    }
 
-    IServer *server = dynamic_cast<IServer *>(module);
-    if (server != nullptr)
-        return server->isIdle();
-
-    throw cRuntimeError("Only IPassiveQueue and IServer is supported by this Strategy");
+    throw cRuntimeError("Only IPassiveQueue (as input) and IServer (as output) is supported by this Strategy");
 }
 
 // --------------------------------------------------------------------------------------------
