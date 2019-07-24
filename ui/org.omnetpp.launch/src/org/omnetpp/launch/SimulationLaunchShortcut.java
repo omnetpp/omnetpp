@@ -640,8 +640,12 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         wc.setAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, exeFile==null ? "" : exeFile.getFullPath().toString());
         wc.setAttribute(IOmnetppLaunchConstants.OPP_WORKING_DIRECTORY, iniFile.getParent().getFullPath().toString());
         wc.setAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, iniFile.getName());
-        if (!Platform.getOS().equals(Platform.OS_MACOSX))
-            wc.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_GDB_INIT, IOmnetppLaunchConstants.OPP_GDB_INIT_FILE);
+
+        if (Platform.getOS().equals(Platform.OS_MACOSX))  // use the bundled lldb-mi wrapper instead of gdb
+            wc.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUG_NAME, "lldbmi2");
+
+        wc.setAttribute(IOmnetppLaunchConstants.ATTR_GDB_INIT, IOmnetppLaunchConstants.OPP_GDB_INIT_FILE);
+
         if (configName != null)
             wc.setAttribute(IOmnetppLaunchConstants.OPP_CONFIG_NAME, configName);
         if (resourceToAssociateWith != null)

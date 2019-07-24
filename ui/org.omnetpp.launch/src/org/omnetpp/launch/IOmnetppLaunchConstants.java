@@ -56,7 +56,8 @@ public interface IOmnetppLaunchConstants {
     public static final String ATTR_DEBUGGER_ID = CDT_LAUNCH_ID + ".DEBUGGER_ID";
     public static final String ATTR_DEBUGGER_STOP_AT_MAIN = CDT_LAUNCH_ID + ".DEBUGGER_STOP_AT_MAIN";
     public static final String ATTR_DEBUGGER_STOP_AT_MAIN_SYMBOL = CDT_LAUNCH_ID + ".DEBUGGER_STOP_AT_MAIN_SYMBOL";
-    public static final String ATTR_DEBUGGER_GDB_INIT = CDT_DSF_GDB_ID + ".GDB_INIT";
+    public static final String ATTR_DEBUG_NAME = CDT_DSF_GDB_ID + ".DEBUG_NAME";
+    public static final String ATTR_GDB_INIT = CDT_DSF_GDB_ID + ".GDB_INIT";
 
     // ========================================================================================
 
