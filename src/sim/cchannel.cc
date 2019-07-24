@@ -184,10 +184,17 @@ cModule *cChannel::getParentModule() const
     // find which (compound) module contains this connection
     if (!srcGate)
         return nullptr;
+
     cModule *ownerModule = srcGate->getOwnerModule();
     if (!ownerModule)
         return nullptr;
-    return srcGate->getType() == cGate::INPUT ? ownerModule : ownerModule->getParentModule();
+
+    if (srcGate->getType() == cGate::INPUT) // connection goes inside
+        return ownerModule;
+    else { // connection goes outside
+        cModule *parentModule = ownerModule->getParentModule();
+        return  parentModule ? parentModule : ownerModule; // avoid returning nullptr
+    }
 }
 
 cProperties *cChannel::getProperties() const
