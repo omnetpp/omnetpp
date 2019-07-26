@@ -76,18 +76,6 @@ SIM_API extern simsignal_t PRE_MODEL_CHANGE;
  *    - cPostPathCutNotification,
  *    - cPostParameterChangeNotification,
  *    - cPostDisplayStringChangeNotification,
- *    - cPostModuleAddNotification,
- *    - cPostModuleDeleteNotification,
- *    - cPostModuleReparentNotification,
- *    - cPostGateAddNotification,
- *    - cPostGateDeleteNotification,
- *    - cPostGateVectorResizeNotification,
- *    - cPostGateConnectNotification,
- *    - cPostGateDisconnectNotification,
- *    - cPostPathCreateNotification,
- *    - cPostPathCutNotification,
- *    - cPostParameterChangeNotification,
- *    - cPostDisplayStringChangeNotification
  *
  * In the listener, use dynamic_cast<> to figure out what notification arrived.
  *
