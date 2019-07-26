@@ -1387,12 +1387,10 @@ bool cModule::initializeChannels(int stage)
         if ((*it)->initializeChannel(stage))
             moreStages = true;
 
-
     // then recursively initialize channels within our submodules too
     for (SubmoduleIterator it(this); !it.end(); ++it)
         if ((*it)->initializeChannels(stage))
             moreStages = true;
-
 
     return moreStages;
 }
@@ -1432,13 +1430,20 @@ bool cModule::initializeModules(int stage)
         if ((*it)->initializeModules(stage))
             moreStages = true;
 
-    // as a last step, call handleParameterChange() to notify the component about
-    // parameter changes that occured during initialization phase
+    // a few more things to do when initialization is complete
     if (!moreStages) {
-        // a module is initialized when all init stages have been completed
-        // (both its own and on all its submodules)
+        // mark as initialized
         setFlag(FL_INITIALIZED, true);
+
+        // notify the component about parameter changes that occurred during initialization phase
         handleParameterChange(nullptr);
+
+        // notify listeners when this was the last stage
+        if (hasListeners(POST_MODEL_CHANGE)) {
+            cPostComponentInitializeNotification tmp;
+            tmp.component = this;
+            emit(POST_MODEL_CHANGE, &tmp);
+        }
     }
 
     return moreStages;

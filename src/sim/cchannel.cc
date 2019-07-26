@@ -27,6 +27,7 @@
 #include "omnetpp/globals.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/ccontextswitcher.h"
+#include "omnetpp/cmodelchange.h"
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"
@@ -136,12 +137,22 @@ bool cChannel::initializeChannel(int stage)
 
     bool moreStages = stage < numStages - 1;
 
-    // as a last step, call handleParameterChange() to notify the component about
-    // parameter changes that occurred during initialization phase
+    // a few more things to do when initialization is complete
     if (!moreStages) {
+        // mark as initialized
         setFlag(FL_INITIALIZED, true);
+
+        // notify the component about parameter changes that occurred during initialization phase
         handleParameterChange(nullptr);
+
+        // notify listeners when this was the last stage
+        if (hasListeners(POST_MODEL_CHANGE)) {
+            cPostComponentInitializeNotification tmp;
+            tmp.component = this;
+            emit(POST_MODEL_CHANGE, &tmp);
+        }
     }
+
     return moreStages;
 }
 

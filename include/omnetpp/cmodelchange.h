@@ -141,6 +141,23 @@ class SIM_API cPostModuleAddNotification : public cModelChangeNotification
 };
 
 /**
+ * @brief Model change notification fired after a component is initialized.
+ *
+ * This notification is fired when the module or channel has completed the
+ * last stage of initialization. When a compound module is created,
+ * modules will be reported to have been initialized in bottom-up order.
+ *
+ * This object accompanies the POST_MODEL_CHANGE signal.
+ *
+ * @ingroup Signals
+ */
+class SIM_API cPostComponentInitializeNotification : public cModelChangeNotification
+{
+  public:
+    cComponent *component;    ///< The component which was initialized
+};
+
+/**
  * @brief Model change notification fired just before a module is deleted.
  *
  * This notification is fired at the top of cModule::deleteModule(),
