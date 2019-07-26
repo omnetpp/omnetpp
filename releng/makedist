@@ -44,7 +44,7 @@ fi
 
 # set the version number of the tools directory that is used in the Windows/macOS distros
 if test -z "$TOOLS_VERSION"; then
-  export TOOLS_VERSION=190710
+  export TOOLS_VERSION=190729
 fi
 
 # use the default language in perl (supresses a lot of warnings in perl calls)
