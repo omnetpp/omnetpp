@@ -1216,6 +1216,13 @@ void cModule::buildInside()
 
     // configure @statistics here, as they may refer to submodules' signals
     addResultRecorders();
+
+    // notify post-change listeners
+    if (hasListeners(POST_MODEL_CHANGE)) {
+        cPostModuleBuildNotification tmp;
+        tmp.module = this;
+        emit(POST_MODEL_CHANGE, &tmp);
+    }
 }
 
 void cModule::doBuildInside()

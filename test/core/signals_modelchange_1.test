@@ -126,6 +126,9 @@ SIGNAL from channel "Test.twoNodes.node2.g$o[0].channel", signal "PRE_MODEL_CHAN
 SIGNAL from channel "Test.twoNodes.node2.g$o[0].channel", signal "POST_MODEL_CHANGE", class cPostParameterChangeNotification, info:
 SIGNAL from channel "Test.twoNodes.node2.g$o[0].channel", signal "PRE_MODEL_CHANGE", class cPreParameterChangeNotification, info:
 SIGNAL from channel "Test.twoNodes.node2.g$o[0].channel", signal "POST_MODEL_CHANGE", class cPostParameterChangeNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE", class cPostModuleBuildNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE", class cPostModuleBuildNotification, info:
+SIGNAL from module "Test.twoNodes", signal "POST_MODEL_CHANGE", class cPostModuleBuildNotification, info:
 SIGNAL from channel "Test.twoNodes.node1.g$o[0].channel", signal "POST_MODEL_CHANGE", class cPostComponentInitializeNotification, info:
 SIGNAL from channel "Test.twoNodes.node2.g$o[0].channel", signal "POST_MODEL_CHANGE", class cPostComponentInitializeNotification, info:
 SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE", class cPostComponentInitializeNotification, info:

@@ -141,6 +141,24 @@ class SIM_API cPostModuleAddNotification : public cModelChangeNotification
 };
 
 /**
+ * @brief Model change notification fired after a module is built.
+ *
+ * This notification is fired at the end of cModule::buildInside(), when
+ * the module and its submodules have been full created and connected,
+ * but they have not been initialized yet. When a compound module is created,
+ * modules are reported to have been built in bottom-up order.
+ *
+ * This object accompanies the POST_MODEL_CHANGE signal.
+ *
+ * @ingroup Signals
+ */
+class SIM_API cPostModuleBuildNotification : public cModelChangeNotification
+{
+  public:
+    cModule *module;          ///< The module
+};
+
+/**
  * @brief Model change notification fired after a component is initialized.
  *
  * This notification is fired when the module or channel has completed the
