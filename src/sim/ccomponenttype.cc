@@ -339,7 +339,7 @@ cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int 
     if (cCanvas::containsCanvasItems(module->getProperties()))
         module->getCanvas()->addFiguresFrom(module->getProperties());
 
-    // add result recorders, etc
+    // let envir perform additional configuration
     getEnvir()->configure(module);
 
     // notify post-change listeners
@@ -465,6 +465,9 @@ cChannel *cChannelType::create(const char *name)
 
     // add parameters to the new module
     addParametersTo(channel);
+
+    // let envir perform additional configuration
+    getEnvir()->configure(channel);
 
     return channel;
 }
