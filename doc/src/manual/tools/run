@@ -9,3 +9,4 @@ perl processnedfuncs.pl <tmp.txt >nedfuncs.tex
 $OPP_RUN -s -h units | sed 's/e+0/e/; s/e-0/e-/; s/e+/e/' | gawk '/../ { print "  " $1 " & " $2 " & " $3 " \\\\\\hline"; }' | sed 's/&  /\& /' >units.txt
 opp_msgtool -h latexdoc > msgproperties.txt
 rm tmp.txt
+python3 extract_chart_api.py > chartapi.txt
