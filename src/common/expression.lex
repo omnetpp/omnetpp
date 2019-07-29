@@ -73,7 +73,7 @@ using namespace omnetpp::common;
 "inf"                    { countChars(); return INF_; }
 "undefined"              { countChars(); return UNDEFINED_; }
 
-{L}({L}|{D})*            { countChars(); yylval = opp_strdup(yytext); return NAME; }
+{L}({L}|{D})*(:{L}({L}|{D})*)*  { countChars(); yylval = opp_strdup(yytext); return NAME; }
 {D}+                     { countChars(); yylval = opp_strdup(yytext); return INTCONSTANT; }
 0[xX]{X}+                { countChars(); yylval = opp_strdup(yytext); return INTCONSTANT; }
 {D}+{E}                  { countChars(); yylval = opp_strdup(yytext); return REALCONSTANT; }

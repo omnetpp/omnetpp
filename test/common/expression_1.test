@@ -54,6 +54,11 @@ eval("(3+2)*5");
 eval("a1");
 eval("a2");
 eval("a3");
+eval("aaa:bbb");
+eval("a0:b");
+eval("a0:");
+eval("a0: a");
+eval(":a2");
 eval("a1+a2+a3");
 eval("fabs(-3.14)");
 eval("pow(2,8)");
@@ -115,6 +120,11 @@ EV << ".\n";
 a1 -> 1
 a2 -> 2
 a3 -> 3
+aaa:bbb -> 49
+a0:b -> 0
+a0: -> exception: syntax error, unexpected ':', expecting $end
+a0: a -> exception: syntax error, unexpected ':', expecting $end
+:a2 -> exception: syntax error, unexpected ':'
 a1+a2+a3 -> 6
 fabs(-3.14) -> 3.14
 pow(2,8) -> 256
