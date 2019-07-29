@@ -298,13 +298,13 @@ class SIM_API cHistogram : public cAbstractHistogram
      * Returns the bin edges of the histogram. There is always one more edge than bin,
      * except when the histogram has not been set up yet, in which case both are zero.
      */
-    const std::vector<double>& getBinEdges() const {return binEdges;} // one more than values
+    virtual std::vector<double> getBinEdges() const override {return binEdges;}
 
     /**
      * Returns the bin values of the histogram. There is always one less bin than edge,
      * except when the histogram has not been set up yet, in which case both are zero.
      */
-    const std::vector<double>& getBinValues() const {return binValues;}
+    virtual std::vector<double> getBinValues() const override {return binValues;}
 
     /**
      * Returns the number of bins in the histogram.

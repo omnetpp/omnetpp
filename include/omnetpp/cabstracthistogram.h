@@ -94,6 +94,18 @@ class SIM_API cAbstractHistogram : public cStdDev
     virtual void setUpBins() = 0;
 
     /**
+     * Returns the bin edges of the histogram. There is always one more edge than bin,
+     * except when the histogram has not been set up yet, in which case both are zero.
+     */
+    virtual std::vector<double> getBinEdges() const;
+
+    /**
+     * Returns the bin values of the histogram. There is always one less bin than edge,
+     * except when the histogram has not been set up yet, in which case both are zero.
+     */
+    virtual std::vector<double> getBinValues() const;
+
+    /**
      * Returns the number of histogram bins.
      */
     virtual int getNumBins() const = 0;
