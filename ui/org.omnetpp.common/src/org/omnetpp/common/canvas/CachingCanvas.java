@@ -244,6 +244,12 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
                     imageGC.setClipping(rect.x, rect.y, rect.width, rect.height);
 
                     imageGraphics = createGraphics(imageGC);
+
+                    // this should not be necessary, it's a workaround for
+                    // https://bugs.eclipse.org/bugs/show_bug.cgi?id=549626
+                    if (SWT.getPlatform().equals("gtk"))
+                        imageGraphics.setClip(new Rectangle(rect.x, rect.y, rect.width, rect.height));
+
                     paintCachableLayer(imageGraphics);
                 }
                 finally {
