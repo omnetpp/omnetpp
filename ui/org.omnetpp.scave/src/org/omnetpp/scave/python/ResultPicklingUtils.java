@@ -41,8 +41,8 @@ public class ResultPicklingUtils {
         // number of bytes
         long s = l * 8;
 
-        String nameX = "/vectordata-" + shmSerial + "-x";
-        String nameY = "/vectordata-" + shmSerial + "-y";
+        String nameX = "/vectordata-" + System.nanoTime() + "-" + shmSerial + "-x";
+        String nameY = "/vectordata-" + System.nanoTime() + "-" + shmSerial + "-y";
         shmSerial += 1;
 
         // X
