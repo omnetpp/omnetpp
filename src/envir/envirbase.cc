@@ -132,7 +132,7 @@ using std::ostream;
 
 Register_GlobalConfigOptionU(CFGID_TOTAL_STACK, "total-stack", "B", nullptr, "Specifies the maximum memory for `activity()` simple module stacks. You need to increase this value if you get a \"Cannot allocate coroutine stack\" error.");
 Register_GlobalConfigOption(CFGID_PARALLEL_SIMULATION, "parallel-simulation", CFG_BOOL, "false", "Enables parallel distributed simulation.");
-Register_GlobalConfigOption(CFGID_SCHEDULER_CLASS, "scheduler-class", CFG_STRING, "omnetpp::cSequentialScheduler", "Part of the Envir plugin mechanism: selects the scheduler class. This plugin interface allows for implementing real-time, hardware-in-the-loop, distributed and distributed parallel simulation. The class has to implement the `cScheduler` interface.");
+Register_PerRunConfigOption(CFGID_SCHEDULER_CLASS, "scheduler-class", CFG_STRING, "omnetpp::cSequentialScheduler", "Part of the Envir plugin mechanism: selects the scheduler class. This plugin interface allows for implementing real-time, hardware-in-the-loop, distributed and distributed parallel simulation. The class has to implement the `cScheduler` interface.");
 Register_GlobalConfigOption(CFGID_PARSIM_COMMUNICATIONS_CLASS, "parsim-communications-class", CFG_STRING, "omnetpp::cFileCommunications", "If `parallel-simulation=true`, it selects the class that implements communication between partitions. The class must implement the `cParsimCommunications` interface.");
 Register_GlobalConfigOption(CFGID_PARSIM_SYNCHRONIZATION_CLASS, "parsim-synchronization-class", CFG_STRING, "omnetpp::cNullMessageProtocol", "If `parallel-simulation=true`, it selects the parallel simulation algorithm. The class must implement the `cParsimSynchronizer` interface.");
 Register_PerRunConfigOption(CFGID_EVENTLOGMANAGER_CLASS, "eventlogmanager-class", CFG_STRING, "omnetpp::envir::EventlogFileManager", "Part of the Envir plugin mechanism: selects the eventlog manager class to be used to record data. The class has to implement the `cIEventlogManager` interface.");
@@ -537,13 +537,8 @@ bool EnvirBase::setup()
         // install XML document cache
         xmlCache = new XMLDocCache();
 
-        // set up for sequential or distributed execution
-        if (!opt->parsim) {
-            // sequential
-            cScheduler *scheduler = createByClassName<cScheduler>(opt->schedulerClass.c_str(), "event scheduler");
-            getSimulation()->setScheduler(scheduler);
-        }
-        else {
+        // parallel simulation
+        if (opt->parsim) {
 #ifdef WITH_PARSIM
             // parsim: create components
             parsimComm = createByClassName<cParsimCommunications>(opt->parsimcommClass.c_str(), "parallel simulation communications layer");
@@ -1287,10 +1282,7 @@ void EnvirBase::readOptions()
 
     opt->totalStack = (size_t)cfg->getAsDouble(CFGID_TOTAL_STACK, TOTAL_STACK_SIZE);
     opt->parsim = cfg->getAsBool(CFGID_PARALLEL_SIMULATION);
-    if (!opt->parsim) {
-        opt->schedulerClass = cfg->getAsString(CFGID_SCHEDULER_CLASS);
-    }
-    else {
+    if (opt->parsim) {
 #ifdef WITH_PARSIM
         opt->parsimcommClass = cfg->getAsString(CFGID_PARSIM_COMMUNICATIONS_CLASS);
         opt->parsimsynchClass = cfg->getAsString(CFGID_PARSIM_SYNCHRONIZATION_CLASS);
@@ -1367,6 +1359,7 @@ void EnvirBase::readPerRunOptions()
     opt->seedset = cfg->getAsInt(CFGID_SEED_SET);
     opt->debugStatisticsRecording = cfg->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
     opt->checkSignals = cfg->getAsBool(CFGID_CHECK_SIGNALS);
+    opt->schedulerClass = cfg->getAsString(CFGID_SCHEDULER_CLASS);
     opt->futureeventsetClass = cfg->getAsString(CFGID_FUTUREEVENTSET_CLASS);
     opt->eventlogManagerClass = cfg->getAsString(CFGID_EVENTLOGMANAGER_CLASS);
     opt->outputVectorManagerClass = cfg->getAsString(CFGID_OUTPUTVECTORMANAGER_CLASS);
@@ -1402,6 +1395,12 @@ void EnvirBase::readPerRunOptions()
     // install FES
     cFutureEventSet *fes = createByClassName<cFutureEventSet>(opt->futureeventsetClass.c_str(), "FES");
     getSimulation()->setFES(fes);
+
+    // install scheduler
+    if (!opt->parsim) {
+        cScheduler *scheduler = createByClassName<cScheduler>(opt->schedulerClass.c_str(), "event scheduler");
+        getSimulation()->setScheduler(scheduler);
+    }
 
     // install fingerprint calculator object
     cFingerprintCalculator *fingerprint = nullptr;
