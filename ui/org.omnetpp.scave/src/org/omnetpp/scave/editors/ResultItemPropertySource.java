@@ -120,11 +120,12 @@ public class ResultItemPropertySource implements IPropertySource {
                 IPropertyDescriptor[] bins = null;
                 if (item instanceof HistogramResult) {
                     HistogramResult histogram = (HistogramResult)item;
-                    DoubleVector binBounds = histogram.getHistogram().getBinLowerBounds();
-                    bins = new IPropertyDescriptor[(int)binBounds.size()];
-                    for (int i = 0; i < binBounds.size(); i++) {
-                        double bin1 = binBounds.get(i);
-                        double bin2 = i < binBounds.size()-1 ? binBounds.get(i+1) : Double.POSITIVE_INFINITY;
+                    DoubleVector binEdges = histogram.getHistogram().getBinEdges();
+                    int numBins = histogram.getHistogram().getNumBins();
+                    bins = new IPropertyDescriptor[numBins];
+                    for (int i = 0; i < numBins; i++) {
+                        double bin1 = binEdges.get(i);
+                        double bin2 = binEdges.get(i+1);
                         bins[i] = new ReadonlyPropertyDescriptor("%"+i, "[" + String.valueOf(bin1) + ", " + String.valueOf(bin2) + ")", "Bins");
                     }
                 }

@@ -229,14 +229,19 @@ public class DataTreeContentProvider {
                                     if (resultItem instanceof HistogramResult) {
                                         HistogramResult histogram = (HistogramResult)resultItem;
                                         Histogram hist = histogram.getHistogram();
-                                        DoubleVector binEdges = hist.getBinLowerBounds();
+
+                                        nodeIdsMap.put(new ResultItemAttributeNode("Underflows", toIntegerAwareString(hist.getUnderflows(), isIntegerType)), id);
+                                        nodeIdsMap.put(new ResultItemAttributeNode("Overflows", toIntegerAwareString(hist.getOverflows(), isIntegerType)), id);
+
+                                        DoubleVector binEdges = hist.getBinEdges();
                                         DoubleVector binValues = hist.getBinValues();
                                         if (binEdges.size() > 0 && binValues.size() > 0) {
-                                            ResultItemAttributeNode binsNode = new ResultItemAttributeNode("Bins", String.valueOf(hist.getNumBins()-2)); //TODO "-2"
+                                            int numBins = hist.getNumBins();
+                                            ResultItemAttributeNode binsNode = new ResultItemAttributeNode("Bins", String.valueOf(numBins));
                                             List<Node> list = new ArrayList<Node>();
-                                            for (int j = 0; j < binEdges.size(); j++) {
+                                            for (int j = 0; j < numBins; j++) {
                                                 double lowerBound = binEdges.get(j);
-                                                double upperBound = j < binEdges.size()-1 ? binEdges.get(j+1) : Double.POSITIVE_INFINITY;
+                                                double upperBound = binEdges.get(j+1);
                                                 double value = binValues.get(j);
                                                 String name = "[" + toIntegerAwareString(lowerBound, isIntegerType) + ", ";
                                                 if (isIntegerType)

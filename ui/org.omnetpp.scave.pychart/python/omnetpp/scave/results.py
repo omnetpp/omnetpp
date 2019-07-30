@@ -24,7 +24,7 @@ def get_results(filter_expression="", row_types=['runattr', 'itervar', 'param', 
     df = pd.DataFrame(pickle.loads(pk), columns=[
         "runID", "type", "module", "name", "attrname", "attrvalue",
         "value", "count", "sumweights", "mean", "stddev", "min", "max",
-        "binedges", "binvalues", "vectime", "vecvalue"])
+        "underflows", "overflows", "binedges", "binvalues", "vectime", "vecvalue"])
 
     df["binedges"] = df["binedges"].map(lambda v: np.frombuffer(v, dtype=np.dtype('>f8')), na_action='ignore')
     df["binvalues"] = df["binvalues"].map(lambda v: np.frombuffer(v, dtype=np.dtype('>f8')), na_action='ignore')
@@ -155,7 +155,7 @@ def get_histograms(filter_expression="", include_attrs=False, include_runattrs=F
     pk = Gateway.results_provider.getHistogramsPickle(filter_expression, include_attrs, include_runattrs, include_itervars, merge_module_and_name)
 
     scalars, attrs, runattrs, itervars = pickle.loads(pk)
-    df = pd.DataFrame(scalars, columns=["runID", "module", "name", "count", "sumweights", "mean", "stddev", "min", "max", "binedges", "binvalues"])
+    df = pd.DataFrame(scalars, columns=["runID", "module", "name", "count", "sumweights", "mean", "stddev", "min", "max", "underflows", "overflows", "binedges", "binvalues"])
 
     df["binedges"] = df["binedges"].map(lambda v: np.frombuffer(v, dtype=np.dtype('>f8')), na_action='ignore')
     df["binvalues"] = df["binvalues"].map(lambda v: np.frombuffer(v, dtype=np.dtype('>f8')), na_action='ignore')

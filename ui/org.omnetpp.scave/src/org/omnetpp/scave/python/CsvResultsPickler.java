@@ -70,7 +70,7 @@ public class CsvResultsPickler implements IObjectPickler {
             OutputStream out) throws IOException {
         RunList runs = resultManager.getUniqueRuns(results);
 
-        // runID, type, module, name, attrname, attrvalue, value, count, sumweights, mean, stddev, min, max, binedges, binvalues, vectime, vecvalue
+        // runID, type, module, name, attrname, attrvalue, value, count, sumweights, mean, stddev, min, max, underflows, overflows, binedges, binvalues, vectime, vecvalue
 
         for (Run r : runs.toArray()) {
 
@@ -89,7 +89,7 @@ public class CsvResultsPickler implements IObjectPickler {
                     pickler.save(key);
                     pickler.save(attrs.get(key));
 
-                    for (int j = 0; j < 11; ++j)
+                    for (int j = 0; j < 13; ++j)
                         pickler.save(null);
                 }
                 out.write(Opcodes.TUPLE);
@@ -110,7 +110,7 @@ public class CsvResultsPickler implements IObjectPickler {
                     pickler.save(key);
                     pickler.save(itervars.get(key));
 
-                    for (int j = 0; j < 11; ++j)
+                    for (int j = 0; j < 13; ++j)
                         pickler.save(null);
                 }
                 out.write(Opcodes.TUPLE);
@@ -129,7 +129,7 @@ public class CsvResultsPickler implements IObjectPickler {
                     pickler.save(pair.getFirst());
                     pickler.save(pair.getSecond());
 
-                    for (int j = 0; j < 11; ++j)
+                    for (int j = 0; j < 13; ++j)
                         pickler.save(null);
                 }
                 out.write(Opcodes.TUPLE);
@@ -154,7 +154,7 @@ public class CsvResultsPickler implements IObjectPickler {
             pickler.save(null); // attrvalue
             pickler.save(result.getValue());
 
-            for (int j = 0; j < 10; ++j)
+            for (int j = 0; j < 12; ++j)
                 pickler.save(null);
         }
         out.write(Opcodes.TUPLE);
@@ -178,7 +178,7 @@ public class CsvResultsPickler implements IObjectPickler {
             pickler.save(result.getModuleName());
             pickler.save(result.getName());
 
-            for (int j = 0; j < 11; ++j)
+            for (int j = 0; j < 13; ++j)
                 pickler.save(null);
 
             ResultPicklingUtils.pickleXYArray(data, out);
@@ -195,7 +195,7 @@ public class CsvResultsPickler implements IObjectPickler {
             throws PickleException, IOException {
         StatisticsResult result = resultManager.getStatistics(ID);
         Statistics stats = result.getStatistics();
-        // runID, type, module, name, attrname, attrvalue, value, count, sumweights, mean, stddev, min, max, binedges, binvalues, vectime, vecvalue
+        // runID, type, module, name, attrname, attrvalue, value, count, sumweights, mean, stddev, min, max, underflows, overflows, binedges, binvalues, vectime, vecvalue
         out.write(Opcodes.MARK);
         {
             pickler.save(result.getRun().getRunName());
@@ -213,7 +213,7 @@ public class CsvResultsPickler implements IObjectPickler {
             pickler.save(stats.getMin());
             pickler.save(stats.getMax());
 
-            for (int j = 0; j < 4; ++j)
+            for (int j = 0; j < 6; ++j)
                 pickler.save(null);
 
         }
@@ -244,7 +244,10 @@ public class CsvResultsPickler implements IObjectPickler {
             pickler.save(stats.getMin());
             pickler.save(stats.getMax());
 
-            ResultPicklingUtils.pickleDoubleArray(hist.getBinLowerBounds().toArray(), out);
+            pickler.save(hist.getUnderflows());
+            pickler.save(hist.getOverflows());
+
+            ResultPicklingUtils.pickleDoubleArray(hist.getBinEdges().toArray(), out);
             ResultPicklingUtils.pickleDoubleArray(hist.getBinValues().toArray(), out);
 
             pickler.save(null); // vectime

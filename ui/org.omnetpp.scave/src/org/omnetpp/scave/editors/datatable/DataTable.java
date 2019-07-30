@@ -663,10 +663,10 @@ public class DataTable extends Table implements IDataControl {
                 else if (COL_HISTOGRAMRANGE.equals(column)) {
                     if (result instanceof HistogramResult) {
                         Histogram bins = ((HistogramResult)result).getHistogram();
-                        if (bins.getNumBins() <= 2) //TODO fix this brain damage of underflow and overflow "cells" !!!
+                        if (bins.getNumBins() == 0)
                             return NA;
-                        double lo = bins.getBinLowerBound(1); //TODO (0)!
-                        double up = bins.getBinUpperBound(bins.getNumBins()-2); //TODO ()-1!
+                        double lo = bins.getBinEdge(0);
+                        double up = bins.getBinEdge(bins.getNumBins());
                         return formatNumber(lo) + ".." + formatNumber(up);
                     }
                     else

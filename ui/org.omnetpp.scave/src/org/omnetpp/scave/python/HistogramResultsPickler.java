@@ -40,7 +40,10 @@ public class HistogramResultsPickler implements IObjectPickler {
             pickler.save(stats.getMin());
             pickler.save(stats.getMax());
 
-            ResultPicklingUtils.pickleDoubleArray(hist.getBinLowerBounds().toArray(), out);
+            pickler.save(hist.getUnderflows());
+            pickler.save(hist.getOverflows());
+
+            ResultPicklingUtils.pickleDoubleArray(hist.getBinEdges().toArray(), out);
             ResultPicklingUtils.pickleDoubleArray(hist.getBinValues().toArray(), out);
         }
         out.write(Opcodes.TUPLE);
