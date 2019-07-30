@@ -14,10 +14,12 @@
 using namespace omnetpp;
 
 /**
- * In this class we add some debug messages to Txc1. When you run the
- * simulation in the OMNeT++ GUI Tkenv, the output will appear in
- * the main text window, and you can also open separate output windows
- * for `tic' and `toc'.
+ * In this step we add some debug messages to Txc1. When you run the
+ * simulation in the OMNeT++ Qtenv GUI, the log will appear in the bottom
+ * panel of the Qtenv window. To see only the log from `tic' or `toc' alone,
+ * go into them by double-clicking their icons, and the bottom panel will
+ * be filtered accordingly. (You can go back with the up arrow button on
+ * the toolbar.)
  */
 class Txc2 : public cSimpleModule
 {

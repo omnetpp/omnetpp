@@ -35,9 +35,9 @@ void Txc3::initialize()
     counter = 10;
 
     // The WATCH() statement below will let you examine the variable under
-    // Tkenv. After doing a few steps in the simulation, double-click either
-    // `tic' or `toc', select the Contents tab in the dialog that pops up,
-    // and you'll find "counter" in the list.
+    // Qtenv. After doing a few steps in the simulation, click either
+    // `tic' or `toc', and you'll find its `counter' variable and its
+    // current value displayed in the inspector panel (bottom left).
     WATCH(counter);
 
     if (strcmp("tic", getName()) == 0) {
