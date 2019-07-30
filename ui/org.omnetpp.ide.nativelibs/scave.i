@@ -19,7 +19,6 @@
 #include "scave/exportutils.h"
 #include "scave/vectorutils.h"
 #include "scave/memoryutils.h"
-#include "scave/datasorter.h"
 #include "scave/vectorfileindex.h"
 #include "scave/indexfileutils.h"
 #include "scave/indexedvectorfilereader.h"
@@ -172,7 +171,6 @@ namespace std {
    %template(ResultFileList) vector<omnetpp::scave::ResultFile*>;
    %template(FileRunList) vector<omnetpp::scave::FileRun*>;
    %template(DoubleVector) vector<double>;
-   %template(XYDatasetVector) vector<omnetpp::scave::XYDataset>;
    %template(StringPair) pair<string,string>;
    %template(OrderedKeyValueList) vector< pair<string,string> >;
 };
@@ -474,9 +472,6 @@ CHECK_RESULTFILE_FORMAT_EXCEPTION(ResultFileManager::loadFile)
 
 %include "scave/resultfilemanager.h"
 
-/* ------------- datasorter.h  ----------------- */
-%include "scave/datasorter.h"
-
 /* ------------- indexfileutils.h  ----------------- */
 %include "scave/indexfileutils.h"
 
@@ -572,10 +567,6 @@ namespace omnetpp { namespace scave {
 } } // namespaces
 
 %include "scave/fields.h"
-
-/* ------------------ datasorter.h --------------------- */
-%include "scave/datasorter.h"
-
 
 /* ------------------ exporter.h ----------------------- */
 namespace omnetpp { namespace scave {
