@@ -198,6 +198,13 @@ void IDList::checkIntegrityAllScalars(ResultFileManager *mgr) const
         throw opp_runtime_error("These items are not all scalars");
 }
 
+void IDList::checkIntegrityAllParameters(ResultFileManager *mgr) const
+{
+    checkIntegrity(mgr);
+    if (!areAllParameters())
+        throw opp_runtime_error("These items are not all parameters");
+}
+
 void IDList::checkIntegrityAllVectors(ResultFileManager *mgr) const
 {
     checkIntegrity(mgr);
@@ -219,6 +226,7 @@ class CmpBase : public std::binary_function<ID, ID, bool> {
           {return strdictcmp(a.c_str(), b.c_str()) < 0;}
        const ResultItem& uncheckedGetItem(ID id) const { return mgr->uncheckedGetItem(id); }
        const ScalarResult& uncheckedGetScalar(ID id) const { return mgr->uncheckedGetScalar(id); }
+       const ParameterResult& uncheckedGetParameter(ID id) const { return mgr->uncheckedGetParameter(id); }
        const VectorResult& uncheckedGetVector(ID id) const { return mgr->uncheckedGetVector(id); }
        const StatisticsResult& uncheckedGetStatistics(ID id) const { return mgr->uncheckedGetStatistics(id); }
        const HistogramResult& uncheckedGetHistogram(ID id) const { return mgr->uncheckedGetHistogram(id); }
@@ -281,6 +289,7 @@ CMP(RunLess, less(uncheckedGetItem(a).getRun()->getRunName(), uncheckedGetItem(b
 CMP(ModuleLess, less(uncheckedGetItem(a).getModuleName(), uncheckedGetItem(b).getModuleName()))
 CMP(NameLess, less(uncheckedGetItem(a).getName(), uncheckedGetItem(b).getName()))
 CMP(ScalarValueLess, uncheckedGetScalar(a).getValue() < uncheckedGetScalar(b).getValue())
+CMP(ParameterValueLess, less(uncheckedGetParameter(a).getValue(), uncheckedGetParameter(b).getValue()))
 
 CMP(VectorIdLess, uncheckedGetVector(a).getVectorId() < uncheckedGetVector(b).getVectorId())
 CMP(VectorCountLess, uncheckedGetVector(a).getStatistics().getCount() < uncheckedGetVector(b).getStatistics().getCount())
@@ -325,6 +334,20 @@ void IDList::sortScalarsBy(ResultFileManager *mgr, bool ascending, T& comparator
 {
     READER_MUTEX
         checkIntegrityAllScalars(mgr);
+    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
+    if (v->size() >= 2 && comparator(v->at(0), v->at(v->size()-1)) != ascending)
+        reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), comparator);
+    else
+        std::sort(v->begin(), v->end(), flipArgs(comparator));
+}
+
+template<class T>
+void IDList::sortParametersBy(ResultFileManager *mgr, bool ascending, T& comparator)
+{
+    READER_MUTEX
+        checkIntegrityAllParameters(mgr);
     // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
     if (v->size() >= 2 && comparator(v->at(0), v->at(v->size()-1)) != ascending)
         reverse();
@@ -408,6 +431,12 @@ void IDList::sortScalarsByValue(ResultFileManager *mgr, bool ascending)
 {
     ScalarValueLess compare(mgr);
     sortScalarsBy(mgr, ascending, compare);
+}
+
+void IDList::sortParametersByValue(ResultFileManager *mgr, bool ascending)
+{
+    ParameterValueLess compare(mgr);
+    sortParametersBy(mgr, ascending, compare);
 }
 
 void IDList::sortVectorsByVectorId(ResultFileManager *mgr, bool ascending)
@@ -525,6 +554,12 @@ bool IDList::areAllScalars() const
 {
     int types = getItemTypes();
     return !types || types == ResultFileManager::SCALAR;
+}
+
+bool IDList::areAllParameters() const
+{
+    int types = getItemTypes();
+    return !types || types == ResultFileManager::PARAMETER;
 }
 
 bool IDList::areAllVectors() const

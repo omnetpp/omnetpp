@@ -87,6 +87,10 @@ public class BrowseDataPage extends FormEditorPage {
         return tabFolder.getScalarsPanel();
     }
 
+    public FilteredDataPanel getParametersPanel() {
+        return tabFolder.getParametersPanel();
+    }
+
     public FilteredDataPanel getVectorsPanel() {
         return tabFolder.getVectorsPanel();
     }
@@ -119,9 +123,11 @@ public class BrowseDataPage extends FormEditorPage {
         configureFilteredDataPanel(tabFolder.getAllPanel());
         configureFilteredDataPanel(tabFolder.getVectorsPanel());
         configureFilteredDataPanel(tabFolder.getScalarsPanel());
+        configureFilteredDataPanel(tabFolder.getParametersPanel());
         configureFilteredDataPanel(tabFolder.getHistogramsPanel());
         configureContextMenu(tabFolder.getAllPanel());
         configureContextMenu(tabFolder.getScalarsPanel());
+        configureContextMenu(tabFolder.getParametersPanel());
         configureContextMenu(tabFolder.getVectorsPanel());
         configureContextMenu(tabFolder.getHistogramsPanel());
 
@@ -290,6 +296,7 @@ public class BrowseDataPage extends FormEditorPage {
         tabFolder.getAllPanel().getDataControl().addSelectionListener(selectionChangeListener);
         tabFolder.getVectorsPanel().getDataControl().addSelectionListener(selectionChangeListener);
         tabFolder.getScalarsPanel().getDataControl().addSelectionListener(selectionChangeListener);
+        tabFolder.getParametersPanel().getDataControl().addSelectionListener(selectionChangeListener);
         tabFolder.getHistogramsPanel().getDataControl().addSelectionListener(selectionChangeListener);
         tabFolder.addSelectionListener(selectionChangeListener);
     }
@@ -312,11 +319,13 @@ public class BrowseDataPage extends FormEditorPage {
         IDList items = manager.getAllItems(false, true); // exclude computed and fields
         IDList vectors = manager.getAllVectors();
         IDList scalars = manager.getAllScalars(showFields, true);
+        IDList parameters = manager.getAllParameters();
         IDList histograms = manager.getAllStatistics();
         histograms.merge(manager.getAllHistograms());
 
         tabFolder.getAllPanel().setIDList(items);
         tabFolder.getScalarsPanel().setIDList(scalars);
+        tabFolder.getParametersPanel().setIDList(parameters);
         tabFolder.getVectorsPanel().setIDList(vectors);
         tabFolder.getHistogramsPanel().setIDList(histograms);
         tabFolder.refreshPanelTitles();
@@ -343,6 +352,7 @@ public class BrowseDataPage extends FormEditorPage {
         this.numericPrecision = prec;
         getAllPanel().getDataControl().setNumericPrecision(prec);
         getScalarsPanel().getDataControl().setNumericPrecision(prec);
+        getParametersPanel().getDataControl().setNumericPrecision(prec);
         getVectorsPanel().getDataControl().setNumericPrecision(prec);
         getHistogramsPanel().getDataControl().setNumericPrecision(prec);
     }

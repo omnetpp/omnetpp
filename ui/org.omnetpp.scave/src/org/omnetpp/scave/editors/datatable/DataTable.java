@@ -53,6 +53,7 @@ import org.omnetpp.scave.editors.ui.ScaveUtil;
 import org.omnetpp.scave.engine.Histogram;
 import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.ParameterResult;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ScalarResult;
@@ -63,9 +64,9 @@ import org.omnetpp.scave.model.ResultType;
 
 /**
  * This is a preconfigured VIRTUAL table, which displays a list of
- * output vectors, output scalars or histograms, given an IDList and
- * the corresponding ResultFileManager as input. It is optimized
- * for very large amounts of data. (Display time is constant,
+ * output vectors, output scalars, parameters, or histograms, given
+ * an IDList and the corresponding ResultFileManager as input. It is
+ * optimized for very large amounts of data. (Display time is constant,
  * so it can be used with even millions of table lines without
  * performance degradation).
  *
@@ -151,6 +152,13 @@ public class DataTable extends Table implements IDataControl {
         COL_VALUE
     };
 
+    private static final Column[] allParameterColumns = new Column[] {
+            COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID,
+            COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
+            COL_MODULE, COL_NAME,
+            COL_VALUE
+        };
+
     private static final Column[] allVectorColumns = new Column[] {
         COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID,
         COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
@@ -186,7 +194,7 @@ public class DataTable extends Table implements IDataControl {
 
     public DataTable(Composite parent, int style, ResultType type) {
         super(parent, style | SWT.VIRTUAL | SWT.FULL_SELECTION);
-        Assert.isTrue(type==ResultType.SCALAR || type==ResultType.VECTOR || type==ResultType.HISTOGRAM);
+        Assert.isTrue(type==ResultType.SCALAR || type==ResultType.PARAMETER || type==ResultType.VECTOR || type==ResultType.HISTOGRAM);
         this.type = type;
         setHeaderVisible(true);
         setLinesVisible(true);
@@ -272,6 +280,7 @@ public class DataTable extends Table implements IDataControl {
     protected Column[] getAllColumns() {
         switch (type) {
         case SCALAR:     return allScalarColumns;
+        case PARAMETER:  return allParameterColumns;
         case VECTOR:     return allVectorColumns;
         case HISTOGRAM:  return allHistogramColumns;
         default: return null;
@@ -447,8 +456,12 @@ public class DataTable extends Table implements IDataControl {
             idList.sortByModule(manager, ascending);
         else if (COL_NAME.equals(column))
             idList.sortByName(manager, ascending);
-        else if (COL_VALUE.equals(column))
-            idList.sortScalarsByValue(manager, ascending);
+        else if (COL_VALUE.equals(column)) {
+            if (idList.areAllScalars())
+                idList.sortScalarsByValue(manager, ascending);
+            else if (idList.areAllParameters())
+                idList.sortParametersByValue(manager, ascending);
+        }
         else if (COL_VECTOR_ID.equals(column))
             idList.sortVectorsByVectorId(manager, ascending);
         else if (COL_KIND.equals(column))
@@ -578,6 +591,11 @@ public class DataTable extends Table implements IDataControl {
                 ScalarResult scalar = (ScalarResult)result;
                 if (COL_VALUE.equals(column))
                     return formatNumber(scalar.getValue());
+            }
+            else if (type == ResultType.PARAMETER) {
+                ParameterResult parameter = (ParameterResult)result;
+                if (COL_VALUE.equals(column))
+                    return parameter.getValue();
             }
             else if (type == ResultType.VECTOR) {
                 VectorResult vector = (VectorResult)result;

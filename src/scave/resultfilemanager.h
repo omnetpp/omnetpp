@@ -416,6 +416,7 @@ class SCAVE_API ResultFileManager
     // unchecked getters are only for internal use by CmpBase in idlist.cc
     const ResultItem& uncheckedGetItem(ID id) const;
     const ScalarResult& uncheckedGetScalar(ID id) const;
+    const ParameterResult& uncheckedGetParameter(ID id) const;
     const VectorResult& uncheckedGetVector(ID id) const;
     const StatisticsResult& uncheckedGetStatistics(ID id) const;
     const HistogramResult& uncheckedGetHistogram(ID id) const;
@@ -569,6 +570,7 @@ inline const ResultItem& ResultFileManager::uncheckedGetItem(ID id) const
     switch (_type(id))
     {
         case SCALAR: return fileList[_fileid(id)]->scalarResults[_pos(id)];
+        case PARAMETER: return fileList[_fileid(id)]->parameterResults[_pos(id)];
         case VECTOR: return fileList[_fileid(id)]->vectorResults[_pos(id)];
         case STATISTICS: return fileList[_fileid(id)]->statisticsResults[_pos(id)];
         case HISTOGRAM: return fileList[_fileid(id)]->histogramResults[_pos(id)];
@@ -579,6 +581,11 @@ inline const ResultItem& ResultFileManager::uncheckedGetItem(ID id) const
 inline const ScalarResult& ResultFileManager::uncheckedGetScalar(ID id) const
 {
     return fileList[_fileid(id)]->scalarResults[_pos(id)];
+}
+
+inline const ParameterResult& ResultFileManager::uncheckedGetParameter(ID id) const
+{
+    return fileList[_fileid(id)]->parameterResults[_pos(id)];
 }
 
 inline const VectorResult& ResultFileManager::uncheckedGetVector(ID id) const

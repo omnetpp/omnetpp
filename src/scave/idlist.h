@@ -52,11 +52,13 @@ class SCAVE_API IDList
         void discardDuplicates();
         void checkIntegrity(ResultFileManager *mgr) const;
         void checkIntegrityAllScalars(ResultFileManager *mgr) const;
+        void checkIntegrityAllParameters(ResultFileManager *mgr) const;
         void checkIntegrityAllVectors(ResultFileManager *mgr) const;
         void checkIntegrityAllHistograms(ResultFileManager *mgr) const;
 
         template <class T> void sortBy(ResultFileManager *mgr, bool ascending, T& comparator);
         template <class T> void sortScalarsBy(ResultFileManager *mgr, bool ascending, T& comparator);
+        template <class T> void sortParametersBy(ResultFileManager *mgr, bool ascending, T& comparator);
         template <class T> void sortVectorsBy(ResultFileManager *mgr, bool ascending, T& comparator);
         template <class T> void sortHistogramsBy(ResultFileManager *mgr, bool ascending, T& comparator);
 
@@ -85,6 +87,7 @@ class SCAVE_API IDList
         IDList dup() const;
         int getItemTypes() const;  // SCALAR, VECTOR or their binary OR
         bool areAllScalars() const;
+        bool areAllParameters() const;
         bool areAllVectors() const;
         bool areAllStatistics() const;
         bool areAllHistograms() const;
@@ -107,6 +110,7 @@ class SCAVE_API IDList
         void sortByModule(ResultFileManager *mgr, bool ascending);
         void sortByName(ResultFileManager *mgr, bool ascending);
         void sortScalarsByValue(ResultFileManager *mgr, bool ascending);
+        void sortParametersByValue(ResultFileManager *mgr, bool ascending);
         void sortVectorsByVectorId(ResultFileManager *mgr, bool ascending);
         void sortVectorsByLength(ResultFileManager *mgr, bool ascending);
         void sortVectorsByMean(ResultFileManager *mgr, bool ascending);

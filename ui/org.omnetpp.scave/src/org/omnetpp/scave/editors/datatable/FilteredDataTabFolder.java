@@ -22,11 +22,13 @@ public class FilteredDataTabFolder extends TabFolder {
     protected TabItem allTab;
     protected TabItem vectorsTab;
     protected TabItem scalarsTab;
+    protected TabItem parametersTab;
     protected TabItem histogramsTab;
 
     protected FilteredDataPanel allPanel;
     protected FilteredDataPanel vectorsPanel;
     protected FilteredDataPanel scalarsPanel;
+    protected FilteredDataPanel parametersPanel;
     protected FilteredDataPanel histogramsPanel;
 
     public FilteredDataTabFolder(Composite parent, int style) {
@@ -49,12 +51,14 @@ public class FilteredDataTabFolder extends TabFolder {
         allPanel = new FilteredDataPanel(this, SWT.NONE, null);
         vectorsPanel = new FilteredDataPanel(this, SWT.NONE, ResultType.VECTOR);
         scalarsPanel = new FilteredDataPanel(this, SWT.NONE, ResultType.SCALAR);
+        parametersPanel = new FilteredDataPanel(this, SWT.NONE, ResultType.PARAMETER);
         histogramsPanel = new FilteredDataPanel(this, SWT.NONE, ResultType.HISTOGRAM);
 
         // create tabs (note: tab labels will be refreshed from initialize())
         allTab = addItem(allPanel);
         vectorsTab = addItem(vectorsPanel);
         scalarsTab = addItem(scalarsPanel);
+        parametersTab = addItem(parametersPanel);
         histogramsTab = addItem(histogramsPanel);
         refreshPanelTitles();
         setActivePanel(allPanel);
@@ -82,6 +86,10 @@ public class FilteredDataTabFolder extends TabFolder {
         return scalarsTab;
     }
 
+    public TabItem getParametersTab() {
+        return parametersTab;
+    }
+
     public TabItem getVectorsTab() {
         return vectorsTab;
     }
@@ -98,6 +106,10 @@ public class FilteredDataTabFolder extends TabFolder {
         return scalarsPanel;
     }
 
+    public FilteredDataPanel getParametersPanel() {
+        return parametersPanel;
+    }
+
     public FilteredDataPanel getVectorsPanel() {
         return vectorsPanel;
     }
@@ -111,6 +123,8 @@ public class FilteredDataTabFolder extends TabFolder {
 
         if (type == ResultFileManager.SCALAR)
             return scalarsPanel;
+        if (type == ResultFileManager.PARAMETER)
+            return parametersPanel;
         else if (type == ResultFileManager.VECTOR)
             return vectorsPanel;
         else if (type == ResultFileManager.HISTOGRAM)
@@ -148,6 +162,8 @@ public class FilteredDataTabFolder extends TabFolder {
             setActivePanel(vectorsPanel);
         else if (type == ResultType.SCALAR)
             setActivePanel(scalarsPanel);
+        else if (type == ResultType.PARAMETER)
+            setActivePanel(parametersPanel);
         else if (type == ResultType.HISTOGRAM)
             setActivePanel(histogramsPanel);
         else
@@ -163,6 +179,8 @@ public class FilteredDataTabFolder extends TabFolder {
             return ResultType.VECTOR;
         else if (activePanel == scalarsPanel)
             return ResultType.SCALAR;
+        else if (activePanel == parametersPanel)
+            return ResultType.PARAMETER;
         else if (activePanel == histogramsPanel)
             return ResultType.HISTOGRAM;
         else
@@ -175,6 +193,8 @@ public class FilteredDataTabFolder extends TabFolder {
         if (panel == null || panel.getIDList().isEmpty()) {
             if (!scalarsPanel.getIDList().isEmpty())
                 setActivePanel(scalarsPanel);
+            if (!parametersPanel.getIDList().isEmpty())
+                setActivePanel(parametersPanel);
             else if (!vectorsPanel.getIDList().isEmpty())
                 setActivePanel(vectorsPanel);
             else if (!histogramsPanel.getIDList().isEmpty())
@@ -187,6 +207,7 @@ public class FilteredDataTabFolder extends TabFolder {
     public void setResultFileManager(ResultFileManagerEx manager) {
         allPanel.setResultFileManager(manager);
         scalarsPanel.setResultFileManager(manager);
+        parametersPanel.setResultFileManager(manager);
         vectorsPanel.setResultFileManager(manager);
         histogramsPanel.setResultFileManager(manager);
     }
@@ -195,6 +216,7 @@ public class FilteredDataTabFolder extends TabFolder {
         setPanelTitle(allTab, "&All");
         setPanelTitle(vectorsTab, "&Vectors");
         setPanelTitle(scalarsTab, "&Scalars");
+        setPanelTitle(parametersTab, "&Parameters");
         setPanelTitle(histogramsTab, "&Histograms");
     }
 
