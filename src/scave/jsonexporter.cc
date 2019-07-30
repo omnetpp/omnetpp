@@ -164,8 +164,6 @@ void JsonExporter::writeStatisticsFields(const Statistics& stat)
         writer.writeDouble("sqrSumWeights", stat.getSumSquaredWeights());
         writer.writeDouble("weightedSqrSum", stat.getSumWeightedSquaredValues());
     }
-
-    //TODO weighted?
 }
 
 void JsonExporter::writeVector(const std::vector<double>& v)
@@ -365,6 +363,8 @@ void JsonExporter::saveResults(const std::string& fileName, ResultFileManager *m
                 writeStatisticsFields(histogram.getStatistics());
 
                 const Histogram& bins = histogram.getHistogram();
+                writer.writeDouble("underflows", bins.getUnderflows());
+                writer.writeDouble("overflows", bins.getOverflows());
                 writer.startRawValue("binedges"); writeVector(bins.getBinEdges());
                 writer.startRawValue("binvalues"); writeVector(bins.getBinValues());
                 writer.closeObject();

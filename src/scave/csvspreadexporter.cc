@@ -444,12 +444,14 @@ void CsvForSpreadsheetExporter::saveHistograms(ResultFileManager *manager, const
             csv.writeString("min");
             csv.writeString("max");
         }
+        csv.writeString("underflows");
+        csv.writeString("overflows");
         csv.writeString("rowtype");
         csv.writeString("data...");
         csv.writeNewLine();
     }
 
-    // write histograms, two lines each ("bins" and "counters" lines)
+    // write histograms, two lines each ("binedges" and "binvalues" lines)
     for (int i = 0; i < (int)idlist.size(); ++i) {
         const HistogramResult& histogram = manager->getHistogram(idlist.get(i));
         writeRunColumns(histogram.getRun());
@@ -467,8 +469,11 @@ void CsvForSpreadsheetExporter::saveHistograms(ResultFileManager *manager, const
             csv.writeDouble(stat.getMin());
             csv.writeDouble(stat.getMax());
         }
-        csv.writeString("bins");
-        for (double d : histogram.getHistogram().getBinEdges())
+        const Histogram& bins = histogram.getHistogram();
+        csv.writeDouble(bins.getUnderflows());
+        csv.writeDouble(bins.getOverflows());
+        csv.writeString("binedges");
+        for (double d : bins.getBinEdges())
             csv.writeDouble(d);
         csv.writeNewLine();
 
@@ -476,10 +481,10 @@ void CsvForSpreadsheetExporter::saveHistograms(ResultFileManager *manager, const
         csv.writeString(histogram.getModuleName());
         csv.writeString(histogram.getName());
         if (includeHistogramStatistics)
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < 8; i++)
                 csv.writeBlank();
-        csv.writeString("counters");
-        for (double d : histogram.getHistogram().getBinValues())
+        csv.writeString("binvalues");
+        for (double d : bins.getBinValues())
             csv.writeDouble(d);
         csv.writeNewLine();
     }

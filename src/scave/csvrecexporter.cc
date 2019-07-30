@@ -186,7 +186,7 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
     if (haveStatisticColumns)
         statisticColumnNames = {"count", "sumweights", "mean", "stddev", "min", "max"};
     if (haveHistogramColumns)
-        histogramColumnNames = {"binedges", "binvalues"};
+        histogramColumnNames = {"underflows", "overflows", "binedges", "binvalues"};
     if (haveVectorColumns)
         vectorColumnNames = {"vectime", "vecvalue"};
 
@@ -263,11 +263,14 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
             csv.writeDouble(stat.getMax());
             if (isHistogram) {
                 const Histogram& histogram = dynamic_cast<const HistogramResult*>(&statistic)->getHistogram();
-                auto binLowerBounds = histogram.getBinEdges();
+                csv.writeDouble(histogram.getUnderflows());
+                csv.writeDouble(histogram.getOverflows());
+
+                auto binEdges = histogram.getBinEdges();
                 auto binValues = histogram.getBinValues();
-                Assert(binValues.size() == binLowerBounds.size()-1);
-                writeAsString(binLowerBounds, 0, binLowerBounds.size());
-                writeAsString(binValues, 0, binValues.size()-1);
+                Assert(binValues.size() == binEdges.size()-1);
+                writeAsString(binEdges);
+                writeAsString(binValues);
             }
             finishRecord(numColumns);
             writeResultAttrRecords(statistic, numColumns);
@@ -341,12 +344,12 @@ void CsvRecordsExporter::finishRecord(int numColumns)
     csv.writeNewLine();
 }
 
-void CsvRecordsExporter::writeAsString(const std::vector<double>& data, int startIndex, int endIndex)
+void CsvRecordsExporter::writeAsString(const std::vector<double>& data)
 {
     std::ostream& out = csv.out();
     csv.beginRaw();
     out << "\"";
-    for (int i = startIndex; i < endIndex; i++) { // endIndex is exclusive
+    for (size_t i = 0; i < data.size(); i++) {
         if (i != 0)
             out << " ";
         csv.writeRawDouble(data[i]);
