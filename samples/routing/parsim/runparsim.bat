@@ -1,8 +1,8 @@
 @echo off
 echo.
 echo *** Distributed execution of the Routing example simulation ***
-echo If you're running the simulation under the Tkenv GUI, you'll have to 
-echo click [Run] in all windows to start the simulation. 
+echo If you're running the simulation under the Qtenv GUI, you'll have to
+echo click [Run] in all windows to start the simulation.
 echo See Readme.txt for more info.
 echo.
 if "%*"=="" pause

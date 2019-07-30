@@ -11,10 +11,10 @@ a simulation executable, only configuration (omnetpp.ini) and a script
 
 The three tandem queues in the CQN example are executed in three separate
 processes. When you launch the simulation (runparsim), you should see 3
-Tkenv windows pop up.
+Qtenv windows pop up.
 
 ********************
-IMPORTANT: You need to click Run in all 3 Tkenv windows to start the simulation!
+IMPORTANT: You need to click Run in all 3 Qtenv windows to start the simulation!
 ********************
 
 Clearly, if you want to measure performance, you'll choose "Express Run" in
@@ -25,7 +25,7 @@ will eat some of the performance.) According to the default omnetpp.ini
 settings, the processes communicate with each other via named pipes. This can
 be switched over to MPI (for performance and clustering) or to temporary files
 (if you want to see what messages are exchanged). Of course, for "production"
-use you'll want to switch over from GUI (Tkenv) to the command-line interface
+use you'll want to switch over from GUI (Qtenv) to the command-line interface
 (Cmdenv).
 
 The synchronization mechanism is by default the conservative null message

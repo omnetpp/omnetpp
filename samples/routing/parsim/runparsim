@@ -1,7 +1,7 @@
 #! /bin/sh
 echo
 echo '*** Distributed execution of the Routing example simulation ***'
-echo 'IMPORTANT: If you'"'"'re running the simulation under the Tkenv GUI,'
+echo 'IMPORTANT: If you'"'"'re running the simulation under the Qtenv GUI,'
 echo 'you'"'"'ll have to click [Run] in all windows to start the simulation.'
 echo 'See Readme.txt for more info.'
 echo
