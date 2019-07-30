@@ -118,6 +118,7 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.option("-o <filename>", "Output file name, or '-' for the standard output. This option is mandatory.");
         help.option("-F <format>", "Selects the exporter. The exporter's operation may further be customized via -x options.");
         help.option("-x <key>=<value>", "Option for the exporter. This option may occur multiple times.");
+        help.option("--<key>=<value>", "Same as -x <key>=<value>.");
         help.option("-k, --no-indexing", "Disallow automatic indexing of vector files");
         help.option("-v, --verbose", "Print info about progress (verbose)");
         help.line();
@@ -683,6 +684,8 @@ void ScaveTool::exportCommand(int argc, char **argv)
             opt_indexingAllowed = false;
         else if (opt == "-v" || opt == "--verbose")
             opt_verbose = true;
+        else if (opt[0] == '-' && opt[1]== '-' && opt[2])
+            opt_exporterOptions.push_back(opt.c_str()+2);
         else if (opt[0] != '-')
             opt_fileNames.push_back(argv[i]);
         else
