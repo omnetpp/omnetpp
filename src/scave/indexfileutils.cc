@@ -55,7 +55,7 @@ bool IndexFileUtils::isExistingVectorFile(const char *filename)
     if (!f)
         return false;
 
-    const char *signature = "version 2";
+    const char *signature = "version 3";
     char buf[20];
     memset(buf, 0, 20);
     fread(buf, strlen(signature), 1, f);

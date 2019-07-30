@@ -41,8 +41,6 @@ namespace envir {
 
 typedef std::map<std::string, std::string> StringMap;
 
-#define SCALAR_FILE_VERSION    2
-
 // global options
 extern omnetpp::cConfigOption *CFGID_OUTPUT_SCALAR_FILE;
 extern omnetpp::cConfigOption *CFGID_OUTPUT_SCALAR_PRECISION;

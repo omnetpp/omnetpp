@@ -141,8 +141,8 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
                     throw ResultFileFormatException("Vector file indexer: Missing version number", vectorFileName, lineNo);
                 if (!parseInt(tokens[1], version))
                     throw ResultFileFormatException("Vector file indexer: Version is not a number", vectorFileName, lineNo);
-                if (version > 2)
-                    throw ResultFileFormatException("Vector file indexer: Expects version 2 or lower", vectorFileName, lineNo);
+                if (version != 2 && version != 3)
+                    throw ResultFileFormatException("Vector file indexer: Expects version 2 or version 3", vectorFileName, lineNo);
             }
             else {  // data line
                 int vectorId;

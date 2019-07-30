@@ -142,7 +142,7 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
         int version;
         CHECK(numTokens >= 2, "missing version number", lineNum);
         CHECK(parseInt(tokens[1], version), "version is not a number", lineNum);
-        CHECK(version <= 2, "expects version 2 or lower", lineNum);
+        CHECK(version == 2 || version == 3, "unsupported file version (version 2 or version 3 expected)", lineNum);
     }
     else if (index->run.parseLine(tokens, numTokens, filename.c_str(), lineNum)) {
         return;

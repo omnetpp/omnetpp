@@ -24,8 +24,8 @@
 namespace omnetpp {
 namespace common {
 
-#define VECTOR_FILE_VERSION    2
-#define INDEX_FILE_VERSION 2
+#define VECTOR_FILE_VERSION    3
+#define INDEX_FILE_VERSION     3
 
 using std::ostream;
 using std::ofstream;

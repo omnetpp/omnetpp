@@ -22,7 +22,7 @@
 namespace omnetpp {
 namespace common {
 
-#define SCALAR_FILE_VERSION    2
+#define SCALAR_FILE_VERSION    3
 
 OmnetppScalarFileWriter::OmnetppScalarFileWriter()
 {

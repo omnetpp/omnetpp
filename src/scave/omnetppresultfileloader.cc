@@ -75,7 +75,7 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
         int version;
         CHECK(numTokens == 2, "incorrect 'version' line -- version <number> expected");
         CHECK(parseInt(vec[1], version), "version is not a number");
-        CHECK(version == 2, "expects version 2");
+        CHECK(version == 2 || version == 3, "unsupported file version (version 2 or version 3 expected)");
         return;
     }
 
@@ -130,6 +130,7 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
         const char *columns = (numTokens < 5 || opp_isdigit(vec[4][0]) ? "TV" : vec[4]);
 
         ctx.currentItemType = ParseContext::VECTOR;
+        ctx.vectorId = vectorId;
         ctx.moduleName = vec[2];
         ctx.resultName = vec[3];
         ctx.vectorColumns = columns;
