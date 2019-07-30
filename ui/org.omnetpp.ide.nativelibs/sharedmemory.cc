@@ -39,9 +39,21 @@
 
 extern "C" {
 
+#include <string.h>
+
+// utility function, not called from Java
+jint throwRuntimeException(JNIEnv *env, const std::string& message)
+{
+    jclass exClass = env->FindClass("java/lang/RuntimeException");
+    return env->ThrowNew(exClass, message.c_str());
+}
+
 JNIEXPORT void JNICALL Java_org_omnetpp_scave_engine_ScaveEngineJNI_createSharedMemory(JNIEnv* env, jobject clazz, jstring name, jlong size)
 {
-    const char *nameStr = env->GetStringUTFChars(name, nullptr);
+    const char *nameChars = env->GetStringUTFChars(name, nullptr);
+    char nameStr[2048];
+    strncpy(nameStr, nameChars, 2048);
+    env->ReleaseStringUTFChars(name, nameChars);
 
 #if defined(_WIN32)
 
@@ -56,23 +68,30 @@ JNIEXPORT void JNICALL Java_org_omnetpp_scave_engine_ScaveEngineJNI_createShared
 #else // POSIX (linux, mac)
 
     int fd = shm_open(nameStr, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
-    if (fd == -1)
-        std::cout << "error opening shm fd" << std::endl;
+    if (fd == -1) {
+        throwRuntimeException(env, std::string("Error opening SHM file descriptor for '") + nameStr + "': " + strerror(errno));
+        return;
+    }
 
-    if (ftruncate(fd, size) == -1)
-        std::cout << "error truncating shm file descriptor" << std::endl;
+    if (ftruncate(fd, size) == -1) {
+        throwRuntimeException(env, std::string("Error setting SHM file descriptor to size ") + std::to_string(size) + " for '" + nameStr + "': " + strerror(errno));
+        return;
+    }
 
-    if (close(fd) == -1)
-        std::cout << "error closing shm fd" << std::endl;
+    if (close(fd) == -1) {
+        throwRuntimeException(env, std::string("Error closing SHM file descriptor for '") + nameStr + "': " + strerror(errno));
+        return;
+    }
 
 #endif
-
-    env->ReleaseStringUTFChars(name, nameStr);
 }
 
 JNIEXPORT jobject JNICALL Java_org_omnetpp_scave_engine_ScaveEngineJNI_mapSharedMemory(JNIEnv* env, jobject clazz, jstring name, jlong size)
 {
-    const char *nameStr = env->GetStringUTFChars(name, nullptr);
+    const char *nameChars = env->GetStringUTFChars(name, nullptr);
+    char nameStr[2048];
+    strncpy(nameStr, nameChars, 2048);
+    env->ReleaseStringUTFChars(name, nameChars);
 
     // must be set by the platform specific fragments
     void *buffer = nullptr;
@@ -89,19 +108,16 @@ JNIEXPORT jobject JNICALL Java_org_omnetpp_scave_engine_ScaveEngineJNI_mapShared
       size,                       // maximum object size (low-order DWORD) - ignored, but must not be 0
       nameStr);                // name of mapping object
 
-    if (GetLastError() != ERROR_ALREADY_EXISTS)
-        std::cout << "trying to map a nonexistent mapping, so it was created instead... expect zeroes" << std::endl;
-
-    if (hMapFile == NULL) {
-        std::cout << "error opening file mapping" << std::endl;
-
-        // char err[2048];
-        // FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(),
-        //               MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), err, 255, NULL);
-        // printf("%s\n", err);//just for the safe case
-        // puts(err);
+    if (GetLastError() != ERROR_ALREADY_EXISTS) {
+        throwRuntimeException(env, std::string("Trying to map a nonexistent shared memory mapping ('") + nameStr + "'), so it was created instead... Expect zeroes!");
+        return 0;
     }
 
+    if (hMapFile == NULL) {
+        char err[2048];
+        FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), err, 2048, NULL);
+        throwRuntimeException(env, std::string("Error opening shared memory file mapping '") + nameStr + "': " + err);
+    }
 
     buffer = MapViewOfFile(
       hMapFile,   // handle to map object
@@ -110,26 +126,32 @@ JNIEXPORT jobject JNICALL Java_org_omnetpp_scave_engine_ScaveEngineJNI_mapShared
       0, // no offset (low)
       0); // no size, map the whole object
 
-    if (buffer == NULL)
-        std::cout << "error mapping view of file" << std::endl;
+    if (buffer == NULL) {
+        char err[2048];
+        FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), err, 2048, NULL);
+        throwRuntimeException(env, std::string("Error mapping view of file '") + nameStr + "': " + err);
+    }
 
 #else // POSIX (linux, mac)
 
     int fd = shm_open(nameStr, O_RDWR, S_IRUSR | S_IWUSR);
-    if (fd == -1)
-        std::cout << "error opening shm fd" << std::endl;
-
+    if (fd == -1) {
+        throwRuntimeException(env, std::string("Error opening SHM file descriptor '") + nameStr + "': " + strerror(errno));
+        return 0;
+    }
 
     buffer = mmap(0, size, PROT_WRITE, MAP_SHARED, fd, 0);
-    if (buffer == MAP_FAILED)
-        std::cout << "error mmapping shm fd" << std::endl;
+    if (buffer == MAP_FAILED) {
+        throwRuntimeException(env, std::string("Error mmap-ing SHM file descriptor '") + nameStr + "': " + strerror(errno));
+        return 0;
+    }
 
-    if (close(fd) == -1)
-        std::cout << "error closing shm fd" << std::endl;
+    if (close(fd) == -1) {
+        throwRuntimeException(env, std::string("Error closing SHM file descriptor '") + nameStr + "': " + strerror(errno));
+        return 0;
+    }
 
 #endif
-
-    env->ReleaseStringUTFChars(name, nameStr);
 
     jobject directBuffer = env->NewDirectByteBuffer(buffer, size);
     return directBuffer;
@@ -141,17 +163,23 @@ JNIEXPORT void JNICALL Java_org_omnetpp_scave_engine_ScaveEngineJNI_unmapSharedM
     jlong capacity = env->GetDirectBufferCapacity(directBuffer);
 
 #if defined(_WIN32)
-    if (UnmapViewOfFile(buffer) == 0)
-        std::cout << "error unmapping file view" << std::endl;
+    if (UnmapViewOfFile(buffer) == 0) {
+        char err[2048];
+        FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), err, 2048, NULL);
+        throwRuntimeException(env, std::string("Error unmapping file view of size ") + std::to_string(capacity) + ": " + err);
+    }
 #else // POSIX (linux, mac)
     if (munmap(buffer, capacity) == -1)
-        std::cout << "error unmapping buf" << std::endl;
+        throwRuntimeException(env, std::string("Error unmapping SHM buffer of size ") + std::to_string(capacity) + ": " + strerror(errno));
 #endif
 }
 
 JNIEXPORT void JNICALL Java_org_omnetpp_scave_engine_ScaveEngineJNI_removeSharedMemory(JNIEnv* env, jobject clazz, jstring name)
 {
-    const char *nameStr = env->GetStringUTFChars(name, nullptr);
+    const char *nameChars = env->GetStringUTFChars(name, nullptr);
+    char nameStr[2048];
+    strncpy(nameStr, nameChars, 2048);
+    env->ReleaseStringUTFChars(name, nameChars);
 
 #if defined(_WIN32)
 
@@ -163,18 +191,23 @@ JNIEXPORT void JNICALL Java_org_omnetpp_scave_engine_ScaveEngineJNI_removeShared
       1,                       // maximum object size (low-order DWORD) - ignored, but must not be 0
       nameStr);                // name of mapping object
 
-    if (GetLastError() != ERROR_ALREADY_EXISTS)
-        std::cout << "trying to remove a nonexistent mapping" << std::endl;
+    if (GetLastError() != ERROR_ALREADY_EXISTS) {
+        char err[2048];
+        FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), err, 2048, NULL);
+        throwRuntimeException(env, std::string("Trying to remove a nonexistent mapping '") + nameStr + "': " + err);
+        return;
+    }
 
-    if (CloseHandle(hMapFile) == 0)
-        std::cout << "error closing file mapping handle" << std::endl;
+    if (CloseHandle(hMapFile) == 0) {
+        char err[2048];
+        FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), err, 2048, NULL);
+        throwRuntimeException(env, std::string("Error closing file mapping handle '") + nameStr + "': " + err);
+    }
 
 #else // POSIX (linux, mac)
     if (shm_unlink(nameStr) == -1)
-        std::cout << "error unlinking shm" << std::endl;
+        throwRuntimeException(env, std::string("Error unlinking SHM object '") + nameStr + "': " + strerror(errno));
 #endif
-
-    env->ReleaseStringUTFChars(name, nameStr);
 }
 
 } // extern "C"
