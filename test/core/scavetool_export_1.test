@@ -167,7 +167,7 @@ parameter   Test.node  typename       Node
 parameter   Test       typename       Test
 vector      Test.node  foo:vector     vectorId=0  count=100   mean=19.84  min=12  max=28
 statistics  Test.node  foo:stats      count=100   mean=19.84  min=12      max=28
-histogram   Test.node  foo:histogram  count=100   mean=19.84  min=12      max=28  #bins=26
+histogram   Test.node  foo:histogram  count=100   mean=19.84  min=12      max=28  #bins=24
 
 General-1-xxxx:
 
@@ -177,7 +177,7 @@ parameter   Test.node  typename       Node
 parameter   Test       typename       Test
 vector      Test.node  foo:vector     vectorId=0  count=100   mean=19.65  min=13  max=27
 statistics  Test.node  foo:stats      count=100   mean=19.65  min=13      max=27
-histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=24
+histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=22
 
 ---------------------------------------------------------------
 $ opp_scavetool export <files>
