@@ -55,7 +55,9 @@ Register_Class(SqliteOutputScalarManager);
 
 void SqliteOutputScalarManager::startRun()
 {
-    Assert(!initialized); // prevent reuse of object for multiple runs
+    // prevent reuse of object for multiple runs
+    Assert(state == NEW);
+    state = STARTED;
 
     // clean up file from previous runs
     fname = getEnvir()->getConfig()->getAsFilename(CFGID_OUTPUT_SCALAR_FILE);
@@ -66,13 +68,17 @@ void SqliteOutputScalarManager::startRun()
 
 void SqliteOutputScalarManager::endRun()
 {
+    Assert(state == NEW || state == STARTED || state == OPENED);
+    state = ENDED;
+
     closeFile();
 }
 
 void SqliteOutputScalarManager::openFileForRun()
 {
     // ensure startRun() has been invoked
-    Assert(!fname.empty());
+    Assert(state == STARTED);
+    state = OPENED;
 
     // open database
     mkPath(directoryOf(fname.c_str()).c_str());
@@ -92,10 +98,10 @@ void SqliteOutputScalarManager::closeFile()
 
 void SqliteOutputScalarManager::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)
 {
-    if (!initialized) {
-        initialized = true;
+    Assert(state == STARTED || state == OPENED);
+
+    if (state != OPENED)
         openFileForRun();
-    }
 
     if (isBad())
         return;
@@ -111,10 +117,10 @@ void SqliteOutputScalarManager::recordScalar(cComponent *component, const char *
 
 void SqliteOutputScalarManager::recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
-    if (!initialized) {
-        initialized = true;
+    Assert(state == STARTED || state == OPENED);
+
+    if (state != OPENED)
         openFileForRun();
-    }
 
     if (isBad())
         return;
@@ -163,10 +169,10 @@ void SqliteOutputScalarManager::recordStatistic(cComponent *component, const cha
 
 void SqliteOutputScalarManager::recordParameter(cPar *par)
 {
-    if (!initialized) {
-        initialized = true;
+    Assert(state == STARTED || state == OPENED);
+
+    if (state != OPENED)
         openFileForRun();
-    }
 
     if (isBad())
         return;
@@ -180,10 +186,10 @@ void SqliteOutputScalarManager::recordParameter(cPar *par)
 
 void SqliteOutputScalarManager::recordComponentType(cComponent *component)
 {
-    if (!initialized) {
-        initialized = true;
+    Assert(state == STARTED || state == OPENED);
+
+    if (state != OPENED)
         openFileForRun();
-    }
 
     if (isBad())
         return;

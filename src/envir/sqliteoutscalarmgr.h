@@ -37,15 +37,14 @@ using omnetpp::common::SqliteScalarFileWriter;
 class SqliteOutputScalarManager : public cIOutputScalarManager
 {
   protected:
-    enum State {NEW, RUN_STARTED, FILE_OPENED, RUN_CLOSED};
-    bool initialized = false;    // true after first call to initialize(), even if it failed
+    enum State {NEW, STARTED, OPENED, ENDED} state = NEW;
     std::string fname;
     SqliteScalarFileWriter writer;
 
   protected:
     virtual void openFileForRun();
     virtual void closeFile();
-    bool isBad() {return initialized && !writer.isOpen();}
+    bool isBad() {return state==OPENED && !writer.isOpen();}
 
   public:
     /** @name Constructors, destructor */

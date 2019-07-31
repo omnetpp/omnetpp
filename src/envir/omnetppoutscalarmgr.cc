@@ -55,7 +55,9 @@ Register_Class(OmnetppOutputScalarManager);
 
 void OmnetppOutputScalarManager::startRun()
 {
-    Assert(!initialized); // prevent reuse of object for multiple runs
+    // prevent reuse of object for multiple runs
+    Assert(state == NEW);
+    state = STARTED;
 
     // delete file left over from previous runs
     fname = getEnvir()->getConfig()->getAsFilename(CFGID_OUTPUT_SCALAR_FILE);
@@ -72,6 +74,9 @@ void OmnetppOutputScalarManager::startRun()
 
 void OmnetppOutputScalarManager::endRun()
 {
+    Assert(state == NEW || state == STARTED || state == OPENED);
+    state = ENDED;
+
     if (writer.isOpen()) {
         writer.endRecordingForRun();
         closeFile();
@@ -81,7 +86,8 @@ void OmnetppOutputScalarManager::endRun()
 void OmnetppOutputScalarManager::openFileForRun()
 {
     // ensure startRun() has been invoked
-    Assert(!fname.empty());
+    Assert(state == STARTED);
+    state = OPENED;
 
     // open file
     mkPath(directoryOf(fname.c_str()).c_str());
@@ -99,10 +105,10 @@ void OmnetppOutputScalarManager::closeFile()
 
 void OmnetppOutputScalarManager::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)
 {
-    if (!initialized) {
-        initialized = true;
+    Assert(state == STARTED || state == OPENED);
+
+    if (state != OPENED)
         openFileForRun();
-    }
 
     if (isBad())
         return;
@@ -118,10 +124,10 @@ void OmnetppOutputScalarManager::recordScalar(cComponent *component, const char 
 
 void OmnetppOutputScalarManager::recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
-    if (!initialized) {
-        initialized = true;
+    Assert(state == STARTED || state == OPENED);
+
+    if (state != OPENED)
         openFileForRun();
-    }
 
     if (isBad())
         return;
@@ -170,10 +176,10 @@ void OmnetppOutputScalarManager::recordStatistic(cComponent *component, const ch
 
 void OmnetppOutputScalarManager::recordParameter(cPar *par)
 {
-    if (!initialized) {
-        initialized = true;
+    Assert(state == STARTED || state == OPENED);
+
+    if (state != OPENED)
         openFileForRun();
-    }
 
     if (isBad())
         return;
@@ -187,10 +193,10 @@ void OmnetppOutputScalarManager::recordParameter(cPar *par)
 
 void OmnetppOutputScalarManager::recordComponentType(cComponent *component)
 {
-    if (!initialized) {
-        initialized = true;
+    Assert(state == STARTED || state == OPENED);
+
+    if (state != OPENED)
         openFileForRun();
-    }
 
     if (isBad())
         return;

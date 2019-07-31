@@ -52,7 +52,7 @@ class OmnetppOutputVectorManager : public cIOutputVectorManager
 
     typedef std::vector<VectorData*> Vectors;
 
-    bool initialized = false; // true after first call to initialize(), even if it failed
+    enum State {NEW, STARTED, OPENED, ENDED} state = NEW;
     std::string fname;
     OmnetppVectorFileWriter writer;
     Vectors vectors; // registered output vectors
@@ -60,7 +60,7 @@ class OmnetppOutputVectorManager : public cIOutputVectorManager
   protected:
     virtual void openFileForRun();
     virtual void closeFile();
-    bool isBad() {return initialized && !writer.isOpen();}
+    bool isBad() {return state==OPENED && !writer.isOpen();}
 
   public:
     /** @name Constructors, destructor */

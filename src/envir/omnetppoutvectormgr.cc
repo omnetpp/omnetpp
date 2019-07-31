@@ -53,8 +53,11 @@ extern omnetpp::cConfigOption *CFGID_VECTOR_RECORD_EVENTNUMBERS;
 
 void OmnetppOutputVectorManager::startRun()
 {
-    Assert(!initialized); // prevent reuse of object for multiple runs
+    // prevent reuse of object for multiple runs
+    Assert(state == NEW);
+    state = STARTED;
 
+    // read configuration
     bool shouldAppend = getEnvir()->getConfig()->getAsBool(CFGID_OUTPUT_VECTOR_FILE_APPEND);
     if (shouldAppend)
         throw cRuntimeError("%s does not support append mode", getClassName());
@@ -72,6 +75,8 @@ void OmnetppOutputVectorManager::startRun()
 
 void OmnetppOutputVectorManager::endRun()
 {
+    Assert(state == NEW || state == STARTED || state == OPENED);
+    state = ENDED;
     if (writer.isOpen()) {
         writer.endRecordingForRun();
         closeFile();
@@ -82,7 +87,8 @@ void OmnetppOutputVectorManager::endRun()
 void OmnetppOutputVectorManager::openFileForRun()
 {
     // ensure startRun() has been invoked
-    Assert(!fname.empty());
+    Assert(state == STARTED);
+    state = OPENED;
 
     // open file
     mkPath(directoryOf(fname.c_str()).c_str());
@@ -99,7 +105,7 @@ void OmnetppOutputVectorManager::closeFile()
 
 void *OmnetppOutputVectorManager::registerVector(const char *modulename, const char *vectorname)
 {
-    //TODO assert: endRun() not yet called
+    Assert(state == NEW || state == STARTED || state == OPENED); // note: NEW needs to be allowed for now
 
     VectorData *vp = new VectorData();
     vp->handleInWriter = nullptr;
@@ -140,7 +146,7 @@ void OmnetppOutputVectorManager::setVectorAttribute(void *vectorhandle, const ch
 
 bool OmnetppOutputVectorManager::record(void *vectorhandle, simtime_t t, double value)
 {
-    //TODO assert: startRun() called, but endRun() not yet!
+    Assert(state == STARTED || state == OPENED);
 
     ASSERT(vectorhandle != nullptr);
     VectorData *vp = (VectorData *)vectorhandle;
@@ -148,10 +154,8 @@ bool OmnetppOutputVectorManager::record(void *vectorhandle, simtime_t t, double 
     if (!vp->enabled || !vp->intervals.contains(t))
         return false;
 
-    if (!initialized) {
-        initialized = true;
+    if (state != OPENED)
         openFileForRun();
-    }
 
     if (isBad())
         return false;

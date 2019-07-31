@@ -54,7 +54,9 @@ Register_GlobalConfigOption(CFGID_OUTPUT_VECTOR_DB_INDEXING, "output-vector-db-i
 
 void SqliteOutputVectorManager::startRun()
 {
-    Assert(!initialized); // prevent reuse of object for multiple runs
+    // prevent reuse of object for multiple runs
+    Assert(state == NEW);
+    state = STARTED;
 
     // delete file left over from previous runs
     fname = getEnvir()->getConfig()->getAsFilename(CFGID_OUTPUT_VECTOR_FILE).c_str();
@@ -81,7 +83,9 @@ void SqliteOutputVectorManager::startRun()
 
 void SqliteOutputVectorManager::endRun()
 {
-    //TODO writeRecords() -- then finalize() can assert on no data being buffered
+    Assert(state == NEW || state == STARTED || state == OPENED);
+    state = ENDED;
+
     if (writer.isOpen()) {
         writer.endRecordingForRun();
         if (indexingMode == INDEX_AFTER) {
@@ -94,13 +98,13 @@ void SqliteOutputVectorManager::endRun()
         closeFile();
         vectors.clear();
     }
-
 }
 
 void SqliteOutputVectorManager::openFileForRun()
 {
     // ensure startRun() has been invoked
-    Assert(!fname.empty());
+    Assert(state == STARTED);
+    state = OPENED;
 
     // open database
     mkPath(directoryOf(fname.c_str()).c_str());
@@ -120,7 +124,7 @@ void SqliteOutputVectorManager::closeFile()
 
 void *SqliteOutputVectorManager::registerVector(const char *modulename, const char *vectorname)
 {
-    //TODO assert: endRun() not yet called
+    Assert(state == NEW || state == STARTED || state == OPENED);
 
     VectorData *vp = new VectorData();
     vp->handleInWriter = nullptr;
@@ -162,7 +166,7 @@ void SqliteOutputVectorManager::setVectorAttribute(void *vectorhandle, const cha
 
 bool SqliteOutputVectorManager::record(void *vectorhandle, simtime_t t, double value)
 {
-    //TODO assert: startRun() called, but endRun() not yet!
+    Assert(state == STARTED || state == OPENED);
 
     ASSERT(vectorhandle != nullptr);
     VectorData *vp = (VectorData *)vectorhandle;
@@ -170,10 +174,8 @@ bool SqliteOutputVectorManager::record(void *vectorhandle, simtime_t t, double v
     if (!vp->enabled || !vp->intervals.contains(t))
         return false;
 
-    if (!initialized) {
-        initialized = true;
+    if (state != OPENED)
         openFileForRun();
-    }
 
     if (vp->handleInWriter == nullptr) {
         std::string vectorFullPath = vp->moduleName.str() + "." + vp->vectorName.c_str();

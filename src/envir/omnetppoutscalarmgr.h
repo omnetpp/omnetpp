@@ -38,14 +38,14 @@ using omnetpp::common::OmnetppScalarFileWriter;
 class ENVIR_API OmnetppOutputScalarManager : public cIOutputScalarManager
 {
   protected:
-    bool initialized = false;  // true after first call to openFileForRun(), even if it failed
+    enum State {NEW, STARTED, OPENED, ENDED} state = NEW;
     std::string fname;
     OmnetppScalarFileWriter writer;
 
   protected:
     virtual void openFileForRun();
     virtual void closeFile();
-    bool isBad() {return initialized && !writer.isOpen();}
+    bool isBad() {return state==OPENED && !writer.isOpen();}
 
   public:
     /** @name Constructors, destructor */
