@@ -538,25 +538,30 @@ public class DocumentationGenerator {
         for (ITypeElement subtype : typeElements) {
             if (subtype instanceof IInterfaceTypeElement)
                 for (INedTypeElement supertype : ((IInterfaceTypeElement)subtype).getNedTypeInfo().getLocalInterfaces())
-                    addSubtypeMapping(subtype, supertype);
+                    addToListInMap(subtypesMap, supertype, subtype);
             else {
                 ITypeElement supertype = subtype.getSuperType();
-                if (supertype != null) {
-                    addSubtypeMapping(subtype, supertype);
-                }
+                if (supertype != null)
+                    addToListInMap(subtypesMap, supertype, subtype);
             }
         }
         monitor.worked(1);
     }
 
-    private void addSubtypeMapping(ITypeElement subtype, ITypeElement supertype) {
-        ArrayList<ITypeElement> subtypes = subtypesMap.get(supertype);
+    private void addToListInMap(Map<ITypeElement, ArrayList<ITypeElement>> map, ITypeElement key, ITypeElement itemToAdd) {
+        ArrayList<ITypeElement> list = map.get(key);
+        if (list == null)
+            list = new ArrayList<ITypeElement>();
+        list.add(itemToAdd);
+        map.put(key, list);
+    }
 
-        if (subtypes == null)
-            subtypes = new ArrayList<ITypeElement>();
-
-        subtypes.add(subtype);
-        subtypesMap.put(supertype, subtypes);
+    private void addToListInMap(Map<INedTypeElement, ArrayList<INedTypeElement>> map, INedTypeElement key, INedTypeElement itemToAdd) {
+        ArrayList<INedTypeElement> list = map.get(key);
+        if (list == null)
+            list = new ArrayList<INedTypeElement>();
+        list.add(itemToAdd);
+        map.put(key, list);
     }
 
     protected void collectImplementorsMap() {
@@ -565,26 +570,11 @@ public class DocumentationGenerator {
             if (typeElement instanceof INedTypeElement && !(typeElement instanceof IInterfaceTypeElement)) {
                 INedTypeElement implementor = (INedTypeElement)typeElement;
 
-                for (INedTypeElement interfaze : implementor.getNedTypeInfo().getLocalInterfaces()) {
-                    ArrayList<INedTypeElement> implementors = directImplementorsMap.get(interfaze);
+                for (INedTypeElement interfaze : implementor.getNedTypeInfo().getLocalInterfaces())
+                    addToListInMap(directImplementorsMap, interfaze, implementor);
 
-                    if (implementors == null)
-                        implementors = new ArrayList<INedTypeElement>();
-
-                    implementors.add(implementor);
-                    directImplementorsMap.put(interfaze, implementors);
-                }
-
-                for (INedTypeElement interfaze : implementor.getNedTypeInfo().getInterfaces()) {
-                    ArrayList<INedTypeElement> implementors = allImplementorsMap.get(interfaze);
-
-                    if (implementors == null)
-                        implementors = new ArrayList<INedTypeElement>();
-
-                    implementors.add(implementor);
-                    allImplementorsMap.put(interfaze, implementors);
-                }
-
+                for (INedTypeElement interfaze : implementor.getNedTypeInfo().getInterfaces())
+                    addToListInMap(allImplementorsMap, interfaze, implementor);
             }
         }
 
@@ -593,17 +583,9 @@ public class DocumentationGenerator {
 
     protected void collectUsersMap() {
         monitor.subTask("Collecting uses");
-        for (ITypeElement userType : typeElements) {
-            for (ITypeElement usedType : userType.getLocalUsedTypes()) {
-                ArrayList<ITypeElement> users = usersMap.get(usedType);
-
-                if (users == null)
-                    users = new ArrayList<ITypeElement>();
-
-                users.add(userType);
-                usersMap.put(usedType, users);
-            }
-        }
+        for (ITypeElement userType : typeElements)
+            for (ITypeElement usedType : userType.getLocalUsedTypes())
+                addToListInMap(usersMap, usedType, userType);
         monitor.worked(1);
     }
 
