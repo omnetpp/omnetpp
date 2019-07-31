@@ -32,7 +32,7 @@ output-scalar-file = ${resultdir}/${configname}.sca
 %subst: /^attr processid \d+/attr processid xxx/m
 
 %contains: results/General.sca
-version 2
+version 3
 run General-0-xxx
 attr configname General
 attr datetime xxx
