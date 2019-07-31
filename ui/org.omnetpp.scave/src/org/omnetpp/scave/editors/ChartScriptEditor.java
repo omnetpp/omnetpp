@@ -955,7 +955,9 @@ public class ChartScriptEditor extends PyEdit {
     protected void gotoLine(PyEdit pyedit, int lineNumber) throws BadLocationException {
             IDocument document = pyedit.getDocument();
             int offset = document.getLineOffset(lineNumber-1);
-            getSourceViewer().setSelectedRange(offset, 0);
+            ISourceViewer sourceViewer = pyedit.getEditorSourceViewer();
+            sourceViewer.setSelectedRange(offset, 0);
+            sourceViewer.revealRange(offset, 0);
     }
 
     public void saved() {
