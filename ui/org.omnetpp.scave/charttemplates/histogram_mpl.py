@@ -18,7 +18,7 @@ title, legend = chart.extract_label_columns(df)
 df.sort_values(by=[l for i, l in legend], axis='index', inplace=True)
 
 for t in df.itertuples(index=False):
-    plt.hist(bins=t.binedges[1:], x=t.binedges[1:-1], weights=t.binvalues[1:-1], label=chart.make_legend_label(legend, t), histtype='stepfilled')
+    plt.hist(bins=t.binedges, x=t.binedges[:-1], weights=t.binvalues, label=chart.make_legend_label(legend, t), histtype='stepfilled')
 
 plt.title(chart.make_chart_title(df, title, legend))
 
