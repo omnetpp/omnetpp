@@ -1286,6 +1286,8 @@ public class DocumentationGenerator {
                     generateTypeDiagram(nedTypeElement);
                     generateUsageDiagram(nedTypeElement);
                     generateInheritanceDiagram(nedTypeElement);
+                    if (typeElement instanceof IInterfaceTypeElement)
+                        generateImplementorsTable(nedTypeElement);
                     generateUsedInTables(nedTypeElement);
                     generateKnownSubtypesTable(nedTypeElement);
                     generateExtendsTable(nedTypeElement);
@@ -1646,6 +1648,20 @@ public class DocumentationGenerator {
             generateTypesTableHead();
 
             for (ITypeElement subtype : subtypesMap.get(typeElement))
+                generateTypeReferenceLine(subtype);
+
+            out(renderer.tableTrailerTag());
+        }
+    }
+
+    protected void generateImplementorsTable(ITypeElement typeElement) throws IOException {
+        if (implementorsMap.containsKey(typeElement)) {
+            out(renderer.subSectionTag("Implementors", "subtitle"));
+
+            out(renderer.tableHeaderTag("implementorstable"));
+            generateTypesTableHead();
+
+            for (ITypeElement subtype : implementorsMap.get(typeElement)) //TODO these are only direct implementors -- we should display indirect ones too
                 generateTypeReferenceLine(subtype);
 
             out(renderer.tableTrailerTag());
