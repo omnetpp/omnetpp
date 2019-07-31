@@ -202,7 +202,8 @@ public class DocumentationGenerator {
     protected List<IFile> files = new ArrayList<IFile>();
     protected List<ITypeElement> typeElements = new ArrayList<ITypeElement>();
     protected Map<ITypeElement, ArrayList<ITypeElement>> subtypesMap = new LinkedHashMap<ITypeElement, ArrayList<ITypeElement>>();
-    protected Map<INedTypeElement, ArrayList<INedTypeElement>> implementorsMap = new LinkedHashMap<INedTypeElement, ArrayList<INedTypeElement>>();
+    protected Map<INedTypeElement, ArrayList<INedTypeElement>> directImplementorsMap = new LinkedHashMap<INedTypeElement, ArrayList<INedTypeElement>>();
+    protected Map<INedTypeElement, ArrayList<INedTypeElement>> allImplementorsMap = new LinkedHashMap<INedTypeElement, ArrayList<INedTypeElement>>();
     protected Map<ITypeElement, ArrayList<ITypeElement>> usersMap = new LinkedHashMap<ITypeElement, ArrayList<ITypeElement>>();
     protected Map<String, List<ITypeElement>> typeNamesMap = new LinkedHashMap<String, List<ITypeElement>>();
     protected Map<String, String> doxyMap = new LinkedHashMap<String, String>();
@@ -565,16 +566,28 @@ public class DocumentationGenerator {
                 INedTypeElement implementor = (INedTypeElement)typeElement;
 
                 for (INedTypeElement interfaze : implementor.getNedTypeInfo().getLocalInterfaces()) {
-                    ArrayList<INedTypeElement> implementors = implementorsMap.get(interfaze);
+                    ArrayList<INedTypeElement> implementors = directImplementorsMap.get(interfaze);
 
                     if (implementors == null)
                         implementors = new ArrayList<INedTypeElement>();
 
                     implementors.add(implementor);
-                    implementorsMap.put(interfaze, implementors);
+                    directImplementorsMap.put(interfaze, implementors);
                 }
+
+                for (INedTypeElement interfaze : implementor.getNedTypeInfo().getInterfaces()) {
+                    ArrayList<INedTypeElement> implementors = allImplementorsMap.get(interfaze);
+
+                    if (implementors == null)
+                        implementors = new ArrayList<INedTypeElement>();
+
+                    implementors.add(implementor);
+                    allImplementorsMap.put(interfaze, implementors);
+                }
+
             }
         }
+
         monitor.worked(1);
     }
 
@@ -1655,13 +1668,13 @@ public class DocumentationGenerator {
     }
 
     protected void generateImplementorsTable(ITypeElement typeElement) throws IOException {
-        if (implementorsMap.containsKey(typeElement)) {
-            out(renderer.subSectionTag("Implementors", "subtitle"));
+        if (allImplementorsMap.containsKey(typeElement)) {
+            out(renderer.subSectionTag("Implemented by", "subtitle"));
 
             out(renderer.tableHeaderTag("implementorstable"));
             generateTypesTableHead();
 
-            for (ITypeElement subtype : implementorsMap.get(typeElement)) //TODO these are only direct implementors -- we should display indirect ones too
+            for (ITypeElement subtype : allImplementorsMap.get(typeElement))
                 generateTypeReferenceLine(subtype);
 
             out(renderer.tableTrailerTag());
@@ -1954,7 +1967,7 @@ public class DocumentationGenerator {
             }
 
             if (typeElement instanceof IInterfaceTypeElement) {
-                ArrayList<INedTypeElement> implementors = implementorsMap.get(typeElement);
+                ArrayList<INedTypeElement> implementors = directImplementorsMap.get(typeElement);
 
                 if  (implementors != null) {
                     for (INedTypeElement implementor : implementors) {
