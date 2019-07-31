@@ -16,6 +16,41 @@ import functools
 from math import inf
 print = functools.partial(print, flush=True)
 
+
+def _get_array_from_shm(name):
+    if not name:
+        return None
+
+    system = platform.system()
+
+    name, size = name.split(" ")
+    size = int(size)
+
+    if system in ['Linux', 'Darwin']:
+        mem = posix_ipc.SharedMemory(name)
+
+        if system == 'Darwin':
+            # for some reason we can't directly np.memmap the shm file, because it is "unseekable"
+            # but the mmap module works with it, so we just copy the data into np, and release the shared memory
+            with mmap.mmap(mem.fd, length=mem.size) as mf:
+                arr = np.frombuffer(mf.read(), dtype=np.dtype('>f8'))
+        else:
+            # on Linux, we can just continue to use the existing shm memory without copying
+            with open(mem.fd, 'wb') as mf:
+                arr = np.memmap(mf, dtype=np.dtype('>f8'))
+
+        # on Mac we are done with shm (data is copied), on Linux we can delete the name even though the mapping is still in use
+        mem.unlink()
+    elif system == 'Windows':
+        # on Windows, the mmap module in itself provides shared memory functionality. and we copy the data here as well.
+        with mmap.mmap(-1, size, tagname=name) as mf:
+            arr = np.frombuffer(mf.read(), dtype=np.dtype('>f8'))
+    else:
+        raise RuntimeError("unsupported platform")
+
+    return arr
+
+
 # CSV format
 def get_results(filter_expression="", row_types=['runattr', 'itervar', 'param', 'scalar', 'vector', 'statistics', 'histogram', 'attr'], omit_unused_columns=True, start_time=-inf, end_time=inf):
 
@@ -29,8 +64,8 @@ def get_results(filter_expression="", row_types=['runattr', 'itervar', 'param', 
     df["binedges"] = df["binedges"].map(lambda v: np.frombuffer(v, dtype=np.dtype('>f8')), na_action='ignore')
     df["binvalues"] = df["binvalues"].map(lambda v: np.frombuffer(v, dtype=np.dtype('>f8')), na_action='ignore')
 
-    df["vectime"] = df["vectime"].map(lambda v: np.frombuffer(v, dtype=np.dtype('>f8')), na_action='ignore')
-    df["vecvalue"] = df["vecvalue"].map(lambda v: np.frombuffer(v, dtype=np.dtype('>f8')), na_action='ignore')
+    df["vectime"] = df["vectime"].map(_get_array_from_shm)
+    df["vecvalue"] = df["vecvalue"].map(_get_array_from_shm)
 
     # TODO: do this filtering in Java instead, might be faster
     df = df[df['type'].isin(row_types)]
