@@ -1249,77 +1249,80 @@ public class DocumentationGenerator {
         try {
             monitor.beginTask("Generating NED type pages...", typeElements.size());
 
-            for (final ITypeElement typeElement : typeElements) {
+            for (ITypeElement typeElement : typeElements) {
                 if (verboseMode)
                     System.out.append('.').flush();
-
-                generatePage(getOutputBaseFileName(typeElement), typeElement.getName(), () -> {
-                        boolean isNedTypeElement = typeElement instanceof INedTypeElement;
-                        boolean isMsgTypeElement = typeElement instanceof IMsgTypeElement;
-
-                        if (isNedTypeElement)
-                            out(renderer.pTag(packageReferenceString(getPackageName((INedTypeElement)typeElement))));
-
-                        out(renderer.typeSectionTag(typeElement));
-
-                        if (typeElement instanceof SimpleModuleElementEx || typeElement instanceof IMsgTypeElement)
-                            generateNedTypeCppDefinitionReference(typeElement);
-
-                        String comment = getExpandedComment(typeElement);
-                        if (comment == null)
-                            out(renderer.pTag("(no description)"));
-                        else
-                            out(processHTMLContent("comment", comment));
-
-                        if (isNedTypeElement) {
-                            INedTypeElement nedTypeElement = (INedTypeElement)typeElement;
-                            monitor.subTask(nedTypeElement.getReadableTagName() + ": " + nedTypeElement.getNedTypeInfo().getFullyQualifiedName());
-
-                            generateTypeDiagram(nedTypeElement);
-                            generateUsageDiagram(nedTypeElement);
-                            generateInheritanceDiagram(nedTypeElement);
-                            generateExtendsTable(nedTypeElement);
-                            generateKnownSubtypesTable(nedTypeElement);
-                            generateUsedInTables(nedTypeElement);
-                            generateParametersTable(nedTypeElement);
-                            generatePropertiesTable(nedTypeElement);
-                            if (typeElement instanceof IModuleTypeElement)
-                                generateGatesTable(nedTypeElement);
-                            generateSignalsTable(nedTypeElement);
-                            generateStatisticsTable(nedTypeElement);
-                            if (typeElement instanceof CompoundModuleElementEx)
-                                generateUnassignedParametersTable(nedTypeElement);
-                        }
-                        else if (isMsgTypeElement) {
-                            IMsgTypeElement msgTypeElement = (IMsgTypeElement)typeElement;
-                            monitor.subTask(msgTypeElement.getReadableTagName() + ": " + msgTypeElement.getName());
-
-                            generateUsageDiagram(msgTypeElement);
-                            generateInheritanceDiagram(msgTypeElement);
-                            generateExtendsTable(msgTypeElement);
-                            generateKnownSubtypesTable(msgTypeElement);
-                            generateFieldsTable(msgTypeElement);
-                            generatePropertiesTable(msgTypeElement);
-                        }
-
-                        if (generateSourceListings) {
-                            generateSourceContent(typeElement);
-
-                            if (typeElement instanceof INedTypeElement && nedResources.isBuiltInDeclaration(((INedTypeElement)typeElement).getNedTypeInfo()))
-                                generateBuiltinTypeReference();
-                            else
-                                generateFileReference(getNedOrMsgFile(typeElement));
-                        }
-
-
-                        monitor.worked(1);
-                    }
-                );
+                generateTypePage(typeElement);
             }
         }
         finally {
             monitor.done();
         }
+    }
+
+    protected void generateTypePage(ITypeElement typeElement) throws Exception {
+        generatePage(getOutputBaseFileName(typeElement), typeElement.getName(), () -> {
+                boolean isNedTypeElement = typeElement instanceof INedTypeElement;
+                boolean isMsgTypeElement = typeElement instanceof IMsgTypeElement;
+
+                if (isNedTypeElement)
+                    out(renderer.pTag(packageReferenceString(getPackageName((INedTypeElement)typeElement))));
+
+                out(renderer.typeSectionTag(typeElement));
+
+                if (typeElement instanceof SimpleModuleElementEx || typeElement instanceof IMsgTypeElement)
+                    generateNedTypeCppDefinitionReference(typeElement);
+
+                String comment = getExpandedComment(typeElement);
+                if (comment == null)
+                    out(renderer.pTag("(no description)"));
+                else
+                    out(processHTMLContent("comment", comment));
+
+                if (isNedTypeElement) {
+                    INedTypeElement nedTypeElement = (INedTypeElement)typeElement;
+                    monitor.subTask(nedTypeElement.getReadableTagName() + ": " + nedTypeElement.getNedTypeInfo().getFullyQualifiedName());
+
+                    generateTypeDiagram(nedTypeElement);
+                    generateUsageDiagram(nedTypeElement);
+                    generateInheritanceDiagram(nedTypeElement);
+                    generateUsedInTables(nedTypeElement);
+                    generateKnownSubtypesTable(nedTypeElement);
+                    generateExtendsTable(nedTypeElement);
+                    generateParametersTable(nedTypeElement);
+                    generatePropertiesTable(nedTypeElement);
+                    if (typeElement instanceof IModuleTypeElement)
+                        generateGatesTable(nedTypeElement);
+                    generateSignalsTable(nedTypeElement);
+                    generateStatisticsTable(nedTypeElement);
+                    if (typeElement instanceof CompoundModuleElementEx)
+                        generateUnassignedParametersTable(nedTypeElement);
+                }
+                else if (isMsgTypeElement) {
+                    IMsgTypeElement msgTypeElement = (IMsgTypeElement)typeElement;
+                    monitor.subTask(msgTypeElement.getReadableTagName() + ": " + msgTypeElement.getName());
+
+                    generateUsageDiagram(msgTypeElement);
+                    generateInheritanceDiagram(msgTypeElement);
+                    generateExtendsTable(msgTypeElement);
+                    generateKnownSubtypesTable(msgTypeElement);
+                    generateFieldsTable(msgTypeElement);
+                    generatePropertiesTable(msgTypeElement);
+                }
+
+                if (generateSourceListings) {
+                    generateSourceContent(typeElement);
+
+                    if (typeElement instanceof INedTypeElement && nedResources.isBuiltInDeclaration(((INedTypeElement)typeElement).getNedTypeInfo()))
+                        generateBuiltinTypeReference();
+                    else
+                        generateFileReference(getNedOrMsgFile(typeElement));
+                }
+
+
+                monitor.worked(1);
+            }
+        );
     }
 
     protected void generateFieldsTable(IMsgTypeElement msgTypeElement) throws IOException {
