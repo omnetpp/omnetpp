@@ -49,17 +49,17 @@ public class FilteredDataTabFolder extends TabFolder {
     protected void initialize() {
         // create pages
         allPanel = new FilteredDataPanel(this, SWT.NONE, null);
-        vectorsPanel = new FilteredDataPanel(this, SWT.NONE, ResultType.VECTOR);
-        scalarsPanel = new FilteredDataPanel(this, SWT.NONE, ResultType.SCALAR);
         parametersPanel = new FilteredDataPanel(this, SWT.NONE, ResultType.PARAMETER);
+        scalarsPanel = new FilteredDataPanel(this, SWT.NONE, ResultType.SCALAR);
+        vectorsPanel = new FilteredDataPanel(this, SWT.NONE, ResultType.VECTOR);
         histogramsPanel = new FilteredDataPanel(this, SWT.NONE, ResultType.HISTOGRAM);
 
         // create tabs (note: tab labels will be refreshed from initialize())
         allTab = addItem(allPanel);
-        vectorsTab = addItem(vectorsPanel);
-        scalarsTab = addItem(scalarsPanel);
         parametersTab = addItem(parametersPanel);
+        scalarsTab = addItem(scalarsPanel);
         histogramsTab = addItem(histogramsPanel);
+        vectorsTab = addItem(vectorsPanel);
         refreshPanelTitles();
         setActivePanel(allPanel);
 
