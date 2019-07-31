@@ -231,11 +231,11 @@ public class DocumentationGenerator {
         dotExecutablePath = ProcessUtils.lookupExecutable(store.getString(IConstants.PREF_GRAPHVIZ_DOT_EXECUTABLE));
         doxyExecutablePath = ProcessUtils.lookupExecutable(store.getString(IConstants.PREF_DOXYGEN_EXECUTABLE));
     }
-    
+
     public void setHeadless(boolean headless) {
         this.headless = headless;
     }
-    
+
     public void setVerboseMode(boolean verboseMode) {
         this.verboseMode = verboseMode;
     }
@@ -1252,7 +1252,7 @@ public class DocumentationGenerator {
             for (final ITypeElement typeElement : typeElements) {
                 if (verboseMode)
                     System.out.append('.').flush();
-                
+
                 generatePage(getOutputBaseFileName(typeElement), typeElement.getName(), () -> {
                         boolean isNedTypeElement = typeElement instanceof INedTypeElement;
                         boolean isMsgTypeElement = typeElement instanceof IMsgTypeElement;
@@ -1703,9 +1703,9 @@ public class DocumentationGenerator {
 
                 for (IFile file : nedFiles) {
                     if (verboseMode)
-                        System.out.append('.').flush();                    
+                        System.out.append('.').flush();
                     monitor.subTask(file.getFullPath().toString());
-                    
+
                     List<INedTypeElement> typeElements = nedResources.getNedFileElement(file).getTopLevelTypeNodes();
 
                     for (INedTypeElement typeElement : typeElements) {
@@ -1874,98 +1874,100 @@ public class DocumentationGenerator {
 
             dot.append("}");
 
-            generateDotOuput(dot, getOutputFile(imageFileName), "svg");
+            generateDotOutput(dot, getOutputFile(imageFileName), "svg");
 
             out(renderer.svgObjectTag(imageFileName));
         }
     }
 
     protected void generateInheritanceDiagram(ITypeElement typeElement) throws IOException {
-        // check if we have to generate the diagram at all. (i.e. it has a supertype or implements at least one interface)
-        boolean hasBaseType = typeElement.getSuperType()!=null ||
-                        ((typeElement instanceof INedTypeElement) &&
-                        ((INedTypeElement)typeElement).getNedTypeInfo().getLocalInterfaces().size()>0);
-
-        if (generatePerTypeInheritanceDiagrams && hasBaseType) {
+        if (generatePerTypeInheritanceDiagrams) {
             ArrayList<ITypeElement> typeElements = new ArrayList<ITypeElement>();
             typeElements.add(typeElement);
 
-            String diagramType = typeElement instanceof INedTypeElement ? "ned" : "msg";
-            String fullRef = !generateFullInheritanceDiagrams ?
-                    "" : " Click "+ renderer.refTag("here", renderer.addExtension("full-"+diagramType+"-inheritance-diagram"), null) + " to see the full picture.";
+            String imageFileName = getOutputFileName(typeElement, "inheritance", ".svg");
+            DotGraph dot = generateInheritanceDotGraph(typeElements, imageFileName);
 
-            out(renderer.subSectionTag("Inheritance diagram", "subtitle")+
-                renderer.pTag("The following diagram shows inheritance relationships for this type.\n" +
-                "Unresolved types are missing from the diagram."+fullRef));
+            if (dot.getNumNodes() > 1) { // has content
+                String diagramType = typeElement instanceof INedTypeElement ? "ned" : "msg";
+                String fullRef = !generateFullInheritanceDiagrams ?
+                        "" : " Click "+ renderer.refTag("here", renderer.addExtension("full-"+diagramType+"-inheritance-diagram"), null) + " to see the full picture.";
 
-            generateInheritanceDiagram(typeElements, getOutputFileName(typeElement, "inheritance", ".svg"));
+                out(renderer.subSectionTag("Inheritance diagram", "subtitle") +
+                    renderer.pTag("The following diagram shows inheritance relationships for this type.\n" +
+                    "Unresolved types are missing from the diagram."+fullRef));
+
+                generateDotOutput(dot, getOutputFile(imageFileName), "svg");
+                out(renderer.svgObjectTag(imageFileName));
+            }
         }
     }
 
     protected void generateInheritanceDiagram(List<? extends ITypeElement> typeElements, String imageFileName) throws IOException {
-        if (generatePerTypeInheritanceDiagrams || generateFullInheritanceDiagrams) {
-            DotGraph dot = new DotGraph();
+        DotGraph dot = generateInheritanceDotGraph(typeElements, imageFileName);
+        generateDotOutput(dot, getOutputFile(imageFileName), "svg");
+        out(renderer.svgObjectTag(imageFileName));
+    }
 
-            dot.append("digraph opp {\n" +
-                       "   graph [bgcolor=\"#ffffff00\"] " +
-                       "   node [fontsize=10,fontname=Helvetica,shape=box,height=.25,style=filled];\n" +
-                       "   edge [arrowhead=none,arrowtail=empty];\n");
+    protected DotGraph generateInheritanceDotGraph(List<? extends ITypeElement> typeElements, String imageFileName) throws IOException {
+        DotGraph dot = new DotGraph();
 
-            for (ITypeElement typeElement : typeElements) {
-                dot.appendNode(typeElement, typeElements.size() == 1);
+        dot.append("digraph opp {\n" +
+                   "   graph [bgcolor=\"#ffffff00\"] " +
+                   "   node [fontsize=10,fontname=Helvetica,shape=box,height=.25,style=filled];\n" +
+                   "   edge [arrowhead=none,arrowtail=empty];\n");
 
-                if (typeElement instanceof IInterfaceTypeElement) {
-                    for (INedTypeElement supertype : ((IInterfaceTypeElement)typeElement).getNedTypeInfo().getLocalInterfaces()) {
-                        dot.appendNode(supertype);
-                        dot.appendEdge(supertype, typeElement);
+        for (ITypeElement typeElement : typeElements) {
+            dot.appendNode(typeElement, typeElements.size() == 1);
+
+            if (typeElement instanceof IInterfaceTypeElement) {
+                for (INedTypeElement supertype : ((IInterfaceTypeElement)typeElement).getNedTypeInfo().getLocalInterfaces()) {
+                    dot.appendNode(supertype);
+                    dot.appendEdge(supertype, typeElement);
+                }
+            }
+            else {
+                if (typeElement.getSuperType() != null) {
+                    ITypeElement extendz = typeElement.getSuperType();
+                    dot.appendNode(extendz);
+                    dot.appendEdge(extendz, typeElement);
+                }
+            }
+
+            if (typeElement instanceof IInterfaceTypeElement) {
+                ArrayList<INedTypeElement> implementors = implementorsMap.get(typeElement);
+
+                if  (implementors != null) {
+                    for (INedTypeElement implementor : implementors) {
+                        dot.appendNode(implementor);
+                        dot.appendEdge(typeElement, implementor, "style=dashed");
                     }
                 }
-                else {
-                    if (typeElement.getSuperType() != null) {
-                        ITypeElement extendz = typeElement.getSuperType();
-                        dot.appendNode(extendz);
-                        dot.appendEdge(extendz, typeElement);
-                    }
-                }
+            }
+            else if (typeElement instanceof INedTypeElement) {
+                INedTypeInfo typeInfo = ((INedTypeElement)typeElement).getNedTypeInfo();
+                Set<INedTypeElement> interfaces = typeInfo.getLocalInterfaces();
 
-                if (typeElement instanceof IInterfaceTypeElement) {
-                    ArrayList<INedTypeElement> implementors = implementorsMap.get(typeElement);
-
-                    if  (implementors != null) {
-                        for (INedTypeElement implementor : implementors) {
-                            dot.appendNode(implementor);
-                            dot.appendEdge(typeElement, implementor, "style=dashed");
-                        }
-                    }
-                }
-                else if (typeElement instanceof INedTypeElement) {
-                    INedTypeInfo typeInfo = ((INedTypeElement)typeElement).getNedTypeInfo();
-                    Set<INedTypeElement> interfaces = typeInfo.getLocalInterfaces();
-
-                    if  (interfaces != null) {
-                        for (INedTypeElement interfaze : interfaces) {
-                            dot.appendNode(interfaze);
-                            dot.appendEdge(interfaze, typeElement, "style=dashed");
-                        }
-                    }
-                }
-
-                ArrayList<ITypeElement> subtypes = subtypesMap.get(typeElement);
-
-                if (subtypes != null) {
-                    for (ITypeElement subtype : subtypes) {
-                        dot.appendNode(subtype);
-                        dot.appendEdge(typeElement, subtype);
+                if  (interfaces != null) {
+                    for (INedTypeElement interfaze : interfaces) {
+                        dot.appendNode(interfaze);
+                        dot.appendEdge(interfaze, typeElement, "style=dashed");
                     }
                 }
             }
 
-            dot.append("}");
+            ArrayList<ITypeElement> subtypes = subtypesMap.get(typeElement);
 
-            generateDotOuput(dot, getOutputFile(imageFileName), "svg");
-
-            out(renderer.svgObjectTag(imageFileName));
+            if (subtypes != null) {
+                for (ITypeElement subtype : subtypes) {
+                    dot.appendNode(subtype);
+                    dot.appendEdge(typeElement, subtype);
+                }
+            }
         }
+
+        dot.append("}");
+        return dot;
     }
 
     protected void generateSourceContent(IFile file) throws IOException, CoreException {
@@ -2068,7 +2070,7 @@ public class DocumentationGenerator {
         }
     }
 
-    protected void generateDotOuput(DotGraph dot, File outputFile, String format) throws IOException {
+    protected void generateDotOutput(DotGraph dot, File outputFile, String format) throws IOException {
         if (dotExecutablePath == null || !new File(dotExecutablePath).exists())
             throw new IllegalStateException("The GraphViz Dot executable path is invalid, set it using Window/Preferences...\nThe currently set path is: " + dotExecutablePath);
 
@@ -2285,9 +2287,7 @@ public class DocumentationGenerator {
 
     protected class DotGraph {
         StringBuffer buffer = new StringBuffer();
-
         Set<ITypeElement> nodes = new LinkedHashSet<ITypeElement>();
-
         Set<Pair<ITypeElement, ITypeElement>> edges = new LinkedHashSet<Pair<ITypeElement, ITypeElement>>();
 
         public void append(String text) {
@@ -2351,6 +2351,10 @@ public class DocumentationGenerator {
                 edges.add(pair);
                 append("\"" + sourceTypeElement.getName() + "\" -> \"" + targetTypeElement.getName() + "\" [" + attributes + "];\n");
             }
+        }
+
+        public int getNumNodes() {
+            return nodes.size();
         }
 
         @Override
