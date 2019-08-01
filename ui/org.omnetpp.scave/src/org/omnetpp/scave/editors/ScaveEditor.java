@@ -1226,14 +1226,15 @@ public class ScaveEditor extends MultiPageEditorPartExt
             return "BrowseData";
         else if (page.equals(chartsPage))
             return "Charts";
-        /*
-         * else { for (Map.Entry<AnalysisObject, Control> entry :
-         * closablePages.entrySet()) { AnalysisObject object = entry.getKey(); Control
-         * editorPage = entry.getValue(); if (page.equals(editorPage)) { Resource
-         * resource = object.eResource(); String uri = resource != null ?
-         * resource.getURIFragment(object) : null; return uri != null ? uri : null; } }
-         * }
-         */
+        else {
+            for (Map.Entry<AnalysisItem, Control> entry : closablePages.entrySet()) {
+                AnalysisItem item = entry.getKey();
+                Control editorPage = entry.getValue();
+                if (page.equals(editorPage))
+                    return Integer.toString(item.getId());
+            }
+        }
+
         return null;
     }
 
@@ -1241,7 +1242,8 @@ public class ScaveEditor extends MultiPageEditorPartExt
         return Integer.toString(analysis.getCharts().getCharts().indexOf(chartScriptEditor.chart));
     }
 
-    FormEditorPage restorePage(String pageId) {
+    // TODO merge the one below into this one?
+    FormEditorPage restoreFixedPage(String pageId) {
         if (pageId == null)
             return null;
         if (pageId.equals("Inputs")) {
@@ -1258,23 +1260,25 @@ public class ScaveEditor extends MultiPageEditorPartExt
         return null;
     }
 
+    // TODO merge with the one above, as a last else clause?
     ChartScriptEditor restoreEditor(String pageId) {
 
         if (pageId == null || pageId.equals("Inputs") || pageId.equals("BrowseData") || pageId.equals("Charts"))
             return null;
 
-        // TODO: add a unique ID to all charts and use that instead of the index
-        int index = Integer.parseInt(pageId);
+        int id = Integer.parseInt(pageId);
         List<AnalysisItem> charts = analysis.getCharts().getCharts();
 
-        if (index < 0 || index >= charts.size())
-            return null;
+        AnalysisItem item = null;
+        for (AnalysisItem chart : charts)
+            if (chart.getId() == id) {
+                item = chart;
+                break;
+            }
 
-        AnalysisItem object = charts.get(index);
-
-        if (object != null) {
-            createClosablePage(object);
-            Control p = closablePages.get(object);
+        if (item != null) {
+            createClosablePage(item);
+            Control p = closablePages.get(item);
             int pageIndex = findPage(p);
             IEditorPart editor = getEditor(pageIndex);
             if (editor instanceof ChartScriptEditor) {
@@ -1319,20 +1323,14 @@ public class ScaveEditor extends MultiPageEditorPartExt
             if (p instanceof FormEditorPage) {
                 FormEditorPage page = (FormEditorPage) p;
                 IMemento pageMemento = memento.createChild(PAGE);
-                pageMemento.putString(PAGE_ID, getPageId(page));
+                String pageId = getPageId(page);
+                pageMemento.putString(PAGE_ID, pageId);
                 page.saveState(pageMemento);
-            } else {
-                int pageIndex = findPage(p);
-                IEditorPart editor = getEditor(pageIndex);
-                if (editor instanceof ChartScriptEditor) {
-                    ChartScriptEditor chartScriptEditor = (ChartScriptEditor) editor;
-                    String pageId = getPageId(chartScriptEditor);
-                    IMemento pageMemento = memento.createChild(PAGE);
-                    pageMemento.putString(PAGE_ID, pageId);
-                    chartScriptEditor.saveState(pageMemento);
+                if (page instanceof ChartPage) {
+                    ChartPage chartPage = (ChartPage)page;
+                    chartPage.getChartScriptEditor().saveState(pageMemento);
                 }
             }
-
         }
     }
 
@@ -1340,7 +1338,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
         for (IMemento pageMemento : memento.getChildren(PAGE)) {
             String pageId = pageMemento.getString(PAGE_ID);
             if (pageId != null) {
-                FormEditorPage page = restorePage(pageId);
+                FormEditorPage page = restoreFixedPage(pageId);
                 if (page != null)
                     page.restoreState(pageMemento);
 

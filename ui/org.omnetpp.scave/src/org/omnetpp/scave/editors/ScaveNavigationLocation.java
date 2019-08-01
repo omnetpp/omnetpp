@@ -84,7 +84,7 @@ public class ScaveNavigationLocation extends NavigationLocation {
         ScaveEditor editor = getScaveEditor();
         if (editor != null) {
             if (pageId != null) {
-                FormEditorPage page = editor.restorePage(pageId);
+                FormEditorPage page = editor.restoreFixedPage(pageId);
                 if (page != null && pageMemento != null) {
                     page.restoreState(pageMemento);
                 }
