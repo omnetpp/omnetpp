@@ -66,11 +66,11 @@ class SIM_API cFigure : public cOwnedObject
         struct SIM_API Point {
             /** @name Coordinates. */
             //@{
-            double x, y;
+            double x = 0, y = 0;
             //@}
             /** @name Methods. */
             //@{
-            Point() : x(0), y(0) {}
+            Point()  {}
             Point(double x, double y) : x(x), y(y) {}
             Point operator + (const Point& p) const;
             Point operator - (const Point& p) const;
@@ -93,11 +93,11 @@ class SIM_API cFigure : public cOwnedObject
         struct SIM_API Rectangle {
             /** @name Rectangle geometry as top-left corner and size. */
             //@{
-            double x, y, width, height;
+            double x = 0, y = 0, width = 0, height = 0;
             //@}
             /** @name Methods. */
             //@{
-            Rectangle() : x(0), y(0), width(0), height(0) {}
+            Rectangle()  {}
             Rectangle(double x, double y, double width, double height) : x(x), y(y), width(width), height(height) {}
             Point getCenter() const;
             Point getSize() const;
@@ -123,11 +123,11 @@ class SIM_API cFigure : public cOwnedObject
         struct SIM_API Color {
             /** @name RGB color components. */
             //@{
-            uint8_t red, green, blue;
+            uint8_t red = 0, green = 0, blue = 0;
             //@}
             /** @name Methods. */
             //@{
-            Color() : red(0), green(0), blue(0) {}
+            Color()  {}
             Color(uint8_t red, uint8_t green, uint8_t blue) : red(red), green(green), blue(blue) {}
             Color(const char *color) {*this = parseColor(color);}
             bool operator==(const Color& other) const {return red == other.red && green == other.green && blue == other.blue;}
@@ -161,12 +161,12 @@ class SIM_API cFigure : public cOwnedObject
             /** @name Font attributes. */
             //@{
             std::string typeface; ///< Typeface of the font. An empty string means the default font.
-            int pointSize;  ///< Font size in points. A zero or negative value means the default size.
-            uint8_t style;  ///< Font style. Binary OR of FontStyle constants such as FONT_BOLD.
+            int pointSize = 0;  ///< Font size in points. A zero or negative value means the default size.
+            uint8_t style = FONT_NONE;  ///< Font style. Binary OR of FontStyle constants such as FONT_BOLD.
             //@}
             /** @name Methods. */
             //@{
-            Font() : pointSize(0), style(FONT_NONE) {}
+            Font()  {}
             Font(std::string typeface, int pointSize=-1, uint8_t style=FONT_NONE) : typeface(typeface), pointSize(pointSize), style(style) {}
             bool operator==(const Font& other) const {return typeface == other.typeface && pointSize == other.pointSize && style == other.style;}
             std::string str() const;
@@ -214,12 +214,12 @@ class SIM_API cFigure : public cOwnedObject
         struct SIM_API Transform {
             /** @name Elements of the transformation matrix. */
             //@{
-            double a, b, c, d, t1, t2;
+            double a = 1, b = 0, c = 0, d = 1, t1 = 0, t2 = 0;
             //@}
 
             /** @name Methods. */
             //@{
-            Transform() : a(1), b(0), c(0), d(1), t1(0), t2(0) {}
+            Transform()  {}
             Transform(double a, double b, double c, double d, double t1, double t2) : a(a), b(b), c(c), d(d), t1(t1), t2(t2) {}
             Transform(const Transform& t) : a(t.a), b(t.b), c(t.c), d(t.d), t1(t.t1), t2(t.t2) {}
             Transform& operator=(const Transform& t) {a=t.a; b=t.b; c=t.c; d=t.d; t1=t.t1; t2=t.t2; return *this;}
@@ -251,11 +251,11 @@ class SIM_API cFigure : public cOwnedObject
         struct SIM_API RGBA {
             /** @name Components of the pixel. */
             //@{
-            uint8_t red, green, blue, alpha;
+            uint8_t red = 0, green = 0, blue = 0, alpha = 0;
             //@}
             /** @name Methods. */
             //@{
-            RGBA() : red(0), green(0), blue(0), alpha(0) {}
+            RGBA()  {}
             RGBA(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) : red(red), green(green), blue(blue), alpha(alpha) {}
             void set(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {red=r; green=g; blue=b; alpha=a;}
             void operator=(const Color& color) {red = color.red; green = color.green; blue = color.blue; alpha = 255;}
@@ -956,12 +956,12 @@ class SIM_API cAbstractLineFigure : public cFigure
 {
     private:
         Color lineColor;
-        LineStyle lineStyle;
-        double lineWidth;
-        double lineOpacity;
-        CapStyle capStyle;
-        Arrowhead startArrowhead, endArrowhead;
-        bool zoomLineWidth;
+        LineStyle lineStyle = LINE_SOLID;
+        double lineWidth = 1;
+        double lineOpacity = 1;
+        CapStyle capStyle = CAP_BUTT;
+        Arrowhead startArrowhead = ARROW_NONE, endArrowhead = ARROW_NONE;
+        bool zoomLineWidth = false;
     private:
         void copy(const cAbstractLineFigure& other);
     protected:
@@ -969,7 +969,7 @@ class SIM_API cAbstractLineFigure : public cFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        explicit cAbstractLineFigure(const char *name=nullptr) : cFigure(name), lineColor(BLACK), lineStyle(LINE_SOLID), lineWidth(1), lineOpacity(1), capStyle(CAP_BUTT), startArrowhead(ARROW_NONE), endArrowhead(ARROW_NONE), zoomLineWidth(false) {}
+        explicit cAbstractLineFigure(const char *name=nullptr) : cFigure(name), lineColor(BLACK) {}
         cAbstractLineFigure(const cAbstractLineFigure& other) : cFigure(other) {copy(other);}
         cAbstractLineFigure& operator=(const cAbstractLineFigure& other);
         //@}
@@ -1158,7 +1158,7 @@ class SIM_API cArcFigure : public cAbstractLineFigure
 {
     private:
         Rectangle bounds; // bounding box of the oval that arc is part of
-        double startAngle, endAngle; // in radians, CCW, 0=east
+        double startAngle = 0, endAngle = 0; // in radians, CCW, 0=east
     private:
         void copy(const cArcFigure& other);
     protected:
@@ -1167,7 +1167,7 @@ class SIM_API cArcFigure : public cAbstractLineFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        explicit cArcFigure(const char *name=nullptr) : cAbstractLineFigure(name), startAngle(0), endAngle(0) {}
+        explicit cArcFigure(const char *name=nullptr) : cAbstractLineFigure(name) {}
         cArcFigure(const cArcFigure& other) : cAbstractLineFigure(other) {copy(other);}
         cArcFigure& operator=(const cArcFigure& other);
         //@}
@@ -1248,8 +1248,8 @@ class SIM_API cPolylineFigure : public cAbstractLineFigure
 {
     private:
         std::vector<Point> points;
-        bool smooth;
-        JoinStyle joinStyle;
+        bool smooth = false;
+        JoinStyle joinStyle = JOIN_MITER;
     private:
         void copy(const cPolylineFigure& other);
         void checkIndex(int i) const;
@@ -1260,7 +1260,7 @@ class SIM_API cPolylineFigure : public cAbstractLineFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        explicit cPolylineFigure(const char *name=nullptr) : cAbstractLineFigure(name), smooth(false), joinStyle(JOIN_MITER) {}
+        explicit cPolylineFigure(const char *name=nullptr) : cAbstractLineFigure(name) {}
         cPolylineFigure(const cPolylineFigure& other) : cAbstractLineFigure(other) {copy(other);}
         cPolylineFigure& operator=(const cPolylineFigure& other);
         //@}
@@ -1373,15 +1373,15 @@ class SIM_API cPolylineFigure : public cAbstractLineFigure
 class SIM_API cAbstractShapeFigure : public cFigure
 {
     private:
-        bool outlined;
-        bool filled;
+        bool outlined = true;
+        bool filled = false;
         Color lineColor;
         Color fillColor;
-        LineStyle lineStyle;
-        double lineWidth;
-        double lineOpacity;
-        double fillOpacity;
-        bool zoomLineWidth;
+        LineStyle lineStyle = LINE_SOLID;
+        double lineWidth = 1;
+        double lineOpacity = 1;
+        double fillOpacity = 1;
+        bool zoomLineWidth = false;
     private:
         void copy(const cAbstractShapeFigure& other);
     protected:
@@ -1389,7 +1389,7 @@ class SIM_API cAbstractShapeFigure : public cFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        explicit cAbstractShapeFigure(const char *name=nullptr) : cFigure(name), outlined(true), filled(false), lineColor(BLACK), fillColor(BLUE), lineStyle(LINE_SOLID), lineWidth(1), lineOpacity(1), fillOpacity(1), zoomLineWidth(false) {}
+        explicit cAbstractShapeFigure(const char *name=nullptr) : cFigure(name),  lineColor(BLACK), fillColor(BLUE) {}
         cAbstractShapeFigure(const cAbstractShapeFigure& other) : cFigure(other) {copy(other);}
         cAbstractShapeFigure& operator=(const cAbstractShapeFigure& other);
         //@}
@@ -1525,7 +1525,7 @@ class SIM_API cRectangleFigure : public cAbstractShapeFigure
 {
     private:
         Rectangle bounds;
-        double cornerRx, cornerRy;
+        double cornerRx = 0, cornerRy = 0;
     protected:
         virtual const char **getAllowedPropertyKeys() const override;
         virtual void hashGeometry(cHasher *hasher) const override;
@@ -1534,7 +1534,7 @@ class SIM_API cRectangleFigure : public cAbstractShapeFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        explicit cRectangleFigure(const char *name=nullptr) : cAbstractShapeFigure(name), cornerRx(0), cornerRy(0) {}
+        explicit cRectangleFigure(const char *name=nullptr) : cAbstractShapeFigure(name) {}
         cRectangleFigure(const cRectangleFigure& other) : cAbstractShapeFigure(other) {copy(other);}
         cRectangleFigure& operator=(const cRectangleFigure& other);
         //@}
@@ -1665,7 +1665,7 @@ class SIM_API cRingFigure : public cAbstractShapeFigure
 {
     private:
         Rectangle bounds; // bounding box
-        double innerRx, innerRy;
+        double innerRx = 0, innerRy = 0;
     private:
         void copy(const cRingFigure& other);
     protected:
@@ -1674,7 +1674,7 @@ class SIM_API cRingFigure : public cAbstractShapeFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        explicit cRingFigure(const char *name=nullptr) : cAbstractShapeFigure(name), innerRx(0), innerRy(0) {}
+        explicit cRingFigure(const char *name=nullptr) : cAbstractShapeFigure(name) {}
         cRingFigure(const cRingFigure& other) : cAbstractShapeFigure(other) {copy(other);}
         cRingFigure& operator=(const cRingFigure& other);
         //@}
@@ -1766,7 +1766,7 @@ class SIM_API cPieSliceFigure : public cAbstractShapeFigure
 {
     private:
         Rectangle bounds; // bounding box of the oval that the pie slice is part of
-        double startAngle, endAngle; // in radians, CCW, 0=east
+        double startAngle = 0, endAngle = 0; // in radians, CCW, 0=east
     private:
         void copy(const cPieSliceFigure& other);
     protected:
@@ -1775,7 +1775,7 @@ class SIM_API cPieSliceFigure : public cAbstractShapeFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        explicit cPieSliceFigure(const char *name=nullptr) : cAbstractShapeFigure(name), startAngle(0), endAngle(0) {}
+        explicit cPieSliceFigure(const char *name=nullptr) : cAbstractShapeFigure(name) {}
         cPieSliceFigure(const cPieSliceFigure& other) : cAbstractShapeFigure(other) {copy(other);}
         cPieSliceFigure& operator=(const cPieSliceFigure& other);
         //@}
@@ -1852,9 +1852,9 @@ class SIM_API cPolygonFigure : public cAbstractShapeFigure
 {
     private:
         std::vector<Point> points;
-        bool smooth;
-        JoinStyle joinStyle;
-        FillRule fillRule;
+        bool smooth = false;
+        JoinStyle joinStyle = JOIN_MITER;
+        FillRule fillRule = FILL_EVENODD;
     private:
         void copy(const cPolygonFigure& other);
         void checkIndex(int i) const;
@@ -1865,7 +1865,7 @@ class SIM_API cPolygonFigure : public cAbstractShapeFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        explicit cPolygonFigure(const char *name=nullptr) : cAbstractShapeFigure(name), smooth(false), joinStyle(JOIN_MITER), fillRule(FILL_EVENODD) {}
+        explicit cPolygonFigure(const char *name=nullptr) : cAbstractShapeFigure(name) {}
         cPolygonFigure(const cPolygonFigure& other) : cAbstractShapeFigure(other) {copy(other);}
         cPolygonFigure& operator=(const cPolygonFigure& other);
         //@}
@@ -2012,10 +2012,10 @@ class SIM_API cPathFigure : public cAbstractShapeFigure
     private:
         std::vector<PathItem*> path;
         mutable std::string cachedPathString;
-        JoinStyle joinStyle;
-        CapStyle capStyle;
+        JoinStyle joinStyle = JOIN_MITER;
+        CapStyle capStyle = CAP_BUTT;
         Point offset;
-        FillRule fillRule;
+        FillRule fillRule = FILL_EVENODD;
 
     private:
         void copy(const cPathFigure& other);
@@ -2029,7 +2029,7 @@ class SIM_API cPathFigure : public cAbstractShapeFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        explicit cPathFigure(const char *name=nullptr) : cAbstractShapeFigure(name), joinStyle(JOIN_MITER), capStyle(CAP_BUTT), fillRule(FILL_EVENODD) {}
+        explicit cPathFigure(const char *name=nullptr) : cAbstractShapeFigure(name) {}
         cPathFigure(const cPathFigure& other) : cAbstractShapeFigure(other) {copy(other);}
         virtual ~cPathFigure() {doClearPath();}
         cPathFigure& operator=(const cPathFigure& other);
@@ -2363,11 +2363,11 @@ class SIM_API cAbstractTextFigure : public cFigure
     private:
         Point position;
         Color color;  // note: tkpath's text supports separate colors and opacity for fill and outline -- ignore because probably SWT doesn't support it!
-        double opacity;
-        bool halo;
+        double opacity = 1;
+        bool halo = false;
         Font font;
         std::string text;
-        Anchor anchor;
+        Anchor anchor = ANCHOR_NW;
     private:
         void copy(const cAbstractTextFigure& other);
     protected:
@@ -2376,7 +2376,7 @@ class SIM_API cAbstractTextFigure : public cFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        explicit cAbstractTextFigure(const char *name=nullptr) : cFigure(name), color(BLACK), opacity(1), halo(false), anchor(ANCHOR_NW) {}
+        explicit cAbstractTextFigure(const char *name=nullptr) : cFigure(name), color(BLACK) {}
         cAbstractTextFigure(const cAbstractTextFigure& other) : cFigure(other) {copy(other);}
         cAbstractTextFigure& operator=(const cAbstractTextFigure& other);
         //@}
@@ -2592,12 +2592,12 @@ class SIM_API cAbstractImageFigure : public cFigure
 {
     private:
         Point position;
-        Anchor anchor;  // note: do not use the ANCHOR_BASELINE_START/MIDDLE/END constants, as they are for text items
-        double width, height; // zero or negative values mean using the image's own size
-        Interpolation interpolation;
-        double opacity;
+        Anchor anchor = ANCHOR_CENTER;  // note: do not use the ANCHOR_BASELINE_START/MIDDLE/END constants, as they are for text items
+        double width = 0, height = 0; // zero or negative values mean using the image's own size
+        Interpolation interpolation = INTERPOLATION_FAST;
+        double opacity = 1;
         Color tintColor;
-        double tintAmount; // in the range 0..1
+        double tintAmount = 0; // in the range 0..1
     private:
         void copy(const cAbstractImageFigure& other);
     protected:
@@ -2607,7 +2607,7 @@ class SIM_API cAbstractImageFigure : public cFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        explicit cAbstractImageFigure(const char *name=nullptr) : cFigure(name), anchor(ANCHOR_CENTER), width(0), height(0), interpolation(INTERPOLATION_FAST), opacity(1), tintColor(BLUE), tintAmount(0) { }
+        explicit cAbstractImageFigure(const char *name=nullptr) : cFigure(name),  tintColor(BLUE) { }
         cAbstractImageFigure(const cAbstractImageFigure& other) : cFigure(other) {copy(other);}
         cAbstractImageFigure& operator=(const cAbstractImageFigure& other);
         //@}
