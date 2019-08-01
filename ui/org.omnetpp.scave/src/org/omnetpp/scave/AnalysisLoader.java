@@ -19,6 +19,19 @@ import org.w3c.dom.NodeList;
 
 public class AnalysisLoader {
 
+    private static String extractCdataOrTextContent(Element scriptElement) {
+        int n = scriptElement.getChildNodes().getLength();
+        for (int k = 0; k < n; ++k) {
+            Node childNode = scriptElement.getChildNodes().item(k);
+            // to make sure the indentation before the CDATA section is not included (it can mess up the script)
+            if (childNode.getNodeType() == Node.CDATA_SECTION_NODE) {
+                return childNode.getTextContent();
+            }
+        }
+        // just return the entire text content of the <script> tag
+        return scriptElement.getTextContent();
+    }
+
     public static Analysis loadNewAnalysis(Node rootNode, ChartTemplateRegistry chartTemplateRegistry) {
 
         if (!rootNode.getNodeName().equals("analysis"))
@@ -110,7 +123,7 @@ public class AnalysisLoader {
                             chart.setScript(scriptAttrNode.getNodeValue());
                         else {
                             if (scriptElement != null)
-                                chart.setScript(scriptElement.getTextContent());
+                                chart.setScript(extractCdataOrTextContent(scriptElement));
                             else
                                 chart.setScript(StringUtils.stripEnd(chartNode.getTextContent(), " "));
                         }
@@ -128,7 +141,7 @@ public class AnalysisLoader {
                             for (Element pageNode : pageNodes) {
                                 String id = pageNode.getAttributes().getNamedItem("id").getNodeValue();
                                 String label = pageNode.getAttributes().getNamedItem("label").getNodeValue();
-                                String xswtForm = pageNode.getTextContent();
+                                String xswtForm = extractCdataOrTextContent(pageNode);
                                 Chart.DialogPage page = new Chart.DialogPage(id, label, xswtForm);
                                 pages.add(page);
                             }
