@@ -354,7 +354,7 @@ boolliteral
 
 numliteral
         : INTCONSTANT
-                { addConstant((intpar_t)opp_atoll($1)); delete [] $1; }
+                { addConstant((intval_t)opp_atoll($1)); delete [] $1; }
         | REALCONSTANT
                 { addConstant(opp_atof($1)); delete [] $1; }
         | NAN_
@@ -368,7 +368,7 @@ numliteral
                   std::string unitstr;
                   double d = parseQuantity($1, unitstr);
                   const char *unit = ExprValue::getPooled(unitstr.c_str());
-                  intpar_t l = (intpar_t)d;
+                  intval_t l = (intval_t)d;
                   if (d == l)
                       addConstant(ExprValue(l, unit));
                   else

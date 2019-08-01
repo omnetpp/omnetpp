@@ -96,7 +96,7 @@ class SIM_API cDoubleParImpl : public cParImpl
     /**
      * Converts from integer.
      */
-    virtual void setIntValue(intpar_t l) override;
+    virtual void setIntValue(intval_t l) override;
 
     /**
      * Sets the value to the given constant.
@@ -131,7 +131,7 @@ class SIM_API cDoubleParImpl : public cParImpl
     /**
      * Converts the value to integer.
      */
-    virtual intpar_t intValue(cComponent *context) const override;
+    virtual intval_t intValue(cComponent *context) const override;
 
     /**
      * Returns the value of the parameter.

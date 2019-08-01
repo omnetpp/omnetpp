@@ -91,9 +91,9 @@ void ExpressionFilter::process(simtime_t_cref t, cObject *details)
         case ExprValue::UNDEF: break;
         case ExprValue::BOOL: fire(this, t, lastOutput.boolValue(), details); break;
         case ExprValue::INT: {
-            // Careful: 'long' is just 32 bits on Windows, so 64-bit intpar_t might not fit. If so, emit in double.
-            intpar_t value = lastOutput.intValue();
-            if (sizeof(long) < sizeof(intpar_t) && (value < LONG_MIN || value > LONG_MAX))
+            // Careful: 'long' is just 32 bits on Windows, so 64-bit intval_t might not fit. If so, emit in double.
+            intval_t value = lastOutput.intValue();
+            if (sizeof(long) < sizeof(intval_t) && (value < LONG_MIN || value > LONG_MAX))
                 fire(this, t, (double)value, details);
             else
                 fire(this, t, (long)value, details);

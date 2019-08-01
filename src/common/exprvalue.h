@@ -80,7 +80,7 @@ class COMMON_API ExprValue
     Type type = UNDEF;
     union {
         bool bl;
-        intpar_t intv;
+        intval_t intv;
         double dbl;
         cObject *obj;
         const char *s; // non-nullptr, dynamically allocated
@@ -101,8 +101,8 @@ class COMMON_API ExprValue
     ExprValue(const ExprValue& other) {operator=(other);}
     ExprValue(ExprValue&& other) {operator=(other);}
     ExprValue(bool b)  {operator=(b);}
-    ExprValue(intpar_t l)  {operator=(l);}
-    ExprValue(intpar_t l, const char *unit)  {setQuantity(l, unit);}
+    ExprValue(intval_t l)  {operator=(l);}
+    ExprValue(intval_t l, const char *unit)  {setQuantity(l, unit);}
     ExprValue(double d)  {operator=(d);}
     ExprValue(double d, const char *unit)  {setQuantity(d,unit);}
     ExprValue(const char *s)  {operator=(s);}
@@ -170,7 +170,7 @@ class COMMON_API ExprValue
     /**
      * Sets the value to the given integer value.
      */
-    ExprValue& operator=(intpar_t d)  {deleteOld(); type=INT; intv=d; unit=nullptr; return *this;}
+    ExprValue& operator=(intval_t d)  {deleteOld(); type=INT; intv=d; unit=nullptr; return *this;}
 
     /**
      * Sets the value to the given double value.
@@ -197,7 +197,7 @@ class COMMON_API ExprValue
      * The unit string pointer is expected to stay valid during the entire
      * duration of the simulation (see related class comment).
      */
-    void setQuantity(intpar_t d, const char *unit) {deleteOld(); type=INT; intv=d; this->unit=unit;}
+    void setQuantity(intval_t d, const char *unit) {deleteOld(); type=INT; intv=d; this->unit=unit;}
 
     /**
      * Sets the value to the given double value and measurement unit.
@@ -210,7 +210,7 @@ class COMMON_API ExprValue
      * Sets the value to the given integer value, preserving the current
      * measurement unit. The object must already have the INT type.
      */
-    void setPreservingUnit(intpar_t d) {ensureType(INT); intv=d;}
+    void setPreservingUnit(intval_t d) {ensureType(INT); intv=d;}
 
     /**
      * Sets the value to the given double value, preserving the current
@@ -255,14 +255,14 @@ class COMMON_API ExprValue
     /**
      * Returns value as integer. The type must be INT.
      */
-    intpar_t intValue() const;
+    intval_t intValue() const;
 
     /**
      * Returns the numeric value as an integer converted to the given unit.
      * If the current unit cannot be converted to the given one, an error
      * will be thrown. The type must be INT.
      */
-    intpar_t intValueInUnit(const char *targetUnit) const;
+    intval_t intValueInUnit(const char *targetUnit) const;
 
     /**
      * Returns value as double. The type must be DOUBLE or INT.
@@ -307,7 +307,7 @@ class COMMON_API ExprValue
      * Calls intValue() and converts the result to unsigned long long.
      * An exception is thrown if the conversion would result in a data loss,
      */
-    operator intpar_t() const  {return intValue();}
+    operator intval_t() const  {return intValue();}
 
     /**
      * Equivalent to doubleValue().

@@ -31,7 +31,7 @@ class SIM_API cIntParImpl : public cParImpl
     // selector: flags & FL_ISEXPR
     union {
       cExpression *expr;
-      intpar_t val;
+      intval_t val;
     };
 
   private:
@@ -95,7 +95,7 @@ class SIM_API cIntParImpl : public cParImpl
     /**
      * Sets the value to the given integer.
      */
-    virtual void setIntValue(intpar_t l) override;
+    virtual void setIntValue(intval_t l) override;
 
     /**
      * Converts from double.
@@ -130,7 +130,7 @@ class SIM_API cIntParImpl : public cParImpl
     /**
      * Returns the value of the parameter.
      */
-    virtual intpar_t intValue(cComponent *context) const override;
+    virtual intval_t intValue(cComponent *context) const override;
 
     /**
      * Converts the value to double.

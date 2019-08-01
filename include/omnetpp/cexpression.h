@@ -106,11 +106,11 @@ class SIM_API cExpression : public cObject
     virtual bool boolValue(Context *context) const = 0;
 
     /**
-     * Evaluate the expression and convert the result to intpar_t if possible;
+     * Evaluate the expression and convert the result to intval_t if possible;
      * throw an error if conversion from that type is not supported.
      * Also throws an error if the actual unit does not match the expected unit.
      */
-    virtual intpar_t intValue(Context *context, const char *expectedUnit=nullptr) const = 0;
+    virtual intval_t intValue(Context *context, const char *expectedUnit=nullptr) const = 0;
 
     /**
      * Evaluate the expression and convert the result to double if possible;
@@ -147,13 +147,13 @@ class SIM_API cExpression : public cObject
     virtual bool boolValue(cComponent *contextComponent=nullptr) const;
 
     /**
-     * Evaluate the expression and convert the result to intpar_t if possible;
+     * Evaluate the expression and convert the result to intval_t if possible;
      * throw an error if conversion from that type is not supported.
      * Also throws an error if the actual unit does not match the expected unit.
      * This method creates a Context from contextComponent, and delegates
      * to intValue(Context*,const char*).
      */
-    virtual intpar_t intValue(cComponent *contextComponent=nullptr, const char *expectedUnit=nullptr) const;
+    virtual intval_t intValue(cComponent *contextComponent=nullptr, const char *expectedUnit=nullptr) const;
 
     /**
      * Evaluate the expression and convert the result to double if possible;

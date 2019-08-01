@@ -177,12 +177,12 @@ public:
     virtual bool boolValue(Context *context=nullptr) const;
 
     /**
-     * Evaluate the expression and convert the result to intpar_t if possible;
+     * Evaluate the expression and convert the result to intval_t if possible;
      * throw an error if conversion from that type is not supported, or
-     * the value is out of the range of intpar_t.
+     * the value is out of the range of intval_t.
      */
-    virtual intpar_t intValue(const char *expectedUnit=nullptr) const {return intValue(nullptr, expectedUnit);}
-    virtual intpar_t intValue(Context *context, const char *expectedUnit=nullptr) const;
+    virtual intval_t intValue(const char *expectedUnit=nullptr) const {return intValue(nullptr, expectedUnit);}
+    virtual intval_t intValue(Context *context, const char *expectedUnit=nullptr) const;
 
     /**
      * Evaluate the expression and convert the result to double if possible;

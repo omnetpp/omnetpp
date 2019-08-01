@@ -171,7 +171,7 @@ DEF(nedf_length,
 
 cNedValue nedf_length(cComponent *contextComponent, cNedValue argv[], int argc)
 {
-    return (intpar_t)argv[0].stdstringValue().size();
+    return (intval_t)argv[0].stdstringValue().size();
 }
 
 DEF(nedf_contains,
@@ -350,7 +350,7 @@ DEF(nedf_indexOf,
 
 cNedValue nedf_indexOf(cComponent *contextComponent, cNedValue argv[], int argc)
 {
-    return (intpar_t)argv[0].stdstringValue().find(argv[1].stdstringValue());
+    return (intval_t)argv[0].stdstringValue().find(argv[1].stdstringValue());
 }
 
 DEF(nedf_choose,
@@ -443,15 +443,15 @@ cNedValue nedf_int(cComponent *contextComponent, cNedValue argv[], int argc)
 {
     switch (argv[0].getType()) {
         case cNedValue::BOOL:
-            return (intpar_t)( (bool)argv[0] ? 1 : 0 );
+            return (intval_t)( (bool)argv[0] ? 1 : 0 );
         case cNedValue::INT:
             return argv[0];
         case cNedValue::DOUBLE:
-            return cNedValue(checked_int_cast<intpar_t>(floor(argv[0].doubleValue())), argv[0].getUnit());
+            return cNedValue(checked_int_cast<intval_t>(floor(argv[0].doubleValue())), argv[0].getUnit());
         case cNedValue::STRING: {
             std::string unit;
             double d = UnitConversion::parseQuantity(argv[0].stringValue(), unit);
-            return cNedValue(checked_int_cast<intpar_t>(floor(d)), cNedValue::getPooled(unit.c_str()));
+            return cNedValue(checked_int_cast<intval_t>(floor(d)), cNedValue::getPooled(unit.c_str()));
         }
         case cNedValue::OBJECT:
             throw cRuntimeError("Cannot convert object to int");
@@ -533,7 +533,7 @@ cNedValue nedf_parentIndex(cComponent *contextComponent, cNedValue argv[], int a
         throw cRuntimeError("'%s' has no parent module", contextComponent->getFullPath().c_str());
     if (!mod->isVector())
         throw cRuntimeError("Module '%s' is not a vector", mod->getFullPath().c_str());
-    return (intpar_t)mod->getIndex();
+    return (intval_t)mod->getIndex();
 }
 
 DEF(nedf_ancestorIndex,
@@ -555,7 +555,7 @@ cNedValue nedf_ancestorIndex(cComponent *contextComponent, cNedValue argv[], int
         throw cRuntimeError("Argument is larger than current nesting level");
     if (!mod->isVector())
         throw cRuntimeError("Module '%s' is not a vector", mod->getFullPath().c_str());
-    return (intpar_t)mod->getIndex();
+    return (intval_t)mod->getIndex();
 }
 
 
@@ -748,7 +748,7 @@ cNedValue nedf_intuniform(cComponent *contextComponent, cNedValue argv[], int ar
     int rng = argc == 3 ? (int)argv[2] : 0;
     if (opp_strcmp(argv[0].getUnit(), argv[1].getUnit()) != 0)
         throw cRuntimeError("Arguments must have the same unit, got (%s,%s)", argv[0].stdstringValue().c_str(), argv[1].stdstringValue().c_str());
-    return cNedValue((intpar_t)contextComponent->intuniform((int)argv[0], (int)argv[1], rng), argv[1].getUnit());
+    return cNedValue((intval_t)contextComponent->intuniform((int)argv[0], (int)argv[1], rng), argv[1].getUnit());
 }
 
 DEF(nedf_intuniformexcl,
@@ -761,7 +761,7 @@ cNedValue nedf_intuniformexcl(cComponent *contextComponent, cNedValue argv[], in
     int rng = argc == 3 ? (int)argv[2] : 0;
     if (opp_strcmp(argv[0].getUnit(), argv[1].getUnit()) != 0)
         throw cRuntimeError("Arguments must have the same unit, got (%s,%s)", argv[0].stdstringValue().c_str(), argv[1].stdstringValue().c_str());
-    return cNedValue((intpar_t)contextComponent->intuniformexcl((int)argv[0], (int)argv[1], rng), argv[1].getUnit());
+    return cNedValue((intval_t)contextComponent->intuniformexcl((int)argv[0], (int)argv[1], rng), argv[1].getUnit());
 }
 
 DEF(nedf_bernoulli,
@@ -772,7 +772,7 @@ DEF(nedf_bernoulli,
 cNedValue nedf_bernoulli(cComponent *contextComponent, cNedValue argv[], int argc)
 {
     int rng = argc == 2 ? (int)argv[1] : 0;
-    return (intpar_t)contextComponent->bernoulli((double)argv[0], rng);
+    return (intval_t)contextComponent->bernoulli((double)argv[0], rng);
 }
 
 DEF(nedf_binomial,
@@ -783,7 +783,7 @@ DEF(nedf_binomial,
 cNedValue nedf_binomial(cComponent *contextComponent, cNedValue argv[], int argc)
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
-    return (intpar_t)contextComponent->binomial((int)argv[0], (double)argv[1], rng);
+    return (intval_t)contextComponent->binomial((int)argv[0], (double)argv[1], rng);
 }
 
 DEF(nedf_geometric,
@@ -794,7 +794,7 @@ DEF(nedf_geometric,
 cNedValue nedf_geometric(cComponent *contextComponent, cNedValue argv[], int argc)
 {
     int rng = argc == 2 ? (int)argv[1] : 0;
-    return (intpar_t)contextComponent->geometric((double)argv[0], rng);
+    return (intval_t)contextComponent->geometric((double)argv[0], rng);
 }
 
 DEF(nedf_negbinomial,
@@ -805,7 +805,7 @@ DEF(nedf_negbinomial,
 cNedValue nedf_negbinomial(cComponent *contextComponent, cNedValue argv[], int argc)
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
-    return (intpar_t)contextComponent->negbinomial((int)argv[0], (double)argv[1], rng);
+    return (intval_t)contextComponent->negbinomial((int)argv[0], (double)argv[1], rng);
 }
 
 DEF(nedf_poisson,
@@ -816,7 +816,7 @@ DEF(nedf_poisson,
 cNedValue nedf_poisson(cComponent *contextComponent, cNedValue argv[], int argc)
 {
     int rng = argc == 2 ? (int)argv[1] : 0;
-    return (intpar_t)contextComponent->poisson((double)argv[0], rng);
+    return (intval_t)contextComponent->poisson((double)argv[0], rng);
 }
 
 //

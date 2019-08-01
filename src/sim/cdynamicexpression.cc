@@ -44,7 +44,7 @@ cNedValue cDynamicExpression::ResolverBase::readVariable(Context *context, const
     throw cRuntimeError("Cannot resolve variable '%s'", name);
 }
 
-cNedValue cDynamicExpression::ResolverBase::readVariable(Context *context, const char *name, intpar_t index)
+cNedValue cDynamicExpression::ResolverBase::readVariable(Context *context, const char *name, intval_t index)
 {
     throw cRuntimeError("Cannot resolve variable '%s[%lld]'", name, (long long)index);
 }
@@ -54,7 +54,7 @@ cNedValue cDynamicExpression::ResolverBase::readMember(Context *context, const c
     throw cRuntimeError("Cannot resolve member '%s' of object %s", name, object.str().c_str());
 }
 
-cNedValue cDynamicExpression::ResolverBase::readMember(Context *context, const cNedValue& object, const char *name, intpar_t index)
+cNedValue cDynamicExpression::ResolverBase::readMember(Context *context, const cNedValue& object, const char *name, intval_t index)
 {
     throw cRuntimeError("Cannot resolve member '%s[%lld]' of object %s", name, (long long)index, object.str().c_str());
 }
@@ -89,7 +89,7 @@ class DynIndexedVariableNode : public IndexedVariableNode {
 protected:
     cDynamicExpression::IResolver *resolver = nullptr;
 protected:
-    virtual ExprValue getValue(Context *context, intpar_t index) const override
+    virtual ExprValue getValue(Context *context, intval_t index) const override
         {return makeExprValue(resolver->readVariable(ctx(context), getName().c_str(), index));}
 public:
     DynIndexedVariableNode(const char *name, cDynamicExpression::IResolver *resolver) : IndexedVariableNode(name), resolver(resolver) {}
@@ -111,7 +111,7 @@ class DynIndexedMemberNode : public IndexedMemberNode {
 protected:
     cDynamicExpression::IResolver *resolver = nullptr;
 protected:
-    virtual ExprValue getValue(Context *context, const ExprValue& object, intpar_t index) const override
+    virtual ExprValue getValue(Context *context, const ExprValue& object, intval_t index) const override
         {return makeExprValue(resolver->readMember(ctx(context), makeNedValue(object), getName().c_str(), index));}
 public:
     DynIndexedMemberNode(const char *name, cDynamicExpression::IResolver *resolver) : IndexedMemberNode(name), resolver(resolver) {}
@@ -259,10 +259,10 @@ bool cDynamicExpression::boolValue(Context *context) const
     return v.boolValue();
 }
 
-intpar_t cDynamicExpression::intValue(Context *context, const char *expectedUnit) const
+intval_t cDynamicExpression::intValue(Context *context, const char *expectedUnit) const
 {
     cNedValue v = evaluate(context);
-    return expectedUnit == nullptr ? v.intValue() : (intpar_t)v.doubleValueInUnit(expectedUnit);
+    return expectedUnit == nullptr ? v.intValue() : (intval_t)v.doubleValueInUnit(expectedUnit);
 }
 
 double cDynamicExpression::doubleValue(Context *context, const char *expectedUnit) const

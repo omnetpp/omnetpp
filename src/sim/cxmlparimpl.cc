@@ -72,7 +72,7 @@ void cXMLParImpl::setBoolValue(bool b)
     throw cRuntimeError(this, E_BADCAST, "bool", "XML");
 }
 
-void cXMLParImpl::setIntValue(intpar_t l)
+void cXMLParImpl::setIntValue(intval_t l)
 {
     throw cRuntimeError(this, E_BADCAST, "integer", "XML");
 }
@@ -106,7 +106,7 @@ bool cXMLParImpl::boolValue(cComponent *) const
     throw cRuntimeError(this, E_BADCAST, "XML", "bool");
 }
 
-intpar_t cXMLParImpl::intValue(cComponent *) const
+intval_t cXMLParImpl::intValue(cComponent *) const
 {
     throw cRuntimeError(this, E_BADCAST, "XML", "integer");
 }

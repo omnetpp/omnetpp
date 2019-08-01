@@ -33,7 +33,7 @@ bool cExpression::boolValue(cComponent *contextComponent) const
     return boolValue(&context);
 }
 
-intpar_t cExpression::intValue(cComponent *contextComponent, const char *expectedUnit) const
+intval_t cExpression::intValue(cComponent *contextComponent, const char *expectedUnit) const
 {
     Context context(contextComponent);
     return intValue(&context, expectedUnit);

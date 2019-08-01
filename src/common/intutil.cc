@@ -34,10 +34,10 @@ void intCastError(const std::string& num, const char *errmsg)
     throw opp_runtime_error(errmsg ? errmsg : "Overflow casting %s to the target integer type", num.c_str());
 }
 
-intpar_t safeSub(intpar_t a, intpar_t b)
+intval_t safeSub(intval_t a, intval_t b)
 {
 #if (__has_builtin(__builtin_sub_overflow) && !defined(__c2__)) || (defined(__GNUC__) && !defined(__clang__) && __GNUC__ >= 5)
-    intpar_t res;
+    intval_t res;
     if (__builtin_sub_overflow(a, b, &res))
         throw opp_runtime_error("Integer overflow subtracting %" PRId64 " from %" PRId64 ", try casting operands to double", (int64_t)b, (int64_t)a);
     return res;
@@ -46,10 +46,10 @@ intpar_t safeSub(intpar_t a, intpar_t b)
 #endif
 }
 
-intpar_t safeAdd(intpar_t a, intpar_t b)
+intval_t safeAdd(intval_t a, intval_t b)
 {
 #if (__has_builtin(__builtin_add_overflow) && !defined(__c2__)) || (defined(__GNUC__) && !defined(__clang__) && __GNUC__ >= 5)
-    intpar_t res;
+    intval_t res;
     if (__builtin_add_overflow(a, b, &res))
         throw opp_runtime_error("Integer overflow adding %" PRId64 " and %" PRId64 ", try casting operands to double", (int64_t)a, (int64_t)b);
     return res;
@@ -58,31 +58,31 @@ intpar_t safeAdd(intpar_t a, intpar_t b)
 #endif
 }
 
-intpar_t safeMul(intpar_t a, intpar_t b)
+intval_t safeMul(intval_t a, intval_t b)
 {
 #if (__has_builtin(__builtin_mul_overflow) && !defined(__c2__)) || (defined(__GNUC__) && !defined(__clang__) && __GNUC__ >= 5)
-    intpar_t res;
+    intval_t res;
     if (__builtin_mul_overflow(a, b, &res))
         throw opp_runtime_error("Integer overflow multiplying %" PRId64 " and %" PRId64 ", try casting operands to double", (int64_t)a, (int64_t)b);
     return res;
 #else
-    const intpar_t int32max = std::numeric_limits<int32_t>::max();
+    const intval_t int32max = std::numeric_limits<int32_t>::max();
     if ((a & ~int32max) == 0 && (b & ~int32max) == 0)
         return a * b;
-    intpar_t res = a * b;
+    intval_t res = a * b;
     if (res / a != b)
         throw opp_runtime_error("Integer overflow multiplying %" PRId64 " and %" PRId64 ", try casting operands to double", (int64_t)a, (int64_t)b);
     return res;
 #endif
 }
 
-intpar_t intPow(intpar_t base, intpar_t exp)
+intval_t intPow(intval_t base, intval_t exp)
 {
     Assert(exp >= 0);
     if (exp == 0)
         return 1;
     try {
-        intpar_t result = 1;
+        intval_t result = 1;
         while (true) {
             if (exp & 1)
                 result = safeMul(result, base);
@@ -98,7 +98,7 @@ intpar_t intPow(intpar_t base, intpar_t exp)
     }
 }
 
-intpar_t shift(intpar_t a, intpar_t b)
+intval_t shift(intval_t a, intval_t b)
 {
     // positive b = left shift, negative b = (arithmetic) right shift
     // note: result of ">>" and "<<" is undefined if shift is larger or equal to the width of the integer
@@ -106,7 +106,7 @@ intpar_t shift(intpar_t a, intpar_t b)
     if (b > 0)
         return b < width ? (a << b) : 0;
     else
-        return -width < b ? (a >> -b) : a > 0 ? 0 : ~(intpar_t)0;
+        return -width < b ? (a >> -b) : a > 0 ? 0 : ~(intval_t)0;
 }
 
 }  // namespace common

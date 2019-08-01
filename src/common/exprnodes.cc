@@ -143,7 +143,7 @@ ExprValue VariableNode::evaluate(Context *context) const
 ExprValue IndexedVariableNode::evaluate(Context *context) const
 {
     ExprValue indexValue = child->tryEvaluate(context);
-    intpar_t index = indexValue.intValue();
+    intval_t index = indexValue.intValue();
     if (indexValue.getUnit() != nullptr)
         throw opp_runtime_error("Index must be dimensionless");
 
@@ -174,7 +174,7 @@ ExprValue IndexedMemberNode::evaluate(Context *context) const
     ExprValue object = child1->tryEvaluate(context);
 
     ExprValue indexValue = child2->tryEvaluate(context);
-    intpar_t index = indexValue.intValue();
+    intval_t index = indexValue.intValue();
     if (indexValue.getUnit() != nullptr)
         throw opp_runtime_error("Index must be dimensionless");
 
@@ -541,15 +541,15 @@ ExprValue IntCastNode::evaluate(Context *context) const
         case ExprValue::UNDEF:
             return value;
         case ExprValue::BOOL:
-            return (intpar_t)( (bool)value ? 1 : 0 );
+            return (intval_t)( (bool)value ? 1 : 0 );
         case ExprValue::INT:
             return value;
         case ExprValue::DOUBLE:
-            return ExprValue(checked_int_cast<intpar_t>(floor(value.doubleValue())), value.getUnit());
+            return ExprValue(checked_int_cast<intval_t>(floor(value.doubleValue())), value.getUnit());
         case ExprValue::STRING: {
             std::string unit;
             double d = UnitConversion::parseQuantity(value.stringValue(), unit);
-            return ExprValue(checked_int_cast<intpar_t>(floor(d)), ExprValue::getPooled(unit.c_str()));
+            return ExprValue(checked_int_cast<intval_t>(floor(d)), ExprValue::getPooled(unit.c_str()));
         }
         default:
             throw opp_runtime_error("Cannot cast %s to int", ExprValue::getTypeName(value.getType()));

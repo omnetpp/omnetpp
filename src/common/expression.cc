@@ -216,10 +216,10 @@ bool Expression::boolValue(Context *context) const
     return v.boolValue();
 }
 
-intpar_t Expression::intValue(Context *context, const char *expectedUnit) const
+intval_t Expression::intValue(Context *context, const char *expectedUnit) const
 {
     ExprValue v = evaluate(context);
-    return expectedUnit == nullptr ? v.intValue() : (intpar_t)v.doubleValueInUnit(expectedUnit);
+    return expectedUnit == nullptr ? v.intValue() : (intval_t)v.doubleValueInUnit(expectedUnit);
 }
 
 double Expression::doubleValue(Context *context, const char *expectedUnit) const

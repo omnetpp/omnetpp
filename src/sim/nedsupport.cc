@@ -117,7 +117,7 @@ ExprValue ModuleIndex::evaluate(Context *context_) const
     cModule *module = dynamic_cast<cModule *>(context->component);
     if (!module)
         throw cRuntimeError("'index' may only occur in submodule context");
-    return (intpar_t)module->getIndex();
+    return (intval_t)module->getIndex();
 }
 
 void ModuleIndex::print(std::ostream& out, int spaciousness) const
@@ -296,7 +296,7 @@ ExprValue LoopVar::evaluate(Context *context_) const
     const char *var = varName.c_str();
     for (int i = 0; i < varCount; i++)
         if (strcmp(var, varNames[i]) == 0)
-            return (intpar_t)vars[i];
+            return (intval_t)vars[i];
 
     throw cRuntimeError(context->component, "Loop variable '%s' not found", varName.c_str());
 }
@@ -320,7 +320,7 @@ ExprValue SizeofGateOrSubmodule::evaluate(Context *context_) const
         cModule *module = dynamic_cast<cModule *>(context->component);
         if (!module)
             throw cRuntimeError("'%s': Size of gate vector is only meaningful in module context", getName().c_str());
-        return (intpar_t)module->getVectorSize();
+        return (intval_t)module->getVectorSize();
     }
     else {
         cModule *module = dynamic_cast<cModule *>(inSubcomponentScope ? context->component->getParentModule() : context->component);
@@ -328,7 +328,7 @@ ExprValue SizeofGateOrSubmodule::evaluate(Context *context_) const
             throw cRuntimeError(context->component, E_ENOPARENT);
         // name is either a submodule vector or a gate vector of the module
         if (module->hasGate(name.c_str())) {
-            return (intpar_t)module->gateSize(name.c_str());  // returns 1 if it's not a vector
+            return (intval_t)module->gateSize(name.c_str());  // returns 1 if it's not a vector
         }
         else {
             // Find ident among submodules. If there's no such submodule, it may
@@ -336,8 +336,8 @@ ExprValue SizeofGateOrSubmodule::evaluate(Context *context_) const
             // size -- we cannot tell, so we have to return 0 (and cannot throw error).
             cModule *submodule0 = module->getSubmodule(name.c_str(), 0);  // returns nullptr if submodule is not a vector
             if (!submodule0 && module->getSubmodule(name.c_str()))
-                return (intpar_t)1;  // return 1 if submodule exists but not a vector
-            return (intpar_t)(submodule0 ? submodule0->getVectorSize() : 0L);
+                return (intval_t)1;  // return 1 if submodule exists but not a vector
+            return (intval_t)(submodule0 ? submodule0->getVectorSize() : 0L);
         }
     }
 }
@@ -362,7 +362,7 @@ ExprValue SizeofSubmoduleGate::evaluate(Context *context_) const
     cModule *submodule = module->getSubmodule(submoduleName.c_str());
     if (!submodule)
         throw cRuntimeError("'%s': Submodule '%s' not found", getName().c_str(), submoduleName.c_str());
-     return (intpar_t)submodule->gateSize(gateName.c_str());
+     return (intval_t)submodule->gateSize(gateName.c_str());
 }
 
 void SizeofSubmoduleGate::print(std::ostream& out, int spaciousness) const
@@ -390,7 +390,7 @@ ExprValue SizeofIndexedSubmoduleGate::evaluate(Context *context_) const
     cModule *submodule = module->getSubmodule(submoduleName.c_str(), index);
     if (!submodule)
         throw cRuntimeError("'%s': Submodule '%s[%d]' not found", getName().c_str(), submoduleName.c_str(), index);
-     return (intpar_t)submodule->gateSize(gateName.c_str());
+     return (intval_t)submodule->gateSize(gateName.c_str());
 }
 
 void SizeofIndexedSubmoduleGate::print(std::ostream& out, int spaciousness) const

@@ -73,12 +73,12 @@ void ExprNode::bringToCommonTypeAndUnit(ExprValue& a, ExprValue& b)
         if (c == 1)
             return; // done
         else if (c > 1 && c == floor(c)) {
-            a.intv = safeMul((intpar_t)c, a.intv);
+            a.intv = safeMul((intval_t)c, a.intv);
             a.unit = b.unit;
             return;
         }
         else if (c2 > 1 && c2 == floor(c2)) {
-            b.intv = safeMul((intpar_t)c2, b.intv);
+            b.intv = safeMul((intval_t)c2, b.intv);
             b.unit = a.unit;
             return;
         }

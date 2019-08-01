@@ -64,7 +64,7 @@ void cStringParImpl::setBoolValue(bool b)
     throw cRuntimeError(this, E_BADCAST, "bool", "string");
 }
 
-void cStringParImpl::setIntValue(intpar_t l)
+void cStringParImpl::setIntValue(intval_t l)
 {
     throw cRuntimeError(this, E_BADCAST, "integer", "string");
 }
@@ -98,7 +98,7 @@ bool cStringParImpl::boolValue(cComponent *context) const
     throw cRuntimeError(this, E_BADCAST, "string", "bool");
 }
 
-intpar_t cStringParImpl::intValue(cComponent *) const
+intval_t cStringParImpl::intValue(cComponent *) const
 {
     throw cRuntimeError(this, E_BADCAST, "string", "integer");
 }

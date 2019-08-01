@@ -101,16 +101,16 @@ class SIM_API ExpressionFilter : public cResultFilter
 
     protected:
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) override {find(prev)->lastValue = ExprValue(b); process(t, details);}
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details) override {find(prev)->lastValue = ExprValue((intpar_t)l); process(t, details);}
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details) override {find(prev)->lastValue = ExprValue((intpar_t)l); process(t, details);} //TODO signed<-->unsigned!
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details) override {find(prev)->lastValue = ExprValue((intval_t)l); process(t, details);}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details) override {find(prev)->lastValue = ExprValue((intval_t)l); process(t, details);} //TODO signed<-->unsigned!
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d, cObject *details) override {find(prev)->lastValue = ExprValue(d); process(t, details);}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v, cObject *details) override {find(prev)->lastValue = ExprValue(SIMTIME_DBL(v)); process(t, details);}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details) override {ASSERT(s); find(prev)->lastValue = ExprValue(s); process(t, details);} // note: emitting nullptr is not allowed
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details) override {find(prev)->lastValue = ExprValue(obj); process(t, details);}
 
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, bool b, cObject *details) override {find(source,signalID)->lastValue = ExprValue(b); process(now(), details);}
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l, cObject *details) override {find(source,signalID)->lastValue = ExprValue((intpar_t)l); process(now(), details);}
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l, cObject *details) override {find(source,signalID)->lastValue = ExprValue((intpar_t)l); process(now(), details);} //TODO signed<-->unsigned!
+        virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l, cObject *details) override {find(source,signalID)->lastValue = ExprValue((intval_t)l); process(now(), details);}
+        virtual void receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l, cObject *details) override {find(source,signalID)->lastValue = ExprValue((intval_t)l); process(now(), details);} //TODO signed<-->unsigned!
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d, cObject *details) override {find(source,signalID)->lastValue = ExprValue(d); process(now(), details);}
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& v, cObject *details) override {find(source,signalID)->lastValue = ExprValue(SIMTIME_DBL(v)); process(now(), details);}
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s, cObject *details) override {ASSERT(s); find(source,signalID)->lastValue = ExprValue(s); process(now(), details);} // note: emitting nullptr is not allowed

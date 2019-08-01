@@ -77,7 +77,7 @@ void ExprValue::cannotCastError(Type targetType) const
             str().c_str(), getTypeName(type), getTypeName(targetType), note);
 }
 
-intpar_t ExprValue::intValue() const
+intval_t ExprValue::intValue() const
 {
     if (type == INT)
         return intv;
@@ -95,14 +95,14 @@ void ExprValue::convertToDouble()
         cannotCastError(DOUBLE);
 }
 
-intpar_t ExprValue::intValueInUnit(const char *targetUnit) const
+intval_t ExprValue::intValueInUnit(const char *targetUnit) const
 {
     if (type == INT) {
         double c = UnitConversion::getConversionFactor(getUnit(), targetUnit);
         if (c == 1)
             return intv;
         else if (c > 1 && c == floor(c))
-            return safeMul((intpar_t)c, intv);
+            return safeMul((intval_t)c, intv);
         else
             throw opp_runtime_error("Cannot convert integer from unit '%s' to '%s': no conversion or conversion rate is not integer", getUnit(), targetUnit);
     }

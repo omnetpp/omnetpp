@@ -196,7 +196,7 @@ class SIM_API cParImpl : public cNamedObject
     /**
      * Sets the value to the given integer value.
      */
-    virtual void setIntValue(intpar_t l) = 0;
+    virtual void setIntValue(intval_t l) = 0;
 
     /**
      * Sets the value to the given double value.
@@ -243,7 +243,7 @@ class SIM_API cParImpl : public cNamedObject
      * Returns value as an integer. The cParImpl type must be INT.
      * Note: Implicit conversion from DOUBLE is intentionally missing.
      */
-    virtual intpar_t intValue(cComponent *context) const = 0;
+    virtual intval_t intValue(cComponent *context) const = 0;
 
     /**
      * Returns value as a double. The cParImpl type must be DOUBLE.

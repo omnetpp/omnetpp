@@ -68,7 +68,7 @@ void cDoubleParImpl::setBoolValue(bool b)
     throw cRuntimeError(this, E_BADCAST, "bool", "double");
 }
 
-void cDoubleParImpl::setIntValue(intpar_t l)
+void cDoubleParImpl::setIntValue(intval_t l)
 {
     throw cRuntimeError(this, E_BADCAST, "integer", "double");
 }
@@ -102,7 +102,7 @@ bool cDoubleParImpl::boolValue(cComponent *) const
     throw cRuntimeError(this, E_BADCAST, "double", "bool");
 }
 
-intpar_t cDoubleParImpl::intValue(cComponent *context) const
+intval_t cDoubleParImpl::intValue(cComponent *context) const
 {
     throw cRuntimeError(this, E_BADCAST, "double", "integer");
 }

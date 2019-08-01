@@ -59,7 +59,7 @@ class SIM_API cNedValue
 
   private:
     bool bl;
-    intpar_t intv;
+    intval_t intv;
     double dbl;
     const char *unit; // for INT/DOUBLE; must point to string constant or pooled string; may be nullptr
     std::string s;
@@ -79,10 +79,10 @@ class SIM_API cNedValue
     //@{
     cNedValue()  {type=UNDEF;}
     cNedValue(bool b)  {set(b);}
-    cNedValue(int l)  {set((intpar_t)l);}
-    cNedValue(int l, const char *unit)  {set((intpar_t)l, unit);}
-    cNedValue(intpar_t l)  {set(l);}
-    cNedValue(intpar_t l, const char *unit)  {set(l, unit);}
+    cNedValue(int l)  {set((intval_t)l);}
+    cNedValue(int l, const char *unit)  {set((intval_t)l, unit);}
+    cNedValue(intval_t l)  {set(l);}
+    cNedValue(intval_t l, const char *unit)  {set(l, unit);}
     cNedValue(double d)  {set(d);}
     cNedValue(double d, const char *unit)  {set(d,unit);}
     cNedValue(const char *s)  {set(s);}
@@ -174,15 +174,15 @@ class SIM_API cNedValue
      * The unit string pointer is expected to stay valid during the entire
      * duration of the simulation (see related class comment).
      */
-    void set(intpar_t l, const char *unit=nullptr) {type=INT; intv=l; this->unit=unit;}
+    void set(intval_t l, const char *unit=nullptr) {type=INT; intv=l; this->unit=unit;}
 
     /**
      * Sets the value to the given integer value and measurement unit (optional).
      * The unit string pointer is expected to stay valid during the entire
      * duration of the simulation (see related class comment).
-     * This is a convenience method that delegates to the intpar_t version.
+     * This is a convenience method that delegates to the intval_t version.
      */
-    void set(int l, const char *unit=nullptr) {set((intpar_t)l, unit);}
+    void set(int l, const char *unit=nullptr) {set((intval_t)l, unit);}
 
     /**
      * Sets the value to the given double value and measurement unit (optional).
@@ -195,7 +195,7 @@ class SIM_API cNedValue
      * Sets the value to the given integer value, preserving the current
      * measurement unit. The object must already have the INT type.
      */
-    void setPreservingUnit(intpar_t l) {assertType(INT); intv=l;}
+    void setPreservingUnit(intval_t l) {assertType(INT); intv=l;}
 
     /**
      * Sets the value to the given double value, preserving the current
@@ -261,14 +261,14 @@ class SIM_API cNedValue
     /**
      * Returns value as integer. The type must be INT.
      */
-    intpar_t intValue() const;
+    intval_t intValue() const;
 
     /**
      * Returns the numeric value as an integer converted to the given unit.
      * If the current unit cannot be converted to the given one, an error
      * will be thrown. The type must be INT.
      */
-    intpar_t intValueInUnit(const char *targetUnit) const;
+    intval_t intValueInUnit(const char *targetUnit) const;
 
     /**
      * Returns value as double. The type must be DOUBLE or INT.
@@ -319,54 +319,54 @@ class SIM_API cNedValue
     cNedValue& operator=(bool b)  {set(b); return *this;}
 
     /**
-     * Converts the argument to long, and calls set(intpar_t).
+     * Converts the argument to long, and calls set(intval_t).
      */
-    cNedValue& operator=(char c)  {set((intpar_t)c); return *this;}
+    cNedValue& operator=(char c)  {set((intval_t)c); return *this;}
 
     /**
-     * Converts the argument to long, and calls set(intpar_t).
+     * Converts the argument to long, and calls set(intval_t).
      */
-    cNedValue& operator=(unsigned char c)  {set((intpar_t)c); return *this;}
+    cNedValue& operator=(unsigned char c)  {set((intval_t)c); return *this;}
 
     /**
-     * Converts the argument to long, and calls set(intpar_t).
+     * Converts the argument to long, and calls set(intval_t).
      */
-    cNedValue& operator=(short i)  {set((intpar_t)i); return *this;}
+    cNedValue& operator=(short i)  {set((intval_t)i); return *this;}
 
     /**
-     * Converts the argument to long, and calls set(intpar_t).
+     * Converts the argument to long, and calls set(intval_t).
      */
-    cNedValue& operator=(unsigned short i)  {set((intpar_t)i); return *this;}
+    cNedValue& operator=(unsigned short i)  {set((intval_t)i); return *this;}
 
     /**
-     * Converts the argument to long, and calls set(intpar_t).
+     * Converts the argument to long, and calls set(intval_t).
      */
-    cNedValue& operator=(int i)  {set((intpar_t)i); return *this;}
+    cNedValue& operator=(int i)  {set((intval_t)i); return *this;}
 
     /**
-     * Converts the argument to long, and calls set(intpar_t).
+     * Converts the argument to long, and calls set(intval_t).
      */
-    cNedValue& operator=(unsigned int i)  {set((intpar_t)i); return *this;}
+    cNedValue& operator=(unsigned int i)  {set((intval_t)i); return *this;}
 
     /**
-     * Equivalent to set(intpar_t).
+     * Equivalent to set(intval_t).
      */
-    cNedValue& operator=(long l)  {set((intpar_t)l); return *this;}
+    cNedValue& operator=(long l)  {set((intval_t)l); return *this;}
 
     /**
-     * Converts the argument to long, and calls set(intpar_t).
+     * Converts the argument to long, and calls set(intval_t).
      */
-    cNedValue& operator=(unsigned long l) {set(checked_int_cast<intpar_t>(l, OVERFLOW_MSG)); return *this;}
+    cNedValue& operator=(unsigned long l) {set(checked_int_cast<intval_t>(l, OVERFLOW_MSG)); return *this;}
 
     /**
-     * Equivalent to set(intpar_t).
+     * Equivalent to set(intval_t).
      */
-    cNedValue& operator=(long long l)  {set(checked_int_cast<intpar_t>(l, OVERFLOW_MSG)); return *this;}
+    cNedValue& operator=(long long l)  {set(checked_int_cast<intval_t>(l, OVERFLOW_MSG)); return *this;}
 
     /**
-     * Converts the argument to long, and calls set(intpar_t).
+     * Converts the argument to long, and calls set(intval_t).
      */
-    cNedValue& operator=(unsigned long long l) {set(checked_int_cast<intpar_t>(l, OVERFLOW_MSG)); return *this;}
+    cNedValue& operator=(unsigned long long l) {set(checked_int_cast<intval_t>(l, OVERFLOW_MSG)); return *this;}
 
     /**
      * Equivalent to set(double).

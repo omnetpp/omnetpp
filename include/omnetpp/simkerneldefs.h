@@ -83,7 +83,7 @@ typedef int64_t eventnumber_t;
  *
  * @ingroup SimSupport
  */
-typedef int64_t intpar_t;
+typedef int64_t intval_t;
 
 #endif
 

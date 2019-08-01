@@ -93,7 +93,7 @@ class SIM_API cXMLParImpl : public cParImpl
     /**
      * Raises an error: cannot convert integer to XML.
      */
-    virtual void setIntValue(intpar_t l) override;
+    virtual void setIntValue(intval_t l) override;
 
     /**
      * Raises an error: cannot convert double to XML.
@@ -128,7 +128,7 @@ class SIM_API cXMLParImpl : public cParImpl
     /**
      * Raises an error: cannot convert XML to integer.
      */
-    virtual intpar_t intValue(cComponent *context) const override;
+    virtual intval_t intValue(cComponent *context) const override;
 
     /**
      * Raises an error: cannot convert XML to double.

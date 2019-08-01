@@ -215,7 +215,7 @@ class SIM_API cPar : public cObject
     /**
      * Sets the value to the given integer value.
      */
-    cPar& setIntValue(intpar_t l);
+    cPar& setIntValue(intval_t l);
 
     /**
      * Sets the value to the given double value.
@@ -273,10 +273,10 @@ class SIM_API cPar : public cObject
     bool boolValue() const;
 
     /**
-     * Returns value as intpar_t. The cPar type must be INT.
+     * Returns value as intval_t. The cPar type must be INT.
      * Note: Implicit conversion from DOUBLE is intentionally missing.
      */
-    intpar_t intValue() const;
+    intval_t intValue() const;
 
     /**
      * Returns value as double. The cPar type must be DOUBLE.
@@ -418,17 +418,17 @@ class SIM_API cPar : public cObject
     /**
      * Delegates to setIntValue().
      */
-    cPar& operator=(unsigned long i) {return setIntValue(checked_int_cast<intpar_t>(i, this));}
+    cPar& operator=(unsigned long i) {return setIntValue(checked_int_cast<intval_t>(i, this));}
 
     /**
      * Delegates to setIntValue().
      */
-    cPar& operator=(long long i)  {return setIntValue(checked_int_cast<intpar_t>(i, this));}
+    cPar& operator=(long long i)  {return setIntValue(checked_int_cast<intval_t>(i, this));}
 
     /**
      * Delegates to setIntValue().
      */
-    cPar& operator=(unsigned long long i)  {return setIntValue(checked_int_cast<intpar_t>(i, this));}
+    cPar& operator=(unsigned long long i)  {return setIntValue(checked_int_cast<intval_t>(i, this));}
 
     /**
      * Equivalent to setDoubleValue().

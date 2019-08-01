@@ -53,13 +53,13 @@ class SIM_API cDynamicExpression : public cExpression
         virtual cNedValue readVariable(Context *context, const char *name) = 0;
 
         /** Return the value of an element of an array variable with the given name. Expression syntax: name[index] */
-        virtual cNedValue readVariable(Context *context, const char *name, intpar_t index) = 0;
+        virtual cNedValue readVariable(Context *context, const char *name, intval_t index) = 0;
 
         /** Return the value of a member of the given object. Expression syntax: object.name */
         virtual cNedValue readMember(Context *context, const cNedValue& object, const char *name) = 0;
 
         /** Return the value of an element of an array member of the given object. Expression syntax: object.name[index] */
-        virtual cNedValue readMember(Context *context, const cNedValue& object, const char *name, intpar_t index) = 0;
+        virtual cNedValue readMember(Context *context, const cNedValue& object, const char *name, intval_t index) = 0;
 
         /** Evaluate a function call with the given arguments. Expression syntax: name(argv0, argv1,...) */
         virtual cNedValue callFunction(Context *context, const char *name, cNedValue argv[], int argc) = 0;
@@ -75,9 +75,9 @@ class SIM_API cDynamicExpression : public cExpression
     class SIM_API ResolverBase : public IResolver {
       public:
         virtual cNedValue readVariable(Context *context, const char *name) override;
-        virtual cNedValue readVariable(Context *context, const char *name, intpar_t index) override;
+        virtual cNedValue readVariable(Context *context, const char *name, intval_t index) override;
         virtual cNedValue readMember(Context *context, const cNedValue& object, const char *name) override;
-        virtual cNedValue readMember(Context *context, const cNedValue& object, const char *name, intpar_t index) override;
+        virtual cNedValue readMember(Context *context, const cNedValue& object, const char *name, intval_t index) override;
         virtual cNedValue callFunction(Context *context, const char *name, cNedValue argv[], int argc) override;
         virtual cNedValue callMethod(Context *context, const cNedValue& object, const char *name, cNedValue argv[], int argc) override;
     };
@@ -185,11 +185,11 @@ class SIM_API cDynamicExpression : public cExpression
     virtual bool boolValue(Context *context) const override;
 
     /**
-     * Evaluate the expression and convert the result to intpar_t if possible;
+     * Evaluate the expression and convert the result to intval_t if possible;
      * throw an error if conversion from that type is not supported, or
-     * the value of out of the range of intpar_t.
+     * the value of out of the range of intval_t.
      */
-    virtual intpar_t intValue(Context *context, const char *expectedUnit=nullptr) const override;
+    virtual intval_t intValue(Context *context, const char *expectedUnit=nullptr) const override;
 
     /**
      * Evaluate the expression and convert the result to double if possible;

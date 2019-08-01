@@ -26,7 +26,7 @@
 namespace omnetpp {
 namespace common {
 
-typedef int64_t intpar_t;
+typedef int64_t intval_t;
 
 // helper for checked_int_cast
 void intCastError(const std::string& num, const char *errmsg=nullptr);
@@ -60,10 +60,10 @@ ToInt checked_int_cast(double d, const char *errmsg=nullptr)
     return (ToInt)d;
 }
 
-inline double safeCastToDouble(intpar_t x)
+inline double safeCastToDouble(intval_t x)
 {
     double d = (double)x;
-    intpar_t x2 = (intpar_t)d;
+    intval_t x2 = (intval_t)d;
     if (x != x2)
         throw opp_runtime_error("Integer %" PRId64 " too large, conversion to double would incur precision loss (use explicit cast to double to suppress this error)", (int64_t)x);
     return d;
@@ -71,11 +71,11 @@ inline double safeCastToDouble(intpar_t x)
 
 // safe integer operations (throw exception on overflow):
 
-intpar_t safeAdd(intpar_t a, intpar_t b);
-intpar_t safeSub(intpar_t a, intpar_t b);
-intpar_t safeMul(intpar_t a, intpar_t b);
-intpar_t intPow(intpar_t base, intpar_t exp);
-intpar_t shift(intpar_t a, intpar_t b);
+intval_t safeAdd(intval_t a, intval_t b);
+intval_t safeSub(intval_t a, intval_t b);
+intval_t safeMul(intval_t a, intval_t b);
+intval_t intPow(intval_t base, intval_t exp);
+intval_t shift(intval_t a, intval_t b);
 
 }  // namespace common
 }  // namespace omnetpp

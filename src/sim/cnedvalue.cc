@@ -78,7 +78,7 @@ void cNedValue::set(const cPar& par)
     }
 }
 
-intpar_t cNedValue::intValue() const
+intval_t cNedValue::intValue() const
 {
     if (type == INT)
         return intv;
@@ -86,10 +86,10 @@ intpar_t cNedValue::intValue() const
         cannotCastError(INT);
 }
 
-inline double safeCastToDouble(intpar_t x)
+inline double safeCastToDouble(intval_t x)
 {
     double d = (double)x;
-    intpar_t x2 = (intpar_t)d;
+    intval_t x2 = (intval_t)d;
     if (x != x2)
         throw cRuntimeError("Integer %" PRId64 " too large, conversion to double would incur precision loss (hint: if this occurs in NED or ini, use the double() operator to suppress this error)", (int64_t)x);
     return d;
@@ -105,14 +105,14 @@ void cNedValue::convertToDouble()
         cannotCastError(DOUBLE);
 }
 
-intpar_t cNedValue::intValueInUnit(const char *targetUnit) const
+intval_t cNedValue::intValueInUnit(const char *targetUnit) const
 {
     if (type == INT) {
         double c = UnitConversion::getConversionFactor(getUnit(), targetUnit);
         if (c == 1)
             return intv;
         else if (c > 1 && c == floor(c))
-            return safeMul((intpar_t)c, intv);
+            return safeMul((intval_t)c, intv);
         else
             throw cRuntimeError("Cannot convert integer from unit %s to %s: no conversion or conversion rate is not integer", getUnit(), targetUnit);
     }

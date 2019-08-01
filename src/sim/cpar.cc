@@ -186,7 +186,7 @@ bool cPar::boolValue() const
     TRY(return p->boolValue(evalContext));
 }
 
-intpar_t cPar::intValue() const
+intval_t cPar::intValue() const
 {
     TRY(return p->intValue(evalContext));
 }
@@ -239,7 +239,7 @@ cPar& cPar::setBoolValue(bool b)
     return *this;
 }
 
-cPar& cPar::setIntValue(intpar_t l)
+cPar& cPar::setIntValue(intval_t l)
 {
     beforeChange();
     copyIfShared();

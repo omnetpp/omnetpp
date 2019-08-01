@@ -74,7 +74,7 @@ class ENVIR_API ValueIterator
         void collectVariablesInto(std::set<std::string>& vars) const;
         void substituteVariables(const VariableMap& map);  // raw -> value
         void evaluate(); // value -> value
-        double dblValue() const { if (value.getType() == ExprValue::INT) return (intpar_t)value; checkType(ExprValue::DOUBLE); return (double)value; }
+        double dblValue() const { if (value.getType() == ExprValue::INT) return (intval_t)value; checkType(ExprValue::DOUBLE); return (double)value; }
         bool boolValue() const { checkType(ExprValue::BOOL); return (bool)value; }
         std::string strValue() const { checkType(ExprValue::STRING); return (std::string)value; }
     };

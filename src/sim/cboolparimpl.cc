@@ -66,7 +66,7 @@ void cBoolParImpl::setBoolValue(bool b)
     flags |= FL_CONTAINSVALUE | FL_ISSET;
 }
 
-void cBoolParImpl::setIntValue(intpar_t l)
+void cBoolParImpl::setIntValue(intval_t l)
 {
     throw cRuntimeError(this, E_BADCAST, "integer", "double");
 }
@@ -108,7 +108,7 @@ bool cBoolParImpl::boolValue(cComponent *context) const
     }
 }
 
-intpar_t cBoolParImpl::intValue(cComponent *) const
+intval_t cBoolParImpl::intValue(cComponent *) const
 {
     throw cRuntimeError(this, E_BADCAST, "bool", "integer");
 }

@@ -92,7 +92,7 @@ protected:
 protected:
     virtual void print(std::ostream& out, int spaciousness) const override;
     virtual ExprValue evaluate(Context *context) const override;
-    virtual ExprValue getValue(Context *context, intpar_t index) const = 0;
+    virtual ExprValue getValue(Context *context, intval_t index) const = 0;
 public:
     IndexedVariableNode(const char *name) : name(name) {}
     virtual std::string getName() const override {return name;}
@@ -119,7 +119,7 @@ protected:
 protected:
     virtual void print(std::ostream& out, int spaciousness) const override;
     virtual ExprValue evaluate(Context *context) const override;
-    virtual ExprValue getValue(Context *context, const ExprValue& object, intpar_t index) const = 0;
+    virtual ExprValue getValue(Context *context, const ExprValue& object, intval_t index) const = 0;
 public:
     IndexedMemberNode(const char *name) : name(name) {}
     virtual std::string getName() const override {return name;}
@@ -350,13 +350,13 @@ public:
 
 class BitwiseInfixOperatorNode : public BinaryOperatorNode {
 protected:
-    virtual intpar_t compute(intpar_t a, intpar_t b) const = 0;
+    virtual intval_t compute(intval_t a, intval_t b) const = 0;
     virtual ExprValue evaluate(Context *context) const override;
 };
 
 class BitwiseAndNode : public BitwiseInfixOperatorNode {
 protected:
-    virtual intpar_t compute(intpar_t a, intpar_t b) const override { return a & b; }
+    virtual intval_t compute(intval_t a, intval_t b) const override { return a & b; }
 public:
     virtual ExprNode *dup() const override {return new BitwiseAndNode;}
     virtual std::string getName() const override {return "&";}
@@ -365,7 +365,7 @@ public:
 
 class BitwiseOrNode : public BitwiseInfixOperatorNode {
 protected:
-    virtual intpar_t compute(intpar_t a, intpar_t b) const override { return a | b; }
+    virtual intval_t compute(intval_t a, intval_t b) const override { return a | b; }
 public:
     virtual ExprNode *dup() const override {return new BitwiseOrNode;}
     virtual std::string getName() const override {return "|";}
@@ -374,7 +374,7 @@ public:
 
 class BitwiseXorNode : public BitwiseInfixOperatorNode {
 protected:
-    virtual intpar_t compute(intpar_t a, intpar_t b) const override { return a ^ b; }
+    virtual intval_t compute(intval_t a, intval_t b) const override { return a ^ b; }
 public:
     virtual ExprNode *dup() const override {return new BitwiseXorNode;}
     virtual std::string getName() const override {return "#";}
@@ -383,7 +383,7 @@ public:
 
 class LShiftNode : public BitwiseInfixOperatorNode {
 protected:
-    virtual intpar_t compute(intpar_t a, intpar_t b) const override { return shift(a,b); }
+    virtual intval_t compute(intval_t a, intval_t b) const override { return shift(a,b); }
 public:
     virtual ExprNode *dup() const override {return new LShiftNode;}
     virtual std::string getName() const override {return "<<";}
@@ -392,7 +392,7 @@ public:
 
 class RShiftNode : public BitwiseInfixOperatorNode {
 protected:
-    virtual intpar_t compute(intpar_t a, intpar_t b) const override { return shift(a,-b); }
+    virtual intval_t compute(intval_t a, intval_t b) const override { return shift(a,-b); }
 public:
     virtual ExprNode *dup() const override {return new RShiftNode;}
     virtual std::string getName() const override {return ">>";}
