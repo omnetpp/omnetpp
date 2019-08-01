@@ -78,12 +78,28 @@
 typedef int64_t eventnumber_t;
 
 /**
- * @brief Type for NED parameter values that store integers. It is guaranteed
- * to be signed and at least as wide as "long".
+ * @brief Signed integer type which is guaranteed to be at least 64 bits wide.
+ * It is used throughout the library as a "large enough" general integer type,
+ * for example in NED parameters, during expression evaluation, and as signal value.
  *
  * @ingroup SimSupport
  */
 typedef int64_t intval_t;
+
+/**
+ * @brief Unsigned integer type which is guaranteed to be at least 64 bits wide.
+ * It is used throughout the library as a "large enough" general unsigned integer type.
+ *
+ * @ingroup SimSupport
+ */
+typedef uint64_t uintval_t;
+
+/**
+ * DEPRECATED. Use intval_t instead.
+ *
+ * @ingroup SimSupport
+ */
+[[deprecated]] typedef intval_t intpar_t;
 
 #endif
 
