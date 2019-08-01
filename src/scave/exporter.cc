@@ -94,7 +94,7 @@ ExporterType *ExporterFactory::getByFormat(const std::string& format)
     for (ExporterType *exporter : exporters)
         if (exporter->getFormatName() == format)
             return exporter;
-    throw opp_runtime_error("Unknown exporter '%s'", format.c_str());
+    return nullptr;
 }
 
 std::string ExporterFactory::getFormatFromOutputFileName(const std::string& fileName)
@@ -111,7 +111,7 @@ std::string ExporterFactory::getFormatFromOutputFileName(const std::string& file
 Exporter *ExporterFactory::createExporter(const std::string& format)
 {
     ExporterType *e = getByFormat(format);
-    return e->create();
+    return e ? e->create() : nullptr;
 }
 
 }  // namespace scave

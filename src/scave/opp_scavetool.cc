@@ -704,7 +704,7 @@ void ScaveTool::exportCommand(int argc, char **argv)
         throw opp_runtime_error("Exporter type could not be deduced from file name, must be specified (-F option)");
     Exporter *exporter = ExporterFactory::createExporter(opt_exporter);
     if (!exporter)
-        throw opp_runtime_error("Unrecognized export format '%s'", opt_exporter.c_str());
+        throw opp_runtime_error("Unrecognized export format '%s' (accepted ones: %s)", opt_exporter.c_str(), opp_join(ExporterFactory::getSupportedFormats(), ", ", '\'').c_str());
 
     // convert exporter options from vector to map
     map<string,string> exporterOptions;
