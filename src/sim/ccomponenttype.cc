@@ -48,8 +48,8 @@ static const char *getSignalTypeName(SimsignalType type)
 {
     switch (type) {
         case SIMSIGNAL_BOOL: return "bool";
-        case SIMSIGNAL_LONG: return "long";
-        case SIMSIGNAL_ULONG: return "unsigned long";
+        case SIMSIGNAL_INT: return "int";
+        case SIMSIGNAL_UINT: return "unsigned int";
         case SIMSIGNAL_DOUBLE: return "double";
         case SIMSIGNAL_SIMTIME: return "simtime_t";
         case SIMSIGNAL_STRING: return "string";
@@ -61,8 +61,8 @@ static const char *getSignalTypeName(SimsignalType type)
 static SimsignalType getSignalType(const char *name, SimsignalType fallback=SIMSIGNAL_UNDEF)
 {
     if (!strcmp(name, "bool")) return SIMSIGNAL_BOOL;
-    if (!strcmp(name, "long")) return SIMSIGNAL_LONG;
-    if (!strcmp(name, "unsigned long")) return SIMSIGNAL_ULONG;
+    if (!strcmp(name, "int") || !strcmp(name, "long")) return SIMSIGNAL_INT;
+    if (!strcmp(name, "unsigned int") || !strcmp(name, "unsigned long")) return SIMSIGNAL_UINT;
     if (!strcmp(name, "double")) return SIMSIGNAL_DOUBLE;
     if (!strcmp(name, "simtime_t")) return SIMSIGNAL_SIMTIME;
     if (!strcmp(name, "string")) return SIMSIGNAL_STRING;

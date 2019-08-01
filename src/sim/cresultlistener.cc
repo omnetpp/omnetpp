@@ -64,7 +64,7 @@ void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, bo
     }
 }
 
-void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, long l, cObject *details)
+void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, intval_t l, cObject *details)
 {
     try {
         receiveSignal(nullptr, getSimulation()->getSimTime(), l, details);
@@ -74,7 +74,7 @@ void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, lo
     }
 }
 
-void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l, cObject *details)
+void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, uintval_t l, cObject *details)
 {
     try {
         receiveSignal(nullptr, getSimulation()->getSimTime(), l, details);
@@ -124,8 +124,8 @@ void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, cO
             // dispatch cITimestampedValue by data type
             switch (v->getValueType(signalID)) {
                 case SIMSIGNAL_BOOL: receiveSignal(nullptr, v->getTimestamp(signalID), v->boolValue(signalID), details); break;
-                case SIMSIGNAL_LONG: receiveSignal(nullptr, v->getTimestamp(signalID), v->longValue(signalID), details); break;
-                case SIMSIGNAL_ULONG: receiveSignal(nullptr, v->getTimestamp(signalID), v->unsignedLongValue(signalID), details); break;
+                case SIMSIGNAL_INT: receiveSignal(nullptr, v->getTimestamp(signalID), v->intValue(signalID), details); break;
+                case SIMSIGNAL_UINT: receiveSignal(nullptr, v->getTimestamp(signalID), v->uintValue(signalID), details); break;
                 case SIMSIGNAL_DOUBLE: receiveSignal(nullptr, v->getTimestamp(signalID), v->doubleValue(signalID), details); break;
                 case SIMSIGNAL_SIMTIME: receiveSignal(nullptr, v->getTimestamp(signalID), v->simtimeValue(signalID), details); break;
                 case SIMSIGNAL_STRING: receiveSignal(nullptr, v->getTimestamp(signalID), v->stringValue(signalID), details); break;

@@ -138,12 +138,12 @@ void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t
     collect(t, b, details);
 }
 
-void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details)
+void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, intval_t l, cObject *details)
 {
     collect(t, l, details);
 }
 
-void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details)
+void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, uintval_t l, cObject *details)
 {
     collect(t, l, details);
 }

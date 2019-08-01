@@ -139,13 +139,13 @@ void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, bo
         fire(this, t, b, details);
 }
 
-void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details)
+void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, intval_t l, cObject *details)
 {
     if (t >= getEndWarmupPeriod())
         fire(this, t, l, details);
 }
 
-void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details)
+void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, uintval_t l, cObject *details)
 {
     if (t >= getEndWarmupPeriod())
         fire(this, t, l, details);

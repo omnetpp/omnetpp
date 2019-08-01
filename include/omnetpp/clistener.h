@@ -45,12 +45,14 @@ enum SimsignalType
 {
     SIMSIGNAL_UNDEF,
     SIMSIGNAL_BOOL,
-    SIMSIGNAL_LONG,
-    SIMSIGNAL_ULONG,
+    SIMSIGNAL_INT, // intval_t
+    SIMSIGNAL_UINT, // uintval_t
     SIMSIGNAL_DOUBLE,
     SIMSIGNAL_SIMTIME,
     SIMSIGNAL_STRING,
-    SIMSIGNAL_OBJECT
+    SIMSIGNAL_OBJECT,
+    SIMSIGNAL_LONG [[deprecated]] = SIMSIGNAL_INT,
+    SIMSIGNAL_ULONG [[deprecated]] = SIMSIGNAL_UINT
 };
 
 /**
@@ -90,11 +92,11 @@ class SIM_API cIListener
      */
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, bool b, cObject *details) = 0;
 
-    /** Receive an emitted long value. See receiveSignal(cComponent*,simsignal_t,bool,cObject*) for more info. */
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l, cObject *details) = 0;
+    /** Receive an emitted signed integer value. See receiveSignal(cComponent*,simsignal_t,bool,cObject*) for more info. */
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, intval_t i, cObject *details) = 0;
 
-    /** Receive an emitted unsigned long value. See receiveSignal(cComponent*,simsignal_t,bool,cObject*) for more info. */
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l, cObject *details) = 0;
+    /** Receive an emitted unsigned integer value. See receiveSignal(cComponent*,simsignal_t,bool,cObject*) for more info. */
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, uintval_t i, cObject *details) = 0;
 
     /** Receive an emitted double value. See receiveSignal(cComponent*,simsignal_t,bool,cObject*) for more info. */
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d, cObject *details) = 0;
@@ -162,24 +164,20 @@ class SIM_API cListener : public cIListener
     /** Utility function, throws a "data type not supported" error. */
     virtual void unsupportedType(simsignal_t signalID, const char *dataType);
 
-#ifdef WITH_OMNETPP4x_LISTENER_SUPPORT
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, bool b);
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l);
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l);
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d);
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& t);
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s);
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj);
-#endif
-
   public:
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, bool b, cObject *details) override;
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l, cObject *details) override;
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l, cObject *details) override;
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, intval_t i, cObject *details) override;
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, uintval_t i, cObject *details) override;
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d, cObject *details) override;
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& t, cObject *details) override;
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s, cObject *details) override;
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) override;
+
+#ifdef _WIN32
+    [[deprecated]] virtual void receiveSignal(cComponent *source, simsignal_t signalID, long i, cObject *details);
+    [[deprecated]] virtual void receiveSignal(cComponent *source, simsignal_t signalID, unsigned long i, cObject *details);
+#endif
+
 };
 
 }  // namespace omnetpp

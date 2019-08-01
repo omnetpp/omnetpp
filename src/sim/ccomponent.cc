@@ -584,20 +584,20 @@ void cComponent::emit(simsignal_t signalID, bool b, cObject *details)
         fire(this, signalID, b, details);
 }
 
-void cComponent::emit(simsignal_t signalID, long l, cObject *details)
+void cComponent::doEmit(simsignal_t signalID, intval_t i, cObject *details)
 {
     if (checkSignals)
-        getComponentType()->checkSignal(signalID, SIMSIGNAL_LONG);
+        getComponentType()->checkSignal(signalID, SIMSIGNAL_INT);
     if (mayHaveListeners(signalID))
-        fire(this, signalID, l, details);
+        fire(this, signalID, i, details);
 }
 
-void cComponent::emit(simsignal_t signalID, unsigned long l, cObject *details)
+void cComponent::doEmit(simsignal_t signalID, uintval_t i, cObject *details)
 {
     if (checkSignals)
-        getComponentType()->checkSignal(signalID, SIMSIGNAL_ULONG);
+        getComponentType()->checkSignal(signalID, SIMSIGNAL_UINT);
     if (mayHaveListeners(signalID))
-        fire(this, signalID, l, details);
+        fire(this, signalID, i, details);
 }
 
 void cComponent::emit(simsignal_t signalID, double d, cObject *details)

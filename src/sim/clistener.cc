@@ -97,21 +97,29 @@ void cListener::unsupportedType(simsignal_t signalID, const char *dataType)
             opp_typename(typeid(*this)), dataType, signalName, (int)signalID);
 }
 
-#ifndef WITH_OMNETPP4x_LISTENER_SUPPORT
-
 void cListener::receiveSignal(cComponent *, simsignal_t signalID, bool, cObject *)
 {
     unsupportedType(signalID, "bool");
 }
 
-void cListener::receiveSignal(cComponent *, simsignal_t signalID, long, cObject *)
+void cListener::receiveSignal(cComponent *c, simsignal_t signalID, intval_t i, cObject *d)
 {
-    unsupportedType(signalID, "long");
+#ifdef _WIN32
+    const char *msg = "Integer signal value does not fit into a long while trying to use deprecated receiveSignal(long) overload";
+    receiveSignal(c, signalID, checked_int_cast<long>(i,nullptr,msg), d);
+#else
+    unsupportedType(signalID, "intval_t");
+#endif
 }
 
-void cListener::receiveSignal(cComponent *, simsignal_t signalID, unsigned long, cObject *)
+void cListener::receiveSignal(cComponent *c, simsignal_t signalID, uintval_t i, cObject *d)
 {
-    unsupportedType(signalID, "unsigned long");
+#ifdef _WIN32
+    const char *msg = "Integer signal value does not fit into an unsigned long while trying to use deprecated receiveSignal(unsigned long) overload";
+    receiveSignal(c, signalID, checked_int_cast<unsigned long>(i,nullptr,msg), d);
+#else
+    unsupportedType(signalID, "uintval_t");
+#endif
 }
 
 void cListener::receiveSignal(cComponent *, simsignal_t signalID, double, cObject *)
@@ -134,22 +142,18 @@ void cListener::receiveSignal(cComponent *, simsignal_t signalID, cObject *, cOb
     unsupportedType(signalID, "cObject *");
 }
 
-#else // WITH_OMNETPP4x_LISTENER_SUPPORT
+#ifdef _WIN32
+void cListener::receiveSignal(cComponent *, simsignal_t signalID, long, cObject *)
+{
+    unsupportedType(signalID, "long");
+}
 
-// Support for OMNeT++ 4.x listeners:
-#define LISTENER(TYPE) \
-    void cListener::receiveSignal(cComponent *, simsignal_t signalID, TYPE) { unsupportedType(signalID, #TYPE); } \
-    void cListener::receiveSignal(cComponent *source, simsignal_t signalID, TYPE d, cObject *) { receiveSignal(source, signalID, d); }
-LISTENER(bool);
-LISTENER(long);
-LISTENER(unsigned long);
-LISTENER(double);
-LISTENER(const SimTime&);
-LISTENER(const char *);
-LISTENER(cObject *);
-#undef LISTENER
+void cListener::receiveSignal(cComponent *, simsignal_t signalID, unsigned long, cObject *)
+{
+    unsupportedType(signalID, "unsigned long");
+}
+#endif
 
-#endif  // WITH_OMNETPP4x_LISTENER_SUPPORT
 
 }  // namespace omnetpp
 

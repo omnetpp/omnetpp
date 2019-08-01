@@ -93,13 +93,13 @@ void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, bool b, cObject 
         delegates[i]->receiveSignal(this, t, b, details);
 }
 
-void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, long l, cObject *details)
+void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, intval_t l, cObject *details)
 {
     for (int i = 0; delegates[i]; i++)
         delegates[i]->receiveSignal(this, t, l, details);
 }
 
-void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details)
+void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, uintval_t l, cObject *details)
 {
     for (int i = 0; delegates[i]; i++)
         delegates[i]->receiveSignal(this, t, l, details);
@@ -146,7 +146,7 @@ void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, 
         fire(this, tt, d, details);
 }
 
-void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details)
+void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, intval_t l, cObject *details)
 {
     simtime_t tt = t;
     double d = l;
@@ -154,7 +154,7 @@ void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, 
         fire(this, tt, d, details);
 }
 
-void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details)
+void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, uintval_t l, cObject *details)
 {
     simtime_t tt = t;
     double d = l;
@@ -194,17 +194,17 @@ void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, 
 
 void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details)
 {
-    THROW("long");
+    THROW("bool");
 }
 
-void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details)
+void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, intval_t l, cObject *details)
 {
-    THROW("long");
+    THROW("intval_t");
 }
 
-void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details)
+void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, uintval_t l, cObject *details)
 {
-    THROW("unsigned long");
+    THROW("uintval_t");
 }
 
 void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, double d, cObject *details)

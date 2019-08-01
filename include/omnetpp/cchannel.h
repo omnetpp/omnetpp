@@ -114,8 +114,8 @@ class SIM_API cChannel : public cComponent //implies noncopyable
         /** @name Other (non-cObject) getters throw an exception. */
         //@{
         virtual bool boolValue(simsignal_t signalID) const override {error(); return false;}
-        virtual long longValue(simsignal_t signalID) const override {error(); return 0;}
-        virtual unsigned long unsignedLongValue(simsignal_t signalID) const override {error(); return 0;}
+        virtual intval_t intValue(simsignal_t signalID) const override {error(); return 0;}
+        virtual uintval_t uintValue(simsignal_t signalID) const override {error(); return 0;}
         virtual double doubleValue(simsignal_t signalID) const override {error(); return 0;}
         virtual SimTime simtimeValue(simsignal_t signalID) const override {error(); return timestamp;}
         virtual const char *stringValue(simsignal_t signalID) const override {error(); return nullptr;}

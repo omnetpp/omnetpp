@@ -140,6 +140,8 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     const SignalListenerList& getListenerList(int k) const {return (*signalTable)[k];} // for inspectors
     int getSignalTableSize() const {return signalTable ? signalTable->size() : 0;} // for inspectors
     void collectResultRecorders(std::vector<cResultRecorder*>& result) const;
+    virtual void doEmit(simsignal_t signalID, intval_t i, cObject *details);
+    virtual void doEmit(simsignal_t signalID, uintval_t i, cObject *details);
 
   public:
     // internal: used by log mechanism
@@ -856,20 +858,6 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     virtual void emit(simsignal_t signalID, bool b, cObject *details = nullptr);
 
     /**
-     * Emits the long value as a signal. If the given signal has listeners in this
-     * component or in ancestor components, their appropriate receiveSignal() methods
-     * are called. If there are no listeners, the runtime cost is usually minimal.
-     */
-    virtual void emit(simsignal_t signalID, long l, cObject *details = nullptr);
-
-    /**
-     * Emits the unsigned long value as a signal. If the given signal has listeners in
-     * this component or in ancestor components, their appropriate receiveSignal() methods
-     * are called. If there are no listeners, the runtime cost is usually minimal.
-     */
-    virtual void emit(simsignal_t signalID, unsigned long l, cObject *details = nullptr);
-
-    /**
      * Emits the double value as a signal. If the given signal has listeners in this
      * component or in ancestor components, their appropriate receiveSignal() methods
      * are called. If there are no listeners, the runtime cost is usually minimal.
@@ -901,28 +889,40 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     /** Delegates to emit(simsignal_t, cObject*) after a const_cast. */
     virtual void emit(simsignal_t signalID, const cObject *obj, cObject *details = nullptr) { emit(signalID, const_cast<cObject *>(obj), details); }
 
-    /** Delegates to emit(simsignal_t, long) */
-    virtual void emit(simsignal_t signalID, char c, cObject *details = nullptr) {emit(signalID,(long)c, details);}
+    /** Emits the given integer as intval_t. See other emit methods, e.g. emit(simsignal_t,double,cObject*), for more information. */
+    virtual void emit(simsignal_t signalID, char c, cObject *details = nullptr) {doEmit(signalID,(intval_t)c, details);}
 
-    /** Delegates to emit(simsignal_t, unsigned long) */
-    virtual void emit(simsignal_t signalID, unsigned char c, cObject *details = nullptr) {emit(signalID,(unsigned long)c, details);}
+    /** Emits the given integer as uintval_t. See other emit methods, e.g. emit(simsignal_t,double,cObject*), for more information. */
+    virtual void emit(simsignal_t signalID, unsigned char c, cObject *details = nullptr) {doEmit(signalID,(uintval_t)c, details);}
 
-    /** Delegates to emit(simsignal_t, long) */
-    virtual void emit(simsignal_t signalID, short i, cObject *details = nullptr) {emit(signalID,(long)i, details);}
+    /** Emits the given integer as intval_t. See other emit methods, e.g. emit(simsignal_t,double,cObject*), for more information. */
+    virtual void emit(simsignal_t signalID, short i, cObject *details = nullptr) {doEmit(signalID,(intval_t)i, details);}
 
-    /** Delegates to emit(simsignal_t, unsigned long) */
-    virtual void emit(simsignal_t signalID, unsigned short i, cObject *details = nullptr) {emit(signalID,(unsigned long)i, details);}
+    /** Emits the given integer as uintval_t. See other emit methods, e.g. emit(simsignal_t,double,cObject*), for more information. */
+    virtual void emit(simsignal_t signalID, unsigned short i, cObject *details = nullptr) {doEmit(signalID,(uintval_t)i, details);}
 
-    /** Delegates to emit(simsignal_t, long) */
-    virtual void emit(simsignal_t signalID, int i, cObject *details = nullptr) {emit(signalID,(long)i, details);}
+    /** Emits the given integer as intval_t. See other emit methods, e.g. emit(simsignal_t,double,cObject*), for more information. */
+    virtual void emit(simsignal_t signalID, int i, cObject *details = nullptr) {doEmit(signalID,(intval_t)i, details);}
 
-    /** Delegates to emit(simsignal_t, unsigned long) */
-    virtual void emit(simsignal_t signalID, unsigned int i, cObject *details = nullptr) {emit(signalID,(unsigned long)i, details);}
+    /** Emits the given integer as uintval_t. See other emit methods, e.g. emit(simsignal_t,double,cObject*), for more information. */
+    virtual void emit(simsignal_t signalID, unsigned int i, cObject *details = nullptr) {doEmit(signalID,(uintval_t)i, details);}
+
+    /** Emits the given integer as intval_t. See other emit methods, e.g. emit(simsignal_t,double,cObject*), for more information. */
+    virtual void emit(simsignal_t signalID, long i, cObject *details = nullptr) {doEmit(signalID,(intval_t)i, details);}
+
+    /** Emits the given integer as uintval_t. See other emit methods, e.g. emit(simsignal_t,double,cObject*), for more information.  */
+    virtual void emit(simsignal_t signalID, unsigned long i, cObject *details = nullptr) {doEmit(signalID,(uintval_t)i, details);}
+
+    /** Emits the given integer as intval_t. See other emit methods, e.g. emit(simsignal_t,double,cObject*), for more information. */
+    virtual void emit(simsignal_t signalID, long long i, cObject *details = nullptr) {doEmit(signalID,(intval_t)i, details);}
+
+    /** Emits the given integer as uintval_t. See other emit methods, e.g. emit(simsignal_t,double,cObject*), for more information. */
+    virtual void emit(simsignal_t signalID, unsigned long long i, cObject *details = nullptr) {doEmit(signalID,(uintval_t)i, details);}
 
     /** Delegates to emit(simsignal_t, double) */
     virtual void emit(simsignal_t signalID, float f, cObject *details = nullptr) {emit(signalID,(double)f, details);}
 
-    /** Delegates to emit(simsignal_t, double) */
+    /** Delegates to doEmit(simsignal_t, double) */
     virtual void emit(simsignal_t signalID, long double d, cObject *details = nullptr) {emit(signalID,(double)d, details);}
 
     /**

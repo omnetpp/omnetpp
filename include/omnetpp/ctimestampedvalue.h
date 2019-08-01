@@ -47,12 +47,14 @@ class SIM_API cITimestampedValue
         /** @name Returns the value for the given signal. */
         //@{
         virtual bool boolValue(simsignal_t signalID) const = 0;
-        virtual long longValue(simsignal_t signalID) const = 0;
-        virtual unsigned long unsignedLongValue(simsignal_t signalID) const = 0;
+        virtual intval_t intValue(simsignal_t signalID) const = 0;
+        virtual uintval_t uintValue(simsignal_t signalID) const = 0;
         virtual double doubleValue(simsignal_t signalID) const = 0;
         virtual SimTime simtimeValue(simsignal_t signalID) const = 0;
         virtual const char *stringValue(simsignal_t signalID) const = 0;
         virtual cObject *objectValue(simsignal_t signalID) const = 0;
+        [[deprecated]] intval_t longValue(simsignal_t signalID) const {return intValue(signalID);}
+        [[deprecated]] uintval_t unsignedLongValue(simsignal_t signalID) const {return uintValue(signalID);}
         //@}
 };
 
@@ -68,8 +70,8 @@ class SIM_API cTimestampedValue : public cITimestampedValue, public cObject
         SimsignalType type; // selector for the union
         union {
             bool b;
-            long l;
-            unsigned long ul;
+            intval_t l;
+            uintval_t ul;
             double d;
             const char *s;
             cObject *obj;
@@ -81,8 +83,8 @@ class SIM_API cTimestampedValue : public cITimestampedValue, public cObject
         //@{
         cTimestampedValue() {type=SIMSIGNAL_UNDEF;}
         cTimestampedValue(simtime_t timestamp, bool b) {set(timestamp,b);}
-        cTimestampedValue(simtime_t timestamp, long l) {set(timestamp,l);}
-        cTimestampedValue(simtime_t timestamp, unsigned long ul) {set(timestamp,ul);}
+        cTimestampedValue(simtime_t timestamp, intval_t l) {set(timestamp,l);}
+        cTimestampedValue(simtime_t timestamp, uintval_t ul) {set(timestamp,ul);}
         cTimestampedValue(simtime_t timestamp, double d) {set(timestamp,d);}
         cTimestampedValue(simtime_t timestamp, const SimTime& t) {set(timestamp,t);}
         cTimestampedValue(simtime_t timestamp, const char *s) {set(timestamp,s);}
@@ -92,8 +94,8 @@ class SIM_API cTimestampedValue : public cITimestampedValue, public cObject
         /** @name Setters */
         //@{
         void set(simtime_t timestamp, bool b) {this->timestamp=timestamp; type=SIMSIGNAL_BOOL; this->b=b;}
-        void set(simtime_t timestamp, long l) {this->timestamp=timestamp; type=SIMSIGNAL_LONG; this->l=l;}
-        void set(simtime_t timestamp, unsigned long ul) {this->timestamp=timestamp; type=SIMSIGNAL_ULONG; this->ul=ul;}
+        void set(simtime_t timestamp, intval_t l) {this->timestamp=timestamp; type=SIMSIGNAL_INT; this->l=l;}
+        void set(simtime_t timestamp, uintval_t ul) {this->timestamp=timestamp; type=SIMSIGNAL_UINT; this->ul=ul;}
         void set(simtime_t timestamp, double d) {this->timestamp=timestamp; type=SIMSIGNAL_DOUBLE; this->d=d;}
         void set(simtime_t timestamp, const SimTime& t) {this->timestamp=timestamp; type=SIMSIGNAL_SIMTIME; this->t=t;}
         void set(simtime_t timestamp, const char *s) {this->timestamp=timestamp; type=SIMSIGNAL_STRING; this->s=s;}
@@ -109,8 +111,8 @@ class SIM_API cTimestampedValue : public cITimestampedValue, public cObject
         /** @name Getters. Call the one that corresponds to the stored type. */
         //@{
         virtual bool boolValue(simsignal_t signalID) const override {return b;}
-        virtual long longValue(simsignal_t signalID) const override {return l;}
-        virtual unsigned long unsignedLongValue(simsignal_t signalID) const override {return ul;}
+        virtual intval_t intValue(simsignal_t signalID) const override {return l;}
+        virtual uintval_t uintValue(simsignal_t signalID) const override {return ul;}
         virtual double doubleValue(simsignal_t signalID) const override {return d;}
         virtual SimTime simtimeValue(simsignal_t signalID) const override {return t;}
         virtual const char *stringValue(simsignal_t signalID) const override {return s;}

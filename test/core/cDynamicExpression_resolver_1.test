@@ -4,7 +4,7 @@ Test cDynamicExpression::parse() with a custom resolver.
 %global:
 
 std::string str(const char *s) {return std::string(s);}
-std::string str(intpar_t x) {return std::to_string(x);}
+std::string str(intval_t x) {return std::to_string(x);}
 
 static cExpression::Context gContext(nullptr);
 
@@ -20,7 +20,7 @@ public:
         return str(name);
     }
 
-    virtual cNedValue readVariable(Context *context, const char *name, intpar_t index) override {
+    virtual cNedValue readVariable(Context *context, const char *name, intval_t index) override {
         ASSERT(context == &gContext);
         return str(name) + str(index);
     }
@@ -30,7 +30,7 @@ public:
         return object.str() + "->" + name;
     }
 
-    virtual cNedValue readMember(Context *context, const cNedValue& object, const char *name, intpar_t index) override {
+    virtual cNedValue readMember(Context *context, const cNedValue& object, const char *name, intval_t index) override {
         ASSERT(context == &gContext);
         return object.str() + "->" + name + str(index);
     }
