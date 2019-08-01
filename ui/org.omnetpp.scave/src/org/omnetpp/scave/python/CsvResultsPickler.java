@@ -16,6 +16,7 @@ import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.engine.ScalarResult;
+import org.omnetpp.scave.engine.ScaveEngine;
 import org.omnetpp.scave.engine.Statistics;
 import org.omnetpp.scave.engine.StatisticsResult;
 import org.omnetpp.scave.engine.StringMap;
@@ -185,8 +186,10 @@ public class CsvResultsPickler implements IObjectPickler {
         }
         out.write(Opcodes.TUPLE);
 
+        data.delete();
         data = null;
-        System.gc();
+        //System.gc(); // NOT NEEDED, SLOW, and actually BREAKS some internal parts of Py4J...
+        ScaveEngine.malloc_trim();
 
         pickleResultAttributes(result, pickler, out);
     }
