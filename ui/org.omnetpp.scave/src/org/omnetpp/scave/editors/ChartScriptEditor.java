@@ -96,9 +96,6 @@ import org.python.pydev.editor.PyEdit;
 import org.python.pydev.shared_core.callbacks.ICallbackListener;
 import org.python.pydev.shared_ui.editor_input.PydevFileEditorInput;
 
-//TODO ScaveEditor remains dirty after hitting Ctrl+S in edited script editor
-//TODO vector operations via chart properties not text insertion
-//TODO on errors, display stack trace somewhere (in log?)
 //TODO @title not used by chart
 
 public class ChartScriptEditor extends PyEdit {
