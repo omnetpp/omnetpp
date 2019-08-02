@@ -95,13 +95,12 @@ def _append_additional_data(df, attrs, include_runattrs, include_itervars, inclu
         runattrs = Gateway.results_provider.getRunAttrsForRunsPickle(runs)
         df = _append_metadata_columns(df, runattrs, "_runattr")
 
-    if include_param_assignments:
-        params = Gateway.results_provider.getParamAssignmentsForRunsPickle(runs)
-        df = _append_metadata_columns(df, params, "_param")
-
     if include_config_entries:
         entries = Gateway.results_provider.getConfigEntriesForRunsPickle(runs)
         df = _append_metadata_columns(df, entries, "_config")
+    elif include_param_assignments: # param_assignments are a subset of config_entries
+        params = Gateway.results_provider.getParamAssignmentsForRunsPickle(runs)
+        df = _append_metadata_columns(df, params, "_param")
 
     return df
 
@@ -111,8 +110,7 @@ def get_runs(filter_expression="", include_runattrs=False, include_itervars=Fals
     df = pd.DataFrame(runs, columns=["runID"])
     return _append_additional_data(df, None, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
-
-def get_run_attrs(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
+def get_runattrs(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
     pk = Gateway.results_provider.getRunAttrsPickle(filter_expression)
     df = pd.DataFrame(pickle.loads(pk), columns=["runID", "name", "value"])
     return _append_additional_data(df, None, include_runattrs, include_itervars, include_param_assignments, include_config_entries)

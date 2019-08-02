@@ -1,0 +1,49 @@
+,runID,module,name,value,interpolationMode,source,title,N,configname,datetime,experiment,inifile,iterationvars,iterationvarsf,measurement,network,processid,repetition,replication,resultdir,runnumber,seedset,**.bar,network_config,repeat
+0,General-0-REDACTED,Test.node1,foo1:last,16.0,sample-hold,foo1,,1,General,REDACTED,General,omnetpp.ini,$N=1,N=1-,$N=1,Test,REDACTED,0,#0,results,0,0,1,Test,2
+1,General-0-REDACTED,Test.node1,foo1:mean,19.9,sample-hold,foo1,,1,General,REDACTED,General,omnetpp.ini,$N=1,N=1-,$N=1,Test,REDACTED,0,#0,results,0,0,1,Test,2
+2,General-0-REDACTED,Test.node1,foo2:last,12.791377943243,,foo2,"A very nice foo., last",1,General,REDACTED,General,omnetpp.ini,$N=1,N=1-,$N=1,Test,REDACTED,0,#0,results,0,0,1,Test,2
+3,General-0-REDACTED,Test.node1,foo2:mean,10.775412123317,,foo2,"A very nice foo., mean",1,General,REDACTED,General,omnetpp.ini,$N=1,N=1-,$N=1,Test,REDACTED,0,#0,results,0,0,1,Test,2
+4,General-0-REDACTED,Test.node2,foo1:last,25.0,sample-hold,foo1,,1,General,REDACTED,General,omnetpp.ini,$N=1,N=1-,$N=1,Test,REDACTED,0,#0,results,0,0,1,Test,2
+5,General-0-REDACTED,Test.node2,foo1:mean,20.11,sample-hold,foo1,,1,General,REDACTED,General,omnetpp.ini,$N=1,N=1-,$N=1,Test,REDACTED,0,#0,results,0,0,1,Test,2
+6,General-0-REDACTED,Test.node2,foo2:last,3.6269256738672,,foo2,"A very nice foo., last",1,General,REDACTED,General,omnetpp.ini,$N=1,N=1-,$N=1,Test,REDACTED,0,#0,results,0,0,1,Test,2
+7,General-0-REDACTED,Test.node2,foo2:mean,10.20752140955,,foo2,"A very nice foo., mean",1,General,REDACTED,General,omnetpp.ini,$N=1,N=1-,$N=1,Test,REDACTED,0,#0,results,0,0,1,Test,2
+8,General-1-REDACTED,Test.node1,foo1:last,23.0,sample-hold,foo1,,1,General,REDACTED,General,omnetpp.ini,$N=1,N=1-,$N=1,Test,REDACTED,1,#1,results,1,1,1,Test,2
+9,General-1-REDACTED,Test.node1,foo1:mean,19.67,sample-hold,foo1,,1,General,REDACTED,General,omnetpp.ini,$N=1,N=1-,$N=1,Test,REDACTED,1,#1,results,1,1,1,Test,2
+10,General-1-REDACTED,Test.node1,foo2:last,15.560362769627,,foo2,"A very nice foo., last",1,General,REDACTED,General,omnetpp.ini,$N=1,N=1-,$N=1,Test,REDACTED,1,#1,results,1,1,1,Test,2
+11,General-1-REDACTED,Test.node1,foo2:mean,10.204222253526,,foo2,"A very nice foo., mean",1,General,REDACTED,General,omnetpp.ini,$N=1,N=1-,$N=1,Test,REDACTED,1,#1,results,1,1,1,Test,2
+12,General-1-REDACTED,Test.node2,foo1:last,16.0,sample-hold,foo1,,1,General,REDACTED,General,omnetpp.ini,$N=1,N=1-,$N=1,Test,REDACTED,1,#1,results,1,1,1,Test,2
+13,General-1-REDACTED,Test.node2,foo1:mean,19.97,sample-hold,foo1,,1,General,REDACTED,General,omnetpp.ini,$N=1,N=1-,$N=1,Test,REDACTED,1,#1,results,1,1,1,Test,2
+14,General-1-REDACTED,Test.node2,foo2:last,3.2791719203563,,foo2,"A very nice foo., last",1,General,REDACTED,General,omnetpp.ini,$N=1,N=1-,$N=1,Test,REDACTED,1,#1,results,1,1,1,Test,2
+15,General-1-REDACTED,Test.node2,foo2:mean,9.2082383363777,,foo2,"A very nice foo., mean",1,General,REDACTED,General,omnetpp.ini,$N=1,N=1-,$N=1,Test,REDACTED,1,#1,results,1,1,1,Test,2
+16,General-2-REDACTED,Test.node1,foo1:last,66.0,sample-hold,foo1,,3,General,REDACTED,General,omnetpp.ini,$N=3,N=3-,$N=3,Test,REDACTED,0,#0,results,2,2,3,Test,2
+17,General-2-REDACTED,Test.node1,foo1:mean,62.25,sample-hold,foo1,,3,General,REDACTED,General,omnetpp.ini,$N=3,N=3-,$N=3,Test,REDACTED,0,#0,results,2,2,3,Test,2
+18,General-2-REDACTED,Test.node1,foo2:last,39.34170751832,,foo2,"A very nice foo., last",3,General,REDACTED,General,omnetpp.ini,$N=3,N=3-,$N=3,Test,REDACTED,0,#0,results,2,2,3,Test,2
+19,General-2-REDACTED,Test.node1,foo2:mean,29.868968979189,,foo2,"A very nice foo., mean",3,General,REDACTED,General,omnetpp.ini,$N=3,N=3-,$N=3,Test,REDACTED,0,#0,results,2,2,3,Test,2
+20,General-2-REDACTED,Test.node2,foo1:last,66.0,sample-hold,foo1,,3,General,REDACTED,General,omnetpp.ini,$N=3,N=3-,$N=3,Test,REDACTED,0,#0,results,2,2,3,Test,2
+21,General-2-REDACTED,Test.node2,foo1:mean,60.09,sample-hold,foo1,,3,General,REDACTED,General,omnetpp.ini,$N=3,N=3-,$N=3,Test,REDACTED,0,#0,results,2,2,3,Test,2
+22,General-2-REDACTED,Test.node2,foo2:last,8.9215805765143,,foo2,"A very nice foo., last",3,General,REDACTED,General,omnetpp.ini,$N=3,N=3-,$N=3,Test,REDACTED,0,#0,results,2,2,3,Test,2
+23,General-2-REDACTED,Test.node2,foo2:mean,29.732305942319,,foo2,"A very nice foo., mean",3,General,REDACTED,General,omnetpp.ini,$N=3,N=3-,$N=3,Test,REDACTED,0,#0,results,2,2,3,Test,2
+24,General-3-REDACTED,Test.node1,foo1:last,57.0,sample-hold,foo1,,3,General,REDACTED,General,omnetpp.ini,$N=3,N=3-,$N=3,Test,REDACTED,1,#1,results,3,3,3,Test,2
+25,General-3-REDACTED,Test.node1,foo1:mean,60.06,sample-hold,foo1,,3,General,REDACTED,General,omnetpp.ini,$N=3,N=3-,$N=3,Test,REDACTED,1,#1,results,3,3,3,Test,2
+26,General-3-REDACTED,Test.node1,foo2:last,131.94212670497,,foo2,"A very nice foo., last",3,General,REDACTED,General,omnetpp.ini,$N=3,N=3-,$N=3,Test,REDACTED,1,#1,results,3,3,3,Test,2
+27,General-3-REDACTED,Test.node1,foo2:mean,38.204270880283,,foo2,"A very nice foo., mean",3,General,REDACTED,General,omnetpp.ini,$N=3,N=3-,$N=3,Test,REDACTED,1,#1,results,3,3,3,Test,2
+28,General-3-REDACTED,Test.node2,foo1:last,69.0,sample-hold,foo1,,3,General,REDACTED,General,omnetpp.ini,$N=3,N=3-,$N=3,Test,REDACTED,1,#1,results,3,3,3,Test,2
+29,General-3-REDACTED,Test.node2,foo1:mean,59.01,sample-hold,foo1,,3,General,REDACTED,General,omnetpp.ini,$N=3,N=3-,$N=3,Test,REDACTED,1,#1,results,3,3,3,Test,2
+30,General-3-REDACTED,Test.node2,foo2:last,23.728808326779,,foo2,"A very nice foo., last",3,General,REDACTED,General,omnetpp.ini,$N=3,N=3-,$N=3,Test,REDACTED,1,#1,results,3,3,3,Test,2
+31,General-3-REDACTED,Test.node2,foo2:mean,27.808040628033,,foo2,"A very nice foo., mean",3,General,REDACTED,General,omnetpp.ini,$N=3,N=3-,$N=3,Test,REDACTED,1,#1,results,3,3,3,Test,2
+32,General-4-REDACTED,Test.node1,foo1:last,90.0,sample-hold,foo1,,6,General,REDACTED,General,omnetpp.ini,$N=6,N=6-,$N=6,Test,REDACTED,0,#0,results,4,4,6,Test,2
+33,General-4-REDACTED,Test.node1,foo1:mean,118.5,sample-hold,foo1,,6,General,REDACTED,General,omnetpp.ini,$N=6,N=6-,$N=6,Test,REDACTED,0,#0,results,4,4,6,Test,2
+34,General-4-REDACTED,Test.node1,foo2:last,63.195620859186,,foo2,"A very nice foo., last",6,General,REDACTED,General,omnetpp.ini,$N=6,N=6-,$N=6,Test,REDACTED,0,#0,results,4,4,6,Test,2
+35,General-4-REDACTED,Test.node1,foo2:mean,68.050474589224,,foo2,"A very nice foo., mean",6,General,REDACTED,General,omnetpp.ini,$N=6,N=6-,$N=6,Test,REDACTED,0,#0,results,4,4,6,Test,2
+36,General-4-REDACTED,Test.node2,foo1:last,144.0,sample-hold,foo1,,6,General,REDACTED,General,omnetpp.ini,$N=6,N=6-,$N=6,Test,REDACTED,0,#0,results,4,4,6,Test,2
+37,General-4-REDACTED,Test.node2,foo1:mean,119.46,sample-hold,foo1,,6,General,REDACTED,General,omnetpp.ini,$N=6,N=6-,$N=6,Test,REDACTED,0,#0,results,4,4,6,Test,2
+38,General-4-REDACTED,Test.node2,foo2:last,192.15566950738,,foo2,"A very nice foo., last",6,General,REDACTED,General,omnetpp.ini,$N=6,N=6-,$N=6,Test,REDACTED,0,#0,results,4,4,6,Test,2
+39,General-4-REDACTED,Test.node2,foo2:mean,59.246059365295,,foo2,"A very nice foo., mean",6,General,REDACTED,General,omnetpp.ini,$N=6,N=6-,$N=6,Test,REDACTED,0,#0,results,4,4,6,Test,2
+40,General-5-REDACTED,Test.node1,foo1:last,108.0,sample-hold,foo1,,6,General,REDACTED,General,omnetpp.ini,$N=6,N=6-,$N=6,Test,REDACTED,1,#1,results,5,5,6,Test,2
+41,General-5-REDACTED,Test.node1,foo1:mean,118.08,sample-hold,foo1,,6,General,REDACTED,General,omnetpp.ini,$N=6,N=6-,$N=6,Test,REDACTED,1,#1,results,5,5,6,Test,2
+42,General-5-REDACTED,Test.node1,foo2:last,47.462161522027,,foo2,"A very nice foo., last",6,General,REDACTED,General,omnetpp.ini,$N=6,N=6-,$N=6,Test,REDACTED,1,#1,results,5,5,6,Test,2
+43,General-5-REDACTED,Test.node1,foo2:mean,62.635890113872,,foo2,"A very nice foo., mean",6,General,REDACTED,General,omnetpp.ini,$N=6,N=6-,$N=6,Test,REDACTED,1,#1,results,5,5,6,Test,2
+44,General-5-REDACTED,Test.node2,foo1:last,132.0,sample-hold,foo1,,6,General,REDACTED,General,omnetpp.ini,$N=6,N=6-,$N=6,Test,REDACTED,1,#1,results,5,5,6,Test,2
+45,General-5-REDACTED,Test.node2,foo1:mean,122.1,sample-hold,foo1,,6,General,REDACTED,General,omnetpp.ini,$N=6,N=6-,$N=6,Test,REDACTED,1,#1,results,5,5,6,Test,2
+46,General-5-REDACTED,Test.node2,foo2:last,85.082079428255,,foo2,"A very nice foo., last",6,General,REDACTED,General,omnetpp.ini,$N=6,N=6-,$N=6,Test,REDACTED,1,#1,results,5,5,6,Test,2
+47,General-5-REDACTED,Test.node2,foo2:mean,53.047182118769,,foo2,"A very nice foo., mean",6,General,REDACTED,General,omnetpp.ini,$N=6,N=6-,$N=6,Test,REDACTED,1,#1,results,5,5,6,Test,2

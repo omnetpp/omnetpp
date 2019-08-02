@@ -1,0 +1,49 @@
+,runID,module,name,value,interpolationMode,source,title
+0,General-0-REDACTED,Test.node1,foo1:last,16.0,sample-hold,foo1,
+1,General-0-REDACTED,Test.node1,foo1:mean,19.9,sample-hold,foo1,
+2,General-0-REDACTED,Test.node1,foo2:last,12.791377943243,,foo2,"A very nice foo., last"
+3,General-0-REDACTED,Test.node1,foo2:mean,10.775412123317,,foo2,"A very nice foo., mean"
+4,General-0-REDACTED,Test.node2,foo1:last,25.0,sample-hold,foo1,
+5,General-0-REDACTED,Test.node2,foo1:mean,20.11,sample-hold,foo1,
+6,General-0-REDACTED,Test.node2,foo2:last,3.6269256738672,,foo2,"A very nice foo., last"
+7,General-0-REDACTED,Test.node2,foo2:mean,10.20752140955,,foo2,"A very nice foo., mean"
+8,General-1-REDACTED,Test.node1,foo1:last,23.0,sample-hold,foo1,
+9,General-1-REDACTED,Test.node1,foo1:mean,19.67,sample-hold,foo1,
+10,General-1-REDACTED,Test.node1,foo2:last,15.560362769627,,foo2,"A very nice foo., last"
+11,General-1-REDACTED,Test.node1,foo2:mean,10.204222253526,,foo2,"A very nice foo., mean"
+12,General-1-REDACTED,Test.node2,foo1:last,16.0,sample-hold,foo1,
+13,General-1-REDACTED,Test.node2,foo1:mean,19.97,sample-hold,foo1,
+14,General-1-REDACTED,Test.node2,foo2:last,3.2791719203563,,foo2,"A very nice foo., last"
+15,General-1-REDACTED,Test.node2,foo2:mean,9.2082383363777,,foo2,"A very nice foo., mean"
+16,General-2-REDACTED,Test.node1,foo1:last,66.0,sample-hold,foo1,
+17,General-2-REDACTED,Test.node1,foo1:mean,62.25,sample-hold,foo1,
+18,General-2-REDACTED,Test.node1,foo2:last,39.34170751832,,foo2,"A very nice foo., last"
+19,General-2-REDACTED,Test.node1,foo2:mean,29.868968979189,,foo2,"A very nice foo., mean"
+20,General-2-REDACTED,Test.node2,foo1:last,66.0,sample-hold,foo1,
+21,General-2-REDACTED,Test.node2,foo1:mean,60.09,sample-hold,foo1,
+22,General-2-REDACTED,Test.node2,foo2:last,8.9215805765143,,foo2,"A very nice foo., last"
+23,General-2-REDACTED,Test.node2,foo2:mean,29.732305942319,,foo2,"A very nice foo., mean"
+24,General-3-REDACTED,Test.node1,foo1:last,57.0,sample-hold,foo1,
+25,General-3-REDACTED,Test.node1,foo1:mean,60.06,sample-hold,foo1,
+26,General-3-REDACTED,Test.node1,foo2:last,131.94212670497,,foo2,"A very nice foo., last"
+27,General-3-REDACTED,Test.node1,foo2:mean,38.204270880283,,foo2,"A very nice foo., mean"
+28,General-3-REDACTED,Test.node2,foo1:last,69.0,sample-hold,foo1,
+29,General-3-REDACTED,Test.node2,foo1:mean,59.01,sample-hold,foo1,
+30,General-3-REDACTED,Test.node2,foo2:last,23.728808326779,,foo2,"A very nice foo., last"
+31,General-3-REDACTED,Test.node2,foo2:mean,27.808040628033,,foo2,"A very nice foo., mean"
+32,General-4-REDACTED,Test.node1,foo1:last,90.0,sample-hold,foo1,
+33,General-4-REDACTED,Test.node1,foo1:mean,118.5,sample-hold,foo1,
+34,General-4-REDACTED,Test.node1,foo2:last,63.195620859186,,foo2,"A very nice foo., last"
+35,General-4-REDACTED,Test.node1,foo2:mean,68.050474589224,,foo2,"A very nice foo., mean"
+36,General-4-REDACTED,Test.node2,foo1:last,144.0,sample-hold,foo1,
+37,General-4-REDACTED,Test.node2,foo1:mean,119.46,sample-hold,foo1,
+38,General-4-REDACTED,Test.node2,foo2:last,192.15566950738,,foo2,"A very nice foo., last"
+39,General-4-REDACTED,Test.node2,foo2:mean,59.246059365295,,foo2,"A very nice foo., mean"
+40,General-5-REDACTED,Test.node1,foo1:last,108.0,sample-hold,foo1,
+41,General-5-REDACTED,Test.node1,foo1:mean,118.08,sample-hold,foo1,
+42,General-5-REDACTED,Test.node1,foo2:last,47.462161522027,,foo2,"A very nice foo., last"
+43,General-5-REDACTED,Test.node1,foo2:mean,62.635890113872,,foo2,"A very nice foo., mean"
+44,General-5-REDACTED,Test.node2,foo1:last,132.0,sample-hold,foo1,
+45,General-5-REDACTED,Test.node2,foo1:mean,122.1,sample-hold,foo1,
+46,General-5-REDACTED,Test.node2,foo2:last,85.082079428255,,foo2,"A very nice foo., last"
+47,General-5-REDACTED,Test.node2,foo2:mean,53.047182118769,,foo2,"A very nice foo., mean"

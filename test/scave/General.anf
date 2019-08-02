@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<analysis version="2">
-    <inputs>
-        <input pattern="/scave_test/results/General-*.vec"/>
-        <input pattern="/scave_test/results/General-*.sca"/>
-    </inputs>
-    <charts/>
-</analysis>
