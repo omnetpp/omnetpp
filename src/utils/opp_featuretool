@@ -302,7 +302,7 @@ root directory where the following files are present:
                     self.nedfolders.append(NedFolder(line, path, prefix, ord))
             nedfoldersfile.close()
         except (IOError, OSError) as e:
-            fail("error occurred when reading the {} file: {}".format(NEDFOLDERSFILE, e))
+            fail("error occurred when reading file {}: {}".format(NEDFOLDERSFILE, e))
 
     ############################
     def getPrefixFromPackageNedFile(self, nedfilename):
@@ -332,7 +332,7 @@ root directory where the following files are present:
         try:
             nedexclusionsfile = open(NEDEXCLUSIONSFILE, 'r')
         except (IOError, OSError) as e:
-            fail(".nedexclusions file error: {}".format(e))
+            fail("error in .nedexclusions: {}".format(e))
 
         check = re.compile(r'^([a-zA-Z0-9_]+\.)*[a-zA-Z0-9_]+$')
         try:
@@ -342,17 +342,17 @@ root directory where the following files are present:
                 line = line.rstrip('\n')
                 if not check.match(line):
                     if self.fixingMode:
-                        warn("invalid line in %s:%d, removed: '%s'" % (NEDEXCLUSIONSFILE, ord, line))
+                        warn("invalid line %s:%d, removed: '%s'" % (NEDEXCLUSIONSFILE, ord, line))
                         self.nedExclusionFileChanged = True
                     elif self.autoFixingMode:
-                        warn("invalid line in %s:%d, ignored: '%s'" % (NEDEXCLUSIONSFILE, ord, line))
+                        warn("invalid line %s:%d, ignored: '%s'" % (NEDEXCLUSIONSFILE, ord, line))
                     else:
-                        fail("invalid line in %s:%d, '%s'" % (NEDEXCLUSIONSFILE, ord, line))
+                        fail("invalid line %s:%d, '%s'" % (NEDEXCLUSIONSFILE, ord, line))
                 else:
                     self.nedfoldersExcluded.append(line)
             nedexclusionsfile.close()
         except (IOError, OSError) as e:
-            fail("I/O error while reading the {} file: ({})".format(NEDEXCLUSIONSFILE, e))
+            fail("I/O error while reading file {}: ({})".format(NEDEXCLUSIONSFILE, e))
 
 
     ############################
@@ -363,7 +363,7 @@ root directory where the following files are present:
                 nedexclusionsfile.write("%s\n" % (nf))
             nedexclusionsfile.close()
         except (IOError, OSError) as e:
-            fail("I/O error while writing the {} file: ({})".format(NEDEXCLUSIONSFILE, e))
+            fail("I/O error while writing file {}: ({})".format(NEDEXCLUSIONSFILE, e))
 
 
     ############################
@@ -404,7 +404,7 @@ root directory where the following files are present:
             try:
                 fsFile = open(FEATURESTATEFILE, 'r')
             except (IOError, OSError) as e:
-                fail("I/O error while reading the {} file: {}".format(FEATURESTATEFILE, e))
+                fail("I/O error while reading file {}: {}".format(FEATURESTATEFILE, e))
 
             if os.stat(FEATURESTATEFILE).st_size == 0:
                 return
@@ -429,15 +429,15 @@ root directory where the following files are present:
                     xord += 1
                     continue
                 else:
-                    fail(""+FEATURESTATEFILE+": Line '" + featureDom.toxml() + "' contains the unknown feature '" + featureState.id + "'")
+                    fail(""+FEATURESTATEFILE+": Line '" + featureDom.toxml() + "' contains the unknown feature '" + featureState.id + "', try 'opp_featuretool repair'")
 
                 if featureState.id in self.featurestate:
                     if self.fixingMode:
-                        warn(""+FEATURESTATEFILE+": Line '" + featureDom.toxml() + "' contains the same feature more than one time '" + featureState.id + "', removed")
+                        warn(""+FEATURESTATEFILE+": Line '" + featureDom.toxml() + "' contains the same feature more than once '" + featureState.id + "', removed")
                         self.fsChanged = True
                         continue
                     else:
-                        fail(""+FEATURESTATEFILE+": Line '" + featureDom.toxml() + "' contains the same feature more than one time '" + featureState.id + "'")
+                        fail(""+FEATURESTATEFILE+": Line '" + featureDom.toxml() + "' contains the same feature more than once '" + featureState.id + "', try 'opp_featuretool repair'")
                 else:
                     self.featurestate[featureState.id] = featureState
 
@@ -489,7 +489,7 @@ root directory where the following files are present:
             if not self.checkFeatureNedFolders(feature):
                 ok = False
         if not ok:
-            fail("Check whether all NED folders are set properly (in the {} file) and all directories corresponding to the NED packages defined in the {} file do exist.".format(NEDFOLDERSFILE, FEATURESFILE))
+            fail("Check whether all NED folders are set properly (in file {}) and all directories corresponding to the NED packages defined in file {} do exist.".format(NEDFOLDERSFILE, FEATURESFILE))
 
 
     ############################
@@ -513,13 +513,13 @@ root directory where the following files are present:
         cnt = 0
         for key, fs in sorted(self.featurestate.items(), key=lambda x:x[1].ord):
             if not fs.id in self.features:
-                fail("unknown %s '%s' feature (not found in .oppfeature file)" % ('enabled' if fs.enabled else 'disabled', fs.id))
+                fail("unknown %s '%s' feature (not found in .oppfeature file), try 'opp_featuretool repair'" % ('enabled' if fs.enabled else 'disabled', fs.id))
             elif self.args.all or (self.args.enabled and fs.enabled) or (self.args.disabled and not fs.enabled) or (self.args.diff and fs.enabled != self.features[fs.id].initiallyEnabled):
                 print("    %s %s" % ('+' if fs.enabled else '-', fs.id))
                 cnt += 1
         for key, fi in self.sortedFeatures:
             if not key in self.featurestate:
-                fail("feature '{}' is missing from the {} file".format(key, FEATURESTATEFILE))
+                fail("feature '{}' is missing from file {}, try 'opp_featuretool repair'".format(key, FEATURESTATEFILE))
         self.printIfVerbose(2, "{} {}feature(s) found.".format(cnt, categ))
 
 
@@ -645,7 +645,7 @@ root directory where the following files are present:
                 elif self.autoFixingMode:
                     warn("feature '%s' is missing from the %s file, using the default state." % (fid, FEATURESTATEFILE))
                 else:
-                    fail("feature '%s' is missing from the %s file." % (fid, FEATURESTATEFILE))
+                    fail("feature '%s' is missing from the %s file, try 'opp_featuretool repair'." % (fid, FEATURESTATEFILE))
 
         # check dependencies:
         dependencyErrorOccurred = False
@@ -683,12 +683,12 @@ root directory where the following files are present:
                     self.featurestate[key].enabled = True
                 self.fsChanged = True
             else:
-                fail("feature dependency error(s) occurred.")  #FIXME what occurred???
+                fail("feature dependency error(s) found, see warnings above.")
         if nedfolderErrorOccurred:
             if self.fixingMode:
                 self.fsChanged = True
             elif not self.autoFixingMode:
-                fail("feature dependency error(s) found in the "+NEDEXCLUSIONSFILE+" file.")  #FIXME what kind of errors???
+                fail("feature dependency error(s) found in the "+NEDEXCLUSIONSFILE+" file, see warnings above.")
 
 
     ############################
@@ -826,7 +826,7 @@ root directory where the following files are present:
         elif self.args.command == 'repair':
             self.doRepairCommand()
         elif self.args.command == 'reset':
-            fail("reset command already processed")  #FIXME assert(false) # reset command already processed
+            fail("internal error") # 'reset' was already processed above
         elif self.args.command == 'enable':
             self.doEnableCommand()
         elif self.args.command == 'disable':
@@ -856,7 +856,7 @@ root directory where the following files are present:
             self.printIfVerbose(1, "opp_featuretool: "+NEDEXCLUSIONSFILE+" file updated.")
 
         if self.errorOccurred:
-            fail("an error ocurred")
+            fail("an error ocurred.")
 
 
 #####################################################
