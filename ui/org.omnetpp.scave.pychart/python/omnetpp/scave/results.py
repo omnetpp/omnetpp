@@ -52,7 +52,7 @@ def _get_array_from_shm(name):
 
 
 # CSV format
-def get_results(filter_expression="", row_types=['runattr', 'itervar', 'param', 'scalar', 'vector', 'statistics', 'histogram', 'attr'], omit_unused_columns=True, start_time=-inf, end_time=inf):
+def get_results(filter_expression="", row_types=['runattr', 'itervar', 'config', 'scalar', 'vector', 'statistic', 'histogram', 'param', 'attr'], omit_unused_columns=True, start_time=-inf, end_time=inf):
 
     pk = Gateway.results_provider.getResultsPickle(filter_expression, row_types, omit_unused_columns, start_time, end_time)
 
@@ -67,10 +67,7 @@ def get_results(filter_expression="", row_types=['runattr', 'itervar', 'param', 
     df["vectime"] = df["vectime"].map(_get_array_from_shm)
     df["vecvalue"] = df["vecvalue"].map(_get_array_from_shm)
 
-    # TODO: do this filtering in Java instead, might be faster
-    df = df[df['type'].isin(row_types)]
-
-    if omit_unused_columns:
+    if omit_unused_columns:  # maybe do this in Java?
         df.dropna(axis='columns', how='all', inplace=True)
 
     return df

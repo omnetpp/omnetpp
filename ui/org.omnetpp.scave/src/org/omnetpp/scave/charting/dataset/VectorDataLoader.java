@@ -21,7 +21,7 @@ public class VectorDataLoader {
     public static XYArrayVector getDataOfVectors(ResultFileManager manager, IDList idlist, double simTimeStart, double simTimeEnd, InterruptedFlag interruptedFlag) {
 
         // System.gc(); // NOT NEEDED, SLOW, and actually BREAKS some internal parts of Py4J...
-        ScaveEngine.malloc_trim();
+        ScaveEngine.malloc_trim(); // just so we maximize the available (non-Java) heap space
 
         long availableSystemMemoryBytes = ScaveEngine.getAvailableMemoryBytes();
 

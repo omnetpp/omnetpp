@@ -11,6 +11,7 @@ import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.InterruptedFlag;
 import org.omnetpp.scave.engine.OrderedKeyValueList;
+import org.omnetpp.scave.engine.ParameterResult;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.Run;
@@ -33,19 +34,31 @@ import net.razorvine.pickle.Pickler;
 public class CsvResultsPickler implements IObjectPickler {
 
     protected String filterExpression;
-    protected List<String> rowTypes;
-    protected boolean omitUnusedColumns;
+
+    boolean addRunAttrs, addIterVars, addConfigEntries, addScalars, addVectors, addStatistics, addHistograms, addParams, addAttrs;
+
+    protected boolean omitUnusedColumns; // done in python at the moment
     protected double simTimeStart;
     protected double simTimeEnd;
     protected InterruptedFlag interruptedFlag;
 
     public CsvResultsPickler(String filterExpression, List<String> rowTypes, boolean omitUnusedColumns, double simTimeStart, double simTimeEnd, InterruptedFlag interruptedFlag) {
         this.filterExpression = filterExpression;
-        this.rowTypes = rowTypes;
+
         this.omitUnusedColumns = omitUnusedColumns;
         this.simTimeStart = simTimeStart;
         this.simTimeEnd = simTimeEnd;
         this.interruptedFlag = interruptedFlag;
+
+        addRunAttrs = rowTypes.contains("runattr");
+        addIterVars = rowTypes.contains("itervar");
+        addConfigEntries = rowTypes.contains("config");
+        addScalars = rowTypes.contains("scalar");
+        addVectors = rowTypes.contains("vector");
+        addStatistics = rowTypes.contains("statistic");
+        addHistograms = rowTypes.contains("histogram");
+        addParams = rowTypes.contains("param");
+        addAttrs = rowTypes.contains("attr");
     }
 
     public void pickleResultAttributes(ResultItem result, Pickler pickler, OutputStream out) throws IOException {
@@ -75,65 +88,71 @@ public class CsvResultsPickler implements IObjectPickler {
 
         for (Run r : runs.toArray()) {
 
-            // Run attributes
-            StringMap attrs = r.getAttributes();
-            StringVector attrKeys = attrs.keys();
-            for (int i = 0; i < attrKeys.size(); ++i) {
-                String key = attrKeys.get(i);
+            if (addRunAttrs) {
+                // Run attributes
+                StringMap attrs = r.getAttributes();
+                StringVector attrKeys = attrs.keys();
+                for (int i = 0; i < attrKeys.size(); ++i) {
+                    String key = attrKeys.get(i);
 
-                out.write(Opcodes.MARK);
-                {
-                    pickler.save(r.getRunName());
-                    pickler.save("runattr");
-                    pickler.save(null); // module
-                    pickler.save(null); // name
-                    pickler.save(key);
-                    pickler.save(attrs.get(key));
+                    out.write(Opcodes.MARK);
+                    {
+                        pickler.save(r.getRunName());
+                        pickler.save("runattr");
+                        pickler.save(null); // module
+                        pickler.save(null); // name
+                        pickler.save(key);
+                        pickler.save(attrs.get(key));
 
-                    for (int j = 0; j < 13; ++j)
-                        pickler.save(null);
+                        for (int j = 0; j < 13; ++j)
+                            pickler.save(null);
+                    }
+                    out.write(Opcodes.TUPLE);
                 }
-                out.write(Opcodes.TUPLE);
             }
 
-            // Iteration variables
-            StringMap itervars = r.getIterationVariables();
-            StringVector itervarKeys = itervars.keys();
-            for (int i = 0; i < itervarKeys.size(); ++i) {
-                String key = itervarKeys.get(i);
+            if (addIterVars) {
+                // Iteration variables
+                StringMap itervars = r.getIterationVariables();
+                StringVector itervarKeys = itervars.keys();
+                for (int i = 0; i < itervarKeys.size(); ++i) {
+                    String key = itervarKeys.get(i);
 
-                out.write(Opcodes.MARK);
-                {
-                    pickler.save(r.getRunName());
-                    pickler.save("itervar");
-                    pickler.save(null); // module
-                    pickler.save(null); // name
-                    pickler.save(key);
-                    pickler.save(itervars.get(key));
+                    out.write(Opcodes.MARK);
+                    {
+                        pickler.save(r.getRunName());
+                        pickler.save("itervar");
+                        pickler.save(null); // module
+                        pickler.save(null); // name
+                        pickler.save(key);
+                        pickler.save(itervars.get(key));
 
-                    for (int j = 0; j < 13; ++j)
-                        pickler.save(null);
+                        for (int j = 0; j < 13; ++j)
+                            pickler.save(null);
+                    }
+                    out.write(Opcodes.TUPLE);
                 }
-                out.write(Opcodes.TUPLE);
             }
 
-            // Parameter assignments
-            OrderedKeyValueList params = r.getParamAssignments();
-            for (int i = 0; i < params.size(); ++i) {
-                StringPair pair = params.get(i);
-                out.write(Opcodes.MARK);
-                {
-                    pickler.save(r.getRunName());
-                    pickler.save("param");
-                    pickler.save(null); // module
-                    pickler.save(null); // name
-                    pickler.save(pair.getFirst());
-                    pickler.save(pair.getSecond());
+            if (addConfigEntries) {
+                // Config entries
+                OrderedKeyValueList entries = r.getConfigEntries();
+                for (int i = 0; i < entries.size(); ++i) {
+                    StringPair pair = entries.get(i);
+                    out.write(Opcodes.MARK);
+                    {
+                        pickler.save(r.getRunName());
+                        pickler.save("config");
+                        pickler.save(null); // module
+                        pickler.save(null); // name
+                        pickler.save(pair.getFirst());
+                        pickler.save(pair.getSecond());
 
-                    for (int j = 0; j < 13; ++j)
-                        pickler.save(null);
+                        for (int j = 0; j < 13; ++j)
+                            pickler.save(null);
+                    }
+                    out.write(Opcodes.TUPLE);
                 }
-                out.write(Opcodes.TUPLE);
             }
 
             if (interruptedFlag.getFlag())
@@ -145,127 +164,167 @@ public class CsvResultsPickler implements IObjectPickler {
             throws PickleException, IOException {
         ScalarResult result = resultManager.getScalar(ID);
 
-        out.write(Opcodes.MARK);
-        {
-            pickler.save(result.getRun().getRunName());
-            pickler.save("scalar");
-            pickler.save(result.getModuleName());
-            pickler.save(result.getName());
-            pickler.save(null); // attrname
-            pickler.save(null); // attrvalue
-            pickler.save(result.getValue());
+        if (addScalars) {
+            out.write(Opcodes.MARK);
+            {
+                pickler.save(result.getRun().getRunName());
+                pickler.save("scalar");
+                pickler.save(result.getModuleName());
+                pickler.save(result.getName());
+                pickler.save(null); // attrname
+                pickler.save(null); // attrvalue
+                pickler.save(result.getValue());
 
-            for (int j = 0; j < 12; ++j)
-                pickler.save(null);
+                for (int j = 0; j < 12; ++j)
+                    pickler.save(null);
+            }
+            out.write(Opcodes.TUPLE);
         }
-        out.write(Opcodes.TUPLE);
 
-        pickleResultAttributes(result, pickler, out);
+        if (addAttrs)
+            pickleResultAttributes(result, pickler, out);
     }
 
+    protected void pickleParameterResult(ResultFileManager resultManager, long ID, Pickler pickler, OutputStream out)
+            throws PickleException, IOException {
+        ParameterResult result = resultManager.getParameter(ID);
+
+        if (addParams) {
+            out.write(Opcodes.MARK);
+            {
+                pickler.save(result.getRun().getRunName());
+                pickler.save("param");
+                pickler.save(result.getModuleName());
+                pickler.save(result.getName());
+                pickler.save(null); // attrname
+                pickler.save(null); // attrvalue
+                pickler.save(result.getValue());
+
+                for (int j = 0; j < 12; ++j)
+                    pickler.save(null);
+            }
+            out.write(Opcodes.TUPLE);
+        }
+
+        if (addAttrs)
+            pickleResultAttributes(result, pickler, out);
+    }
 
     protected void pickleVectorResult(ResultFileManager resultManager, long ID, Pickler pickler,
             OutputStream out) throws PickleException, IOException {
         VectorResult result = resultManager.getVector(ID);
-        IDList idAsList = new IDList();
-        idAsList.add(ID);
-        // TODO optimize: load all the vectors at once
-        XYArray data = VectorDataLoader.getDataOfVectors(resultManager, idAsList, simTimeStart, simTimeEnd, interruptedFlag).get(0);
 
-        out.write(Opcodes.MARK);
-        {
-            pickler.save(result.getRun().getRunName());
-            pickler.save("vector");
-            pickler.save(result.getModuleName());
-            pickler.save(result.getName());
+        if (addVectors) {
+            IDList idAsList = new IDList();
+            idAsList.add(ID);
+            // TODO optimize: load all the vectors at once
+            XYArray data = VectorDataLoader.getDataOfVectors(resultManager, idAsList, simTimeStart, simTimeEnd, interruptedFlag).get(0);
 
-            for (int j = 0; j < 13; ++j)
-                pickler.save(null);
+            out.write(Opcodes.MARK);
+            {
+                pickler.save(result.getRun().getRunName());
+                pickler.save("vector");
+                pickler.save(result.getModuleName());
+                pickler.save(result.getName());
 
-            ResultPicklingUtils.pickleXYArray(data, out);
+                for (int j = 0; j < 13; ++j)
+                    pickler.save(null);
+
+                ResultPicklingUtils.pickleXYArray(data, out);
+            }
+            out.write(Opcodes.TUPLE);
+
+            data.delete();
+            data = null;
+            //System.gc(); // NOT NEEDED, SLOW, and actually BREAKS some internal parts of Py4J...
+            ScaveEngine.malloc_trim(); // so the std::vector buffers (in data) are released to the operating system
         }
-        out.write(Opcodes.TUPLE);
 
-        data.delete();
-        data = null;
-        //System.gc(); // NOT NEEDED, SLOW, and actually BREAKS some internal parts of Py4J...
-        ScaveEngine.malloc_trim();
-
-        pickleResultAttributes(result, pickler, out);
+        if (addAttrs)
+            pickleResultAttributes(result, pickler, out);
     }
 
     protected void pickleStatisticsResult(ResultFileManager resultManager, long ID, Pickler pickler, OutputStream out)
             throws PickleException, IOException {
         StatisticsResult result = resultManager.getStatistics(ID);
-        Statistics stats = result.getStatistics();
-        // runID, type, module, name, attrname, attrvalue, value, count, sumweights, mean, stddev, min, max, underflows, overflows, binedges, binvalues, vectime, vecvalue
-        out.write(Opcodes.MARK);
-        {
-            pickler.save(result.getRun().getRunName());
-            pickler.save("statistic");
-            pickler.save(result.getModuleName());
-            pickler.save(result.getName());
-            pickler.save(null); // attrname
-            pickler.save(null); // attrvalue
-            pickler.save(null); // value
 
-            pickler.save(stats.getCount());
-            pickler.save(stats.getSumWeights());
-            pickler.save(stats.getMean());
-            pickler.save(stats.getStddev());
-            pickler.save(stats.getMin());
-            pickler.save(stats.getMax());
+        if (addStatistics) {
+            Statistics stats = result.getStatistics();
+            // runID, type, module, name, attrname, attrvalue, value, count, sumweights, mean, stddev, min, max, underflows, overflows, binedges, binvalues, vectime, vecvalue
+            out.write(Opcodes.MARK);
+            {
+                pickler.save(result.getRun().getRunName());
+                pickler.save("statistic");
+                pickler.save(result.getModuleName());
+                pickler.save(result.getName());
+                pickler.save(null); // attrname
+                pickler.save(null); // attrvalue
+                pickler.save(null); // value
 
-            for (int j = 0; j < 6; ++j)
-                pickler.save(null);
+                pickler.save(stats.getCount());
+                pickler.save(stats.getSumWeights());
+                pickler.save(stats.getMean());
+                pickler.save(stats.getStddev());
+                pickler.save(stats.getMin());
+                pickler.save(stats.getMax());
 
+                for (int j = 0; j < 6; ++j)
+                    pickler.save(null);
+            }
+            out.write(Opcodes.TUPLE);
         }
-        out.write(Opcodes.TUPLE);
 
-        pickleResultAttributes(result, pickler, out);
+        if (addAttrs)
+            pickleResultAttributes(result, pickler, out);
     }
 
     protected void pickleHistogramResult(ResultFileManager resultManager, long ID, Pickler pickler, OutputStream out)
             throws PickleException, IOException {
+
         HistogramResult result = resultManager.getHistogram(ID);
-        Statistics stats = result.getStatistics();
-        Histogram hist = result.getHistogram();
-        out.write(Opcodes.MARK);
-        {
-            pickler.save(result.getRun().getRunName());
-            pickler.save("histogram");
-            pickler.save(result.getModuleName());
-            pickler.save(result.getName());
-            pickler.save(null); // attrname
-            pickler.save(null); // attrvalue
-            pickler.save(null); // value
 
-            pickler.save(stats.getCount());
-            pickler.save(stats.getSumWeights());
-            pickler.save(stats.getMean());
-            pickler.save(stats.getStddev());
-            pickler.save(stats.getMin());
-            pickler.save(stats.getMax());
+        if (addHistograms) {
+            Statistics stats = result.getStatistics();
+            Histogram hist = result.getHistogram();
+            out.write(Opcodes.MARK);
+            {
+                pickler.save(result.getRun().getRunName());
+                pickler.save("histogram");
+                pickler.save(result.getModuleName());
+                pickler.save(result.getName());
+                pickler.save(null); // attrname
+                pickler.save(null); // attrvalue
+                pickler.save(null); // value
 
-            pickler.save(hist.getUnderflows());
-            pickler.save(hist.getOverflows());
+                pickler.save(stats.getCount());
+                pickler.save(stats.getSumWeights());
+                pickler.save(stats.getMean());
+                pickler.save(stats.getStddev());
+                pickler.save(stats.getMin());
+                pickler.save(stats.getMax());
 
-            ResultPicklingUtils.pickleDoubleArray(hist.getBinEdges().toArray(), out);
-            ResultPicklingUtils.pickleDoubleArray(hist.getBinValues().toArray(), out);
+                pickler.save(hist.getUnderflows());
+                pickler.save(hist.getOverflows());
 
-            pickler.save(null); // vectime
-            pickler.save(null); // vecvalue
+                ResultPicklingUtils.pickleDoubleArray(hist.getBinEdges().toArray(), out);
+                ResultPicklingUtils.pickleDoubleArray(hist.getBinValues().toArray(), out);
+
+                pickler.save(null); // vectime
+                pickler.save(null); // vecvalue
+            }
+            out.write(Opcodes.TUPLE);
         }
-        out.write(Opcodes.TUPLE);
 
-        pickleResultAttributes(result, pickler, out);
+
+        if (addAttrs)
+            pickleResultAttributes(result, pickler, out);
     }
 
     @Override
     public void pickle(Object obj, OutputStream out, Pickler pickler) throws PickleException, IOException {
         ResultFileManager resultManager = (ResultFileManager)obj;
 
-        // TODO: rowTypes and omitUnusedColumns is currently ignored here, filtering is done in Python.
+        // TODO: omitUnusedColumns is currently ignored here, dropping them is done in Python.
         out.write(Opcodes.MARK);
         if (filterExpression != null && !filterExpression.trim().isEmpty()) {
             IDList results = resultManager.getAllItems();
@@ -276,33 +335,45 @@ public class CsvResultsPickler implements IObjectPickler {
 
             pickleRunsOfResults(resultManager, results, pickler, out);
 
-            for (int i = 0; i < results.size(); ++i) {
-                if (ResultFileManager.getTypeOf(results.get(i)) == ResultFileManager.SCALAR)
-                    pickleScalarResult(resultManager, results.get(i), pickler, out);
-                if (i % 10 == 0 && interruptedFlag.getFlag())
-                    throw new RuntimeException("Result pickling interrupted");
-            }
+            if (addScalars || addAttrs)
+                for (int i = 0; i < results.size(); ++i) {
+                    if (ResultFileManager.getTypeOf(results.get(i)) == ResultFileManager.SCALAR)
+                        pickleScalarResult(resultManager, results.get(i), pickler, out);
+                    if (i % 10 == 0 && interruptedFlag.getFlag())
+                        throw new RuntimeException("Result pickling interrupted");
+                }
 
-            for (int i = 0; i < results.size(); ++i) {
-                if (ResultFileManager.getTypeOf(results.get(i)) == ResultFileManager.VECTOR)
-                    pickleVectorResult(resultManager, results.get(i), pickler, out);
-                if (i % 10 == 0 && interruptedFlag.getFlag())
-                    throw new RuntimeException("Result pickling interrupted");
-            }
+            if (addVectors || addAttrs)
+                for (int i = 0; i < results.size(); ++i) {
+                    if (ResultFileManager.getTypeOf(results.get(i)) == ResultFileManager.VECTOR)
+                        pickleVectorResult(resultManager, results.get(i), pickler, out);
+                    if (i % 10 == 0 && interruptedFlag.getFlag())
+                        throw new RuntimeException("Result pickling interrupted");
+                }
 
-            for (int i = 0; i < results.size(); ++i) {
-                if (ResultFileManager.getTypeOf(results.get(i)) == ResultFileManager.STATISTICS)
-                    pickleStatisticsResult(resultManager, results.get(i), pickler, out);
-                if (i % 10 == 0 && interruptedFlag.getFlag())
-                    throw new RuntimeException("Result pickling interrupted");
-            }
+            if (addStatistics || addAttrs)
+                for (int i = 0; i < results.size(); ++i) {
+                    if (ResultFileManager.getTypeOf(results.get(i)) == ResultFileManager.STATISTICS)
+                        pickleStatisticsResult(resultManager, results.get(i), pickler, out);
+                    if (i % 10 == 0 && interruptedFlag.getFlag())
+                        throw new RuntimeException("Result pickling interrupted");
+                }
 
-            for (int i = 0; i < results.size(); ++i) {
-                if (ResultFileManager.getTypeOf(results.get(i)) == ResultFileManager.HISTOGRAM)
-                    pickleHistogramResult(resultManager, results.get(i), pickler, out);
-                if (i % 10 == 0 && interruptedFlag.getFlag())
-                    throw new RuntimeException("Result pickling interrupted");
-            }
+            if (addHistograms || addAttrs)
+                for (int i = 0; i < results.size(); ++i) {
+                    if (ResultFileManager.getTypeOf(results.get(i)) == ResultFileManager.HISTOGRAM)
+                        pickleHistogramResult(resultManager, results.get(i), pickler, out);
+                    if (i % 10 == 0 && interruptedFlag.getFlag())
+                        throw new RuntimeException("Result pickling interrupted");
+                }
+
+            if (addParams || addAttrs)
+                for (int i = 0; i < results.size(); ++i) {
+                    if (ResultFileManager.getTypeOf(results.get(i)) == ResultFileManager.PARAMETER)
+                        pickleParameterResult(resultManager, results.get(i), pickler, out);
+                    if (i % 10 == 0 && interruptedFlag.getFlag())
+                        throw new RuntimeException("Result pickling interrupted");
+                }
         }
         out.write(Opcodes.LIST);
     }

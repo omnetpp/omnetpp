@@ -87,7 +87,7 @@ public class VectorResultsPickler implements IObjectPickler {
                 vectorsData.delete();
                 vectorsData = null;
                 //System.gc(); // NOT NEEDED, SLOW, and actually BREAKS some internal parts of Py4J...
-                ScaveEngine.malloc_trim();
+                ScaveEngine.malloc_trim(); // so the std::vector buffers (in vectorsData) are released to the operating system
 
                 if (ResultPicklingUtils.debug)
                     Debug.println("vector data cleanup done");
