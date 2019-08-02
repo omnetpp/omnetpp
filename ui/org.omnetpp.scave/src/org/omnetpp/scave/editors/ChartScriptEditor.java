@@ -682,14 +682,14 @@ public class ChartScriptEditor extends PyEdit {
         int length = doc.getLength();
         int line = 0;
 
-        String[] parts = msg.split("File \"<string>\", line ", 2);
+        String[] parts = msg.split(".+File \"<string>\", line ");
 
         if (parts.length == 0)
             problemMessage = "Unknown error.";
         else if (parts.length == 1)
             problemMessage = parts[0].trim();
         else {
-            String[] parts2 = parts[1].split("(,|\n)", 2);
+            String[] parts2 = parts[parts.length-1].split("(,|\n)", 2);
 
             line = Integer.parseInt(parts2[0]);
 
