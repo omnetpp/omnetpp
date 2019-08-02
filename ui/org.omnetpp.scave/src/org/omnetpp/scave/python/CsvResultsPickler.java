@@ -84,8 +84,6 @@ public class CsvResultsPickler implements IObjectPickler {
             OutputStream out) throws IOException {
         RunList runs = resultManager.getUniqueRuns(results);
 
-        // runID, type, module, name, attrname, attrvalue, value, count, sumweights, mean, stddev, min, max, underflows, overflows, binedges, binvalues, vectime, vecvalue
-
         for (Run r : runs.toArray()) {
 
             if (addRunAttrs) {
@@ -327,7 +325,7 @@ public class CsvResultsPickler implements IObjectPickler {
         // TODO: omitUnusedColumns is currently ignored here, dropping them is done in Python.
         out.write(Opcodes.MARK);
         if (filterExpression != null && !filterExpression.trim().isEmpty()) {
-            IDList results = resultManager.getAllItems();
+            IDList results = resultManager.getAllItems(false, false);
             results = resultManager.filterIDList(results, filterExpression, interruptedFlag);
 
             if (ResultPicklingUtils.debug)
