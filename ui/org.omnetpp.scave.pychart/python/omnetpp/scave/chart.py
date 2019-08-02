@@ -78,9 +78,12 @@ def make_legend_label(legend_cols, row):
     return ", ".join([col + "=" + str(row[i]) for i, col in legend_cols])
 
 def make_chart_title(df, title_col, legend_cols):
+    if df is None or df.empty or title_col not in df:
+        return "None"
+
     what = str(list(df[title_col])[0]) if title_col else "Data"
     if title_col and len(df[title_col].unique()) > 1:
-        what +=  " and other variables"
+        what += " and other variables"
     by_what = (" (by " + ", ".join([id[1] for id in legend_cols]) + ")") if legend_cols else ""
     return what + by_what
 
