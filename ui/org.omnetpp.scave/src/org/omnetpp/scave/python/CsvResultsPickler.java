@@ -75,6 +75,9 @@ public class CsvResultsPickler implements IObjectPickler {
                 pickler.save(result.getName());
                 pickler.save(key);
                 pickler.save(attrs.get(key));
+
+                for (int j = 0; j < 13; ++j)
+                    pickler.save(null);
             }
             out.write(Opcodes.TUPLE);
         }
@@ -248,7 +251,6 @@ public class CsvResultsPickler implements IObjectPickler {
 
         if (addStatistics) {
             Statistics stats = result.getStatistics();
-            // runID, type, module, name, attrname, attrvalue, value, count, sumweights, mean, stddev, min, max, underflows, overflows, binedges, binvalues, vectime, vecvalue
             out.write(Opcodes.MARK);
             {
                 pickler.save(result.getRun().getRunName());
@@ -313,7 +315,6 @@ public class CsvResultsPickler implements IObjectPickler {
             out.write(Opcodes.TUPLE);
         }
 
-
         if (addAttrs)
             pickleResultAttributes(result, pickler, out);
     }
@@ -321,6 +322,9 @@ public class CsvResultsPickler implements IObjectPickler {
     @Override
     public void pickle(Object obj, OutputStream out, Pickler pickler) throws PickleException, IOException {
         ResultFileManager resultManager = (ResultFileManager)obj;
+
+        // the columns are always:
+        // runID, type, module, name, attrname, attrvalue, value, count, sumweights, mean, stddev, min, max, underflows, overflows, binedges, binvalues, vectime, vecvalue
 
         // TODO: omitUnusedColumns is currently ignored here, dropping them is done in Python.
         out.write(Opcodes.MARK);

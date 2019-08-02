@@ -95,9 +95,9 @@ def _to_label(x):
     if isinstance(x, str):
         return x
     elif isinstance(x, tuple):
-        return ", ".join(list(x))
+        return ", ".join(map(str, list(x)))
     elif isinstance(x, list):
-        return ", ".join(x)
+        return ", ".join(map(str, x))
     else:
         return str(x)
 

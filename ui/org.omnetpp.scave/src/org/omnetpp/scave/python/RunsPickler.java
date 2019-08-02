@@ -27,25 +27,23 @@ public class RunsPickler implements IObjectPickler {
     @Override
     public void pickle(Object obj, OutputStream out, Pickler pickler) throws PickleException, IOException {
         ResultFileManager resultManager = (ResultFileManager)obj;
+        // in contrast to all other picklers, the list of run names is not wrapped in a tuple,
+        // as it would only have one element, so there is no point to it.
         out.write(Opcodes.MARK);
-        {
-            out.write(Opcodes.MARK);
-            if (filterExpression != null && !filterExpression.trim().isEmpty()) {
-                RunList runs = resultManager.getRuns();
-                runs = resultManager.filterRunList(runs, filterExpression);
+        if (filterExpression != null && !filterExpression.trim().isEmpty()) {
+            RunList runs = resultManager.getRuns();
+            runs = resultManager.filterRunList(runs, filterExpression);
 
-                if (ResultPicklingUtils.debug)
-                    Debug.println("pickling " + runs.size() + " runs");
+            if (ResultPicklingUtils.debug)
+                Debug.println("pickling " + runs.size() + " runs");
 
-                for (Run r : runs.toArray()) {
-                    pickler.save(r.getRunName());
+            for (Run r : runs.toArray()) {
+                pickler.save(r.getRunName());
 
-                    if (interruptedFlag.getFlag())
-                        throw new RuntimeException("Run pickling interrupted");
-                }
+                if (interruptedFlag.getFlag())
+                    throw new RuntimeException("Run pickling interrupted");
             }
-            out.write(Opcodes.LIST);
         }
-        out.write(Opcodes.TUPLE);
+        out.write(Opcodes.LIST);
     }
 }

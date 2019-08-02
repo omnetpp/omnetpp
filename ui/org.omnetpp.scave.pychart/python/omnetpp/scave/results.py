@@ -53,8 +53,7 @@ def _get_array_from_shm(name):
 
 # CSV format
 def get_results(filter_expression="", row_types=['runattr', 'itervar', 'config', 'scalar', 'vector', 'statistic', 'histogram', 'param', 'attr'], omit_unused_columns=True, start_time=-inf, end_time=inf):
-
-    pk = Gateway.results_provider.getResultsPickle(filter_expression, row_types, omit_unused_columns, start_time, end_time)
+    pk = Gateway.results_provider.getResultsPickle(filter_expression, list(row_types), bool(omit_unused_columns), float(start_time), float(end_time))
 
     df = pd.DataFrame(pickle.loads(pk), columns=[
         "runID", "type", "module", "name", "attrname", "attrvalue",
@@ -82,8 +81,9 @@ def _append_metadata_columns(df, metadata_pickle, suffix):
 def _append_additional_data(df, attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
     if attrs is not None:
         attrs = pd.DataFrame(attrs, columns=["runID", "module", "name", "attrname", "attrvalue"])
-        attrs = pd.pivot_table(attrs, columns="attrname", aggfunc='first', index=["runID", "module", "name"], values="attrvalue")
-        df = df.merge(attrs, left_on=["runID", "module", "name"], right_index=True, how='left')
+        if not attrs.empty:
+            attrs = pd.pivot_table(attrs, columns="attrname", aggfunc='first', index=["runID", "module", "name"], values="attrvalue")
+            df = df.merge(attrs, left_on=["runID", "module", "name"], right_index=True, how='left')
 
     runs = list(df["runID"].unique())
 
@@ -104,10 +104,10 @@ def _append_additional_data(df, attrs, include_runattrs, include_itervars, inclu
 
     return df
 
+
 def get_runs(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
     pk = Gateway.results_provider.getRunsPickle(filter_expression)
-    runs, runattrs, itervars = pickle.loads(pk)
-    df = pd.DataFrame(runs, columns=["runID"])
+    df = pd.DataFrame({"runID": pickle.loads(pk)})
     return _append_additional_data(df, None, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
 def get_runattrs(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
@@ -115,14 +115,14 @@ def get_runattrs(filter_expression="", include_runattrs=False, include_itervars=
     df = pd.DataFrame(pickle.loads(pk), columns=["runID", "name", "value"])
     return _append_additional_data(df, None, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
-
-def get_itervars(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
+def get_itervars(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, as_numeric=False):
     pk = Gateway.results_provider.getItervarsPickle(filter_expression)
     df = pd.DataFrame(pickle.loads(pk), columns=["runID", "name", "value"])
+    if as_numeric:
+        df["value"] = pd.to_numeric(df["value"], errors="coerce")
     return _append_additional_data(df, None, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
-
-def get_scalars(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, include_params=False, merge_module_and_name=False):
+def get_scalars(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
     pk = Gateway.results_provider.getScalarsPickle(filter_expression, include_attrs, merge_module_and_name)
 
     scalars, attrs = pickle.loads(pk)
@@ -130,12 +130,14 @@ def get_scalars(filter_expression="", include_attrs=False, include_runattrs=Fals
 
     return _append_additional_data(df, attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
-
-def get_param_values(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False, as_numeric=False):
+def get_parameters(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False, as_numeric=False):
     pk = Gateway.results_provider.getParamValuesPickle(filter_expression, include_attrs, merge_module_and_name)
 
     params, attrs = pickle.loads(pk)
     df = pd.DataFrame(params, columns=["runID", "module", "name", "value"])
+
+    if as_numeric:
+        df["value"] = pd.to_numeric(df["value"], errors="coerce")
 
     return _append_additional_data(df, attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
