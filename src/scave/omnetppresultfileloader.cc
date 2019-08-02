@@ -247,12 +247,19 @@ void OmnetppResultFileLoader::flush(ParseContext& ctx)
     case ParseContext::NONE:
         break;
     case ParseContext::RUN: {
-        Run *runRef = resultFileManager->getOrAddRun(ctx.runName);
-        ctx.fileRunRef = resultFileManager->getOrAddFileRun(ctx.fileRef, runRef);
-        separateItervarsFromAttrs(ctx.attrs, ctx.itervars);
-        addAll(runRef->attributes, ctx.attrs);  // note: merge/overwrite attributes if run already existed
-        addAll(runRef->itervars, ctx.itervars);
-        addAll(runRef->configEntries, ctx.configEntries);
+        Run *existingRun = resultFileManager->getRunByName(ctx.runName.c_str());
+        if (existingRun) {
+            ctx.fileRunRef = resultFileManager->getOrAddFileRun(ctx.fileRef, existingRun);
+            // TODO check for consistency, or merge/overwrite attributes
+        }
+        else {
+            Run *runRef = resultFileManager->getOrAddRun(ctx.runName);
+            ctx.fileRunRef = resultFileManager->getOrAddFileRun(ctx.fileRef, runRef);
+            separateItervarsFromAttrs(ctx.attrs, ctx.itervars);
+            addAll(runRef->attributes, ctx.attrs);
+            addAll(runRef->itervars, ctx.itervars);
+            addAll(runRef->configEntries, ctx.configEntries);
+        }
         break;
     }
     case ParseContext::SCALAR: {
