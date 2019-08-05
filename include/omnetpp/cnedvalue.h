@@ -55,7 +55,17 @@ class SIM_API cNedValue
      * Type of the value stored in a cNedValue object.
      */
     // Note: char codes need to be present and be consistent with cNedFunction::getArgTypes()!
-    enum Type {UNDEF=0, BOOL='B', INT='L', DOUBLE='D', STRING='S', OBJECT='O', DBL=DOUBLE /*compat*/, STR=STRING /*compat*/} type;
+    enum Type {
+        UNDEF = 0,
+        BOOL = 'B',
+        INT = 'L',
+        DOUBLE = 'D',
+        STRING = 'S',
+        OBJECT = 'O',
+        XML [[deprecated]] = OBJECT, // and use check_and_cast<cXmlElement*>() on value
+        DBL [[deprecated]] = DOUBLE, // rename
+        STR [[deprecated]] = STRING // rename
+    } type;
 
   private:
     bool bl;
