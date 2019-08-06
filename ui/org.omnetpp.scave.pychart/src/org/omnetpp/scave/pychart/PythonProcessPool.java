@@ -75,7 +75,7 @@ public class PythonProcessPool {
         String location = locationBase + File.separator + "python";
 
         ProcessBuilder pb = new ProcessBuilder()
-                .command("python3", "-m", "omnetpp.internal.PythonEntryPoint", Integer.toString(javaPort))
+                .command("python3", "-u", "-m", "omnetpp.internal.PythonEntryPoint", Integer.toString(javaPort))
                 // .directory(new File(location))
                 .redirectError(ProcessBuilder.Redirect.PIPE).redirectOutput(ProcessBuilder.Redirect.PIPE)
                 .redirectInput(ProcessBuilder.Redirect.PIPE);
