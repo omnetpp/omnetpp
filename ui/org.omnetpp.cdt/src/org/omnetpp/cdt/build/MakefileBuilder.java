@@ -33,6 +33,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -53,8 +55,9 @@ import org.omnetpp.common.util.UIUtils;
  * @author Andras
  */
 public class MakefileBuilder extends IncrementalProjectBuilder {
+    public static final String PREF_DONTSHOW_MISSINGOMNETPPLIBS_DIALOG = "org.omnetpp.cdt.DontShowMissingOmnetppLibsDialog";
     public static final String BUILDER_ID = "org.omnetpp.cdt.MakefileBuilder";
-    public static final String MARKER_ID = "org.omnetpp.cdt.makefileproblem"; //XXX this is shared with DependencyCache
+    public static final String MARKER_ID = "org.omnetpp.cdt.makefileproblem";
 
     private BuildSpecification buildSpec = null;  // re-read for each build
     private ProblemMarkerSynchronizer markerSynchronizer = null; // new instance for each build
@@ -242,13 +245,19 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         if (libMissing) {
             runInUIThread(new Runnable() {
                 public void run() {
-                    String message =
-                        "OMNeT++ libraries not yet compiled: library files for configuration \"" + activeConfig.getName() + "\" " +
-                        "are missing from " + OmnetppDirs.getOmnetppLibDir() + ".\n\n"+
-                        "Switch to a different build configuration in the project context menu, " +
-                        "or build the OMNeT++ libraries from " +
-                        "the command line. (See the Install Guide for help.)";
-                    MessageDialog.openWarning(getActiveShell(), "Project "+getProject().getName(), message);
+                    IPreferenceStore preferences = Activator.getDefault().getPreferenceStore();
+                    String pref = preferences.getString(PREF_DONTSHOW_MISSINGOMNETPPLIBS_DIALOG);
+                    if (!MessageDialogWithToggle.ALWAYS.equals(pref)) {
+                        MessageDialogWithToggle.openWarning(
+                                Display.getCurrent().getActiveShell(),
+                                "Project "+getProject().getName(),
+                                "OMNeT++ libraries not yet compiled: library files for configuration \"" + activeConfig.getName() + "\" " +
+                                "are missing from " + OmnetppDirs.getOmnetppLibDir() + ".\n\n" +
+                                "Switch to a different build configuration in the project context menu, " +
+                                "or build the OMNeT++ libraries from the command line. (See the Install Guide for help.)",
+                                "Don't show this message again", false,
+                                preferences, PREF_DONTSHOW_MISSINGOMNETPPLIBS_DIALOG);
+                    }
                 }
             });
         }
