@@ -95,6 +95,8 @@ void ExprValue::convertToDouble()
         cannotCastError(DOUBLE);
 }
 
+inline const char *emptyToNone(const char *s) { return (s && *s) ? s : "none"; }
+
 intval_t ExprValue::intValueInUnit(const char *targetUnit) const
 {
     if (type == INT) {
@@ -104,7 +106,8 @@ intval_t ExprValue::intValueInUnit(const char *targetUnit) const
         else if (c > 1 && c == floor(c))
             return safeMul((intval_t)c, intv);
         else
-            throw opp_runtime_error("Cannot convert integer from unit '%s' to '%s': no conversion or conversion rate is not integer", getUnit(), targetUnit);
+            throw opp_runtime_error("Cannot convert integer from unit '%s' to '%s': no conversion or conversion rate is not integer",
+                    emptyToNone(getUnit()), emptyToNone(targetUnit));
     }
     else {
         cannotCastError(INT);
