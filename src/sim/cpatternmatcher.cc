@@ -16,6 +16,7 @@
 
 #include "common/patternmatcher.h"
 #include "omnetpp/cpatternmatcher.h"
+#include "omnetpp/cexception.h"
 
 using namespace omnetpp::common;
 
@@ -28,7 +29,8 @@ cPatternMatcher::cPatternMatcher()
 
 cPatternMatcher::cPatternMatcher(const char *pattern, bool dottedpath, bool fullstring, bool casesensitive)
 {
-    impl = new PatternMatcher(pattern, dottedpath, fullstring, casesensitive);
+    impl = new PatternMatcher();
+    setPattern(pattern, dottedpath, fullstring, casesensitive);
 }
 
 cPatternMatcher::~cPatternMatcher()
@@ -38,7 +40,12 @@ cPatternMatcher::~cPatternMatcher()
 
 void cPatternMatcher::setPattern(const char *pattern, bool dottedpath, bool fullstring, bool casesensitive)
 {
-    impl->setPattern(pattern, dottedpath, fullstring, casesensitive);
+    try {
+        impl->setPattern(pattern, dottedpath, fullstring, casesensitive);
+    }
+    catch (std::exception& e) {
+        throw cRuntimeError("%s", e.what()); // allow debug-on-error
+    }
 }
 
 bool cPatternMatcher::matches(const char *line)
