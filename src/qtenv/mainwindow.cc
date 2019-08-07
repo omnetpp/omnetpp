@@ -1015,6 +1015,12 @@ void MainWindow::on_actionDebugOnErrors_triggered(bool checked)
     getQtenv()->debugOnErrors = checked;
 }
 
+void MainWindow::on_actionDebugNow_triggered()
+{
+    if (env->ensureDebugger())
+        DEBUG_TRAP; // YOU ASKED FOR A DEBUGGER IN THE MENU -- PLACE YOUR BREAKPOINTS AND CONTINUE EXECUTION
+}
+
 void MainWindow::on_actionEventlogRecording_triggered()
 {
     getQtenv()->setEventlogRecording(!getQtenv()->getEventlogRecording());
