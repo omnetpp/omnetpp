@@ -313,6 +313,7 @@ Total number of messages created since start of the simulation</string>
     <addaction name="actionExpressRun"/>
     <addaction name="actionRunUntil"/>
     <addaction name="separator"/>
+    <addaction name="actionDebugNow"/>
     <addaction name="actionDebugNextEvent"/>
     <addaction name="actionDebugOnErrors"/>
     <addaction name="separator"/>
@@ -874,6 +875,11 @@ Total number of messages created since start of the simulation</string>
    </property>
    <property name="toolTip">
     <string>Message Printers</string>
+   </property>
+  </action>
+  <action name="actionDebugNow">
+   <property name="text">
+    <string>Debug Now</string>
    </property>
   </action>
  </widget>
