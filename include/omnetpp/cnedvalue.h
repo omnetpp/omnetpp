@@ -65,7 +65,8 @@ class SIM_API cNedValue
         XML [[deprecated]] = OBJECT, // and use check_and_cast<cXmlElement*>() on value
         DBL [[deprecated]] = DOUBLE, // rename
         STR [[deprecated]] = STRING // rename
-    } type;
+    };
+    Type type;
 
   private:
     bool bl;
