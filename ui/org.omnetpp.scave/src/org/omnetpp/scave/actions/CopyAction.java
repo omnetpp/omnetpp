@@ -19,7 +19,10 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
+import org.omnetpp.scave.editors.ui.ChartPage;
+import org.omnetpp.scave.editors.ui.FormEditorPage;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ModelObject;
 
 /**
@@ -48,9 +51,21 @@ public class CopyAction extends AbstractScaveAction {
         }
         else {
             Object[] objects = asStructuredOrEmpty(selection).toArray();
-            for (int i = 0; i < objects.length; ++i)
-                if (objects[i] instanceof ModelObject)
-                    objects[i] = ((ModelObject)objects[i]).dup();
+            for (int i = 0; i < objects.length; ++i) {
+                if (objects[i] instanceof ModelObject) {
+                    ModelObject origObject = (ModelObject)objects[i];
+                    objects[i] = origObject.dup();
+
+                    // For Charts that are open in editors, the editor document contents
+                    // authoritative over the script in the data model, so let's use that instead.
+                    if (objects[i] instanceof Chart) {
+                        Chart chart = (Chart)objects[i];
+                        FormEditorPage page = editor.getEditorPage((Chart)origObject);
+                        if (page != null)
+                            chart.setScript(((ChartPage)page).getChartScriptEditor().getDocument().get());
+                    }
+                }
+            }
             // TODO filter out non-AnalysisObject objects
             Clipboard clipboard = new Clipboard(Display.getCurrent());
             clipboard.setContents(new Object[] { objects }, new Transfer[] {LocalTransfer.getInstance()});
