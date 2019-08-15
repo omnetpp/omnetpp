@@ -82,9 +82,7 @@ const char *opp_demangle_typename(const char *mangledName)
     //   - omnetpp::inner::Foo -> "N7omnetpp5inner3FooE"
     //   - std::runtime_error -> "St13runtime_error"
     //   - Foo* -> "P3Foo" (P prefix means pointer)
-    // http://theoryx5.uwinnipeg.ca/gnu/gcc/gxxint_15.html
-    // http://www.codesourcery.com/cxx-abi/abi.html#mangling
-    // libiberty/cp_demangle.c
+    // see libiberty/cp_demangle.c
     //
     if (*s>='0' && *s<='9')
     {
