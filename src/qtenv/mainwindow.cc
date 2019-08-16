@@ -456,7 +456,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
             // nothing to do
             break;
         case FINISH_QUIT:
-            env->finishSimulation();
+            ASSERT(getQtenv()->getCallFinishOnExitFlag() == false);
+            getQtenv()->setCallFinishOnExitFlag(true);
             break;
         case YES_NO_CANCEL: {
             QString question3 = "Do you want to conclude the simulation by invoking finish() before exiting?";
@@ -464,8 +465,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
             int ans = QMessageBox::question(this, "Question", question3, buttons, QMessageBox::Yes);
 
-            if (ans == QMessageBox::Yes)
-                env->finishSimulation();
+            if (ans == QMessageBox::Yes) {
+                ASSERT(getQtenv()->getCallFinishOnExitFlag() == false);
+                getQtenv()->setCallFinishOnExitFlag(true);
+            }
 
             if (ans == QMessageBox::Cancel) {
                 event->ignore();

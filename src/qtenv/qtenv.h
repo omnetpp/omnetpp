@@ -155,6 +155,7 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       Speedometer speedometer;
 
       bool stopSimulationFlag;      // indicates that the simulation should be stopped (STOP button pressed in the UI)
+      bool callFinishOnExitFlag = false;
 
       typedef std::list<Inspector*> InspectorList;
       InspectorList inspectors;     // list of inspector objects
@@ -372,6 +373,8 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       eState getSimulationState() {return simulationState;}
       void setStopSimulationFlag() {stopSimulationFlag = true;}
       bool getStopSimulationFlag() {return stopSimulationFlag;}
+      bool getCallFinishOnExitFlag() { return callFinishOnExitFlag; }
+      void setCallFinishOnExitFlag(bool flag) { callFinishOnExitFlag = flag; }
       Speedometer& getSpeedometer() {return speedometer;}
       LogBuffer *getLogBuffer() {return &logBuffer;}
       ComponentHistory *getComponentHistory() {return &componentHistory;}

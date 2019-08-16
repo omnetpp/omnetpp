@@ -649,6 +649,9 @@ void Qtenv::doRun()
     // SHUTDOWN
     //
 
+    if (simulationState == SIM_READY && callFinishOnExitFlag)
+        finishSimulation();
+
     // saving the open toplevel inspectors to the .qtenvrc file
     storeInspectors(false);
 
