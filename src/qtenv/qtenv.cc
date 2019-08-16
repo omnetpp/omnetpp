@@ -1639,9 +1639,10 @@ void Qtenv::askParameter(cPar *par, bool unassigned)
 
         std::string reply;
         std::string title = unassigned ? "Unassigned Parameter" : "Requested to Ask Parameter";
+        std::string defaultValue = par->str();
         bool ok = inputDialog(title.c_str(), prompt.c_str(),
                     "Use this value for all similar parameters",
-                    par->str().c_str(), reply, useForAll);
+                    defaultValue.c_str(), reply, useForAll);
         if (!ok)
             throw cRuntimeError(E_CANCEL);
 
@@ -2300,7 +2301,7 @@ bool Qtenv::inputDialog(const char *title, const char *prompt,
 
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addWidget(new QLabel(prompt));
-    QLineEdit *edit = new QLineEdit(defaultValue);
+    QLineEdit *edit = new QLineEdit(opp_nulltoempty(defaultValue));
     layout->addWidget(edit);
 
     QCheckBox *checkBox = nullptr;
