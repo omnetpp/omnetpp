@@ -15,7 +15,7 @@
 #CXX=g++
 
 #
-# Set to "yes" if you want to use clang/clang++ instead of gcc/g++ when both
+# Set to "no" if you want to use gcc/g++ instead of default clang/clang++ when both
 # compiler is installed.
 #
 PREFER_CLANG=yes
