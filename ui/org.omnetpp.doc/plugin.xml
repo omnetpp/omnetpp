@@ -46,7 +46,7 @@
          point="org.eclipse.ui.intro">
       <introProductBinding
             introId="org.eclipse.ui.intro.universal"
-            productId="org.omnetpp.ide.omnetpp.product">
+            productId="org.omnetpp.main.product">
       </introProductBinding>
    </extension>
 
