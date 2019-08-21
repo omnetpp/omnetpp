@@ -287,7 +287,7 @@ tar xfz $TOOLS_DIR/$TOOLS_VERSION/all/osg-samples-data.tar.gz --directory sample
 
 # cleanup: remove the ui and other unnecessary directories
 echo Removing unnecessary code: IDE source, petrinet, images source, releng etc.
-rm -rf .github doc/src images/src releng ui misc/petrinets
+rm -rf .github .vscode doc/src images/src releng ui misc/petrinets
 
 unneededfiles=`find . -name '.gitignore'`
 if [ "$unneededfiles" != "" ]; then
