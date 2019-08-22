@@ -146,7 +146,7 @@ public class OnClosingWelcomeView implements IPageListener, IPartListener {
             @Override
             public void run() {
                 IWorkbenchPage page = part.getSite().getPage();
-                int partState = page.getPartState(page.getReference(part));
+                int partState = (page != null) ? page.getPartState(page.getReference(part)) : IWorkbenchPage.STATE_MINIMIZED; // if no page exist (during close) treat it as minimized
                 // KLUDGE: we need to delay this check because the part state will change only after the control resize event is handled
                 if (!hasBeenRun && (closed || partState != IWorkbenchPage.STATE_MAXIMIZED) && !PlatformUI.getWorkbench().isClosing()) {
                     try {
