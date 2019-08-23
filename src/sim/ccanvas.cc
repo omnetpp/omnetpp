@@ -1005,7 +1005,7 @@ void cFigure::addFigure(cFigure *figure)
         throw cRuntimeError(this, "addFigure(): Cannot insert nullptr");
     take(figure);
     children.push_back(figure);
-    refreshTagBits();
+    figure->refreshTagBits();
     figure->clearChangeFlags();
     fireStructuralChange();
 }
@@ -1018,7 +1018,7 @@ void cFigure::addFigure(cFigure *figure, int pos)
         throw cRuntimeError(this, "addFigure(): Insert position %d out of bounds", pos);
     take(figure);
     children.insert(children.begin() + pos, figure);
-    refreshTagBits();
+    figure->refreshTagBits();
     figure->clearChangeFlags();
     fireStructuralChange();
 }
