@@ -377,8 +377,7 @@ class SIM_API cFigure : public cOwnedObject
         uint8_t getLocalChangeFlags() const {return localChanges;}
         uint8_t getSubtreeChangeFlags() const {return subtreeChanges;}
         void clearChangeFlags();
-        void refreshTagBits();
-        void refreshTagBitsRec();
+        void refreshTagBitsRec(cCanvas *ownerCanvas);
         int64_t getTagBits() const {return tagBits;}
         void setTagBits(uint64_t tagBits) {this->tagBits = tagBits;}
 
