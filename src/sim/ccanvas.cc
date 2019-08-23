@@ -992,9 +992,10 @@ void cFigure::setTags(const char *tags)
     if (opp_strcmp(this->tags, tags) == 0)
         return;
     const char *oldTags = this->tags;
-    this->tags = stringPool.get(tags);
     stringPool.release(oldTags);
-    refreshTagBits();
+    this->tags = stringPool.get(tags);
+    if (cCanvas *ownerCanvas = getCanvas())
+        tagBits = ownerCanvas->parseTags(getTags());
     fire(CHANGE_TAGS);
 }
 
@@ -1004,7 +1005,8 @@ void cFigure::addFigure(cFigure *figure)
         throw cRuntimeError(this, "addFigure(): Cannot insert nullptr");
     take(figure);
     children.push_back(figure);
-    figure->refreshTagBits();
+    if (cCanvas *ownerCanvas = getCanvas())
+        figure->refreshTagBitsRec(ownerCanvas);
     figure->clearChangeFlags();
     fireStructuralChange();
 }
@@ -1017,7 +1019,8 @@ void cFigure::addFigure(cFigure *figure, int pos)
         throw cRuntimeError(this, "addFigure(): Insert position %d out of bounds", pos);
     take(figure);
     children.insert(children.begin() + pos, figure);
-    figure->refreshTagBits();
+    if (cCanvas *ownerCanvas = getCanvas())
+        figure->refreshTagBitsRec(ownerCanvas);
     figure->clearChangeFlags();
     fireStructuralChange();
 }
@@ -1180,14 +1183,11 @@ cFigure *cFigure::getFigureByPath(const char *path) const
     return figure;  // nullptr if not found
 }
 
-void cFigure::refreshTagBits()
+void cFigure::refreshTagBitsRec(cCanvas *ownerCanvas)
 {
-    cCanvas *canvas = getCanvas();
-    if (canvas) {
-        tagBits = canvas->parseTags(getTags());
-        for (auto & child : children)
-            child->refreshTagBits();
-    }
+    tagBits = ownerCanvas->parseTags(getTags());
+    for (auto & child : children)
+        child->refreshTagBitsRec(ownerCanvas);
 }
 
 void cFigure::fire(uint8_t flags)
