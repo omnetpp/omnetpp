@@ -66,7 +66,7 @@ public class NedEditorLauncher implements IEditorLauncher {
                 }
                 return;
             }
-            if (!res.isNedFile(file)) {
+            if (!res.containsNedFileElement(file)) {
                 IDE.openEditor(page, file, EditorsUI.DEFAULT_TEXT_EDITOR_ID);
                 MessageDialog.openInformation(workbenchWindow.getShell(),
                         "Not a NED File",
