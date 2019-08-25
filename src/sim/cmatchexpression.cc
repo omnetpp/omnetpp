@@ -17,14 +17,28 @@
 
 #include "common/matchexpression.h"
 #include "omnetpp/cmatchexpression.h"
+#include "omnetpp/cexception.h"
 
 using namespace omnetpp::common;
 
 namespace omnetpp {
 
+#define TRY(code)   try { code; } catch (std::exception& e) { throw cRuntimeError("cMatchExpression: %s", removePrefix(e.what())); }
+
+const char *removePrefix(const char *s)
+{
+    const char *prefix = "MatchExpression: ";
+    return strncmp(s, prefix, strlen(prefix))==0 ? s+strlen(prefix) : s;
+}
+
 cMatchExpression::cMatchExpression()
 {
     impl = new MatchExpression();
+}
+
+cMatchExpression::cMatchExpression(const char *pattern, bool dottedpath, bool fullstring, bool casesensitive)
+{
+    TRY(impl = new MatchExpression(pattern, dottedpath, fullstring, casesensitive));
 }
 
 cMatchExpression::~cMatchExpression()
@@ -32,14 +46,9 @@ cMatchExpression::~cMatchExpression()
     delete impl;
 }
 
-cMatchExpression::cMatchExpression(const char *pattern, bool dottedpath, bool fullstring, bool casesensitive)
-{
-    impl = new MatchExpression(pattern, dottedpath, fullstring, casesensitive);
-}
-
 void cMatchExpression::setPattern(const char *pattern, bool dottedpath, bool fullstring, bool casesensitive)
 {
-    impl->setPattern(pattern, dottedpath, fullstring, casesensitive);
+    TRY(impl->setPattern(pattern, dottedpath, fullstring, casesensitive));
 }
 
 class Wrapper : public MatchExpression::Matchable
@@ -56,7 +65,7 @@ class Wrapper : public MatchExpression::Matchable
 bool cMatchExpression::matches(const Matchable *object)
 {
     Wrapper wrapper(object);
-    return impl->matches(&wrapper);
+    TRY(return impl->matches(&wrapper));
 }
 
 }  // namespace omnetpp
