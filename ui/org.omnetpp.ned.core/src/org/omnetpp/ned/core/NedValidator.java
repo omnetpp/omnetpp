@@ -17,6 +17,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.engine.UnitConversion;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.ned.core.ParamUtil.FindParamResult;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.INedErrorStore;
 import org.omnetpp.ned.model.ex.ChannelElementEx;
@@ -383,8 +384,8 @@ public class NedValidator extends AbstractNedValidatorEx {
                 return;
             }
 
-            Object[] result = ParamUtil.findMatchingParamDeclarationRecursively(submoduleNode, paramPattern, contextProject);
-            ParamElementEx paramDeclaration = (ParamElementEx)result[0];
+            FindParamResult result = ParamUtil.findMatchingParamDeclarationRecursively(submoduleNode, paramPattern, contextProject);
+            ParamElementEx paramDeclaration = result.paramDeclaration;
 
             if (paramDeclaration == null) {
                 String message = "'"+paramPattern+"': no such parameter";
@@ -413,8 +414,8 @@ public class NedValidator extends AbstractNedValidatorEx {
             }
         }
         else {
-            Object[] result = ParamUtil.findMatchingParamDeclarationRecursively(componentNode.getNedTypeInfo(), paramPattern, contextProject);
-            ParamElementEx paramDeclaration = (ParamElementEx)result[0];
+            FindParamResult result = ParamUtil.findMatchingParamDeclarationRecursively(componentNode.getNedTypeInfo(), paramPattern, contextProject);
+            ParamElementEx paramDeclaration = (ParamElementEx)result.paramDeclaration;
 
             // global "parameters" section of type
             if (paramDeclaration == null) {
@@ -437,9 +438,8 @@ public class NedValidator extends AbstractNedValidatorEx {
         validateChildren(node);
     }
 
-    @SuppressWarnings("unchecked")
-    protected void validateParamAssignment(Object[] result, ParamElementEx paramAssignment, ParamElementEx paramDeclaration) {
-        ArrayList<ParamElementEx> paramAssignments = ParamUtil.findParamAssignmentsForParamDeclaration((Vector<INedTypeInfo>)result[1], (Vector<ISubmoduleOrConnection>)result[2], paramDeclaration);
+    protected void validateParamAssignment(FindParamResult result, ParamElementEx paramAssignment, ParamElementEx paramDeclaration) {
+        ArrayList<ParamElementEx> paramAssignments = ParamUtil.findParamAssignmentsForParamDeclaration(result.typeInfoPath, result.elementPath, paramDeclaration);
         validateParamValue(paramDeclaration, paramAssignment);
 
         if (paramAssignments.indexOf(paramAssignment) == -1) {

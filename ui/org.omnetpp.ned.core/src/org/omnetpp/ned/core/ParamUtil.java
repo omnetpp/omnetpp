@@ -74,14 +74,20 @@ public class ParamUtil {
         treeTraversal.traverse(submodule);
     }
 
+    public static class FindParamResult {
+        public ParamElementEx paramDeclaration = null;
+        public Vector<INedTypeInfo> typeInfoPath = null;
+        public Vector<ISubmoduleOrConnection> elementPath = null;
+    }
+
     /**
      * Returns the parameter declaration under type info with the path that matches the provided name pattern.
      * Recurses down on submodules.
      * The contextProject parameter affects the resolution of parametric submodule types ("like").
      */
-    public static Object[] findMatchingParamDeclarationRecursively(INedTypeInfo typeInfo, String paramNamePattern, IProject contextProject) {
+    public static FindParamResult findMatchingParamDeclarationRecursively(INedTypeInfo typeInfo, String paramNamePattern, IProject contextProject) {
         String fullPattern = typeInfo.getName() + "." + paramNamePattern;
-        Object[] result = new Object[] {null, null, null};
+        FindParamResult result = new FindParamResult();
         mapParamDeclarationsRecursively(typeInfo, createFindMatchingParamDeclarationVisitor(fullPattern, result), contextProject);
 
         return result;
@@ -92,24 +98,24 @@ public class ParamUtil {
      * Recurses down on submodules.
      * The contextProject parameter affects the resolution of parametric submodule types ("like").
      */
-    public static Object[] findMatchingParamDeclarationRecursively(SubmoduleElementEx submodule, String paramNamePattern, IProject contextProject) {
+    public static FindParamResult findMatchingParamDeclarationRecursively(SubmoduleElementEx submodule, String paramNamePattern, IProject contextProject) {
         String fullPattern = getParamPathElementName(submodule) + "." + paramNamePattern;
-        Object[] result = new Object[] {null, null, null};
+        FindParamResult result = new FindParamResult();
         mapParamDeclarationsRecursively(submodule, createFindMatchingParamDeclarationVisitor(fullPattern, result), contextProject);
 
         return result;
     }
 
-    private static RecursiveParamDeclarationVisitor createFindMatchingParamDeclarationVisitor(final String fullPattern, final Object[] result) {
+    private static RecursiveParamDeclarationVisitor createFindMatchingParamDeclarationVisitor(final String fullPattern, final FindParamResult result) {
         return new RecursiveParamDeclarationVisitor() {
             @Override
             protected boolean visitParamDeclaration(String fullPath, Stack<INedTypeInfo> typeInfoPath, Stack<ISubmoduleOrConnection> elementPath, ParamElementEx paramDeclaration) {
                 String paramName = paramDeclaration.getName();
 
                 if (matchesPattern(fullPattern, fullPath == null ? paramName : fullPath + "." + paramName)) {
-                    result[0] = paramDeclaration;
-                    result[1] = new Vector<INedTypeInfo>(typeInfoPath);
-                    result[2] = new Vector<ISubmoduleOrConnection>(elementPath);
+                    result.paramDeclaration = paramDeclaration;
+                    result.typeInfoPath = new Vector<INedTypeInfo>(typeInfoPath);
+                    result.elementPath = new Vector<ISubmoduleOrConnection>(elementPath);
 
                     return false;
                 }
