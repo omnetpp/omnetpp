@@ -62,9 +62,11 @@ void cXMLParImpl::parsimUnpack(cCommBuffer *buffer)
 
 void cXMLParImpl::forEachChild(cVisitor *v, cComponent *context)
 {
-    cXMLElement *element = xmlValue(context);
-    if (element)
-        v->visit(element);
+    if (isSet()) { // because xmlValue() throws otherwise
+        cXMLElement *element = xmlValue(context);
+        if (element)
+            v->visit(element);
+    }
 }
 
 void cXMLParImpl::setBoolValue(bool b)
