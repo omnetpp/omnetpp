@@ -73,7 +73,7 @@ class cStringPool
     const char *peek(const char *s) const;
 
     /**
-     * The parameter must a pointer returned by get(). It decrements the
+     * The parameter must be a pointer returned by get(). It decrements the
      * reference count and frees the pooled string if it reaches zero.
      * Passing nullptr is OK.
      */
