@@ -68,6 +68,7 @@ class LAYOUT_API BasicGraphLayouterEnvironment : public GraphLayouterEnvironment
         virtual bool okToProceed() override;
 
         virtual void setTimeout(int seconds) {timeout = seconds;}
+        virtual void restartTimeout() {startTime = time(nullptr);}
         virtual void addParameter(const char *name, double value) {parameters[name] = value;}
 
         virtual bool getBoolParameter(const char *name, int index, bool defaultValue) override;

@@ -17,6 +17,8 @@
 #include "modulelayouter.h"
 
 #include <omnetpp/cdisplaystring.h>
+#include <QMessageBox>
+#include <QPushButton>
 #include "qtenv.h"
 #include "layout/graphlayouter.h"
 #include "layout/basicspringembedderlayout.h"
@@ -30,6 +32,41 @@
 namespace omnetpp {
 using namespace layout;
 namespace qtenv {
+
+class InteractiveTimeoutBasicGraphLayouterEnvironment : public BasicGraphLayouterEnvironment {
+
+    bool okToProceed() override {
+        if (BasicGraphLayouterEnvironment::okToProceed())
+            return true;
+        else {
+            QMessageBox box(getQtenv()->getMainWindow());
+
+            box.setIcon(QMessageBox::Question);
+            box.setWindowTitle("Slow Layouting");
+            box.setText("Laying out submodule positions is slower than usual.\nDo you want to proceed?");
+
+            // The actual roles don't matter to us, but on different platforms they might be placed/ordered differently
+            QPushButton *stopButton = box.addButton("Stop", QMessageBox::ButtonRole::NoRole);
+            QPushButton *waitButton = box.addButton("Continue", QMessageBox::ButtonRole::YesRole);
+            QPushButton *goButton = box.addButton("Run to completion", QMessageBox::ButtonRole::AcceptRole);
+
+            box.exec();
+            QAbstractButton *clickedButton = box.clickedButton();
+
+            if (clickedButton == waitButton) {
+                restartTimeout();
+                return true;
+            } else if (clickedButton == stopButton) {
+                return false;
+            } else if (clickedButton == goButton) {
+                setTimeout(0);
+                return true;
+            } else
+                return false;
+        }
+    }
+
+};
 
 void ModuleLayouter::getSubmoduleCoords(cModule *submod, bool &explicitcoords, bool &obeysLayout, double &x, double &y, double &sx, double &sy, double zoomFactor, double imageSizeFactor)
 {
@@ -329,7 +366,8 @@ void ModuleLayouter::ensureLayouted(cModule *module)
     }
     else {
         // we still have to set something for the layouter if visualisation is disabled.
-        BasicGraphLayouterEnvironment basicEnvironment;
+        InteractiveTimeoutBasicGraphLayouterEnvironment basicEnvironment;
+        basicEnvironment.setTimeout(5);
 
         graphLayouter->setEnvironment(&basicEnvironment);
 
