@@ -1057,9 +1057,7 @@ void Qtenv::finishSimulation()
         displayException(e);
     }
 
-    // we have to cheat if finish() is called after an error (which is already dubious)
-    if (simulationState != SIM_ERROR)
-        simulationState = SIM_FINISHCALLED;
+    simulationState = SIM_FINISHCALLED;
 
     updateStatusDisplay();
     callRefreshInspectors();
