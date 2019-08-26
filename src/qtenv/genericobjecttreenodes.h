@@ -167,6 +167,21 @@ class ChildObjectNode : public TreeNode
     cObject *getCObjectPointer() override;
 };
 
+class TextNode : public TreeNode
+{
+    QString message;
+
+  protected:
+    std::vector<TreeNode *> makeChildren() override { return {}; }
+    bool isSameAs(TreeNode *other) override;
+
+  public:
+    TextNode(TreeNode *parent, int indexInParent, const QString &message, Mode mode);
+    int computeChildCount() override { return 0; }
+    QVariant computeData(int role) override;
+    QString computeNodeIdentifier() override;
+};
+
 class FieldNode : public TreeNode
 {
   protected:
