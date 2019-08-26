@@ -102,7 +102,8 @@ void erase(std::vector<T>& v, int pos) {
 
 template<typename T, typename A>
 inline void remove(std::vector<T>& v, const A& a) {
-    v.erase(std::remove(v.begin(), v.end(), a), v.end());
+    if (!v.empty()) // optimization
+        v.erase(std::remove(v.begin(), v.end(), a), v.end());
 }
 
 template<typename K, typename V>
