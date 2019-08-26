@@ -516,8 +516,10 @@ void MainWindow::on_actionSetUpConfiguration_triggered()
     // It would only be an ASSERT(false) or something similar anyway.
     RunSelectionDialog dialog(configEx, configEx->getActiveConfigName(), "", this);
     if (dialog.exec()) {
+        busy("Setting up new run...");
         emit setNewNetwork();
         env->newRun(dialog.getConfigName().c_str(), dialog.getRunNumber());
+        busy();
         reflectRecordEventlog();
     }
 }
