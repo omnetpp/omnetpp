@@ -94,7 +94,14 @@ int TreeNode::computeObjectChildCount(void *obj, cClassDescriptor *desc, Mode mo
 
         case Mode::CHILDREN: {
             envir::cCountChildrenVisitor visitor((cObject *)obj);
-            visitor.process((cObject *)obj);
+
+            try {
+                visitor.process((cObject *)obj);
+            }
+            catch (std::exception &e) {
+                return 1; // the error marker
+            }
+
             return visitor.getCount();
         }
 
@@ -126,12 +133,17 @@ std::vector<TreeNode *> TreeNode::makeObjectChildNodes(void *obj, cClassDescript
     switch (mode) {
         case Mode::CHILDREN: {
             envir::cCollectChildrenVisitor visitor((cObject *)obj);
-            visitor.process((cObject *)obj);
+            try {
+                visitor.process((cObject *)obj);
 
-            cObject **objs = visitor.getArray();
-            for (int i = 0; i < visitor.getArraySize(); ++i) {
-                result.push_back(new ChildObjectNode(this, result.size(), obj, desc, objs[i], mode));
+                cObject **objs = visitor.getArray();
+                for (int i = 0; i < visitor.getArraySize(); ++i)
+                    result.push_back(new ChildObjectNode(this, result.size(), obj, desc, objs[i], mode));
             }
+            catch (std::exception &e) {
+                result.push_back(new TextNode(this, result.size(), QString("<!> Error: ") + e.what(), mode));
+            }
+
             break;
         }
 
@@ -429,6 +441,36 @@ bool ChildObjectNode::isSameAs(TreeNode *other)
     ChildObjectNode *o = static_cast<ChildObjectNode *>(other);
     return object == o->object;
 }
+
+
+TextNode::TextNode(TreeNode *parent, int indexInParent, const QString &message, Mode mode)
+    : TreeNode(parent, indexInParent, nullptr, nullptr, mode), message(message)
+{
+}
+
+QVariant TextNode::computeData(int role)
+{
+    switch (role) {
+        case Qt::DisplayRole: return message;
+        case Qt::UserRole: return QVariant::fromValue(HighlightRange{0, message.length()});
+        default: return getDefaultObjectData(nullptr, role);
+    }
+}
+
+QString TextNode::computeNodeIdentifier()
+{
+    return "<" + message + ">";
+}
+
+bool TextNode::isSameAs(TreeNode *other)
+{
+    if (typeid(*this) != typeid(*other) || !TreeNode::isSameAs(other))
+        return false;
+
+    TextNode *o = static_cast<TextNode *>(other);
+    return message == o->message;
+}
+
 
 FieldNode::FieldNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int fieldIndex, Mode mode)
     : TreeNode(parent, indexInParent, contObject, contDesc, mode), fieldIndex(fieldIndex)
