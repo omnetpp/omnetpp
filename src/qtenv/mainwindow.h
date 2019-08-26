@@ -76,6 +76,7 @@ public:
 
     QSize sizeHint() const override { return QSize(1100, 700); }
 
+    void busy(QString msg = "");
     bool isRunning();
     void setGuiForRunmode(RunMode runMode, bool untilMode = false);
     void setRunUntilModule(Inspector *insp = nullptr);
@@ -197,7 +198,6 @@ private:
     bool networkPresent();
     bool isSimulationOk();
 
-    void busy(QString msg = "");
     void copyToClipboard(cObject *object, int what);
 
     void saveSplitter(QString prefName, QSplitter *splitter);

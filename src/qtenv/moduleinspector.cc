@@ -430,10 +430,12 @@ void ModuleInspector::relayout()
 {
     if (getQtenv()->getSimulationState() != Qtenv::SIM_ERROR) {
         // TODO: use some simpler signals-slots mechanism
+        getQtenv()->getMainWindow()->busy("Relayouting...");
         getQtenv()->getModuleLayouter()->fullRelayout(static_cast<cModule*>(object));
         canvasViewer->redraw();
         getQtenv()->callRefreshDisplaySafe();
         getQtenv()->callRefreshInspectors();
+        getQtenv()->getMainWindow()->busy();
         getQtenv()->getMessageAnimator()->updateInspector(this);
     }
 }
