@@ -316,20 +316,29 @@ void cDefaultHistogramStrategy::createBins()
     if (r == 0)
         r = 1.0;  // warning?
 
+    // these might still be the same value because of double imprecision
     double rangeMin = c - r / 2;
     double rangeMax = c + r / 2;
 
     if (rangeMin < 0 && minValue >= 0 && maxValue > 0)
         rangeMin = 0; // do not go into negative unless warranted by the collected data
 
-    binSize = (rangeMax - rangeMin) / targetNumBins;
-    binSize = roundToOneTwoFive(binSize);
+    // just to avoid dividing by zero...
+    if (rangeMin == rangeMax)
+        binSize = 1;
+    else {
+        binSize = (rangeMax - rangeMin) / targetNumBins;
+        binSize = roundToOneTwoFive(binSize);
+    }
     if (mode == cHistogram::MODE_INTEGERS)
         binSize = ceil(binSize);
 
     rangeMin = binSize * std::floor(rangeMin / binSize); // snap
     rangeMax = binSize * std::ceil(rangeMax / binSize);
-
+    if (rangeMin == rangeMax) { // this can still happen if the single collected value is around 1e17
+        rangeMax = nextafter(rangeMin, INFINITY);
+        binSize = rangeMax - rangeMin; // this should help avoid further problems (unless we are right where the precision drops even further)
+    }
     hist->createUniformBins(rangeMin, rangeMax, binSize);
 
     // auto-extending now is needed, otherwise collectIntoHistogram() will
