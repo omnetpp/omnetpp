@@ -3441,7 +3441,7 @@ void cPixmapFigure::setPixelOpacity(int x, int y, double opacity)
 
 //------
 
-cCanvas::cCanvas(const char *name) : cOwnedObject(name), backgroundColor(cFigure::Color(160,224,160)), animationHoldEndTime(0)
+cCanvas::cCanvas(const char *name) : cOwnedObject(name), backgroundColor(cFigure::Color(160,224,160)), minAnimationSpeed(DBL_MAX), animationHoldEndTime(0)
 {
     rootFigure = new cGroupFigure("rootFigure");
     take(rootFigure);
@@ -3638,10 +3638,15 @@ std::vector<std::string> cCanvas::getAllTagsAsVector() const
 
 void cCanvas::setAnimationSpeed(double animationSpeed, const cObject *source)
 {
-    if (animationSpeed <= 0)
+    if (std::isnan(animationSpeed) || animationSpeed <= 0)
         animationSpeedMap.erase(source);
     else
         animationSpeedMap[source] = animationSpeed;
+
+    double min = DBL_MAX;
+    for (auto it : animationSpeedMap)
+        min = std::min(min, it.second);
+    minAnimationSpeed = min;
 }
 
 double cCanvas::getAnimationSpeed(const cObject *source)

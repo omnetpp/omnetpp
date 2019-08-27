@@ -2963,6 +2963,7 @@ class SIM_API cCanvas : public cOwnedObject
         std::map<std::string,int> tagBitIndex;  // tag-to-bitindex
         static std::map<std::string,cObjectFactory*> figureFactories;
         std::map<const cObject*,double> animationSpeedMap;  // maps source to animationSpeed
+        double minAnimationSpeed; // minimum of the values in animationSpeedMap cached, or DBL_MAX for none
         double animationHoldEndTime; // the effective one will be the maximum endTime of all visible canvases
     public:
         // internal:
@@ -2973,6 +2974,7 @@ class SIM_API cCanvas : public cOwnedObject
         virtual uint64_t parseTags(const char *s);
         virtual std::string getTags(uint64_t tagBits);
         const std::map<const cObject*,double>& getAnimationSpeedMap() const {return animationSpeedMap;}  // for e.g. Qtenv
+        double getMinAnimationSpeed() const {return minAnimationSpeed;} // for e.g. Qtenv; DBL_MAX if none
         double getAnimationHoldEndTime() const {return animationHoldEndTime;}  // for e.g. Qtenv
     private:
         void copy(const cCanvas& other);
