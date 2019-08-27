@@ -458,20 +458,11 @@ double Qtenv::computeModelAnimationSpeedRequest()
 {
     double animSpeed = DBL_MAX;
 
-    bool wasNan = false;
-
     for (auto i : inspectors) {
         if (auto mi = dynamic_cast<ModuleInspector *>(i))
             if (auto mod = dynamic_cast<cModule *>(mi->getObject()))
-                if (auto canv = mod->getCanvasIfExists()) {
-                    const std::map<const cObject*,double>& speedMap = canv->getAnimationSpeedMap();
-
-                    for (const auto& s : speedMap) {
-                        if (std::isnan(s.second))
-                            wasNan = true;
-                        animSpeed = std::min(animSpeed, s.second);
-                    }
-                }
+                if (auto canv = mod->getCanvasIfExists())
+                    animSpeed = std::min(animSpeed, canv->getMinAnimationSpeed());
 
         // TODO
         //if (auto ci = dynamic_cast<CanvasInspector *>(i)) {
@@ -480,7 +471,7 @@ double Qtenv::computeModelAnimationSpeedRequest()
     }
 
     if (animSpeed == DBL_MAX)
-        animSpeed = wasNan ? NAN : 0.0; // TODO: some smarter default
+        animSpeed = 0.0; // or DBL_MAX, or NAN?
 
     return animSpeed;
 }
