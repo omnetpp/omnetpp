@@ -563,7 +563,7 @@ void Qtenv::doRun()
 
         // these three have to be available for the whole lifetime of the application
         static int argc = 1;
-        static char arg[] = { 'a', 'p', 'p', 0 };
+        static char arg[] = { 'Q', 't', 'e', 'n', 'v', '\0' };
         static char *argv[] = { arg, nullptr };
         app = new QApplication(argc, argv);
 
