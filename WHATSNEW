@@ -28,6 +28,12 @@ Samples:
     using the data from the resultfiles sample.
 
 
+OMNeT++ 5.5.1 (June 2019)
+-------------------------
+
+This release contains minor stability fixes.
+
+
 OMNeT++ 5.5 (June 2019)
 -----------------------
 
@@ -44,7 +50,7 @@ Core:
 
   - A description string can now be specified when registering new result filters
     and recorders. New registration macros have been added for this purpose.
-    
+
   - cXMLElement was optimized to use less memory when large files are loaded.
 
   - cHistogram: Now collects the number of positive and negative infinity values
