@@ -12,18 +12,11 @@ def perform_vector_ops(df, operations : str):
     def convert(name):
         s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
         lower = str(re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower())
-    
-        try:
-            return int(lower)
+
+        try: return int(lower)
         except:
-            pass
-    
-        try:
-            return float(lower)
-        except:
-            pass
-    
-        return lower
+            try: return float(lower)
+            except: return lower
 
     for line in operations.splitlines():
         if not line.strip():
@@ -58,8 +51,7 @@ def perform_vector_ops(df, operations : str):
             df = apply(df, op_fun, **params)
         elif type == "compute":
             df = compute(df, op_fun, **params)
-            
-    
+
     return df
 
 

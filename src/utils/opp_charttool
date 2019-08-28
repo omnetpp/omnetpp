@@ -1,5 +1,9 @@
 #!/bin/env python3
 
+"""
+This script can load .anf files and execute the chart scripts in them, independent of the IDE.
+"""
+
 import os
 import sys
 import glob
@@ -28,7 +32,8 @@ def error(message):
 
 
 class Chart:
-    def __init__(self, type=str(), name=str(), script=str(), properties=dict()):
+    def __init__(self, index=int(), type=str(), name=str(), script=str(), properties=dict()):
+        self.index = index
         self.type = type
         self.name = name
         self.script = script
@@ -40,6 +45,17 @@ class Analysis:
         self.charts = charts
 
 
+def _make_chart(i, c):
+    script = c.get('script') if 'script' in c.keys() else c.text
+
+    sn = c.find('script')
+    if sn is not None:
+        script = sn.text.strip() # should get the CDATA contents instead, but shouldn't matter much
+
+    props = { p.get('name') : p.get('value') for p in c.findall('property') }
+    return Chart(i, c.get('type'), c.get('name'), script, props)
+
+
 def load_anf_file(anf_file_name):
     analysis = ET.parse(anf_file_name).getroot()
 
@@ -49,11 +65,7 @@ def load_anf_file(anf_file_name):
         error("Unsupported analysis file version: \"{}\" (only \"2\" is supported).".format(version))
 
     inputs = [i.get('pattern') for i in analysis.findall("inputs/input")]
-
-    charts = [
-            Chart(c.get('type'), c.get('name'), c.get('script') if 'script' in c.keys() else c.text,
-                { p.get('name') : p.get('value') for p in c.findall('property') })
-            for c in analysis.findall("charts/chart")]
+    charts = [_make_chart(i, c) for i, c in enumerate(analysis.findall("charts/chart"))]
 
     return Analysis(inputs, charts)
 
@@ -74,29 +86,27 @@ def print_analysis_info(anf_file, analysis):
         print('\t"{}"'.format(inp))
 
 
-def run_chart(wd, c):
-
-    # print("changing to " + wd)
+def run_chart(wd, c, export):
     os.chdir(wd)
-    # print(sys.path)
     sys.path = [wd,
         get_opp_root() + "/ui/org.omnetpp.scave.pychart/python/"
     ] + sys.path
 
     chart.name = c.name
-    chart.properties = c.properties
-
-    script = c.script
+    chart.properties.update(c.properties)
 
     global _show_called
     _show_called = False
 
-    # print(script)
-    exec(script, {})
+    exec(c.script, {})
 
-    if not _show_called:
-        # print("calling explicit plt.show()")
-        plt.show()
+    if export:
+        # maybe warn if _show_called is set
+        # TODO: heuristic: only prepend index if there would be collision (either among exported charts, or with existing files?)
+        plt.savefig(str(c.index) + "-" + c.name + ".png")
+    else:
+        if not _show_called:
+            plt.show()
 
 
 if __name__ == "__main__":
@@ -105,7 +115,9 @@ if __name__ == "__main__":
     parser.add_argument('anf_file', type=str, nargs=1, help='The Analysis (.anf) file')
     parser.add_argument('-i', metavar='chart_index', type=int, nargs=1, help='The index of the chart to run (conflicts with -n)')
     parser.add_argument('-n', metavar='chart_name', type=str, nargs=1, help='The name of the chart to run (conflicts with -i, the first chart is selected when ambiguous)')
-    parser.add_argument('-w', metavar='workspace_directory', type=str, nargs=1, default='.', help='The workspace directory, the input patterns are relative to this')
+    parser.add_argument('-e', action='store_true', default=False, help='Export selected or all charts as image[s] (experimental)')
+    parser.add_argument('-p', metavar='project_path', type=str, nargs='*', help='Adds a workspace path to filesystem directory mapping (format: "/project=.")')
+    parser.add_argument('-w', metavar='workspace_directory', type=str, nargs=1, default='.', help='The workspace directory. Acts as a fallback after -p. The input patterns are relative to this')
 
     args = parser.parse_args()
 
@@ -119,31 +131,73 @@ if __name__ == "__main__":
 
     if False: # debug output
         import json
-        print(json.dumps(analysis, default=lambda obj: vars(
-            obj), indent=4, separators=(',', ': ')))
+        print(json.dumps(analysis, default=lambda obj: vars(obj), indent=4, separators=(',', ': ')))
 
-    inputfiles = [glob.glob(args.w[0] + "/" + i) for i in analysis.inputs]
 
-    # flattening the list of lists, turning them into absolute paths (script will cwd) and making it unique
-    inputfiles = list(set([os.path.abspath(item) for sublist in inputfiles for item in sublist]))
-    # print(inputfiles)
+    project_paths = dict([tuple(p.split('=', 2)) for p in args.p]) if args.p else dict()
+
+    # if there is no mapping given at all, guess that all projects are in .
+    if not project_paths and analysis.inputs:
+        projs = list()
+        for inp in analysis.inputs:
+            if inp.startswith("/"):
+                inp = inp[1:]
+            path = inp.split("/")[0]
+            if not path in projs:
+                projs.append(path)
+        if projs:
+            #TODO warn for multiple default project mappings
+            for p in projs:
+                project_paths[p] = "."
+
+    inputfiles = list()
+    for i in analysis.inputs:
+        mapped = False
+        for p in project_paths.keys():
+            pv = project_paths[p]
+
+            if not p.startswith("/"):
+                p = "/" + p
+
+            if i.startswith(p):
+                inputfiles.extend(glob.glob(pv + "/" + i[len(p):]))
+                mapped = True
+                break
+
+        # this is a sort-of default case
+        if not mapped:
+            inputfiles.extend(glob.glob(args.w[0] + "/" + i))
+
+    # turning them into absolute paths (script will cwd) and making it unique
+    inputfiles = list(set([os.path.abspath(item) for item in inputfiles]))
 
     results.inputfiles = inputfiles
     results.wd = args.w[0]
 
-    if not args.i and not args.n:
-        print_analysis_info(anf_file, analysis)
-    elif args.i:
-        run_chart(anf_dir, analysis.charts[args.i[0]])
-    elif args.n:
+    selected_chart = None
 
-        ch = None
+    if args.i:
+        selected_chart = analysis.charts[args.i[0]]
+    elif args.n:
         for c in analysis.charts:
             if c.name == args.n[0]:
-                ch = c
+                selected_chart = c
                 break
-
-        if ch:
-            run_chart(anf_dir, ch)
-        else:
+        if not selected_chart:
             error('No chart named "{}".'.format(args.n[0]))
+    else: # neither -i nor -n given
+        if not args.e:
+            print_analysis_info(anf_file, analysis)
+
+    if args.e:
+        if selected_chart:
+            run_chart(anf_dir, selected_chart, True)
+        else:
+            for c in analysis.charts:
+                run_chart(anf_dir, c, True)
+                plt.clf()
+
+    else:
+        if selected_chart:
+            run_chart(anf_dir, selected_chart, False)
+

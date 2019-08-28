@@ -4,7 +4,11 @@ import pandas as pd
 import math
 from omnetpp.scave import results
 
-properties = dict()
+class NoneDict(dict):
+    def __getitem__(self, key):
+        return dict.get(self, key, None)
+
+properties = NoneDict()
 name = ""
 
 def get_properties():
@@ -19,10 +23,79 @@ def set_property(key, value):
     properties[key] = value
 
 def get_default_properties():
-    return dict() # TODO
+    return NoneDict() # TODO
 
 def get_name():
     return name
+
+def extract_label_columns(df):
+    titles = ["title", "name", "module", "experiment", "measurement", "replication"]
+    legends = ["title", "name", "module", "experiment", "measurement", "replication"]
+
+    blacklist = ["runID", "value", "vectime", "vecvalue", "binedges", "binvalues",
+                 "count", "sumweights", "mean", "stddev", "min", "max",
+                 "processid", "iterationvars", "iterationvarsf", "datetime",
+                 "source", "interpolationmode", "enum", "title", 'runnumber', 'seedset'
+                ]
+
+    title_col = None
+
+    for title in titles:
+        if title in df and len(df[title].unique()) == 1:
+            title_col = title
+            break
+    if title_col == None:
+        if "name" in titles:
+            title_col = "name"
+
+    legend_cols = []
+
+    for legend in legends:
+        if legend in df and len(df[legend].unique()) == len(df):
+            legend_cols = [(list(df.columns.values).index(legend), legend)]
+            break
+
+    if legend_cols:
+        return title_col, legend_cols
+
+    last_len = None
+    for i, col in reversed(list(enumerate(df))):
+        if col not in blacklist and col != title_col:
+            new_len = len(df.groupby([i2 for i1, i2 in legend_cols] + [col]))
+            if new_len == len(df) or (not last_len) or new_len > last_len:
+                legend_cols.append((i, col))
+                last_len = new_len
+            if new_len == len(df):
+                break
+    """
+    if not legend_cols:
+        last_len = None
+        for i, col in reversed(list(enumerate(df))):
+            if col not in blacklist and col != title_col:
+                new_len = len(df.groupby([i2 for i1, i2 in legend_cols] + [col]))
+                if new_len > 1:
+                    legend_cols.append((i, col))
+    """
+
+    # TODO: use runID (or iterationvars?) as last resort (if present)
+    return title_col, legend_cols
+
+
+def make_legend_label(legend_cols, row):
+    if len(legend_cols) == 1:
+        return str(row[legend_cols[0][0]])
+    return ", ".join([col + "=" + str(row[i]) for i, col in legend_cols])
+
+def make_chart_title(df, title_col, legend_cols):
+    if df is None or df.empty or title_col not in df:
+        return "None"
+
+    what = str(list(df[title_col])[0]) if title_col else "Data"
+    if title_col and len(df[title_col].unique()) > 1:
+        what += " and other variables"
+    by_what = (" (by " + ", ".join([id[1] for id in legend_cols]) + ")") if legend_cols else ""
+    return what + by_what
+
 
 
 def _to_label(x):
@@ -61,27 +134,15 @@ def _plot_scalars_DF_simple(df):
 
 
 def _plot_scalars_DF_scave(df):
-    _plot_scalars_DF_simple(results.pivot_scalars(df))
-
-
-def _plot_scalars_DF_2(df):
-    names = df.index.get_level_values('name').tolist()
-    modules = df.index.get_level_values('module').tolist()
-
-    paths = list(map(lambda t: '.'.join(t), zip(modules, names)))
-
-    values = df[('result', 'value')]
-
-    _plot_scalars_lists(None, paths, values)
-
+    print("patty")
+    df.plot.bar(y="value")
+    plt.legend()
 
 def plot_scalars(df_or_values, labels=None, row_label=None):
     if isinstance(df_or_values, pd.DataFrame):
         df = df_or_values
         if "value" in df.columns and "module" in df.columns and "name" in df.columns:
             _plot_scalars_DF_scave(df)
-        elif "experiment" in df.index.names and "measurement" in df.index.names and "replication" in df.index.names and "module" in df.index.names and "name" in df.index.names:
-            _plot_scalars_DF_2(df)
         else:
             _plot_scalars_DF_simple(df)
     else:
@@ -114,38 +175,15 @@ def _plot_vectors_DF_simple(df):
 
 def _plot_vectors_DF_scave(df):
     for row in df.itertuples(index=False):
-        if row.type == "vector":
-            plt.plot(list(row.vectime), list(row.vecvalue), label=row.module + ':' + row.name)
+        plt.plot(list(row.vectime), list(row.vecvalue), label=row.module + ':' + row.name)
     plt.legend()
-
-def _plot_vectors_DF_2(df):
-    for index, row in df.iterrows():
-        style = dict()
-        if ('attr', 'interpolationmode') in row:
-            interp = row[('attr', 'interpolationmode')]
-            if interp == "none":
-                style['linestyle'] = ' '
-                style['marker'] = '.'
-            elif interp == "linear":
-                pass
-                # nothing to do
-            elif interp == "sample-hold":
-                style['drawstyle'] = 'steps-post'
-            elif interp == "backward-sample-hold":
-                style['drawstyle'] = 'steps-pre'
-
-
-        plt.plot(list(row[('result', 'vectime')]), list(row[('result', 'vecvalue')]), label=row[('attr', 'title')], **style)
-
 
 
 def plot_vectors(df_or_list):
     if isinstance(df_or_list, pd.DataFrame):
         df = df_or_list
-        if "vectime" in df.columns and "vecvalue" in df.columns and "type" in df.columns and "module" in df.columns and "name" in df.columns:
+        if "vectime" in df.columns and "vecvalue" in df.columns and "module" in df.columns and "name" in df.columns:
             _plot_vectors_DF_scave(df)
-        elif "experiment" in df.index.names and "measurement" in df.index.names and "replication" in df.index.names and "module" in df.index.names and "name" in df.index.names:
-            _plot_vectors_DF_2(df)
         else:
             _plot_vectors_DF_simple(df)
     else:
@@ -180,19 +218,8 @@ def _plot_histograms_DF(df):
             plt.hist(bins=edges, x=edges[:-1], weights=values, label=row[2] + ":" + row[3])
     plt.legend()
 
-
-def _plot_histograms_DF_2(df):
-    for index, row in df.iterrows():
-        edges = list(row[('result', 'binedges')])
-        values = list(row[('result', 'binvalues')])
-        plt.hist(bins=edges, x=edges[:-1], weights=values, label=row[('attr', 'title')])
-
-
-
 def plot_histograms(df):
     if "binedges" in df and "binvalues" in df and "module" in df and "name" in df:
         _plot_histograms_DF_scave(df)
-    elif "experiment" in df.index.names and "measurement" in df.index.names and "replication" in df.index.names and "module" in df.index.names and "name" in df.index.names:
-        _plot_histograms_DF_2(df)
     else:
         _plot_histograms_DF(df)
