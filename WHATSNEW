@@ -6,8 +6,8 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
-OMNeT++ 6.0pre2 (Aug 2018)
-----------------------------
+OMNeT++ 6.0pre4 (Aug 2019)
+--------------------------
 
 This is a preview release demonstrating our completely revamped charting
 solution in the IDE. It is now completely based on Python3, with support
@@ -20,6 +20,7 @@ model changed substantially.
 IDE:
 
   - A completely rewritten Charts interface in the Analysis Tool.
+  - Updated NED documentation generator with command line support.
 
 Samples:
 
