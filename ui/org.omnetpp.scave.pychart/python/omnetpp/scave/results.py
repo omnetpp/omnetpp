@@ -17,13 +17,13 @@ from math import inf
 print = functools.partial(print, flush=True)
 
 
-def _get_array_from_shm(name):
-    if not name:
+def _get_array_from_shm(name_and_size):
+    if not name_and_size:
         return None
 
     system = platform.system()
 
-    name, size = name.split(" ")
+    name, size = name_and_size.split(" ")
     size = int(size)
 
     if system in ['Linux', 'Darwin']:
