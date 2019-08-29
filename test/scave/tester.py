@@ -1,4 +1,5 @@
 from omnetpp.scave import chart
+import difflib
 
 def sanitize_row(row):
     if "attrname" in row and row["attrname"] in ["datetime", "processid"]:
@@ -17,14 +18,73 @@ def sanitize(df):
     df = df.sort_values(axis=0, by=list(filter(lambda c: c in df, ["runID", "module", "type", "name", "attrname"])))
     df = df.reset_index(drop=True)
     return df
+    
+    
+def compressOneDiff(tmpDiff, maxLines):
+    if len(tmpDiff) <= 2 * maxLines + 3:
+        return tmpDiff
+    pre = tmpDiff[0][0]
+    return tmpDiff[:maxLines] \
+            + [ pre + ".\n", pre + ". <snip>\n", pre + ".\n"] \
+            + tmpDiff[-maxLines:]
+
+def compressDiff(diff):
+    maxLines = 3
+    tmpDiff = []
+    prevStart = ''
+    for line in diff:
+        if prevStart == line[0:2]:
+            tmpDiff.append(line)
+        else:
+            for l in compressOneDiff(tmpDiff, maxLines):
+                yield l
+            prevStart = line[0:2]
+            tmpDiff = [line]
+
+    for l in compressOneDiff(tmpDiff, maxLines):
+        yield l
+
+def colorDiff(diff):
+    for line in diff:
+        if line.startswith('+ '):
+            yield '\033[0;32m' + line + "\033[0;0m"     # GREEN
+        elif line.startswith('+.'):
+            yield "\033[2;32m" + line + "\033[0;0m"     # dark green
+        elif line.startswith('- '):
+            yield "\033[1;31m" + line + "\033[0;0m"     # RED
+        elif line.startswith('^ '):
+            yield "\033[1;34m" + line + "\033[0;0m"     # BLUE
+        elif line.startswith('? '):
+            yield "\033[1;33m" + line + "\033[0;0m"     # YELLOW
+        elif line.startswith(' .'):
+            yield "\033[2;37m" + line + "\033[0;0m"     # dark white
+        else:
+            yield line
+
+
+def addMissingNewLine(str):
+    return str if str.endswith("\n") else str + "\n"
 
 def sanitize_and_compare_csv(df, ref_filename):
     df = sanitize(df)
     csv = df.to_csv(None)
     with open(ref_filename) as f:
-        if csv == str(f.read()):
+        actual = csv
+        expected = str(f.read())
+        if actual == expected:
             return True
         else:
+            #print("expected: " + expected + " actual: " + actual)
+            
+            
+            diff = difflib.ndiff(addMissingNewLine(expected).splitlines(True), addMissingNewLine(actual).splitlines(True))
+            diff = compressDiff(diff)
+            diff = colorDiff(diff)
+            difftxt = ''.join(diff)
+            
+            print(difftxt)
+
+
             with open(ref_filename + ".out", "wt") as f2:
                 f2.write(csv)
             return False
