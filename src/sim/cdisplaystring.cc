@@ -239,7 +239,7 @@ const char *cDisplayString::getTagName(int tagindex) const
 int cDisplayString::getNumArgs(int tagindex) const
 {
     if (tagindex < 0 || tagindex >= numTags)
-        return -1;
+        return 0;
     return tags[tagindex].numArgs;
 }
 
