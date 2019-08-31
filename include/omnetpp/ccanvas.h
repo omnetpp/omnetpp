@@ -19,6 +19,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <cmath>
 #include "cownedobject.h"
 
 namespace omnetpp {
@@ -78,6 +79,7 @@ class SIM_API cFigure : public cOwnedObject
             double operator * (const Point& p) const;
             double distanceTo(const Point& p) const;
             double getLength() const;
+            double getAngle() const {return std::atan2(y,x);}
             Point& translate(double dx, double dy) {x += dx; y += dy; return *this;}
             bool operator==(const Point& other) const {return x == other.x && y == other.y;}
             std::string str() const;
