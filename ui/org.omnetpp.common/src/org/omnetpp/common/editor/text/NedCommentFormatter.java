@@ -40,6 +40,29 @@ public class NedCommentFormatter {
         // remove '// ', '/// ' and '//////...' from beginning of lines
         comment = comment.replaceAll("(?s)\n[ \t]*//+ ?", "\n");
 
+        // hyperlink URLs in the text
+        if (comment.contains("http://") || comment.contains("https://")) {
+            // protect <nohtml> sections
+            ArrayList<String> nohtmlList1 = new ArrayList<String>();
+            comment = extract(comment, "(?s)<nohtml>(.*?)</nohtml>", nohtmlList1, "nohtml");
+
+            // protect <a> tags which may contain URLs in both attribute and body
+            ArrayList<String> aTagList = new ArrayList<String>();
+            comment = extract(comment, "(?is)(<a\\s.*?>.*?</a>)", aTagList, "a");
+
+            // also protect all opening tags, because they might contain URLs in attributes (e.g. <img src="...">)
+            ArrayList<String> tagOpenersList = new ArrayList<String>();
+            comment = extract(comment, "(?s)(<.*?>)", tagOpenersList, "tag");
+
+            // hyperlink URLs in the text. URL extends to next whitespace, but we exclude trailing space, comma, etc.
+            comment = comment.replaceAll("(?i)(http(s?)://[^\\s]+[^\\s.,;\"'])", "<a href=\"$1\" target=\"_blank\">$1</a>");
+
+            // restore all the previous
+            comment = restore(comment, "tag", tagOpenersList);
+            comment = restore(comment, "a", aTagList);
+            comment = restore(comment, "nohtml", nohtmlList1);
+        }
+
         // extract existing <pre> sections to prevent tampering inside them
         final ArrayList<String> preList = new ArrayList<String>();
         comment = StringUtils.replaceMatches(comment, "(?s)<pre>(.*?)</pre>", new IRegexpReplacementProvider() {
@@ -171,6 +194,23 @@ public class NedCommentFormatter {
         });
 
         return comment;
+    }
+
+    private static String extract(String comment, String regex, final ArrayList<String> extractions, String token) {
+        return StringUtils.replaceMatches(comment, regex, new IRegexpReplacementProvider() {
+            public String getReplacement(Matcher matcher) {
+                extractions.add(matcher.group(1));
+                return "<" + token + "!" + (extractions.size() - 1) + "/>";
+            }
+        });
+    }
+
+    private static String restore(String comment, String token, final ArrayList<String> extractions) {
+        return StringUtils.replaceMatches(comment, "<" + token + "!(\\d+)/>", new IRegexpReplacementProvider() {
+            public String getReplacement(Matcher matcher) {
+                return extractions.get(Integer.parseInt(matcher.group(1)));
+            }
+        });
     }
 
     /**
