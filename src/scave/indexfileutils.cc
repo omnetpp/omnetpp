@@ -55,13 +55,11 @@ bool IndexFileUtils::isExistingVectorFile(const char *filename)
     if (!f)
         return false;
 
-    const char *signature = "version 3";
-    char buf[20];
-    memset(buf, 0, 20);
-    fread(buf, strlen(signature), 1, f);
+    char buf[20] = "";
+    fgets(buf, 20, f);
     fclose(f);
-    bool matches = memcmp(buf, signature, strlen(signature)) == 0;
-    return matches;
+    std::string trimmed = opp_trim(buf);
+    return trimmed == "version 2" || trimmed == "version 3";
 }
 
 std::string IndexFileUtils::getVectorFileName(const char *filename)
