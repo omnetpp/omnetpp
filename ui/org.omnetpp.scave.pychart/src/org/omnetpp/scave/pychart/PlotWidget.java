@@ -115,9 +115,9 @@ public class PlotWidget extends Canvas implements IPlotWidget {
             }
 
             @Override
-            public void mouseEnter(MouseEvent arg0) {
+            public void mouseEnter(MouseEvent e) {
                 if (pythonProcess != null && pythonProcess.isAlive()) {
-                    pythonProcess.pythonCallerThread.asyncExec(() -> getCanvas().enterEvent());
+                    pythonProcess.pythonCallerThread.asyncExec(() -> getCanvas().enterEvent(e.x, e.y));
                     mouseIsOverMe = true;
                     redraw();
                 }

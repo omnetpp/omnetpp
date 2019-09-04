@@ -242,8 +242,8 @@ class FigureCanvasSWT(FigureCanvasBase):
     def setWidget(self, w):
         self.widget = w
 
-    def enterEvent(self):
-        FigureCanvasBase.enter_notify_event(self)
+    def enterEvent(self, x, y):
+        FigureCanvasBase.enter_notify_event(self, xy=(x, y))
 
     def leaveEvent(self):
         FigureCanvasBase.leave_notify_event(self)

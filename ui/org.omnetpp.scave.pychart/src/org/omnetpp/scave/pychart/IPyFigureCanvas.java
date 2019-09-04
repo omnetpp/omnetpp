@@ -15,7 +15,7 @@ public interface IPyFigureCanvas {
     // These are normally called by the SWT event handlers of a PlotWidget,
     // and are passed over to the Python side, to Matplotlib, which then does
     // however it pleases (redraws, calls user-defined handlers, and so on).
-    void enterEvent();
+    void enterEvent(int x, int y);
 
     void leaveEvent();
 
