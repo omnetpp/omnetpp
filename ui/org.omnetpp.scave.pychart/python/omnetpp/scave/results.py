@@ -75,7 +75,10 @@ def get_results(filter_expression="", row_types=['runattr', 'itervar', 'config',
 def _append_metadata_columns(df, metadata_pickle, suffix):
     metadata_df = pd.DataFrame(pickle.loads(metadata_pickle), columns=["runID", "name", "value"])
     metadata_df = pd.pivot_table(metadata_df, columns="name", aggfunc='first', index="runID", values="value")
-    return df.join(metadata_df, on="runID", rsuffix=suffix)
+    if metadata_df.empty:
+        return df
+    else:
+        return df.join(metadata_df, on="runID", rsuffix=suffix)
 
 
 def _append_additional_data(df, attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
