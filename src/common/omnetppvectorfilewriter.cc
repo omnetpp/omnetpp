@@ -123,20 +123,20 @@ void OmnetppVectorFileWriter::beginRecordingForRun(const std::string& runName, c
 
     // save run attributes
     for (auto& pair : attributes) {
-        check(fprintf(f, "attr %s %s\n", pair.first.c_str(), QUOTE(pair.second.c_str())));
-        checki(fprintf(fi, "attr %s %s\n", pair.first.c_str(), QUOTE(pair.second.c_str())));
+        check(fprintf(f, "attr %s %s\n", QUOTE(pair.first.c_str()), QUOTE(pair.second.c_str())));
+        checki(fprintf(fi, "attr %s %s\n", QUOTE(pair.first.c_str()), QUOTE(pair.second.c_str())));
     }
 
     // save itervars
     for (auto& pair : itervars) {
-        check(fprintf(f, "itervar %s %s\n", pair.first.c_str(), QUOTE(pair.second.c_str())));
-        checki(fprintf(fi, "itervar %s %s\n", pair.first.c_str(), QUOTE(pair.second.c_str())));
+        check(fprintf(f, "itervar %s %s\n", QUOTE(pair.first.c_str()), QUOTE(pair.second.c_str())));
+        checki(fprintf(fi, "itervar %s %s\n", QUOTE(pair.first.c_str()), QUOTE(pair.second.c_str())));
     }
 
     // save config entries
     for (auto& pair : configEntries) {
-        check(fprintf(f, "config %s %s\n", pair.first.c_str(), QUOTE(pair.second.c_str())));
-        checki(fprintf(fi, "config %s %s\n", pair.first.c_str(), QUOTE(pair.second.c_str())));
+        check(fprintf(f, "config %s %s\n", QUOTE(pair.first.c_str()), QUOTE(pair.second.c_str())));
+        checki(fprintf(fi, "config %s %s\n", QUOTE(pair.first.c_str()), QUOTE(pair.second.c_str())));
     }
 
     check(fprintf(f, "\n"));

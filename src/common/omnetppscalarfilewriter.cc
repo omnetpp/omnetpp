@@ -114,11 +114,11 @@ void OmnetppScalarFileWriter::beginRecordingForRun(const std::string& runName, c
 
     // save itervars
     for (auto pair : itervars)
-        check(fprintf(f, "itervar %s %s\n", pair.first.c_str(), QUOTE(pair.second.c_str())));
+        check(fprintf(f, "itervar %s %s\n", QUOTE(pair.first.c_str()), QUOTE(pair.second.c_str())));
 
     // save config entries
     for (auto& pair : configEntries)
-        check(fprintf(f, "config %s %s\n", pair.first.c_str(), QUOTE(pair.second.c_str())));
+        check(fprintf(f, "config %s %s\n", QUOTE(pair.first.c_str()), QUOTE(pair.second.c_str())));
 
     check(fprintf(f, "\n"));
 }
@@ -166,7 +166,7 @@ void OmnetppScalarFileWriter::recordHistogram(const std::string& componentFullPa
 void OmnetppScalarFileWriter::recordParameter(const std::string& componentFullPath, const std::string& name, const std::string& value, const StringMap& attributes)
 {
     Assert(isOpen());
-    check(fprintf(f, "par %s %s %s\n", QUOTE(componentFullPath.c_str()), QUOTE(name.c_str()), value.c_str()));
+    check(fprintf(f, "par %s %s %s\n", QUOTE(componentFullPath.c_str()), QUOTE(name.c_str()), QUOTE(value.c_str())));
     writeAttributes(attributes);
 }
 
