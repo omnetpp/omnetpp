@@ -184,6 +184,8 @@ void MessageAnimator::sendHop(cMessage *msg, cGate *srcGate, bool isLastHop, sim
 void MessageAnimator::endSend(cMessage *msg)
 {
     ASSERT(currentMessageSend);
+    ASSERT2(currentMessageSend->getNumParts() > 0, "No messageSendDirect() nor messageSendHop() was called between beginSend() and endSend()");
+
     updateAnimations();
 
     auto dup = getQtenv()->getLogBuffer()->getLastMessageDup(msg);

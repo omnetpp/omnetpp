@@ -171,6 +171,7 @@ public:
 
     // Appends a part to the end of this sequence, and inits it if necessary.
     virtual void addAnimation(Animation *a);
+    size_t getNumParts() const { return parts.size(); }
 
     // Removes the parts from the end that are holding,
     // and returns them in a new sequence.
