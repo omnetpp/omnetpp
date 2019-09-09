@@ -76,8 +76,8 @@ class SIM_API cResultFilter : public cResultListener
     protected:
         // methods for invoking the delegates
         void fire(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details);
-        void fire(cResultFilter *prev, simtime_t_cref t, long l, cObject *details);
-        void fire(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details);
+        void fire(cResultFilter *prev, simtime_t_cref t, intval_t l, cObject *details);
+        void fire(cResultFilter *prev, simtime_t_cref t, uintval_t l, cObject *details);
         void fire(cResultFilter *prev, simtime_t_cref t, double d, cObject *details);
         void fire(cResultFilter *prev, simtime_t_cref t, const SimTime& v, cObject *details);
         void fire(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details);
@@ -113,8 +113,8 @@ class SIM_API cNumericResultFilter : public cResultFilter
         virtual bool process(simtime_t& t, double& value, cObject *details) = 0;
     protected:
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) override;
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details) override;
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details) override;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, intval_t l, cObject *details) override;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, uintval_t l, cObject *details) override;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d, cObject *details) override;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v, cObject *details) override;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details) override;
@@ -133,8 +133,8 @@ class SIM_API cObjectResultFilter : public cResultFilter
 {
     protected:
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) override;
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details) override;
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details) override;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, intval_t l, cObject *details) override;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, uintval_t l, cObject *details) override;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d, cObject *details) override;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v, cObject *details) override;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details) override;

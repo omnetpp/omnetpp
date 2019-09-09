@@ -40,8 +40,8 @@ class SIM_API cResultListener : public cObject, public cIListener
     protected:
         // simplified API that better supports chaining:
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) = 0;
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details) = 0;
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details) = 0;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, intval_t l, cObject *details) = 0;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, uintval_t l, cObject *details) = 0;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d, cObject *details) = 0;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v, cObject *details) = 0;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details) = 0;
@@ -53,8 +53,8 @@ class SIM_API cResultListener : public cObject, public cIListener
 
         // original listener API delegates to simplified API:
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, bool b, cObject *details) override;
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l, cObject *details) override;
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l, cObject *details) override;
+        virtual void receiveSignal(cComponent *source, simsignal_t signalID, intval_t l, cObject *details) override;
+        virtual void receiveSignal(cComponent *source, simsignal_t signalID, uintval_t l, cObject *details) override;
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d, cObject *details) override;
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& v, cObject *details) override;
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s, cObject *details) override;
