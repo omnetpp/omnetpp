@@ -146,7 +146,9 @@ class SIM_API cEnvir
      * simple module. beginSend() will be followed by a messageSendDirect()
      * (optional, only present when cSimpleModule::sendDirect() was called),
      * several messageSendHop() calls (one for each connection in the path),
-     * and finally an endSend().
+     * and finally an endSend(). At least one call to either messageSendDirect()
+     * or messageSendHop() must occur between corresponding
+     * beginSend()/endSend() pairs.
      */
     virtual void beginSend(cMessage *msg) = 0;
 
