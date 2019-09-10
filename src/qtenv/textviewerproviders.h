@@ -72,8 +72,8 @@ public:
     // Or it can be a nullptr, prepare for it!
     virtual void *getUserData(int lineIndex) { return nullptr; }
 
-    virtual eventnumber_t getEventNumberAtLine(int lineIndex) { return 0; };
-    virtual int getLineAtEvent(eventnumber_t eventNumber) { return 0; };
+    virtual eventnumber_t getEventNumberAtLine(int lineIndex) { return -1; };
+    virtual int getLineAtEvent(eventnumber_t eventNumber) { return -1; };
 
 signals:
     void textChanged();
