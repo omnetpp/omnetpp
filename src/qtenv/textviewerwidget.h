@@ -228,6 +228,9 @@ public:
      */
     void setCaretPosition(int lineIndex, int column);
 
+    void followOutput() { doContentEnd(false); }
+    bool followingOutput() const { return followContentEnd; }
+
     /**
      * Returns the caret position.
      */

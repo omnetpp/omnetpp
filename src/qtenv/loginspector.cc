@@ -230,10 +230,14 @@ QStringList LogInspector::gatherAllMessagePrinterTags()
 
 void LogInspector::setMode(Mode mode)
 {
+    bool atEnd = true;
     eventnumber_t caretAtEvent = -1;
     if (textWidget && textWidget->getContentProvider()) {
+        auto *content = textWidget->getContentProvider();
         Pos caretPos = textWidget->getCaretPosition();
-        caretAtEvent = textWidget->getContentProvider()->getEventNumberAtLine(caretPos.line);
+
+        atEnd = textWidget->followingOutput() || (caretPos.line == (content->getLineCount() - 1));
+        caretAtEvent = content->getEventNumberAtLine(caretPos.line);
     }
 
     if (this->mode == MESSAGES)
@@ -255,11 +259,16 @@ void LogInspector::setMode(Mode mode)
 
     setPref(PREF_MODE, mode);
 
-    if (caretAtEvent >= 0) {
-        int lineNumber = textWidget->getContentProvider()->getLineAtEvent(caretAtEvent);
-        textWidget->setCaretPosition(lineNumber, 0);
-        textWidget->revealCaret();
+    if (atEnd)
+        textWidget->followOutput();
+    else {
+        if (caretAtEvent >= 0) {
+            int lineNumber = contentProvider->getLineAtEvent(caretAtEvent);
+            if (lineNumber >= 0)
+                textWidget->setCaretPosition(lineNumber, 0);
+        }
     }
+    textWidget->revealCaret();
 }
 
 void LogInspector::doSetObject(cObject *obj)
