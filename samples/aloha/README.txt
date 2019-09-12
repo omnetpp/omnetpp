@@ -18,7 +18,7 @@ The internal state of the server and all statistics are visible in the GUI
 The most important statistics is channel utilization. It is also recorded in
 omnetpp.vec, and can be plotted using the Analysis Tool in the IDE.
 
-The supplied omnetpp.ini file contains six predefined 6 predefined configurations:
+The supplied omnetpp.ini file contains 6 predefined configurations:
 - pure Aloha at high load
 - pure Aloha at moderate load (utilization =~ max)
 - pure Aloha at low load
@@ -26,9 +26,9 @@ The supplied omnetpp.ini file contains six predefined 6 predefined configuration
 - slotted Aloha at moderate load (utilization =~ max)
 - slotted Aloha at low load
 
-- In addition it contains a predefined experiment scenario called
-  PureAlohaExperiment where it explores the channel utilization in the
-  function of number of hosts and packet generation frequency.
+In addition, it also contains a predefined parameter study called
+PureAlohaExperiment, which explores the channel utilization in the
+function of the number of hosts and the packet generation frequency.
 
 According to some descriptions of the Aloha protocol, hosts have to listen
 on the channel before they start to transmit anything. This "listen before
