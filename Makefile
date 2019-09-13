@@ -67,7 +67,7 @@ include Makefile.inc
 #=====================================================================
 
 BASE=common layout eventlog scave nedxml sim envir cmdenv utils
-SAMPLES=aloha canvas cqn dyna embedding embedding2 fifo hypercube histograms neddemo queueinglib queueinglibext routing tictoc sockets osg-intro osg-earth osg-indoor osg-satellites
+SAMPLES=aloha canvas cqn dyna embedding embedding2 fifo hypercube histograms neddemo queueinglib queueinglibext routing tictoc sockets openstreetmap petrinets osg-intro osg-earth osg-indoor osg-satellites
 JNILIBS=org.omnetpp.ned.model org.omnetpp.ide.nativelibs
 
 ifeq "$(WITH_QTENV)" "yes"
