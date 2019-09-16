@@ -107,7 +107,9 @@ Inspector::Inspector(QWidget *parent, bool isTopLevel, InspectorFactory *f)
     object = nullptr;
     type = f->getInspectorType();
 
-    if (!isTopLevel) {
+    if (isTopLevel)
+        setAttribute(Qt::WA_DeleteOnClose);
+    else {
         auto layout = new QGridLayout(parent);
         parent->setLayout(layout);
         layout->setMargin(0);
@@ -379,10 +381,11 @@ void Inspector::goUpInto()  // XXX weird name
 
 void Inspector::closeEvent(QCloseEvent *)
 {
-    if (isToplevelInspector())
-        setPref(PREF_GEOM, geometry());
+    ASSERT(isToplevelInspector());
 
-    getQtenv()->deleteInspector(this); // !!!
+    setPref(PREF_GEOM, geometry());
+
+    getQtenv()->deleteInspector(this);
     getQtenv()->storeInspectors(false);
 }
 
