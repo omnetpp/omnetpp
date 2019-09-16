@@ -338,9 +338,8 @@ void Qtenv::storeInspectors(bool closeThem)
         }
     }
 
-    for (auto i : toBeClosed) {
+    for (auto i : toBeClosed)
         deleteInspector(i);
-    }
 }
 
 void Qtenv::updateStoredInspector(cObject *newObject, cObject *oldObject)
@@ -1277,8 +1276,12 @@ Inspector *Qtenv::findFirstInspector(const cObject *obj, InspectorType type, boo
 
 void Qtenv::deleteInspector(Inspector *insp)
 {
+    ASSERT(insp->isToplevelInspector());
+    ASSERT(insp->testAttribute(Qt::WA_DeleteOnClose));
+
+    // this will also make Qt call delete on it, because of the Qt::WA_DeleteOnClose attribute
+    insp->close();
     inspectors.remove(insp);
-    delete insp;
 }
 
 void Qtenv::callRefreshDisplay()
