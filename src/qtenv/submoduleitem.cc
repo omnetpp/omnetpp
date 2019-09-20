@@ -185,29 +185,36 @@ void SubmoduleItem::realignAnchoredItems()
 {
     auto mainBounds = shapeImageBoundingRect().adjusted(-2, -2, 2, 2);
 
+    // this is not entirely precise because we don't have access to the paint device, but it's not that critical
+    // (yes, we use the canvas font. we did all this time, and nobody seemed to mind, so...)
+    int lineSpacing = QFontMetrics(getQtenv()->getCanvasFont()).lineSpacing();
+
+    QPointF cursor;
+    switch (textPos) {
+        case TEXTPOS_LEFT:  cursor = mainBounds.topLeft();  break;
+        case TEXTPOS_RIGHT: cursor = mainBounds.topRight(); break;
+        case TEXTPOS_TOP: cursor = { mainBounds.center().x(), mainBounds.top() - textItems.size() * lineSpacing }; break;
+    }
+
     // the info text label
-    if (textItem) {
-        auto textBounds = textItem->textRect();
-        QPointF pos;
+    for (OutlinedTextItem *item : textItems) {
+        QPointF pos = cursor;
+        cursor.ry() += lineSpacing;
 
+        auto bounds = item->boundingRect();
         switch (textPos) {
-            case TEXTPOS_LEFT:
-                pos.setX(mainBounds.left() - textBounds.width());
-                pos.setY(mainBounds.top());
+            case TEXTPOS_LEFT: // right justify
+                pos.rx() -= bounds.width();
                 break;
-
-            case TEXTPOS_RIGHT:
-                pos.setX(mainBounds.right());
-                pos.setY(mainBounds.top());
+            case TEXTPOS_RIGHT: // left justified
+                // no-op
                 break;
-
-            case TEXTPOS_TOP:
-                pos.setX(mainBounds.center().x() - textBounds.width() / 2.0f);
-                pos.setY(mainBounds.top() - textBounds.height());
+            case TEXTPOS_TOP: // center horizontally
+                pos.rx() -= bounds.width() / 2.0f;
                 break;
         }
 
-        textItem->setPos(pos);
+        item->setPos(pos);
     }
 
     // the queue length
@@ -296,7 +303,6 @@ SubmoduleItem::SubmoduleItem(cModule *mod, GraphicsLayer *rangeLayer)
 {
     nameItem = new OutlinedTextItem(this);
     queueItem = new OutlinedTextItem(this);
-    textItem = new OutlinedTextItem(this);
 
     connect(this, SIGNAL(xChanged()), this, SLOT(onPositionChanged()));
     connect(this, SIGNAL(yChanged()), this, SLOT(onPositionChanged()));
@@ -465,8 +471,31 @@ void SubmoduleItem::setInfoText(const QString& text, TextPos pos, const QColor& 
         this->text = text;
         textPos = pos;
         textColor = color;
-        textItem->setText(text);
-        textItem->setBrush(color);
+
+        QStringList lines = text.split("\n");
+
+        int nl = lines.size();
+        int nti = textItems.size();
+
+        if (nti < nl) {
+            // we have to add a couple more text items
+            for (int i = nti; i < nl; ++i)
+                textItems.push_back(new OutlinedTextItem(this));
+        }
+        else if (nl < nti) {
+            // we have too many text items
+            for (int i = nl; i < nti; ++i)
+                delete textItems[i];
+            textItems.resize(nl);
+        }
+
+        ASSERT(textItems.size() == lines.size());
+
+        for (int i = 0; i < nl; ++i) {
+            OutlinedTextItem *item = textItems[i];
+            item->setText(lines[i]);
+            item->setBrush(color);
+        }
         realignAnchoredItems();
     }
 }
