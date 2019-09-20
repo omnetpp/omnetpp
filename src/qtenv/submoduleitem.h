@@ -114,8 +114,13 @@ protected:
     QGraphicsPixmapItem *decoratorImageItem = nullptr;
 
     OutlinedTextItem *nameItem = nullptr; // includes the vector index
-    OutlinedTextItem *textItem = nullptr;
     OutlinedTextItem *queueItem = nullptr;
+
+    // This needs to be a vector only so we can position the lines independently,
+    // to left/middle/right align the text for the different positioning modes.
+    // QGraphicsSimpleTextItem can't align its lines, while QGraphicsTextItem
+    // makes it hard to draw the outline. So we do it manually, no big deal.
+    std::vector<OutlinedTextItem *> textItems;
 
     GraphicsLayer *rangeLayer = nullptr;
 
