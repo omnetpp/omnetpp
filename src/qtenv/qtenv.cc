@@ -1127,7 +1127,6 @@ void Qtenv::newNetwork(const char *networkname)
     mainNetworkView->setObject(module);
     mainInspector->setObject(module);
 
-    displayUpdateController->skipToNextEvent(); // should be changed to animate at some point...
     animating = true;  // affects how network graphics is drawn!
     messageAnimator->redrawMessages();
     messageAnimator->setMarkedModule(getSimulation()->guessNextModule());
@@ -1185,7 +1184,6 @@ void Qtenv::newRun(const char *configname, int runnumber)
     mainNetworkView->setObject(module);
     mainInspector->setObject(module);
 
-    displayUpdateController->skipToNextEvent(); // should be changed to animate at some point...
     animating = true;  // affects how network graphics is drawn!
     messageAnimator->redrawMessages();
     messageAnimator->setMarkedModule(getSimulation()->guessNextModule());
