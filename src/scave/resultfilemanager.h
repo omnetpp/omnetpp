@@ -491,6 +491,8 @@ class SCAVE_API ResultFileManager
     std::vector< std::pair<std::string, std::string> > getMatchingParamAssignments(const char *pattern) const;
     std::vector< std::pair<std::string, std::string> > getMatchingNonParamAssignmentConfigEntries(const char *pattern) const;
 
+    std::multimap<Run *, std::string> getMatchingRunattrsPtr(const char *pattern) const;
+
     /**
      * Get a filtered subset of the input set (of scalars or vectors).
      * All three filter parameters may be null, or (the textual ones)

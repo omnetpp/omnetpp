@@ -1181,6 +1181,33 @@ std::vector<std::pair<std::string, std::string>> ResultFileManager::getMatchingR
     return out;
 }
 
+std::multimap<Run *, std::string> ResultFileManager::getMatchingRunattrsPtr(const char *pattern) const
+{
+    if (opp_isblank(pattern))  // no filter
+        throw opp_runtime_error("Empty filter expression is not allowed");
+
+    MatchExpression matchExpr(pattern, false  /*dottedpath*/, true  /*fullstring*/, true  /*casesensitive*/);
+
+    READER_MUTEX
+    std::multimap<Run *, std::string> out;
+    for (int k = 0; k < (int)runList.size(); k++) {
+        if (runList[k] != nullptr) {
+            Run *run = runList[k];
+            int i = 0;
+            for (auto &ra : run->getAttributes()) {
+
+                MatchableRunattr matchable(run, ra.first);
+
+                if (matchExpr.matches(&matchable))
+                    out.insert({run, ra.first});
+
+                ++i;
+            }
+        }
+    }
+    return out;
+}
+
 
 std::vector< std::pair<std::string, std::string>>  ResultFileManager::getMatchingConfigEntries(const char *pattern) const
 {

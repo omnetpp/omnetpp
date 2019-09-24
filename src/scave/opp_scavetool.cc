@@ -16,6 +16,8 @@
 
 #include <sstream>
 #include <iomanip>
+#include <map>
+#include <algorithm>
 #include "common/ver.h"
 #include "common/fileutil.h"
 #include "common/linetokenizer.h"
@@ -412,8 +414,10 @@ void ScaveTool::queryCommand(int argc, char **argv)
 
     // filter statistics
     IDList results = resultFileManager.getAllItems(opt_includeFields, opt_includeItervars);
-    results.set(results.filterByTypes(opt_resultTypeFilter));
-    results.set(resultFileManager.filterIDList(results, opt_filterExpression.c_str()));
+    if (opt_mode != LIST_RUNS && opt_mode != LIST_RUNATTRS && opt_mode != LIST_ITERVARS) {
+        results.set(results.filterByTypes(opt_resultTypeFilter));
+        results.set(resultFileManager.filterIDList(results, opt_filterExpression.c_str()));
+    }
 
     RunList *runs = resultFileManager.getUniqueRuns(results);
     std::sort(runs->begin(), runs->end(), [](Run *a, Run *b)  {return a->getRunName() < b->getRunName();}); // sort runs by runId, for consistent output
@@ -522,16 +526,27 @@ void ScaveTool::queryCommand(int argc, char **argv)
     }
 #undef L
     case LIST_RUNATTRS: {
+        std::multimap<Run *, std::string> filteredRunAttrs = resultFileManager.getMatchingRunattrsPtr(opt_filterExpression.c_str());;
+
+        Run *prevRun = nullptr;
         // note: we ignore opt_perRun, as it makes no sense here
-        for (Run *run : *runs) {
-            string runName = runStr(run, opt_runDisplayMode);
+        for (std::pair<Run *, std::string> i : filteredRunAttrs) {
+            string runName = runStr(i.first, opt_runDisplayMode);
             string maybeRunColumnWithTab = opt_grepFriendly ? runName + "\t" : "";
-            if (!opt_grepFriendly)
+
+            if (i.first != prevRun && !opt_grepFriendly) {
+                if (prevRun != nullptr)
+                    out << endl;
+
                 out << runName << ":" << endl << endl;
-            for (auto& runAttr : run->getAttributes())
-                out << maybeRunColumnWithTab << runAttr.first << "\t" << runAttr.second << std::endl;
-            out << endl;
+            }
+
+            out << maybeRunColumnWithTab << i.second << "\t" << i.first->getAttribute(i.second) << std::endl;
+
+            prevRun = i.first;
         }
+        out << endl;
+
         break;
     }
     case LIST_ITERVARS: {
@@ -593,8 +608,10 @@ void ScaveTool::queryCommand(int argc, char **argv)
         break;
     }
     case LIST_RUNS: {
+        RunList filteredRuns = resultFileManager.filterRunList(*runs, opt_filterExpression.c_str());
+        std::cout << " filtered " << runs->size() << " runs using " << opt_filterExpression << " to " << filteredRuns.size() << std::endl;
         // note: we ignore opt_perRun, as it makes no sense here
-        for (Run *run : *runs)
+        for (Run *run : filteredRuns)
             out << runStr(run, opt_runDisplayMode) << endl;
         break;
     }
@@ -725,7 +742,7 @@ void ScaveTool::exportCommand(int argc, char **argv)
     ResultFileManager resultFileManager;
     loadFiles(resultFileManager, opt_fileNames, opt_indexingAllowed, opt_verbose);
 
-    // filter statistics
+    // filter results
     IDList results = resultFileManager.getAllItems(opt_includeFields, opt_includeItervars);
     results.set(results.filterByTypes(opt_resultTypeFilter));
     results.set(resultFileManager.filterIDList(results, opt_filterExpression.c_str()));
