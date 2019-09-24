@@ -10,7 +10,8 @@
 network Network
 {
     parameters:
-    	@display("bgb=1000,800");
+        @display("bgb=1000,800");
+        @figure[submodules](type=group;zIndex=100);
         int numCars = default(100);
     submodules:
         map: OpenStreetMap {@display("p=50,50");}
