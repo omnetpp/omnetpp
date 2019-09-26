@@ -65,7 +65,7 @@ def _get_results(filter_expression, file_extensions, result_type, *additional_ar
     })
 
 
-    # df.rename(columns={"run": "runID"}, inplace=True) # oh, inconsistencies...
+    df.rename(columns={"run": "runID"}, inplace=True) # oh, inconsistencies...
 
     # TODO: convert column dtype as well?
 
@@ -142,6 +142,10 @@ def get_histograms(filter_expression, include_attrs=False, include_runattrs=Fals
     return df
 
 
+def _get_metadata(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
+    # TODO: factor out common parts of the ones below here
+    pass
+
 def get_runs(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
     command = ["opp_scavetool", "q", *inputfiles, "-r", '-f',
                 filter_expression, "-g"]
@@ -169,10 +173,12 @@ def get_runs(filter_expression="", include_runattrs=False, include_itervars=Fals
         ra.rename(columns={"name": "attrname", "value": "attrvalue"}, inplace=True) # oh, inconsistencies...
         df = _append_metadata_columns(df,ra, "_runattr")
 
-    """if include_config_entries:
-        df = _append_metadata_columns(df, configs, "_config")"""
-    # TODO maybe only params, based on include_ args
+    if include_config_entries:
+        ce = get_config_entries("*")
+        ce.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
+        df = _append_metadata_columns(df, ce, "_config")
 
+    # TODO maybe only params, based on include_ args
     #TODO df.join(params, on="run", rsuffix="_param")
 
     return df
@@ -198,6 +204,11 @@ def get_runattrs(filter_expression="", include_runattrs=False, include_itervars=
         ra.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
         df = _append_metadata_columns(df, ra, "_runattr")
 
+    if include_config_entries:
+        ce = get_config_entries("*")
+        ce.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
+        df = _append_metadata_columns(df, ce, "_config")
+
     return df
 
 
@@ -222,7 +233,37 @@ def get_itervars(filter_expression="", include_runattrs=False, include_itervars=
         ra.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
         df = _append_metadata_columns(df, ra, "_runattr")
 
+    if include_config_entries:
+        ce = get_config_entries("*")
+        ce.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
+        df = _append_metadata_columns(df, ce, "_config")
+
     return df
 
 def get_config_entries(filter_expression, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
-    pass # TODO in opp_scavetool
+    command = ["opp_scavetool", "q", *inputfiles, "-j", "-g", "--tabs"]
+
+    output = subprocess.check_output(command)
+
+    if len(output.decode('utf-8').splitlines()) == 1:
+        print("<!> HINT: opp_scavetool returned an empty result. Consider adding a project name to directory mapping, for example: -p /aloha=../aloha")
+
+    # TODO: stream the output through subprocess.PIPE ?
+    df = pd.read_csv(io.BytesIO(output), sep='\t', header=None, names=["runID", "name", "value"])
+
+    if include_itervars:
+        iv = get_itervars("*")
+        iv.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
+        df = _append_metadata_columns(df, iv, "_itervar")
+
+    if include_runattrs:
+        ra = get_runattrs("*")
+        ra.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
+        df = _append_metadata_columns(df, ra, "_runattr")
+
+    if include_config_entries:
+        ce = get_config_entries("*")
+        ce.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
+        df = _append_metadata_columns(df, ce, "_config")
+
+    return df

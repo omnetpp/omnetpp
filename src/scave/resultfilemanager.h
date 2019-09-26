@@ -485,14 +485,14 @@ class SCAVE_API ResultFileManager
     IDList getStatisticsInFileRun(FileRun *fileRun) const;
     IDList getHistogramsInFileRun(FileRun *fileRun) const;
 
-    // these are the ones that are called from Python. they identify runs by their ID
+    // these are the ones that are called from Python. the runs are returned by their ID
     std::vector< std::pair<std::string, std::string> > getMatchingItervars(const char *pattern) const;
     std::vector< std::pair<std::string, std::string> > getMatchingRunattrs(const char *pattern) const;
     std::vector< std::pair<std::string, std::string> > getMatchingConfigEntries(const char *pattern) const;
     std::vector< std::pair<std::string, std::string> > getMatchingParamAssignments(const char *pattern) const;
     std::vector< std::pair<std::string, std::string> > getMatchingNonParamAssignmentConfigEntries(const char *pattern) const;
 
-    // these are the ones that are called from opp_scavetool. they return runs by pointer
+    // these are the ones that are called from opp_scavetool
     std::multimap<Run *, std::string> getMatchingItervarsPtr(const char *pattern) const;
     std::multimap<Run *, std::string> getMatchingRunattrsPtr(const char *pattern) const;
     std::multimap<Run *, std::string> getMatchingConfigEntriesPtr(const char *pattern) const;
