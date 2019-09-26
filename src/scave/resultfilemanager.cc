@@ -208,7 +208,6 @@ const std::string& Run::getParamAssignment(const std::string& key) const
     return isKeyParamAssignment(key) ? getConfigValue(key) : NULLSTRING;
 }
 
-
 const OrderedKeyValueList Run::getNonParamAssignmentConfigEntries() const
 {
     OrderedKeyValueList result;
@@ -1126,8 +1125,15 @@ const char *MatchableConfigEntry::getAsString(const char *attribute) const
         return getName();
 }
 
-
 std::vector<std::pair<std::string, std::string>> ResultFileManager::getMatchingItervars(const char *pattern) const
+{
+    std::vector<std::pair<std::string, std::string>> out;
+    for (auto i : getMatchingItervarsPtr(pattern))
+        out.push_back({i.first->getRunName(), i.second});
+    return out;
+}
+
+std::multimap<Run *, std::string> ResultFileManager::getMatchingItervarsPtr(const char *pattern) const
 {
     if (opp_isblank(pattern))  // no filter
         throw opp_runtime_error("Empty filter expression is not allowed");
@@ -1135,19 +1141,14 @@ std::vector<std::pair<std::string, std::string>> ResultFileManager::getMatchingI
     MatchExpression matchExpr(pattern, false  /*dottedpath*/, true  /*fullstring*/, true  /*casesensitive*/);
 
     READER_MUTEX
-    std::vector<std::pair<std::string, std::string>> out;
+    std::multimap<Run *, std::string> out;
     for (int k = 0; k < (int)runList.size(); k++) {
         if (runList[k] != nullptr) {
             Run *run = runList[k];
-            int i = 0;
             for (auto &iv : run->getIterationVariables()) {
-
                 MatchableItervar matchable(run, iv.first);
-
                 if (matchExpr.matches(&matchable))
-                    out.push_back({run->getRunName(), iv.first});
-
-                ++i;
+                    out.insert({run, iv.first});
             }
         }
     }
@@ -1156,28 +1157,9 @@ std::vector<std::pair<std::string, std::string>> ResultFileManager::getMatchingI
 
 std::vector<std::pair<std::string, std::string>> ResultFileManager::getMatchingRunattrs(const char *pattern) const
 {
-    if (opp_isblank(pattern))  // no filter
-        throw opp_runtime_error("Empty filter expression is not allowed");
-
-    MatchExpression matchExpr(pattern, false  /*dottedpath*/, true  /*fullstring*/, true  /*casesensitive*/);
-
-    READER_MUTEX
     std::vector<std::pair<std::string, std::string>> out;
-    for (int k = 0; k < (int)runList.size(); k++) {
-        if (runList[k] != nullptr) {
-            Run *run = runList[k];
-            int i = 0;
-            for (auto &ra : run->getAttributes()) {
-
-                MatchableRunattr matchable(run, ra.first);
-
-                if (matchExpr.matches(&matchable))
-                    out.push_back({run->getRunName(), ra.first});
-
-                ++i;
-            }
-        }
-    }
+    for (auto i : getMatchingRunattrsPtr(pattern))
+        out.push_back({i.first->getRunName(), i.second});
     return out;
 }
 
@@ -1193,23 +1175,25 @@ std::multimap<Run *, std::string> ResultFileManager::getMatchingRunattrsPtr(cons
     for (int k = 0; k < (int)runList.size(); k++) {
         if (runList[k] != nullptr) {
             Run *run = runList[k];
-            int i = 0;
             for (auto &ra : run->getAttributes()) {
-
                 MatchableRunattr matchable(run, ra.first);
-
                 if (matchExpr.matches(&matchable))
                     out.insert({run, ra.first});
-
-                ++i;
             }
         }
     }
     return out;
 }
 
+std::vector< std::pair<std::string, std::string>> ResultFileManager::getMatchingConfigEntries(const char *pattern) const
+{
+    std::vector<std::pair<std::string, std::string>> out;
+    for (auto i : getMatchingConfigEntriesPtr(pattern))
+        out.push_back({i.first->getRunName(), i.second});
+    return out;
+}
 
-std::vector< std::pair<std::string, std::string>>  ResultFileManager::getMatchingConfigEntries(const char *pattern) const
+std::multimap<Run *, std::string> ResultFileManager::getMatchingConfigEntriesPtr(const char *pattern) const
 {
     if (opp_isblank(pattern))  // no filter
         throw opp_runtime_error("Empty filter expression is not allowed");
@@ -1217,25 +1201,21 @@ std::vector< std::pair<std::string, std::string>>  ResultFileManager::getMatchin
     MatchExpression matchExpr(pattern, false  /*dottedpath*/, true  /*fullstring*/, true  /*casesensitive*/);
 
     READER_MUTEX
-    std::vector<std::pair<std::string, std::string>> out;
+    std::multimap<Run *, std::string> out;
     for (int k = 0; k < (int)runList.size(); k++) {
         if (runList[k] != nullptr) {
             Run *run = runList[k];
-            int i = 0;
             for (auto &entry : run->getConfigEntries()) {
                 MatchableConfigEntry matchable(run, entry.first);
-
                 if (matchExpr.matches(&matchable))
-                    out.push_back({run->getRunName(), entry.first});
-
-                ++i;
+                    out.insert({run, entry.first});
             }
         }
     }
     return out;
 }
 
-
+// TODO use getMatchingConfigEntriesPtr then filter
 std::vector<std::pair<std::string, std::string>> ResultFileManager::getMatchingParamAssignments(const char *pattern) const
 {
     if (opp_isblank(pattern))  // no filter
@@ -1248,21 +1228,17 @@ std::vector<std::pair<std::string, std::string>> ResultFileManager::getMatchingP
     for (int k = 0; k < (int)runList.size(); k++) {
         if (runList[k] != nullptr) {
             Run *run = runList[k];
-            int i = 0;
             for (auto &param : run->getParamAssignments()) {
                 MatchableConfigEntry matchable(run, param.first);
-
                 if (matchExpr.matches(&matchable))
                     out.push_back({run->getRunName(), param.first});
-
-                ++i;
             }
         }
     }
     return out;
 }
 
-
+// TODO use getMatchingConfigEntriesPtr then filter
 std::vector<std::pair<std::string, std::string>> ResultFileManager::getMatchingNonParamAssignmentConfigEntries(const char *pattern) const
 {
     if (opp_isblank(pattern))  // no filter
@@ -1275,14 +1251,10 @@ std::vector<std::pair<std::string, std::string>> ResultFileManager::getMatchingN
     for (int k = 0; k < (int)runList.size(); k++) {
         if (runList[k] != nullptr) {
             Run *run = runList[k];
-            int i = 0;
             for (auto &entry : run->getNonParamAssignmentConfigEntries()) {
                 MatchableConfigEntry matchable(run, entry.first);
-
                 if (matchExpr.matches(&matchable))
                     out.push_back({run->getRunName(), entry.first});
-
-                ++i;
             }
         }
     }

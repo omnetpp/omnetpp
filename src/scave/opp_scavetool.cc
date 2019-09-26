@@ -309,11 +309,34 @@ static string runStr(const Run *run, RunDisplayMode mode)
     }
 }
 
+typedef std::string get_value_t(Run * run, const std::string &name);
+
+static void listRunMetadata(std::ostream &out, const std::multimap<Run *, std::string> &metadata, get_value_t getValue, RunDisplayMode runDisplayMode, bool grepFriendly)
+{
+    Run *prevRun = nullptr;
+    // note: we ignore opt_perRun, as it makes no sense here
+    for (std::pair<Run *, std::string> i : metadata) {
+        string runName = runStr(i.first, runDisplayMode);
+        string maybeRunColumnWithTab = grepFriendly ? runName + "\t" : "";
+
+        if (i.first != prevRun && !grepFriendly) {
+            if (prevRun != nullptr)
+                out << endl;
+            out << runName << ":" << endl << endl;
+        }
+
+        out << maybeRunColumnWithTab << i.second << "\t" << getValue(i.first, i.second) << std::endl;
+
+        prevRun = i.first;
+    }
+    out << endl;
+}
+
 void ScaveTool::queryCommand(int argc, char **argv)
 {
     enum QueryMode {
-        PRINT_SUMMARY, LIST_RESULTS, LIST_RUNATTRS, LIST_ITERVARS, LIST_MODULES, LIST_NAMES,
-        LIST_MODULE_AND_NAME_PAIRS, LIST_RUNS, LIST_CONFIGS
+        PRINT_SUMMARY, LIST_RESULTS, LIST_RUNATTRS, LIST_ITERVARS, LIST_CONFIGENTRIES,
+        LIST_MODULES, LIST_NAMES, LIST_MODULE_AND_NAME_PAIRS, LIST_RUNS, LIST_CONFIGS
     };
 
     QueryMode opt_mode = PRINT_SUMMARY;
@@ -348,6 +371,8 @@ void ScaveTool::queryCommand(int argc, char **argv)
             opt_mode = LIST_RUNATTRS;
         else if (opt == "-i" || opt == "--list-itervars")
             opt_mode = LIST_ITERVARS;
+        else if (opt == "-j" || opt == "--list-configentries")
+            opt_mode = LIST_CONFIGENTRIES;
         else if (opt == "-n" || opt == "--list-names")
             opt_mode = LIST_NAMES;
         else if (opt == "-m" || opt == "--list-modules")
@@ -414,7 +439,7 @@ void ScaveTool::queryCommand(int argc, char **argv)
 
     // filter statistics
     IDList results = resultFileManager.getAllItems(opt_includeFields, opt_includeItervars);
-    if (opt_mode != LIST_RUNS && opt_mode != LIST_RUNATTRS && opt_mode != LIST_ITERVARS) {
+    if (opt_mode != LIST_RUNS && opt_mode != LIST_RUNATTRS && opt_mode != LIST_ITERVARS && opt_mode != LIST_CONFIGENTRIES) {
         results.set(results.filterByTypes(opt_resultTypeFilter));
         results.set(resultFileManager.filterIDList(results, opt_filterExpression.c_str()));
     }
@@ -526,40 +551,18 @@ void ScaveTool::queryCommand(int argc, char **argv)
     }
 #undef L
     case LIST_RUNATTRS: {
-        std::multimap<Run *, std::string> filteredRunAttrs = resultFileManager.getMatchingRunattrsPtr(opt_filterExpression.c_str());;
-
-        Run *prevRun = nullptr;
-        // note: we ignore opt_perRun, as it makes no sense here
-        for (std::pair<Run *, std::string> i : filteredRunAttrs) {
-            string runName = runStr(i.first, opt_runDisplayMode);
-            string maybeRunColumnWithTab = opt_grepFriendly ? runName + "\t" : "";
-
-            if (i.first != prevRun && !opt_grepFriendly) {
-                if (prevRun != nullptr)
-                    out << endl;
-
-                out << runName << ":" << endl << endl;
-            }
-
-            out << maybeRunColumnWithTab << i.second << "\t" << i.first->getAttribute(i.second) << std::endl;
-
-            prevRun = i.first;
-        }
-        out << endl;
-
+        std::multimap<Run *, std::string> filteredRunattrs = resultFileManager.getMatchingRunattrsPtr(opt_filterExpression.c_str());
+        listRunMetadata(out, filteredRunattrs, [](Run *run, const std::string &name) { return run->getAttribute(name); }, opt_runDisplayMode, opt_grepFriendly);
         break;
     }
     case LIST_ITERVARS: {
-        // note: we ignore opt_perRun, as it makes no sense here
-        for (Run *run : *runs) {
-            string runName = runStr(run, opt_runDisplayMode);
-            string maybeRunColumnWithTab = opt_grepFriendly ? runName + "\t" : "";
-            if (!opt_grepFriendly)
-                out << runName << ":" << endl << endl;
-            for (auto& pair : run->getIterationVariables())
-                out << maybeRunColumnWithTab << pair.first << "\t" << pair.second << std::endl;
-            out << endl;
-        }
+        std::multimap<Run *, std::string> filteredItervars = resultFileManager.getMatchingItervarsPtr(opt_filterExpression.c_str());
+        listRunMetadata(out, filteredItervars, [](Run *run, const std::string &name) { return run->getIterationVariable(name); }, opt_runDisplayMode, opt_grepFriendly);
+        break;
+    }
+    case LIST_CONFIGENTRIES: {
+        std::multimap<Run *, std::string> filteredConfigEntries = resultFileManager.getMatchingConfigEntriesPtr(opt_filterExpression.c_str());
+        listRunMetadata(out, filteredConfigEntries, [](Run *run, const std::string &name) { return run->getConfigValue(name); }, opt_runDisplayMode, opt_grepFriendly);
         break;
     }
     case LIST_NAMES: {
@@ -609,7 +612,6 @@ void ScaveTool::queryCommand(int argc, char **argv)
     }
     case LIST_RUNS: {
         RunList filteredRuns = resultFileManager.filterRunList(*runs, opt_filterExpression.c_str());
-        std::cout << " filtered " << runs->size() << " runs using " << opt_filterExpression << " to " << filteredRuns.size() << std::endl;
         // note: we ignore opt_perRun, as it makes no sense here
         for (Run *run : filteredRuns)
             out << runStr(run, opt_runDisplayMode) << endl;

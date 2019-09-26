@@ -40,7 +40,7 @@ def _get_results(filter_expression, file_extensions, result_type, *additional_ar
 
     output = subprocess.check_output(command)
 
-    if len(str(command).splitlines()) == 1:
+    if len(output.decode("utf-8").splitlines()) == 1:
         print("<!> HINT: opp_scavetool returned an empty result. Consider adding a project name to directory mapping, for example: -p /aloha=../aloha")
 
     # with open("output.csv", "tw") as outp:
@@ -64,6 +64,9 @@ def _get_results(filter_expression, file_extensions, result_type, *additional_ar
         'vecvalue': _parse_ndarray
     })
 
+
+    # df.rename(columns={"run": "runID"}, inplace=True) # oh, inconsistencies...
+
     # TODO: convert column dtype as well?
 
     return df
@@ -78,10 +81,10 @@ def _split_by_types(df, types):
     return result
 
 def _append_metadata_columns(df, meta, suffix):
-    meta = pd.pivot_table(meta, index="run", columns="attrname", values="attrvalue", aggfunc="first")
+    meta = pd.pivot_table(meta, index="runID", columns="attrname", values="attrvalue", aggfunc="first")
 
     if not meta.empty:
-        df = df.join(meta, on="run", rsuffix=suffix)
+        df = df.join(meta, on="runID", rsuffix=suffix)
 
     return df
 
@@ -91,8 +94,8 @@ def _pivot_results(df, include_attrs, include_runattrs, include_itervars, includ
 
 
     if include_attrs and attrs is not None and not attrs.empty:
-        attrs = pd.pivot_table(attrs, columns="attrname", aggfunc='first', index=["run", "module", "name"], values="attrvalue")
-        df = df.merge(attrs, left_on=["run", "module", "name"], right_index=True, how='left')
+        attrs = pd.pivot_table(attrs, columns="attrname", aggfunc='first', index=["runID", "module", "name"], values="attrvalue")
+        df = df.merge(attrs, left_on=["runID", "module", "name"], right_index=True, how='left')
 
     if include_itervars:
         df = _append_metadata_columns(df, itervars, "_itervar")
@@ -104,7 +107,6 @@ def _pivot_results(df, include_attrs, include_runattrs, include_itervars, includ
 
     #TODO df.join(params, on="run", rsuffix="_param")
 
-    df.rename(columns={"run": "runID"}, inplace=True) # oh, inconsistencies...
     df.drop(['type', 'attrname', 'attrvalue'], axis=1, inplace=True)
 
     if merge_module_and_name:
@@ -116,7 +118,6 @@ def _pivot_results(df, include_attrs, include_runattrs, include_itervars, includ
 
 def get_results(filter_expression="", row_types=['runattr', 'itervar', 'config', 'scalar', 'vector', 'statistic', 'histogram', 'param', 'attr'], omit_unused_columns=True, start_time=-inf, end_time=inf):
     df = _get_results(filter_expression, ['.sca', '.vec'], None)
-    df.rename(columns={"run": "runID"}, inplace=True) # oh, inconsistencies...
     return df
 
 def get_scalars(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
@@ -141,17 +142,87 @@ def get_histograms(filter_expression, include_attrs=False, include_runattrs=Fals
     return df
 
 
-
-
-
 def get_runs(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
-    pass # TODO in opp_scavetool
+    command = ["opp_scavetool", "q", *inputfiles, "-r", '-f',
+                filter_expression, "-g"]
+
+    output = subprocess.check_output(command)
+
+    if len(output.decode("utf-8").splitlines()) == 0:
+        print("<!> HINT: opp_scavetool returned an empty result. Consider adding a project name to directory mapping, for example: -p /aloha=../aloha")
+
+    # with open("output.csv", "tw") as outp:
+    #     outp.write(str(output))
+
+    # TODO: stream the output through subprocess.PIPE ?
+    df = pd.read_csv(io.BytesIO(output),  header=None, names=["runID"])
+
+    # TODO: convert column dtype as well?
+
+    if include_itervars:
+        iv = get_itervars("*")
+        iv.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
+        df = _append_metadata_columns(df, iv, "_itervar")
+
+    if include_runattrs:
+        ra = get_runattrs("*")
+        ra.rename(columns={"name": "attrname", "value": "attrvalue"}, inplace=True) # oh, inconsistencies...
+        df = _append_metadata_columns(df,ra, "_runattr")
+
+    """if include_config_entries:
+        df = _append_metadata_columns(df, configs, "_config")"""
+    # TODO maybe only params, based on include_ args
+
+    #TODO df.join(params, on="run", rsuffix="_param")
+
+    return df
+
 def get_runattrs(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
-    pass # TODO in opp_scavetool
+    command = ["opp_scavetool", "q", *inputfiles, "-a", "-g", "--tabs"]
+
+    output = subprocess.check_output(command)
+
+    if len(output.decode('utf-8').splitlines()) == 1:
+        print("<!> HINT: opp_scavetool returned an empty result. Consider adding a project name to directory mapping, for example: -p /aloha=../aloha")
+
+    # TODO: stream the output through subprocess.PIPE ?
+    df = pd.read_csv(io.BytesIO(output), sep='\t', header=None, names=["runID", "name", "value"])
+
+    if include_itervars:
+        iv = get_itervars("*")
+        iv.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
+        df = _append_metadata_columns(df, iv, "_itervar")
+
+    if include_runattrs:
+        ra = get_runattrs("*")
+        ra.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
+        df = _append_metadata_columns(df, ra, "_runattr")
+
+    return df
+
+
 def get_itervars(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, as_numeric=False):
-    pass # TODO in opp_scavetool
-"""
-    This always returns all config entries: param assignments, global and per-object config options.
-"""
+    command = ["opp_scavetool", "q", *inputfiles, "-i", "-g", "--tabs"]
+
+    output = subprocess.check_output(command)
+
+    if len(output.decode('utf-8').splitlines()) == 1:
+        print("<!> HINT: opp_scavetool returned an empty result. Consider adding a project name to directory mapping, for example: -p /aloha=../aloha")
+
+    # TODO: stream the output through subprocess.PIPE ?
+    df = pd.read_csv(io.BytesIO(output), sep='\t', header=None, names=["runID", "name", "value"])
+
+    if include_itervars:
+        iv = get_itervars("*")
+        iv.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
+        df = _append_metadata_columns(df, iv, "_itervar")
+
+    if include_runattrs:
+        ra = get_runattrs("*")
+        ra.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
+        df = _append_metadata_columns(df, ra, "_runattr")
+
+    return df
+
 def get_config_entries(filter_expression, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
     pass # TODO in opp_scavetool
