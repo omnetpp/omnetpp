@@ -485,7 +485,7 @@ class SCAVE_API ResultFileManager
     IDList getStatisticsInFileRun(FileRun *fileRun) const;
     IDList getHistogramsInFileRun(FileRun *fileRun) const;
 
-    // these are the ones that are called from Python. the runs are returned by their ID
+    // These are the ones that are called from Python. They return (runID, name) pairs (the values are queried later).
     std::vector< std::pair<std::string, std::string> > getMatchingItervars(const char *pattern) const;
     std::vector< std::pair<std::string, std::string> > getMatchingRunattrs(const char *pattern) const;
     std::vector< std::pair<std::string, std::string> > getMatchingConfigEntries(const char *pattern) const;
