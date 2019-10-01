@@ -90,15 +90,7 @@ void ExpressionFilter::process(simtime_t_cref t, cObject *details)
     switch (lastOutput.getType()) {
         case ExprValue::UNDEF: break;
         case ExprValue::BOOL: fire(this, t, lastOutput.boolValue(), details); break;
-        case ExprValue::INT: {
-            // Careful: 'long' is just 32 bits on Windows, so 64-bit intval_t might not fit. If so, emit in double.
-            intval_t value = lastOutput.intValue();
-            if (sizeof(long) < sizeof(intval_t) && (value < LONG_MIN || value > LONG_MAX))
-                fire(this, t, (double)value, details);
-            else
-                fire(this, t, (long)value, details);
-            break;
-        }
+        case ExprValue::INT: fire(this, t, lastOutput.intValue(), details); break;
         case ExprValue::DOUBLE: fire(this, t, lastOutput.doubleValue(), details); break;
         case ExprValue::STRING: fire(this, t, lastOutput.stringValue(), details); break;
         case ExprValue::OBJECT: fire(this, t, lastOutput.objectValue(), details); break;

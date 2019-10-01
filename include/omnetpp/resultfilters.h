@@ -47,7 +47,7 @@ class SIM_API WarmupPeriodFilter : public cResultFilter
 class SIM_API TotalCountFilter : public cResultFilter
 {
     protected:
-        long count;
+        intval_t count;
     protected:
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) override {count++; fire(this,t,count,details);}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, intval_t l, cObject *details) override {count++; fire(this,t,count,details);}
@@ -58,7 +58,7 @@ class SIM_API TotalCountFilter : public cResultFilter
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details) override {count++; fire(this,t,count,details);}
     public:
         TotalCountFilter() {count = 0;}
-        long getCount() const {return count;}
+        intval_t getCount() const {return count;}
         virtual double getInitialDoubleValue() const override {return getCount();}
         virtual std::string str() const override;
 };
@@ -170,12 +170,12 @@ class SIM_API ErrorNanFilter : public cNumericResultFilter
 class SIM_API CountNanFilter : public cNumericResultFilter
 {
     protected:
-        long count = 0;
+        intval_t count = 0;
     protected:
         virtual bool process(simtime_t& t, double& value, cObject *details) override;
     public:
         CountNanFilter() {}
-        long getCount() const {return count;}
+        intval_t getCount() const {return count;}
         virtual double getInitialDoubleValue() const override {return getCount();}
         virtual std::string str() const override;
 };
@@ -205,7 +205,7 @@ class SIM_API MeanFilter : public cNumericResultFilter
 {
     protected:
         bool timeWeighted = false;
-        long count = 0;
+        intval_t count = 0;
         double lastValue = NAN;
         simtime_t lastTime = SIMTIME_ZERO;
         double weightedSum = 0;
@@ -258,7 +258,7 @@ class SIM_API MaxFilter : public cNumericResultFilter
 class SIM_API AverageFilter : public cNumericResultFilter
 {
     protected:
-        long count;
+        intval_t count;
         double sum;
     protected:
         virtual bool process(simtime_t& t, double& value, cObject *details) override;

@@ -33,7 +33,7 @@
 #define DEBUG_TRAP  __asm__("int3")
 #else
 #include <csignal>
-#define DEBUG_TRAP  raise(SIGTRAP)
+#define DEBUG_TRAP  ::raise(SIGTRAP)
 #endif
 
 //

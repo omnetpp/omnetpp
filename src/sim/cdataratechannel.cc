@@ -55,7 +55,7 @@ cDatarateChannel::~cDatarateChannel()
 void cDatarateChannel::finish()
 {
     if (txFinishTime != -1 && mayHaveListeners(channelBusySignal)) {
-        cTimestampedValue tmp(txFinishTime, 0L);
+        cTimestampedValue tmp(txFinishTime, (intval_t)0);
         emit(channelBusySignal, &tmp);
     }
 }
@@ -151,7 +151,7 @@ void cDatarateChannel::processMessage(cMessage *msg, simtime_t t, result_t& resu
     }
 
     if (txFinishTime != -1 && mayHaveListeners(channelBusySignal)) {
-        cTimestampedValue tmp(txFinishTime, 0L);
+        cTimestampedValue tmp(txFinishTime, (intval_t)0);
         emit(channelBusySignal, &tmp);
     }
 
@@ -187,7 +187,7 @@ void cDatarateChannel::processMessage(cMessage *msg, simtime_t t, result_t& resu
         emit(messageSentSignal, &tmp);
     }
     if (mayHaveListeners(channelBusySignal)) {
-        cTimestampedValue tmp(t, 1L);
+        cTimestampedValue tmp(t, (intval_t)1);
         emit(channelBusySignal, &tmp);
     }
 }
