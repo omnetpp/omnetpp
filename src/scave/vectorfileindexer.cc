@@ -132,7 +132,6 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
 
                 index.addVector(vector);
                 lastVectorDecl = index.getVectorAt(index.getNumberOfVectors() - 1);
-                currentVectorRef = nullptr;
             }
             else if (tokens[0][0] == 'v' && strcmp(tokens[0], "version") == 0) {
                 int version;
@@ -160,6 +159,9 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
                         if (currentBlock.size > currentVectorRef->blockSize)
                             currentVectorRef->blockSize = currentBlock.size;
                         currentVectorRef->addBlock(currentBlock);
+                    }
+                    else {
+                        Assert(currentBlock.getCount() == 0);
                     }
 
                     currentBlock = Block();
@@ -199,7 +201,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
 
         // finish last block
         if (currentBlock.getCount() > 0) {
-            assert(currentVectorRef != nullptr);
+            Assert(currentVectorRef != nullptr);
             currentBlock.size = (int64_t)(reader.getFileSize() - currentBlock.startOffset);
             if (currentBlock.size > currentVectorRef->blockSize)
                 currentVectorRef->blockSize = currentBlock.size;
