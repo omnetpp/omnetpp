@@ -130,8 +130,13 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
                 vector.columns = (numTokens < 5 || opp_isdigit(tokens[4][0]) ? "TV" : tokens[4]);
                 vector.blockSize = 0;
 
+                int currentVectorId = currentVectorRef != nullptr ? currentVectorRef->vectorId : -1; // remember id
+
                 index.addVector(vector);
                 lastVectorDecl = index.getVectorAt(index.getNumberOfVectors() - 1);
+
+                if (currentVectorRef != nullptr)
+                    currentVectorRef = index.getVectorById(currentVectorId); // refresh currentVectorRef, as index.addVector() might have invalidated it due to std::vector reallocation
             }
             else if (tokens[0][0] == 'v' && strcmp(tokens[0], "version") == 0) {
                 int version;
