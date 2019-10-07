@@ -356,7 +356,7 @@ class HistogramPlot {
         public double getCellValue(int series, int index) {
             IHistogramDataset dataset = canvas.getDataset();
             double value = dataset.getCellValue(series, index);
-            long count = dataset.getValueCount(series);
+            double sumWeights = dataset.getSumWeights(series);
             double cellMin = dataset.getCellLowerBound(series, index);
             if (Double.isInfinite(cellMin))
                 cellMin = dataset.getMinValue(series);
@@ -365,13 +365,13 @@ class HistogramPlot {
                 cellMax = dataset.getMaxValue(series);
             double cellWidth = cellMax > cellMin ? cellMax - cellMin : 0.0;
 
-            return cellWidth > 0.0 ? value / cellWidth / count : 0.0;
+            return cellWidth > 0.0 ? value / cellWidth / sumWeights : 0.0;
         }
     }
 
     private class CdfTransform implements ICellValueTransform {
         int prevSeries=-1, prevIndex=-1;
-        long valueCount;
+        double sumWeights;
         double prevValue = 0.0;
 
         public double getCellValue(int series, int index) {
@@ -379,7 +379,7 @@ class HistogramPlot {
             if (series != prevSeries) {
                 prevValue = 0.0;
                 prevIndex = -1;
-                valueCount = dataset.getValueCount(series);
+                sumWeights = dataset.getSumWeights(series);
             }
             double value = prevValue;
             if (index > prevIndex) {
@@ -399,7 +399,7 @@ class HistogramPlot {
             prevSeries = series;
             prevIndex = index;
             prevValue = value;
-            return valueCount > 0 ? value / valueCount : 0.0;
+            return sumWeights > 0 ? value / sumWeights : 0.0;
         }
     }
 }

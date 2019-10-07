@@ -18,6 +18,7 @@ public class PythonHistogramDataset implements IHistogramDataset {
         String key;
         String title;
         int count;
+        double sumWeights;
         double minValue;
         double maxValue;
         double[] binEdges; // N+1, >= 2
@@ -45,6 +46,7 @@ public class PythonHistogramDataset implements IHistogramDataset {
                 histogramData.title = (String) d.get("title");
 
                 histogramData.count = (Integer) d.get("count");
+                histogramData.sumWeights = (Double) d.get("sumweights");
 
                 histogramData.minValue = (Double) d.get("min");
                 histogramData.maxValue = (Double) d.get("max");
@@ -89,6 +91,11 @@ public class PythonHistogramDataset implements IHistogramDataset {
     @Override
     public long getValueCount(int series) {
         return histograms.get(series).count;
+    }
+
+    @Override
+    public double getSumWeights(int series) {
+        return histograms.get(series).sumWeights;
     }
 
     @Override

@@ -41,6 +41,15 @@ public interface IHistogramDataset extends IDataset {
     long getValueCount(int series);
 
     /**
+     * Returns the sum of weights of the collected values.
+     * For unweighted histograms, this is equal to getValueCount(series).
+     *
+     * @param series index of the histogram
+     * @return summed weights of data values collected
+     */
+    double getSumWeights(int series);
+
+    /**
      * Returns the least collected value.
      *
      * @param series index of the histogram
@@ -118,6 +127,10 @@ public interface IHistogramDataset extends IDataset {
         }
 
         public long getValueCount(int series) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        public double getSumWeights(int series) {
             throw new IndexOutOfBoundsException();
         }
 

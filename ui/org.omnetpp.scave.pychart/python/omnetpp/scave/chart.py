@@ -377,12 +377,13 @@ def plot_scatter(df, xdata, iso_column):
     return list(names)
 
 
-def plot_histogram(label, edges, values, count=-1, lowest=math.nan, highest=math.nan):
+def plot_histogram(label, edges, values, sumweights=-1.0, lowest=math.nan, highest=math.nan):
     Gateway.chart_plotter.plotHistograms(pl.dumps([
         {
             "title": label,
             "key": label,
-            "count": len(values) if count == -1 else count,
+            "count": len(values) if sumweights == -1.0 else int(sumweights),
+            "sumweights": float(len(values)) if sumweights == -1.0 else float(sumweights),
             "min": float(min(edges)) if lowest == math.nan else lowest,
             "max": float(max(edges)) if highest == math.nan else highest,
             "edges": _list_to_bytes(edges),
@@ -398,6 +399,7 @@ def _plot_histograms_DF(df):
             min = float(row[10])
             max = float(row[11])
             count = int(row[6])
+            sumweights = float(row[7])
 
             edges = _list_to_bytes(list(row[12]) + [float('inf')])
             values = _list_to_bytes(row[13])
@@ -407,6 +409,7 @@ def _plot_histograms_DF(df):
                     "title": row[2] + ":" + row[3],
                     "key": row[2] + ":" + row[3],
                     "count": count,
+                    "sumweights": sumweights,
                     "min": min,
                     "max": max,
                     "edges": edges,
@@ -424,6 +427,7 @@ def _plot_histograms_DF_scave(df):
             "title": make_legend_label(legend_cols, row),  # row[2] + ":" + row[3],
             "key": str(i), # "-".join([row.title, row.runID]),  # row[2] + ":" + row[3],
             "count": int(row.count),
+            "sumweights": float(row.sumweights),
             "min": float(row.min),
             "max": float(row.max),
             "edges": _list_to_bytes(list(row.binedges) + [float('inf')]),
