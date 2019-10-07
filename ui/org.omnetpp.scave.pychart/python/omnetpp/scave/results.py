@@ -21,11 +21,10 @@ def _get_array_from_shm(name_and_size):
     if not name_and_size:
         return None
 
-    system = platform.system()
-
     name, size = name_and_size.split(" ")
     size = int(size)
 
+    system = platform.system()
     if system in ['Linux', 'Darwin']:
         mem = posix_ipc.SharedMemory(name)
 
@@ -146,11 +145,13 @@ def get_parameters(filter_expression="", include_attrs=False, include_runattrs=F
 
 
 def _get_array_from_shm(name):
-    system = platform.system()
+    if not name:
+        return None
 
     name, size = name.split(" ")
     size = int(size)
 
+    system = platform.system()
     if system in ['Linux', 'Darwin']:
         mem = posix_ipc.SharedMemory(name)
 
