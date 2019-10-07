@@ -22,15 +22,17 @@ public class HistogramDataset implements IHistogramDataset {
         String key;
         boolean isIntegerType;
         long count;
+        double sumWeights;
         double minValue;
         double maxValue;
         double[] cellBreaks;
         double[] cellValues;
 
-        public HistogramData(String key, boolean isIntegerType, long count, double minValue, double maxValue, double[] cellBreaks, double[] cellValues) {
+        public HistogramData(String key, boolean isIntegerType, long count, double sumWeights, double minValue, double maxValue, double[] cellBreaks, double[] cellValues) {
             this.key = key;
             this.isIntegerType = isIntegerType;
             this.count = count;
+            this.sumWeights = sumWeights;
             this.minValue = minValue;
             this.maxValue = maxValue;
             this.cellBreaks = cellBreaks;
@@ -56,7 +58,7 @@ public class HistogramDataset implements IHistogramDataset {
             cellBreaks[size] = Double.POSITIVE_INFINITY;
             double[] cellValues = histogram.getHistogram().getBinValues().toArray();
             Statistics stat = histogram.getStatistics();
-            histograms[i] = new HistogramData(keys[i], isIntegerType, stat.getCount(), stat.getMin(), stat.getMax(), cellBreaks, cellValues);
+            histograms[i] = new HistogramData(keys[i], isIntegerType, stat.getCount(), stat.getSumWeights(), stat.getMin(), stat.getMax(), cellBreaks, cellValues);
         }
     }
 
@@ -79,6 +81,10 @@ public class HistogramDataset implements IHistogramDataset {
 
     public long getValueCount(int series) {
         return histograms[series].count;
+    }
+
+    public double getSumWeights(int series) {
+        return histograms[series].sumWeights;
     }
 
     public double getMinValue(int series) {
