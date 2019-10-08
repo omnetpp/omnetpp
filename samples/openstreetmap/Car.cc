@@ -29,7 +29,7 @@ void Driver::initialize(int stage)
         p2 = getNextTarget();
         t1 = simTime();
         t2 = t1 + computeTravelTime(p1, p2);
-        scheduleAt(t1, new cMessage("timer"));
+        scheduleAt(t2, new cMessage("timer"));
     }
 }
 
