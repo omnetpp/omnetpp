@@ -133,7 +133,7 @@ class FeatureTool:
             print("opp_featuretool: Warning: {}".format(msg), file=sys.stderr)
 
     def createParser(self):
-        self.parser = OppParser(description='''Turn project features on and off in an OMNeT++/OMNEST model. List the enablement
+        self.parser = OppParser(description='''Turn project features on and off in an OMNeT++ model. List the enablement
 of the features. Show the command line options needed to generarate a makefile
 when using the opp_makemake command. The tool must be executed in the project
 root directory where the following files are present:
@@ -198,9 +198,9 @@ root directory where the following files are present:
         options_parser.add_argument('-s', '--srcpath',
                     help='Selects the source folder to print makemake options for. (The default is the first value in the cppSourceRoots attribute of the <features> tag in the FEATUREFILE.)',
                     )
-        options_parser.add_argument('-c', '--compiler-options', action='store_true', help='show compiler options (i.e. -D flags)')
-        options_parser.add_argument('-l', '--linker-options', action='store_true', help='show linker options (i.e. -l and -L flags)')
-        options_parser.add_argument('-f', '--folder-options', action='store_true', help='show excluded folders options (i.e. -X flags)')
+        options_parser.add_argument('-c', '--compiler-options', action='store_true', help='Show compiler options (i.e. -D flags)')
+        options_parser.add_argument('-l', '--linker-options', action='store_true', help='Show linker options (i.e. -l and -L flags)')
+        options_parser.add_argument('-f', '--folder-options', action='store_true', help='Show excluded folders options (i.e. -X flags)')
 
         # defines command:
         defines_parser = subparsers.add_parser('defines', help='Print the compiler macros that can be used as a header file (i.e. the -DWITH_FEATURE options from the project features)')
@@ -212,8 +212,8 @@ root directory where the following files are present:
                     )
 
         # common arguments:
-        self.parser.add_argument('-v', '--verbose', action='count', default=1, help='Verbose mode')
-        self.parser.add_argument('-q', '--quiet', action='store_const', const=0, dest='verbose', help='Quiet mode')
+        self.parser.add_argument('-v', '--verbose', action='store_true', default=False, help='Verbose mode')
+        self.parser.add_argument('-q', '--quiet', action='store_true', default=False, dest='dummy', help='Ignored (kept for compatibility)')
 
     ############################
     def doResetCommand(self):
@@ -562,7 +562,7 @@ root directory where the following files are present:
             self.printIfVerbose(1, "Enabling feature(s):  " + ", ".join(featureOnList))
             if len(requirements):
                 if self.args.with_dependencies:
-                    self.printIfVerbose(1, "Required features that are enabled, too:  " + ", ".join(sorted(requirements)))
+                    self.printIfVerbose(1, "Required features that will be enabled as well:  " + ", ".join(sorted(requirements)))
                 else:
                     print("Required features:  " + ", ".join(sorted(requirements)))
                     update = queryYesNo("Enable these features?", default="yes")
@@ -606,15 +606,15 @@ root directory where the following files are present:
             self.updateDependencies(featureOffList, dependencyList)
             update = True
             if len(featureOffList) == 0:
-                self.printIfVerbose(1, "All the selected features are already disabled.")
+                self.printIfVerbose(1, "The requested features are already disabled.")
                 sys.exit(0)
             self.printIfVerbose(1, "Disabling feature(s):  " + ", ".join(featureOffList))
             if len(dependencyList):
                 if self.args.with_dependencies:
-                    self.printIfVerbose(1, "Dependent features that are disabled, too:  " + ", ".join(sorted(dependencyList)))
+                    self.printIfVerbose(1, "Also disabling the following dependent features:  " + ", ".join(sorted(dependencyList)))
                 else:
                     print("Dependent features:  " + ", ".join(sorted(dependencyList)))
-                    update = queryYesNo("Disable these features, too?", default="yes")
+                    update = queryYesNo("Disable them as well?", default="yes")
             if update:
                 featureOffList.update(dependencyList)
                 for key in featureOffList:
