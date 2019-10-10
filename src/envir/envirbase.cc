@@ -1054,7 +1054,8 @@ void EnvirBase::simulationEvent(cEvent *event)
 {
     if (logFormatUsesEventName)
         currentEventName = event->getFullName();
-    currentEventClassName = event->getClassName();
+    if (logFormatUsesEventClassName)
+        currentEventClassName = event->getClassName();
     currentModuleId = event->isMessage() ? (static_cast<cMessage *>(event))->getArrivalModule()->getId() : -1;
     if (recordEventlog)
         eventlogManager->simulationEvent(event);
@@ -1509,6 +1510,7 @@ void EnvirBase::setLogFormat(const char *logFormat)
 {
     logFormatter.setFormat(logFormat);
     logFormatUsesEventName = logFormatter.usesEventName();
+    logFormatUsesEventClassName = logFormatter.usesEventClassName();
 }
 
 //-------------------------------------------------------------

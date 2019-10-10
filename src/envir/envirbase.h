@@ -149,6 +149,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     LogFormatter logFormatter;
     bool logFormatUsesEventName;
     std::string currentEventName;
+    bool logFormatUsesEventClassName;
     const char *currentEventClassName;
     int currentModuleId;
 

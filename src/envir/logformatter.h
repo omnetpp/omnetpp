@@ -187,8 +187,9 @@ class ENVIR_API LogFormatter
     LogFormatter(const char *format);
 
     void setFormat(const char *format) { parseFormat(format); }
-    bool isBlank() { return isBlank_; }
-    bool usesEventName();
+    bool isBlank() const { return isBlank_; }
+    bool usesEventName() const {return containsDirective(EVENT_OBJECT) || containsDirective(EVENT_OBJECT_NAME);}
+    bool usesEventClassName() const {return containsDirective(EVENT_OBJECT) || containsDirective(EVENT_OBJECT_CLASSNAME);}
     std::string formatPrefix(cLogEntry *entry);
     void resetAdaptiveTabs();
 
@@ -196,6 +197,7 @@ class ENVIR_API LogFormatter
     void parseFormat(const char *format);
     FormatDirective getDirective(char ch);
     void addPart(FormatDirective directive, char *textBegin, char *textEnd, bool conditional);
+    bool containsDirective(FormatDirective directive) const;
 };
 
 } // namespace envir

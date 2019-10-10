@@ -113,10 +113,10 @@ void LogFormatter::addPart(FormatDirective directive, char *textBegin, char *tex
     formatParts.push_back(part);
 }
 
-bool LogFormatter::usesEventName()
+bool LogFormatter::containsDirective(FormatDirective directive) const
 {
-    for (auto & formatPart : formatParts)
-        if (formatPart.directive == EVENT_OBJECT_NAME || formatPart.directive == EVENT_OBJECT)
+    for (const auto & formatPart : formatParts)
+        if (formatPart.directive == directive)
             return true;
     return false;
 }
