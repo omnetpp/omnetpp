@@ -61,13 +61,37 @@ StringMap ResultFileUtils::getIterationVariables()
     return itervars;
 }
 
+static std::string removeOptionalQuotes(const char *key, const char *value)
+{
+    if (value[0] != '"')
+        return value;
+    const char *lastDot = strrchr(key, '.');
+    const char *suffix = lastDot == nullptr ? key : lastDot+1;
+    // Note: suffix may be a parameter name (so, not a config option), may contain wildcard, etc.
+    // In all such cases, we just won't find it in configOptions and value unquoting will be skipped.
+    cConfigOption *option = dynamic_cast<cConfigOption*>(configOptions.getInstance()->lookup(suffix));
+    if (option == nullptr)
+        return value;
+    bool optionallyQuoted = option->getType() == cConfigOption::CFG_STRING || option->getType() == cConfigOption::CFG_FILENAME || option->getType() == cConfigOption::CFG_FILENAMES;
+    if (!optionallyQuoted)
+        return value;
+    const char *endp;
+    std::string unquotedValue = opp_parsequotedstr(value, endp);
+    if (*endp)
+        return value; // cannot be parsed as a single quoted string
+    return unquotedValue;
+}
+
 OrderedKeyValueList ResultFileUtils::getConfigEntries()
 {
     cConfigurationEx *cfg = getEnvir()->getConfigEx();
     OrderedKeyValueList result;
     std::vector<const char *> keysValues = cfg->getKeyValuePairs();
-    for (int i = 0; i < (int)keysValues.size(); i += 2)
-        result.push_back(std::make_pair(keysValues[i], keysValues[i+1]));
+    for (int i = 0; i < (int)keysValues.size(); i += 2) {
+        const char *key = keysValues[i];
+        const char *value = keysValues[i+1];
+        result.push_back(std::make_pair(key, removeOptionalQuotes(key, value)));
+    }
     return result;
 }
 
