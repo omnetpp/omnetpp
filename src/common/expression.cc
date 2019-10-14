@@ -18,6 +18,7 @@
 #include <cmath>
 #include <limits>
 #include <stack>
+#include <typeinfo>
 #include <cinttypes>
 #include "commonutil.h"
 #include "stlutil.h"
