@@ -8,7 +8,7 @@ Lists features
 %prerun-command: rm -f .oppfeaturestate
 %prerun-command: rm -f .nedexclusions
 
-%testprog: opp_featuretool isenabled F_A
+%testprog: opp_featuretool -v isenabled F_A
 
 %postrun-command: ../../lib/fileExistingCheck
 

@@ -20,8 +20,5 @@ Lists features
 '.nedfolders' found.
 '.nedexclusions' not found.
 
-%contains: test.err
+%contains: test.out
 Disabled feature(s): F_C.
-
-%not-contains-regex: stdout
-[a-zA-Z0-9]

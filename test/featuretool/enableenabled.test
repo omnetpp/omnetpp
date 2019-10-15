@@ -22,7 +22,7 @@ feature_c_folder
 feature_d_folder
 %prerun-command: cp .nedexclusions_in .nedexclusions
 
-%testprog: opp_featuretool enable --with-dependencies F_E
+%testprog: opp_featuretool -v enable --with-dependencies F_E
 
 %postrun-command: ../../lib/fileExistingCheck
 

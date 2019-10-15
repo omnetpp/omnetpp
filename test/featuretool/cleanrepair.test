@@ -6,7 +6,7 @@ Repair .oppfeaturestate and .nedexclusions files
 %prerun-command: cp ../../.nedfolders ../../.oppfeatures .
 %prerun-command: rm -f .oppfeaturestate .nedexclusions
 
-%testprog: opp_featuretool repair
+%testprog: opp_featuretool -v repair
 
 %postrun-command: ../../lib/fileExistingCheck
 

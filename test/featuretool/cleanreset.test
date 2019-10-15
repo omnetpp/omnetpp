@@ -6,7 +6,7 @@ Reset .oppfeaturestate and .nedexclusions to default
 %prerun-command: cp ../../.nedfolders ../../.oppfeatures .
 %prerun-command: rm -f .oppfeaturestate .nedexclusions
 
-%testprog: opp_featuretool reset
+%testprog: opp_featuretool -v reset
 
 %postrun-command: ../../lib/fileExistingCheck
 

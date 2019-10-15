@@ -17,13 +17,11 @@ Lists features
 '.nedexclusions' not found.
 
 %contains: stdout
-List of all features:
     + F_A
     - F_B
     - F_C
     - F_D
     + F_E
-5 feature(s) found.
 
 %not-contains-regex: test.err
 [a-zA-Z0-9]

@@ -8,7 +8,7 @@ Disable feature with its dependencies
 %prerun-command: rm -f .oppfeaturestate
 %prerun-command: rm -f .nedexclusions
 
-%testprog: opp_featuretool disable --with-dependencies F_A
+%testprog: opp_featuretool -v disable --with-dependencies F_A
 
 %postrun-command: ../../lib/fileExistingCheck
 
@@ -20,7 +20,7 @@ Disable feature with its dependencies
 
 %contains: stdout
 Disabling feature(s):  F_A
-Dependent features that are disabled, too:  F_E
+Also disabling the following dependent features:  F_E
 opp_featuretool: .oppfeaturestate file updated.
 opp_featuretool: .nedexclusions file updated.
 

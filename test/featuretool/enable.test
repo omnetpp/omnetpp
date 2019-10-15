@@ -22,7 +22,7 @@ feature_c_folder
 feature_d_folder
 %prerun-command: cp .nedexclusions_in .nedexclusions
 
-%testprog: opp_featuretool enable --with-dependencies F_D
+%testprog: opp_featuretool -v enable --with-dependencies F_D
 
 %postrun-command: ../../lib/fileExistingCheck
 
@@ -34,7 +34,7 @@ feature_d_folder
 
 %contains: stdout
 Enabling feature(s):  F_D
-Required features that are enabled, too:  F_B, F_C
+Required features that will be enabled as well:  F_B, F_C
 opp_featuretool: .oppfeaturestate file updated.
 opp_featuretool: .nedexclusions file updated.
 

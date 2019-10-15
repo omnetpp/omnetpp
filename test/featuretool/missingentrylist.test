@@ -33,13 +33,11 @@ feature_d_folder
 '.nedexclusions' found.
 
 %contains: stdout
-List of all features:
     + F_A
     - F_B
     - F_C
     - F_D
     + F_E
-5 feature(s) found.
 
 %contains: test.err
 opp_featuretool: Warning: feature 'F_C' is missing from the .oppfeaturestate file, using the default state.
