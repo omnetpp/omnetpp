@@ -769,18 +769,17 @@ root directory where the following files are present:
     def doIsEnabledCommand(self):
         self.doValidateCommand()
         # ISENABLED command #
-        featureOnList = set()
+        featureOffList = set()
         featureUnknownList = set()
         for key in self.args.features:
             if not key in self.features:
                 featureUnknownList.add(key)
             elif not self.featurestate[key].enabled:
-                featureOnList.add(key)
+                featureOffList.add(key)
         if len(featureUnknownList) > 0:
             fail("Unknown feature(s): {}.".format((", ".join(sorted(featureUnknownList)))))
-        if len(featureOnList) > 0:
-            if self.args.verbose >= 2:
-                print("Disabled feature(s): {}.".format((", ".join(sorted(featureOnList)))), file=sys.stderr)
+        if len(featureOffList) > 0:
+            self.printIfVerbose(1, "Disabled feature(s): {}.".format((", ".join(sorted(featureOffList)))))
             sys.exit(1)
         self.printIfVerbose(1, "Feature(s) {} are enabled.".format((", ".join(self.args.features))))
         sys.exit(0)
