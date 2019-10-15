@@ -58,15 +58,15 @@ config output-scalar-file-append true
 config output-scalar-file results/General.sca
 config network Test
 config cmdenv-express-mode false
-config cmdenv-log-prefix "\"\""
+config cmdenv-log-prefix ""
 
-par Test.node typename "Node"
-par Test.node hello "Hello"
+par Test.node typename "\"Node\""
+par Test.node hello "\"Hello\""
 par Test.node startTime 0.1s
 attr unit s
 scalar Test.node foo:last 17
 attr source foo
-par Test typename "Test"
+par Test typename "\"Test\""
 
 run General-1-xxx
 attr configname General
@@ -93,15 +93,15 @@ config output-scalar-file-append true
 config output-scalar-file results/General.sca
 config network Test
 config cmdenv-express-mode false
-config cmdenv-log-prefix "\"\""
+config cmdenv-log-prefix ""
 
-par Test.node typename "Node"
-par Test.node hello "Hello"
+par Test.node typename "\"Node\""
+par Test.node hello "\"Hello\""
 par Test.node startTime 0.1s
 attr unit s
 scalar Test.node foo:last 19
 attr source foo
-par Test typename "Test"
+par Test typename "\"Test\""
 
 run General-2-xxx
 attr configname General
@@ -128,15 +128,15 @@ config output-scalar-file-append true
 config output-scalar-file results/General.sca
 config network Test
 config cmdenv-express-mode false
-config cmdenv-log-prefix "\"\""
+config cmdenv-log-prefix ""
 
-par Test.node typename "Node"
-par Test.node hello "Hello"
+par Test.node typename "\"Node\""
+par Test.node hello "\"Hello\""
 par Test.node startTime 0.1s
 attr unit s
 scalar Test.node foo:last 18
 attr source foo
-par Test typename "Test"
+par Test typename "\"Test\""
 
 run General-3-xxx
 attr configname General
@@ -163,15 +163,15 @@ config output-scalar-file-append true
 config output-scalar-file results/General.sca
 config network Test
 config cmdenv-express-mode false
-config cmdenv-log-prefix "\"\""
+config cmdenv-log-prefix ""
 
-par Test.node typename "Node"
-par Test.node hello "Hello"
+par Test.node typename "\"Node\""
+par Test.node hello "\"Hello\""
 par Test.node startTime 0.1s
 attr unit s
 scalar Test.node foo:last 18
 attr source foo
-par Test typename "Test"
+par Test typename "\"Test\""
 
 run General-4-xxx
 attr configname General
@@ -198,15 +198,15 @@ config output-scalar-file-append true
 config output-scalar-file results/General.sca
 config network Test
 config cmdenv-express-mode false
-config cmdenv-log-prefix "\"\""
+config cmdenv-log-prefix ""
 
-par Test.node typename "Node"
-par Test.node hello "Hello"
+par Test.node typename "\"Node\""
+par Test.node hello "\"Hello\""
 par Test.node startTime 0.1s
 attr unit s
 scalar Test.node foo:last 19
 attr source foo
-par Test typename "Test"
+par Test typename "\"Test\""
 
 run General-5-xxx
 attr configname General
@@ -233,15 +233,15 @@ config output-scalar-file-append true
 config output-scalar-file results/General.sca
 config network Test
 config cmdenv-express-mode false
-config cmdenv-log-prefix "\"\""
+config cmdenv-log-prefix ""
 
-par Test.node typename "Node"
-par Test.node hello "Hello"
+par Test.node typename "\"Node\""
+par Test.node hello "\"Hello\""
 par Test.node startTime 0.1s
 attr unit s
 scalar Test.node foo:last 18
 attr source foo
-par Test typename "Test"
+par Test typename "\"Test\""
 
 run General-6-xxx
 attr configname General
@@ -268,15 +268,15 @@ config output-scalar-file-append true
 config output-scalar-file results/General.sca
 config network Test
 config cmdenv-express-mode false
-config cmdenv-log-prefix "\"\""
+config cmdenv-log-prefix ""
 
-par Test.node typename "Node"
-par Test.node hello "Hello"
+par Test.node typename "\"Node\""
+par Test.node hello "\"Hello\""
 par Test.node startTime 0.1s
 attr unit s
 scalar Test.node foo:last 18
 attr source foo
-par Test typename "Test"
+par Test typename "\"Test\""
 
 run General-7-xxx
 attr configname General
@@ -303,13 +303,13 @@ config output-scalar-file-append true
 config output-scalar-file results/General.sca
 config network Test
 config cmdenv-express-mode false
-config cmdenv-log-prefix "\"\""
+config cmdenv-log-prefix ""
 
-par Test.node typename "Node"
-par Test.node hello "Hello"
+par Test.node typename "\"Node\""
+par Test.node hello "\"Hello\""
 par Test.node startTime 0.1s
 attr unit s
 scalar Test.node foo:last 21
 attr source foo
-par Test typename "Test"
+par Test typename "\"Test\""
 

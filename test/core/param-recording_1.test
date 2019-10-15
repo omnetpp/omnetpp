@@ -22,11 +22,12 @@ output-scalar-file = test.sca
 **.param-recording = true
 
 %contains: test.sca
-par Test typename "Test"
+par Test typename "\"Test\""
 par Test b false
 par Test i 4
 par Test d 123.45
 par Test t 3600s
 attr unit s
 par Test x 1+exponential(10)
-par Test hello "Hello world"
+par Test hello "\"Hello world\""
+
