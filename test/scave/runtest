@@ -1,0 +1,10 @@
+#! /bin/sh
+
+rm -rf results
+
+opp_makemake -f
+make -j6 MODE=debug
+
+./scave_dbg -u Cmdenv
+
+opp_charttool -e results_api_test.anf
