@@ -39,14 +39,14 @@ echo ===========================================================================
 echo SCAVETOOL SUMMARY REPORT OF EACH RESULT FILE:
 for f in results-*/*.vec results-*/*.sca; do
     printf '%s\t' $f
-    scavetool -p --no-indexing $f || ERROR
+    opp_scavetool -p --no-indexing $f || ERROR
 done
 echo
 
 echo ================================================================================================================
 echo BRINGING SQLite and OMNeT++ FILES TO COMMON FORMAT, VIA CSV EXPORT:
 for f in results-*/*.vec results-*/*.sca; do
-    withecho scavetool x $f -o $f.csv -x precision=12 || ERROR
+    withecho opp_scavetool x $f -o $f.csv -x precision=12 || ERROR
     # erase naturally differring parts, such as runid's variable part, processid, resultdir
     sed -E -e 's/^([A-Za-z0-9_]+-[0-9]+)-[^,]+/\1-xxxx/' \
            -e 's/results-(sqlite|omnetpp)/results-xxx/' \
