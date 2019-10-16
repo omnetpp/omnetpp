@@ -124,7 +124,7 @@
 /samples/routing/,                   ./routing -f omnetpp.ini -c Net10 -r 0,                  100s,         b3f8-d998/tplx,PASS,
 /samples/routing/,                   ./routing -f omnetpp.ini -c RandomGraph -r 0,            100s,         c269-5faa/tplx,PASS,
 /samples/routing/,                   ./routing -f omnetpp.ini -c Mesh -r 0,                   100s,         c193-28a7/tplx,PASS,
-/samples/routing/,                   ./routing -f omnetpp.ini -c RandomMesh -r 0,             100s,         3ffa-c408/tplx,PASS,
+/samples/routing/,                   ./routing -f omnetpp.ini -c RandomMesh -r 0,             100s,         724b-1132/tplx,PASS,
 /samples/routing/,                   ./routing -f omnetpp.ini -c NetBuilder -r 0,             100s,         1b25-73f9/tplx,PASS,
 # /samples/routing/parsim/,            ./routing -f omnetpp.ini -c Net60-parsim -r 0,          5000s,         0000-0000,PASS,           # Parallel simulation
 # /samples/routing/parsim/,            ./routing -f omnetpp.ini -c Net10-parsim -r 0,          5000s,         0000-0000,PASS,           # Parallel simulation

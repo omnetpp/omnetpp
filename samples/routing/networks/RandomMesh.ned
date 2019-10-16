@@ -33,8 +33,8 @@ network RandomMesh
         }
     connections allowunconnected:
         for i=0..height-1, for j=0..width-1 {
-            node[i*width+j].port[0] <--> C <--> node[(i+1)*width+j].port[1] if uniform(0,1)<0.70 && i!=height-1;
-            node[i*width+j].port[2] <--> C <--> node[(i*width+j)+1].port[3] if uniform(0,1)<0.70 && j!=width-1;
+            node[i*width+j].port[0] <--> C <--> node[(i+1)*width+j].port[1] if i!=height-1 && uniform(0,1)<0.70;
+            node[i*width+j].port[2] <--> C <--> node[(i*width+j)+1].port[3] if j!=width-1 && uniform(0,1)<0.70;
         }
 }
 
