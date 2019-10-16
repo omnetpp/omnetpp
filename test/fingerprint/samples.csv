@@ -152,7 +152,7 @@
 /samples/tictoc/,                    ./tictoc -f omnetpp.ini -c Tictoc15 -r 0,              5000s,         e596-6f3b/tplx,PASS,
 /samples/tictoc/,                    ./tictoc -f omnetpp.ini -c Tictoc16 -r 0,              5000s,         1669-90c4/tplx,PASS,
 
-/samples/openstreetmap/,             ./openstreetmap -f omnetpp.ini -c General,           100000s,         44b5-91ea/tplx,PASS,
+/samples/openstreetmap/,             ./openstreetmap -f omnetpp.ini -c General,           100000s,         ec78-619d/tplx,PASS,
 
 /samples/petrinets/,                 ./petrinets -f omnetpp.ini -c Counter -r 0,          100000s,         c710-cd02/tplx,PASS,
 /samples/petrinets/,                 ./petrinets -f omnetpp.ini -c VendingMachine -r 0,        1s,         078e-230e/tplx,PASS,
