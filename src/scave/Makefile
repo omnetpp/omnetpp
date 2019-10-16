@@ -42,7 +42,7 @@ OBJS= $O/idlist.o \
       $O/indexfilereader.o  $O/indexfilewriter.o \
       $O/scaveutils.o $O/scaveexception.o $O/enumtype.o \
       $O/xyarray.o $O/fields.o $O/vectorutils.o $O/memoryutils.o $O/sqliteresultfileutils.o \
-      $O/exporter.o $O/exportutils.o \
+      $O/sqlitevectordatareader.o $O/exporter.o $O/exportutils.o \
       $O/csvrecexporter.o $O/csvspreadexporter.o $O/jsonexporter.o \
       $O/omnetppscalarfileexporter.o $O/sqlitescalarfileexporter.o \
       $O/omnetppvectorfileexporter.o $O/sqlitevectorfileexporter.o
@@ -117,4 +117,3 @@ clean:
 	$(Q)rm -rf $O $(GENERATED_SOURCES) $(TARGET_LIB_FILES) $(TARGET_EXE_FILES)
 
 -include $(OBJS:%=%.d)
-

@@ -26,43 +26,22 @@
 #include <cstdarg>
 #include "common/filereader.h"
 #include "scavedefs.h"
+#include "ivectordatareader.h"
 #include "resultfilemanager.h"
 #include "vectorfileindex.h"
 
 namespace omnetpp {
 namespace scave {
 
-struct VectorDatum {
-    long serial;
-    eventnumber_t eventNumber;
-    simultime_t simtime;
-    double value;
-
-    VectorDatum()
-        : eventNumber(-1) {}
-    VectorDatum(long serial, eventnumber_t eventNumber, simultime_t simtime, double value)
-        : serial(serial), eventNumber(eventNumber), simtime(simtime), value(value) {}
-};
-
-typedef std::vector<VectorDatum> Entries;
 
 /**
  * Vector file reader with random access.
  * Each instance reads one vector from a vector file.
  */
-class SCAVE_API IndexedVectorFileReader
+class SCAVE_API IndexedVectorFileReader : public IVectorDataReader
 {
     using VectorInfo = VectorFileIndex::VectorInfo;
     using Block = VectorFileIndex::Block;
-
-    public:
-        class SCAVE_API Adapter {
-            public:
-                virtual void process(int vectorId, const std::vector<VectorDatum>& data) = 0;
-                virtual ~Adapter() {};
-        };
-
-        using AdapterLambdaType = std::function<void(int /* vectorId */, const std::vector<VectorDatum>& /* data */)>;
 
     private:
 
@@ -84,34 +63,15 @@ class SCAVE_API IndexedVectorFileReader
         explicit IndexedVectorFileReader(const char* filename, bool includeEventNumbers, AdapterLambdaType adapter);
         ~IndexedVectorFileReader();
 
-        /**
-         * Returns the number of entries in the vector.
-         */
-        int getNumberOfEntries(int vectorId) const { return index->getVectorById(vectorId)->getCount(); };
-        /**
-         * Returns the entry with the specified serial,
-         * or nullptr if the serial is out of range.
-         * The pointer will be valid until the next call to getEntryBySerial().
-         */
-        VectorDatum *getEntryBySerial(int vectorId, long serial);
+        int getNumberOfEntries(int vectorId) override { return index->getVectorById(vectorId)->getCount(); };
 
-        /**
-         * Returns the first entry whose simtime is >= than the given simtime (when after is true),
-         * or the last entry whose simtime is <= than the given simtime (when after is false).
-         * Returns nullptr when no entry after/before.
-         */
-        VectorDatum *getEntryBySimtime(int vectorId, simultime_t simtime, bool after);
+        VectorDatum *getEntryBySerial(int vectorId, int64_t serial) override;
+        VectorDatum *getEntryBySimtime(int vectorId, simultime_t simtime, bool after) override;
+        VectorDatum *getEntryByEventnum(int vectorId, eventnumber_t eventNum, bool after) override;
 
-        /**
-         * Returns the first entry whose simtime is >= than the given simtime (when after is true),
-         * or the last entry whose simtime is <= than the given simtime (when after is false).
-         * Returns nullptrs when no entry after/before.
-         */
-        VectorDatum *getEntryByEventnum(int vectorId, eventnumber_t eventNum, bool after);
-
-        void collectEntries(const std::set<int>& vectorIds);
-        void collectEntriesInSimtimeInterval(const std::set<int>& vectorIds, simultime_t startTime, simultime_t endTime);
-        void collectEntriesInEventnumInterval(const std::set<int>& vectorIds, eventnumber_t startEventNum, eventnumber_t endEventNum);
+        void collectEntries(const std::set<int>& vectorIds) override;
+        void collectEntriesInSimtimeInterval(const std::set<int>& vectorIds, simultime_t startTime, simultime_t endTime) override;
+        void collectEntriesInEventnumInterval(const std::set<int>& vectorIds, eventnumber_t startEventNum, eventnumber_t endEventNum) override;
 };
 
 
@@ -119,5 +79,3 @@ class SCAVE_API IndexedVectorFileReader
 }  // namespace omnetpp
 
 #endif
-
-

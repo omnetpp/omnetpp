@@ -443,7 +443,7 @@ public class VirtualTable<T>
     }
 
     public IVirtualTableContentProvider<T> getContentProvider() {
-        return contentProvider ;
+        return contentProvider;
     }
 
     public void setContentProvider(IVirtualTableContentProvider<T> contentProvider) {
@@ -1040,7 +1040,7 @@ public class VirtualTable<T>
         int rowNumber = (int)contentProvider.getDistanceToElement(getTopVisibleElement(), visibleElement, visibleElementCount);
 
         if (rowNumber == visibleElementCount)
-            throw new IllegalArgumentException("Element is not visisble: " + visibleElement);
+            throw new IllegalArgumentException("Element is not visible: " + visibleElement);
 
         int rowHeight = getRowHeight();
         int x = getSize().x / 2;

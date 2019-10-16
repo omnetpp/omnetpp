@@ -113,7 +113,7 @@ Entries IndexedVectorFileReader::loadBlock(const Block& block, std::function<boo
     return result;
 }
 
-VectorDatum *IndexedVectorFileReader::getEntryBySerial(int vectorId, long serial)
+VectorDatum *IndexedVectorFileReader::getEntryBySerial(int vectorId, int64_t serial)
 {
     VectorInfo *vector = index->getVectorById(vectorId);
     if (!vector)

@@ -21,7 +21,9 @@
 #include "scave/memoryutils.h"
 #include "scave/vectorfileindex.h"
 #include "scave/indexfileutils.h"
+#include "scave/ivectordatareader.h"
 #include "scave/indexedvectorfilereader.h"
+#include "scave/sqlitevectordatareader.h"
 #include "scave/vectorfileindexer.h"
 #include "scave/scaveexception.h"
 #include "scave/exporter.h"
@@ -482,7 +484,7 @@ CHECK_RESULTFILE_FORMAT_EXCEPTION(VectorFileIndexer::generateIndex)
 
 %include "scave/vectorfileindexer.h"
 
-/* ------------- indexedvectorfilereader.h  ----------------- */
+/* ------------- ivectordatareader.h  ----------------- */
 %typemap(javainterfaces) omnetpp::scave::VectorDatum "Comparable<VectorDatum>"
 
 %typemap(javacode) omnetpp::scave::VectorDatum %{
@@ -505,7 +507,15 @@ namespace omnetpp { namespace scave {
 
 } } // namespaces
 
+%include "scave/ivectordatareader.h"
+
+/* ------------- indexedvectorfilereader.h  ----------------- */
+
 %include "scave/indexedvectorfilereader.h"
+
+/* ------------- sqlitevectordatareader.h  ----------------- */
+
+%include "scave/sqlitevectordatareader.h"
 
 /* ------------------ fields.h --------------------- */
 namespace omnetpp { namespace scave {

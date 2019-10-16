@@ -12,9 +12,12 @@ import org.eclipse.jface.viewers.Viewer;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.virtualtable.IVirtualTableContentProvider;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.engine.IVectorDataReader;
+import org.omnetpp.scave.engine.IVectorDataReader.Adapter;
 import org.omnetpp.scave.engine.IndexedVectorFileReader;
-import org.omnetpp.scave.engine.IndexedVectorFileReader.Adapter;
 import org.omnetpp.scave.engine.ResultItem;
+import org.omnetpp.scave.engine.SqliteResultFileUtils;
+import org.omnetpp.scave.engine.SqliteVectorDataReader;
 import org.omnetpp.scave.engine.VectorDatum;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.model2.ResultItemRef;
@@ -27,7 +30,7 @@ import org.omnetpp.scave.model2.ResultItemRef;
  */
 public class VectorResultContentProvider implements IVirtualTableContentProvider<VectorDatum> {
 
-    private IndexedVectorFileReader reader;
+    private IVectorDataReader reader;
     int vectorId;
 
     public VectorDatum getApproximateElementAt(double percentage) {
@@ -145,7 +148,10 @@ public class VectorResultContentProvider implements IVirtualTableContentProvider
                 String filename = vector.getFileRun().getFile().getFileSystemFilePath();
 
                 try {
-                    reader = new IndexedVectorFileReader(filename, true, (Adapter)null);
+                    if (SqliteResultFileUtils.isSqliteFile(filename))
+                        reader = new SqliteVectorDataReader(filename, true, (Adapter)null);
+                    else
+                        reader = new IndexedVectorFileReader(filename, true, (Adapter)null);
                 }
                 catch (Exception e) {
                     ScavePlugin.logError("Cannot open index file: "+filename, e);

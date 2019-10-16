@@ -27,6 +27,8 @@
 #include "xyarray.h"
 #include "resultfilemanager.h"
 #include "indexedvectorfilereader.h"
+#include "sqliteresultfileutils.h"
+#include "sqlitevectordatareader.h"
 
 using namespace std;
 
@@ -92,15 +94,21 @@ vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList
                 throw opp_runtime_error("Vector loading interrupted");
         };
 
-        IndexedVectorFileReader reader(resultFile->getFileSystemFilePath().c_str(), includeEventNumbers, adapter);
+        IVectorDataReader *reader;
+        if (SqliteResultFileUtils::isSqliteFile(resultFile->getFileSystemFilePath().c_str()))
+            reader = new SqliteVectorDataReader(resultFile->getFileSystemFilePath().c_str(), includeEventNumbers, adapter);
+        else
+            reader = new IndexedVectorFileReader(resultFile->getFileSystemFilePath().c_str(), includeEventNumbers, adapter);
 
         try {
             if (simTimeStart == -INFINITY && simTimeEnd == INFINITY)
-                reader.collectEntries(vectorIdsInFile);
+                reader->collectEntries(vectorIdsInFile);
             else
-                reader.collectEntriesInSimtimeInterval(vectorIdsInFile, simTimeStart, simTimeEnd);
+                reader->collectEntriesInSimtimeInterval(vectorIdsInFile, simTimeStart, simTimeEnd);
+            delete reader;
         }
         catch (std::exception &e) {
+            delete reader;
 
             for (XYArray *a : result)
                 delete a;
@@ -121,5 +129,3 @@ XYArrayVector *readVectorsIntoArrays2(ResultFileManager *manager, const IDList& 
 
 } // namespace scave
 }  // namespace omnetpp
-
-
