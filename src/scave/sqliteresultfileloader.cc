@@ -440,6 +440,7 @@ ResultFile *SqliteResultFileLoader::loadFile(const char *fileName, const char *f
         loadRunConfigEntries();
         loadRunItervars();
         loadScalars();
+        loadParameters();
         loadVectors();
         loadHistograms();
     }
