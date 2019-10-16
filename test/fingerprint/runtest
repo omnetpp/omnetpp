@@ -1,2 +1,2 @@
 #!/bin/sh
-opp_fingerprinttest -d --directory ../.. "$@"
+opp_fingerprinttest --directory ../.. "$@"
