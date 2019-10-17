@@ -199,7 +199,7 @@ void SqliteOutputScalarManager::recordComponentType(cComponent *component)
     bool enabled = getEnvir()->getConfig()->getAsBool((componentFullPath+"."+name).c_str(), CFGID_PARAM_RECORDING);
     if (enabled) {
         const char *nedType = component->getComponentType()->getFullName();
-        writer.recordParameter(componentFullPath, name, opp_quotestr(nedType), StringMap());
+        writer.recordParameter(componentFullPath, name, nedType, StringMap());
     }
 }
 
@@ -210,4 +210,3 @@ void SqliteOutputScalarManager::flush()
 
 }  // namespace envir
 }  // namespace omnetpp
-
