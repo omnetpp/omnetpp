@@ -46,12 +46,13 @@ echo
 echo ================================================================================================================
 echo BRINGING SQLite and OMNeT++ FILES TO COMMON FORMAT, VIA CSV EXPORT:
 for f in results-*/*.vec results-*/*.sca; do
-    withecho opp_scavetool x $f -o $f.csv -x precision=12 || ERROR
+    withecho opp_scavetool x $f -o $f.csv -x precision=12 --start-time 10s --end-time 50s || ERROR
     # erase naturally differring parts, such as runid's variable part, processid, resultdir
     sed -E -e 's/^([A-Za-z0-9_]+-[0-9]+)-[^,]+/\1-xxxx/' \
            -e 's/results-(sqlite|omnetpp)/results-xxx/' \
            -e 's/processid,[0-9]+/processid,9999/' \
            -e 's/datetime,[0-9:-]+/datetime,xxxx/' \
+           -e 's/output(scalar|vector)manager-class,[a-zA-Z0-9_:]+/output-x-manager-class,xxxx/' \
            $f.csv > $f.csvx
 done
 echo
@@ -62,4 +63,3 @@ for f in $(cd results-omnetpp; echo *.sca *.vec); do
     withecho diff -u1 results-omnetpp/$f.csvx results-sqlite/$f.csvx || FAIL
 done
 echo '*** PASS ***'
-
