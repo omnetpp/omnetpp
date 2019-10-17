@@ -201,6 +201,8 @@ void TextViewerWidget::setCaretPosition(int lineIndex, int column)
 
 Pos TextViewerWidget::getCaretPosition()
 {
+    if (contentChangedFlag)
+        handleContentChange();
     int clippedCaretColumn = clip(0, content->getLineText(caretLineIndex).length(), caretColumn);
     return Pos(caretLineIndex, clippedCaretColumn);
 }
@@ -218,6 +220,8 @@ void TextViewerWidget::setSelection(int startLineIndex, int startColumn, int end
 
 Pos TextViewerWidget::getSelectionAnchor()
 {
+    if (contentChangedFlag)
+        handleContentChange();
     int clippedSelectionAnchorColumn = clip(0, content->getLineText(selectionAnchorLineIndex).length(), selectionAnchorColumn);
     return Pos(selectionAnchorLineIndex, clippedSelectionAnchorColumn);
 }
@@ -338,6 +342,9 @@ int TextViewerWidget::getNumVisibleLines(int height)
 
 int TextViewerWidget::getLineColumnOffset(const QFontMetrics& metrics, int lineIndex, int columnIndex)
 {
+    if (contentChangedFlag)
+        handleContentChange();
+
     auto line = content->getLineText(lineIndex);
 
     const QChar *const textStart = line.unicode();
@@ -395,6 +402,9 @@ Pos TextViewerWidget::getLineColumnAt(int x, int y)
 
 Pos TextViewerWidget::getColumnInLineAt(int x, int lineIndex)
 {
+    if (contentChangedFlag)
+        handleContentChange();
+
     auto line = content->getLineText(lineIndex);
     auto metrics = QFontMetrics(font, viewport());
 
@@ -1155,6 +1165,9 @@ void TextViewerWidget::drawLine(QPainter& painter, int lineIndex, int x, int y, 
 
 void TextViewerWidget::keyPressEvent(QKeyEvent *event)
 {
+    if (contentChangedFlag)
+        handleContentChange();
+
     bool shiftPressed = event->modifiers() & Qt::ShiftModifier;
     bool controlPressed = event->modifiers() & Qt::ControlModifier;
 
@@ -1590,4 +1603,3 @@ bool Pos::operator!=(const Pos& other)
 
 }  // namespace qtenv
 }  // namespace omnetpp
-
