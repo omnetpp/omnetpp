@@ -24,6 +24,9 @@ def _get_array_from_shm(name_and_size):
     name, size = name_and_size.split(" ")
     size = int(size)
 
+    if name == "<EMPTY>" and size == 0:
+        return np.array([])
+
     system = platform.system()
     if system in ['Linux', 'Darwin']:
         mem = posix_ipc.SharedMemory(name)
@@ -142,39 +145,6 @@ def get_parameters(filter_expression="", include_attrs=False, include_runattrs=F
         df["value"] = pd.to_numeric(df["value"], errors="coerce")
 
     return _append_additional_data(df, attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
-
-
-def _get_array_from_shm(name):
-    if not name:
-        return None
-
-    name, size = name.split(" ")
-    size = int(size)
-
-    system = platform.system()
-    if system in ['Linux', 'Darwin']:
-        mem = posix_ipc.SharedMemory(name)
-
-        if system == 'Darwin':
-            # for some reason we can't directly np.memmap the shm file, because it is "unseekable"
-            # but the mmap module works with it, so we just copy the data into np, and release the shared memory
-            with mmap.mmap(mem.fd, length=mem.size) as mf:
-                arr = np.frombuffer(mf.read(), dtype=np.dtype('>f8'))
-        else:
-            # on Linux, we can just continue to use the existing shm memory without copying
-            with open(mem.fd, 'wb') as mf:
-                arr = np.memmap(mf, dtype=np.dtype('>f8'))
-
-        # on Mac we are done with shm (data is copied), on Linux we can delete the name even though the mapping is still in use
-        mem.unlink()
-    elif system == 'Windows':
-        # on Windows, the mmap module in itself provides shared memory functionality. and we copy the data here as well.
-        with mmap.mmap(-1, size, tagname=name) as mf:
-            arr = np.frombuffer(mf.read(), dtype=np.dtype('>f8'))
-    else:
-        raise RuntimeError("unsupported platform")
-
-    return arr
 
 
 def get_vectors(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False, start_time=-inf, end_time=inf):

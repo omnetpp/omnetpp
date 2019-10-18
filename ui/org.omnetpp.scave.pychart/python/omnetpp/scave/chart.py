@@ -144,6 +144,9 @@ def plot_scalars(df_or_values, labels=None, row_label=None):
 
 
 def _put_array_in_shm(arr, shm_objs, mmap_objs):
+    if arr.size == 0:
+        return "<EMPTY> 0"
+
     global vector_data_counter
     # the only need to start with a / on POSIX, but Windows doesn't seem to mind, so just putting it there always...
     name = "/vecdata-" + str(os.getpid()) + "-" + str(vector_data_counter)

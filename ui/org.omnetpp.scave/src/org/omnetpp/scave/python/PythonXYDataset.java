@@ -24,9 +24,9 @@ public class PythonXYDataset implements IXYDataset {
         ByteBuffer ys;
 
         public void dispose() {
-            if (xs != null)
+            if (xs != null && xs.capacity() != 0)
                 ScaveEngine.unmapSharedMemory(xs);
-            if (ys != null)
+            if (ys != null && ys.capacity() != 0)
                 ScaveEngine.unmapSharedMemory(ys);
         }
     }
@@ -47,7 +47,11 @@ public class PythonXYDataset implements IXYDataset {
         String[] parts = nameAndSize.split(" ");
         String name = parts[0];
         long size = Long.parseLong(parts[1]);
-        return (ByteBuffer)ScaveEngine.mapSharedMemory(name, size);
+
+        if (name.equals("<EMPTY>") && size == 0)
+            return ByteBuffer.allocate(0);
+        else
+            return (ByteBuffer)ScaveEngine.mapSharedMemory(name, size);
     }
 
     public void addVectors(byte[] pickledData) {

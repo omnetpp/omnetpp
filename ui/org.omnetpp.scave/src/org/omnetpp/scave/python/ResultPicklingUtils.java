@@ -36,21 +36,30 @@ public class ResultPicklingUtils {
 
     static int shmSerial = 0;
 
+    private static void writeString(String s, OutputStream out) throws IOException {
+        byte[] encodedX = s.getBytes("UTF-8");
+        out.write(Opcodes.BINUNICODE);
+        out.write(PickleUtils.integer_to_bytes(encodedX.length));
+        out.write(encodedX);
+    }
+
     public static void pickleXYArray(XYArray array, OutputStream out) throws IOException {
         int l = array.length();
         // number of bytes
         long s = l * 8;
+
+        if (s == 0) {
+            writeString("<EMPTY> 0", out);
+            writeString("<EMPTY> 0", out);
+            return;
+        }
 
         String nameX = "/vectordata-" + System.nanoTime() + "-" + shmSerial + "-x";
         String nameY = "/vectordata-" + System.nanoTime() + "-" + shmSerial + "-y";
         shmSerial += 1;
 
         // X
-        byte[] encodedX = (nameX + " " + s).getBytes("UTF-8");
-        out.write(Opcodes.BINUNICODE);
-        out.write(PickleUtils.integer_to_bytes(encodedX.length));
-        out.write(encodedX);
-
+        writeString(nameX + " " + s, out);
         ScaveEngine.createSharedMemory(nameX, s);
 
         ByteBuffer shmX = ScaveEngine.mapSharedMemory(nameX, s);
@@ -61,10 +70,7 @@ public class ResultPicklingUtils {
 
         ScaveEngine.unmapSharedMemory(shmX);
         // Y
-        byte[] encodedY = (nameY + " " + s).getBytes("UTF-8");
-        out.write(Opcodes.BINUNICODE);
-        out.write(PickleUtils.integer_to_bytes(encodedY.length));
-        out.write(encodedY);
+        writeString(nameY + " " + s, out);
 
         ScaveEngine.createSharedMemory(nameY, s);
         ByteBuffer shmY = ScaveEngine.mapSharedMemory(nameY, s);
