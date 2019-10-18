@@ -1,5 +1,8 @@
 #! /bin/sh
 
+# exit on first error
+set -e
+
 rm -rf results
 
 opp_makemake -f

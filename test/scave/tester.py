@@ -115,7 +115,11 @@ def run_tests(locals):
             add_outcome(l, passed)
     
     chart.set_property("Graph.Title", "See console for test results.")
-    
-    faileds = ", ".join([n for n, s in outcomes.items() if not s])
+
+    failed_names = [n for n, s in outcomes.items() if not s]
+    faileds = ", ".join(failed_names)
     import sys
     print("FAILED TESTS: " + (faileds or "NONE"), file=sys.stderr)
+
+    if faileds:
+        raise Exception(str(len(failed_names)) + " tests failed")

@@ -8,6 +8,7 @@ import os
 import sys
 import glob
 import argparse
+import traceback
 import subprocess
 import numpy as np
 import pandas as pd
@@ -87,6 +88,8 @@ def print_analysis_info(anf_file, analysis):
 
 
 def run_chart(wd, c, export):
+    assert(os.path.isabs(wd))
+
     os.chdir(wd)
     sys.path = [wd,
         get_opp_root() + "/ui/org.omnetpp.scave.pychart/python/"
@@ -98,7 +101,13 @@ def run_chart(wd, c, export):
     global _show_called
     _show_called = False
 
-    exec(c.script, {})
+    got_error = False
+    try:
+        exec(c.script, {})
+    except:
+        print("Error in chart " + c.name, file = sys.stderr)
+        print(traceback.format_exc(), file = sys.stderr)
+        got_error = True
 
     if export:
         # maybe warn if _show_called is set
@@ -107,6 +116,8 @@ def run_chart(wd, c, export):
     else:
         if not _show_called:
             plt.show()
+
+    return not got_error
 
 
 if __name__ == "__main__":
@@ -189,15 +200,21 @@ if __name__ == "__main__":
         if not args.e:
             print_analysis_info(anf_file, analysis)
 
+    ok = True
+
     if args.e:
         if selected_chart:
-            run_chart(anf_dir, selected_chart, True)
+            chart_ok = run_chart(anf_dir, selected_chart, True)
+            ok = ok and chart_ok
         else:
             for c in analysis.charts:
-                run_chart(anf_dir, c, True)
+                chart_ok = run_chart(anf_dir, c, True)
+                ok = ok and chart_ok
                 plt.clf()
-
     else:
         if selected_chart:
-            run_chart(anf_dir, selected_chart, False)
+            chart_ok = run_chart(anf_dir, selected_chart, False)
+            ok = ok and chart_ok
 
+    if not ok:
+        sys.exit(1)
