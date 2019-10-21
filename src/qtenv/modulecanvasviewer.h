@@ -102,7 +102,9 @@ private:
 
     void updateZoomLabelPos();
 
-    void renderToPrinter(QPrinter& printer);
+    QRectF askExportArea(); // returns a Null rectangle if the dialog was cancelled.
+    void renderToPrinter(QPrinter& printer, const QRectF& sceneRect);
+    void renderToPaintDevice(QPaintDevice& paintDevice, const QRectF& sceneRect, const QRectF& pageRect);
 
     // similar logic as in getObjectsAt()
     QString gatherTooltips(const QPoint& pos, int threshold = 4);
@@ -133,6 +135,7 @@ signals:
     void marqueeZoom(QRectF);
 
 public slots:
+    void exportToImage();
     void exportToPdf();
     void print();
 

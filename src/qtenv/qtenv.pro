@@ -55,6 +55,7 @@ QMAKE_MOC += $$(OPP_DEFINES)
 QT *= core gui opengl widgets printsupport
 
 SOURCES += mainwindow.cc \
+    areaselectordialog.cc \
     arrow.cc \
     figurerenderers.cc \
     histograminspector.cc \
@@ -122,6 +123,7 @@ SOURCES += mainwindow.cc \
     videorecordingdialog.cc
 
 HEADERS += mainwindow.h \
+    areaselectordialog.h \
     arrow.h \
     componenthistory.h \
     layouterenv.h \
@@ -198,6 +200,7 @@ INCLUDEPATH += ../../../../src ../../../../include
 INCLUDEPATH += .. ../../include
 
 FORMS += mainwindow.ui \
+    areaselectordialog.ui \
     runselectiondialog.ui \
     stopdialog.ui \
     logfinddialog.ui \

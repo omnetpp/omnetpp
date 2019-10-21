@@ -698,6 +698,7 @@ void ModuleInspector::createContextMenu(const std::vector<cObject *>& objects, c
             ->setData(QVariant::fromValue(TAB_FILTERING));
 
     menu->addSeparator();
+    menu->addAction("Export to image...", canvasViewer, SLOT(exportToImage()));
     menu->addAction("Export to PDF...", canvasViewer, SLOT(exportToPdf()));
     menu->addAction("Print...", canvasViewer, SLOT(print()));
 
