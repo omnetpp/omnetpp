@@ -100,7 +100,7 @@ ExprValue NedFunctionNode::evaluate(Context *context_) const
     int i = 0;
     for (ExprNode *child : children)
         argv[i++] = makeNedValue(child->tryEvaluate(context_));
-    return makeExprValue(nedFunction->invoke(context->component, argv.get(), argc));
+    return makeExprValue(nedFunction->invoke(context, argv.get(), argc));
 }
 
 void NedFunctionNode::print(std::ostream& out, int spaciousness) const

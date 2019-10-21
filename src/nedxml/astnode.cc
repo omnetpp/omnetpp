@@ -21,9 +21,11 @@
 #include <iostream>
 
 #include "astnode.h"
-
 #include "errorstore.h"
 #include "exception.h"
+#include "common/fileutil.h"
+
+using namespace omnetpp::common;
 
 namespace omnetpp {
 namespace nedxml {
@@ -163,6 +165,12 @@ const char *ASTNode::getSourceLocation() const
 void ASTNode::setSourceLocation(const char *loc)
 {
     srcLoc = loc ? loc : "";
+    directory = directoryOf(loc);
+}
+
+const char *ASTNode::getSourceFileDirectory() const
+{
+    return directory.c_str();
 }
 
 const SourceRegion& ASTNode::getSourceRegion() const

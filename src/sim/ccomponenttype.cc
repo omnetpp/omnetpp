@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <cstring>
 #include "common/patternmatcher.h"
+#include "common/fileutil.h"
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/ccontextswitcher.h"
 #include "omnetpp/cmodule.h"
@@ -253,6 +254,16 @@ cProperty *cComponentType::getSignalDeclaration(const char *signalName)
 cObjectFactory *cComponentType::lookupClass(const char *className) const
 {
     return cObjectFactory::find(className, getCxxNamespace().c_str(), true);
+}
+
+const char *cComponentType::getSourceFileDirectory() const
+{
+    if (!sourceFileDirectoryCached) {
+        const char *fname = getSourceFileName();
+        sourceFileDirectory = fname ? directoryOf(fname) : "";
+        sourceFileDirectoryCached = true;
+    }
+    return sourceFileDirectory.empty() ? nullptr : sourceFileDirectory.c_str();
 }
 
 //----

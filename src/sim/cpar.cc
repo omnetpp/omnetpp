@@ -17,6 +17,7 @@
 *--------------------------------------------------------------*/
 
 #include "common/commonutil.h"
+#include "common/stringutil.h"
 #include "omnetpp/cpar.h"
 #include "omnetpp/cparimpl.h"
 #include "omnetpp/cproperties.h"
@@ -394,7 +395,7 @@ void cPar::convertToConst()
     afterChange();
 }
 
-void cPar::parse(const char *text)
+void cPar::parse(const char *text, const char *baseDirectory)
 {
     // Implementation note: we are trying to share cParImpl objects for
     // values coming from the configuration. This is possible because an
@@ -411,7 +412,7 @@ void cPar::parse(const char *text)
     //
     beforeChange();
     cComponentType *componentType = ownerComponent->getComponentType();
-    std::string key = std::string(componentType->getName()) + ":" + getName() + ":" + text;
+    std::string key = std::string(componentType->getName()) + "|" + getName() + "|" + text + "|" + opp_nulltoempty(baseDirectory);
     cParImpl *cachedValue = componentType->getSharedParImpl(key.c_str());
     if (cachedValue) {
         // an identical value found in the map -- use it
@@ -421,6 +422,7 @@ void cPar::parse(const char *text)
         // not found: clone existing parameter (to preserve name, type, unit etc), then parse text into it
         cParImpl *tmp = p->dup();
         try {
+            tmp->setBaseDirectory(baseDirectory);
             tmp->parse(text);
         }
         catch (std::exception& e) {

@@ -26,12 +26,24 @@ namespace omnetpp {
 
 
 /**
- * @brief A function that can be used with cDynamicExpression.
+ * @brief One of the two function signatures that can be used with cDynamicExpression.
+ * This one can be used with functions that do not need context information other
+ * than contextComponent for the evaluation.
  *
  * @see cNedFunction, Define_NED_Function().
  * @ingroup SimSupport
  */
 typedef cNedValue (*NedFunction)(cComponent *context, cNedValue argv[], int argc);
+
+/**
+ * @brief One of the two function signatures that can be used with cDynamicExpression.
+ * This one is more generic, as it receives all context information in the context
+ * argument.
+ *
+ * @see cNedFunction, Define_NED_Function().
+ * @ingroup SimSupport
+ */
+typedef cNedValue (*NedFunctionExt)(cExpression::Context *context, cNedValue argv[], int argc);
 
 // NEDFunction was renamed NedFunction in OMNeT++ 5.3; typedef added for compatibility
 typedef NedFunction NEDFunction;
@@ -53,7 +65,8 @@ class SIM_API cNedFunction : public cNoncopyableOwnedObject
     bool hasVarargs_;      // if true, signature contains "..." after the last typed arg
     char returnType;       // one of B,L,T,D,Q,S,X,*
     int minArgc, maxArgc;  // minimum and maximum argument count
-    NedFunction f;         // function ptr
+    NedFunction f = nullptr; // implementation function
+    NedFunctionExt fext = nullptr; // alternative function that takes cExpression::Context as arg
     std::string category;  // category string; only used when listing all functions
     std::string description;  // optional documentation string
 
@@ -83,6 +96,13 @@ class SIM_API cNedFunction : public cNoncopyableOwnedObject
     cNedFunction(NedFunction f, const char *signature, const char *category=nullptr, const char *description=nullptr);
 
     /**
+     * Alternative constructor. Usage is similar to the first constructor, except that it
+     * takes a function with a slightly different signature (NedFunctionExt instead of
+     * NedFunction).
+     */
+    cNedFunction(NedFunctionExt f, const char *signature, const char *category=nullptr, const char *description=nullptr);
+
+    /**
      * Destructor.
      */
     virtual ~cNedFunction() {}
@@ -101,7 +121,7 @@ class SIM_API cNedFunction : public cNoncopyableOwnedObject
     /**
      * Performs argument type checking, and invokes the function.
      */
-    cNedValue invoke(cComponent *context, cNedValue argv[], int argc);
+    cNedValue invoke(cExpression::Context *context, cNedValue argv[], int argc);
 
     /**
      * Returns the function pointer. Do not call the function

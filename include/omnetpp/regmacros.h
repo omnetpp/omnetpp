@@ -71,9 +71,10 @@ namespace omnetpp {
  * FUNCTION is a pointer to the function, and SIGNATURE is the function's
  * signature in NED.
  *
- * The C++ function should have the following signature:
+ * The C++ function can have either of the following two signatures:
  * <pre>
- * cNedValue f(cComponent *context, cNedValue argv[], int argc)
+ * cNedValue f(cComponent *context, cNedValue argv[], int argc);  // typedef NedFunction
+ * cNedValue f(cExpression::Context *context, cNedValue argv[], int argc);  // typedef NedFunctionExt
  * </pre>
  *
  * SIGNATURE is a string with the following syntax:

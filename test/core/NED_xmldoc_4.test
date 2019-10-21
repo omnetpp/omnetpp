@@ -1,0 +1,64 @@
+%description:
+Check xmldoc(): files are relative to the expression xmldoc() occurred in
+
+%file: foo/foo.ned
+package foo;
+
+module Foo
+{
+    parameters:
+        xml config = default(xmldoc("foo.xml"));
+}
+
+%file: test.ned
+import foo.Foo;
+import testlib.Dump;
+
+network Test
+{
+    submodules:
+        default_: Foo;
+        omnetppini: Foo;
+        fooini: Foo;
+        ned: Foo { config = xmldoc("root.xml"); }
+        dump: Dump;
+}
+
+%file: root.xml
+<root/>
+
+%file: foo/foo.xml
+<foo/>
+
+%file: foo/foo.ini
+[General]
+*.fooini.config = xmldoc("foo.xml")
+
+%inifile: omnetpp.ini
+include foo/foo.ini
+*.omnetppini.config = xmldoc("root.xml")
+
+%subst: | at .*/| at .../|
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.default_: foo.Foo {
+            parameters:
+                config = <foo/> at .../foo.xml:1
+        }
+        module Test.omnetppini: foo.Foo {
+            parameters:
+                config = <root/> at .../root.xml:1
+        }
+        module Test.fooini: foo.Foo {
+            parameters:
+                config = <foo/> at .../foo.xml:1
+        }
+        module Test.ned: foo.Foo {
+            parameters:
+                config = <root/> at .../root.xml:1
+        }
+}
+

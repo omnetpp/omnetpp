@@ -369,7 +369,7 @@ class SIM_API cPar : public cObject
      * Note: this method understands expressions too, but does NOT handle
      * the special values "default" and "ask".
      */
-    void parse(const char *text);
+    void parse(const char *text, const char *baseDirectory=nullptr);
     //@}
 
     /** @name Overloaded assignment and conversion operators. */

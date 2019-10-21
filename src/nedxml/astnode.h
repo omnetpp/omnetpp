@@ -77,6 +77,7 @@ class NEDXML_API ASTNode
   private:
     long id;
     std::string srcLoc;
+    std::string directory;
     SourceRegion srcRegion;
     ASTNode *parent;
     ASTNode *firstChild;
@@ -163,6 +164,11 @@ class NEDXML_API ASTNode
      * where this element originally came from). Called by the (NED/XML) parser.
      */
     virtual void setSourceLocation(const char *loc);
+
+    /**
+     * Returns the directory this element was loaded from.
+     */
+    virtual const char *getSourceFileDirectory() const;
 
     /**
      * Returns the source region, containing a line:col region in the source file

@@ -20,6 +20,7 @@
 #include "common/stringutil.h"
 #include "common/opp_ctype.h"
 #include "common/unitconversion.h"
+#include "common/fileutil.h"
 #include "omnetpp/distrib.h"
 #include "omnetpp/cnedmathfunction.h"
 #include "omnetpp/cnedfunction.h"
@@ -39,6 +40,10 @@ void nedfunctions_dummy() {} //see util.cc
 
 #define DEF(FUNCTION, SIGNATURE, CATEGORY, DESCRIPTION) \
         cNedValue FUNCTION(cComponent *context, cNedValue argv[], int argc); \
+        Define_NED_Function2(FUNCTION, SIGNATURE, CATEGORY, DESCRIPTION);
+
+#define DEF2(FUNCTION, SIGNATURE, CATEGORY, DESCRIPTION) \
+        cNedValue FUNCTION(cExpression::Context *context, cNedValue argv[], int argc); \
         Define_NED_Function2(FUNCTION, SIGNATURE, CATEGORY, DESCRIPTION);
 
 //
@@ -823,18 +828,19 @@ cNedValue nedf_poisson(cComponent *contextComponent, cNedValue argv[], int argc)
 // XML functions
 //
 
-DEF(nedf_xmldoc,
+DEF2(nedf_xmldoc,
     "xml xmldoc(string filename, string xpath?)",
     "xml",
     "Parses the given XML file into a cXMLElement tree, and returns the root element. "
     "When called with two arguments, it returns the first element from the tree that "
     "matches the expression given in simplified XPath syntax.")
 
-cNedValue nedf_xmldoc(cComponent *contextComponent, cNedValue argv[], int argc)
+cNedValue nedf_xmldoc(cExpression::Context *context, cNedValue argv[], int argc)
 {
     const char *filename = argv[0].stringValue();
+    std::string filepath = opp_isempty(context->baseDirectory) ? filename : concatDirAndFile(context->baseDirectory, filename);
     const char *xpath = argc == 1 ? nullptr : argv[1].stringValue();
-    cXMLElement *node = getEnvir()->getXMLDocument(filename, xpath);
+    cXMLElement *node = getEnvir()->getXMLDocument(filepath.c_str(), xpath);
     if (!node) {
         if (argc == 1)
             throw cRuntimeError("File \"%s\"not found", filename);

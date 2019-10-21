@@ -63,6 +63,9 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     struct SignalDesc { SimsignalType type; cObjectFactory *objectType; bool isNullable; };
     std::map<simsignal_t,SignalDesc> signalsSeen;
 
+    mutable bool sourceFileDirectoryCached = false;
+    mutable std::string sourceFileDirectory;
+
   protected:
     friend class cComponent;
     friend class cModule;
@@ -121,6 +124,9 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
 
     // internal: return the path of the source file this declaration has been loaded from, or nullptr if not available
     virtual const char *getSourceFileName() const {return nullptr;}
+
+    // internal: return the directory of the source file this declaration has been loaded from, or nullptr if not available
+    virtual const char *getSourceFileDirectory() const;
 
     // internal: used by cComponent::emit() methods to validate signals
     virtual void checkSignal(simsignal_t signalID, SimsignalType type, cObject *obj = nullptr);

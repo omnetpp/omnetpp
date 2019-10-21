@@ -107,7 +107,7 @@ class NEDXML_API NedTypeInfo
     virtual Type getType() const {return type;}
 
     /**
-     * Returns the name of the file this NED type was loaded from.
+     * Returns the path of the source file this NED type was loaded from.
      */
     virtual const char *getSourceFileName() const;
 

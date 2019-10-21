@@ -23,37 +23,37 @@ namespace omnetpp {
 
 cNedValue cExpression::evaluate(cComponent *contextComponent) const
 {
-    Context context(contextComponent);
+    Context context(contextComponent, nullptr);
     return evaluate(&context);
 }
 
 bool cExpression::boolValue(cComponent *contextComponent) const
 {
-    Context context(contextComponent);
+    Context context(contextComponent, nullptr);
     return boolValue(&context);
 }
 
 intval_t cExpression::intValue(cComponent *contextComponent, const char *expectedUnit) const
 {
-    Context context(contextComponent);
+    Context context(contextComponent, nullptr);
     return intValue(&context, expectedUnit);
 }
 
 double cExpression::doubleValue(cComponent *contextComponent, const char *expectedUnit) const
 {
-    Context context(contextComponent);
+    Context context(contextComponent, nullptr);
     return doubleValue(&context, expectedUnit);
 }
 
 std::string cExpression::stringValue(cComponent *contextComponent) const
 {
-    Context context(contextComponent);
+    Context context(contextComponent, nullptr);
     return stringValue(&context);
 }
 
 cXMLElement *cExpression::xmlValue(cComponent *contextComponent) const
 {
-    Context context(contextComponent);
+    Context context(contextComponent, nullptr);
     return xmlValue(&context);
 }
 

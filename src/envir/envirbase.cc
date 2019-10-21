@@ -860,9 +860,8 @@ void EnvirBase::readParameter(cPar *par)
 
     // get it from the ini file
     std::string moduleFullPath = par->getOwner()->getFullPath();
-    const char *str = getConfigEx()->getParameterValue(moduleFullPath.c_str(), par->getName(), par->containsValue());
-
-    //TODO somehow  use base directory for finding XML files specified with relative path
+    const cConfiguration::KeyValue& entry = getConfigEx()->getParameterEntry(moduleFullPath.c_str(), par->getName(), par->containsValue());
+    const char *str = entry.getValue();
 
     if (omnetpp::opp_strcmp(str, "default") == 0) {
         ASSERT(par->containsValue());  // cConfiguration should not return "=default" lines for params that have no default value
@@ -872,7 +871,7 @@ void EnvirBase::readParameter(cPar *par)
         askParameter(par, false);
     }
     else if (!opp_isempty(str)) {
-        par->parse(str);
+        par->parse(str, entry.getBaseDirectory());
     }
     else {
         // str empty: no value in the ini file
@@ -1540,7 +1539,8 @@ void EnvirBase::setupRNGMapping(cComponent *component)
     int tmpmap[100];
     for (auto suffix : suffixes) {
         // contains "rng-1", "rng-4" or whichever has been found in the config for this module/channel
-        const char *value = cfg->getPerObjectConfigValue(componentFullPath.c_str(), suffix);
+        const cConfiguration::KeyValue& entry = cfg->getPerObjectConfigEntry(componentFullPath.c_str(), suffix);
+        const char *value = entry.getValue();
         ASSERT(value != nullptr);
         try {
             char *endptr;
@@ -1553,7 +1553,7 @@ void EnvirBase::setupRNGMapping(cComponent *component)
                 // not a numeric constant, try parsing it as an expression
                 cDynamicExpression expr;
                 expr.parse(value);
-                cExpression::Context context(component);
+                cExpression::Context context(component, entry.getBaseDirectory());
                 cNedValue tmp = expr.evaluate(&context);
                 if (!tmp.isNumeric())
                     throw opp_runtime_error("Numeric constant or expression expected");

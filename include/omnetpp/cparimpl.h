@@ -57,10 +57,13 @@ class SIM_API cParImpl : public cNamedObject
     // unit (s, mW, GHz, baud, etc); optional
     const char *unitp; // stringpooled
 
+    // base directory for interpreting relative path names in the expression (e.g. xmldoc())
+    const char *baseDirectory; // stringpooled
+
     // global variables for statistics
     static long totalParimplObjs;
     static long liveParimplObjs;
-    static cStringPool unitStringPool;
+    static cStringPool stringPool;
 
   private:
     void copy(const cParImpl& other);
@@ -83,7 +86,7 @@ class SIM_API cParImpl : public cNamedObject
     /**
      * Copy constructor.
      */
-    cParImpl(const cParImpl& other) : cNamedObject(other) {unitp = nullptr; copy(other);}
+    cParImpl(const cParImpl& other) : cNamedObject(other) {unitp = nullptr; baseDirectory = nullptr; copy(other);}
 
     /**
      * Destructor.
@@ -183,6 +186,18 @@ class SIM_API cParImpl : public cNamedObject
      * Initialize the parameter's unit (normally from the @unit property).
      */
     virtual void setUnit(const char *s);
+
+    /**
+     * Returns the base directory for interpreting relative path names
+     * in the expression.
+     */
+    virtual const char *getBaseDirectory() const {return baseDirectory;}
+
+    /**
+     * Sets the base directory for interpreting relative path names in the
+     * expression (e.g. in xmldoc()).
+     */
+    virtual void setBaseDirectory(const char *baseDirectory);
     //@}
 
     /** @name Setter functions. Note that overloaded assignment operators also exist. */

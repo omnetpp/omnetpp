@@ -217,6 +217,7 @@ void cNedNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
             try {
                 cDynamicExpression *expr = new cDynamicExpression();
                 expr->parseNedExpr(valueExpr.getExprText(), isSubcomponent, false);
+                impl->setBaseDirectory(paramNode->getSourceFileDirectory());
                 impl->setExpression(expr);
                 if (expr->isAConstant())
                     impl->convertToConst(nullptr);
@@ -343,6 +344,7 @@ void cNedNetworkBuilder::doAssignParameterFromPattern(cPar& par, ParamElement *p
             ASSERT(impl == par.impl() && !impl->isShared());
             cDynamicExpression *expr = new cDynamicExpression();
             expr->parseNedExpr(valueExpr.getExprText(), isInSubcomponent, false);
+            impl->setBaseDirectory(patternNode->getSourceFileDirectory());
             impl->setExpression(expr);
             if (expr->isAConstant())
                 impl->convertToConst(nullptr);
@@ -401,6 +403,7 @@ void cNedNetworkBuilder::doGateSize(cModule *module, GateElement *gateNode, bool
                     dynamicExpr->parseNedExpr(vectorSizeExpr.getExprText(), isSubcomponent, false);
                     value = new cIntParImpl();
                     value->setName("gatesize-expression");
+                    value->setBaseDirectory(gateNode->getSourceFileDirectory());
                     value->setExpression(dynamicExpr);
                     if (dynamicExpr->isAConstant())
                         value->convertToConst(nullptr);
@@ -757,7 +760,8 @@ void cNedNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement 
             ConditionElement *condition = submod->getFirstConditionChild();
             if (condition) {
                 ExprRef conditionExpr(condition, ConditionElement::ATT_CONDITION);
-                NedExpressionContext context(compoundModule, NedExpressionContext::SUBMODULE_CONDITION, submodTypeName.c_str());
+                const char *baseDirectory = compoundModule->getComponentType()->getSourceFileDirectory();
+                NedExpressionContext context(compoundModule, baseDirectory, NedExpressionContext::SUBMODULE_CONDITION, submodTypeName.c_str());
                 if (evaluateAsBool(conditionExpr, &context, false) == false)
                     return;
             }
@@ -785,7 +789,8 @@ void cNedNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement 
             ExprRef conditionExpr(condition, ConditionElement::ATT_CONDITION);
             // note: "typename" may NOT occur in vector submodules' condition, because type is
             // per-element, and we want to evaluate the condition only once for the whole vector
-            NedExpressionContext context(compoundModule, NedExpressionContext::SUBMODULE_ARRAY_CONDITION, nullptr);
+            const char *baseDirectory = compoundModule->getComponentType()->getSourceFileDirectory();
+            NedExpressionContext context(compoundModule, baseDirectory, NedExpressionContext::SUBMODULE_ARRAY_CONDITION, nullptr);
             if (evaluateAsBool(conditionExpr, &context, false) == false)
                 return;
         }
@@ -1225,19 +1230,22 @@ cDynamicExpression *cNedNetworkBuilder::getOrCreateExpression(const ExprRef& exp
 
 long cNedNetworkBuilder::evaluateAsLong(const ExprRef& exprRef, cComponent *contextComponent, bool inSubcomponentScope)
 {
-    cExpression::Context context(contextComponent);
+    const char *baseDirectory = contextComponent->getComponentType()->getSourceFileDirectory();
+    cExpression::Context context(contextComponent, baseDirectory);
     return evaluateAsLong(exprRef, &context, inSubcomponentScope);
 }
 
 bool cNedNetworkBuilder::evaluateAsBool(const ExprRef& exprRef, cComponent *contextComponent, bool inSubcomponentScope)
 {
-    cExpression::Context context(contextComponent);
+    const char *baseDirectory = contextComponent->getComponentType()->getSourceFileDirectory();
+    cExpression::Context context(contextComponent, baseDirectory);
     return evaluateAsBool(exprRef, &context, inSubcomponentScope);
 }
 
 std::string cNedNetworkBuilder::evaluateAsString(const ExprRef& exprRef, cComponent *contextComponent, bool inSubcomponentScope)
 {
-    cExpression::Context context(contextComponent);
+    const char *baseDirectory = contextComponent->getComponentType()->getSourceFileDirectory();
+    cExpression::Context context(contextComponent, baseDirectory);
     return evaluateAsString(exprRef, &context, inSubcomponentScope);
 }
 

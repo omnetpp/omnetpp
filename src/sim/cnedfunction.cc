@@ -43,6 +43,20 @@ cNedFunction::cNedFunction(NedFunction f, const char *signature,
     parseSignature(signature);
 }
 
+cNedFunction::cNedFunction(NedFunctionExt f, const char *signature,
+        const char *category, const char *description) :
+    cNoncopyableOwnedObject(nullptr, false)
+{
+    ASSERT(f);
+
+    this->fext = f;
+    this->signature = opp_nulltoempty(signature);
+    this->category = opp_nulltoempty(category);
+    this->description = opp_nulltoempty(description);
+
+    parseSignature(signature);
+}
+
 static bool contains(const std::string& str, const std::string& substr)
 {
     return str.find(substr) != std::string::npos;
@@ -185,10 +199,10 @@ void cNedFunction::checkArgs(cNedValue argv[], int argc)
     }
 }
 
-cNedValue cNedFunction::invoke(cComponent *context, cNedValue argv[], int argc)
+cNedValue cNedFunction::invoke(cExpression::Context *context, cNedValue argv[], int argc)
 {
     checkArgs(argv, argc);
-    return f(context, argv, argc);
+    return fext ? fext(context, argv, argc) : f(context->component, argv, argc);
 }
 
 std::string cNedFunction::str() const

@@ -36,24 +36,27 @@ namespace omnetpp {
 
 long cParImpl::totalParimplObjs;
 long cParImpl::liveParimplObjs;
-cStringPool cParImpl::unitStringPool("cParImpl::unitStringPool");
+cStringPool cParImpl::stringPool("cParImpl::stringPool");
 
 cParImpl::cParImpl()
 {
     unitp = nullptr;
+    baseDirectory = nullptr;
     totalParimplObjs++;
     liveParimplObjs++;
 }
 
 cParImpl::~cParImpl()
 {
-    unitStringPool.release(unitp);
+    stringPool.release(unitp);
+    stringPool.release(baseDirectory);
     liveParimplObjs--;
 }
 
 void cParImpl::copy(const cParImpl& other)
 {
     setUnit(other.getUnit());
+    setBaseDirectory(other.getBaseDirectory());
 }
 
 cParImpl& cParImpl::operator=(const cParImpl& other)
@@ -87,8 +90,14 @@ const char *cParImpl::getUnit() const
 
 void cParImpl::setUnit(const char *s)
 {
-    unitStringPool.release(unitp);
-    unitp = unitStringPool.get(s);
+    stringPool.release(unitp);
+    unitp = stringPool.get(s);
+}
+
+void cParImpl::setBaseDirectory(const char *s)
+{
+    stringPool.release(baseDirectory);
+    baseDirectory = stringPool.get(s);
 }
 
 cNedValue cParImpl::evaluate(cExpression *expr, cComponent *contextComponent) const
@@ -98,7 +107,7 @@ cNedValue cParImpl::evaluate(cExpression *expr, cComponent *contextComponent) co
         depth++;
         if (depth >= 5)
             throw cRuntimeError("Evaluation nesting too deep (circular parameter references?)");
-        cExpression::Context context(contextComponent);
+        cExpression::Context context(contextComponent, baseDirectory);
         cNedValue ret = expr->evaluate(&context);
         depth--;
         return ret;
@@ -131,7 +140,7 @@ cParImpl *cParImpl::createWithType(Type type)
     switch (type) {
         case cPar::BOOL:    return new cBoolParImpl();
         case cPar::DOUBLE:  return new cDoubleParImpl();
-        case cPar::INT:    return new cIntParImpl();
+        case cPar::INT:     return new cIntParImpl();
         case cPar::STRING:  return new cStringParImpl();
         case cPar::XML:     return new cXMLParImpl();
         default: throw cRuntimeError("cParImpl::createWithType(): No such type: %d", type);

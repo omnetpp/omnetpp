@@ -40,8 +40,8 @@ class NedExpressionContext : public cExpression::Context
 {
   public:
     enum ExpressionRole { SUBMODULE_CONDITION, SUBMODULE_ARRAY_CONDITION, OTHER };
-    explicit NedExpressionContext(cComponent *component, ExpressionRole role, const char *computedTypename) :
-            cExpression::Context(component), role(role), computedTypename(computedTypename) {}
+    explicit NedExpressionContext(cComponent *component, const char *baseDirectory, ExpressionRole role, const char *computedTypename) :
+            cExpression::Context(component, baseDirectory), role(role), computedTypename(computedTypename) {}
     ExpressionRole role;
     const char *computedTypename;
 };
