@@ -31,6 +31,7 @@
 #include "connectionitem.h"
 #include "submoduleitem.h"
 #include "graphicsitems.h"
+#include "areaselectordialog.h"
 #include "arrow.h"
 #include <QGraphicsScene>
 #include <QScrollBar>
@@ -44,6 +45,7 @@
 #include <QRubberBand>
 #include <QToolTip>
 #include <QPrinter>
+#include <QImageWriter>
 #include <QPrintDialog>
 #include <QFileDialog>
 
@@ -304,9 +306,42 @@ void ModuleCanvasViewer::contextMenuEvent(QContextMenuEvent *event)
     }
 }
 
+void ModuleCanvasViewer::exportToImage()
+{
+    QRectF sceneRect = askExportArea();
+
+    if (sceneRect.isNull())
+        return;
+
+    QString filter;
+    for (auto f : QImageWriter::supportedImageFormats()) {
+        if (!filter.isEmpty())
+            filter += ";;";
+        filter += QString(f).toUpper() + "(*." + QString(f) + ")";
+    }
+
+    QString selF = "PNG(*.png)";
+    QString fileName = QString(getQtenv()->cEnvir::getConfigEx()->getActiveConfigName()) + "_" + getObjectShortTypeName(object) + QString(".png");
+    fileName = QFileDialog::getSaveFileName(this, "Export to Image", fileName, filter, &selF);
+
+    if (fileName.isNull())
+        return; // the file selection dialog got cancelled
+
+    QImage image(sceneRect.size().toSize(), QImage::Format_RGBA8888); // Premultiplied?
+
+    renderToPaintDevice(image, sceneRect, QRectF(QPointF(0, 0), sceneRect.size().toSize()));
+
+    image.save(fileName);
+}
+
 void ModuleCanvasViewer::exportToPdf()
 {
-    QString fileName = getObjectShortTypeName(object) + QString(".pdf");
+    QRectF exportArea = askExportArea();
+
+    if (exportArea.isNull())
+        return;
+
+    QString fileName = QString(getQtenv()->cEnvir::getConfigEx()->getActiveConfigName()) + "_" + getObjectShortTypeName(object) + QString(".pdf");
     fileName = QFileDialog::getSaveFileName(this, "Export to PDF", fileName, "PDF files (*.pdf)");
 
     if (fileName.isNull())
@@ -321,11 +356,16 @@ void ModuleCanvasViewer::exportToPdf()
     printer.setColorMode(QPrinter::Color);
     printer.setOutputFileName(fileName);
 
-    renderToPrinter(printer);
+    renderToPrinter(printer, exportArea);
 }
 
 void ModuleCanvasViewer::print()
 {
+    QRectF exportArea = askExportArea();
+
+    if (exportArea.isNull())
+        return;
+
     QPrinter printer;
 
     // the user can override this in the dialog...
@@ -336,29 +376,50 @@ void ModuleCanvasViewer::print()
     if (printDialog.exec() != QDialog::Accepted)
         return;
 
-    renderToPrinter(printer);
+    renderToPrinter(printer, exportArea);
 }
 
-void ModuleCanvasViewer::renderToPrinter(QPrinter &printer)
+QRectF ModuleCanvasViewer::askExportArea()
 {
-    QRectF rect;
+    AreaSelectorDialog dialog(this);
 
-    if (object && compoundModuleItem) {
-        auto compoundRect = compoundModuleItem->boundingRect()
-                .united(getSubmodulesRect());
-        auto figuresRect = canvasRenderer->itemsBoundingRect();
+    QRectF exportArea;
 
-        rect = compoundRect.united(figuresRect);
+    if (!object || !compoundModuleItem)
+        return exportArea;
+    if (dialog.exec() != QDialog::Accepted)
+        return exportArea;
+
+    switch (dialog.getArea()) {
+        case AreaSelectorDialog::BOUNDING_BOX:
+            exportArea = scene()->itemsBoundingRect();
+            break;
+        case AreaSelectorDialog::MODULE_RECTANGLE:
+            exportArea = compoundModuleItem->boundingRect();
+            break;
+        case AreaSelectorDialog::VIEWPORT:
+            exportArea = mapToScene(viewport()->rect()).boundingRect();
+            break;
     }
 
-    const int margin = 20;
+    int margin = dialog.getMargin();
+
     QMarginsF margins(margin, margin, margin, margin);
-    rect = rect.marginsAdded(margins);
+    return exportArea.marginsAdded(margins);
+}
 
+void ModuleCanvasViewer::renderToPrinter(QPrinter &printer, const QRectF& sceneRect)
+{
     printer.setPageMargins(QMargins(0, 0, 0, 0));
-    printer.setPaperSize(rect.size() / printer.resolution(), QPrinter::Inch);
-    scene()->setSceneRect(rect);
+    printer.setPaperSize(sceneRect.size() / printer.resolution(), QPrinter::Inch);
+    printer.setFullPage(true);
 
+    renderToPaintDevice(printer, sceneRect, printer.pageRect());
+}
+
+void ModuleCanvasViewer::renderToPaintDevice(QPaintDevice &printer, const QRectF& sceneRect, const QRectF& pageRect)
+{
+    scene()->setSceneRect(sceneRect);
 
     QPainter painter;
     setZoomLabelVisible(false);
@@ -373,11 +434,10 @@ void ModuleCanvasViewer::renderToPrinter(QPrinter &printer)
     }
 
     painter.begin(&printer);
-    printer.setFullPage(true);
-    painter.fillRect(printer.pageRect(), backgroundBrush()); // green background
+    painter.fillRect(pageRect, backgroundBrush()); // green background
 
     QRect viewport = scene()->sceneRect().toAlignedRect();
-    scene()->render(&painter, printer.pageRect(), viewport);
+    scene()->render(&painter, pageRect, viewport);
 
     painter.end();
 
@@ -917,4 +977,3 @@ void ModuleCanvasViewer::bubble(cComponent *subcomponent, const char *text)
 
 }  // namespace qtenv
 }  // namespace omnetpp
-
