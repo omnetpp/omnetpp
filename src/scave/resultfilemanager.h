@@ -493,9 +493,9 @@ class SCAVE_API ResultFileManager
     std::vector< std::pair<std::string, std::string> > getMatchingNonParamAssignmentConfigEntries(const char *pattern) const;
 
     // these are the ones that are called from opp_scavetool
-    std::multimap<Run *, std::string> getMatchingItervarsPtr(const char *pattern) const;
-    std::multimap<Run *, std::string> getMatchingRunattrsPtr(const char *pattern) const;
-    std::multimap<Run *, std::string> getMatchingConfigEntriesPtr(const char *pattern) const;
+    std::vector< std::pair<Run *, std::string> > getMatchingItervarsPtr(const char *pattern) const;
+    std::vector< std::pair<Run *, std::string> > getMatchingRunattrsPtr(const char *pattern) const;
+    std::vector< std::pair<Run *, std::string> > getMatchingConfigEntriesPtr(const char *pattern) const;
 
     /**
      * Get a filtered subset of the input set (of scalars or vectors).
@@ -637,5 +637,3 @@ class SCAVE_API IResultFileLoader
 
 
 #endif
-
-

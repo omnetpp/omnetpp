@@ -1133,7 +1133,7 @@ std::vector<std::pair<std::string, std::string>> ResultFileManager::getMatchingI
     return out;
 }
 
-std::multimap<Run *, std::string> ResultFileManager::getMatchingItervarsPtr(const char *pattern) const
+std::vector< std::pair<Run *, std::string> > ResultFileManager::getMatchingItervarsPtr(const char *pattern) const
 {
     if (opp_isblank(pattern))  // no filter
         throw opp_runtime_error("Empty filter expression is not allowed");
@@ -1141,14 +1141,14 @@ std::multimap<Run *, std::string> ResultFileManager::getMatchingItervarsPtr(cons
     MatchExpression matchExpr(pattern, false  /*dottedpath*/, true  /*fullstring*/, true  /*casesensitive*/);
 
     READER_MUTEX
-    std::multimap<Run *, std::string> out;
+    std::vector< std::pair<Run *, std::string> > out;
     for (int k = 0; k < (int)runList.size(); k++) {
         if (runList[k] != nullptr) {
             Run *run = runList[k];
             for (auto &iv : run->getIterationVariables()) {
                 MatchableItervar matchable(run, iv.first);
                 if (matchExpr.matches(&matchable))
-                    out.insert({run, iv.first});
+                    out.push_back({run, iv.first});
             }
         }
     }
@@ -1163,7 +1163,7 @@ std::vector<std::pair<std::string, std::string>> ResultFileManager::getMatchingR
     return out;
 }
 
-std::multimap<Run *, std::string> ResultFileManager::getMatchingRunattrsPtr(const char *pattern) const
+std::vector< std::pair<Run *, std::string> > ResultFileManager::getMatchingRunattrsPtr(const char *pattern) const
 {
     if (opp_isblank(pattern))  // no filter
         throw opp_runtime_error("Empty filter expression is not allowed");
@@ -1171,14 +1171,14 @@ std::multimap<Run *, std::string> ResultFileManager::getMatchingRunattrsPtr(cons
     MatchExpression matchExpr(pattern, false  /*dottedpath*/, true  /*fullstring*/, true  /*casesensitive*/);
 
     READER_MUTEX
-    std::multimap<Run *, std::string> out;
+    std::vector< std::pair<Run *, std::string> > out;
     for (int k = 0; k < (int)runList.size(); k++) {
         if (runList[k] != nullptr) {
             Run *run = runList[k];
             for (auto &ra : run->getAttributes()) {
                 MatchableRunattr matchable(run, ra.first);
                 if (matchExpr.matches(&matchable))
-                    out.insert({run, ra.first});
+                    out.push_back({run, ra.first});
             }
         }
     }
@@ -1193,7 +1193,7 @@ std::vector< std::pair<std::string, std::string>> ResultFileManager::getMatching
     return out;
 }
 
-std::multimap<Run *, std::string> ResultFileManager::getMatchingConfigEntriesPtr(const char *pattern) const
+std::vector< std::pair<Run *, std::string> > ResultFileManager::getMatchingConfigEntriesPtr(const char *pattern) const
 {
     if (opp_isblank(pattern))  // no filter
         throw opp_runtime_error("Empty filter expression is not allowed");
@@ -1201,14 +1201,14 @@ std::multimap<Run *, std::string> ResultFileManager::getMatchingConfigEntriesPtr
     MatchExpression matchExpr(pattern, false  /*dottedpath*/, true  /*fullstring*/, true  /*casesensitive*/);
 
     READER_MUTEX
-    std::multimap<Run *, std::string> out;
+    std::vector< std::pair<Run *, std::string> > out;
     for (int k = 0; k < (int)runList.size(); k++) {
         if (runList[k] != nullptr) {
             Run *run = runList[k];
             for (auto &entry : run->getConfigEntries()) {
                 MatchableConfigEntry matchable(run, entry.first);
                 if (matchExpr.matches(&matchable))
-                    out.insert({run, entry.first});
+                    out.push_back({run, entry.first});
             }
         }
     }
