@@ -51,7 +51,7 @@ class SIM_API cNamedObject : public cObject
 
   private:
     // pool for shared storage of object names
-    static cStringPool stringPool;
+    static cStringPool nameStringPool;
 
   public:
     /** @name Constructors, destructor, assignment. */

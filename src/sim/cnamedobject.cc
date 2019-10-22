@@ -34,7 +34,7 @@ using std::ostream;
 Register_Class(cNamedObject);
 
 // static class members
-cStringPool cNamedObject::stringPool("cNamedObject::stringPool");
+cStringPool cNamedObject::nameStringPool("cNamedObject::stringPool");
 
 cNamedObject::cNamedObject()
 {
@@ -48,7 +48,7 @@ cNamedObject::cNamedObject(const char *s, bool namepooling)
     if (!s)
         name = nullptr;
     else if (namepooling)
-        name = stringPool.get(s);
+        name = nameStringPool.get(s);
     else
         name = opp_strdup(s);
 }
@@ -65,7 +65,7 @@ cNamedObject::~cNamedObject()
 {
     if (name) {
         if (flags & FL_NAMEPOOLING)
-            stringPool.release(name);
+            nameStringPool.release(name);
         else
             delete[] name;
     }
@@ -92,7 +92,7 @@ void cNamedObject::setName(const char *s)
     // release name string
     if (name) {
         if (flags & FL_NAMEPOOLING)
-            stringPool.release(name);
+            nameStringPool.release(name);
         else
             delete[] name;
     }
@@ -101,7 +101,7 @@ void cNamedObject::setName(const char *s)
     if (!s)
         name = nullptr;
     else if (flags & FL_NAMEPOOLING)
-        name = stringPool.get(s);
+        name = nameStringPool.get(s);
     else
         name = opp_strdup(s);
 }
@@ -115,7 +115,7 @@ void cNamedObject::setNamePooling(bool pooling)
         flags |= FL_NAMEPOOLING;
         if (name) {
             const char *oldname = name;
-            name = stringPool.get(oldname);
+            name = nameStringPool.get(oldname);
             delete[] oldname;
         }
     }
@@ -125,7 +125,7 @@ void cNamedObject::setNamePooling(bool pooling)
         if (name) {
             const char *oldname = name;
             name = opp_strdup(oldname);
-            stringPool.release(oldname);
+            nameStringPool.release(oldname);
         }
     }
 }
