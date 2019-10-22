@@ -342,9 +342,6 @@ int TextViewerWidget::getNumVisibleLines(int height)
 
 int TextViewerWidget::getLineColumnOffset(const QFontMetrics& metrics, int lineIndex, int columnIndex)
 {
-    if (contentChangedFlag)
-        handleContentChange();
-
     auto line = content->getLineText(lineIndex);
 
     const QChar *const textStart = line.unicode();
