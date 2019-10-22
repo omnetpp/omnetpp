@@ -80,6 +80,16 @@ static void updateOrRethrowException(std::exception& e, NedElement *context)
     }
 }
 
+bool cNedNetworkBuilder::getBooleanProperty(NedElement *componentNode, const char *name)
+{
+    ParametersElement *paramsNode = dynamic_cast<ParametersElement*>(componentNode->getFirstChildWithTag(NED_PARAMETERS));
+    if (paramsNode)
+        for (PropertyElement *prop = paramsNode->getFirstPropertyChild(); prop != nullptr; prop = prop->getNextPropertySibling())
+            if (omnetpp::opp_strcmp(prop->getName(), name) == 0 && ASTNodeUtil::propertyAsBool(prop) == true)
+                return true;
+    return false;
+}
+
 void cNedNetworkBuilder::addParametersAndGatesTo(cComponent *component, cNedDeclaration *decl)
 {
     cContextSwitcher __ctx(component);  // params need to be evaluated in the module's context FIXME needed???
@@ -725,11 +735,8 @@ bool cNedNetworkBuilder::getSubmoduleOrChannelTypeNameFromDeepAssignments(cModul
 void cNedNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement *submod)
 {
     // if there is a @dynamic or @dynamic(true), do not instantiate the submodule
-    ParametersElement *paramsNode = submod->getFirstParametersChild();
-    if (paramsNode)
-        for (PropertyElement *prop = paramsNode->getFirstPropertyChild(); prop != nullptr; prop = prop->getNextPropertySibling())
-            if (omnetpp::opp_strcmp(prop->getName(), "dynamic") == 0 && ASTNodeUtil::propertyAsBool(prop) == true)
-                return;
+    if (getBooleanProperty(submod, "dynamic"))
+        return;
 
     // find vector size expression
     const char *submodName = submod->getName();
@@ -956,6 +963,15 @@ void cNedNetworkBuilder::doConnectGates(cModule *modp, cGate *srcGate, cGate *de
         srcGate->connectTo(destGate);
     }
     else {
+        if (srcGate->getNextGate() || destGate->getPreviousGate()) {
+            bool reconnectAllowed = getBooleanProperty(conn, "reconnect");
+            if (reconnectAllowed) {
+                if (srcGate->getNextGate())
+                    srcGate->disconnect();
+                if (destGate->getPreviousGate())
+                    destGate->getPreviousGate()->disconnect();
+            }
+        }
         cChannel *channel = createChannel(conn, modp, srcGate);
         channel->setNedConnectionElementId(conn->getId());  // so that properties will be found
         srcGate->connectTo(destGate, channel);
