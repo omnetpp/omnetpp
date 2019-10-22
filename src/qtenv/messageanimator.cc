@@ -440,6 +440,14 @@ void MessageAnimator::addDeliveryAnimation(cMessage *msg, cModule *showIn, Deliv
     updateAnimations();
 }
 
+MethodcallAnimation *MessageAnimator::getCurrentMethodCallRoot() const
+{
+    MethodcallAnimation *cur = currentMethodCall;
+    while (cur && cur->getParent())
+        cur = cur->getParent();
+    return cur;
+}
+
 double MessageAnimator::getAnimationHoldEndTime() const
 {
     double rem = -1;
@@ -549,6 +557,10 @@ void MessageAnimator::messageDuplicated(cMessage *msg, cMessage *dup)
     if (currentMessageSend)
         currentMessageSend->messageDuplicated(msg, dup);
 
+    MethodcallAnimation *methodCallRoot = getCurrentMethodCallRoot();
+    if (methodCallRoot)
+        methodCallRoot->messageDuplicated(msg, dup);
+
     if (deliveries)
         deliveries->messageDuplicated(msg, dup);
 }
@@ -562,8 +574,12 @@ void MessageAnimator::removeMessagePointer(cMessage *msg)
     for (auto a : animations)
         a->removeMessagePointer(msg);
 
-    if (currentMethodCall)
-        currentMethodCall->removeMessagePointer(msg);
+    if (currentMessageSend)
+        currentMessageSend->removeMessagePointer(msg);
+
+    MethodcallAnimation *methodCallRoot = getCurrentMethodCallRoot();
+    if (methodCallRoot)
+        methodCallRoot->removeMessagePointer(msg);
 
     if (deliveries)
         deliveries->removeMessagePointer(msg);

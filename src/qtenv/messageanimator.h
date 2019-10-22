@@ -52,7 +52,7 @@ class QTENV_API MessageAnimator
     // If empty, no hold is in effect.
     std::set<const Animation*> holdRequests;
 
-    // cursor in the tree
+    // cursor in the tree - NOT necessarily the root
     MethodcallAnimation *currentMethodCall = nullptr;
 
     // Used to keep track of time in the current send sequence.
@@ -83,6 +83,8 @@ class QTENV_API MessageAnimator
     void addDeliveryAnimation(cMessage *msg, cModule *showIn, DeliveryAnimation *anim);
 
     cModule *markedModule = nullptr; // the next event marker will be drawn around this, and its parents. none if nullptr
+
+    MethodcallAnimation *getCurrentMethodCallRoot() const;
 
 public:
 
