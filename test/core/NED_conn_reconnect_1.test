@@ -1,0 +1,117 @@
+%description:
+Test that by adding the @reconnect property to a connection, one can reconnect gates
+that are already connected.
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Node
+{
+    gates:
+        input in @loose;
+        output out @loose;
+    connections allowunconnected:
+}
+
+module Container
+{
+    gates:
+        input in1 @loose;
+        input in2 @loose;
+        output out1 @loose;
+        output out2 @loose;
+    submodules:
+        a: Node;
+    connections allowunconnected:
+        in1 --> a.in;
+        in2 --> { @reconnect; }--> a.in;
+        a.out --> out1;
+        a.out --> { @reconnect; }--> out2;
+}
+
+network Test
+{
+    submodules:
+        a: Node;
+        b: Node;
+        c: Node;
+        d: Node;
+        e: Node;
+        f: Node;
+        g: Node;
+        h: Node;
+        container: Container;
+        dump: Dump;
+    connections:
+        a.out --> b.in;
+        a.out --> { @reconnect; } --> c.in; // reconnect source gate
+
+        d.out --> e.in;
+        f.out --> { @reconnect; } --> e.in; // reconnect destination gate
+
+        g.out --> { delay = 1s; } --> h.in; // reconnect connection that has channel object
+        g.out --> { @reconnect;} --> h.in; // reconnect with ideal channel
+        g.out --> { @reconnect; datarate = 1Gbps; } --> h.in; // reconnect with datarate channel
+}
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.a: Node {
+            gates:
+                in @loose: not connected
+                out @loose: --> c.in, (ned.IdealChannel)channel
+        }
+        module Test.b: Node {
+            gates:
+                in @loose: not connected
+                out @loose: not connected
+        }
+        module Test.c: Node {
+            gates:
+                in @loose: <-- a.out, (ned.IdealChannel)channel
+                out @loose: not connected
+        }
+        module Test.d: Node {
+            gates:
+                in @loose: not connected
+                out @loose: not connected
+        }
+        module Test.e: Node {
+            gates:
+                in @loose: <-- f.out, (ned.IdealChannel)channel
+                out @loose: not connected
+        }
+        module Test.f: Node {
+            gates:
+                in @loose: not connected
+                out @loose: --> e.in, (ned.IdealChannel)channel
+        }
+        module Test.g: Node {
+            gates:
+                in @loose: not connected
+                out @loose: --> h.in, (ned.DatarateChannel)channel disabled=false delay=0s datarate=1e+09bps ber=0 per=0
+        }
+        module Test.h: Node {
+            gates:
+                in @loose: <-- g.out, (ned.DatarateChannel)channel disabled=false delay=0s datarate=1e+09bps ber=0 per=0
+                out @loose: not connected
+        }
+        module Test.container: Container {
+            gates:
+                in1 @loose: not connected
+                in2 @loose: not connected
+                out1 @loose: not connected
+                out2 @loose: not connected
+            submodules:
+                module Test.container.a: Node {
+                    gates:
+                        in @loose: <-- <parent>.in2, (ned.IdealChannel)channel
+                        out @loose: --> <parent>.out2, (ned.IdealChannel)channel
+                }
+        }
+}
+

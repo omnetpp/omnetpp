@@ -117,6 +117,7 @@ class SIM_API cNedNetworkBuilder
     long evaluateAsLong(const ExprRef& exprRef, cExpression::Context *context, bool inSubcomponentScope);
     bool evaluateAsBool(const ExprRef& exprRef, cExpression::Context *context, bool inSubcomponentScope);
     std::string evaluateAsString(const ExprRef& exprRef, cExpression::Context *context, bool inSubcomponentScope);
+    bool getBooleanProperty(NedElement *componentNode, const char *name);
 
   public:
     /** Constructor */
