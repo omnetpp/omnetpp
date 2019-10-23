@@ -23,7 +23,7 @@ using namespace omnetpp;
 
 namespace @TESTNAME@ {
 
-cNedValue nedf_haveClass(cComponent *context, cNedValue argv[], int argc)
+cValue nedf_haveClass(cComponent *context, cValue argv[], int argc)
 {
     return cObjectFactory::find(argv[0].stringValue()) != nullptr;
 }
@@ -34,7 +34,7 @@ Define_NED_Function2(nedf_haveClass,
         "Returns true if the given C++ class exists"
 );
 
-cNedValue nedf_lindex(cComponent *context, cNedValue argv[], int argc)
+cValue nedf_lindex(cComponent *context, cValue argv[], int argc)
 {
     int index = (int)argv[0].doubleValue();
     if (index < 0)

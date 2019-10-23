@@ -39,32 +39,32 @@ cDynamicExpression::IResolver::~IResolver()
 {
 }
 
-cNedValue cDynamicExpression::ResolverBase::readVariable(Context *context, const char *name)
+cValue cDynamicExpression::ResolverBase::readVariable(Context *context, const char *name)
 {
     throw cRuntimeError("Cannot resolve variable '%s'", name);
 }
 
-cNedValue cDynamicExpression::ResolverBase::readVariable(Context *context, const char *name, intval_t index)
+cValue cDynamicExpression::ResolverBase::readVariable(Context *context, const char *name, intval_t index)
 {
     throw cRuntimeError("Cannot resolve variable '%s[%lld]'", name, (long long)index);
 }
 
-cNedValue cDynamicExpression::ResolverBase::readMember(Context *context, const cNedValue& object, const char *name)
+cValue cDynamicExpression::ResolverBase::readMember(Context *context, const cValue& object, const char *name)
 {
     throw cRuntimeError("Cannot resolve member '%s' of object %s", name, object.str().c_str());
 }
 
-cNedValue cDynamicExpression::ResolverBase::readMember(Context *context, const cNedValue& object, const char *name, intval_t index)
+cValue cDynamicExpression::ResolverBase::readMember(Context *context, const cValue& object, const char *name, intval_t index)
 {
     throw cRuntimeError("Cannot resolve member '%s[%lld]' of object %s", name, (long long)index, object.str().c_str());
 }
 
-cNedValue cDynamicExpression::ResolverBase::callFunction(Context *context, const char *name, cNedValue argv[], int argc)
+cValue cDynamicExpression::ResolverBase::callFunction(Context *context, const char *name, cValue argv[], int argc)
 {
     throw cRuntimeError("Cannot resolve function '%s()' with %d arguments", name, argc);
 }
 
-cNedValue cDynamicExpression::ResolverBase::callMethod(Context *context, const cNedValue& object, const char *name, cNedValue argv[], int argc)
+cValue cDynamicExpression::ResolverBase::callMethod(Context *context, const cValue& object, const char *name, cValue argv[], int argc)
 {
     throw cRuntimeError("Cannot resolve method '%s()' with %d arguments of object %s", name, argc, object.str().c_str());
 }
@@ -122,7 +122,7 @@ class DynFunctionCallNode : public FunctionNode
 {
   protected:
     cDynamicExpression::IResolver *resolver = nullptr;
-    mutable cNedValue *buf = nullptr;
+    mutable cValue *buf = nullptr;
   protected:
     virtual ExprValue compute(Context *context, ExprValue argv[], int argc) const override
         {makeNedValues(buf, argv, argc); return makeExprValue(resolver->callFunction(ctx(context), getName().c_str(), buf, argc));}
@@ -136,7 +136,7 @@ class DynMethodCallNode : public MethodNode
 {
   protected:
     cDynamicExpression::IResolver *resolver = nullptr;
-    mutable cNedValue *buf = nullptr;
+    mutable cValue *buf = nullptr;
   protected:
     virtual ExprValue compute(Context *context, ExprValue& object, ExprValue argv[], int argc) const override
         {makeNedValues(buf, argv, argc); return makeExprValue(resolver->callMethod(ctx(context), makeNedValue(object), getName().c_str(), buf, argc));}
@@ -162,7 +162,7 @@ class DynTranslator : public Expression::BasicAstTranslator
         {return !resolver ? nullptr : new DynMethodCallNode(functionName, resolver);}
 };
 
-cNedValue cDynamicExpression::SymbolTable::readVariable(Context *context, const char *name)
+cValue cDynamicExpression::SymbolTable::readVariable(Context *context, const char *name)
 {
     const auto it = symbolTable.find(name);
     if (it == symbolTable.end())
@@ -223,7 +223,7 @@ std::string cDynamicExpression::str() const
     return expression->str();
 }
 
-cNedValue cDynamicExpression::evaluate(Context *context) const
+cValue cDynamicExpression::evaluate(Context *context) const
 {
     omnetpp::common::expression::Context tmp;
     tmp.simContext = context;
@@ -255,31 +255,31 @@ bool cDynamicExpression::isAConstant() const
 
 bool cDynamicExpression::boolValue(Context *context) const
 {
-    cNedValue v = evaluate(context);
+    cValue v = evaluate(context);
     return v.boolValue();
 }
 
 intval_t cDynamicExpression::intValue(Context *context, const char *expectedUnit) const
 {
-    cNedValue v = evaluate(context);
+    cValue v = evaluate(context);
     return expectedUnit == nullptr ? v.intValue() : (intval_t)v.doubleValueInUnit(expectedUnit);
 }
 
 double cDynamicExpression::doubleValue(Context *context, const char *expectedUnit) const
 {
-    cNedValue v = evaluate(context);
+    cValue v = evaluate(context);
     return expectedUnit == nullptr ? v.doubleValue() : v.doubleValueInUnit(expectedUnit);
 }
 
 std::string cDynamicExpression::stringValue(Context *context) const
 {
-    cNedValue v = evaluate(context);
+    cValue v = evaluate(context);
     return v.stringValue();
 }
 
 cXMLElement *cDynamicExpression::xmlValue(Context *context) const
 {
-    cNedValue v = evaluate(context);
+    cValue v = evaluate(context);
     return v.xmlValue();
 }
 

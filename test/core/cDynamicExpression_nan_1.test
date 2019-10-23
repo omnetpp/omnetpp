@@ -9,7 +9,7 @@ void test(const char *expr)
     std::string result;
     try {
         e.parse(expr);
-        cNedValue v = e.evaluate();
+        cValue v = e.evaluate();
         result = v.str();
     } catch (std::exception& ex) {
         result = ex.what();

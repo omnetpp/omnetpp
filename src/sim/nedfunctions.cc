@@ -39,11 +39,11 @@ namespace omnetpp {
 void nedfunctions_dummy() {} //see util.cc
 
 #define DEF(FUNCTION, SIGNATURE, CATEGORY, DESCRIPTION) \
-        cNedValue FUNCTION(cComponent *context, cNedValue argv[], int argc); \
+        cValue FUNCTION(cComponent *context, cValue argv[], int argc); \
         Define_NED_Function2(FUNCTION, SIGNATURE, CATEGORY, DESCRIPTION);
 
 #define DEF2(FUNCTION, SIGNATURE, CATEGORY, DESCRIPTION) \
-        cNedValue FUNCTION(cExpression::Context *context, cNedValue argv[], int argc); \
+        cValue FUNCTION(cExpression::Context *context, cValue argv[], int argc); \
         Define_NED_Function2(FUNCTION, SIGNATURE, CATEGORY, DESCRIPTION);
 
 //
@@ -77,9 +77,9 @@ DEF(nedf_fabs,
     "math",
     "Returns the absolute value of the quantity.")
 
-cNedValue nedf_fabs(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_fabs(cComponent *contextComponent, cValue argv[], int argc)
 {
-    return cNedValue(fabs((double)argv[0]), argv[0].getUnit());
+    return cValue(fabs((double)argv[0]), argv[0].getUnit());
 }
 
 DEF(nedf_fmod,
@@ -87,17 +87,17 @@ DEF(nedf_fmod,
     "math",
     "Returns the floating-point remainder of x/y; unit conversion takes place if needed.")
 
-cNedValue nedf_fmod(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_fmod(cComponent *contextComponent, cValue argv[], int argc)
 {
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
-    return cNedValue(fmod((double)argv[0], argv1converted), argv[0].getUnit());
+    return cValue(fmod((double)argv[0], argv1converted), argv[0].getUnit());
 }
 
 DEF(nedf_min,
     "quantity min(quantity a, quantity b)",
     "math",
     "Returns the smaller one of the two quantities; unit conversion takes place if needed.")
-cNedValue nedf_min(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_min(cComponent *contextComponent, cValue argv[], int argc)
 {
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
     return (double)argv[0] < argv1converted ? argv[0] : argv[1];
@@ -108,7 +108,7 @@ DEF(nedf_max,
     "math",
     "Returns the greater one of the two quantities; unit conversion takes place if needed.")
 
-cNedValue nedf_max(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_max(cComponent *contextComponent, cValue argv[], int argc)
 {
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
     return (double)argv[0] < argv1converted ? argv[1] : argv[0];
@@ -124,7 +124,7 @@ DEF(nedf_dropUnit,
     "units",
     "Removes the unit of measurement from quantity x.")
 
-cNedValue nedf_dropUnit(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_dropUnit(cComponent *contextComponent, cValue argv[], int argc)
 {
     argv[0].setUnit(nullptr);
     return argv[0];
@@ -135,9 +135,9 @@ DEF(nedf_replaceUnit,
     "units",
     "Replaces the unit of x with the given unit.")
 
-cNedValue nedf_replaceUnit(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_replaceUnit(cComponent *contextComponent, cValue argv[], int argc)
 {
-    const char *newUnit = cNedValue::getPooled((const char *)argv[1]);
+    const char *newUnit = cValue::getPooled((const char *)argv[1]);
     argv[0].setUnit(newUnit);
     return argv[0];
 }
@@ -147,9 +147,9 @@ DEF(nedf_convertUnit,
     "units",
     "Converts x to the given unit.")
 
-cNedValue nedf_convertUnit(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_convertUnit(cComponent *contextComponent, cValue argv[], int argc)
 {
-    const char *newUnit = cNedValue::getPooled((const char *)argv[1]);
+    const char *newUnit = cValue::getPooled((const char *)argv[1]);
     argv[0].convertTo(newUnit);
     return argv[0];
 }
@@ -159,7 +159,7 @@ DEF(nedf_unitOf,
     "units",
     "Returns the unit of the given quantity.")
 
-cNedValue nedf_unitOf(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_unitOf(cComponent *contextComponent, cValue argv[], int argc)
 {
     return argv[0].getUnit();
 }
@@ -174,7 +174,7 @@ DEF(nedf_length,
     "strings",
     "Returns the length of the string")
 
-cNedValue nedf_length(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_length(cComponent *contextComponent, cValue argv[], int argc)
 {
     return (intval_t)argv[0].stdstringValue().size();
 }
@@ -184,7 +184,7 @@ DEF(nedf_contains,
     "strings",
     "Returns true if string s contains substr as substring")
 
-cNedValue nedf_contains(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_contains(cComponent *contextComponent, cValue argv[], int argc)
 {
     return argv[0].stdstringValue().find(argv[1].stdstringValue()) != std::string::npos;
 }
@@ -194,7 +194,7 @@ DEF(nedf_substring,
     "strings",
     "Return the substring of s starting at the given position, either to the end of the string or maximum len characters")
 
-cNedValue nedf_substring(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_substring(cComponent *contextComponent, cValue argv[], int argc)
 {
     int size = argv[0].stdstringValue().size();
     int index = (int)argv[1];
@@ -212,7 +212,7 @@ DEF(nedf_substringBefore,
     "strings",
     "Returns the substring of s before the first occurrence of substr, or the empty string if s does not contain substr.")
 
-cNedValue nedf_substringBefore(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_substringBefore(cComponent *contextComponent, cValue argv[], int argc)
 {
     size_t pos = argv[0].stdstringValue().find(argv[1].stdstringValue());
     return pos == std::string::npos ? "" : argv[0].stdstringValue().substr(0, pos);
@@ -223,7 +223,7 @@ DEF(nedf_substringAfter,
     "strings",
     "Returns the substring of s after the first occurrence of substr, or the empty string if s does not contain substr.")
 
-cNedValue nedf_substringAfter(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_substringAfter(cComponent *contextComponent, cValue argv[], int argc)
 {
     size_t pos = argv[0].stdstringValue().find(argv[1].stdstringValue());
     return pos == std::string::npos ? "" : argv[0].stdstringValue().substr(pos + argv[1].stdstringValue().size());
@@ -234,7 +234,7 @@ DEF(nedf_substringBeforeLast,
     "strings",
     "Returns the substring of s before the last occurrence of substr, or the empty string if s does not contain substr.")
 
-cNedValue nedf_substringBeforeLast(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_substringBeforeLast(cComponent *contextComponent, cValue argv[], int argc)
 {
     size_t pos = argv[0].stdstringValue().rfind(argv[1].stdstringValue());
     return pos == std::string::npos ? "" : argv[0].stdstringValue().substr(0, pos);
@@ -245,7 +245,7 @@ DEF(nedf_substringAfterLast,
     "strings",
     "Returns the substring of s after the last occurrence of substr, or the empty string if s does not contain substr.")
 
-cNedValue nedf_substringAfterLast(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_substringAfterLast(cComponent *contextComponent, cValue argv[], int argc)
 {
     size_t pos = argv[0].stdstringValue().rfind(argv[1].stdstringValue());
     return pos == std::string::npos ? "" : argv[0].stdstringValue().substr(pos + argv[1].stdstringValue().size());
@@ -256,7 +256,7 @@ DEF(nedf_startsWith,
     "strings",
     "Returns true if s begins with the substring substr.")
 
-cNedValue nedf_startsWith(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_startsWith(cComponent *contextComponent, cValue argv[], int argc)
 {
     return argv[0].stdstringValue().find(argv[1].stdstringValue()) == 0;
 }
@@ -266,7 +266,7 @@ DEF(nedf_endsWith,
     "strings",
     "Returns true if s ends with the substring substr.")
 
-cNedValue nedf_endsWith(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_endsWith(cComponent *contextComponent, cValue argv[], int argc)
 {
     return argv[0].stdstringValue().rfind(argv[1].stdstringValue()) == argv[0].stdstringValue().size() - argv[1].stdstringValue().size();
 }
@@ -276,7 +276,7 @@ DEF(nedf_tail,
     "strings",
     "Returns the last len character of s, or the full s if it is shorter than len characters.")
 
-cNedValue nedf_tail(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_tail(cComponent *contextComponent, cValue argv[], int argc)
 {
     int length = (int)argv[1];
     if (length < 0)
@@ -290,7 +290,7 @@ DEF(nedf_replace,
     "strings",
     "Replaces all occurrences of substr in s with the string repl. If startPos is given, search begins from position startPos in s.")
 
-cNedValue nedf_replace(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_replace(cComponent *contextComponent, cValue argv[], int argc)
 {
     std::string str = argv[0].stdstringValue();
     const std::string& search = argv[1].stdstringValue();
@@ -318,7 +318,7 @@ DEF(nedf_replaceFirst,
     "strings",
     "Replaces the first occurrence of substr in s with the string repl. If startPos is given, search begins from position startPos in s.")
 
-cNedValue nedf_replaceFirst(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_replaceFirst(cComponent *contextComponent, cValue argv[], int argc)
 {
     std::string str = argv[0].stdstringValue();
     const std::string& search = argv[1].stdstringValue();
@@ -343,7 +343,7 @@ DEF(nedf_trim,
     "strings",
     "Discards whitespace from the start and end of s, and returns the result.")
 
-cNedValue nedf_trim(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_trim(cComponent *contextComponent, cValue argv[], int argc)
 {
     return opp_trim(argv[0].stdstringValue());
 }
@@ -353,7 +353,7 @@ DEF(nedf_indexOf,
     "strings",
     "Returns the position of the first occurrence of substring substr in s, or -1 if s does not contain substr.")
 
-cNedValue nedf_indexOf(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_indexOf(cComponent *contextComponent, cValue argv[], int argc)
 {
     return (intval_t)argv[0].stdstringValue().find(argv[1].stdstringValue());
 }
@@ -363,7 +363,7 @@ DEF(nedf_choose,
     "strings",
     "Interprets list as a space-separated list, and returns the item at the given index. Negative and out-of-bounds indices cause an error.")
 
-cNedValue nedf_choose(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_choose(cComponent *contextComponent, cValue argv[], int argc)
 {
     int index = (int)argv[0];
     if (index < 0)
@@ -381,7 +381,7 @@ DEF(nedf_toUpper,
     "strings",
     "Converts s to all uppercase, and returns the result.")
 
-cNedValue nedf_toUpper(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_toUpper(cComponent *contextComponent, cValue argv[], int argc)
 {
     std::string tmp = argv[0].stdstringValue();
     int length = tmp.length();
@@ -395,7 +395,7 @@ DEF(nedf_toLower,
     "strings",
     "Converts s to all lowercase, and returns the result.")
 
-cNedValue nedf_toLower(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_toLower(cComponent *contextComponent, cValue argv[], int argc)
 {
     std::string tmp = argv[0].stdstringValue();
     int length = tmp.length();
@@ -409,7 +409,7 @@ DEF(nedf_expand,
     "strings",
     "Expands ${} variables (${configname}, ${runnumber}, etc.) in the given string, and returns the result.")
 
-cNedValue nedf_expand(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_expand(cComponent *contextComponent, cValue argv[], int argc)
 {
     std::string tmp = argv[0].stdstringValue();
     tmp = getEnvir()->getConfig()->substituteVariables(tmp.c_str());
@@ -421,21 +421,21 @@ DEF(nedf_bool,
     "conversion",
     "Converts x to bool, and returns the result. For numeric values, 0 and nan become false and other values become true; for strings, \"true\" becomes true and everything else becomes false.")
 
-cNedValue nedf_bool(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_bool(cComponent *contextComponent, cValue argv[], int argc)
 {
     switch (argv[0].getType()) {
-        case cNedValue::BOOL:
+        case cValue::BOOL:
             return argv[0];
-        case cNedValue::INT:
+        case cValue::INT:
             return argv[0].intValue() != 0;
-        case cNedValue::DOUBLE:
+        case cValue::DOUBLE:
             return !std::isnan(argv[0].doubleValue()) && argv[0].doubleValue() != 0;
-        case cNedValue::STRING:
+        case cValue::STRING:
             return argv[0].stdstringValue() == "true";
-        case cNedValue::OBJECT:
+        case cValue::OBJECT:
             throw cRuntimeError("Cannot convert object to bool");
         default:
-            throw cRuntimeError("Internal error: Invalid cNedValue type");
+            throw cRuntimeError("Internal error: Invalid cValue type");
     }
 }
 
@@ -444,24 +444,24 @@ DEF(nedf_int,
     "conversion",
     "Converts x to int, and returns the result. A boolean argument becomes 0 or 1; a double is converted using floor(); a string is interpreted as number; an object argument causes an error. Units are preserved.")
 
-cNedValue nedf_int(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_int(cComponent *contextComponent, cValue argv[], int argc)
 {
     switch (argv[0].getType()) {
-        case cNedValue::BOOL:
+        case cValue::BOOL:
             return (intval_t)( (bool)argv[0] ? 1 : 0 );
-        case cNedValue::INT:
+        case cValue::INT:
             return argv[0];
-        case cNedValue::DOUBLE:
-            return cNedValue(checked_int_cast<intval_t>(floor(argv[0].doubleValue())), argv[0].getUnit());
-        case cNedValue::STRING: {
+        case cValue::DOUBLE:
+            return cValue(checked_int_cast<intval_t>(floor(argv[0].doubleValue())), argv[0].getUnit());
+        case cValue::STRING: {
             std::string unit;
             double d = UnitConversion::parseQuantity(argv[0].stringValue(), unit);
-            return cNedValue(checked_int_cast<intval_t>(floor(d)), cNedValue::getPooled(unit.c_str()));
+            return cValue(checked_int_cast<intval_t>(floor(d)), cValue::getPooled(unit.c_str()));
         }
-        case cNedValue::OBJECT:
+        case cValue::OBJECT:
             throw cRuntimeError("Cannot convert object to int");
         default:
-            throw cRuntimeError("Internal error: Invalid cNedValue type");
+            throw cRuntimeError("Internal error: Invalid cValue type");
     }
 }
 
@@ -470,24 +470,24 @@ DEF(nedf_double,
     "conversion",
     "Converts x to double, and returns the result. A boolean argument becomes 0 or 1; a string is interpreted as number; an object argument causes an error. Units are preserved.")
 
-cNedValue nedf_double(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_double(cComponent *contextComponent, cValue argv[], int argc)
 {
     switch (argv[0].getType()) {
-        case cNedValue::BOOL:
+        case cValue::BOOL:
             return (bool)argv[0] ? 1.0 : 0.0;
-        case cNedValue::INT:
-            return cNedValue((double)argv[0].intValue(), argv[0].getUnit());
-        case cNedValue::DOUBLE:
+        case cValue::INT:
+            return cValue((double)argv[0].intValue(), argv[0].getUnit());
+        case cValue::DOUBLE:
             return argv[0];
-        case cNedValue::STRING: {
+        case cValue::STRING: {
             std::string unit;
             double d = UnitConversion::parseQuantity(argv[0].stringValue(), unit);
-            return cNedValue(d, cNedValue::getPooled(unit.c_str()));
+            return cValue(d, cValue::getPooled(unit.c_str()));
         }
-        case cNedValue::OBJECT:
+        case cValue::OBJECT:
             throw cRuntimeError("Cannot convert object to double");
         default:
-            throw cRuntimeError("Internal error: Bad cNedValue type");
+            throw cRuntimeError("Internal error: Bad cValue type");
     }
 }
 
@@ -496,7 +496,7 @@ DEF(nedf_string,
     "conversion",
     "Converts x to string, and returns the result.")
 
-cNedValue nedf_string(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_string(cComponent *contextComponent, cValue argv[], int argc)
 {
     return argv[0].str();
 }
@@ -511,7 +511,7 @@ DEF(nedf_fullPath,
     "ned",
     "Returns the full path of the module or channel in context.")
 
-cNedValue nedf_fullPath(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_fullPath(cComponent *contextComponent, cValue argv[], int argc)
 {
     return contextComponent->getFullPath();
 }
@@ -521,7 +521,7 @@ DEF(nedf_fullName,
     "ned",
     "Returns the full name of the module or channel in context.")
 
-cNedValue nedf_fullName(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_fullName(cComponent *contextComponent, cValue argv[], int argc)
 {
     return contextComponent->getFullName();
 }
@@ -531,7 +531,7 @@ DEF(nedf_parentIndex,
     "ned",
     "Returns the index of the parent module, which has to be part of module vector.")
 
-cNedValue nedf_parentIndex(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_parentIndex(cComponent *contextComponent, cValue argv[], int argc)
 {
     cModule *mod = contextComponent->getParentModule();
     if (!mod)
@@ -546,7 +546,7 @@ DEF(nedf_ancestorIndex,
     "ned",
     "Returns the index of the ancestor module numLevels levels above the module or channel in context.")
 
-cNedValue nedf_ancestorIndex(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_ancestorIndex(cComponent *contextComponent, cValue argv[], int argc)
 {
     int levels = (int)argv[0];
     if (levels < 0)
@@ -574,11 +574,11 @@ DEF(nedf_uniform,
     "random/continuous",
     "Returns a random number from the Uniform distribution")
 
-cNedValue nedf_uniform(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_uniform(cComponent *contextComponent, cValue argv[], int argc)
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
-    return cNedValue(contextComponent->uniform((double)argv[0], argv1converted, rng), argv[0].getUnit());
+    return cValue(contextComponent->uniform((double)argv[0], argv1converted, rng), argv[0].getUnit());
 }
 
 DEF(nedf_exponential,
@@ -586,10 +586,10 @@ DEF(nedf_exponential,
     "random/continuous",
     "Returns a random number from the Exponential distribution")
 
-cNedValue nedf_exponential(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_exponential(cComponent *contextComponent, cValue argv[], int argc)
 {
     int rng = argc == 2 ? (int)argv[1] : 0;
-    return cNedValue(contextComponent->exponential((double)argv[0], rng), argv[0].getUnit());
+    return cValue(contextComponent->exponential((double)argv[0], rng), argv[0].getUnit());
 }
 
 DEF(nedf_normal,
@@ -597,11 +597,11 @@ DEF(nedf_normal,
     "random/continuous",
     "Returns a random number from the Normal distribution")
 
-cNedValue nedf_normal(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_normal(cComponent *contextComponent, cValue argv[], int argc)
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
-    return cNedValue(contextComponent->normal((double)argv[0], argv1converted, rng), argv[0].getUnit());
+    return cValue(contextComponent->normal((double)argv[0], argv1converted, rng), argv[0].getUnit());
 }
 
 DEF(nedf_truncnormal,
@@ -609,11 +609,11 @@ DEF(nedf_truncnormal,
     "random/continuous",
     "Returns a random number from the truncated Normal distribution")
 
-cNedValue nedf_truncnormal(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_truncnormal(cComponent *contextComponent, cValue argv[], int argc)
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
-    return cNedValue(contextComponent->truncnormal((double)argv[0], argv1converted, rng), argv[0].getUnit());
+    return cValue(contextComponent->truncnormal((double)argv[0], argv1converted, rng), argv[0].getUnit());
 }
 
 DEF(nedf_gamma_d,
@@ -621,10 +621,10 @@ DEF(nedf_gamma_d,
     "random/continuous",
     "Returns a random number from the Gamma distribution")
 
-cNedValue nedf_gamma_d(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_gamma_d(cComponent *contextComponent, cValue argv[], int argc)
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
-    return cNedValue(contextComponent->gamma_d((double)argv[0], (double)argv[1], rng), argv[1].getUnit());
+    return cValue(contextComponent->gamma_d((double)argv[0], (double)argv[1], rng), argv[1].getUnit());
 }
 
 DEF(nedf_beta,
@@ -632,7 +632,7 @@ DEF(nedf_beta,
     "random/continuous",
     "Returns a random number from the Beta distribution")
 
-cNedValue nedf_beta(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_beta(cComponent *contextComponent, cValue argv[], int argc)
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
     argv[0] = contextComponent->beta((double)argv[0], (double)argv[1], rng);
@@ -644,13 +644,13 @@ DEF(nedf_erlang_k,
     "random/continuous",
     "Returns a random number from the Erlang distribution")
 
-cNedValue nedf_erlang_k(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_erlang_k(cComponent *contextComponent, cValue argv[], int argc)
 {
     int k = (int)argv[0];
     if (k < 0)
         throw cRuntimeError("k parameter (number of phases) must be positive (k=%d)", k);
     int rng = argc == 3 ? (int)argv[2] : 0;
-    return cNedValue(contextComponent->erlang_k(k, (double)argv[1], rng), argv[1].getUnit());
+    return cValue(contextComponent->erlang_k(k, (double)argv[1], rng), argv[1].getUnit());
 }
 
 DEF(nedf_chi_square,
@@ -658,7 +658,7 @@ DEF(nedf_chi_square,
     "random/continuous",
     "Returns a random number from the Chi-square distribution")
 
-cNedValue nedf_chi_square(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_chi_square(cComponent *contextComponent, cValue argv[], int argc)
 {
     int k = (int)argv[0];
     if (k < 0)
@@ -672,7 +672,7 @@ DEF(nedf_student_t,
     "random/continuous",
     "Returns a random number from the Student-t distribution")
 
-cNedValue nedf_student_t(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_student_t(cComponent *contextComponent, cValue argv[], int argc)
 {
     int i = (int)argv[0];
     if (i < 0)
@@ -686,11 +686,11 @@ DEF(nedf_cauchy,
     "random/continuous",
     "Returns a random number from the Cauchy distribution")
 
-cNedValue nedf_cauchy(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_cauchy(cComponent *contextComponent, cValue argv[], int argc)
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
-    return cNedValue(contextComponent->cauchy((double)argv[0], argv1converted, rng), argv[0].getUnit());
+    return cValue(contextComponent->cauchy((double)argv[0], argv1converted, rng), argv[0].getUnit());
 }
 
 DEF(nedf_triang,
@@ -698,12 +698,12 @@ DEF(nedf_triang,
     "random/continuous",
     "Returns a random number from the Triangular distribution")
 
-cNedValue nedf_triang(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_triang(cComponent *contextComponent, cValue argv[], int argc)
 {
     int rng = argc == 4 ? (int)argv[3] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
     double argv2converted = argv[2].doubleValueInUnit(argv[0].getUnit());
-    return cNedValue(contextComponent->triang((double)argv[0], argv1converted, argv2converted, rng), argv[0].getUnit());
+    return cValue(contextComponent->triang((double)argv[0], argv1converted, argv2converted, rng), argv[0].getUnit());
 }
 
 DEF(nedf_lognormal,
@@ -711,7 +711,7 @@ DEF(nedf_lognormal,
     "random/continuous",
     "Returns a random number from the Lognormal distribution")
 
-cNedValue nedf_lognormal(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_lognormal(cComponent *contextComponent, cValue argv[], int argc)
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
     return contextComponent->lognormal((double)argv[0], (double)argv[1], rng);
@@ -722,11 +722,11 @@ DEF(nedf_weibull,
     "random/continuous",
     "Returns a random number from the Weibull distribution")
 
-cNedValue nedf_weibull(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_weibull(cComponent *contextComponent, cValue argv[], int argc)
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
-    return cNedValue(contextComponent->weibull((double)argv[0], argv1converted, rng), argv[0].getUnit());
+    return cValue(contextComponent->weibull((double)argv[0], argv1converted, rng), argv[0].getUnit());
 }
 
 DEF(nedf_pareto_shifted,
@@ -734,11 +734,11 @@ DEF(nedf_pareto_shifted,
     "random/continuous",
     "Returns a random number from the Pareto-shifted distribution")
 
-cNedValue nedf_pareto_shifted(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_pareto_shifted(cComponent *contextComponent, cValue argv[], int argc)
 {
     int rng = argc == 4 ? (int)argv[3] : 0;
     double argv2converted = argv[2].doubleValueInUnit(argv[1].getUnit());
-    return cNedValue(contextComponent->pareto_shifted((double)argv[0], (double)argv[1], argv2converted, rng), argv[1].getUnit());
+    return cValue(contextComponent->pareto_shifted((double)argv[0], (double)argv[1], argv2converted, rng), argv[1].getUnit());
 }
 
 // discrete
@@ -748,12 +748,12 @@ DEF(nedf_intuniform,
     "random/discrete",
     "Returns a random integer uniformly distributed over [a,b]")
 
-cNedValue nedf_intuniform(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_intuniform(cComponent *contextComponent, cValue argv[], int argc)
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
     if (opp_strcmp(argv[0].getUnit(), argv[1].getUnit()) != 0)
         throw cRuntimeError("Arguments must have the same unit, got (%s,%s)", argv[0].stdstringValue().c_str(), argv[1].stdstringValue().c_str());
-    return cNedValue((intval_t)contextComponent->intuniform((int)argv[0], (int)argv[1], rng), argv[1].getUnit());
+    return cValue((intval_t)contextComponent->intuniform((int)argv[0], (int)argv[1], rng), argv[1].getUnit());
 }
 
 DEF(nedf_intuniformexcl,
@@ -761,12 +761,12 @@ DEF(nedf_intuniformexcl,
     "random/discrete",
     "Returns a random integer uniformly distributed over [a,b), that is, [a,b-1]")
 
-cNedValue nedf_intuniformexcl(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_intuniformexcl(cComponent *contextComponent, cValue argv[], int argc)
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
     if (opp_strcmp(argv[0].getUnit(), argv[1].getUnit()) != 0)
         throw cRuntimeError("Arguments must have the same unit, got (%s,%s)", argv[0].stdstringValue().c_str(), argv[1].stdstringValue().c_str());
-    return cNedValue((intval_t)contextComponent->intuniformexcl((int)argv[0], (int)argv[1], rng), argv[1].getUnit());
+    return cValue((intval_t)contextComponent->intuniformexcl((int)argv[0], (int)argv[1], rng), argv[1].getUnit());
 }
 
 DEF(nedf_bernoulli,
@@ -774,7 +774,7 @@ DEF(nedf_bernoulli,
     "random/discrete",
     "Returns a random number from the Bernoulli distribution")
 
-cNedValue nedf_bernoulli(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_bernoulli(cComponent *contextComponent, cValue argv[], int argc)
 {
     int rng = argc == 2 ? (int)argv[1] : 0;
     return (intval_t)contextComponent->bernoulli((double)argv[0], rng);
@@ -785,7 +785,7 @@ DEF(nedf_binomial,
     "random/discrete",
     "Returns a random number from the Binomial distribution")
 
-cNedValue nedf_binomial(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_binomial(cComponent *contextComponent, cValue argv[], int argc)
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
     return (intval_t)contextComponent->binomial((int)argv[0], (double)argv[1], rng);
@@ -796,7 +796,7 @@ DEF(nedf_geometric,
     "random/discrete",
     "Returns a random number from the Geometric distribution")
 
-cNedValue nedf_geometric(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_geometric(cComponent *contextComponent, cValue argv[], int argc)
 {
     int rng = argc == 2 ? (int)argv[1] : 0;
     return (intval_t)contextComponent->geometric((double)argv[0], rng);
@@ -807,7 +807,7 @@ DEF(nedf_negbinomial,
     "random/discrete",
     "Returns a random number from the Negbinomial distribution")
 
-cNedValue nedf_negbinomial(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_negbinomial(cComponent *contextComponent, cValue argv[], int argc)
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
     return (intval_t)contextComponent->negbinomial((int)argv[0], (double)argv[1], rng);
@@ -818,7 +818,7 @@ DEF(nedf_poisson,
     "random/discrete",
     "Returns a random number from the Poisson distribution")
 
-cNedValue nedf_poisson(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_poisson(cComponent *contextComponent, cValue argv[], int argc)
 {
     int rng = argc == 2 ? (int)argv[1] : 0;
     return (intval_t)contextComponent->poisson((double)argv[0], rng);
@@ -835,7 +835,7 @@ DEF2(nedf_xmldoc,
     "When called with two arguments, it returns the first element from the tree that "
     "matches the expression given in simplified XPath syntax.")
 
-cNedValue nedf_xmldoc(cExpression::Context *context, cNedValue argv[], int argc)
+cValue nedf_xmldoc(cExpression::Context *context, cValue argv[], int argc)
 {
     const char *filename = argv[0].stringValue();
     std::string filepath = opp_isempty(context->baseDirectory) ? filename : concatDirAndFile(context->baseDirectory, filename);
@@ -857,7 +857,7 @@ DEF(nedf_xml,
     "When called with two arguments, it returns the first element from the tree that "
     "matches the expression given in simplified XPath syntax.")
 
-cNedValue nedf_xml(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_xml(cComponent *contextComponent, cValue argv[], int argc)
 {
     const char *xmlText = argv[0].stringValue();
     const char *xpath = argc == 1 ? nullptr : argv[1].stringValue();
@@ -881,9 +881,9 @@ DEF(nedf_simTime,
     "misc",
     "Returns the current simulation time.")
 
-cNedValue nedf_simTime(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_simTime(cComponent *contextComponent, cValue argv[], int argc)
 {
-    return cNedValue(SIMTIME_DBL(simTime()), "s");
+    return cValue(SIMTIME_DBL(simTime()), "s");
 }
 
 DEF(nedf_select,
@@ -891,7 +891,7 @@ DEF(nedf_select,
     "misc",
     "Returns the <index>th item from the rest of the argument list; numbering starts from 0.")
 
-cNedValue nedf_select(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_select(cComponent *contextComponent, cValue argv[], int argc)
 {
     long index = argv[0];
     if (index < 0)
@@ -909,11 +909,11 @@ DEF(nedf_firstAvailable,
     "its C++ implementation class is also available. Throws an error if "
     "none of the types are available.")
 
-cNedValue nedf_firstAvailable(cComponent *contextComponent, cNedValue argv[], int argc)
+cValue nedf_firstAvailable(cComponent *contextComponent, cValue argv[], int argc)
 {
     cRegistrationList *types = componentTypes.getInstance();
     for (int i = 0; i < argc; i++) {
-        if (argv[i].getType() != cNedValue::STRING)
+        if (argv[i].getType() != cValue::STRING)
             throw cRuntimeError("String arguments expected");
         const char *name = argv[i].stringValue();
         cComponentType *c;

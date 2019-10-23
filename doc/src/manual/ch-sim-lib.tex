@@ -2688,13 +2688,13 @@ The C++ function that implements the NED function must have the following
 signature, as defined by the \fdef{NEDFunction} typedef:
 
 \begin{cpp}
-cNedValue function(cComponent *context, cNedValue argv[], int argc);
+cValue function(cComponent *context, cValue argv[], int argc);
 \end{cpp}
 
-As you can see, the function accepts an array of \cclass{cNedValue}
-objects, and returns a \cclass{cNedValue}; the \textit{argc-argv} style
+As you can see, the function accepts an array of \cclass{cValue}
+objects, and returns a \cclass{cValue}; the \textit{argc-argv} style
 argument list should be familiar to you from the declaration of the C/C++
-\ttt{main()} function. \cclass{cNedValue} is a class that is used during
+\ttt{main()} function. \cclass{cValue} is a class that is used during
 the evaluation of NED expressions, and represents a value together with its
 type.  The \ttt{context} argument contains the module or channel in the
 context of which the NED expression is being evaluated; it is useful for
@@ -2708,7 +2708,7 @@ Thus, \ttt{argc} is mostly useful only if you have optional arguments or a
 variable argument list. The NED expression evaluator also checks that the
 value you return from the function corresponds to the signature.
 
-\cclass{cNedValue} can store all the needed data types (\ttt{bool},
+\cclass{cValue} can store all the needed data types (\ttt{bool},
 \ttt{double}, \ttt{string}, etc.), and is equipped with the functions
 necessary to conveniently read and manipulate the stored value. The value can
 be read via functions like \ffunc{boolValue()}, \ffunc{longValue()},
@@ -2718,10 +2718,10 @@ be read via functions like \ffunc{boolValue()}, \ffunc{longValue()},
 object to the desired data type, making use of the provided typecast
 operators. Invoking a getter or typecast operator that does not match the
 stored data type will result in a runtime error. For setting the stored
-value, \cclass{cNedValue} provides a number of overloaded \ffunc{set()}
+value, \cclass{cValue} provides a number of overloaded \ffunc{set()}
 functions, assignment operators and constructors.
 
-Further \cclass{cNedValue} member functions provide access to the stored
+Further \cclass{cValue} member functions provide access to the stored
 data type; yet other functions are associated with handling quantities,
 i.e. doubles with measurement units. There are member functions for getting
 and setting the number part and the measurement unit part separately; for
@@ -2731,7 +2731,7 @@ Equipped with the above information, we can already write a simple NED function
 that returns the length of a string:
 
 \begin{cpp}
-static cNedValue ned_strlen(cComponent *context, cNedValue argv[], int argc)
+static cValue ned_strlen(cComponent *context, cValue argv[], int argc)
 {
     return (long)argv[0].stdstringValue().size();
 }
@@ -2745,7 +2745,7 @@ be already declared, we place the function implementation in front of the
 \ttt{static}, because its name doesn't need to be visible for the linker.
 In the function body, we use \ttt{std::string}'s \ttt{size()} method to
 obtain the length of the string, and cast the result to \ttt{long}; the C++
-compiler will convert that into a \ttt{cNedValue} using \ttt{cNedValue}'s
+compiler will convert that into a \ttt{cValue} using \ttt{cValue}'s
 \ttt{long} constructor. Note that the \fkeyword{int} keyword in the signature
 maps to the C++ type \ttt{long}.
 
@@ -2753,7 +2753,7 @@ The following example defines a \ttt{choose()} NED function that returns
 its $k$th argument that follows the \ttt{index} ($k$) argument.
 
 \begin{cpp}
-static cNedValue ned_choose(cComponent *context, cNedValue argv[], int argc)
+static cValue ned_choose(cComponent *context, cValue argv[], int argc)
 {
     int index = (int)argv[0];
     if (index < 0 || index >= argc-1)
@@ -2774,12 +2774,12 @@ The third example shows how the built-in \ttt{uniform()} NED function could
 be reimplemented by the user:
 
 \begin{cpp}
-static cNedValue ned_uniform(cComponent *context, cNedValue argv[], int argc)
+static cValue ned_uniform(cComponent *context, cValue argv[], int argc)
 {
     int rng = argc==3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
     double result = uniform((double)argv[0], argv1converted, rng);
-    return cNedValue(result, argv[0].getUnit());
+    return cValue(result, argv[0].getUnit());
     // or: argv[0].setPreservingUnit(result); return argv[0];
 }
 
@@ -2801,7 +2801,7 @@ Alternatively, we could have overwritten the numeric part of \ttt{a} with
 the result using \ffunc{setPreservingUnit()}, and returned just that. If
 there is no measurement unit, \ffunc{getUnit()} will return \ttt{nullptr},
 which is understood by both \ffunc{doubleValueInUnit()} and the
-\cclass{cNedValue} constructor.
+\cclass{cValue} constructor.
 
 \begin{note}
 Note that it is OK to change the elements of the \ttt{argv[]} vector: they
@@ -2810,14 +2810,14 @@ evaluator anyway when your function returns.
 \end{note}
 
 
-\subsubsection{cNedValue In More Detail}
-\label{sec:sim-lib:cnedvalue-in-more-detail}
+\subsubsection{cValue In More Detail}
+\label{sec:sim-lib:cvalue-in-more-detail}
 
 In the previous section we have given an overview and demonstrated the basic
-use of the \cclass{cNedValue} class; here we go into further details.
+use of the \cclass{cValue} class; here we go into further details.
 
 The stored data type can be obtained with the \ffunc{getType()} function.
-It returns an enum (\ttt{cNedValue::Type}) that has the following values:
+It returns an enum (\ttt{cValue::Type}) that has the following values:
 \ttt{UNDEF}, \ttt{BOOL}, \ttt{INT}, \ttt{DOUBLE}, \ttt{STRING}, \ttt{XML}.
 \ttt{UNDEF} is synonymous with \textit{unset}; the others correspond to data
 types: \ttt{bool}, \ttt{int64\_t}, \ttt{double}, \ttt{const char *}
@@ -2826,25 +2826,25 @@ There is no separate \ttt{QUANTITY} type: quantities are also represented with
 the \ttt{DOUBLE} type, which has an optional associated measurement unit.
 
 The \ffunc{getTypeName()} static function returns the string equivalent of
-a \ttt{cNedValue::Type}. The utility function \ffunc{isSet()} returns \ttt{true}
+a \ttt{cValue::Type}. The utility function \ffunc{isSet()} returns \ttt{true}
 if the type is different from \ttt{UNDEF}; \ffunc{isNumeric()} returns \ttt{true}
 if the type is \ttt{INT} or \ttt{DOUBLE}.
 
 \begin{cpp}
-cNedValue value = 5.0;
-cNedValue::Type type = value.getType(); // ==> DOUBLE
-EV << cNedValue::getTypeName(type) << endl; // ==> "double"
+cValue value = 5.0;
+cValue::Type type = value.getType(); // ==> DOUBLE
+EV << cValue::getTypeName(type) << endl; // ==> "double"
 \end{cpp}
 
 We have already seen that the \ttt{DOUBLE} type serves both the
 \fkeyword{double} and \fkeyword{quantity} types of the NED function
 signature, by storing an optional measurement unit (a string)
-in addition to the \ttt{double} variable. A \cclass{cNedValue} can be set
+in addition to the \ttt{double} variable. A \cclass{cValue} can be set
 to a quantity by creating it with a two-argument constructor that accepts
 a \ttt{double} and a \ttt{const char *} for unit, or by invoking a similar
 two-argument \ffunc{set()} function. The measurement unit can be read with
 \ffunc{getUnit()}, and overwritten with \ffunc{setUnit()}. If you assign a
-\ttt{double} to a \cclass{cNedValue} or invoke the one-argument
+\ttt{double} to a \cclass{cValue} or invoke the one-argument
 \ttt{set(double)} method on it, that will clear the measurement unit. If you
 want to overwrite the number part but preserve the original unit, you need
 to use the \ffunc{setPreservingUnit(double)} method.
@@ -2855,7 +2855,7 @@ to return the number in that unit. The \ffunc{convertTo()} method also
 accepts a measurement unit, and tries to permanently convert the value to
 that unit; that is, if successful, it changes both the number and the
 measurement unit part of the object. The \ffunc{convertUnit()} static
-\cclass{cNedValue} member function accepts three arguments: a quantity as a
+\cclass{cValue} member function accepts three arguments: a quantity as a
 \ttt{double} and a unit, and a target unit; and returns the number in the
 target unit. A \ffunc{parseQuantity()} static member function parses
 a string that contains a quantity (e.g. \ttt{"5min 48s"}), and return
@@ -2868,19 +2868,19 @@ For performance reasons, \ttt{setUnit()}, \ttt{convertTo()} and all other
 functions that accept and store a measurement unit will only store the
 \ttt{const char*} pointer, but do \textit{not} copy the string itself.
 Consequently, the passed measurement unit pointers must stay valid for at
-least the lifetime of the \cclass{cNedValue} object, or even longer if the
-same pointer propagates to other \cclass{cNedValue} objects. It is
+least the lifetime of the \cclass{cValue} object, or even longer if the
+same pointer propagates to other \cclass{cValue} objects. It is
 recommended that you only pass pointers that stay valid during the entire
 simulation. It is safe to use: (1) string constants from the code; (2) unit
-strings from other \cclass{cNedValue}s; and (3) pooled strings e.g. from a
-\cclass{cStringPool} or from \cclass{cNedValue}'s static \ffunc{getPooled()}
+strings from other \cclass{cValue}s; and (3) pooled strings e.g. from a
+\cclass{cStringPool} or from \cclass{cValue}'s static \ffunc{getPooled()}
 function.
 
 Example code:
 
 \begin{cpp}
 // manipulating the number and the measurement unit
-cNedValue value(250,"ms");    // initialize to 250ms
+cValue value(250,"ms");    // initialize to 250ms
 value = 300.0;                // ==> 300 (clears the unit!)
 value.set(500,"ms");          // ==> 500ms
 value.setUnit("s");           // ==> 500s (overwrites the unit)
@@ -2891,12 +2891,12 @@ value.setUnit(nullptr);       // ==> 180 (clears the unit)
 value.set(500, "ms");         // ==> 500ms
 value.convertTo("s");         // ==> 0.5s
 double us = value.doubleValueInUnit("us"); // ==> 500000 (value is unchanged)
-double bps = cNedValue::convertUnit(128, "kbps", "bps"); // ==> 128000
-double ms = cNedValue::convertUnit("2min 15.1s", "ms"); // ==> 135100
+double bps = cValue::convertUnit(128, "kbps", "bps"); // ==> 128000
+double ms = cValue::convertUnit("2min 15.1s", "ms"); // ==> 135100
 
 // getting persistent measurement unit strings
 const char *unit = argv[0].stringValue(); // cannot be trusted to persist
-value.setUnit(cNedValue::getPooled(unit)); // use a persistent copy for setUnit()
+value.setUnit(cValue::getPooled(unit)); // use a persistent copy for setUnit()
 \end{cpp}
 
 

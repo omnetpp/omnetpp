@@ -74,7 +74,7 @@
 #include "omnetpp/cmatchexpression.h"
 #include "omnetpp/cpatternmatcher.h"
 #include "omnetpp/cnedfunction.h"
-#include "omnetpp/cnedvalue.h"
+#include "omnetpp/cvalue.h"
 #include "omnetpp/cnedmathfunction.h"
 #include "omnetpp/cobject.h"
 #include "omnetpp/cnamedobject.h"

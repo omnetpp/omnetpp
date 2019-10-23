@@ -21,7 +21,7 @@ using namespace std;
 
 namespace omnetpp {
 
-cNedValue cExpression::evaluate(cComponent *contextComponent) const
+cValue cExpression::evaluate(cComponent *contextComponent) const
 {
     Context context(contextComponent, nullptr);
     return evaluate(&context);

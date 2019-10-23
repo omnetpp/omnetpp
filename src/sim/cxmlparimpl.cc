@@ -136,8 +136,8 @@ cXMLElement *cXMLParImpl::xmlValue(cComponent *context) const
     if ((flags & FL_ISEXPR) == 0)
         return val;
     else {
-        cNedValue v = evaluate(expr, context);
-        if (v.type != cNedValue::OBJECT)
+        cValue v = evaluate(expr, context);
+        if (v.type != cValue::OBJECT)
             throw cRuntimeError(E_ECANTCAST, "XML");
         return v.xmlValue();
     }

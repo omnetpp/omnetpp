@@ -151,21 +151,21 @@ void cNedFunction::parseSignature(const char *signature)
         minArgc = maxArgc;
 }
 
-static void errorBadArgType(cNedFunction *self, int index, cNedValue::Type expected, const cNedValue& actual)
+static void errorBadArgType(cNedFunction *self, int index, cValue::Type expected, const cValue& actual)
 {
-    const char *note = (expected == cNedValue::INT && actual.getType() == cNedValue::DOUBLE) ?
+    const char *note = (expected == cValue::INT && actual.getType() == cValue::DOUBLE) ?
             " (note: no implicit conversion from double to int)" : "";
-    const char *expectedTypeName = (expected == cNedValue::DOUBLE) ? "double or int" :  cNedValue::getTypeName(expected);
+    const char *expectedTypeName = (expected == cValue::DOUBLE) ? "double or int" :  cValue::getTypeName(expected);
     throw cRuntimeError("%s expected for argument %d, got %s%s",
-            expectedTypeName, index, cNedValue::getTypeName(actual.getType()), note);
+            expectedTypeName, index, cValue::getTypeName(actual.getType()), note);
 }
 
-static void errorDimlessArgExpected(cNedFunction *self, int index, const cNedValue& actual)
+static void errorDimlessArgExpected(cNedFunction *self, int index, const cValue& actual)
 {
     throw cRuntimeError("Argument %d must be dimensionless, got %s", index, actual.str().c_str());
 }
 
-void cNedFunction::checkArgs(cNedValue argv[], int argc)
+void cNedFunction::checkArgs(cValue argv[], int argc)
 {
     if (argc < minArgc || (argc > maxArgc && !hasVarargs_))
         throw cRuntimeError("Wrong number of arguments");
@@ -174,24 +174,24 @@ void cNedFunction::checkArgs(cNedValue argv[], int argc)
     for (int i = 0; i < n; i++) {
         char declType = argTypes[i];
         if (declType == 'L') {
-            if (argv[i].type != cNedValue::INT)
-                errorBadArgType(this, i, cNedValue::INT, argv[i]);
+            if (argv[i].type != cValue::INT)
+                errorBadArgType(this, i, cValue::INT, argv[i]);
             if (!opp_isempty(argv[i].getUnit()))
                 errorDimlessArgExpected(this, i, argv[i]);
         }
         if (declType == 'T') {
-            if (argv[i].type != cNedValue::INT)
-                errorBadArgType(this, i, cNedValue::INT, argv[i]);
+            if (argv[i].type != cValue::INT)
+                errorBadArgType(this, i, cValue::INT, argv[i]);
         }
         else if (declType == 'D') {
-            if (argv[i].type != cNedValue::DOUBLE && argv[i].type != cNedValue::INT) // allow implicit INT-to-DOUBLE conversion
-                errorBadArgType(this, i, cNedValue::DOUBLE, argv[i]);
+            if (argv[i].type != cValue::DOUBLE && argv[i].type != cValue::INT) // allow implicit INT-to-DOUBLE conversion
+                errorBadArgType(this, i, cValue::DOUBLE, argv[i]);
             if (!opp_isempty(argv[i].getUnit()))
                 errorDimlessArgExpected(this, i, argv[i]);
         }
         else if (declType == 'Q') {
-            if (argv[i].type != cNedValue::DOUBLE && argv[i].type != cNedValue::INT) // allow implicit INT-to-DOUBLE conversion
-                errorBadArgType(this, i, cNedValue::DOUBLE, argv[i]);
+            if (argv[i].type != cValue::DOUBLE && argv[i].type != cValue::INT) // allow implicit INT-to-DOUBLE conversion
+                errorBadArgType(this, i, cValue::DOUBLE, argv[i]);
         }
         else if (declType != '*' && argv[i].type != declType) {
             errorBadArgType(this, i, argv[i].type, argv[i]);
@@ -199,7 +199,7 @@ void cNedFunction::checkArgs(cNedValue argv[], int argc)
     }
 }
 
-cNedValue cNedFunction::invoke(cExpression::Context *context, cNedValue argv[], int argc)
+cValue cNedFunction::invoke(cExpression::Context *context, cValue argv[], int argc)
 {
     checkArgs(argv, argc);
     return fext ? fext(context, argv, argc) : f(context->component, argv, argc);

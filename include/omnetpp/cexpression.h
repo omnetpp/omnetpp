@@ -18,7 +18,7 @@
 
 #include "cobject.h"
 #include "cexception.h"
-#include "cnedvalue.h"
+#include "cvalue.h"
 
 namespace omnetpp {
 
@@ -95,10 +95,10 @@ class SIM_API cExpression : public cObject
     /** @name Evaluator methods. */
     //@{
     /**
-     * Evaluate the expression and return the result in a cNedValue.
+     * Evaluate the expression and return the result in a cValue.
      * The context parameter cannot be nullptr.
      */
-    virtual cNedValue evaluate(Context *context) const = 0;
+    virtual cValue evaluate(Context *context) const = 0;
 
     /**
      * Evaluate the expression and convert the result to bool if possible;
@@ -133,11 +133,11 @@ class SIM_API cExpression : public cObject
     virtual cXMLElement *xmlValue(Context *context) const = 0;
 
     /**
-     * Evaluate the expression and return the result in a cNedValue.
+     * Evaluate the expression and return the result in a cValue.
      * This method creates a Context from contextComponent, and delegates
      * to evaluate(Context*).
      */
-    virtual cNedValue evaluate(cComponent *contextComponent=nullptr) const;
+    virtual cValue evaluate(cComponent *contextComponent=nullptr) const;
 
     /**
      * Evaluate the expression and convert the result to bool if possible;

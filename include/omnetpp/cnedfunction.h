@@ -33,7 +33,7 @@ namespace omnetpp {
  * @see cNedFunction, Define_NED_Function().
  * @ingroup SimSupport
  */
-typedef cNedValue (*NedFunction)(cComponent *context, cNedValue argv[], int argc);
+typedef cValue (*NedFunction)(cComponent *context, cValue argv[], int argc);
 
 /**
  * @brief One of the two function signatures that can be used with cDynamicExpression.
@@ -43,7 +43,7 @@ typedef cNedValue (*NedFunction)(cComponent *context, cNedValue argv[], int argc
  * @see cNedFunction, Define_NED_Function().
  * @ingroup SimSupport
  */
-typedef cNedValue (*NedFunctionExt)(cExpression::Context *context, cNedValue argv[], int argc);
+typedef cValue (*NedFunctionExt)(cExpression::Context *context, cValue argv[], int argc);
 
 // NEDFunction was renamed NedFunction in OMNeT++ 5.3; typedef added for compatibility
 typedef NedFunction NEDFunction;
@@ -72,7 +72,7 @@ class SIM_API cNedFunction : public cNoncopyableOwnedObject
 
   protected:
     void parseSignature(const char *signature);
-    void checkArgs(cNedValue argv[], int argc);
+    void checkArgs(cValue argv[], int argc);
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -121,7 +121,7 @@ class SIM_API cNedFunction : public cNoncopyableOwnedObject
     /**
      * Performs argument type checking, and invokes the function.
      */
-    cNedValue invoke(cExpression::Context *context, cNedValue argv[], int argc);
+    cValue invoke(cExpression::Context *context, cValue argv[], int argc);
 
     /**
      * Returns the function pointer. Do not call the function

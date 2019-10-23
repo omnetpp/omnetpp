@@ -16,7 +16,7 @@
 #ifndef __OMNETPP_CDYNAMICEXPRESSION_H
 #define __OMNETPP_CDYNAMICEXPRESSION_H
 
-#include "cnedvalue.h"
+#include "cvalue.h"
 #include "cexpression.h"
 #include "cstringpool.h"
 
@@ -50,22 +50,22 @@ class SIM_API cDynamicExpression : public cExpression
         /** @name Evaluator methods. */
         //@{
         /** Return the value of a variable with the given name. */
-        virtual cNedValue readVariable(Context *context, const char *name) = 0;
+        virtual cValue readVariable(Context *context, const char *name) = 0;
 
         /** Return the value of an element of an array variable with the given name. Expression syntax: name[index] */
-        virtual cNedValue readVariable(Context *context, const char *name, intval_t index) = 0;
+        virtual cValue readVariable(Context *context, const char *name, intval_t index) = 0;
 
         /** Return the value of a member of the given object. Expression syntax: object.name */
-        virtual cNedValue readMember(Context *context, const cNedValue& object, const char *name) = 0;
+        virtual cValue readMember(Context *context, const cValue& object, const char *name) = 0;
 
         /** Return the value of an element of an array member of the given object. Expression syntax: object.name[index] */
-        virtual cNedValue readMember(Context *context, const cNedValue& object, const char *name, intval_t index) = 0;
+        virtual cValue readMember(Context *context, const cValue& object, const char *name, intval_t index) = 0;
 
         /** Evaluate a function call with the given arguments. Expression syntax: name(argv0, argv1,...) */
-        virtual cNedValue callFunction(Context *context, const char *name, cNedValue argv[], int argc) = 0;
+        virtual cValue callFunction(Context *context, const char *name, cValue argv[], int argc) = 0;
 
         /** Evaluate a method call on the given object with the given arguments. Expression syntax: object.name(argv0, argv1,...) */
-        virtual cNedValue callMethod(Context *context, const cNedValue& object, const char *name, cNedValue argv[], int argc) = 0;
+        virtual cValue callMethod(Context *context, const cValue& object, const char *name, cValue argv[], int argc) = 0;
         //@}
     };
 
@@ -74,12 +74,12 @@ class SIM_API cDynamicExpression : public cExpression
      */
     class SIM_API ResolverBase : public IResolver {
       public:
-        virtual cNedValue readVariable(Context *context, const char *name) override;
-        virtual cNedValue readVariable(Context *context, const char *name, intval_t index) override;
-        virtual cNedValue readMember(Context *context, const cNedValue& object, const char *name) override;
-        virtual cNedValue readMember(Context *context, const cNedValue& object, const char *name, intval_t index) override;
-        virtual cNedValue callFunction(Context *context, const char *name, cNedValue argv[], int argc) override;
-        virtual cNedValue callMethod(Context *context, const cNedValue& object, const char *name, cNedValue argv[], int argc) override;
+        virtual cValue readVariable(Context *context, const char *name) override;
+        virtual cValue readVariable(Context *context, const char *name, intval_t index) override;
+        virtual cValue readMember(Context *context, const cValue& object, const char *name) override;
+        virtual cValue readMember(Context *context, const cValue& object, const char *name, intval_t index) override;
+        virtual cValue callFunction(Context *context, const char *name, cValue argv[], int argc) override;
+        virtual cValue callMethod(Context *context, const cValue& object, const char *name, cValue argv[], int argc) override;
     };
 
     /**
@@ -87,11 +87,11 @@ class SIM_API cDynamicExpression : public cExpression
      */
     class SIM_API SymbolTable : public ResolverBase {
       private:
-        std::map<std::string, cNedValue> symbolTable;
+        std::map<std::string, cValue> symbolTable;
       public:
-        SymbolTable(const std::map<std::string, cNedValue>& symbolTable) : symbolTable(symbolTable) {}
+        SymbolTable(const std::map<std::string, cValue>& symbolTable) : symbolTable(symbolTable) {}
         virtual SymbolTable *dup() const override {return new SymbolTable(symbolTable);}
-        virtual cNedValue readVariable(Context *context, const char *name) override;
+        virtual cValue readVariable(Context *context, const char *name) override;
     };
 
   protected:
@@ -165,7 +165,7 @@ class SIM_API cDynamicExpression : public cExpression
      * parse(const char *text, IResolver *resolver) while using
      * cDynamicExpression::SymbolTable as resolver.
      */
-    virtual void parse(const char *text, const std::map<std::string,cNedValue>& symbolTable) {parse(text, new SymbolTable(symbolTable));}
+    virtual void parse(const char *text, const std::map<std::string,cValue>& symbolTable) {parse(text, new SymbolTable(symbolTable));}
 
     /**
      * Interprets the string as a NED expression, and stores it.
@@ -173,10 +173,10 @@ class SIM_API cDynamicExpression : public cExpression
     virtual void parseNedExpr(const char *text, bool inSubcomponentScope, bool inInifile);
 
     /**
-     * Evaluate the expression, and return the results as a cNedValue.
+     * Evaluate the expression, and return the results as a cValue.
      * Evaluation errors result in exceptions.
      */
-    virtual cNedValue evaluate(Context *context) const override;
+    virtual cValue evaluate(Context *context) const override;
 
     /**
      * Evaluate the expression and convert the result to bool if possible;

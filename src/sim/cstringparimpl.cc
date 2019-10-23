@@ -128,8 +128,8 @@ std::string cStringParImpl::stdstringValue(cComponent *context) const
     if ((flags & FL_ISEXPR) == 0)
         return val;
     else {
-        cNedValue v = evaluate(expr, context);
-        if (v.type != cNEDValue::STRING)
+        cValue v = evaluate(expr, context);
+        if (v.type != cValue::STRING)
             throw cRuntimeError(E_ECANTCAST, "string");
         return v.stringValue();
     }

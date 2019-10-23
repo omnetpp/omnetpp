@@ -10,7 +10,7 @@ void test(const char *expr)
     try {
         cDynamicExpression e;
         e.parse(expr);
-        cNedValue v = e.evaluate(cSimulation::getActiveSimulation()->getContextModule());
+        cValue v = e.evaluate(cSimulation::getActiveSimulation()->getContextModule());
         result = v.str();
     } catch (std::exception& e) {
         result = e.what();

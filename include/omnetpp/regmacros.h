@@ -73,8 +73,8 @@ namespace omnetpp {
  *
  * The C++ function can have either of the following two signatures:
  * <pre>
- * cNedValue f(cComponent *context, cNedValue argv[], int argc);  // typedef NedFunction
- * cNedValue f(cExpression::Context *context, cNedValue argv[], int argc);  // typedef NedFunctionExt
+ * cValue f(cComponent *context, cValue argv[], int argc);  // typedef NedFunction
+ * cValue f(cExpression::Context *context, cValue argv[], int argc);  // typedef NedFunctionExt
  * </pre>
  *
  * SIGNATURE is a string with the following syntax:

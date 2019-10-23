@@ -2,7 +2,7 @@
 Test cDynamicExpression::parse() with its SymbolTable inner class.
 
 %global:
-typedef std::map<std::string, cNedValue> Variables;
+typedef std::map<std::string, cValue> Variables;
 
 void test(const char *expr, const Variables& variables)
 {
@@ -10,7 +10,7 @@ void test(const char *expr, const Variables& variables)
     try {
         cDynamicExpression e;
         e.parse(expr, variables);
-        cNedValue v = e.evaluate();
+        cValue v = e.evaluate();
         result = v.str();
     } catch (std::exception& e) {
         result = e.what();
@@ -19,7 +19,7 @@ void test(const char *expr, const Variables& variables)
 }
 
 %activity:
-std::map<std::string, cNedValue> variables;
+std::map<std::string, cValue> variables;
 variables["a"] = 2;
 variables["b"] = 1;
 

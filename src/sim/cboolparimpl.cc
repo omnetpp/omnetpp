@@ -101,8 +101,8 @@ bool cBoolParImpl::boolValue(cComponent *context) const
     if ((flags & FL_ISEXPR) == 0)
         return val;
     else {
-        cNedValue v = evaluate(expr, context);
-        if (v.type != cNedValue::BOOL)
+        cValue v = evaluate(expr, context);
+        if (v.type != cValue::BOOL)
             throw cRuntimeError(E_ECANTCAST, "bool");
         return v.boolValue();
     }

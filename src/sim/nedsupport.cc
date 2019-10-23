@@ -32,28 +32,28 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace nedsupport {
 
-cNedValue makeNedValue(const ExprValue& value)
+cValue makeNedValue(const ExprValue& value)
 {
     switch (value.getType()) {
-    case ExprValue::UNDEF: return cNedValue();
-    case ExprValue::BOOL: return cNedValue(value.boolValue());
-    case ExprValue::INT: return cNedValue(value.intValue(), value.getUnit());
-    case ExprValue::DOUBLE: return cNedValue(value.doubleValue(), value.getUnit());
-    case ExprValue::STRING: return cNedValue(value.stringValue());
-    case ExprValue::OBJECT: return cNedValue(value.objectValue());
+    case ExprValue::UNDEF: return cValue();
+    case ExprValue::BOOL: return cValue(value.boolValue());
+    case ExprValue::INT: return cValue(value.intValue(), value.getUnit());
+    case ExprValue::DOUBLE: return cValue(value.doubleValue(), value.getUnit());
+    case ExprValue::STRING: return cValue(value.stringValue());
+    case ExprValue::OBJECT: return cValue(value.objectValue());
     }
     Assert(false);
 }
 
-ExprValue makeExprValue(const cNedValue& value)
+ExprValue makeExprValue(const cValue& value)
 {
     switch (value.getType()) {
-    case cNedValue::UNDEF: return ExprValue();
-    case cNedValue::BOOL: return ExprValue(value.boolValue());
-    case cNedValue::INT: return ExprValue(value.intValue(), value.getUnit());
-    case cNedValue::DOUBLE: return ExprValue(value.doubleValue(), value.getUnit());
-    case cNedValue::STRING: return ExprValue(value.stringValue());
-    case cNedValue::OBJECT: return ExprValue(value.objectValue());
+    case cValue::UNDEF: return ExprValue();
+    case cValue::BOOL: return ExprValue(value.boolValue());
+    case cValue::INT: return ExprValue(value.intValue(), value.getUnit());
+    case cValue::DOUBLE: return ExprValue(value.doubleValue(), value.getUnit());
+    case cValue::STRING: return ExprValue(value.stringValue());
+    case cValue::OBJECT: return ExprValue(value.objectValue());
     }
     Assert(false);
 }
@@ -70,10 +70,10 @@ ExprValue makeExprValue(const cPar& par)
     Assert(false);
 }
 
-cNedValue *makeNedValues(cNedValue *&buffer, const ExprValue argv[], int argc)
+cValue *makeNedValues(cValue *&buffer, const ExprValue argv[], int argc)
 {
     if (!buffer)
-        buffer = new cNedValue[argc];
+        buffer = new cValue[argc];
     for (int i = 0; i < argc; i++)
         buffer[i] = makeNedValue(argv[i]);
     return buffer;
@@ -96,7 +96,7 @@ ExprValue NedFunctionNode::evaluate(Context *context_) const
     cExpression::Context *context = dynamic_cast<cExpression::Context*>(context_->simContext);
     ASSERT(context != nullptr);
     int argc = children.size();
-    std::unique_ptr<cNedValue[]> argv(new cNedValue[argc]);
+    std::unique_ptr<cValue[]> argv(new cValue[argc]);
     int i = 0;
     for (ExprNode *child : children)
         argv[i++] = makeNedValue(child->tryEvaluate(context_));

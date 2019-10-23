@@ -100,7 +100,7 @@ void cParImpl::setBaseDirectory(const char *s)
     baseDirectory = stringPool.get(s);
 }
 
-cNedValue cParImpl::evaluate(cExpression *expr, cComponent *contextComponent) const
+cValue cParImpl::evaluate(cExpression *expr, cComponent *contextComponent) const
 {
     static int depth;
     try {
@@ -108,7 +108,7 @@ cNedValue cParImpl::evaluate(cExpression *expr, cComponent *contextComponent) co
         if (depth >= 5)
             throw cRuntimeError("Evaluation nesting too deep (circular parameter references?)");
         cExpression::Context context(contextComponent, baseDirectory);
-        cNedValue ret = expr->evaluate(&context);
+        cValue ret = expr->evaluate(&context);
         depth--;
         return ret;
     }

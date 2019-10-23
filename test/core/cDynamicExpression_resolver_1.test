@@ -15,32 +15,32 @@ public:
 
     virtual TestResolver *dup() const override {return new TestResolver();}
 
-    virtual cNedValue readVariable(Context *context, const char *name) override {
+    virtual cValue readVariable(Context *context, const char *name) override {
         ASSERT(context == &gContext);
         return str(name);
     }
 
-    virtual cNedValue readVariable(Context *context, const char *name, intval_t index) override {
+    virtual cValue readVariable(Context *context, const char *name, intval_t index) override {
         ASSERT(context == &gContext);
         return str(name) + str(index);
     }
 
-    virtual cNedValue readMember(Context *context, const cNedValue& object, const char *name) override {
+    virtual cValue readMember(Context *context, const cValue& object, const char *name) override {
         ASSERT(context == &gContext);
         return object.str() + "->" + name;
     }
 
-    virtual cNedValue readMember(Context *context, const cNedValue& object, const char *name, intval_t index) override {
+    virtual cValue readMember(Context *context, const cValue& object, const char *name, intval_t index) override {
         ASSERT(context == &gContext);
         return object.str() + "->" + name + str(index);
     }
 
-    virtual cNedValue callFunction(Context *context, const char *name, cNedValue argv[], int argc) override {
+    virtual cValue callFunction(Context *context, const char *name, cValue argv[], int argc) override {
         ASSERT(context == &gContext);
         return str(name) + "(....)";
     }
 
-    virtual cNedValue callMethod(Context *context, const cNedValue& object, const char *name, cNedValue argv[], int argc) override {
+    virtual cValue callMethod(Context *context, const cValue& object, const char *name, cValue argv[], int argc) override {
         ASSERT(context == &gContext);
         return object.str() + "->" + name + "(....)";
     }
@@ -52,7 +52,7 @@ void test(const char *expr)
     try {
         cDynamicExpression e;
         e.parse(expr, new TestResolver());
-        cNedValue v = e.evaluate(&gContext);
+        cValue v = e.evaluate(&gContext);
         result = v.str();
     } catch (std::exception& e) {
         result = e.what();

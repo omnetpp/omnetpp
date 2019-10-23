@@ -31,10 +31,10 @@ namespace nedsupport {
 
 using omnetpp::common::expression::Context;
 
-cNedValue makeNedValue(const ExprValue& value);
-ExprValue makeExprValue(const cNedValue& value);
+cValue makeNedValue(const ExprValue& value);
+ExprValue makeExprValue(const cValue& value);
 ExprValue makeExprValue(const cPar& par);
-cNedValue *makeNedValues(cNedValue *&buffer, const ExprValue argv[], int argc);
+cValue *makeNedValues(cValue *&buffer, const ExprValue argv[], int argc);
 
 class NedExpressionContext : public cExpression::Context
 {
