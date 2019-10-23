@@ -70,8 +70,8 @@ static void dump(NedElement *node)
 // utility function for exception handling: adds NED file+line to the exception text
 static void updateOrRethrowException(std::exception& e, NedElement *context)
 {
-    const char *loc = context ? context->getSourceLocation() : nullptr;
-    if (!opp_isempty(loc)) {
+    std::string loc = context ? context->getSourceLocation() : "";
+    if (!loc.empty()) {
         std::string msg = std::string(e.what()) + ", at " + loc;
         cException *ce = dynamic_cast<cException *>(&e);
         if (ce)

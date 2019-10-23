@@ -173,7 +173,7 @@ void MsgAnalyzer::extractFields(ClassInfo& classInfo)
 
         FieldInfo *duplicate = findField(classInfo, field.name);
         if (duplicate != nullptr)
-            errors->addError(field.astNode, "Field '%s' already exists, see %s", field.name.c_str(), duplicate->astNode->getSourceLocation());
+            errors->addError(field.astNode, "Field '%s' already exists, see %s", field.name.c_str(), duplicate->astNode->getSourceLocation().c_str());
         else if (field.type.empty())
             classInfo.baseclassFieldlist.push_back(field);
         else

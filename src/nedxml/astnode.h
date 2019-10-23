@@ -157,7 +157,7 @@ class NEDXML_API ASTNode
      * Returns a string containing a file/line position showing where this
      * element originally came from.
      */
-    virtual const char *getSourceLocation() const;
+    virtual std::string getSourceLocation() const;
 
     /**
      * Sets location string (a string containing a file/line position showing

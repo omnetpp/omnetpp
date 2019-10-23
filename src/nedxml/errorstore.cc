@@ -31,20 +31,15 @@ void ErrorStore::doAdd(ASTNode *context, const char *loc, int severity, const ch
     entries.push_back(Entry());
     Entry& e = entries.back();
 
-    if (!loc && context)
-        loc = context->getSourceLocation();
-
     e.context = context;
-    e.location = loc ? loc : "";
+    e.location = loc ? loc : context ? context->getSourceLocation() : "";
     e.severity = severity;
     e.message = message;
 
     if (doprint) {
         const char *severitytext = severityName(severity);
-        if (loc && !loc[0])
-            fprintf(stderr, "%s: %s\n", severitytext, message);
-        else if (loc)
-            fprintf(stderr, "%s: %s: %s\n", loc, severitytext, message);
+        if (!e.location.empty())
+            fprintf(stderr, "%s: %s: %s\n", e.location.c_str(), severitytext, message);
         else if (context)
             fprintf(stderr, "<%s>: %s: %s\n", context->getTagName(), severitytext, message);
         else
@@ -166,15 +161,13 @@ void NedInternalError(const char *file, int line, ASTNode *context, const char *
     char message[BUFLEN];
     VSNPRINTF(message, BUFLEN, messagefmt);
 
-    const char *loc = context ? context->getSourceLocation() : nullptr;
-    if (loc)
-        fprintf(stderr, "INTERNAL ERROR: %s:%d: %s: %s\n", file, line, loc, message);
+    std::string loc = context ? context->getSourceLocation() : "";
+    if (!loc.empty())
+        fprintf(stderr, "INTERNAL ERROR: %s:%d: %s: %s\n", file, line, loc.c_str(), message);
     else if (context)
         fprintf(stderr, "INTERNAL ERROR: %s:%d: <%s>: %s\n", file, line, context->getTagName(), message);
     else
         fprintf(stderr, "INTERNAL ERROR: %s:%d: %s\n", file, line, message);
-    // exit(-1);
-    // __asm int 3; //FIXME this windows-only
 }
 
 }  // namespace nedxml

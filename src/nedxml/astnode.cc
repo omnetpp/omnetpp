@@ -157,9 +157,9 @@ void ASTNode::setId(long _id)
     id = _id;
 }
 
-const char *ASTNode::getSourceLocation() const
+std::string ASTNode::getSourceLocation() const
 {
-    return srcLoc.c_str();
+    return srcLoc;
 }
 
 void ASTNode::setSourceLocation(const char *loc)

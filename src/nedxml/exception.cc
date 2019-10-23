@@ -40,9 +40,9 @@ NedException::NedException(ASTNode *context, const char *messagefmt...) : std::r
     char message[BUFLEN];
     VSNPRINTF(message, BUFLEN, messagefmt);
 
-    const char *loc = context ? context->getSourceLocation() : nullptr;
-    if (loc)
-        msg = std::string(message) + ", at " + std::string(loc);
+    std::string loc = context ? context->getSourceLocation() : "";
+    if (!loc.empty())
+        msg = std::string(message) + ", at " + loc;
     else if (context)
         msg = std::string(context->getTagName()) + ": " + message;
     else
