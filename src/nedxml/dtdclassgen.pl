@@ -201,7 +201,7 @@ foreach $element (@elements)
            if ($atttypes[$i] eq '(input|output|inout)') {
               $enumname = "gatetype";
            }
-           elsif ($atttypes[$i] eq '(double|int|string|bool|xml)') {
+           elsif ($atttypes[$i] eq '(double|int|string|bool|object|xml)') {
               $enumname = "partype";
            }
            elsif ($atttypes[$i] eq '(double|quantity|int|bool|string|spec)') {
@@ -285,7 +285,7 @@ foreach $element (@elements)
 if ($ned eq 'msg') {
     foreach $element (keys(%sharedElements)) {
         my $nedEnumName = $enumname{$element};
-        $nedEnumName =~ s/^MSG_/NED_/; 
+        $nedEnumName =~ s/^MSG_/NED_/;
         print H "    $enumname{$element} = $nedEnumName,\n";
     }
 }
@@ -295,7 +295,7 @@ print H "};\n\n";
 if ($ned eq "ned") {
     print H "// Note: zero *must* be a valid value for all enums, because that gets set in the ctor if there's not default\n";
     print H "enum {GATETYPE_NONE, GATETYPE_INPUT, GATETYPE_OUTPUT, GATETYPE_INOUT};\n";
-    print H "enum {PARTYPE_NONE, PARTYPE_DOUBLE, PARTYPE_INT, PARTYPE_STRING, PARTYPE_BOOL, PARTYPE_XML};\n";
+    print H "enum {PARTYPE_NONE, PARTYPE_DOUBLE, PARTYPE_INT, PARTYPE_STRING, PARTYPE_BOOL, PARTYPE_OBJECT, PARTYPE_XML};\n";
     print H "enum {LIT_DOUBLE, LIT_QUANTITY, LIT_INT, LIT_STRING, LIT_BOOL, LIT_SPEC};\n";
     print H "enum {SUBGATE_NONE, SUBGATE_I, SUBGATE_O};\n";
     print H "\n";
@@ -304,9 +304,9 @@ if ($ned eq "ned") {
     print CC "static int gatetype_nums[] = {GATETYPE_NONE, GATETYPE_INPUT, GATETYPE_OUTPUT, GATETYPE_INOUT};\n";
     print CC "static const int gatetype_n = 4;\n";
     print CC "\n";
-    print CC "static const char *partype_vals[] = {\"\", \"double\", \"int\", \"string\", \"bool\", \"xml\"};\n";
-    print CC "static int partype_nums[] = {PARTYPE_NONE, PARTYPE_DOUBLE, PARTYPE_INT, PARTYPE_STRING, PARTYPE_BOOL, PARTYPE_XML};\n";
-    print CC "static const int partype_n = 6;\n";
+    print CC "static const char *partype_vals[] = {\"\", \"double\", \"int\", \"string\", \"bool\", \"object\", \"xml\"};\n";
+    print CC "static int partype_nums[] = {PARTYPE_NONE, PARTYPE_DOUBLE, PARTYPE_INT, PARTYPE_STRING, PARTYPE_BOOL, PARTYPE_OBJECT, PARTYPE_XML};\n";
+    print CC "static const int partype_n = 7;\n";
     print CC "\n";
     print CC "static const char *littype_vals[] = {\"double\", \"quantity\", \"int\", \"string\", \"bool\", \"spec\"};\n";
     print CC "static int littype_nums[] = {LIT_DOUBLE, LIT_QUANTITY, LIT_INT, LIT_STRING, LIT_BOOL, LIT_SPEC};\n";

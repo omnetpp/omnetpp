@@ -1,5 +1,5 @@
 //==========================================================================
-//   CDOUBLEPAR.CC  - part of
+//   CDOUBLEPARIMPL.CC  - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -85,6 +85,11 @@ void cDoubleParImpl::setStringValue(const char *s)
     throw cRuntimeError(this, E_BADCAST, "string", "double");
 }
 
+void cDoubleParImpl::setObjectValue(cObject *object)
+{
+    throw cRuntimeError(this, E_BADCAST, "object", "double");
+}
+
 void cDoubleParImpl::setXMLValue(cXMLElement *node)
 {
     throw cRuntimeError(this, E_BADCAST, "XML", "double");
@@ -128,6 +133,11 @@ const char *cDoubleParImpl::stringValue(cComponent *) const
 std::string cDoubleParImpl::stdstringValue(cComponent *) const
 {
     throw cRuntimeError(this, E_BADCAST, "double", "string");
+}
+
+cObject *cDoubleParImpl::objectValue(cComponent *) const
+{
+    throw cRuntimeError(this, E_BADCAST, "double", "object");
 }
 
 cXMLElement *cDoubleParImpl::xmlValue(cComponent *) const

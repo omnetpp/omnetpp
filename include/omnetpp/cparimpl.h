@@ -37,7 +37,7 @@ class cComponent;
  *
  * cParImpl is an abstract base class, which supports several data types via
  * subclasses: cIntParImpl, cDoubleParImpl, cBoolParImpl, cStringParImpl,
- * cXMLParImpl.
+ * cObjectParImpl, cXMLParImpl.
  *
  * @ingroup Internals
  */
@@ -231,6 +231,11 @@ class SIM_API cParImpl : public cNamedObject
     virtual void setStringValue(const std::string& s)  {setStringValue(s.c_str());}
 
     /**
+     * Sets the value to the given object.
+     */
+    virtual void setObjectValue(cObject *object) = 0;
+
+    /**
      * Sets the value to the given cXMLElement.
      */
     virtual void setXMLValue(cXMLElement *node) = 0;
@@ -280,6 +285,11 @@ class SIM_API cParImpl : public cNamedObject
      * Returns value as string. The cParImpl type must be STRING.
      */
     virtual std::string stdstringValue(cComponent *context) const = 0;
+
+    /**
+     * Returns value as pointer to a cObject. The cParImpl type must be OBJECT.
+     */
+    virtual cObject *objectValue(cComponent *context) const = 0;
 
     /**
      * Returns value as pointer to cXMLElement. The cParImpl type must be XML.

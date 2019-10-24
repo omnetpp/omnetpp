@@ -1,5 +1,5 @@
 //==========================================================================
-//   CXMLPAR.CC  - part of
+//   CXMLPARIMPL.CC  - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -26,6 +26,7 @@ namespace omnetpp {
 cXMLParImpl::cXMLParImpl()
 {
     val = nullptr;
+    expr = nullptr;
 }
 
 cXMLParImpl::~cXMLParImpl()
@@ -89,6 +90,11 @@ void cXMLParImpl::setStringValue(const char *s)
     throw cRuntimeError(this, E_BADCAST, "string", "XML");
 }
 
+void cXMLParImpl::setObjectValue(cObject *object)
+{
+    throw cRuntimeError(this, E_BADCAST, "object", "XML");
+}
+
 void cXMLParImpl::setXMLValue(cXMLElement *node)
 {
     deleteOld();
@@ -126,6 +132,11 @@ const char *cXMLParImpl::stringValue(cComponent *) const
 std::string cXMLParImpl::stdstringValue(cComponent *) const
 {
     throw cRuntimeError(this, E_BADCAST, "XML", "string");
+}
+
+cObject *cXMLParImpl::objectValue(cComponent *) const
+{
+    throw cRuntimeError(this, E_BADCAST, "XML", "object");
 }
 
 cXMLElement *cXMLParImpl::xmlValue(cComponent *context) const

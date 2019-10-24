@@ -26,6 +26,7 @@
 #include "omnetpp/cintparimpl.h"
 #include "omnetpp/cdoubleparimpl.h"
 #include "omnetpp/cstringparimpl.h"
+#include "omnetpp/cobjectparimpl.h"
 #include "omnetpp/cxmlparimpl.h"
 
 #ifdef WITH_PARSIM
@@ -142,6 +143,7 @@ cParImpl *cParImpl::createWithType(Type type)
         case cPar::DOUBLE:  return new cDoubleParImpl();
         case cPar::INT:     return new cIntParImpl();
         case cPar::STRING:  return new cStringParImpl();
+        case cPar::OBJECT:  return new cObjectParImpl();
         case cPar::XML:     return new cXMLParImpl();
         default: throw cRuntimeError("cParImpl::createWithType(): No such type: %d", type);
     }

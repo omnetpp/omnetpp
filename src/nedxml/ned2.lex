@@ -109,6 +109,7 @@ using namespace omnetpp::nedxml;
 "string"                 { countChars(); return STRING_; }
 "bool"                   { countChars(); return BOOL_; }
 "xml"                    { countChars(); return XML_; }
+"object"                 { countChars(); return OBJECT_; }
 "volatile"               { countChars(); return VOLATILE_; }
 
 "input"                  { countChars(); return INPUT_; }

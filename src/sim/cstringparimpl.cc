@@ -1,4 +1,4 @@
-//   CSTRINGPAR.CC  - part of
+//   CSTRINGPARIMPL.CC  - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -81,6 +81,11 @@ void cStringParImpl::setStringValue(const char *s)
     flags |= FL_CONTAINSVALUE | FL_ISSET;
 }
 
+void cStringParImpl::setObjectValue(cObject *object)
+{
+    throw cRuntimeError(this, E_BADCAST, "object", "string");
+}
+
 void cStringParImpl::setXMLValue(cXMLElement *node)
 {
     throw cRuntimeError(this, E_BADCAST, "XML", "string");
@@ -133,6 +138,11 @@ std::string cStringParImpl::stdstringValue(cComponent *context) const
             throw cRuntimeError(E_ECANTCAST, "string");
         return v.stringValue();
     }
+}
+
+cObject *cStringParImpl::objectValue(cComponent *) const
+{
+    throw cRuntimeError(this, E_BADCAST, "string", "object");
 }
 
 cXMLElement *cStringParImpl::xmlValue(cComponent *) const

@@ -32,7 +32,7 @@ class SIM_API cStringParImpl : public cParImpl
     // only one of expr and val is active at a time; however, we cannot use
     // union here because std::string has constructor/destructor.
     // selector: flags & FL_ISEXPR
-    cExpression *expr;
+    cExpression *expr = nullptr;
     std::string val;
 
   private:
@@ -109,7 +109,12 @@ class SIM_API cStringParImpl : public cParImpl
     virtual void setStringValue(const char *s) override;
 
     /**
-     * Raises an error: cannot convert XML to long.
+     * Raises an error: cannot convert object to string.
+     */
+    virtual void setObjectValue(cObject *object) override;
+
+    /**
+     * Raises an error: cannot convert XML to string.
      */
     virtual void setXMLValue(cXMLElement *node) override;
 
@@ -147,6 +152,11 @@ class SIM_API cStringParImpl : public cParImpl
      * Returns the value of the parameter.
      */
     virtual std::string stdstringValue(cComponent *context) const override;
+
+    /**
+     * Raises an error: cannot convert string to object.
+     */
+    virtual cObject *objectValue(cComponent *context) const override;
 
     /**
      * Raises an error: cannot convert string to XML.

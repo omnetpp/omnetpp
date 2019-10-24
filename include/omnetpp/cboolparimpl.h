@@ -109,6 +109,11 @@ class SIM_API cBoolParImpl : public cParImpl
     virtual void setStringValue(const char *s) override;
 
     /**
+     * Raises an error: cannot convert object to bool.
+     */
+    virtual void setObjectValue(cObject *object) override;
+
+    /**
      * Raises an error: cannot convert XML to bool.
      */
     virtual void setXMLValue(cXMLElement *node) override;
@@ -147,6 +152,11 @@ class SIM_API cBoolParImpl : public cParImpl
      * Raises an error: cannot convert bool to string.
      */
     virtual std::string stdstringValue(cComponent *context) const override;
+
+    /**
+     * Raises an error: cannot convert bool to object.
+     */
+    virtual cObject *objectValue(cComponent *context) const override;
 
     /**
      * Raises an error: cannot convert bool to XML.

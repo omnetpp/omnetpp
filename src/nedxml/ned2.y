@@ -24,7 +24,7 @@
 %token MODULE SIMPLE NETWORK CHANNEL MODULEINTERFACE CHANNELINTERFACE
 %token EXTENDS LIKE
 %token TYPES PARAMETERS GATES SUBMODULES CONNECTIONS ALLOWUNCONNECTED
-%token DOUBLE_ INT_ STRING_ BOOL_ XML_ VOLATILE_
+%token DOUBLE_ INT_ STRING_ BOOL_ OBJECT_ XML_ VOLATILE_
 %token INPUT_ OUTPUT_ INOUT_
 %token IF FOR
 %token RIGHTARROW LEFTARROW DBLARROW TO
@@ -749,6 +749,8 @@ paramtype
                 { ps.paramType = PARTYPE_STRING; }
         | BOOL_
                 { ps.paramType = PARTYPE_BOOL; }
+        | OBJECT_
+                { ps.paramType = PARTYPE_OBJECT; }
         | XML_
                 { ps.paramType = PARTYPE_XML; }
         ;
@@ -1572,6 +1574,7 @@ funcname
         | INT_
         | DOUBLE_
         | STRING_
+        | OBJECT_
         | XML_
         | XMLDOC
         ;

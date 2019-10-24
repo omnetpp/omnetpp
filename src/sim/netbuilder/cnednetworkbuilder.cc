@@ -145,6 +145,7 @@ cPar::Type cNedNetworkBuilder::translateParamType(int t)
            t == PARTYPE_INT ? cPar::INT :
            t == PARTYPE_STRING ? cPar::STRING :
            t == PARTYPE_BOOL ? cPar::BOOL :
+           t == PARTYPE_OBJECT ? cPar::OBJECT :
            t == PARTYPE_XML ? cPar::XML :
            (cPar::Type)-1;
 }

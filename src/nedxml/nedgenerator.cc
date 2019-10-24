@@ -397,6 +397,7 @@ void NedGenerator::doParam(ParamElement *node, const char *indent, bool islast, 
         case PARTYPE_INT:    OUT << "int "; break;
         case PARTYPE_STRING: OUT << "string "; break;
         case PARTYPE_BOOL:   OUT << "bool "; break;
+        case PARTYPE_OBJECT: OUT << "object "; break;
         case PARTYPE_XML:    OUT << "xml "; break;
         default: INTERNAL_ERROR0(node, "wrong type");
     }

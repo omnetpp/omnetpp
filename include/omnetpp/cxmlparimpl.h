@@ -106,6 +106,11 @@ class SIM_API cXMLParImpl : public cParImpl
     virtual void setStringValue(const char *s) override;
 
     /**
+     * Raises an error: cannot convert object to XML.
+     */
+    virtual void setObjectValue(cObject *object) override;
+
+    /**
      * Sets the value to the given cXMLElement tree.
      */
     virtual void setXMLValue(cXMLElement *node) override;
@@ -144,6 +149,11 @@ class SIM_API cXMLParImpl : public cParImpl
      * Raises an error: cannot convert XML to string.
      */
     virtual std::string stdstringValue(cComponent *context) const override;
+
+    /**
+     * Raises an error: cannot convert XML to object.
+     */
+    virtual cObject *objectValue(cComponent *context) const override;
 
     /**
      * Returns the value of the parameter.

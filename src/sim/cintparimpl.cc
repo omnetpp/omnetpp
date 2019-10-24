@@ -1,5 +1,5 @@
 //==========================================================================
-//   CINTPAR.CC  - part of
+//   CINTPARIMPL.CC  - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -83,6 +83,11 @@ void cIntParImpl::setStringValue(const char *s)
     throw cRuntimeError(this, E_BADCAST, "string", "integer");
 }
 
+void cIntParImpl::setObjectValue(cObject *node)
+{
+    throw cRuntimeError(this, E_BADCAST, "object", "integer");
+}
+
 void cIntParImpl::setXMLValue(cXMLElement *node)
 {
     throw cRuntimeError(this, E_BADCAST, "XML", "integer");
@@ -126,6 +131,11 @@ const char *cIntParImpl::stringValue(cComponent *) const
 std::string cIntParImpl::stdstringValue(cComponent *) const
 {
     throw cRuntimeError(this, E_BADCAST, "integer", "string");
+}
+
+cObject *cIntParImpl::objectValue(cComponent *) const
+{
+    throw cRuntimeError(this, E_BADCAST, "integer", "object");
 }
 
 cXMLElement *cIntParImpl::xmlValue(cComponent *) const

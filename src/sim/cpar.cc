@@ -114,6 +114,7 @@ void cPar::operator=(const cPar& other)
             case DOUBLE: setDoubleValue(other.doubleValue()); break;
             case INT:    setIntValue(other.intValue()); break;
             case STRING: setStringValue(other.stdstringValue().c_str()); break;
+            case OBJECT: setObjectValue(other.objectValue()); break;
             case XML:    setXMLValue(other.xmlValue()); break;
             default:     ASSERT(false);
         }
@@ -136,6 +137,7 @@ const char *cPar::getTypeName(Type t)
         case DOUBLE: return "double";
         case INT:    return "int";
         case STRING: return "string";
+        case OBJECT: return "object";
         case XML:    return "xml";
         default:     return "???";
     }
@@ -220,6 +222,11 @@ std::string cPar::stdstringValue() const
     TRY(return p->stdstringValue(evalContext));
 }
 
+cObject *cPar::objectValue() const
+{
+    TRY(return p->objectValue(evalContext));
+}
+
 cXMLElement *cPar::xmlValue() const
 {
     TRY(return p->xmlValue(evalContext));
@@ -265,6 +272,16 @@ cPar& cPar::setStringValue(const char *s)
     beforeChange();
     copyIfShared();
     p->setStringValue(s);
+    evalContext = nullptr;
+    afterChange();
+    return *this;
+}
+
+cPar& cPar::setObjectValue(cObject *object)
+{
+    beforeChange();
+    ASSERT(!p->isShared());
+    p->setObjectValue(object);
     evalContext = nullptr;
     afterChange();
     return *this;
@@ -411,28 +428,40 @@ void cPar::parse(const char *text, const char *baseDirectory)
     // cParImpl::parse() which throws an error on them.
     //
     beforeChange();
-    cComponentType *componentType = ownerComponent->getComponentType();
-    std::string key = std::string(componentType->getName()) + "|" + getName() + "|" + text + "|" + opp_nulltoempty(baseDirectory);
-    cParImpl *cachedValue = componentType->getSharedParImpl(key.c_str());
-    if (cachedValue) {
-        // an identical value found in the map -- use it
-        setImpl(cachedValue);
+    bool cacheable = p->getType() != cPar::OBJECT; // object parameters are not cacheable, for simplicity
+    if (cacheable) {
+        cComponentType *componentType = ownerComponent->getComponentType();
+        std::string key = std::string(componentType->getName()) + "|" + getName() + "|" + text + "|" + opp_nulltoempty(baseDirectory);
+        cParImpl *cachedValue = componentType->getSharedParImpl(key.c_str());
+        if (cachedValue) {
+            // an identical value found in the map -- use it
+            setImpl(cachedValue);
+        }
+        else {
+            // not found: clone existing parameter (to preserve name, type, unit etc), then parse text into it
+            cParImpl *tmp = p->dup();
+            try {
+                tmp->setBaseDirectory(baseDirectory);
+                tmp->parse(text);
+            }
+            catch (std::exception& e) {
+                delete tmp;
+                throw cRuntimeError("Wrong value '%s' for parameter '%s': %s", text, getFullPath().c_str(), e.what());
+            }
+
+            // successfully parsed: install it
+            componentType->putSharedParImpl(key.c_str(), tmp);
+            setImpl(tmp);
+        }
     }
-    else {
-        // not found: clone existing parameter (to preserve name, type, unit etc), then parse text into it
-        cParImpl *tmp = p->dup();
+    else { // not cacheable
         try {
-            tmp->setBaseDirectory(baseDirectory);
-            tmp->parse(text);
+            p->setBaseDirectory(baseDirectory);
+            p->parse(text);
         }
         catch (std::exception& e) {
-            delete tmp;
             throw cRuntimeError("Wrong value '%s' for parameter '%s': %s", text, getFullPath().c_str(), e.what());
         }
-
-        // successfully parsed: install it
-        componentType->putSharedParImpl(key.c_str(), tmp);
-        setImpl(tmp);
     }
     afterChange();
 }

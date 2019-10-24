@@ -73,6 +73,7 @@ class SIM_API cPar : public cObject
         DOUBLE = 'D',
         INT = 'L',
         STRING = 'S',
+        OBJECT = 'O',
         XML = 'X',
         LONG = INT // for backward compatibility
     };
@@ -235,6 +236,11 @@ class SIM_API cPar : public cObject
     cPar& setStringValue(const std::string& s)  {setStringValue(s.c_str()); return *this;}
 
     /**
+     * Sets the value to the given object.
+     */
+    cPar& setObjectValue(cObject *object);
+
+    /**
      * Sets the value to the given cXMLElement.
      */
     cPar& setXMLValue(cXMLElement *node);
@@ -318,6 +324,19 @@ class SIM_API cPar : public cObject
      * The cPar type must be STRING.
      */
     bool isEmptyString() const {return stdstringValue().empty();}
+
+    /**
+     * Returns the value as object. The cPar type must be OBJECT. The ownership
+     * of the object remains with the cPar. It is not possible for the user
+     * to take ownership of the object, but creating a copy via dup() is an
+     * option.
+     *
+     * If the parameter is declared volatile (see isVolatile()), the lifetime
+     * of the object extends until the next objectValue() call (then the current
+     * object is discarded and replaced with the result of the expression
+     * evaluation).
+     */
+    cObject *objectValue() const;
 
     /**
      * Returns value as pointer to cXMLElement. The cPar type must be XML.
@@ -451,6 +470,11 @@ class SIM_API cPar : public cObject
     cPar& operator=(const std::string& s)  {return setStringValue(s);}
 
     /**
+     * Equivalent to setObjectValue().
+     */
+    cPar& operator=(cObject *object)  {return setObjectValue(object);}
+
+    /**
      * Equivalent to setXMLValue().
      */
     cPar& operator=(cXMLElement *node)  {return setXMLValue(node);}
@@ -539,6 +563,11 @@ class SIM_API cPar : public cObject
      * Equivalent to stdstringValue().
      */
     operator std::string() const  {return stdstringValue();}
+
+    /**
+     * Equivalent to objectValue().
+     */
+    operator cObject *() const  {return objectValue();}
 
     /**
      * Equivalent to xmlValue(). NOTE: The lifetime of the returned object tree

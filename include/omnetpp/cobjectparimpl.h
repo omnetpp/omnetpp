@@ -1,5 +1,5 @@
 //==========================================================================
-//   CDOUBLEPARIMPL.H  - part of
+//   COBJECTPARIMPL.H  - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -13,33 +13,44 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_CDOUBLEPARIMPL_H
-#define __OMNETPP_CDOUBLEPARIMPL_H
+#ifndef __OMNETPP_COBJECTPARIMPL_H
+#define __OMNETPP_COBJECTPARIMPL_H
 
 #include "cparimpl.h"
 
 namespace omnetpp {
 
+
 /**
- * @brief A cParImpl subclass that stores a module/channel parameter
- * of the type double.
+ * @brief A cParImpl subclass that stores a module/channel parameter of type object.
+ *
+ * Rules:
+ * 1. cObjectParImpl objects are never shared. Each object-valued parameter
+ *    has its own cObjectParImpl instance.
+ * 2. The user cannot "take" the object from the cPar. It can only clone it if needs be.
+ * 3. A volatile parameters's object value is replaced on each read operation.
+ * 4. Plain cObject objects (non-cOwnedObject ones) are owned, i.e. deleted when no longer needed.
+ * 5. cOwnedObject objects are "taken" ownership via take(), but only if their owner allows (i.e. is a soft owner).
+ * 6. cOwnedObject objects are owned iff their owner is this object.
+ * 7. nullptr is allowed as value.
  *
  * @ingroup Internals
  */
-class SIM_API cDoubleParImpl : public cParImpl
+//TODO ensure unsharing cObjectParImpl instances!
+class SIM_API cObjectParImpl : public cParImpl
 {
   protected:
     // selector: flags & FL_ISEXPR
-    union {
-      cExpression *expr;
-      double val;
-    };
+    cExpression *expr;
+    mutable cObject *obj; // stores the result of the last evaluation
 
   private:
-    void copy(const cDoubleParImpl& other);
+    void copy(const cObjectParImpl& other);
 
   protected:
-    void deleteOld();
+    void deleteExpression();
+    void deleteObject();
+    void doSetObject(cObject *object);
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -48,22 +59,22 @@ class SIM_API cDoubleParImpl : public cParImpl
     /**
      * Constructor.
      */
-    explicit cDoubleParImpl();
+    explicit cObjectParImpl();
 
     /**
      * Copy constructor.
      */
-    cDoubleParImpl(const cDoubleParImpl& other) : cParImpl(other) {copy(other);}
+    cObjectParImpl(const cObjectParImpl& other) : cParImpl(other) {copy(other);}
 
     /**
      * Destructor.
      */
-    virtual ~cDoubleParImpl();
+    virtual ~cObjectParImpl();
 
     /**
      * Assignment operator.
      */
-    void operator=(const cDoubleParImpl& otherpar);
+    void operator=(const cObjectParImpl& otherpar);
     //@}
 
     /** @name Redefined cObject member functions */
@@ -72,7 +83,7 @@ class SIM_API cDoubleParImpl : public cParImpl
     /**
      * Creates and returns an exact copy of this object.
      */
-    virtual cDoubleParImpl *dup() const override  {return new cDoubleParImpl(*this);}
+    virtual cObjectParImpl *dup() const override  {return new cObjectParImpl(*this);}
 
     /**
      * Serializes the object into a buffer.
@@ -89,32 +100,32 @@ class SIM_API cDoubleParImpl : public cParImpl
     //@{
 
     /**
-     * Raises an error: cannot convert bool to double.
+     * Raises an error: cannot convert bool to object.
      */
     virtual void setBoolValue(bool b) override;
 
     /**
-     * Converts from integer.
+     * Raises an error: cannot convert integer to object.
      */
     virtual void setIntValue(intval_t l) override;
 
     /**
-     * Sets the value to the given constant.
+     * Raises an error: cannot convert double to object.
      */
     virtual void setDoubleValue(double d) override;
 
     /**
-     * Raises an error: cannot convert string to double.
+     * Raises an error: cannot convert string to object.
      */
     virtual void setStringValue(const char *s) override;
 
     /**
-     * Raises an error: cannot convert object to double.
+     * Sets the value to the given object.
      */
     virtual void setObjectValue(cObject *object) override;
 
     /**
-     * Raises an error: cannot convert XML to double.
+     * Raises an error: cannot convert XML to object.
      */
     virtual void setXMLValue(cXMLElement *node) override;
 
@@ -129,37 +140,37 @@ class SIM_API cDoubleParImpl : public cParImpl
     //@{
 
     /**
-     * Raises an error: cannot convert double to bool.
+     * Raises an error: cannot convert object to bool.
      */
     virtual bool boolValue(cComponent *context) const override;
 
     /**
-     * Converts the value to integer.
+     * Raises an error: cannot convert object to integer.
      */
     virtual intval_t intValue(cComponent *context) const override;
 
     /**
-     * Returns the value of the parameter.
+     * Raises an error: cannot convert object to double.
      */
     virtual double doubleValue(cComponent *context) const override;
 
     /**
-     * Raises an error: cannot convert double to string.
+     * Raises an error: cannot convert object to string.
      */
     virtual const char *stringValue(cComponent *context) const override;
 
     /**
-     * Raises an error: cannot convert double to string.
+     * Raises an error: cannot convert object to string.
      */
     virtual std::string stdstringValue(cComponent *context) const override;
 
     /**
-     * Raises an error: cannot convert double to object.
+     * Returns the value of the parameter.
      */
     virtual cObject *objectValue(cComponent *context) const override;
 
     /**
-     * Raises an error: cannot convert double to XML.
+     * Raises an error: cannot convert object to XML.
      */
     virtual cXMLElement *xmlValue(cComponent *context) const override;
 
@@ -173,18 +184,22 @@ class SIM_API cDoubleParImpl : public cParImpl
     //@{
 
     /**
-     * Returns DOUBLE.
+     * Returns object.
      */
     virtual Type getType() const override;
 
     /**
-     * Returns true.
+     * Returns false.
      */
     virtual bool isNumeric() const override;
     //@}
 
     /** @name Redefined cParImpl misc functions. */
     //@{
+    /**
+     * Ensure object parameters cannot be shared.
+     */
+    virtual void setIsShared(bool shared) override { ASSERT(!shared); }
 
     /**
      * Replaces for non-const values, replaces the stored expression with its
@@ -206,6 +221,11 @@ class SIM_API cDoubleParImpl : public cParImpl
      * Object comparison.
      */
     virtual int compare(const cParImpl *other) const override;
+
+    /**
+     * Visits the object element
+     */
+    virtual void forEachChild(cVisitor *v, cComponent *context) override;
     //@}
 };
 

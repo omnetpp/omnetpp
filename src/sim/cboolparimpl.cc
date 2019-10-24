@@ -1,5 +1,5 @@
 //==========================================================================
-//   CBOOLPAR.CC  - part of
+//   CBOOLPARIMPL.CC  - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -81,6 +81,11 @@ void cBoolParImpl::setStringValue(const char *s)
     throw cRuntimeError(this, E_BADCAST, "string", "bool");
 }
 
+void cBoolParImpl::setObjectValue(cObject *object)
+{
+    throw cRuntimeError(this, E_BADCAST, "object", "bool");
+}
+
 void cBoolParImpl::setXMLValue(cXMLElement *node)
 {
     throw cRuntimeError(this, E_BADCAST, "XML", "bool");
@@ -126,6 +131,11 @@ const char *cBoolParImpl::stringValue(cComponent *) const
 std::string cBoolParImpl::stdstringValue(cComponent *) const
 {
     throw cRuntimeError(this, E_BADCAST, "bool", "string");
+}
+
+cObject *cBoolParImpl::objectValue(cComponent *) const
+{
+    throw cRuntimeError(this, E_BADCAST, "bool", "object");
 }
 
 cXMLElement *cBoolParImpl::xmlValue(cComponent *) const

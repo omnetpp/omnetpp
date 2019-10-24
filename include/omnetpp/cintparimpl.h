@@ -108,6 +108,11 @@ class SIM_API cIntParImpl : public cParImpl
     virtual void setStringValue(const char *s) override;
 
     /**
+     * Raises an error: cannot convert object to integer.
+     */
+    virtual void setObjectValue(cObject *object) override;
+
+    /**
      * Raises an error: cannot convert XML to integer.
      */
     virtual void setXMLValue(cXMLElement *node) override;
@@ -146,6 +151,11 @@ class SIM_API cIntParImpl : public cParImpl
      * Raises an error: cannot convert integer to string.
      */
     virtual std::string stdstringValue(cComponent *context) const override;
+
+    /**
+     * Raises an error: cannot convert integer to object.
+     */
+    virtual cObject *objectValue(cComponent *context) const override;
 
     /**
      * Raises an error: cannot convert integer to XML.
