@@ -6,7 +6,7 @@ Test cDynamicExpression::parse() with a custom resolver.
 std::string str(const char *s) {return std::string(s);}
 std::string str(intval_t x) {return std::to_string(x);}
 
-static cExpression::Context gContext(nullptr);
+static cExpression::Context gContext(nullptr, nullptr);
 
 
 class TestResolver : public cDynamicExpression::ResolverBase {
