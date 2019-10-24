@@ -14,11 +14,44 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+%{
+
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include "commonutil.h"
+#include "expressionyydefs.h"
+
+#define YYDEBUG 1           /* allow debugging */
+#define YYDEBUGGING_ON 0    /* turn on/off debugging */
+
+#if YYDEBUG != 0
+#define YYERROR_VERBOSE     /* more detailed error messages */
+#include <cstring>         /* YYVERBOSE needs it */
+#endif
+
+#include "expression.h"
+#include "exception.h"
+#include "stringutil.h"
+#include "unitconversion.h"
+
+using namespace omnetpp::common;
+using namespace omnetpp::common::expression;
+
+typedef Expression::AstNode AstNode;
+typedef Expression::AstNode::Type AstNodeType;
+%}
+
+%union {
+  const char *str;
+  AstNode *node;
+}
+
 /* Reserved words */
-%token TRUE_ FALSE_ NAN_ INF_ UNDEFINED_
+%token TRUE_ FALSE_ NAN_ INF_ UNDEFINED_ NULLPTR_
 
 /* Other tokens: identifiers, numeric literals, operators etc */
-%token NAME INTCONSTANT REALCONSTANT STRINGCONSTANT
+%token <str> NAME INTCONSTANT REALCONSTANT STRINGCONSTANT
 %token EQ NE GE LE SPACESHIP
 %token AND OR XOR
 %token SHIFT_LEFT SHIFT_RIGHT
@@ -46,33 +79,9 @@
 
 %start expression
 
+%parse-param {AstNode *&resultAstTree}
+
 %{
-
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include "commonutil.h"
-#include "expressionyydefs.h"
-
-#define YYDEBUG 1           /* allow debugging */
-#define YYDEBUGGING_ON 0    /* turn on/off debugging */
-
-#if YYDEBUG != 0
-#define YYERROR_VERBOSE     /* more detailed error messages */
-#include <cstring>         /* YYVERBOSE needs it */
-#endif
-
-#include "expression.h"
-#include "exception.h"
-#include "stringutil.h"
-#include "unitconversion.h"
-
-using namespace omnetpp::common;
-using namespace omnetpp::common::expression;
-
-typedef Expression::AstNode AstNode;
-typedef Expression::AstNode::Type AstNodeType;
-
 #define yyin expressionyyin
 #define yyout expressionyyout
 #define yyrestart expressionyyrestart
@@ -85,11 +94,9 @@ struct yy_buffer_state *yy_scan_string(const char *str);
 void yy_delete_buffer(struct yy_buffer_state *);
 void yyrestart(FILE *);
 int yylex();
-void yyerror (const char *s);
+void yyerror (AstNode *&dummy, const char *s);
 
 LineColumn xpos, xprevpos;
-
-static std::vector<AstNode*> astNodes;
 
 static char *join(const char *s1, const char *s2, const char *s3=nullptr)
 {
@@ -111,48 +118,20 @@ static char *concat(const char *s1, const char *s2, const char *s3=nullptr, cons
     return d;
 }
 
-static void addNode(AstNode *node, int numChildren)
+static AstNode *newConstant(const ExprValue& c)
 {
-    node->children.resize(numChildren);
-    for (int i=0; i<numChildren; i++)
-        node->children[i] = astNodes[astNodes.size()-numChildren+i];
-    astNodes.resize(astNodes.size()-numChildren);
-    astNodes.push_back(node);
+    return new AstNode(c);
 }
 
-static void addConstant(const ExprValue& c)
+static AstNode *newOp(const char *name, AstNode *child1, AstNode *child2=nullptr, AstNode *child3=nullptr)
 {
-    addNode(new AstNode(c), 0);
-}
-
-static void addNode(AstNodeType type, const char *name, int numChildren)
-{
-    addNode(new AstNode(type, name), numChildren);
-}
-
-static void addOp(const char *name, int numArgs)
-{
-    addNode(new AstNode(AstNode::OP, name), numArgs);
-}
-
-static void addFunction(const char *name, int numArgs)
-{
-    addNode(new AstNode(AstNode::FUNCTION, name), numArgs);
-}
-
-static void addMethod(const char *name, int numArgs)
-{
-    addNode(new AstNode(AstNode::METHOD, name), 1 + numArgs);
-}
-
-static void addIdent(const char *name, bool withIndex)
-{
-    addNode(new AstNode(withIndex ? AstNode::IDENT_W_INDEX : AstNode::IDENT, name), withIndex ? 1 : 0);
-}
-
-static void addMember(const char *name, bool withIndex)
-{
-    addNode(new AstNode(withIndex ? AstNode::MEMBER_W_INDEX : AstNode::MEMBER, name), withIndex ? 2 : 1);
+    AstNode *node = new AstNode(AstNode::OP, name);
+    node->children.push_back(child1);
+    if (child2)
+        node->children.push_back(child2);
+    if (child3)
+        node->children.push_back(child3);
+    return node;
 }
 
 static double parseQuantity(const char *text, std::string& unit)
@@ -162,7 +141,8 @@ static double parseQuantity(const char *text, std::string& unit)
         return UnitConversion::parseQuantity(text, unit);
     }
     catch (std::exception& e) {
-        yyerror(e.what());
+        AstNode *dummy;
+        yyerror(dummy, e.what());
         return 0;
     }
 }
@@ -173,165 +153,143 @@ static double parseQuantity(const char *text, std::string& unit)
 
 expression
         : expr
+                { resultAstTree = $<node>1; }
         ;
 
 expr
-        : basicexpr
-        | literal
+        : literal
+        | variable
         | functioncall
         | '(' expr ')'
+                { $<node>$ = $<node>2; }
         | operation
+        | expr '.' methodcall
+                { $<node>$ = $<node>3; $<node>$->children.insert($<node>$->children.begin(), $<node>1); }
+        | expr '.' member
+                { $<node>$ = $<node>3; $<node>$->children.insert($<node>$->children.begin(), $<node>1); }
         ;
 
 operation
         : expr '+' expr
-                { addOp("+", 2); }
+                { $<node>$ = newOp("+", $<node>1, $<node>3); }
         | expr '-' expr
-                { addOp("-", 2); }
+                { $<node>$ = newOp("-", $<node>1, $<node>3); }
         | expr '*' expr
-                { addOp("*", 2); }
+                { $<node>$ = newOp("*", $<node>1, $<node>3); }
         | expr '/' expr
-                { addOp("/", 2); }
+                { $<node>$ = newOp("/", $<node>1, $<node>3); }
         | expr '%' expr
-                { addOp("%", 2); }
+                { $<node>$ = newOp("%", $<node>1, $<node>3); }
         | expr '^' expr
-                { addOp("^", 2); }
+                { $<node>$ = newOp("^", $<node>1, $<node>3); }
 
         | '-' expr
                 %prec UMIN_
                 {
-                  AstNode *last = astNodes.back();
-                  if (last->type == AstNode::CONSTANT && last->constant.getType() == ExprValue::DOUBLE)
-                      last->constant.setPreservingUnit(-last->constant.doubleValue());
-                  else if (last->type == AstNode::CONSTANT && last->constant.getType() == ExprValue::INT)
-                      last->constant.setPreservingUnit(-last->constant.intValue());
-                  else
-                      addOp("-", 1);
+                    AstNode *arg = $<node>2;
+                    if (arg->type == AstNode::CONSTANT && arg->constant.getType() == ExprValue::DOUBLE) {
+                        arg->constant.setPreservingUnit(-arg->constant.doubleValue());
+                        $<node>$ = $<node>2;
+                    }
+                    else if (arg->type == AstNode::CONSTANT && arg->constant.getType() == ExprValue::INT) {
+                        arg->constant.setPreservingUnit(-arg->constant.intValue());
+                        $<node>$ = $<node>2;
+                    }
+                    else {
+                        $<node>$ = newOp("-", arg);
+                    }
                 }
 
         | expr '=' expr
-                { addOp("=", 2); }
+                { $<node>$ = newOp("=", $<node>1, $<node>3); }
         | expr EQ expr
-                { addOp("==", 2); }
+                { $<node>$ = newOp("==", $<node>1, $<node>3); }
         | expr NE expr
-                { addOp("!=", 2); }
+                { $<node>$ = newOp("!=", $<node>1, $<node>3); }
         | expr '>' expr
-                { addOp(">", 2); }
+                { $<node>$ = newOp(">", $<node>1, $<node>3); }
         | expr GE expr
-                { addOp(">=", 2); }
+                { $<node>$ = newOp(">=", $<node>1, $<node>3); }
         | expr '<' expr
-                { addOp("<", 2); }
+                { $<node>$ = newOp("<", $<node>1, $<node>3); }
         | expr LE expr
-                { addOp("<=", 2); }
+                { $<node>$ = newOp("<=", $<node>1, $<node>3); }
         | expr SPACESHIP expr
-                { addOp("<=>", 2); }
+                { $<node>$ = newOp("<=>", $<node>1, $<node>3); }
         | expr MATCH expr
-                { addOp("=~", 2); }
+                { $<node>$ = newOp("=~", $<node>1, $<node>3); }
 
         | expr AND expr
-                { addOp("&&", 2); }
+                { $<node>$ = newOp("&&", $<node>1, $<node>3); }
         | expr OR expr
-                { addOp("||", 2); }
+                { $<node>$ = newOp("||", $<node>1, $<node>3); }
         | expr XOR expr
-                { addOp("##", 2); }
+                { $<node>$ = newOp("##", $<node>1, $<node>3); }
 
         | '!' expr
                 %prec NOT_
-                { addOp("!", 1); }
+                { $<node>$ = newOp("!", $<node>2); }
 
         | expr '!'
                 %prec BANG_
-                { addOp("_!", 1); /*!!!*/ }
+                { $<node>$ = newOp("_!", $<node>1); /*!!!*/ }
 
         | expr '&' expr
-                { addOp("&", 2); }
+                { $<node>$ = newOp("&", $<node>1, $<node>3); }
         | expr '|' expr
-                { addOp("|", 2); }
+                { $<node>$ = newOp("|", $<node>1, $<node>3); }
         | expr '#' expr
-                { addOp("#", 2); }
+                { $<node>$ = newOp("#", $<node>1, $<node>3); }
 
         | '~' expr
                 %prec NEG_
-                { addOp("~", 1); }
+                { $<node>$ = newOp("~", $<node>2); }
         | expr SHIFT_LEFT expr
-                { addOp("<<", 2); }
+                { $<node>$ = newOp("<<", $<node>1, $<node>3); }
         | expr SHIFT_RIGHT expr
-                { addOp(">>", 2); }
+                { $<node>$ = newOp(">>", $<node>1, $<node>3); }
         | expr '?' expr ':' expr
-                { addOp("?:", 3); }
+                { $<node>$ = newOp("?:", $<node>1, $<node>3, $<node>5); }
         ;
 
 functioncall
-        : NAME '(' ')'
-                { addFunction($1,0); delete [] $1; }
-        | NAME '(' expr ')'
-                { addFunction($1,1); delete [] $1; }
-        | NAME '(' expr ',' expr ')'
-                { addFunction($1,2); delete [] $1; }
-        | NAME '(' expr ',' expr ',' expr ')'
-                { addFunction($1,3); delete [] $1; }
-        | NAME '(' expr ',' expr ',' expr ',' expr ')'
-                { addFunction($1,4); delete [] $1; }
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ')'
-                { addFunction($1,5); delete [] $1; }
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-                { addFunction($1,6); delete [] $1; }
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-                { addFunction($1,7); delete [] $1; }
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-                { addFunction($1,8); delete [] $1; }
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-                { addFunction($1,9); delete [] $1; }
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-                { addFunction($1,10); delete [] $1; }
+        : NAME '(' opt_exprlist ')'
+            { $<node>3->type = AstNode::FUNCTION; $<node>3->name = $1; delete [] $1; $<node>$ = $<node>3; }
         ;
 
-basicexpr
-        : variable '.' members
-        | functioncall '.' members
-        | '(' expr ')' '.' members
-        | variable
+methodcall
+        : NAME '(' opt_exprlist ')'
+            { $<node>3->type = AstNode::METHOD; $<node>3->name = $1; delete [] $1; $<node>$ = $<node>3; }
+        ;
         ;
 
-members
-        :  member '.' members
-        |  member
+opt_exprlist
+        : exprlist
+        | %empty
+            { $<node>$ = new AstNode(); }
+        ;
+
+exprlist
+        : exprlist ',' expr
+            { $<node>1->children.push_back($<node>3); $<node>$ = $<node>1; }
+        | expr
+            { $<node>$ = new AstNode(); $<node>$->children.push_back($<node>1); }
+        ;
+
         ;
 
 variable
         : NAME
-                { addIdent($1, false); delete [] $1; }
+                { $<node>$ = new AstNode(AstNode::IDENT, $1); delete [] $1; }
         | NAME '[' expr ']'
-                { addIdent($1, true); delete [] $1; }
+                { $<node>$ = new AstNode(AstNode::IDENT_W_INDEX, $1); delete [] $1; $<node>$->children.push_back($<node>3); }
         ;
 
 member
         : NAME
-                { addMember($1, false); delete [] $1; }
+                { $<node>$ = new AstNode(AstNode::MEMBER, $1); delete [] $1; }
         | NAME '[' expr ']'
-                { addMember($1, true); delete [] $1; }
-        | NAME '(' ')'
-                { addMethod($1,0); delete [] $1; }
-        | NAME '(' expr ')'
-                { addMethod($1,1); delete [] $1; }
-        | NAME '(' expr ',' expr ')'
-                { addMethod($1,2); delete [] $1; }
-        | NAME '(' expr ',' expr ',' expr ')'
-                { addMethod($1,3); delete [] $1; }
-        | NAME '(' expr ',' expr ',' expr ',' expr ')'
-                { addMethod($1,4); delete [] $1; }
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ')'
-                { addMethod($1,5); delete [] $1; }
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-                { addMethod($1,6); delete [] $1; }
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-                { addMethod($1,7); delete [] $1; }
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-                { addMethod($1,8); delete [] $1; }
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-                { addMethod($1,9); delete [] $1; }
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-                { addMethod($1,10); delete [] $1; }
+                { $<node>$ = new AstNode(AstNode::MEMBER_W_INDEX, $1); delete [] $1; $<node>$->children.push_back($<node>3); }
         ;
 
 literal
@@ -342,55 +300,55 @@ literal
 
 stringliteral
         : STRINGCONSTANT
-                { addConstant(opp_parsequotedstr($1)); delete [] $1; }
+                { $<node>$ = newConstant(opp_parsequotedstr($1)); delete [] $1; }
         ;
 
 boolliteral
         : TRUE_
-                { addConstant(true); }
+                { $<node>$ = newConstant(true); }
         | FALSE_
-                { addConstant(false); }
+                { $<node>$ = newConstant(false); }
         ;
 
 numliteral
         : INTCONSTANT
-                { addConstant((intval_t)opp_atoll($1)); delete [] $1; }
+                { $<node>$ = newConstant((intval_t)opp_atoll($1)); delete [] $1; }
         | REALCONSTANT
-                { addConstant(opp_atof($1)); delete [] $1; }
+                { $<node>$ = newConstant(opp_atof($1)); delete [] $1; }
         | NAN_
-                { addConstant(std::nan("")); }
+                { $<node>$ = newConstant(std::nan("")); }
         | INF_
-                { addConstant(1/0.0); }
+                { $<node>$ = newConstant(1/0.0); }
         | UNDEFINED_
-                { addConstant(ExprValue()); }
+                { $<node>$ = newConstant(ExprValue()); }
         | quantity
                 {
                   std::string unitstr;
-                  double d = parseQuantity($1, unitstr);
+                  double d = parseQuantity($<str>1, unitstr);
                   const char *unit = ExprValue::getPooled(unitstr.c_str());
                   intval_t l = (intval_t)d;
                   if (d == l)
-                      addConstant(ExprValue(l, unit));
+                      $<node>$ = newConstant(ExprValue(l, unit));
                   else
-                      addConstant(ExprValue(d, unit));
-                  delete [] $1;
+                      $<node>$ = newConstant(ExprValue(d, unit));
+                  delete [] $<str>1;
                 }
         ;
 
 quantity
         : quantity qnumber NAME
-                { $$ = join($1, $2, $3); delete [] $1; delete [] $2; delete [] $3; }
+                { $<str>$ = join($<str>1, $<str>2, $<str>3); delete [] $<str>1; delete [] $<str>2; delete [] $<str>3; }
         | qnumber NAME
-                { $$ = join($1, $2); delete [] $1; delete [] $2; }
+                { $<str>$ = join($<str>1, $<str>2); delete [] $<str>1; delete [] $<str>2; }
         ;
 
 qnumber
         : INTCONSTANT
         | REALCONSTANT
         | NAN_
-                { $$ = opp_strdup("nan"); }
+                { $<str>$ = opp_strdup("nan"); }
         | INF_
-                { $$ = opp_strdup("inf"); }
+                { $<str>$ = opp_strdup("inf"); }
         ;
 %%
 
@@ -413,32 +371,23 @@ AstNode *Expression::parseToAst(const char *text) const
     if (!handle)
         throw std::runtime_error("Parser is unable to allocate work memory");
 
-    for (AstNode *node : astNodes)
-        delete node;
-    astNodes.clear();
-
     // parse
+    AstNode *result;
     try
     {
-        yyparse();
+        yyparse(result);
     }
     catch (std::exception& e)
     {
         yy_delete_buffer(handle);
-        for (AstNode *node : astNodes)
-            delete node;
-        astNodes.clear();
         throw;
     }
     yy_delete_buffer(handle);
 
-    Assert(astNodes.size() == 1);
-    AstNode *result = astNodes[0];
-    astNodes.clear();
     return result;
 }
 
-void yyerror(const char *s)
+void yyerror(AstNode *&dummy, const char *s)
 {
     // chop newline
     char buf[250];

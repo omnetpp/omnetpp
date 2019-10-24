@@ -50,6 +50,8 @@ public:
         AstNode(const ExprValue& c) : type(CONSTANT), constant(c) {}
         AstNode(Type type, const char *name) : type(type), name(name) {}
         ~AstNode() {for (AstNode *child : children) delete child;}
+        void append(AstNode *node) {children.push_back(node);}
+        void prepend(AstNode *node) {children.insert(children.begin(), node);}
         std::string str() const;
         static const char *typeName(Type type);
     };

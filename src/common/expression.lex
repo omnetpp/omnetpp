@@ -36,6 +36,10 @@ S  [ \t\v\n\r\f]
 #include <cstring>
 #include "expressionyydefs.h"
 #include "exception.h"
+#include "expression.h"
+
+typedef omnetpp::common::Expression::AstNode AstNode;
+
 #include "expression.tab.hh"
 
 #define yylval expressionyylval
@@ -73,11 +77,11 @@ using namespace omnetpp::common;
 "inf"                    { countChars(); return INF_; }
 "undefined"              { countChars(); return UNDEFINED_; }
 
-{L}({L}|{D})*(:{L}({L}|{D})*)*  { countChars(); yylval = opp_strdup(yytext); return NAME; }
-{D}+                     { countChars(); yylval = opp_strdup(yytext); return INTCONSTANT; }
-0[xX]{X}+                { countChars(); yylval = opp_strdup(yytext); return INTCONSTANT; }
-{D}+{E}                  { countChars(); yylval = opp_strdup(yytext); return REALCONSTANT; }
-{D}*"."{D}+({E})?        { countChars(); yylval = opp_strdup(yytext); return REALCONSTANT; }
+{L}({L}|{D})*(:{L}({L}|{D})*)*  { countChars(); yylval.str = opp_strdup(yytext); return NAME; }
+{D}+                     { countChars(); yylval.str = opp_strdup(yytext); return INTCONSTANT; }
+0[xX]{X}+                { countChars(); yylval.str = opp_strdup(yytext); return INTCONSTANT; }
+{D}+{E}                  { countChars(); yylval.str = opp_strdup(yytext); return REALCONSTANT; }
+{D}*"."{D}+({E})?        { countChars(); yylval.str = opp_strdup(yytext); return REALCONSTANT; }
 
 \"                       { BEGIN(stringliteral); countChars(); }
 <stringliteral>{
@@ -86,7 +90,7 @@ using namespace omnetpp::common;
       \\\"               { extendCount(); /* qouted quote */ }
       \\[^\n\"]          { extendCount(); /* qouted char */ }
       [^\\\n\"]+         { extendCount(); /* character inside string literal */ }
-      \"                 { extendCount(); yylval = opp_strdup(extendbuf.c_str()); BEGIN(INITIAL); return STRINGCONSTANT; /* closing quote */ }
+      \"                 { extendCount(); yylval.str = opp_strdup(extendbuf.c_str()); BEGIN(INITIAL); return STRINGCONSTANT; /* closing quote */ }
 }
 
 ","                      { countChars(); return ','; }

@@ -33,7 +33,6 @@ struct my_yyltype {
    char *text;
 };
 #define YYLTYPE  struct my_yyltype
-#define YYSTYPE  char*
 
 
 #define xpos     expressionxpos
