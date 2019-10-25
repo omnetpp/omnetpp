@@ -74,22 +74,10 @@ class NEDXML_API NedParser
 
     /**
      * Affects operation of parseFile() and parseText(), specifies whether
-     * expressions should be parsed or not.
-     * Default is true.
-     */
-    void setParseExpressions(bool b) {np.parseexpr = b;}
-
-    /**
-     * Affects operation of parseFile() and parseText(), specifies whether
      * sourceCode attributes in ASTNodes should be filled out.
      * Default is false.
      */
     void setStoreSource(bool b) {np.storesrc = b;}
-
-    /**
-     * Returns the "parse expressions" flag; see setParseExpressions().
-     */
-    bool getParseExpressionsFlag() {return np.parseexpr;}
 
     /**
      * Returns the "store source code" flag; see setStoreSource().
@@ -111,12 +99,6 @@ class NEDXML_API NedParser
      * attributes; it defaults to "buffer".
      */
     ASTNode *parseNedText(const char *nedtext, const char *fname=nullptr);
-
-    /**
-     * Parse the given text as a NED expression, and return the result tree.
-     * Returns nullptr or partial tree if there was an error.
-     */
-    ASTNode *parseNedExpression(const char *nedexpression);
 };
 
 } // namespace nedxml

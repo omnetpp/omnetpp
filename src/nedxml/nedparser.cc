@@ -119,14 +119,6 @@ ASTNode *NedParser::parseNedText(const char *nedtext, const char *fname)
     return parseNed();
 }
 
-ASTNode *NedParser::parseNedExpression(const char *nedexpression)
-{
-    np.parseexpr = true;
-    std::string source = std::string(MAGIC_PREFIX) + "\n" + nedexpression;
-    ASTNode *tree = parseNedText(source.c_str(), "buffer");
-    return tree ? tree->getFirstChild() : nullptr;  // unwrap from NedFileElement
-}
-
 bool NedParser::loadFile(const char *osfname, const char *fname)
 {
     if (!fname)

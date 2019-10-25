@@ -47,14 +47,8 @@ ParamElement *addParameter(ParseContext *np, ASTNode *params, YYLoc namepos);
 ParamElement *addParameter(ParseContext *np, ASTNode *params, const char *name, YYLoc namepos);
 GateElement *addGate(ParseContext *np, ASTNode *gates, YYLoc namepos);
 
-void swapExpressionChildren(ASTNode *node, const char *attr1, const char *attr2);
 void swapConnection(ASTNode *conn);
 
-ExpressionElement *createExpression(ParseContext *np, ASTNode *expr);
-OperatorElement *createOperator(ParseContext *np, const char *op, ASTNode *operand1, ASTNode *operand2=nullptr, ASTNode *operand3=nullptr);
-FunctionElement *createFunction(ParseContext *np, const char *funcname, ASTNode *arg1=nullptr, ASTNode *arg2=nullptr, ASTNode *arg3=nullptr, ASTNode *arg4=nullptr, ASTNode *arg5=nullptr, ASTNode *arg6=nullptr, ASTNode *arg7=nullptr, ASTNode *arg8=nullptr, ASTNode *arg9=nullptr, ASTNode *arg10=nullptr);
-IdentElement *createIdent(ParseContext *np, YYLoc parampos);
-IdentElement *createIdent(ParseContext *np, YYLoc parampos, YYLoc modulepos, ASTNode *moduleindexoperand=nullptr);
 LiteralElement *createPropertyValue(ParseContext *np, YYLoc textpos);
 LiteralElement *createLiteral(ParseContext *np, int type, YYLoc valuepos, YYLoc textpos);
 LiteralElement *createLiteral(ParseContext *np, int type, const char *value, const char *text);

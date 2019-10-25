@@ -41,7 +41,6 @@ class NedResourceCache;
 class NEDXML_API NedCrossValidator : public NedValidatorBase
 {
   protected:
-    bool parsedExpressions;
     NedResourceCache *resolver;
 
     // temporary variables:
@@ -64,7 +63,7 @@ class NEDXML_API NedCrossValidator : public NedValidatorBase
 
   public:
     /** Constructor */
-    NedCrossValidator(bool parsedExpr, NedResourceCache *resolver, ErrorStore *e);
+    NedCrossValidator(NedResourceCache *resolver, ErrorStore *e);
 
     /** Destructor */
     virtual ~NedCrossValidator();
@@ -98,10 +97,6 @@ class NEDXML_API NedCrossValidator : public NedValidatorBase
     virtual void validateElement(ConnectionGroupElement *node) override;
     virtual void validateElement(LoopElement *node) override;
     virtual void validateElement(ConditionElement *node) override;
-    virtual void validateElement(ExpressionElement *node) override;
-    virtual void validateElement(OperatorElement *node) override;
-    virtual void validateElement(FunctionElement *node) override;
-    virtual void validateElement(IdentElement *node) override;
     virtual void validateElement(LiteralElement *node) override;
     virtual void validateElement(UnknownElement *node) override;
     //@}

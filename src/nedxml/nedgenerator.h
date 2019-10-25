@@ -142,14 +142,6 @@ class NEDXML_API NedGenerator
     void printConnectionGate(ASTNode *conn, const char *modname, const char *modindexattr,
                              const char *gatename, const char *gateindexattr, bool isplusplus,
                              int gatesubg, const char *indent);
-
-    // expressions
-    void doExpression(ExpressionElement *node, const char *indent, bool islast, const char *);
-    int getOperatorPrecedence(const char *op, int args);
-    bool isOperatorLeftAssoc(const char *op);
-    void doOperator(OperatorElement *node, const char *indent, bool islast, const char *);
-    void doFunction(FunctionElement *node, const char *indent, bool islast, const char *);
-    void doIdent(IdentElement *node, const char *indent, bool islast, const char *);
     void doLiteral(LiteralElement *node, const char *indent, bool islast, const char *);
     void doComment(CommentElement *node, const char *indent, bool islast, const char *);
     //@}

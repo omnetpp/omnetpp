@@ -29,10 +29,9 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace nedxml {
 
-NedCrossValidator::NedCrossValidator(bool parsedExpr, NedResourceCache *res, ErrorStore *e)
+NedCrossValidator::NedCrossValidator(NedResourceCache *res, ErrorStore *e)
     : NedValidatorBase(e)
 {
-    parsedExpressions = parsedExpr;
     resolver = res;
 }
 
@@ -250,7 +249,7 @@ void NedCrossValidator::validateConnGate(const char *submodName, bool hasSubmodI
             errors->addError(conn, "%s: compound module has no submodule named '%s'", q, submodName);
         }
         else {
-            bool isSubmodVector = submod->getFirstChildWithAttribute(NED_EXPRESSION, "target", "vector-size") != nullptr;
+            bool isSubmodVector = !opp_isempty(submod->getVectorSize());
             if (hasSubmodIndex && !isSubmodVector)
                 errors->addError(conn, "%s: extra submodule index ('%s' is not a vector submodule)", q, submodName);
             else if (!hasSubmodIndex && isSubmodVector)
@@ -279,10 +278,10 @@ void NedCrossValidator::validateElement(ConnectionElement *node)
     if (!compound)
         INTERNAL_ERROR0(node, "occurs outside a compound-module");
 
-    bool srcModIx = node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "src-module-index") != nullptr;
-    bool srcGateIx = node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "src-gate-index") != nullptr || node->getSrcGatePlusplus();
-    bool destModIx = node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "dest-module-index") != nullptr;
-    bool destGateIx = node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "dest-gate-index") != nullptr || node->getDestGatePlusplus();
+    bool srcModIx = !opp_isempty(node->getSrcModuleIndex());
+    bool srcGateIx = !opp_isempty(node->getSrcGateIndex()) || node->getSrcGatePlusplus();
+    bool destModIx = !opp_isempty(node->getDestModuleIndex());
+    bool destGateIx = !opp_isempty(node->getDestGateIndex()) || node->getDestGatePlusplus();
     validateConnGate(node->getSrcModule(), srcModIx, node->getSrcGate(), srcGateIx, compound, node, true);
     validateConnGate(node->getDestModule(), destModIx, node->getDestGate(), destGateIx, compound, node, false);
 }
@@ -311,26 +310,6 @@ void NedCrossValidator::validateElement(LoopElement *node)
 }
 
 void NedCrossValidator::validateElement(ConditionElement *node)
-{
-    // FIXME revise
-}
-
-void NedCrossValidator::validateElement(ExpressionElement *node)
-{
-    // FIXME revise
-}
-
-void NedCrossValidator::validateElement(OperatorElement *node)
-{
-    // FIXME revise
-}
-
-void NedCrossValidator::validateElement(FunctionElement *node)
-{
-    // FIXME revise
-}
-
-void NedCrossValidator::validateElement(IdentElement *node)
 {
     // FIXME revise
 }

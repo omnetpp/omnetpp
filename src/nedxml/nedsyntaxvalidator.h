@@ -39,8 +39,6 @@ namespace nedxml {
 class NEDXML_API NedSyntaxValidator : public NedValidatorBase
 {
   protected:
-    bool parsedExpressions;
-
     // internal helpers: verify attributes
     void checkExpressionAttributes(ASTNode *node, const char *attrs[], bool optional[], int n);
     void checkEnumAttribute(ASTNode *node, const char *attr, const char *values[], int n);
@@ -56,12 +54,9 @@ class NEDXML_API NedSyntaxValidator : public NedValidatorBase
 
   public:
     /**
-     * Constructor. Bool argument specifies if the validator should expect
-     * parsed or unparsed expressions in the tree (This affects the validation
-     * process.)
+     * Constructor.
      */
-    NedSyntaxValidator(bool parsedExpr, ErrorStore *e)
-        : NedValidatorBase(e) {parsedExpressions=parsedExpr;}
+    NedSyntaxValidator(ErrorStore *e) : NedValidatorBase(e) {}
 
     /**
      * Destructor.
@@ -98,10 +93,6 @@ class NEDXML_API NedSyntaxValidator : public NedValidatorBase
     virtual void validateElement(ConnectionGroupElement *node) override;
     virtual void validateElement(LoopElement *node) override;
     virtual void validateElement(ConditionElement *node) override;
-    virtual void validateElement(ExpressionElement *node) override;
-    virtual void validateElement(OperatorElement *node) override;
-    virtual void validateElement(FunctionElement *node) override;
-    virtual void validateElement(IdentElement *node) override;
     virtual void validateElement(LiteralElement *node) override;
     virtual void validateElement(UnknownElement *node) override;
     //@}

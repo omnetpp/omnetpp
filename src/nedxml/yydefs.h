@@ -46,14 +46,12 @@ struct YYLoc {
 
 //TODO cleanup
 struct ParseContext {
-    bool parseexpr = true;            // whether to parse NED expressions or not
     bool msgNewSyntax = true;
-    bool storesrc = false;             // whether to fill in sourceCode attributes
+    bool storesrc = false;               // whether to fill in sourceCode attributes
     const char *filename = nullptr;      // name of file being parsed
     ErrorStore *errors = nullptr;        // accumulates error messages
     SourceDocument *source = nullptr;    // represents the source file
 
-    bool getParseExpressionsFlag() {return parseexpr;}
     bool getStoreSourceFlag()  {return storesrc;}
     const char *getFileName() {return filename;}
     ErrorStore *getErrors() {return errors;}

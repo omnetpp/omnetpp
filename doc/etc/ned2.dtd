@@ -69,7 +69,7 @@
 <!ATTLIST parameters
     is-implicit         (true|false)  "false">
 
-<!ELEMENT param (comment*, expression?, property*)>
+<!ELEMENT param (comment*, property*)>
 <!ATTLIST param
      type               (double|int|string|bool|xml) #IMPLIED
      is-volatile        (true|false)  "false"
@@ -90,7 +90,7 @@
 
 <!ELEMENT gates (comment*, gate*)>
 
-<!ELEMENT gate (comment*, expression?, property*)>
+<!ELEMENT gate (comment*, property*)>
 <!ATTLIST gate
      name               NMTOKEN   #REQUIRED
      type               (input|output|inout) #IMPLIED
@@ -102,7 +102,7 @@
 
 <!ELEMENT submodules (comment*, submodule*)>
 
-<!ELEMENT submodule (comment*, expression*, condition?, parameters?, gates?)>
+<!ELEMENT submodule (comment*, condition?, parameters?, gates?)>
 <!ATTLIST submodule
      name               NMTOKEN   #REQUIRED
      type               CDATA     #IMPLIED
@@ -115,7 +115,7 @@
 <!ATTLIST connections
      allow-unconnected (true|false) "false">
 
-<!ELEMENT connection (comment*, expression*, parameters?, (loop|condition)*)>
+<!ELEMENT connection (comment*, parameters?, (loop|condition)*)>
 <!ATTLIST connection
      src-module          NMTOKEN   #IMPLIED
      src-module-index    CDATA     #IMPLIED
@@ -139,43 +139,15 @@
 
 <!ELEMENT connection-group (comment*, (loop|condition)*, connection*)>
 
-<!ELEMENT loop (comment*, expression*)>
+<!ELEMENT loop (comment*)>
 <!ATTLIST loop
      param-name          NMTOKEN   #REQUIRED
      from-value          CDATA     #IMPLIED
      to-value            CDATA     #IMPLIED>
 
-<!ELEMENT condition (comment*, expression?)>
+<!ELEMENT condition (comment*)>
 <!ATTLIST condition
      condition           CDATA     #IMPLIED>
-
-<!--
-  **  Expressions
-  -->
-
-<!ELEMENT expression (comment*, (operator|function|ident|literal))>
-<!ATTLIST expression
-     target              CDATA     #IMPLIED>
-
-<!ELEMENT operator (comment*, (operator|function|ident|literal)+)>
-<!ATTLIST operator
-     name                CDATA     #REQUIRED>
-
-<!-- functions, "index", "const" and "sizeof" -->
-<!ELEMENT function (comment*, (operator|function|ident|literal)*)>
-<!ATTLIST function
-     name                NMTOKEN   #REQUIRED>
-
-<!-- Ident is either a parameter reference or an argument for the "sizeof"
-     operator; its NED source form is one of the following: "name", "module.name",
-     "module[n].name". If there is a child, it represents the module index n.
-     A reserved module name (with special meaning) is "this".
--->
-<!ELEMENT ident (comment*, (operator|function|ident|literal)?)>
-<!ATTLIST ident
-     module              CDATA     #IMPLIED
-     name                NMTOKEN   #REQUIRED>
-
 
 <!ELEMENT literal (comment*)>
 <!-- Note: value is in fact REQUIRED, but empty attr value should

@@ -155,29 +155,12 @@ void NedGenerator::printInheritance(ASTNode *node, const char *indent)
 
 bool NedGenerator::hasExpression(ASTNode *node, const char *attr)
 {
-    if (!opp_isempty(node->getAttribute(attr))) {
-        return true;
-    }
-    else {
-        for (ExpressionElement *expr = (ExpressionElement *)node->getFirstChildWithTag(NED_EXPRESSION); expr; expr = expr->getNextExpressionSibling())
-            if (!opp_isempty(expr->getTarget()) && !strcmp(expr->getTarget(), attr))
-                return true;
-
-        return false;
-    }
+    return !opp_isempty(node->getAttribute(attr));
 }
 
 void NedGenerator::printExpression(ASTNode *node, const char *attr, const char *indent)
 {
-    if (!opp_isempty(node->getAttribute(attr))) {
-        OUT << node->getAttribute(attr);
-    }
-    else {
-        for (ExpressionElement *expr = (ExpressionElement *)node->getFirstChildWithTag(NED_EXPRESSION); expr; expr = expr->getNextExpressionSibling())
-            if (!opp_isempty(expr->getTarget()) && !strcmp(expr->getTarget(), attr))
-                generateNedItem(expr, indent, false, nullptr);
-
-    }
+    OUT << node->getAttribute(attr);
 }
 
 void NedGenerator::printOptVector(ASTNode *node, const char *attr, const char *indent)
@@ -696,175 +679,6 @@ void NedGenerator::printConnectionGate(ASTNode *conn, const char *modname, const
         printOptVector(conn, gateindexattr, indent);
 }
 
-void NedGenerator::doExpression(ExpressionElement *node, const char *indent, bool islast, const char *)
-{
-    generateChildren(node, indent);
-}
-
-int NedGenerator::getOperatorPrecedence(const char *op, int args)
-{
-    //
-    // this method should always contain the same precendence rules as ebnf.y
-    //
-
-    if (args == 3) {
-        // %left '?' ':'
-        if (!strcmp(op, "?:"))
-            return 1;
-        INTERNAL_ERROR1(nullptr, "getOperatorPrecedence(): unknown tertiary operator '%s'", op);
-    }
-
-    if (args == 2) {
-        // %left OR
-        if (!strcmp(op,"||")) return 2;
-        // %left XOR
-        if (!strcmp(op,"##")) return 3;
-        // %left AND
-        if (!strcmp(op,"&&")) return 4;
-
-        // %left EQ NE GT GE LS LE
-        if (!strcmp(op,"==")) return 5;
-        if (!strcmp(op,"!=")) return 5;
-        if (!strcmp(op,"<"))  return 5;
-        if (!strcmp(op,">"))  return 5;
-        if (!strcmp(op,"<=")) return 5;
-        if (!strcmp(op,">=")) return 5;
-
-        // %left BIN_OR
-        if (!strcmp(op,"|"))  return 6;
-        // %left BIN_XOR
-        if (!strcmp(op,"#"))  return 7;
-        // %left BIN_AND
-        if (!strcmp(op,"&"))  return 8;
-
-        // %left SHIFT_LEFT SHIFT_RIGHT
-        if (!strcmp(op,"<<")) return 9;
-        if (!strcmp(op,">>")) return 9;
-
-        // %left PLUS MIN
-        if (!strcmp(op,"+"))  return 10;
-        if (!strcmp(op,"-"))  return 10;
-
-        // %left MUL DIV MOD
-        if (!strcmp(op,"*"))  return 11;
-        if (!strcmp(op,"/"))  return 11;
-        if (!strcmp(op,"%"))  return 11;
-
-        // %right EXP
-        if (!strcmp(op,"^"))  return 12;
-        INTERNAL_ERROR1(nullptr, "getOperatorPrecedence(): unknown binary operator '%s'", op);
-    }
-
-    if (args == 1) {
-        // %left UMIN NOT BIN_COMPL
-        if (!strcmp(op,"-"))  return 13;
-        if (!strcmp(op,"!"))  return 13;
-        if (!strcmp(op,"~"))  return 13;
-        INTERNAL_ERROR1(nullptr, "getOperatorPrecedence(): unknown unary operator '%s'", op);
-    }
-
-    INTERNAL_ERROR1(nullptr, "getOperatorPrecedence(): bad number of args: %d", args);
-    return -1;
-}
-
-bool NedGenerator::isOperatorLeftAssoc(const char *op)
-{
-    // only exponentiation is right assoc, all others are left assoc
-    if (!strcmp(op,"^")) return false;
-    return true;
-}
-
-void NedGenerator::doOperator(OperatorElement *node, const char *indent, bool islast, const char *)
-{
-    ASTNode *op1 = node->getFirstChild();
-    ASTNode *op2 = op1 ? op1->getNextSibling() : nullptr;
-    ASTNode *op3 = op2 ? op2->getNextSibling() : nullptr;
-
-    if (!op2) {
-        // unary
-        OUT << node->getName();
-        generateNedItem(op1, indent, false, nullptr);
-    }
-    else if (!op3) {
-        // binary
-        int prec = getOperatorPrecedence(node->getName(), 2);
-        // bool leftassoc = isOperatorLeftAssoc(node->getName());
-
-        bool needsParen = false;
-        bool spacious = (prec <= 2);  // we want spaces around &&, ||, ##
-
-        ASTNode *parent = node->getParent();
-        if (parent && parent->getTagCode() == NED_OPERATOR) {
-            OperatorElement *parentop = (OperatorElement *)parent;
-            int parentprec = getOperatorPrecedence(parentop->getName(), parentop->getNumChildren());
-            if (parentprec > prec) {
-                needsParen = true;
-            }
-            else if (parentprec == prec) {
-                // TBD can be refined (make use of associativity & precedence rules)
-                needsParen = true;
-            }
-        }
-
-        if (needsParen)
-            OUT << "(";
-        generateNedItem(op1, indent, false, nullptr);
-        if (spacious)
-            OUT << " " << node->getName() << " ";
-        else
-            OUT << node->getName();
-        generateNedItem(op2, indent, false, nullptr);
-        if (needsParen)
-            OUT << ")";
-    }
-    else {
-        // tertiary
-        bool needsParen = true;  // TBD can be refined
-        bool spacious = true;  // TBD can be refined
-
-        if (needsParen)
-            OUT << "(";
-        generateNedItem(op1, indent, false, nullptr);
-        OUT << (spacious ? " ? " : "?");
-        generateNedItem(op2, indent, false, nullptr);
-        OUT << (spacious ? " : " : ":");
-        generateNedItem(op3, indent, false, nullptr);
-        if (needsParen)
-            OUT << ")";
-    }
-}
-
-void NedGenerator::doFunction(FunctionElement *node, const char *indent, bool islast, const char *)
-{
-    if (!strcmp(node->getName(), "index") || !strcmp(node->getName(), "typename")) {
-        OUT << node->getName();  // 'index' and 'typename' don't need parentheses
-        return;
-    }
-
-    OUT << node->getName() << "(";
-    for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling()) {
-        if (child != node->getFirstChild())
-            OUT << ", ";
-        generateNedItem(child, indent, false, nullptr);
-    }
-    OUT << ")";
-}
-
-void NedGenerator::doIdent(IdentElement *node, const char *indent, bool islast, const char *)
-{
-    if (!opp_isempty(node->getModule())) {
-        OUT << node->getModule();
-        if (node->getFirstChild()) {
-            OUT << "[";
-            generateChildren(node, indent, nullptr);
-            OUT << "]";
-        }
-        OUT << ".";
-    }
-
-    OUT << node->getName();
-}
-
 void NedGenerator::doLiteral(LiteralElement *node, const char *indent, bool islast, const char *sep)
 {
     if (!opp_isempty(node->getText())) {
@@ -919,10 +733,6 @@ void NedGenerator::generateNedItem(ASTNode *node, const char *indent, bool islas
         case NED_CONNECTION_GROUP: doConnectionGroup(static_cast<ConnectionGroupElement *>(node), indent, islast, arg); break;
         case NED_LOOP: doLoop(static_cast<LoopElement *>(node), indent, islast, arg); break;
         case NED_CONDITION: doCondition(static_cast<ConditionElement *>(node), indent, islast, arg); break;
-        case NED_EXPRESSION: doExpression(static_cast<ExpressionElement *>(node), indent, islast, arg); break;
-        case NED_OPERATOR: doOperator(static_cast<OperatorElement *>(node), indent, islast, arg); break;
-        case NED_FUNCTION: doFunction(static_cast<FunctionElement *>(node), indent, islast, arg); break;
-        case NED_IDENT: doIdent(static_cast<IdentElement *>(node), indent, islast, arg); break;
         case NED_LITERAL: doLiteral(static_cast<LiteralElement *>(node), indent, islast, arg); break;
         case NED_COMMENT: doComment(static_cast<CommentElement *>(node), indent, islast, arg); break;
         default: INTERNAL_ERROR1(node, "generateNedItem(): unknown tag '%s'", node->getTagName());

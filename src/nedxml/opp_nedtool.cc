@@ -90,7 +90,7 @@ bool NedTool::fileLooksLikeXml(const char *filename)
     return in.good() && c == '<';
 }
 
-NedFileElement *NedTool::parseNedFile(const char *filename, bool opt_unparsedexpr, bool opt_storesrc)
+NedFileElement *NedTool::parseNedFile(const char *filename, bool opt_storesrc)
 {
     if (opt_verbose)
         std::cout << "parsing " << filename << "\n";
@@ -101,7 +101,6 @@ NedFileElement *NedTool::parseNedFile(const char *filename, bool opt_unparsedexp
 
     // process input tree
     NedParser parser(&errors);
-    parser.setParseExpressions(!opt_unparsedexpr);
     parser.setStoreSource(opt_storesrc);
     tree = parser.parseNedFile(filename);
     if (errors.containsError()) {
@@ -116,7 +115,7 @@ NedFileElement *NedTool::parseNedFile(const char *filename, bool opt_unparsedexp
         return nullptr;
     }
 
-    NedSyntaxValidator syntaxvalidator(!opt_unparsedexpr, &errors);
+    NedSyntaxValidator syntaxvalidator(&errors);
     syntaxvalidator.validate(tree);
     if (errors.containsError()) {
         delete tree;
@@ -269,7 +268,6 @@ void NedTool::printHelpPage(const std::string& page)
         help.option("-m, --merge", "Output is a single file (out.ned or out.xml by default).");
         help.option("-o <filename>", "Output file name (don't use when processing multiple files)");
         help.option("-s, --split", "Split NED files to one NED component per file");
-        help.option("-u, --unparsedexpr", "Do not parse expressions in NED input");
         help.option("-l, --srcloc", "Add source location info (src-loc attributes) to XML output");
         help.option("-t, --storesrc", "When converting NED to XML, include source code of components in XML output");
         help.option("-k, --bak", "Save backup of original files as .bak");
@@ -291,7 +289,6 @@ void NedTool::printHelpPage(const std::string& page)
                   "Otherwise, errors will be reported on the standard error, the program will return a nonzero exit code. "
                   "Specify -v (verbose) to see which files are being checked.");
         help.line("Options:");
-        help.option("-e", "Do not parse expressions");
         help.option("-v", "Verbose");
         help.line();
     }
@@ -361,7 +358,6 @@ void NedTool::convertCommand(int argc, char **argv)
     bool opt_mergeoutput = false;
     std::string opt_outputfile;
     bool opt_splitnedfiles = false;
-    bool opt_unparsedexpr = false;
     bool opt_srcloc = false;
     bool opt_storesrc = false;
     bool opt_makebackup = false;
@@ -382,8 +378,6 @@ void NedTool::convertCommand(int argc, char **argv)
         }
         else if (string(argv[i]) == "-s" || string(argv[i]) == "--split")
             opt_splitnedfiles = true;
-        else if (string(argv[i]) == "-u" || string(argv[i]) == "--unparsedexpr")
-            opt_unparsedexpr = true;
         else if (string(argv[i]) == "-l" || string(argv[i]) == "--srcloc")
             opt_srcloc = true;
         else if (string(argv[i]) == "-t" || string(argv[i]) == "--storesrc")
@@ -417,7 +411,7 @@ void NedTool::convertCommand(int argc, char **argv)
                         !fileLooksLikeXml(inputFile.c_str());
         FilesElement *tree;
         if (isNedFile)
-            tree = wrapIntoFilesElement(parseNedFile(inputFile.c_str(), opt_unparsedexpr, opt_storesrc));
+            tree = wrapIntoFilesElement(parseNedFile(inputFile.c_str(), opt_storesrc));
         else
             tree = wrapIntoFilesElement(parseXmlFile(inputFile.c_str()));
 
@@ -491,7 +485,7 @@ void NedTool::prettyprintCommand(int argc, char **argv)
 
     int numSkipped = 0;
     for (std::string nedfile : nedfiles) {
-        NedFileElement *tree = parseNedFile(nedfile.c_str(), true, false);
+        NedFileElement *tree = parseNedFile(nedfile.c_str(), false);
         if (tree == nullptr)
             numSkipped++;
         else {
@@ -508,13 +502,10 @@ void NedTool::prettyprintCommand(int argc, char **argv)
 void NedTool::validateCommand(int argc, char **argv)
 {
     // process options
-    bool opt_unparsedexpr = false;     // -e
     std::vector<std::string> nedfiles;
 
     for (int i = 0; i < argc; i++) {
-        if (string(argv[i]) == "-e")
-            opt_unparsedexpr = true;
-        else if (string(argv[i]) == "-v")
+        if (string(argv[i]) == "-v")
             opt_verbose = true;
         else if (argv[i][0] == '-')
             throw opp_runtime_error("unknown option %s", argv[i]);
@@ -530,7 +521,7 @@ void NedTool::validateCommand(int argc, char **argv)
 
     int numFilesWithErrors = 0;
     for (std::string nedfile : nedfiles) {
-        NedElement *tree = parseNedFile(nedfile.c_str(), opt_unparsedexpr, false);
+        NedElement *tree = parseNedFile(nedfile.c_str(), false);
         if (tree == nullptr)
             numFilesWithErrors++;
         else
@@ -587,7 +578,7 @@ void NedTool::generateCppCommand(int argc, char **argv)
     // basic syntax check on the files
     int numFilesWithErrors = 0;
     for (std::string nedfile : nedfiles) {
-        NedElement *tree = parseNedFile(nedfile.c_str(), true, false);
+        NedElement *tree = parseNedFile(nedfile.c_str(), false);
         if (tree == nullptr)
             numFilesWithErrors++;
         else

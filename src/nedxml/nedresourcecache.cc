@@ -62,7 +62,6 @@ void NedResourceCache::registerBuiltinDeclarations()
 
     ErrorStore errors;
     NedParser parser(&errors);
-    parser.setParseExpressions(false);
     ASTNode *tree = parser.parseNedText(nedCode, "built-in-declarations");
     if (errors.containsError()) {
         delete tree;
@@ -173,7 +172,6 @@ NedFileElement *NedResourceCache::parseAndValidateNedFileOrText(const char *fnam
     }
     else {
         NedParser parser(&errors);
-        parser.setParseExpressions(false); // expressions will be parsed by cDynamicExpression
         parser.setStoreSource(false);
         if (nedText)
             tree = parser.parseNedText(nedText, fname);
@@ -193,7 +191,7 @@ NedFileElement *NedResourceCache::parseAndValidateNedFileOrText(const char *fnam
         throw NedException(getFirstError(&errors, "NED internal DTD validation failure: ").c_str());
     }
 
-    NedSyntaxValidator syntaxvalidator(false, &errors);
+    NedSyntaxValidator syntaxvalidator(&errors);
     syntaxvalidator.validate(tree);
     if (errors.containsError()) {
         delete tree;

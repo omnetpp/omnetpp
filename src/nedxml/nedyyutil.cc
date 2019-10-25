@@ -199,22 +199,7 @@ void addOptionalExpression(ParseContext *np, ASTNode *elem, const char *attrname
 
 void addExpression(ParseContext *np, ASTNode *elem, const char *attrname, YYLoc exprpos, ASTNode *expr)
 {
-    if (np->parseexpr) {
-        assert(expr);
-        ((ExpressionElement *)expr)->setTarget(attrname);
-
-        // in the DTD, whilespaces and expressions are at front, insert there
-        ASTNode *insertPos = elem->getFirstChild();
-        while (insertPos && (insertPos->getTagCode() == NED_COMMENT || insertPos->getTagCode() == NED_EXPRESSION))
-            insertPos = insertPos->getNextSibling();
-        if (!insertPos)
-            elem->appendChild(expr);
-        else
-            elem->insertChildBefore(insertPos, expr);
-    }
-    else {
-        elem->setAttribute(attrname, toString(np, exprpos));
-    }
+    elem->setAttribute(attrname, toString(np, exprpos));
 }
 
 void swapConnection(ASTNode *conn)
@@ -225,78 +210,6 @@ void swapConnection(ASTNode *conn)
     swapAttributes(conn, "src-gate-index", "dest-gate-index");
     swapAttributes(conn, "src-gate-plusplus", "dest-gate-plusplus");
     swapAttributes(conn, "src-gate-subg", "dest-gate-subg");
-
-    swapExpressionChildren(conn, "src-module-index", "dest-module-index");
-    swapExpressionChildren(conn, "src-gate-index", "dest-gate-index");
-}
-
-void swapExpressionChildren(ASTNode *node, const char *attr1, const char *attr2)
-{
-    ExpressionElement *expr1, *expr2;
-    for (expr1 = (ExpressionElement *)node->getFirstChildWithTag(NED_EXPRESSION); expr1; expr1 = expr1->getNextExpressionSibling())
-        if (!strcmp(expr1->getTarget(), attr1))
-            break;
-
-    for (expr2 = (ExpressionElement *)node->getFirstChildWithTag(NED_EXPRESSION); expr2; expr2 = expr2->getNextExpressionSibling())
-        if (!strcmp(expr2->getTarget(), attr2))
-            break;
-
-
-    if (expr1)
-        expr1->setTarget(attr2);
-    if (expr2)
-        expr2->setTarget(attr1);
-}
-
-OperatorElement *createOperator(ParseContext *np, const char *op, ASTNode *operand1, ASTNode *operand2, ASTNode *operand3)
-{
-    OperatorElement *opnode = (OperatorElement *)createNedElementWithTag(np, NED_OPERATOR);
-    opnode->setName(op);
-    opnode->appendChild(operand1);
-    if (operand2) opnode->appendChild(operand2);
-    if (operand3) opnode->appendChild(operand3);
-    return opnode;
-}
-
-FunctionElement *createFunction(ParseContext *np, const char *funcname, ASTNode *arg1, ASTNode *arg2, ASTNode *arg3, ASTNode *arg4, ASTNode *arg5, ASTNode *arg6, ASTNode *arg7, ASTNode *arg8, ASTNode *arg9, ASTNode *arg10)
-{
-    FunctionElement *funcnode = (FunctionElement *)createNedElementWithTag(np, NED_FUNCTION);
-    funcnode->setName(funcname);
-    if (arg1) funcnode->appendChild(arg1);
-    if (arg2) funcnode->appendChild(arg2);
-    if (arg3) funcnode->appendChild(arg3);
-    if (arg4) funcnode->appendChild(arg4);
-    if (arg5) funcnode->appendChild(arg5);
-    if (arg6) funcnode->appendChild(arg6);
-    if (arg7) funcnode->appendChild(arg7);
-    if (arg8) funcnode->appendChild(arg8);
-    if (arg9) funcnode->appendChild(arg9);
-    if (arg10) funcnode->appendChild(arg10);
-    return funcnode;
-}
-
-ExpressionElement *createExpression(ParseContext *np, ASTNode *expr)
-{
-    ExpressionElement *expression = (ExpressionElement *)createNedElementWithTag(np, NED_EXPRESSION);
-    expression->appendChild(expr);
-    return expression;
-}
-
-IdentElement *createIdent(ParseContext *np, YYLoc parampos)
-{
-    IdentElement *ident = (IdentElement *)createNedElementWithTag(np, NED_IDENT);
-    ident->setName(toString(np, parampos));
-    return ident;
-}
-
-IdentElement *createIdent(ParseContext *np, YYLoc parampos, YYLoc modulepos, ASTNode *moduleindexoperand)
-{
-    IdentElement *ident = (IdentElement *)createNedElementWithTag(np, NED_IDENT);
-    ident->setName(toString(np, parampos));
-    ident->setModule(toString(np, modulepos));
-    if (moduleindexoperand)
-        ident->appendChild(moduleindexoperand);
-    return ident;
 }
 
 LiteralElement *createPropertyValue(ParseContext *np, YYLoc textpos)  // which is a spec or a string literal

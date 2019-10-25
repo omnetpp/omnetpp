@@ -39,7 +39,7 @@ class NedTool
     std::vector<std::string> expandNedFolder(const char *fname);
     std::vector<std::string> expandFileArg(const char *arg);
     bool fileLooksLikeXml(const char *filename);
-    NedFileElement *parseNedFile(const char *fname, bool opt_unparsedexpr, bool opt_storesrc);
+    NedFileElement *parseNedFile(const char *fname, bool opt_storesrc);
     ASTNode *parseXmlFile(const char *filename);
     FilesElement *wrapIntoFilesElement(ASTNode *tree);
     void moveChildren(ASTNode *source, ASTNode *target);

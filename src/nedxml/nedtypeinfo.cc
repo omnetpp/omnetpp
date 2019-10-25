@@ -501,11 +501,8 @@ void NedTypeInfo::checkComplianceToInterface(NedTypeInfo *idecl)
 
             // if both are vectors, check vector size specs are compatible
             if (igate->getIsVector() && gate->getIsVector()) {
-                ExpressionElement *gatesizeExpr = (ExpressionElement *)gate->getFirstChildWithAttribute(NED_EXPRESSION, "target", "vector-size");
-                ExpressionElement *igatesizeExpr = (ExpressionElement *)igate->getFirstChildWithAttribute(NED_EXPRESSION, "target", "vector-size");
-
-                bool hasGatesize = !opp_isempty(gate->getVectorSize()) || gatesizeExpr != nullptr;
-                bool ihasGatesize = !opp_isempty(igate->getVectorSize()) || igatesizeExpr != nullptr;
+                bool hasGatesize = !opp_isempty(gate->getVectorSize());
+                bool ihasGatesize = !opp_isempty(igate->getVectorSize());
 
                 if (hasGatesize && !ihasGatesize)
                     throw NedException(gate, "Size of gate vector '%s' must be left unspecified, as required by interface '%s'",
@@ -516,9 +513,7 @@ void NedTypeInfo::checkComplianceToInterface(NedTypeInfo *idecl)
 
                 // if both gatesizes are given, check that they are actually the same
                 if (hasGatesize && ihasGatesize) {
-                    bool mismatch = (gatesizeExpr && igatesizeExpr) ?
-                        ASTNodeUtil::compareTree(gatesizeExpr, igatesizeExpr) != 0 : // with parsed expressions
-                        opp_strcmp(gate->getVectorSize(), igate->getVectorSize()) != 0;  // with unparsed expressions
+                    bool mismatch = opp_strcmp(gate->getVectorSize(), igate->getVectorSize()) != 0;
                     if (mismatch)
                         throw NedException(gate, "Size of gate vector '%s' must be specified as in interface '%s'",
                                 gate->getName(), idecl->getFullName());

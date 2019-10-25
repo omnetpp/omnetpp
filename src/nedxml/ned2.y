@@ -1502,9 +1502,6 @@ vector
 expression
         :
           expr
-                {
-                  if (np->getParseExpressionsFlag()) $$ = createExpression(np, $1);
-                }
         ;
 
 /*
@@ -1513,99 +1510,53 @@ expression
 expr
         : simple_expr
         | '(' expr ')'
-                { $$ = $2; }
 
         | expr '+' expr
-                { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "+", $1, $3); }
         | expr '-' expr
-                { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "-", $1, $3); }
         | expr '*' expr
-                { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "*", $1, $3); }
         | expr '/' expr
-                { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "/", $1, $3); }
         | expr '%' expr
-                { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "%", $1, $3); }
         | expr '^' expr
-                { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "^", $1, $3); }
         | '-' expr
                 %prec UMIN_
-                {
-                  if (np->getParseExpressionsFlag()) {
-                      if ($2->getTagCode() == NED_LITERAL)
-                          $$ = prependMinusSign(np, $2);
-                      else
-                          $$ = createOperator(np, "-", $2);
-                  }
-                }
 
         | expr EQ expr
-                { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "==", $1, $3); }
         | expr NE expr
-                { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "!=", $1, $3); }
         | expr '>' expr
-                { if (np->getParseExpressionsFlag()) $$ = createOperator(np, ">", $1, $3); }
         | expr GE expr
-                { if (np->getParseExpressionsFlag()) $$ = createOperator(np, ">=", $1, $3); }
         | expr '<' expr
-                { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "<", $1, $3); }
         | expr LE expr
-                { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "<=", $1, $3); }
         | expr SPACESHIP expr
-                { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "<=>", $1, $3); }
         | expr MATCH expr
-                { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "=~", $1, $3); }
 
         | expr AND expr
-                { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "&&", $1, $3); }
         | expr OR expr
-                { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "||", $1, $3); }
         | expr XOR expr
-                { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "##", $1, $3); }
 
         | '!' expr
                 %prec NOT_
-                { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "!", $2); }
 
         | expr '&' expr
-                { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "&", $1, $3); }
         | expr '|' expr
-                { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "|", $1, $3); }
         | expr '#' expr
-                { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "#", $1, $3); }
 
         | '~' expr
                 %prec NEG_
-                { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "~", $2); }
         | expr SHIFT_LEFT expr
-                { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "<<", $1, $3); }
         | expr SHIFT_RIGHT expr
-                { if (np->getParseExpressionsFlag()) $$ = createOperator(np, ">>", $1, $3); }
         | expr '?' expr ':' expr
-                { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "?:", $1, $3, $5); }
 
         | funcname '(' ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction(np, toString(np, @1)); }
         | funcname '(' expr ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction(np, toString(np, @1), $3); }
         | funcname '(' expr ',' expr ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction(np, toString(np, @1), $3, $5); }
         | funcname '(' expr ',' expr ',' expr ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction(np, toString(np, @1), $3, $5, $7); }
         | funcname '(' expr ',' expr ',' expr ',' expr ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction(np, toString(np, @1), $3, $5, $7, $9); }
         | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction(np, toString(np, @1), $3, $5, $7, $9, $11); }
         | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction(np, toString(np, @1), $3, $5, $7, $9, $11, $13); }
         | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction(np, toString(np, @1), $3, $5, $7, $9, $11, $13, $15); }
         | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction(np, toString(np, @1), $3, $5, $7, $9, $11, $13, $15, $17); }
         | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction(np, toString(np, @1), $3, $5, $7, $9, $11, $13, $15, $17, $19); }
         | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction(np, toString(np, @1), $3, $5, $7, $9, $11, $13, $15, $17, $19, $21); }
-
         ;
 
 simple_expr
@@ -1626,26 +1577,17 @@ funcname
 
 identifier
         : NAME
-                { if (np->getParseExpressionsFlag()) $$ = createIdent(np, @1); }
         | THIS_ '.' NAME
-                { if (np->getParseExpressionsFlag()) $$ = createIdent(np, @3, @1); }
         | NAME '.' NAME
-                { if (np->getParseExpressionsFlag()) $$ = createIdent(np, @3, @1); }
         | NAME '[' expr ']' '.' NAME
-                { if (np->getParseExpressionsFlag()) $$ = createIdent(np, @6, @1, $3); }
         ;
 
 operator
         : INDEX_
-                { if (np->getParseExpressionsFlag()) $$ = createFunction(np, "index"); }
         | INDEX_ '(' ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction(np, "index"); }
         | EXISTS '(' identifier ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction(np, "exists", $3); }
         | SIZEOF '(' identifier ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction(np, "sizeof", $3); }
         | TYPENAME
-                { if (np->getParseExpressionsFlag()) $$ = createFunction(np, "typename"); }
         ;
 
 literal
@@ -1656,25 +1598,18 @@ literal
 
 stringliteral
         : STRINGCONSTANT
-                { if (np->getParseExpressionsFlag()) $$ = createStringLiteral(np, @1); }
         ;
 
 boolliteral
         : TRUE_
-                { if (np->getParseExpressionsFlag()) $$ = createLiteral(np, LIT_BOOL, @1, @1); }
         | FALSE_
-                { if (np->getParseExpressionsFlag()) $$ = createLiteral(np, LIT_BOOL, @1, @1); }
         ;
 
 numliteral
         : INTCONSTANT
-                { if (np->getParseExpressionsFlag()) $$ = createLiteral(np, LIT_INT, @1, @1); }
         | realconstant_ext
-                { if (np->getParseExpressionsFlag()) $$ = createLiteral(np, LIT_DOUBLE, @1, @1); }
         | UNDEFINED_
-                { if (np->getParseExpressionsFlag()) $$ = createLiteral(np, LIT_DOUBLE, @1, @1); }  /*TODO*/
         | quantity
-                { if (np->getParseExpressionsFlag()) $$ = createQuantityLiteral(np, @1); }
         ;
 
 quantity
