@@ -273,13 +273,12 @@ public interface IDisplayString {
         // START of connection properties
         // NOTE: Do NOT change the first and last elements of property groups!
         // ROUTING_MODE(Tag.m, xxx, PropType.STRING, PropGroup.Connection, "routing", "Routing mode", "todo: [m]anual, manhatta[n], [s]hortestpath"),
-        ROUTING_CONSTRAINT(Tag.m, 0, PropType.STRING, PropGroup.Connection, "routing constraint", "Connection routing constraint", "auto=a.*,a; south=s.*,s; north=n.*,n; east=e.*,e; west=w.*,w"),
-
-        // A tag (anchoring)
-        // ANCHOR_SRCX(Tag.a, 0, PropType.INTEGER, PropGroup.Position, "source anchor x", "Relative horizontal position of the anchor on the source module side"),
-        // ANCHOR_SRCY(Tag.a, 1, PropType.INTEGER, PropGroup.Position, "source anchor y", "Relative vertical position of the anchor on the source module side"),
-        // ANCHOR_DSTX(Tag.a, 2, PropType.INTEGER, PropGroup.Position, "destination anchor x", "Relative horizontal position of the anchor on the destination module side"),
-        // ANCHOR_DSTY(Tag.a, 3, PropType.INTEGER, PropGroup.Position, "destination anchor y", "Relative vertical position of the anchor on the destination module side"),
+        ROUTING_CONSTRAINT(Tag.m, 0, PropType.STRING, PropGroup.Connection, "routing constraint", "Connection routing constraint", "auto=a.*,a; south=s.*,s; north=n.*,n; east=e.*,e; west=w.*,w; manual=m.*,m"),
+        // maybe the following should be turned into an A tag (anchoring)
+        ROUTING_ANCHOR_SRCX(Tag.m,  1, PropType.INTEGER, PropGroup.Connection, "src anchor x",  "When m[0] is 'm', this is the x coordinate of one point of the connection line, in integer percentages of the source rectangle", null),
+        ROUTING_ANCHOR_SRCY(Tag.m,  2, PropType.INTEGER, PropGroup.Connection, "src anchor y",  "When m[0] is 'm', this is the y coordinate of one point of the connection line, in integer percentages of the source rectangle", null),
+        ROUTING_ANCHOR_DESTX(Tag.m, 3, PropType.INTEGER, PropGroup.Connection, "dest anchor x", "When m[0] is 'm', this is the x coordinate of another point of the connection line, in integer percentages of the destination rectangle", null),
+        ROUTING_ANCHOR_DESTY(Tag.m, 4, PropType.INTEGER, PropGroup.Connection, "dest anchor y", "When m[0] is 'm', this is the y coordinate of another point of the connection line, in integer percentages of the destination rectangle", null),
 
         // LS tag (line style)
         CONNECTION_COLOR(Tag.ls, 0, PropType.COLOR, PropGroup.Line, "line color", "Connection color (color name, #RRGGBB or @HHSSBB)", null),
