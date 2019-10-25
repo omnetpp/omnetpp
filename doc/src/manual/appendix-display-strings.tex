@@ -220,7 +220,27 @@ Name of distance unit (default: meter)
  \hline
 \tbf{m}[0] - routing constraint
 &
-Connection routing constraint. Values: auto (a), south (s), north (n), east (e), west (w)
+Connection routing constraint. Values: auto (a), south (s), north (n), east (e), west (w), manual (m)
+\\
+ \hline
+\tbf{m}[1] - routing x1
+&
+Connection routing source coordinate. When m[0] is 'm', this is the x coordinate of one point of the connection line, in integer percentages of the source rectangle.
+\\
+ \hline
+\tbf{m}[2] - routing y1
+&
+Connection routing source coordinate. When m[0] is 'm', this is the y coordinate of one point of the connection line, in integer percentages of the source rectangle.
+\\
+ \hline
+\tbf{m}[3] - routing x2
+&
+Connection routing destination coordinate. When m[0] is 'm', this is the x coordinate of another point of the connection line, in integer percentages of the destination rectangle.
+\\
+ \hline
+\tbf{m}[4] - routing y2
+&
+Connection routing destination coordinate. When m[0] is 'm', this is the y coordinate of another point of the connection line, in integer percentages of the destination rectangle.
 \\
  \hline
 \tbf{ls}[0] - line color
