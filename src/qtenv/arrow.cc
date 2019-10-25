@@ -195,6 +195,11 @@ QLineF arrowcoords(double src_x1, double src_y1, double src_x2, double src_y2, /
         //  N,S - connection points N or S. Horiz shift by gate indices
         switch (mode) {
             case 'n':
+                src_x = dest_x = src_x1 + (src_i+1) * src_width / (src_n+1);
+                src_y = src_y2;
+                dest_y = src_y1;
+                break;
+
             case 's':
                 src_x = dest_x = src_x1 + (src_i+1) * src_width / (src_n+1);
                 src_y = src_y1;
@@ -202,9 +207,14 @@ QLineF arrowcoords(double src_x1, double src_y1, double src_x2, double src_y2, /
                 break;
 
             case 'e':
-            case 'w':
                 src_x = src_x1;
                 dest_x = src_x2;
+                src_y = dest_y = src_y1 + (src_i+1) * src_height / (src_n+1);
+                break;
+
+            case 'w':
+                src_x = src_x2;
+                dest_x = src_x1;
                 src_y = dest_y = src_y1 + (src_i+1) * src_height / (src_n+1);
                 break;
 
