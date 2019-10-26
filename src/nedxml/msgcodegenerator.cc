@@ -1070,6 +1070,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "    virtual const char **getFieldPropertyNames(int field) const override;\n";
     CC << "    virtual const char *getFieldProperty(int field, const char *propertyname) const override;\n";
     CC << "    virtual int getFieldArraySize(void *object, int field) const override;\n";
+    CC << "    virtual bool setFieldArraySize(void *object, int field, int size) const override;\n";
     CC << "\n";
     CC << "    virtual const char *getFieldDynamicTypeString(void *object, int field, int i) const override;\n";
     CC << "    virtual std::string getFieldValueAsString(void *object, int field, int i) const override;\n";
@@ -1077,6 +1078,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "\n";
     CC << "    virtual const char *getFieldStructName(int field) const override;\n";
     CC << "    virtual void *getFieldStructValuePointer(void *object, int field, int i) const override;\n";
+    CC << "    virtual bool setFieldStructValuePointer(void *object, int field, int i, void *ptr) const override;\n";
     CC << "};\n\n";
 
     // register class
@@ -1173,6 +1175,10 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
                 flags.push_back("FD_ISCOWNEDOBJECT");
             if (field.isEditable)
                 flags.push_back("FD_ISEDITABLE");
+            if (field.isReplaceable)
+                flags.push_back("FD_ISREPLACEABLE");
+            if (field.isResizable)
+                flags.push_back("FD_ISRESIZABLE");
             std::string flagss;
             if (flags.empty())
                 flagss = "0";
@@ -1339,6 +1345,30 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "}\n";
     CC << "\n";
 
+    // setFieldArraySize()
+    CC << "bool " << classInfo.descriptorClass << "::setFieldArraySize(void *object, int field, int size) const\n";
+    CC << "{\n";
+    CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
+    CC << "    if (basedesc) {\n";
+    CC << "        if (field < basedesc->getFieldCount())\n";
+    CC << "            basedesc->setFieldArraySize(object, field, size);\n";
+    CC << "        field -= basedesc->getFieldCount();\n";
+    CC << "    }\n";
+    CC << "    " << classInfo.className << " *pp = (" << classInfo.className << " *)object; (void)pp;\n";
+    CC << "    switch (field) {\n";
+    for (size_t i = 0; i < numFields; i++) {
+        const FieldInfo& field = classInfo.fieldList[i];
+        if (field.isArray && field.isResizable) {
+            Assert(classInfo.isClass); // we don't support variable-length arrays in structs
+            CC << "        case " << field.symbolicConstant << ": ";
+            CC << makeFuncall("pp", field.sizeSetter, false, "size") << "; return true;\n";
+        }
+    }
+    CC << "        default: return false;\n";
+    CC << "    }\n";
+    CC << "}\n";
+    CC << "\n";
+
     // getFieldDynamicTypeString()
     CC << "const char *" << classInfo.descriptorClass << "::getFieldDynamicTypeString(void *object, int field, int i) const\n";
     CC << "{\n";
@@ -1469,7 +1499,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < numFields; i++) {
         const FieldInfo& field = classInfo.fieldList[i];
-        if (!field.byValue) {
+        if (!field.byValue) { //TODO ?
             std::string value;
             if (!classInfo.isClass)
                 value = str("pp->") + field.var + (field.isArray ? "[i]" : "");
@@ -1483,6 +1513,36 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "    }\n";
     CC << "}\n";
     CC << "\n";
+
+    // setFieldStructValuePointer()
+    CC << "bool " << classInfo.descriptorClass << "::setFieldStructValuePointer(void *object, int field, int i, void *ptr) const\n";
+    CC << "{\n";
+    CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
+    CC << "    if (basedesc) {\n";
+    CC << "        if (field < basedesc->getFieldCount())\n";
+    CC << "            return basedesc->setFieldStructValuePointer(object, field, i, ptr);\n";
+    CC << "        field -= basedesc->getFieldCount();\n";
+    CC << "    }\n";
+    CC << "    " << classInfo.className << " *pp = (" << classInfo.className << " *)object; (void)pp;\n";
+    CC << "    switch (field) {\n";
+    for (size_t i = 0; i < numFields; i++) {
+        const FieldInfo& field = classInfo.fieldList[i];
+        if (field.isPointer && field.isReplaceable) { //TODO !field.byValue ?
+            CC << "        case " << field.symbolicConstant << ": ";
+            std::string maybeDereference = field.isPointer ? "" : "*";
+            std::string castPtr = std::string("(") + field.argType + ")ptr"; //TODO cast how?
+            if (!classInfo.isClass)
+                CC <<  str("pp->") << field.var << (field.isArray ? "[i]" : "") << " = " << maybeDereference << castPtr << ";";
+            else
+                CC << makeFuncall("pp", field.setter, field.isArray, maybeDereference + castPtr) << ";";
+            CC << " return true;\n";
+        }
+    }
+    CC << "        default: return false;\n";
+    CC << "    }\n";
+    CC << "}\n";
+    CC << "\n";
+
 }
 
 void MsgCodeGenerator::generateEnum(const EnumInfo& enumInfo)

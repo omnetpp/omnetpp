@@ -57,8 +57,9 @@ const char *MsgCompiler::BUILTIN_DEFINITIONS =
         @property[beforeChange](type=string; usage=class; desc="Method to be called before mutator code (in setters, non-const getters, operator=, etc.)");
         @property[implements](type=stringlist; usage=class; desc="Names of additional base classes");
         @property[nopack](type=bool; usage=field; desc="Ignore field in parsimPack/parsimUnpack methods");
-        @property[owned](type=bool; usage=field; desc="For pointers and pointer arrays: allocated memory is owned by the object (needs to be duplicated in dup(), and deleted in destructor). If field type is also cOwnedObject, take()/drop() calls are also generated");
-        @property[editable](type=bool; usage=field,class; desc="Field value is editable in the UI via the descriptor's setFieldValueFromString() method");
+        @property[editable](type=bool; usage=field,class; desc="Field value (or value of fields that are instances of this type) can be set via the class descriptor's setFieldValueFromString() method");
+        @property[replaceable](type=bool; usage=field; desc="Field is a pointer whose value can be set via the class descriptor's setFieldStructValuePointer() method");
+        @property[resizable](type=bool; usage=field; desc="Field is a variable-size array whose size can be set via the class descriptor's setFieldArraySize() method");
         @property[overrideGetter](type=bool; usage=field; desc="Add 'override' to the declaration of the getter method");
         @property[overrideSetter](type=bool; usage=field; desc="Add 'override' to the declaration of the setter method");
         @property[enum](type=string; usage=field; desc="For integer fields: Values are from the given enum");
@@ -73,6 +74,7 @@ const char *MsgCompiler::BUILTIN_DEFINITIONS =
         @property[allowReplace](type=bool; usage=field; desc="Whether setter of an owned pointer field is allowed to delete previously set object");
         @property[actually](type=string; usage=class; desc="Internal use");
         @property[overwritePreviousDefinition](type=bool; usage=class; desc="Internal use");
+        @property[owned](type=bool; usage=field; desc="For pointers and pointer arrays: allocated memory is owned by the object (needs to be duplicated in dup(), and deleted in destructor). If field type is also cOwnedObject, take()/drop() calls are also generated");
 
         class __bool { @actually(bool); @primitive; @fromString(string2bool($)); @toString(bool2string($)); @defaultValue(false); }
         class __float { @actually(float); @primitive; @fromString(string2double($)); @toString(double2string($)); @defaultValue(0); }

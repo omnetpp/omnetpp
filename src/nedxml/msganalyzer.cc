@@ -402,11 +402,16 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
     field->isFixedArray = field->isArray && !field->arraySize.empty();
 
     field->nopack = getPropertyAsBool(field->props, PROP_NOPACK, false);
-    bool isEditableDefault = fieldClassInfo.isEditable && !field->isConst && !field->isPointer && classInfo.generateSettersInDescriptor;
-    field->isEditable = getPropertyAsBool(field->props, PROP_EDITABLE, isEditableDefault);
     field->isOpaque = getPropertyAsBool(field->props, PROP_OPAQUE, fieldClassInfo.isOpaque);
     field->overrideGetter = getPropertyAsBool(field->props, PROP_OVERRIDEGETTER, false) || getPropertyAsBool(field->props, "override", false);
     field->overrideSetter = getPropertyAsBool(field->props, PROP_OVERRIDESETTER, false) || getPropertyAsBool(field->props, "override", false);
+
+    bool isEditableDefault = fieldClassInfo.isEditable && !field->isConst && !field->isPointer && classInfo.generateSettersInDescriptor;
+    field->isEditable = getPropertyAsBool(field->props, PROP_EDITABLE, isEditableDefault);
+    bool isReplaceableDefault = field->isPointer && !field->isConst && classInfo.generateSettersInDescriptor;
+    field->isReplaceable = getPropertyAsBool(field->props, PROP_REPLACEABLE, isReplaceableDefault);
+    bool isResizableDefault = classInfo.isClass && field->isArray && !field->isFixedArray && classInfo.generateSettersInDescriptor;
+    field->isResizable = getPropertyAsBool(field->props, PROP_RESIZABLE, isResizableDefault);
 
     // resolve enum
     field->enumName = getProperty(field->props, PROP_ENUM);

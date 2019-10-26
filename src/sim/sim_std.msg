@@ -1066,7 +1066,7 @@ class cPolylineFigure extends cAbstractLineFigure
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
-    Point points[] @group(geometry) @editable @getter(getPoint) @setter(setPoint) @sizeGetter(getNumPoints);
+    Point points[] @group(geometry) @editable @getter(getPoint) @setter(setPoint) @sizeGetter(getNumPoints) @sizeSetter(setNumPoints);
     bool smooth @group(geometry) @editable;
     int joinStyle @group(line) @editable @enum(cFigure::JoinStyle);
 }
@@ -1130,7 +1130,7 @@ class cPolygonFigure extends cAbstractShapeFigure
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
-    Point points[] @group(geometry) @editable @getter(getPoint) @setter(setPoint) @sizeGetter(getNumPoints);
+    Point points[] @group(geometry) @editable @getter(getPoint) @setter(setPoint) @sizeGetter(getNumPoints)  @sizeSetter(setNumPoints);
     bool smooth @group(geometry) @editable;
     int joinStyle @group(outline) @editable @enum(cFigure::JoinStyle);
     int fillRule @group(fill) @editable @enum(cFigure::FillRule);

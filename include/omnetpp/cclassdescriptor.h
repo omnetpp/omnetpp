@@ -44,7 +44,9 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
         FD_ISPOINTER = 0x04,  ///< field is pointer or pointer array: T *a; T *a[]; T *a[10];
         FD_ISCOBJECT = 0x08,  ///< if ISCOMPOUND: basic type (T) subclasses from cObject
         FD_ISCOWNEDOBJECT = 0x10, ///< if ISCOMPOUND: basic type (T) subclasses from cOwnedObject
-        FD_ISEDITABLE = 0x20, ///< whether field supports setFieldValueAsString()
+        FD_ISEDITABLE = 0x20,     ///< whether field supports setFieldValueAsString()
+        FD_ISREPLACEABLE = 0x40,  ///< whether field supports setFieldStructValuePointer()
+        FD_ISRESIZABLE = 0x80,    ///< whether field supports setFieldArraySize()
         FD_NONE = 0x0
     };
 
@@ -191,6 +193,8 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
     bool getFieldIsCObject(int field) const {return getFieldTypeFlags(field) & (FD_ISCOBJECT|FD_ISCOWNEDOBJECT);}
     bool getFieldIsCOwnedObject(int field) const {return getFieldTypeFlags(field) & FD_ISCOWNEDOBJECT;}
     bool getFieldIsEditable(int field) const {return getFieldTypeFlags(field) & FD_ISEDITABLE;}
+    bool getFieldIsReplaceable(int field) const {return getFieldTypeFlags(field) & FD_ISREPLACEABLE;}
+    bool getFieldIsResizable(int field) const {return getFieldTypeFlags(field) & FD_ISRESIZABLE;}
     //@}
 
     /**
@@ -225,6 +229,13 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
      * not an array, it returns 0.
      */
     virtual int getFieldArraySize(void *object, int field) const = 0;
+
+    /**
+     * Sets the array size of a field in the given object. Returns true if
+     * successful, and false if unsuccessful due to some reason (e.g. field is
+     * not a variable-sized array, has no array size setter method, etc.)
+     */
+    virtual bool setFieldArraySize(void *object, int field, int size) const = 0;
 
     /**
      * Returns the runtime type of the given field as a string if it can be
@@ -271,6 +282,11 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
      * Returns the pointer to the value of a compound field in the given object.
      */
     virtual void *getFieldStructValuePointer(void *object, int field, int i) const = 0;
+
+    /**
+     * Sets a pointer field in the given object.
+     */
+    virtual bool setFieldStructValuePointer(void *object, int field, int i, void *ptr) const = 0;
     //@}
 };
 

@@ -130,10 +130,14 @@ class NEDXML_API MsgTypeTable
         std::string enumName;   // from @enum
         std::string enumQName;  // fully qualified type name of enum
         bool nopack;            // @nopack(true)
-        bool isEditable;        // @editable(true): field value is editable in the UI via the descriptor's setFieldValueFromString() method
         bool isOpaque;          // @opaque(true), means that field type is treated as atomic (has no fields), i.e. has no descriptor
         bool overrideGetter;    // @overrideGetter|@override, used when field getter function overrides a function in base class
         bool overrideSetter;    // @overrideSetter|@override, used when field setter function overrides a function in base class
+
+        // The following members only affect the generated class descriptor, not the class itself
+        bool isEditable;        // @editable(true): field value is editable via the descriptor's setFieldValueFromString() method
+        bool isReplaceable;     // @replaceable(true): field value is a pointer which can be set via the descriptor's setFieldStructValuePointer() method
+        bool isResizable;       // @resizable(true): field is an array whose size can be set via the descriptor's setFieldArraySize() method
     };
 
     class ClassInfo {

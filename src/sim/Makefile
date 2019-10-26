@@ -149,7 +149,7 @@ clean:
 	$(Q)rm -rf $O $(GENERATED_SOURCES) $(TARGET_LIB_FILES)
 
 # NOTE: This is a trick: creating a muti-target pattern rule that prevents executing this target multiple times when running make in parallel
-%im_std_m.h %im_std_m.cc : sim_std.msg
+%im_std_m.h %im_std_m.cc : sim_std.msg ../nedxml/*
 	$(qecho) MSGC: $<
 	$(Q)$(MSGC) --msg6 sim_std.msg
 
