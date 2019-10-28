@@ -218,7 +218,7 @@ startsymbol
  */
 nedfile
         : definitions
-        |
+        | %empty
         ;
 
 definitions
@@ -339,7 +339,7 @@ propertydecl_header
 
 opt_propertydecl_keys
         : propertydecl_keys
-        |
+        | %empty
         ;
 
 propertydecl_keys
@@ -404,7 +404,7 @@ channelheader
         ;
 
 opt_inheritance
-        :
+        : %empty
         | EXTENDS extendsname
         | LIKE likenames
         | EXTENDS extendsname LIKE likenames
@@ -471,7 +471,7 @@ channelinterfaceheader
 
 opt_interfaceinheritance
         : EXTENDS extendsnames
-        |
+        | %empty
         ;
 
 extendsnames
@@ -659,7 +659,7 @@ opt_paramblock
 
 opt_params
         : params
-        |
+        | %empty
         ;
 
 params
@@ -757,7 +757,7 @@ paramtype
 opt_volatile
         : VOLATILE_
                 { ps.isVolatile = true; }
-        |
+        | %empty
                 { ps.isVolatile = false; }
         ;
 
@@ -779,7 +779,7 @@ paramvalue
 
 opt_inline_properties
         : inline_properties
-        |
+        | %empty
         ;
 
 inline_properties
@@ -896,7 +896,7 @@ property_value
                 {
                   $$ = createPropertyValue(np, @$);
                 }
-        |  /*empty*/
+        | %empty
                 {
                   LiteralElement *node = (LiteralElement *)createNedElementWithTag(np, NED_LITERAL);
                   node->setType(LIT_SPEC); // and leave both value and text at ""
@@ -916,7 +916,7 @@ property_literal
  */
 opt_gateblock
         : gateblock
-        |
+        | %empty
         ;
 
 gateblock
@@ -934,7 +934,7 @@ gateblock
 
 opt_gates
         : gates
-        |
+        | %empty
         ;
 
 gates
@@ -1013,7 +1013,7 @@ gatetype
  */
 opt_typeblock
         : typeblock
-        |
+        | %empty
         ;
 
 typeblock
@@ -1035,7 +1035,7 @@ typeblock
 
 opt_localtypes
         : localtypes
-        |
+        | %empty
         ;
 
 localtypes
@@ -1059,7 +1059,7 @@ localtype
  */
 opt_submodblock
         : submodblock
-        |
+        | %empty
         ;
 
 submodblock
@@ -1077,7 +1077,7 @@ submodblock
 
 opt_submodules
         : submodules
-        |
+        | %empty
         ;
 
 submodules
@@ -1151,7 +1151,7 @@ likeexpr
 opt_condition
         : condition
                 { $$ = $1; }
-        |
+        | %empty
                 { $$ = nullptr; }
         ;
 
@@ -1160,7 +1160,7 @@ opt_condition
  */
 opt_connblock
         : connblock
-        |
+        | %empty
         ;
 
 connblock
@@ -1189,7 +1189,7 @@ connblock
 
 opt_connections
         : connections
-        |
+        | %empty
         ;
 
 connections
@@ -1235,7 +1235,7 @@ connectiongroup
 opt_loops_and_conditions
         : loops_and_conditions
                 { $$ = $1; }
-        |
+        | %empty
                 { $$ = nullptr; }
         ;
 
@@ -1438,7 +1438,7 @@ opt_subgate
                   else
                        np->getErrors()->addError(currentLocation(np), "invalid subgate spec '%s', must be 'i' or 'o'", toString(np, @2));
                 }
-        |
+        | %empty
                 { ps.subgate = SUBGATE_NONE; }
         ;
 
@@ -1473,7 +1473,7 @@ channelspec_header
         ;
 
 opt_channelname
-        :
+        : %empty
         | NAME ':'
                 { ps.conn->setName(toString(np, @1)); }
         ;
@@ -1554,7 +1554,7 @@ functioncall
 
 opt_exprlist
         : exprlist
-        | /*%empty*/
+        | %empty
         ;
 
 exprlist
@@ -1630,7 +1630,7 @@ realconstant_ext
 
 opt_semicolon
         : ';'
-        |
+        | %empty
         ;
 
 %%

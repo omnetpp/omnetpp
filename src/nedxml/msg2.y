@@ -149,7 +149,7 @@ msgfile
 
 definitions
         : definitions definition
-        |
+        | %empty
         ;
 
 definition
@@ -339,7 +339,7 @@ enum
 
 opt_enumfields
         : enumfields
-        |
+        | %empty
         ;
 
 enumfields
@@ -458,7 +458,7 @@ body
 
 opt_fields_and_properties
         : fields_and_properties
-        |
+        | %empty
         ;
 
 fields_and_properties
@@ -506,7 +506,7 @@ fieldtypename
 fieldmodifiers
         : ABSTRACT
                 { ps.isAbstract = true; }
-        |
+        | %empty
                 { ps.isAbstract = false; }
         ;
 
@@ -555,7 +555,7 @@ opt_fieldvector
                 {
                   ps.field->setIsVector(true);
                 }
-        |
+        | %empty
         ;
 
 fieldvalue   /* some arbitrary C++ expression - validation left to C++ compiler */
@@ -586,7 +586,7 @@ enumvalue
 
 opt_inline_properties
         : inline_properties
-        |
+        | %empty
         ;
 
 inline_properties
@@ -676,7 +676,7 @@ property_value
                 {
                   $$ = createPropertyValue(np, @$);
                 }
-        |  /*empty*/
+        | %empty
                 {
                   LiteralElement *node = (LiteralElement *)createMsgElementWithTag(np, MSG_LITERAL);
                   node->setType(LIT_SPEC); // and leave both value and text at ""
@@ -691,7 +691,10 @@ property_literal
         | STRINGCONSTANT
         ;
 
-opt_semicolon : ';' | ;
+opt_semicolon
+        : ';'
+        | %empty
+        ;
 
 %%
 
