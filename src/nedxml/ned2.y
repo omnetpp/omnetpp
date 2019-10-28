@@ -1509,6 +1509,7 @@ expression
  */
 expr
         : simple_expr
+        | functioncall
         | '(' expr ')'
 
         | expr '+' expr
@@ -1545,18 +1546,20 @@ expr
         | expr SHIFT_LEFT expr
         | expr SHIFT_RIGHT expr
         | expr '?' expr ':' expr
+        ;
 
-        | funcname '(' ')'
-        | funcname '(' expr ')'
-        | funcname '(' expr ',' expr ')'
-        | funcname '(' expr ',' expr ',' expr ')'
-        | funcname '(' expr ',' expr ',' expr ',' expr ')'
-        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+functioncall
+        : funcname '(' opt_exprlist ')'
+        ;
+
+opt_exprlist
+        : exprlist
+        | /*%empty*/
+        ;
+
+exprlist
+        : exprlist ',' expr
+        | expr
         ;
 
 simple_expr
