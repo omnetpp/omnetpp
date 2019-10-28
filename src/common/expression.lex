@@ -76,6 +76,7 @@ using namespace omnetpp::common;
 "nan"                    { countChars(); return NAN_; }
 "inf"                    { countChars(); return INF_; }
 "undefined"              { countChars(); return UNDEFINED_; }
+"nullptr"                { countChars(); return NULLPTR_; }
 
 {L}({L}|{D})*(:{L}({L}|{D})*)*  { countChars(); yylval.str = opp_strdup(yytext); return NAME; }
 {D}+                     { countChars(); yylval.str = opp_strdup(yytext); return INTCONSTANT; }
@@ -100,6 +101,8 @@ using namespace omnetpp::common;
 ")"                      { countChars(); return ')'; }
 "["                      { countChars(); return '['; }
 "]"                      { countChars(); return ']'; }
+"{"                      { countChars(); return '{'; }
+"}"                      { countChars(); return '}'; }
 "."                      { countChars(); return '.'; }
 "?"                      { countChars(); return '?'; }
 

@@ -40,7 +40,7 @@ public:
      */
     struct COMMON_API AstNode
     {
-        enum Type {UNDEF, CONSTANT, OP, IDENT, IDENT_W_INDEX, FUNCTION, MEMBER, MEMBER_W_INDEX, METHOD};
+        enum Type {UNDEF, CONSTANT, OP, IDENT, IDENT_W_INDEX, FUNCTION, MEMBER, MEMBER_W_INDEX, METHOD, OBJECT, KEYVALUE, ARRAY};
         Type type;
         ExprValue constant;
         std::string name; // of operator, identifier or function
@@ -102,6 +102,8 @@ public:
         virtual ExprNode *createFunctionNode(const char *functionName, int argCount) {return nullptr;}
         virtual ExprNode *createMethodNode(const char *functionName, int argCount) {return nullptr;}
         virtual ExprNode *createOperatorNode(const char *opName, int argCount) {return nullptr;}
+        virtual ExprNode *createObjectNode(const char *typeName, const std::vector<std::string>& keys) {return nullptr;}
+        virtual ExprNode *createArrayNode(int argCount) {return nullptr;}
     };
 
     /**

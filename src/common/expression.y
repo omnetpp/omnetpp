@@ -35,11 +35,15 @@
 #include "stringutil.h"
 #include "unitconversion.h"
 
+using namespace omnetpp;
 using namespace omnetpp::common;
 using namespace omnetpp::common::expression;
 
 typedef Expression::AstNode AstNode;
 typedef Expression::AstNode::Type AstNodeType;
+
+namespace omnetpp { class cObject; };
+
 %}
 
 %union {
@@ -160,6 +164,8 @@ expr
         : literal
         | variable
         | functioncall
+        | object
+        | array
         | '(' expr ')'
                 { $<node>$ = $<node>2; }
         | operation
@@ -261,6 +267,17 @@ methodcall
         : NAME '(' opt_exprlist ')'
             { $<node>3->type = AstNode::METHOD; $<node>3->name = $1; delete [] $1; $<node>$ = $<node>3; }
         ;
+
+array
+        : '[' opt_exprlist ']'
+            { $<node>2->type = AstNode::ARRAY; $<node>$ = $<node>2; }
+        ;
+
+object
+        : '{' opt_keyvaluelist '}'
+            { $<node>2->type = AstNode::OBJECT; $<node>$ = $<node>2; }
+        | NAME '{' opt_keyvaluelist '}'
+            { $<node>3->type = AstNode::OBJECT; $<node>3->name = $1; delete [] $1; $<node>$ = $<node>3; }
         ;
 
 opt_exprlist
@@ -276,6 +293,22 @@ exprlist
             { $<node>$ = new AstNode(); $<node>$->children.push_back($<node>1); }
         ;
 
+opt_keyvaluelist
+        : keyvaluelist
+        | %empty
+            { $<node>$ = new AstNode(); }
+        ;
+
+keyvaluelist
+        : keyvaluelist ',' keyvalue
+            { $<node>1->children.push_back($<node>3); $<node>$ = $<node>1; }
+        | keyvalue
+            { $<node>$ = new AstNode(); $<node>$->children.push_back($<node>1); }
+        ;
+
+keyvalue
+        : NAME ':' expr
+                { $<node>$ = new AstNode(AstNode::KEYVALUE, $1); $<node>$->children.push_back($<node>3); delete [] $1; }
         ;
 
 variable
@@ -296,6 +329,7 @@ literal
         : stringliteral
         | boolliteral
         | numliteral
+        | otherliteral
         ;
 
 stringliteral
@@ -319,8 +353,6 @@ numliteral
                 { $<node>$ = newConstant(std::nan("")); }
         | INF_
                 { $<node>$ = newConstant(1/0.0); }
-        | UNDEFINED_
-                { $<node>$ = newConstant(ExprValue()); }
         | quantity
                 {
                   std::string unitstr;
@@ -333,6 +365,13 @@ numliteral
                       $<node>$ = newConstant(ExprValue(d, unit));
                   delete [] $<str>1;
                 }
+        ;
+
+otherliteral
+        : UNDEFINED_
+                { $<node>$ = newConstant(ExprValue()); }
+        | NULLPTR_
+                { $<node>$ = newConstant((cObject*)nullptr); }
         ;
 
 quantity

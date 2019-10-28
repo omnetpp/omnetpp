@@ -56,6 +56,9 @@ const char *Expression::AstNode::typeName(Type type)
         case AstNode::IDENT_W_INDEX: return "identifier";
         case AstNode::MEMBER:
         case AstNode::MEMBER_W_INDEX: return "member";
+        case AstNode::OBJECT: return "object";
+        case AstNode::ARRAY: return "array";
+        case AstNode::KEYVALUE: return "key-value";
         case AstNode::UNDEF: return "undef";
 	default: throw opp_runtime_error("Unrecognized enum value %d", type);
     }
@@ -246,13 +249,19 @@ ExprNode *Expression::AstTranslator::translateChild(AstNode *astChild, AstTransl
     return child;
 }
 
+inline AstNode *skipKeyValue(AstNode *astNode)
+{
+    // in the OBJECT syntax, values are nested under KEYVALUE nodes that need to be left out
+    return astNode->type == AstNode::KEYVALUE ? astNode->children[0] : astNode;
+}
+
 void Expression::AstTranslator::translateChildren(AstNode *astNode, ExprNode *node, AstTranslator *translatorForChildren)
 {
     std::vector<ExprNode*> children;
     try {
         children.reserve(astNode->children.size());
         for (AstNode *astChild : astNode->children)
-            children.push_back(translateChild(astChild, translatorForChildren));
+            children.push_back(translateChild(skipKeyValue(astChild), translatorForChildren));
         node->setChildren(children);
     }
     catch (std::exception& e) {
@@ -321,7 +330,27 @@ ExprNode *Expression::BasicAstTranslator::translateToExpressionTree(AstNode *ast
             translateChildren(astNode, node, translatorForChildren);
         return node;
     }
-
+    case AstNode::OBJECT: {
+        const char *name = astNode->name.c_str();
+        std::vector<std::string> keys;
+        for (AstNode *child : astNode->children) {
+            if (child->type != AstNode::KEYVALUE)
+                throw opp_runtime_error("Expression AST: unexpected node type under OBJECT, must be KEYVALUE");
+            keys.push_back(child->name);
+        }
+        ExprNode *node = createObjectNode(name, keys);
+        if (node)
+            translateChildren(astNode, node, translatorForChildren);
+        return node;
+    }
+    case AstNode::ARRAY: {
+        int argCount = astNode->children.size();
+        ExprNode *node = createArrayNode(argCount);
+        if (node)
+            translateChildren(astNode, node, translatorForChildren);
+        return node;
+    }
+    case AstNode::KEYVALUE: // translated as part of OBJECT
     default: throw opp_runtime_error("Unknown element type");
     }
 }
