@@ -133,6 +133,8 @@ public class SequenceChart
 
     public static final String STATE_PROPERTY = "SequenceChartState";
 
+    private static final String ANSI_CONTROL_SEQUENCE_REGEX = "\u001b\\[[\\d;]*[A-HJKSTfimnsu]";
+
     /*************************************************************************************
      * DRAWING PARAMETERS
      */
@@ -4142,7 +4144,7 @@ public class SequenceChart
                     for (int i = 0; i < event.getNumEventLogMessages(); i++) {
                         EventLogMessageEntry eventLogMessageEntry = event.getEventLogMessage(i);
 
-                        res += "<br/><span style=\"color:rgb(127, 0, 85)\"> - " + eventLogMessageEntry.getText() + "</span>";
+                        res += "<br/><span style=\"color:rgb(127, 0, 85)\"> - " + eventLogMessageEntry.getText().replaceAll(ANSI_CONTROL_SEQUENCE_REGEX, "") + "</span>";
 
                         if (i == 100) {
                             res += "<br/><br/>Content stripped after 100 lines. See Eventlog Table for more details.";
