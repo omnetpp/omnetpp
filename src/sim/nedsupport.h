@@ -241,6 +241,33 @@ class SizeofIndexedSubmoduleGate : public UnaryNode
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
+class ObjectNode : public NaryNode
+{
+  private:
+    std::string typeName;
+    std::vector<std::string> fieldNames; // to be assigned from the child expressions
+  protected:
+    virtual ExprValue evaluate(Context *context) const override;
+    virtual void print(std::ostream& out, int spaciousness) const override;
+  public:
+    ObjectNode(const char *typeName, const std::vector<std::string>& fieldNames) : typeName(typeName), fieldNames(fieldNames) {}
+    ObjectNode *dup() const override {return new ObjectNode(typeName.c_str(), fieldNames);}
+    virtual std::string getName() const override {return typeName;}
+    virtual Precedence getPrecedence() const override {return ELEM;}
+};
+
+class ArrayNode : public NaryNode
+{
+  protected:
+    virtual ExprValue evaluate(Context *context) const override;
+    virtual void print(std::ostream& out, int spaciousness) const override;
+  public:
+    ArrayNode() {}
+    ArrayNode *dup() const override {return new ArrayNode();}
+    virtual std::string getName() const override {return "array";}
+    virtual Precedence getPrecedence() const override {return ELEM;}
+};
+
 class NedOperatorTranslator : public Expression::AstTranslator
 {
   private:
@@ -266,6 +293,8 @@ class NedFunctionTranslator : public Expression::BasicAstTranslator
     virtual ExprNode *createMathFunctionNode(cNedMathFunction *nedFunction, int argCount);
   public:
     virtual ExprNode *createFunctionNode(const char *functionName, int argCount) override;
+    virtual ExprNode *createObjectNode(const char *typeName, const std::vector<std::string>& fieldNames) override;
+    virtual ExprNode *createArrayNode(int argCount) override;
 };
 
 }  // namespace nedsupport

@@ -25,6 +25,7 @@
 #include "omnetpp/cmodule.h"
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/checkandcast.h"
+#include "omnetpp/cclassdescriptor.h"
 #include "nedsupport.h"
 
 using namespace omnetpp::common;
@@ -65,6 +66,7 @@ ExprValue makeExprValue(const cPar& par)
     case cPar::INT: return ExprValue(par.intValue(), par.getUnit());
     case cPar::DOUBLE: return ExprValue(par.doubleValue(), par.getUnit());
     case cPar::STRING: return ExprValue(par.stdstringValue());
+    case cPar::OBJECT: return ExprValue(par.objectValue());
     case cPar::XML: return ExprValue(par.xmlValue());
     }
     Assert(false);
@@ -402,6 +404,66 @@ void SizeofIndexedSubmoduleGate::print(std::ostream& out, int spaciousness) cons
 
 //---
 
+ExprValue ObjectNode::evaluate(Context *context_) const
+{
+    cExpression::Context *context = dynamic_cast<cExpression::Context*>(context_->simContext);
+    ASSERT(context != nullptr);
+    ASSERT(children.size() == fieldNames.size());
+
+    if (typeName.empty()) {
+        cValueObject *object = new cValueObject();
+        object->setName("object");
+        for (int i = 0; i < fieldNames.size(); i++)
+            object->set(fieldNames[i].c_str(), makeNedValue(children[i]->tryEvaluate(context_)));
+        return object;
+    }
+    else {
+        throw cRuntimeError("Creation of typed objects ('%s {...}') is not supported", typeName.c_str());
+    }
+}
+
+void ObjectNode::print(std::ostream& out, int spaciousness) const
+{
+    if (!typeName.empty())
+        out << getName() << " ";
+    out << "{ ";
+    std::vector<ExprNode*> children = getChildren();
+    ASSERT(children.size() == fieldNames.size());
+    for (size_t i = 0; i < children.size(); i++) {
+        if (i != 0)
+            out << (spaciousness >= LASTPREC-ARITHM_LAST ? ", " : ",");
+        out << fieldNames[i] << ": ";
+        printChild(out, children[i], spaciousness);
+    }
+    out << " }";
+}
+
+//---
+
+ExprValue ArrayNode::evaluate(Context *context_) const
+{
+    cExpression::Context *context = dynamic_cast<cExpression::Context*>(context_->simContext);
+    ASSERT(context != nullptr);
+    cValueArray *array = new cValueArray();
+    array->setName("array");
+    for (ExprNode *child : children)
+        array->add(makeNedValue(child->tryEvaluate(context_)));
+    return ExprValue(array);
+}
+
+void ArrayNode::print(std::ostream& out, int spaciousness) const
+{
+    out << "[ ";
+    std::vector<ExprNode*> children = getChildren();
+    for (size_t i = 0; i < children.size(); i++) {
+        if (i != 0)
+            out << (spaciousness >= LASTPREC-ARITHM_LAST ? ", " : ",");
+        printChild(out, children[i], spaciousness);
+    }
+    out << " ]";
+}
+
+//---
 
 typedef Expression::AstNode AstNode;
 
@@ -563,6 +625,16 @@ ExprNode *NedFunctionTranslator::createFunctionNode(const char *functionName, in
     if (cNedMathFunction *mathFunction = cNedMathFunction::find(functionName, argCount))
         return createMathFunctionNode(mathFunction, argCount);
     return nullptr;
+}
+
+ExprNode *NedFunctionTranslator::createObjectNode(const char *typeName, const std::vector<std::string>& fieldNames)
+{
+    return new ObjectNode(typeName, fieldNames);
+}
+
+ExprNode *NedFunctionTranslator::createArrayNode(int argCount)
+{
+    return new ArrayNode();
 }
 
 ExprNode *NedFunctionTranslator::createNedFunctionNode(cNedFunction *nedFunction, int argCount)
