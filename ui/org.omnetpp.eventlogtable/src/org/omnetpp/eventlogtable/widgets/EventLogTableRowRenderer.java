@@ -88,6 +88,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
     private static final int HORIZONTAL_SPACING = 4;
     private static final int INDENT_SPACING = HORIZONTAL_SPACING * 4;
     private static final int VERTICAL_SPACING = 3;
+    private static final String ANSI_CONTROL_SEQUENCE_REGEX = "\u001b\\[[\\d;]*[A-HJKSTfimnsu]";
 
     protected EventLogInput eventLogInput;
     protected EventLogTable eventLogTable;
@@ -566,7 +567,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
         }
 
         Builder raw(String value) {
-            return append(value, RAW_VALUE_STYLE);
+            return append(value.replaceAll(ANSI_CONTROL_SEQUENCE_REGEX, ""), RAW_VALUE_STYLE);
         }
 
         Builder bubble(String text) {
@@ -574,7 +575,9 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
         }
 
         Builder eventLogMessage(String text) {
-            return append(text, EVENT_LOG_MESSAGE_STYLE);
+            // TODO: maybe implement actual formatting, using something like
+            // https://github.com/mihnita/ansi-econsole ?
+            return append(text.replaceAll(ANSI_CONTROL_SEQUENCE_REGEX, ""), EVENT_LOG_MESSAGE_STYLE);
         }
 
         Builder module(int moduleId) {
