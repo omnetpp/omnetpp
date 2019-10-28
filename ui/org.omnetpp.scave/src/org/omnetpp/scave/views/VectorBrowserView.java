@@ -47,6 +47,7 @@ import org.omnetpp.scave.editors.datatable.VectorResultContentProvider;
 import org.omnetpp.scave.editors.datatable.VectorResultRowRenderer;
 import org.omnetpp.scave.engine.VectorDatum;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engine.SqliteResultFileUtils;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engineext.IndexFileUtils;
 import org.omnetpp.scave.model2.ChartDataPoint;
@@ -333,7 +334,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
         if (input != null && input.resolve() instanceof VectorResult) {
             VectorResult vector = (VectorResult)input.resolve();
             String file = vector.getFileRun().getFile().getFileSystemFilePath();
-            if (IndexFileUtils.isIndexFileUpToDate(file)) {
+            if (SqliteResultFileUtils.isSqliteFile(file) || (IndexFileUtils.isExistingVectorFile(file) && IndexFileUtils.isIndexFileUpToDate(file))) {
                 hideMessage();
                 if (eventNumberColumn != null && vector.getColumns().indexOf('E') < 0) {
                     eventNumberColumn.dispose();
