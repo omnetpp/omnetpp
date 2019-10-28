@@ -1789,7 +1789,7 @@ public class SequenceChart
 
                 // check if module already has an associated axis?
                 for (ModuleTreeItem axisModule : axisModules)
-                    if (axisModule == moduleTreeItem || (axisModule.isCompoundModule() && axisModule.isDescendantModule(moduleTreeItem)))
+                    if (axisModule == moduleTreeItem || (!axisModule.hasCustomClass() && axisModule.isDescendantModule(moduleTreeItem)))
                         continue;
 
                 // create module tree item on demand
@@ -1831,7 +1831,11 @@ public class SequenceChart
             return ((FilteredEventLog)eventLog).matchesModuleCreatedEntry(moduleCreatedEntry);
         }
         else
-            return !moduleTreeItem.isCompoundModule();
+            // If the module has any kind of custom behavior attached to it (via @class)
+            // - whether it is a simple module, or a "tricky" compound module -,
+            // it's possible that it "does something"_ calls methods, handles events,
+            // sends messages, etc.; so let's include it.
+            return moduleTreeItem.hasCustomClass();
     }
 
     /*************************************************************************************

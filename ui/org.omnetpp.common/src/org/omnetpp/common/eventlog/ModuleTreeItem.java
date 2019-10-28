@@ -64,6 +64,11 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
         return isCompoundModule;
     }
 
+    // if the user supplied some custom behavior using @class
+    public boolean hasCustomClass() {
+        return !"omnetpp::cModule".equals(moduleClassName);
+    }
+
     private void addSubmodule(ModuleTreeItem submodule) {
         getRootModule().getModuleIdToModuleMap().put(submodule.getModuleId(), submodule);
         submodules.add(submodule);
