@@ -199,7 +199,7 @@ class SIM_API cObjectParImpl : public cParImpl
     /**
      * Ensure object parameters cannot be shared.
      */
-    virtual void setIsShared(bool shared) override { ASSERT(!shared); }
+    //virtual void setIsShared(bool shared) override { ASSERT(!shared); }
 
     /**
      * Replaces for non-const values, replaces the stored expression with its

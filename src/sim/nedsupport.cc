@@ -26,6 +26,8 @@
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/checkandcast.h"
 #include "omnetpp/cclassdescriptor.h"
+#include "omnetpp/cvaluearray.h"
+#include "omnetpp/cvaluemap.h"
 #include "nedsupport.h"
 
 using namespace omnetpp::common;
@@ -404,21 +406,98 @@ void SizeofIndexedSubmoduleGate::print(std::ostream& out, int spaciousness) cons
 
 //---
 
+class cDefaultOwnerSwitcher
+{
+  private:
+    cDefaultOwner *oldOwner;
+    cDefaultOwner tmpOwner;
+  public:
+    cDefaultOwnerSwitcher() {
+        oldOwner = cOwnedObject::getDefaultOwner();
+        cOwnedObject::setDefaultOwner(&tmpOwner);
+    }
+    cDefaultOwner *getOwner() {return &tmpOwner;}
+    ~cDefaultOwnerSwitcher() {
+        cOwnedObject::setDefaultOwner(oldOwner);
+    }
+};
+
+//---
+
 ExprValue ObjectNode::evaluate(Context *context_) const
 {
     cExpression::Context *context = dynamic_cast<cExpression::Context*>(context_->simContext);
     ASSERT(context != nullptr);
     ASSERT(children.size() == fieldNames.size());
-
     if (typeName.empty()) {
-        cValueObject *object = new cValueObject();
+        cValueMap *object = new cValueMap();
+        cDefaultOwnerSwitcher owner;
         object->setName("object");
         for (int i = 0; i < fieldNames.size(); i++)
             object->set(fieldNames[i].c_str(), makeNedValue(children[i]->tryEvaluate(context_)));
+        object->takeAllObjectsFrom(owner.getOwner());
         return object;
     }
     else {
-        throw cRuntimeError("Creation of typed objects ('%s {...}') is not supported", typeName.c_str());
+        cObject *object = createOne(typeName.c_str());
+        cDefaultOwnerSwitcher owner;
+        cClassDescriptor *desc = object->getDescriptor();
+        for (int i = 0; i < fieldNames.size(); i++)
+            setField(desc, object, fieldNames[i].c_str(), makeNedValue(children[i]->tryEvaluate(context_)));
+        object->takeAllObjectsFrom(owner.getOwner());
+        return object;
+    }
+}
+
+void ObjectNode::setField(cClassDescriptor *desc, cObject *object, const char *fieldName, const cValue& value) const
+{
+    int fieldIndex = desc->findField(fieldName);
+    if (fieldIndex == -1)
+        throw cRuntimeError("Class '%s' has no field named '%s'", object->getClassName(), fieldName);
+    bool isArrayField = desc->getFieldIsArray(fieldIndex);
+    bool isCObjectField = desc->getFieldIsCObject(fieldIndex);
+    bool isCompoundField = desc->getFieldIsCompound(fieldIndex);
+    if (!isArrayField) {
+        // scalar field
+        if (!isCompoundField) { // atomic
+            if (value.getType() == cValue::OBJECT)
+                throw cRuntimeError("Cannot put object value into non-object field '%s' inside a '%s'", fieldName, object->getClassName());
+            desc->setFieldValueAsString(object, fieldIndex, 0, value.str().c_str());
+        }
+        else if (isCObjectField) {
+            if (value.getType() != cValue::OBJECT)
+                throw cRuntimeError("Cannot put %s value into object field '%s' inside a '%s'",
+                        cValue::getTypeName(value.getType()), fieldName, object->getClassName());
+            desc->setFieldStructValuePointer(object, fieldIndex, 0, value.objectValue());
+        }
+        else {
+            throw cRuntimeError("Non-cObject compound fields currently not supported (field '%s' in class '%s')", fieldName, object->getClassName());
+        }
+    }
+    else {
+        // array field
+        cValueArray *array = check_and_cast<cValueArray *>(value.objectValue());
+        int arraySize = array->size();
+        desc->setFieldArraySize(object, fieldIndex, arraySize);
+        if (!isCompoundField) { // atomic
+            for (int i = 0; i < arraySize; i++) {
+                const cValue& arrayElement = array->get(i);
+                if (arrayElement.getType() == cValue::OBJECT)
+                    throw cRuntimeError("Cannot put object value into non-object field '%s[]' inside a '%s'", fieldName, object->getClassName());
+                desc->setFieldValueAsString(object, fieldIndex, i, arrayElement.str().c_str());
+            }
+        }
+        else if (isCObjectField) {
+            for (int i = 0; i < arraySize; i++) {
+                if (array->get(i).getType() != cValue::OBJECT)
+                    throw cRuntimeError("Cannot put non-object value into object field '%s' inside a '%s'", fieldName, object->getClassName());
+                cObject *obj = array->remove(i).objectValue();
+                desc->setFieldStructValuePointer(object, fieldIndex, i, obj);
+            }
+        }
+        else {
+            throw cRuntimeError("Non-cObject compound fields currently not supported (field '%s' in class '%s')", fieldName, object->getClassName());
+        }
     }
 }
 
@@ -446,8 +525,10 @@ ExprValue ArrayNode::evaluate(Context *context_) const
     ASSERT(context != nullptr);
     cValueArray *array = new cValueArray();
     array->setName("array");
+    cDefaultOwnerSwitcher owner;
     for (ExprNode *child : children)
         array->add(makeNedValue(child->tryEvaluate(context_)));
+    array->takeAllObjectsFrom(owner.getOwner());
     return ExprValue(array);
 }
 
@@ -666,8 +747,6 @@ ExprNode *NedFunctionTranslator::createMathFunctionNode(cNedMathFunction *mathFu
         default: throw opp_runtime_error("'%s()': NED math functions only support up to 4 arguments", name);
     }
 }
-
-
 
 }  // namespace omnetpp
 } // namespace nedsupport

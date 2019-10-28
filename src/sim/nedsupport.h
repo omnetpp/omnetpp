@@ -248,6 +248,7 @@ class ObjectNode : public NaryNode
     std::vector<std::string> fieldNames; // to be assigned from the child expressions
   protected:
     virtual ExprValue evaluate(Context *context) const override;
+    virtual void setField(cClassDescriptor *desc, cObject *object, const char *fieldName, const cValue& value) const;
     virtual void print(std::ostream& out, int spaciousness) const override;
   public:
     ObjectNode(const char *typeName, const std::vector<std::string>& fieldNames) : typeName(typeName), fieldNames(fieldNames) {}
