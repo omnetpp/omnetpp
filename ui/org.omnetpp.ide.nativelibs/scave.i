@@ -591,10 +591,6 @@ namespace omnetpp { namespace scave {
 %include "scave/exportutils.h"
 
 /* ------------------ sqliteresultfileutils.h ----------------------- */
-namespace omnetpp { namespace scave {
-//TODO
-} } // namespaces
-
 %include "scave/sqliteresultfileutils.h"
 
 /* ------------------ xyarray.h ----------------------- */

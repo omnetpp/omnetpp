@@ -114,15 +114,10 @@ VectorDatum *SqliteVectorDataReader::getSingleEntry(int simtimeExp)
     assert(stmt != nullptr);
     int resultCode = sqlite3_step(stmt);
 
-    if (resultCode == SQLITE_DONE) {
-        finalizeStatement(); // this is a bit out-of-place
-        error("vector not found, or not enough entries");
-    }
-
-    if (resultCode != SQLITE_ROW)
+    if (resultCode != SQLITE_ROW) {
+        finalizeStatement();
         return nullptr;
-
-    checkRow(resultCode);
+    }
 
     VectorDatum *datum = new VectorDatum();
     int64_t rowid = sqlite3_column_int64(stmt, 0);

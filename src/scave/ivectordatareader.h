@@ -67,6 +67,7 @@ class SCAVE_API IVectorDataReader
          * Returns the number of entries in the vector.
          */
         virtual int getNumberOfEntries(int vectorId) = 0;
+
         /**
          * Returns the entry with the specified serial,
          * or nullptr if the serial is out of range.
@@ -88,7 +89,7 @@ class SCAVE_API IVectorDataReader
          */
         virtual VectorDatum *getEntryByEventnum(int vectorId, eventnumber_t eventNum, bool after) = 0;
 
-        // These functions don't fill the serial field of the VectorDatum entries given to the adapter!
+        // These functions don't always (with the SQLite reader) fill the serial field of the VectorDatum entries given to the adapter!
         virtual void collectEntries(const std::set<int>& vectorIds) = 0;
         virtual void collectEntriesInSimtimeInterval(const std::set<int>& vectorIds, simultime_t startTime, simultime_t endTime) = 0;
         virtual void collectEntriesInEventnumInterval(const std::set<int>& vectorIds, eventnumber_t startEventNum, eventnumber_t endEventNum) = 0;
