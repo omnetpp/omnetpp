@@ -54,7 +54,10 @@ cFigure::Point Driver::getNextTarget()
 
 simtime_t Driver::computeTravelTime(const Point& from, const Point& to)
 {
-    return normal(100,10); // keep it simple in this example
+    double dist = from.distanceTo(to);
+    double v = dist / 5.0;
+    v = std::max(std::min(v, 20.0), 8.0);
+    return dist / v;
 }
 
 void Driver::handleMessage(cMessage *timer)
