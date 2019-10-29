@@ -83,17 +83,20 @@ MatchExpression::MatchExpression(const char *pattern, bool dottedpath, bool full
 
 void MatchExpression::setPattern(const char *pattern, bool dottedpath, bool fullstring, bool casesensitive)
 {
-    if (opp_isblank(pattern))
-        throw opp_runtime_error("MatchExpression: Empty string is not a valid expression (try \"*\" for match-all)");
-
-    std::vector<Elem> elems = parsePattern(pattern);
-    ExprNode *t = generateEvaluator(elems, dottedpath, fullstring, casesensitive);
-
     this->matchDottedPath = dottedpath;
     this->matchFullString = fullstring;
     this->caseSensitive = casesensitive;
-    delete tree;
-    tree = t;
+
+    if (opp_isblank(pattern)) {
+        delete tree;
+        tree = new ConstantNode(ExprValue(false));
+    }
+    else {
+        std::vector<Elem> elems = parsePattern(pattern);
+        ExprNode *t = generateEvaluator(elems, dottedpath, fullstring, casesensitive);
+        delete tree;
+        tree = t;
+    }
 }
 
 ExprNode *MatchExpression::generateEvaluator(const std::vector<Elem>& elems, bool dottedpath, bool fullstring, bool casesensitive)
