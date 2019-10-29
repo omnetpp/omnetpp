@@ -1781,6 +1781,12 @@ void cPolylineFigure::moveLocal(double dx, double dy)
     fireGeometryChange();
 }
 
+void cPolylineFigure::setNumPoints(int size)
+{
+    this->points.resize(size);
+    fireGeometryChange();
+}
+
 void cPolylineFigure::setPoints(const std::vector<Point>& points)
 {
     if (points == this->points)
@@ -2412,6 +2418,12 @@ void cPolygonFigure::setPoints(const std::vector<Point>& points)
     if (points == this->points)
         return;
     this->points = points;
+    fireGeometryChange();
+}
+
+void cPolygonFigure::setNumPoints(int size)
+{
+    this->points.resize(size);
     fireGeometryChange();
 }
 

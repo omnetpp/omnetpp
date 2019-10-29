@@ -1298,6 +1298,12 @@ class SIM_API cPolylineFigure : public cAbstractLineFigure
         virtual const Point& getPoint(int i) const {checkIndex(i); return points[i];}
 
         /**
+         * Sets the number of points that define the polyline. (Appends new
+         * points or drops trailing points as needed.)
+         */
+        virtual void setNumPoints(int size); // primarily for sim_std.msg
+
+        /**
          * Sets the ith point. The index must be in the 0..getNumPoints()-1 interval.
          */
         virtual void setPoint(int i, const Point& point);
@@ -1901,6 +1907,12 @@ class SIM_API cPolygonFigure : public cAbstractShapeFigure
          * interval.
          */
         virtual const Point& getPoint(int i) const {checkIndex(i); return points[i];}
+
+        /**
+         * Sets the number of points that define the polygon. (Appends new
+         * points or drops trailing points as needed.)
+         */
+        virtual void setNumPoints(int size); // primarily for sim_std.msg
 
         /**
          * Sets the ith point. The index must be in the 0..getNumPoints()-1 interval.
