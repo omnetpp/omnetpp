@@ -18,7 +18,6 @@
 #include "common/stlutil.h"
 #include "exception.h"
 #include "msgtypetable.h"
-#include "msganalyzer.h"
 #include "msgcompiler.h"
 
 using namespace omnetpp::common;
