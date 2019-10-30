@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 #
 # This script automatically updates ChangeLog files from the git history.
 # The result may need some editing before committing back into the repo.
