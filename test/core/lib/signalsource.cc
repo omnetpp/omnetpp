@@ -101,9 +101,9 @@ void SignalSource::emitSignal(cXMLElement *elem)
             if (strcmp(type, "bool") == 0)
                 tsval.set(t, value[0] == 't');
             else if (strcmp(type, "long") == 0)
-                tsval.set(t, strtol(value, nullptr, 10));
+                tsval.set(t, (intval_t)strtol(value, nullptr, 10));
             else if (strcmp(type, "unsigned long") == 0)
-                tsval.set(t, strtoul(value, nullptr, 10));
+                tsval.set(t, (uintval_t)strtoul(value, nullptr, 10));
             else if (strcmp(type, "double") == 0)
                 tsval.set(t, strtod(value, nullptr));
             else if (strcmp(type, "simtime_t") == 0)

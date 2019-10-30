@@ -93,7 +93,7 @@ void Routing::handleMessage(cMessage *msg)
     RoutingTable::iterator it = rtable.find(destAddr);
     if (it == rtable.end()) {
         EV << "address " << destAddr << " unreachable, discarding packet " << pk->getName() << endl;
-        emit(dropSignal, (long)pk->getByteLength());
+        emit(dropSignal, (intval_t)pk->getByteLength());
         delete pk;
         return;
     }

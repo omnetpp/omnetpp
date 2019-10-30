@@ -16,8 +16,8 @@ class NoisyListener : public cListener
     NoisyListener();
     virtual ~NoisyListener();
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, bool b, cObject *details) override;
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l, cObject *details) override;
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, unsigned long t, cObject *details) override;
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, intval_t l, cObject *details) override;
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, uintval_t l, cObject *details) override;
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d, cObject *details) override;
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& t, cObject *details) override;
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s, cObject *details) override;

@@ -20,7 +20,7 @@ using namespace omnetpp;
 class L2Queue : public cSimpleModule
 {
   private:
-    long frameCapacity;
+    intval_t frameCapacity;
 
     cQueue queue;
     cMessage *endTransmissionEvent;
@@ -85,7 +85,7 @@ void L2Queue::startTransmitting(cMessage *msg)
     int64_t numBytes = check_and_cast<cPacket *>(msg)->getByteLength();
     send(msg, "line$o");
 
-    emit(txBytesSignal, (long)numBytes);
+    emit(txBytesSignal, numBytes);
 
     // Schedule an event for the time when last bit will leave the gate.
     simtime_t endTransmission = gate("line$o")->getTransmissionChannel()->getTransmissionFinishTime();
@@ -110,7 +110,7 @@ void L2Queue::handleMessage(cMessage *msg)
     }
     else if (msg->arrivedOn("line$i")) {
         // pass up
-        emit(rxBytesSignal, (long)check_and_cast<cPacket *>(msg)->getByteLength());
+        emit(rxBytesSignal, (intval_t)check_and_cast<cPacket *>(msg)->getByteLength());
         send(msg, "out");
     }
     else {  // arrived on gate "in"
@@ -118,7 +118,7 @@ void L2Queue::handleMessage(cMessage *msg)
             // We are currently busy, so just queue up the packet.
             if (frameCapacity && queue.getLength() >= frameCapacity) {
                 EV << "Received " << msg << " but transmitter busy and queue full: discarding\n";
-                emit(dropSignal, (long)check_and_cast<cPacket *>(msg)->getByteLength());
+                emit(dropSignal, (intval_t)check_and_cast<cPacket *>(msg)->getByteLength());
                 delete msg;
             }
             else {

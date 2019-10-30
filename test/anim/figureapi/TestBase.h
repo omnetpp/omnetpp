@@ -25,17 +25,17 @@ class TestBase : public cSimpleModule, public cIListener {
 protected:
     cLabelFigure *descr;
     cLabelFigure *state;
-    long lastTick = 0;
+    intval_t lastTick = 0;
 
     virtual void initialize();
     virtual void refreshDisplay() const;
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l, cObject *details = 0);
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, intval_t l, cObject *details = 0);
 
     // dummies
     virtual void handleMessage(cMessage *msg) {}
 
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, bool b, cObject *details) {}
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l, cObject *details) {}
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, uintval_t l, cObject *details) {}
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d, cObject *details) {}
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& t, cObject *details) {}
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s, cObject *details) {}

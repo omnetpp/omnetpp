@@ -30,13 +30,13 @@ void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, bool
     EV << ", bool " << b << "\n";
 }
 
-void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, long l, cObject *details)
+void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, intval_t l, cObject *details)
 {
     EV << "SIGNAL from "; printFrom(source, signalID);
     EV << ", long " << l << "\n";
 }
 
-void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l, cObject *details)
+void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, uintval_t l, cObject *details)
 {
     EV << "SIGNAL from "; printFrom(source, signalID);
     EV << ", long " << l << "\n";

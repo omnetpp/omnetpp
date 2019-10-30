@@ -26,12 +26,12 @@ class Server : public cSimpleModule
     bool channelBusy;
     cMessage *endRxEvent;
 
-    long currentCollisionNumFrames;
+    intval_t currentCollisionNumFrames;
     simtime_t recvStartTime;
 
     // statistics
-    long totalFrames;
-    long collidedFrames;
+    intval_t totalFrames;
+    intval_t collidedFrames;
     simtime_t totalReceiveTime;
     simtime_t totalCollisionTime;
     double currentChannelUtilization;

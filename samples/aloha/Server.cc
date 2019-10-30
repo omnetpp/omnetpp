@@ -59,7 +59,7 @@ void Server::handleMessage(cMessage *msg)
         simtime_t dt = simTime() - recvStartTime;
         if (currentCollisionNumFrames == 0) {
             // start of reception at recvStartTime
-            cTimestampedValue tmp(recvStartTime, 1l);
+            cTimestampedValue tmp(recvStartTime, (intval_t)1);
             emit(receiveSignal, &tmp);
             // end of reception now
             emit(receiveSignal, 0);

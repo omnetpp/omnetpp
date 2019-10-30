@@ -26,8 +26,8 @@ class Server : public cSimpleModule
     bool channelBusy;
     cMessage *endRxEvent;
 
-    long currentCollisionNumFrames;
-    long receiveCounter;
+    intval_t currentCollisionNumFrames;
+    intval_t receiveCounter;
     simtime_t recvStartTime;
     enum { IDLE = 0, TRANSMISSION = 1, COLLISION = 2 };
     simsignal_t channelStateSignal;

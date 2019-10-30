@@ -41,7 +41,7 @@ void TestBase::refreshDisplay() const
         state->setText(stateText.c_str());
 }
 
-void TestBase::receiveSignal(cComponent *source, simsignal_t signalID, long l, cObject *details)
+void TestBase::receiveSignal(cComponent *source, simsignal_t signalID, intval_t l, cObject *details)
 {
     Enter_Method_Silent(); // just to set the context object
 
