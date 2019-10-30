@@ -263,7 +263,7 @@ void MsgTool::printHelpPage(const std::string& page)
         help.option("h, help", "Print help text");
         help.line();
         help.para("The default command is 'cpp'.");
-        help.para("To get help, use opp_msgtool help <topic>. Available help topics: command names.");
+        help.para("To get help, use opp_msgtool help <topic>. Available help topics: command names, 'builtindefs'.");
     }
     else if (page == "h" || page == "help") {
         help.para("Usage: opp_msgtool help <topic>");
@@ -347,6 +347,10 @@ void MsgTool::printHelpPage(const std::string& page)
         help.option("-Xns", "Do not generate setters in class descriptors (cf. @descriptor(readonly) MSG property)");
         help.option("-v", "Verbose");
         help.line();
+    }
+    else if (page == "builtindefs") {
+        std::cout << MsgCompiler::getBuiltinDefinitions();
+
     }
     else {
         throw opp_runtime_error("no help topic '%s'", page.c_str());

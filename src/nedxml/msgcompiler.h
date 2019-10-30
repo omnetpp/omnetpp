@@ -77,6 +77,10 @@ class NEDXML_API MsgCompiler
     StringSet importsSeen;
     StringSet importedFiles;
 
+  private:
+    static constexpr const char* ATT_NAME = "name";
+    static const char *BUILTIN_DEFINITIONS;
+
   protected:
     void importBuiltinDefinitions();
     void processBuiltinImport(const char *txt, const char *fname);
@@ -105,8 +109,10 @@ class NEDXML_API MsgCompiler
      */
     void generate(MsgFileElement *fileElement, const char *hFile, const char *ccFile, StringSet& outImportedFiles);
 
-  private:
-    static constexpr const char* ATT_NAME = "name";
+    /**
+     * Returns the built-in MSG definitions.
+     */
+    static const char *getBuiltinDefinitions() {return BUILTIN_DEFINITIONS;}
 };
 
 }  // namespace nedxml

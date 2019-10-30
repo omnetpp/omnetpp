@@ -32,7 +32,7 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace nedxml {
 
-static const char *BUILTIN_DEFINITIONS =
+const char *MsgCompiler::BUILTIN_DEFINITIONS =
         R"ENDMARK(
         @property[property](type=any; usage=file; desc="For declaring properties");
         @property[customize](type=bool; usage=class; desc="Customize the class via inheritance. Generates base class <name>_Base");
