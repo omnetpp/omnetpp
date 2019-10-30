@@ -45,7 +45,10 @@ public class ManualAxisOrder {
         // add selected modules in the last known order
         ArrayList<ModuleTreeItem> currentAxisModuleOrder = new ArrayList<ModuleTreeItem>();
         for (ModuleTreeItem axisModule : lastAxisModuleOrder)
-            if (ArrayUtils.contains(selectedAxisModules, axisModule))
+            // FIXME KLUDGE XXX the second part of the condition (!currentAxisModuleOrder.contains(axisModule))
+            // is only necessary to make sure that the result will not contain duplicates.
+            // A proper fix would be to guarantee that lastAxisModuleOrder (and selectedAxisModules) are always free of duplicates.
+            if (ArrayUtils.contains(selectedAxisModules, axisModule) && !currentAxisModuleOrder.contains(axisModule))
                 currentAxisModuleOrder.add(axisModule);
         return currentAxisModuleOrder;
     }
