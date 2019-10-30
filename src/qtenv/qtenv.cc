@@ -329,9 +329,8 @@ void Qtenv::storeInspectors(bool closeThem)
             localPrefs->setValue("fullscreen", insp->windowState().testFlag(Qt::WindowFullScreen));
             localPrefs->endGroup();
 
-            if (closeThem) {
+            if (closeThem)
                 toBeClosed.push_back(insp);
-            }
 
             index++;
         }
@@ -645,10 +644,12 @@ void Qtenv::doRun()
     // saving the open toplevel inspectors to the .qtenvrc file
     storeInspectors(false);
 
-    // close all inspectors before exiting
-    for (auto insp : inspectors) {
+    // close all inspectors before exiting,
+    // making a copy of the list to avoid iterator invalidation
+    // (inspectors will be removed from the main list when tey are deleted)
+    InspectorList inspectorsCopy = inspectors;
+    for (auto insp : inspectorsCopy)
         delete insp;
-    }
     inspectors.clear();
 
     IOsgViewer::uninit();
@@ -1274,9 +1275,15 @@ void Qtenv::deleteInspector(Inspector *insp)
 {
     ASSERT(insp->isToplevelInspector());
     ASSERT(insp->testAttribute(Qt::WA_DeleteOnClose));
+    ASSERT(std::find(inspectors.begin(), inspectors.end(), insp) != inspectors.end());
 
-    // this will also make Qt call delete on it, because of the Qt::WA_DeleteOnClose attribute
-    insp->close();
+    // this will also make Qt call delete on it later, because of the Qt::WA_DeleteOnClose attribute
+    delete insp;
+}
+
+void Qtenv::inspectorDeleted(Inspector *insp)
+{
+    // this should be idempotent, because of Inspector::closeEvent()
     inspectors.remove(insp);
 }
 
