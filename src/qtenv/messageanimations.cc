@@ -473,6 +473,11 @@ void MethodcallAnimation::addToInspector(Inspector *insp)
             if (!to)
                 dest = QPointF(src.x() + src.y()  / 4 + 4, -16);
 
+            QPointF offset = -QLineF(src, dest).normalVector().unitVector().translated(-src).p2() * 4.0;
+
+            src += offset;
+            dest += offset;
+
             auto layer = mi->getAnimationLayer();
             auto connectionItem = new ConnectionItem(layer);
             connectionItem->setVisible(false);
