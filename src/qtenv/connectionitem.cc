@@ -122,21 +122,21 @@ void ConnectionItem::updateTextItem()
     textItem->setVisible(isVisible());
 
     QRectF textRect = textItem->textRect();
-    QPointF textSize(textRect.width(), textRect.height());
+    QPointF textSize(textRect.width() + 4, textRect.height() + 4);
 
     switch (textAlignment) {
         case Qt::AlignLeft:
-            textItem->setPos(0.75 * src + 0.25 * dest - textSize * 0.5);
+            textItem->setPos(0.75 * src + 0.25 * dest - textSize * 0.5 + QPoint(2, 2));
             break;
         case Qt::AlignRight:
-            textItem->setPos(0.25 * src + 0.75 * dest - textSize * 0.5);
+            textItem->setPos(0.25 * src + 0.75 * dest - textSize * 0.5 + QPoint(2, 2));
             break;
         default: // Center
             textItem->setPos(0.5 * src + 0.5 * dest
                               - QPoint(textSize.x() * 0.5,
                                        ((src.x()==dest.x()) ? (src.y()<dest.y()) : (src.x()<dest.x()))
                                         ? 0
-                                        : textSize.y()));
+                                        : textSize.y()) + QPoint(2, 2));
     }
 }
 
