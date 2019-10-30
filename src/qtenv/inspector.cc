@@ -123,6 +123,8 @@ Inspector::~Inspector()
         setPref(PREF_GEOM, geometry());
     delete inspectDropdownMenu;
     delete copyDropdownMenu;
+
+    getQtenv()->inspectorDeleted(this);
 }
 
 const char *Inspector::getClassName() const
@@ -385,7 +387,9 @@ void Inspector::closeEvent(QCloseEvent *)
 
     setPref(PREF_GEOM, geometry());
 
-    getQtenv()->deleteInspector(this);
+    // We have to call this prematurely, so the stored inspector list won't contain it.
+    // The dtor will also call it, sure, but it is idempotent.
+    getQtenv()->inspectorDeleted(this);
     getQtenv()->storeInspectors(false);
 }
 

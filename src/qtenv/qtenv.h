@@ -369,6 +369,7 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       Inspector *addEmbeddedInspector(InspectorFactory *factory, QWidget *parent);
       Inspector *findFirstInspector(const cObject *obj, InspectorType type, bool ignoreEmbedded=false);
       void deleteInspector(Inspector *insp);
+      void inspectorDeleted(Inspector *insp);
       const std::list<Inspector*>& getInspectors() {return inspectors;}
 
       eState getSimulationState() {return simulationState;}
