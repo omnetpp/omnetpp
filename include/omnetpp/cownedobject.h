@@ -195,17 +195,9 @@ class SIM_API cOwnedObject : public cNamedObject
     virtual bool isOwnedObject() const override {return true;}
 
     /**
-     * Returns false in cOwnedObject and in all derived classes except cDefaultList.
-     * An object A is a "soft owner" if it allows a B object take() an object A owns.
-     * "Hard owners" will raise an error if some other object tries to take()
-     * an object they own. The only soft owner class is cDefaultList.
-     */
-    virtual bool isSoftOwner() const {return false;}
-
-    /**
      * The object that will be the owner of new or dropped (see drop()) objects.
-     * The default owner is set internally, it is usually the simple module processing
-     * the current event.
+     * The default owner is set internally; it is usually the component in context
+     * (see cSimulation::getContext()).
      */
     static cDefaultList *getDefaultOwner();
     //@}

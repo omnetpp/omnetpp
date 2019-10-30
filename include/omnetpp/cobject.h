@@ -243,6 +243,16 @@ class SIM_API cObject
     virtual bool isOwnedObject() const {return false;}
 
     /**
+     * Returns true if this object is a "soft owner" and false otherwise.
+     * Currently the only soft owner class is cDefaultList (and its subclasses,
+     * most notably cModule and cSimpleModule), all others are "hard owners".
+     * An object is soft owner if it allows another object to take ownership
+     * (via take()) of an object it currently owns. Hard owners will raise
+     * an error if some other object tries to take() an object that they own.
+     */
+    virtual bool isSoftOwner() const {return false;}
+
+    /**
      * Enables traversing the object tree, performing some operation on
      * each object. The operation is encapsulated in the particular subclass
      * of cVisitor.
