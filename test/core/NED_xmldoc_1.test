@@ -61,7 +61,7 @@ void Test::activity()
 
 }; //namespace
 
-%subst: | at .*/| at |
+%subst: | at .*[/\\]| at |
 %contains: stdout
 foo at test.xml:2
 baz at test.xml:6

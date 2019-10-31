@@ -38,7 +38,7 @@ network Test
 include foo/foo.ini
 *.omnetppini.config = xmldoc("root.xml")
 
-%subst: | at .*/| at .../|
+%subst: | at .*[/\\]| at .../|
 %contains: stdout
 module Test: Test {
     parameters:

@@ -48,7 +48,7 @@ void Tester::handleMessage(cMessage *msg)
 
 }; //namespace
 
-%exitcode: 134
+%exitcode: 134 3
 
 %inifile: test.ini
 [General]
