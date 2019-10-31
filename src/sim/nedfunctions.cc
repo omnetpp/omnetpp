@@ -838,7 +838,7 @@ DEF2(nedf_xmldoc,
 cValue nedf_xmldoc(cExpression::Context *context, cValue argv[], int argc)
 {
     const char *filename = argv[0].stringValue();
-    std::string filepath = opp_isempty(context->baseDirectory) ? filename : concatDirAndFile(context->baseDirectory, filename);
+    std::string filepath = opp_isempty(context->baseDirectory) ? filename : tidyFilename(concatDirAndFile(context->baseDirectory, filename).c_str());
     const char *xpath = argc == 1 ? nullptr : argv[1].stringValue();
     cXMLElement *node = getEnvir()->getXMLDocument(filepath.c_str(), xpath);
     if (!node) {
