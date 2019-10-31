@@ -33,25 +33,58 @@ class cDefaultOwner;
 
 
 /**
- * @brief Root of the \opp class hierarchy. cObject is a lightweight class
- * without any data members.
+ * @brief cObject is a lightweight class which serves as the root of the
+ * \opp class hierarchy. cObject, via virtual and pure virtual methods,
+ * defines several properties and mechanisms that are used throughout
+ * the entire simulation library.
  *
- * cObject and its subclass cOwnedObject define an ownership mechanism.
- * Any cObject may become owner of other objects, but owned objects must be
- * subclassed from cOwnedObject. cObject also contains methods that allow
- * the object to be displayed in graphical user interfaces like Qtenv.
+ * These mechanisms are the following:
  *
- * It is recommended to use cObject as a base class for any class
- * that has at least one virtual member function. This makes the class more
- * interoperable with \opp, and causes no extra overhead at all.
- * sizeof(cObject) should yield 4 on a 32-bit architecture (4-byte vptr),
- * and using cObject as a base class does not add anything to the size
- * of an object, because a class with a virtual function already has a vptr.
- * Subclasses are expected to redefine member functions such as dup(),
- * str(), forEachChild(), etc.
+ * - Name string. There are three virtual methods: getName(), getFullName()
+ *   and getFullPath(). They are expected to be overridden subclasses as cObject
+ *   only contains trivial implementations, e.g. getName() always returns the
+ *   empty string. getName() returns a "base name"; getFullName() augments
+ *   the base name with auxiliary information such as an index; and getFullPath()
+ *   includes the object's location in the object hierarchy. An example: for a
+ *   module in a network simulation, getName() may return "eth", getFullName()
+ *   may return "eth[2]", and getFullPath() may return "Net.host[4].eth[2]".
  *
- * Note: The (cPolymorphic, cObject) classes in \opp versions 2.x and 3.x
- * were renamed to (cObject, cOwnedObject) in version 4.0.
+ * - Class name. getClassName() returns the fully qualified C++ class name.
+ *   Its operation is based on the C++ typeid() operator and the type_info class.
+ *
+ * - Info string. The str() method can be overridden in subclasses to return a
+ *   one-line concise description of the object's contents, e.g. for display
+ *   in graphical user interfaces.
+ *
+ * - Cloning. The dup() method is to be overridden in subclasses to return an
+ *   exact copy of this object.
+ *
+ * - Iteration. The forEachChild() method is to be overridden in subclasses to
+ *   iterate over (cObject-derived) objects that it contains or holds.
+ *   This method is primarily used by graphical user interfaces to display
+ *   an object hierarchy, and for searching.
+ *
+ * - Ownership mechanism. The ownership mechanism helps define an object
+ *   containment hierarchy, and also defines responsibility of deletion.
+ *   Several methods belong here, the most visible one being getOwner().
+ *   A cObject itself does not keep track of its owner (the method returns
+ *   nullptr), an actual owner pointer is added by the subclass cOwnedObject.
+ *   cObject also provides the drop(), take() and dropAndDelete() methods
+ *   that sublasses may utilize in implementing their ownership management.
+ *
+ * - Packing/unpacking. The parsimPack() and parsimUnpack() methods can be
+ *   overridden to allow instances to be transferred via MPI for parallel
+ *   simulation.
+ *
+ * - Reflection. The getDescriptor() method returns a cClassDescriptor object
+ *   that allows for enumerating the object's fields, getting/setting their
+ *   values, etc.
+ *
+ * In model code, it usually makes sense to use cObject as a base class for
+ * any class that is expected to be polymorphic. In this case, cObject does
+ * not add any runtime overhead (as it contains no data members). The
+ * appropriate member functions (dup(), str(), etc.) are expected to be
+ * redefined.
  *
  * @ingroup SimSupport
  */
@@ -59,10 +92,6 @@ class SIM_API cObject
 {
     friend class cOwnedObject;
     friend class cDefaultOwner;
-
-  public:
-    // internal: returns a descriptor object for this object
-    virtual cClassDescriptor *getDescriptor() const;
 
 #ifdef SIMFRONTEND_SUPPORT
     // internal: used by the UI to optimize refreshes
@@ -233,8 +262,11 @@ class SIM_API cObject
     /** @name Miscellaneous functions. */
     //@{
     /**
-     * Returns owner (or parent) object. This default implementation just
-     * returns nullptr.
+     * Returns the owner (or parent) object. nullptr as return value is legal,
+     * and may mean "unknown" (=not tracked) or "no owner".
+     * This default implementation just returns nullptr (meaning "unknown").
+     * (With the cOwnedObject subclass which does maintain an owner pointer,
+     * a nullptr return value would mean "no owner".)
      */
     virtual cObject *getOwner() const {return nullptr;}
 
@@ -280,6 +312,11 @@ class SIM_API cObject
      * instead.
      */
     cObject *findObject(const char *name, bool deep=true);
+
+    /**
+     * Returns the descriptor object for (the class of) this object.
+     */
+    virtual cClassDescriptor *getDescriptor() const;
     //@}
 
     /** @name Helper functions. */

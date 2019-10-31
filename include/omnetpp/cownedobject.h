@@ -160,11 +160,11 @@ class SIM_API cOwnedObject : public cNamedObject
      * The assignment operator. Derived classes should contain similar
      * methods (<tt>cClassName& cClassName::operator=(cClassName&)</tt>).
      *
-     * Assigment copies the contents of the object EXCEPT for the name string.
+     * Assignment copies the contents of the object EXCEPT for the name string.
      * If you want to copy the name string, you can do it by hand:
      * <tt>setName(o.getName()</tt>).
      *
-     * Ownership of the object is not affected by assigments.
+     * Ownership of the object is not affected by assignments.
      */
     cOwnedObject& operator=(const cOwnedObject& o);
 

@@ -52,15 +52,15 @@ class cComponent;
  * From the 4.0 version, simulation models should use cMsgPar for that.
  *
  * <b>Implementation note:</b> from the 4.0 version, almost all methods
- * of cPar delegates to an internal cParImpl object, which actually stores
+ * of cPar delegate to an internal cParImpl object, which actually stores
  * the value, and generally does the real job. This was done to allow
  * sharing parameter objects which have the same name, same value, etc.
  * among module/channel instances. This significantly reduces memory
  * consumption of most simulation models. Because cPar is just a thin
  * wrapper around cParImpl, cPar is not meant for subclassing, and
- * none if its methods are virtual. cParImpl and subclasses should also
- * be regarded as internal data structures, and they should not be
- * directly accessed or manipulated from model code.
+ * none if its methods are virtual. cParImpl and subclasses should
+ * be regarded as internal data structures, and should not be
+ * directly accessed from model code.
  *
  * @ingroup SimCore
  */
