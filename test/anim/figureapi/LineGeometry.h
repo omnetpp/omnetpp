@@ -29,7 +29,7 @@ class LineGeometry : public TestBase
 
   protected:
     virtual std::string init() override;
-    virtual std::string onTick(int tick);
+    virtual std::string onTick(int tick) override;
 };
 
 #endif

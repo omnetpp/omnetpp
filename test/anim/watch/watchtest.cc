@@ -120,7 +120,7 @@ void WatchTest::activity()
     WATCH_PTR(gcp);
     WATCH_PTR(gmp);
 
-    int *wrongp = (int *)gcp;
+    // int *wrongp = (int *)gcp;
     // WATCH_PTR(wrongp); -- this has to give a compile error
 
     //
