@@ -126,6 +126,12 @@ void cObject::dropAndDelete(cOwnedObject *obj)
     delete obj;
 }
 
+void cObject::takeAllObjectsFrom(cDefaultList *list)
+{
+    while (list->defaultListSize() > 0)
+        take(list->defaultListGet(0));
+}
+
 void cObject::parsimPack(cCommBuffer *buffer) const
 {
     throw cRuntimeError(E_CANTPACK);

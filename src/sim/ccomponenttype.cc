@@ -328,7 +328,7 @@ cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int 
         getSimulation()->setSystemModule(module);
 
     // put the object members of the new module to their place
-    module->takeAllObjectsFrom(tmpList);
+    module->takeAllObjectsFrom(&tmpList);
 
     // restore default owner (must precede parameters)
     cOwnedObject::setDefaultOwner(oldList);
@@ -463,7 +463,7 @@ cChannel *cChannelType::create(const char *name)
 
     // put the object members of the new module to their place
     oldlist->take(channel);
-    channel->takeAllObjectsFrom(tmplist);
+    channel->takeAllObjectsFrom(&tmplist);
 
     // restore default owner
     cOwnedObject::setDefaultOwner(oldlist);

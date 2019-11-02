@@ -146,12 +146,6 @@ void cDefaultList::yieldOwnership(cOwnedObject *obj, cObject *newowner)
 #endif
 }
 
-void cDefaultList::takeAllObjectsFrom(cDefaultList& other)
-{
-    while (other.defaultListSize() > 0)
-        take(other.defaultListGet(0));
-}
-
 std::string cDefaultList::str() const
 {
     std::stringstream out;

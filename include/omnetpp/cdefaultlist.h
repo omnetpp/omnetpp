@@ -56,9 +56,6 @@ class SIM_API cDefaultList : public cNoncopyableOwnedObject
     virtual void yieldOwnership(cOwnedObject *obj, cObject *newOwner) override;
 
   public:
-    // internal: called from module creation code in ctypes.cc
-    void takeAllObjectsFrom(cDefaultList& other);
-
 #ifdef SIMFRONTEND_SUPPORT
     // internal: used by the UI to optimize refreshes
     void updateLastChangeSerial()  {lastChangeSerial = changeCounter++;}

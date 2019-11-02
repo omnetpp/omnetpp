@@ -29,6 +29,7 @@ namespace omnetpp {
 class cCommBuffer;
 class cClassDescriptor;
 class cOwnedObject;
+class cDefaultList;
 
 
 /**
@@ -80,6 +81,10 @@ class SIM_API cObject
 
     // internal
     virtual void yieldOwnership(cOwnedObject *obj, cObject *to);
+
+  public:
+    // internal
+    void takeAllObjectsFrom(cDefaultList *list);
 
   public:
     /**
