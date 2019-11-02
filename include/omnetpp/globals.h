@@ -38,7 +38,7 @@ SIM_API extern std::map<std::string,std::string> figureTypes; ///< Maps figure t
 
 // Internal: list in which objects are accumulated if there is no simple module in context.
 // @see cOwnedObject::setDefaultOwner() and cSimulation::setContextModule())
-SIM_API extern cDefaultList defaultList;
+SIM_API extern cDefaultOwner defaultList;
 
 // Internal: Support for embedding NED files as string constants
 struct EmbeddedNedFile

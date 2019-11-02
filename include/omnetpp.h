@@ -38,7 +38,7 @@
 #include "omnetpp/cdataratechannel.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/ccoroutine.h"
-#include "omnetpp/cdefaultlist.h"
+#include "omnetpp/cdefaultowner.h"
 #include "omnetpp/cabstracthistogram.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/cdisplaystring.h"

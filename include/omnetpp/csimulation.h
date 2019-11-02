@@ -39,9 +39,9 @@ class cNedFileLoader;
 class cFingerprintCalculator;
 class cModuleType;
 class cEnvir;
-class cDefaultList;
+class cDefaultOwner;
 
-SIM_API extern cDefaultList defaultList; // also in globals.h
+SIM_API extern cDefaultOwner defaultList; // also in globals.h
 
 
 /**

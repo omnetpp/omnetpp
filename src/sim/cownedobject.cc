@@ -24,7 +24,7 @@
 #include "omnetpp/globals.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/simutil.h"
-#include "omnetpp/cdefaultlist.h"
+#include "omnetpp/cdefaultowner.h"
 #include "omnetpp/cclassdescriptor.h"
 
 #ifdef WITH_PARSIM
@@ -54,11 +54,11 @@ void printAllObjects()
 #endif
 
 // static class members
-cDefaultList *cOwnedObject::defaultOwner = &defaultList;
+cDefaultOwner *cOwnedObject::defaultOwner = &defaultList;
 long cOwnedObject::totalObjectCount = 0;
 long cOwnedObject::liveObjectCount = 0;
 
-cDefaultList defaultList;
+cDefaultOwner defaultList;
 
 cOwnedObject::cOwnedObject()
 {
@@ -118,13 +118,13 @@ void cOwnedObject::removeFromOwnershipTree()
         owner->yieldOwnership(this, nullptr);
 }
 
-void cOwnedObject::setDefaultOwner(cDefaultList *list)
+void cOwnedObject::setDefaultOwner(cDefaultOwner *list)
 {
     ASSERT(list != nullptr);
     defaultOwner = list;
 }
 
-cDefaultList *cOwnedObject::getDefaultOwner()
+cDefaultOwner *cOwnedObject::getDefaultOwner()
 {
     return defaultOwner;
 }

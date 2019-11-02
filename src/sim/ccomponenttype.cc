@@ -294,8 +294,8 @@ cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int 
     cContextTypeSwitcher tmp(CTX_BUILD);
 
     // Object members of the new module class are collected to tmplist.
-    cDefaultList tmpList;
-    cDefaultList *oldList = cOwnedObject::getDefaultOwner();
+    cDefaultOwner tmpList;
+    cDefaultOwner *oldList = cOwnedObject::getDefaultOwner();
     cOwnedObject::setDefaultOwner(&tmpList);
     cModule *module;
     try {
@@ -433,8 +433,8 @@ cChannel *cChannelType::create(const char *name)
     cContextTypeSwitcher tmp(CTX_BUILD);
 
     // Object members of the new channel class are collected to tmplist.
-    cDefaultList tmplist;
-    cDefaultList *oldlist = cOwnedObject::getDefaultOwner();
+    cDefaultOwner tmplist;
+    cDefaultOwner *oldlist = cOwnedObject::getDefaultOwner();
     cOwnedObject::setDefaultOwner(&tmplist);
 
     // create channel object
@@ -460,6 +460,8 @@ cChannel *cChannelType::create(const char *name)
     // set up channel: set name, channel type, etc
     channel->setName(name);
     channel->setComponentType(this);
+
+    //TODO use cDefaultOwnerSwitcher
 
     // put the object members of the new module to their place
     oldlist->take(channel);

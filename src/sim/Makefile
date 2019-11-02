@@ -33,7 +33,7 @@ IMPLIBS= -loppcommon$D
 OBJS_STD=\
     $O/carray.o $O/cdelaychannel.o $O/cdataratechannel.o $O/cboolparimpl.o $O/cchannel.o \
     $O/cobjectfactory.o $O/ccomponent.o $O/ccomponenttype.o $O/cconfiguration.o $O/cconfigoption.o \
-    $O/ccanvas.o $O/ccoroutine.o $O/cdefaultlist.o $O/cabstracthistogram.o $O/cfutureeventset.o \
+    $O/ccanvas.o $O/ccoroutine.o $O/cdefaultowner.o $O/cabstracthistogram.o $O/cfutureeventset.o \
     $O/cdisplaystring.o $O/cdoubleparimpl.o $O/cdynamicexpression.o $O/cexpression.o $O/cenvir.o \
     $O/cenum.o $O/cevent.o $O/cexception.o $O/cfsm.o $O/cnedmathfunction.o $O/cgate.o \
     $O/ccontextswitcher.o $O/chistogram.o $O/chistogramstrategy.o $O/cksplit.o \

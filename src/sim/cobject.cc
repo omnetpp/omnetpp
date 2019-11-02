@@ -18,7 +18,7 @@
 
 #include "omnetpp/cobject.h"
 #include "omnetpp/cownedobject.h"
-#include "omnetpp/cdefaultlist.h"
+#include "omnetpp/cdefaultowner.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/cclassdescriptor.h"
 #include "omnetpp/csimulation.h"
@@ -102,7 +102,7 @@ void cObject::yieldOwnership(cOwnedObject *obj, cObject *newowner)
 
 void cObject::take(cOwnedObject *obj)
 {
-    // ask current owner to release it -- if it's a cDefaultList, it will.
+    // ask current owner to release it -- if it's a cDefaultOwner, it will.
     obj->owner->yieldOwnership(obj, this);
 }
 
@@ -126,7 +126,7 @@ void cObject::dropAndDelete(cOwnedObject *obj)
     delete obj;
 }
 
-void cObject::takeAllObjectsFrom(cDefaultList *list)
+void cObject::takeAllObjectsFrom(cDefaultOwner *list)
 {
     while (list->defaultListSize() > 0)
         take(list->defaultListGet(0));

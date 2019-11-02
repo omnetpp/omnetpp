@@ -20,7 +20,7 @@
 #include "simkerneldefs.h"
 #include "cownedobject.h"
 #include "cpar.h"
-#include "cdefaultlist.h"
+#include "cdefaultowner.h"
 #include "simtime.h"
 #include "cenvir.h"
 #include "clistener.h"
@@ -45,7 +45,7 @@ class cResultRecorder;
  *
  * @ingroup SimCore
  */
-class SIM_API cComponent : public cDefaultList //implies noncopyable
+class SIM_API cComponent : public cDefaultOwner //implies noncopyable
 {
     friend class cComponentDescriptor; // listener lists, etc
     friend class cComponent__SignalListenerListDescriptor;  // sim_std.msg

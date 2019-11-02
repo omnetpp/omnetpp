@@ -1,5 +1,5 @@
 //==========================================================================
-//  CDEFAULTLIST.H - part of
+//  CDEFAULTOWNER.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_CDEFAULTLIST_H
-#define __OMNETPP_CDEFAULTLIST_H
+#ifndef __OMNETPP_CDEFAULTOWNER_H
+#define __OMNETPP_CDEFAULTOWNER_H
 
 #include "cownedobject.h"
 
@@ -25,12 +25,12 @@ namespace omnetpp {
  * @brief Internal class, used as a base class for modules and channels. It is not
  * intended for subclassing outside the simulation kernel.
  *
- * cDefaultList acts as a "soft owner" (see object ownership discussion
+ * cDefaultOwner acts as a "soft owner" (see object ownership discussion
  * in cOwnedObject documentation).
  *
  * @ingroup SimSupport
  */
-class SIM_API cDefaultList : public cNoncopyableOwnedObject
+class SIM_API cDefaultOwner : public cNoncopyableOwnedObject
 {
     friend class cObject;
     friend class cOwnedObject;
@@ -82,12 +82,12 @@ class SIM_API cDefaultList : public cNoncopyableOwnedObject
     /**
      * Constructor.
      */
-    explicit cDefaultList(const char *name=nullptr);
+    explicit cDefaultOwner(const char *name=nullptr);
 
     /**
      * Destructor. The contained objects will be deleted.
      */
-    virtual ~cDefaultList();
+    virtual ~cDefaultOwner();
     //@}
 
     /** @name Redefined cObject methods. */

@@ -149,7 +149,7 @@ class cNoncopyableOwnedObject extends cOwnedObject
     @descriptor(readonly);
 }
 
-class cDefaultList extends cNoncopyableOwnedObject
+class cDefaultOwner extends cNoncopyableOwnedObject
 {
     @existingClass;
     @overwritePreviousDefinition;
@@ -191,7 +191,7 @@ class cComponent::SignalListenerList
     cIListener *listeners[] @getter(getListener) @sizeGetter(countListeners); //TODO @toString(->str()) for cResultListeners
 }
 
-class cComponent extends cDefaultList
+class cComponent extends cDefaultOwner
 {
     @existingClass;
     @overwritePreviousDefinition;
@@ -633,13 +633,13 @@ class cHistogram extends cAbstractHistogram
     cIHistogramStrategy *strategy @group(histogram) @hint("Determines when and how bins are created");
 }
 
-class cIHistogramStrategy extends cObject 
+class cIHistogramStrategy extends cObject
 {
     @existingClass;
     @overwritePreviousDefinition;
 }
 
-class cFixedRangeHistogramStrategy extends cIHistogramStrategy 
+class cFixedRangeHistogramStrategy extends cIHistogramStrategy
 {
     @existingClass;
     @overwritePreviousDefinition;
@@ -649,7 +649,7 @@ class cFixedRangeHistogramStrategy extends cIHistogramStrategy
     int mode @enum(cHistogram::Mode);
 }
 
-class cPrecollectionBasedHistogramStrategy extends cIHistogramStrategy 
+class cPrecollectionBasedHistogramStrategy extends cIHistogramStrategy
 {
     @existingClass;
     @overwritePreviousDefinition;
@@ -658,7 +658,7 @@ class cPrecollectionBasedHistogramStrategy extends cIHistogramStrategy
     int rangeUnchangedThreshold;
 }
 
-class cDefaultHistogramStrategy extends cPrecollectionBasedHistogramStrategy 
+class cDefaultHistogramStrategy extends cPrecollectionBasedHistogramStrategy
 {
     @existingClass;
     @overwritePreviousDefinition;
