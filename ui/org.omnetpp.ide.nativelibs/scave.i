@@ -73,6 +73,8 @@ USE_COMMON_ENGINE_ILOCK();
 %include "std_map.i"
 %include "std_pair.i"
 
+%include "map_oldapi.i" // needed for SWIG >=4.0 so we still have the 3.x functions
+
 namespace std {
    %typemap(javacode) vector<string> %{
        public String[] toArray() {
