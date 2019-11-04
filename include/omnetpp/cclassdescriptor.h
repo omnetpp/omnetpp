@@ -231,11 +231,14 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
     virtual int getFieldArraySize(void *object, int field) const = 0;
 
     /**
-     * Sets the array size of a field in the given object. Returns true if
-     * successful, and false if unsuccessful due to some reason (e.g. field is
-     * not a variable-sized array, has no array size setter method, etc.)
+     * Sets the array size of a field in the given object.
+     * If the operation is not successful, an exception is thrown.
+     *
+     * The field argument must be in the 0..getFieldCount()-1 range.
+     * The i argument must be in the 0..getFieldArraySize()-1 range, or
+     * 0 if the field is not an array.
      */
-    virtual bool setFieldArraySize(void *object, int field, int size) const = 0;
+    virtual void setFieldArraySize(void *object, int field, int size) const = 0;
 
     /**
      * Returns the runtime type of the given field as a string if it can be
@@ -262,14 +265,13 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
 
     /**
      * Sets the value of a field in the given object by parsing the given value string.
-     * Returns true if successful, and false if an error occurred or the field
-     * does not support setting.
+     * If the operation is not successful, an exception is thrown.
      *
      * The field argument must be in the 0..getFieldCount()-1 range.
      * The i argument must be in the 0..getFieldArraySize()-1 range, or
      * 0 if the field is not an array.
      */
-    virtual bool setFieldValueAsString(void *object, int field, int i, const char *value) const = 0;
+    virtual void setFieldValueAsString(void *object, int field, int i, const char *value) const = 0;
 
     /**
      * Returns the declared type name of a compound field in the described class.
@@ -280,13 +282,21 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
 
     /**
      * Returns the pointer to the value of a compound field in the given object.
+     * The field argument must be in the 0..getFieldCount()-1 range.
+     * The i argument must be in the 0..getFieldArraySize()-1 range, or
+     * 0 if the field is not an array.
      */
     virtual void *getFieldStructValuePointer(void *object, int field, int i) const = 0;
 
     /**
      * Sets a pointer field in the given object.
+     * If the operation is not successful, an exception is thrown.
+     *
+     * The field argument must be in the 0..getFieldCount()-1 range.
+     * The i argument must be in the 0..getFieldArraySize()-1 range, or
+     * 0 if the field is not an array.
      */
-    virtual bool setFieldStructValuePointer(void *object, int field, int i, void *ptr) const = 0;
+    virtual void setFieldStructValuePointer(void *object, int field, int i, void *ptr) const = 0;
     //@}
 };
 

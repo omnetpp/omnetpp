@@ -45,14 +45,14 @@ class SIM_API cStdVectorWatcherDescriptor : public cClassDescriptor  // noncopya
     virtual const char **getFieldPropertyNames(int field) const override;
     virtual const char *getFieldProperty(int field, const char *propertyname) const override;
     virtual int getFieldArraySize(void *object, int field) const override;
-    virtual bool setFieldArraySize(void *object, int field, int size) const override;
+    virtual void setFieldArraySize(void *object, int field, int size) const override;
 
     virtual std::string getFieldValueAsString(void *object, int field, int i) const override;
-    virtual bool setFieldValueAsString(void *object, int field, int i, const char *value) const override;
+    virtual void setFieldValueAsString(void *object, int field, int i, const char *value) const override;
 
     virtual const char *getFieldStructName(int field) const override;
     virtual void *getFieldStructValuePointer(void *object, int field, int i) const override;
-    virtual bool setFieldStructValuePointer(void *object, int field, int i, void *ptr) const override;
+    virtual void setFieldStructValuePointer(void *object, int field, int i, void *ptr) const override;
 };
 
 cStdVectorWatcherDescriptor::cStdVectorWatcherDescriptor(const char *vecType, const char *elemType) :
@@ -116,9 +116,9 @@ int cStdVectorWatcherDescriptor::getFieldArraySize(void *object, int field) cons
     return pp->size();
 }
 
-bool cStdVectorWatcherDescriptor::setFieldArraySize(void *object, int field, int size) const
+void cStdVectorWatcherDescriptor::setFieldArraySize(void *object, int field, int size) const
 {
-    return false; //TODO could be implemented
+    throw cRuntimeError("Cannot set size of array field");  // not supported
 }
 
 std::string cStdVectorWatcherDescriptor::getFieldValueAsString(void *object, int field, int i) const
@@ -127,9 +127,9 @@ std::string cStdVectorWatcherDescriptor::getFieldValueAsString(void *object, int
     return pp->at(i);
 }
 
-bool cStdVectorWatcherDescriptor::setFieldValueAsString(void *object, int field, int i, const char *value) const
+void cStdVectorWatcherDescriptor::setFieldValueAsString(void *object, int field, int i, const char *value) const
 {
-    return false;  // not supported
+    throw cRuntimeError("Cannot set field value");  // not supported
 }
 
 const char *cStdVectorWatcherDescriptor::getFieldStructName(int field) const
@@ -142,9 +142,9 @@ void *cStdVectorWatcherDescriptor::getFieldStructValuePointer(void *object, int 
     return nullptr;  //TODO we could return a pointer to the given array element (if element is a compound type)
 }
 
-bool cStdVectorWatcherDescriptor::setFieldStructValuePointer(void *object, int field, int i, void *ptr) const
+void cStdVectorWatcherDescriptor::setFieldStructValuePointer(void *object, int field, int i, void *ptr) const
 {
-    return false;  // not supported
+    throw cRuntimeError("Cannot set field value");  // not supported
 }
 
 //--------------------------------

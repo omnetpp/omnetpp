@@ -621,9 +621,10 @@ struct DisableDebugOnErrors {
 bool FieldNode::setData(const QVariant& value, int role)
 {
     DisableDebugOnErrors dummy; // prevent the Debug dialog from kicking in if there is an exception inside setFieldValueAsString()
-    return containingDesc
-           ? containingDesc->setFieldValueAsString(containingObject, fieldIndex, 0, value.toString().toStdString().c_str())
-           : false;
+    if (!containingDesc)
+        return false;
+    containingDesc->setFieldValueAsString(containingObject, fieldIndex, 0, value.toString().toStdString().c_str());
+    return true;
 }
 
 cObject *FieldNode::getCObjectPointer()
@@ -875,7 +876,8 @@ bool ArrayElementNode::isEditable()
 
 bool ArrayElementNode::setData(const QVariant& value, int role)
 {
-    return containingDesc->setFieldValueAsString(containingObject, fieldIndex, arrayIndex, value.toString().toStdString().c_str());
+    containingDesc->setFieldValueAsString(containingObject, fieldIndex, arrayIndex, value.toString().toStdString().c_str());
+    return true;
 }
 
 QString ArrayElementNode::computeNodeIdentifier()

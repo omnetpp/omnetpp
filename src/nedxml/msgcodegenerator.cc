@@ -1070,15 +1070,15 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "    virtual const char **getFieldPropertyNames(int field) const override;\n";
     CC << "    virtual const char *getFieldProperty(int field, const char *propertyname) const override;\n";
     CC << "    virtual int getFieldArraySize(void *object, int field) const override;\n";
-    CC << "    virtual bool setFieldArraySize(void *object, int field, int size) const override;\n";
+    CC << "    virtual void setFieldArraySize(void *object, int field, int size) const override;\n";
     CC << "\n";
     CC << "    virtual const char *getFieldDynamicTypeString(void *object, int field, int i) const override;\n";
     CC << "    virtual std::string getFieldValueAsString(void *object, int field, int i) const override;\n";
-    CC << "    virtual bool setFieldValueAsString(void *object, int field, int i, const char *value) const override;\n";
+    CC << "    virtual void setFieldValueAsString(void *object, int field, int i, const char *value) const override;\n";
     CC << "\n";
     CC << "    virtual const char *getFieldStructName(int field) const override;\n";
     CC << "    virtual void *getFieldStructValuePointer(void *object, int field, int i) const override;\n";
-    CC << "    virtual bool setFieldStructValuePointer(void *object, int field, int i, void *ptr) const override;\n";
+    CC << "    virtual void setFieldStructValuePointer(void *object, int field, int i, void *ptr) const override;\n";
     CC << "};\n\n";
 
     // register class
@@ -1346,12 +1346,14 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "\n";
 
     // setFieldArraySize()
-    CC << "bool " << classInfo.descriptorClass << "::setFieldArraySize(void *object, int field, int size) const\n";
+    CC << "void " << classInfo.descriptorClass << "::setFieldArraySize(void *object, int field, int size) const\n";
     CC << "{\n";
     CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
-    CC << "        if (field < basedesc->getFieldCount())\n";
+    CC << "        if (field < basedesc->getFieldCount()) {\n";
     CC << "            basedesc->setFieldArraySize(object, field, size);\n";
+    CC << "            return;\n";
+    CC << "        }\n";
     CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
     CC << "    " << classInfo.className << " *pp = (" << classInfo.className << " *)object; (void)pp;\n";
@@ -1361,10 +1363,10 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
         if (field.isArray && field.isResizable) {
             Assert(classInfo.isClass); // we don't support variable-length arrays in structs
             CC << "        case " << field.symbolicConstant << ": ";
-            CC << makeFuncall("pp", field.sizeSetter, false, "size") << "; return true;\n";
+            CC << makeFuncall("pp", field.sizeSetter, false, "size") << "; break;\n";
         }
     }
-    CC << "        default: return false;\n";
+    CC << "        default: throw omnetpp::cRuntimeError(\"Cannot set array size of field %d of class '" << classInfo.className << "'\", field);\n";
     CC << "    }\n";
     CC << "}\n";
     CC << "\n";
@@ -1428,12 +1430,14 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "\n";
 
     // setFieldValueAsString()
-    CC << "bool " << classInfo.descriptorClass << "::setFieldValueAsString(void *object, int field, int i, const char *value) const\n";
+    CC << "void " << classInfo.descriptorClass << "::setFieldValueAsString(void *object, int field, int i, const char *value) const\n";
     CC << "{\n";
     CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
-    CC << "        if (field < basedesc->getFieldCount())\n";
-    CC << "            return basedesc->setFieldValueAsString(object,field,i,value);\n";
+    CC << "        if (field < basedesc->getFieldCount()) {\n";
+    CC << "            basedesc->setFieldValueAsString(object, field, i, value);\n";
+    CC << "            return;\n";
+    CC << "        }\n";
     CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
     CC << "    " << classInfo.className << " *pp = (" << classInfo.className << " *)object; (void)pp;\n";
@@ -1446,16 +1450,17 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
             CC << "        case " << field.symbolicConstant << ": ";
             if (!classInfo.isClass && field.isArray) {
                 Assert(field.isFixedArray); // struct may not contain dynamic arrays; checked by analyzer
-                CC << "if (i >= " << field.arraySize << ") return \"\";\n                ";
+                CC << "if (i < 0 || i >= " << field.arraySize << ") throw omnetpp::cRuntimeError(\"Array index %d out of bounds for field %d of class '" << classInfo.className << "'\", i, field);\n";
+                CC << "                ";
             }
             std::string fromstringCall = makeFuncall("value", field.fromString); //TODO use op>> if there's no fromstring?
             if (!classInfo.isClass)
-                CC << "pp->" << field.var << (field.isArray ? "[i]" : "") << " = " << fromstringCall << "; return true;\n";
+                CC << "pp->" << field.var << (field.isArray ? "[i]" : "") << " = " << fromstringCall << "; break;\n";
             else
-                CC << makeFuncall("pp", field.setter, field.isArray, fromstringCall) << "; return true;\n";
+                CC << makeFuncall("pp", field.setter, field.isArray, fromstringCall) << "; break;\n";
         }
     }
-    CC << "        default: return false;\n";
+    CC << "        default: throw omnetpp::cRuntimeError(\"Cannot set field %d of class '" << classInfo.className << "'\", field);\n";
     CC << "    }\n";
     CC << "}\n";
     CC << "\n";
@@ -1515,12 +1520,14 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "\n";
 
     // setFieldStructValuePointer()
-    CC << "bool " << classInfo.descriptorClass << "::setFieldStructValuePointer(void *object, int field, int i, void *ptr) const\n";
+    CC << "void " << classInfo.descriptorClass << "::setFieldStructValuePointer(void *object, int field, int i, void *ptr) const\n";
     CC << "{\n";
     CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
-    CC << "        if (field < basedesc->getFieldCount())\n";
-    CC << "            return basedesc->setFieldStructValuePointer(object, field, i, ptr);\n";
+    CC << "        if (field < basedesc->getFieldCount()) {\n";
+    CC << "            basedesc->setFieldStructValuePointer(object, field, i, ptr);\n";
+    CC << "            return;\n";
+    CC << "        }\n";
     CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
     CC << "    " << classInfo.className << " *pp = (" << classInfo.className << " *)object; (void)pp;\n";
@@ -1535,10 +1542,10 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
                 CC <<  str("pp->") << field.var << (field.isArray ? "[i]" : "") << " = " << maybeDereference << castPtr << ";";
             else
                 CC << makeFuncall("pp", field.setter, field.isArray, maybeDereference + castPtr) << ";";
-            CC << " return true;\n";
+            CC << " break;\n";
         }
     }
-    CC << "        default: return false;\n";
+    CC << "        default: throw omnetpp::cRuntimeError(\"Cannot set field %d of class '" << classInfo.className << "'\", field);\n";
     CC << "    }\n";
     CC << "}\n";
     CC << "\n";
