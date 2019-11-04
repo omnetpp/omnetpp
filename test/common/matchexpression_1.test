@@ -56,6 +56,10 @@ match("a b c d", "x");
 match("a NOT b c", "b"); // read: "a OR (NOT b) OR c"
 match("a NOT b c", "c");
 
+// the empty pattern does not mach anything
+match("",      "a");
+match("",      "");
+
 EV << endl;
 
 //
@@ -136,6 +140,8 @@ a b c d | c --> true
 a b c d | x --> false
 a NOT b c | b --> false
 a NOT b c | c --> true
+ | a --> false
+ |  --> false
 
 (*one OR *two) AND twenty* | twenty-one --> true
 (*one OR *two) AND twenty* | twenty-two --> true
