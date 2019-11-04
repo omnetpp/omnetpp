@@ -100,6 +100,8 @@ typedef std::vector<IMessageDependency *> IMessageDependencyList;
 %include "std_vector.i"
 %include "std_map.i"
 
+%include "map_oldapi.i" // needed for SWIG >=4.0 so we still have the 3.x functions
+
 namespace std {
 
    %typemap(javacode) vector<string> %{
