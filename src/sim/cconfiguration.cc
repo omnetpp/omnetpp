@@ -105,14 +105,8 @@ std::vector<std::string> cConfiguration::parseFilenames(const char *s, const cha
     std::vector<std::string> result;
     FilenamesListTokenizer tokenizer(s); // note: this observes quotation marks, although ignores backslashes (khmmm...)
     const char *fname;
-    while ((fname = tokenizer.nextToken()) != nullptr) {
-        if (fname[0] == '@' && fname[1] == '@')
-            result.push_back("@@" + tidyFilename(concatDirAndFile(baseDir, fname + 2).c_str()));
-        else if (fname[0] == '@')
-            result.push_back("@" + tidyFilename(concatDirAndFile(baseDir, fname + 1).c_str()));
-        else
-            result.push_back(tidyFilename(concatDirAndFile(baseDir, fname).c_str()));
-    }
+    while ((fname = tokenizer.nextToken()) != nullptr)
+        result.push_back(tidyFilename(concatDirAndFile(baseDir, fname).c_str()));
     return result;
 }
 
