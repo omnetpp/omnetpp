@@ -571,7 +571,7 @@ bool MethodcallAnimation::isEmpty() const
 QString MethodcallAnimation::str() const
 {
     return QString("MethodCall '") + text + "' from "
-            + (srcMod ? srcMod->getFullName() : "NULL") + " to " +  (destMod ? destMod->getFullName() : "NULL")
+            + (srcMod ? srcMod->getFullName() : "nullptr") + " to " +  (destMod ? destMod->getFullName() : "nullptr")
             + " state " + stateText[state];
 }
 
@@ -952,7 +952,7 @@ void SendDirectAnimation::removeFromInspector(Inspector *insp)
 QString SendDirectAnimation::str() const
 {
     cModule *src = getSimulation()->getModule(srcModuleId);
-    return QString("SendDirect ") + (msgToUse() ? msgToUse()->getName() : "NULL") +
+    return QString("SendDirect ") + (msgToUse() ? msgToUse()->getName() : "nullptr") +
             + "from: " + (src ? src->getFullPath().c_str() : "<deleted>") + " to: " + dest->getFullPath().c_str()
             + " state: " + stateText[state];
 }
@@ -1058,7 +1058,7 @@ void DeliveryAnimation::updateInInspector(Inspector *insp)
 
 QString DeliveryAnimation::str() const
 {
-    return QString("delivery of") + (msgToUse() ? msgToUse()->getFullName() : "NULL")
+    return QString("delivery of") + (msgToUse() ? msgToUse()->getFullName() : "nullptr")
             + " state: " + stateText[state];
 }
 

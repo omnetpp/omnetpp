@@ -812,7 +812,7 @@ QVariant ArrayElementNode::computeData(int role)
                         ? QString("(%1) %2")
                           .arg(getObjectShortTypeName(fieldObjectPointer))
                           .arg(getObjectFullNameOrPath(fieldObjectPointer))
-                         : "NULL");
+                         : "nullptr");
 
         std::string i = fieldObjectPointer ? fieldObjectPointer->str() : "";
         if (!i.empty()) {
