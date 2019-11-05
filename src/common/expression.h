@@ -153,7 +153,7 @@ public:
      *
      * If no translator is given, it uses the global default translator.
      */
-    virtual void parse(const char *text, AstTranslator *translator=nullptr);
+    virtual Expression& parse(const char *text, AstTranslator *translator=nullptr);
 
     /**
      * Returns true if the expression is empty. An empty expression cannot be evaluated.
@@ -197,12 +197,12 @@ public:
      * Evaluate the expression and convert the result to string if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual std::string stringValue(Context *context) const;
+    virtual std::string stringValue(Context *context=nullptr) const;
 
     // Advanced use and debugging:
 
     // direct access to the expression evaluator tree
-    virtual void setExpressionTree(ExprNode* exprTree);
+    virtual void setExpressionTree(ExprNode *exprTree);
     virtual const ExprNode *getExpressionTree() const {return tree;}
     virtual ExprNode *removeExpressionTree() {ExprNode *result = tree; tree = nullptr; return result;}
 

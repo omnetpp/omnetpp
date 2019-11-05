@@ -75,9 +75,10 @@ Expression& Expression::operator=(const Expression& other)
     return *this;
 }
 
-void Expression::parse(const char *expr, AstTranslator *translator)
+Expression& Expression::parse(const char *expr, AstTranslator *translator)
 {
     setExpressionTree(parseAndTranslate(expr, translator));
+    return *this;
 }
 
 ExprNode *Expression::parseAndTranslate(const char *expr, AstTranslator *translator) const
