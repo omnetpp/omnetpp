@@ -160,6 +160,8 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     int internalGetSectionId(const char *section) const;
     int internalFindEntry(int sectionId, const char *key) const;
     const char *internalGetValue(const std::vector<int>& sectionChain, const char *key, const char *fallbackValue=nullptr, int *sectionIdPtr=nullptr, int *entryIdPtr=nullptr) const;
+    intval_t internalGetValueAsInt(const std::vector<int>& sectionChain, const char *key, intval_t fallbackValue, int *sectionIdPtr=nullptr, int *entryIdPtr=nullptr) const;
+    std::string internalGetValueAsString(const std::vector<int>& sectionChain, const char *key, const char *fallbackValue=nullptr, int *sectionIdPtr=nullptr, int *entryIdPtr=nullptr) const;
     int resolveConfigName(const char *configName) const;
     std::vector<int> resolveSectionChain(int sectionId) const;
     std::vector<int> resolveSectionChain(const char *configName) const;
@@ -173,7 +175,8 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     std::string substituteVariables(const char *text, int sectionId, int entryId, const StringMap& variables, const StringMap& locationToVarName) const;
     bool isPredefinedVariable(const char *varname) const;
     StringMap computeVariables(const char *configName, int runNumber, std::vector<int> sectionChain, const Scenario *scenario, const StringMap& locationToVarName) const;
-    std::string resolveConfigOption(cConfigOption *option, const std::vector<int>& sectionChain, const StringMap& variables, const StringMap& locationToVarName) const;
+    std::string internalGetConfigAsString(cConfigOption *option, const std::vector<int>& sectionChain, const StringMap& variables, const StringMap& locationToVarName) const;
+    intval_t internalGetConfigAsInt(cConfigOption *option, const std::vector<int>& sectionChain, const StringMap& variables, const StringMap& locationToVarName) const;
     static bool isIgnorableConfigKey(const char *ignoredKeyPatterns, const char *key);
     static cConfigOption *lookupConfigOption(const char *key);
     const std::string *getPooledBaseDir(const char *basedir);

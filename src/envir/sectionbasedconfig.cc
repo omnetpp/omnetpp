@@ -211,7 +211,7 @@ std::string SectionBasedConfiguration::getConfigDescription(const char *configNa
 {
     // determine the list of sections, from this one up to [General]
     std::vector<int> sectionChain = resolveSectionChain(configName);
-    return opp_nulltoempty(internalGetValue(sectionChain, CFGID_DESCRIPTION->getName()));
+    return internalGetValueAsString(sectionChain, CFGID_DESCRIPTION->getName());
 }
 
 std::vector<std::string> SectionBasedConfiguration::getBaseConfigs(const char *configName) const
@@ -382,14 +382,14 @@ SectionBasedConfiguration::StringMap SectionBasedConfiguration::computeVariables
     StringMap result;
 
     // create variables
-    int runnumberWidth = std::max(0, atoi(opp_nulltoempty(internalGetValue(sectionChain, CFGID_RUNNUMBER_WIDTH->getName()))));
+    int runnumberWidth = std::max(0, (int)internalGetValueAsInt(sectionChain, CFGID_RUNNUMBER_WIDTH->getName(), 0));
     result[CFGVAR_INIFILE] = opp_nulltoempty(getFileName());
     result[CFGVAR_CONFIGNAME] = configName;
     result[CFGVAR_RUNNUMBER] = opp_stringf("%0*d", runnumberWidth, runNumber);
-    result[CFGVAR_NETWORK] = opp_nulltoempty(internalGetValue(sectionChain, CFGID_NETWORK->getName()));
+    result[CFGVAR_NETWORK] = internalGetValueAsString(sectionChain, CFGID_NETWORK->getName());
     result[CFGVAR_PROCESSID] = opp_stringf("%d", (int)getpid());
     result[CFGVAR_DATETIME] = opp_makedatetimestring();
-    result[CFGVAR_RESULTDIR] = opp_nulltoempty(internalGetValue(sectionChain, CFGID_RESULT_DIR->getName(), CFGID_RESULT_DIR->getDefaultValue()));
+    result[CFGVAR_RESULTDIR] = internalGetValueAsString(sectionChain, CFGID_RESULT_DIR->getName(), CFGID_RESULT_DIR->getDefaultValue());
     result[CFGVAR_RUNID] = result[CFGVAR_CONFIGNAME]+"-"+result[CFGVAR_RUNNUMBER]+"-"+result[CFGVAR_DATETIME]+"-"+result[CFGVAR_PROCESSID];
 
     // store iteration variables
@@ -412,18 +412,29 @@ SectionBasedConfiguration::StringMap SectionBasedConfiguration::computeVariables
     result[CFGVAR_ITERATIONVARSF] = iterationvarsf;
 
     // experiment/measurement/replication must be done as last, because they may depend on the above vars
-    result[CFGVAR_SEEDSET] = resolveConfigOption(CFGID_SEED_SET, sectionChain, result, locationToVarName);
-    result[CFGVAR_EXPERIMENT] = resolveConfigOption(CFGID_EXPERIMENT_LABEL, sectionChain, result, locationToVarName);
-    result[CFGVAR_MEASUREMENT] = resolveConfigOption(CFGID_MEASUREMENT_LABEL, sectionChain, result, locationToVarName);
-    result[CFGVAR_REPLICATION] = resolveConfigOption(CFGID_REPLICATION_LABEL, sectionChain, result, locationToVarName);
+    result[CFGVAR_SEEDSET] = std::to_string(internalGetConfigAsInt(CFGID_SEED_SET, sectionChain, result, locationToVarName));
+    result[CFGVAR_EXPERIMENT] = internalGetConfigAsString(CFGID_EXPERIMENT_LABEL, sectionChain, result, locationToVarName);
+    result[CFGVAR_MEASUREMENT] = internalGetConfigAsString(CFGID_MEASUREMENT_LABEL, sectionChain, result, locationToVarName);
+    result[CFGVAR_REPLICATION] = internalGetConfigAsString(CFGID_REPLICATION_LABEL, sectionChain, result, locationToVarName);
     return result;
 }
 
-std::string SectionBasedConfiguration::resolveConfigOption(cConfigOption *option, const std::vector<int>& sectionChain, const StringMap& variables, const StringMap& locationToVarName) const
+std::string SectionBasedConfiguration::internalGetConfigAsString(cConfigOption *option, const std::vector<int>& sectionChain, const StringMap& variables, const StringMap& locationToVarName) const
 {
     int sectionId, entryId;
     const char *value = internalGetValue(sectionChain, option->getName(), option->getDefaultValue(), &sectionId, &entryId);
-    return substituteVariables(value, sectionId, entryId, variables, locationToVarName);
+    std::string str = substituteVariables(value, sectionId, entryId, variables, locationToVarName);
+    if (strchr(str.c_str(), '"') != nullptr)
+        str = Expression().parse(str.c_str()).stringValue();
+    return str;
+}
+
+intval_t SectionBasedConfiguration::internalGetConfigAsInt(cConfigOption *option, const std::vector<int>& sectionChain, const StringMap& variables, const StringMap& locationToVarName) const
+{
+    int sectionId, entryId;
+    const char *value = internalGetValue(sectionChain, option->getName(), option->getDefaultValue(), &sectionId, &entryId);
+    std::string str = substituteVariables(value, sectionId, entryId, variables, locationToVarName);
+    return Expression().parse(str.c_str()).intValue();
 }
 
 int SectionBasedConfiguration::getNumRunsInConfig(const char *configName) const
@@ -536,8 +547,7 @@ std::vector<Scenario::IterationVariable> SectionBasedConfiguration::collectItera
     }
 
     // register ${repetition}, based on the repeat= config entry
-    const char *repeat = internalGetValue(sectionChain, CFGID_REPEAT->getName());
-    int repeatCount = (int)parseLong(repeat, nullptr, 1);
+    int repeatCount = internalGetValueAsInt(sectionChain, CFGID_REPEAT->getName(), 1);
     Scenario::IterationVariable repetition;
     repetition.varName = CFGVAR_REPETITION;
     repetition.value = opp_stringf("0..%d", repeatCount-1);
@@ -990,6 +1000,18 @@ const char *SectionBasedConfiguration::internalGetValue(const std::vector<int>& 
         }
     }
     return fallbackValue;
+}
+
+std::string SectionBasedConfiguration::internalGetValueAsString(const std::vector<int>& sectionChain, const char *key, const char *fallbackValue, int *outSectionIdPtr, int *outEntryIdPtr) const
+{
+    const char *s = internalGetValue(sectionChain, key, fallbackValue, outSectionIdPtr, outEntryIdPtr);
+    return !s ? "" : !strchr(s, '"') ? s : Expression().parse(s).stringValue();
+}
+
+intval_t SectionBasedConfiguration::internalGetValueAsInt(const std::vector<int>& sectionChain, const char *key, intval_t fallbackValue, int *outSectionIdPtr, int *outEntryIdPtr) const
+{
+    const char *s = internalGetValue(sectionChain, key, nullptr, outSectionIdPtr, outEntryIdPtr);
+    return !s ? fallbackValue : Expression().parse(s).intValue();
 }
 
 enum { WHITE, GREY, BLACK };
