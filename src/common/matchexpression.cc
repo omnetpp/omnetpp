@@ -83,10 +83,6 @@ MatchExpression::MatchExpression(const char *pattern, bool dottedpath, bool full
 
 void MatchExpression::setPattern(const char *pattern, bool dottedpath, bool fullstring, bool casesensitive)
 {
-    this->matchDottedPath = dottedpath;
-    this->matchFullString = fullstring;
-    this->caseSensitive = casesensitive;
-
     if (opp_isblank(pattern)) {
         delete tree;
         tree = new ConstantNode(ExprValue(false));
@@ -97,6 +93,10 @@ void MatchExpression::setPattern(const char *pattern, bool dottedpath, bool full
         delete tree;
         tree = t;
     }
+
+    this->matchDottedPath = dottedpath;
+    this->matchFullString = fullstring;
+    this->caseSensitive = casesensitive;
 }
 
 ExprNode *MatchExpression::generateEvaluator(const std::vector<Elem>& elems, bool dottedpath, bool fullstring, bool casesensitive)
