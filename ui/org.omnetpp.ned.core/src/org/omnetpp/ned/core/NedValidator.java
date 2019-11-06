@@ -10,7 +10,6 @@ package org.omnetpp.ned.core;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
-import java.util.Vector;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -38,7 +37,6 @@ import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
-import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;
 import org.omnetpp.ned.model.pojo.ClassDeclElement;
 import org.omnetpp.ned.model.pojo.ClassElement;
@@ -51,14 +49,11 @@ import org.omnetpp.ned.model.pojo.CplusplusElement;
 import org.omnetpp.ned.model.pojo.EnumDeclElement;
 import org.omnetpp.ned.model.pojo.EnumElement;
 import org.omnetpp.ned.model.pojo.EnumFieldElement;
-import org.omnetpp.ned.model.pojo.ExpressionElement;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
 import org.omnetpp.ned.model.pojo.FieldElement;
 import org.omnetpp.ned.model.pojo.FilesElement;
-import org.omnetpp.ned.model.pojo.FunctionElement;
 import org.omnetpp.ned.model.pojo.GateElement;
 import org.omnetpp.ned.model.pojo.GatesElement;
-import org.omnetpp.ned.model.pojo.IdentElement;
 import org.omnetpp.ned.model.pojo.ImportElement;
 import org.omnetpp.ned.model.pojo.InterfaceNameElement;
 import org.omnetpp.ned.model.pojo.LiteralElement;
@@ -68,7 +63,6 @@ import org.omnetpp.ned.model.pojo.MessageElement;
 import org.omnetpp.ned.model.pojo.ModuleInterfaceElement;
 import org.omnetpp.ned.model.pojo.MsgFileElement;
 import org.omnetpp.ned.model.pojo.NamespaceElement;
-import org.omnetpp.ned.model.pojo.OperatorElement;
 import org.omnetpp.ned.model.pojo.PackageElement;
 import org.omnetpp.ned.model.pojo.PacketDeclElement;
 import org.omnetpp.ned.model.pojo.PacketElement;
@@ -765,26 +759,6 @@ public class NedValidator extends AbstractNedValidatorEx {
 
     @Override
     protected void validateElement(ConditionElement node) {
-        validateChildren(node);
-    }
-
-    @Override
-    protected void validateElement(ExpressionElement node) {
-        validateChildren(node);
-    }
-
-    @Override
-    protected void validateElement(OperatorElement node) {
-        validateChildren(node);
-    }
-
-    @Override
-    protected void validateElement(FunctionElement node) {
-        validateChildren(node);
-    }
-
-    @Override
-    protected void validateElement(IdentElement node) {
         validateChildren(node);
     }
 
