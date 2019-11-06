@@ -148,31 +148,31 @@ class SIM_API cNedMathFunction : public cNoncopyableOwnedObject
 
     /**
      * Returns function pointer as double function with no args.
-     * Throws exception is actual arg count is different.
+     * Throws exception if actual arg count is different.
      */
     MathFuncNoArg getMathFuncNoArg() const;
 
     /**
      * Returns function pointer as double function with 1 double arg.
-     * Throws exception is actual arg count is different.
+     * Throws exception if actual arg count is different.
      */
     MathFunc1Arg getMathFunc1Arg() const;
 
     /**
      * Returns function pointer as double function with 2 double args.
-     * Throws exception is actual arg count is different.
+     * Throws exception if actual arg count is different.
      */
     MathFunc2Args getMathFunc2Args() const;
 
     /**
      * Returns function pointer as double function with 3 double args.
-     * Throws exception is actual arg count is different.
+     * Throws exception if actual arg count is different.
      */
     MathFunc3Args getMathFunc3Args() const;
 
     /**
      * Returns function pointer as double function with 4 double args.
-     * Throws exception is actual arg count is different.
+     * Throws exception if actual arg count is different.
      */
     MathFunc4Args getMathFunc4Args() const;
 
