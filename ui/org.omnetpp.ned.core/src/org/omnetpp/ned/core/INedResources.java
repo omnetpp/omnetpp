@@ -123,11 +123,4 @@ public interface INedResources extends INedTypeResolver {
      */
     public boolean isImmutableCopyUpToDate(INedTypeResolver copy);
 
-    /**
-     * Parses the given NED expression, and returns the parse tree. Returns null if the expression
-     * contains a syntax error. The default implementation (NedResources) caches the result,
-     * so it is typically very fast.
-     */
-    public INedElement getParsedNedExpression(String expression);
-
 }

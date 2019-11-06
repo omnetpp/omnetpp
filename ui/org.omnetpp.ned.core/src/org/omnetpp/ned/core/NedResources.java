@@ -537,18 +537,6 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
         return immutableCopy == copy;
     }
 
-    public synchronized INedElement getParsedNedExpression(String expression) {
-        INedElement tree = expressionCache.get(expression);
-        if (tree != null)
-            return tree==BOGUS_EXPRESSION ? null : tree;
-
-        // parse, and cache the result (BOGUS_EXPRESSION is uses so we can distinguish "not cached"
-        // from "syntax error" without an extra expressionCache.contains() call)
-        tree = NedTreeUtil.parseNedExpression(expression);
-        expressionCache.put(expression, tree==null ? BOGUS_EXPRESSION : tree);
-        return tree;
-    }
-
     // ******************* notification helpers ************************************
 
     public void addNedModelChangeListener(INedChangeListener listener) {

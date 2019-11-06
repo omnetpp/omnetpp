@@ -208,8 +208,7 @@ static void assertNonEmpty(std::stack<ASTNode *>& somescope)
  * Start rule. Support parsing a standalone expression as well
  */
 startsymbol
-        : EXPRESSION_SELECTOR expr
-                { ps.nedfile->appendChild($2); }
+        : EXPRESSION_SELECTOR expression
         | nedfile
         ;
 
@@ -1500,8 +1499,7 @@ vector
         ;
 
 expression
-        :
-          expr
+        : expr
         ;
 
 /*

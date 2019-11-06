@@ -99,6 +99,12 @@ class NEDXML_API NedParser
      * attributes; it defaults to "buffer".
      */
     ASTNode *parseNedText(const char *nedtext, const char *fname=nullptr);
+
+    /**
+     * Returns true if the given string is a syntactically valid NED expression
+     * (corresponds to the grammar), and false otherwise.
+     */
+    bool isValidNedExpression(const char *expr);
 };
 
 } // namespace nedxml

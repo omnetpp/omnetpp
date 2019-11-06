@@ -174,6 +174,13 @@ ASTNode *NedParser::parseNed()
     return ::doParseNed(&np, np.source->getFullText());
 }
 
+bool NedParser::isValidNedExpression(const char *expr)
+{
+    std::string source = std::string(MAGIC_PREFIX) + "\n" + expr;
+    delete parseNedText(source.c_str(), "expression");
+    return !np.errors->containsError();
+}
+
 }  // namespace nedxml
 }  // namespace omnetpp
 
