@@ -20,7 +20,8 @@
 #include <cstring>
 #include <clocale>
 #include <string>
-#include <map>
+#include <functional> // reference_wrapper
+#include <unordered_map>
 #include "omnetpp/platdep/platmisc.h"
 #include "commonutil.h"
 #include "opp_ctype.h"
@@ -90,16 +91,9 @@ void CallTracer::printf(const char *fmt, ...)
 }
 
 //----
-
-#ifdef __GNUC__
-typedef std::map<std::string, std::string> StringMap;
-static StringMap demangledNames;
-#endif
-
-static const char *getDemangledTypename(const char *mangledName)
+static std::string demangle(const char *mangledName)
 {
     const char *s = mangledName;
-
 #ifdef __GNUC__
     // gcc's typeinfo returns mangled name:
     //   - Foo -> "3Foo"
@@ -109,55 +103,74 @@ static const char *getDemangledTypename(const char *mangledName)
     //   - Foo* -> "P3Foo" (P prefix means pointer)
     // see libiberty/cp_demangle.c
     //
-    if (*s>='0' && *s<='9')
-    {
+    if (opp_isdigit(*s)) {
         // no namespace: just skip the leading number
-        while (*s>='0' && *s<='9')
+        while (opp_isdigit(*s))
             s++;
         return s;
     }
 
-    // if we've already seen this name, return cached result
-    StringMap::const_iterator it = demangledNames.find(mangledName);
-    if (it == demangledNames.end()) {
-        // not found -- demangle it and cache the result
-        std::string result;
-        std::string prefix, suffix;
-        if (*s == 'P' && *(s+1) == 'K') {
-            // PKx -> "const x *"
-            prefix = "const ";
-            suffix = " *";
-            s += 2;
-        }
-        while (true) {
-            if (*s == 'P')
-                suffix += " *";
-            else if (*s == 'K')
-                suffix += " const";
-            else
-                break;
-            s++;
-        }
+    std::string result;
+    std::string prefix, suffix;
+    if (*s == 'P' && *(s+1) == 'K') {
+        // PKx -> "const x *"
+        prefix = "const ";
+        suffix = " *";
+        s += 2;
+    }
+    while (true) {
+        if (*s == 'P')
+            suffix += " *";
+        else if (*s == 'K')
+            suffix += " const";
+        else
+            break;
+        s++;
+    }
 
-        switch (*s) {
-            case 'v': result = "void"; break;
-            case 'b': result = "bool"; break;
-            case 's': result = "short"; break;
-            case 't': result = "unsigned short"; break;
-            case 'i': result = "int"; break;
-            case 'j': result = "unsigned int"; break;
-            case 'l': result = "long"; break;
-            case 'm': result = "unsigned long"; break;
-            case 'f': result = "float"; break;
-            case 'd': result = "double"; break;
-            case 'c': result = "char"; break;
-            case 'a': result = "signed char"; break;
-            case 'h': result = "unsigned char"; break;
-            case 'N': {
-                // mangled name contains namespace: decode it
+    switch (*s) {
+        case 'v': result = "void"; break;
+        case 'b': result = "bool"; break;
+        case 's': result = "short"; break;
+        case 't': result = "unsigned short"; break;
+        case 'i': result = "int"; break;
+        case 'j': result = "unsigned int"; break;
+        case 'l': result = "long"; break;
+        case 'm': result = "unsigned long"; break;
+        case 'f': result = "float"; break;
+        case 'd': result = "double"; break;
+        case 'c': result = "char"; break;
+        case 'a': result = "signed char"; break;
+        case 'h': result = "unsigned char"; break;
+        case 'N': {
+            // mangled name contains namespace: decode it
+            result.reserve(strlen(s)+8);
+            s++; // skip leading 'N'
+            while (opp_isdigit(*s)) {
+                int len = (int)strtol(s, (char **)&s, 10);
+                if (!result.empty()) result += "::";
+                result.append(s, len);
+                s += len;
+            }
+            break;
+        }
+        case 'S': {
+            // probably std::something, e.g. "St13runtime_error"
+            switch (s[1]) {
+            // some "Sx" prefixes are special abbreviations
+            case 'a': result = "std::allocator"; break;
+            case 'b': result = "std::basic_string"; break;
+            case 's': result = "std::string"; break;
+            case 'i': result = "std::istream"; break;
+            case 'o': result = "std::ostream"; break;
+            case 'd': result = "std::iostream"; break;
+            case 't':
+                // "St" -> std::
+                s+=2;
                 result.reserve(strlen(s)+8);
-                s++; // skip leading 'N'
-                while (*s>='0' && *s<='9') {
+                result.append("std");
+                while (opp_isalpha(*s)) s++; // skip possible other modifiers
+                while (opp_isdigit(*s)) {
                     int len = (int)strtol(s, (char **)&s, 10);
                     if (!result.empty()) result += "::";
                     result.append(s, len);
@@ -165,51 +178,25 @@ static const char *getDemangledTypename(const char *mangledName)
                 }
                 break;
             }
-            case 'S': {
-                // probably std::something, e.g. "St13runtime_error"
-                switch (s[1]) {
-                    // some "Sx" prefixes are special abbreviations
-                    case 'a': result = "std::allocator"; break;
-                    case 'b': result = "std::basic_string"; break;
-                    case 's': result = "std::string"; break;
-                    case 'i': result = "std::istream"; break;
-                    case 'o': result = "std::ostream"; break;
-                    case 'd': result = "std::iostream"; break;
-                    case 't':
-                        // "St" -> std::
-                        s+=2;
-                        result.reserve(strlen(s)+8);
-                        result.append("std");
-                        while (opp_isalpha(*s)) s++; // skip possible other modifiers
-                        while (*s>='0' && *s<='9') {
-                            int len = (int)strtol(s, (char **)&s, 10);
-                            if (!result.empty()) result += "::";
-                            result.append(s, len);
-                            s += len;
-                        }
-                        break;
-                }
-                break;
+            break;
+        }
+        default: {
+            if (opp_isdigit(*s)) {
+                // no namespace: just skip the leading number
+                while (opp_isdigit(*s))
+                    s++;
+                result = s;
             }
-            default: {
-                if (*s>='0' && *s<='9') {
-                    // no namespace: just skip the leading number
-                    while (*s>='0' && *s<='9')
-                        s++;
-                    result = s;
-                }
-                else {
-                    // dunno how to interpret it, just return it unchanged
-                    result = s;
-                }
+            else {
+                // dunno how to interpret it, just return it unchanged
+                result = s;
             }
         }
-
-        demangledNames[mangledName] = prefix + result + suffix;
-        it = demangledNames.find(mangledName);
     }
-    return it->second.c_str();
+    return result;
+
 #else
+
     // MSVC prepends the string with "class " (possibly other compilers too)
     if (s[0]=='c' && s[1]=='l' && s[2]=='a' && s[3]=='s' && s[4]=='s' && s[5]==' ')
         s+=6;
@@ -221,11 +208,29 @@ static const char *getDemangledTypename(const char *mangledName)
 #endif
 }
 
+using TypeInfoRef = std::reference_wrapper<const std::type_info>;
+
+struct Hasher {
+    std::size_t operator()(TypeInfoRef code) const { return code.get().hash_code(); }
+};
+
+struct EqualTo {
+    bool operator()(TypeInfoRef lhs, TypeInfoRef rhs) const { return lhs.get() == rhs.get(); }
+};
+
+std::unordered_map<TypeInfoRef, std::string, Hasher, EqualTo> demangledNames;
+
 const char *opp_typename(const std::type_info& t)
 {
     if (t == typeid(std::string))
         return "std::string";  // otherwise we'd get "std::basic_string<........>"
-    return getDemangledTypename(t.name());
+
+    auto it = demangledNames.find(t);
+    if (it == demangledNames.end()) {
+        demangledNames[t] = demangle(t.name());
+        it = demangledNames.find(t);
+    }
+    return it->second.c_str();
 }
 
 
