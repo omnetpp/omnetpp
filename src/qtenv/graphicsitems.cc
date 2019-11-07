@@ -19,6 +19,7 @@
 #include <cmath>
 #include <QPen>
 #include <QPainter>
+#include <QFontMetricsF>
 #include <QDebug>
 #include "qtenv.h"
 
@@ -240,7 +241,7 @@ QRectF OutlinedTextItem::textRect() const
 void OutlinedTextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     // background rectangle
-    painter->setBrush(backgroundBrush);
+    painter->setBrush(bgBrush);
     painter->setPen(Qt::NoPen);
     painter->drawRect(boundingRect());
 
@@ -291,8 +292,8 @@ void OutlinedTextItem::setBrush(const QBrush& brush)
 
 void OutlinedTextItem::setBackgroundBrush(const QBrush& brush)
 {
-    if (backgroundBrush != brush) {
-        backgroundBrush = brush;
+    if (bgBrush != brush) {
+        bgBrush = brush;
         update(boundingRect());
     }
 }
@@ -308,6 +309,116 @@ void OutlinedTextItem::setHaloEnabled(bool enabled)
 }
 
 //---- end of OutlinedTextItem ----
+
+//---- MultiLineOutlinedTextItem implementation ----
+
+void MultiLineOutlinedTextItem::realignLines()
+{
+    // this is not entirely precise because we don't have access to the paint device, but it's not that critical
+    // (yes, we use the canvas font. we did all this time, and nobody seemed to mind, so...)
+
+    double lineSpacing = QFontMetricsF(getQtenv()->getCanvasFont()).lineSpacing();
+
+    double maxWidth = 0;
+    for  (OutlinedTextItem *item : textItems)
+        maxWidth = std::max(maxWidth, item->boundingRect().width());
+
+    QPointF cursor = QPointF(0.0, 0.0);
+
+    // the info text label
+    for (OutlinedTextItem *item : textItems) {
+        QPointF pos = cursor;
+        cursor.ry() += lineSpacing;
+
+        auto bounds = item->boundingRect();
+        switch (alignment) {
+            case Qt::AlignLeft:
+                // no-op
+                break;
+            case Qt::AlignRight:
+                pos.rx() += maxWidth - bounds.width();
+                break;
+            case Qt::AlignCenter:
+                pos.rx() += (maxWidth - bounds.width()) / 2.0f;
+                break;
+        }
+
+        item->setPos(pos);
+    }
+}
+
+void MultiLineOutlinedTextItem::setText(const QString &text)
+{
+    QStringList lines = text.split("\n");
+
+    int nl = lines.size();
+    int nti = textItems.size();
+
+    if (nti < nl) {
+        // we have to add a couple more text items
+        for (int i = nti; i < nl; ++i) {
+            OutlinedTextItem *newItem = new OutlinedTextItem(this);
+            if (!textItems.empty()) { // on the first run (from the ctor) it will be empty
+                // copying style from the "template"
+                OutlinedTextItem *first = textItems.front();
+                newItem->setFont(first->font());
+                newItem->setPen(first->pen());
+                newItem->setBrush(first->brush());
+                newItem->setBackgroundBrush(first->backgroundBush());
+                newItem->setHaloEnabled(first->isHaloEnabled());
+            }
+            textItems.push_back(newItem);
+        }
+    }
+    else if (nl < nti) {
+        // we have too many text items
+        for (int i = nl; i < nti; ++i)
+            delete textItems[i];
+        textItems.resize(nl);
+    }
+
+    ASSERT(textItems.size() == lines.size());
+    ASSERT(!textItems.empty());
+
+    for (int i = 0; i < nl; ++i)
+        textItems[i]->setText(lines[i]);
+
+    realignLines();
+}
+
+void MultiLineOutlinedTextItem::setAlignment(Qt::Alignment align) {
+    if (alignment != align) {
+        alignment = align;
+        realignLines();
+    }
+}
+
+void MultiLineOutlinedTextItem::setFont(const QFont &font) {
+    for (auto i : textItems)
+        i->setFont(font);
+};
+
+void MultiLineOutlinedTextItem::setPen(const QPen &pen) {
+    for (auto i : textItems)
+        i->setPen(pen);
+}
+
+void MultiLineOutlinedTextItem::setBrush(const QBrush &brush) {
+    for (auto i : textItems)
+        i->setBrush(brush);
+}
+
+void MultiLineOutlinedTextItem::setBackgroundBrush(const QBrush &brush) {
+    for (auto i : textItems)
+        i->setBackgroundBrush(brush);
+}
+
+void MultiLineOutlinedTextItem::setHaloEnabled(bool enabled) {
+    for (auto i : textItems)
+        i->setHaloEnabled(enabled);
+}
+
+//---- end of MultiLineOutlinedTextItem ----
 
 //---- BubbleItem implementation ----
 

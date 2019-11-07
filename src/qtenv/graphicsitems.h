@@ -20,6 +20,7 @@
 #include <QGraphicsObject>
 #include <QGraphicsEffect>
 #include <QFont>
+#include <QPen>
 #include <QTimer>
 #include "qtenvdefs.h"
 
@@ -86,7 +87,7 @@ protected:
     QGraphicsSimpleTextItem *outlineItem; // never has a Brush
     QGraphicsSimpleTextItem *fillItem; // never has a Pen
 
-    QBrush backgroundBrush;
+    QBrush bgBrush;
     bool haloEnabled = true;
 
 public:
@@ -100,7 +101,42 @@ public:
 
     QFont font() const { return fillItem->font(); }
     void setFont(const QFont &font);
+    QString text() const { return fillItem->text(); }
     void setText(const QString &text);
+    QPen pen() const { return outlineItem->pen(); }
+    void setPen(const QPen &pen);
+    QBrush brush() const { return fillItem->brush(); }
+    void setBrush(const QBrush &brush);
+    QBrush backgroundBush() const { return bgBrush; }
+    void setBackgroundBrush(const QBrush &brush);
+    bool isHaloEnabled() const { return haloEnabled; }
+    void setHaloEnabled(bool enabled);
+};
+
+class QTENV_API MultiLineOutlinedTextItem : public QGraphicsItem {
+protected:
+
+    Qt::Alignment alignment = Qt::AlignLeft; // only Left, Center and Right are accepted.
+
+    // This needs to be a vector only so we can position the lines independently,
+    // to left/middle/right align the text for the different positioning modes.
+    // QGraphicsSimpleTextItem can't align its lines, while QGraphicsTextItem
+    // makes it hard to draw the outline. So we do it manually, no big deal.
+    // This must always contain at least one element, which is used to hold
+    // the desired style info (font, colors, halo, etc.).
+    std::vector<OutlinedTextItem *> textItems;
+
+    void realignLines();
+
+public:
+    MultiLineOutlinedTextItem(QGraphicsItem *parent = nullptr) : QGraphicsItem(parent) { setText(""); /* just to ensure at least one line item */ }
+
+    QRectF boundingRect() const override { return childrenBoundingRect(); } // just to make positioning calculations easier
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override { /* nothing */ }
+
+    void setText(const QString &text);
+    void setAlignment(Qt::Alignment align);
+    void setFont(const QFont &font);
     void setPen(const QPen &pen);
     void setBrush(const QBrush &brush);
     void setBackgroundBrush(const QBrush &brush);

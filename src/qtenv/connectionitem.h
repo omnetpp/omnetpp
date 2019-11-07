@@ -24,7 +24,7 @@
 namespace omnetpp {
 namespace qtenv {
 
-class OutlinedTextItem;
+class MultiLineOutlinedTextItem;
 class ArrowheadItem;
 
 class ConnectionItem;
@@ -50,9 +50,9 @@ protected:
     bool lineEnabled = true;
     bool halfLength = false;
 
-    QGraphicsLineItem *lineItem = nullptr;
-    OutlinedTextItem *textItem = nullptr; // This is a managed sibling!
-    ArrowheadItem *arrowItem = nullptr;
+    QGraphicsLineItem *lineItem;
+    MultiLineOutlinedTextItem *textItem; // This is a managed sibling!
+    ArrowheadItem *arrowItem;
 
 protected slots:
     void updateLineItem();

@@ -94,7 +94,7 @@ void ConnectionItem::updateLineItem()
 
     if (halfLength)
         dest = src + dir / 2;
-    else if (arrowItem && arrowItem->isVisible()) {
+    else if (arrowItem->isVisible()) {
         // making the end not stick out of the arrowhead
         // the line itself has to be shorter
         dest -= dir / length * lineWidth;
@@ -121,15 +121,17 @@ void ConnectionItem::updateTextItem()
     textItem->setBrush(textColor);
     textItem->setVisible(isVisible());
 
-    QRectF textRect = textItem->textRect();
+    QRectF textRect = textItem->boundingRect();
     QPointF textSize(textRect.width() + 4, textRect.height() + 4);
 
     switch (textAlignment) {
         case Qt::AlignLeft:
             textItem->setPos(0.75 * src + 0.25 * dest - textSize * 0.5 + QPoint(2, 2));
+            textItem->setAlignment(Qt::AlignLeft);
             break;
         case Qt::AlignRight:
             textItem->setPos(0.25 * src + 0.75 * dest - textSize * 0.5 + QPoint(2, 2));
+            textItem->setAlignment(Qt::AlignRight);
             break;
         default: // Center
             textItem->setPos(0.5 * src + 0.5 * dest
@@ -137,6 +139,7 @@ void ConnectionItem::updateTextItem()
                                        ((src.x()==dest.x()) ? (src.y()<dest.y()) : (src.x()<dest.x()))
                                         ? 0
                                         : textSize.y()) + QPoint(2, 2));
+            textItem->setAlignment(Qt::AlignCenter);
     }
 }
 
@@ -160,7 +163,7 @@ ConnectionItem::ConnectionItem(QGraphicsItem *parent) :
     lineItem = new QGraphicsLineItem(this);
     // The text has to be a sibling, otherwise the pair line
     // of a twoway connection would obscure it.
-    textItem = new OutlinedTextItem(parentItem());
+    textItem = new MultiLineOutlinedTextItem(parentItem());
     textItem->setZValue(1); // connect is to update visibility
     connect(this, SIGNAL(visibleChanged()), this, SLOT(updateTextItem()));
     // TODO arrowItem disappear when a part of lineItem is out of view.
