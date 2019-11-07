@@ -171,55 +171,35 @@ void SubmoduleItemUtil::updateQueueSizeLabel(SubmoduleItem *si, cModule *mod)
 
 void SubmoduleItem::updateNameItem()
 {
-    if (nameItem) {
-        QString label = name;
-        if (vectorIndex >= 0) {
-            label += "[" + QString::number(vectorIndex) + "]";
-        }
-        nameItem->setText(label);
-        nameItem->setPos(-nameItem->textRect().width() / 2, shapeImageBoundingRect().height() / 2 + 2);
-    }
+    QString label = name;
+    if (vectorIndex >= 0)
+        label += "[" + QString::number(vectorIndex) + "]";
+    nameItem->setText(label);
+    nameItem->setPos(-nameItem->textRect().width() / 2, shapeImageBoundingRect().height() / 2 + 2);
 }
 
 void SubmoduleItem::realignAnchoredItems()
 {
     auto mainBounds = shapeImageBoundingRect().adjusted(-2, -2, 2, 2);
+    auto textBounds = textItem->boundingRect();
 
-    // this is not entirely precise because we don't have access to the paint device, but it's not that critical
-    // (yes, we use the canvas font. we did all this time, and nobody seemed to mind, so...)
-    int lineSpacing = QFontMetrics(getQtenv()->getCanvasFont()).lineSpacing();
-
-    QPointF cursor;
     switch (textPos) {
-        case TEXTPOS_LEFT:  cursor = mainBounds.topLeft();  break;
-        case TEXTPOS_RIGHT: cursor = mainBounds.topRight(); break;
-        case TEXTPOS_TOP: cursor = { mainBounds.center().x(), mainBounds.top() - textItems.size() * lineSpacing }; break;
-    }
-
-    // the info text label
-    for (OutlinedTextItem *item : textItems) {
-        QPointF pos = cursor;
-        cursor.ry() += lineSpacing;
-
-        auto bounds = item->boundingRect();
-        switch (textPos) {
-            case TEXTPOS_LEFT: // right justify
-                pos.rx() -= bounds.width();
-                break;
-            case TEXTPOS_RIGHT: // left justified
-                // no-op
-                break;
-            case TEXTPOS_TOP: // center horizontally
-                pos.rx() -= bounds.width() / 2.0f;
-                break;
-        }
-
-        item->setPos(pos);
+        case TEXTPOS_LEFT:
+            textItem->setPos(mainBounds.left() - textBounds.width(), mainBounds.top());
+            textItem->setAlignment(Qt::AlignRight);
+            break;
+        case TEXTPOS_RIGHT:
+            textItem->setPos(mainBounds.topRight());
+            textItem->setAlignment(Qt::AlignLeft);
+            break;
+        case TEXTPOS_TOP:
+            textItem->setPos(mainBounds.center().x() - textBounds.width() / 2, mainBounds.top() - textBounds.height());
+            textItem->setAlignment(Qt::AlignCenter);
+            break;
     }
 
     // the queue length
-    if (queueItem)
-        queueItem->setPos(mainBounds.width() / 2, -mainBounds.height() / 2);
+    queueItem->setPos(mainBounds.width() / 2, -mainBounds.height() / 2);
 
     // the icon in the corner
     if (decoratorImageItem)
@@ -303,6 +283,7 @@ SubmoduleItem::SubmoduleItem(cModule *mod, GraphicsLayer *rangeLayer)
 {
     nameItem = new OutlinedTextItem(this);
     queueItem = new OutlinedTextItem(this);
+    textItem = new MultiLineOutlinedTextItem(this);
 
     connect(this, SIGNAL(xChanged()), this, SLOT(onPositionChanged()));
     connect(this, SIGNAL(yChanged()), this, SLOT(onPositionChanged()));
@@ -472,30 +453,8 @@ void SubmoduleItem::setInfoText(const QString& text, TextPos pos, const QColor& 
         textPos = pos;
         textColor = color;
 
-        QStringList lines = text.split("\n");
-
-        int nl = lines.size();
-        int nti = textItems.size();
-
-        if (nti < nl) {
-            // we have to add a couple more text items
-            for (int i = nti; i < nl; ++i)
-                textItems.push_back(new OutlinedTextItem(this));
-        }
-        else if (nl < nti) {
-            // we have too many text items
-            for (int i = nl; i < nti; ++i)
-                delete textItems[i];
-            textItems.resize(nl);
-        }
-
-        ASSERT(textItems.size() == lines.size());
-
-        for (int i = 0; i < nl; ++i) {
-            OutlinedTextItem *item = textItems[i];
-            item->setText(lines[i]);
-            item->setBrush(color);
-        }
+        textItem->setText(text);
+        textItem->setBrush(color);
         realignAnchoredItems();
     }
 }
