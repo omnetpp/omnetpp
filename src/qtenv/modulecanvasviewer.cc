@@ -924,8 +924,16 @@ void ModuleCanvasViewer::refresh()
         }
 
         for (auto g : changedConnections)
-            if (g && g->getNextGate()) // if any gate was unconnected above, we added a nullptr
+            if (g && g->getNextGate()) {// if any gate was unconnected above, we added a nullptr
                 refreshConnection(g);
+                if (isTwoWayConnection(g)) {
+                    // if it is two way connection, refresh the "other half" of it as well,
+                    // so in case the connection line itself has changed, it isn't split in two
+                    cGate *otherDirection = getGateOtherHalf(g->getNextGate());
+                    if (!contains(changedConnections, otherDirection)) // don't do it twice
+                        refreshConnection(otherDirection);
+                }
+            }
     }
 
     compoundModuleChanged = false;
