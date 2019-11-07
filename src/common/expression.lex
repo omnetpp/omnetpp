@@ -77,6 +77,7 @@ using namespace omnetpp::common;
 "inf"                    { countChars(); return INF_; }
 "undefined"              { countChars(); return UNDEFINED_; }
 "nullptr"                { countChars(); return NULLPTR_; }
+"null"                   { countChars(); return NULLPTR_; /* JSON-compatible notation */ }
 
 {L}({L}|{D})*(:{L}({L}|{D})*)*  { countChars(); yylval.str = opp_strdup(yytext); return NAME; }
 {D}+                     { countChars(); yylval.str = opp_strdup(yytext); return INTCONSTANT; }

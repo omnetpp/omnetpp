@@ -309,6 +309,8 @@ keyvaluelist
 keyvalue
         : NAME ':' expr
                 { $<node>$ = new AstNode(AstNode::KEYVALUE, $1); $<node>$->children.push_back($<node>3); delete [] $1; }
+        | STRINGCONSTANT ':' expr
+                { $<node>$ = new AstNode(AstNode::KEYVALUE, opp_parsequotedstr($1).c_str()); $<node>$->children.push_back($<node>3); delete [] $1; }
         ;
 
 variable
