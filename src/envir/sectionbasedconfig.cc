@@ -424,7 +424,7 @@ std::string SectionBasedConfiguration::internalGetConfigAsString(cConfigOption *
     int sectionId, entryId;
     const char *value = internalGetValue(sectionChain, option->getName(), option->getDefaultValue(), &sectionId, &entryId);
     std::string str = substituteVariables(value, sectionId, entryId, variables, locationToVarName);
-    if (strchr(str.c_str(), '"') != nullptr)
+    if (str[0] == '"')
         str = Expression().parse(str.c_str()).stringValue();
     return str;
 }
@@ -1005,7 +1005,7 @@ const char *SectionBasedConfiguration::internalGetValue(const std::vector<int>& 
 std::string SectionBasedConfiguration::internalGetValueAsString(const std::vector<int>& sectionChain, const char *key, const char *fallbackValue, int *outSectionIdPtr, int *outEntryIdPtr) const
 {
     const char *s = internalGetValue(sectionChain, key, fallbackValue, outSectionIdPtr, outEntryIdPtr);
-    return !s ? "" : !strchr(s, '"') ? s : Expression().parse(s).stringValue();
+    return !s ? "" : s[0]=='"' ? Expression().parse(s).stringValue() : s;
 }
 
 intval_t SectionBasedConfiguration::internalGetValueAsInt(const std::vector<int>& sectionChain, const char *key, intval_t fallbackValue, int *outSectionIdPtr, int *outEntryIdPtr) const

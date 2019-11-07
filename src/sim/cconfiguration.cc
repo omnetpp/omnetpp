@@ -65,9 +65,7 @@ std::string cConfiguration::parseString(const char *s, const char *defaultValue,
         s = defaultValue;
     if (!s)
         return fallbackValue;
-    if (strchr(s, '"') == nullptr)
-        return s;
-    return Expression().parse(s).stringValue();
+    return (s[0] == '"') ? Expression().parse(s).stringValue() : s;
 }
 
 std::string cConfiguration::parseFilename(const char *s, const char *baseDir, const char *defaultValue)
@@ -76,7 +74,7 @@ std::string cConfiguration::parseFilename(const char *s, const char *baseDir, co
         s = defaultValue;
     if (!s || !s[0])
         return "";
-    std::string str = strchr(s, '"')==nullptr ? s : Expression().parse(s).stringValue();
+    std::string str = s[0]=='"' ? Expression().parse(s).stringValue() : s;
     return tidyFilename(concatDirAndFile(baseDir, str.c_str()).c_str());
 }
 
@@ -86,7 +84,7 @@ std::vector<std::string> cConfiguration::parseFilenames(const char *s, const cha
         s = defaultValue;
     if (!s)
         s = "";
-    std::string str = strchr(s, '"')==nullptr ? s : Expression().parse(s).stringValue();
+    std::string str = s[0]=='"' ? Expression().parse(s).stringValue() : s;
 
     std::vector<std::string> result;
     FilenamesListTokenizer tokenizer(str.c_str()); // note: this observes quotation marks, although ignores backslashes (khmmm...)
@@ -102,7 +100,7 @@ std::string cConfiguration::adjustPath(const char *s, const char *baseDir, const
         s = defaultValue;
     if (!s)
         s = "";
-    std::string str = strchr(s, '"')==nullptr ? s : Expression().parse(s).stringValue();
+    std::string str = s[0]=='"' ? Expression().parse(s).stringValue() : s;
 
     std::string result;
     StringTokenizer tokenizer(str.c_str(), PATH_SEPARATOR);
