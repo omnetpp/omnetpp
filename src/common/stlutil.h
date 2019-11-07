@@ -23,6 +23,7 @@
 #include <map>
 #include <unordered_map>
 #include <set>
+#include <unordered_set>
 #include <algorithm>
 #include "commonutil.h"  // Assert()
 
@@ -75,6 +76,11 @@ inline bool contains(const std::vector<T>& v, const T& a) {
 
 template<typename T>
 inline bool contains(const std::set<T>& s, const T& a) {
+    return s.find(a) != s.end();
+}
+
+template<typename T>
+inline bool contains(const std::unordered_set<T>& s, const T& a) {
     return s.find(a) != s.end();
 }
 
