@@ -22,6 +22,7 @@
 #include <iostream>
 #include <sstream>
 #include <iomanip>
+#include <typeinfo>
 #include "commondefs.h"
 #include "exception.h"
 
@@ -75,6 +76,11 @@ COMMON_API void setPosixLocale();
  * A more convenient gethostname(). Does its best, but when it fails the result will be nullptr.
  */
 COMMON_API const char *opp_gethostname();
+
+/**
+ * Returns the name of a C++ type, correcting the quirks of various compilers.
+ */
+COMMON_API const char *opp_typename(const std::type_info& t);
 
 /**
  * Debugging aid: prints a message on entering/leaving methods; message

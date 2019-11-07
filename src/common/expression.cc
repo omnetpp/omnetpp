@@ -108,7 +108,7 @@ void Expression::dumpAst(AstNode *node, std::ostream& out, int indentLevel) cons
 
 void Expression::dumpExprTree(ExprNode *node, std::ostream& out, int indentLevel) const
 {
-    out << std::string(4*indentLevel, ' ' ) << node->getName() << " ("<< typeid(*node).name() << ")\n";
+    out << std::string(4*indentLevel, ' ' ) << node->getName() << " ("<< opp_typename(typeid(*node)) << ")\n";
     for (ExprNode *child : node->getChildren())
         dumpExprTree(child, out, indentLevel+1);
 }

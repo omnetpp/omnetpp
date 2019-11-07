@@ -129,7 +129,7 @@ Inspector::~Inspector()
 
 const char *Inspector::getClassName() const
 {
-    return opp_typename(typeid(*this));
+    return common::opp_typename(typeid(*this));
 }
 
 bool Inspector::supportsObject(cObject *object) const
