@@ -14,9 +14,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-/* number of expected shift-reduce conflicts */
-%expect 1
-
 /* Tokens */
 %token STRINGLITERAL 
 %token MATCHES
@@ -81,9 +78,6 @@ or_expr
         : or_expr OR_ and_expr
                 { MatchExpressionParserState &state = *(MatchExpressionParserState*)statePtr;
                   state.elems.push_back(MatchExpression::Elem(MatchExpression::Elem::OR)); }
-        | or_expr /*implicit-OR*/ and_expr
-                { MatchExpressionParserState &state = *(MatchExpressionParserState*)statePtr;
-                  state.elems.push_back(MatchExpression::Elem(MatchExpression::Elem::OR)); }
         | and_expr
         ;
 
@@ -112,13 +106,6 @@ fieldpattern
                     MatchExpressionParserState &state = *(MatchExpressionParserState*)statePtr;
                     state.elems.push_back(MatchExpression::Elem($1));
                     delete [] $1;
-                }
-        | STRINGLITERAL '(' STRINGLITERAL ')'
-                {
-                    MatchExpressionParserState &state = *(MatchExpressionParserState*)statePtr;
-                    state.elems.push_back(MatchExpression::Elem($3, $1));
-                    delete [] $1;
-                    delete [] $3;
                 }
         | STRINGLITERAL MATCHES STRINGLITERAL
                 {
