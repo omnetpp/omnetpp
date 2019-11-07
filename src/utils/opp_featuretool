@@ -559,7 +559,7 @@ root directory where the following files are present:
             if len(featureOnList) == 0:
                 self.printIfVerbose(1, "Feature(s) are already enabled.")
                 sys.exit(0)
-            self.printIfVerbose(1, "Enabling feature(s):  " + ", ".join(featureOnList))
+            self.printIfVerbose(1, "Enabling feature(s):  " + ", ".join(sorted(featureOnList)))
             if len(requirements):
                 if self.args.with_dependencies:
                     self.printIfVerbose(1, "Required features that will be enabled as well:  " + ", ".join(sorted(requirements)))
@@ -608,7 +608,7 @@ root directory where the following files are present:
             if len(featureOffList) == 0:
                 self.printIfVerbose(1, "The requested features are already disabled.")
                 sys.exit(0)
-            self.printIfVerbose(1, "Disabling feature(s):  " + ", ".join(featureOffList))
+            self.printIfVerbose(1, "Disabling feature(s):  " + ", ".join(sorted(featureOffList)))
             if len(dependencyList):
                 if self.args.with_dependencies:
                     self.printIfVerbose(1, "Also disabling the following dependent features:  " + ", ".join(sorted(dependencyList)))
@@ -661,7 +661,7 @@ root directory where the following files are present:
         if len(featureOnList):
             self.updateRequirements(featureOnList, requirements)
             if len(requirements):
-                warn("these features are also required:  " + ", ".join(requirements))
+                warn("these features are also required:  " + ", ".join(sorted(requirements)))
             featureOnList.update(requirements)
 
         nedfolderErrorOccurred = False
