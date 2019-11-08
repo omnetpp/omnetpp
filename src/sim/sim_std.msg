@@ -712,6 +712,23 @@ class cExpression extends cObject
     string str @getter(str);
 }
 
+class cValue
+{
+    @existingClass;
+    @overwritePreviousDefinition;
+    @descriptor(readonly);
+    @opaque;
+    @toString(.str());
+}
+
+class cValueArray extends cOwnedObject
+{
+    @existingClass;
+    @overwritePreviousDefinition;
+    @descriptor(readonly);
+    cValue elements[] @getter(get) @setter(set) @sizeGetter(size);
+}
+
 class cFSM extends cOwnedObject
 {
     @existingClass;
