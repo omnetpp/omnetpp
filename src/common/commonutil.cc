@@ -193,7 +193,7 @@ static std::string demangle(const char *mangledName)
             }
         }
     }
-    return result;
+    return prefix + result + suffix;
 
 #else
 
