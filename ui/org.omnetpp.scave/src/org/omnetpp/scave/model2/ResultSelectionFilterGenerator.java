@@ -110,10 +110,6 @@ public class ResultSelectionFilterGenerator {
 
         String[] fields = new String[] {"runattr:experiment", "runattr:measurement", "runattr:replication", "module", "name"};
 
-        // note: it might be possible to optimize this by taking the difference IDLists as parameters
-        IDList toBeExcluded = all.getDifference(target);
-        IDList toBeIncluded = target.getDifference(all);
-
         Map<String, ColumnValueCounts> columnData = new HashMap<String, ColumnValueCounts>();
 
         for (String f : fields)
