@@ -50,12 +50,6 @@ match("{50..120} OR bu*bu", "50");
 match("{50..120} OR bu*bu", "500");
 match("{50..120} OR bu*bu", "bu");
 
-// OR is optional ("a b" means the same as "a OR b")
-match("a b c d", "c");
-match("a b c d", "x");
-match("a NOT b c", "b"); // read: "a OR (NOT b) OR c"
-match("a NOT b c", "c");
-
 // the empty pattern does not mach anything
 match("",      "a");
 match("",      "");
@@ -76,10 +70,6 @@ match("*one OR (*two AND twenty*)", "twenty-two");
 match("*one OR (*two AND twenty*)", "thirty-one");
 
 match("*one OR *two AND twenty*",   "thirty-one");
-
-// OR is optional
-match("twenty* AND *two thirty* AND *three", "thirty-three");  // read: "(twenty* AND *two) OR (thirty* AND *three)"
-match("twenty* AND *two thirty* AND *three", "thirty-two");
 
 EV << endl;
 
@@ -136,10 +126,6 @@ a OR b | c --> false
 {50..120} OR bu*bu | 50 --> true
 {50..120} OR bu*bu | 500 --> false
 {50..120} OR bu*bu | bu --> false
-a b c d | c --> true
-a b c d | x --> false
-a NOT b c | b --> false
-a NOT b c | c --> true
  | a --> false
  |  --> false
 
@@ -151,8 +137,6 @@ a NOT b c | c --> true
 *one OR (*two AND twenty*) | twenty-two --> true
 *one OR (*two AND twenty*) | thirty-one --> true
 *one OR *two AND twenty* | thirty-one --> true
-twenty* AND *two thirty* AND *three | thirty-three --> true
-twenty* AND *two thirty* AND *three | thirty-two --> false
 
 "a" | a --> true
 "a" | b --> false

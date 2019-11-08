@@ -97,9 +97,9 @@ run -T sv
 
 run -l --filter "*:mean"
 run -l -f "*:mean"
-run -l -f "name(*:mean)"
+run -l -f "name=~*:mean"
 run -l -f '*:mean OR *:vector'
-run -l -f 'module(Test.node) AND *:vector'
+run -l -f 'module=~Test.node AND *:vector'
 # try with -e (--list-qnames) as well
 run -e -f '*:mean OR *:vector'
 
@@ -407,7 +407,7 @@ General-1-xxxx:
 scalar  Test.node  foo:mean  19.65
 
 ------------------------
-$ opp_scavetool -l -f name(*:mean) <files>
+$ opp_scavetool -l -f name=~*:mean <files>
 General-0-xxxx:
 
 scalar  Test.node  foo:mean  19.84
@@ -429,7 +429,7 @@ scalar  Test.node  foo:mean    19.65
 vector  Test.node  foo:vector  vectorId=0  count=100  mean=19.65  min=13  max=27
 
 ------------------------
-$ opp_scavetool -l -f module(Test.node) AND *:vector <files>
+$ opp_scavetool -l -f module=~Test.node AND *:vector <files>
 General-0-xxxx:
 
 vector  Test.node  foo:vector  vectorId=0  count=100  mean=19.84  min=12  max=28
