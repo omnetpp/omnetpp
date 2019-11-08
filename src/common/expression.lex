@@ -27,6 +27,7 @@ E  [Ee][+-]?{D}+
 S  [ \t\v\n\r\f]
 
 %x stringliteral
+%x stringliteral2
 
 /* the following option keeps isatty() out */
 %option never-interactive
@@ -89,10 +90,20 @@ using namespace omnetpp::common;
 <stringliteral>{
       \n                 { BEGIN(INITIAL); throw std::runtime_error("Unterminated string literal"); /* NOTE: BEGIN(INITIAL) is important, otherwise parsing of the next file will start from the <stringliteral> state! */  }
       \\\n               { extendCount(); /* line continuation */ }
-      \\\"               { extendCount(); /* qouted quote */ }
-      \\[^\n\"]          { extendCount(); /* qouted char */ }
+      \\\"               { extendCount(); /* quoted quote */ }
+      \\[^\n\"]          { extendCount(); /* quoted char */ }
       [^\\\n\"]+         { extendCount(); /* character inside string literal */ }
       \"                 { extendCount(); yylval.str = opp_strdup(extendbuf.c_str()); BEGIN(INITIAL); return STRINGCONSTANT; /* closing quote */ }
+}
+
+'                        { BEGIN(stringliteral2); countChars(); }
+<stringliteral2>{
+      \n                 { BEGIN(INITIAL); throw std::runtime_error("Unterminated string literal"); /* NOTE: BEGIN(INITIAL) is important, otherwise parsing of the next file will start from the <stringliteral2> state! */  }
+      \\\n               { extendCount(); /* line continuation */ }
+      \\\'               { extendCount(); /* quoted apostrophe */ }
+      \\[^\n\']          { extendCount(); /* quoted char */ }
+      [^\\\n\']+         { extendCount(); /* character inside string literal */ }
+      '                  { extendCount(); yylval.str = opp_strdup(extendbuf.c_str()); BEGIN(INITIAL); return STRINGCONSTANT; /* closing quote */ }
 }
 
 ","                      { countChars(); return ','; }

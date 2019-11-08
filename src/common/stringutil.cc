@@ -53,10 +53,10 @@ std::string opp_trim(const std::string& text)
     return text.substr(pos, endpos-pos);
 }
 
-std::string opp_parsequotedstr(const char *txt)
+std::string opp_parsequotedstr(const char *txt, char quot)
 {
     const char *endp;
-    std::string ret = opp_parsequotedstr(txt, endp);
+    std::string ret = opp_parsequotedstr(txt, endp, quot);
     if (*endp)
         throw opp_runtime_error("Trailing garbage after string literal");
     return ret;
@@ -86,16 +86,18 @@ inline int h2d(const char *& s)
     return a*16+b;
 }
 
-std::string opp_parsequotedstr(const char *txt, const char *& endp)
+std::string opp_parsequotedstr(const char *txt, const char *& endp, char quot)
 {
     const char *s = txt;
     while (opp_isspace(*s))
         s++;
-    if (*s++ != '"')
+    if (!quot && (*s=='"' || *s=='\''))
+        quot = *s;
+    if (*s++ != quot)
         throw opp_runtime_error("Missing opening quote");
     char *buf = new char[strlen(txt)+1];
     char *d = buf;
-    for ( ; *s && *s != '"'; s++, d++) {
+    for ( ; *s && *s != quot; s++, d++) {
         if (*s == '\\') {
             // allow backslash as quote character, also interpret backslash sequences
             s++;
@@ -106,7 +108,6 @@ std::string opp_parsequotedstr(const char *txt, const char *& endp)
                 case 'r': *d = '\r'; break;
                 case 't': *d = '\t'; break;
                 case 'x': s++; *d = h2d(s); s--; break; // hex code
-                case '"': *d = '"'; break;  // quote needs to be backslashed
                 case '\\': *d = '\\'; break;  // backslash needs to be backslashed
                 case '\n': d--; break; // don't store line continuation (backslash followed by newline)
                 case '\0': d--; s--; break; // string ends in stray backslash
@@ -115,7 +116,11 @@ std::string opp_parsequotedstr(const char *txt, const char *& endp)
                 case ',': throw opp_runtime_error("Illegal escape sequence '\\%c' "
                           "(Hint: use double backslashes to quote display string "
                           "special chars: equal sign, comma, semicolon)", *s);
-                default:  throw opp_runtime_error("Illegal escape sequence '\\%c'", *s);
+                default:
+                    if (*s == quot)
+                        *d = quot;
+                    else
+                        throw opp_runtime_error("Illegal escape sequence '\\%c'", *s);
             }
         }
         else {
@@ -123,7 +128,7 @@ std::string opp_parsequotedstr(const char *txt, const char *& endp)
         }
     }
     *d = '\0';
-    if (*s++ != '"') {
+    if (*s++ != quot) {
         delete[] buf;
         throw opp_runtime_error("Missing closing quote");
     }

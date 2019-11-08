@@ -105,20 +105,26 @@ COMMON_API std::string opp_trim(const std::string& text);
 
 /**
  * Reverse of opp_quotestr(): remove quotes and resolve backslashed escapes.
+ * The quot argument specifies which character is used as quotation mark;
+ * acceptable values are double quote ("hello") and apostrophe ('hello'),
+ * and the NUL value which means "whichever the input string starts with".
  *
  * Throws an exception if there is a parse error. If there is anything
  * (non-whitespace) in the input after the string literal, endp is set to
  * that character; otherwise endp is set to point to the terminating zero
  * of the string.
  */
-COMMON_API std::string opp_parsequotedstr(const char *txt, const char *&endp);
+COMMON_API std::string opp_parsequotedstr(const char *txt, const char *&endp, char quot='"');
 
 /**
  * Reverse of opp_quotestr(): remove quotes and resolve backslashed escapes.
+ * The quot argument specifies which character is used as quotation mark;
+ * acceptable values are double quote ("hello") and apostrophe ('hello'),
+ * and the NUL value which means "whichever the input string starts with".
  *
  * Throws an exception if there is a parse error.
  */
-COMMON_API std::string opp_parsequotedstr(const char *txt);
+COMMON_API std::string opp_parsequotedstr(const char *txt, char quot='"');
 
 /**
  * Surround the given string with "quotes", also escape with backslash

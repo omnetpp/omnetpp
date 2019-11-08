@@ -310,7 +310,7 @@ keyvalue
         : NAME ':' expr
                 { $<node>$ = new AstNode(AstNode::KEYVALUE, $1); $<node>$->children.push_back($<node>3); delete [] $1; }
         | STRINGCONSTANT ':' expr
-                { $<node>$ = new AstNode(AstNode::KEYVALUE, opp_parsequotedstr($1).c_str()); $<node>$->children.push_back($<node>3); delete [] $1; }
+                { $<node>$ = new AstNode(AstNode::KEYVALUE, opp_parsequotedstr($1,0).c_str()); $<node>$->children.push_back($<node>3); delete [] $1; }
         ;
 
 variable
@@ -336,7 +336,7 @@ literal
 
 stringliteral
         : STRINGCONSTANT
-                { $<node>$ = newConstant(opp_parsequotedstr($1)); delete [] $1; }
+                { $<node>$ = newConstant(opp_parsequotedstr($1,0)); delete [] $1; }
         ;
 
 boolliteral
