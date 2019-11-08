@@ -75,7 +75,7 @@
 
 <!ELEMENT param (comment*, property*)>
 <!ATTLIST param
-     type               (double|int|string|bool|xml) #IMPLIED
+     type               (double|int|string|bool|object|xml) #IMPLIED
      is-volatile        (true|false)  "false"
      name               CDATA     #REQUIRED
      value              CDATA     #IMPLIED

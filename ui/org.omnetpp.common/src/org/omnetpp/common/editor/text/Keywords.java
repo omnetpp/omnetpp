@@ -29,7 +29,7 @@ public class Keywords {
 
     public final static String[] NED_GATE_TYPES = { "inout", "input", "output" };
 
-    public final static String[] NED_PARAM_TYPES = { "bool", "double", "int", "string", "xml" };
+    public final static String[] NED_PARAM_TYPES = { "bool", "double", "int", "string", "object", "xml" };
 
     public final static String[] NED_PARAM_TYPE_MODIFIERS = { "volatile" };
 
@@ -47,7 +47,7 @@ public class Keywords {
 
     public final static String[] NED_EXPR_KEYWORDS = { "sizeof", "const", "default", "ask", "this", "index", "typename", "xmldoc" };
 
-    public final static String[] BOOL_CONSTANTS = { "false", "true" };
+    public final static String[] BOOL_CONSTANTS = { "false", "true", "undefined", "nan", "inf", "null", "nullptr" };
 
     public final static String[] MSG_TYPE_KEYWORDS = {"abstract", "readonly", "bool", "char", "short", "int", "long", "double", "unsigned", "string"};
 

@@ -26,8 +26,11 @@
 #include "eventlog/sequencechartfacade.h"
 #include "eventlog/filteredeventlog.h"
 #include "common/filereader.h"
+#include "common/exprvalue.h"
 
 using namespace omnetpp::eventlog;
+using namespace omnetpp::common;
+using namespace omnetpp::common::expression;
 %}
 
 // hide export/import macros from swig

@@ -172,7 +172,7 @@ foreach $element (@elements)
            if ($atttypes[$i] eq '(input|output|inout)') {
               $enumname = "gatetype";
            }
-           elsif ($atttypes[$i] eq '(double|int|string|bool|xml)') {
+           elsif ($atttypes[$i] eq '(double|int|string|bool|object|xml)') {
               $enumname = "partype";
            }
            elsif ($atttypes[$i] eq '(double|quantity|int|bool|string|spec)') {
