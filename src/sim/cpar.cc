@@ -428,40 +428,28 @@ void cPar::parse(const char *text, const char *baseDirectory)
     // cParImpl::parse() which throws an error on them.
     //
     beforeChange();
-    bool cacheable = p->getType() != cPar::OBJECT; // object parameters are not cacheable, for simplicity
-    if (cacheable) {
-        cComponentType *componentType = ownerComponent->getComponentType();
-        std::string key = std::string(componentType->getName()) + "|" + getName() + "|" + text + "|" + opp_nulltoempty(baseDirectory);
-        cParImpl *cachedValue = componentType->getSharedParImpl(key.c_str());
-        if (cachedValue) {
-            // an identical value found in the map -- use it
-            setImpl(cachedValue);
-        }
-        else {
-            // not found: clone existing parameter (to preserve name, type, unit etc), then parse text into it
-            cParImpl *tmp = p->dup();
-            try {
-                tmp->setBaseDirectory(baseDirectory);
-                tmp->parse(text);
-            }
-            catch (std::exception& e) {
-                delete tmp;
-                throw cRuntimeError("Wrong value '%s' for parameter '%s': %s", text, getFullPath().c_str(), e.what());
-            }
-
-            // successfully parsed: install it
-            componentType->putSharedParImpl(key.c_str(), tmp);
-            setImpl(tmp);
-        }
+    cComponentType *componentType = ownerComponent->getComponentType();
+    std::string key = std::string(getName()) + "|" + text + "|" + opp_nulltoempty(baseDirectory);
+    cParImpl *cachedValue = componentType->getSharedParImpl(key.c_str());
+    if (cachedValue) {
+        // an identical value found in the map -- use it
+        setImpl(cachedValue);
     }
-    else { // not cacheable
+    else {
+        // not found: clone existing parameter (to preserve name, type, unit etc), then parse text into it
+        cParImpl *tmp = p->dup();
         try {
-            p->setBaseDirectory(baseDirectory);
-            p->parse(text);
+            tmp->setBaseDirectory(baseDirectory);
+            tmp->parse(text);
         }
         catch (std::exception& e) {
+            delete tmp;
             throw cRuntimeError("Wrong value '%s' for parameter '%s': %s", text, getFullPath().c_str(), e.what());
         }
+
+        // successfully parsed: install it
+        componentType->putSharedParImpl(key.c_str(), tmp);
+        setImpl(tmp);
     }
     afterChange();
 }

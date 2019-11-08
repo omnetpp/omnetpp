@@ -73,6 +73,7 @@ void cValue::set(const cPar& par)
         case cPar::INT: *this = par.intValue(); unit = par.getUnit(); break;
         case cPar::DOUBLE: *this = par.doubleValue(); unit = par.getUnit(); break;
         case cPar::STRING: *this = par.stdstringValue(); break;
+        case cPar::OBJECT: *this = par.objectValue(); break;
         case cPar::XML: *this = par.xmlValue(); break;
         default: throw cRuntimeError("Internal error: Invalid cPar type: %s", par.getFullPath().c_str());
     }

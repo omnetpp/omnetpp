@@ -139,8 +139,6 @@ std::string cObjectParImpl::stdstringValue(cComponent *) const
 
 cObject *cObjectParImpl::objectValue(cComponent *context) const
 {
-    //ASSERT(!isShared());  // object parimpl instances are never shared
-
     if ((flags & FL_ISSET) == 0)
         throw cRuntimeError(E_PARNOTSET);
 

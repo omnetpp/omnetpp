@@ -25,18 +25,15 @@ namespace omnetpp {
  * @brief A cParImpl subclass that stores a module/channel parameter of type object.
  *
  * Rules:
- * 1. cObjectParImpl objects are never shared. Each object-valued parameter
- *    has its own cObjectParImpl instance.
- * 2. The user cannot "take" the object from the cPar. It can only clone it if needs be.
- * 3. A volatile parameters's object value is replaced on each read operation.
- * 4. Plain cObject objects (non-cOwnedObject ones) are owned, i.e. deleted when no longer needed.
- * 5. cOwnedObject objects are "taken" ownership via take(), but only if their owner allows (i.e. is a soft owner).
- * 6. cOwnedObject objects are owned iff their owner is this object.
- * 7. nullptr is allowed as value.
+ * 1. The user cannot "take" the object from the cPar. It can only clone it if needs be.
+ * 2. A volatile parameters's object value is replaced on each read operation.
+ * 3. Plain cObject objects (non-cOwnedObject ones) are owned, i.e. deleted when no longer needed.
+ * 4. cOwnedObject objects are "taken" ownership via take(), but only if their owner allows (i.e. is a soft owner).
+ * 5. cOwnedObject objects are owned iff their owner is this object.
+ * 6. nullptr is allowed as value.
  *
  * @ingroup Internals
  */
-//TODO ensure unsharing cObjectParImpl instances!
 class SIM_API cObjectParImpl : public cParImpl
 {
   protected:
@@ -196,11 +193,6 @@ class SIM_API cObjectParImpl : public cParImpl
 
     /** @name Redefined cParImpl misc functions. */
     //@{
-    /**
-     * Ensure object parameters cannot be shared.
-     */
-    //virtual void setIsShared(bool shared) override { ASSERT(!shared); }
-
     /**
      * Replaces for non-const values, replaces the stored expression with its
      * evaluation.
