@@ -146,7 +146,7 @@ public class FilterUtil {
         if (attrPattern != null && attrPattern.length() > 0) {
             if (sb.length() > 0)
                 sb.append(" AND ");
-            sb.append(quoteStringIfNeeded(attrName)).append("(").append(quoteStringIfNeeded(attrPattern)).append(")");
+            sb.append(quoteStringIfNeeded(attrName)).append(" =~ ").append(quoteStringIfNeeded(attrPattern));
         }
     }
 
