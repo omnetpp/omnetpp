@@ -313,7 +313,7 @@ void FindObjectsDialog::refresh()
         QMessageBox::warning(this, "Qtenv",
                 QString("Name filter pattern \"") + name + "\" has invalid syntax -- using \"*\" instead.",
                 QMessageBox::StandardButton::Ok);
-        className = "*";
+        name = "*";
     }
     // get list
     int maxCount = getPref("maxcount", 1000).toInt();
