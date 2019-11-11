@@ -22,8 +22,8 @@ network RandomGraph
     submodules:
         node[n]: RandomGraphNode;
     connections:
-        for i=0..n-1, for j=0..n-1 {
-            node[i].g++ <--> node[j].g++ if i!=j && uniform(0,1)<connectedness;
+        for i = 0..n-2, for j = i+1..n-1 {
+            node[i].g++ <--> node[j].g++ if uniform(0,1)<connectedness;
         }
 }
 
