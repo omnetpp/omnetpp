@@ -7,8 +7,8 @@
     <charts>
         <chart name="CutThrough vs Store and Forward" type="ScatterChart">from omnetpp.scave import results, chart
 
-filter_string = """((name(endToEndDelay:mean) and module(*.rte[1].app) )
-  OR (name(iaMean) )) """
+filter_string = """((name=~endToEndDelay:mean and module=~*.rte[1].app )
+  OR (name=~iaMean )) """
 
 df = results.get_scalars(filter_string)
 

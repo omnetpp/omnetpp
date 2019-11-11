@@ -8,8 +8,8 @@
         <chart name="Chart2" type="LineChart">from omnetpp.scave import results, chart
 
 df = results.get_vectors("""
-ADD vectors WHERE run(PureAloha2-0-20170320-11:14:54-11186) AND module(Aloha.server) AND name(serverChannelState:vector)
-ADD vectors WHERE run(PureAloha2-0-20170320-11:14:54-11186) AND module(Aloha.host[6]) AND name(radioState:vector)
+ADD vectors WHERE run=~PureAloha2-0-20170320-11:14:54-11186 AND module=~Aloha.server AND name=~serverChannelState:vector
+ADD vectors WHERE run=~PureAloha2-0-20170320-11:14:54-11186 AND module=~Aloha.host[6] AND name=~radioState:vector
 """)
 
 chart.plot_vectors(df)<property name="Graph.Title" value="PureAloha2  #0"/>
@@ -18,10 +18,10 @@ chart.plot_vectors(df)<property name="Graph.Title" value="PureAloha2  #0"/>
 
 # This expression selects the results (you might be able to logically simplify it)
 filter_expression = """
-ADD scalars WHERE attr:experiment(PureAloha2) AND attr:replication(#0) AND module(Aloha.server) AND name(collisionLength:mean)
-ADD scalars WHERE attr:experiment(PureAloha2) AND attr:replication(#0) AND module(Aloha.server) AND name(collisionLength:sum)
-ADD scalars WHERE attr:experiment(PureAloha2) AND attr:replication(#0) AND module(Aloha.server) AND name(collisionLength:max)
-ADD scalars WHERE attr:experiment(PureAloha2) AND attr:replication(#0) AND module(Aloha.server) AND name(channelUtilization:last)
+ADD scalars WHERE attr:experiment=~PureAloha2 AND attr:replication=~#0 AND module=~Aloha.server AND name=~collisionLength:mean
+ADD scalars WHERE attr:experiment=~PureAloha2 AND attr:replication=~#0 AND module=~Aloha.server AND name=~collisionLength:sum
+ADD scalars WHERE attr:experiment=~PureAloha2 AND attr:replication=~#0 AND module=~Aloha.server AND name=~collisionLength:max
+ADD scalars WHERE attr:experiment=~PureAloha2 AND attr:replication=~#0 AND module=~Aloha.server AND name=~channelUtilization:last
 """
 
 # The data is returned as a Pandas DataFrame

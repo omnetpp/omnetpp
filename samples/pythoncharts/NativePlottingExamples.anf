@@ -106,7 +106,7 @@ chart.plot_scalars(df)</script>
         <chart name="scalars dataframe 3" template="" type="BarChart">
             <script>from omnetpp.scave import results
 
-df = results.get_scalars("name(rxBytes:sum) OR name(txBytes:sum)")
+df = results.get_scalars("name=~rxBytes:sum OR name=~txBytes:sum")
 print(df)
 chart.plot_scalars(df)</script>
             <form/>
@@ -114,7 +114,7 @@ chart.plot_scalars(df)</script>
         <chart name="scalars dataframe 4" template="" type="BarChart">
             <script>from omnetpp.scave import results
 
-df = results.get_scalars("name(rxBytes:sum) OR name(txBytes:sum)")
+df = results.get_scalars("name=~rxBytes:sum OR name=~txBytes:sum")
 df = results.pivot_scalars(df, columns=["name", "replication"], index=["module"])
 print(df)
 chart.plot_scalars(df)</script>
@@ -450,8 +450,8 @@ from omnetpp.scave import vectorops as ops
 
 # This expression selects the results (you might be able to logically simplify it)
 filter_expression = """
-ADD scalars WHERE attr:experiment(PureAlohaExperiment) AND module(_runattrs_) AND name(iaMean)
-ADD scalars WHERE attr:experiment(PureAlohaExperiment) AND module(Aloha.server) AND name(*channelUtilization*)
+ADD scalars WHERE attr:experiment=~PureAlohaExperiment AND module=~_runattrs_ AND name=~iaMean
+ADD scalars WHERE attr:experiment=~PureAlohaExperiment AND module=~Aloha.server AND name=~*channelUtilization*
 """
 
 # The data is returned as a Pandas DataFrame
@@ -482,14 +482,14 @@ from omnetpp.scave import vectorops as ops
 
 # This expression selects the results (you might be able to logically simplify it)
 filter_expression = """
-ADD scalars WHERE attr:experiment(PureAlohaExperiment) AND module(Aloha.server) AND name(*channelUtilization*)
+ADD scalars WHERE attr:experiment=~PureAlohaExperiment AND module=~Aloha.server AND name=~*channelUtilization*
 """
 
 # The data is returned as a Pandas DataFrame
 df = results.get_scalars(filter_expression)
 
 df2 = results.get_vectors(
-"ADD vectors WHERE attr:experiment(PureAlohaExperiment) AND module(Aloha.server) AND name(*serverChannelState*)"
+"ADD vectors WHERE attr:experiment=~PureAlohaExperiment AND module=~Aloha.server AND name=~*serverChannelState*"
 )
 
 # Which we turn into a more usable format
@@ -544,14 +544,14 @@ from omnetpp.scave import results, chart, vectorops as ops
 
 # This expression selects the results (you might be able to logically simplify it)
 filter_expression = """
-ADD scalars WHERE attr:experiment(PureAlohaExperiment) AND module(Aloha.server) AND name(*channelUtilization*)
+ADD scalars WHERE attr:experiment=~PureAlohaExperiment AND module=~Aloha.server AND name=~*channelUtilization*
 """
 
 # The data is returned as a Pandas DataFrame
 df = results.get_scalars(filter_expression)
 
 df2 = results.get_vectors(
-"ADD vectors WHERE attr:experiment(PureAlohaExperiment) AND  name(*tat*)"
+"ADD vectors WHERE attr:experiment=~PureAlohaExperiment AND name=~*tat*"
 )
 
 # Which we turn into a more usable format

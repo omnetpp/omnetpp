@@ -20,13 +20,13 @@ except:
 
 # This expression selects the results (you might be able to logically simplify it)
 filter_expression = """
-    (attr:experiment(Net5SaturatedQueue) AND attr:replication(#0))
+    (attr:experiment=~Net5SaturatedQueue AND attr:replication=~#0)
 AND
-    (name(txBytes:vector) OR name(rxBytes:vector))
+    (name=~txBytes:vector OR name=~rxBytes:vector)
 AND
 (
-  module(Net5.rte[2].queue[3]) OR
-  module(Net5.rte[2].queue[3])
+  module=~Net5.rte[2].queue[3] OR
+  module=~Net5.rte[2].queue[3]
 )
 """
 
@@ -159,9 +159,9 @@ except:
 
 # This expression selects the results (you might be able to logically simplify it)
 filter_expression = """
-    (attr:experiment(Net5SaturatedQueue) AND attr:replication(#0))
+    (attr:experiment=~Net5SaturatedQueue AND attr:replication=~#0)
 AND
-    (name(txBytes:vector) OR name(rxBytes:vector))
+    (name=~txBytes:vector OR name=~rxBytes:vector)
 AND
 (
   module(Net5.rte[2].queue[3]) OR
@@ -287,7 +287,7 @@ chart.plot_vectors(df)
 
 # This expression selects the results (you might be able to logically simplify it)
 filter_expression = """
-ADD vectors WHERE attr:experiment(Net5SaturatedQueue) AND attr:replication(#0) AND module(Net5.rte[0].queue[1]) AND name(busy:vector)
+ADD vectors WHERE attr:experiment=~Net5SaturatedQueue AND attr:replication=~#0 AND module=~Net5.rte[0].queue[1] AND name=~busy:vector
 """
 
 # The data is returned as a Pandas DataFrame
