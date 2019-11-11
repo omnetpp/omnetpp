@@ -88,11 +88,11 @@ class ENVIR_API ObjectPrinter
          * "*Frame:*Address,*Id":
          *     captures all fields named anythingAddress and anythingId from
          *     objects of any class named AnythingFrame
-         * "MyMessage:declaredOn(MyMessage)":
+         * "MyMessage:declaredOn=~MyMessage":
          *     captures instances of MyMessage recording the fields
          *     declared on the MyMessage class
-         * "*:(not declaredOn(cMessage) and not declaredOn(cNamedObject) and
-         * not declaredOn(cObject))":
+         * "*:(not declaredOn=~cMessage and not declaredOn=~cNamedObject and
+         * not declaredOn=~cObject)":
          *     records user-defined fields from all objects
          */
         ObjectPrinter(ObjectPrinterRecursionPredicate recursionPredicate=nullptr, const char *pattern="*", int indentSize=4);
