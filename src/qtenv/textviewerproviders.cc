@@ -194,7 +194,7 @@ void *ModuleOutputContentProvider::getUserData(int lineIndex)
 eventnumber_t ModuleOutputContentProvider::getEventNumberAtLine(int lineIndex)
 {
     int entryIndex = getIndexOfEntryAt(lineIndex);
-    if (entryIndex >= logBuffer->getNumEntries())
+    if (entryIndex < 0 || entryIndex >= logBuffer->getNumEntries())
         return -1;
     LogBuffer::Entry *eventEntry = logBuffer->getEntries()[entryIndex];
     Q_ASSERT(!filter || filter->matches(eventEntry));
@@ -206,7 +206,7 @@ int ModuleOutputContentProvider::getLineAtEvent(eventnumber_t eventNumber)
     int entryIndex = logBuffer->findEntryByEventNumber(eventNumber);
     if (!isIndexValid())
         rebuildIndex();
-    if (entryIndex >= entryStartLineNumbers.size())
+    if (entryIndex < 0 || entryIndex >= entryStartLineNumbers.size())
         return -1;
     return entryStartLineNumbers[entryIndex];
 };
