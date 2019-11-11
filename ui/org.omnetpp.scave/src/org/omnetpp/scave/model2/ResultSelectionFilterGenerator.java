@@ -22,7 +22,7 @@ import org.omnetpp.scave.model.ResultType;
 
 public class ResultSelectionFilterGenerator {
 
-    public static boolean debug = false;
+    public static boolean debug = false; // TODO initialize from OMNETPP_DEBUG envvar, like elsewhere
 
     public static List<String> getIDListAsFilters(IDList ids, String[] runidFields, ResultFileManager manager) {
         Assert.isNotNull(runidFields);
