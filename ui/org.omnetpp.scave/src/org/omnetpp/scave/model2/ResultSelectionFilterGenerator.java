@@ -90,10 +90,12 @@ public class ResultSelectionFilterGenerator {
             valueCounts.get(value).nonTargetCount += 1;
         }
 
-        System.out.println("counters for " + attrName);
+        if (debug)
+            Debug.println("counters for " + attrName);
         for (String v : valueCounts.keySet()) {
             AttributeValueCounts c = valueCounts.get(v);
-            System.out.println("   " + v + " : target = " + c.targetCount + " , nonTarget = " + c.nonTargetCount);
+            if (debug)
+                Debug.println("   " + v + " : target = " + c.targetCount + " , nonTarget = " + c.nonTargetCount);
         }
 
         ColumnValueCounts result = new ColumnValueCounts();
@@ -138,7 +140,8 @@ public class ResultSelectionFilterGenerator {
 
             columnScore /= numVals;
 
-            System.out.println("column score for " + f + " is: " + columnScore);
+            if (debug)
+                Debug.println("column score for " + f + " is: " + columnScore);
 
             if (columnScore > bestScore) {
                 bestAttr = f;
@@ -146,7 +149,8 @@ public class ResultSelectionFilterGenerator {
             }
         }
 
-        System.out.println("best attr: " + bestAttr);
+        if (debug)
+            Debug.println("best attr: " + bestAttr);
 
         Set<String> selectedValues = new HashSet<String>();
 
@@ -190,12 +194,15 @@ public class ResultSelectionFilterGenerator {
 
         String approxFilter = getApproximateFilter(target, all, manager);
 
-        System.out.println("getFilter, trying to reduce " + all.size() + " IDs to " + target.size());
-        System.out.println("approx filter is: " + approxFilter);
+        if (debug) {
+            Debug.println("getFilter, trying to reduce " + all.size() + " IDs to " + target.size());
+            Debug.println("approx filter is: " + approxFilter);
+        }
 
         IDList approxMatching = manager.filterIDList(all, approxFilter);
 
-        System.out.println("approx matching count: " + approxMatching.size());
+        if (debug)
+            Debug.println("approx matching count: " + approxMatching.size());
 
         IDList approxNotMatching = all.dup();
         approxNotMatching.subtract(approxMatching);
@@ -205,16 +212,20 @@ public class ResultSelectionFilterGenerator {
 
         String includeFilter = null;
         if (!toBeIncluded.isEmpty()) {
-            System.out.println("computing include filter...");
+            if (debug)
+                Debug.println("computing include filter...");
             includeFilter = getFilter(toBeIncluded, approxNotMatching,  manager);
-            System.out.println("include filter: " + includeFilter);
+            if (debug)
+                Debug.println("include filter: " + includeFilter);
         }
 
         String excludeFilter = null;
         if (!toBeExcluded.isEmpty()) {
-            System.out.println("computing exclude filter...");
+            if (debug)
+                Debug.println("computing exclude filter...");
             excludeFilter = getFilter(toBeExcluded, approxMatching, manager);
-            System.out.println("exclude filter: " + excludeFilter);
+            if (debug)
+                Debug.println("exclude filter: " + excludeFilter);
         }
 
         boolean haveInclude = includeFilter != null && !includeFilter.equals("(\n    *\n)");
@@ -288,7 +299,8 @@ public class ResultSelectionFilterGenerator {
 //
 //
 //        String refinedFilter = refineFilterForSelection(itemsMatchingViewFilter, ids, manager);
-//        System.out.println("refined filter: " + refinedFilter);
+//        if (debug
+//            Debug.println("refined filter: " + refinedFilter);
 //
 //        if (refinedFilter != null)
 //            return refinedFilter;
