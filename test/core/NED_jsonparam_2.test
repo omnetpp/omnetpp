@@ -1,0 +1,66 @@
+%description:
+Test JSON-style object parameters.
+
+%file: json.msg
+
+namespace @TESTNAME@;
+
+cplusplus {{ using namespace omnetpp; }}
+
+class Data extends cObject
+{
+    int foo;
+    string bar;
+}
+
+class DataVector extends cObject
+{
+    Data *data[] @owned;
+}
+
+class Messages extends cObject
+{
+    cMessage *msg @owned;
+    cMessage *list[] @owned;
+}
+
+%file: test.ned
+
+import testlib.Dump;
+
+network Test {
+  parameters:
+    object a1 = @TESTNAME@::Data { foo : 42, bar : "hello" };
+    object a2 = @TESTNAME@::DataVector {
+                  data : [
+                    @TESTNAME@::Data { foo : 42, bar : "hello" },
+                    @TESTNAME@::Data { foo : 99, bar : "world" }
+                  ]
+                };
+    object a3 = @TESTNAME@::Messages {
+                  msg : omnetpp::cMessage { name : "hello" }
+                };
+    object a4 = @TESTNAME@::Messages {
+                  list : [
+                    omnetpp::cMessage { name : "hello" },
+                    omnetpp::cMessage { name : "world" }
+                  ]
+                };
+
+  submodules:
+    dump: Dump;
+}
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        a1 = (NED_jsonparam_2::Data):
+        a2 = (NED_jsonparam_2::DataVector):
+        a3 = (NED_jsonparam_2::Messages):
+        a4 = (NED_jsonparam_2::Messages):
+    submodules:
+}
+
+%not-contains: stdout
+undisposed object
