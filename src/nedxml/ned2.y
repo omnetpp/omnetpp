@@ -15,7 +15,7 @@
 *--------------------------------------------------------------*/
 
 /* number of expected shift-reduce conflicts */
-%expect 7
+%expect 8
 
 /* Reserved words. Trailing '_' in some token names are there to avoid
  * (potential) conflict with macros defined in system headers.
@@ -29,7 +29,7 @@
 %token IF FOR
 %token RIGHTARROW LEFTARROW DBLARROW TO
 %token THIS_ DEFAULT ASK CONST_ SIZEOF INDEX_ EXISTS TYPENAME XMLDOC
-%token TRUE_ FALSE_ NAN_ INF_ UNDEFINED_
+%token TRUE_ FALSE_ NAN_ INF_ UNDEFINED_ NULLPTR_ NULL_
 
 /* Other tokens: identifiers, numeric literals, operators etc */
 %token NAME PROPNAME INTCONSTANT REALCONSTANT STRINGCONSTANT CHARCONSTANT
@@ -1510,6 +1510,8 @@ expression
 expr
         : simple_expr
         | functioncall
+        | object
+        | array
         | '(' expr ')'
 
         | expr '+' expr
@@ -1552,6 +1554,15 @@ functioncall
         : funcname '(' opt_exprlist ')'
         ;
 
+array
+        : '[' opt_exprlist ']'
+        ;
+
+object
+        : '{' opt_keyvaluelist '}'
+        | NAME '{' opt_keyvaluelist '}'
+        ;
+
 opt_exprlist
         : exprlist
         | %empty
@@ -1560,6 +1571,21 @@ opt_exprlist
 exprlist
         : exprlist ',' expr
         | expr
+        ;
+
+opt_keyvaluelist
+        : keyvaluelist
+        | %empty
+        ;
+
+keyvaluelist
+        : keyvaluelist ',' keyvalue
+        | keyvalue
+        ;
+
+keyvalue
+        : NAME ':' expr
+        | STRINGCONSTANT ':' expr
         ;
 
 simple_expr
@@ -1598,6 +1624,7 @@ literal
         : stringliteral
         | boolliteral
         | numliteral
+        | otherliteral
         ;
 
 stringliteral
@@ -1612,8 +1639,13 @@ boolliteral
 numliteral
         : INTCONSTANT
         | realconstant_ext
-        | UNDEFINED_
         | quantity
+        ;
+
+otherliteral
+        : UNDEFINED_
+        | NULLPTR_
+        | NULL_
         ;
 
 quantity

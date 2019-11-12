@@ -34,7 +34,7 @@ void cValueMap::copy(const cValueMap& other)
         cValue& value = entry.second;
         if (value.getType() == cValue::OBJECT) {
             cObject *obj = value.objectValue();
-            if (!obj->isOwnedObject() || obj->getOwner() == &other) {
+            if (obj && (!obj->isOwnedObject() || obj->getOwner() == &other)) {
                 cObject *clone = obj->dup();
                 value.set(clone);
                 if (obj->isOwnedObject())
@@ -48,7 +48,7 @@ void cValueMap::takeValue(const cValue& value)
 {
     if (value.getType() == cValue::OBJECT) {
         cObject *obj = value.objectValue();
-        if (obj->isOwnedObject() && obj->getOwner()->isSoftOwner())
+        if (obj && obj->isOwnedObject() && obj->getOwner()->isSoftOwner())
             take(static_cast<cOwnedObject*>(obj));
     }
 }
@@ -57,7 +57,9 @@ void cValueMap::dropAndDeleteValue(const cValue& value)
 {
     if (value.getType() == cValue::OBJECT) {
         cObject *obj = value.objectValue();
-        if (!obj->isOwnedObject())
+        if (!obj)
+            ; // nop
+        else if (!obj->isOwnedObject())
             delete obj;
         else if (obj->getOwner() == this)
             dropAndDelete(static_cast<cOwnedObject*>(obj));

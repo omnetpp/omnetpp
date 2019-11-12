@@ -35,6 +35,7 @@ E  [Ee][+-]?{D}+
 S  [ \t\v\n\r\f]
 
 %x stringliteral
+%x stringliteral2
 %x propertyname
 %x afterpropertyname
 %x propertyindex
@@ -129,6 +130,8 @@ using namespace omnetpp::nedxml;
 "nan"                    { countChars(); return NAN_; }
 "inf"                    { countChars(); return INF_; }
 "undefined"              { countChars(); return UNDEFINED_; }
+"nullptr"                { countChars(); return NULLPTR_; }
+"null"                   { countChars(); return NULL_; }
 "this"                   { countChars(); return THIS_; }
 "default"                { countChars(); return DEFAULT; }
 "ask"                    { countChars(); return ASK; }
@@ -149,10 +152,20 @@ using namespace omnetpp::nedxml;
 <stringliteral>{
     \n                   { BEGIN(INITIAL); parenDepth=0; throw NedException("Unterminated string literal (append backslash to line for multi-line strings)"); /* NOTE: BEGIN(INITIAL) is important, otherwise parsing of the next file (!) will start from the <stringliteral> state! */ }
     \\\n                 { extendCount(); /* line continuation */ }
-    \\\"                 { extendCount(); /* qouted quote */ }
-    \\[^\n\"]            { extendCount(); /* qouted char */ }
+    \\\"                 { extendCount(); /* quoted quote */ }
+    \\[^\n\"]            { extendCount(); /* quoted char */ }
     [^\\\n\"]+           { extendCount(); /* character inside string literal */ }
     \"                   { extendCount(); if (parenDepth==0) BEGIN(INITIAL);else BEGIN(propertyvalue); return STRINGCONSTANT; /* closing quote */ }
+}
+
+'                        { BEGIN(stringliteral2); countChars(); }
+<stringliteral2>{
+    \n                   { BEGIN(INITIAL); parenDepth=0; throw NedException("Unterminated string literal (append backslash to line for multi-line strings)"); /* NOTE: BEGIN(INITIAL) is important, otherwise parsing of the next file (!) will start from the <stringliteral2> state! */ }
+    \\\n                 { extendCount(); /* line continuation */ }
+    \\\'                 { extendCount(); /* quoted apostrophe */ }
+    \\[^\n\']            { extendCount(); /* quoted char */ }
+    [^\\\n\']+           { extendCount(); /* character inside string literal */ }
+    '                    { extendCount(); if (parenDepth==0) BEGIN(INITIAL);else BEGIN(propertyvalue); return STRINGCONSTANT; /* closing quote */ }
 }
 
 "@"                      { countChars(); BEGIN(propertyname); return '@'; }

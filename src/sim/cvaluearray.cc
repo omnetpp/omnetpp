@@ -33,7 +33,7 @@ void cValueArray::copy(const cValueArray& other)
     for (cValue& value : array) {
         if (value.getType() == cValue::OBJECT) {
             cObject *obj = value.objectValue();
-            if (!obj->isOwnedObject() || obj->getOwner() == &other) {
+            if (obj && (!obj->isOwnedObject() || obj->getOwner() == &other)) {
                 cObject *clone = obj->dup();
                 value.set(clone);
                 if (obj->isOwnedObject())
@@ -52,7 +52,7 @@ void cValueArray::takeValue(const cValue& value)
 {
     if (value.getType() == cValue::OBJECT) {
         cObject *obj = value.objectValue();
-        if (obj->isOwnedObject() && obj->getOwner()->isSoftOwner())
+        if (obj && obj->isOwnedObject() && obj->getOwner()->isSoftOwner())
             take(static_cast<cOwnedObject*>(obj));
     }
 }
@@ -61,7 +61,9 @@ void cValueArray::dropAndDeleteValue(const cValue& value)
 {
     if (value.getType() == cValue::OBJECT) {
         cObject *obj = value.objectValue();
-        if (!obj->isOwnedObject())
+        if (!obj)
+            ; // nop
+        else if (!obj->isOwnedObject())
             delete obj;
         else if (obj->getOwner() == this)
             dropAndDelete(static_cast<cOwnedObject*>(obj));
@@ -163,7 +165,7 @@ cValue cValueArray::remove(int k)
         throw cRuntimeError(this, "remove(): index %s is out of bounds", k);
     if (array[k].getType() == cValue::OBJECT) {
         cObject *obj = array[k].objectValue();
-        if (obj->getOwner() == this)
+        if (obj && obj->getOwner() == this)
             drop(static_cast<cOwnedObject*>(obj));
     }
     cValue result = std::move(array[k]);
