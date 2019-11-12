@@ -1,0 +1,64 @@
+%description:
+Test that config options accept expressions.
+
+In the result files, "config" lines currently contain the expressions, although
+it would probably be better to save the values after evaluation.
+
+%activity:
+recordScalar("foo", 42); // ensure a sca file is created
+
+%inifile: test.ini
+[General]
+**.dummy1 = ${a=st}
+**.dummy2 = ${i=5}
+
+network = "Te" + "${a}"
+runnumber-width = ${i}-2 # =3
+cmdenv-express-mode = 1==2  #false
+sim-time-limit = ${i}s + 0.1s
+seed-set = 1 + ${i}
+result-dir = "dir" + "${i}"
+description = "Hello " + "world"
+experiment-label = "Experiment " + "One"
+measurement-label = "Measurement " + "${iterationvars}"
+
+%subst: /run General-000-.*/run General-000-xxx/
+%subst: /attr datetime .*/attr datetime xxx/
+%subst: /attr processid .*/attr processid xxx/
+
+%contains: dir5/General-a=st,i=5-#0.sca
+version 3
+run General-000-xxx
+attr configname General
+attr datetime xxx
+attr experiment "Experiment One"
+attr inifile _defaults.ini
+attr iterationvars "$a=st, $i=5"
+attr iterationvarsf a=st,i=5-
+attr measurement "Measurement $a=st, $i=5"
+attr network Test
+attr processid xxx
+attr repetition 0
+attr replication #0
+attr resultdir dir5
+attr runnumber 000
+attr seedset 6
+itervar a st
+itervar i 5
+config **.dummy1 st
+config **.dummy2 5
+config network "\"Te\" + \"st\""
+config runnumber-width 5-2
+config cmdenv-express-mode 1==2
+config sim-time-limit "5s + 0.1s"
+config seed-set "1 + 5"
+config result-dir "\"dir\" + \"5\""
+config description "\"Hello \" + \"world\""
+config experiment-label "\"Experiment \" + \"One\""
+config measurement-label "\"Measurement \" + \"$a=st, $i=5\""
+config network Test
+config cmdenv-express-mode false
+config cmdenv-log-prefix ""
+
+scalar Test foo 42
+par Test typename "\"Test\""
