@@ -37,6 +37,7 @@
 %token EQ NE GE LE SPACESHIP
 %token AND OR XOR
 %token SHIFT_LEFT SHIFT_RIGHT
+%token DOUBLECOLON
 
 %token EXPRESSION_SELECTOR   /* forces parsing text as a single expression */
 
@@ -1561,7 +1562,11 @@ array
 object
         : '{' opt_keyvaluelist '}'
         | NAME '{' opt_keyvaluelist '}'
+        | NAME DOUBLECOLON NAME '{' opt_keyvaluelist '}'
+        | NAME DOUBLECOLON NAME DOUBLECOLON NAME '{' opt_keyvaluelist '}' /* note: doing it properly with a 'qname' rule introduces a spurious reduce/reduce conflict (???) */
+        | NAME DOUBLECOLON NAME DOUBLECOLON NAME DOUBLECOLON NAME '{' opt_keyvaluelist '}'
         ;
+
 
 opt_exprlist
         : exprlist

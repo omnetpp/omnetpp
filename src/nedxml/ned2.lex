@@ -124,6 +124,7 @@ using namespace omnetpp::nedxml;
 "<--"                    { countChars(); return LEFTARROW; }
 "<-->"                   { countChars(); return DBLARROW; }
 ".."                     { countChars(); return TO; }
+"::"                     { countChars(); return DOUBLECOLON; }
 
 "true"                   { countChars(); return TRUE_; }
 "false"                  { countChars(); return FALSE_; }

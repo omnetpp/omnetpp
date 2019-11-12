@@ -146,6 +146,8 @@ using namespace omnetpp::common;
 "<=>"                    { countChars(); return SPACESHIP; }
 "=~"                     { countChars(); return MATCH; }
 
+"::"                     { countChars(); return DOUBLECOLON; }
+
 "\\xEF\\xBB\\xBF"           { /* UTF-8 BOM mark, ignore */ }
 {S}                      { countChars(); }
 .                        { countChars(); return INVALID_CHAR; }

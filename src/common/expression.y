@@ -59,6 +59,7 @@ namespace omnetpp { class cObject; };
 %token EQ NE GE LE SPACESHIP
 %token AND OR XOR
 %token SHIFT_LEFT SHIFT_RIGHT
+%token DOUBLECOLON
 
 %token INVALID_CHAR   /* just to generate parse error */
 
@@ -276,8 +277,15 @@ array
 object
         : '{' opt_keyvaluelist '}'
             { $<node>2->type = AstNode::OBJECT; $<node>$ = $<node>2; }
-        | NAME '{' opt_keyvaluelist '}'
-            { $<node>3->type = AstNode::OBJECT; $<node>3->name = $1; delete [] $1; $<node>$ = $<node>3; }
+        | qname '{' opt_keyvaluelist '}'
+            { $<node>3->type = AstNode::OBJECT; $<node>3->name = $<str>1; delete [] $<str>1; $<node>$ = $<node>3; }
+        ;
+
+qname
+        : NAME DOUBLECOLON qname
+            { $<str>$ = concat($<str>1, "::", $<str>3); delete [] $<str>1; delete [] $<str>3; }
+        | NAME
+            { $<str>$ = $<str>1; }
         ;
 
 opt_exprlist
