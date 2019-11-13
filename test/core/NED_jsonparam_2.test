@@ -30,6 +30,7 @@ import testlib.Dump;
 
 network Test {
   parameters:
+    object a0 = omnetpp::cMessage { name : "hello", kind: 7 };
     object a1 = @TESTNAME@::Data { foo : 42, bar : "hello" };
     object a2 = @TESTNAME@::DataVector {
                   data : [
@@ -55,6 +56,7 @@ network Test {
 module Test: Test {
     parameters:
         @isNetwork
+        a0 = (omnetpp::cMessage)hello: (new msg)
         a1 = (NED_jsonparam_2::Data):
         a2 = (NED_jsonparam_2::DataVector):
         a3 = (NED_jsonparam_2::Messages):

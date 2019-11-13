@@ -1,0 +1,176 @@
+%description:
+Test JSON-style object parameters.
+
+%file: test.ned
+
+import testlib.Dump;
+
+simple Node {
+  parameters:
+    object fixed = { 'moduleindex': ancestorIndex(0), 'rndvalue' : intuniform(0,100) };
+    volatile object volatile_fixed = { 'moduleindex': ancestorIndex(0), 'rndvalue' : intuniform(0,100) };
+    object defaultval = default( { 'moduleindex': ancestorIndex(0), 'rndvalue' : intuniform(0,100) } );
+    volatile object volatile_defaultval = default( { 'moduleindex': ancestorIndex(0), 'rndvalue' : intuniform(0,100) } );
+
+    object fromned_nodef;
+    object fromned_wdef = default([1,2,3]);
+    volatile object volatile_fromned_nodef;
+    volatile object volatile_fromned_wdef = default([1,2,3]);
+
+    object fromini_nodef;
+    object fromini_wdef = default([1,2,3]);
+    volatile object volatile_fromini_nodef;
+    volatile object volatile_fromini_wdef = default([1,2,3]);
+}
+
+network Test {
+  submodules:
+    node[3]: Node {
+      fromned_nodef = { 'moduleindex': index, 'rndvalue' : intuniform(0,100) };
+      fromned_wdef = { 'moduleindex': index, 'rndvalue' : intuniform(0,100) };
+      volatile_fromned_nodef = { 'moduleindex': index, 'rndvalue' : intuniform(0,100) };
+      volatile_fromned_wdef = { 'moduleindex': index, 'rndvalue' : intuniform(0,100) };
+    }
+    dump: Dump;
+}
+
+%file: node.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Node : public cSimpleModule
+{
+  public:
+    Node() : cSimpleModule(16384) { }
+    virtual void activity() override;
+};
+
+Define_Module(Node);
+
+void Node::activity()
+{
+    for (int i=0; i<getNumParams(); i++) {
+        cPar& p = par(i);
+        cObject *obj = p.objectValue();
+        if (p.isVolatile()) {
+            // verify that volatile parameters actually yield a new object each time
+            cObject *prevObj = obj;
+            obj = p.objectValue();
+            ASSERT(obj != prevObj);
+        }
+        EV << p.getFullPath() << " = " << obj->str() << endl;
+    }
+    EV << ".\n";
+}
+
+}; //namespace
+
+%inifile: omnetpp.ini
+**.fromini_nodef = { 'moduleindex': index, 'rndvalue' : intuniform(0,100) }
+**.fromini_wdef = { 'moduleindex': index, 'rndvalue' : intuniform(0,100) }
+**.volatile_fromini_nodef = { 'moduleindex': index, 'rndvalue' : intuniform(0,100) }
+**.volatile_fromini_wdef = { 'moduleindex': index, 'rndvalue' : intuniform(0,100) }
+
+%contains: stdout
+Test.node[0].fixed = {moduleindex: 0, rndvalue: 44}
+Test.node[0].volatile_fixed = {moduleindex: 0, rndvalue: 88}
+Test.node[0].defaultval = {moduleindex: 0, rndvalue: 47}
+Test.node[0].volatile_defaultval = {moduleindex: 0, rndvalue: 37}
+Test.node[0].fromned_nodef = {moduleindex: 0, rndvalue: 64}
+Test.node[0].fromned_wdef = {moduleindex: 0, rndvalue: 67}
+Test.node[0].volatile_fromned_nodef = {moduleindex: 0, rndvalue: 77}
+Test.node[0].volatile_fromned_wdef = {moduleindex: 0, rndvalue: 9}
+Test.node[0].fromini_nodef = {moduleindex: 0, rndvalue: 67}
+Test.node[0].fromini_wdef = {moduleindex: 0, rndvalue: 9}
+Test.node[0].volatile_fromini_nodef = {moduleindex: 0, rndvalue: 80}
+Test.node[0].volatile_fromini_wdef = {moduleindex: 0, rndvalue: 79}
+.
+
+%contains: stdout
+Test.node[1].fixed = {moduleindex: 1, rndvalue: 83}
+Test.node[1].volatile_fixed = {moduleindex: 1, rndvalue: 64}
+Test.node[1].defaultval = {moduleindex: 1, rndvalue: 21}
+Test.node[1].volatile_defaultval = {moduleindex: 1, rndvalue: 99}
+Test.node[1].fromned_nodef = {moduleindex: 1, rndvalue: 36}
+Test.node[1].fromned_wdef = {moduleindex: 1, rndvalue: 87}
+Test.node[1].volatile_fromned_nodef = {moduleindex: 1, rndvalue: 49}
+Test.node[1].volatile_fromned_wdef = {moduleindex: 1, rndvalue: 19}
+Test.node[1].fromini_nodef = {moduleindex: 1, rndvalue: 70}
+Test.node[1].fromini_wdef = {moduleindex: 1, rndvalue: 88}
+Test.node[1].volatile_fromini_nodef = {moduleindex: 1, rndvalue: 14}
+Test.node[1].volatile_fromini_wdef = {moduleindex: 1, rndvalue: 32}
+.
+
+%contains: stdout
+Test.node[2].fixed = {moduleindex: 2, rndvalue: 88}
+Test.node[2].volatile_fixed = {moduleindex: 2, rndvalue: 9}
+Test.node[2].defaultval = {moduleindex: 2, rndvalue: 12}
+Test.node[2].volatile_defaultval = {moduleindex: 2, rndvalue: 32}
+Test.node[2].fromned_nodef = {moduleindex: 2, rndvalue: 58}
+Test.node[2].fromned_wdef = {moduleindex: 2, rndvalue: 65}
+Test.node[2].volatile_fromned_nodef = {moduleindex: 2, rndvalue: 74}
+Test.node[2].volatile_fromned_wdef = {moduleindex: 2, rndvalue: 35}
+Test.node[2].fromini_nodef = {moduleindex: 2, rndvalue: 39}
+Test.node[2].fromini_wdef = {moduleindex: 2, rndvalue: 87}
+Test.node[2].volatile_fromini_nodef = {moduleindex: 2, rndvalue: 55}
+Test.node[2].volatile_fromini_wdef = {moduleindex: 2, rndvalue: 34}
+.
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.node[0]: Node {
+            parameters:
+                fixed = (omnetpp::cValueMap)object: {moduleindex: 0, rndvalue: 44}
+                volatile_fixed = { moduleindex: ancestorIndex(0), rndvalue: intuniform(0, 100) }
+                defaultval = (omnetpp::cValueMap)object: {moduleindex: 0, rndvalue: 47}
+                volatile_defaultval = { moduleindex: ancestorIndex(0), rndvalue: intuniform(0, 100) }
+                fromned_nodef = (omnetpp::cValueMap)object: {moduleindex: 0, rndvalue: 64}
+                fromned_wdef = (omnetpp::cValueMap)object: {moduleindex: 0, rndvalue: 67}
+                volatile_fromned_nodef = { moduleindex: index, rndvalue: intuniform(0, 100) }
+                volatile_fromned_wdef = { moduleindex: index, rndvalue: intuniform(0, 100) }
+                fromini_nodef = (omnetpp::cValueMap)object: {moduleindex: 0, rndvalue: 67}
+                fromini_wdef = (omnetpp::cValueMap)object: {moduleindex: 0, rndvalue: 9}
+                volatile_fromini_nodef = { moduleindex: index, rndvalue: intuniform(0, 100) }
+                volatile_fromini_wdef = { moduleindex: index, rndvalue: intuniform(0, 100) }
+        }
+        module Test.node[1]: Node {
+            parameters:
+                fixed = (omnetpp::cValueMap)object: {moduleindex: 1, rndvalue: 83}
+                volatile_fixed = { moduleindex: ancestorIndex(0), rndvalue: intuniform(0, 100) }
+                defaultval = (omnetpp::cValueMap)object: {moduleindex: 1, rndvalue: 21}
+                volatile_defaultval = { moduleindex: ancestorIndex(0), rndvalue: intuniform(0, 100) }
+                fromned_nodef = (omnetpp::cValueMap)object: {moduleindex: 1, rndvalue: 36}
+                fromned_wdef = (omnetpp::cValueMap)object: {moduleindex: 1, rndvalue: 87}
+                volatile_fromned_nodef = { moduleindex: index, rndvalue: intuniform(0, 100) }
+                volatile_fromned_wdef = { moduleindex: index, rndvalue: intuniform(0, 100) }
+                fromini_nodef = (omnetpp::cValueMap)object: {moduleindex: 1, rndvalue: 70}
+                fromini_wdef = (omnetpp::cValueMap)object: {moduleindex: 1, rndvalue: 88}
+                volatile_fromini_nodef = { moduleindex: index, rndvalue: intuniform(0, 100) }
+                volatile_fromini_wdef = { moduleindex: index, rndvalue: intuniform(0, 100) }
+        }
+        module Test.node[2]: Node {
+            parameters:
+                fixed = (omnetpp::cValueMap)object: {moduleindex: 2, rndvalue: 88}
+                volatile_fixed = { moduleindex: ancestorIndex(0), rndvalue: intuniform(0, 100) }
+                defaultval = (omnetpp::cValueMap)object: {moduleindex: 2, rndvalue: 12}
+                volatile_defaultval = { moduleindex: ancestorIndex(0), rndvalue: intuniform(0, 100) }
+                fromned_nodef = (omnetpp::cValueMap)object: {moduleindex: 2, rndvalue: 58}
+                fromned_wdef = (omnetpp::cValueMap)object: {moduleindex: 2, rndvalue: 65}
+                volatile_fromned_nodef = { moduleindex: index, rndvalue: intuniform(0, 100) }
+                volatile_fromned_wdef = { moduleindex: index, rndvalue: intuniform(0, 100) }
+                fromini_nodef = (omnetpp::cValueMap)object: {moduleindex: 2, rndvalue: 39}
+                fromini_wdef = (omnetpp::cValueMap)object: {moduleindex: 2, rndvalue: 87}
+                volatile_fromini_nodef = { moduleindex: index, rndvalue: intuniform(0, 100) }
+                volatile_fromini_wdef = { moduleindex: index, rndvalue: intuniform(0, 100) }
+        }
+}
+
+%not-contains: stdout
+undisposed object
