@@ -82,9 +82,18 @@ cValueArray& cValueArray::operator=(const cValueArray& other)
 std::string cValueArray::str() const
 {
     if (array.empty())
-        return std::string("empty");
+        return std::string("[]");
     std::stringstream out;
-    out << "size=" << array.size();
+    int length = array.size();
+    int printed = std::min(8, length);
+    out << "[";
+    for (int i = 0; i < printed; i++) {
+        if (i != 0) out << ", ";
+        out << array[i].str();
+    }
+    if (length > printed)
+        out << ", ... and " << (length-printed) << " more";
+    out << "]";
     return out.str();
 }
 

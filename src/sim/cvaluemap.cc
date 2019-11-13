@@ -78,9 +78,20 @@ cValueMap& cValueMap::operator=(const cValueMap& other)
 std::string cValueMap::str() const
 {
     if (fields.empty())
-        return std::string("empty");
+        return std::string("{}");
+
     std::stringstream out;
-    out << "size=" << fields.size();
+    int length = fields.size();
+    int printed = std::min(5, length);
+    out << "{";
+    auto it = fields.begin();
+    for (int i = 0; i < printed; i++, ++it) {
+        if (i != 0) out << ", ";
+        out << it->first << ": " << it->second.str();
+    }
+    if (length > printed)
+        out << ", ... and " << (length-printed) << " more";
+    out << "}";
     return out.str();
 }
 

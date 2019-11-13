@@ -197,13 +197,14 @@ std::string cValue::str() const
         case INT: sprintf(buf, "%" PRId64 "%s", (int64_t)intv, opp_nulltoempty(unit)); return buf;
         case DOUBLE:
             opp_dtoa(buf, "%g", dbl);
-            if (!std::isfinite(dbl))
-                strcat(buf, " ");
-            if (!opp_isempty(unit))
+            if (!opp_isempty(unit)) {
+                if (!std::isfinite(dbl))
+                    strcat(buf, " ");
                 strcat(buf, unit);
+            }
             return buf;
         case STRING: return opp_quotestr(s);
-        case OBJECT: return obj->str();
+        case OBJECT: return obj ? obj->str() : "nullptr";
         default: throw cRuntimeError("Internal error: Invalid cValue type");
     }
 }
