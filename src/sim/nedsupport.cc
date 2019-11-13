@@ -462,7 +462,7 @@ void ObjectNode::setField(cClassDescriptor *desc, cObject *object, const char *f
         if (!isCompoundField) { // atomic
             if (value.getType() == cValue::OBJECT)
                 throw cRuntimeError("Cannot put object value into non-object field '%s' inside a '%s'", fieldName, object->getClassName());
-            desc->setFieldValueAsString(object, fieldIndex, 0, value.str().c_str());
+            desc->setFieldValueAsString(object, fieldIndex, 0, value.getType()==cValue::STRING ? value.stringValue() : value.str().c_str());
         }
         else if (isCObjectField) {
             if (value.getType() != cValue::OBJECT)
@@ -481,10 +481,10 @@ void ObjectNode::setField(cClassDescriptor *desc, cObject *object, const char *f
         desc->setFieldArraySize(object, fieldIndex, arraySize);
         if (!isCompoundField) { // atomic
             for (int i = 0; i < arraySize; i++) {
-                const cValue& arrayElement = array->get(i);
-                if (arrayElement.getType() == cValue::OBJECT)
+                const cValue& elementValue = array->get(i);
+                if (elementValue.getType() == cValue::OBJECT)
                     throw cRuntimeError("Cannot put object value into non-object field '%s[]' inside a '%s'", fieldName, object->getClassName());
-                desc->setFieldValueAsString(object, fieldIndex, i, arrayElement.str().c_str());
+                desc->setFieldValueAsString(object, fieldIndex, i, elementValue.getType()==cValue::STRING ? elementValue.stringValue() : elementValue.str().c_str());
             }
         }
         else if (isCObjectField) {
