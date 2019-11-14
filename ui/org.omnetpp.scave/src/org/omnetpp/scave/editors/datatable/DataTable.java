@@ -555,6 +555,8 @@ public class DataTable extends Table implements IDataControl {
             long id = idList.get(row);
             ResultItem result = manager.getItem(id);
 
+            String unit = result.getAttribute("unit");
+
             if (COL_DIRECTORY.equals(column))
                 return result.getFileRun().getFile().getDirectory();
             else if (COL_FILE.equals(column)) {
@@ -590,7 +592,7 @@ public class DataTable extends Table implements IDataControl {
             else if (type == ResultType.SCALAR) {
                 ScalarResult scalar = (ScalarResult)result;
                 if (COL_VALUE.equals(column))
-                    return formatNumber(scalar.getValue());
+                    return formatNumber(scalar.getValue(), unit);
             }
             else if (type == ResultType.PARAMETER) {
                 ParameterResult parameter = (ParameterResult)result;
@@ -608,23 +610,26 @@ public class DataTable extends Table implements IDataControl {
                 }
                 else if (COL_MEAN.equals(column)) {
                     double mean = vector.getStatistics().getMean();
-                    return Double.isNaN(mean) ? NA : formatNumber(mean);
+                    return Double.isNaN(mean) ? NA : formatNumber(mean, unit);
                 }
                 else if (COL_STDDEV.equals(column)) {
                     double stddev = vector.getStatistics().getStddev();
-                    return Double.isNaN(stddev) ? NA : formatNumber(stddev);
+                    return Double.isNaN(stddev) ? NA : formatNumber(stddev, unit);
                 }
                 else if (COL_VARIANCE.equals(column)) {
                     double variance = vector.getStatistics().getVariance();
-                    return Double.isNaN(variance) ? NA : formatNumber(variance);
+                    String unitSquared = unit;
+                    if (!unit.isEmpty())
+                        unitSquared = unit + "²";
+                    return Double.isNaN(variance) ? NA : formatNumber(variance, unitSquared);
                 }
                 else if (COL_MIN.equals(column)) {
                     double min = vector.getStatistics().getMin();
-                    return Double.isNaN(min) ? NA : formatNumber(min);
+                    return Double.isNaN(min) ? NA : formatNumber(min, unit);
                 }
                 else if (COL_MAX.equals(column)) {
                     double max = vector.getStatistics().getMax();
-                    return Double.isNaN(max) ? NA : formatNumber(max);
+                    return Double.isNaN(max) ? NA : formatNumber(max, unit);
                 }
                 else if (COL_MIN_TIME.equals(column)) {
                     BigDecimal minTime = vector.getStartTime();
@@ -650,27 +655,30 @@ public class DataTable extends Table implements IDataControl {
                     if (!stats.getStatistics().isWeighted())
                         return NA;
                     double sumWeights = stats.getStatistics().getSumWeights();
-                    return sumWeights >= 0 ? formatNumber(sumWeights) : NA;
+                    return sumWeights >= 0 ? formatNumber(sumWeights, "") : NA;
                 }
                 else if (COL_MEAN.equals(column)) {
                     double mean = stats.getStatistics().getMean();
-                    return Double.isNaN(mean) ? NA : formatNumber(mean);
+                    return Double.isNaN(mean) ? NA : formatNumber(mean, unit);
                 }
                 else if (COL_STDDEV.equals(column)) {
                     double stddev = stats.getStatistics().getStddev();
-                    return Double.isNaN(stddev) ? NA : formatNumber(stddev);
+                    return Double.isNaN(stddev) ? NA : formatNumber(stddev, unit);
                 }
                 else if (COL_VARIANCE.equals(column)) {
                     double variance = stats.getStatistics().getVariance();
-                    return Double.isNaN(variance) ? NA : formatNumber(variance);
+                    String unitSquared = unit;
+                    if (!unit.isEmpty())
+                        unitSquared = unit + "²";
+                    return Double.isNaN(variance) ? NA : formatNumber(variance, unitSquared);
                 }
                 else if (COL_MIN.equals(column)) {
                     double min = stats.getStatistics().getMin();
-                    return Double.isNaN(min) ? NA : formatNumber(min);
+                    return Double.isNaN(min) ? NA : formatNumber(min, unit);
                 }
                 else if (COL_MAX.equals(column)) {
                     double max = stats.getStatistics().getMax();
-                    return Double.isNaN(max) ? NA : formatNumber(max);
+                    return Double.isNaN(max) ? NA : formatNumber(max, unit);
                 }
                 else if (COL_NUMBINS.equals(column)) {
                     if (result instanceof HistogramResult)
@@ -685,7 +693,7 @@ public class DataTable extends Table implements IDataControl {
                             return NA;
                         double lo = bins.getBinEdge(0);
                         double up = bins.getBinEdge(bins.getNumBins());
-                        return formatNumber(lo) + " .. " + formatNumber(up);
+                        return formatNumber(lo, "") + " .. " + formatNumber(up, unit);
                     }
                     else
                         return NA;
@@ -700,12 +708,15 @@ public class DataTable extends Table implements IDataControl {
         return "";
     }
 
-    protected String formatNumber(double d) {
-        return ScaveUtil.formatNumber(d, getNumericPrecision());
+    protected String formatNumber(double d, String unit) {
+        String result = ScaveUtil.formatNumber(d, getNumericPrecision());
+        if (!unit.isEmpty())
+            result += " " + unit;
+        return result;
     }
 
     protected String formatNumber(BigDecimal d) {
-        return ScaveUtil.formatNumber(d, getNumericPrecision());
+        return ScaveUtil.formatNumber(d, getNumericPrecision()) + " s";
     }
 
     public void copySelectionToClipboard() {
