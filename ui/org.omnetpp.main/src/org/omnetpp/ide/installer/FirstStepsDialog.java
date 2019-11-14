@@ -150,7 +150,7 @@ public class FirstStepsDialog extends TitleAreaDialog {
             isInstallINETRequested = installINETButton.getSelection();
             String omnetppVersion = "omnetpp-" + OmnetppDirs.getMajorVersion() + "." + OmnetppDirs.getMinorVersion();
             URL projectDescriptionURL = new URL(InstallSimulationModelsDialog.DESCRIPTORS_URL + "/" + omnetppVersion + "/inet.xml");
-            InstallProjectJob installProjectJob = new InstallProjectJob(projectDescriptionURL, new ProjectInstallationOptions("inet"));
+            InstallProjectJob installProjectJob = new InstallProjectJob(projectDescriptionURL, new ProjectInstallationOptions("inet4"));
             installProjectJob.setUser(true);
             installProjectJob.schedule();
         }
