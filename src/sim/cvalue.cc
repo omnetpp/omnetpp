@@ -73,7 +73,7 @@ void cValue::set(const cPar& par)
         case cPar::INT: *this = par.intValue(); unit = par.getUnit(); break;
         case cPar::DOUBLE: *this = par.doubleValue(); unit = par.getUnit(); break;
         case cPar::STRING: *this = par.stdstringValue(); break;
-        case cPar::OBJECT: *this = par.objectValue(); break;
+        case cPar::OBJECT: throw cRuntimeError("Using NED parameters of type 'object' in expressions is currently not supported"); // reason: ownership issues (use obj->dup() or not? delete object in destructor or not?)
         case cPar::XML: *this = par.xmlValue(); break;
         default: throw cRuntimeError("Internal error: Invalid cPar type: %s", par.getFullPath().c_str());
     }

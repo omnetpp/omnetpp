@@ -68,7 +68,7 @@ ExprValue makeExprValue(const cPar& par)
     case cPar::INT: return ExprValue(par.intValue(), par.getUnit());
     case cPar::DOUBLE: return ExprValue(par.doubleValue(), par.getUnit());
     case cPar::STRING: return ExprValue(par.stdstringValue());
-    case cPar::OBJECT: return ExprValue(par.objectValue());
+    case cPar::OBJECT: throw cRuntimeError("Using NED parameters of type 'object' in expressions is currently not supported");  // reason: ownership issues (use obj->dup() or not? delete object in destructor or not?)
     case cPar::XML: return ExprValue(par.xmlValue());
     }
     Assert(false);
@@ -251,7 +251,7 @@ ExprValue IndexedSubmoduleParameterRef::evaluate(Context *context_) const
     cModule *submodule = compoundModule->getSubmodule(submoduleName.c_str(), index);
     if (!submodule)
         throw cRuntimeError("'%s': Submodule '%s[%d]' not found", getName().c_str(), submoduleName.c_str(), index);
-    return makeExprValue(submodule->par(paramName.c_str()));
+    return makeExprValue(submodule->par(paramName.c_str())); //TODO make a copy here??? (and similar places)
 }
 
 void IndexedSubmoduleParameterRef::print(std::ostream& out, int spaciousness) const
@@ -477,6 +477,7 @@ void ObjectNode::setFieldElement(cClassDescriptor *desc, void *object, const cha
     bool isPointerField = desc->getFieldIsPointer(fieldIndex);
     bool isCObjectField = desc->getFieldIsCObject(fieldIndex);
 
+    // scalar field
     if (!isCompoundField) { // atomic
         if (value.getType() == cValue::OBJECT)
             throw cRuntimeError("Cannot put object value into non-object field '%s%s' inside a '%s'",

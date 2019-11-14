@@ -1,0 +1,22 @@
+%description:
+Test JSON-style object parameters.
+
+%file: test.ned
+
+import testlib.Dump;
+
+network Test {
+  parameters:
+    object foo = { a: 1, b: intuniform(0,100) };
+    object bar = foo; // points to the same object as foo! ownership issues
+
+  submodules:
+    dump: Dump;
+}
+
+%exitcode: 1
+%contains: stderr
+<!> Error: Cannot evaluate parameter 'bar': Using NED parameters of type 'object' in expressions is currently not supported
+
+%not-contains: stdout
+undisposed object
