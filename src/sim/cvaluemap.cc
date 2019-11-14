@@ -163,6 +163,14 @@ void cValueMap::erase(const char *key)
     }
 }
 
+const cValueMap::Entry& cValueMap::getEntry(int k) const
+{
+    for (auto& entry : fields) //TODO cache
+        if (k-- == 0)
+            return entry;
+    throw cRuntimeError(this, "getEntry(): index out of bounds");
+}
+
 
 }  // namespace omnetpp
 

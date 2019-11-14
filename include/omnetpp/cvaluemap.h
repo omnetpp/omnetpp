@@ -44,6 +44,12 @@ class SIM_API cValueMap : public cOwnedObject
     void dropAndDeleteValue(const cValue& value);
 
   public:
+    // internal, for inspectors only:
+    typedef std::map<std::string,cValue>::value_type Entry;
+    const Entry& getEntry(int k) const;
+    static std::string entryToStr(const Entry& e) {return e.first + " : " + e.second.str();}
+
+  public:
     /** @name Constructors, destructor, assignment. */
     //@{
 

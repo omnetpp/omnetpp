@@ -729,6 +729,24 @@ class cValueArray extends cOwnedObject
     cValue elements[] @getter(get) @setter(set) @sizeGetter(size);
 }
 
+struct cValueMap::Entry 
+{
+    @existingClass;
+    @overwritePreviousDefinition;
+    @descriptor(readonly);
+    @toString(cValueMap::entryToStr($));
+    string first;
+    cValue second;
+}
+
+class cValueMap extends cOwnedObject
+{
+    @existingClass;
+    @overwritePreviousDefinition;
+    @descriptor(readonly);
+    cValueMap::Entry entries[] @sizeGetter(size) @getter(getEntry);
+}
+
 class cFSM extends cOwnedObject
 {
     @existingClass;
