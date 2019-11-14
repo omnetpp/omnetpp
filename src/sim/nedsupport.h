@@ -26,6 +26,7 @@ using namespace omnetpp::common::expression;
 namespace omnetpp {
 
 class cNedFunction;
+class cValueMap;
 
 namespace nedsupport {
 
@@ -248,7 +249,9 @@ class ObjectNode : public NaryNode
     std::vector<std::string> fieldNames; // to be assigned from the child expressions
   protected:
     virtual ExprValue evaluate(Context *context) const override;
-    virtual void setField(cClassDescriptor *desc, cObject *object, const char *fieldName, const cValue& value) const;
+    virtual void setField(cClassDescriptor *desc, void *object, const char *fieldName, const cValue& value) const;
+    virtual void setFieldElement(cClassDescriptor *desc, void *object, const char *fieldName, int fieldIndex, int arrayIndex, const cValue& value) const;
+    virtual void fillObject(cClassDescriptor *desc, void *object, const cValueMap *map) const;
     virtual void print(std::ostream& out, int spaciousness) const override;
   public:
     ObjectNode(const char *typeName, const std::vector<std::string>& fieldNames) : typeName(typeName), fieldNames(fieldNames) {}

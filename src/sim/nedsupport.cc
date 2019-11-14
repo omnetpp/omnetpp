@@ -449,55 +449,71 @@ ExprValue ObjectNode::evaluate(Context *context_) const
     }
 }
 
-void ObjectNode::setField(cClassDescriptor *desc, cObject *object, const char *fieldName, const cValue& value) const
+void ObjectNode::setField(cClassDescriptor *desc, void *object, const char *fieldName, const cValue& value) const
 {
     int fieldIndex = desc->findField(fieldName);
     if (fieldIndex == -1)
-        throw cRuntimeError("Class '%s' has no field named '%s'", object->getClassName(), fieldName);
+        throw cRuntimeError("Class '%s' has no field named '%s'", desc->getFullName(), fieldName);
+
     bool isArrayField = desc->getFieldIsArray(fieldIndex);
-    bool isCObjectField = desc->getFieldIsCObject(fieldIndex);
-    bool isCompoundField = desc->getFieldIsCompound(fieldIndex);
+
     if (!isArrayField) {
         // scalar field
-        if (!isCompoundField) { // atomic
-            if (value.getType() == cValue::OBJECT)
-                throw cRuntimeError("Cannot put object value into non-object field '%s' inside a '%s'", fieldName, object->getClassName());
-            desc->setFieldValueAsString(object, fieldIndex, 0, value.getType()==cValue::STRING ? value.stringValue() : value.str().c_str());
-        }
-        else if (isCObjectField) {
-            if (value.getType() != cValue::OBJECT)
-                throw cRuntimeError("Cannot put %s value into object field '%s' inside a '%s'",
-                        cValue::getTypeName(value.getType()), fieldName, object->getClassName());
-            desc->setFieldStructValuePointer(object, fieldIndex, 0, value.objectValue());
-        }
-        else {
-            throw cRuntimeError("Non-cObject compound fields currently not supported (field '%s' in class '%s')", fieldName, object->getClassName());
-        }
+        setFieldElement(desc, object, fieldName, fieldIndex, -1, value);
     }
     else {
         // array field
         cValueArray *array = check_and_cast<cValueArray *>(value.objectValue());
         int arraySize = array->size();
         desc->setFieldArraySize(object, fieldIndex, arraySize);
-        if (!isCompoundField) { // atomic
-            for (int i = 0; i < arraySize; i++) {
-                const cValue& elementValue = array->get(i);
-                if (elementValue.getType() == cValue::OBJECT)
-                    throw cRuntimeError("Cannot put object value into non-object field '%s[]' inside a '%s'", fieldName, object->getClassName());
-                desc->setFieldValueAsString(object, fieldIndex, i, elementValue.getType()==cValue::STRING ? elementValue.stringValue() : elementValue.str().c_str());
-            }
-        }
-        else if (isCObjectField) {
-            for (int i = 0; i < arraySize; i++) {
-                if (array->get(i).getType() != cValue::OBJECT)
-                    throw cRuntimeError("Cannot put non-object value into object field '%s' inside a '%s'", fieldName, object->getClassName());
-                cObject *obj = array->remove(i).objectValue();
-                desc->setFieldStructValuePointer(object, fieldIndex, i, obj);
-            }
-        }
-        else {
-            throw cRuntimeError("Non-cObject compound fields currently not supported (field '%s' in class '%s')", fieldName, object->getClassName());
-        }
+        for (int i = 0; i < arraySize; i++)
+            setFieldElement(desc, object, fieldName, fieldIndex, i, array->remove(i));
+    }
+}
+
+void ObjectNode::setFieldElement(cClassDescriptor *desc, void *object, const char *fieldName, int fieldIndex, int arrayIndex, const cValue& value) const
+{
+    bool isCompoundField = desc->getFieldIsCompound(fieldIndex);
+    bool isPointerField = desc->getFieldIsPointer(fieldIndex);
+    bool isCObjectField = desc->getFieldIsCObject(fieldIndex);
+
+    if (!isCompoundField) { // atomic
+        if (value.getType() == cValue::OBJECT)
+            throw cRuntimeError("Cannot put object value into non-object field '%s%s' inside a '%s'",
+                    fieldName, (fieldIndex==-1 ? "" : "[]"), desc->getFullName());
+        desc->setFieldValueAsString(object, fieldIndex, arrayIndex, value.getType()==cValue::STRING ? value.stringValue() : value.str().c_str());
+    }
+    else if (isPointerField) {
+        if (!isCObjectField)
+            throw cRuntimeError("Non-cObject pointer fields are currently not supported (field '%s' in class '%s')", fieldName, desc->getFullName());
+        if (value.getType() != cValue::OBJECT)
+            throw cRuntimeError("Cannot put %s value into object field '%s%s' inside a '%s'",
+                    cValue::getTypeName(value.getType()), fieldName, (fieldIndex==-1 ? "" : "[]"), desc->getFullName());
+        desc->setFieldStructValuePointer(object, fieldIndex, arrayIndex, value.objectValue());
+    }
+    else {
+        // non-pointer: set individual fields
+        void *fieldPtr = desc->getFieldStructValuePointer(object, fieldIndex, arrayIndex);
+
+        cClassDescriptor *fieldDesc = isCObjectField ?
+                static_cast<cObject *>(fieldPtr)->getDescriptor() :
+                cClassDescriptor::getDescriptorFor(desc->getFieldStructName(fieldIndex));
+
+        cValueMap *valueMap = value.getType()==cValue::OBJECT ? dynamic_cast<cValueMap *>(value.objectValue()) : nullptr;
+        if (valueMap == nullptr)
+            throw cRuntimeError("Map value expected for object field '%s%s' inside a '%s'",
+                    cValue::getTypeName(value.getType()), fieldName, (fieldIndex==-1 ? "" : "[]"), desc->getFullName());
+
+        fillObject(fieldDesc, fieldPtr, valueMap);
+    }
+}
+
+void ObjectNode::fillObject(cClassDescriptor *desc, void *object, const cValueMap *valueMap) const
+{
+    for (auto it : valueMap->getFields()) {
+        const char *fieldName = it.first.c_str();
+        const cValue& value = it.second;
+        setField(desc, object, fieldName, value);
     }
 }
 
@@ -729,7 +745,7 @@ ExprNode *NedFunctionTranslator::createNedFunctionNode(cNedFunction *nedFunction
         else if (minArgs == maxArgs)
             throw opp_runtime_error("NED function '%s' expects %d arguments", nedFunction->getName(), minArgs);
         else
-            throw opp_runtime_error("NED function '%s' expects %d..%d arguments", nedFunction->getName(), minArgs, maxArgs);
+            throw opp_runtime_error("NED function '%s' expects %d to %d arguments", nedFunction->getName(), minArgs, maxArgs);
     }
     return new NedFunctionNode(nedFunction);
 }

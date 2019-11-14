@@ -1,0 +1,64 @@
+%description:
+Test JSON-style object parameters.
+
+%file: json.msg
+
+namespace @TESTNAME@;
+
+cplusplus {{ using namespace omnetpp; }}
+
+struct Point {
+    double x;
+    double y;
+}
+
+class Trail extends cObject {
+    Point points[];
+}
+
+cplusplus(Point) {{
+    std::string str() const {
+      char buf[128];
+      sprintf(buf, "(%g,%g)", x, y);
+      return buf;
+    }
+}}
+
+cplusplus(Trail) {{
+    std::string str() const override {
+      std::stringstream os;
+      for (int i=0; i<getPointsArraySize(); i++)
+        os << " " << getPoints(i).str();
+      return os.str();
+    }
+}}
+
+%file: test.ned
+
+import testlib.Dump;
+
+network Test {
+  parameters:
+    object trail = @TESTNAME@::Trail {
+      points: [
+        { x: 1, y : 5 },
+        { x: 2, y : 6 },
+        { x: 3, y : 7 },
+        { x: 4, y : 8 }
+      ]
+    };
+
+  submodules:
+    dump: Dump;
+}
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        trail = (NED_jsonparam_4::Trail):  (1,5) (2,6) (3,7) (4,8)
+    submodules:
+}
+
+%not-contains: stdout
+undisposed object
