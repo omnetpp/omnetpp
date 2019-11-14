@@ -371,7 +371,7 @@ public class DataTreeContentProvider {
             HistogramResult histogram = (HistogramResult)resultItem;
             Statistics stat = histogram.getStatistics();
             Histogram hist = histogram.getHistogram();
-            return formatNumber(stat.getMean()) + " (" + String.valueOf(stat.getCount()) + ") [" + (hist.getNumBins()-2) + " bins]"; //TODO "-2"
+            return formatNumber(stat.getMean()) + " (" + String.valueOf(stat.getCount()) + ") [" + (hist.getNumBins()) + " bins]";
         }
         else if (resultItem instanceof StatisticsResult) {
             StatisticsResult histogram = (StatisticsResult)resultItem;

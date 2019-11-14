@@ -197,7 +197,7 @@ public class ResultItemPropertySource implements IPropertySource {
                     if (propertyId.equals(PROP_MAX)) return statistics.getStatistics().getMax();
                     if (propertyId.equals(PROP_MEAN)) return statistics.getStatistics().getMean();
                     if (propertyId.equals(PROP_STDDEV)) return statistics.getStatistics().getStddev();
-                    if (propertyId.equals(PROP_NUMBINS)) return statistics instanceof HistogramResult ? ((HistogramResult)resultItem).getHistogram().getNumBins()-2 : "n/a"; //TODO revise "-2"
+                    if (propertyId.equals(PROP_NUMBINS)) return statistics instanceof HistogramResult ? ((HistogramResult)resultItem).getHistogram().getNumBins() : "n/a";
                 }
                 else {
                     if (propertyId.equals(PROP_KIND)) return "other";

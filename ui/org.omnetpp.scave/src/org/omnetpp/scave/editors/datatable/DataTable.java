@@ -674,7 +674,7 @@ public class DataTable extends Table implements IDataControl {
                 }
                 else if (COL_NUMBINS.equals(column)) {
                     if (result instanceof HistogramResult)
-                        return String.valueOf(((HistogramResult)result).getHistogram().getNumBins()-2); //TODO fix this brain damage of underflow and overflow "cells" !!!
+                        return String.valueOf(((HistogramResult)result).getHistogram().getNumBins());
                     else
                         return NA;
                 }
@@ -685,7 +685,7 @@ public class DataTable extends Table implements IDataControl {
                             return NA;
                         double lo = bins.getBinEdge(0);
                         double up = bins.getBinEdge(bins.getNumBins());
-                        return formatNumber(lo) + ".." + formatNumber(up);
+                        return formatNumber(lo) + " .. " + formatNumber(up);
                     }
                     else
                         return NA;
