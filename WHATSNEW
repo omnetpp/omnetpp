@@ -6,8 +6,8 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
-OMNeT++ 6.0pre4 (Aug 2019)
---------------------------
+OMNeT++ 6.0pre5 (November 2019)
+-------------------------------
 
 This is a preview release demonstrating our completely revamped charting
 solution in the IDE. It is now completely based on Python3, with support
@@ -17,16 +17,26 @@ charts from Python. Analysis files (.anf) created by older versions of the
 IDE (and vice versa) cannot be opened by this release, because the internal
 model changed substantially.
 
+Core:
+
+  - Introduced structured NED parameters using JSON like syntax.
+
 IDE:
 
   - A completely rewritten Charts interface in the Analysis Tool.
-  - Updated NED documentation generator with command line support.
+  - Updated NED documentation generator with command line support (opp_neddoc).
 
 Samples:
 
   - Added a new sample (pythoncharts) that contains the documentation,
     and some sample analysis files for the new Python-based plotting,
     using the data from the resultfiles sample.
+  - Added a new sample (openstreetmap) that displays a city map, with
+    some animated car traffic on it. Map data comes from an OSM file
+    exported from openstreetmap.org.
+  - A new sample (petrinets) demonstrating how to implement stochastic
+    Petri nets, a well-known formalism for the description of distributed
+    systems.
 
 
 OMNeT++ 5.5.1 (June 2019)
