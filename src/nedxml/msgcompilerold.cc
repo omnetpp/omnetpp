@@ -1587,13 +1587,15 @@ void MsgCompilerOld::generateDescriptorClass(const ClassInfo& info)
     CC << "    virtual const char **getFieldPropertyNames(int field) const override;\n";
     CC << "    virtual const char *getFieldProperty(int field, const char *propertyname) const override;\n";
     CC << "    virtual int getFieldArraySize(void *object, int field) const override;\n";
+    CC << "    virtual void setFieldArraySize(void *object, int field, int size) const override;\n";
     CC << "\n";
     CC << "    virtual const char *getFieldDynamicTypeString(void *object, int field, int i) const override;\n";
     CC << "    virtual std::string getFieldValueAsString(void *object, int field, int i) const override;\n";
-    CC << "    virtual bool setFieldValueAsString(void *object, int field, int i, const char *value) const override;\n";
+    CC << "    virtual void setFieldValueAsString(void *object, int field, int i, const char *value) const override;\n";
     CC << "\n";
     CC << "    virtual const char *getFieldStructName(int field) const override;\n";
     CC << "    virtual void *getFieldStructValuePointer(void *object, int field, int i) const override;\n";
+    CC << "    virtual void setFieldStructValuePointer(void *object, int field, int i, void *ptr) const override;\n";
     CC << "};\n\n";
 
     // register class
@@ -1853,6 +1855,13 @@ void MsgCompilerOld::generateDescriptorClass(const ClassInfo& info)
     CC << "}\n";
     CC << "\n";
 
+   // setFieldArraySize()
+    CC << "void " << info.msgdescclass << "::setFieldArraySize(void *object, int field, int size) const\n";
+    CC << "{\n";
+    CC << "    throw omnetpp::cRuntimeError(\"setFieldArraySize() is unsupported in message compiler legacy mode (--msg4 option)\");\n";
+    CC << "}\n";
+    CC << "\n";
+
     // getFieldDynamicTypeString()
     CC << "const char *" << info.msgdescclass << "::getFieldDynamicTypeString(void *object, int field, int i) const\n";
     CC << "{\n";
@@ -1921,12 +1930,14 @@ void MsgCompilerOld::generateDescriptorClass(const ClassInfo& info)
     CC << "\n";
 
     // setFieldValueAsString()
-    CC << "bool " << info.msgdescclass << "::setFieldValueAsString(void *object, int field, int i, const char *value) const\n";
+    CC << "void " << info.msgdescclass << "::setFieldValueAsString(void *object, int field, int i, const char *value) const\n";
     CC << "{\n";
     CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
-    CC << "        if (field < basedesc->getFieldCount())\n";
-    CC << "            return basedesc->setFieldValueAsString(object,field,i,value);\n";
+    CC << "        if (field < basedesc->getFieldCount()) {\n";
+    CC << "            basedesc->setFieldValueAsString(object,field,i,value);\n";
+    CC << "            return;\n";
+    CC << "        }\n";
     CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
     CC << "    " << info.msgclass << " *pp = (" << info.msgclass << " *)object; (void)pp;\n";
@@ -1943,16 +1954,18 @@ void MsgCompilerOld::generateDescriptorClass(const ClassInfo& info)
             if (info.classtype == STRUCT) {
                 if (field.fisarray) {
                     std::string arraySize = !field.farraysize.empty() ? field.farraysize : (str("pp->")+field.varsize);
-                    CC << "if (i>=" << arraySize << ") return false;\n                ";
+                    CC << "if (i>=" << arraySize << ") throw omnetpp::cRuntimeError(\"Array index %d out of bounds for field %d of class '" << info.msgclass << "'\", i, field);\n";
+                    CC << "                ";
                 }
-                CC << "pp->" << field.var << (field.fisarray ? "[i]" : "") << " = " << fromstringCall << "; return true;\n";
+                CC << "pp->" << field.var << (field.fisarray ? "[i]" : "") << " = " << fromstringCall << "; break;\n";
             }
             else {
-                CC << makeFuncall("pp", field.setter, field.fisarray, fromstringCall) << "; return true;\n";
+                CC << makeFuncall("pp", field.setter, field.fisarray, fromstringCall) << "; break;\n";
             }
         }
     }
-    CC << "        default: return false;\n";
+    CC << "        default: throw omnetpp::cRuntimeError(\"Cannot set field %d of class '" << info.msgclass << "'\", field);\n";
+
     CC << "    }\n";
     CC << "}\n";
     CC << "\n";
@@ -2022,6 +2035,14 @@ void MsgCompilerOld::generateDescriptorClass(const ClassInfo& info)
     CC << "    }\n";
     CC << "}\n";
     CC << "\n";
+
+    // setFieldStructValuePointer()
+    CC << "void " << info.msgdescclass << "::setFieldStructValuePointer(void *object, int field, int i, void *ptr) const\n";
+    CC << "{\n";
+    CC << "    throw omnetpp::cRuntimeError(\"setFieldStructValuePointer() is unsupported in message compiler legacy mode (--msg4 option)\");\n";
+    CC << "}\n";
+    CC << "\n";
+
 }
 
 MsgCompilerOld::EnumInfo MsgCompilerOld::extractEnumInfo(EnumElement *node)
