@@ -18,8 +18,12 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentListener;
+import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Position;
+import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
+import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -93,6 +97,8 @@ import org.omnetpp.scave.python.PanAction;
 import org.omnetpp.scave.python.ToggleAutoUpdateAction;
 import org.omnetpp.scave.python.ZoomAction;
 import org.python.pydev.editor.PyEdit;
+import org.python.pydev.editor.PyEditConfiguration;
+import org.python.pydev.plugin.PyDevUiPrefs;
 import org.python.pydev.shared_core.callbacks.ICallbackListener;
 import org.python.pydev.shared_ui.editor_input.PydevFileEditorInput;
 
@@ -607,7 +613,52 @@ public class ChartScriptEditor extends PyEdit {
         changeListener = new ChangeListener();
         getDocumentProvider().getDocument(editorInput).addDocumentListener(changeListener);
         chart.addListener(changeListener);
+
+        final SourceViewerConfiguration origConf = getSourceViewerConfiguration();
+
+        setSourceViewerConfiguration(new PyEditConfiguration(getColorCache(), this, PyDevUiPrefs.getChainedPrefStore()) {
+
+            @Override
+            public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
+                final IContentAssistant origAss = origConf.getContentAssistant(sourceViewer);
+                return new IContentAssistant() {
+
+                    @Override
+                    public void uninstall() {
+                        origAss.uninstall();
+
+                    }
+
+                    @Override
+                    public String showPossibleCompletions() {
+                        if (getChartViewer().getWidget().isFocusControl())
+                            return null;
+                        else
+                            return origAss.showPossibleCompletions();
+                    }
+
+                    @Override
+                    public String showContextInformation() {
+                        if (getChartViewer().getWidget().isFocusControl())
+                            return null;
+                        else
+                            return origAss.showContextInformation();
+                    }
+
+                    @Override
+                    public void install(ITextViewer textViewer) {
+                        origAss.install(textViewer);
+                    }
+
+                    @Override
+                    public IContentAssistProcessor getContentAssistProcessor(String contentType) {
+                        return origAss.getContentAssistProcessor(contentType);
+                    }
+                };
+            }
+        });
     }
+
 
     public ScaveEditor getScaveEditor() {
         return scaveEditor;
@@ -923,6 +974,7 @@ public class ChartScriptEditor extends PyEdit {
             runChartScript();
         scaveEditor.setSelection(new StructuredSelection(chart));
         console.activate();
+        getChartViewer().getWidget().setFocus();
     }
 
     public void gotoMarker(IMarker marker) {
