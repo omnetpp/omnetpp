@@ -75,6 +75,7 @@ const char *MsgCompiler::BUILTIN_DEFINITIONS =
         @property[actually](type=string; usage=class; desc="Internal use");
         @property[overwritePreviousDefinition](type=bool; usage=class; desc="Internal use");
         @property[owned](type=bool; usage=field; desc="For pointers and pointer arrays: allocated memory is owned by the object (needs to be duplicated in dup(), and deleted in destructor). If field type is also cOwnedObject, take()/drop() calls are also generated");
+        @property[custom](type=bool; usage=field; desc="Do not generate any data or code for the field, only add it to the descriptor. Indicates that the field's implementation will be added to the class via targeted cplusplus blocks");
 
         class __bool { @actually(bool); @primitive; @fromString(string2bool($)); @toString(bool2string($)); @defaultValue(false); }
         class __float { @actually(float); @primitive; @fromString(string2double($)); @toString(double2string($)); @defaultValue(0); }

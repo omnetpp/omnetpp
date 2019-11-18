@@ -1,0 +1,36 @@
+%description:
+Tests @custom fields
+
+%file: test.msg
+
+namespace @TESTNAME@;
+
+class Hello {
+   string foo;
+   string bar @custom @editable(false); // computed field (no setter)
+   string baz @custom;
+}
+
+cplusplus(Hello) {{
+   std::string getBar() const {return "hello from getBar()";}
+   std::string getBaz() const {return baz;}
+   void setBaz(const char *s) {baz = s;}
+private:
+   std::string baz;
+}}
+
+%includes:
+#include "test_m.h"
+using namespace @TESTNAME@;
+
+%activity:
+Hello hello;
+EV << hello.getBar() << endl;
+hello.setBaz("ciao");
+EV << hello.getBaz() << endl;
+EV << ".\n";
+
+%contains: stdout
+hello from getBar()
+ciao
+.

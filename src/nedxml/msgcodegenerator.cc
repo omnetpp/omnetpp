@@ -418,7 +418,7 @@ void MsgCodeGenerator::generateClassDecl(const ClassInfo& classInfo, const std::
     H << "\n{\n";
     H << "  protected:\n";
     for (const FieldInfo& field : classInfo.fieldList) {
-        if (field.isAbstract)
+        if (field.isAbstract || field.isCustom)
             continue;
         if (field.isFixedArray) {
             H << "    " << field.dataType << " " << field.var << "[" << field.arraySize << "]" << (field.value == "0" ? " = {0}" : "") << ";\n"; // note: C++ has no syntax for filling a full array with a (nonzero) value in an expression
@@ -481,6 +481,8 @@ void MsgCodeGenerator::generateClassDecl(const ClassInfo& classInfo, const std::
     H << "\n";
     H << "    // field getter/setter methods\n";
     for (const auto& field : classInfo.fieldList) {
+        if (field.isCustom)
+            continue;
         std::string pure;
         if (field.isAbstract)
             pure = " = 0";
@@ -562,7 +564,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
     if (!classInfo.baseclassFieldlist.empty() && !classInfo.fieldList.empty())
         CC << "\n";
     for (const auto& field : classInfo.fieldList) {
-        if (field.isAbstract)
+        if (field.isAbstract || field.isCustom)
             continue;
 
         if (field.isFixedArray && !field.value.empty() && field.value != "0")
@@ -590,7 +592,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
         CC << " : ::" << classInfo.baseClass << "(other)";
     CC << "\n{\n";
     for (const auto& field : classInfo.fieldList) {
-        if (field.isAbstract)
+        if (field.isAbstract || field.isCustom)
             continue;
         if (field.isFixedArray && field.isOwnedPointer)
             CC << "    std::fill(" << var(field) << ", " << var(field) << " + " << field.sizeVar << ", nullptr);\n";
@@ -609,7 +611,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
     CC << "" << classInfo.className << "::~" << classInfo.className << "()\n";
     CC << "{\n";
     for (const auto& field : classInfo.fieldList) {
-        if (field.isAbstract)
+        if (field.isAbstract || field.isCustom)
             continue;
         std::ostringstream releaseElem;
         if (field.isOwnedPointer && field.iscOwnedObject)
@@ -646,7 +648,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
     CC << "void " << classInfo.className << "::copy(const " << classInfo.className << "& other)\n";
     CC << "{\n";
     for (const auto& field : classInfo.fieldList) {
-        if (field.isAbstract)
+        if (field.isAbstract || field.isCustom)
             continue;
         if (!field.isPointer && field.isConst)
             continue;
@@ -739,8 +741,8 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
     for (const auto& field : classInfo.fieldList) {
         if (field.nopack)
             continue; // @nopack specified
-        if (field.isAbstract) {
-            CC << "    // field " << field.name << " is abstract -- please do packing in customized class\n";
+        if (field.isAbstract || field.isCustom) {
+            CC << "    // field " << field.name << " is abstract or custom -- please do packing in customized class\n";
         }
         else {
             if (field.isArray) {
@@ -770,8 +772,8 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
     for (const auto& field : classInfo.fieldList) {
         if (field.nopack)
             continue; // @nopack specified
-        if (field.isAbstract) {
-            CC << "    // field " << field.name << " is abstract -- please do unpacking in customized class\n";
+        if (field.isAbstract || field.isCustom) {
+            CC << "    // field " << field.name << " is abstract or custom -- please do unpacking in customized class\n";
         }
         else {
             if (field.isArray) {
@@ -798,7 +800,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
     CC << "}\n\n";
 
     for (const auto& field : classInfo.fieldList) {
-        if (field.isAbstract)
+        if (field.isAbstract || field.isCustom)
             continue;
 
         std::string idx = (field.isArray) ? "[k]" : "";
@@ -991,6 +993,8 @@ void MsgCodeGenerator::generateStructDecl(const ClassInfo& classInfo, const std:
     H << "{\n";
     H << "    " << classInfo.className << "();\n";
     for (const auto& field : classInfo.fieldList) {
+        if (field.isCustom)
+            continue;
         H << "    " << field.dataType << " " << field.var;
         if (field.isArray)
             H << "[" << field.arraySize << "]";
@@ -1016,12 +1020,15 @@ void MsgCodeGenerator::generateStructImpl(const ClassInfo& classInfo)
     CC << "{\n";
     // override baseclass fields initial value
     for (const auto& field : classInfo.baseclassFieldlist) {
-        CC << "    " << var(field) << " = " << field.value << ";\n";
+        if (!field.isCustom)
+            CC << "    " << var(field) << " = " << field.value << ";\n";
     }
     if (!classInfo.baseclassFieldlist.empty() && !classInfo.fieldList.empty())
         CC << "\n";
 
     for (const auto& field : classInfo.fieldList) {
+        if (field.isCustom)
+            continue;
         Assert(!field.isAbstract); // ensured in the analyzer
         Assert(!field.iscOwnedObject); // ensured in the analyzer
         if (field.isArray) {
@@ -1041,6 +1048,8 @@ void MsgCodeGenerator::generateStructImpl(const ClassInfo& classInfo)
     if (!classInfo.baseClass.empty())
         CC << "    doParsimPacking(b,(::" << classInfo.baseClass << "&)a);\n";
     for (const auto& field : classInfo.fieldList) {
+        if (field.isCustom)
+            continue;
         if (field.isArray)
             CC << "    doParsimArrayPacking(b,a." << field.var << "," << field.arraySize << ");\n";
         else
@@ -1054,6 +1063,8 @@ void MsgCodeGenerator::generateStructImpl(const ClassInfo& classInfo)
     if (!classInfo.baseClass.empty())
         CC << "    doParsimUnpacking(b,(::" << classInfo.baseClass << "&)a);\n";
     for (const auto& field : classInfo.fieldList) {
+        if (field.isCustom)
+            continue;
         if (field.isArray)
             CC << "    doParsimArrayUnpacking(b,a." << field.var << "," << field.arraySize << ");\n";
         else

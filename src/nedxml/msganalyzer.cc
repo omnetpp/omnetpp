@@ -564,6 +564,8 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
 
     if (field->isEditable && field->fromString.empty() && classInfo.generateDescriptor && classInfo.generateSettersInDescriptor)
         errors->addError(field->astNode, "Field '%s' is editable, but @fromString is unspecified", field->name.c_str());
+
+    field->isCustom = getPropertyAsBool(field->props, PROP_CUSTOM, false);
 }
 
 MsgAnalyzer::FieldInfo *MsgAnalyzer::findField(ClassInfo& classInfo, const std::string& name)
