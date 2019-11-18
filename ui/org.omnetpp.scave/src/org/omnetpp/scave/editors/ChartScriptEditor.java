@@ -97,6 +97,8 @@ import org.omnetpp.scave.python.NativeChartViewer;
 import org.omnetpp.scave.python.PanAction;
 import org.omnetpp.scave.python.ToggleAutoUpdateAction;
 import org.omnetpp.scave.python.ZoomAction;
+import org.python.pydev.core.IIndentPrefs;
+import org.python.pydev.core.autoedit.PyAutoIndentStrategy;
 import org.python.pydev.editor.PyEdit;
 import org.python.pydev.editor.PyEditConfiguration;
 import org.python.pydev.plugin.PyDevUiPrefs;
@@ -642,6 +644,19 @@ public class ChartScriptEditor extends PyEdit {
             formEditor.addSeparatorToToolbar();
             formEditor.addToToolbar(new ClosePageAction());
         }
+    }
+
+    // Overriding this is only necessary because we are replacing the SourceViewerConfiguration,
+    // and there were some inconsistencies, with the original IIndentPrefs referring to the original config?
+    @Override
+    public IIndentPrefs getIndentPrefs() {
+        return getAutoEditStrategy().getIndentPrefs();
+    }
+
+    // Overriding this is only necessary because we are replacing the SourceViewerConfiguration,
+    // and there were some inconsistencies, with the original AutoIndentStrategy referring to the original config?
+    public PyAutoIndentStrategy getAutoEditStrategy() {
+        return ((PyEditConfiguration)getSourceViewerConfiguration()).getPyAutoIndentStrategy(this);
     }
 
     // to make sure the Ctrl+Space hotkey does not show the completion popup when
