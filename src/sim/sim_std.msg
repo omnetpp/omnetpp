@@ -47,6 +47,7 @@ Register_Enum(cFigure::FillRule,  (cF::FILL_EVENODD, cF::FILL_NONZERO));
 Register_Enum(cFigure::Arrowhead, (cF::ARROW_NONE, cF::ARROW_SIMPLE, cF::ARROW_TRIANGLE, cF::ARROW_BARBED));
 Register_Enum(cFigure::Anchor,    (cF::ANCHOR_CENTER, cF::ANCHOR_N, cF::ANCHOR_E, cF::ANCHOR_S, cF::ANCHOR_W, cF::ANCHOR_NW, cF::ANCHOR_NE, cF::ANCHOR_SE, cF::ANCHOR_SW, cF::ANCHOR_BASELINE_START, cF::ANCHOR_BASELINE_MIDDLE, cF::ANCHOR_BASELINE_END));
 Register_Enum(cFigure::Interpolation, (cF::INTERPOLATION_NONE, cF::INTERPOLATION_FAST, cF::INTERPOLATION_BEST));
+Register_Enum(cValue::Type,       (cValue::UNDEF, cValue::BOOL, cValue::INT, cValue::DOUBLE, cValue::STRING, cValue::OBJECT));
 #undef cF
 
 //
@@ -93,6 +94,7 @@ enum cFigure::FillRule;
 enum cFigure::Arrowhead;
 enum cFigure::Anchor;
 enum cFigure::Interpolation;
+enum cValue::Type;
 
 class simtime_t
 {
@@ -717,8 +719,9 @@ class cValue
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
-    @opaque;
     @toString(.str());
+    int type @enum(cValue::Type) @hint("Value type");
+    cObject *containedObject @getter(cValue::getContainedObject($)) @hint("Only of type==OBJECT");
 }
 
 class cValueArray extends cOwnedObject
@@ -735,8 +738,8 @@ struct cValueMap::Entry
     @overwritePreviousDefinition;
     @descriptor(readonly);
     @toString(cValueMap::entryToStr($));
-    string first;
-    cValue second;
+    string first @hint("Key");
+    cValue second @hint("Value");
 }
 
 class cValueMap extends cOwnedObject

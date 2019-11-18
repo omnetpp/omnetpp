@@ -84,6 +84,9 @@ class SIM_API cValue
     void assertType(Type t) const {if (type!=t) cannotCastError(t);}
 #endif
     [[noreturn]] void cannotCastError(Type t) const;
+  public:
+    // internal, for inspectors only:
+    static cObject *getContainedObject(const cValue *p) {return p->type==cValue::OBJECT ? p->obj : nullptr;}
 
   public:
     /** @name Constructors */
