@@ -99,7 +99,8 @@ void cValueMap::forEachChild(cVisitor* v)
 {
     for (auto entry : fields)
         if (entry.second.getType() == cValue::OBJECT)
-            v->visit(entry.second.objectValue());
+            if (cObject *child = entry.second.objectValue())
+                v->visit(child);
 }
 
 void cValueMap::parsimPack(cCommBuffer* buffer) const
