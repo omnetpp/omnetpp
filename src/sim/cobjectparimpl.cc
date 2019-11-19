@@ -18,6 +18,7 @@
 #include "omnetpp/cobjectparimpl.h"
 #include "omnetpp/cstringtokenizer.h"
 #include "omnetpp/cdynamicexpression.h"
+#include "omnetpp/cobjectfactory.h"
 #include "omnetpp/ccomponent.h"
 
 namespace omnetpp {
@@ -26,6 +27,7 @@ cObjectParImpl::cObjectParImpl()
 {
     obj = nullptr;
     expr = nullptr;
+    expectedType = nullptr;
 }
 
 cObjectParImpl::~cObjectParImpl()
@@ -36,12 +38,18 @@ cObjectParImpl::~cObjectParImpl()
 
 void cObjectParImpl::copy(const cObjectParImpl& other)
 {
-    if (flags & FL_ISEXPR) //FIXME!!! if (other.flags...)
+    if (flags & FL_ISEXPR)
         expr = other.expr->dup();
 
-    //TODO dup() if owner!!!
-    //obj = other.obj;
-    obj = nullptr;
+    expectedType = other.expectedType;
+
+    obj = other.obj;
+    if (obj) {
+        if (!obj->isOwnedObject())
+            obj = obj->dup();
+        else if (obj->getOwner() == &other)
+            take(static_cast<cOwnedObject*>(obj = obj->dup()));
+    }
 }
 
 void cObjectParImpl::operator=(const cObjectParImpl& other)
@@ -176,11 +184,35 @@ void cObjectParImpl::deleteObject()
 
 void cObjectParImpl::doSetObject(cObject *object)
 {
+    checkType(object);
     deleteObject();
     obj = object;
     if (cOwnedObject *ownedObj = dynamic_cast<cOwnedObject*>(obj))
         if (ownedObj->getOwner()->isSoftOwner())
             take(ownedObj);
+}
+
+void cObjectParImpl::checkType(cObject *object)
+{
+    if (!expectedType)
+        return;
+
+    bool optional = expectedType[strlen(expectedType)-1] == '?';
+    if (!object) {
+        if (optional)
+            return;
+        else
+            throw cRuntimeError("nullptr is not an allowed value (append '?' to the name in @class() to allow it)");
+    }
+
+    std::string typeName = optional ? std::string(expectedType, strlen(expectedType)-1) : expectedType; // remove trailing '?'
+    cObjectFactory *factory = cObjectFactory::find(typeName.c_str());
+    if (!factory)
+        throw cRuntimeError("'%s' is not a registered class (missing Register_Class() or Register_Abstract_Class() macro?)", typeName.c_str());
+    if (!factory->isInstance(object))
+        throw cRuntimeError("Cannot cast object (%s)%s to '%s', the C++ type declared for the parameter",
+                object->getClassName(), object->getFullName(), factory->getFullName());
+
 }
 
 cPar::Type cObjectParImpl::getType() const
@@ -191,6 +223,12 @@ cPar::Type cObjectParImpl::getType() const
 bool cObjectParImpl::isNumeric() const
 {
     return false;
+}
+
+void cObjectParImpl::setExpectedType(const char *s)
+{
+    stringPool.release(expectedType);
+    expectedType = stringPool.get(s);
 }
 
 void cObjectParImpl::convertToConst(cComponent *context)

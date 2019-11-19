@@ -40,6 +40,7 @@ class SIM_API cObjectParImpl : public cParImpl
     // selector: flags & FL_ISEXPR
     cExpression *expr;
     mutable cObject *obj; // stores the result of the last evaluation
+    const char *expectedType; // value of the @class property or nullptr; stringpooled
 
   private:
     void copy(const cObjectParImpl& other);
@@ -47,7 +48,8 @@ class SIM_API cObjectParImpl : public cParImpl
   protected:
     void deleteExpression();
     void deleteObject();
-    void doSetObject(cObject *object);
+    virtual void doSetObject(cObject *object);
+    virtual void checkType(cObject *object);
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -179,6 +181,11 @@ class SIM_API cObjectParImpl : public cParImpl
      * Returns false.
      */
     virtual bool isNumeric() const override;
+
+    /**
+     * Sets the expected type (@class property in NED)
+     */
+    virtual void setExpectedType(const char *s);
     //@}
 
     /** @name Redefined cParImpl misc functions. */

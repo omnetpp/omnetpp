@@ -42,6 +42,7 @@
 #include "omnetpp/cboolparimpl.h"
 #include "omnetpp/cintparimpl.h"
 #include "omnetpp/cstringparimpl.h"
+#include "omnetpp/cobjectparimpl.h"
 #include "common/displaystring.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigoption.h"
@@ -210,6 +211,14 @@ void cNedNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
             cProperty *unitProp = paramProps->get("unit");
             const char *declUnit = unitProp ? unitProp->getValue(cProperty::DEFAULTKEY) : nullptr;
             impl->setUnit(declUnit);
+
+            if (impl->getType() == cPar::OBJECT) {
+                cProperty *classProp = paramProps->get("class");
+                const char *declClass = classProp ? classProp->getValue(cProperty::DEFAULTKEY) : nullptr;
+                cObjectParImpl *objParImpl = dynamic_cast<cObjectParImpl*>(impl);
+                ASSERT(objParImpl);
+                objParImpl->setExpectedType(declClass);
+            }
         }
         else {
             // parameter must exist already. Un-share it so that we can modify its value

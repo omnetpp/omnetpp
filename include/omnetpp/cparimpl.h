@@ -63,6 +63,8 @@ class SIM_API cParImpl : public cNamedObject
     // global variables for statistics
     static long totalParimplObjs;
     static long liveParimplObjs;
+
+  protected:
     static cStringPool stringPool;
 
   private:
