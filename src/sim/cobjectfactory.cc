@@ -33,9 +33,7 @@ cObjectFactory::cObjectFactory(const char *name, cObject *(*creatorf)(), void *(
 
 std::string cObjectFactory::str() const
 {
-    if (description.empty())
-        return "";
-    return std::string("(") + description + ")";  //TODO isAbstract
+    return opp_join("; ", isAbstract() ? "abstract class" : "", description);
 }
 
 cObjectFactory *cObjectFactory::find(const char *className, const char *contextNamespace, bool fallbackToOmnetpp)
