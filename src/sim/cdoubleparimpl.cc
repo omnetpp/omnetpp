@@ -53,16 +53,6 @@ void cDoubleParImpl::operator=(const cDoubleParImpl& other)
     copy(other);
 }
 
-void cDoubleParImpl::parsimPack(cCommBuffer *buffer) const
-{
-    //TBD
-}
-
-void cDoubleParImpl::parsimUnpack(cCommBuffer *buffer)
-{
-    //TBD
-}
-
 void cDoubleParImpl::setBoolValue(bool b)
 {
     throw cRuntimeError(this, E_BADCAST, "bool", "double");

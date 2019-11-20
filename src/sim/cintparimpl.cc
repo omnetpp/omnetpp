@@ -51,16 +51,6 @@ void cIntParImpl::operator=(const cIntParImpl& other)
     copy(other);
 }
 
-void cIntParImpl::parsimPack(cCommBuffer *buffer) const
-{
-    //TBD
-}
-
-void cIntParImpl::parsimUnpack(cCommBuffer *buffer)
-{
-    //TBD
-}
-
 void cIntParImpl::setBoolValue(bool b)
 {
     throw cRuntimeError(this, E_BADCAST, "bool", "integer");

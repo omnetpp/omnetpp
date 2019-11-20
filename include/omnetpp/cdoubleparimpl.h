@@ -73,16 +73,6 @@ class SIM_API cDoubleParImpl : public cParImpl
      * Creates and returns an exact copy of this object.
      */
     virtual cDoubleParImpl *dup() const override  {return new cDoubleParImpl(*this);}
-
-    /**
-     * Serializes the object into a buffer.
-     */
-    virtual void parsimPack(cCommBuffer *buffer) const override;
-
-    /**
-     * Deserializes the object from a buffer.
-     */
-    virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}
 
     /** @name Redefined cParImpl setter functions. */

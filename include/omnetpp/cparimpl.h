@@ -107,12 +107,12 @@ class SIM_API cParImpl : public cNamedObject
     virtual cParImpl *dup() const override;
 
     /**
-     * Serializes the object into a buffer.
+     * Redefined to throw a "packing not supported" exception.
      */
     virtual void parsimPack(cCommBuffer *buffer) const override;
 
     /**
-     * Deserializes the object from a buffer.
+     * Redefined to throw a "packing not supported" exception.
      */
     virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}

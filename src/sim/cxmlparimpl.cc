@@ -51,16 +51,6 @@ void cXMLParImpl::operator=(const cXMLParImpl& other)
     copy(other);
 }
 
-void cXMLParImpl::parsimPack(cCommBuffer *buffer) const
-{
-    //TBD
-}
-
-void cXMLParImpl::parsimUnpack(cCommBuffer *buffer)
-{
-    //TBD
-}
-
 void cXMLParImpl::forEachChild(cVisitor *v, cComponent *context)
 {
     if (isSet()) { // because xmlValue() throws otherwise

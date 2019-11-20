@@ -71,12 +71,12 @@ cParImpl& cParImpl::operator=(const cParImpl& other)
 
 void cParImpl::parsimPack(cCommBuffer *buffer) const
 {
-    //TBD
+    throw cRuntimeError(E_CANTPACK);
 }
 
 void cParImpl::parsimUnpack(cCommBuffer *buffer)
 {
-    //TBD
+    throw cRuntimeError(E_CANTPACK);
 }
 
 cParImpl *cParImpl::dup() const

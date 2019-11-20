@@ -49,16 +49,6 @@ void cStringParImpl::operator=(const cStringParImpl& other)
     copy(other);
 }
 
-void cStringParImpl::parsimPack(cCommBuffer *buffer) const
-{
-    //TBD
-}
-
-void cStringParImpl::parsimUnpack(cCommBuffer *buffer)
-{
-    //TBD
-}
-
 void cStringParImpl::setBoolValue(bool b)
 {
     throw cRuntimeError(this, E_BADCAST, "bool", "string");

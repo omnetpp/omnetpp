@@ -49,16 +49,6 @@ void cBoolParImpl::operator=(const cBoolParImpl& other)
     copy(other);
 }
 
-void cBoolParImpl::parsimPack(cCommBuffer *buffer) const
-{
-    //TBD
-}
-
-void cBoolParImpl::parsimUnpack(cCommBuffer *buffer)
-{
-    //TBD
-}
-
 void cBoolParImpl::setBoolValue(bool b)
 {
     deleteOld();
