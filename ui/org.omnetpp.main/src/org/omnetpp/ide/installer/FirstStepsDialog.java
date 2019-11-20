@@ -166,7 +166,7 @@ public class FirstStepsDialog extends TitleAreaDialog {
             public void run() {
                 try {
                     IWorkbench workbench = PlatformUI.getWorkbench();
-                    workbench.getBrowserSupport().createBrowser("open-community-catalog").openURL(new URL("http://www.omnetpp.org/models/catalog"));
+                    workbench.getBrowserSupport().createBrowser("open-community-catalog").openURL(new URL("http://omnetpp.org/download/models-and-tools"));
                     //XXX workbench.getBrowserSupport().getExternalBrowser().openURL(new URL(event.location));
                 }
                 catch (Exception e) {
