@@ -169,7 +169,7 @@ QString ModuleCanvasViewer::gatherTooltips(const QRect& rect)
     for (auto i : items) {
         QString itemTip = i->data(ITEMDATA_TOOLTIP).toString();
 
-        if (itemTip.isEmpty()) {
+        if (itemTip.isEmpty() && getQtenv()->inspectorsAreFresh()) {
             cObject *itemObject = i->data(ITEMDATA_COBJECT).value<cObject *>();
 
             if (itemObject && itemObject != object)
