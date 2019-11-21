@@ -314,9 +314,9 @@ class noncopyable
     noncopyable() {}
     ~noncopyable() {}
   private:
-    // private, and in addition unimplemented (usage causes missing linker symbol)
-    noncopyable(const noncopyable& x);
-    const noncopyable& operator=(const noncopyable&);
+    // private, and in addition deleted
+    noncopyable(const noncopyable& x) = delete;
+    const noncopyable& operator=(const noncopyable&) = delete;
 };
 
 }  // namespace omnetpp
