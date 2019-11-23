@@ -435,8 +435,7 @@ void MsgCodeGenerator::generateClassDecl(const ClassInfo& classInfo, const std::
     H << "  private:\n";
     H << "    void copy(const " << classInfo.className << "& other);\n\n";
     H << "  protected:\n";
-    H << "    // protected and unimplemented operator==(), to prevent accidental usage\n";
-    H << "    bool operator==(const " << classInfo.className << "&);\n";
+    H << "    bool operator==(const " << classInfo.className << "&) = delete;\n";
     if (classInfo.customize) {
         H << "    // make constructors protected to avoid instantiation\n";
     }
