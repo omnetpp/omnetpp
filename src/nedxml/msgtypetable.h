@@ -29,6 +29,8 @@
 namespace omnetpp {
 namespace nedxml {
 
+class CplusplusElement;
+
 /**
  * Holds types from msg files.
  *
@@ -186,7 +188,8 @@ class NEDXML_API MsgTypeTable
         std::string str;               // @str; expression to be returned from str() method
 
         std::string classExtraCode;    // code to be inserted into the class declaration
-        std::map<std::string, std::string> methodExtraCode; // code to be inserted in methods given as keys
+        std::map<std::string, CplusplusElement*> methodCplusplusBlocks; // keyed by method name
+        mutable std::set<std::string> usedMethodCplusplusBlocks; // collects method names; used during generation
 
         // The following members describe how the class should behave when instantiated as field
         std::string defaultValue;      // default value (or empty)

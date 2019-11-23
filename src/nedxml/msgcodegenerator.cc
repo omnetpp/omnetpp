@@ -581,6 +581,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
         if (!field.isArray)
             CC << takeElem.str();
     }
+    generateMethodCplusplusBlock(classInfo, classInfo.className);
     CC << "}\n\n";
 
     // copy constructor:
@@ -600,6 +601,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
             CC << "        take(&" << varElem(field) << ");\n";
         }
     }
+    generateMethodCplusplusBlock(classInfo, classInfo.className + "&");
     CC << "    copy(other);\n";
     CC << "}\n\n";
 
@@ -625,6 +627,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
         else {
             CC << releaseElem.str();
         }
+        generateMethodCplusplusBlock(classInfo, std::string("~") + classInfo.className);
     }
     CC << "}\n\n";
 
@@ -634,6 +637,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
     CC << "    if (this == &other) return *this;\n";
     if (classInfo.baseClass != "")
         CC << "    ::" << classInfo.baseClass << "::operator=(other);\n";
+    generateMethodCplusplusBlock(classInfo, "operator=");
     CC << "    copy(other);\n";
     CC << "    return *this;\n";
     CC << "}\n\n";
@@ -703,11 +707,14 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
             CC << copyElem.str();
         }
     }
+    generateMethodCplusplusBlock(classInfo, "copy");
     CC << "}\n\n";
 
+    // str() function:
     if (!classInfo.str.empty()) {
         CC << "std::string " << classInfo.className << "::str() const\n";
         CC << "{\n";
+        generateMethodCplusplusBlock(classInfo, "str");
         CC << "    return " << classInfo.str << ";\n";
         CC << "}\n\n";
     }
@@ -715,7 +722,8 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
     //
     // Note: This class may not be derived from cObject, and then this parsimPack()/
     // parsimUnpack() is NOT that of cObject. However it's still needed because a
-    // "friend" doParsimPacking() function could not access protected members otherwise.
+    // "friend" doParsimPacking() function would not be able to access protected
+    // members otherwise.
     //
     CC << "void " << classInfo.className << "::parsimPack(omnetpp::cCommBuffer *b) const\n";
     CC << "{\n";
@@ -745,6 +753,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
             }
         }
     }
+    generateMethodCplusplusBlock(classInfo, "parsimPack");
     CC << "}\n\n";
 
     CC << "void " << classInfo.className << "::parsimUnpack(omnetpp::cCommBuffer *b)\n";
@@ -785,6 +794,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
             }
         }
     }
+    generateMethodCplusplusBlock(classInfo, "parsimUnpack");
     CC << "}\n\n";
 
     for (const auto& field : classInfo.fieldList) {
@@ -800,6 +810,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
         if (field.isArray) {
             CC << "" << field.sizeType << " " << classInfo.className << "::" << field.sizeGetter << "() const\n";
             CC << "{\n";
+            generateMethodCplusplusBlock(classInfo, field.sizeGetter);
             CC << "    return " << field.sizeVar << ";\n";
             CC << "}\n\n";
         }
@@ -808,6 +819,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
         CC << "{\n";
         if (field.isArray)
             CC << "    if (k >= " << field.sizeVar << ") throw omnetpp::cRuntimeError(\"Array of size " << field.sizeVar << " indexed by %lu\", (unsigned long)k);\n";
+        generateMethodCplusplusBlock(classInfo, field.getter);
         CC << "    return " << makeFuncall(indexedVar, field.getterConversion) + ";\n";
         CC << "}\n\n";
 
@@ -838,6 +850,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
             CC << "    " << field.sizeVar << " = newSize;\n";
             if (!field.isPointer && field.iscOwnedObject)
                 CC << forEachIndex(field) << "\n" << "        take(&" << varElem(field) << ");\n";
+            generateMethodCplusplusBlock(classInfo, field.sizeGetter);
             CC << "}\n\n";
         }
 
@@ -849,6 +862,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
                 CC << "    if (k >= " << field.sizeVar << ") throw omnetpp::cRuntimeError(\"Array of size " << field.arraySize << " indexed by %lu\", (unsigned long)k);\n";
             }
             CC << maybe_handleChange_line;
+            generateMethodCplusplusBlock(classInfo, field.setter);
             if (field.isOwnedPointer) {
                 if (!field.allowReplace)
                     CC << "    if (" << indexedVar << " != nullptr) throw omnetpp::cRuntimeError(\"" << field.setter << "(): a value is already set, remove it first with " << field.dropper << "()\");\n";
@@ -872,6 +886,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
             if (field.isArray)
                 CC << "    if (k >= " << field.sizeVar << ") throw omnetpp::cRuntimeError(\"Array of size " << field.arraySize << " indexed by %lu\", (unsigned long)k);\n";
             CC << maybe_handleChange_line;
+            generateMethodCplusplusBlock(classInfo, field.dropper);
             CC << "    " << field.mutableReturnType << " retval = ";
             if (field.isConst)
                 CC << "const_cast<" << field.mutableReturnType << ">(" << indexedVar << ");\n";
@@ -890,8 +905,9 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
         if (field.isDynamicArray) {
             CC << "void " << classInfo.className << "::" << field.inserter << "(" << idxarg2 << field.argType << " " << field.argName << ")\n";
             CC << "{\n";
-            CC << maybe_handleChange_line;
             CC << "    if (k > " << field.sizeVar << ") throw omnetpp::cRuntimeError(\"Array of size " << field.arraySize << " indexed by %lu\", (unsigned long)k);\n";
+            CC << maybe_handleChange_line;
+            generateMethodCplusplusBlock(classInfo, field.inserter);
             CC << "    " << field.sizeType << " newSize = " << field.sizeVar << " + 1;\n";
             CC << "    " << field.dataType << " *" << field.var << "2 = new " << field.dataType << "[newSize];\n";
             CC << "    " << field.sizeType << " i;\n";
@@ -925,6 +941,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
             CC << "{\n";
             CC << "    if (k >= " << field.sizeVar << ") throw omnetpp::cRuntimeError(\"Array of size " << field.arraySize << " indexed by %lu\", (unsigned long)k);\n";
             CC << maybe_handleChange_line;
+            generateMethodCplusplusBlock(classInfo, field.eraser);
             CC << "    " << field.sizeType << " newSize = " << field.sizeVar << " - 1;\n";
             CC << "    " << field.dataType << " *" << field.var << "2 = (newSize == 0) ? nullptr : new " << field.dataType << "[newSize];\n";
             CC << "    " << field.sizeType << " i;\n";
@@ -950,6 +967,8 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
             CC << "}\n\n";
         }
     }
+
+    reportUnusedMethodCplusplusBlocks(classInfo);
 }
 
 void MsgCodeGenerator::generateStruct(const ClassInfo& classInfo, const std::string& exportDef)
@@ -1013,6 +1032,7 @@ void MsgCodeGenerator::generateStructImpl(const ClassInfo& classInfo)
             }
         }
     }
+    generateMethodCplusplusBlock(classInfo, classInfo.className);
     CC << "}\n\n";
 
     // doPacking/doUnpacking go to the global namespace
@@ -1026,6 +1046,7 @@ void MsgCodeGenerator::generateStructImpl(const ClassInfo& classInfo)
         else
             CC << "    doParsimPacking(b,a." << field.var << ");\n";
     }
+    generateMethodCplusplusBlock(classInfo, "__doPacking");
     CC << "}\n\n";
 
     CC << "void __doUnpacking(omnetpp::cCommBuffer *b, " << classInfo.className << "& a)\n";
@@ -1038,7 +1059,10 @@ void MsgCodeGenerator::generateStructImpl(const ClassInfo& classInfo)
         else
             CC << "    doParsimUnpacking(b,a." << field.var << ");\n";
     }
+    generateMethodCplusplusBlock(classInfo, "__doUnpacking");
     CC << "}\n\n";
+
+    reportUnusedMethodCplusplusBlocks(classInfo);
 }
 
 void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
@@ -1678,22 +1702,50 @@ void MsgCodeGenerator::generateTypeAnnouncement(const ClassInfo& classInfo)
     H << (classInfo.isClass ? "class " : "struct ") << classInfo.name << ";\n";
 }
 
-void MsgCodeGenerator::generateCplusplusBlock(const std::string& target, const std::string& body0)
+void MsgCodeGenerator::generateMethodCplusplusBlock(const ClassInfo& classInfo, const std::string& method)
 {
-    std::string body = body0;
-    size_t pos0 = body.find_first_not_of("\r\n");
-    if (pos0 != body.npos)
-        body = body.substr(pos0);
-    size_t pos = body.find_last_not_of("\r\n");
-    if (pos != body.npos)
-        body = body.substr(0, pos+1);
-    if (target == "" || target == "h")
-        H << "// cplusplus {{\n" << body << "\n// }}\n\n";
-    else if (target == "cc")
-        CC << "// cplusplus {{\n" << body << "\n// }}\n\n";
-    else
-        throw opp_runtime_error("unrecognized target '%s' for cplusplus block", target.c_str());
+    auto it = classInfo.methodCplusplusBlocks.find(method);
+    if (it != classInfo.methodCplusplusBlocks.end()) {
+        generateCplusplusBlock(CC, it->second->getBody());
+        classInfo.usedMethodCplusplusBlocks.insert(method);
+    }
 }
+
+void MsgCodeGenerator::reportUnusedMethodCplusplusBlocks(const ClassInfo& classInfo)
+{
+    for (auto pair : classInfo.methodCplusplusBlocks)
+        if (!contains(classInfo.usedMethodCplusplusBlocks, pair.first))
+            errors->addError(pair.second, "invalid target for cplusplus block: no '%s' method generated in the specified type", pair.first.c_str());
+}
+
+void MsgCodeGenerator::generateHeaderCplusplusBlock(const std::string& body)
+{
+    generateCplusplusBlock(H, body);
+    H << "\n";
+}
+
+void MsgCodeGenerator::generateImplCplusplusBlock(const std::string& body)
+{
+    generateCplusplusBlock(CC, body);
+    CC << "\n";
+}
+
+void MsgCodeGenerator::generateCplusplusBlock(std::ofstream& out, const std::string& body)
+{
+    std::string trimmedBody = body;
+    size_t pos0 = trimmedBody.find_first_not_of("\r\n");
+    if (pos0 != trimmedBody.npos)
+        trimmedBody = trimmedBody.substr(pos0);
+    size_t pos = trimmedBody.find_last_not_of("\r\n");
+    if (pos != trimmedBody.npos)
+        trimmedBody = trimmedBody.substr(0, pos+1);
+
+    out << "// cplusplus {{\n";
+    out << trimmedBody << "\n";
+    out << "// }}\n";
+}
+
+
 
 }  // namespace nedxml
 }  // namespace omnetpp

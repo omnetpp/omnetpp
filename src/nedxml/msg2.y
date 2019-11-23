@@ -233,7 +233,7 @@ targetspec
         ;
 
 targetitem
-        : NAME | DOUBLECOLON | INTCONSTANT | ':' | '.' | ','
+        : NAME | DOUBLECOLON | INTCONSTANT | ':' | '.' | ',' | '~' | '=' | '&'
         ;
 
 /*

@@ -127,7 +127,8 @@ P check_and_cast(T *p)
     return ret;
 }
 
-MsgCompiler::MsgCompiler(const MsgCompilerOptions& opts, ErrorStore *errors) : opts(opts), analyzer(opts, &typeTable, errors), errors(errors)
+MsgCompiler::MsgCompiler(const MsgCompilerOptions& opts, ErrorStore *errors) :
+    opts(opts), analyzer(opts, &typeTable, errors), codegen(errors), errors(errors)
 {
 }
 
@@ -378,8 +379,10 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
                 CplusplusElement *cppElem = check_and_cast<CplusplusElement *>(child);
                 std::string body = cppElem->getBody();
                 std::string target = cppElem->getTarget();
-                if (target == "" || target == "h" || target == "cc")
-                    codegen.generateCplusplusBlock(target, body);
+                if (target == "" || target == "h")
+                    codegen.generateHeaderCplusplusBlock(body);
+                else if (target == "cc")
+                    codegen.generateImplCplusplusBlock(body);
                 break;
             }
 

@@ -53,6 +53,7 @@ class NEDXML_API MsgCodeGenerator
     std::ofstream hStream;
     std::ofstream ccStream;
     std::string headerGuard;
+    ErrorStore *errors;
 
   protected:
     std::string prefixWithNamespace(const std::string& name, const std::string& namespaceName);
@@ -62,8 +63,12 @@ class NEDXML_API MsgCodeGenerator
     void generateClassImpl(const ClassInfo& classInfo);
     void generateStructDecl(const ClassInfo& classInfo, const std::string& exportDef);
     void generateStructImpl(const ClassInfo& classInfo);
+    void generateCplusplusBlock(std::ofstream& out, const std::string& body);
+    void generateMethodCplusplusBlock(const ClassInfo& classInfo, const std::string& method);
+    void reportUnusedMethodCplusplusBlocks(const ClassInfo& classInfo);
 
   public:
+    MsgCodeGenerator(ErrorStore *errors) : errors(errors) {}
     void openFiles(const char *hFile, const char *ccFile);
     void closeFiles();
     void deleteFiles();
@@ -78,7 +83,8 @@ class NEDXML_API MsgCodeGenerator
     void generateNamespaceEnd(const std::string& namespaceName, bool intoCcFile=true);
     void generateTypeAnnouncement(const ClassInfo& classInfo);
     std::string generatePreComment(ASTNode *nedElement);
-    void generateCplusplusBlock(const std::string& target, const std::string& body);
+    void generateHeaderCplusplusBlock(const std::string& body);
+    void generateImplCplusplusBlock(const std::string& body);
     void generateTemplates();
 };
 

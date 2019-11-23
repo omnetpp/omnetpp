@@ -401,6 +401,8 @@ std::string opp_breaklines(const std::string& text, int lineLength)
 
 std::string opp_indentlines(const std::string& text, const std::string& indent)
 {
+    if (indent.empty())
+        return text;
     std::string tmp = indent + opp_replacesubstring(text, "\n", std::string("\n")+indent, true);
     if (text[text.length()-1] == '\n')
         tmp = tmp.substr(0, tmp.length() - indent.length()); // remove indent after last line

@@ -849,17 +849,16 @@ void MsgAnalyzer::analyzeCplusplusBlockTarget(CplusplusElement *cppElem, const s
         errors->addError(cppElem, "invalid target for cplusplus block: type '%s' is not generated", qname.c_str());
     else if (method == "" && classInfo->classExtraCode != "")
         errors->addError(cppElem, "invalid target for cplusplus block: duplicate block for type '%s'", qname.c_str());
-    else if (method != "" && containsKey(classInfo->methodExtraCode, method))
+    else if (method != "" && containsKey(classInfo->methodCplusplusBlocks, method))
         errors->addError(cppElem, "invalid target for cplusplus block: duplicate block for method '%s::%s", qname.c_str(), method.c_str());
     else
         ok = true;
 
     if (ok) {
-        std::string body = cppElem->getBody();
         if (method == "")
-            classInfo->classExtraCode = body;
+            classInfo->classExtraCode = cppElem->getBody();
         else
-            classInfo->methodExtraCode[method] = body;
+            classInfo->methodCplusplusBlocks[method] = cppElem;
     }
 }
 
