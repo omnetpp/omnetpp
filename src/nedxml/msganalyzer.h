@@ -88,6 +88,7 @@ class NEDXML_API MsgAnalyzer
     ClassInfo extractClassInfoFromEnum(EnumElement *node, const std::string& namespaceName, bool isImported);
     Property extractProperty(PropertyElement *propertyElem);
     void validateFileProperty(const Property& property);
+    void analyzeCplusplusBlockTarget(CplusplusElement *cppElem, const std::string& currentNamespace);
 
   public:
     static constexpr const char* ATT_NAME = "name";

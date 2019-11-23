@@ -323,9 +323,9 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
     NamespaceElement *firstNSElem = fileElement->getFirstNamespaceChild();
     std::string firstNSName = firstNSElem ? firstNSElem->getName() : "";
     codegen.generateProlog(fileElement->getFilename(), firstNSName, opts.exportDef);
-    std::map<std::string, std::string> classExtraCode;
+    std::map<std::string, std::map<std::string, std::string>> classExtraCode; //per-class, per-method
 
-    // generate forward declarations so that cyclic references compile; also collect classExtraCode blocks
+    // generate forward declarations so that cyclic references compile; also collect cplusplus blocks
     for (ASTNode *child = fileElement->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
             case MSG_NAMESPACE: {
@@ -350,24 +350,7 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
             }
             case MSG_CPLUSPLUS: {
                 CplusplusElement *cppElem = check_and_cast<CplusplusElement *>(child);
-                std::string body = cppElem->getBody();
-                std::string target = cppElem->getTarget();
-                if (target != "" && target != "h" && target != "cc") { // target must be a type name
-                    std::string qname = prefixWithNamespace(target, currentNamespace);
-                    ClassInfo *classInfo = typeTable.findClassInfo(qname);
-                    if (classInfo == nullptr)
-                        errors->addError(cppElem, "invalid target for cplusplus block: no such type '%s'", qname.c_str());
-                    else if (classInfo->isImported)
-                        errors->addError(cppElem, "invalid target for cplusplus block: type '%s' is imported", qname.c_str());
-                    else if (classInfo->isEnum)
-                        errors->addError(cppElem, "invalid target for cplusplus block: type '%s' is enum", qname.c_str());
-                    else if (!classInfo->generateClass)
-                        errors->addError(cppElem, "invalid target for cplusplus block: class '%s' is not generated", qname.c_str());
-                    else if (classExtraCode.find(qname) != classExtraCode.end())
-                        errors->addError(cppElem, "invalid target for cplusplus block: duplicate block for type '%s'", qname.c_str());
-                    else
-                        classExtraCode[qname] = body;
-                }
+                analyzer.analyzeCplusplusBlockTarget(cppElem, currentNamespace);
                 break;
             }
         }
@@ -428,11 +411,10 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
                 if (classInfo.generateClass) {
                     if (isQualified(classInfo.className))
                         errors->addError(classInfo.astNode, "type name may only be qualified when generating descriptor for an existing class: '%s'", classInfo.className.c_str());
-                    std::string extraCode = containsKey(classExtraCode, classInfo.qname) ? classExtraCode[classInfo.qname] : "";
                     if (child->getTagCode() == MSG_STRUCT)
-                        codegen.generateStruct(classInfo, opts.exportDef, extraCode);
+                        codegen.generateStruct(classInfo, opts.exportDef);
                     else
-                        codegen.generateClass(classInfo, opts.exportDef, extraCode);
+                        codegen.generateClass(classInfo, opts.exportDef);
                 }
                 if (classInfo.generateDescriptor)
                     codegen.generateDescriptorClass(classInfo);

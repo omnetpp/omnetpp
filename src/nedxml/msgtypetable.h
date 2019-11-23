@@ -185,6 +185,9 @@ class NEDXML_API MsgTypeTable
         std::string beforeChange;      // @beforeChange; method to be called before mutator methods
         std::string str;               // @str; expression to be returned from str() method
 
+        std::string classExtraCode;    // code to be inserted into the class declaration
+        std::map<std::string, std::string> methodExtraCode; // code to be inserted in methods given as keys
+
         // The following members describe how the class should behave when instantiated as field
         std::string defaultValue;      // default value (or empty)
         bool isOpaque;                 // from @opaque

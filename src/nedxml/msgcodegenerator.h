@@ -58,9 +58,9 @@ class NEDXML_API MsgCodeGenerator
     std::string prefixWithNamespace(const std::string& name, const std::string& namespaceName);
     std::string makeFuncall(const std::string& var, const std::string& funcTemplate, bool withIndex=false, const std::string& value="");
 
-    void generateClassDecl(const ClassInfo& classInfo, const std::string& exportDef, const std::string& extraCode);
+    void generateClassDecl(const ClassInfo& classInfo, const std::string& exportDef);
     void generateClassImpl(const ClassInfo& classInfo);
-    void generateStructDecl(const ClassInfo& classInfo, const std::string& exportDef, const std::string& extraCode);
+    void generateStructDecl(const ClassInfo& classInfo, const std::string& exportDef);
     void generateStructImpl(const ClassInfo& classInfo);
 
   public:
@@ -69,8 +69,8 @@ class NEDXML_API MsgCodeGenerator
     void deleteFiles();
     void generateProlog(const std::string& msgFileName, const std::string& firstNamespace, const std::string& exportDef);
     void generateEpilog();
-    void generateClass(const ClassInfo& classInfo, const std::string& exportDef, const std::string& extraCode="");
-    void generateStruct(const ClassInfo& classInfo, const std::string& exportDef, const std::string& extraCode="");
+    void generateClass(const ClassInfo& classInfo, const std::string& exportDef);
+    void generateStruct(const ClassInfo& classInfo, const std::string& exportDef);
     void generateDescriptorClass(const ClassInfo& a);
     void generateEnum(const EnumInfo& enumInfo);
     void generateImport(const std::string& importName);

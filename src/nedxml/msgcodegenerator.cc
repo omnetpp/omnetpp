@@ -353,13 +353,13 @@ std::string MsgCodeGenerator::generatePreComment(ASTNode *nedElement)
     return o.str();
 }
 
-void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::string& exportDef, const std::string& extraCode)
+void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::string& exportDef)
 {
-    generateClassDecl(classInfo, exportDef, extraCode);
+    generateClassDecl(classInfo, exportDef);
     generateClassImpl(classInfo);
 }
 
-void MsgCodeGenerator::generateClassDecl(const ClassInfo& classInfo, const std::string& exportDef, const std::string& extraCode)
+void MsgCodeGenerator::generateClassDecl(const ClassInfo& classInfo, const std::string& exportDef)
 {
     H << "/**\n";
     H << " * Class generated from <tt>" << SL(classInfo.astNode->getSourceLocation()) << "</tt> by " PROGRAM ".\n";
@@ -516,7 +516,7 @@ void MsgCodeGenerator::generateClassDecl(const ClassInfo& classInfo, const std::
             H << "    virtual void " << field.eraser << "(" << getterIndexArg << ")" << overrideSetter /*TODO*/ << pure << ";\n";
         }
     }
-    H << extraCode;
+    H << classInfo.classExtraCode;
     H << "};\n\n";
 
     if (!classInfo.customize && classInfo.iscObject) {
@@ -952,13 +952,13 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
     }
 }
 
-void MsgCodeGenerator::generateStruct(const ClassInfo& classInfo, const std::string& exportDef, const std::string& extraCode)
+void MsgCodeGenerator::generateStruct(const ClassInfo& classInfo, const std::string& exportDef)
 {
-    generateStructDecl(classInfo, exportDef, extraCode);
+    generateStructDecl(classInfo, exportDef);
     generateStructImpl(classInfo);
 }
 
-void MsgCodeGenerator::generateStructDecl(const ClassInfo& classInfo, const std::string& exportDef, const std::string& extraCode)
+void MsgCodeGenerator::generateStructDecl(const ClassInfo& classInfo, const std::string& exportDef)
 {
     H << "/**\n";
     H << " * Struct generated from " << SL(classInfo.astNode->getSourceLocation()) << " by " PROGRAM ".\n";
@@ -979,7 +979,7 @@ void MsgCodeGenerator::generateStructDecl(const ClassInfo& classInfo, const std:
             H << " = " << field.value;
         H << ";\n";
     }
-    H << extraCode;
+    H << classInfo.classExtraCode;
     H << "};\n\n";
 
     H << "// helpers for local use\n";

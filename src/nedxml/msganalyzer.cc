@@ -819,5 +819,51 @@ void MsgAnalyzer::validateFileProperty(const Property& property)
     validateProperty(property, "file");
 }
 
+void MsgAnalyzer::analyzeCplusplusBlockTarget(CplusplusElement *cppElem, const std::string& currentNamespace)
+{
+    std::string qname, method;
+    std::string target = cppElem->getTarget();
+    if (target == "" || target == "h" || target == "cc")
+        return; // not per-class or per-method block
+
+    qname = prefixWithNamespace(target, currentNamespace);
+    ClassInfo *classInfo = typeTable->findClassInfo(qname);
+    if (!classInfo) {
+        // assume part after last "::" is a method name
+        int pos = qname.rfind("::");
+        if (pos > 0) {
+            method = qname.substr(pos+2);
+            qname = qname.substr(0, pos);
+            classInfo = typeTable->findClassInfo(qname);
+        }
+    }
+
+    bool ok = false;
+    if (classInfo == nullptr)
+        errors->addError(cppElem, "invalid target for cplusplus block: '%s' does not refer to a type in current namespace", target.c_str()); // note: qname may already be truncated here
+    else if (classInfo->isEnum)
+        errors->addError(cppElem, "invalid target for cplusplus block: type '%s' is an enum", qname.c_str());
+    else if (classInfo->isImported)
+        errors->addError(cppElem, "invalid target for cplusplus block: type '%s' is imported", qname.c_str());
+    else if (!classInfo->generateClass)
+        errors->addError(cppElem, "invalid target for cplusplus block: type '%s' is not generated", qname.c_str());
+    else if (method == "" && classInfo->classExtraCode != "")
+        errors->addError(cppElem, "invalid target for cplusplus block: duplicate block for type '%s'", qname.c_str());
+    else if (method != "" && containsKey(classInfo->methodExtraCode, method))
+        errors->addError(cppElem, "invalid target for cplusplus block: duplicate block for method '%s::%s", qname.c_str(), method.c_str());
+    else
+        ok = true;
+
+    if (ok) {
+        std::string body = cppElem->getBody();
+        if (method == "")
+            classInfo->classExtraCode = body;
+        else
+            classInfo->methodExtraCode[method] = body;
+    }
+}
+
+
+
 }  // namespace nedxml
 }  // namespace omnetpp
