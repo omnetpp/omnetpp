@@ -976,6 +976,8 @@ void MsgCodeGenerator::generateStructDecl(const ClassInfo& classInfo, const std:
         H << "    " << field.dataType << " " << field.var;
         if (field.isArray)
             H << "[" << field.arraySize << "]";
+        else if (!field.value.empty())
+            H << " = " << field.value;
         H << ";\n";
     }
     H << extraCode;
@@ -1010,9 +1012,6 @@ void MsgCodeGenerator::generateStructImpl(const ClassInfo& classInfo)
                 CC << "    for (" << field.sizeType << " i = 0; i < " << field.arraySize << "; i++)\n";
                 CC << "        " << var(field) << "[i] = " << field.value << ";\n";
             }
-        }
-        else if (!field.value.empty()) {
-            CC << "    " << var(field) << " = " << field.value << ";\n";
         }
     }
     CC << "}\n\n";
