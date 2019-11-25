@@ -1,9 +1,11 @@
 #! /bin/sh
-opp_run -s -h latexconfig > config-in.txt
+OPP_RUN=opp_run_dbg
+$OPP_RUN -s -h latexconfig > config-in.txt
 perl stripgrammar.pl ../../../../src/nedxml/ned2.y >ned.txt
 perl stripgrammar.pl ../../../../src/nedxml/msg2.y >msg.txt
 perl stripeventlog.pl ../../../../src/eventlog/eventlogentries.txt >eventlog.txt
-opp_run -s -h nedfunctions >tmp.txt
+$OPP_RUN -s -h nedfunctions >tmp.txt
 perl processnedfuncs.pl <tmp.txt >nedfuncs.tex
-opp_run -s -h units | sed 's/e+0/e/; s/e-0/e-/; s/e+/e/' | gawk '/../ { print "  " $1 " & " $2 " & " $3 " \\\\\\hline"; }' | sed 's/&  /\& /' >units.txt
+$OPP_RUN -s -h units | sed 's/e+0/e/; s/e-0/e-/; s/e+/e/' | gawk '/../ { print "  " $1 " & " $2 " & " $3 " \\\\\\hline"; }' | sed 's/&  /\& /' >units.txt
+opp_msgtool -h latexdoc > msgproperties.txt
 rm tmp.txt

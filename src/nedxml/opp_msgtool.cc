@@ -350,7 +350,11 @@ void MsgTool::printHelpPage(const std::string& page)
     }
     else if (page == "builtindefs") {
         std::cout << MsgCompiler::getBuiltinDefinitions();
-
+    }
+    else if (page == "latexdoc") {
+        MsgCompilerOptions options;
+        ErrorStore errors;
+        MsgCompiler(options, &errors).printPropertiesLatexDocu(std::cout);
     }
     else {
         throw opp_runtime_error("no help topic '%s'", page.c_str());

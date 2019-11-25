@@ -40,6 +40,8 @@
 %\setlength{\parskip}{1ex}
 %\setlength{\parindent}{5ex}
 
+\hfuzz=10pt %% suppress less severe 'overfull hbox' warnings
+
 \renewcommand{\bottomfraction}{0.9}
 \renewcommand{\topfraction}{0.9}
 \renewcommand{\floatpagefraction}{0.9}
@@ -448,6 +450,9 @@
 \cleardoublepage
 
 \include{appendix-msg-grammar}
+\cleardoublepage
+
+\include{appendix-msg-properties}
 \cleardoublepage
 
 \include{appendix-display-strings}

@@ -34,48 +34,48 @@ namespace nedxml {
 
 const char *MsgCompiler::BUILTIN_DEFINITIONS =
         R"ENDMARK(
-        @property[property](type=any; usage=file; desc="For declaring properties");
-        @property[customize](type=bool; usage=class; desc="Customize the class via inheritance. Generates base class <name>_Base");
-        @property[str](type=string; usage=class; desc="Expression to be returned from the generated str() method");
-        @property[primitive](type=bool; usage=field,class; desc="Shortcut for @opaque @byValue @editable @subclassable(false) @supportsPtr(false)");
-        @property[opaque](type=bool; usage=field,class; desc="Treats the field as atomic (non-compound) type, i.e. having no descriptor class. When specified on a class, it determines the default for fields of that type.");
-        @property[byValue](type=bool; usage=field,class; desc="Causes the value to be passed by value (instead of by reference) in setters/getters. When specified on a class, it determines the default for fields of that type.");
-        @property[supportsPtr](type=bool; usage=field,class; desc="Whether type supports creating a pointer (or pointer array) from it");
-        @property[subclassable](type=bool; usage=class; desc="Whether this type can be subclassed (e.g. C++ primitive types and final classes cannot)");
-        @property[defaultValue](type=string; usage=class; desc="Default value for fields of this type");
+        @property[property](type=any; usage=file; desc="Property for declaring properties.");
+        @property[customize](type=bool; usage=class; desc="If true: Customize the class via inheritance. Generates base class <name>_Base.");
+        @property[str](type=string; usage=class; desc="Expression to be returned from the generated str() method.");
+        @property[primitive](type=bool; usage=field,class; desc="Shortcut for @opaque @byValue @editable @subclassable(false) @supportsPtr(false).");
+        @property[opaque](type=bool; usage=field,class; desc="If true: Treat the field as atomic (non-compound) type, i.e. having no descriptor class. When specified on a class, it determines the default for fields of that type.");
+        @property[byValue](type=bool; usage=field,class; desc="If true: Causes the value to be passed by value (instead of by reference) in setters/getters. When specified on a class, it determines the default for fields of that type.");
+        @property[supportsPtr](type=bool; usage=field,class; desc="Specifies whether this type supports creating a pointer (or pointer array) from it.");
+        @property[subclassable](type=bool; usage=class; desc="Specifies whether this type can be subclassed (e.g. C++ primitive types and final classes cannot).");
+        @property[defaultValue](type=string; usage=class; desc="Default value for fields of this type.");
         @property[cppType](type=string; usage=field,class; desc="Member C++ datatype. When specified on a class, it determines the default for fields of that type.");
         @property[argType](type=string; usage=field,class; desc="Field setter C++ argument type. When specified on a class, it determines the default for fields of that type.");
         @property[returnType](type=string; usage=field,class; desc="Field getter C++ return type. When specified on a class, it determines the default for fields of that type.");
         @property[fromString](type=string; usage=field,class; desc="Affects descriptor class: Code to convert string to field value. When specified on a class, it determines the default for fields of that type.");
         @property[toString](type=string; usage=field,class; desc="Affects descriptor class: Code to convert field value to string. When specified on a class, it determines the default for fields of that type.");
         @property[getterConversion](type=string; usage=field,class; desc="Code to convert field data type to return type in getters. When specified on a class, it determines the default for fields of that type.");
-        @property[clone](type=string; usage=field,class; desc="For owned pointer fields: code to duplicate (one array element of) the field value. When specified on a class, it determines the default for fields of that type.");
-        @property[existingClass](type=bool; usage=class; desc="Whether class is already defined in C++, i.e. does not need to be generated");
-        @property[descriptor](type=string; usage=class; desc="Whether to generate descriptor class; special value 'readonly' requests generating a read-only descriptor");
-        @property[omitGetVerb](type=bool; usage=class; desc="Drop the 'get' verb from the names of getter methods");
-        @property[fieldNameSuffix](type=string; usage=class; desc="Suffix to append to the names of data members");
-        @property[beforeChange](type=string; usage=class; desc="Method to be called before mutator code (in setters, non-const getters, operator=, etc.)");
-        @property[implements](type=stringlist; usage=class; desc="Names of additional base classes");
-        @property[nopack](type=bool; usage=field; desc="Ignore field in parsimPack/parsimUnpack methods");
-        @property[editable](type=bool; usage=field,class; desc="Field value (or value of fields that are instances of this type) can be set via the class descriptor's setFieldValueFromString() method");
-        @property[replaceable](type=bool; usage=field; desc="Field is a pointer whose value can be set via the class descriptor's setFieldStructValuePointer() method");
-        @property[resizable](type=bool; usage=field; desc="Field is a variable-size array whose size can be set via the class descriptor's setFieldArraySize() method");
-        @property[overrideGetter](type=bool; usage=field; desc="Add 'override' to the declaration of the getter method");
-        @property[overrideSetter](type=bool; usage=field; desc="Add 'override' to the declaration of the setter method");
-        @property[enum](type=string; usage=field; desc="For integer fields: Values are from the given enum");
-        @property[sizeType](type=string; usage=field; desc="C++ type to use for array sizes and indices");
-        @property[setter](type=string; usage=field; desc="Name of setter method");
-        @property[getter](type=string; usage=field; desc="Name of (const) getter method");
-        @property[getterForUpdate](type=string; usage=field; desc="Name of non-const getter method");
-        @property[sizeSetter](type=string; usage=field; desc="Name of method that sets size of dynamic array");
-        @property[sizeGetter](type=string; usage=field; desc="Name of method that returns array size");
-        @property[inserter](type=string; usage=field; desc="Name of inserter method (inserts element into dynamic array)");
-        @property[eraser](type=string; usage=field; desc="Name of eraser method (erases element from dynamic array)");
-        @property[allowReplace](type=bool; usage=field; desc="Whether setter of an owned pointer field is allowed to delete previously set object");
-        @property[actually](type=string; usage=class; desc="Internal use");
-        @property[overwritePreviousDefinition](type=bool; usage=class; desc="Internal use");
-        @property[owned](type=bool; usage=field; desc="For pointers and pointer arrays: allocated memory is owned by the object (needs to be duplicated in dup(), and deleted in destructor). If field type is also cOwnedObject, take()/drop() calls are also generated");
-        @property[custom](type=bool; usage=field; desc="Do not generate any data or code for the field, only add it to the descriptor. Indicates that the field's implementation will be added to the class via targeted cplusplus blocks");
+        @property[clone](type=string; usage=field,class; desc="For owned pointer fields: Code to duplicate (one array element of) the field value. When specified on a class, it determines the default for fields of that type.");
+        @property[existingClass](type=bool; usage=class; desc="If true: This is a type is already defined in C++, i.e. it does not need to be generated.");
+        @property[descriptor](type=string; usage=class; desc="A 'true'/'false' value specifies whether to generate descriptor class; special value 'readonly' requests generating a read-only descriptor.");
+        @property[omitGetVerb](type=bool; usage=class; desc="If true: Drop the 'get' verb from the names of getter methods.");
+        @property[fieldNameSuffix](type=string; usage=class; desc="Suffix to append to the names of data members.");
+        @property[beforeChange](type=string; usage=class; desc="Method to be called before mutator code (in setters, non-const getters, operator=, etc.).");
+        @property[implements](type=stringlist; usage=class; desc="Names of additional base classes.");
+        @property[nopack](type=bool; usage=field; desc="If true: Ignore this field in parsimPack/parsimUnpack methods.");
+        @property[editable](type=bool; usage=field,class; desc="Specifies whether field value (or value of fields that are instances of this type) can be set via the class descriptor's setFieldValueFromString() method.");
+        @property[replaceable](type=bool; usage=field; desc="If true: Field is a pointer whose value can be set via the class descriptor's setFieldStructValuePointer() method.");
+        @property[resizable](type=bool; usage=field; desc="If true: Field is a variable-size array whose size can be set via the class descriptor's setFieldArraySize() method.");
+        @property[overrideGetter](type=bool; usage=field; desc="If true: Add the 'override' keyword to the declaration of the getter method.");
+        @property[overrideSetter](type=bool; usage=field; desc="If true: Add the 'override' keyword to the declaration of the setter method.");
+        @property[enum](type=string; usage=field; desc="For integer fields: Values are from the given enum.");
+        @property[sizeType](type=string; usage=field; desc="C++ type to use for array sizes and indices.");
+        @property[setter](type=string; usage=field; desc="Name of the setter method.");
+        @property[getter](type=string; usage=field; desc="Name of the (const) getter method.");
+        @property[getterForUpdate](type=string; usage=field; desc="Name of the non-const getter method.");
+        @property[sizeSetter](type=string; usage=field; desc="Name of the method that sets size of dynamic array.");
+        @property[sizeGetter](type=string; usage=field; desc="Name of the method that returns the array size.");
+        @property[inserter](type=string; usage=field; desc="Name of the inserter method. (This method inserts element into a dynamic array.)");
+        @property[eraser](type=string; usage=field; desc="Name of the eraser method. (This method erases element from a dynamic array.)");
+        @property[allowReplace](type=bool; usage=field; desc="Specifies whether the setter method of an owned pointer field is allowed to delete the previously set object.");
+        @property[actually](type=string; usage=class; internal=true; desc="Internal use.");
+        @property[overwritePreviousDefinition](type=bool; usage=class; internal=true; desc="Internal use.");
+        @property[owned](type=bool; usage=field; desc="For pointers and pointer arrays: Whether allocated memory is owned by the object (needs to be duplicated in dup(), and deleted in destructor). If field type is also a cOwnedObject, take()/drop() calls are also generated.");
+        @property[custom](type=bool; usage=field; desc="If true: Do not generate any data or code for the field, only add it to the descriptor. Indicates that the field's implementation will be added to the class via targeted cplusplus blocks.");
 
         class __bool { @actually(bool); @primitive; @fromString(string2bool($)); @toString(bool2string($)); @defaultValue(false); }
         class __float { @actually(float); @primitive; @fromString(string2double($)); @toString(double2string($)); @defaultValue(0); }
@@ -439,6 +439,31 @@ void MsgCompiler::validateNamespaceName(const std::string& namespaceName, ASTNod
     for (auto token : opp_split(namespaceName, "::"))
         if (contains(MsgAnalyzer::RESERVED_WORDS, token))
             errors->addError(element, "namespace name '%s' is a reserved word", token.c_str());
+}
+
+void MsgCompiler::printPropertiesLatexDocu(std::ostream& out)
+{
+    if (used)
+        throw opp_runtime_error("MsgCompiler is a one-shot object, make a new instance to compile another file");
+    used = true;
+
+    importBuiltinDefinitions();
+
+    std::map<std::string,const Property*> sortedPropertyDecls;
+    auto& properties = typeTable.getGlobalProperties().getAll();
+    for (const Property& p : properties)
+        if (p.getName() == "property" && opp_join(p.getValue("internal"),"") != "true")
+            sortedPropertyDecls[p.getIndex()] = &p;
+
+    out << "\\begin{description}\n";
+    for (auto pair : sortedPropertyDecls) {
+        const Property *p = pair.second;
+        out << "\\item[" << p->getIndex() << "] ";
+        out << "\\textit{(type: " << opp_join(p->getValue("type"), "") << ", ";
+        out << "use: " << opp_join(p->getValue("usage"), ", ") << ")} \\\\\n";
+        out << opp_indentlines(opp_breaklines(opp_latexQuote(opp_join(p->getValue("desc"), "")), 76), "  ") << "\n\n";
+    }
+    out << "\\end{description}\n";
 }
 
 }  // namespace nedxml

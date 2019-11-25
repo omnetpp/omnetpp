@@ -110,6 +110,11 @@ class NEDXML_API MsgCompiler
     void generate(MsgFileElement *fileElement, const char *hFile, const char *ccFile, StringSet& outImportedFiles);
 
     /**
+     * Print properties documentation in LaTeX format, for use in the Manual.
+     */
+    void printPropertiesLatexDocu(std::ostream& out);
+
+    /**
      * Returns the built-in MSG definitions.
      */
     static const char *getBuiltinDefinitions() {return BUILTIN_DEFINITIONS;}
