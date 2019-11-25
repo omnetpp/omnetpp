@@ -1,0 +1,74 @@
+%description:
+Tests cplusplus blocks that go into class/struct declarations
+
+%file: test.msg
+
+namespace @TESTNAME@;
+
+class Hello {
+   string foo;
+}
+
+cplusplus(Hello::Hello) {{
+   printf("Constructor\n");
+}}
+
+cplusplus(Hello::Hello&) {{
+   printf("Copy constructor\n");
+}}
+
+cplusplus(Hello::~Hello) {{
+   printf("Destructor\n");
+}}
+
+cplusplus(Hello::operator=) {{
+   printf("operator=\n");
+}}
+
+cplusplus(Hello::copy) {{
+   printf("copy\n");
+}}
+
+cplusplus(Hello::parsimPack) {{
+   printf("parsimPack\n");
+}}
+
+cplusplus(Hello::parsimUnpack) {{
+   printf("parsimUnpack\n");
+}}
+
+cplusplus(Hello::setFoo) {{
+   printf("setFoo\n");
+}}
+
+cplusplus(Hello::getFoo) {{
+   printf("getFoo\n");
+}}
+
+%includes:
+#include "test_m.h"
+using namespace @TESTNAME@;
+
+%activity:
+Hello hello;
+
+%contains: stdout
+Constructor
+Destructor
+
+%contains: test_m.cc
+   printf("Constructor\n");
+%contains: test_m.cc
+   printf("Copy constructor\n");
+%contains: test_m.cc
+   printf("Destructor\n");
+%contains: test_m.cc
+   printf("operator=\n");
+%contains: test_m.cc
+   printf("copy\n");
+%contains: test_m.cc
+   printf("parsimPack\n");
+%contains: test_m.cc
+   printf("parsimUnpack\n");
+%contains: test_m.cc
+   printf("setFoo\n");

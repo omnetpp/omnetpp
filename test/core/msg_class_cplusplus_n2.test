@@ -1,0 +1,26 @@
+%description:
+Tests that cplusplus blocks targeted into nonexistent methods cause an error
+
+%file: test1.msg.bad
+
+namespace @TESTNAME@;
+
+class Hello {
+    int foo;
+}
+
+cplusplus(Hello::getFoo) {{
+    printf("getFoo\n");
+}}
+
+cplusplus(Hello::getBar) {{
+    printf("getBar\n");
+}}
+
+%testprog: opp_msgtool test1.msg.bad
+
+%ignore-exitcode: 1
+
+%contains: stderr
+: Error: invalid target for cplusplus block: no 'getBar' method generated in the specified type
+
