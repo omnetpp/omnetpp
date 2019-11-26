@@ -1037,8 +1037,8 @@ std::string opp_latexQuote(const std::string& str)
     tmp = opp_replacesubstring(tmp, "&", "\\&", true);
     tmp = opp_replacesubstring(tmp, "#", "\\#", true);
     tmp = opp_replacesubstring(tmp, "\b", "{\\textbackslash}", true);
-    tmp = opp_replacesubstring(tmp, "\n", "\\\\", true);
     tmp = opp_replacesubstring(tmp, "~", "{\\textasciitilde}", true);
+    tmp = opp_replacesubstring(tmp, "\n", "\\\\\n", true);
 
     return tmp.c_str();
 }

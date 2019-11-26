@@ -16,16 +16,19 @@ with the \fopt{-h configdetails} option.
 
 %% Change tolerance to give more freedom to the hyphenation/word wrapping algorithm
 %% \tolerance 5000
+
 \begin{description}
 \item[**.bin-recording] = \textit{<bool>}, default: \ttt{true}\\
     \textit{Per-object setting for scalar results.}\\
     Whether the bins of the matching histogram object should be recorded,
     provided that recording of the histogram object itself is enabled
-    (\ttt{**.{\allowbreak}<scalar-{\allowbreak}name>.{\allowbreak}scalar-{\allowbreak}recording={\allowbreak}true}).\\Usage:
+    (\ttt{**.{\allowbreak}<scalar-{\allowbreak}name>.{\allowbreak}scalar-{\allowbreak}recording={\allowbreak}true}).\\
+    Usage:
     \ttt{<module-{\allowbreak}full-{\allowbreak}path>.{\allowbreak}<scalar-{\allowbreak}name>.{\allowbreak}bin-{\allowbreak}recording={\allowbreak}true/{\allowbreak}false}.
     To control histogram recording from a \ttt{@{\allowbreak}statistic}, use
     \ttt{<statistic-{\allowbreak}name>:{\allowbreak}histogram} for
-    \ttt{<scalar-{\allowbreak}name>}.\\Example:
+    \ttt{<scalar-{\allowbreak}name>}.\\
+    Example:
     \ttt{**.{\allowbreak}ping.{\allowbreak}round\-Trip\-Time:{\allowbreak}histogram.{\allowbreak}bin-{\allowbreak}recording={\allowbreak}false}
 \item[check-signals] = \textit{<bool>}, default: \ttt{true}\\
     \textit{Per-simulation-run setting.}\\
@@ -142,7 +145,7 @@ with the \fopt{-h configdetails} option.
     default is no limit. Note: To reduce per-event overhead, this time limit is
     only checked every N events (by default, N=1024).
 \item[debug-on-errors] = \textit{<bool>}, default: \ttt{false}\\
-    \textit{Global setting (applies to all simulation runs).}\\
+    \textit{Per-simulation-run setting.}\\
     When set to true, runtime errors will cause the simulation program to break
     into the C++ debugger (if the simulation is running under one, or
     just-in-time debugging is activated). Once in the debugger, you can view
@@ -151,26 +154,29 @@ with the \fopt{-h configdetails} option.
     \textit{Per-simulation-run setting.}\\
     Turns on the printing of debugging information related to statistics
     recording (\ttt{@{\allowbreak}statistic} properties)
-\item[debugger-attach-command] = \textit{<string>}, default: \ttt{nemiver {\allowbreak}-{\allowbreak}-{\allowbreak}attach={\allowbreak}\%u {\allowbreak}\&}\\
+\item[debugger-attach-command] = \textit{<string>}\\
     \textit{Global setting (applies to all simulation runs).}\\
     Command line to launch the debugger. It must contain exactly one percent
     sign, as \ttt{\%u}, which will be replaced by the PID of this process. The
     command must not block (i.e. it should end in \ttt{\&} on Unix-like
-    systems).
+    systems). Default on this platform: \ttt{nemiver
+    {\allowbreak}-{\allowbreak}-{\allowbreak}attach={\allowbreak}\%u
+    {\allowbreak}\&}. This default can be overridden with the
+    \ttt{OMNETPP\_DEBUGGER\_COMMAND} environment variable.
 \item[debugger-attach-on-error] = \textit{<bool>}, default: \ttt{false}\\
     \textit{Global setting (applies to all simulation runs).}\\
     When set to true, runtime errors and crashes will trigger an external
-    debugger to be launched, allowing you to perform just-in-time debugging on
-    the simulation process. The debugger command is configurable. Note that
-    debugging (i.e. attaching to) a non-child process needs to be explicitly
-    enabled on some systems, e.g. Ubuntu.
+    debugger to be launched (if not already present), allowing you to perform
+    just-in-time debugging on the simulation process. The debugger command is
+    configurable. Note that debugging (i.e. attaching to) a non-child process
+    needs to be explicitly enabled on some systems, e.g. Ubuntu.
 \item[debugger-attach-on-startup] = \textit{<bool>}, default: \ttt{false}\\
     \textit{Global setting (applies to all simulation runs).}\\
     When set to true, the simulation program will launch an external debugger
-    attached to it, allowing you to set breakpoints before proceeding. The
-    debugger command is configurable.  Note that debugging (i.e. attaching to)
-    a non-child process needs to be explicitly enabled on some systems, e.g.
-    Ubuntu.
+    attached to it (if not already present), allowing you to set breakpoints
+    before proceeding. The debugger command is configurable. Note that
+    debugging (i.e. attaching to) a non-child process needs to be explicitly
+    enabled on some systems, e.g. Ubuntu.
 \item[debugger-attach-wait-time] = \textit{<double>}, unit=\ttt{s}, default: \ttt{20s}\\
     \textit{Global setting (applies to all simulation runs).}\\
     An interval to wait after launching the external debugger, to give the
@@ -192,32 +198,41 @@ with the \fopt{-h configdetails} option.
     and/or/not/* and various field match expressions can be used. The object
     pattern matches to class name, the field pattern matches to field name by
     default.\\
+
     \ttt{EVENTLOG-{\allowbreak}MESSAGE-{\allowbreak}DETAIL-{\allowbreak}PATTERN
     {\allowbreak}:{\allowbreak}={\allowbreak} {\allowbreak}(
     {\allowbreak}DETAIL-{\allowbreak}PATTERN {\allowbreak}'|' {\allowbreak})*
-    {\allowbreak}DETAIL\_PATTERN}\\  \ttt{DETAIL-{\allowbreak}PATTERN
+    {\allowbreak}DETAIL\_PATTERN}\\
+        \ttt{DETAIL-{\allowbreak}PATTERN
     {\allowbreak}:{\allowbreak}={\allowbreak}
     {\allowbreak}OBJECT-{\allowbreak}PATTERN {\allowbreak}[
     {\allowbreak}':{\allowbreak}' {\allowbreak}FIELD-{\allowbreak}PATTERNS
-    {\allowbreak}]}\\  \ttt{OBJECT-{\allowbreak}PATTERN
+    {\allowbreak}]}\\
+        \ttt{OBJECT-{\allowbreak}PATTERN
     {\allowbreak}:{\allowbreak}={\allowbreak}
     {\allowbreak}MATCH-{\allowbreak}EXPRESSION}\\
-    \ttt{FIELD-{\allowbreak}PATTERNS {\allowbreak}:{\allowbreak}={\allowbreak}
-    {\allowbreak}( {\allowbreak}FIELD-{\allowbreak}PATTERN
-    {\allowbreak}',{\allowbreak}' {\allowbreak})*
-    {\allowbreak}FIELD\_PATTERN}\\  \ttt{FIELD-{\allowbreak}PATTERN
-    {\allowbreak}:{\allowbreak}={\allowbreak}
-    {\allowbreak}MATCH-{\allowbreak}EXPRESSION}\\Examples:\\  \ttt{*}: captures
-    all fields of all messages\\
-    \ttt{*Frame:{\allowbreak}*Address,{\allowbreak}*Id}: captures all fields
+        \ttt{FIELD-{\allowbreak}PATTERNS
+    {\allowbreak}:{\allowbreak}={\allowbreak} {\allowbreak}(
+    {\allowbreak}FIELD-{\allowbreak}PATTERN {\allowbreak}',{\allowbreak}'
+    {\allowbreak})* {\allowbreak}FIELD\_PATTERN}\\
+        \ttt{FIELD-{\allowbreak}PATTERN {\allowbreak}:{\allowbreak}={\allowbreak}
+    {\allowbreak}MATCH-{\allowbreak}EXPRESSION}\\
+    Examples:\\
+        \ttt{*}: captures all fields of all messages\\
+        \ttt{*Frame:{\allowbreak}*Address,{\allowbreak}*Id}: captures all fields
     named somethingAddress and somethingId from messages of any class named
-    somethingFrame\\  \ttt{My\-Message:{\allowbreak}declared\-On(My\-Message)}:
+    somethingFrame\\
+
+    \ttt{My\-Message:{\allowbreak}declared\-On={\allowbreak}{\textasciitilde}My\-Message}:
     captures instances of MyMessage recording the fields declared on the
-    MyMessage class\\  \ttt{*:{\allowbreak}(not
-    {\allowbreak}declared\-On(cMessage) {\allowbreak}and {\allowbreak}not
-    {\allowbreak}declared\-On(cNamed\-Object) {\allowbreak}and {\allowbreak}not
-    {\allowbreak}declared\-On(cObject))}: records user-defined fields from all
-    messages
+    MyMessage class\\
+        \ttt{*:{\allowbreak}(not
+    {\allowbreak}declared\-On={\allowbreak}{\textasciitilde}cMessage
+    {\allowbreak}and {\allowbreak}not
+    {\allowbreak}declared\-On={\allowbreak}{\textasciitilde}cNamed\-Object
+    {\allowbreak}and {\allowbreak}not
+    {\allowbreak}declared\-On={\allowbreak}{\textasciitilde}cObject)}: records
+    user-defined fields from all messages
 \item[eventlog-recording-intervals] = \textit{<custom>}\\
     \textit{Per-simulation-run setting.}\\
     Simulation time interval(s) when events should be recorded. Syntax:
@@ -290,7 +305,7 @@ with the \fopt{-h configdetails} option.
     which includes all results in all modules in the calculated fingerprint. If
     you configured multiple fingerprints, separate filters with commas.
 \item[fingerprintcalculator-class] = \textit{<string>}, default: \ttt{omnetpp::{\allowbreak}cSingle\-Fingerprint\-Calculator}\\
-    \textit{Global setting (applies to all simulation runs).}\\
+    \textit{Per-simulation-run setting.}\\
     Part of the Envir plugin mechanism: selects the fingerprint calculator
     class to be used to calculate the simulation fingerprint. The class has to
     implement the \ttt{cFingerprint\-Calculator} interface.
@@ -305,11 +320,12 @@ with the \fopt{-h configdetails} option.
     Part of the Envir plugin mechanism: selects the class for storing the
     future events in the simulation. The class has to implement the
     \ttt{cFuture\-Event\-Set} interface.
-\item[image-path] = \textit{<path>}\\
+\item[image-path] = \textit{<path>}, default: \ttt{.{\allowbreak}/{\allowbreak}images}\\
     \textit{Global setting (applies to all simulation runs).}\\
     A semicolon-separated list of directories that contain module icons and
-    other resources. This list with be concatenated with
-    \ttt{OMNETPP\_IMAGE\_PATH}.
+    other resources. This list will be concatenated with the contents of the
+    \ttt{OMNETPP\_IMAGE\_PATH} environment variable or with a compile-time,
+    hardcoded image path if the environment variable is empty.
 \item[iteration-nesting-order] = \textit{<string>}\\
     \textit{Per-simulation-run setting.}\\
     Specifies the loop nesting order for iteration variables
@@ -343,14 +359,22 @@ with the \fopt{-h configdetails} option.
     {\allowbreak}={\allowbreak} {\allowbreak}true};
     \ttt{**.{\allowbreak}module-{\allowbreak}eventlog-{\allowbreak}recording
     {\allowbreak}={\allowbreak} {\allowbreak}false}
+\item[ned-exclusion-path] = \textit{<path>}\\
+    \textit{Global setting (applies to all simulation runs).}\\
+    A semicolon-separated list of directories to be skipped when loading NED
+    files. Relative paths are interpreted as relative to root of the NED folder
+    being loaded, i.e. specifying 'tests' will skip the 'tests' subdirectory in
+    each folder in the NED path. The NED exclusion path may also be specified
+    via command-line option (-x) and environment variable
+    (OMNETPP\_NED\_EXCLUSION\_PATH).
 \item[ned-path] = \textit{<path>}\\
     \textit{Global setting (applies to all simulation runs).}\\
     A semicolon-separated list of directories. The directories will be regarded
     as roots of the NED package hierarchy, and all NED files will be loaded
     from their subdirectory trees. This option is normally left empty, as the
     OMNeT++ IDE sets the NED path automatically, and for simulations started
-    outside the IDE it is more convenient to specify it via a command-line
-    option or the NEDPATH environment variable.
+    outside the IDE it is more convenient to specify it via command-line option
+    (-n) or via environment variable (OMNETPP\_NED\_PATH, NEDPATH).
 \item[network] = \textit{<string>}\\
     \textit{Per-simulation-run setting.}\\
     The name of the network to be simulated.  The package name can be omitted
@@ -420,6 +444,13 @@ with the \fopt{-h configdetails} option.
     Applicable to module parameters: specifies whether the module parameter
     should be recorded into the output scalar file. Set it for parameters whose
     value you will need for result analysis.
+\item[**.param-recording] = \textit{<bool>}, default: \ttt{true}\\
+    \textit{Per-object setting for module/channel parameters.}\\
+    Whether the matching module (and channel) parameters should be recorded.\\
+    Usage:
+    \ttt{<module-{\allowbreak}full-{\allowbreak}path>.{\allowbreak}<parameter-{\allowbreak}name>.{\allowbreak}param-{\allowbreak}recording={\allowbreak}true/{\allowbreak}false}.\\
+    Example:
+    \ttt{**.{\allowbreak}app.{\allowbreak}pk\-Len.{\allowbreak}param-{\allowbreak}recording={\allowbreak}true}
 \item[parsim-communications-class] = \textit{<string>}, default: \ttt{omnetpp::{\allowbreak}cFile\-Communications}\\
     \textit{Global setting (applies to all simulation runs).}\\
     If \ttt{parallel-{\allowbreak}simulation={\allowbreak}true}, it selects the
@@ -483,7 +514,7 @@ with the \fopt{-h configdetails} option.
     partition IDs for compound modules that span across multiple partitions.
     Ranges (\ttt{5..{\allowbreak}9}) and \ttt{*} (=all) are accepted too.
 \item[print-undisposed] = \textit{<bool>}, default: \ttt{true}\\
-    \textit{Global setting (applies to all simulation runs).}\\
+    \textit{Per-simulation-run setting.}\\
     Whether to report objects left (that is, not deallocated by simple module
     destructors) after network cleanup.
 \item[qtenv-default-config] = \textit{<string>}\\
@@ -535,7 +566,8 @@ with the \fopt{-h configdetails} option.
 \item[**.result-recording-modes] = \textit{<string>}, default: \ttt{default}\\
     \textit{Per-object setting for statistics (@statistic).}\\
     Defines how to calculate results from the matching
-    \ttt{@{\allowbreak}statistic}.\\Usage:
+    \ttt{@{\allowbreak}statistic}.\\
+    Usage:
     \ttt{<module-{\allowbreak}full-{\allowbreak}path>.{\allowbreak}<statistic-{\allowbreak}name>.{\allowbreak}result-{\allowbreak}recording-{\allowbreak}modes={\allowbreak}<modes>}.
     Special values: \ttt{default}, \ttt{all}: they select the modes listed in
     the \ttt{record} key of \ttt{@{\allowbreak}statistic}; all selects all of
@@ -555,7 +587,8 @@ with the \fopt{-h configdetails} option.
     \ttt{ancestor\-Index()} operators being potentially very useful. The
     default is one-to-one mapping, i.e. RNG k of all modules refer to the
     global RNG k (\ttt{for
-    {\allowbreak}k={\allowbreak}0..{\allowbreak}num-{\allowbreak}rngs-{\allowbreak}1}).\\Usage:
+    {\allowbreak}k={\allowbreak}0..{\allowbreak}num-{\allowbreak}rngs-{\allowbreak}1}).\\
+    Usage:
     \ttt{<module-{\allowbreak}full-{\allowbreak}path>.{\allowbreak}rng-{\allowbreak}<local-{\allowbreak}index>={\allowbreak}<global-{\allowbreak}index>}.
     Examples:
     \ttt{**.{\allowbreak}mac.{\allowbreak}rng-{\allowbreak}0={\allowbreak}1;
@@ -572,7 +605,8 @@ with the \fopt{-h configdetails} option.
 \item[**.scalar-recording] = \textit{<bool>}, default: \ttt{true}\\
     \textit{Per-object setting for scalar results.}\\
     Whether the matching output scalars and statistic objects should be
-    recorded.\\Usage:
+    recorded.\\
+    Usage:
     \ttt{<module-{\allowbreak}full-{\allowbreak}path>.{\allowbreak}<scalar-{\allowbreak}name>.{\allowbreak}scalar-{\allowbreak}recording={\allowbreak}true/{\allowbreak}false}.
     To enable/disable individual recording modes for a @statistic (those added
     via the \ttt{record={\allowbreak}...{\allowbreak}} key of
@@ -581,10 +615,11 @@ with the \fopt{-h configdetails} option.
     config option), use \ttt{<statistic-{\allowbreak}name>:{\allowbreak}<mode>}
     for \ttt{<scalar-{\allowbreak}name>}, and make sure the
     \ttt{@{\allowbreak}statistic} as a whole is not disabled with
-    \ttt{**.{\allowbreak}<statistic-{\allowbreak}name>.{\allowbreak}statistic-{\allowbreak}recording={\allowbreak}false}.\\Example:
+    \ttt{**.{\allowbreak}<statistic-{\allowbreak}name>.{\allowbreak}statistic-{\allowbreak}recording={\allowbreak}false}.\\
+    Example:
     \ttt{**.{\allowbreak}ping.{\allowbreak}round\-Trip\-Time:{\allowbreak}stddev.{\allowbreak}scalar-{\allowbreak}recording={\allowbreak}false}
 \item[scheduler-class] = \textit{<string>}, default: \ttt{omnetpp::{\allowbreak}cSequential\-Scheduler}\\
-    \textit{Global setting (applies to all simulation runs).}\\
+    \textit{Per-simulation-run setting.}\\
     Part of the Envir plugin mechanism: selects the scheduler class. This
     plugin interface allows for implementing real-time, hardware-in-the-loop,
     distributed and distributed parallel simulation. The class has to implement
@@ -650,8 +685,10 @@ with the \fopt{-h configdetails} option.
     specifying
     \ttt{**.{\allowbreak}scalar-{\allowbreak}recording={\allowbreak}false} and
     \ttt{**.{\allowbreak}vector-{\allowbreak}recording={\allowbreak}false}
-    together.\\Usage:
-    \ttt{<module-{\allowbreak}full-{\allowbreak}path>.{\allowbreak}<statistic-{\allowbreak}name>.{\allowbreak}statistic-{\allowbreak}recording={\allowbreak}true/{\allowbreak}false}.\\Example:
+    together.\\
+    Usage:
+    \ttt{<module-{\allowbreak}full-{\allowbreak}path>.{\allowbreak}<statistic-{\allowbreak}name>.{\allowbreak}statistic-{\allowbreak}recording={\allowbreak}true/{\allowbreak}false}.\\
+    Example:
     \ttt{**.{\allowbreak}ping.{\allowbreak}round\-Trip\-Time.{\allowbreak}statistic-{\allowbreak}recording={\allowbreak}false}
 \item[total-stack] = \textit{<double>}, unit=\ttt{B}\\
     \textit{Global setting (applies to all simulation runs).}\\
@@ -663,7 +700,7 @@ with the \fopt{-h configdetails} option.
     Specifies type for submodules and channels declared with 'like <>'.
 \item[user-interface] = \textit{<string>}\\
     \textit{Global setting (applies to all simulation runs).}\\
-    Selects the user interface to be started. Possible values are Cmdenv and
+    Selects the user interface to be started. Known good values are Cmdenv and
     Qtenv. This option is normally left empty, as it is more convenient to
     specify the user interface via a command-line option or the IDE's Run and
     Debug dialogs. New user interfaces can be defined by subclassing
@@ -673,18 +710,22 @@ with the \fopt{-h configdetails} option.
     For output vectors: the maximum per-vector buffer space used for storing
     values before writing them out as a block into the output vector file.
     There is also a total limit, see
-    \ttt{output-{\allowbreak}vectors-{\allowbreak}memory-{\allowbreak}limit}.\\Usage:
+    \ttt{output-{\allowbreak}vectors-{\allowbreak}memory-{\allowbreak}limit}.\\
+    Usage:
     \ttt{<module-{\allowbreak}full-{\allowbreak}path>.{\allowbreak}<vector-{\allowbreak}name>.{\allowbreak}vector-{\allowbreak}buffer={\allowbreak}<amount>}.
 \item[**.vector-record-eventnumbers] = \textit{<bool>}, default: \ttt{true}\\
     \textit{Per-object setting for vector results.}\\
     Whether to record event numbers for an output vector. (Values and
     timestamps are always recorded.) Event numbers are needed by the Sequence
-    Chart Tool, for example.\\Usage:
-    \ttt{<module-{\allowbreak}full-{\allowbreak}path>.{\allowbreak}<vector-{\allowbreak}name>.{\allowbreak}vector-{\allowbreak}record-{\allowbreak}eventnumbers={\allowbreak}true/{\allowbreak}false}.\\Example:
+    Chart Tool, for example.\\
+    Usage:
+    \ttt{<module-{\allowbreak}full-{\allowbreak}path>.{\allowbreak}<vector-{\allowbreak}name>.{\allowbreak}vector-{\allowbreak}record-{\allowbreak}eventnumbers={\allowbreak}true/{\allowbreak}false}.\\
+    Example:
     \ttt{**.{\allowbreak}ping.{\allowbreak}round\-Trip\-Time:{\allowbreak}vector.{\allowbreak}vector-{\allowbreak}record-{\allowbreak}eventnumbers={\allowbreak}false}
 \item[**.vector-recording] = \textit{<bool>}, default: \ttt{true}\\
     \textit{Per-object setting for vector results.}\\
-    Whether data written into an output vector should be recorded.\\Usage:
+    Whether data written into an output vector should be recorded.\\
+    Usage:
     \ttt{<module-{\allowbreak}full-{\allowbreak}path>.{\allowbreak}<vector-{\allowbreak}name>.{\allowbreak}vector-{\allowbreak}recording={\allowbreak}true/{\allowbreak}false}.
     To control vector recording from a \ttt{@{\allowbreak}statistic}, use
     \ttt{<statistic-{\allowbreak}name>:{\allowbreak}vector {\allowbreak}for
@@ -698,7 +739,8 @@ with the \fopt{-h configdetails} option.
     The syntax for \ttt{<intervals>} is:
     \ttt{[<from>]..{\allowbreak}[<to>],{\allowbreak}...{\allowbreak}} That is,
     both start and end of an interval are optional, and intervals are separated
-    by comma.\\Example:
+    by comma.\\
+    Example:
     \ttt{**.{\allowbreak}round\-Trip\-Time:{\allowbreak}vector.{\allowbreak}vector-{\allowbreak}recording-{\allowbreak}intervals={\allowbreak}..{\allowbreak}100,{\allowbreak}
     {\allowbreak}200..{\allowbreak}400,{\allowbreak}
     {\allowbreak}900..{\allowbreak}}
@@ -718,7 +760,7 @@ with the \fopt{-h configdetails} option.
 \item[**.with-akaroa] = \textit{<bool>}, default: \ttt{false}\\
     Per-object setting for vector results.\\
     Whether the output vector should be under Akaroa control.
- \end{description}
+\end{description}
 
 \section{Predefined Variables}
 \label{sec:config-options:predefined-variables}
