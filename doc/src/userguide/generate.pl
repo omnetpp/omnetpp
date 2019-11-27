@@ -1,4 +1,4 @@
-#!/usr/bin/perl -- # -*- Perl -*-
+#! /usr/bin/env perl 
 
 # Generates docbook elements from the source code.
 
