@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 
 @the_skiplist = <<END_OF_SKIPLIST =~ m/(\S.*\S)/g;
