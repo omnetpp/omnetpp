@@ -1212,6 +1212,7 @@ class cLabelFigure extends cAbstractTextFigure
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
+    double angle @group(geometry) @editable;
 }
 
 class cAbstractImageFigure extends cFigure

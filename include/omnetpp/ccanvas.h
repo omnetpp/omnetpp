@@ -2559,7 +2559,11 @@ class SIM_API cTextFigure : public cAbstractTextFigure
 class SIM_API cLabelFigure : public cAbstractTextFigure
 {
     private:
-        void copy(const cLabelFigure& other) {}
+        double angle = 0.0; // in radians, positive is CCW, 0 is "horizontal" or "unrotated"
+    private:
+        void copy(const cLabelFigure& other);
+    protected:
+        virtual const char **getAllowedPropertyKeys() const override;
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
@@ -2571,7 +2575,14 @@ class SIM_API cLabelFigure : public cAbstractTextFigure
         /** @name Redefined cObject and cFigure member functions. */
         //@{
         virtual cLabelFigure *dup() const override  {return new cLabelFigure(*this);}
+        virtual void parse(cProperty *property) override;
         virtual const char *getRendererClassName() const override {return "LabelFigureRenderer";}
+        //@}
+
+        /** @name Geometry */
+        //@{
+        virtual double getAngle() const  {return angle;}
+        virtual void setAngle(double angle);
         //@}
 };
 

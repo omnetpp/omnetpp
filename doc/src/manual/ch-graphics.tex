@@ -2392,6 +2392,14 @@ The result:
 \cclass{cLabelFigure} displays text which is unaffected by zooming or
 transformations, except its position. Font, color, position, anchoring and
 other properties are inherited from \cclass{cAbstractTextFigure}.
+The angle of the label can be set with the \ffunc{setAngle()} method. Zero
+angle means horizontal (unrotated) text. Positive values rotate
+counterclockwise, while negative values rotate clockwise.
+
+\begin{note}
+Angles are in radians in the C++ API, but in degrees when the figure is
+defined in the NED file via \fprop{@figure}.
+\end{note}
 
 The following example displays a label in Courier New with the default
 size, slightly transparent.

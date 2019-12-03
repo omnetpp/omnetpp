@@ -1205,16 +1205,18 @@ void LabelFigureRenderer::refreshTransform(const FigureRenderingArgs& args)
 void LabelFigureRenderer::refreshGeometry(const FigureRenderingArgs& args)
 {
     OutlinedTextItem *textItem = static_cast<OutlinedTextItem *>(args.item);
-    cAbstractTextFigure *textFigure = static_cast<cAbstractTextFigure *>(args.figure);
+    cLabelFigure *labelFigure = static_cast<cLabelFigure *>(args.figure);
 
     // see the comment in TextFigureRenderer::refreshGeometry
-    cFigure::Point pos = args.transform.applyTo(textFigure->getPosition());
+    cFigure::Point pos = args.transform.applyTo(labelFigure->getPosition());
 
     QFontMetricsF fontMetric(textItem->font());
     QRectF textRect = textItem->textRect();
-    QPointF offset = getAnchorOffset(textFigure->getAnchor(), textRect.width(), textRect.height(), fontMetric.ascent());
+    QPointF offset = getAnchorOffset(labelFigure->getAnchor(), textRect.width(), textRect.height(), fontMetric.ascent());
 
     textItem->setPos(QPointF(pos.x, pos.y) + offset);
+    textItem->setRotation(-labelFigure->getAngle()/M_PI*180);
+    textItem->setTransformOriginPoint(-offset);
 }
 
 void LabelFigureRenderer::refreshZoom(const FigureRenderingArgs& args)
