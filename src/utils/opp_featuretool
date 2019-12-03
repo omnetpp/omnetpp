@@ -59,6 +59,15 @@ def queryYesNo(question, default="yes"):
             sys.stdout.write("Please respond with 'yes' or 'no' "
                              "(or 'y' or 'n').\n")
 
+def readFile(filename):
+    try:
+        f = open(filename, 'r')
+        lines = f.readlines()
+        f.close()
+        return lines
+    except (IOError, OSError) as e:
+        fail("can't read '{}': {}".format(filename, e))
+
 ############################
 class OppParser(argparse.ArgumentParser):
    def error(self, message):
@@ -98,19 +107,18 @@ class FeatureState:
 
 ############################
 class NedFolder:
-    def __init__(self, name, path, prefix, ord):
-        self.name = name
+    def __init__(self, path, package, ord):
         self.path = path
-        self.prefix = prefix
+        self.package = package
         self.ord = ord
 
     def isSubpackage(self, subpkg):
-        if self.prefix == '':
+        if self.package == '':
              return True
-        return subpkg.startswith(self.prefix) and (len(subpkg) == len(self.prefix) or subpkg[len(self.prefix)] == '.')
+        return subpkg.startswith(self.package) and (len(subpkg) == len(self.package) or subpkg[len(self.package)] == '.')
 
     def __repr__(self):
-        return "<%s: name=%s, path=%s, prefix=%s, ord=%d>" % (self.__class__.__name__, self.name, self.path, self.prefix, self.ord)
+        return "<%s: path=%s, package=%s, ord=%d>" % (self.__class__.__name__, self.path, self.package, self.ord)
 
 ############################
 class FeatureTool:
@@ -265,59 +273,38 @@ root directory where the following files are present:
         # read nedfolders file:
         self.nedfolders = []
 
-        emptyline = re.compile(r'^\s*$')
-        check = re.compile(r'^\-?([a-zA-Z0-9_]+\.)*[a-zA-Z0-9_]+$')
-
         if not os.path.isfile(NEDFOLDERSFILE):
-            # warn("the "+NEDFOLDERSFILE+" file is missing.")
-            nedfilename = './package.ned'
-            prefix = self.getPrefixFromPackageNedFile(nedfilename)
-            self.nedfolders.append(NedFolder('.', '.', prefix, 0))
-            return
+            lines = [ '.' ]
+        else:
+            lines = readFile(NEDFOLDERSFILE)
 
-        try:
-            nedfoldersfile = open(NEDFOLDERSFILE, 'r')
-        except (IOError, OSError) as e:
-            fail("can't open {} file: {}".format(NEDFOLDERSFILE, e))
-
-        try:
-            ord = 0
-            for line in nedfoldersfile:
-                ord += 1
-                line = line.rstrip('\n')
-                if emptyline.match(line):
-                    continue
-                if not check.match(line):
-                    fail("invalid line at %s:%d : '%s'" % (NEDFOLDERSFILE, ord, line))
-                elif line[0] == '-':
-                    pass    # ignore omnet 4.x exclusion lines
-                else:
-                    if line == '.':
-                        path = line
-                    else:
-                        path = line.replace('.', '/')
-                    prefix = ''
-                    nedfilename = path+'/package.ned'
-                    prefix = self.getPrefixFromPackageNedFile(nedfilename)
-                    self.nedfolders.append(NedFolder(line, path, prefix, ord))
-            nedfoldersfile.close()
-        except (IOError, OSError) as e:
-            fail("error occurred when reading file {}: {}".format(NEDFOLDERSFILE, e))
+        ord = 0
+        for line in lines:
+            ord += 1
+            line = line.strip()
+            if line == "" or line[0] == '-':
+                continue    # ignore empty lines and OMNeT++ 4.x package exclusion lines
+            else:
+                path = line
+                self.nedfolders.append(NedFolder(path, self.getPackageForFolder(path), ord))
 
     ############################
-    def getPrefixFromPackageNedFile(self, nedfilename):
-        pkgchk = re.compile(r'^package\s+(([a-zA-Z0-9_]+\.)*[a-zA-Z0-9_]+);')
+    def getPackageForFolder(self, folder):
+        packageNedFile = folder + '/package.ned'
+        if not os.path.isfile(packageNedFile):
+            return ''
+        else:
+            return self.getPackageFromNedFile(packageNedFile)
 
-        if os.path.isfile(nedfilename):
-            try:
-                with open(nedfilename, 'r') as nedfile:
-                    for nedline in nedfile:
-                        m = pkgchk.match(nedline)
-                        if m:
-                            prefix = m.group(1)
-                            return prefix
-            except (IOError, OSError) as e:
-                fail("error reading {}: {}".format(nedfilename, e))
+    ############################
+    def getPackageFromNedFile(self, nedfilename):
+        lines = readFile(nedfilename)
+        packageNameRegex = re.compile(r'^package\s+(([a-zA-Z0-9_]+\.)*[a-zA-Z0-9_]+);')
+        for line in lines:
+            m = packageNameRegex.match(line)
+            if m:
+                package = m.group(1)
+                return package
         return ''
 
     ############################
@@ -458,7 +445,7 @@ root directory where the following files are present:
         for nedPackage in feature.nedPackages:
             for nedfolder in self.nedfolders:
                 if nedfolder.isSubpackage(nedPackage):
-                    packageSuffix = nedPackage[len(nedfolder.prefix):]
+                    packageSuffix = nedPackage[len(nedfolder.package):]
                     folder = nedfolder.path + '/' + packageSuffix.replace('.', '/')
                     if (os.path.exists(folder) and self.isCxxSourceFolder(folder)):
                         result.append(folder)
@@ -472,7 +459,7 @@ root directory where the following files are present:
             foundNedPackageFolder = False
             for nedfolder in self.nedfolders:
                 if nedfolder.isSubpackage(nedPackage):
-                    packageSuffix = nedPackage[len(nedfolder.prefix):]
+                    packageSuffix = nedPackage[len(nedfolder.package):]
                     folder = nedfolder.path + '/' + packageSuffix.replace('.', '/')
                     if os.path.exists(folder):
                         foundNedPackageFolder = True
