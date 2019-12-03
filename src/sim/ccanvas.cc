@@ -127,6 +127,7 @@ static const char *PKEY_STARTARROWHEAD = "startArrowhead";
 static const char *PKEY_ENDARROWHEAD = "endArrowhead";
 static const char *PKEY_TEXT = "text";
 static const char *PKEY_FONT = "font";
+static const char *PKEY_ANGLE = "angle";
 static const char *PKEY_COLOR = "color";
 static const char *PKEY_OPACITY = "opacity";
 static const char *PKEY_HALO = "halo";
@@ -3087,6 +3088,11 @@ cTextFigure& cTextFigure::operator=(const cTextFigure& other)
 
 //----
 
+void cLabelFigure::copy(const cLabelFigure& other)
+{
+    setAngle(other.getAngle());
+}
+
 cLabelFigure& cLabelFigure::operator=(const cLabelFigure& other)
 {
     if (this == &other)
@@ -3094,6 +3100,33 @@ cLabelFigure& cLabelFigure::operator=(const cLabelFigure& other)
     cAbstractTextFigure::operator=(other);
     copy(other);
     return *this;
+}
+
+void cLabelFigure::parse(cProperty *property)
+{
+    cAbstractTextFigure::parse(property);
+
+    const char *s;
+    if ((s = property->getValue(PKEY_ANGLE)) != nullptr)
+        setAngle(deg2rad(opp_atof(s)));
+}
+
+const char **cLabelFigure::getAllowedPropertyKeys() const
+{
+    static const char *keys[32];
+    if (!keys[0]) {
+        const char *localKeys[] = { PKEY_ANGLE, nullptr};
+        concatArrays(keys, cAbstractTextFigure::getAllowedPropertyKeys(), localKeys);
+    }
+    return keys;
+}
+
+void cLabelFigure::setAngle(double angle)
+{
+    if (angle == this->angle)
+        return;
+    this->angle = angle;
+    fireGeometryChange();
 }
 
 //----
