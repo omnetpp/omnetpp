@@ -14,6 +14,7 @@ import sys
 import re
 import types
 import xml.dom.minidom
+from os.path import isfile
 
 FEATURESFILE = ".oppfeatures"
 FEATURESTATEFILE = ".oppfeaturestate"
@@ -67,6 +68,14 @@ def readFile(filename):
         return lines
     except (IOError, OSError) as e:
         fail("can't read '{}': {}".format(filename, e))
+
+def writeFile(filename, content):
+    try:
+        f = open(filename, 'w')
+        f.write(content)
+        f.close()
+    except (IOError, OSError) as e:
+        fail("can't write '{}': {}".format(filename, e))
 
 ############################
 class OppParser(argparse.ArgumentParser):
@@ -270,11 +279,10 @@ root directory where the following files are present:
 
     ############################
     def readNedFoldersFile(self):
-        # read nedfolders file:
         self.nedfolders = []
 
-        if not os.path.isfile(NEDFOLDERSFILE):
-            lines = [ '.' ]
+        if not isfile(NEDFOLDERSFILE):
+            lines = ['.']  # the default is to have
         else:
             lines = readFile(NEDFOLDERSFILE)
 
@@ -285,14 +293,14 @@ root directory where the following files are present:
             if line == "" or line[0] == '-':
                 continue    # ignore empty lines and OMNeT++ 4.x package exclusion lines
             else:
-                path = line
+                path = line  # other lines define relative NED folder paths
                 self.nedfolders.append(NedFolder(path, self.getPackageForFolder(path), ord))
 
     ############################
     def getPackageForFolder(self, folder):
         packageNedFile = folder + '/package.ned'
-        if not os.path.isfile(packageNedFile):
-            return ''
+        if not isfile(packageNedFile):
+            return ''  # no package.ned: default package
         else:
             return self.getPackageFromNedFile(packageNedFile)
 
@@ -309,49 +317,24 @@ root directory where the following files are present:
 
     ############################
     def readNedExclusionsFile(self):
-        # read nedexclusions file:
         self.nedfoldersExcluded = []
-
-        if not os.path.isfile(NEDEXCLUSIONSFILE):
-            # warn("the "+NEDEXCLUSIONSFILE+" file is missing.")
+        if not isfile(NEDEXCLUSIONSFILE):
             return
 
-        try:
-            nedexclusionsfile = open(NEDEXCLUSIONSFILE, 'r')
-        except (IOError, OSError) as e:
-            fail("error in .nedexclusions: {}".format(e))
-
-        check = re.compile(r'^([a-zA-Z0-9_]+\.)*[a-zA-Z0-9_]+$')
-        try:
-            ord = 0
-            for line in nedexclusionsfile:
-                ord += 1
-                line = line.rstrip('\n')
-                if not check.match(line):
-                    if self.fixingMode:
-                        warn("invalid line %s:%d, removed: '%s'" % (NEDEXCLUSIONSFILE, ord, line))
-                        self.nedExclusionFileChanged = True
-                    elif self.autoFixingMode:
-                        warn("invalid line %s:%d, ignored: '%s'" % (NEDEXCLUSIONSFILE, ord, line))
-                    else:
-                        fail("invalid line %s:%d, '%s'" % (NEDEXCLUSIONSFILE, ord, line))
-                else:
-                    self.nedfoldersExcluded.append(line)
-            nedexclusionsfile.close()
-        except (IOError, OSError) as e:
-            fail("I/O error while reading file {}: ({})".format(NEDEXCLUSIONSFILE, e))
-
+        lines = readFile(NEDEXCLUSIONSFILE)
+        dottedNameRegex = re.compile(r'^([a-zA-Z0-9_]+\.)*[a-zA-Z0-9_]+$')
+        ord = 0
+        for line in lines:
+            ord += 1
+            line = line.strip()
+            if not dottedNameRegex.match(line):
+                warn("invalid line %s:%d: '%s'" % (NEDEXCLUSIONSFILE, ord, line))
+            self.nedfoldersExcluded.append(line)
 
     ############################
     def writeNedExclusions(self):
-        try:
-            nedexclusionsfile = open(NEDEXCLUSIONSFILE, 'w')
-            for nf in sorted(self.nedfoldersExcluded):
-                nedexclusionsfile.write("%s\n" % (nf))
-            nedexclusionsfile.close()
-        except (IOError, OSError) as e:
-            fail("I/O error while writing file {}: ({})".format(NEDEXCLUSIONSFILE, e))
-
+        content = "\n".join(sorted(self.nedfoldersExcluded))
+        writeFile(NEDEXCLUSIONSFILE, content)
 
     ############################
     def writeFeatureState(self):
@@ -375,7 +358,7 @@ root directory where the following files are present:
         # read featurestate xml file
         self.featurestate = dict()
 
-        if not os.path.isfile(FEATURESTATEFILE):
+        if not isfile(FEATURESTATEFILE):
             if (self.fixingMode or self.autoFixingMode):
                 # warn("the .featurestate file does not exist. Using defaults.")
                 # generate default featurestate
