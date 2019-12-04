@@ -160,7 +160,7 @@ class NedFolder:
 class FeatureTool:
     # enforce static member list
     __slots__ = ('args', 'parser', 'fixingMode', 'autoFixingMode',
-                 'features', 'sortedFeatures', 'featurestate', 'nedfolders', 'nedfoldersExcluded', 'cppSourceRoots',
+                 'features', 'sortedFeatures', 'featurestate', 'unusedFeaturestates', 'nedfolders', 'nedfoldersExcluded', 'cppSourceRoots',
                  'featurestatesChanged', 'nedExclusionFileChanged')
 
     def __init__(self):
@@ -172,6 +172,7 @@ class FeatureTool:
         self.features = None  # dict: id -> Feature
         self.sortedFeatures = None  # array of Feature
         self.featurestate = None  # dict: id -> FeatureState
+        self.unusedFeaturestates = [] # array of Feature
         self.nedfolders = [] # array: NedFolder
         self.nedfoldersExcluded = [] # array of string
         self.cppSourceRoots = [] # array of string
@@ -372,7 +373,8 @@ root directory where the following files are present:
     def writeFeatureStateFile(self):
         domTree = xml.dom.minidom.parseString("<featurestates/>")
         featurestateDom = domTree.documentElement
-        for fk, fs in sorted(self.featurestate.items(), key=lambda x:x[1].ord):
+        allFeaturestates = list(self.featurestate.values()) + self.unusedFeaturestates
+        for fs in sorted(allFeaturestates, key = lambda x: x.ord):
             oneFS = domTree.createElement("feature")
             oneFS.setAttribute("id", fs.id)
             oneFS.setAttribute("enabled", str(fs.enabled).lower())
@@ -411,6 +413,7 @@ root directory where the following files are present:
                     featureState.ord = self.features[featureState.id].ord
                 elif self.fixingMode:
                     warn(""+FEATURESTATEFILE+": Line '" + featureDom.toxml() + "' contains the unknown feature '" + featureState.id + "', removed")
+                    self.unusedFeaturestates.append(featureState)
                     self.featurestatesChanged = True
                     xord += 1
                     continue
