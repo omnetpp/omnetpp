@@ -84,8 +84,6 @@ def writeFile(filename, content):
 
 def readXmlFile(filename, repairHint=None):
     try:
-        if os.stat(filename).st_size == 0:
-            return None
         f = open(filename, 'r')
         domTree = xml.dom.minidom.parse(f)
         f.close()
@@ -159,26 +157,24 @@ class NedFolder:
 ############################
 class FeatureTool:
     # enforce static member list
-    __slots__ = ('args', 'parser', 'fixingMode', 'autoFixingMode',
-                 'features', 'sortedFeatures', 'featurestate', 'unusedFeaturestates', 'nedfolders', 'nedfoldersExcluded', 'cppSourceRoots',
-                 'featurestatesChanged', 'nedExclusionFileChanged')
+    __slots__ = ('args', 'parser',
+                 'features', 'sortedFeatures', 'featurestate', 'unusedFeaturestates', 'nedfolders', 'nedExclusions', 'cppSourceRoots',
+                 'featurestatesChanged', 'nedExclusionsChanged')
 
     def __init__(self):
         self.args = None
         self.parser = None
-        self.fixingMode = False
-        self.autoFixingMode = False
 
         self.features = None  # dict: id -> Feature
-        self.sortedFeatures = None  # array of Feature
+        self.sortedFeatures = None  # list of Feature items
         self.featurestate = None  # dict: id -> FeatureState
-        self.unusedFeaturestates = [] # array of Feature
-        self.nedfolders = [] # array: NedFolder
-        self.nedfoldersExcluded = [] # array of string
-        self.cppSourceRoots = [] # array of string
+        self.unusedFeaturestates = [] # list of Feature items
+        self.nedfolders = [] # list of NedFolder items
+        self.nedExclusions = [] # list of excluded NED package names
+        self.cppSourceRoots = [] # list of folder path strings
 
         self.featurestatesChanged = False
-        self.nedExclusionFileChanged = False
+        self.nedExclusionsChanged = False
 
     def printIfVerbose(self, verbosity, msg):
         if verbosity <= self.args.verbose:
@@ -283,10 +279,10 @@ root directory where the following files are present:
             self.featurestate[fk] = fs
         self.writeFeatureStateFile()
 
-        self.nedfoldersExcluded = []
+        self.nedExclusions = []
         for fk, feature in self.sortedFeatures:
             if not feature.initiallyEnabled:
-                self.nedfoldersExcluded.extend(feature.nedPackages)
+                self.nedExclusions.extend(feature.nedPackages)
 
         self.writeNedExclusionsFile()
 
@@ -350,7 +346,7 @@ root directory where the following files are present:
 
     ############################
     def readNedExclusionsFile(self):
-        self.nedfoldersExcluded = []
+        self.nedExclusions = []
         if not isfile(NEDEXCLUSIONSFILE):
             return
 
@@ -362,11 +358,11 @@ root directory where the following files are present:
             line = line.strip()
             if not dottedNameRegex.match(line):
                 warn("invalid line %s:%d: '%s'" % (NEDEXCLUSIONSFILE, ord, line))
-            self.nedfoldersExcluded.append(line)
+            self.nedExclusions.append(line)
 
     ############################
     def writeNedExclusionsFile(self):
-        content = "\n".join(sorted(self.nedfoldersExcluded))
+        content = "\n".join(sorted(self.nedExclusions))
         writeFile(NEDEXCLUSIONSFILE, content)
 
     ############################
@@ -387,48 +383,26 @@ root directory where the following files are present:
         self.featurestate = dict()
 
         if not isfile(FEATURESTATEFILE):
-            if (self.fixingMode or self.autoFixingMode):
-                # warn("the .featurestate file does not exist. Using defaults.")
-                # generate default featurestate
-                for fk, feature in self.sortedFeatures:
-                    fs = FeatureState(feature.id, feature.initiallyEnabled, feature.ord)
-                    self.featurestate[fk] = fs
-
-                if self.fixingMode:
-                    self.featurestatesChanged = True
-            else:
-                fail("the "+FEATURESTATEFILE+" file does not exist.")
+            self.printIfVerbose(1, "'" + FEATURESTATEFILE + "' does not exist, initializing with the default enablement settings")
         else:
             domTree = readXmlFile(FEATURESTATEFILE, "Repair the file by hand, or delete it")
-            if not domTree:
-                return
-
             featurestateDom = domTree.documentElement
             featurestatelistDom = featurestateDom.getElementsByTagName("feature")
-
             xord = len(self.features) + 1000
             for featureDom in featurestatelistDom:
                 featureState = FeatureState.fromXML(featureDom, xord)
                 if featureState.id in self.features:
                     featureState.ord = self.features[featureState.id].ord
-                elif self.fixingMode:
-                    warn(""+FEATURESTATEFILE+": Line '" + featureDom.toxml() + "' contains the unknown feature '" + featureState.id + "', removed")
-                    self.unusedFeaturestates.append(featureState)
-                    self.featurestatesChanged = True
-                    xord += 1
-                    continue
-                else:
-                    fail(""+FEATURESTATEFILE+": Line '" + featureDom.toxml() + "' contains the unknown feature '" + featureState.id + "', try 'opp_featuretool repair'")
-
-                if featureState.id in self.featurestate:
-                    if self.fixingMode:
-                        warn(""+FEATURESTATEFILE+": Line '" + featureDom.toxml() + "' contains the same feature more than once '" + featureState.id + "', removed")
-                        self.featurestatesChanged = True
-                        continue
-                    else:
-                        fail(""+FEATURESTATEFILE+": Line '" + featureDom.toxml() + "' contains the same feature more than once '" + featureState.id + "', try 'opp_featuretool repair'")
-                else:
                     self.featurestate[featureState.id] = featureState
+                else:
+                    self.unusedFeaturestates.append(featureState)
+
+        # add missing feature states
+        for fk, feature in self.sortedFeatures:
+            if not (feature.id in self.featurestate):
+                fs = FeatureState(feature.id, feature.initiallyEnabled, feature.ord)
+                self.featurestate[fk] = fs
+                self.featurestatesChanged = True
 
 
     ############################
@@ -525,6 +499,15 @@ root directory where the following files are present:
     def updateRequirements(self, featureOnList, requirements):
         for featureid in featureOnList:
             self.updateRequirementsOf(featureid, featureOnList, requirements)
+
+    ############################
+    def updateNedExclusions(self):
+        self.nedExclusions = []
+        for key, fs in sorted(self.featurestate.items(), key=lambda x:x[1].ord):
+            enabled = False
+            if fs.id in self.features and not fs.enabled:
+                self.nedExclusions.extend(self.features[fs.id].nedPackages)
+        self.nedExclusionsChanged = True
 
     ############################
     def doEnableCommand(self):
@@ -629,24 +612,7 @@ root directory where the following files are present:
 
     ############################
     def validateOrRepair(self, repair=False):
-        # "syntax check in FEATURESTATEFILE file" for 'validate' is implemented in readFeatureStateFile()
-
-        featureMissed = False
-        # check feature existing in FEATURESTATEFILE file:
-        for fid, feature in self.sortedFeatures:
-            if not fid in self.featurestate:
-                featureMissed = True
-                fs = FeatureState(feature.id, feature.initiallyEnabled, feature.ord)
-                self.featurestate[fid] = fs
-                if self.fixingMode:
-                    warn("feature '%s' is missing from the %s file, adding it with default state." % (fid, FEATURESTATEFILE))
-                    self.featurestatesChanged = True
-                elif self.autoFixingMode:
-                    warn("feature '%s' is missing from the %s file, using the default state." % (fid, FEATURESTATEFILE))
-                else:
-                    fail("feature '%s' is missing from the %s file, try 'opp_featuretool repair'." % (fid, FEATURESTATEFILE))
-
-        # check dependencies:
+        # check feature dependencies:
         dependencyErrorOccurred = False
         featureOnList = set()
         requirements = set()
@@ -663,30 +629,35 @@ root directory where the following files are present:
                 warn("these features are also required:  " + ", ".join(sorted(requirements)))
             featureOnList.update(requirements)
 
+        # check NED folder exclusions:
         nedfolderErrorOccurred = False
         for fid, feature in self.sortedFeatures:
             for np in feature.nedPackages:
                 if self.featurestate[fid].enabled:
-                    if np in self.nedfoldersExcluded:
-                        if not (self.autoFixingMode or self.fixingMode):
+                    if np in self.nedExclusions:
+                        if not repair:
                             warn("NED package '%s' is part of the enabled feature '%s', but it is excluded." % (np, fid))
                         nedfolderErrorOccurred = True
                 else:
-                    if not np in self.nedfoldersExcluded:
-                        if not (self.autoFixingMode or self.fixingMode):
+                    if not np in self.nedExclusions:
+                        if not repair:
                             warn("NED package '%s' is part of the disabled feature '%s', but it is not excluded." % (np, fid))
                         nedfolderErrorOccurred = True
+
+        # enable missing features (TODO recursively!)
         if dependencyErrorOccurred:
-            if self.fixingMode:
+            if repair:
                 for key in featureOnList:
                     self.featurestate[key].enabled = True
                 self.featurestatesChanged = True
             else:
                 fail("feature dependency error(s) found, see warnings above.")
+
+        # TODO looks like nedexclusions will be regenerated on the way out from main, maybe refactor
         if nedfolderErrorOccurred:
-            if self.fixingMode:
+            if repair:
                 self.featurestatesChanged = True
-            elif not self.autoFixingMode:
+            else:
                 fail("feature dependency error(s) found in the "+NEDEXCLUSIONSFILE+" file, see warnings above.")
 
 
@@ -796,7 +767,6 @@ root directory where the following files are present:
         self.readFeatureStateFile()
         self.readNedExclusionsFile()
 
-
     ############################
     def run(self):
         self.featurestatesChanged = False
@@ -807,9 +777,6 @@ root directory where the following files are present:
             self.args = self.parser.parse_args()
         except (IOError, OSError) as e:
             fail("{}".format(e))
-
-        self.autoFixingMode = (self.args.command != "validate")
-        self.fixingMode = (self.args.command == "repair")
 
         if self.args.command == None:
             self.parser.print_help()
@@ -837,15 +804,9 @@ root directory where the following files are present:
         if self.featurestatesChanged:
             self.writeFeatureStateFile()
             self.printIfVerbose(1, "opp_featuretool: "+FEATURESTATEFILE+" file updated.")
+            self.updateNedExclusions()
 
-            self.nedfoldersExcluded = []
-            for key, fs in sorted(self.featurestate.items(), key=lambda x:x[1].ord):
-                enabled = False
-                if fs.id in self.features and not fs.enabled:
-                    self.nedfoldersExcluded.extend(self.features[fs.id].nedPackages)
-            self.nedExclusionFileChanged = True
-
-        if self.nedExclusionFileChanged:
+        if self.nedExclusionsChanged:
             self.writeNedExclusionsFile()
             self.printIfVerbose(1, "opp_featuretool: "+NEDEXCLUSIONSFILE+" file updated.")
 
