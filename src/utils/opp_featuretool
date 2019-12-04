@@ -21,12 +21,16 @@ FEATURESTATEFILE = ".oppfeaturestate"
 NEDFOLDERSFILE = ".nedfolders"
 NEDEXCLUSIONSFILE = ".nedexclusions"
 
-def fail(msg):
+def fail(msg, repairHint=None):
     print("opp_featuretool: Error: {}".format(msg), file=sys.stderr)
+    if repairHint:
+        print("Hint: " + repairHint, file=sys.stderr)
     sys.exit(1)
 
-def warn(msg):
+def warn(msg, repairHint=None):
     print("opp_featuretool: Warning: {}".format(msg), file=sys.stderr)
+    if repairHint:
+        print("Hint: " + repairHint, file=sys.stderr)
 
 def queryYesNo(question, default="yes"):
     """Ask a yes/no question via raw_input() and return their answer.
@@ -60,6 +64,7 @@ def queryYesNo(question, default="yes"):
             sys.stdout.write("Please respond with 'yes' or 'no' "
                              "(or 'y' or 'n').\n")
 
+############################
 def readFile(filename):
     try:
         f = open(filename, 'r')
@@ -67,7 +72,7 @@ def readFile(filename):
         f.close()
         return lines
     except (IOError, OSError) as e:
-        fail("can't read '{}': {}".format(filename, e))
+        fail("cannot read '{}': {}".format(filename, e))
 
 def writeFile(filename, content):
     try:
@@ -75,7 +80,28 @@ def writeFile(filename, content):
         f.write(content)
         f.close()
     except (IOError, OSError) as e:
-        fail("can't write '{}': {}".format(filename, e))
+        fail("cannot write '{}': {}".format(filename, e))
+
+def readXmlFile(filename, repairHint=None):
+    try:
+        if os.stat(filename).st_size == 0:
+            return None
+        f = open(filename, 'r')
+        domTree = xml.dom.minidom.parse(f)
+        f.close()
+        return domTree
+    except (IOError, OSError) as e:
+        fail("cannot read '{}': {}".format(filename, e))
+    except Exception as e:
+        fail("cannot parse XML file '{}': {}".format(filename, e), repairHint)
+
+def writeXmlFile(filename, domTree):
+    try:
+        f = open(filename, 'w')
+        domTree.writexml(f, addindent="    ", newl="\n")
+        f.close()
+    except (IOError, OSError) as e:
+        fail("cannot write '{}': {}".format(filename, e))
 
 ############################
 class OppParser(argparse.ArgumentParser):
@@ -83,6 +109,7 @@ class OppParser(argparse.ArgumentParser):
       sys.stderr.write('error: %s\n' % message)
       self.print_help()
       sys.exit(2)
+
 ############################
 class Feature:
     def __init__(self, feature, ord):
@@ -252,29 +279,21 @@ root directory where the following files are present:
 
     ############################
     def readFeatures(self):
-        # read features xml file
-        try:
-            featurefile = open(FEATURESFILE, 'r')
-        except (IOError, OSError) as e:
-            fail("can't open {} file: {}".format(FEATURESFILE, e))
+        domTree = readXmlFile(FEATURESFILE)
+        self.features = dict()
+        if not domTree:
+            return
+        featuresDom = domTree.documentElement
+        self.cppSourceRoots = featuresDom.getAttribute("cppSourceRoots").split()
+        featurelistDom = featuresDom.getElementsByTagName("feature")
 
-        try:
-            DOMTree = xml.dom.minidom.parse(featurefile)
-            featuresDom = DOMTree.documentElement
-            self.cppSourceRoots = featuresDom.getAttribute("cppSourceRoots").split()
-            featurelistDom = featuresDom.getElementsByTagName("feature")
-
-            self.features = dict()
-            ord = 0
-            for featureDom in featurelistDom:
-                feature = Feature(featureDom, ord)
-                self.features[feature.id] = feature
-                ord += 1
-        except Exception as e:
-            fail("cannot parse {} file: {}".format(FEATURESFILE, e))
+        ord = 0
+        for featureDom in featurelistDom:
+            feature = Feature(featureDom, ord)
+            self.features[feature.id] = feature
+            ord += 1
 
         self.sortedFeatures = sorted(self.features.items(), key=lambda x:x[1].ord)
-        featurefile.close()
 
 
     ############################
@@ -338,19 +357,14 @@ root directory where the following files are present:
 
     ############################
     def writeFeatureState(self):
-        try:
-            DOMTree = xml.dom.minidom.parseString("<featurestates/>")
-            featurestateDom = DOMTree.documentElement
-            for fk, fs in sorted(self.featurestate.items(), key=lambda x:x[1].ord):
-                oneFS = DOMTree.createElement("feature")
-                oneFS.setAttribute("id", fs.id)
-                oneFS.setAttribute("enabled", str(fs.enabled).lower())
-                featurestateDom.appendChild(oneFS)
-            fsFile = open(FEATURESTATEFILE, 'w')
-            DOMTree.writexml(fsFile, addindent="    ", newl="\n")
-            fsFile.close()
-        except (IOError, OSError) as e:
-            fail("error occurred when writing {} file: {}".format(FEATURESTATEFILE, e))
+        domTree = xml.dom.minidom.parseString("<featurestates/>")
+        featurestateDom = domTree.documentElement
+        for fk, fs in sorted(self.featurestate.items(), key=lambda x:x[1].ord):
+            oneFS = domTree.createElement("feature")
+            oneFS.setAttribute("id", fs.id)
+            oneFS.setAttribute("enabled", str(fs.enabled).lower())
+            featurestateDom.appendChild(oneFS)
+        writeXmlFile(FEATURESTATEFILE, domTree)
 
 
     ############################
@@ -371,21 +385,11 @@ root directory where the following files are present:
             else:
                 fail("the "+FEATURESTATEFILE+" file does not exist.")
         else:
-            try:
-                fsFile = open(FEATURESTATEFILE, 'r')
-            except (IOError, OSError) as e:
-                fail("I/O error while reading file {}: {}".format(FEATURESTATEFILE, e))
-
-            if os.stat(FEATURESTATEFILE).st_size == 0:
+            domTree = readXmlFile(FEATURESTATEFILE, "Repair the file by hand, or delete it")
+            if not domTree:
                 return
-            try:
-                DOMTree = xml.dom.minidom.parse(fsFile)
-            except Exception as e:
-                fail("cannot parse {} file: {}, to fix it: repair the file by hand, or delete {}".format(FEATURESTATEFILE, e, FEATURESTATEFILE))
 
-            fsFile.close()
-
-            featurestateDom = DOMTree.documentElement
+            featurestateDom = domTree.documentElement
             featurestatelistDom = featurestateDom.getElementsByTagName("feature")
 
             xord = len(self.features) + 1000

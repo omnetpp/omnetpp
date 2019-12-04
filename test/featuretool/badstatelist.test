@@ -36,4 +36,5 @@ feature_d_folder
 return: ERROR
 
 %contains: test.err
-opp_featuretool: Error: cannot parse .oppfeaturestate file: not well-formed (invalid token): line 3, column 5, to fix it: repair the file by hand, or delete .oppfeaturestate
+opp_featuretool: Error: cannot parse XML file '.oppfeaturestate': not well-formed (invalid token): line 3, column 5
+Hint: Repair the file by hand, or delete it
