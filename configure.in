@@ -410,9 +410,9 @@ if test "$CC" = "clang"; then
 fi
 
 #----------------------
-# check and disable stack checking to avoid opplibs.so dependence on glibc 2.4
+# check and disable frame pointer omission for better debugging support
 #----------------------
-AC_PROG_CXX_OPTION(-fno-stack-protector, CFLAGS_ARCH="$CFLAGS_ARCH -fno-stack-protector")
+AC_PROG_CXX_OPTION(-fno-omit-frame-pointer, CFLAGS_ARCH="$CFLAGS_ARCH -fno-omit-frame-pointer")
 
 #----------------------
 # check for support of --no-as-needed  linker option. GCC 4.6 has changed not to link with a shared lib

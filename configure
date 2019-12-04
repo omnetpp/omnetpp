@@ -3446,14 +3446,14 @@ if test "$CC" = "clang"; then
 fi
 
 #----------------------
-# check and disable stack checking to avoid opplibs.so dependence on glibc 2.4
+# check and disable frame pointer omission for better debugging support
 #----------------------
 
 
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports -fno-stack-protector" >&5
-$as_echo_n "checking whether $CXX supports -fno-stack-protector... " >&6; }
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports -fno-omit-frame-pointer" >&5
+$as_echo_n "checking whether $CXX supports -fno-omit-frame-pointer... " >&6; }
     ac_save_CXX="$CXX"
-    CXX="$CXX -fno-stack-protector"
+    CXX="$CXX -fno-omit-frame-pointer"
     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -3470,7 +3470,7 @@ if ac_fn_cxx_try_link "$LINENO"; then :
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
         CXX="$ac_save_CXX"
-        CFLAGS_ARCH="$CFLAGS_ARCH -fno-stack-protector"
+        CFLAGS_ARCH="$CFLAGS_ARCH -fno-omit-frame-pointer"
 
 else
 
