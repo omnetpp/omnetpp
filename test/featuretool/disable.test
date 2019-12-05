@@ -1,5 +1,5 @@
 %description:
-Testing opp_feature
+Testing opp_featuretool.
 Disable feature with dependencies
 
 %prerun-command: ../../lib/createSrcFolders

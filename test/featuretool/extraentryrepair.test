@@ -1,5 +1,5 @@
 %description:
-Testing opp_feature
+Testing opp_featuretool.
 .oppfeaturestate has an unknown feature
 Repair .oppfeaturestate and .nedexclusions files
 
@@ -34,12 +34,8 @@ feature_d_folder
 '.nedfolders' found.
 '.nedexclusions' found.
 
-%contains: stdout
-opp_featuretool: .oppfeaturestate file updated.
-opp_featuretool: .nedexclusions file updated.
-
-%contains: test.err
-opp_featuretool: Warning: .oppfeaturestate: Line '<feature enabled="false" id="F_UNKNOWN"/>' contains the unknown feature 'F_UNKNOWN', removed
+%not-contains-regex: test.err
+[a-zA-Z]
 
 %contains: .oppfeaturestate
 <?xml version="1.0" ?>
@@ -47,6 +43,7 @@ opp_featuretool: Warning: .oppfeaturestate: Line '<feature enabled="false" id="F
     <feature enabled="true" id="F_A"/>
     <feature enabled="false" id="F_B"/>
     <feature enabled="false" id="F_C"/>
+    <feature enabled="false" id="F_UNKNOWN"/>
     <feature enabled="false" id="F_D"/>
     <feature enabled="true" id="F_E"/>
 </featurestates>

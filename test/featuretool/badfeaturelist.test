@@ -1,5 +1,5 @@
 %description:
-Testing opp_feature: oppfeaturestate file has xml syntax error
+Testing opp_featuretool: oppfeaturestate file has xml syntax error
 
 %prerun-command: cp ../../.nedfolders .
 %prerun-command: cp ../../.oppfeatures .

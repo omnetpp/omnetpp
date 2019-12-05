@@ -1,5 +1,5 @@
 %description:
-Testing opp_feature
+Testing opp_featuretool.
 Try disable an unknown feature
 
 %prerun-command: ../../lib/createSrcFolders

@@ -1,5 +1,5 @@
 %description:
-Testing opp_feature with a clean project: exists .oppfeatures and .nedfolders only
+Testing opp_featuretool with a clean project: only .oppfeatures and .nedfolders exist.
 Lists features
 
 %prerun-command: ../../lib/createSrcFolders
@@ -14,9 +14,9 @@ Lists features
 
 %contains: postrun-command(1).out
 '.oppfeatures' found.
-'.oppfeaturestate' not found.
+'.oppfeaturestate' found.
 '.nedfolders' found.
-'.nedexclusions' not found.
+'.nedexclusions' found.
 
 %contains: test.out
 Disabled feature(s): F_B, F_C, F_D.

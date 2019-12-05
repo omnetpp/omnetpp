@@ -35,10 +35,10 @@ feature_d_folder
 '.nedexclusions' found.
 
 %contains: stdout
-return: ERROR
+return: OK
 
-%contains: test.err
-opp_featuretool: Error: .oppfeaturestate: Line '<feature enabled="false" id="F_UNKNOWN"/>' contains the unknown feature 'F_UNKNOWN'
+%not-contains-regex: test.err
+[a-zA-Z]
 
 %contains: .oppfeaturestate
 <?xml version="1.0" ?>

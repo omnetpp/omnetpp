@@ -1,5 +1,5 @@
 %description:
-Testing opp_feature
+Testing opp_featuretool.
 Missing one feature from .oppfeature
 Listing features
 
@@ -39,14 +39,15 @@ feature_d_folder
     - F_D
     + F_E
 
-%contains: test.err
-opp_featuretool: Warning: feature 'F_C' is missing from the .oppfeaturestate file, using the default state.
+%not-contains-regex: test.err
+[a-zA-Z]
 
 %contains: .oppfeaturestate
 <?xml version="1.0" ?>
 <featurestates>
     <feature enabled="true" id="F_A"/>
     <feature enabled="false" id="F_B"/>
+    <feature enabled="false" id="F_C"/>
     <feature enabled="false" id="F_D"/>
     <feature enabled="true" id="F_E"/>
 </featurestates>

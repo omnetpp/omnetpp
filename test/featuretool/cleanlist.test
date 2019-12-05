@@ -1,6 +1,6 @@
 %description:
-Testing opp_feature with a clean project: exists .oppfeatures and .nedfolders only
-Lists features
+Testing opp_featuretool with a clean project: only .oppfeatures and .nedfolders exist.
+Lists features; creates '.oppfeaturestate' and '.nedexclusions' as side effect.
 
 %prerun-command: ../../lib/createSrcFolders
 %prerun-command: cp ../../.nedfolders ../../.oppfeatures .
@@ -12,9 +12,9 @@ Lists features
 
 %contains: postrun-command(1).out
 '.oppfeatures' found.
-'.oppfeaturestate' not found.
+'.oppfeaturestate' found.
 '.nedfolders' found.
-'.nedexclusions' not found.
+'.nedexclusions' found.
 
 %contains: stdout
     + F_A

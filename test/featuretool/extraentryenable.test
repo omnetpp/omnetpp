@@ -1,7 +1,7 @@
 %description:
-Testing opp_feature
-.oppfeaturestate has an unknown feature
-Try enable an existing feature
+Testing opp_featuretool.
+.oppfeaturestate has an unknown feature which is simply ignored during processing but preserved in the output.
+Try enable an existing feature.
 
 %prerun-command: ../../lib/createSrcFolders
 %prerun-command: cp ../../.nedfolders ../../.oppfeatures .
@@ -35,26 +35,26 @@ feature_d_folder
 '.nedexclusions' found.
 
 %contains: stdout
-return: ERROR
+return: OK
 
-%contains: test.err
-opp_featuretool: Error: .oppfeaturestate: Line '<feature enabled="false" id="F_UNKNOWN"/>' contains the unknown feature 'F_UNKNOWN'
+%not-contains-regex: test.err
+[a-zA-Z]
 
 %contains: .oppfeaturestate
 <?xml version="1.0" ?>
 <featurestates>
     <feature enabled="true" id="F_A"/>
-    <feature enabled="false" id="F_B"/>
+    <feature enabled="true" id="F_B"/>
     <feature enabled="false" id="F_C"/>
-    <feature enabled="false" id="F_UNKNOWN"/>
     <feature enabled="false" id="F_D"/>
     <feature enabled="true" id="F_E"/>
+    <feature enabled="false" id="F_UNKNOWN"/>
 </featurestates>
 
 %not-contains: .nedexclusions
 feature_a_folder
 
-%contains: .nedexclusions
+%not-contains: .nedexclusions
 feature_b_folder
 
 %contains: .nedexclusions

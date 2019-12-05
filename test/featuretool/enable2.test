@@ -1,5 +1,5 @@
 %description:
-Testing opp_feature
+Testing opp_featuretool.
 Enable only one feature
 
 %prerun-command: ../../lib/createSrcFolders

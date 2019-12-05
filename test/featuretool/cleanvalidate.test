@@ -1,5 +1,5 @@
 %description:
-Testing opp_feature with a clean project: exists .oppfeatures and .nedfolders only
+Testing opp_featuretool with a clean project: only .oppfeatures and .nedfolders exist.
 Validate .oppfeaturestate and .nedexclusions
 
 %prerun-command: ../../lib/createSrcFolders
@@ -19,4 +19,7 @@ Validate .oppfeaturestate and .nedexclusions
 '.nedexclusions' not found.
 
 %contains: test.err
-opp_featuretool: Error: the .oppfeaturestate file does not exist.
+opp_featuretool: Warning: NED package 'feature_b_folder' is part of the disabled feature 'F_B', but it is not excluded.
+opp_featuretool: Warning: NED package 'feature_c_folder' is part of the disabled feature 'F_C', but it is not excluded.
+opp_featuretool: Warning: NED package 'feature_d_folder' is part of the disabled feature 'F_D', but it is not excluded.
+opp_featuretool: Error: feature dependency error(s) found in the .nedexclusions file, see warnings above.
