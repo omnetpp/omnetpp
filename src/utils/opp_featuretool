@@ -458,7 +458,7 @@ root directory where the following files are present:
     ############################
     def doListCommand(self):
         self.readAllConfigFiles()
-        self.validateOrRepair(False)
+        self.validateOrRepair(True)
 
         if self.args.enabled:
             categ = "enabled "
@@ -512,7 +512,7 @@ root directory where the following files are present:
     ############################
     def doEnableCommand(self):
         self.readAllConfigFiles()
-        self.validateOrRepair(False)
+        self.validateOrRepair(True)
 
         if 'all' in self.args.features:
             if len(self.args.features) > 1:
@@ -564,7 +564,7 @@ root directory where the following files are present:
     ############################
     def doDisableCommand(self):
         self.readAllConfigFiles()
-        self.validateOrRepair(False)
+        self.validateOrRepair(True)
 
         if 'all' in self.args.features:
             if len(self.args.features) > 1:
@@ -664,7 +664,7 @@ root directory where the following files are present:
     ############################
     def doOptionsCommand(self):
         self.readAllConfigFiles()
-        self.validateOrRepair(False)
+        self.validateOrRepair(True)
 
         if self.args.srcpath == None:
             self.args.srcpath = self.cppSourceRoots[0]
@@ -711,7 +711,7 @@ root directory where the following files are present:
     ############################
     def doDefinesCommand(self):
         self.readAllConfigFiles()
-        self.validateOrRepair(False)
+        self.validateOrRepair(True)
 
         print("//")
         print("// Generated file, do not edit!")
@@ -742,7 +742,7 @@ root directory where the following files are present:
     ############################
     def doIsEnabledCommand(self):
         self.readAllConfigFiles()
-        self.validateOrRepair(False)
+        self.validateOrRepair(True)
 
         featureOffList = set()
         featureUnknownList = set()
