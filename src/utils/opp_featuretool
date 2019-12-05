@@ -272,7 +272,9 @@ root directory where the following files are present:
 
     ############################
     def doResetCommand(self):
-        # RESET command
+        self.readNedFoldersFile()
+        self.readFeaturesFile()
+
         self.printIfVerbose(1, "Enablement of all project features reset to the default")
         self.featurestate = dict()
         for fk, feature in self.sortedFeatures:
@@ -478,8 +480,9 @@ root directory where the following files are present:
 
     ############################
     def doListCommand(self):
-        self.doValidateCommand()
-        # LIST command #
+        self.readAllConfigFiles()
+        self.validateOrRepair(False)
+
         if self.args.enabled:
             categ = "enabled "
             self.printIfVerbose(2, "List of enabled features:")
@@ -514,14 +517,17 @@ root directory where the following files are present:
                 if not req in requirements and not req in featureOnList:
                     self.updateRequirementsOf(req, featureOnList, requirements)
                     requirements.add(req)
+
     ############################
     def updateRequirements(self, featureOnList, requirements):
         for featureid in featureOnList:
             self.updateRequirementsOf(featureid, featureOnList, requirements)
+
     ############################
     def doEnableCommand(self):
-        self.doValidateCommand()
-        # ENABLE command #
+        self.readAllConfigFiles()
+        self.validateOrRepair(False)
+
         if 'all' in self.args.features:
             if len(self.args.features) > 1:
                 fail("'all' should not be used while individual features are mentioned on the command line.")
@@ -563,14 +569,17 @@ root directory where the following files are present:
             if (featureid in f.requires) and self.featurestate[f.id].enabled and (not (f.id in dependencyList)) and (not (f.id in featureOffList)):
                 self.updateDependsOf(f.id, featureOffList, dependencyList)
                 dependencyList.add(f.id)
+
     ############################
     def updateDependencies(self, featureOffList, dependencyList):
         for featureid in featureOffList:
             self.updateDependsOf(featureid, featureOffList, dependencyList)
+
     ############################
     def doDisableCommand(self):
-        self.doValidateCommand()
-        # DISABLE command #
+        self.readAllConfigFiles()
+        self.validateOrRepair(False)
+
         if 'all' in self.args.features:
             if len(self.args.features) > 1:
                 fail("'all' should not be used while individual features are mentioned on the command line.")
@@ -607,10 +616,12 @@ root directory where the following files are present:
 
     ############################
     def doValidateCommand(self):
+        self.readAllConfigFiles()
         self.validateOrRepair(False)
 
     ############################
     def doRepairCommand(self):
+        self.readAllConfigFiles()
         self.validateOrRepair(True)
 
     ############################
@@ -678,7 +689,9 @@ root directory where the following files are present:
 
     ############################
     def doOptionsCommand(self):
-        self.doValidateCommand()
+        self.readAllConfigFiles()
+        self.validateOrRepair(False)
+
         if self.args.srcpath == None:
             self.args.srcpath = self.cppSourceRoots[0]
         elif self.args.srcpath not in self.cppSourceRoots:
@@ -723,7 +736,9 @@ root directory where the following files are present:
 
     ############################
     def doDefinesCommand(self):
-        self.doValidateCommand()
+        self.readAllConfigFiles()
+        self.validateOrRepair(False)
+
         print("//")
         print("// Generated file, do not edit!")
         print("//")
@@ -752,8 +767,9 @@ root directory where the following files are present:
 
     ############################
     def doIsEnabledCommand(self):
-        self.doValidateCommand()
-        # ISENABLED command #
+        self.readAllConfigFiles()
+        self.validateOrRepair(False)
+
         featureOffList = set()
         featureUnknownList = set()
         for key in self.args.features:
@@ -768,6 +784,14 @@ root directory where the following files are present:
             sys.exit(1)
         self.printIfVerbose(1, "Feature(s) {} are enabled.".format((", ".join(self.args.features))))
         sys.exit(0)
+
+    ############################
+    def readAllConfigFiles(self):
+        self.readNedFoldersFile()
+        self.readFeaturesFile()
+        self.verifyFeaturesNedFolders()
+        self.readFeatureStateFile()
+        self.readNedExclusionsFile()
 
 
     ############################
@@ -784,32 +808,16 @@ root directory where the following files are present:
         self.autoFixingMode = (self.args.command != "validate")
         self.fixingMode = (self.args.command == "repair")
 
-        # read nedfolders file:
-        self.readNedFoldersFile()
-
-        # read feature file
-        self.readFeaturesFile()
-
-        self.verifyFeaturesNedFolders()
-
-        if self.args.command == 'reset':
-            self.doResetCommand()
-            return
-
-        # Read featurestate file #
-        self.readFeatureStateFile()
-
-        # read nedexclusions file:
-        self.readNedExclusionsFile()
-
-        if self.args.command == 'list':
+        if self.args.command == None:
+            self.parser.print_help()
+        elif self.args.command == 'list':
             self.doListCommand()
         elif self.args.command == 'validate':
             self.doValidateCommand()
         elif self.args.command == 'repair':
             self.doRepairCommand()
         elif self.args.command == 'reset':
-            fail("internal error") # 'reset' was already processed above
+            self.doResetCommand()
         elif self.args.command == 'enable':
             self.doEnableCommand()
         elif self.args.command == 'disable':
