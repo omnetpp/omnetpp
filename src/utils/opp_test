@@ -19,6 +19,15 @@ shouldCompressDiff = True
 useColors = sys.stdout.isatty()
 maxPrintableSize = 32768
 
+txtPASS = "PASS"
+txtFAIL = "FAIL"
+txtUNRESOLVED = "UNRESOLVED"
+
+if useColors:
+    txtPASS = '\033[0;32m' + "PASS" + "\033[0;0m"     # GREEN
+    txtFAIL = "\033[1;33m" + "FAIL" + "\033[0;0m"    # YELLOW
+    txtUNRESOLVED = "\033[1;31m" + "UNRESOLVED" + "\033[0;0m"      # RED
+
 def fail(msg):
     print(progname + ": Error: {}".format(msg), file=sys.stderr)
     sys.exit(1)
@@ -547,20 +556,20 @@ Supported .test file entry types:
         self.unresolved_tests.append(testname)
         self.result[testname] = 'UNRESOLVED'
         self.reason[testname] = reason
-        print("*** "+testname+": UNRESOLVED ("+reason+")")
+        print("*** "+testname+": "+txtUNRESOLVED+" ("+reason+")")
 
     def testfailed(self, testname, reason):
         self.num_fail += 1
         self.failed_tests.append(testname)
         self.result[testname] = 'FAIL'
         self.reason[testname] = reason
-        print("*** "+testname+": FAIL ("+reason+")")
+        print("*** "+testname+": "+txtFAIL+" ("+reason+")")
 
     def testpassed(self, testname):
         self.num_pass += 1
         self.result[testname] = 'PASS'
         self.reason[testname] = ''
-        print("*** "+testname+": PASS")
+        print("*** "+testname+": "+txtPASS)
 
     def saveOriginalEnv(self):
         self.savedEnv = {}
