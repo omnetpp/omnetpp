@@ -475,7 +475,7 @@ Supported .test file entry types:
 
         f.seek(0, os.SEEK_END)
         if (f.tell() > self.taillength):
-            f.seek(-self.taillength, os.SEEK_END)
+            f.seek(f.tell()-self.taillength, os.SEEK_SET) # note: SEEK_END would throw 'io.UnsupportedOperation: can't do nonzero end-relative seeks' unless file is opened as binary
             istail = True
             f.readline()  # skip incomplete line
         else:
