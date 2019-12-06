@@ -1,6 +1,6 @@
 %description:
 Testing opp_feature
-.nedfolders file is missing
+.nedfolders file is missing -- counts as "."
 Try listing features
 
 %prerun-command: ../../lib/createSrcFolders
@@ -24,7 +24,7 @@ feature_c_folder
 feature_d_folder
 %prerun-command: cp .nedexclusions_in .nedexclusions
 
-%testprog: opp_featuretool options
+%testprog: opp_featuretool list
 
 %ignore-exitcode: 1
 
@@ -36,13 +36,17 @@ feature_d_folder
 '.nedfolders' not found.
 '.nedexclusions' found.
 
-%not-contains-regex: stdout
-[a-zA-Z0-9]
+%contains: stdout
+    + F_A
+    - F_B
+    - F_C
+    - F_D
+    + F_E
+
 
 %contains: stderr
-opp_featuretool: Error: NED package 'feature_a_folder' in feature 'F_A' was not found.
-opp_featuretool: Error: NED package 'feature_b_folder' in feature 'F_B' was not found.
-opp_featuretool: Error: NED package 'feature_c_folder' in feature 'F_C' was not found.
-opp_featuretool: Error: NED package 'feature_d_folder' in feature 'F_D' was not found.
-opp_featuretool: Error: NED package 'feature_e_folder' in feature 'F_E' was not found.
-opp_featuretool: Error: Check whether all NED folders are set properly (in file .nedfolders) and all directories corresponding to the NED packages defined in file .oppfeatures do exist.
+opp_featuretool: Warning: No folder corresponds to NED package 'feature_a_folder' referenced in feature 'F_A' (Hint: Make sure its NED root folder is listed in '.nedfolders'!)
+opp_featuretool: Warning: No folder corresponds to NED package 'feature_b_folder' referenced in feature 'F_B' (Hint: Make sure its NED root folder is listed in '.nedfolders'!)
+opp_featuretool: Warning: No folder corresponds to NED package 'feature_c_folder' referenced in feature 'F_C' (Hint: Make sure its NED root folder is listed in '.nedfolders'!)
+opp_featuretool: Warning: No folder corresponds to NED package 'feature_d_folder' referenced in feature 'F_D' (Hint: Make sure its NED root folder is listed in '.nedfolders'!)
+opp_featuretool: Warning: No folder corresponds to NED package 'feature_e_folder' referenced in feature 'F_E' (Hint: Make sure its NED root folder is listed in '.nedfolders'!)
