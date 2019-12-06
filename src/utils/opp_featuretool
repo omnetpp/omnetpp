@@ -180,10 +180,6 @@ class FeatureTool:
         if verbosity <= self.args.verbose:
             print(msg)
 
-    def warnIfVerbose(self, verbosity, msg):
-        if verbosity <= self.args.verbose:
-            print("opp_featuretool: Warning: {}".format(msg), file=sys.stderr)
-
     def createParser(self):
         self.parser = OppParser(description='''Turn project features on and off in an OMNeT++ model. List the enablement
 of the features. Show the command line options needed to generarate a makefile
@@ -203,15 +199,6 @@ root directory where the following files are present:
         list_group.add_argument('-d', '--disabled', action='store_true', default=False, help='List disabled features')
         list_group.add_argument('-x', '--diff', action='store_true', default=False, help='List features not in default state')
 
-        # validate command
-        subparsers.add_parser('validate', help='Validate feature enablements: Report inconsistencies and dependency problems in the '+FEATURESTATEFILE+' and '+NEDEXCLUSIONSFILE+' file.')
-
-        # reset command
-        subparsers.add_parser('reset', help='Reset all feature enablements to their default')
-
-        # repair command
-        subparsers.add_parser('repair', help='Repair feature enablements: missing features are added to the state file with the initiallyEnabled flag, non-existent features are removed from the '+FEATURESTATEFILE+' file')
-
         # enable command
         enable_parser = subparsers.add_parser('enable', help='Enable the specified features')
         enable_parser.add_argument('features', nargs='+', help='Enable the specified features, use \'all\' for all features')
@@ -221,6 +208,9 @@ root directory where the following files are present:
         disable_parser = subparsers.add_parser('disable', help='Disable the specified features')
         disable_parser.add_argument('features', nargs='+', help='Disable the specified features, use \'all\' for all features')
         disable_parser.add_argument('-f', '--with-dependencies', action='store_true', default=False, help='Disable all dependent features without asking for confirmation')
+
+        # reset command
+        subparsers.add_parser('reset', help='Reset all feature enablements to their default')
 
         # options command:
         options_parser = subparsers.add_parser('options', help='Print opp_makemake command line arguments for creating a make file with the current feature enablement')
@@ -427,33 +417,31 @@ root directory where the following files are present:
     ############################
     def doListCommand(self):
         self.readAllConfigFiles()
-        self.validateOrRepair(True)
+        self.validateAndRepair()
 
         if self.args.enabled:
             categ = "enabled "
-            self.printIfVerbose(2, "List of enabled features:")
+            self.printIfVerbose(1, "List of enabled features:")
         elif self.args.disabled:
             categ = "disabled "
-            self.printIfVerbose(2, "List of disabled features:")
+            self.printIfVerbose(1, "List of disabled features:")
         elif self.args.diff:
             categ = "changed "
-            self.printIfVerbose(2, "List of changed features:")
+            self.printIfVerbose(1, "List of changed features:")
         else:
             categ = ""
-            self.printIfVerbose(2, "List of all features:")
+            self.printIfVerbose(1, "List of all features:")
             self.args.all = True
 
         cnt = 0
         for key, fs in sorted(self.featurestate.items(), key=lambda x:x[1].ord):
-            if not fs.id in self.features:
-                fail("unknown %s '%s' feature (not found in .oppfeature file), try 'opp_featuretool repair'" % ('enabled' if fs.enabled else 'disabled', fs.id))
-            elif self.args.all or (self.args.enabled and fs.enabled) or (self.args.disabled and not fs.enabled) or (self.args.diff and fs.enabled != self.features[fs.id].initiallyEnabled):
+            assert fs.id in self.features
+            if self.args.all or (self.args.enabled and fs.enabled) or (self.args.disabled and not fs.enabled) or (self.args.diff and fs.enabled != self.features[fs.id].initiallyEnabled):
                 print("    %s %s" % ('+' if fs.enabled else '-', fs.id))
                 cnt += 1
+        self.printIfVerbose(1, "{} {}feature(s)".format(cnt, categ))
         for key, _ in self.sortedFeatures:
-            if not key in self.featurestate:
-                fail("feature '{}' is missing from file {}, try 'opp_featuretool repair'".format(key, FEATURESTATEFILE))
-        self.printIfVerbose(2, "{} {}feature(s) found.".format(cnt, categ))
+            assert key in self.featurestate
 
 
     ############################
@@ -480,7 +468,7 @@ root directory where the following files are present:
     ############################
     def doEnableCommand(self):
         self.readAllConfigFiles()
-        self.validateOrRepair(True)
+        self.validateAndRepair()
 
         if 'all' in self.args.features:
             if len(self.args.features) > 1:
@@ -532,7 +520,7 @@ root directory where the following files are present:
     ############################
     def doDisableCommand(self):
         self.readAllConfigFiles()
-        self.validateOrRepair(True)
+        self.validateAndRepair()
 
         if 'all' in self.args.features:
             if len(self.args.features) > 1:
@@ -569,17 +557,7 @@ root directory where the following files are present:
                     self.featurestatesChanged = True
 
     ############################
-    def doValidateCommand(self):
-        self.readAllConfigFiles()
-        self.validateOrRepair(False)
-
-    ############################
-    def doRepairCommand(self):
-        self.readAllConfigFiles()
-        self.validateOrRepair(True)
-
-    ############################
-    def validateOrRepair(self, repair=False):
+    def validateAndRepair(self):
         # check C++ source folders
         for cppSourceRoot in self.cppSourceRoots:
             if not isdir(cppSourceRoot):
@@ -598,13 +576,13 @@ root directory where the following files are present:
             if self.featurestate[fid].enabled:
                 for r in feature.requires:
                     if not self.featurestate[r].enabled:
-                        warn("feature '%s' is required for '%s', but it is disabled." % (r, fid))
+                        warn("Feature '%s' is required for '%s', but it is disabled, fixing" % (r, fid))
                         featureOnList.add(r)
                         dependencyErrorOccurred = True
         if len(featureOnList):
             self.updateRequirements(featureOnList, requirements)
             if len(requirements):
-                warn("these features are also required:  " + ", ".join(sorted(requirements)))
+                warn("The following features are also required, enabling them:  " + ", ".join(sorted(requirements)))
             featureOnList.update(requirements)
 
         # check NED folder exclusions:
@@ -613,36 +591,28 @@ root directory where the following files are present:
             for np in feature.nedPackages:
                 if self.featurestate[fid].enabled:
                     if np in self.nedExclusions:
-                        if not repair:
-                            warn("NED package '%s' is part of the enabled feature '%s', but it is excluded in '%s'." % (np, fid, NEDEXCLUSIONSFILE))
+                        warn("NED package '%s' is part of the enabled feature '%s', but it is excluded in '%s', fixing." % (np, fid, NEDEXCLUSIONSFILE))
                         nedfolderErrorOccurred = True
                 else:
                     if not np in self.nedExclusions:
-                        if not repair:
-                            warn("NED package '%s' is part of the disabled feature '%s', but it is not excluded." % (np, fid))
+                        warn("NED package '%s' is part of the disabled feature '%s', but it is not excluded in '%s', fixing." % (np, fid, NEDEXCLUSIONSFILE))
                         nedfolderErrorOccurred = True
 
-        # enable missing features (TODO recursively!)
+        # enable missing features
         if dependencyErrorOccurred:
-            if repair:
-                for key in featureOnList:
-                    self.featurestate[key].enabled = True
-                self.featurestatesChanged = True
-            else:
-                fail("feature dependency error(s) found, see warnings above.")
+            for key in featureOnList:
+                self.featurestate[key].enabled = True
+            self.featurestatesChanged = True
 
-        # TODO looks like nedexclusions will be regenerated on the way out from main, maybe refactor
+        # featurestates and nedexclusions will be regenerated on the way out from main()
         if nedfolderErrorOccurred:
-            if repair:
-                self.featurestatesChanged = True
-            else:
-                fail("feature dependency error(s) found in the "+NEDEXCLUSIONSFILE+" file, see warnings above.")
+            self.featurestatesChanged = True  # FIXME ?????
 
 
     ############################
     def doOptionsCommand(self):
         self.readAllConfigFiles()
-        self.validateOrRepair(True)
+        self.validateAndRepair()
 
         if self.args.srcpath == None:
             self.args.srcpath = self.cppSourceRoots[0]
@@ -689,7 +659,7 @@ root directory where the following files are present:
     ############################
     def doDefinesCommand(self):
         self.readAllConfigFiles()
-        self.validateOrRepair(True)
+        self.validateAndRepair()
 
         print("//")
         print("// Generated file, do not edit!")
@@ -720,7 +690,7 @@ root directory where the following files are present:
     ############################
     def doIsEnabledCommand(self):
         self.readAllConfigFiles()
-        self.validateOrRepair(True)
+        self.validateAndRepair()
 
         featureOffList = set()
         featureUnknownList = set()
@@ -761,10 +731,6 @@ root directory where the following files are present:
             self.parser.print_help()
         elif self.args.command == 'list':
             self.doListCommand()
-        elif self.args.command == 'validate':
-            self.doValidateCommand()
-        elif self.args.command == 'repair':
-            self.doRepairCommand()
         elif self.args.command == 'reset':
             self.doResetCommand()
         elif self.args.command == 'enable':
