@@ -55,7 +55,7 @@ def queryYesNo(question, default="yes"):
 
     while True:
         sys.stdout.write(question + prompt)
-        choice = raw_input().lower()
+        choice = input().lower()
         if default is not None and choice == '':
             return valid[default]
         elif choice in valid:
@@ -198,70 +198,43 @@ root directory where the following files are present:
         # list command
         list_parser = subparsers.add_parser('list', help='List features')
         list_group = list_parser.add_mutually_exclusive_group()
-        list_group.add_argument('-a', '--all', action='store_true',
-                    default=False,
-                    help='List all features (default)',
-                    )
-        list_group.add_argument('-e', '--enabled', action='store_true',
-                    default=False,
-                    help='List enabled features',
-                    )
-        list_group.add_argument('-d', '--disabled', action='store_true',
-                    default=False,
-                    help='List disabled features',
-                    )
-        list_group.add_argument('-x', '--diff', action='store_true',
-                    default=False,
-                    help='List features not in default state',
-                    )
+        list_group.add_argument('-a', '--all', action='store_true', default=False, help='List all features (default)')
+        list_group.add_argument('-e', '--enabled', action='store_true', default=False, help='List enabled features')
+        list_group.add_argument('-d', '--disabled', action='store_true', default=False, help='List disabled features')
+        list_group.add_argument('-x', '--diff', action='store_true', default=False, help='List features not in default state')
 
         # validate command
-        validate_parser = subparsers.add_parser('validate', help='Validate feature enablements: Report inconsistencies and dependency problems in the '+
-                FEATURESTATEFILE+' and '+NEDEXCLUSIONSFILE+' file.')
+        subparsers.add_parser('validate', help='Validate feature enablements: Report inconsistencies and dependency problems in the '+FEATURESTATEFILE+' and '+NEDEXCLUSIONSFILE+' file.')
 
         # reset command
-        reset_parser = subparsers.add_parser('reset', help='Reset all feature enablements to their default')
+        subparsers.add_parser('reset', help='Reset all feature enablements to their default')
 
         # repair command
-        repair_parser = subparsers.add_parser('repair', help='Repair feature enablements: missing features are added to the state file with the initiallyEnabled flag, non-existent features are removed from the '+FEATURESTATEFILE+' file')
+        subparsers.add_parser('repair', help='Repair feature enablements: missing features are added to the state file with the initiallyEnabled flag, non-existent features are removed from the '+FEATURESTATEFILE+' file')
 
         # enable command
         enable_parser = subparsers.add_parser('enable', help='Enable the specified features')
-        enable_parser.add_argument('features', nargs='+',
-                    help='Enable the specified features, use \'all\' for all features',
-                    )
-        enable_parser.add_argument('-f', '--with-dependencies', action='store_true',
-                    default=False,
-                    help='Enable all required features without asking for confirmation',
-                    )
+        enable_parser.add_argument('features', nargs='+', help='Enable the specified features, use \'all\' for all features')
+        enable_parser.add_argument('-f', '--with-dependencies', action='store_true', default=False, help='Enable all required features without asking for confirmation')
 
         # disable command
         disable_parser = subparsers.add_parser('disable', help='Disable the specified features')
-        disable_parser.add_argument('features', nargs='+',
-                    help='Disable the specified features, use \'all\' for all features',
-                    )
-        disable_parser.add_argument('-f', '--with-dependencies', action='store_true',
-                    default=False,
-                    help='Disable all dependent features without asking for confirmation',
-                    )
+        disable_parser.add_argument('features', nargs='+', help='Disable the specified features, use \'all\' for all features')
+        disable_parser.add_argument('-f', '--with-dependencies', action='store_true', default=False, help='Disable all dependent features without asking for confirmation')
 
         # options command:
         options_parser = subparsers.add_parser('options', help='Print opp_makemake command line arguments for creating a make file with the current feature enablement')
-        options_parser.add_argument('-s', '--srcpath',
-                    help='Selects the source folder to print makemake options for. (The default is the first value in the cppSourceRoots attribute of the <features> tag in \'%s\'.)' % (FEATURESFILE),
-                    )
+        options_parser.add_argument('-s', '--srcpath', help='Selects the source folder to print makemake options for. (The default is the first value in the cppSourceRoots attribute of the <features> tag in \'%s\'.)' % (FEATURESFILE))
         options_parser.add_argument('-c', '--compiler-options', action='store_true', help='Show compiler options (i.e. -D flags)')
         options_parser.add_argument('-l', '--linker-options', action='store_true', help='Show linker options (i.e. -l and -L flags)')
         options_parser.add_argument('-f', '--folder-options', action='store_true', help='Show excluded folders options (i.e. -X flags)')
 
         # defines command:
-        defines_parser = subparsers.add_parser('defines', help='Print the compiler macros that can be used as a header file (i.e. the -DWITH_FEATURE options from the project features)')
+        subparsers.add_parser('defines', help='Print the compiler macros that can be used as a header file (i.e. the -DWITH_FEATURE options from the project features)')
 
         # isenabled command
         isenabled_parser = subparsers.add_parser('isenabled', help='Returns true if the specified feature(s) are enabled, and false otherwise.')
-        isenabled_parser.add_argument('features', nargs='+',
-                    help='feature list',
-                    )
+        isenabled_parser.add_argument('features', nargs='+', help='feature list')
 
         # common arguments:
         self.parser.add_argument('-v', '--verbose', action='store_true', default=False, help='Verbose mode')
@@ -411,8 +384,8 @@ root directory where the following files are present:
             return True
         for cppSourceRoot in self.cppSourceRoots:
             if folder.startswith(cppSourceRoot) and (len(folder) == len(cppSourceRoot) or folder[len(cppSourceRoot)] == '/'):
-                return True;
-        return False;
+                return True
+        return False
 
 
     ############################
@@ -447,7 +420,7 @@ root directory where the following files are present:
 
     ############################
     def verifyFeaturesNedFolders(self):
-        for fid, feature in self.sortedFeatures:
+        for _,feature in self.sortedFeatures:
             self.checkFeatureNedFoldersExist(feature)
 
 
@@ -477,7 +450,7 @@ root directory where the following files are present:
             elif self.args.all or (self.args.enabled and fs.enabled) or (self.args.disabled and not fs.enabled) or (self.args.diff and fs.enabled != self.features[fs.id].initiallyEnabled):
                 print("    %s %s" % ('+' if fs.enabled else '-', fs.id))
                 cnt += 1
-        for key, fi in self.sortedFeatures:
+        for key, _ in self.sortedFeatures:
             if not key in self.featurestate:
                 fail("feature '{}' is missing from file {}, try 'opp_featuretool repair'".format(key, FEATURESTATEFILE))
         self.printIfVerbose(2, "{} {}feature(s) found.".format(cnt, categ))
@@ -499,8 +472,7 @@ root directory where the following files are present:
     ############################
     def updateNedExclusions(self):
         self.nedExclusions = []
-        for key, fs in sorted(self.featurestate.items(), key=lambda x:x[1].ord):
-            enabled = False
+        for _, fs in sorted(self.featurestate.items(), key=lambda x:x[1].ord):
             if fs.id in self.features and not fs.enabled:
                 self.nedExclusions.extend(self.features[fs.id].nedPackages)
         self.nedExclusionsChanged = True
@@ -514,7 +486,7 @@ root directory where the following files are present:
             if len(self.args.features) > 1:
                 fail("'all' should not be used while individual features are mentioned on the command line.")
             else:
-                for key,fs in self.sortedFeatures:
+                for key,_ in self.sortedFeatures:
                     if not self.featurestate[key].enabled:
                         self.featurestatesChanged = True
                         self.featurestate[key].enabled = True
@@ -547,7 +519,7 @@ root directory where the following files are present:
 
     ############################
     def updateDependsOf(self, featureid, featureOffList, dependencyList):
-        for fk,f in self.sortedFeatures:
+        for _,f in self.sortedFeatures:
             if (featureid in f.requires) and self.featurestate[f.id].enabled and (not (f.id in dependencyList)) and (not (f.id in featureOffList)):
                 self.updateDependsOf(f.id, featureOffList, dependencyList)
                 dependencyList.add(f.id)
@@ -566,7 +538,7 @@ root directory where the following files are present:
             if len(self.args.features) > 1:
                 fail("'all' should not be used while individual features are mentioned on the command line.")
             else:
-                for key,fs in self.sortedFeatures:
+                for key,_ in self.sortedFeatures:
                     if self.featurestate[key].enabled:
                         self.featurestate[key].enabled = False
                         self.featurestatesChanged = True
@@ -611,12 +583,12 @@ root directory where the following files are present:
         # check C++ source folders
         for cppSourceRoot in self.cppSourceRoots:
             if not isdir(cppSourceRoot):
-                warn("C++ source folder '%s' defined in '%s' does not exist." % (cppSourceRoot, FEATURESFILE));
+                fail("C++ source folder '%s' defined in '%s' does not exist." % (cppSourceRoot, FEATURESFILE))
 
         # check NED folders
         for nedFolder in self.nedfolders:
             if not isdir(nedFolder.path):
-                warn("NED source folder '%s' listed in '%s' does not exist." % (nedFolder.path, NEDFOLDERSFILE));
+                fail("NED source folder '%s' listed in '%s' does not exist." % (nedFolder.path, NEDFOLDERSFILE))
 
         # check feature dependencies:
         dependencyErrorOccurred = False
@@ -733,7 +705,7 @@ root directory where the following files are present:
 
         defline = re.compile(r'^-D([a-zA-Z0-9_]+)$')
         deflineeq = re.compile(r'^-D([a-zA-Z0-9_]+)=(.*)$')
-        flags = sorted(" ".join(compileFlags).split(" "));
+        flags = sorted(" ".join(compileFlags).split(" "))
         for flag in flags:
             matchObj = defline.match(flag)
             if matchObj:
