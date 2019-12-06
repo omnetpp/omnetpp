@@ -36,7 +36,7 @@ feature_d_folder
 return: ERROR
 
 %contains: test.err
-opp_featuretool: Error: unknown feature 'F_UNKNOWN'.
+opp_featuretool: Error: Unknown feature 'F_UNKNOWN'
 
 %contains: .oppfeaturestate
 <?xml version="1.0" ?>

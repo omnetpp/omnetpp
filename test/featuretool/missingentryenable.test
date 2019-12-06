@@ -33,8 +33,8 @@ feature_d_folder
 '.nedexclusions' found.
 
 %contains: stdout
-opp_featuretool: .oppfeaturestate file updated.
-opp_featuretool: .nedexclusions file updated.
+opp_featuretool: '.oppfeaturestate' updated
+opp_featuretool: '.nedexclusions' updated
 
 %not-contains-regex: test.err
 [a-zA-Z]

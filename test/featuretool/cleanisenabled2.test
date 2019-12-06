@@ -21,4 +21,4 @@ Tests if feature is enabled; creates '.oppfeaturestate' and '.nedexclusions' as 
 '.nedexclusions' found.
 
 %contains: test.out
-Disabled feature(s): F_C.
+Disabled feature(s): F_C

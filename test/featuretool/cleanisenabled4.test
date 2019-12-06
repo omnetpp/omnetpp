@@ -19,4 +19,4 @@ Lists features
 '.nedexclusions' found.
 
 %contains: test.out
-Disabled feature(s): F_B, F_C, F_D.
+Disabled feature(s): F_B, F_C, F_D

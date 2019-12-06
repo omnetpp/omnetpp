@@ -19,7 +19,7 @@ Lists features
 '.nedexclusions' not found.
 
 %contains: stderr
-opp_featuretool: Error: Unknown feature(s): F_UNKNOWN.
+opp_featuretool: Error: Unknown feature(s): F_UNKNOWN
 
 %not-contains-regex: stdout
 [a-zA-Z0-9]

@@ -36,4 +36,4 @@ feature_d_folder
 return: ERROR
 
 %contains: test.err
-opp_featuretool: Error: cannot parse XML file '.oppfeatures': not well-formed (invalid token): line 1, column 2
+opp_featuretool: Error: Cannot parse XML file '.oppfeatures': not well-formed (invalid token): line 1, column 2

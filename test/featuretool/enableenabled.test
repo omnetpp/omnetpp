@@ -33,7 +33,7 @@ feature_d_folder
 '.nedexclusions' found.
 
 %contains: stdout
-Feature(s) are already enabled.
+Feature(s) are already enabled
 
 %not-contains: test.err
 Error:

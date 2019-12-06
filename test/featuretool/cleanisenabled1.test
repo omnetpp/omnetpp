@@ -19,7 +19,9 @@ Tests if feature is enabled; creates '.oppfeaturestate' and '.nedexclusions' as 
 '.nedexclusions' found.
 
 %contains: stdout
-Feature(s) F_A are enabled.
+Feature(s) F_A are enabled
 
-%not-contains-regex: test.err
-[a-zA-Z0-9]
+%contains: test.err
+opp_featuretool: Warning: NED package 'feature_b_folder' is part of the disabled feature 'F_B', but it is not excluded in '.nedexclusions', fixing
+opp_featuretool: Warning: NED package 'feature_c_folder' is part of the disabled feature 'F_C', but it is not excluded in '.nedexclusions', fixing
+opp_featuretool: Warning: NED package 'feature_d_folder' is part of the disabled feature 'F_D', but it is not excluded in '.nedexclusions', fixing

@@ -34,8 +34,8 @@ feature_d_folder
 
 %contains: stdout
 Disabling feature(s):  F_E
-opp_featuretool: .oppfeaturestate file updated.
-opp_featuretool: .nedexclusions file updated.
+opp_featuretool: '.oppfeaturestate' updated
+opp_featuretool: '.nedexclusions' updated
 
 %not-contains: test.err
 Error:
