@@ -165,7 +165,7 @@ class FeatureTool:
         self.parser = None
 
         self.features = None  # dict: id -> Feature
-        self.sortedFeatures = None  # list of Feature items
+        self.sortedFeatures = None  # list of (id,Feature) pairs (!!!)
         self.featurestate = None  # dict: id -> FeatureState
         self.unusedFeaturestates = [] # list of Feature items
         self.nedfolders = [] # list of NedFolder items
@@ -568,6 +568,12 @@ root directory where the following files are present:
         for nedFolder in self.nedfolders:
             if not isdir(nedFolder.path):
                 fail("NED source folder '%s' listed in '%s' does not exist" % (nedFolder.path, NEDFOLDERSFILE))
+
+        # make sure that the "requires" lists of features don't reference undefined features
+        for fid, feature in self.sortedFeatures:
+            for r in feature.requires:
+                if not r in self.features:
+                    fail("Feature '%s' requires undefined feature '%s' in '%s'" % (feature.id, r, FEATURESFILE))
 
         # check feature dependencies:
         dependencyErrorOccurred = False
