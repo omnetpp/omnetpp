@@ -2,6 +2,8 @@
 barchart_legacy.properties
 barchart_mpl.properties
 barchart.properties
+barchart_parameters_mpl.properties
+barchart_parameters.properties
 boxwhiskers.properties
 histogram_legacy.properties
 histogram_mpl.properties

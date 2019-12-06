@@ -45,6 +45,10 @@ public class CreateTempMatplotlibChartAction extends AbstractScaveAction {
             IDList idList = idListSelection.getScalarIDs();
             openMatplotlibChart(editor, manager, ResultType.SCALAR, idList);
         }
+        if (idListSelection.getParametersCount() != 0) {
+            IDList idList = idListSelection.getParameterIDs();
+            openMatplotlibChart(editor, manager, ResultType.PARAMETER, idList);
+        }
         if (idListSelection.getVectorsCount() != 0) {
             IDList idList = idListSelection.getVectorIDs();
             openMatplotlibChart(editor, manager, ResultType.VECTOR, idList);
@@ -69,6 +73,7 @@ public class CreateTempMatplotlibChartAction extends AbstractScaveAction {
         switch (type) {
             case HISTOGRAM: chart = ScaveModelUtil.createChartFromTemplate(templateRegistry, "histogram_mpl"); break;
             case SCALAR: chart = ScaveModelUtil.createChartFromTemplate(templateRegistry, "barchart_mpl"); break;
+            case PARAMETER: chart = ScaveModelUtil.createChartFromTemplate(templateRegistry, "barchart_parameters_mpl"); break;
             case VECTOR: chart = ScaveModelUtil.createChartFromTemplate(templateRegistry, "linechart_mpl"); break;
             case STATISTICS: chart = ScaveModelUtil.createChartFromTemplate(templateRegistry, "boxwhiskers"); break;
             default: Assert.isLegal(false, "invalid enum value"); break;

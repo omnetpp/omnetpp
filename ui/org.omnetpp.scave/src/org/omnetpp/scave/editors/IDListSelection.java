@@ -34,6 +34,8 @@ public class IDListSelection implements ISelection {
         this.manager = manager;
         if (idlist.areAllScalars())
             type = ResultType.SCALAR;
+        if (idlist.areAllParameters())
+            type = ResultType.PARAMETER;
         else if (idlist.areAllVectors())
             type = ResultType.VECTOR;
         else if (idlist.areAllHistograms())
@@ -52,6 +54,8 @@ public class IDListSelection implements ISelection {
         int internalType = ResultFileManager.getTypeOf(id);
         if (internalType == ResultFileManager.SCALAR)
             type = ResultType.SCALAR;
+        if (internalType == ResultFileManager.PARAMETER)
+            type = ResultType.PARAMETER;
         else if (internalType == ResultFileManager.VECTOR)
             type = ResultType.VECTOR;
         else if (internalType == ResultFileManager.STATISTICS)
@@ -81,6 +85,10 @@ public class IDListSelection implements ISelection {
         return idlist.filterByTypes(ResultFileManager.SCALAR); //TODO or self, if it's all scalars!
     }
 
+    public IDList getParameterIDs() {
+        return idlist.filterByTypes(ResultFileManager.PARAMETER); //TODO or self, if it's all scalars!
+    }
+
     public IDList getVectorIDs() {
         return idlist.filterByTypes(ResultFileManager.VECTOR);
     }
@@ -95,6 +103,10 @@ public class IDListSelection implements ISelection {
 
     public int getScalarsCount() {
         return idlist.countByTypes(ResultFileManager.SCALAR);  //TODO or size() if it's all scalars, or 0 if it contains no scalar!
+    }
+
+    public int getParametersCount() {
+        return idlist.countByTypes(ResultFileManager.PARAMETER);
     }
 
     public int getVectorsCount() {

@@ -44,6 +44,10 @@ public class CreateTempChartAction extends AbstractScaveAction {
             IDList idList = idListSelection.getScalarIDs();
             openChart(editor, manager, ResultType.SCALAR, idList);
         }
+        if (idListSelection.getParametersCount() != 0) {
+            IDList idList = idListSelection.getParameterIDs();
+            openChart(editor, manager, ResultType.PARAMETER, idList);
+        }
         if (idListSelection.getVectorsCount() != 0) {
             IDList idList = idListSelection.getVectorIDs();
             openChart(editor, manager, ResultType.VECTOR, idList);
@@ -63,6 +67,7 @@ public class CreateTempChartAction extends AbstractScaveAction {
         switch (type) {
             case HISTOGRAM: chart = ScaveModelUtil.createChartFromTemplate(templateRegistry, "histogram"); break;
             case SCALAR: chart = ScaveModelUtil.createChartFromTemplate(templateRegistry, "barchart"); break;
+            case PARAMETER: chart = ScaveModelUtil.createChartFromTemplate(templateRegistry, "barchart_parameters"); break;
             case VECTOR: chart = ScaveModelUtil.createChartFromTemplate(templateRegistry, "linechart"); break;
             case STATISTICS: Assert.isLegal(false, "unsupported result type"); break;
             default: Assert.isLegal(false, "invalid enum value"); break;
