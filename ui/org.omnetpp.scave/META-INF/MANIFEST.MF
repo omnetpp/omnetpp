@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ Scalar / Vector Chart
 Bundle-SymbolicName: org.omnetpp.scave;singleton:=true
-Bundle-Version: 5.5.1.qualifier
+Bundle-Version: 5.6.0.qualifier
 Bundle-ClassPath: .
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
