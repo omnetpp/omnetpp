@@ -3,7 +3,7 @@ Testing opp_feature with a clean project: exists .oppfeatures and .nedfolders on
 Reset .oppfeaturestate and .nedexclusions to default
 
 %prerun-command: ../../lib/createSrcFolders
-%prerun-command: cp ../../.nedfolders ../../.oppfeatures .
+%prerun-command: cp ../../data/.nedfolders ../../data/.oppfeatures .
 %prerun-command: rm -f .oppfeaturestate .nedexclusions
 
 %testprog: opp_featuretool -v reset

@@ -2,8 +2,8 @@
 Testing opp_feature: oppfeaturestate file has xml syntax error
 
 %prerun-command: ../../lib/createSrcFolders
-%prerun-command: cp ../../.nedfolders .
-%prerun-command: cp ../../.oppfeatures .
+%prerun-command: cp ../../data/.nedfolders .
+%prerun-command: cp ../../data/.oppfeatures .
 
 %file: .oppfeaturestate_in
 <?xml version="1.0" ?>

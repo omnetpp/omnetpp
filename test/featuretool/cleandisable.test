@@ -3,8 +3,8 @@ Testing opp_featuretool with a clean project: only .oppfeatures and .nedfolders 
 Disable feature with its dependencies.
 
 %prerun-command: ../../lib/createSrcFolders
-%prerun-command: cp ../../.oppfeatures .
-%prerun-command: cp ../../.nedfolders .
+%prerun-command: cp ../../data/.oppfeatures .
+%prerun-command: cp ../../data/.nedfolders .
 %prerun-command: rm -f .oppfeaturestate
 %prerun-command: rm -f .nedexclusions
 

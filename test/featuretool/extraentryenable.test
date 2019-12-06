@@ -4,7 +4,7 @@ Testing opp_featuretool.
 Try enable an existing feature.
 
 %prerun-command: ../../lib/createSrcFolders
-%prerun-command: cp ../../.nedfolders ../../.oppfeatures .
+%prerun-command: cp ../../data/.nedfolders ../../data/.oppfeatures .
 
 %file: .oppfeaturestate_in
 <?xml version="1.0" ?>

@@ -5,7 +5,7 @@ Try listing features
 
 %prerun-command: ../../lib/createSrcFolders
 %prerun-command: rm -f .nedfolders
-%prerun-command: cp ../../.oppfeatures .
+%prerun-command: cp ../../data/.oppfeatures .
 
 %file: .oppfeaturestate_in
 <?xml version="1.0" ?>

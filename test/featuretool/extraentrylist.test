@@ -4,7 +4,7 @@ Testing opp_feature with a clean project: exists .oppfeatures and .nedfolders on
 Try listing features
 
 %prerun-command: ../../lib/createSrcFolders
-%prerun-command: cp ../../.nedfolders ../../.oppfeatures .
+%prerun-command: cp ../../data/.nedfolders ../../data/.oppfeatures .
 
 %file: .oppfeaturestate_in
 <?xml version="1.0" ?>

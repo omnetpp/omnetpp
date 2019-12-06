@@ -3,7 +3,7 @@ Testing opp_featuretool with a clean project: only .oppfeatures and .nedfolders 
 Lists features
 
 %prerun-command: ../../lib/createSrcFolders
-%prerun-command: cp ../../.nedfolders ../../.oppfeatures .
+%prerun-command: cp ../../data/.nedfolders ../../data/.oppfeatures .
 %prerun-command: rm -f .oppfeaturestate .nedexclusions
 
 %testprog: opp_featuretool -v isenabled F_A F_B F_C F_D F_E

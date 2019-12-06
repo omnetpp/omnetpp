@@ -3,7 +3,7 @@ Testing opp_featuretool with a clean project: only .oppfeatures and .nedfolders 
 Generates makemake args; creates '.oppfeaturestate' and '.nedexclusions' as side effect.
 
 %prerun-command: ../../lib/createSrcFolders
-%prerun-command: cp ../../.nedfolders ../../.oppfeatures .
+%prerun-command: cp ../../data/.nedfolders ../../data/.oppfeatures .
 %prerun-command: rm -f .oppfeaturestate .nedexclusions
 
 %testprog: opp_featuretool options

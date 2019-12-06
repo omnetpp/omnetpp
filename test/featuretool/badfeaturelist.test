@@ -1,8 +1,8 @@
 %description:
 Testing opp_featuretool: oppfeaturestate file has xml syntax error
 
-%prerun-command: cp ../../.nedfolders .
-%prerun-command: cp ../../.oppfeatures .
+%prerun-command: cp ../../data/.nedfolders .
+%prerun-command: cp ../../data/.oppfeatures .
 
 %file: .oppfeatures_in
 It's not an XML file

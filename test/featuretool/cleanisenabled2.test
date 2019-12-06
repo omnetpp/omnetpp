@@ -3,8 +3,8 @@ Testing opp_featuretool with a clean project: only .oppfeatures and .nedfolders 
 Tests if feature is enabled; creates '.oppfeaturestate' and '.nedexclusions' as side effect.
 
 %prerun-command: ../../lib/createSrcFolders
-%prerun-command: cp ../../.nedfolders .
-%prerun-command: cp ../../.oppfeatures .
+%prerun-command: cp ../../data/.nedfolders .
+%prerun-command: cp ../../data/.oppfeatures .
 %prerun-command: rm -f .oppfeaturestate
 %prerun-command: rm -f .nedexclusions
 
