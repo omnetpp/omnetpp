@@ -14,7 +14,7 @@ import sys
 import re
 import types
 import xml.dom.minidom
-from os.path import isfile
+from os.path import isfile, isdir
 
 FEATURESFILE = ".oppfeatures"
 FEATURESTATEFILE = ".oppfeaturestate"
@@ -248,7 +248,7 @@ root directory where the following files are present:
         # options command:
         options_parser = subparsers.add_parser('options', help='Print opp_makemake command line arguments for creating a make file with the current feature enablement')
         options_parser.add_argument('-s', '--srcpath',
-                    help='Selects the source folder to print makemake options for. (The default is the first value in the cppSourceRoots attribute of the <features> tag in the FEATUREFILE.)',
+                    help='Selects the source folder to print makemake options for. (The default is the first value in the cppSourceRoots attribute of the <features> tag in \'%s\'.)' % (FEATURESFILE),
                     )
         options_parser.add_argument('-c', '--compiler-options', action='store_true', help='Show compiler options (i.e. -D flags)')
         options_parser.add_argument('-l', '--linker-options', action='store_true', help='Show linker options (i.e. -l and -L flags)')
@@ -429,30 +429,26 @@ root directory where the following files are present:
 
 
     ############################
-    def checkFeatureNedFolders(self, feature):
+    def checkFeatureNedFoldersExist(self, feature):
         retval = True
         for nedPackage in feature.nedPackages:
-            foundNedPackageFolder = False
+            nedPackageFolderFound = False
             for nedfolder in self.nedfolders:
                 if nedfolder.isSubpackage(nedPackage):
                     packageSuffix = nedPackage[len(nedfolder.package):]
                     folder = nedfolder.path + '/' + packageSuffix.replace('.', '/')
                     if os.path.exists(folder):
-                        foundNedPackageFolder = True
-            if not foundNedPackageFolder:
-                print("opp_featuretool: Error: NED package '{}' in feature '{}' was not found.".format(nedPackage, feature.id), file=sys.stderr)
+                        nedPackageFolderFound = True
+            if not nedPackageFolderFound:
+                warn("No folder corresponds to NED package '{}' referenced in feature '{}' (Hint: Make sure its NED root folder is listed in '{}'!)".format(nedPackage, feature.id, NEDFOLDERSFILE))
                 retval = False
         return retval
 
 
     ############################
     def verifyFeaturesNedFolders(self):
-        ok = True
         for fid, feature in self.sortedFeatures:
-            if not self.checkFeatureNedFolders(feature):
-                ok = False
-        if not ok:
-            fail("Check whether all NED folders are set properly (in file {}) and all directories corresponding to the NED packages defined in file {} do exist.".format(NEDFOLDERSFILE, FEATURESFILE))
+            self.checkFeatureNedFoldersExist(feature)
 
 
     ############################
@@ -612,6 +608,16 @@ root directory where the following files are present:
 
     ############################
     def validateOrRepair(self, repair=False):
+        # check C++ source folders
+        for cppSourceRoot in self.cppSourceRoots:
+            if not isdir(cppSourceRoot):
+                warn("C++ source folder '%s' defined in '%s' does not exist." % (cppSourceRoot, FEATURESFILE));
+
+        # check NED folders
+        for nedFolder in self.nedfolders:
+            if not isdir(nedFolder.path):
+                warn("NED source folder '%s' listed in '%s' does not exist." % (nedFolder.path, NEDFOLDERSFILE));
+
         # check feature dependencies:
         dependencyErrorOccurred = False
         featureOnList = set()
@@ -636,7 +642,7 @@ root directory where the following files are present:
                 if self.featurestate[fid].enabled:
                     if np in self.nedExclusions:
                         if not repair:
-                            warn("NED package '%s' is part of the enabled feature '%s', but it is excluded." % (np, fid))
+                            warn("NED package '%s' is part of the enabled feature '%s', but it is excluded in '%s'." % (np, fid, NEDEXCLUSIONSFILE))
                         nedfolderErrorOccurred = True
                 else:
                     if not np in self.nedExclusions:
