@@ -30,16 +30,16 @@ Enablement of all project features reset to the default
 </featurestates>
 
 %not-contains: .nedexclusions
-feature_a_folder
+org.foo.aaa
 
 %contains: .nedexclusions
-feature_b_folder
+org.foo.bbb
 
 %contains: .nedexclusions
-feature_c_folder
+org.foo.ccc
 
 %contains: .nedexclusions
-feature_d_folder
+org.foo.ddd
 
 %not-contains: .nedexclusions
-feature_e_folder
+org.foo.eee

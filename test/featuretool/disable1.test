@@ -17,9 +17,9 @@ Disable only one feature
 %prerun-command: cp .oppfeaturestate_in .oppfeaturestate
 
 %file: .nedexclusions_in
-feature_b_folder
-feature_c_folder
-feature_d_folder
+org.foo.bbb
+org.foo.ccc
+org.foo.ddd
 %prerun-command: cp .nedexclusions_in .nedexclusions
 
 %testprog: opp_featuretool -v disable --with-dependencies F_E
@@ -54,16 +54,16 @@ Warning:
 </featurestates>
 
 %not-contains: .nedexclusions
-feature_a_folder
+org.foo.aaa
 
 %contains: .nedexclusions
-feature_b_folder
+org.foo.bbb
 
 %contains: .nedexclusions
-feature_c_folder
+org.foo.ccc
 
 %contains: .nedexclusions
-feature_d_folder
+org.foo.ddd
 
 %contains: .nedexclusions
-feature_e_folder
+org.foo.eee

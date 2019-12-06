@@ -1,8 +1,9 @@
 #!/bin/bash
 mkdir src
-mkdir src/feature_a_folder
-mkdir src/feature_b_folder
-mkdir src/feature_c_folder
-mkdir src/feature_d_folder
-mkdir src/feature_e_folder
+mkdir -p src/foo/aaa
+mkdir -p src/foo/bbb
+mkdir -p src/foo/ccc
+mkdir -p src/foo/ddd
+mkdir -p src/foo/eee
 ls src
+echo 'package org;' >> src/package.ned

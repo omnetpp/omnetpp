@@ -24,7 +24,7 @@ Lists features; creates '.oppfeaturestate' and '.nedexclusions' as side effect.
     + F_E
 
 %contains: test.err
-opp_featuretool: Warning: NED package 'feature_b_folder' is part of the disabled feature 'F_B', but it is not excluded in '.nedexclusions', fixing
-opp_featuretool: Warning: NED package 'feature_c_folder' is part of the disabled feature 'F_C', but it is not excluded in '.nedexclusions', fixing
-opp_featuretool: Warning: NED package 'feature_d_folder' is part of the disabled feature 'F_D', but it is not excluded in '.nedexclusions', fixing
+opp_featuretool: Warning: NED package 'org.foo.bbb' is part of the disabled feature 'F_B', but it is not excluded in '.nedexclusions', fixing
+opp_featuretool: Warning: NED package 'org.foo.ccc' is part of the disabled feature 'F_C', but it is not excluded in '.nedexclusions', fixing
+opp_featuretool: Warning: NED package 'org.foo.ddd' is part of the disabled feature 'F_D', but it is not excluded in '.nedexclusions', fixing
 

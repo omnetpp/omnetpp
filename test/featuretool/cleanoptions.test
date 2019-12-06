@@ -17,9 +17,9 @@ Generates makemake args; creates '.oppfeaturestate' and '.nedexclusions' as side
 '.nedexclusions' found.
 
 %contains: stdout
--Xfeature_b_folder -Xfeature_c_folder -Xfeature_d_folder -DF_A -DF_E -llibA -llibE
+-Xfoo/bbb -Xfoo/ccc -Xfoo/ddd -DF_A -DF_E -llibA -llibE
 
 %contains: test.err
-opp_featuretool: Warning: NED package 'feature_b_folder' is part of the disabled feature 'F_B', but it is not excluded in '.nedexclusions', fixing
-opp_featuretool: Warning: NED package 'feature_c_folder' is part of the disabled feature 'F_C', but it is not excluded in '.nedexclusions', fixing
-opp_featuretool: Warning: NED package 'feature_d_folder' is part of the disabled feature 'F_D', but it is not excluded in '.nedexclusions', fixing
+opp_featuretool: Warning: NED package 'org.foo.bbb' is part of the disabled feature 'F_B', but it is not excluded in '.nedexclusions', fixing
+opp_featuretool: Warning: NED package 'org.foo.ccc' is part of the disabled feature 'F_C', but it is not excluded in '.nedexclusions', fixing
+opp_featuretool: Warning: NED package 'org.foo.ddd' is part of the disabled feature 'F_D', but it is not excluded in '.nedexclusions', fixing

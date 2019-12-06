@@ -19,9 +19,9 @@ Try listing features
 %prerun-command: cp .oppfeaturestate_in .oppfeaturestate
 
 %file: .nedexclusions_in
-feature_b_folder
-feature_c_folder
-feature_d_folder
+org.foo.bbb
+org.foo.ccc
+org.foo.ddd
 %prerun-command: cp .nedexclusions_in .nedexclusions
 
 %testprog: opp_featuretool list
@@ -45,8 +45,8 @@ feature_d_folder
 
 
 %contains: stderr
-opp_featuretool: Warning: No folder corresponds to NED package 'feature_a_folder' referenced in feature 'F_A' (Hint: Make sure its NED root folder is listed in '.nedfolders'!)
-opp_featuretool: Warning: No folder corresponds to NED package 'feature_b_folder' referenced in feature 'F_B' (Hint: Make sure its NED root folder is listed in '.nedfolders'!)
-opp_featuretool: Warning: No folder corresponds to NED package 'feature_c_folder' referenced in feature 'F_C' (Hint: Make sure its NED root folder is listed in '.nedfolders'!)
-opp_featuretool: Warning: No folder corresponds to NED package 'feature_d_folder' referenced in feature 'F_D' (Hint: Make sure its NED root folder is listed in '.nedfolders'!)
-opp_featuretool: Warning: No folder corresponds to NED package 'feature_e_folder' referenced in feature 'F_E' (Hint: Make sure its NED root folder is listed in '.nedfolders'!)
+opp_featuretool: Warning: No folder corresponds to NED package 'org.foo.aaa' referenced in feature 'F_A' (Hint: Make sure its NED root folder is listed in '.nedfolders'!)
+opp_featuretool: Warning: No folder corresponds to NED package 'org.foo.bbb' referenced in feature 'F_B' (Hint: Make sure its NED root folder is listed in '.nedfolders'!)
+opp_featuretool: Warning: No folder corresponds to NED package 'org.foo.ccc' referenced in feature 'F_C' (Hint: Make sure its NED root folder is listed in '.nedfolders'!)
+opp_featuretool: Warning: No folder corresponds to NED package 'org.foo.ddd' referenced in feature 'F_D' (Hint: Make sure its NED root folder is listed in '.nedfolders'!)
+opp_featuretool: Warning: No folder corresponds to NED package 'org.foo.eee' referenced in feature 'F_E' (Hint: Make sure its NED root folder is listed in '.nedfolders'!)
