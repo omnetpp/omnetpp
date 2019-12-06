@@ -1,0 +1,16 @@
+#!/bin/sh
+#
+# Copy to this (context) directory:
+#
+# - the 'tools' directory containing the Windows and macOS toolchains (i.e. in ./tools/170717/...)
+# - the 'omnetpp' directory containing a checked out version of the repo as a base to be able to pre-load and cache maven artifacts.
+#
+# NOTE: you need to rebuild this image and the image tag whenever the Windows/macOS toolchain or Eclipse is updated
+
+rm -rf omnetpp
+mkdir omnetpp
+# checkout the current state of the repo to the context dir
+git --git-dir ~/omnetpp-dev/.git --work-tree=omnetpp checkout -f omnest-5.x
+
+docker build -t omnetpp/distrobuild:eclipse4.13-tools180301-191212 .
+rm -rf omnetpp

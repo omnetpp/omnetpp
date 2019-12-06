@@ -14,6 +14,12 @@ if [ "$VERSION"x = "x" ]; then
   export VERSION=unknown
 fi
 
+# by default run the build in off-line. should specify OFFLINE=no for maven to update dependencies on-line
+export OFFLINE_FLAG=--offline
+if [ "$ONLINE" = "true" ]; then
+  export OFFLINE_FLAG=
+fi
+
 cd `dirname $0`/../../..
 
 echo Copying 'ui' to 'out/ui' ...
@@ -27,7 +33,7 @@ touch out/ui/org.omnetpp.ide.nativelibs.macosx/libopplibs.jnilib
 
 echo Building $what IDE version: $VERSION with buildID: $BUILDID
 cd out/ui
-mvn clean verify -Dwhat=$what -DforceContextQualifier=$BUILDID || { echo --- error during compiling/packaging Java IDE parts ---; exit 1;}
+mvn clean verify $OFFLINE_FLAG -Dwhat=$what -DforceContextQualifier=$BUILDID || { echo --- error during compiling/packaging Java IDE parts ---; exit 1;}
 
 # post process the final layout. Merge the plugins and features directory of all platforms to save space
 cd releng/org.omnetpp.ide.product/target/products/org.$what.ide.product || { echo --- error changing to the final result directory ---; exit 1;}
