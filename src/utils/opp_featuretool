@@ -61,8 +61,7 @@ def queryYesNo(question, default="yes"):
         elif choice in valid:
             return valid[choice]
         else:
-            sys.stdout.write("Please respond with 'yes' or 'no' "
-                             "(or 'y' or 'n').\n")
+            sys.stdout.write("Please respond with 'yes' or 'no' (or 'y' or 'n').\n")
 
 ############################
 def readFile(filename):
@@ -72,7 +71,7 @@ def readFile(filename):
         f.close()
         return lines
     except (IOError, OSError) as e:
-        fail("cannot read '{}': {}".format(filename, e))
+        fail("Cannot read '{}': {}".format(filename, e))
 
 def writeFile(filename, content):
     try:
@@ -80,7 +79,7 @@ def writeFile(filename, content):
         f.write(content)
         f.close()
     except (IOError, OSError) as e:
-        fail("cannot write '{}': {}".format(filename, e))
+        fail("Cannot write '{}': {}".format(filename, e))
 
 def readXmlFile(filename, repairHint=None):
     try:
@@ -89,9 +88,9 @@ def readXmlFile(filename, repairHint=None):
         f.close()
         return domTree
     except (IOError, OSError) as e:
-        fail("cannot read '{}': {}".format(filename, e))
+        fail("Cannot read '{}': {}".format(filename, e))
     except Exception as e:
-        fail("cannot parse XML file '{}': {}".format(filename, e), repairHint)
+        fail("Cannot parse XML file '{}': {}".format(filename, e), repairHint)
 
 def writeXmlFile(filename, domTree):
     try:
@@ -99,7 +98,7 @@ def writeXmlFile(filename, domTree):
         domTree.writexml(f, addindent="    ", newl="\n")
         f.close()
     except (IOError, OSError) as e:
-        fail("cannot write '{}': {}".format(filename, e))
+        fail("Cannot write '{}': {}".format(filename, e))
 
 ############################
 class OppParser(argparse.ArgumentParser):
@@ -320,7 +319,7 @@ root directory where the following files are present:
             ord += 1
             line = line.strip()
             if not dottedNameRegex.match(line):
-                warn("invalid line %s:%d: '%s'" % (NEDEXCLUSIONSFILE, ord, line))
+                warn("Invalid line %s:%d: '%s'" % (NEDEXCLUSIONSFILE, ord, line))
             self.nedExclusions.append(line)
 
     ############################
@@ -472,7 +471,7 @@ root directory where the following files are present:
 
         if 'all' in self.args.features:
             if len(self.args.features) > 1:
-                fail("'all' should not be used while individual features are mentioned on the command line.")
+                fail("'all' should not be used while individual features are mentioned on the command line")
             else:
                 for key,_ in self.sortedFeatures:
                     if not self.featurestate[key].enabled:
@@ -483,13 +482,13 @@ root directory where the following files are present:
             requirements = set()
             for key in self.args.features:
                 if not key in self.features:
-                    fail("unknown feature '%s'." % (key))
+                    fail("Unknown feature '%s'" % (key))
                 if not self.featurestate[key].enabled:
                     featureOnList.add(key)
             self.updateRequirements(featureOnList, requirements)
             update = True
             if len(featureOnList) == 0:
-                self.printIfVerbose(1, "Feature(s) are already enabled.")
+                self.printIfVerbose(1, "Feature(s) are already enabled")
                 return
             self.printIfVerbose(1, "Enabling feature(s):  " + ", ".join(sorted(featureOnList)))
             if len(requirements):
@@ -524,7 +523,7 @@ root directory where the following files are present:
 
         if 'all' in self.args.features:
             if len(self.args.features) > 1:
-                fail("'all' should not be used while individual features are mentioned on the command line.")
+                fail("'all' should not be used while individual features are mentioned on the command line")
             else:
                 for key,_ in self.sortedFeatures:
                     if self.featurestate[key].enabled:
@@ -535,13 +534,13 @@ root directory where the following files are present:
             dependencyList = set()
             for key in self.args.features:
                 if not key in self.features:
-                    fail("unknown feature '%s'." % (key))
+                    fail("Unknown feature '%s'" % (key))
                 if self.featurestate[key].enabled:
                     featureOffList.add(key)
             self.updateDependencies(featureOffList, dependencyList)
             update = True
             if len(featureOffList) == 0:
-                self.printIfVerbose(1, "The requested features are already disabled.")
+                self.printIfVerbose(1, "The requested features are already disabled")
                 return
             self.printIfVerbose(1, "Disabling feature(s):  " + ", ".join(sorted(featureOffList)))
             if len(dependencyList):
@@ -561,12 +560,12 @@ root directory where the following files are present:
         # check C++ source folders
         for cppSourceRoot in self.cppSourceRoots:
             if not isdir(cppSourceRoot):
-                fail("C++ source folder '%s' defined in '%s' does not exist." % (cppSourceRoot, FEATURESFILE))
+                fail("C++ source folder '%s' defined in '%s' does not exist" % (cppSourceRoot, FEATURESFILE))
 
         # check NED folders
         for nedFolder in self.nedfolders:
             if not isdir(nedFolder.path):
-                fail("NED source folder '%s' listed in '%s' does not exist." % (nedFolder.path, NEDFOLDERSFILE))
+                fail("NED source folder '%s' listed in '%s' does not exist" % (nedFolder.path, NEDFOLDERSFILE))
 
         # check feature dependencies:
         dependencyErrorOccurred = False
@@ -591,11 +590,11 @@ root directory where the following files are present:
             for np in feature.nedPackages:
                 if self.featurestate[fid].enabled:
                     if np in self.nedExclusions:
-                        warn("NED package '%s' is part of the enabled feature '%s', but it is excluded in '%s', fixing." % (np, fid, NEDEXCLUSIONSFILE))
+                        warn("NED package '%s' is part of the enabled feature '%s', but it is excluded in '%s', fixing" % (np, fid, NEDEXCLUSIONSFILE))
                         nedfolderErrorOccurred = True
                 else:
                     if not np in self.nedExclusions:
-                        warn("NED package '%s' is part of the disabled feature '%s', but it is not excluded in '%s', fixing." % (np, fid, NEDEXCLUSIONSFILE))
+                        warn("NED package '%s' is part of the disabled feature '%s', but it is not excluded in '%s', fixing" % (np, fid, NEDEXCLUSIONSFILE))
                         nedfolderErrorOccurred = True
 
         # enable missing features
@@ -617,7 +616,7 @@ root directory where the following files are present:
         if self.args.srcpath == None:
             self.args.srcpath = self.cppSourceRoots[0]
         elif self.args.srcpath not in self.cppSourceRoots:
-            fail("the selected '%s' source path is not specified in the '%s' file. Choose any of ['%s']." % (self.args.srcpath, FEATURESFILE, "','".join(self.cppSourceRoots)))
+            fail("Source path '%s' is not specified in '%s'. Choose any of ['%s']" % (self.args.srcpath, FEATURESFILE, "','".join(self.cppSourceRoots)))
         if (not (self.args.compiler_options or self.args.folder_options or self.args.linker_options)):
             # enable all
             self.args.compiler_options = True
@@ -700,11 +699,11 @@ root directory where the following files are present:
             elif not self.featurestate[key].enabled:
                 featureOffList.add(key)
         if len(featureUnknownList) > 0:
-            fail("Unknown feature(s): {}.".format((", ".join(sorted(featureUnknownList)))))
+            fail("Unknown feature(s): {}".format((", ".join(sorted(featureUnknownList)))))
         if len(featureOffList) > 0:
-            self.printIfVerbose(1, "Disabled feature(s): {}.".format((", ".join(sorted(featureOffList)))))
+            self.printIfVerbose(1, "Disabled feature(s): {}".format((", ".join(sorted(featureOffList)))))
             return 1
-        self.printIfVerbose(1, "Feature(s) {} are enabled.".format((", ".join(self.args.features))))
+        self.printIfVerbose(1, "Feature(s) {} are enabled".format((", ".join(self.args.features))))
         return 0
 
     ############################
@@ -744,16 +743,16 @@ root directory where the following files are present:
         elif self.args.command == 'isenabled':
             exitcode = self.doIsEnabledCommand()
         else:
-            fail("unknown command '%s'" % self.args.command)
+            fail("Unknown command '%s'" % self.args.command)
 
         if self.featurestatesChanged:
             self.writeFeatureStateFile()
-            self.printIfVerbose(1, "opp_featuretool: "+FEATURESTATEFILE+" file updated.")
+            self.printIfVerbose(1, "opp_featuretool: '" + FEATURESTATEFILE + "' updated")
             self.updateNedExclusions()
 
         if self.nedExclusionsChanged:
             self.writeNedExclusionsFile()
-            self.printIfVerbose(1, "opp_featuretool: "+NEDEXCLUSIONSFILE+" file updated.")
+            self.printIfVerbose(1, "opp_featuretool: '" + NEDEXCLUSIONSFILE + "' updated")
 
         sys.exit(exitcode)
 
