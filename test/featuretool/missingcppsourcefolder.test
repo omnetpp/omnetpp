@@ -1,0 +1,17 @@
+%description:
+Verify that if a folder listed in cppSourceRoots doesn't exist, it causes an error.
+
+%file: .oppfeatures
+<features cppSourceRoots="src bogus"/>
+
+%file: testscript.sh
+mkdir -p src
+opp_featuretool list
+
+%testprog: sh ./testscript.sh
+
+%exitcode: 1
+
+%contains: stderr
+opp_featuretool: Error: C++ source folder 'bogus' defined in '.oppfeatures' does not exist
+

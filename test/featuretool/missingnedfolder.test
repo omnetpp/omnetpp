@@ -1,0 +1,21 @@
+%description:
+Verify that if a folder listed in ".nedfolders" doesn't exist, it causes an error.
+
+%file: .oppfeatures
+<features/>
+
+%file: .nedfolders
+src
+bogus
+
+%file: testscript.sh
+mkdir -p src
+opp_featuretool list
+
+%testprog: sh ./testscript.sh
+
+%exitcode: 1
+
+%contains: stderr
+opp_featuretool: Error: NED source folder 'bogus' listed in '.nedfolders' does not exist
+

@@ -1,0 +1,17 @@
+%description:
+Test that an unresolved dependence in ".oppfeatures" file is reported
+
+%file: .oppfeatures
+<features>
+    <feature id="B" requires="A"/>
+</features>
+
+%file: testscript.sh
+opp_featuretool list
+
+%testprog: sh ./testscript.sh
+
+%exitcode: 1
+
+%contains: stderr
+opp_featuretool: Error: Feature 'B' requires undefined feature 'A' in '.oppfeatures'

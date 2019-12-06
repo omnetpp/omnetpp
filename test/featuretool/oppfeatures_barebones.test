@@ -1,0 +1,21 @@
+%description:
+Test that a barebones ".oppfeatures" file is still valid
+
+%file: .oppfeatures
+<features>
+    <feature id="A"/>
+    <feature id="B" name="FeatureB"/>
+    <feature id="C" initiallyEnabled="false"/>
+    <feature id="D" requires="A B"/>
+</features>
+
+%file: testscript.sh
+opp_featuretool list
+
+%testprog: sh ./testscript.sh
+
+%contains: stdout
+    + A
+    + B
+    - C
+    + D

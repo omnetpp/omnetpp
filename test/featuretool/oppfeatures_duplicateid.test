@@ -1,0 +1,22 @@
+%description:
+Test that duplicate feature IDs in ".oppfeatures" are detected
+
+%file: .oppfeatures
+<features>
+    <feature id="A"/>
+    <feature id="A"/>
+    <feature id="A" name="FeatureA"/>
+</features>
+
+%file: testscript.sh
+opp_featuretool list
+
+%testprog: sh ./testscript.sh
+
+%contains: stdout
+    + A
+
+%contains: stderr
+opp_featuretool: Warning: Duplicate feature 'A' in '.oppfeatures'
+opp_featuretool: Warning: Duplicate feature 'A' in '.oppfeatures'
+
