@@ -262,6 +262,8 @@ root directory where the following files are present:
         ord = 0
         for featureDom in featurelistDom:
             feature = Feature(featureDom, ord)
+            if feature.id in self.features:
+                warn("Duplicate feature '%s' in '%s'" % (feature.id, FEATURESFILE))
             self.features[feature.id] = feature
             ord += 1
 
