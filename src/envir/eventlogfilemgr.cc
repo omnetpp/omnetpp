@@ -682,7 +682,7 @@ void EventlogFileManager::logLine(const char *prefix, const char *line, int line
 
 void EventlogFileManager::stoppedWithException(bool isError, int resultCode, const char *message)
 {
-    if (isCombinedRecordingEnabled) {
+      if (isCombinedRecordingEnabled && feventlog) { // silently ignore call if eventlog file is not yet open
         EventLogWriter::recordSimulationEndEntry_e_c_m(feventlog, isError, resultCode, message);
         eventNumber = -1;
         entryIndex++;
