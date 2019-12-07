@@ -297,7 +297,8 @@ void NedResourceCache::doneLoadingNedFiles()
             if (PackageElement *packageDecl = (PackageElement *)nedFile->getFirstChildWithTag(NED_PACKAGE))
                 packageName = packageDecl->getName();
             if (containsKey(packageDotNedFiles, packageName))
-                throw NedException("More than one package.ned file per package: '%s' and '%s'",
+                throw NedException("More than one package.ned file for package '%s'%s: '%s' and '%s'",
+                        packageName.c_str(), (packageName.empty() ? " (the default package)" : ""),
                         fileName, packageDotNedFiles[packageName]->getFilename());
             packageDotNedFiles[packageName] = nedFile;
         }
