@@ -225,6 +225,7 @@ sub makeMethodImpl ()
    my $wantOptFields = shift;
 
    my $txt = "void EventLogWriter::" . makeMethodDecl($class,$wantOptFields) . "\n{\n";
+   $txt .= "    ASSERT(f!=nullptr);\n";
 
    # class code goes into initial fprintf
    my $fmt .= "$class->{CODE}";

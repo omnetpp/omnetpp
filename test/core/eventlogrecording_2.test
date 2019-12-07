@@ -1,0 +1,13 @@
+%description:
+Test that startup errors (e.g. no such network) are handled gracefully
+
+%inifile: omnetpp.ini
+[General]
+network = Nonexistent
+record-eventlog = true
+
+%exitcode: 1
+
+%contains: stderr
+<!> Error: Network 'Nonexistent' not found, check .ini and .ned files
+
