@@ -244,6 +244,7 @@ cMessage *cMessage::privateDup() const
     ret->messageId = messageId;
     ret->flags |= FL_ISPRIVATECOPY;
     ret->removeFromOwnershipTree();
+    nextMessageId--;
     totalMsgCount--;
     liveMsgCount--;
     return ret;
