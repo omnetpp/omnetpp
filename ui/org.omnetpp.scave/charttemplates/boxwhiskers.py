@@ -4,10 +4,10 @@ import pandas as pd
 
 params = chart.get_properties()
 
-stats = results.get_statistics(params["filter"], include_attrs=True, include_itervars=True)
-hists = results.get_histograms(params["filter"], include_attrs=True, include_itervars=True)
+stats = results.get_statistics(params["filter"], include_attrs=True, include_runattrs=True, include_itervars=True)
+hists = results.get_histograms(params["filter"], include_attrs=True, include_runattrs=True, include_itervars=True)
 
-df = pd.concat([stats, hists])
+df = pd.concat([stats, hists], sort=False)
 print(df)
 
 # TODO: move this to chart ? (or an utils module)
@@ -94,8 +94,7 @@ customized_box_plot([(r.min, r.mean - r.stddev * coeff, r.mean, r.mean + r.stdde
                             if r.count > 0
                     ], plt.gca())
 
-if 'title' in df:
-    plt.title(df[title][0])
+plt.title(chart.make_chart_title(df, title, legend))
 
 plt.gca().set_xticklabels([
     chart.make_legend_label(legend, r) for r in df.itertuples(index=False)
