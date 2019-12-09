@@ -167,7 +167,7 @@ public class ResultSelectionFilterGenerator {
             String newTerm = "";
             if (!selectedValues.isEmpty()) {
                 if (selectedValues.size() == 1)
-                    newTerm = bestAttr + " =~ " + selectedValues.iterator().next();
+                    newTerm = bestAttr + " =~ " + FilterUtil.quoteStringIfNeeded(selectedValues.iterator().next());
                 else {
                     newTerm += "(";
                     String[] vals = selectedValues.toArray(new String[]{});
@@ -175,7 +175,7 @@ public class ResultSelectionFilterGenerator {
                     for (String v : vals) {
                         if (!first)
                             newTerm += " OR ";
-                        newTerm += bestAttr + " =~ " + v;
+                        newTerm += bestAttr + " =~ " + FilterUtil.quoteStringIfNeeded(v);
                         first = false;
                     }
                     newTerm += ")";
@@ -348,7 +348,7 @@ public class ResultSelectionFilterGenerator {
         for (Run r :runs.toArray()) {
             if (!first)
                 sb.append("\n OR \n");
-            sb.append("( run =~ \"" + r.getRunName() + "\" AND (\n");
+            sb.append("( run =~ " + FilterUtil.quoteStringIfNeeded(r.getRunName()) + " AND (\n");
 
             IDList idsInRun = manager.filterIDList(ids, r, null, null);
 
