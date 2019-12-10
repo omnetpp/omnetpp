@@ -243,6 +243,22 @@ class SIM_API cGate : public cObject, noncopyable
     /** @name Information about the gate. */
     //@{
     /**
+     * Returns true if this gate is half of an "inout gate" (which is made up
+     * of an input and an output gate object). The name of such a gate includes
+     * the "$i" (for the input half) or "$o" (for the output half) suffix.
+     *
+     * @see getBaseName(), getNameSuffix(), getOtherHalf()
+     */
+    bool isGateHalf() const;
+
+    /**
+     * If this gate is one half of an "inout gate" (see isGateHalf()), this method
+     * returns the other half. For example, for a gate named "eth$o[5]" it returns
+     * the gate "eth$i[5]" and vica versa; otherwise it returns nullptr.
+     */
+    cGate *getOtherHalf() const;
+
+    /**
      * Returns the gate name without index and potential "$i"/"$o" suffix.
      */
     const char *getBaseName() const;
