@@ -10,6 +10,7 @@ package org.omnetpp.scave.editors.ui;
 import java.util.concurrent.Callable;
 
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -26,6 +27,7 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.DecreaseDecimalPlacesAction;
 import org.omnetpp.scave.actions.FlatModuleTreeAction;
 import org.omnetpp.scave.actions.IncreaseDecimalPlacesAction;
+import org.omnetpp.scave.actions.SetChartFilterAction;
 import org.omnetpp.scave.actions.SetFilterAction2;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
@@ -42,6 +44,8 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
 import org.omnetpp.scave.engineext.ResultFileManagerChangeEvent;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
+import org.omnetpp.scave.model.AnalysisItem;
+import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ResultType;
 
 /**
@@ -194,7 +198,15 @@ public class BrowseDataPage extends FormEditorPage {
         if (actions != null) {
             contextMenuManager.add(actions.createTempChartAction);
             contextMenuManager.add(actions.createTempMatplotlibChartAction);
-            contextMenuManager.add(new Separator());
+
+            MenuManager setFilterSubmenu = new MenuManager("Set filter to existing chart...");
+
+            for (AnalysisItem i : scaveEditor.getAnalysis().getCharts().getCharts())
+                if (i instanceof Chart) // TODO: menu is not updated when charts are added to or removed from the analysis
+                    setFilterSubmenu.add(new SetChartFilterAction((Chart)i));
+
+            contextMenuManager.add(setFilterSubmenu);
+
             contextMenuManager.add(actions.createExportMenu());
             contextMenuManager.add(actions.copyToClipboardAction);
             contextMenuManager.add(new Separator());
