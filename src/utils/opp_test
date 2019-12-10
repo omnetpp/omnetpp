@@ -738,7 +738,7 @@ Supported .test file entry types:
                     f = open(os.path.join(self.args.workdir, self.testname, infname), 'r')
                     txt = ''
                     for line in f:
-                        txt += re.sub(r'[ \t]*[\r\n]+$', '', line) + "\n"
+                        txt += line.rstrip() + '\n'
                     f.close()
                 except (IOError, OSError) as e:
                     self.testunresolved(testfilename, "cannot read test case output file `{}: {}".format(infname, e))
