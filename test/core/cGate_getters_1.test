@@ -1,0 +1,82 @@
+%description:
+Test cGate::getBaseId()
+
+%file: test.ned
+
+simple Tester {
+    gates:
+        output dummy;
+        input in;
+        input inv[5];
+        output out;
+        output outv[7];
+        inout g;
+        inout gv[3];
+}
+
+network Test {
+    submodules:
+        tester: Tester;
+    connections allowunconnected:
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Tester : public cSimpleModule
+{
+  public:
+    Tester() {}
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override {}
+    virtual void test(const char *name, int index=-1);
+};
+
+Define_Module(Tester);
+
+void Tester::test(const char *name, int index)
+{
+    cGate *g = (index==-1) ? gate(name) : gate(name,index);
+    EV << "" << g->getFullName();
+    EV << "  name=" << g->getName();
+    EV << "  isVector=" << g->isVector();
+    EV << "  index=" << g->getIndex();
+    EV << "  baseName=" << g->getBaseName();
+    EV << "  nameSuffix=" << g->getNameSuffix();
+    EV << "  type=" << cGate::getTypeName(g->getType());
+    EV << "  isGateHalf=" << g->isGateHalf();
+    cGate *oh = g->getOtherHalf();
+    EV << "  otherHalf=" << (oh ? oh->getFullName() : "nullptr");
+    EV << endl;
+}
+
+void Tester::initialize()
+{
+    test("in");
+    test("inv",2);
+    test("out");
+    test("outv",2);
+    test("g$i");
+    test("gv$i",2);
+    test("g$o");
+    test("gv$o",2);
+    EV << ".\n";
+}
+
+}; //namespace
+
+%contains: stdout
+in  name=in  isVector=0  index=0  baseName=in  nameSuffix=  type=input  isGateHalf=0  otherHalf=nullptr
+inv[2]  name=inv  isVector=1  index=2  baseName=inv  nameSuffix=  type=input  isGateHalf=0  otherHalf=nullptr
+out  name=out  isVector=0  index=0  baseName=out  nameSuffix=  type=output  isGateHalf=0  otherHalf=nullptr
+outv[2]  name=outv  isVector=1  index=2  baseName=outv  nameSuffix=  type=output  isGateHalf=0  otherHalf=nullptr
+g$i  name=g$i  isVector=0  index=0  baseName=g  nameSuffix=$i  type=input  isGateHalf=1  otherHalf=g$o
+gv$i[2]  name=gv$i  isVector=1  index=2  baseName=gv  nameSuffix=$i  type=input  isGateHalf=1  otherHalf=gv$o[2]
+g$o  name=g$o  isVector=0  index=0  baseName=g  nameSuffix=$o  type=output  isGateHalf=1  otherHalf=g$i
+gv$o[2]  name=gv$o  isVector=1  index=2  baseName=gv  nameSuffix=$o  type=output  isGateHalf=1  otherHalf=gv$i[2]
+.
