@@ -117,6 +117,19 @@ void cGate::forEachChild(cVisitor *v)
         v->visit(channel);
 }
 
+bool cGate::isGateHalf() const
+{
+    return desc->name->type == INOUT;
+}
+
+cGate *cGate::getOtherHalf() const
+{
+    if (!isGateHalf())
+        return nullptr; // has no other half
+    else
+        return getOwnerModule()->gateHalf(getBaseName(), getType()==INPUT ? OUTPUT : INPUT, isVector() ? getIndex() : -1);
+}
+
 const char *cGate::getBaseName() const
 {
     return desc->name->name.c_str();
