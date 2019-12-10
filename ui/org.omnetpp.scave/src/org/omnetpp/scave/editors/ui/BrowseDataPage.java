@@ -24,6 +24,7 @@ import org.omnetpp.common.ui.DropdownAction;
 import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.actions.CopyChartFilterAction;
 import org.omnetpp.scave.actions.DecreaseDecimalPlacesAction;
 import org.omnetpp.scave.actions.FlatModuleTreeAction;
 import org.omnetpp.scave.actions.IncreaseDecimalPlacesAction;
@@ -199,6 +200,7 @@ public class BrowseDataPage extends FormEditorPage {
             contextMenuManager.add(actions.createTempChartAction);
             contextMenuManager.add(actions.createTempMatplotlibChartAction);
 
+            contextMenuManager.add(new CopyChartFilterAction());
             MenuManager setFilterSubmenu = new MenuManager("Set filter to existing chart...");
 
             for (AnalysisItem i : scaveEditor.getAnalysis().getCharts().getCharts())
