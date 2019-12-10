@@ -293,7 +293,7 @@ cmdenv-log-prefix = ""
         body = ''
         key_index = ''
         for line in testfile:
-            line = line.rstrip("\r\n").rstrip(" \t")
+            line = line.rstrip()
             if (line[:2] == '%#'):
                 # ignore comments
                 pass
