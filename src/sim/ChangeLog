@@ -1,3 +1,55 @@
+2019-12-08  Andras Varga
+
+	* cMessage: privateDup() changed not to affect nextMessageId.
+
+	Otherwise message IDs may differ between Qtenv and Cmdenv, which may
+	hinder debugging or produce differring fingerprints
+
+2019-08-07  Andras Varga
+
+	* cPatternMacher: fix: on error, throw cRuntimeError not opp_runtime_error,
+	to let --debug-on-errors stop on invalid pattern syntax
+
+2019-08-27  Andras Varga
+
+	* cCanvas: cache the minimum of animSpeed values, so that Qtenv doesn't
+	have to compute it every time.
+
+2019-08-27  Attila Torok
+
+	* cDefaultHistogramStrategy: Work around double imprecision.
+
+2019-08-25  Andras Varga
+
+	* cXMLParImpl: reduce chance of forEachChild() throwing.
+
+2019-08-23  Andras Varga
+
+	* cFigure: fix bug that caused adding many (10000+) figures to the
+	root figure very slow. (addFigure() was needlessly updating tags on
+	all figures, not just the newly added one.)
+
+	* cFigure: eliminate recursion during refreshing tag bits where not needed
+
+2018-06-11  Andras Varga
+
+	* Revised module/channel deletion (destructors, deleteModule(), etc).
+
+	Motivation: recent changes in C++ do not allow throwing exception from
+	destructor.
+
+	Changes:
+	- cModule, cChannel destructor: added clarification that direct deletion
+	  of module/channel objects is not allowed
+	- use FL_DELETING flag to authorize destructor call from deleteModule()
+	  and disconnect()
+	- allow deleting submodule tree containing the currently active activity
+	  module; use cDeleteModuleException for that
+	- disallow deleting the system module, unless as part of network cleanup
+	- disallow deleting modules before/during initialization (latter would
+	  crash the multi-stage initialization code), unless as part of network
+	  cleanup
+
 2019-05-15  ------ omnetpp-5.5 released ------
 
 2019-04-25  Andras Varga
@@ -18,7 +70,7 @@
 	* Added user-accessible descriptions for result filter/recorder types.
 	New registration macros were introduced to allow specifying documentation:
 	Register_ResultFilter2(), Register_ResultRecorder2()
-		
+
 	* Fix: prevent initial NaNs coming from filters expressions like
 	count(foo)+count(bar)
 
@@ -30,9 +82,9 @@
 
 	* Added TimeFilter, a result filter that replaces the value with its
 	timestamp.
-	
+
 	* Added preciseDiv(int64_t, SimTime)
-	
+
 	* Added intuniformexcl() as NED function, global function, as cComponent
 	method, as object (cIntUniformExcl)
 

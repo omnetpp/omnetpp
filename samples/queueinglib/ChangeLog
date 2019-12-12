@@ -1,3 +1,7 @@
+2019-07-24  Andras Varga
+
+	* SelectionStrategy adjustment based on a pull request from 'mngr0'
+
 2019-05-15  ------ omnetpp-5.5 released ------
 
 2018-06-25  ------ omnetpp-5.4.1 released ------

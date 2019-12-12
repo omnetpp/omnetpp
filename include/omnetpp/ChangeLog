@@ -1,3 +1,18 @@
+2019-09-09  Attila Torok
+
+	* cEnvir: beginSend() documentation updated: at least one messageSendDirect()
+	or messageSendHop() is required before endSend().
+
+2018-06-11  Andras Varga
+
+	* deleteModule() method moved from cSimpleModule to cModule.
+
+	* deleteModule() functionality extended: it is now allowed for a
+	running module to delete itself, also as part of a module tree.
+
+	* Clarify in method comments that directly deleting a module or channel
+	object (via the "delete" operator) is not allowed.
+
 2019-05-15  ------ omnetpp-5.5 released ------
 
 2019-04-25  Andras Varga

@@ -1,3 +1,8 @@
+2019-10-22  Andras Varga
+
+	* NED feature: allow reconnecting already connected gates by specifying
+	the @reconnect property in the connection.
+
 2019-05-15  ------ omnetpp-5.5 released ------
 
 2019-03-18  Andras Varga

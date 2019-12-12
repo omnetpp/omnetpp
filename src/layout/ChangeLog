@@ -1,3 +1,7 @@
+2019-08-26  Attila Torok
+
+	* BasicGraphLayouterEnvironment: added restartTimeout()
+
 2019-05-15  ------ omnetpp-5.5 released ------
 
 2019-03-11  Andras Varga
