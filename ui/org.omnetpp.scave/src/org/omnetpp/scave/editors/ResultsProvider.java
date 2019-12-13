@@ -72,23 +72,23 @@ public class ResultsProvider implements IScaveResultsPickleProvider {
 
 
     @Override
-    public byte[] getScalarsPickle(String filterExpression, boolean includeAttrs, boolean mergeModuleAndName) throws PickleException, IOException {
-        return ResultPicklingUtils.pickleResultsUsing(rfm, new ScalarResultsPickler(filterExpression, includeAttrs, mergeModuleAndName, interruptedFlag));
+    public byte[] getScalarsPickle(String filterExpression, boolean includeAttrs) throws PickleException, IOException {
+        return ResultPicklingUtils.pickleResultsUsing(rfm, new ScalarResultsPickler(filterExpression, includeAttrs, interruptedFlag));
     }
 
     @Override
-    public byte[] getVectorsPickle(String filterExpression, boolean includeAttrs, boolean mergeModuleAndName, double simTimeStart, double simTimeEnd) throws PickleException, IOException {
-        return ResultPicklingUtils.pickleResultsUsing(rfm, new VectorResultsPickler(filterExpression, includeAttrs, mergeModuleAndName, simTimeStart, simTimeEnd, interruptedFlag));
+    public byte[] getVectorsPickle(String filterExpression, boolean includeAttrs, double simTimeStart, double simTimeEnd) throws PickleException, IOException {
+        return ResultPicklingUtils.pickleResultsUsing(rfm, new VectorResultsPickler(filterExpression, includeAttrs, simTimeStart, simTimeEnd, interruptedFlag));
     }
 
     @Override
-    public byte[] getStatisticsPickle(String filterExpression, boolean includeAttrs, boolean mergeModuleAndName) throws PickleException, IOException {
-        return ResultPicklingUtils.pickleResultsUsing(rfm, new StatisticsResultsPickler(filterExpression, includeAttrs, mergeModuleAndName, interruptedFlag));
+    public byte[] getStatisticsPickle(String filterExpression, boolean includeAttrs) throws PickleException, IOException {
+        return ResultPicklingUtils.pickleResultsUsing(rfm, new StatisticsResultsPickler(filterExpression, includeAttrs, interruptedFlag));
     }
 
     @Override
-    public byte[] getHistogramsPickle(String filterExpression, boolean includeAttrs, boolean mergeModuleAndName) throws PickleException, IOException {
-        return ResultPicklingUtils.pickleResultsUsing(rfm, new HistogramResultsPickler(filterExpression, includeAttrs, mergeModuleAndName, interruptedFlag));
+    public byte[] getHistogramsPickle(String filterExpression, boolean includeAttrs) throws PickleException, IOException {
+        return ResultPicklingUtils.pickleResultsUsing(rfm, new HistogramResultsPickler(filterExpression, includeAttrs, interruptedFlag));
     }
 
     @Override
@@ -104,7 +104,7 @@ public class ResultsProvider implements IScaveResultsPickleProvider {
 
 
     @Override
-    public byte[] getParamValuesPickle(String filterExpression, boolean includeAttrs, boolean mergeModuleAndName) throws PickleException, IOException {
-        return ResultPicklingUtils.pickleResultsUsing(rfm, new ParamValuesPickler(filterExpression, includeAttrs, mergeModuleAndName, interruptedFlag));
+    public byte[] getParamValuesPickle(String filterExpression, boolean includeAttrs) throws PickleException, IOException {
+        return ResultPicklingUtils.pickleResultsUsing(rfm, new ParamValuesPickler(filterExpression, includeAttrs, interruptedFlag));
     }
 }

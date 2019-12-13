@@ -18,13 +18,11 @@ public class ScalarResultsPickler implements IObjectPickler {
 
     String filterExpression;
     boolean includeAttrs;
-    boolean mergeModuleAndName;
     InterruptedFlag interruptedFlag;
 
-    public ScalarResultsPickler(String filterExpression, boolean includeAttrs, boolean mergeModuleAndName, InterruptedFlag interruptedFlag) {
+    public ScalarResultsPickler(String filterExpression, boolean includeAttrs, InterruptedFlag interruptedFlag) {
         this.filterExpression = filterExpression;
         this.includeAttrs = includeAttrs;
-        this.mergeModuleAndName = mergeModuleAndName;
         this.interruptedFlag = interruptedFlag;
     }
 
@@ -37,10 +35,7 @@ public class ScalarResultsPickler implements IObjectPickler {
         {
             pickler.save(result.getRun().getRunName());
             pickler.save(result.getModuleName());
-            if (mergeModuleAndName)
-                pickler.save(result.getModuleName() + "." + result.getName());
-            else
-                pickler.save(result.getName());
+            pickler.save(result.getName());
             pickler.save(result.getValue());
         }
         out.write(Opcodes.TUPLE);

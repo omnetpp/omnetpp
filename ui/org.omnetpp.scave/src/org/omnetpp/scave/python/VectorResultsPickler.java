@@ -29,10 +29,7 @@ public class VectorResultsPickler implements IObjectPickler {
         {
             pickler.save(result.getRun().getRunName());
             pickler.save(result.getModuleName());
-            if (mergeModuleAndName)
-                pickler.save(result.getModuleName() + "." + result.getName());
-            else
-                pickler.save(result.getName());
+            pickler.save(result.getName());
 
             ResultPicklingUtils.pickleXYArray(data, out);
         }
@@ -41,15 +38,13 @@ public class VectorResultsPickler implements IObjectPickler {
 
     String filterExpression;
     boolean includeAttrs;
-    boolean mergeModuleAndName;
     double simTimeStart;
     double simTimeEnd;
     InterruptedFlag interruptedFlag;
 
-    public VectorResultsPickler(String filterExpression, boolean includeAttrs, boolean mergeModuleAndName, double simTimeStart, double simTimeEnd, InterruptedFlag interruptedFlag) {
+    public VectorResultsPickler(String filterExpression, boolean includeAttrs, double simTimeStart, double simTimeEnd, InterruptedFlag interruptedFlag) {
         this.filterExpression = filterExpression;
         this.includeAttrs = includeAttrs;
-        this.mergeModuleAndName = mergeModuleAndName;
         this.simTimeStart = simTimeStart;
         this.simTimeEnd = simTimeEnd;
         this.interruptedFlag = interruptedFlag;

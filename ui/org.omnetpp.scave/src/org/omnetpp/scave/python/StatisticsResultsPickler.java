@@ -25,10 +25,7 @@ public class StatisticsResultsPickler implements IObjectPickler {
         {
             pickler.save(result.getRun().getRunName());
             pickler.save(result.getModuleName());
-            if (mergeModuleAndName)
-                pickler.save(result.getModuleName() + "." + result.getName());
-            else
-                pickler.save(result.getName());
+            pickler.save(result.getName());
 
             pickler.save(stats.getCount());
             pickler.save(stats.getSumWeights());
@@ -42,13 +39,11 @@ public class StatisticsResultsPickler implements IObjectPickler {
 
     String filterExpression;
     boolean includeAttrs;
-    boolean mergeModuleAndName;
     InterruptedFlag interruptedFlag;
 
-    public StatisticsResultsPickler(String filterExpression, boolean includeAttrs, boolean mergeModuleAndName, InterruptedFlag interruptedFlag) {
+    public StatisticsResultsPickler(String filterExpression, boolean includeAttrs, InterruptedFlag interruptedFlag) {
         this.filterExpression = filterExpression;
         this.includeAttrs = includeAttrs;
-        this.mergeModuleAndName = mergeModuleAndName;
         this.interruptedFlag = interruptedFlag;
     }
 

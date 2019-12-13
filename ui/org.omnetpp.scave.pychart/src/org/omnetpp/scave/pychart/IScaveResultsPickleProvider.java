@@ -25,10 +25,10 @@ public interface IScaveResultsPickleProvider {
     byte[] getResultsPickle(String filterExpression, List<String> rowTypes, boolean omitUnusedColumns, double simTimeStart, double simTimeEnd) throws PickleException, IOException;
 
     // simple format
-    byte[] getScalarsPickle(String filterExpression, boolean includeAttrs, boolean mergeModuleAndName) throws PickleException, IOException;
-    byte[] getVectorsPickle(String filterExpression, boolean includeAttrs, boolean mergeModuleAndName, double simTimeStart, double simTimeEnd) throws PickleException, IOException;
-    byte[] getStatisticsPickle(String filterExpression, boolean includeAttrs, boolean mergeModuleAndName) throws PickleException, IOException;
-    byte[] getHistogramsPickle(String filterExpression, boolean includeAttrs, boolean mergeModuleAndName) throws PickleException, IOException;
+    byte[] getScalarsPickle(String filterExpression, boolean includeAttrs) throws PickleException, IOException;
+    byte[] getVectorsPickle(String filterExpression, boolean includeAttrs, double simTimeStart, double simTimeEnd) throws PickleException, IOException;
+    byte[] getStatisticsPickle(String filterExpression, boolean includeAttrs) throws PickleException, IOException;
+    byte[] getHistogramsPickle(String filterExpression, boolean includeAttrs) throws PickleException, IOException;
 
-    byte[] getParamValuesPickle(String filter, boolean include_attrs, boolean mergeModuleAndName) throws PickleException, IOException;
+    byte[] getParamValuesPickle(String filter, boolean include_attrs) throws PickleException, IOException;
 }

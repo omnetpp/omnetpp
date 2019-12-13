@@ -9,7 +9,6 @@ import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.InterruptedFlag;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.Statistics;
 
 import net.razorvine.pickle.IObjectPickler;
@@ -28,10 +27,7 @@ public class HistogramResultsPickler implements IObjectPickler {
         {
             pickler.save(result.getRun().getRunName());
             pickler.save(result.getModuleName());
-            if (mergeModuleAndName)
-                pickler.save(result.getModuleName() + "." + result.getName());
-            else
-                pickler.save(result.getName());
+            pickler.save(result.getName());
 
             pickler.save(stats.getCount());
             pickler.save(stats.getSumWeights());
@@ -49,33 +45,13 @@ public class HistogramResultsPickler implements IObjectPickler {
         out.write(Opcodes.TUPLE);
     }
 
-    void pickleScalarResult(ResultFileManager resultManager, long ID, Pickler pickler, OutputStream out)
-            throws PickleException, IOException {
-        ScalarResult result = resultManager.getScalar(ID);
-
-        // runID, module, name, value
-        out.write(Opcodes.MARK);
-        {
-            pickler.save(result.getRun().getRunName());
-            pickler.save(result.getModuleName());
-            if (mergeModuleAndName)
-                pickler.save(result.getModuleName() + "." + result.getName());
-            else
-                pickler.save(result.getName());
-            pickler.save(result.getValue());
-        }
-        out.write(Opcodes.TUPLE);
-    }
-
     String filterExpression;
     boolean includeAttrs;
-    boolean mergeModuleAndName;
     InterruptedFlag interruptedFlag;
 
-    public HistogramResultsPickler(String filterExpression, boolean includeAttrs, boolean mergeModuleAndName, InterruptedFlag interruptedFlag) {
+    public HistogramResultsPickler(String filterExpression, boolean includeAttrs, InterruptedFlag interruptedFlag) {
         this.filterExpression = filterExpression;
         this.includeAttrs = includeAttrs;
-        this.mergeModuleAndName = mergeModuleAndName;
         this.interruptedFlag = interruptedFlag;
     }
 
