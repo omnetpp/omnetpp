@@ -1,269 +1,282 @@
-import os
-import io
-import subprocess
-from math import inf
-import numpy as np
-import pandas as pd
-
 """
-This module implements the same result querying API that is provided by the IDE to chart scripts,
-using the opp_scavetool program to load the .sca and .vec files.
+This module lets the scripts that power the charts in the IDE query
+any simulation results and metadata referenced by the .anf file they
+are in, returned as as Pandas DataFrames in various formats.
+
+The `filter_expressions` parameter in all functions has the same syntax.
+It is always evaluated independently on every loaded result item or metadata entry, and its value
+determines whether the given item or piece of metadata is included in the returned `DataFrame`.
 """
 
+# Alternatively: The results module gives access to the simulation results loaded into the IDE.
 # TODO: document
-inputfiles = list()
 
 
-def _parse_int(s):
-    return int(s) if s else None
+# Technically, this module only delegates all of its functions to one of two different
+# implementations of the API described here, based on whether it is running from within the IDE
+# or not (for example, from opp_charttool), detected using the WITHIN_OMNETPP_IDE environment variable.
 
-def _parse_float(s):
-    return float(s) if s else None
+import os
 
-def _parse_if_number(s):
-    try: return int(s)
-    except:
-        try: return float(s)
-        except: return True if s=="true" else False if s=="false" else s if s else None
+if os.getenv("WITHIN_OMNETPP_IDE", "no") == "yes":
+    from omnetpp.scave.impl_ide import results as impl
+else:
+    from .impl_charttool import results as impl
 
-def _parse_ndarray(s):
-    return np.fromstring(s, sep=' ') if s else None
-
-
-def _get_results(filter_expression, file_extensions, result_type, *additional_args):
-
-    filelist = [i for i in inputfiles if any([i.endswith(e) for e in file_extensions])]
-    type_filter = ['-T', result_type] if result_type else []
-
-    command = ["opp_scavetool", "x", *filelist, *type_filter, '-f',
-                filter_expression, "-F", "CSV-R", "-o", "-", *additional_args]
-
-    output = subprocess.check_output(command)
-
-    if len(output.decode("utf-8").splitlines()) == 1:
-        print("<!> HINT: opp_scavetool returned an empty result. Consider adding a project name to directory mapping, for example: -p /aloha=../aloha")
-
-    # with open("output.csv", "tw") as outp:
-    #     outp.write(str(output))
-
-    # TODO: stream the output through subprocess.PIPE ?
-    df = pd.read_csv(io.BytesIO(output), converters = {
-        'value': _parse_if_number,
-        #'attrvalue': _parse_if_number, # should be optional, and done later
-        'count': _parse_int,
-        'min': _parse_float,
-        'max': _parse_float,
-        'mean': _parse_float,
-        'stddev': _parse_float,
-        'sumweights': _parse_float,
-        'underflows': _parse_float,
-        'overflows': _parse_float,
-        'binedges': _parse_ndarray,
-        'binvalues': _parse_ndarray,
-        'vectime': _parse_ndarray,
-        'vecvalue': _parse_ndarray
-    })
-
-
-    df.rename(columns={"run": "runID"}, inplace=True) # oh, inconsistencies...
-
-    # TODO: convert column dtype as well?
-
-    return df
-
-def _split_by_types(df, types):
-    result = list()
-    for t in types:
-        mask = df['type'] == t
-        result.append(df[mask])
-        df = df[~mask]
-    result.append(df)
-    return result
-
-def _append_metadata_columns(df, meta, suffix):
-    meta = pd.pivot_table(meta, index="runID", columns="attrname", values="attrvalue", aggfunc="first")
-
-    if not meta.empty:
-        df = df.join(meta, on="runID", rsuffix=suffix)
-
-    return df
-
-def _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name):
-    # TODO add params
-    itervars, runattrs, configs, attrs, df = _split_by_types(df, ["itervar", "runattr", "config", "attr"])
-
-
-    if include_attrs and attrs is not None and not attrs.empty:
-        attrs = pd.pivot_table(attrs, columns="attrname", aggfunc='first', index=["runID", "module", "name"], values="attrvalue")
-        df = df.merge(attrs, left_on=["runID", "module", "name"], right_index=True, how='left')
-
-    if include_itervars:
-        df = _append_metadata_columns(df, itervars, "_itervar")
-    if include_runattrs:
-        df = _append_metadata_columns(df, runattrs, "_runattr")
-    if include_config_entries:
-        df = _append_metadata_columns(df, configs, "_config")
-    # TODO maybe only params, based on include_ args
-
-    #TODO df.join(params, on="run", rsuffix="_param")
-
-    df.drop(['type', 'attrname', 'attrvalue'], axis=1, inplace=True)
-
-    if merge_module_and_name:
-        df["name"] = df["module"] + "." + df["name"]
-
-    return df
-
-
+from math import inf
 
 def get_results(filter_expression="", row_types=['runattr', 'itervar', 'config', 'scalar', 'vector', 'statistic', 'histogram', 'param', 'attr'], omit_unused_columns=True, start_time=-inf, end_time=inf):
-    df = _get_results(filter_expression, ['.sca', '.vec'], None)
-    return df
+    """
+    Returns a filtered set of results and metadata in CSV-like format.
+    The items can be any type, even mixed together in a single `DataFrame`.
+    They are selected from the complete set of data referenced by the analysis file (`.anf`),
+    including only those for which the given `filter_expression` evaluates to `True`.
 
-def get_scalars(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
-    # TODO filter row types based on include_ args, as optimization
-    df = _get_results(filter_expression, ['.sca'], 's')
-    df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
-    return df
+    # Parameters
 
-def get_vectors(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False, start_time=-inf, end_time=inf):
-    df = _get_results(filter_expression, ['.vec'], 'v', '--start-time', str(start_time), '--end-time', str(end_time))
-    df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
-    return df
+    - **filter_expression** *(string)*: The filter expression to select the desired items. Example: `module =~ "*host*" AND name =~ "numPacket*"`
+    - **row_types**: Optional. When given, filters the returned rows by type. Should be a unique list, containing any number of these strings:
+      `"runattr"`, `"itervar"`, `"config"`, `"scalar"`, `"vector"`, `"statistic"`, `"histogram"`, `"param"`, `"attr"`
+    - **omit_unused_columns** *(bool)*: Optional. If `True`, all columns that would only contain `None` are removed from the returned DataFrame
+    - **start_time**, **end_time** *(double)*: Optional time limits to trim the data of vector type results.
+      The unit is seconds, both the `vectime` and `vecvalue` arrays will be affected, the interval is left-closed, right-open.
 
-def get_statistics(filter_expression, include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
-    df = _get_results(filter_expression, ['.sca'], 't')
-    df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
-    return df
+    # Columns of the returned DataFrame
 
-def get_histograms(filter_expression, include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False, include_statistics_fields=False):
-    df = _get_results(filter_expression, ['.sca'], 'h')
-    df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries, merge_module_and_name)
-    return df
+    - **runID** *(string)*:  Identifies the simulation run
+    - **type** *(string)*: Row type, one of the following: scalar, vector, statistics, histogram, runattr, itervar, param, attr
+    - **module** *(string)*: Hierarchical name (a.k.a. full path) of the module that recorded the result item
+    - **name** *(string)*: Name of the result item (scalar, statistic, histogram or vector)
+    - **attrname** *(string)*: Name of the run attribute or result item attribute (in the latter case, the module and name columns identify the result item the attribute belongs to)
+    - **attrvalue** *(string)*: Value of run and result item attributes, iteration variables, saved ini param settings (runattr, attr, itervar, param)
+    - **value** *(double or string)*:  Output scalar or attribute value
+    - **count**, **sumweights**, **mean**, **min**, **max**, **stddev** *(double)*: Fields of the statistics or histogram
+    - **binedges**, **binvalues** *(np.array)*: Histogram bin edges and bin values, as space-separated lists. `len(binedges)==len(binvalues)+1`
+    - **underflows**, **overflows** *(double)*: Sum of weights (or counts) of underflown and overflown samples of histograms
+    - **vectime**, **vecvalue** *(np.array)*: Output vector time and value arrays, as space-separated lists
+    """
+    return impl.get_results(**locals())
 
-
-def _get_metadata(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
-    # TODO: factor out common parts of the ones below here
-    pass
 
 def get_runs(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
-    command = ["opp_scavetool", "q", *inputfiles, "-r", '-f',
-                filter_expression, "-g"]
+    """
+    Returns a filtered list of runs, identified by their run ID.
 
-    output = subprocess.check_output(command)
+    # Parameters
 
-    if len(output.decode("utf-8").splitlines()) == 0:
-        print("<!> HINT: opp_scavetool returned an empty result. Consider adding a project name to directory mapping, for example: -p /aloha=../aloha")
+    - **filter_expression**: The filter expression to select the desired runs.
+      Example: `runattr:network =~ "Aloha" AND config:Aloha.slotTime =~ 0`
+    - **include_runattrs**, **include_itervars**, **include_param_assignments**, **include_config_entries** *(bool)*:
+      Optional. When set to `True`, additional pieces of metadata about the run is appended to the result, pivoted into columns.
 
-    # with open("output.csv", "tw") as outp:
-    #     outp.write(str(output))
+    # Columns of the returned DataFrame
 
-    # TODO: stream the output through subprocess.PIPE ?
-    df = pd.read_csv(io.BytesIO(output),  header=None, names=["runID"])
+    - **runID** (string): Identifies the simulation run
+    - Additional metadata items (run attributes, iteration variables, etc.), as requested
+    """
+    return impl.get_runs(**locals())
 
-    # TODO: convert column dtype as well?
-
-    if include_itervars:
-        iv = get_itervars("*")
-        iv.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
-        df = _append_metadata_columns(df, iv, "_itervar")
-
-    if include_runattrs:
-        ra = get_runattrs("*")
-        ra.rename(columns={"name": "attrname", "value": "attrvalue"}, inplace=True) # oh, inconsistencies...
-        df = _append_metadata_columns(df,ra, "_runattr")
-
-    if include_config_entries:
-        ce = get_config_entries("*")
-        ce.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
-        df = _append_metadata_columns(df, ce, "_config")
-
-    # TODO maybe only params, based on include_ args
-    #TODO df.join(params, on="run", rsuffix="_param")
-
-    return df
 
 def get_runattrs(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
-    command = ["opp_scavetool", "q", *inputfiles, "-a", "-g", "--tabs"]
+    """
+    Returns a filtered list of run attributes.
 
-    output = subprocess.check_output(command)
+    The set of run attributes is fixed: `configname`, `datetime`, `experiment`,
+    `inifile`, `iterationvars`, `iterationvarsf`, `measurement`, `network`,
+    `processid`, `repetition`, `replication`, `resultdir`, `runnumber`, `seedset`.
 
-    if len(output.decode('utf-8').splitlines()) == 1:
-        print("<!> HINT: opp_scavetool returned an empty result. Consider adding a project name to directory mapping, for example: -p /aloha=../aloha")
+    # Parameters
 
-    # TODO: stream the output through subprocess.PIPE ?
-    df = pd.read_csv(io.BytesIO(output), sep='\t', header=None, names=["runID", "name", "value"])
+    - **filter_expression**: The filter expression to select the desired run attributes.
+      Example: `name =~ *date* AND config:Aloha.slotTime =~ 0`
+    - **include_runattrs**, **include_itervars**, **include_param_assignments**, **include_config_entries** *(bool)*:
+      Optional. When set to `True`, additional pieces of metadata about the run is appended to the result, pivoted into columns.
 
-    if include_itervars:
-        iv = get_itervars("*")
-        iv.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
-        df = _append_metadata_columns(df, iv, "_itervar")
+    # Columns of the returned DataFrame
 
-    if include_runattrs:
-        ra = get_runattrs("*")
-        ra.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
-        df = _append_metadata_columns(df, ra, "_runattr")
-
-    if include_config_entries:
-        ce = get_config_entries("*")
-        ce.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
-        df = _append_metadata_columns(df, ce, "_config")
-
-    return df
+    - **runID** *(string)*: Identifies the simulation run
+    - **name** *(string)*: The name of the run attribute
+    - **value** *(string)*: The value of the run attribue
+    - Additional metadata items (run attributes, iteration variables, etc.), as requested
+    """
+    return impl.get_runattrs(**locals())
 
 
 def get_itervars(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, as_numeric=False):
-    command = ["opp_scavetool", "q", *inputfiles, "-i", "-g", "--tabs"]
+    """
+    Returns a filtered list of iteration variables.
 
-    output = subprocess.check_output(command)
+    # Parameters
 
-    if len(output.decode('utf-8').splitlines()) == 1:
-        print("<!> HINT: opp_scavetool returned an empty result. Consider adding a project name to directory mapping, for example: -p /aloha=../aloha")
+    - **filter_expression** *(string)*: The filter expression to select the desired iteration variables.
+      Example: `name =~ iaMean AND config:Aloha.slotTime =~ 0`
+    - **include_runattrs**, **include_itervars**, **include_param_assignments**, **include_config_entries** *(bool)*:
+      Optional. When set to `True`, additional pieces of metadata about the run is appended to the result, pivoted into columns.
+    - **as_numeric** *(bool)*: Optional. When set to `True`, the returned values will be converted to `double`.
+      Non-numeric values will become `NaN`.
 
-    # TODO: stream the output through subprocess.PIPE ?
-    df = pd.read_csv(io.BytesIO(output), sep='\t', header=None, names=["runID", "name", "value"])
+    # Columns of the returned DataFrame
 
-    if include_itervars:
-        iv = get_itervars("*")
-        iv.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
-        df = _append_metadata_columns(df, iv, "_itervar")
+    - **runID** *(string)*: Identifies the simulation run
+    - **name** *(string)*: The name of the iteration variable
+    - **value** *(string or double)*: The value of the iteration variable. Its type depends on the `as_numeric` parameter.
+    - Additional metadata items (run attributes, iteration variables, etc.), as requested
+    """
+    return impl.get_itervars(**locals())
 
-    if include_runattrs:
-        ra = get_runattrs("*")
-        ra.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
-        df = _append_metadata_columns(df, ra, "_runattr")
 
-    if include_config_entries:
-        ce = get_config_entries("*")
-        ce.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
-        df = _append_metadata_columns(df, ce, "_config")
+def get_scalars(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
+    """
+    Returns a filtered list of scalar results.
 
-    return df
+    # Parameters
+
+    - **filter_expression** *(string)*: The filter expression to select the desired scalars.
+      Example: `name =~ "channelUtilization*" AND runattr:replication =~ "#0"`
+    - **include_attrs** *(bool)*: Optional. When set to `True`, result attributes (like `unit`
+      or `source` for example) are appended to the DataFrame, pivoted into columns.
+    - **include_runattrs**, **include_itervars**, **include_param_assignments**, **include_config_entries** *(bool)*:
+      Optional. When set to `True`, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
+    - **merge_module_and_name** *(bool)*: Optional. When set to `True`, the value in the `module` column
+      is prepended to the value in the `name` column, joined by a period, in every row.
+
+    # Columns of the returned DataFrame
+
+    - **runID** *(string)*: Identifies the simulation run
+    - **name** *(string)*: The name of the scalar
+    - **value** *(double)*: The value of the scalar
+    - Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
+    """
+    return impl.get_scalars(**locals())
+
+
+def get_parameters(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False, as_numeric=False):
+    """
+    Returns a filtered list of parameters - actually computed values of individual `cPar` instances in the fully built network.
+
+    Parameters are considered "pseudo-results", similar to scalars - except their values are strings. Even though they act
+    mostly as input to the actual simulation run, the actually assigned value of individual `cPar` instances is valuable information,
+    as it is the result of the network setup process. For example, even if a parameter is set up as an expression like `normal(3, 0.4)`
+    from `omnetpp.ini`, the returned DataFrame will contain the single concrete value picked for every instance of the parameter.
+
+    # Parameters
+
+    - **filter_expression** *(string)*: The filter expression to select the desired parameters.
+      Example: `name =~ "x" AND module =~ Aloha.server`
+    - **include_attrs** *(bool)*: Optional. When set to `True`, result attributes (like `unit` for
+      example) are appended to the DataFrame, pivoted into columns.
+    - **include_runattrs**, **include_itervars**, **include_param_assignments**, **include_config_entries** *(bool)*:
+      Optional. When set to `True`, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
+    - **merge_module_and_name** *(bool)*: Optional. When set to `True`, the value in the `module` column
+      is prepended to the value in the `name` column, joined by a period, in every row.
+    - **as_numeric** *(bool)*: Optional. When set to `True`, the returned values will be converted to `double`.
+      Non-numeric values will become `NaN`.
+
+    # Columns of the returned DataFrame
+
+    - **runID** *(string)*: Identifies the simulation run
+    - **name** *(string)*: The name of the parameter
+    - **value** *(string or double)*: The value of the parameter. Its type depends on the `as_numeric` parameter.
+    - Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
+    """
+    return impl.get_parameters(**locals())
+
+
+def get_vectors(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False, start_time=-inf, end_time=inf):
+    """
+    Returns a filtered list of vector results.
+
+    # Parameters
+
+    - **filter_expression** *(string)*: The filter expression to select the desired vectors.
+      Example: `name =~ "radioState*" AND runattr:replication =~ "#0"`
+    - **include_attrs** *(bool)*: Optional. When set to `True`, result attributes (like `unit`
+      or `source` for example) are appended to the DataFrame, pivoted into columns.
+    - **include_runattrs**, **include_itervars**, **include_param_assignments**, **include_config_entries** *(bool)*:
+      Optional. When set to `True`, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
+    - **merge_module_and_name** *(bool)*: Optional. When set to `True`, the value in the `module` column
+      is prepended to the value in the `name` column, joined by a period, in every row.
+    - **start_time**, **end_time** *(double)*: Optional time limits to trim the data of vector type results.
+      The unit is seconds, both the `vectime` and `vecvalue` arrays will be affected, the interval is left-closed, right-open.
+
+    # Columns of the returned DataFrame
+
+    - **runID** *(string)*: Identifies the simulation run
+    - **name** *(string)*: The name of the vector
+    - **vectime**, **vecvalue** *(np.array)*: The simulation times and the corresponding values in the vector
+    - Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
+    """
+    return impl.get_vectors(**locals())
+
+
+def get_statistics(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
+    """
+    Returns a filtered list of statistics results.
+
+    # Parameters
+
+    - **filter_expression** *(string)*: The filter expression to select the desired statistics.
+      Example: `name =~ "collisionLength:stat" AND itervar:iaMean =~ "5"`
+    - **include_attrs** *(bool)*: Optional. When set to `True`, result attributes (like `unit`
+      or `source` for example) are appended to the DataFrame, pivoted into columns.
+    - **include_runattrs**, **include_itervars**, **include_param_assignments**, **include_config_entries** *(bool)*:
+      Optional. When set to `True`, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
+    - **merge_module_and_name** *(bool)*: Optional. When set to `True`, the value in the `module` column
+      is prepended to the value in the `name` column, joined by a period, in every row.
+
+    # Columns of the returned DataFrame
+
+    - **runID** *(string)*: Identifies the simulation run
+    - **name** *(string)*: The name of the vector
+    - **count**, **sumweights**, **mean**, **stddev**, **min**, **max** *(double)*: The characteristic mathematical properties of the statistics result
+    - Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
+    """
+    return impl.get_statistics(**locals())
+
+
+def get_histograms(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False, include_statistics_fields=False):
+    """
+    Returns a filtered list of histogram results.
+
+    # Parameters
+
+    - **filter_expression** *(string)*: The filter expression to select the desired histogram.
+      Example: `name =~ "collisionMultiplicity:histogram" AND itervar:iaMean =~ "2"`
+    - **include_attrs** *(bool)*: Optional. When set to `True`, result attributes (like `unit`
+      or `source` for example) are appended to the DataFrame, pivoted into columns.
+    - **include_runattrs**, **include_itervars**, **include_param_assignments**, **include_config_entries** *(bool)*:
+      Optional. When set to `True`, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
+    - **merge_module_and_name** *(bool)*: Optional. When set to `True`, the value in the `module` column
+      is prepended to the value in the `name` column, joined by a period, in every row.
+
+    # Columns of the returned DataFrame
+
+    - **runID** *(string)*: Identifies the simulation run
+    - **name** *(string)*: The name of the vector
+    - **count**, **sumweights**, **mean**, **stddev**, **min**, **max** *(double)*: The characteristic mathematical properties of the histogram
+    - **binedges**, **binvalues** *(np.array)*: The histogram edge locations and the weighted sum of the collected samples in each bin. `len(binedges) == len(binvalues) + 1`
+    - **underflows**, **overflows** *(double)*: The weighted sum of the samples that fell outside of the histogram bin range in the two directions
+    - Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
+    """
+    return impl.get_histograms(**locals())
+
 
 def get_config_entries(filter_expression, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
-    command = ["opp_scavetool", "q", *inputfiles, "-j", "-g", "--tabs"]
+    """
+    Returns a filtered list of config entries. That is: parameter assignment patterns; and global and per-object config options.
 
-    output = subprocess.check_output(command)
+    # Parameters
 
-    if len(output.decode('utf-8').splitlines()) == 1:
-        print("<!> HINT: opp_scavetool returned an empty result. Consider adding a project name to directory mapping, for example: -p /aloha=../aloha")
+    - **filter_expression** *(string)*: The filter expression to select the desired config entries.
+      Example: `name =~ sim-time-limit AND itervar:numHosts =~ 10`
+    - **include_runattrs**, **include_itervars**, **include_param_assignments**, **include_config_entries** *(bool)*:
+      Optional. When set to `True`, additional pieces of metadata about the run is appended to the result, pivoted into columns.
 
-    # TODO: stream the output through subprocess.PIPE ?
-    df = pd.read_csv(io.BytesIO(output), sep='\t', header=None, names=["runID", "name", "value"])
+    # Columns of the returned DataFrame
 
-    if include_itervars:
-        iv = get_itervars("*")
-        iv.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
-        df = _append_metadata_columns(df, iv, "_itervar")
-
-    if include_runattrs:
-        ra = get_runattrs("*")
-        ra.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
-        df = _append_metadata_columns(df, ra, "_runattr")
-
-    if include_config_entries:
-        ce = get_config_entries("*")
-        ce.rename(columns={"name": "attrname", "value" : "attrvalue"}, inplace=True) # oh, inconsistencies...
-        df = _append_metadata_columns(df, ce, "_config")
-
-    return df
+    - **runID** *(string)*: Identifies the simulation run
+    - **name** *(string)*: The name of the config entry
+    - **value** *(string or double)*: The value of the config entry
+    - Additional metadata items (run attributes, iteration variables, etc.), as requested
+    """
+    return impl.get_config_entries(**locals())

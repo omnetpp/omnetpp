@@ -111,7 +111,7 @@ public class ScavePlugin extends AbstractUIPlugin {
             String pythonExecutable = findExecutableOnPath(SystemUtils.IS_OS_WINDOWS ? "python3.exe" : "python3");
             Debug.println("found python3: " + pythonExecutable);
 
-            IInterpreterInfo info = manager.createInterpreterInfo(pythonExecutable, new NullProgressMonitor(), false);
+            InterpreterInfo info = (InterpreterInfo)manager.createInterpreterInfo(pythonExecutable, new NullProgressMonitor(), false);
             info.setName("Default Python 3");
 
             String locationBase = "NULL";
@@ -127,13 +127,14 @@ public class ScavePlugin extends AbstractUIPlugin {
                 File f = new File(location);
                 if (f.exists()) {
                     location = f.getCanonicalPath();
-                    ((InterpreterInfo) info).libs.add(location);
-                    ((InterpreterInfo) info).addPredefinedCompletionsPath(location);
+                    info.libs.add(0, location);
                 }
             }
             catch (IOException e) {
                 logError(e);
             }
+
+            info.setEnvVariables(new String[] { "WITHIN_OMNETPP_IDE=yes" });
 
             manager.setInfos(new IInterpreterInfo[] { info }, new HashSet<String>(), new NullProgressMonitor());
         }

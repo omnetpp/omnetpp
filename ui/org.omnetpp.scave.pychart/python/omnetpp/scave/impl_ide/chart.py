@@ -19,15 +19,16 @@ from omnetpp.internal import Gateway
 
 vector_data_counter = 0
 
+
 def extract_label_columns(df):
     titles = ["title", "name", "module", "experiment", "measurement", "replication"]
     legends = ["title", "name", "module", "experiment", "measurement", "replication"]
 
-    blacklist = ["runID", "value", "vectime", "vecvalue", "binedges", "binvalues",
+    blacklist = ["runID", "value", "attrvalue", "vectime", "vecvalue",
+                 "binedges", "binvalues", "underflows", "overflows",
                  "count", "sumweights", "mean", "stddev", "min", "max",
                  "processid", "iterationvars", "iterationvarsf", "datetime",
-                 "source", "interpolationmode", "enum", "title", 'runnumber', 'seedset'
-                ]
+                 "source", "interpolationmode", "enum", "title", 'runnumber', 'seedset']
 
     title_col = None
 
@@ -50,14 +51,18 @@ def extract_label_columns(df):
         return title_col, legend_cols
 
     last_len = None
-    for i, col in reversed(list(enumerate(df))):
+    for i, col in list(enumerate(df)):
         if col not in blacklist and col != title_col:
             new_len = len(df.groupby([i2 for i1, i2 in legend_cols] + [col]))
-            if new_len == len(df) or (not last_len) or new_len > last_len:
+            if new_len == len(df) or not last_len or new_len > last_len:
                 legend_cols.append((i, col))
                 last_len = new_len
             if new_len == len(df):
                 break
+
+    # filter out columns which only have a single value in them (this can happen in the loop above, with the first considered column)
+    legend_cols = list(filter(lambda icol: len(df[icol[1]].unique()) > 1, legend_cols))
+
     """
     if not legend_cols:
         last_len = None
@@ -69,6 +74,8 @@ def extract_label_columns(df):
     """
 
     # TODO: use runID (or iterationvars?) as last resort (if present)
+
+    # at this point, ideally this should hold: len(df.groupby([i2 for i1, i2 in legend_cols])) == len(df)
     return title_col, legend_cols
 
 
@@ -76,6 +83,7 @@ def make_legend_label(legend_cols, row):
     if len(legend_cols) == 1:
         return str(row[legend_cols[0][0]])
     return ", ".join([col + "=" + str(row[i]) for i, col in legend_cols])
+
 
 def make_chart_title(df, title_col, legend_cols):
     if df is None or df.empty or title_col not in df:
@@ -87,11 +95,19 @@ def make_chart_title(df, title_col, legend_cols):
     by_what = (" (by " + ", ".join([id[1] for id in legend_cols]) + ")") if legend_cols else ""
     return what + by_what
 
+
 def _list_to_bytes(l):
+    """
+    Internal. Encodes/serializes a list or `np.array` of numbers as
+    8-byte floats (doubles) into an `np.array` of bytes.
+    """
     return np.array(np.array(l), dtype=np.dtype('>f8')).tobytes()
 
 
 def _to_label(x):
+    """
+    Internal. Turns various types of objects into a string, so they can be used as labels.
+    """
     if isinstance(x, str):
         return x
     elif isinstance(x, tuple):
@@ -122,17 +138,15 @@ def _plot_scalars_DF_simple(df):
         }
     ))
 
+
 def _plot_scalars_DF_scave(df):
     # TODO: pivot in the other direction (transposed)?
     # TODO: this is... wrong?
     _plot_scalars_DF_simple(pd.pivot_table(df, index="module", columns="name", values="value"))
 
 
+# This method only does dynamic dispatching based on its first argument.
 def plot_scalars(df_or_values, labels=None, row_label=None):
-    """
-    This method only does dynamic dispatching based on its first argument.
-    TODO: styling in-place?
-    """
     if isinstance(df_or_values, pd.DataFrame):
         df = df_or_values
         if "value" in df.columns and "module" in df.columns and "name" in df.columns:
@@ -144,6 +158,12 @@ def plot_scalars(df_or_values, labels=None, row_label=None):
 
 
 def _put_array_in_shm(arr, shm_objs, mmap_objs):
+    """
+    Internal. Turns a `np.array` into a byte sequence, and writes it into
+    a newly created (platform-specific) SHM object with the given name.
+    Returns a space-separated string, holding the name and the size
+    of the SHM object.
+    """
     if arr.size == 0:
         return "<EMPTY> 0"
 
@@ -179,7 +199,6 @@ def _put_array_in_shm(arr, shm_objs, mmap_objs):
 
 
 def plot_vector(label, xs, ys):
-
     # only used on posix, to unlink them later
     shm_objs = list()
     # only used on windows, to prevent gc
@@ -200,7 +219,6 @@ def plot_vector(label, xs, ys):
 
 
 def _plot_vectors_tuplelist(vectors):
-
     # only used on posix, to unlink them later
     shm_objs = list()
     # only used on windows, to prevent gc
@@ -250,7 +268,6 @@ def _plot_vectors_DF_simple(df):
 
 
 def _plot_vectors_DF_scave(df):
-
     title_col, legend_cols = extract_label_columns(df)
 
     # only used on posix, to unlink them later
@@ -266,6 +283,7 @@ def _plot_vectors_DF_scave(df):
             "ys": _put_array_in_shm(row.vecvalue, shm_objs, mmap_objs)
         }
         for i, row in enumerate(df.itertuples(index=False))
+        if row.vectime is not None and row.vecvalue is not None
     ]))
 
     # this is a no-op on Windows
@@ -288,10 +306,8 @@ def _plot_vectors_DF_scave(df):
 
     set_properties(properties)
 
+
 def plot_vectors(df_or_list):
-    """
-    TODO: styling in-place?
-    """
     if isinstance(df_or_list, pd.DataFrame):
         df = df_or_list
         if "vectime" in df.columns and "vecvalue" in df.columns:
@@ -302,82 +318,55 @@ def plot_vectors(df_or_list):
         _plot_vectors_tuplelist(df_or_list)
 
 
-def _plot_points_DF(df):
-    Gateway.chart_plotter.plotVectors(pl.dumps([
-        {
-            "title": str(row[0]),
-            "key": str(row[0]),
-            "xs": _list_to_bytes([row.x]),
-            "ys": _list_to_bytes([row.y])
-        }
-        for row in df.itertuples()
-    ]))
+def plot_scatter(df, xdata, iso_column=None):
+    #names = set(df["name"].values)
+    #names.discard(None)
+    #names.discard(xdata)
+    #names.discard(iso_column)
 
+    # TODO: compute mean if results are vectors?
+    # TODO: add option to sort by a third column, instead of the X axis
 
-def _plot_points_tuplelist(points):
-    """ points is a list of (label, x, y) tuples """
-    Gateway.chart_plotter.plotVectors(pl.dumps([
-        {
-            "title": str(point[0]),
-            "key": str(point[0]),
-            "xs": _list_to_bytes([point[1]]),
-            "ys": _list_to_bytes([point[2]])
-        }
-        for point in points
-    ]))
-
-"""
-# TODO: scatter charts: same as vector, just with implicit "Dots" Line Type?
-def plotPoints(df_or_points):
-    if isinstance(df_or_points, pd.DataFrame):
-        _plotPoints_DF(df_or_points)
-    else:
-        _plotPoints_tuplelist(df_or_points)
-"""
-
-
-def plot_scatter(df, xdata, iso_column):
-
-    names = set(df["name"].values)
-    names.discard(None)
-    names.discard(xdata)
-    names.discard(iso_column)
-
-    df = results.pivot_scalars(df, index=xdata, columns=iso_column, values="value")
+    df = pd.pivot_table(df, index=xdata, columns=iso_column, values="value")
 
     renaming = dict()
 
     if iso_column:
         for c in list(df.columns):
-            renaming[c] = iso_column + "=" + str(c)
+            renaming[c] = str(iso_column) + "=" + str(c)
 
     df = df.reset_index()
 
-    renaming[xdata] = "time"
-
-    df = df.rename(renaming, axis="columns")
-
     df.dropna(inplace=True)
 
-    df["time"] = pd.to_numeric(df["time"])
+    df[xdata] = pd.to_numeric(df[xdata])
 
-    df.sort_values(by="time", inplace=True)
+    df.sort_values(by=xdata, inplace=True)
+    if df.columns.nlevels > 1:
+        df.columns = [' '.join(col).strip() for col in df.columns.values]
 
-    print(df)
-
-    xs = _list_to_bytes(df["time"])
+    # only used on posix, to unlink them later
+    shm_objs = list()
+    # only used on windows, to prevent gc
+    mmap_objs = list()
 
     Gateway.chart_plotter.plotVectors(pl.dumps([
         {
             "title": column,
             "key": column,
-            "xs": xs,
-            "ys": _list_to_bytes(df[column])
+            "xs": _put_array_in_shm(np.array(df[xdata]), shm_objs, mmap_objs),
+            "ys": _put_array_in_shm(np.array(df[column]), shm_objs, mmap_objs)
         }
-        for column in df if column != "time"
+        for column in df if column != xdata
     ]))
 
-    return list(names)
+    # this is a no-op on Windows
+    for o in shm_objs:
+        o.unlink()
+
+    # TODO: set_property('Y.Axis.Title', ', '.join(names))
+    set_property('X.Axis.Title', xdata)
+    set_property('Graph.Title', get_name())
 
 
 def plot_histogram(label, edges, values, sumweights=-1.0, lowest=math.nan, highest=math.nan):
@@ -395,40 +384,13 @@ def plot_histogram(label, edges, values, sumweights=-1.0, lowest=math.nan, highe
     ]))
 
 
-def _plot_histograms_DF(df):
-    for row in df.itertuples(index=False):
-        if row[1] == "histogram":
-
-            min = float(row[10])
-            max = float(row[11])
-            count = int(row[6])
-            sumweights = float(row[7])
-
-            edges = _list_to_bytes(list(row[12]) + [float('inf')])
-            values = _list_to_bytes(row[13])
-
-            Gateway.chart_plotter.plotHistograms(pl.dumps([
-                {
-                    "title": row[2] + ":" + row[3],
-                    "key": row[2] + ":" + row[3],
-                    "count": count,
-                    "sumweights": sumweights,
-                    "min": min,
-                    "max": max,
-                    "edges": edges,
-                    "values": values
-                }
-            ]))
-
-
-
 def _plot_histograms_DF_scave(df):
     title_col, legend_cols = extract_label_columns(df)
 
     Gateway.chart_plotter.plotHistograms(pl.dumps([
         {
             "title": make_legend_label(legend_cols, row),  # row[2] + ":" + row[3],
-            "key": str(i), # "-".join([row.title, row.runID]),  # row[2] + ":" + row[3],
+            "key": str(i),  # "-".join([row.title, row.runID]),  # row[2] + ":" + row[3],
             "count": int(row.count),
             "sumweights": float(row.sumweights),
             "min": float(row.min),
@@ -443,15 +405,17 @@ def _plot_histograms_DF_scave(df):
     if not get_property("Graph.Title"):
         set_property("Graph.Title", title)
 
+
 def plot_histograms(df):
-    if "binedges" in df and "binvalues" in df and "module" in df and "name" in df:
+    if "binedges" in df.columns and "binvalues" in df.columns:
         _plot_histograms_DF_scave(df)
     else:
-        _plot_histograms_DF(df)
+        pass # TODO - add other formats as well?
 
 
 def set_property(key, value):
     Gateway.chart_plotter.setChartProperty(key, value)
+
 
 def set_properties(*vargs, **kwargs):
     props = dict()
@@ -469,7 +433,7 @@ def get_properties():
 
 
 def get_property(key):
-    return Gateway.properties_provider.getChartProperties()["key"]  # TODO: could be optimized
+    return Gateway.properties_provider.getChartProperties()[key]  # TODO: could be optimized
 
 
 def get_default_properties():

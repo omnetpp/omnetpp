@@ -86,6 +86,8 @@ public class PythonProcessPool {
         else
             env.put("PYTHONPATH", location);
 
+        env.put("WITHIN_OMNETPP_IDE", "yes");
+
         if (PythonProcess.debug)
             Debug.println("starting python process... with path " + env.get("PYTHONPATH"));
 
