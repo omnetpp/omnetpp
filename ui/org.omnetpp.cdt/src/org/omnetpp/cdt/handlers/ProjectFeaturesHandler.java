@@ -3,6 +3,7 @@ package org.omnetpp.cdt.handlers;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
@@ -27,6 +28,7 @@ import org.eclipse.ui.dialogs.PreferencesUtil;
  */
 public class ProjectFeaturesHandler extends AbstractHandler {
     public static final String PROJECTFEATURES_ID = "org.omnetpp.cdt.ProjectFeatures";
+    private static final String ID_CDT_PROJECTS = "org.eclipse.cdt.ui.CView"; // "C/C++ Projects" view
 
     public Object execute(ExecutionEvent event) throws ExecutionException {
         execute();
@@ -54,35 +56,41 @@ public class ProjectFeaturesHandler extends AbstractHandler {
             return null;
 
         IWorkbenchPart part = workbenchPage.getActivePart();
-        Object selection = null;
-        if (part instanceof IEditorPart) {
-            selection = ((IEditorPart) part).getEditorInput();
-        } else {
-            ISelection sel = workbenchWindow.getSelectionService().getSelection();
-            if (sel != null && (sel instanceof IStructuredSelection))
-                selection = ((IStructuredSelection) sel).getFirstElement();
-        }
-        if (selection == null) {
+        IProject project = null;
+
+        if (part instanceof IEditorPart)
+            project = getProjectFrom(((IEditorPart) part).getEditorInput());
+        if (project == null)
+            project = getProjectFrom(workbenchWindow.getSelectionService().getSelection());
+        if (project == null) {
             IEditorPart activeEditor = workbenchPage.getActiveEditor();
             if (activeEditor != null)
-                selection = activeEditor.getEditorInput();
+                project = getProjectFrom(activeEditor.getEditorInput());
         }
-        if (selection == null) {
-            ISelection sel = workbenchPage.getSelection(IPageLayout.ID_PROJECT_EXPLORER);
-            if (sel != null && (sel instanceof IStructuredSelection))
-                selection = ((IStructuredSelection) sel).getFirstElement();
-        }
-        if (selection == null) {
-            ISelection sel = workbenchPage.getSelection(IPageLayout.ID_RES_NAV);
-            if (sel != null && (sel instanceof IStructuredSelection))
-                selection = ((IStructuredSelection) sel).getFirstElement();
-        }
+        if (project == null)
+            project = getProjectFrom(workbenchPage.getSelection(IPageLayout.ID_PROJECT_EXPLORER));
+        if (project == null)
+            project = getProjectFrom(workbenchPage.getSelection(ID_CDT_PROJECTS));
+        if (project == null)
+            project = getProjectFrom(workbenchPage.getSelection(IPageLayout.ID_RES_NAV));
+        return project;
+    }
 
+    private static IProject getProjectFrom(Object selection) {
         if (selection == null)
             return null;
-        if (!(selection instanceof IAdaptable))
-            return null;
-        IResource resource = (IResource) ((IAdaptable) selection).getAdapter(IResource.class);
+        if (selection instanceof IStructuredSelection)
+            selection = ((IStructuredSelection) selection).getFirstElement();
+        IResource resource = null;
+        if (selection instanceof IResource)
+            resource = (IResource) selection;
+        if (resource == null && selection instanceof IAdaptable)
+            resource = (IResource) ((IAdaptable) selection).getAdapter(IResource.class);
+        if (resource == null && selection instanceof IAdaptable) {
+            IMarker marker = (IMarker) ((IAdaptable) selection).getAdapter(IMarker.class);
+            if (marker != null)
+                resource = marker.getResource();
+        }
         if (resource == null)
             return null;
         return resource.getProject();
