@@ -8,6 +8,9 @@ from omnetpp.scave import results, chart
 
 params = chart.get_properties()
 
+if not (params["x_attr"] and params["y_attr"]):
+    raise Exception("Please select axis attributes in the properties dialog!")
+
 df = results.get_scalars(params["scalar_filter"], include_attrs=True, include_itervars=True, include_runattrs=True)
 
 df[params["x_attr"]] = pd.to_numeric(df[params["x_attr"]])
