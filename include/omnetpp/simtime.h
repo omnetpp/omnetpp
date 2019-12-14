@@ -381,6 +381,11 @@ class SIM_API SimTime
     int64_t raw() const  {return t;}
 
     /**
+     * Creates a SimTime by setting its underlying 64-bit integer.
+     */
+    static SimTime fromRaw(int64_t l) {SimTime tmp; tmp.t = l; return tmp;}
+
+    /**
      * Directly sets the underlying 64-bit integer.
      */
     const SimTime& setRaw(int64_t l) {t = l; return *this;}
