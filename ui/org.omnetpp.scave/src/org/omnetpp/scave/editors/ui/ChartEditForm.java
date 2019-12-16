@@ -224,8 +224,8 @@ public class ChartEditForm {
                     combo.add(comboItem);
             }
             else if (control instanceof Text && isFilter != null && isFilter.equalsIgnoreCase("true")) {
-                FilterContentProposalProvider filterProposalProvider = new FilterContentProposalProvider();
-                ContentAssistUtil.configureText((Text)control, filterProposalProvider);
+                // FilterContentProposalProvider filterProposalProvider = new FilterContentProposalProvider();
+                // ContentAssistUtil.configureText((Text)control, filterProposalProvider);
             }
         }
 
