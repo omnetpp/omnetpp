@@ -14,35 +14,11 @@ from omnetpp.internal import Gateway
 from omnetpp.scave import results
 from omnetpp.scave import chart
 
-# I believe the purpose of the following piece of code is entirely achieved by the "-u" command line argument.
-# But just to be sure, let's leave this in here, I don't think it will cause harm.
-# We're just trying to make the stdout and stderr streams unbuffered, so all output is sure(r) to reach the Console.
-if os.name == "posix":
-    import fcntl
-
-    fl = fcntl.fcntl(sys.stdout.fileno(), fcntl.F_GETFL)
-    fl |= os.O_SYNC
-    fcntl.fcntl(sys.stdout.fileno(), fcntl.F_SETFL, fl)
-
-    fl = fcntl.fcntl(sys.stderr.fileno(), fcntl.F_GETFL)
-    fl |= os.O_SYNC
-    fcntl.fcntl(sys.stderr.fileno(), fcntl.F_SETFL, fl)
-else:
-    import msvcrt
-    msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
-    msvcrt.setmode(sys.stderr.fileno(), os.O_BINARY)
-
 try:
     import matplotlib as mpl
     mpl.use('module://omnetpp.internal.backend_SWTAgg')
 
     import pandas as pd
-
-    pd.set_option("display.width", 500)
-    pd.set_option("display.max_columns", 50)
-    pd.set_option("display.max_colwidth", 50)
-    pd.set_option("display.max_rows", 500)
-
 except ImportError as e:
     print("can't import " + e.name)
     sys.exit(1)
@@ -85,6 +61,31 @@ class PythonEntryPoint(object):
 
 
 if __name__ == "__main__":
+    # I believe the purpose of the following piece of code is entirely achieved by the "-u" command line argument.
+    # But just to be sure, let's leave this in here, I don't think it will cause harm.
+    # We're just trying to make the stdout and stderr streams unbuffered, so all output is sure(r) to reach the Console.
+    if os.name == "posix":
+        import fcntl
+
+        fl = fcntl.fcntl(sys.stdout.fileno(), fcntl.F_GETFL)
+        fl |= os.O_SYNC
+        fcntl.fcntl(sys.stdout.fileno(), fcntl.F_SETFL, fl)
+
+        fl = fcntl.fcntl(sys.stderr.fileno(), fcntl.F_GETFL)
+        fl |= os.O_SYNC
+        fcntl.fcntl(sys.stderr.fileno(), fcntl.F_SETFL, fl)
+    else:
+        import msvcrt
+        msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
+        msvcrt.setmode(sys.stderr.fileno(), os.O_BINARY)
+
+    pd.set_option("display.width", 500)
+    pd.set_option("display.max_columns", 50)
+    pd.set_option("display.max_colwidth", 50)
+    pd.set_option("display.max_rows", 500)
+
+    Gateway.connect_to_IDE()
+
     for line in sys.stdin:
         # We don't actually expect any input, this is just a simple way to wait
         # for the parent process (Java) to die.
