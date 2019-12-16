@@ -190,12 +190,9 @@ def plot_vectors(df_or_list):
         _plot_vectors_tuplelist(df_or_list)
 
 
-
-
-def plot_histogram(label, edges, values, count=-1, lowest=math.nan, highest=math.nan):
+def plot_histogram(label, binedges, binvalues, underflows=0.0, overflows=0.0, minvalue=math.nan, maxvalue=math.nan):
     plt.hist(bins=edges, x=edges[:-1], weights=values, label=label)
     plt.legend()
-
 
 
 def _plot_histograms_DF_scave(df):
@@ -207,7 +204,6 @@ def _plot_histograms_DF_scave(df):
     plt.legend()
 
 
-
 def _plot_histograms_DF(df):
     for row in df.itertuples(index=False):
         if row[1] == "histogram":
@@ -217,6 +213,7 @@ def _plot_histograms_DF(df):
 
             plt.hist(bins=edges, x=edges[:-1], weights=values, label=row[2] + ":" + row[3])
     plt.legend()
+
 
 def plot_histograms(df):
     if "binedges" in df and "binvalues" in df and "module" in df and "name" in df:

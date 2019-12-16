@@ -59,6 +59,15 @@ def make_chart_title(df, title_col, legend_cols):
     return impl.make_chart_title(**locals())
 
 
+def plot_bars(df):
+    return impl.plot_bars(**locals())
+
+def plot_lines(df):
+    return impl.plot_lines(**locals())
+
+def plot_histogram_data(df):
+    return impl.plot_histogram_data(**locals())
+
 def plot_scalars(df_or_values, labels=None, row_label=None):
     """
     Takes a set of scalar type results and plots them as a "native" bar chart - using the
@@ -130,6 +139,7 @@ def plot_vectors(df_or_list):
     return impl.plot_vectors(**locals())
 
 
+# maybe sorting by a different column than xdata
 def plot_scatter(df, xdata, iso_column=None):
     """
     Pivots a DataFrame of numeric results (like scalars, itervars or statistics fields)
@@ -148,7 +158,7 @@ def plot_scatter(df, xdata, iso_column=None):
     return impl.plot_scatter(**locals())
 
 
-def plot_histogram(label, edges, values, sumweights=-1.0, lowest=math.nan, highest=math.nan):
+def plot_histogram(label, binedges, binvalues, underflows=0.0, overflows=0.0, minvalue=math.nan, maxvalue=math.nan):
     """
     Plots a single histogram as a "native" chart - using the
     IDE's built-in drawing widget.
@@ -156,10 +166,10 @@ def plot_histogram(label, edges, values, sumweights=-1.0, lowest=math.nan, highe
     # Parameters
 
     - **label**: A string that identifies this line on the plot. It will appear on the legend, so should be unique across invocations.
-    - **edges**, **values**: Lists or `np.array`s of numbers. Containing the bin edges and the values of the histogram,
+    - **binedges**, **binvalues**: Lists or `np.array`s of numbers. Containing the bin edges and the values of the histogram,
       respectively. `edges` should be one element longer than `values.
-    - **sumweights**: Optional. In case of a weighted histogram, the total sum of weights of the collected histograms, including
-      underflows and overflows.
+    - **underflows**, **overflows**: Optional. The sum of weights of the collected values that fell under or over the histogram bin range, respectively.
+    - **minvalue**, **maxvalue**: Optional. The smallest and the highest collected value, respectively.
 
     Can be called repeatedly, each invocation adds a new histogram to the existing ones on the plot.
 
@@ -181,7 +191,7 @@ def plot_histograms(df):
     return impl.plot_histograms(**locals())
 
 
-def set_property(key, value):
+def set_plot_property(key, value):
     """
     Sets one property of the chart to the given value. If there was no property with the given
     name (key) yet, it is added.
@@ -191,39 +201,36 @@ def set_property(key, value):
     changes some visual property on its view. It is not persistent and is not reflected
     in later calls to `get_property()` or `get_properties()`.
     """
-    return impl.set_property(**locals())
+    return impl.set_plot_property(**locals())
 
 
-def set_properties(*vargs, **kwargs):
+def set_plot_properties(props):
     """
-    Updates or adds any number of properties of the chart with the given values. Any
-    existing property values will be overwritten, and any new keys will be inserted.
-
-    This function accepts any number of dictionaries (holding the desired new property
-    keys and values) as parameters.
+    Updates or adds any number of properties of the chart with the values given in `props.
+    Any existing property values will be overwritten, and any new keys will be inserted.
 
     Please note that this function does not change or affect the actual chart
     object at all (as that is treated strictly as a read-only input); instead, it only
     changes some visual property on its view. This change is not persistent and is not
     reflected in later calls to `get_property()` or `get_properties()`.
     """
-    return impl.set_properties(**locals())
+    return impl.set_plot_properties(**locals())
 
 
-def get_properties():
+def get_configured_properties():
     """
     Returns the currently set properties of the chart as a `dict`
     whose keys and values are both all strings.
     """
-    return impl.get_properties(**locals())
+    return impl.get_configured_properties(**locals())
 
 
-def get_property(key):
+def get_configured_property(key):
     """
     Returns the value of a single property of the chart, or `None` if there is
     no property with the given name (key) set on the chart.
     """
-    return impl.get_property(**locals())
+    return impl.get_configured_property(**locals())
 
 
 def get_default_properties():
@@ -242,3 +249,7 @@ def get_name():
     Returns the name of the chart as a string.
     """
     return impl.get_name(**locals())
+
+
+def copy_properties():
+    set_plot_properties(get_configured_properties())

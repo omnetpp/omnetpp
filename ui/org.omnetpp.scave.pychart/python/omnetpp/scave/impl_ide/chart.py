@@ -20,6 +20,14 @@ from omnetpp.internal import Gateway
 vector_data_counter = 0
 
 
+def _list_to_bytes(l):
+    """
+    Internal. Encodes/serializes a list or `np.array` of numbers as
+    8-byte floats (doubles) into an `np.array` of bytes.
+    """
+    return np.array(np.array(l), dtype=np.dtype('>f8')).tobytes()
+
+
 def extract_label_columns(df):
     titles = ["title", "name", "module", "experiment", "measurement", "replication"]
     legends = ["title", "name", "module", "experiment", "measurement", "replication"]
@@ -96,19 +104,69 @@ def make_chart_title(df, title_col, legend_cols):
     return what + by_what
 
 
-def _list_to_bytes(l):
-    """
-    Internal. Encodes/serializes a list or `np.array` of numbers as
-    8-byte floats (doubles) into an `np.array` of bytes.
-    """
-    return np.array(np.array(l), dtype=np.dtype('>f8')).tobytes()
+def plot_bars(df):
+    Gateway.chart_plotter.plotScalars(pl.dumps(
+        {
+            "columnKeys": [_to_label(c) for c in list(df.columns)],
+            "rowKeys": [_to_label(i) for i in list(df.index)],
+            "values": _list_to_bytes(df.values.flatten('F'))
+        }
+    ))
+
+def plot_lines(df): # key, label, xs, ys
+    if sorted(list(df.columns)) != sorted(["key", "label", "xs", "ys"]):
+        raise RuntimeError("Invalid DataFrame format in plot_lines")
+
+    # only used on posix, to unlink them later
+    shm_objs = list()
+    # only used on windows, to prevent gc
+    mmap_objs = list()
+
+    Gateway.chart_plotter.plotVectors(pl.dumps([
+        {
+            "key": row.key,
+            "title": row.label,
+            "xs": _put_array_in_shm(row.xs, shm_objs, mmap_objs),
+            "ys": _put_array_in_shm(row.ys, shm_objs, mmap_objs)
+        }
+        for row in df.itertuples(index=False)
+    ]))
+
+    # this is a no-op on Windows
+    for o in shm_objs:
+        o.unlink()
+
+def plot_histogram_data(df): # key, label, binedges, binvalues, underflows, overflows, min, max
+    print(df)
+    if sorted(list(df.columns)) != sorted(["key", "label", "binedges", "binvalues", "underflows", "overflows", "min", "max"]):
+        raise RuntimeError("Invalid DataFrame format in plot_histogram_data")
+
+    Gateway.chart_plotter.plotHistograms(pl.dumps([
+        {
+            "key": row.key,
+            "title": row.label,
+            "sumweights": float(np.sum(row.binvalues) + row.underflows + row.overflows), # TODO remove?
+
+            "edges": _list_to_bytes(row.binedges),
+            "values": _list_to_bytes(row.binvalues),
+
+            "underflows": float(row.underflows),
+            "overflows": float(row.overflows),
+
+            "min": float(row.min),
+            "max": float(row.max),
+        }
+        for row in df.itertuples(index=False)
+    ]))
 
 
 def _to_label(x):
     """
     Internal. Turns various types of objects into a string, so they can be used as labels.
     """
-    if isinstance(x, str):
+    if x is None:
+        return ""
+    elif isinstance(x, str):
         return x
     elif isinstance(x, tuple):
         return ", ".join(map(str, list(x)))
@@ -119,24 +177,20 @@ def _to_label(x):
 
 
 def _plot_scalars_lists(row_label, labels, values):
-    Gateway.chart_plotter.plotScalars(pl.dumps(
-        {
-            "columnKeys": labels if labels else [""] * len(values),
-            "rowKeys": [row_label if row_label else ""],
-            "values": _list_to_bytes(values)
-        }
-    ))
+    if labels and len(labels) != len(values):
+        raise RuntimeError("Not the same number of labels as values!")
+    rows = [row_label if row_label else ""],
+    columns = labels if labels else [""] * len(values),
+
+    df = pd.DataFrame({row_label : values}, index=labels).transpose()
+
+    plot_bars(df)
 
 
 def _plot_scalars_DF_simple(df):
+    plot_bars(df)
     # TODO: detect single-valued index/ column header levels, drop them
-    Gateway.chart_plotter.plotScalars(pl.dumps(
-        {
-            "columnKeys": [_to_label(c) for c in list(df.columns)],
-            "rowKeys": [_to_label(i) for i in list(df.index)],
-            "values": _list_to_bytes(df.values.flatten('F'))
-        }
-    ))
+
 
 
 def _plot_scalars_DF_scave(df):
@@ -168,7 +222,7 @@ def _put_array_in_shm(arr, shm_objs, mmap_objs):
         return "<EMPTY> 0"
 
     global vector_data_counter
-    # the only need to start with a / on POSIX, but Windows doesn't seem to mind, so just putting it there always...
+    # they only need to start with a / on POSIX, but Windows doesn't seem to mind, so just putting it there always...
     name = "/vecdata-" + str(os.getpid()) + "-" + str(vector_data_counter)
     vector_data_counter += 1
 
@@ -199,96 +253,57 @@ def _put_array_in_shm(arr, shm_objs, mmap_objs):
 
 
 def plot_vector(label, xs, ys):
-    # only used on posix, to unlink them later
-    shm_objs = list()
-    # only used on windows, to prevent gc
-    mmap_objs = list()
-
-    Gateway.chart_plotter.plotVectors(pl.dumps([
-        {
-            "title": str(label),
-            "key": str(label),
-            "xs": _put_array_in_shm(np.array(xs), shm_objs, mmap_objs),
-            "ys": _put_array_in_shm(np.array(ys), shm_objs, mmap_objs)
+    plot_lines(pd.DataFrame({
+        "key": [label],
+        "label": [label],
+        "xs": [np.array(xs)],
+        "ys": [np.array(ys)]
         }
-    ]))
-
-    # this is a no-op on Windows
-    for o in shm_objs:
-        o.unlink()
+    ))
 
 
 def _plot_vectors_tuplelist(vectors):
-    # only used on posix, to unlink them later
-    shm_objs = list()
-    # only used on windows, to prevent gc
-    mmap_objs = list()
-
-    """ vectors is a list of (label, xs, ys) tuples """
-    Gateway.chart_plotter.plotVectors(pl.dumps([
-        {
-            "title": str(v[0]),
-            "key": str(v[0]),
-            "xs": _put_array_in_shm(np.array(v[1]), shm_objs, mmap_objs),
-            "ys": _put_array_in_shm(np.array(v[2]), shm_objs, mmap_objs)
-        }
-        for v in vectors
-    ]))
-
-    # this is a no-op on Windows
-    for o in shm_objs:
-        o.unlink()
+    df = pd.DataFrame.from_records(vectors, columns=["label", "xs", "ys"])
+    df["key"] = [str(i) for i in range(len(vectors))]
+    df["xs"] = df["xs"].map(np.array)
+    df["ys"] = df["ys"].map(np.array)
+    plot_lines(df)
 
 
 def _plot_vectors_DF_simple(df):
-    xs = None
-    if "time" in df:
-        xs = df["time"]
-    else:
-        xs = range(len(df[df.columns[0]]))
+    xcolumn = None
+    for c in ["x", "xs", "time"]:
+        if c in df:
+            xcolumn = c
+            break
+    xs = df[xcolumn] if xcolumn else np.array(range(len(df.index)))
 
-    # only used on posix, to unlink them later
-    shm_objs = list()
-    # only used on windows, to prevent gc
-    mmap_objs = list()
+    df2 = pd.DataFrame.from_records([(
+            str(i),
+            str(column),
+            np.array(xs[~np.isnan(df[column])]),
+            np.array(df[column].values[~np.isnan(df[column])])
+        )
+        for i, column in enumerate(df) if column != xcolumn
+    ], columns=["key", "label", "xs", "ys"])
 
-    Gateway.chart_plotter.plotVectors(pl.dumps([
-        {
-            "title": str(column),
-            "key": str(column),
-            "xs": _put_array_in_shm(xs[~np.isnan(df[column])], shm_objs, mmap_objs),
-            "ys": _put_array_in_shm(df[column].values[~np.isnan(df[column])], shm_objs, mmap_objs)
-        }
-        for column in df if column != "time"
-    ]))
-
-    # this is a no-op on Windows
-    for o in shm_objs:
-        o.unlink()
+    plot_lines(df2)
 
 
 def _plot_vectors_DF_scave(df):
     title_col, legend_cols = extract_label_columns(df)
 
-    # only used on posix, to unlink them later
-    shm_objs = list()
-    # only used on windows, to prevent gc
-    mmap_objs = list()
-
-    Gateway.chart_plotter.plotVectors(pl.dumps([
-        {
-            "title": make_legend_label(legend_cols, row),
-            "key": str(i),
-            "xs": _put_array_in_shm(row.vectime, shm_objs, mmap_objs),
-            "ys": _put_array_in_shm(row.vecvalue, shm_objs, mmap_objs)
-        }
+    df2 = pd.DataFrame.from_records([(
+            str(i),
+            make_legend_label(legend_cols, row),
+            row.vectime,
+            row.vecvalue
+        )
         for i, row in enumerate(df.itertuples(index=False))
         if row.vectime is not None and row.vecvalue is not None
-    ]))
+    ], columns=["key", "label", "xs", "ys"])
 
-    # this is a no-op on Windows
-    for o in shm_objs:
-        o.unlink()
+    plot_lines(df2)
 
     properties = dict()
     for i, t in enumerate(df.itertuples(index=False)):
@@ -304,7 +319,7 @@ def _plot_vectors_DF_scave(df):
             elif interpolation == "backward-sample-hold":
                 properties["Line.Type/" + key] = "BackwardSampleHold"
 
-    set_properties(properties)
+    set_plot_properties(properties)
 
 
 def plot_vectors(df_or_list):
@@ -319,10 +334,10 @@ def plot_vectors(df_or_list):
 
 
 def plot_scatter(df, xdata, iso_column=None):
-    #names = set(df["name"].values)
-    #names.discard(None)
-    #names.discard(xdata)
-    #names.discard(iso_column)
+    # names = set(df["name"].values)
+    # names.discard(None)
+    # names.discard(xdata)
+    # names.discard(iso_column)
 
     # TODO: compute mean if results are vectors?
     # TODO: add option to sort by a third column, instead of the X axis
@@ -369,75 +384,66 @@ def plot_scatter(df, xdata, iso_column=None):
     set_property('Graph.Title', get_name())
 
 
-def plot_histogram(label, edges, values, sumweights=-1.0, lowest=math.nan, highest=math.nan):
-    Gateway.chart_plotter.plotHistograms(pl.dumps([
-        {
-            "title": label,
-            "key": label,
-            "count": len(values) if sumweights == -1.0 else int(sumweights),
-            "sumweights": float(len(values)) if sumweights == -1.0 else float(sumweights),
-            "min": float(min(edges)) if lowest == math.nan else lowest,
-            "max": float(max(edges)) if highest == math.nan else highest,
-            "edges": _list_to_bytes(edges),
-            "values": _list_to_bytes(values)
-        }
-    ]))
+def plot_histogram(label, binedges, binvalues, underflows=0.0, overflows=0.0, minvalue=math.nan, maxvalue=math.nan):
+    plot_histogram_data(pd.DataFrame({
+        "key": [label],
+        "label": [label],
+        "binedges": [np.array(binedges)],
+        "binvalues": [np.array(binvalues)],
+        "underflows": [underflows],
+        "overflows": [overflows],
+        "min": [float(np.min(binedges)) if minvalue == math.nan else minvalue],
+        "max": [float(np.max(binedges)) if maxvalue == math.nan else maxvalue]
+    }))
 
 
 def _plot_histograms_DF_scave(df):
+
     title_col, legend_cols = extract_label_columns(df)
 
-    Gateway.chart_plotter.plotHistograms(pl.dumps([
-        {
-            "title": make_legend_label(legend_cols, row),  # row[2] + ":" + row[3],
-            "key": str(i),  # "-".join([row.title, row.runID]),  # row[2] + ":" + row[3],
-            "count": int(row.count),
-            "sumweights": float(row.sumweights),
-            "min": float(row.min),
-            "max": float(row.max),
-            "edges": _list_to_bytes(list(row.binedges) + [float('inf')]),
-            "values": _list_to_bytes(row.binvalues)
-        }
+    plot_histogram_data(pd.DataFrame.from_records([(
+            str(i),
+            make_legend_label(legend_cols, row),
+            np.array(row.binedges),
+            np.array(row.binvalues),
+            row.underflows,
+            row.overflows,
+            float(min(row.binedges)) if row.min == math.nan else row.min,
+            float(max(row.binedges)) if row.max == math.nan else row.max
+        )
         for i, row in enumerate(df.itertuples(index=False))
-    ]))
+    ], columns=["key", "label", "binedges", "binvalues", "underflows", "overflows", "min", "max"]))
 
     title = make_chart_title(df, title_col, legend_cols)
-    if not get_property("Graph.Title"):
-        set_property("Graph.Title", title)
+    if not get_configured_property("Graph.Title"):
+        set_plot_property("Graph.Title", title)
 
 
 def plot_histograms(df):
     if "binedges" in df.columns and "binvalues" in df.columns:
         _plot_histograms_DF_scave(df)
     else:
-        pass # TODO - add other formats as well?
+        pass  # TODO - add other formats as well?
 
 
-def set_property(key, value):
+def set_plot_property(key, value):
     Gateway.chart_plotter.setChartProperty(key, value)
 
 
-def set_properties(*vargs, **kwargs):
-    props = dict()
-    for a in vargs:
-        if type(a) != dict:
-            raise Exception("dictionary expected")
-        props.update(a)
-    for k, v in kwargs.items():
-        props[k] = v
+def set_plot_properties(props):
     Gateway.chart_plotter.setChartProperties(props)
 
 
-def get_properties():
+def get_configured_properties():
     return Gateway.properties_provider.getChartProperties()
 
 
-def get_property(key):
+def get_configured_property(key):
     return Gateway.properties_provider.getChartProperties()[key]  # TODO: could be optimized
 
 
-def get_default_properties():
-    return Gateway.properties_provider.getDefaultChartProperties()
+# def get_default_properties():
+#     return Gateway.properties_provider.getDefaultChartProperties()
 
 
 def get_name():

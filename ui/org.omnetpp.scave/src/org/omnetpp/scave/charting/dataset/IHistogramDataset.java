@@ -33,14 +33,6 @@ public interface IHistogramDataset extends IDataset {
     boolean isIntegerType(int series);
 
     /**
-     * Returns the number of collected values.
-     *
-     * @param series index of the histogram
-     * @return number of data values collected
-     */
-    long getValueCount(int series);
-
-    /**
      * Returns the sum of weights of the collected values.
      * For unweighted histograms, this is equal to getValueCount(series).
      *
@@ -123,10 +115,6 @@ public interface IHistogramDataset extends IDataset {
         }
 
         public boolean isIntegerType(int series) {
-            throw new IndexOutOfBoundsException();
-        }
-
-        public long getValueCount(int series) {
             throw new IndexOutOfBoundsException();
         }
 

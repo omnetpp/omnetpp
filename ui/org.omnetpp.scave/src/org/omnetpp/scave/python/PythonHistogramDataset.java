@@ -17,7 +17,6 @@ public class PythonHistogramDataset implements IHistogramDataset {
     class HistogramData {
         String key;
         String title;
-        int count;
         double sumWeights;
         double minValue;
         double maxValue;
@@ -45,7 +44,6 @@ public class PythonHistogramDataset implements IHistogramDataset {
                 histogramData.key = (String) d.get("key");
                 histogramData.title = (String) d.get("title");
 
-                histogramData.count = (Integer) d.get("count");
                 histogramData.sumWeights = (Double) d.get("sumweights");
 
                 histogramData.minValue = (Double) d.get("min");
@@ -86,11 +84,6 @@ public class PythonHistogramDataset implements IHistogramDataset {
     @Override
     public boolean isIntegerType(int series) {
         return false;
-    }
-
-    @Override
-    public long getValueCount(int series) {
-        return histograms.get(series).count;
     }
 
     @Override
