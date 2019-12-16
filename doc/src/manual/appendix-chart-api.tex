@@ -1,0 +1,615 @@
+\\appendixchapter{Python API for chart scripts}
+\\label{cha:chart-api}
+
+This chapter describes the API of the Python modules available
+for chart scripts, provided by the Analysis Tool in the IDE.
+
+Some conventional import aliases appear in code fragments throughout this
+chapter, such as `np` for NumPy and `pd` for Pandas.
+
+% --------
+% The rest of this file is the output of the tools/extract_chart_api.py
+% script (tools/chartapi.txt), pasted here manually, do not edit here!
+% --------
+
+%
+% generated with extract_chart_api.py
+%
+
+\section{results module}
+\label{cha:chart-api:results}
+
+\par This module lets the scripts that power the charts in the IDE query
+any simulation results and metadata referenced by the .anf file they
+are in, returned as as Pandas DataFrames in various formats.\par The \ttt{filter\_expressions} parameter in all functions has the same syntax.
+It is always evaluated independently on every loaded result item or metadata entry, and its value
+determines whether the given item or piece of metadata is included in the returned \ttt{DataFrame}.
+\subsection{get\_results()}
+\label{cha:chart-api:results:get-results}
+
+\begin{flushleft}
+\ttt{get\_results(filter\_expression="", row\_types=["runattr", "itervar", "config", "scalar", "vector", "statistic", "histogram", "param", "attr"], omit\_unused\_columns=True, start\_time=-inf, end\_time=inf)}
+\end{flushleft}
+
+
+\par Returns a filtered set of results and metadata in CSV-like format.
+The items can be any type, even mixed together in a single \ttt{DataFrame}.
+They are selected from the complete set of data referenced by the analysis file (\ttt{.anf}),
+including only those for which the given \ttt{filter\_expression} evaluates to \ttt{True}.
+\subsubsection{Parameters}
+\label{sssec:num1}
+
+\begin{itemize}
+  \item \textbf{filter\_expression} \textit{(string)}: The filter expression to select the desired items. Example: \ttt{module ={\textasciitilde} "*host*" AND name ={\textasciitilde} "numPacket*"}
+  \item \textbf{row\_types}: Optional. When given, filters the returned rows by type. Should be a unique list, containing any number of these strings:
+\ttt{"runattr"}, \ttt{"itervar"}, \ttt{"config"}, \ttt{"scalar"}, \ttt{"vector"}, \ttt{"statistic"}, \ttt{"histogram"}, \ttt{"param"}, \ttt{"attr"}
+  \item \textbf{omit\_unused\_columns} \textit{(bool)}: Optional. If \ttt{True}, all columns that would only contain \ttt{None} are removed from the returned DataFrame
+  \item \textbf{start\_time}, \textbf{end\_time} \textit{(double)}: Optional time limits to trim the data of vector type results.
+The unit is seconds, both the \ttt{vectime} and \ttt{vecvalue} arrays will be affected, the interval is left-closed, right-open.
+
+\end{itemize}
+
+\subsubsection{Columns of the returned DataFrame}
+\label{sssec:num2}
+
+\begin{itemize}
+  \item \textbf{runID} \textit{(string)}:  Identifies the simulation run
+  \item \textbf{type} \textit{(string)}: Row type, one of the following: scalar, vector, statistics, histogram, runattr, itervar, param, attr
+  \item \textbf{module} \textit{(string)}: Hierarchical name (a.k.a. full path) of the module that recorded the result item
+  \item \textbf{name} \textit{(string)}: Name of the result item (scalar, statistic, histogram or vector)
+  \item \textbf{attrname} \textit{(string)}: Name of the run attribute or result item attribute (in the latter case, the module and name columns identify the result item the attribute belongs to)
+  \item \textbf{attrvalue} \textit{(string)}: Value of run and result item attributes, iteration variables, saved ini param settings (runattr, attr, itervar, param)
+  \item \textbf{value} \textit{(double or string)}:  Output scalar or attribute value
+  \item \textbf{count}, \textbf{sumweights}, \textbf{mean}, \textbf{min}, \textbf{max}, \textbf{stddev} \textit{(double)}: Fields of the statistics or histogram
+  \item \textbf{binedges}, \textbf{binvalues} \textit{(np.array)}: Histogram bin edges and bin values, as space-separated lists. \ttt{len(binedges)==len(binvalues)+1}
+  \item \textbf{underflows}, \textbf{overflows} \textit{(double)}: Sum of weights (or counts) of underflown and overflown samples of histograms
+  \item \textbf{vectime}, \textbf{vecvalue} \textit{(np.array)}: Output vector time and value arrays, as space-separated lists
+
+\end{itemize}
+
+\subsection{get\_runs()}
+\label{cha:chart-api:results:get-runs}
+
+\begin{flushleft}
+\ttt{get\_runs(filter\_expression="", include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False)}
+\end{flushleft}
+
+
+\par Returns a filtered list of runs, identified by their run ID.
+\subsubsection{Parameters}
+\label{sssec:num3}
+
+\begin{itemize}
+  \item \textbf{filter\_expression}: The filter expression to select the desired runs.
+Example: \ttt{runattr:network ={\textasciitilde} "Aloha" AND config:Aloha.slotTime ={\textasciitilde} 0}
+  \item \textbf{include\_runattrs}, \textbf{include\_itervars}, \textbf{include\_param\_assignments}, \textbf{include\_config\_entries} \textit{(bool)}:
+Optional. When set to \ttt{True}, additional pieces of metadata about the run is appended to the result, pivoted into columns.
+
+\end{itemize}
+
+\subsubsection{Columns of the returned DataFrame}
+\label{sssec:num4}
+
+\begin{itemize}
+  \item \textbf{runID} (string): Identifies the simulation run
+  \item Additional metadata items (run attributes, iteration variables, etc.), as requested
+
+\end{itemize}
+
+\subsection{get\_runattrs()}
+\label{cha:chart-api:results:get-runattrs}
+
+\begin{flushleft}
+\ttt{get\_runattrs(filter\_expression="", include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False)}
+\end{flushleft}
+
+
+\par Returns a filtered list of run attributes.\par The set of run attributes is fixed: \ttt{configname}, \ttt{datetime}, \ttt{experiment},
+\ttt{inifile}, \ttt{iterationvars}, \ttt{iterationvarsf}, \ttt{measurement}, \ttt{network},
+\ttt{processid}, \ttt{repetition}, \ttt{replication}, \ttt{resultdir}, \ttt{runnumber}, \ttt{seedset}.
+\subsubsection{Parameters}
+\label{sssec:num5}
+
+\begin{itemize}
+  \item \textbf{filter\_expression}: The filter expression to select the desired run attributes.
+Example: \ttt{name ={\textasciitilde} *date* AND config:Aloha.slotTime ={\textasciitilde} 0}
+  \item \textbf{include\_runattrs}, \textbf{include\_itervars}, \textbf{include\_param\_assignments}, \textbf{include\_config\_entries} \textit{(bool)}:
+Optional. When set to \ttt{True}, additional pieces of metadata about the run is appended to the result, pivoted into columns.
+
+\end{itemize}
+
+\subsubsection{Columns of the returned DataFrame}
+\label{sssec:num6}
+
+\begin{itemize}
+  \item \textbf{runID} \textit{(string)}: Identifies the simulation run
+  \item \textbf{name} \textit{(string)}: The name of the run attribute
+  \item \textbf{value} \textit{(string)}: The value of the run attribue
+  \item Additional metadata items (run attributes, iteration variables, etc.), as requested
+
+\end{itemize}
+
+\subsection{get\_itervars()}
+\label{cha:chart-api:results:get-itervars}
+
+\begin{flushleft}
+\ttt{get\_itervars(filter\_expression="", include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False, as\_numeric=False)}
+\end{flushleft}
+
+
+\par Returns a filtered list of iteration variables.
+\subsubsection{Parameters}
+\label{sssec:num7}
+
+\begin{itemize}
+  \item \textbf{filter\_expression} \textit{(string)}: The filter expression to select the desired iteration variables.
+Example: \ttt{name ={\textasciitilde} iaMean AND config:Aloha.slotTime ={\textasciitilde} 0}
+  \item \textbf{include\_runattrs}, \textbf{include\_itervars}, \textbf{include\_param\_assignments}, \textbf{include\_config\_entries} \textit{(bool)}:
+Optional. When set to \ttt{True}, additional pieces of metadata about the run is appended to the result, pivoted into columns.
+  \item \textbf{as\_numeric} \textit{(bool)}: Optional. When set to \ttt{True}, the returned values will be converted to \ttt{double}.
+Non-numeric values will become \ttt{NaN}.
+
+\end{itemize}
+
+\subsubsection{Columns of the returned DataFrame}
+\label{sssec:num8}
+
+\begin{itemize}
+  \item \textbf{runID} \textit{(string)}: Identifies the simulation run
+  \item \textbf{name} \textit{(string)}: The name of the iteration variable
+  \item \textbf{value} \textit{(string or double)}: The value of the iteration variable. Its type depends on the \ttt{as\_numeric} parameter.
+  \item Additional metadata items (run attributes, iteration variables, etc.), as requested
+
+\end{itemize}
+
+\subsection{get\_scalars()}
+\label{cha:chart-api:results:get-scalars}
+
+\begin{flushleft}
+\ttt{get\_scalars(filter\_expression="", include\_attrs=False, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False, merge\_module\_and\_name=False)}
+\end{flushleft}
+
+
+\par Returns a filtered list of scalar results.
+\subsubsection{Parameters}
+\label{sssec:num9}
+
+\begin{itemize}
+  \item \textbf{filter\_expression} \textit{(string)}: The filter expression to select the desired scalars.
+Example: \ttt{name ={\textasciitilde} "channelUtilization*" AND runattr:replication ={\textasciitilde} "\#0"}
+  \item \textbf{include\_attrs} \textit{(bool)}: Optional. When set to \ttt{True}, result attributes (like \ttt{unit}
+or \ttt{source} for example) are appended to the DataFrame, pivoted into columns.
+  \item \textbf{include\_runattrs}, \textbf{include\_itervars}, \textbf{include\_param\_assignments}, \textbf{include\_config\_entries} \textit{(bool)}:
+Optional. When set to \ttt{True}, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
+  \item \textbf{merge\_module\_and\_name} \textit{(bool)}: Optional. When set to \ttt{True}, the value in the \ttt{module} column
+is prepended to the value in the \ttt{name} column, joined by a period, in every row.
+
+\end{itemize}
+
+\subsubsection{Columns of the returned DataFrame}
+\label{sssec:num10}
+
+\begin{itemize}
+  \item \textbf{runID} \textit{(string)}: Identifies the simulation run
+  \item \textbf{name} \textit{(string)}: The name of the scalar
+  \item \textbf{value} \textit{(double)}: The value of the scalar
+  \item Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
+
+\end{itemize}
+
+\subsection{get\_parameters()}
+\label{cha:chart-api:results:get-parameters}
+
+\begin{flushleft}
+\ttt{get\_parameters(filter\_expression="", include\_attrs=False, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False, merge\_module\_and\_name=False, as\_numeric=False)}
+\end{flushleft}
+
+
+\par Returns a filtered list of parameters - actually computed values of individual \ttt{cPar} instances in the fully built network.\par Parameters are considered "pseudo-results", similar to scalars - except their values are strings. Even though they act
+mostly as input to the actual simulation run, the actually assigned value of individual \ttt{cPar} instances is valuable information,
+as it is the result of the network setup process. For example, even if a parameter is set up as an expression like \ttt{normal(3, 0.4)}
+from \ttt{omnetpp.ini}, the returned DataFrame will contain the single concrete value picked for every instance of the parameter.
+\subsubsection{Parameters}
+\label{sssec:num11}
+
+\begin{itemize}
+  \item \textbf{filter\_expression} \textit{(string)}: The filter expression to select the desired parameters.
+Example: \ttt{name ={\textasciitilde} "x" AND module ={\textasciitilde} Aloha.server}
+  \item \textbf{include\_attrs} \textit{(bool)}: Optional. When set to \ttt{True}, result attributes (like \ttt{unit} for
+example) are appended to the DataFrame, pivoted into columns.
+  \item \textbf{include\_runattrs}, \textbf{include\_itervars}, \textbf{include\_param\_assignments}, \textbf{include\_config\_entries} \textit{(bool)}:
+Optional. When set to \ttt{True}, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
+  \item \textbf{merge\_module\_and\_name} \textit{(bool)}: Optional. When set to \ttt{True}, the value in the \ttt{module} column
+is prepended to the value in the \ttt{name} column, joined by a period, in every row.
+  \item \textbf{as\_numeric} \textit{(bool)}: Optional. When set to \ttt{True}, the returned values will be converted to \ttt{double}.
+Non-numeric values will become \ttt{NaN}.
+
+\end{itemize}
+
+\subsubsection{Columns of the returned DataFrame}
+\label{sssec:num12}
+
+\begin{itemize}
+  \item \textbf{runID} \textit{(string)}: Identifies the simulation run
+  \item \textbf{name} \textit{(string)}: The name of the parameter
+  \item \textbf{value} \textit{(string or double)}: The value of the parameter. Its type depends on the \ttt{as\_numeric} parameter.
+  \item Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
+
+\end{itemize}
+
+\subsection{get\_vectors()}
+\label{cha:chart-api:results:get-vectors}
+
+\begin{flushleft}
+\ttt{get\_vectors(filter\_expression="", include\_attrs=False, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False, merge\_module\_and\_name=False, start\_time=-inf, end\_time=inf)}
+\end{flushleft}
+
+
+\par Returns a filtered list of vector results.
+\subsubsection{Parameters}
+\label{sssec:num13}
+
+\begin{itemize}
+  \item \textbf{filter\_expression} \textit{(string)}: The filter expression to select the desired vectors.
+Example: \ttt{name ={\textasciitilde} "radioState*" AND runattr:replication ={\textasciitilde} "\#0"}
+  \item \textbf{include\_attrs} \textit{(bool)}: Optional. When set to \ttt{True}, result attributes (like \ttt{unit}
+or \ttt{source} for example) are appended to the DataFrame, pivoted into columns.
+  \item \textbf{include\_runattrs}, \textbf{include\_itervars}, \textbf{include\_param\_assignments}, \textbf{include\_config\_entries} \textit{(bool)}:
+Optional. When set to \ttt{True}, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
+  \item \textbf{merge\_module\_and\_name} \textit{(bool)}: Optional. When set to \ttt{True}, the value in the \ttt{module} column
+is prepended to the value in the \ttt{name} column, joined by a period, in every row.
+  \item \textbf{start\_time}, \textbf{end\_time} \textit{(double)}: Optional time limits to trim the data of vector type results.
+The unit is seconds, both the \ttt{vectime} and \ttt{vecvalue} arrays will be affected, the interval is left-closed, right-open.
+
+\end{itemize}
+
+\subsubsection{Columns of the returned DataFrame}
+\label{sssec:num14}
+
+\begin{itemize}
+  \item \textbf{runID} \textit{(string)}: Identifies the simulation run
+  \item \textbf{name} \textit{(string)}: The name of the vector
+  \item \textbf{vectime}, \textbf{vecvalue} \textit{(np.array)}: The simulation times and the corresponding values in the vector
+  \item Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
+
+\end{itemize}
+
+\subsection{get\_statistics()}
+\label{cha:chart-api:results:get-statistics}
+
+\begin{flushleft}
+\ttt{get\_statistics(filter\_expression="", include\_attrs=False, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False, merge\_module\_and\_name=False)}
+\end{flushleft}
+
+
+\par Returns a filtered list of statistics results.
+\subsubsection{Parameters}
+\label{sssec:num15}
+
+\begin{itemize}
+  \item \textbf{filter\_expression} \textit{(string)}: The filter expression to select the desired statistics.
+Example: \ttt{name ={\textasciitilde} "collisionLength:stat" AND itervar:iaMean ={\textasciitilde} "5"}
+  \item \textbf{include\_attrs} \textit{(bool)}: Optional. When set to \ttt{True}, result attributes (like \ttt{unit}
+or \ttt{source} for example) are appended to the DataFrame, pivoted into columns.
+  \item \textbf{include\_runattrs}, \textbf{include\_itervars}, \textbf{include\_param\_assignments}, \textbf{include\_config\_entries} \textit{(bool)}:
+Optional. When set to \ttt{True}, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
+  \item \textbf{merge\_module\_and\_name} \textit{(bool)}: Optional. When set to \ttt{True}, the value in the \ttt{module} column
+is prepended to the value in the \ttt{name} column, joined by a period, in every row.
+
+\end{itemize}
+
+\subsubsection{Columns of the returned DataFrame}
+\label{sssec:num16}
+
+\begin{itemize}
+  \item \textbf{runID} \textit{(string)}: Identifies the simulation run
+  \item \textbf{name} \textit{(string)}: The name of the vector
+  \item \textbf{count}, \textbf{sumweights}, \textbf{mean}, \textbf{stddev}, \textbf{min}, \textbf{max} \textit{(double)}: The characteristic mathematical properties of the statistics result
+  \item Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
+
+\end{itemize}
+
+\subsection{get\_histograms()}
+\label{cha:chart-api:results:get-histograms}
+
+\begin{flushleft}
+\ttt{get\_histograms(filter\_expression="", include\_attrs=False, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False, merge\_module\_and\_name=False, include\_statistics\_fields=False)}
+\end{flushleft}
+
+
+\par Returns a filtered list of histogram results.
+\subsubsection{Parameters}
+\label{sssec:num17}
+
+\begin{itemize}
+  \item \textbf{filter\_expression} \textit{(string)}: The filter expression to select the desired histogram.
+Example: \ttt{name ={\textasciitilde} "collisionMultiplicity:histogram" AND itervar:iaMean ={\textasciitilde} "2"}
+  \item \textbf{include\_attrs} \textit{(bool)}: Optional. When set to \ttt{True}, result attributes (like \ttt{unit}
+or \ttt{source} for example) are appended to the DataFrame, pivoted into columns.
+  \item \textbf{include\_runattrs}, \textbf{include\_itervars}, \textbf{include\_param\_assignments}, \textbf{include\_config\_entries} \textit{(bool)}:
+Optional. When set to \ttt{True}, additional pieces of metadata about the run is appended to the DataFrame, pivoted into columns.
+  \item \textbf{merge\_module\_and\_name} \textit{(bool)}: Optional. When set to \ttt{True}, the value in the \ttt{module} column
+is prepended to the value in the \ttt{name} column, joined by a period, in every row.
+
+\end{itemize}
+
+\subsubsection{Columns of the returned DataFrame}
+\label{sssec:num18}
+
+\begin{itemize}
+  \item \textbf{runID} \textit{(string)}: Identifies the simulation run
+  \item \textbf{name} \textit{(string)}: The name of the vector
+  \item \textbf{count}, \textbf{sumweights}, \textbf{mean}, \textbf{stddev}, \textbf{min}, \textbf{max} \textit{(double)}: The characteristic mathematical properties of the histogram
+  \item \textbf{binedges}, \textbf{binvalues} \textit{(np.array)}: The histogram edge locations and the weighted sum of the collected samples in each bin. \ttt{len(binedges) == len(binvalues) + 1}
+  \item \textbf{underflows}, \textbf{overflows} \textit{(double)}: The weighted sum of the samples that fell outside of the histogram bin range in the two directions
+  \item Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
+
+\end{itemize}
+
+\subsection{get\_config\_entries()}
+\label{cha:chart-api:results:get-config-entries}
+
+\begin{flushleft}
+\ttt{get\_config\_entries(filter\_expression, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False)}
+\end{flushleft}
+
+
+\par Returns a filtered list of config entries. That is: parameter assignment patterns; and global and per-object config options.
+\subsubsection{Parameters}
+\label{sssec:num19}
+
+\begin{itemize}
+  \item \textbf{filter\_expression} \textit{(string)}: The filter expression to select the desired config entries.
+Example: \ttt{name ={\textasciitilde} sim-time-limit AND itervar:numHosts ={\textasciitilde} 10}
+  \item \textbf{include\_runattrs}, \textbf{include\_itervars}, \textbf{include\_param\_assignments}, \textbf{include\_config\_entries} \textit{(bool)}:
+Optional. When set to \ttt{True}, additional pieces of metadata about the run is appended to the result, pivoted into columns.
+
+\end{itemize}
+
+\subsubsection{Columns of the returned DataFrame}
+\label{sssec:num20}
+
+\begin{itemize}
+  \item \textbf{runID} \textit{(string)}: Identifies the simulation run
+  \item \textbf{name} \textit{(string)}: The name of the config entry
+  \item \textbf{value} \textit{(string or double)}: The value of the config entry
+  \item Additional metadata items (run attributes, iteration variables, etc.), as requested
+
+\end{itemize}
+
+\section{chart module}
+\label{cha:chart-api:chart}
+
+\par This module is the interface for displaying data using the built-in plot widgets (i.e. without matplotlib).
+It also provides functions to access the properties of the chart object, regardless of the used plotting method.
+\subsection{extract\_label\_columns()}
+\label{cha:chart-api:chart:extract-label-columns}
+
+\begin{flushleft}
+\ttt{extract\_label\_columns(df)}
+\end{flushleft}
+
+
+\par Utility function to make a reasonable guess as to which column of
+the given DataFrame is most suitable to act as a chart title and
+which ones can be used as legend labels.\par Ideally a "title column" should be one in which all lines have the same
+value, and can be reasonably used as a title. Some often used candidates
+are: \ttt{title}, \ttt{name}, and \ttt{module}.\par Label columns should be a minimal set of columns whose corresponding
+value tuples uniquely identify every line in the DataFrame. These will
+primarily be iteration variables and run attributes.
+\subsubsection{Returns:}
+\label{sssec:num21}
+
+\par A pair of a string and a list; the first value is the name of the
+"title" column, and the second one is a list of pairs, each
+containing the index and the name of a "label" column.\par Example: \ttt{('title', [(8, 'numHosts'), (7, 'iaMean')])}
+\subsection{make\_legend\_label()}
+\label{cha:chart-api:chart:make-legend-label}
+
+\begin{flushleft}
+\ttt{make\_legend\_label(legend\_cols, row)}
+\end{flushleft}
+
+
+\par Produces a reasonably good label text (to be used in a chart legend) for a result row from
+a DataFrame, given a list of selected columns as returned by \ttt{extract\_label\_columns()}.
+\subsection{make\_chart\_title()}
+\label{cha:chart-api:chart:make-chart-title}
+
+\begin{flushleft}
+\ttt{make\_chart\_title(df, title\_col, legend\_cols)}
+\end{flushleft}
+
+
+\par Produces a reasonably good chart title text from a result DataFrame, given a selected "title"
+column, and a list of selected "legend" columns as returned by \ttt{extract\_label\_columns()}.
+\subsection{plot\_scalars()}
+\label{cha:chart-api:chart:plot-scalars}
+
+\begin{flushleft}
+\ttt{plot\_scalars(df\_or\_values, labels=None, row\_label=None)}
+\end{flushleft}
+
+
+\par Takes a set of scalar type results and plots them as a "native" bar chart - using the
+IDE's built-in drawing widget, and not Matplotlib.\par \ttt{df\_or\_values} can be in either of three different formats:\begin{itemize}
+  \item A \ttt{pd.DataFrame} with (at least) \ttt{value}, \ttt{module} and \ttt{name} columns,
+  for example as returned by \ttt{results.get\_scalars()}
+  \item A \ttt{pd.DataFrame} containing only the numeric values. This is what you
+  might get for example from \ttt{pd.pivot\_table()}.
+  Each line in the dataframe will be in it's own bar group, similar to
+  what \ttt{df.plot.bar()} would draw by default.
+  The names in both the horizontal and vertical indices are used as
+  labels in the legend.
+  \item A simple \ttt{list} or \ttt{np.array} of numbers. They will all be in a single group.
+
+\end{itemize}
+\par The optional \ttt{labels} and \ttt{row\_label} parameters are only used in the third
+case, as markers for the legend; and ignored in the first two cases.\par Returns \ttt{None}.
+\subsection{plot\_vector()}
+\label{cha:chart-api:chart:plot-vector}
+
+\begin{flushleft}
+\ttt{plot\_vector(label, xs, ys)}
+\end{flushleft}
+
+
+\par Plots a single vector as a "native" line chart - using the
+IDE's built-in drawing widget, and not Matplotlib.
+\subsubsection{Parameters}
+\label{sssec:num22}
+
+\begin{itemize}
+  \item \textbf{label}: A string that identifies this line on the plot. It will appear on the legend, so should be unique across invocations.
+  \item \textbf{xs}, \textbf{ys}: Lists or \ttt{np.array}s of numbers. Containing the X and Y coordinates (like time and value) of each point on the line,
+respectively. There is no requirement on either of these to hold positive, unique or monotonous values, so this method can be used to
+draw arbitrary scatter plots as well.
+
+\end{itemize}
+\par Can be called repeatedly, each invocation adds a new line to the existing ones on the plot.\par Returns \ttt{None}.
+\subsection{plot\_vectors()}
+\label{cha:chart-api:chart:plot-vectors}
+
+\begin{flushleft}
+\ttt{plot\_vectors(df\_or\_list)}
+\end{flushleft}
+
+
+\par Takes a set of vector type results and plots them as a "native" line chart - using the
+IDE's built-in drawing widget, and not Matplotlib.\par \ttt{df\_or\_values} can be in either of three different formats:\begin{itemize}
+  \item A \ttt{pd.DataFrame} with (at least) \ttt{vectime} and \ttt{vecvalue} columns,
+  for example as returned by \ttt{results.get\_vectors()}
+  \item A \ttt{pd.DataFrame} containing only the numeric values. This is what you
+  might get for example from \ttt{pd.pivot\_table()}.
+  Each line in the dataframe will be in it's own bar group, similar to
+  what \ttt{df.plot.bar()} would draw by default.
+  The names in both the horizontal and vertical indices are used as
+  labels in the legend.
+  \item A simple \ttt{list} or \ttt{np.array} of numbers. They will all be in a single group.
+
+\end{itemize}
+\par The optional \ttt{labels} and \ttt{row\_label} parameters are only used in the third
+case, as markers for the legend; and ignored in the first two cases.\par There is no requirement on the inputs to hold positive, unique or monotonous values,
+so this method can be used to draw arbitrary scatter plots as well.\par Returns \ttt{None}.
+\subsection{plot\_scatter()}
+\label{cha:chart-api:chart:plot-scatter}
+
+\begin{flushleft}
+\ttt{plot\_scatter(df, xdata, iso\_column=None)}
+\end{flushleft}
+
+
+\par Pivots a DataFrame of numeric results (like scalars, itervars or statistics fields)
+and plots them on a line type chart as a scatter plot. The data points can be optionally
+separated into multiple isolines.
+\subsubsection{Parameters}
+\label{sssec:num23}
+
+\begin{itemize}
+  \item \textbf{df}: A DataFrame that holds the data to be pivoted
+  \item \textbf{xdata} \textit{(string)}: The name of a column in \ttt{df} which will provide the X coordinate for the data points
+  \item \textbf{iso\_column} \textit{(string)}: Optional. The name of a column in \ttt{df} whose the values will be used to separate
+the data points into multiple isolines.
+
+\end{itemize}
+\par Returns \ttt{None}.
+\subsection{plot\_histogram()}
+\label{cha:chart-api:chart:plot-histogram}
+
+\begin{flushleft}
+\ttt{plot\_histogram(label, edges, values, sumweights=-1.0, lowest=nan, highest=nan)}
+\end{flushleft}
+
+
+\par Plots a single histogram as a "native" chart - using the
+IDE's built-in drawing widget, and not Matplotlib.
+\subsubsection{Parameters}
+\label{sssec:num24}
+
+\begin{itemize}
+  \item \textbf{label}: A string that identifies this line on the plot. It will appear on the legend, so should be unique across invocations.
+  \item \textbf{edges}, \textbf{values}: Lists or \ttt{np.array}s of numbers. Containing the bin edges and the values of the histogram,
+respectively. \ttt{edges} should be one element longer than `values.
+  \item \textbf{sumweights}: Optional. In case of a weighted histogram, the total sum of weights of the collected histograms, including
+underflows and overflows.
+
+\end{itemize}
+\par Can be called repeatedly, each invocation adds a new histogram to the existing ones on the plot.\par Returns \ttt{None}.
+\subsection{plot\_histograms()}
+\label{cha:chart-api:chart:plot-histograms}
+
+\begin{flushleft}
+\ttt{plot\_histograms(df)}
+\end{flushleft}
+
+
+\par Takes a set of histogram type results and plots them as a "native" chart - using the
+IDE's built-in drawing widget, and not Matplotlib.\par \ttt{df} is a DataFrame, containing (at least) \ttt{binedges} and \ttt{binvalues} columns,
+for example as returned by \ttt{results.get\_histograms()}\par Returns \ttt{None}.
+\subsection{set\_property()}
+\label{cha:chart-api:chart:set-property}
+
+\begin{flushleft}
+\ttt{set\_property(key, value)}
+\end{flushleft}
+
+
+\par Sets one property of the chart to the given value. If there was no property with the given
+name (key) yet, it is added.\par Please note that this function does not change or affect the actual chart
+object at all (as that is treated strictly as a read-only input); instead, it only
+changes some visual property on its view. It is not persistent and is not reflected
+in later calls to \ttt{get\_property()} or \ttt{get\_properties()}.
+\subsection{set\_properties()}
+\label{cha:chart-api:chart:set-properties}
+
+\begin{flushleft}
+\ttt{set\_properties(*vargs, **kwargs)}
+\end{flushleft}
+
+
+\par Updates or adds any number of properties of the chart with the given values. Any
+existing property values will be overwritten, and any new keys will be inserted.\par This function accepts any number of dictionaries (holding the desired new property
+keys and values) as parameters.\par Please note that this function does not change or affect the actual chart
+object at all (as that is treated strictly as a read-only input); instead, it only
+changes some visual property on its view. This change is not persistent and is not
+reflected in later calls to \ttt{get\_property()} or \ttt{get\_properties()}.
+\subsection{get\_properties()}
+\label{cha:chart-api:chart:get-properties}
+
+\begin{flushleft}
+\ttt{get\_properties()}
+\end{flushleft}
+
+
+\par Returns the currently set properties of the chart as a \ttt{dict}
+whose keys and values are both all strings.
+\subsection{get\_property()}
+\label{cha:chart-api:chart:get-property}
+
+\begin{flushleft}
+\ttt{get\_property(key)}
+\end{flushleft}
+
+
+\par Returns the value of a single property of the chart, or \ttt{None} if there is
+no property with the given name (key) set on the chart.
+\subsection{get\_default\_properties()}
+\label{cha:chart-api:chart:get-default-properties}
+
+\begin{flushleft}
+\ttt{get\_default\_properties()}
+\end{flushleft}
+
+
+\par Returns a string-to-string \ttt{dict} that holds the default property keys and values
+for the chart, corresponding to its type.\par This is useful for discovering the basic set of accepted visual property keys
+of charts using built-in plot widgets (i.e. not matplotlib).
+\subsection{get\_name()}
+\label{cha:chart-api:chart:get-name}
+
+\begin{flushleft}
+\ttt{get\_name()}
+\end{flushleft}
+
+
+\par Returns the name of the chart as a string.
