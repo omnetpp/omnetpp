@@ -224,6 +224,7 @@ public class ChartEditForm {
                     combo.add(comboItem);
             }
             else if (control instanceof Text && isFilter != null && isFilter.equalsIgnoreCase("true")) {
+                // TODO: enable when it is updated to the new =~ syntax
                 // FilterContentProposalProvider filterProposalProvider = new FilterContentProposalProvider();
                 // ContentAssistUtil.configureText((Text)control, filterProposalProvider);
             }
