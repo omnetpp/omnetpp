@@ -62,9 +62,9 @@ def make_chart_title(df, title_col, legend_cols):
 def plot_scalars(df_or_values, labels=None, row_label=None):
     """
     Takes a set of scalar type results and plots them as a "native" bar chart - using the
-    IDE's built-in drawing widget, and not Matplotlib.
+    IDE's built-in drawing widget.
 
-    `df_or_values` can be in either of three different formats:
+    `df_or_values` can be in one of three different formats:
 
     - A `pd.DataFrame` with (at least) `value`, `module` and `name` columns,
         for example as returned by `results.get_scalars()`
@@ -87,14 +87,14 @@ def plot_scalars(df_or_values, labels=None, row_label=None):
 def plot_vector(label, xs, ys):
     """
     Plots a single vector as a "native" line chart - using the
-    IDE's built-in drawing widget, and not Matplotlib.
+    IDE's built-in drawing widget.
 
     # Parameters
 
     - **label**: A string that identifies this line on the plot. It will appear on the legend, so should be unique across invocations.
     - **xs**, **ys**: Lists or `np.array`s of numbers. Containing the X and Y coordinates (like time and value) of each point on the line,
       respectively. There is no requirement on either of these to hold positive, unique or monotonous values, so this method can be used to
-      draw arbitrary scatter plots as well.
+      draw arbitrary scatter plots as well. They must be equal in length.
 
     Can be called repeatedly, each invocation adds a new line to the existing ones on the plot.
 
@@ -106,22 +106,21 @@ def plot_vector(label, xs, ys):
 def plot_vectors(df_or_list):
     """
     Takes a set of vector type results and plots them as a "native" line chart - using the
-    IDE's built-in drawing widget, and not Matplotlib.
+    IDE's built-in drawing widget.
 
-    `df_or_values` can be in either of three different formats:
+    `df_or_values` can be in one of three different formats:
 
     - A `pd.DataFrame` with (at least) `vectime` and `vecvalue` columns,
         for example as returned by `results.get_vectors()`
-    - A `pd.DataFrame` containing only the numeric values. This is what you
-        might get for example from `pd.pivot_table()`.
-        Each line in the dataframe will be in it's own bar group, similar to
-        what `df.plot.bar()` would draw by default.
-        The names in both the horizontal and vertical indices are used as
-        labels in the legend.
-    - A simple `list` or `np.array` of numbers. They will all be in a single group.
-
-    The optional `labels` and `row_label` parameters are only used in the third
-    case, as markers for the legend; and ignored in the first two cases.
+    - A `pd.DataFrame` containing only the numeric values. If there is a `"time"`
+      column, that will provide the X coordinates, otherwise an artificial sequencial
+      X coordinate series will be generated. Every column (other than "time") will be
+      a different line.
+    - A `list` of 3-tuples: `(label, x, y)`, each element of the list describes
+      a line. The first element of each tuple is a string, which will be the label
+      of the line, while the second and third are lists or `ndarray` of numbers.
+      In every given tuple, the second and third element must be the equal length,
+      but this length van differ between individual tuples.
 
     There is no requirement on the inputs to hold positive, unique or monotonous values,
     so this method can be used to draw arbitrary scatter plots as well.
@@ -139,7 +138,7 @@ def plot_scatter(df, xdata, iso_column=None):
 
     # Parameters
 
-    - **df**: A DataFrame that holds the data to be pivoted
+    - **df**: A DataFrame that holds the data to be pivoted.
     - **xdata** *(string)*: The name of a column in `df` which will provide the X coordinate for the data points
     - **iso_column** *(string)*: Optional. The name of a column in `df` whose the values will be used to separate
       the data points into multiple isolines.
@@ -152,7 +151,7 @@ def plot_scatter(df, xdata, iso_column=None):
 def plot_histogram(label, edges, values, sumweights=-1.0, lowest=math.nan, highest=math.nan):
     """
     Plots a single histogram as a "native" chart - using the
-    IDE's built-in drawing widget, and not Matplotlib.
+    IDE's built-in drawing widget.
 
     # Parameters
 
@@ -172,7 +171,7 @@ def plot_histogram(label, edges, values, sumweights=-1.0, lowest=math.nan, highe
 def plot_histograms(df):
     """
     Takes a set of histogram type results and plots them as a "native" chart - using the
-    IDE's built-in drawing widget, and not Matplotlib.
+    IDE's built-in drawing widget.
 
     `df` is a DataFrame, containing (at least) `binedges` and `binvalues` columns,
     for example as returned by `results.get_histograms()`

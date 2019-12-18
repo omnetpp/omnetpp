@@ -1,5 +1,5 @@
-\\appendixchapter{Python API for chart scripts}
-\\label{cha:chart-api}
+\appendixchapter{Python API for chart scripts}
+\label{cha:chart-api}
 
 This chapter describes the API of the Python modules available
 for chart scripts, provided by the Analysis Tool in the IDE.
@@ -191,6 +191,7 @@ is prepended to the value in the \ttt{name} column, joined by a period, in every
 
 \begin{itemize}
   \item \textbf{runID} \textit{(string)}: Identifies the simulation run
+  \item \textbf{module} \textit{(string)}: Hierarchical name (a.k.a. full path) of the module that recorded the result item
   \item \textbf{name} \textit{(string)}: The name of the scalar
   \item \textbf{value} \textit{(double)}: The value of the scalar
   \item Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
@@ -231,6 +232,7 @@ Non-numeric values will become \ttt{NaN}.
 
 \begin{itemize}
   \item \textbf{runID} \textit{(string)}: Identifies the simulation run
+  \item \textbf{module} \textit{(string)}: Hierarchical name (a.k.a. full path) of the module that recorded the result item
   \item \textbf{name} \textit{(string)}: The name of the parameter
   \item \textbf{value} \textit{(string or double)}: The value of the parameter. Its type depends on the \ttt{as\_numeric} parameter.
   \item Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
@@ -268,6 +270,7 @@ The unit is seconds, both the \ttt{vectime} and \ttt{vecvalue} arrays will be af
 
 \begin{itemize}
   \item \textbf{runID} \textit{(string)}: Identifies the simulation run
+  \item \textbf{module} \textit{(string)}: Hierarchical name (a.k.a. full path) of the module that recorded the result item
   \item \textbf{name} \textit{(string)}: The name of the vector
   \item \textbf{vectime}, \textbf{vecvalue} \textit{(np.array)}: The simulation times and the corresponding values in the vector
   \item Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
@@ -303,6 +306,7 @@ is prepended to the value in the \ttt{name} column, joined by a period, in every
 
 \begin{itemize}
   \item \textbf{runID} \textit{(string)}: Identifies the simulation run
+  \item \textbf{module} \textit{(string)}: Hierarchical name (a.k.a. full path) of the module that recorded the result item
   \item \textbf{name} \textit{(string)}: The name of the vector
   \item \textbf{count}, \textbf{sumweights}, \textbf{mean}, \textbf{stddev}, \textbf{min}, \textbf{max} \textit{(double)}: The characteristic mathematical properties of the statistics result
   \item Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
@@ -338,6 +342,7 @@ is prepended to the value in the \ttt{name} column, joined by a period, in every
 
 \begin{itemize}
   \item \textbf{runID} \textit{(string)}: Identifies the simulation run
+  \item \textbf{module} \textit{(string)}: Hierarchical name (a.k.a. full path) of the module that recorded the result item
   \item \textbf{name} \textit{(string)}: The name of the vector
   \item \textbf{count}, \textbf{sumweights}, \textbf{mean}, \textbf{stddev}, \textbf{min}, \textbf{max} \textit{(double)}: The characteristic mathematical properties of the histogram
   \item \textbf{binedges}, \textbf{binvalues} \textit{(np.array)}: The histogram edge locations and the weighted sum of the collected samples in each bin. \ttt{len(binedges) == len(binvalues) + 1}
@@ -432,7 +437,7 @@ column, and a list of selected "legend" columns as returned by \ttt{extract\_lab
 
 
 \par Takes a set of scalar type results and plots them as a "native" bar chart - using the
-IDE's built-in drawing widget, and not Matplotlib.\par \ttt{df\_or\_values} can be in either of three different formats:\begin{itemize}
+IDE's built-in drawing widget.\par \ttt{df\_or\_values} can be in one of three different formats:\begin{itemize}
   \item A \ttt{pd.DataFrame} with (at least) \ttt{value}, \ttt{module} and \ttt{name} columns,
   for example as returned by \ttt{results.get\_scalars()}
   \item A \ttt{pd.DataFrame} containing only the numeric values. This is what you
@@ -455,7 +460,7 @@ case, as markers for the legend; and ignored in the first two cases.\par Returns
 
 
 \par Plots a single vector as a "native" line chart - using the
-IDE's built-in drawing widget, and not Matplotlib.
+IDE's built-in drawing widget.
 \subsubsection{Parameters}
 \label{sssec:num22}
 
@@ -463,7 +468,7 @@ IDE's built-in drawing widget, and not Matplotlib.
   \item \textbf{label}: A string that identifies this line on the plot. It will appear on the legend, so should be unique across invocations.
   \item \textbf{xs}, \textbf{ys}: Lists or \ttt{np.array}s of numbers. Containing the X and Y coordinates (like time and value) of each point on the line,
 respectively. There is no requirement on either of these to hold positive, unique or monotonous values, so this method can be used to
-draw arbitrary scatter plots as well.
+draw arbitrary scatter plots as well. They must be equal in length.
 
 \end{itemize}
 \par Can be called repeatedly, each invocation adds a new line to the existing ones on the plot.\par Returns \ttt{None}.
@@ -476,20 +481,21 @@ draw arbitrary scatter plots as well.
 
 
 \par Takes a set of vector type results and plots them as a "native" line chart - using the
-IDE's built-in drawing widget, and not Matplotlib.\par \ttt{df\_or\_values} can be in either of three different formats:\begin{itemize}
+IDE's built-in drawing widget.\par \ttt{df\_or\_values} can be in one of three different formats:\begin{itemize}
   \item A \ttt{pd.DataFrame} with (at least) \ttt{vectime} and \ttt{vecvalue} columns,
   for example as returned by \ttt{results.get\_vectors()}
-  \item A \ttt{pd.DataFrame} containing only the numeric values. This is what you
-  might get for example from \ttt{pd.pivot\_table()}.
-  Each line in the dataframe will be in it's own bar group, similar to
-  what \ttt{df.plot.bar()} would draw by default.
-  The names in both the horizontal and vertical indices are used as
-  labels in the legend.
-  \item A simple \ttt{list} or \ttt{np.array} of numbers. They will all be in a single group.
+  \item A \ttt{pd.DataFrame} containing only the numeric values. If there is a \ttt{"time"}
+column, that will provide the X coordinates, otherwise an artificial sequencial
+X coordinate series will be generated. Every column (other than "time") will be
+a different line.
+  \item A \ttt{list} of 3-tuples: \ttt{(label, x, y)}, each element of the list describes
+a line. The first element of each tuple is a string, which will be the label
+of the line, while the second and third are lists or \ttt{ndarray} of numbers.
+In every given tuple, the second and third element must be the equal length,
+but this length van differ between individual tuples.
 
 \end{itemize}
-\par The optional \ttt{labels} and \ttt{row\_label} parameters are only used in the third
-case, as markers for the legend; and ignored in the first two cases.\par There is no requirement on the inputs to hold positive, unique or monotonous values,
+\par There is no requirement on the inputs to hold positive, unique or monotonous values,
 so this method can be used to draw arbitrary scatter plots as well.\par Returns \ttt{None}.
 \subsection{plot\_scatter()}
 \label{cha:chart-api:chart:plot-scatter}
@@ -506,7 +512,7 @@ separated into multiple isolines.
 \label{sssec:num23}
 
 \begin{itemize}
-  \item \textbf{df}: A DataFrame that holds the data to be pivoted
+  \item \textbf{df}: A DataFrame that holds the data to be pivoted.
   \item \textbf{xdata} \textit{(string)}: The name of a column in \ttt{df} which will provide the X coordinate for the data points
   \item \textbf{iso\_column} \textit{(string)}: Optional. The name of a column in \ttt{df} whose the values will be used to separate
 the data points into multiple isolines.
@@ -522,7 +528,7 @@ the data points into multiple isolines.
 
 
 \par Plots a single histogram as a "native" chart - using the
-IDE's built-in drawing widget, and not Matplotlib.
+IDE's built-in drawing widget.
 \subsubsection{Parameters}
 \label{sssec:num24}
 
@@ -544,7 +550,7 @@ underflows and overflows.
 
 
 \par Takes a set of histogram type results and plots them as a "native" chart - using the
-IDE's built-in drawing widget, and not Matplotlib.\par \ttt{df} is a DataFrame, containing (at least) \ttt{binedges} and \ttt{binvalues} columns,
+IDE's built-in drawing widget.\par \ttt{df} is a DataFrame, containing (at least) \ttt{binedges} and \ttt{binvalues} columns,
 for example as returned by \ttt{results.get\_histograms()}\par Returns \ttt{None}.
 \subsection{set\_property()}
 \label{cha:chart-api:chart:set-property}

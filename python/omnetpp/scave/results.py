@@ -143,6 +143,7 @@ def get_scalars(filter_expression="", include_attrs=False, include_runattrs=Fals
     # Columns of the returned DataFrame
 
     - **runID** *(string)*: Identifies the simulation run
+    - **module** *(string)*: Hierarchical name (a.k.a. full path) of the module that recorded the result item
     - **name** *(string)*: The name of the scalar
     - **value** *(double)*: The value of the scalar
     - Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
@@ -175,6 +176,7 @@ def get_parameters(filter_expression="", include_attrs=False, include_runattrs=F
     # Columns of the returned DataFrame
 
     - **runID** *(string)*: Identifies the simulation run
+    - **module** *(string)*: Hierarchical name (a.k.a. full path) of the module that recorded the result item
     - **name** *(string)*: The name of the parameter
     - **value** *(string or double)*: The value of the parameter. Its type depends on the `as_numeric` parameter.
     - Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
@@ -202,6 +204,7 @@ def get_vectors(filter_expression="", include_attrs=False, include_runattrs=Fals
     # Columns of the returned DataFrame
 
     - **runID** *(string)*: Identifies the simulation run
+    - **module** *(string)*: Hierarchical name (a.k.a. full path) of the module that recorded the result item
     - **name** *(string)*: The name of the vector
     - **vectime**, **vecvalue** *(np.array)*: The simulation times and the corresponding values in the vector
     - Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
@@ -227,6 +230,7 @@ def get_statistics(filter_expression="", include_attrs=False, include_runattrs=F
     # Columns of the returned DataFrame
 
     - **runID** *(string)*: Identifies the simulation run
+    - **module** *(string)*: Hierarchical name (a.k.a. full path) of the module that recorded the result item
     - **name** *(string)*: The name of the vector
     - **count**, **sumweights**, **mean**, **stddev**, **min**, **max** *(double)*: The characteristic mathematical properties of the statistics result
     - Additional metadata items (result attributes, run attributes, iteration variables, etc.), as requested
@@ -252,6 +256,7 @@ def get_histograms(filter_expression="", include_attrs=False, include_runattrs=F
     # Columns of the returned DataFrame
 
     - **runID** *(string)*: Identifies the simulation run
+    - **module** *(string)*: Hierarchical name (a.k.a. full path) of the module that recorded the result item
     - **name** *(string)*: The name of the vector
     - **count**, **sumweights**, **mean**, **stddev**, **min**, **max** *(double)*: The characteristic mathematical properties of the histogram
     - **binedges**, **binvalues** *(np.array)*: The histogram edge locations and the weighted sum of the collected samples in each bin. `len(binedges) == len(binvalues) + 1`
