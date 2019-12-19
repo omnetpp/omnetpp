@@ -97,47 +97,45 @@ public class ResultPicklingUtils {
     }
 
     public static byte[] pickleResultsUsing(ResultFileManager resultManager, IObjectPickler resultsPickler) throws PickleException, IOException {
-        ILock l = resultManager.getReadLock();
-        l.lock();
-        Pickler p = new Pickler(true);
-        Pickler.registerCustomPickler(ResultFileManager.class, resultsPickler);
+        return ResultFileManager.callWithReadLock(resultManager, () -> {
+            Pickler p = new Pickler(true);
+            Pickler.registerCustomPickler(ResultFileManager.class, resultsPickler);
 
-        // We need to limit the size of the pickle, because:
-        // Py4J will Base64 encode it (1.25x) into a UTF-16 String (x2), then
-        // it will be sent to the Python process (x2), and depickled (+1), so overall,
-        // the used memory is at least 1 + 1.25*2*2 + 1 = 7x the size of the pickle we produce.
-        // Note that vector data is not pickled (we use shared memory for that).
-        long SIZE_LIMIT = ScaveEngine.getAvailableMemoryBytes() / 10;
+            // We need to limit the size of the pickle, because:
+            // Py4J will Base64 encode it (1.25x) into a UTF-16 String (x2), then
+            // it will be sent to the Python process (x2), and depickled (+1), so overall,
+            // the used memory is at least 1 + 1.25*2*2 + 1 = 7x the size of the pickle we produce.
+            // Note that vector data is not pickled (we use shared memory for that).
+            long SIZE_LIMIT = ScaveEngine.getAvailableMemoryBytes() / 10;
 
-        ByteArrayOutputStream bo = new ByteArrayOutputStream() {
+            ByteArrayOutputStream bo = new ByteArrayOutputStream() {
 
-            protected void checkSizeLimit() {
-                if (buf.length > SIZE_LIMIT)
-                    throw new RuntimeException("Pickle size limit exceeded.");
-            }
+                protected void checkSizeLimit() {
+                    if (buf.length > SIZE_LIMIT)
+                        throw new RuntimeException("Pickle size limit exceeded.");
+                }
 
-            @Override
-            public synchronized void write(byte[] b, int off, int len) {
-                super.write(b, off, len);
-                checkSizeLimit();
-            }
+                @Override
+                public synchronized void write(byte[] b, int off, int len) {
+                    super.write(b, off, len);
+                    checkSizeLimit();
+                }
 
-            @Override
-            public synchronized void write(int b) {
-                super.write(b);
-                checkSizeLimit();
-            }
-        };
+                @Override
+                public synchronized void write(int b) {
+                    super.write(b);
+                    checkSizeLimit();
+                }
+            };
 
-        p.dump(resultManager, bo);
-        bo.flush();
+            p.dump(resultManager, bo);
+            bo.flush();
 
-        byte[] pickle = bo.toByteArray();
+            byte[] pickle = bo.toByteArray();
 
-        l.unlock();
-
-        if (debug)
-            Debug.println("Pickle size: " + pickle.length);
-        return pickle;
+            if (debug)
+                Debug.println("Pickle size: " + pickle.length);
+            return pickle;
+        });
     }
 }
