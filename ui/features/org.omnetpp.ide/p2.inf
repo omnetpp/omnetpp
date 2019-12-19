@@ -1,15 +1,15 @@
 instructions.configure=\
 org.eclipse.equinox.p2.touchpoint.eclipse.addRepository(type:0,location:http${#58}//download.eclipse.org/releases/latest,name:Eclipse);\
 org.eclipse.equinox.p2.touchpoint.eclipse.addRepository(type:1,location:http${#58}//download.eclipse.org/releases/latest,name:Eclipse);\
-org.eclipse.equinox.p2.touchpoint.eclipse.addRepository(type:0,location:http${#58}//download.eclipse.org/eclipse/updates/4.13,name:The Eclipse Project Updates);\
-org.eclipse.equinox.p2.touchpoint.eclipse.addRepository(type:1,location:http${#58}//download.eclipse.org/eclipse/updates/4.13,name:The Eclipse Project Updates);\
-org.eclipse.equinox.p2.touchpoint.eclipse.addRepository(type:0,location:http${#58}//download.eclipse.org/tools/cdt/releases/9.9,name:CDT); \
-org.eclipse.equinox.p2.touchpoint.eclipse.addRepository(type:1,location:http${#58}//download.eclipse.org/tools/cdt/releases/9.9,name:CDT);
+org.eclipse.equinox.p2.touchpoint.eclipse.addRepository(type:0,location:http${#58}//download.eclipse.org/eclipse/updates/4.14,name:The Eclipse Project Updates);\
+org.eclipse.equinox.p2.touchpoint.eclipse.addRepository(type:1,location:http${#58}//download.eclipse.org/eclipse/updates/4.14,name:The Eclipse Project Updates);\
+org.eclipse.equinox.p2.touchpoint.eclipse.addRepository(type:0,location:http${#58}//download.eclipse.org/tools/cdt/releases/9.10,name:CDT); \
+org.eclipse.equinox.p2.touchpoint.eclipse.addRepository(type:1,location:http${#58}//download.eclipse.org/tools/cdt/releases/9.10,name:CDT);
 
 instructions.unconfigure=\
 org.eclipse.equinox.p2.touchpoint.eclipse.removeRepository(type:0,location:http${#58}//download.eclipse.org/releases/latest);\
 org.eclipse.equinox.p2.touchpoint.eclipse.removeRepository(type:1,location:http${#58}//download.eclipse.org/releases/latest);\
-org.eclipse.equinox.p2.touchpoint.eclipse.removeRepository(type:0,location:http${#58}//download.eclipse.org/eclipse/updates/4.13);\
-org.eclipse.equinox.p2.touchpoint.eclipse.removeRepository(type:1,location:http${#58}//download.eclipse.org/eclipse/updates/4.13);\
-org.eclipse.equinox.p2.touchpoint.eclipse.removeRepository(type:0,location:http${#58}//download.eclipse.org/tools/cdt/releases/9.9,name:CDT);\
-org.eclipse.equinox.p2.touchpoint.eclipse.removeRepository(type:1,location:http${#58}//download.eclipse.org/tools/cdt/releases/9.9,name:CDT);
+org.eclipse.equinox.p2.touchpoint.eclipse.removeRepository(type:0,location:http${#58}//download.eclipse.org/eclipse/updates/4.14);\
+org.eclipse.equinox.p2.touchpoint.eclipse.removeRepository(type:1,location:http${#58}//download.eclipse.org/eclipse/updates/4.14);\
+org.eclipse.equinox.p2.touchpoint.eclipse.removeRepository(type:0,location:http${#58}//download.eclipse.org/tools/cdt/releases/9.10,name:CDT);\
+org.eclipse.equinox.p2.touchpoint.eclipse.removeRepository(type:1,location:http${#58}//download.eclipse.org/tools/cdt/releases/9.10,name:CDT);
