@@ -97,6 +97,7 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheet;
 import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetSorter;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.ui.LocalTransfer;
 import org.omnetpp.common.ui.MultiPageEditorPartExt;
 import org.omnetpp.common.ui.ViewerDragAdapter;
@@ -969,7 +970,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
                 }
                 updateStatusLineManager(getEditorSite().getActionBars().getStatusLineManager(), selection);
                 actions.updateActions();
-                System.out.println("selection changed: " + selection);
+                Debug.println("selection changed: " + selection);
                 fireSelectionChangedEvent(selection);
             } finally {
                 selectionChangeInProgress = false;
