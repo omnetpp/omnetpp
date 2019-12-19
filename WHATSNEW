@@ -6,7 +6,7 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
-OMNeT++ 6.0pre5 (November 2019)
+OMNeT++ 6.0pre6 (December 2019)
 -------------------------------
 
 This is a preview release demonstrating our completely revamped charting
