@@ -453,6 +453,10 @@ def get_configured_property(key):
 def get_name():
     return Gateway.properties_provider.getChartName()
 
+
+def set_message(message):
+    Gateway.chart_plotter.setMessage(message)
+
 """
 def getChartContents():
     return entry_point.getChartContents()
