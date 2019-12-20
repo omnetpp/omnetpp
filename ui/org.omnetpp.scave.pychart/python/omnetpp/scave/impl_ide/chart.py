@@ -105,6 +105,7 @@ def make_chart_title(df, title_col, legend_cols):
 
 
 def plot_bars(df):
+    # TODO: add check for one-layer indices? numbers-only data?
     Gateway.chart_plotter.plotScalars(pl.dumps(
         {
             "columnKeys": [_to_label(c) for c in list(df.columns)],
@@ -360,6 +361,8 @@ def plot_scatter(df, xdata, iso_column=None):
     if df.columns.nlevels > 1:
         df.columns = [' '.join(col).strip() for col in df.columns.values]
 
+    # todo only return df
+    """
     # only used on posix, to unlink them later
     shm_objs = list()
     # only used on windows, to prevent gc
@@ -382,6 +385,7 @@ def plot_scatter(df, xdata, iso_column=None):
     # TODO: set_property('Y.Axis.Title', ', '.join(names))
     set_property('X.Axis.Title', xdata)
     set_property('Graph.Title', get_name())
+    """
 
 
 def plot_histogram(label, binedges, binvalues, underflows=0.0, overflows=0.0, minvalue=math.nan, maxvalue=math.nan):

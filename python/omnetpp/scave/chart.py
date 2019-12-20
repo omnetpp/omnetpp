@@ -68,6 +68,7 @@ def plot_lines(df):
 def plot_histogram_data(df):
     return impl.plot_histogram_data(**locals())
 
+# TODO: rename row_label to group_label?
 def plot_scalars(df_or_values, labels=None, row_label=None):
     """
     Takes a set of scalar type results and plots them as a "native" bar chart - using the
@@ -139,6 +140,7 @@ def plot_vectors(df_or_list):
     return impl.plot_vectors(**locals())
 
 
+# TODO document, allow multiple iso columns, selecting the "value" column,
 # maybe sorting by a different column than xdata
 def plot_scatter(df, xdata, iso_column=None):
     """

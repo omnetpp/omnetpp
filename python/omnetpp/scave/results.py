@@ -8,8 +8,21 @@ It is always evaluated independently on every loaded result item or metadata ent
 determines whether the given item or piece of metadata is included in the returned `DataFrame`.
 """
 
+
 # Alternatively: The results module gives access to the simulation results loaded into the IDE.
 # TODO: document
+
+# DOCS TODO:
+# more about filter expression syntax, operators, accepted fields
+# about include_runattrs, include_itervars, include_param_assignments, include_config_entries
+# about chart templates, how custom ones can be added to a project (own .properties file)
+# about opp_charttool ?
+#
+# Additional columns can be appended that contain metadata about the run in which the result belongs:
+#   - include_runattrs:
+#   - include_itervars:
+#   - include_param_assignments: Adds a subset of include_config_entries, only includes cPar assignment entries, not global or per-object config options
+#   - include_config_entries: Adds all configuration entries: param assignments, global and per-object configuration options. If True, include_param_assignments has no effect.
 
 
 # Technically, this module only delegates all of its functions to one of two different
