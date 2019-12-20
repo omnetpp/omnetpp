@@ -124,15 +124,16 @@ public class NativeChartViewer extends ChartViewerBase {
 
         chartView.setStatusText("Running Python script...");
 
+        // resetting properties to factory defaults
         IPropertySource2 propSource = ChartVisualProperties.createPropertySource(chart);
-
         for (IPropertyDescriptor desc : propSource.getPropertyDescriptors()) {
             String id = (String)desc.getId();
-            Property prop = chart.lookupProperty(id);
-            if (prop != null)
-                chartView.setProperty(id, prop.getValue());
-            else
-                chartView.setProperty(id, Converter.objectToString(ChartDefaults.getDefaultPropertyValue(id)));
+            // applying the values stored in the chart model object will have to be done explicitly in the script
+            // Property prop = chart.lookupProperty(id);
+            // if (prop != null)
+            //     chartView.setProperty(id, prop.getValue());
+            // else
+            chartView.setProperty(id, Converter.objectToString(ChartDefaults.getDefaultPropertyValue(id)));
         }
 
         try {
