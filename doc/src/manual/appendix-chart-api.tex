@@ -428,6 +428,33 @@ a DataFrame, given a list of selected columns as returned by \ttt{extract\_label
 
 \par Produces a reasonably good chart title text from a result DataFrame, given a selected "title"
 column, and a list of selected "legend" columns as returned by \ttt{extract\_label\_columns()}.
+\subsection{plot\_bars()}
+\label{cha:chart-api:chart:plot-bars}
+
+\begin{flushleft}
+\ttt{plot\_bars(df)}
+\end{flushleft}
+
+
+
+\subsection{plot\_lines()}
+\label{cha:chart-api:chart:plot-lines}
+
+\begin{flushleft}
+\ttt{plot\_lines(df)}
+\end{flushleft}
+
+
+
+\subsection{plot\_histogram\_data()}
+\label{cha:chart-api:chart:plot-histogram-data}
+
+\begin{flushleft}
+\ttt{plot\_histogram\_data(df)}
+\end{flushleft}
+
+
+
 \subsection{plot\_scalars()}
 \label{cha:chart-api:chart:plot-scalars}
 
@@ -523,7 +550,7 @@ the data points into multiple isolines.
 \label{cha:chart-api:chart:plot-histogram}
 
 \begin{flushleft}
-\ttt{plot\_histogram(label, edges, values, sumweights=-1.0, lowest=nan, highest=nan)}
+\ttt{plot\_histogram(label, binedges, binvalues, underflows=0.0, overflows=0.0, minvalue=nan, maxvalue=nan)}
 \end{flushleft}
 
 
@@ -534,10 +561,10 @@ IDE's built-in drawing widget.
 
 \begin{itemize}
   \item \textbf{label}: A string that identifies this line on the plot. It will appear on the legend, so should be unique across invocations.
-  \item \textbf{edges}, \textbf{values}: Lists or \ttt{np.array}s of numbers. Containing the bin edges and the values of the histogram,
+  \item \textbf{binedges}, \textbf{binvalues}: Lists or \ttt{np.array}s of numbers. Containing the bin edges and the values of the histogram,
 respectively. \ttt{edges} should be one element longer than `values.
-  \item \textbf{sumweights}: Optional. In case of a weighted histogram, the total sum of weights of the collected histograms, including
-underflows and overflows.
+  \item \textbf{underflows}, \textbf{overflows}: Optional. The sum of weights of the collected values that fell under or over the histogram bin range, respectively.
+  \item \textbf{minvalue}, \textbf{maxvalue}: Optional. The smallest and the highest collected value, respectively.
 
 \end{itemize}
 \par Can be called repeatedly, each invocation adds a new histogram to the existing ones on the plot.\par Returns \ttt{None}.
@@ -552,11 +579,11 @@ underflows and overflows.
 \par Takes a set of histogram type results and plots them as a "native" chart - using the
 IDE's built-in drawing widget.\par \ttt{df} is a DataFrame, containing (at least) \ttt{binedges} and \ttt{binvalues} columns,
 for example as returned by \ttt{results.get\_histograms()}\par Returns \ttt{None}.
-\subsection{set\_property()}
-\label{cha:chart-api:chart:set-property}
+\subsection{set\_plot\_property()}
+\label{cha:chart-api:chart:set-plot-property}
 
 \begin{flushleft}
-\ttt{set\_property(key, value)}
+\ttt{set\_plot\_property(key, value)}
 \end{flushleft}
 
 
@@ -565,35 +592,34 @@ name (key) yet, it is added.\par Please note that this function does not change 
 object at all (as that is treated strictly as a read-only input); instead, it only
 changes some visual property on its view. It is not persistent and is not reflected
 in later calls to \ttt{get\_property()} or \ttt{get\_properties()}.
-\subsection{set\_properties()}
-\label{cha:chart-api:chart:set-properties}
+\subsection{set\_plot\_properties()}
+\label{cha:chart-api:chart:set-plot-properties}
 
 \begin{flushleft}
-\ttt{set\_properties(*vargs, **kwargs)}
+\ttt{set\_plot\_properties(props)}
 \end{flushleft}
 
 
-\par Updates or adds any number of properties of the chart with the given values. Any
-existing property values will be overwritten, and any new keys will be inserted.\par This function accepts any number of dictionaries (holding the desired new property
-keys and values) as parameters.\par Please note that this function does not change or affect the actual chart
+\par Updates or adds any number of properties of the chart with the values given in `props.
+Any existing property values will be overwritten, and any new keys will be inserted.\par Please note that this function does not change or affect the actual chart
 object at all (as that is treated strictly as a read-only input); instead, it only
 changes some visual property on its view. This change is not persistent and is not
 reflected in later calls to \ttt{get\_property()} or \ttt{get\_properties()}.
-\subsection{get\_properties()}
-\label{cha:chart-api:chart:get-properties}
+\subsection{get\_configured\_properties()}
+\label{cha:chart-api:chart:get-configured-properties}
 
 \begin{flushleft}
-\ttt{get\_properties()}
+\ttt{get\_configured\_properties()}
 \end{flushleft}
 
 
 \par Returns the currently set properties of the chart as a \ttt{dict}
 whose keys and values are both all strings.
-\subsection{get\_property()}
-\label{cha:chart-api:chart:get-property}
+\subsection{get\_configured\_property()}
+\label{cha:chart-api:chart:get-configured-property}
 
 \begin{flushleft}
-\ttt{get\_property(key)}
+\ttt{get\_configured\_property(key)}
 \end{flushleft}
 
 
@@ -619,3 +645,9 @@ of charts using built-in plot widgets (i.e. not matplotlib).
 
 
 \par Returns the name of the chart as a string.
+\subsection{copy\_properties()}
+\label{cha:chart-api:chart:copy-properties}
+
+\begin{flushleft}
+\ttt{copy\_properties()}
+\end{flushleft}
