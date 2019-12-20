@@ -11,7 +11,9 @@
         <input pattern="/resultfiles/routing2/*.sca"/>
     </inputs>
     <charts>
-        <chart name="simplecursor" type="MatplotlibChart">from matplotlib.widgets import Cursor
+        <chart icon="" id="267" name="simplecursor" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[from matplotlib.widgets import Cursor
 import pylab
 
 fig = pylab.figure()
@@ -26,8 +28,12 @@ ax.set_ylim(-2,2)
 cursor = Cursor(ax, useblit=False, color='red', linewidth=2 )
 
 pylab.show()
-pylab.title("Move the mouse in the chart!")</chart>
-        <chart name="trifinder" type="MatplotlibChart">import matplotlib.pyplot as plt
+pylab.title("Move the mouse in the chart!")]]>
+            </script>
+        </chart>
+        <chart icon="" id="268" name="trifinder" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import matplotlib.pyplot as plt
 from matplotlib.tri import Triangulation
 from matplotlib.patches import Polygon
 import numpy as np
@@ -68,7 +74,7 @@ y = (radii*np.sin(angles)).flatten()
 triangulation = Triangulation(x, y)
 xmid = x[triangulation.triangles].mean(axis=1)
 ymid = y[triangulation.triangles].mean(axis=1)
-mask = np.where(xmid*xmid + ymid*ymid &lt; min_radius*min_radius, 1, 0)
+mask = np.where(xmid*xmid + ymid*ymid < min_radius*min_radius, 1, 0)
 triangulation.set_mask(mask)
 
 # Use the triangulation's default TriFinder object.
@@ -81,9 +87,14 @@ polygon = Polygon([[0, 0], [0, 0]], facecolor='y')  # dummy data for xs,ys
 update_polygon(-1)
 plt.gca().add_patch(polygon)
 plt.gcf().canvas.mpl_connect('motion_notify_event', motion_notify)
-plt.show()<property name="Legend.Display" value="false"/>
+plt.show()
+]]>
+            </script>
+            <property name="Legend.Display" value="false"/>
         </chart>
-        <chart name="lorenz" type="MatplotlibChart">import numpy as np
+        <chart icon="" id="269" name="lorenz" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -123,8 +134,12 @@ ax.set_ylabel("Y Axis")
 ax.set_zlabel("Z Axis")
 ax.set_title("Lorenz Attractor")
 
-plt.show()</chart>
-        <chart name="xkcd" type="MatplotlibChart">import numpy as np
+plt.show()]]>
+            </script>
+        </chart>
+        <chart icon="" id="270" name="xkcd" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -145,7 +160,7 @@ with plt.xkcd():
 
     plt.annotate(
         'THE DAY I REALIZED\nI COULD COOK BACON\nWHENEVER I WANTED',
-        xy=(70, 1), arrowprops=dict(arrowstyle='-&gt;'), xytext=(15, -10))
+        xy=(70, 1), arrowprops=dict(arrowstyle='->'), xytext=(15, -10))
 
     plt.plot(data)
 
@@ -177,8 +192,12 @@ with plt.xkcd():
         '"The Data So Far" from xkcd by Randall Monroe',
         ha='center')
 
-plt.show()</chart>
-        <chart name="annotation" type="MatplotlibChart">import numpy as np
+plt.show()]]>
+            </script>
+        </chart>
+        <chart icon="" id="271" name="annotation" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 ax = plt.subplot(111)
@@ -193,8 +212,12 @@ plt.annotate('local max', xy=(2, 1), xytext=(3, 1.5),
 
 plt.ylim(-2,2)
 
-plt.show()</chart>
-        <chart name="polarannotation" type="MatplotlibChart">import numpy as np
+plt.show()]]>
+            </script>
+        </chart>
+        <chart icon="" id="272" name="polarannotation" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -215,9 +238,14 @@ ax.annotate('a polar annotation',
             horizontalalignment='left',
             verticalalignment='bottom',
             )
-plt.show()<property name="Legend.Display" value="false"/>
+plt.show()
+]]>
+            </script>
+            <property name="Legend.Display" value="false"/>
         </chart>
-        <chart name="closestpoint" type="MatplotlibChart">import numpy as np
+        <chart icon="" id="273" name="closestpoint" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import scipy.spatial as spatial
@@ -241,7 +269,7 @@ class FollowDotCursor(object):
         y = y[mask]
         self._points = np.column_stack((x, y))
         self.offsets = offsets
-        y = y[np.abs(y - y.mean()) &lt;= 3 * y.std()]
+        y = y[np.abs(y - y.mean()) <= 3 * y.std()]
         self.scale = x.ptp()
         self.scale = y.ptp() / self.scale if self.scale else 1
         self.tree = spatial.cKDTree(self.scaled(self._points))
@@ -284,7 +312,7 @@ class FollowDotCursor(object):
             bbox = dict(
                 boxstyle='round,pad=0.5', fc='yellow', alpha=0.75),
             arrowprops = dict(
-                arrowstyle='-&gt;', connectionstyle='arc3,rad=0'))
+                arrowstyle='->', connectionstyle='arc3,rad=0'))
         return annotation
 
     def snap(self, x, y):
@@ -312,8 +340,12 @@ ax2.plot(t, y2, 'g-', label='y2')
 
 cursor1 = FollowDotCursor(ax1, t, y1)
 cursor2 = FollowDotCursor(ax2, t, y2)
-plt.show()</chart>
-        <chart name="widgets" type="MatplotlibChart">from numpy import pi, sin
+plt.show()]]>
+            </script>
+        </chart>
+        <chart icon="" id="274" name="widgets" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[from numpy import pi, sin
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider, Button, RadioButtons
@@ -361,8 +393,12 @@ def color_radios_on_clicked(label):
     fig.canvas.draw_idle()
 color_radios.on_clicked(color_radios_on_clicked)
 
-plt.show()</chart>
-        <chart name="subplots" type="MatplotlibChart">import numpy as np
+plt.show()]]>
+            </script>
+        </chart>
+        <chart icon="" id="275" name="subplots" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 def add_subplot_axes(ax,rect,axisbg='w'):
@@ -376,7 +412,7 @@ def add_subplot_axes(ax,rect,axisbg='w'):
     x = infig_position[0]
     y = infig_position[1]
     width *= rect[2]
-    height *= rect[3]  # &lt;= Typo was here
+    height *= rect[3]  # <= Typo was here
     subax = fig.add_axes([x,y,width,height])
     x_labelsize = subax.get_xticklabels()[0].get_size()
     y_labelsize = subax.get_yticklabels()[0].get_size()
@@ -413,8 +449,14 @@ def example2():
 
 example2()
 plt.show()
-</chart>
-        <chart name="multicursor" type="MatplotlibChart">from matplotlib.widgets import MultiCursor
+]]>
+            </script>
+        </chart>
+        <chart icon="" id="276" name="multicursor" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.widgets import MultiCursor
 
 t = np.arange(0.0, 2.0, 0.01)
 s1 = np.sin(2*np.pi*t)
@@ -429,15 +471,19 @@ ax2.plot(t, s2)
 
 # setting useblit to False should not be necessary
 multi = MultiCursor(fig.canvas, (ax1, ax2), color='r', lw=1)
-plt.show()</chart>
-        <chart name="histogram" type="MatplotlibChart">import numpy as np
+plt.show()]]>
+            </script>
+        </chart>
+        <chart icon="" id="277" name="histogram" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import numpy as np
 import matplotlib.pyplot as plt
 
 mu, sigma = 120, 15
 x = mu + sigma * np.random.randn(10000)
 
 # the histogram of the data
-n, bins, patches = plt.hist(x, 50, normed=1, facecolor='g', alpha=0.75)
+n, bins, patches = plt.hist(x, 50, density=1, facecolor='g', alpha=0.75)
 
 
 plt.xlabel('Smarts')
@@ -446,9 +492,14 @@ plt.title('Histogram of IQ')
 plt.text(60, .025, r'$\mu=100,\ \sigma=15$')
 plt.axis([40, 160, 0, 0.03])
 plt.grid(True)
-plt.show()<property name="Legend.Display" value="false"/>
+plt.show()
+]]>
+            </script>
+            <property name="Legend.Display" value="false"/>
         </chart>
-        <chart name="kendelltau" type="MatplotlibChart">import numpy as np
+        <chart icon="" id="278" name="kendelltau" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 print("This chart will fail if scipy and seaborn are not installed")
@@ -462,23 +513,25 @@ x = rs.gamma(2, size=1000)
 y = -.5 * x + rs.normal(size=1000)
 
 sns.jointplot(x, y, kind="hex", stat_func=kendalltau, color="#4CB391")
-</chart>
-        <chart name="big vector" type="MatplotlibChart">import pandas as pd
-import prettyplotlib as ppl
+]]>
+            </script>
+        </chart>
+        <chart icon="" id="279" name="big vector" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[from omnetpp.scave import results
+import pandas as pd
+import matplotlib.pyplot as plt
 import time
 
 startTime = time.perf_counter()
-#vectors = opp.get_vectors('*')
-#vectors = opp.get_vectors('module("Aloha.server")')
-vectors = results.get_vectors('name(serverChannelState:vector)')
+
+df = results.get_vectors('name =~ serverChannelState:vector')
 
 endTime = time.perf_counter()
 
 print("get_vectors took " + str((endTime - startTime) * 1000.0) + " ms")
 
-print(str(len(vectors)))
-
-df = vectors[vectors.type == "vector"]
+print(str(len(df)))
 
 print(str(df.head()))
 
@@ -493,91 +546,98 @@ print("plotting took " + str((endTime - startTime) * 1000.0) + " ms")
 #plt.tight_layout()
 
 #plt.show()
-</chart>
-        <chart name="print scalars" type="MatplotlibChart">import numpy as np
-import pandas as pd
+]]>
+            </script>
+        </chart>
+        <chart icon="" id="280" name="print scalars" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import pandas as pd
 import matplotlib.pyplot as plt
+from omnetpp.scave import results
+
 pd.set_option('display.width', 1000)
 pd.set_option('display.max_columns', 500)
 scalars = results.get_scalars('*')
 print(scalars)
 
 plt.title("Check the 'Console' View...")
-plt.show()</chart>
-        <chart name="print vectors" type="MatplotlibChart">import numpy as np
-import pandas as pd
+plt.show()]]>
+            </script>
+        </chart>
+        <chart icon="" id="281" name="print vectors" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[from omnetpp.scave import results
 import matplotlib.pyplot as plt
+
 vectors = results.get_vectors('*')
 print(vectors)
 
 plt.title("Check the 'Console' View...")
-plt.show()</chart>
-        <chart name="print histograms" type="MatplotlibChart">import numpy as np
-import pandas as pd
+plt.show()]]>
+            </script>
+        </chart>
+        <chart icon="" id="282" name="print histograms" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[from omnetpp.scave import results
 import matplotlib.pyplot as plt
 histograms = results.get_histograms('*')
 
 print(histograms)
 
 plt.title("Check the 'Console' View...")
-plt.show()</chart>
-        <chart name="aloha mpl" type="MatplotlibChart">import numpy as np
+plt.show()]]>
+            </script>
+        </chart>
+        <chart icon="" id="283" name="aloha mpl" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from omnetpp.scave import results
 
-aloha = results.get_scalars('run("PureAlohaExperiment*") AND attr:replication(#1)')
+aloha = results.get_scalars('run =~ "PureAlohaExperiment*" AND runattr:replication =~ "#1" AND module =~ "Aloha.server" AND name =~ "channelUtilization:last"', include_itervars=True)
 
-aloha = aloha.assign(qname = aloha.module + "." + aloha.name)
-
-scalars = aloha[(aloha.type=='scalar') | (aloha.type=='itervar')]  # filter rows
-scalars = scalars.assign(qname = scalars.attrname.combine_first(scalars.module + '.' + scalars.name))  # add qname column
-scalars.value = scalars.value.combine_first(scalars.attrvalue.astype('float64'))  # merge value columns
-
-scalars_wide = scalars.pivot('run', columns='qname', values='value')
-
-aloha_pivot = scalars_wide.pivot_table(index='iaMean', columns='numHosts', values='Aloha.server.channelUtilization:last')  # note: aggregation function = mean (that's the default)
+aloha_pivot = aloha.pivot_table(index='iaMean', columns='numHosts', values='value')  # note: aggregation function = mean (that's the default)
 aloha_pivot.plot.line()
 
-plt.ylabel('channel utilization')</chart>
-        <chart name="aloha xy" type="LineChart">import numpy as np
+plt.ylabel('channel utilization')]]>
+            </script>
+        </chart>
+        <chart icon="" id="284" name="aloha xy" template="" type="LINE">
+            <script>
+                <![CDATA[import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from omnetpp.scave import chart, results
 
-aloha = results.get_scalars('run("PureAlohaExperiment*") AND attr:replication(#1)')
+aloha = results.get_scalars('run =~ "PureAlohaExperiment*" AND runattr:replication =~ "#1" AND module =~ Aloha.server AND name =~ channelUtilization:last', include_itervars=True)
 
-aloha = aloha.assign(qname = aloha.module + "." + aloha.name)
-
-scalars = aloha[(aloha.type=='scalar') | (aloha.type=='itervar')]  # filter rows
-scalars = scalars.assign(qname = scalars.attrname.combine_first(scalars.module + '.' + scalars.name))  # add qname column
-scalars.value = scalars.value.combine_first(scalars.attrvalue.astype('float64'))  # merge value columns
-
-scalars_wide = scalars.pivot('run', columns='qname', values='value')
-
-aloha_pivot = scalars_wide.pivot_table(index='iaMean', columns='numHosts', values='Aloha.server.channelUtilization:last')  # note: aggregation function = mean (that's the default)
+aloha_pivot = aloha.pivot_table(index='iaMean', columns='numHosts', values='value')  # note: aggregation function = mean (that's the default)
 
 print(aloha_pivot)
 
 aloha_pivot *= 100
-print(aloha_pivot.index.name)
-print(aloha_pivot.columns.name)
+chart.plot_vectors(aloha_pivot)
+#for c in aloha_pivot:
+#    chart.plot_vectors(pd.DataFrame({"time":aloha_pivot.index, "numHosts=" + str(c): aloha_pivot[c]}))
 
-for c in aloha_pivot:
-    chart.plot_vectors(pd.DataFrame({"time":aloha_pivot.index, "numHosts=" + str(c): aloha_pivot[c]}))
+print(chart.get_configured_properties())
 
-print(chart.get_properties())
-
-chart.set_properties({
+chart.set_plot_properties({
     "Graph.Title": "Pure Aloha Experiment",
     "X.Axis.Title": "Mean packet inter-arrival time (s)",
-    "Y.Axis.Title": "Channel utilization (%)"
+    "Y.Axis.Title": "Channel utilization (%)",
+    "Line.Label/1": "blabla"
 })
-<property name="Graph.Title" value="Pure Aloha Experiment"/>
+]]>
+            </script>
+            <property name="Graph.Title" value="Pure Aloha Experiment"/>
             <property name="Axis.Title.Font" value="Sans-regular-16"/>
             <property name="Legend.Display" value="false"/>
         </chart>
-        <chart name="hover annotation" type="MatplotlibChart">import matplotlib.pyplot as plt
+        <chart icon="" id="285" name="hover annotation" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import matplotlib.pyplot as plt
 import numpy as np; np.random.seed(1)
 
 x = np.random.rand(15)
@@ -593,7 +653,7 @@ sc = plt.scatter(x,y,c=c, s=100, cmap=cmap, norm=norm)
 
 annot = ax.annotate("", xy=(0,0), xytext=(20,20),textcoords="offset points",
                     bbox=dict(boxstyle="round", fc="w"),
-                    arrowprops=dict(arrowstyle="-&gt;"))
+                    arrowprops=dict(arrowstyle="->"))
 annot.set_visible(False)
 
 def update_annot(ind):
@@ -625,45 +685,54 @@ fig.canvas.mpl_connect("motion_notify_event", hover)
 plt.title("Hover the mouse over the dots!")
 plt.show()
 
-# source: https://stackoverflow.com/a/47166787/635587</chart>
-        <chart name="pivot_scalars" type="BarChart">import numpy as np
+# source: https://stackoverflow.com/a/47166787/635587]]>
+            </script>
+        </chart>
+        <chart icon="" id="286" name="pivot_scalars" template="" type="BAR">
+            <script>
+                <![CDATA[import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 df = results.get_scalars("""ADD scalars WHERE name(txBytes:sum) OR name(rxBytes:sum)""")
 df = results.pivot_scalars(df)
-chart.plot_scalars(df)</chart>
-        <chart name="line and points" type="LineChart">import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-# chart.plotVector("nice line", [1, 2, 5, 8], [4,3,6,1])
-# chart.plotVector("nicer line", [1, 2, 5, 8], [14,13,16,11])
-
-
-chart.plot_vectors([("A", [1, 2, 3], [10, 20, 30]), ("B", [4,5,6],[11, 12, 13])])
-
-chart.set_property("Line.Type/A", "Dots")
-
-#df = results.get_vectors('name("rxBytes:vector")')
-#df.vecvalue = df.vecvalue.apply(np.cumsum)
-#chart.plot_vectors(df)
-<property name="Legend.Display" value="false"/>
+chart.plot_scalars(df)]]>
+            </script>
         </chart>
-        <chart name="queue length" type="MatplotlibChart">from omnetpp.scave import results
+        <chart icon="" id="287" name="line and points" template="" type="LINE">
+            <script>
+                <![CDATA[import numpy as np
+from omnetpp.scave import results, chart
+
+df = results.get_vectors('name =~ "rxBytes:vector"')
+df.vecvalue = df.vecvalue.apply(np.cumsum)
+
+chart.plot_vectors(df)
+
+]]>
+            </script>
+            <property name="Legend.Display" value="false"/>
+        </chart>
+        <chart icon="" id="288" name="queue length" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[from omnetpp.scave import results
 import matplotlib.pyplot as plt
 
-df = results.get_vectors("name(qlen:vector)")
+df = results.get_vectors("name =~ qlen:vector")
 
 for t in df.itertuples():
-    if t.type == "vector":
-        plt.plot(t.vectime, t.vecvalue, label=t.module, drawstyle='steps-post')
+    plt.plot(t.vectime, t.vecvalue, label=t.module, drawstyle='steps-post')
 
 plt.xlabel('Simulation time (s)')
 plt.ylabel('Queue length')
 
 plt.legend()
 plt.tight_layout()
-</chart>
-        <chart name="legend toggle" type="MatplotlibChart">import numpy as np
+]]>
+            </script>
+        </chart>
+        <chart icon="" id="289" name="legend toggle" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -704,8 +773,12 @@ def onpick(event):
     fig.canvas.draw()
 
 fig.canvas.mpl_connect('pick_event', onpick)
-</chart>
-        <chart name="zoom" type="MatplotlibChart">import numpy as np
+]]>
+            </script>
+        </chart>
+        <chart icon="" id="290" name="zoom" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 """
@@ -745,6 +818,8 @@ def onpress(event):
 fig.canvas.mpl_connect('motion_notify_event', onpress)
 fig.canvas.mpl_connect('button_press_event', onpress)
 fig.canvas.mpl_connect('button_release_event', onpress)
-show()</chart>
+show()]]>
+            </script>
+        </chart>
     </charts>
 </analysis>

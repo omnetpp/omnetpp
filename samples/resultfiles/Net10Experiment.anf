@@ -5,23 +5,17 @@
         <input pattern="/resultfiles/routing2/Net10Experiment-*.sca"/>
     </inputs>
     <charts>
-        <chart name="CutThrough vs Store and Forward" type="ScatterChart">from omnetpp.scave import results, chart
+        <chart icon="" id="1" name="CutThrough vs Store and Forward" template="" type="LINE">
+            <script>
+                <![CDATA[from omnetpp.scave import results, chart
 
-filter_string = """((name=~endToEndDelay:mean and module=~*.rte[1].app )
-  OR (name=~iaMean )) """
+filter_string = "name =~ endToEndDelay:mean AND module=~*.rte[1].app "
 
-df = results.get_scalars(filter_string)
+df = results.get_scalars(filter_string, include_itervars=True)
 
-xdata = 'iaMean'
-iso_column = None
-
-names = chart.plot_scatter(df, xdata=xdata, iso_column=iso_column)
-
-chart.set_property('Y.Axis.Title', ', '.join(names))
-chart.set_property('X.Axis.Title', 'iaMean')
-chart.set_property('Graph.Title', chart.get_name())
-
-chart.set_properties(chart.get_properties())
-</chart>
+names = chart.plot_scatter(df, "iaMean", "cutThrough")
+]]>
+            </script>
+        </chart>
     </charts>
 </analysis>

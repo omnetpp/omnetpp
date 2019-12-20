@@ -1,76 +1,45 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <analysis version="2">
     <inputs>
+        <input pattern="/resultfiles/routing/*.vec"/>
         <input pattern="/resultfiles/routing/*.sca"/>
+        <input pattern="/resultfiles/aloha/*.vec"/>
+        <input pattern="/resultfiles/aloha/*.sca"/>
+        <input pattern="/resultfiles/routing2/*.vec"/>
         <input pattern="/resultfiles/routing2/*.sca"/>
-        <input pattern="/aloha/results/*.vec"/>
-        <input pattern="/aloha/results/*.sca"/>
     </inputs>
     <charts>
-        <chart name="scalars simple 1" template="" type="BarChart">
-            <script>from omnetpp.scave import chart
+        <chart icon="" id="40" name="scalars simple 1" template="" type="BAR">
+            <script>
+                <![CDATA[from omnetpp.scave import chart
 
-chart.plot_scalars([10, 13, 18, 20])
+chart.plot_scalars([10, 13, 18, 20], ["a", "b", "c", "d"])
 
-
-
-
-
-
-
-
-
-</script>
-            <form/>
+chart.copy_properties()
+]]>
+            </script>
+            <dialogPage id="PROPERTIES" label="Properties"/>
             <property name="Legend.Display" value="false"/>
         </chart>
-        <chart name="scalars simple 2" template="" type="BarChart">
-            <script>from omnetpp.scave import chart
+        <chart icon="" id="41" name="scalars simple 2" template="" type="BAR">
+            <script>
+                <![CDATA[from omnetpp.scave import chart
 
 chart.plot_scalars([10, 13, 18],
                   labels=["a little", "a bit more", "quite a lot"],
                   row_label="amount of milk")
 
-print("Hello")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</script>
-            <form/>
+chart.copy_properties()
+]]>
+            </script>
+            <dialogPage id="PROPERTIES" label="Properties"/>
             <property name="Axis.Title.Font" value="Arial-regular-16"/>
             <property name="Label.Font" value="Arial-regular-16"/>
             <property name="Legend.Font" value="Arial-regular-16"/>
         </chart>
-        <chart name="scalars dataframe 1" template="" type="BarChart">
-            <script>import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
+        <chart icon="" id="42" name="scalars dataframe 1" template="" type="BAR">
+            <script>
+                <![CDATA[import pandas as pd
 from omnetpp.scave import chart
 
 df = pd.DataFrame(
@@ -81,13 +50,16 @@ df = pd.DataFrame(
 
 print(df)
 
-chart.plot_scalars(df)</script>
-            <form/>
+chart.plot_scalars(df)
+
+chart.copy_properties()
+]]>
+            </script>
+            <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
-        <chart name="scalars dataframe 2" template="" type="BarChart">
-            <script>import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
+        <chart icon="" id="43" name="scalars dataframe 2" template="" type="BAR">
+            <script>
+                <![CDATA[import pandas as pd
 from omnetpp.scave import chart
 
 df = pd.DataFrame(
@@ -100,56 +72,80 @@ df = pd.DataFrame(
 )
 
 print(df)
-chart.plot_scalars(df)</script>
-            <form/>
+chart.plot_scalars(df)
+
+chart.copy_properties()
+]]>
+            </script>
+            <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
-        <chart name="scalars dataframe 3" template="" type="BarChart">
-            <script>from omnetpp.scave import results
+        <chart icon="" id="44" name="scalars dataframe 3" template="" type="BAR">
+            <script>
+                <![CDATA[from omnetpp.scave import results, chart
 
 df = results.get_scalars("name=~rxBytes:sum OR name=~txBytes:sum")
 print(df)
-chart.plot_scalars(df)</script>
-            <form/>
-        </chart>
-        <chart name="scalars dataframe 4" template="" type="BarChart">
-            <script>from omnetpp.scave import results
+chart.plot_scalars(df)
 
-df = results.get_scalars("name=~rxBytes:sum OR name=~txBytes:sum")
-df = results.pivot_scalars(df, columns=["name", "replication"], index=["module"])
+chart.copy_properties()]]>
+            </script>
+            <dialogPage id="PROPERTIES" label="Properties"/>
+            <property name="Axes.Grid" value="None"/>
+        </chart>
+        <chart icon="" id="45" name="scalars dataframe 4" template="" type="BAR">
+            <script>
+                <![CDATA[import pandas as pd
+from omnetpp.scave import results, chart
+
+df = results.get_scalars("name=~rxBytes:sum OR name=~txBytes:sum", include_itervars=True)
 print(df)
-chart.plot_scalars(df)</script>
-            <form/>
+
+df = pd.pivot_table(df, columns="name", index="iaMean", values="value")
+print(df)
+
+chart.plot_scalars(df/1000000)
+
+chart.copy_properties()]]>
+            </script>
+            <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
-        <chart name="vectors simple 1" template="" type="LineChart">
-            <script>import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-chart.plotVector("trend", [0, 1, 2, 3], [3,6,7,9])</script>
-            <form/>
+        <chart icon="" id="46" name="vectors simple 1" template="" type="LINE">
+            <script>
+                <![CDATA[from omnetpp.scave import chart
+
+chart.plot_vector("trend", [0, 1, 2, 3], [3,6,7,9])
+
+chart.copy_properties()
+]]>
+            </script>
+            <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
-        <chart name="vectors simple 2" template="" type="LineChart">
-            <script>import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-chart.plotVector("trend", [0, 1, 2, 3], [3,6,7,9])
-chart.plotVector("tronb", [0, 1, 2, 3], [4,8,7,3])
-chart.plotVector("trang", [0, 1.5, 2.5, 3], [9,7,4,1])</script>
-            <form/>
+        <chart icon="" id="47" name="vectors simple 2" template="" type="LINE">
+            <script>
+                <![CDATA[from omnetpp.scave import chart
+
+chart.plot_vector("trend 1", [0, 1, 2, 3], [3,6,7,9])
+chart.plot_vector("trend 2", [0, 1, 2, 3], [4,8,7,5])
+chart.plot_vector("trend 3", [0, 1.5, 2.5, 3], [9,7,4,1])
+
+chart.copy_properties()
+]]>
+            </script>
+            <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
-        <chart name="vectors simple 3" template="" type="LineChart">
-            <script>import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
+        <chart icon="" id="48" name="vectors simple 3" template="" type="LINE">
+            <script>
+                <![CDATA[from omnetpp.scave import chart
+
 data = [
 	("apples", [2000, 2010, 2020], [300, 367, 341]),
 	("oranges", [2002, 2014, 2019], [170, 190, 220]),
     ("pears", [1999, 2003, 2014], [235, 340, 320])
 ]
 
-print(data)
-
 chart.plot_vectors(data)
 
+chart.copy_properties()
 
 
 
@@ -165,76 +161,102 @@ chart.plot_vectors(data)
 
 
 
-
-
-
-</script>
-            <form/>
+]]>
+            </script>
+            <dialogPage id="PROPERTIES" label="Properties"/>
             <property name="X.Axis.Min" value="1990.0"/>
             <property name="X.Axis.Max" value="2030.0"/>
         </chart>
-        <chart name="vectors dataframe 1" template="" type="LineChart">
-            <script>import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
+        <chart icon="" id="49" name="vectors dataframe 1" template="" type="LINE">
+            <script>
+                <![CDATA[import pandas as pd
+from omnetpp.scave import chart
+
 df = pd.DataFrame({
     "N": [120, 161, 283],
-    "X": [300, 320, 345]
+    "A": [300, 320, 345]
 })
 print(df)
-chart.plot_vectors(df)</script>
-            <form/>
+chart.plot_vectors(df)
+
+chart.copy_properties()
+]]>
+            </script>
+            <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
-        <chart name="vectors dataframe 2" template="" type="LineChart">
-            <script>import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
+        <chart icon="" id="50" name="vectors dataframe 2" template="" type="LINE">
+            <script>
+                <![CDATA[import pandas as pd
+from omnetpp.scave import chart
+
 df = pd.DataFrame({
-    "N": [120, 161, 283],
-    "Y": [300, 320, 345],
+    "M": [120, 161, 283],
+    "D": [300, 320, 345],
     "time": [0.1, 0.2, 0.45]
 })
 print(df)
-chart.plot_vectors(df)</script>
-            <form/>
+chart.plot_vectors(df)
+
+chart.copy_properties()
+]]>
+            </script>
+            <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
-        <chart name="vectors dataframe 3" template="" type="LineChart">
-            <script>from omnetpp.scave import results
+        <chart icon="" id="51" name="vectors dataframe 3" template="" type="LINE">
+            <script>
+                <![CDATA[from omnetpp.scave import results, chart
 
-df = results.get_vectors("name(hopCount:vector)")
+df = results.get_vectors("name =~ hopCount:vector", include_attrs=True)
 
-chart.plot_vectors(df)</script>
-            <form/>
+print(df)
+
+chart.plot_vectors(df)
+
+chart.copy_properties()]]>
+            </script>
+            <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
-        <chart name="vectors dataframe 4" template="" type="LineChart">
-            <script>from omnetpp.scave import results
+        <chart icon="" id="52" name="vectors dataframe 4" template="" type="LINE">
+            <script>
+                <![CDATA[from omnetpp.scave import results, chart
 
 
-df = results.get_vectors("name(rxBytes:vector) OR name(txBytes:vector)")
+df = results.get_vectors("name =~ rxBytes:vector OR name =~ txBytes:vector", include_attrs=True)
 
 # df.vecvalue = df.vecvalue.apply(np.cumsum)
 
 print(df)
 
-chart.plot_vectors(df)</script>
-            <form/>
-        </chart>
-        <chart name="histograms simple 1" template="" type="HistogramChart">
-            <script>from omnetpp.scave import chart
+chart.plot_vectors(df)
 
-chart.plotHistogram(label="IQ", edges=[80, 90, 100, 110, 120, 130], values=[2, 3, 7, 6, 4])</script>
-            <form/>
+chart.copy_properties()]]>
+            </script>
+            <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
-        <chart name="histograms simple 2" template="" type="HistogramChart">
-            <script>from omnetpp.scave import chart
+        <chart icon="" id="53" name="histograms simple 1" template="" type="HISTOGRAM">
+            <script>
+                <![CDATA[from omnetpp.scave import chart
 
-chart.plotHistogram("A", [80, 90, 105, 118, 130], [2, 3, 7, 4])
+chart.plot_histogram(label="IQ", binedges=[80, 90, 100, 110, 120, 130], binvalues=[2, 3, 7, 6, 4])
 
-chart.plotHistogram("B", [83, 97, 101, 110, 124, 137], [0.6, 0.8, 1.5, 1.1, 0.9])</script>
-            <form/>
+chart.copy_properties()]]>
+            </script>
+            <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
-        <chart name="histograms simple 3" template="" type="HistogramChart">
-            <script>import numpy as np
+        <chart icon="" id="54" name="histograms simple 2" template="" type="HISTOGRAM">
+            <script>
+                <![CDATA[from omnetpp.scave import chart
+
+chart.plot_histogram("A", [80, 90, 105, 118, 130], [2, 3, 7, 4])
+chart.plot_histogram("B", [83, 97, 101, 110, 124, 137], [0.6, 0.8, 1.5, 1.1, 0.9])
+
+chart.copy_properties()]]>
+            </script>
+            <dialogPage id="PROPERTIES" label="Properties"/>
+        </chart>
+        <chart icon="" id="55" name="histograms simple 3" template="" type="HISTOGRAM">
+            <script>
+                <![CDATA[import numpy as np
 from omnetpp.scave import chart
 
 samples = np.random.normal(loc=42, scale=6.28, size=1000000)
@@ -244,24 +266,30 @@ values, edges = np.histogram(samples, bins=64)
 print(edges)
 print(values)
 
-chart.plotHistogram("bell", edges, values)</script>
-            <form/>
+chart.plot_histogram("bell", edges, values)
+
+chart.copy_properties()]]>
+            </script>
+            <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
-        <chart name="histograms dataframe 1" template="" type="HistogramChart">
-            <script>from omnetpp.scave import results
+        <chart icon="" id="56" name="histograms dataframe 1" template="" type="HISTOGRAM">
+            <script>
+                <![CDATA[from omnetpp.scave import results, chart
 
-from omnetpp.scave import chart
+df = results.get_histograms("name =~ collisionLength:histogram")
 
-df = results.get_histograms("name(collisionLength:histogram)")
+print(df)
 
-print(df.columns)
-chart.plot_histograms(df)</script>
-            <form/>
+chart.plot_histograms(df)
+
+chart.copy_properties()]]>
+            </script>
+            <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
-        <chart name="styling 1" template="" type="BarChart">
-            <script>import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
+        <chart icon="" id="57" name="styling 1" template="" type="BAR">
+            <script>
+                <![CDATA[import pandas as pd
+
 from omnetpp.scave import chart
 
 df = pd.DataFrame(
@@ -274,13 +302,11 @@ print(df)
 
 chart.plot_scalars(df)
 
+chart.copy_properties()
 
-chart.set_property("Graph.Title", "This is a nice chart!")
-chart.set_property("Plot.BackgroundColor", "lightgreen")
-chart.set_property("Legend.Font", "Arial-bold-18")
-
-
-
+chart.set_plot_property("Graph.Title", "This is a nice chart!")
+chart.set_plot_property("Plot.BackgroundColor", "lightgreen")
+chart.set_plot_property("Legend.Font", "Arial-bold-18")
 
 
 
@@ -298,15 +324,20 @@ chart.set_property("Legend.Font", "Arial-bold-18")
 
 
 
-</script>
-            <form/>
+
+
+
+]]>
+            </script>
+            <dialogPage id="PROPERTIES" label="Properties"/>
             <property name="Graph.Title" value="Even though we have a title set here, this will be overridden by the script"/>
             <property name="Legend.Font" value="Arial-italic-12"/>
         </chart>
-        <chart name="styling 2" template="" type="BarChart">
-            <script>import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
+        <chart icon="" id="58" name="styling 2" template="" type="BAR">
+            <script>
+                <![CDATA[import pandas as pd
+from omnetpp.scave import chart
+
 df = pd.DataFrame(
     [[10, 30],
      [12, 34]],
@@ -315,15 +346,18 @@ df = pd.DataFrame(
 print(df)
 chart.plot_scalars(df)
 
+chart.copy_properties()
 
-chart.set_property("Bar.Color/X", "purple")
-chart.set_property("Bar.Color/Y", "yellow")</script>
-            <form/>
+chart.set_plot_property("Bar.Color/X", "purple")
+chart.set_plot_property("Bar.Color/Y", "yellow")]]>
+            </script>
+            <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
-        <chart name="styling 3" template="" type="BarChart">
-            <script>import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
+        <chart icon="" id="59" name="styling 3" template="" type="BAR">
+            <script>
+                <![CDATA[import pandas as pd
+from omnetpp.scave import chart
+
 df = pd.DataFrame(
     [[10, 30],
      [12, 34]],
@@ -332,20 +366,23 @@ df = pd.DataFrame(
 print(df)
 chart.plot_scalars(df)
 
+chart.copy_properties()
 
-chart.set_properties({
+chart.set_plot_properties({
     "Graph.Title": "This is a nice chart!",
     "Plot.BackgroundColor": "lightgreen",
 
     "Bar.Color/X": "purple",
     "Bar.Color/Y": "yellow"
-})</script>
-            <form/>
+})]]>
+            </script>
+            <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
-        <chart name="styling 4" template="" type="BarChart">
-            <script>import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
+        <chart icon="" id="60" name="styling 4" template="" type="BAR">
+            <script>
+                <![CDATA[import pandas as pd
+from omnetpp.scave import chart
+
 df = pd.DataFrame(
     [[10, 30],
      [12, 34]],
@@ -355,21 +392,21 @@ print(df)
 chart.plot_scalars(df)
 
 print("\nThese properties are set in the form:")
-print(chart.get_properties())
+print(chart.get_configured_properties())
 
-print("\nAnd these are all the defaults:")
-print(chart.get_default_properties())
+# print("\nAnd these are all the defaults:")
+# print(chart.get_default_plot_properties())
 
-effective = chart.get_default_properties()
-effective.update(chart.get_properties())
+# effective = chart.get_default_properties()
+# effective.update(chart.get_configured_properties())
 
-print("\nSo the effective set of properties (before the script is executed):")
+# print("\nSo the effective set of properties (before the script is executed):")
 
-print(effective)
+# print(effective)
 
-print("\n\nBut of course these can be overridden from the script...")
+# print("\n\nBut of course these can be overridden from the script...")
 
-chart.set_property("Plot.BackgroundColor", "blue")
+chart.set_plot_property("Plot.BackgroundColor", "blue")
 
 # and you can reset anything to the default (overriding anything set in the dialog, or in the script up to this point)
 # chart.set_properties(chart.get_default_properties())
@@ -402,1801 +439,54 @@ chart.set_property("Plot.BackgroundColor", "blue")
 
 
 
-</script>
-            <form/>
+]]>
+            </script>
+            <dialogPage id="PROPERTIES" label="Properties"/>
             <property name="Graph.Title" value="A concise title"/>
             <property name="Axes.Grid" value="All"/>
             <property name="Legend.Font" value="Arial-regular-12"/>
         </chart>
-        <chart name="importing 1" template="" type="MatplotlibChart">
-            <script>import simplechart</script>
-            <form/>
+        <chart icon="" id="61" name="importing 1" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import simplechart]]>
+            </script>
+            <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
-        <chart name="importing 2" template="" type="MatplotlibChart">
-            <script>import matplotlib.pyplot as plt
+        <chart icon="" id="62" name="importing 2" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import matplotlib.pyplot as plt
 
 import charts
 charts.chart_function()
 
-plt.grid()</script>
-            <form/>
+plt.grid()]]>
+            </script>
+            <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
-        <chart name="importing 3" template="" type="BarChart">
-            <script>from omnetpp.scave import charts
-charts.chart_function_native(results, chart)</script>
-            <form/>
+        <chart icon="" id="63" name="importing 3" template="" type="BAR">
+            <script>
+                <![CDATA[import charts
+charts.chart_function_native()]]>
+            </script>
+            <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
-        <chart name="importing 4" template="" type="MatplotlibChart">
-            <script>from charts import scripts
-
-scripts[chart.get_name()]()</script>
-            <form/>
-        </chart>
-        <chart name="importing 5" template="" type="BarChart">
-            <script>from charts import scripts
-
-scripts[chart.get_name()](results, chart)</script>
-            <form/>
-        </chart>
-        <chart name="" template="" type="ScatterChart">
-            <script>import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-
-from omnetpp.scave import results
+        <chart icon="" id="64" name="importing 4" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[from charts import scripts
 from omnetpp.scave import chart
 
-from omnetpp.scave import vectorops as ops
-
-# This expression selects the results (you might be able to logically simplify it)
-filter_expression = """
-ADD scalars WHERE attr:experiment=~PureAlohaExperiment AND module=~_runattrs_ AND name=~iaMean
-ADD scalars WHERE attr:experiment=~PureAlohaExperiment AND module=~Aloha.server AND name=~*channelUtilization*
-"""
-
-# The data is returned as a Pandas DataFrame
-df = results.get_scalars(filter_expression)
-
-print(df)
-
-# Which we turn into a more usable format
-df = results.transform_results(df)
-
-# You can perform any transformations on the data here
-
-# Finally, the results are plotted
-# chart.plot_scalars(df)
-# chart.plotScatter(df, "iaMean", "channelUtilization:last")</script>
-            <form/>
+scripts[chart.get_name()]()]]>
+            </script>
+            <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
-        <chart name="" template="" type="LineChart">
-            <script>import numpy as np
-from omnetpp.scave import results
-from omnetpp.scave import chart
-import pandas as pd
-
-pd.set_option('display.width', 5000)
-pd.set_option('display.max_columns', 500)
-
-from omnetpp.scave import vectorops as ops
-
-# This expression selects the results (you might be able to logically simplify it)
-filter_expression = """
-ADD scalars WHERE attr:experiment=~PureAlohaExperiment AND module=~Aloha.server AND name=~*channelUtilization*
-"""
-
-# The data is returned as a Pandas DataFrame
-df = results.get_scalars(filter_expression)
-
-df2 = results.get_vectors(
-"ADD vectors WHERE attr:experiment=~PureAlohaExperiment AND module=~Aloha.server AND name=~*serverChannelState*"
-)
-
-# Which we turn into a more usable format
-df = results.transform_results(df)
-df2 = results.transform_results(df2)
-
-
-
-def extend_iloc(df):
-    cols_to_flatten = [('result', 'vectime'), ('result', 'vecvalue')]
-
-    # Row numbers to repeat
-    lens = df[cols_to_flatten[0]].apply(len)
-    vals = range(df.shape[0])
-
-    ilocations = np.repeat(vals, lens)
-
-    # Replicate rows and add flattened column of lists
-    with_idxs = [(i, c) for (i, c) in enumerate(df.columns) if c not in cols_to_flatten]
-    col_idxs = list(list(zip(*with_idxs))[0])
-    new_df = df.iloc[ilocations, col_idxs].copy()
-
-    # Flatten columns of lists
-    for col_target in cols_to_flatten:
-        col_flat = [item for sublist in df[col_target] for item in sublist]
-        new_df[col_target] = col_flat
-
-    return new_df
-
-df2 = extend_iloc(df2)
-
-df2 = df2.reindex_axis((sorted(df2.columns)), axis=1)
-
-print()
-
-df.reset_index(inplace=True)
-print(df2)
-df2.plot.scatter(('result', 'vectime'), ('result', 'vecvalue'))
-# df.pivot_table()
-
-# You can perform any transformations on the data here
-
-# Finally, the results are plotted
-# chart.plot_scalars(df)
-# chart.plotScatter(df, "iaMean", "channelUtilization:last")</script>
-            <form/>
-        </chart>
-        <chart name="" template="" type="MatplotlibChart">
-            <script>import numpy as np
-import pandas as pd
-from omnetpp.scave import results, chart, vectorops as ops
-
-# This expression selects the results (you might be able to logically simplify it)
-filter_expression = """
-ADD scalars WHERE attr:experiment=~PureAlohaExperiment AND module=~Aloha.server AND name=~*channelUtilization*
-"""
-
-# The data is returned as a Pandas DataFrame
-df = results.get_scalars(filter_expression)
-
-df2 = results.get_vectors(
-"ADD vectors WHERE attr:experiment=~PureAlohaExperiment AND name=~*tat*"
-)
-
-# Which we turn into a more usable format
-df = results.transform_results(df)
-df2 = results.transform_results(df2)
-
-df.columns = df.columns.droplevel()
-
-df_piv = df.pivot_table(values=['value'], index='iaMean', columns='numHosts')
-df_piv.reset_index(inplace=True)
-# df_piv.columns = df_piv.columns.droplevel()
-
-# df_piv.columns[0] = 'iaMean'
-# print(df_piv)
-# df_piv.plot()
-
-def expand_vectors(df):
-    cols_to_flatten = [('result', 'vectime'), ('result', 'vecvalue')]
-
-    # Row numbers to repeat
-    lens = df[cols_to_flatten[0]].apply(len)
-    vals = range(df.shape[0])
-
-    ilocations = np.repeat(vals, lens)
-
-    # Replicate rows and add flattened column of lists
-    with_idxs = [(i, c) for (i, c) in enumerate(df.columns) if c not in cols_to_flatten]
-    col_idxs = list(list(zip(*with_idxs))[0])
-    new_df = df.iloc[ilocations, col_idxs].copy()
-
-    # Flatten columns of lists
-    for col_target in cols_to_flatten:
-        col_flat = [item for sublist in df[col_target] for item in sublist]
-        new_df[col_target] = col_flat
-
-    return new_df
-
-
-df2 = expand_vectors(df2)
-
-df2_ = df2.groupby(df2.index.names + [('result','vectime')]).mean()
-print(df2_.unstack("name"))
-# print(df2.unstack())
-
-#df2.plot(x='vectime')
-
-# df2 = df2.reindex_axis((sorted(df2.columns)), axis=1)
-
-# print()
-
-# df.reset_index(inplace=True)
-# print(df2)
-
-# df3 = pd.pivot_table(df2, values=)
-
-# df.pivot_table()
-
-# You can perform any transformations on the data here
-
-# Finally, the results are plotted
-# chart.plot_scalars(df)
-# chart.plotScatter(df, "iaMean", "channelUtilization:last")</script>
-            <form/>
-        </chart>
-        <chart name="" template="" type="MatplotlibChart">
-            <script>import numpy as np
-from omnetpp.scave import results
-from omnetpp.scave import chart
-import pandas as pd
-
-pd.set_option('display.width', 5000)
-pd.set_option('display.max_columns', 500)
-
-from omnetpp.scave import vectorops as ops
-
-# This expression selects the results (you might be able to logically simplify it)
-filter_expression = """
-ADD scalars WHERE attr:experiment(PureAlohaExperiment) AND module(Aloha.server) AND name(*channelUtilization*)
-"""
-
-# The data is returned as a Pandas DataFrame
-df = results.get_scalars(filter_expression)
-
-df2 = results.get_vectors(
-"ADD vectors WHERE attr:experiment(PureAlohaExperiment) AND module(Aloha.server) AND name(*serverChannelState*)"
-)
-
-# Which we turn into a more usable format
-df = results.transform_results(df)
-df2 = results.transform_results(df2)
-
-
-
-def extend_iloc(df):
-    cols_to_flatten = [('result', 'vectime'), ('result', 'vecvalue')]
-
-    # Row numbers to repeat
-    lens = df[cols_to_flatten[0]].apply(len)
-    vals = range(df.shape[0])
-
-    ilocations = np.repeat(vals, lens)
-
-    # Replicate rows and add flattened column of lists
-    with_idxs = [(i, c) for (i, c) in enumerate(df.columns) if c not in cols_to_flatten]
-    col_idxs = list(list(zip(*with_idxs))[0])
-    new_df = df.iloc[ilocations, col_idxs].copy()
-
-    # Flatten columns of lists
-    for col_target in cols_to_flatten:
-        col_flat = [item for sublist in df[col_target] for item in sublist]
-        new_df[col_target] = col_flat
-
-    return new_df
-
-df2 = extend_iloc(df2)
-
-df2 = df2.reindex_axis((sorted(df2.columns)), axis=1)
-
-print()
-
-df.reset_index(inplace=True)
-print(df2)
-df2[('itervar', 'iaMean')] = pd.to_numeric(df2[('itervar', 'iaMean')])
-df2[('itervar', 'numHosts')] = pd.to_numeric(df2[('itervar', 'numHosts')])
-
-# df2.plot.scatter(('itervar', 'numHosts'), ('itervar', 'iaMean'))
-
-print(df2[('result', 'vecvalue')])
-#df3 = pd.pivot_table(df2, index=('itervar', 'iaMean'), columns=('itervar', 'numHosts'), values=[('result', 'vecvalue')])
-# df.pivot_table()
-
-# You can perform any transformations on the data here
-
-# Finally, the results are plotted
-# chart.plot_scalars(df)
-# chart.plotScatter(df, "iaMean", "channelUtilization:last")</script>
-            <form/>
-        </chart>
-        <chart name="" template="" type="MatplotlibChart">
-            <script>from omnetpp.scave import results
-import pandas as pd
-import math
-
-pd.set_option('display.max_rows', 500)
-pd.set_option('display.max_columns', 500)
-pd.set_option('display.width', 1000)
-
-import traceback
-df = results.get_runs("*", include_runattrs=True, include_itervars=True)
-#print(df)
-
-#df = results.get_histograms("*", include_attrs=True, include_itervars=True)
-
-print(results.get_scalars("hopCount:mean"))
-
-df = results.get_scalars("module(*server*) AND name(*channelUtilization*)", include_itervars=True, include_attrs=True)
-#print(df)
-#print()
-
-
-#print(df)
-#print()
-
-df = pd.pivot_table(df, index="iaMean", columns=["title", "numHosts"], values="value")
-#print(df)
-#print()
-
-column_headers = df.columns.unique("title")
-df.columns = df.columns.droplevel()
-df.plot.line(title=column_headers[0])
-
-
-
-
-
-#df.plot.line(x="iaMean", y="value")
-
-#df = results.get_run_attrs("module(*server*)")
-#print(df)
-# df = pd.pivot_table(df, columns="attrname", index=["runID", "module", "name"], values="attrvalue", aggfunc='first')
-#print(df[df['enum'].l])
-
-#df = results.transform_results(df)
-
-#print(df)</script>
-            <form/>
-        </chart>
-        <chart name="created from Line Chart" template="" type="MatplotlibChart">
-            <script>from omnetpp.scave import chart
-
-chart.get_properties()
-
-
-print("I am the line chart template!")</script>
-            <form/>
-        </chart>
-        <chart name="created from Line Chart" template="" type="MatplotlibChart">
-            <script>print("I am the line chart template!")
-
-import matplotlib.pyplot as plt
-
-from omnetpp.scave import chart
-
-props = chart.get_properties()
-
-plt.title(props["separator"])
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</script>
-            <form/>
-            <property name="quoteChar" value="doublequote"/>
-            <property name="columnNames" value="true"/>
-            <property name="omitBlankColumns" value="true"/>
-            <property name="quoteEscaping" value="doubling"/>
-            <property name="precision" value="14"/>
-            <property name="separator" value="comma"/>
-        </chart>
-        <chart name="created from Line Chart" template="" type="LineChart">
-            <script>print("I am the line chart template!")</script>
-            <form/>
-        </chart>
-        <chart name="created from Scatter Chart" template="" type="MatplotlibChart">
-            <script>from omnetpp.scave import results, chart
-import pandas as pd
-import math
-
-pd.set_option('display.max_rows', 500)
-pd.set_option('display.max_columns', 500)
-pd.set_option('display.width', 1000)
-
-params = chart.get_properties()
-
-df = results.get_scalars("module(*server*) AND name(*" + params["yaxis"] + "*)", include_itervars=True, include_attrs=True)
-
-df = pd.pivot_table(df, index=params['xaxis'], columns=["title", params['iso']], values="value")
-
-
-print(df)
-print()
-
-column_headers = df.columns.unique("title")
-df.columns = df.columns.droplevel()
-df.plot.line(title=column_headers[0])
-
-</script>
-            <form>&lt;?xml version='1.0' encoding='UTF-8'?&gt;
-&lt;xswt xmlns:x='http://sweet_swt.sf.net/xswt'&gt;
-  &lt;import xmlns='http://sweet_swt.sf.net/xswt'&gt;
-    &lt;package name='java.lang'/&gt;
-    &lt;package name='org.eclipse.swt.widgets' /&gt;
-    &lt;package name='org.eclipse.swt.graphics' /&gt;
-    &lt;package name='org.eclipse.swt.layout' /&gt;
-    &lt;package name='org.eclipse.swt.custom' /&gt;
-  &lt;/import&gt;
-  &lt;layout x:class='GridLayout' numColumns='1'/&gt;
-  &lt;x:children&gt;
-    &lt;group text=''&gt;
-      &lt;layoutData x:class='GridData' horizontalAlignment='FILL' verticalAlignment='FILL' grabExcessHorizontalSpace='true'/&gt;
-      &lt;layout x:class='GridLayout' numColumns='2'/&gt;
-      &lt;x:children&gt;
-            &lt;label text="Xaxis:"/&gt;
-            &lt;text x:id="xaxis" x:style="BORDER"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/text&gt;
-            &lt;label text="Yaxis:"/&gt;
-            &lt;text x:id="yaxis" x:style="BORDER"&gt;
-              &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/text&gt;
-            &lt;label text="ISO:"/&gt;
-            &lt;text x:id="iso" x:id.foo="bar" x:style="BORDER"&gt;
-              &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/text&gt;
-      &lt;/x:children&gt;
-    &lt;/group&gt;
-  &lt;/x:children&gt;
-&lt;/xswt&gt;</form>
-        </chart>
-        <chart name="created from Scatter Chart" template="scatterchart" type="MatplotlibChart">
-            <script>from omnetpp.scave import results, chart
-import pandas as pd
-import math
-
-pd.set_option('display.max_rows', 500)
-pd.set_option('display.max_columns', 500)
-pd.set_option('display.width', 1000)
-
-params = chart.get_properties()
-
-df = results.get_scalars("module(*server*) AND name(*:min)", include_itervars=True, include_attrs=True)
-print(df)
-#df = pd.pivot_table(df, index=params['xaxis'], columns=["title", params['iso']], values="value")
-
-
-print(df)
-print()
-
-column_headers = df.columns.unique("title")
-df.columns = df.columns.droplevel()
-df.plot.line(title=column_headers[0])
-
-</script>
-            <form>&lt;?xml version='1.0' encoding='UTF-8'?&gt;
-&lt;xswt xmlns:x='http://sweet_swt.sf.net/xswt'&gt;
-  &lt;import xmlns='http://sweet_swt.sf.net/xswt'&gt;
-    &lt;package name='java.lang'/&gt;
-    &lt;package name='org.eclipse.swt.widgets' /&gt;
-    &lt;package name='org.eclipse.swt.graphics' /&gt;
-    &lt;package name='org.eclipse.swt.layout' /&gt;
-    &lt;package name='org.eclipse.swt.custom' /&gt;
-  &lt;/import&gt;
-  &lt;layout x:class='GridLayout' numColumns='1'/&gt;
-  &lt;x:children&gt;
-    &lt;group text=''&gt;
-      &lt;layoutData x:class='GridData' horizontalAlignment='FILL' verticalAlignment='FILL' grabExcessHorizontalSpace='true'/&gt;
-      &lt;layout x:class='GridLayout' numColumns='2'/&gt;
-      &lt;x:children&gt;
-            &lt;label text="Xaxis:"/&gt;
-            &lt;combo x:id="xaxis" x:id.content="scalarnames,itervarnames,runattrnames" x:style="BORDER"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-            &lt;label text="Yaxis:"/&gt;
-            &lt;text x:id="yaxis" x:style="BORDER"&gt;
-              &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/text&gt;
-            &lt;label text="ISO:"/&gt;
-            &lt;text x:id="iso" x:style="BORDER"&gt;
-              &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/text&gt;
-      &lt;/x:children&gt;
-    &lt;/group&gt;
-  &lt;/x:children&gt;
-&lt;/xswt&gt;</form>
-            <property name="xaxis" value="rxBytes:histogram:mean"/>
-        </chart>
-        <chart name="created from Scatter Chart" template="scatterchart" type="MatplotlibChart">
-            <script>from omnetpp.scave import results, chart
-import pandas as pd
-import math
-
-pd.set_option('display.max_rows', 500)
-pd.set_option('display.max_columns', 500)
-pd.set_option('display.width', 1000)
-
-params = chart.get_properties()
-
-def get_anything(filter):
-    sc = results.get_scalars(filter)
-    iv = results.get_itervars(filter)
-    ra = results.get_run_attrs(filter)
-
-    df = pd.concat([sc, iv, ra])
-    df["value"] = pd.to_numeric(df["value"], errors="coerce")
-    df = pd.pivot_table(df, columns="name", index="runID", values="value")
-
-    return df
-
-df = get_anything(params["xaxis"])
-df = df.join(get_anything(params["yaxis"]))
-df = df.join(get_anything(params["iso"]))
-
-""" TODO: split entry fields as filter and column name (for pivoting), maybe add an additional "global filter", that gets AND-ed to all 3 filters? """
-
-
-
-#print(results.get_itervars("attr:numHosts(*)"))
-#print(df)
-#df = pd.concat([df, results.get_itervars(params["yaxis"])])
-
-#df = results.get_itervars(params["yaxis"])
-
-
-#print(df)
-#df = pd.pivot_table(df, index=params['xaxis'], columns=["title", params['iso']], values="value")
-
-
-#df.index = pd.to_numeric(df.index.values)
-
-#column_headers = df.columns.unique("title")
-#df.columns = df.columns.droplevel()
-#df.plot.line(title=column_headers[0])
-
-</script>
-            <form>&lt;?xml version='1.0' encoding='UTF-8'?&gt;
-&lt;xswt xmlns:x='http://sweet_swt.sf.net/xswt'&gt;
-  &lt;import xmlns='http://sweet_swt.sf.net/xswt'&gt;
-    &lt;package name='java.lang'/&gt;
-    &lt;package name='org.eclipse.swt.widgets' /&gt;
-    &lt;package name='org.eclipse.swt.graphics' /&gt;
-    &lt;package name='org.eclipse.swt.layout' /&gt;
-    &lt;package name='org.eclipse.swt.custom' /&gt;
-  &lt;/import&gt;
-  &lt;layout x:class='GridLayout' numColumns='1'/&gt;
-  &lt;x:children&gt;
-    &lt;group text=''&gt;
-      &lt;layoutData x:class='GridData' horizontalAlignment='FILL' verticalAlignment='FILL' grabExcessHorizontalSpace='true'/&gt;
-      &lt;layout x:class='GridLayout' numColumns='2'/&gt;
-      &lt;x:children&gt;
-            &lt;label text="Xaxis:"/&gt;
-            &lt;combo x:id="xaxis" x:id.content="scalarnames,itervarnames,runattrnames" x:style="BORDER"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-            &lt;label text="Yaxis:"/&gt;
-            &lt;combo x:id="yaxis" x:id.content="scalarnames,itervarnames,runattrnames" x:style="BORDER"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-            &lt;label text="ISO:"/&gt;
-            &lt;combo x:id="iso" x:id.content="scalarnames,itervarnames,runattrnames" x:style="BORDER"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-      &lt;/x:children&gt;
-    &lt;/group&gt;
-  &lt;/x:children&gt;
-&lt;/xswt&gt;</form>
-            <property name="xaxis" value="run(*PureAloha*) AND iaMean"/>
-            <property name="iso" value="run(*PureAloha*) AND numHosts"/>
-            <property name="yaxis" value="run(*PureAloha*) AND channelUtilization:last"/>
-        </chart>
-        <chart name="created from Scatter Chart" template="scatterchart" type="MatplotlibChart">
-            <script>import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-from omnetpp.scave import results, chart
-
-pd.set_option('display.max_rows', 500)
-pd.set_option('display.max_columns', 500)
-pd.set_option('display.width', 1000)
-
-params = chart.get_properties()
-
-def aggfunc(x):
-    if type(x.values[0]) == float:
-        return np.mean(x)
-
-    return x.values[0]
-
-def get_anything(filter):
-    sc = results.get_scalars(filter, include_attrs=True)
-    iv = results.get_itervars(filter)
-    ra = results.get_run_attrs(filter)
-
-    df = pd.concat([sc, iv, ra])
-    #print(df)
-
-    df["value"] = pd.to_numeric(df["value"], errors="ignore")
-    df = pd.pivot_table(df, columns="name", index="runID", dropna=False, aggfunc=aggfunc)
-    #print(df)
-
-    return df
-
-def filter_for(what):
-    return "(" + params["common_filter"] + ") AND (" +  params[what + "_filter"] + ")"
-
-xa = get_anything(filter_for("xaxis"))
-ya = get_anything(filter_for("yaxis"))
-iso = get_anything(filter_for("iso"))
-
-cols = xa["value"].columns.values
-if len(cols) != 1:
-    raise Exception("X axis filter must result in exactly one value column, instead of " + str(cols))
-xaxis_column = cols[0]
-
-cols = ya["value"].columns.values
-if len(cols) != 1:
-    raise Exception("Y axis filter must result in exactly one value column, instead of " + str(cols))
-yaxis_column = cols[0]
-
-cols = iso["value"].columns.values
-if len(cols) != 1:
-    raise Exception("Iso line filter must result in exactly one value column, instead of " + str(cols))
-iso_column = cols[0]
-
-df = xa.join(ya, how='outer').join(iso, how='outer').dropna(how="all", axis="columns")
-
-print(df)
-
-values = df["value"]
-titles = df["title"]
-
-values[yaxis_column] = pd.to_numeric(values[yaxis_column], errors="ignore")
-
-df = pd.pivot_table(values, columns=iso_column, index=xaxis_column, values=yaxis_column)
-
-print(df)
-df.plot.line()
-plt.title(', '.join(titles[yaxis_column].unique()))
-
-
-</script>
-            <form>&lt;?xml version='1.0' encoding='UTF-8'?&gt;
-&lt;xswt xmlns:x='http://sweet_swt.sf.net/xswt'&gt;
-  &lt;import xmlns='http://sweet_swt.sf.net/xswt'&gt;
-    &lt;package name='java.lang'/&gt;
-    &lt;package name='org.eclipse.swt.widgets' /&gt;
-    &lt;package name='org.eclipse.swt.graphics' /&gt;
-    &lt;package name='org.eclipse.swt.layout' /&gt;
-    &lt;package name='org.eclipse.swt.custom' /&gt;
-  &lt;/import&gt;
-  &lt;layout x:class='GridLayout' numColumns='1'/&gt;
-  &lt;x:children&gt;
-    &lt;group text=''&gt;
-
-      &lt;layoutData x:class='GridData' horizontalAlignment='FILL' verticalAlignment='FILL' grabExcessHorizontalSpace='true'/&gt;
-      &lt;layout x:class='GridLayout' numColumns='2'/&gt;
-
-      &lt;x:children&gt;
-            &lt;label text="Common filter part:"/&gt;
-            &lt;combo x:id="common_filter" x:style="BORDER"&gt; &lt;!-- x:id.content="scalarnames,itervarnames,runattrnames" --&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-
-            &lt;label text="Xaxis filter:"/&gt;
-            &lt;combo x:id="xaxis_filter" x:id.content="scalarnames,itervarnames,runattrnames" x:style="BORDER"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-
-            &lt;label text="Yaxis filter:"/&gt;
-            &lt;combo x:id="yaxis_filter" x:id.content="scalarnames,itervarnames,runattrnames" x:style="BORDER"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-
-            &lt;label text="ISO filter:"/&gt;
-            &lt;combo x:id="iso_filter" x:id.content="scalarnames,itervarnames,runattrnames" x:style="BORDER"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-
-            &lt;label text="Xaxis column:"/&gt;
-            &lt;combo x:id="xaxis_column" x:id.content="scalarnames,itervarnames,runattrnames" x:style="BORDER"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-
-            &lt;label text="Yaxis column:"/&gt;
-            &lt;combo x:id="yaxis_column" x:id.content="scalarnames,itervarnames,runattrnames" x:style="BORDER"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-
-            &lt;label text="ISO column:"/&gt;
-            &lt;combo x:id="iso_column" x:id.content="scalarnames,itervarnames,runattrnames" x:style="BORDER"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-
-      &lt;/x:children&gt;
-    &lt;/group&gt;
-  &lt;/x:children&gt;
-&lt;/xswt&gt;</form>
-            <property name="yaxis_filter" value="qlen:timeavg"/>
-            <property name="common_filter" value="run(*et10Experi*)"/>
-            <property name="xaxis_filter" value="iaMea*"/>
-            <property name="yaxis_column" value="qlen:timeavg"/>
-            <property name="iso_filter" value="cutThrough"/>
-            <property name="xaxis_column" value="iaMean"/>
-            <property name="iso_column" value="cutThrough"/>
-        </chart>
-        <chart name="created from Scatter Chart" template="scatterchart" type="MatplotlibChart">
-            <script>import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-from omnetpp.scave import results, chart
-
-pd.set_option('display.max_rows', 500)
-pd.set_option('display.max_columns', 500)
-pd.set_option('display.width', 1000)
-
-params = chart.get_properties()
-
-def aggfunc(x):
-    if type(x.values[0]) == float:
-        return np.nanmean(x, dtype=np.float64)
-
-    if type(x.values[0]) == str:
-        return ", ".join(x.unique())
-
-    return np.nanmean(x, dtype=np.float64)
-
-def get_data(filter):
-    sc = results.get_scalars(filter, include_attrs=True)
-    iv = results.get_itervars(filter)
-    ra = results.get_run_attrs(filter)
-
-    df = pd.concat([sc, iv, ra])
-    #print(df)
-
-    df["value"] = pd.to_numeric(df["value"], errors="ignore")
-    df = pd.pivot_table(df, columns="name", index="runID", dropna=False, aggfunc=aggfunc)
-    #print(df)
-
-    return df
-
-def filter_for(what):
-    return "(" + params["common_filter"] + ") AND (" +  params[what] + ")"
-
-xa = get_data(filter_for("xaxis_filter"))
-ya = get_data(filter_for("yaxis_filter"))
-iso = get_data(filter_for("iso_filter"))
-
-
-cols = xa["value"].columns.values
-if len(cols) != 1:
-    raise Exception("X axis filter must result in exactly one value column, instead of " + str(cols))
-xaxis_column = cols[0]
-
-cols = ya["value"].columns.values
-if len(cols) != 1:
-    raise Exception("Y axis filter must result in exactly one variable, instead of: " + ", ".join(cols) + "\nTry narrowing down the filter expression to one of these by name!")
-yaxis_column = cols[0]
-
-cols = iso["value"].columns.values
-if len(cols) != 1:
-    raise Exception("Iso line filter must result in exactly one value column, instead of " + str(cols))
-iso_column = cols[0]
-
-try:
-    df = xa.join(ya, how='outer').join(iso, how='outer')
-except:
-    import traceback
-    traceback.print_exc()
-print(df)
-
-values = df["value"]
-titles = df["title"] if "title" in df else None
-units = df["unit"] if "unit" in df else None
-
-
-
-values[yaxis_column] = pd.to_numeric(values[yaxis_column], errors="ignore")
-
-
-
-#values[iso_column] = values[iso_column].apply(lambda x: 1 if x == 'true' else 0)
-#values.plot.scatter( x=xaxis_column,y=yaxis_column, c=iso_column, colormap='rainbow')
-
-
-df = pd.pivot_table(values, columns=iso_column, index=xaxis_column, values=yaxis_column, dropna=False)
-
-if False:
-    ax = plt.subplot(1, 2, 1)
-    ax.table(cellText=df.values, colLabels=df.columns, loc='center')
-
-    df.plot.line(ax=plt.subplot(1, 2, 2))
-else:
-    df.plot.line()
-
-if titles is not None:
-    plt.title(', '.join(titles[yaxis_column].unique()))
-
-if units is not None:
-    plt.gca().get_yaxis().set_label_text(plt.gca().get_yaxis().get_label_text() + " [" + ', '.join(units[yaxis_column].unique()) + "]")
-
-plt.tight_layout()
-
-plt.grid()
-</script>
-            <form>&lt;?xml version='1.0' encoding='UTF-8'?&gt;
-&lt;xswt xmlns:x='http://sweet_swt.sf.net/xswt'&gt;
-  &lt;import xmlns='http://sweet_swt.sf.net/xswt'&gt;
-    &lt;package name='java.lang'/&gt;
-    &lt;package name='org.eclipse.swt.widgets' /&gt;
-    &lt;package name='org.eclipse.swt.graphics' /&gt;
-    &lt;package name='org.eclipse.swt.layout' /&gt;
-    &lt;package name='org.eclipse.swt.custom' /&gt;
-  &lt;/import&gt;
-  &lt;layout x:class='GridLayout' numColumns='1'/&gt;
-  &lt;x:children&gt;
-    &lt;group text=''&gt;
-
-      &lt;layoutData x:class='GridData' horizontalAlignment='FILL' verticalAlignment='FILL' grabExcessHorizontalSpace='true'/&gt;
-      &lt;layout x:class='GridLayout' numColumns='2'/&gt;
-
-      &lt;x:children&gt;
-            &lt;label text="Common filter part:"/&gt;
-            &lt;combo x:id="common_filter" x:style="BORDER"&gt; &lt;!-- x:id.content="scalarnames,itervarnames,runattrnames" --&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-
-            &lt;label text="Filter for X axis data:"/&gt;
-            &lt;combo x:id="xaxis_filter" x:id.content="scalarnames,itervarnames,runattrnames" x:style="BORDER"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-
-            &lt;label text="Filter for Y axis data:"/&gt;
-            &lt;combo x:id="yaxis_filter" x:id.content="scalarnames,itervarnames,runattrnames" x:style="BORDER"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-
-            &lt;label text="Filter for iso line data:"/&gt;
-            &lt;combo x:id="iso_filter" x:id.content="scalarnames,itervarnames,runattrnames" x:style="BORDER"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-      &lt;/x:children&gt;
-    &lt;/group&gt;
-  &lt;/x:children&gt;
-&lt;/xswt&gt;</form>
-            <property name="yaxis_filter" value="channelUtilization:last"/>
-            <property name="common_filter" value="run(*PureAloha*)"/>
-            <property name="xaxis_filter" value="iaMean"/>
-            <property name="iso_filter" value="numHosts"/>
-        </chart>
-        <chart name="created from Scatter Chart" template="scatterchart" type="MatplotlibChart">
-            <script>import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-from omnetpp.scave import results, chart
-
-pd.set_option('display.max_rows', 500)
-pd.set_option('display.max_columns', 500)
-pd.set_option('display.width', 1000)
-
-params = chart.get_properties()
-
-def aggfunc(x):
-    if type(x.values[0]) == float:
-        return np.nanmean(x, dtype=np.float64)
-
-    if type(x.values[0]) == str:
-        return ", ".join(x.unique())
-
-    return np.nanmean(x, dtype=np.float64)
-
-def get_data(filter):
-    sc = results.get_scalars(filter, include_attrs=True)
-    iv = results.get_itervars(filter)
-    ra = results.get_run_attrs(filter)
-
-    df = pd.concat([sc, iv, ra])
-    #print(df)
-
-    df["value"] = pd.to_numeric(df["value"], errors="ignore")
-    df = pd.pivot_table(df, columns="name", index="runID", dropna=False, aggfunc=aggfunc)
-    #print(df)
-
-    return df
-
-def filter_for(what):
-    return "(" + params["common_filter"] + ") AND (" +  params[what] + ")"
-
-xa = get_data(filter_for("xaxis_filter"))
-ya = get_data(filter_for("yaxis_filter"))
-iso = get_data(filter_for("iso_filter"))
-
-
-cols = xa["value"].columns.values
-if len(cols) != 1:
-    raise Exception("X axis filter must result in exactly one value column, instead of " + str(cols))
-xaxis_column = cols[0]
-
-cols = ya["value"].columns.values
-if len(cols) != 1:
-    raise Exception("Y axis filter must result in exactly one variable, instead of: " + ", ".join(cols) + "\nTry narrowing down the filter expression to one of these by name!")
-yaxis_column = cols[0]
-
-cols = iso["value"].columns.values
-if len(cols) != 1:
-    raise Exception("Iso line filter must result in exactly one value column, instead of " + str(cols))
-iso_column = cols[0]
-
-try:
-    df = xa.join(ya, how='outer').join(iso, how='outer')
-except:
-    import traceback
-    traceback.print_exc()
-print(df)
-
-values = df["value"]
-titles = df["title"] if "title" in df else None
-units = df["unit"] if "unit" in df else None
-
-
-
-values[yaxis_column] = pd.to_numeric(values[yaxis_column], errors="ignore")
-
-
-
-#values[iso_column] = values[iso_column].apply(lambda x: 1 if x == 'true' else 0)
-#values.plot.scatter( x=xaxis_column,y=yaxis_column, c=iso_column, colormap='rainbow')
-
-
-df = pd.pivot_table(values, columns=iso_column, index=xaxis_column, values=yaxis_column, dropna=False)
-
-if False:
-    ax = plt.subplot(1, 2, 1)
-    ax.table(cellText=df.values, colLabels=df.columns, loc='center')
-
-    df.plot.line(ax=plt.subplot(1, 2, 2))
-else:
-    df.plot.line()
-
-if titles is not None:
-    plt.title(', '.join(titles[yaxis_column].unique()))
-
-if units is not None:
-    plt.gca().get_yaxis().set_label_text(plt.gca().get_yaxis().get_label_text() + " [" + ', '.join(units[yaxis_column].unique()) + "]")
-
-plt.tight_layout()
-
-plt.grid()
-</script>
-            <form>&lt;?xml version='1.0' encoding='UTF-8'?&gt;
-&lt;xswt xmlns:x='http://sweet_swt.sf.net/xswt'&gt;
-  &lt;import xmlns='http://sweet_swt.sf.net/xswt'&gt;
-    &lt;package name='java.lang'/&gt;
-    &lt;package name='org.eclipse.swt.widgets' /&gt;
-    &lt;package name='org.eclipse.swt.graphics' /&gt;
-    &lt;package name='org.eclipse.swt.layout' /&gt;
-    &lt;package name='org.eclipse.swt.custom' /&gt;
-  &lt;/import&gt;
-  &lt;layout x:class='GridLayout' numColumns='1'/&gt;
-  &lt;x:children&gt;
-    &lt;group text=''&gt;
-
-      &lt;layoutData x:class='GridData' horizontalAlignment='FILL' verticalAlignment='FILL' grabExcessHorizontalSpace='true'/&gt;
-      &lt;layout x:class='GridLayout' numColumns='2'/&gt;
-
-      &lt;x:children&gt;
-            &lt;label text="Common filter part:"/&gt;
-            &lt;combo x:id="common_filter" x:style="BORDER"&gt; &lt;!-- x:id.content="scalarnames,itervarnames,runattrnames" --&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-
-            &lt;label text="Filter for X axis data:"/&gt;
-            &lt;combo x:id="xaxis_filter" x:id.content="scalarnames,itervarnames,runattrnames" x:style="BORDER"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-
-            &lt;label text="Filter for Y axis data:"/&gt;
-            &lt;combo x:id="yaxis_filter" x:id.content="scalarnames,itervarnames,runattrnames" x:style="BORDER"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-
-            &lt;label text="Filter for iso line data:"/&gt;
-            &lt;combo x:id="iso_filter" x:id.content="scalarnames,itervarnames,runattrnames" x:style="BORDER"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-      &lt;/x:children&gt;
-    &lt;/group&gt;
-  &lt;/x:children&gt;
-&lt;/xswt&gt;</form>
-            <property name="yaxis_filter" value="endToEndDelay:mean"/>
-            <property name="common_filter" value="run(*Net10Exp*)"/>
-            <property name="xaxis_filter" value="hopCount:mean"/>
-            <property name="iso_filter" value="cutThrough"/>
-        </chart>
-        <chart name="created from Line Chart" template="linechart" type="LineChart">
-            <script>from omnetpp.scave import results, chart, vectorops as ops
-
-params = chart.get_properties()
-
-# This expression selects the results (you might be able to logically simplify it)
-
-filter_expression = params["filter"]
-print(filter_expression)
-# The data is returned as a Pandas DataFrame
-df = results.get_vectors(filter_expression, include_attrs=True, include_itervars=True, include_runattrs=True)
-
-print(df)
-
-# Which we turn into a more usable format
-#df = results.transform_results(df)
-
-# &lt;|&gt; vectorops marker &lt;|&gt;
-# You can perform any transformations on the data here
-print(df)
-# Finally, the results are plotted
-try:
-    chart.plot_vectors(df)
-except:
-    import traceback
-    import sys
-    traceback.print_exc(file=sys.stdout)</script>
-            <form>&lt;?xml version='1.0' encoding='UTF-8'?&gt;
-&lt;xswt xmlns:x='http://sweet_swt.sf.net/xswt'&gt;
-  &lt;import xmlns='http://sweet_swt.sf.net/xswt'&gt;
-    &lt;package name='java.lang'/&gt;
-    &lt;package name='org.eclipse.swt.widgets' /&gt;
-    &lt;package name='org.eclipse.swt.graphics' /&gt;
-    &lt;package name='org.eclipse.swt.layout' /&gt;
-    &lt;package name='org.eclipse.swt.custom' /&gt;
-  &lt;/import&gt;
-  &lt;layout x:class='GridLayout' numColumns='1'/&gt;
-  &lt;x:children&gt;
-    &lt;group text=''&gt;
-
-      &lt;layoutData x:class='GridData' horizontalAlignment='FILL' verticalAlignment='FILL' grabExcessHorizontalSpace='true'/&gt;
-      &lt;layout x:class='GridLayout' numColumns='2'/&gt;
-
-      &lt;x:children&gt;
-            &lt;label text="Filter expression:"/&gt;
-            &lt;combo x:id="filter" x:style="BORDER" x:id.content="vectornames,itervarnames,runattrnames"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-      &lt;/x:children&gt;
-    &lt;/group&gt;
-  &lt;/x:children&gt;
-&lt;/xswt&gt;</form>
-            <property name="filter" value="name(qlen:vector)"/>
-        </chart>
-        <chart name="created from Histogram Chart" template="histogramchart" type="HistogramChart">
-            <script>from omnetpp.scave import results, chart
-
-params = chart.get_properties()
-
-# This expression selects the results
-
-filter_expression = params["filter"]
-
-# The data is returned as a Pandas DataFrame
-df = results.get_histograms(filter_expression)
-
-# You can perform any transformations on the data here
-
-print(df)
-
-# Finally, the results are plotted
-chart.plot_histograms(df)
-print("...")</script>
-            <form>&lt;?xml version='1.0' encoding='UTF-8'?&gt;
-&lt;xswt xmlns:x='http://sweet_swt.sf.net/xswt'&gt;
-  &lt;import xmlns='http://sweet_swt.sf.net/xswt'&gt;
-    &lt;package name='java.lang'/&gt;
-    &lt;package name='org.eclipse.swt.widgets' /&gt;
-    &lt;package name='org.eclipse.swt.graphics' /&gt;
-    &lt;package name='org.eclipse.swt.layout' /&gt;
-    &lt;package name='org.eclipse.swt.custom' /&gt;
-  &lt;/import&gt;
-  &lt;layout x:class='GridLayout' numColumns='1'/&gt;
-  &lt;x:children&gt;
-    &lt;group text=''&gt;
-
-      &lt;layoutData x:class='GridData' horizontalAlignment='FILL' verticalAlignment='FILL' grabExcessHorizontalSpace='true'/&gt;
-      &lt;layout x:class='GridLayout' numColumns='2'/&gt;
-
-      &lt;x:children&gt;
-            &lt;label text="Filter expression:"/&gt;
-            &lt;combo x:id="filter" x:style="BORDER" x:id.content="histogramnames,itervarnames,runattrnames"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-      &lt;/x:children&gt;
-    &lt;/group&gt;
-  &lt;/x:children&gt;
-&lt;/xswt&gt;</form>
-            <property name="filter" value="name(rxBytes:histogram) AND itervar:cutThrough(false)"/>
-            <property name="Hist.Bar" value="Outline"/>
-            <property name="Hist.Data" value="Count"/>
-            <property name="Hist.ShowOverflowCell" value="true"/>
-        </chart>
-        <chart name="created from Line Chart with MatPlotLib" template="linechart_mpl" type="MatplotlibChart">
-            <script>from omnetpp.scave import results, chart, vectorops as ops
-import matplotlib.pyplot as plt
-
-params = chart.get_properties()
-
-# This expression selects the results (you might be able to logically simplify it)
-
-filter_expression = params["filter"]
-
-# The data is returned as a Pandas DataFrame
-df = results.get_vectors(filter_expression)
-
-# &lt;|&gt; vectorops marker &lt;|&gt;
-df = ops.apply(df, ops.vector_timewinavg, window_size=10) # Average of all values in every window_size long interval (in seconds)
-# You can perform any transformations on the data here
-
-plt.xlabel('Simulation time (s)')
-plt.ylabel('Vector value')
-
-for t in df[['vectime', 'vecvalue', 'module', 'name']].itertuples(index=False):
-    plt.plot(t[0], t[1], label=(t[2] + ':' + t[3])[:-7], drawstyle='steps-post')
-
-plt.legend()
-
-
-
-if "chart_title" in params:
-    plt.title(params["chart_title"])</script>
-            <form>&lt;?xml version='1.0' encoding='UTF-8'?&gt;
-&lt;xswt xmlns:x='http://sweet_swt.sf.net/xswt'&gt;
-  &lt;import xmlns='http://sweet_swt.sf.net/xswt'&gt;
-    &lt;package name='java.lang'/&gt;
-    &lt;package name='org.eclipse.swt.widgets' /&gt;
-    &lt;package name='org.eclipse.swt.graphics' /&gt;
-    &lt;package name='org.eclipse.swt.layout' /&gt;
-    &lt;package name='org.eclipse.swt.custom' /&gt;
-  &lt;/import&gt;
-  &lt;layout x:class='GridLayout' numColumns='1'/&gt;
-  &lt;x:children&gt;
-    &lt;group text=''&gt;
-
-      &lt;layoutData x:class='GridData' horizontalAlignment='FILL' verticalAlignment='FILL' grabExcessHorizontalSpace='true'/&gt;
-      &lt;layout x:class='GridLayout' numColumns='2'/&gt;
-
-      &lt;x:children&gt;
-            &lt;label text="Filter expression:"/&gt;
-            &lt;combo x:id="filter" x:style="BORDER" x:id.content="vectornames,itervarnames,runattrnames"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-
-            &lt;label text="Chart Title:"/&gt;
-            &lt;text x:id="chart_title" x:style="BORDER"&gt;
-		      &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-		    &lt;/text&gt;
-
-      &lt;/x:children&gt;
-
-
-    &lt;/group&gt;
-  &lt;/x:children&gt;
-&lt;/xswt&gt;</form>
-            <property name="filter" value="name(*qlen*)"/>
-            <property name="chart_title" value="Queue length"/>
-        </chart>
-        <chart name="created from Line Chart with MatPlotLib" template="linechart_mpl" type="MatplotlibChart">
-            <script>from omnetpp.scave import results, chart, vectorops as ops
-import matplotlib.pyplot as plt
-
-params = chart.get_properties()
-
-# This expression selects the results (you might be able to logically simplify it)
-
-filter_expression = params["filter"]
-
-# The data is returned as a Pandas DataFrame
-df = results.get_vectors(filter_expression)
-
-# Which we turn into a more usable format
-df = results.transform_results(df)
-
-# &lt;|&gt; vectorops marker &lt;|&gt;
-# You can perform any transformations on the data here
-
-plt.xlabel('Simulation time (s)')
-plt.ylabel('Vector value')
-
-for t in df[['vectime', 'vecvalue', 'module', 'name']].itertuples(index=False):
-    plt.plot(t[0], t[1], label=(t[2] + ':' + t[3])[:-7], drawstyle='steps-post')</script>
-            <form>&lt;?xml version='1.0' encoding='UTF-8'?&gt;
-&lt;xswt xmlns:x='http://sweet_swt.sf.net/xswt'&gt;
-  &lt;import xmlns='http://sweet_swt.sf.net/xswt'&gt;
-    &lt;package name='java.lang'/&gt;
-    &lt;package name='org.eclipse.swt.widgets' /&gt;
-    &lt;package name='org.eclipse.swt.graphics' /&gt;
-    &lt;package name='org.eclipse.swt.layout' /&gt;
-    &lt;package name='org.eclipse.swt.custom' /&gt;
-  &lt;/import&gt;
-  &lt;layout x:class='GridLayout' numColumns='1'/&gt;
-  &lt;x:children&gt;
-    &lt;group text=''&gt;
-
-      &lt;layoutData x:class='GridData' horizontalAlignment='FILL' verticalAlignment='FILL' grabExcessHorizontalSpace='true'/&gt;
-      &lt;layout x:class='GridLayout' numColumns='2'/&gt;
-
-      &lt;x:children&gt;
-            &lt;label text="Filter expression:"/&gt;
-            &lt;combo x:id="filter" x:style="BORDER" x:id.content="vectornames,itervarnames,runattrnames"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-
-            &lt;label text="Chart Title:"/&gt;
-            &lt;text x:id="chart_title" x:style="BORDER"&gt;
-		      &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-		    &lt;/text&gt;
-
-      &lt;/x:children&gt;
-
-
-    &lt;/group&gt;
-  &lt;/x:children&gt;
-&lt;/xswt&gt;</form>
-        </chart>
-        <chart name="" template="" type="MatplotlibChart">
-            <script>import matplotlib.pyplot as plt
-
-# source: https://stackoverflow.com/a/39789718/635587
-def customized_box_plot(percentiles, axes, redraw = True, *args, **kwargs):
-    """
-    Generates a customized boxplot based on the given percentile values
-    """
-    n_box = len(percentiles)
-    box_plot = axes.boxplot([[-9, -4, 2, 4, 9],]*n_box, showmeans=True, meanprops=dict(marker='+'), *args, **kwargs)
-    # Creates len(percentiles) no of box plots
-
-    min_y, max_y = float('inf'), -float('inf')
-
-    for box_no, pdata in enumerate(percentiles):
-        if len(pdata) == 6:
-            (q1_start, q2_start, q3_start, q4_start, q4_end, fliers_xy) = pdata
-        elif len(pdata) == 5:
-            (q1_start, q2_start, q3_start, q4_start, q4_end) = pdata
-            fliers_xy = None
-        else:
-            raise ValueError("Percentile arrays for customized_box_plot must have either 5 or 6 values")
-
-        # Lower cap
-        box_plot['caps'][2*box_no].set_ydata([q1_start, q1_start])
-        # xdata is determined by the width of the box plot
-
-        # Lower whiskers
-        box_plot['whiskers'][2*box_no].set_ydata([q1_start, q2_start])
-
-        # Higher cap
-        box_plot['caps'][2*box_no + 1].set_ydata([q4_end, q4_end])
-
-        # Higher whiskers
-        box_plot['whiskers'][2*box_no + 1].set_ydata([q4_start, q4_end])
-
-        # Box
-        path = box_plot['boxes'][box_no].get_path()
-        path.vertices[0][1] = q2_start
-        path.vertices[1][1] = q2_start
-        path.vertices[2][1] = q4_start
-        path.vertices[3][1] = q4_start
-        path.vertices[4][1] = q2_start
-
-        # Median
-        box_plot['means'][box_no].set_ydata([q3_start, q3_start])
-
-        box_plot['medians'][box_no].set_visible(False)
-
-        # Outliers
-        if fliers_xy is not None and len(fliers_xy[0]) != 0:
-            # If outliers exist
-            box_plot['fliers'][box_no].set(xdata = fliers_xy[0],
-                                           ydata = fliers_xy[1])
-
-            min_y = min(q1_start, min_y, fliers_xy[1].min())
-            max_y = max(q4_end, max_y, fliers_xy[1].max())
-
-        else:
-            min_y = min(q1_start, min_y)
-            max_y = max(q4_end, max_y)
-
-        mid_y = (min_y + max_y) / 2
-        # The y axis is rescaled to fit the new box plot completely with 10%
-        # of the maximum value at both ends
-        axes.set_ylim([mid_y - (mid_y - min_y) * 1.25, mid_y + (max_y - mid_y) * 1.25])
-
-    # If redraw is set to true, the canvas is updated.
-    if redraw:
-        axes.figure.canvas.draw()
-
-    return box_plot
-
-from omnetpp.scave import results
-df = results.get_histograms("name(collisionLength*)", include_itervars=True)
-print(df)
-
-# &gt;&gt;&gt; math.sqrt(2) * scipy.special.erfinv(0.5)
-coeff = 0.6744897501960817
-
-customized_box_plot([
-    (r.min, r.mean - r.stddev * coeff, r.mean, r.mean + r.stddev * coeff, r.max) for r in df.itertuples(index=False)
-     if r.count &gt; 0], plt.gca())
-
-plt.gca().set_xticklabels([
-    r.module + ":" + r.name for r in df.itertuples(index=False)
-     if r.count &gt; 0], rotation=60)
-
-plt.tight_layout()
-plt.grid()
-</script>
-            <form/>
-        </chart>
-        <chart name="created from Box and Whiskers Chart with MatPlotLib" template="boxwhiskers_mpl" type="MatplotlibChart">
-            <script>from omnetpp.scave import results, chart
-import matplotlib.pyplot as plt
-
-params = chart.get_properties()
-
-df = results.get_histograms(params["filter"], include_itervars=True)
-print(df)
-
-
-# source: https://stackoverflow.com/a/39789718/635587
-def customized_box_plot(percentiles, axes, redraw = True, *args, **kwargs):
-    """
-    Generates a customized boxplot based on the given percentile values
-    """
-    n_box = len(percentiles)
-    box_plot = axes.boxplot([[-9, -4, 2, 4, 9],]*n_box, showmeans=True, meanprops=dict(marker='+'), *args, **kwargs) 
-    # Creates len(percentiles) no of box plots
-
-    min_y, max_y = float('inf'), -float('inf')
-
-    for box_no, pdata in enumerate(percentiles):
-        if len(pdata) == 6:
-            (q1_start, q2_start, q3_start, q4_start, q4_end, fliers_xy) = pdata
-        elif len(pdata) == 5:
-            (q1_start, q2_start, q3_start, q4_start, q4_end) = pdata
-            fliers_xy = None
-        else:
-            raise ValueError("Percentile arrays for customized_box_plot must have either 5 or 6 values")
-
-        # Lower cap
-        box_plot['caps'][2*box_no].set_ydata([q1_start, q1_start])
-        # xdata is determined by the width of the box plot
-
-        # Lower whiskers
-        box_plot['whiskers'][2*box_no].set_ydata([q1_start, q2_start])
-
-        # Higher cap
-        box_plot['caps'][2*box_no + 1].set_ydata([q4_end, q4_end])
-
-        # Higher whiskers
-        box_plot['whiskers'][2*box_no + 1].set_ydata([q4_start, q4_end])
-
-        # Box
-        path = box_plot['boxes'][box_no].get_path()
-        path.vertices[0][1] = q2_start
-        path.vertices[1][1] = q2_start
-        path.vertices[2][1] = q4_start
-        path.vertices[3][1] = q4_start
-        path.vertices[4][1] = q2_start
-
-        box_plot['means'][box_no].set_ydata([q3_start, q3_start])
-        box_plot['medians'][box_no].set_visible(False)
-
-        # Outliers
-        if fliers_xy is not None and len(fliers_xy[0]) != 0:
-            # If outliers exist
-            box_plot['fliers'][box_no].set(xdata = fliers_xy[0],
-                                           ydata = fliers_xy[1])
-
-            min_y = min(q1_start, min_y, fliers_xy[1].min())
-            max_y = max(q4_end, max_y, fliers_xy[1].max())
-
-        else:
-            min_y = min(q1_start, min_y)
-            max_y = max(q4_end, max_y)
-
-        mid_y = (min_y + max_y) / 2
-        # The y axis is rescaled to fit the new box plot completely with 10% 
-        # of the maximum value at both ends
-        axes.set_ylim([mid_y - (mid_y - min_y) * 1.25, mid_y + (max_y - mid_y) * 1.25])
-
-    # If redraw is set to true, the canvas is updated.
-    if redraw:
-        axes.figure.canvas.draw()
-
-    return box_plot
-
-
-title, legend = chart.extract_label_columns(df)
-
-legend = list(reversed(legend))
-
-df.sort_values(by=[l for i, l in legend], axis='index', inplace=True)
-
-# This is how much of the standard deviation will give the 25th and 75th
-# percentiles, assuming normal distribution.
-# &gt;&gt;&gt; math.sqrt(2) * scipy.special.erfinv(0.5)
-coeff = 0.6744897501960817
-
-customized_box_plot([(r.min, r.mean - r.stddev * coeff, r.mean, r.mean + r.stddev * coeff, r.max)
-                        for r in df.itertuples(index=False)
-                            if r.count &gt; 0
-                    ], plt.gca(), redraw=False)
-
-plt.title(df[title][0])
-
-plt.gca().set_xticklabels([
-    chart.make_legend_label(legend, r) for r in df.itertuples(index=False)
-     if r.count &gt; 0], rotation=60)
-
-plt.tight_layout()
-
-</script>
-            <form>&lt;?xml version='1.0' encoding='UTF-8'?&gt;
-&lt;xswt xmlns:x='http://sweet_swt.sf.net/xswt'&gt;
-  &lt;import xmlns='http://sweet_swt.sf.net/xswt'&gt;
-    &lt;package name='java.lang'/&gt;
-    &lt;package name='org.eclipse.swt.widgets' /&gt;
-    &lt;package name='org.eclipse.swt.graphics' /&gt;
-    &lt;package name='org.eclipse.swt.layout' /&gt;
-    &lt;package name='org.eclipse.swt.custom' /&gt;
-  &lt;/import&gt;
-  &lt;layout x:class='GridLayout' numColumns='1'/&gt;
-  &lt;x:children&gt;
-    &lt;group text=''&gt;
-
-      &lt;layoutData x:class='GridData' horizontalAlignment='FILL' verticalAlignment='FILL' grabExcessHorizontalSpace='true'/&gt;
-      &lt;layout x:class='GridLayout' numColumns='2'/&gt;
-
-      &lt;x:children&gt;
-            &lt;label text="Filter expression:"/&gt;
-            &lt;combo x:id="filter" x:style="BORDER" x:id.content="histogramnames,statisticnames,itervarnames,runattrnames"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-      &lt;/x:children&gt;
-    &lt;/group&gt;
-  &lt;/x:children&gt;
-&lt;/xswt&gt;</form>
-            <property name="filter" value="name(collisionLeng*)"/>
-        </chart>
-        <chart name="created from template: Line Chart with MatPlotLib" template="linechart_mpl" type="MatplotlibChart">
-            <script>from omnetpp.scave import results, chart, vectorops as ops
-import matplotlib.pyplot as plt
-
-params = chart.get_properties()
-
-# This expression selects the results (you might be able to logically simplify it)
-
-filter_expression = params["filter"]
-
-# The data is returned as a Pandas DataFrame
-df = results.get_vectors(filter_expression, include_attrs=True, include_itervars=True)
-
-# &lt;|&gt; vectorops marker &lt;|&gt;
-# You can perform any transformations on the data here
-
-plt.xlabel('Simulation time (s)')
-plt.ylabel('Vector value')
-
-title, legend = chart.extract_label_columns(df)
-
-for t in df.itertuples(index=False):
-    style = dict()
-    if 'interpolationmode' in df:
-            interp = t.interpolationmode
-            if interp == "none":
-                style['linestyle'] = ' '
-                style['marker'] = '.'
-            elif interp == "linear":
-                pass
-                # nothing to do
-            elif interp == "sample-hold":
-                style['drawstyle'] = 'steps-post'
-            elif interp == "backward-sample-hold":
-                style['drawstyle'] = 'steps-pre'
-
-    plt.plot(t.vectime, t.vecvalue, label=chart.make_legend_label(legend, t), **style)
-
-plt.title(chart.make_chart_title(df, title, legend))
-
-plt.legend()</script>
-            <form>&lt;?xml version='1.0' encoding='UTF-8'?&gt;
-&lt;xswt xmlns:x='http://sweet_swt.sf.net/xswt'&gt;
-  &lt;import xmlns='http://sweet_swt.sf.net/xswt'&gt;
-    &lt;package name='java.lang'/&gt;
-    &lt;package name='org.eclipse.swt.widgets' /&gt;
-    &lt;package name='org.eclipse.swt.graphics' /&gt;
-    &lt;package name='org.eclipse.swt.layout' /&gt;
-    &lt;package name='org.eclipse.swt.custom' /&gt;
-  &lt;/import&gt;
-  &lt;layout x:class='GridLayout' numColumns='1'/&gt;
-  &lt;x:children&gt;
-    &lt;group text=''&gt;
-
-      &lt;layoutData x:class='GridData' horizontalAlignment='FILL' verticalAlignment='FILL' grabExcessHorizontalSpace='true'/&gt;
-      &lt;layout x:class='GridLayout' numColumns='2'/&gt;
-
-      &lt;x:children&gt;
-            &lt;label text="Filter expression:"/&gt;
-            &lt;combo x:id="filter" x:style="BORDER" x:id.content="vectornames,itervarnames,runattrnames"&gt; 
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-            
-            &lt;label text="Chart Title:"/&gt;
-            &lt;text x:id="chart_title" x:style="BORDER"&gt;
-		      &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-		    &lt;/text&gt;
-            
-      &lt;/x:children&gt;
-      
-      
-    &lt;/group&gt;
-  &lt;/x:children&gt;
-&lt;/xswt&gt;</form>
-            <property name="filter" value="name(*qlen*)"/>
-        </chart>
-        <chart name="" template="" type="MatplotlibChart">
-            <script>import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-
-from mpl_toolkits.mplot3d import Axes3D
-from omnetpp.scave import results, chart
-
-df = results.get_scalars("name(channelUtilization:last)", include_itervars=True)
-print(df)
-
-
-# setup the figure and axes
-fig = plt.gcf()
-ax = fig.add_subplot(111, projection='3d')
-
-
-title, legend = chart.extract_label_columns(df)
-
-plt.title(list(df[title])[0])
-
-if len(legend) == 2:
-    df = pd.pivot_table(df, index=legend[0][1], columns=legend[1][1], values="value")
-    plt.xlabel(legend[1][1])
-    plt.ylabel(legend[0][1])
-
-print(df)
-
-
-x = pd.to_numeric(df.columns)
-y = pd.to_numeric(df.index)
-X,Y = np.meshgrid(x,y)
-Z = df
-
-if True:
-    ax.plot_surface(X, Y, Z)
-else:
-    x, y = X.ravel(), Y.ravel()
-    top = df.values.ravel()
-    
-    bottom = np.zeros_like(top)
-    width = depth = 0.5
-    
-    ax.bar3d(x-width/2, y-depth/2, bottom, width, depth, top, shade=True)
-</script>
-            <form/>
-        </chart>
-        <chart name="created from template: 3D Surface Chart" template="3dsurface" type="MatplotlibChart">
-            <script>import numpy as np
-import pandas as pd
-import matplotlib as mpl
-import matplotlib.cm as cm
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-from omnetpp.scave import results, chart
-
-params = chart.get_properties()
-
-df = results.get_scalars(params["scalar_filter"], include_attrs=True, include_itervars=True, include_runattrs=True)
-
-df[params["x_attr"]] = pd.to_numeric(df[params["x_attr"]])
-df[params["y_attr"]] = pd.to_numeric(df[params["y_attr"]])
-
-#print(df)
-
-title_col, legend_cols = chart.extract_label_columns(df)
-title = str(list(df[title_col])[0]) if title_col else None
-
-df = pd.pivot_table(df, columns=[params["x_attr"]], index=params["y_attr"], values="value", dropna=False)
-
-ax = plt.gcf().add_subplot(111, projection='3d')
-
-print(df)
-
-X,Y = np.meshgrid(df.columns, df.index)
-
-
-cmap = cm.get_cmap('RdYlGn') # Get desired colormap - you can change this!
-max_height = df.max()   # get range of colorbars so we can normalize
-min_height = df.min()
-top = df.values.ravel()
-rgba = [cmap((k-min_height)/max_height) for k in top] 
-
-if True:
-    if True:
-        ax.scatter(X, Y, df, c=top, cmap='RdYlGn', depthshade=True)
-    else:
-        ax.plot_trisurf(X.ravel(), Y.ravel(), df.values.ravel(), cmap='magma', shade=True)
-else:
-    
-    bottom = np.zeros_like(top)
-    width = depth = 0.5
-    
-    
-    ax.bar3d(X.ravel() - width/2, Y.ravel() - depth/2, bottom, width, depth, top, shade=True, color=rgba)
-
-ax.set_xticks(df.columns)
-ax.get_xaxis().set_label_text(df.columns.name)
-
-ax.set_yticks(df.index)
-ax.get_yaxis().set_label_text(df.index.name)
-
-if title:
-    plt.title(title)
-</script>
-            <form>&lt;?xml version='1.0' encoding='UTF-8'?&gt;
-&lt;xswt xmlns:x='http://sweet_swt.sf.net/xswt'&gt;
-  &lt;import xmlns='http://sweet_swt.sf.net/xswt'&gt;
-    &lt;package name='java.lang'/&gt;
-    &lt;package name='org.eclipse.swt.widgets' /&gt;
-    &lt;package name='org.eclipse.swt.graphics' /&gt;
-    &lt;package name='org.eclipse.swt.layout' /&gt;
-    &lt;package name='org.eclipse.swt.custom' /&gt;
-  &lt;/import&gt;
-  &lt;layout x:class='GridLayout' numColumns='1'/&gt;
-  &lt;x:children&gt;
-    &lt;group text=''&gt;
-
-      &lt;layoutData x:class='GridData' horizontalAlignment='FILL' verticalAlignment='FILL' grabExcessHorizontalSpace='true'/&gt;
-      &lt;layout x:class='GridLayout' numColumns='2'/&gt;
-
-      &lt;x:children&gt;
-            &lt;label text="Attribute for X axis data:"/&gt;
-            &lt;combo x:id="x_attr" x:id.content="itervarnames,runattrnames" x:style="BORDER"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-
-            &lt;label text="Attribute for Y axis data:"/&gt;
-            &lt;combo x:id="y_attr" x:id.content="itervarnames,runattrnames" x:style="BORDER"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-
-            &lt;label text="Scalar filter:"/&gt;
-            &lt;combo x:id="scalar_filter" x:id.content="scalarnames" x:style="BORDER"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-      &lt;/x:children&gt;
-    &lt;/group&gt;
-  &lt;/x:children&gt;
-&lt;/xswt&gt;</form>
-            <property name="scalar_filter" value="runattr:experiment(PureAlohaExperiment) AND name(channelUtilization:last)"/>
-            <property name="y_attr" value="iaMean"/>
-            <property name="x_attr" value="numHosts"/>
-        </chart>
-        <chart name="created from template: 3D Surface Chart" template="3d" type="MatplotlibChart">
-            <script>import numpy as np
-import pandas as pd
-import matplotlib as mpl
-import matplotlib.cm as cm
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-from omnetpp.scave import results, chart
-
-params = chart.get_properties()
-
-df = results.get_scalars(params["scalar_filter"], include_attrs=True, include_itervars=True, include_runattrs=True)
-
-df[params["x_attr"]] = pd.to_numeric(df[params["x_attr"]])
-df[params["y_attr"]] = pd.to_numeric(df[params["y_attr"]])
-
-#print(df)
-
-title_col, legend_cols = chart.extract_label_columns(df)
-
-print(legend_cols)
-title = str(list(df[title_col])[0]) if title_col else None
-
-df = pd.pivot_table(df, columns=[params["x_attr"]], index=params["y_attr"], values="value", dropna=False)
-
-ax = plt.gcf().add_subplot(111, projection='3d')
-
-print(df)
-
-X,Y = np.meshgrid(df.columns, df.index)
-
-
-cmap = cm.get_cmap('RdYlGn') # Get desired colormap - you can change this!
-max_height = np.max(df.values)   # get range of colorbars so we can normalize
-min_height = np.min(df.values)
-top = df.values.ravel()
-rgba = [cmap((k-min_height)/max_height) for k in top]
- 
-
-type = params["chart_type"]
-
-if type == "bar":
-    bottom = np.zeros_like(top)
-    width = depth = 0.5
-    ax.bar3d(X.ravel() - width/2, Y.ravel() - depth/2, bottom, width, depth, top, shade=True, color=rgba)
-elif type == "points":
-    ax.scatter(X, Y, df, c=top, cmap='RdYlGn', depthshade=True)
-elif type == "surface":
-    ax.plot_trisurf(X.ravel(), Y.ravel(), df.values.ravel(), cmap='RdYlGn', shade=True)
-
-
-ax.set_xticks(df.columns)
-ax.get_xaxis().set_label_text(df.columns.name)
-
-ax.set_yticks(df.index)
-ax.get_yaxis().set_label_text(df.index.name)
-
-if title:
-    plt.title(title)
-</script>
-            <form>&lt;?xml version='1.0' encoding='UTF-8'?&gt;
-&lt;xswt xmlns:x='http://sweet_swt.sf.net/xswt'&gt;
-  &lt;import xmlns='http://sweet_swt.sf.net/xswt'&gt;
-    &lt;package name='java.lang'/&gt;
-    &lt;package name='org.eclipse.swt.widgets' /&gt;
-    &lt;package name='org.eclipse.swt.graphics' /&gt;
-    &lt;package name='org.eclipse.swt.layout' /&gt;
-    &lt;package name='org.eclipse.swt.custom' /&gt;
-  &lt;/import&gt;
-  &lt;layout x:class='GridLayout' numColumns='1'/&gt;
-  &lt;x:children&gt;
-    &lt;group text=''&gt;
-
-      &lt;layoutData x:class='GridData' horizontalAlignment='FILL' verticalAlignment='FILL' grabExcessHorizontalSpace='true'/&gt;
-      &lt;layout x:class='GridLayout' numColumns='2'/&gt;
-
-      &lt;x:children&gt;
-            &lt;label text="Attribute for X axis data:"/&gt;
-            &lt;combo x:id="x_attr" x:id.content="itervarnames,runattrnames" x:style="BORDER"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-
-            &lt;label text="Attribute for Y axis data:"/&gt;
-            &lt;combo x:id="y_attr" x:id.content="itervarnames,runattrnames" x:style="BORDER"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-
-            &lt;label text="Scalar filter:"/&gt;
-            &lt;combo x:id="scalar_filter" x:id.content="scalarnames" x:style="BORDER"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/combo&gt;
-
-            &lt;label text="Chart type:"/&gt;
-            &lt;combo x:id="chart_type" x:style="BORDER|READ_ONLY"&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-                &lt;add x:p0="surface"/&gt;
-                &lt;add x:p0="bar"/&gt;
-                &lt;add x:p0="points"/&gt;
-            &lt;/combo&gt;
-
-            &lt;label text="Colormap:"/&gt;
-            &lt;text x:id="colormap" x:style="BORDER"&gt; &lt;!-- TODO: use a giant combobox instead? --&gt;
-                &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
-            &lt;/text&gt;
-
-      &lt;/x:children&gt;
-    &lt;/group&gt;
-  &lt;/x:children&gt;
-&lt;/xswt&gt;</form>
-            <property name="scalar_filter" value="runattr:experiment(PureAlohaExperiment) AND name(channelUtilization:last)"/>
-            <property name="chart_type" value="bar"/>
-            <property name="y_attr" value="numHosts"/>
-            <property name="x_attr" value="iaMean"/>
+        <chart icon="" id="65" name="importing 5" template="" type="BAR">
+            <script>
+                <![CDATA[from omnetpp.scave import chart
+from charts import scripts
+
+scripts[chart.get_name()]()]]>
+            </script>
+            <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
     </charts>
 </analysis>
