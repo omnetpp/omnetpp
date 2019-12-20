@@ -115,7 +115,6 @@ AC_DEFUN([AC_PROG_CXX_OPTION], [
 AC_INIT
 AC_CONFIG_SRCDIR(include/omnetpp.h)
 AC_LANG(C++)
-AC_OPENMP()
 AC_CONFIG_AUX_DIR(src/utils)
 AC_CANONICAL_HOST()
 
@@ -879,6 +878,12 @@ if test "$jni_ok" = "no" -o "$SWIG" = "not found"; then
 else
    JNILIBS_IF_POSSIBLE=jnilibs
 fi
+
+#----------------------
+# Check for optional OpenMP compiler/linker flag.
+#----------------------
+
+AC_OPENMP()
 
 #----------------------
 # Check for MPI.
