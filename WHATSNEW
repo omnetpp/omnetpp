@@ -17,6 +17,8 @@ charts from Python. Analysis files (.anf) created by older versions of the
 IDE (and vice versa) cannot be opened by this release, because the internal
 model changed substantially.
 
+Changes compared to OMNeT++ 5.5.1:
+
 Core:
 
   - Introduced structured NED parameters using JSON like syntax.
@@ -67,10 +69,10 @@ Core:
   - cHistogram: Now collects the number of positive and negative infinity values
     separately.
 
-  - SimTime: Added preciseDiv() for a precise division of an integer and a 
+  - SimTime: Added preciseDiv() for a precise division of an integer and a
     simulation time.
 
-  - cQueue, cPacketQueue: added a constructor that accepts a comparator 
+  - cQueue, cPacketQueue: added a constructor that accepts a comparator
     object (not just a function).
 
   - cModule: Added containsModule() method.
