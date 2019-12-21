@@ -307,8 +307,8 @@ class SIM_API SimTime
      *
      * Examples:
      *   1.7ms in us --> 1700;
-     *   3.8ms in s --> 3;
-     *   -3.8ms in s --> -3;
+     *   3.8ms in ms --> 3;
+     *   -3.8ms in ms --> -3;
      *   999ms in s --> 0
      */
     int64_t inUnit(SimTimeUnit unit) const;
