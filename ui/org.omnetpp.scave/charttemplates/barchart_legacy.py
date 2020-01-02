@@ -1,7 +1,7 @@
 from omnetpp.scave import results, chart
 import pandas as pd
 
-params = chart.get_properties()
+params = chart.get_configured_properties()
 
 filter_expression = params["filter"]
 
@@ -27,3 +27,5 @@ df = pd.pivot_table(df, values="value", index=groups.split(","), columns=bars.sp
 
 # Finally, the results are plotted
 chart.plot_scalars(df)
+
+chart.copy_properties()

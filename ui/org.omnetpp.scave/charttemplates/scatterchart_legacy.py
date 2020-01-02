@@ -4,7 +4,7 @@ import pandas as pd
 import re
 from distutils.util import strtobool
 
-params = chart.get_properties()
+params = chart.get_configured_properties()
 
 filter_expression = params["filter"]
 
@@ -86,3 +86,5 @@ df.columns = ["time"] + lbls[1:]
 print(df)
 
 chart.plot_vectors(df)
+
+chart.copy_properties()

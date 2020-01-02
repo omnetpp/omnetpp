@@ -1,7 +1,7 @@
 from omnetpp.scave import results, chart
 import matplotlib.pyplot as plt
 
-params = chart.get_properties()
+params = chart.get_configured_properties()
 
 # This expression selects the results (you might be able to logically simplify it)
 filter_expression = params["filter"]

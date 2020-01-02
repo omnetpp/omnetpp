@@ -2,7 +2,7 @@ from omnetpp.scave import results, chart
 import matplotlib.pyplot as plt
 import pandas as pd
 
-params = chart.get_properties()
+params = chart.get_configured_properties()
 
 stats = results.get_statistics(params["filter"], include_attrs=True, include_runattrs=True, include_itervars=True)
 hists = results.get_histograms(params["filter"], include_attrs=True, include_runattrs=True, include_itervars=True)

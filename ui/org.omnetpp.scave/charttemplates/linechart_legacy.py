@@ -1,6 +1,6 @@
 from omnetpp.scave import results, chart, vectorops as ops
 
-params = chart.get_properties()
+params = chart.get_configured_properties()
 
 # This expression selects the results (you might be able to logically simplify it)
 
@@ -17,3 +17,5 @@ print(df)
 
 # Finally, the results are plotted
 chart.plot_vectors(df)
+
+chart.copy_properties()

@@ -1,7 +1,7 @@
 from omnetpp.scave import results, chart
 import pandas as pd
 
-params = chart.get_properties()
+params = chart.get_configured_properties()
 
 # This expression selects the results (you might be able to logically simplify it)
 
@@ -21,7 +21,7 @@ for i, c in legend:
 
 df.sort_values(by=[l for i, l in legend], axis='index', inplace=True)
 
-chart.set_property("Graph.Title", chart.make_chart_title(df, title, legend))
+chart.set_plot_property("Graph.Title", chart.make_chart_title(df, title, legend))
 
 if len(legend) == 2:
     df = pd.pivot_table(df, index=legend[0][1], columns=legend[1][1], values='value')
@@ -32,3 +32,5 @@ print(df)
 
 # Finally, the results are plotted
 chart.plot_scalars(df)
+
+chart.copy_properties()

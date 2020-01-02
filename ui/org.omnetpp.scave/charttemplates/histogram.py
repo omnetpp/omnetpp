@@ -1,6 +1,6 @@
 from omnetpp.scave import results, chart
 
-params = chart.get_properties()
+params = chart.get_configured_properties()
 
 # This expression selects the results
 
@@ -14,3 +14,5 @@ df = results.get_histograms(filter_expression, include_attrs=True, include_iterv
 print(df)
 # Finally, the results are plotted
 chart.plot_histograms(df)
+
+chart.copy_properties()
