@@ -207,7 +207,8 @@ public class DataTable extends Table implements IDataControl {
                     public Object call() {
                         TableItem item = (TableItem)e.item;
                         int lineNumber = indexOf(item);
-                        fillTableLine(item, lineNumber);
+                        if (lineNumber >= 0)
+                            fillTableLine(item, lineNumber);
                         return null;
                     }
                 });
