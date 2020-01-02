@@ -62,13 +62,13 @@ cplusplus(Bar) {{
 %ignore-exitcode: 1
 
 %contains: stderr
-: Error: invalid target for cplusplus block: type 'msg_class_cplusplus_3::Foo' is imported
+: Error: invalid target for cplusplus block: type 'msg_class_cplusplus_n1::Foo' is imported
 %contains: stderr
-: Error: invalid target for cplusplus block: type 'msg_class_cplusplus_3::BarExists' is not generated
+: Error: invalid target for cplusplus block: type 'msg_class_cplusplus_n1::BarExists' is not generated
 %contains: stderr
-: Error: invalid target for cplusplus block: type 'msg_class_cplusplus_3::Enum' is an enum
+: Error: invalid target for cplusplus block: type 'msg_class_cplusplus_n1::Enum' is an enum
 %contains: stderr
 : Error: invalid target for cplusplus block: 'Other' does not refer to a type in current namespace
 %contains: stderr
-: Error: invalid target for cplusplus block: duplicate block for type 'msg_class_cplusplus_3::Bar'
+: Error: invalid target for cplusplus block: duplicate block for type 'msg_class_cplusplus_n1::Bar'
 
