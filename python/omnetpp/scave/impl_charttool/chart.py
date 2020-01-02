@@ -22,8 +22,8 @@ def set_plot_properties(*vargs, **kwargs):
 def set_plot_property(key, value):
     properties[key] = value
 
-def get_default_properties():
-    return NoneDict() # TODO
+#def get_default_properties():
+#    return NoneDict() # TODO
 
 def get_name():
     return name

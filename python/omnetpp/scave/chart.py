@@ -235,15 +235,15 @@ def get_configured_property(key):
     return impl.get_configured_property(**locals())
 
 
-def get_default_properties():
-    """
-    Returns a string-to-string `dict` that holds the default property keys and values
-    for the chart, corresponding to its type.
-
-    This is useful for discovering the basic set of accepted visual property keys
-    of charts using built-in plot widgets (i.e. not matplotlib).
-    """
-    return impl.get_default_properties(**locals())
+#def get_default_properties():
+#    """
+#    Returns a string-to-string `dict` that holds the default property keys and values
+#    for the chart, corresponding to its type.
+#
+#    This is useful for discovering the basic set of accepted visual property keys
+#    of charts using built-in plot widgets (i.e. not matplotlib).
+#    """
+#    return impl.get_default_properties(**locals())
 
 
 def get_name():
