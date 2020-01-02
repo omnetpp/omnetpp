@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 import xml.etree.ElementTree as ET
 import matplotlib.pyplot as plt
-from omnetpp.scave import results, chart
+from omnetpp.scave.impl_charttool import results, chart
 
 
 _real_show = plt.show

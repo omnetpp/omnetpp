@@ -11,15 +11,15 @@ class NoneDict(dict):
 properties = NoneDict()
 name = ""
 
-def get_properties():
+def get_configured_properties():
     return properties
 
-def set_properties(*vargs, **kwargs):
+def set_plot_properties(*vargs, **kwargs):
     for a in vargs:
         properties.update(a)
     properties.update(kwargs)
 
-def set_property(key, value):
+def set_plot_property(key, value):
     properties[key] = value
 
 def get_default_properties():
@@ -220,3 +220,7 @@ def plot_histograms(df):
         _plot_histograms_DF_scave(df)
     else:
         _plot_histograms_DF(df)
+
+# this is needed only because opp_charttool directly imports this impl module (for technical reasons)
+def copy_properties():
+    set_plot_properties(get_configured_properties())
