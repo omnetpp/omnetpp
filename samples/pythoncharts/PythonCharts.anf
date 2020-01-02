@@ -500,7 +500,6 @@ plt.show()
         <chart icon="" id="278" name="kendelltau" template="" type="MATPLOTLIB">
             <script>
                 <![CDATA[import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 print("This chart will fail if scipy and seaborn are not installed")
 
@@ -543,9 +542,7 @@ for t in df[["vectime", "vecvalue"]].itertuples(index=False):
 endTime = time.perf_counter()
 print("plotting took " + str((endTime - startTime) * 1000.0) + " ms")
 
-#plt.tight_layout()
-
-#plt.show()
+plt.tight_layout()
 ]]>
             </script>
         </chart>

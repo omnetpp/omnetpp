@@ -2,7 +2,9 @@
 <analysis version="2">
     <inputs/>
     <charts>
-        <chart name="streamplot" type="MatplotlibChart">import numpy as np
+        <chart icon="" id="1" name="streamplot" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import numpy as np
 import matplotlib.pyplot as plt
 
 Y, X = np.mgrid[-3:3:100j, -3:3:100j]
@@ -20,8 +22,12 @@ ax1.streamplot(X, Y, U, V, density=[0.5, 1])
 lw = 5*speed / speed.max()
 ax2.streamplot(X, Y, U, V, density=0.6, color='k', linewidth=lw)
 
-plt.tight_layout()</chart>
-        <chart name="quad" type="MatplotlibChart">
+plt.tight_layout()]]>
+            </script>
+        </chart>
+        <chart icon="" id="2" name="quad" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[
 import numpy as np
 from matplotlib.pyplot import figure, show, savefig
 from matplotlib import cm, colors
@@ -39,7 +45,7 @@ Z = np.sqrt(X**2 + Y**2)/5
 Z = (Z - Z.min()) / (Z.max() - Z.min())
 
 # The color array can include masked values:
-Zm = ma.masked_where(np.fabs(Qz) &lt; 0.5*np.amax(Qz), Z)
+Zm = ma.masked_where(np.fabs(Qz) < 0.5*np.amax(Qz), Z)
 
 
 fig = figure()
@@ -56,38 +62,12 @@ ax = fig.add_subplot(122)
 #  Or use the default, which is transparent:
 col = ax.pcolormesh(Qx, Qz, Zm, shading='gouraud')
 ax.set_title('With masked values')
-</chart>
-        <chart name="contours" type="MatplotlibChart">import matplotlib
-import numpy as np
-import matplotlib.cm as cm
-import matplotlib.mlab as mlab
-import matplotlib.pyplot as plt
-
-import prettyplotlib as ppl
-
-matplotlib.rcParams['xtick.direction'] = 'out'
-matplotlib.rcParams['ytick.direction'] = 'out'
-
-delta = 0.025
-x = np.arange(-3.0, 3.0, delta)
-y = np.arange(-2.0, 2.0, delta)
-X, Y = np.meshgrid(x, y)
-Z1 = mlab.bivariate_normal(X, Y, 1.0, 1.0, 0.0, 0.0)
-Z2 = mlab.bivariate_normal(X, Y, 1.5, 0.5, 1, 1)
-# difference of Gaussians
-Z = 10.0 * (Z2 - Z1)
-
-
-# Create a simple contour plot with labels using default colors.  The
-# inline argument to clabel will control whether the labels are draw
-# over the line segments of the contour, removing the lines beneath
-# the label
-plt.figure()
-CS = plt.contour(X, Y, Z)
-plt.clabel(CS, inline=1, fontsize=10)
-plt.title('Simplest default with labels')
-</chart>
-        <chart name="cameras" type="MatplotlibChart">import numpy as np
+]]>
+            </script>
+        </chart>
+        <chart icon="" id="4" name="cameras" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -113,8 +93,12 @@ ax.set_xlabel(("In the last few years, with very little fanfare,\n"
                "flying saucers, lake monsters, ghosts, and bigfoot."),
               size=16)
 
-plt.tight_layout()</chart>
-        <chart name="scatter hist" type="MatplotlibChart">
+plt.tight_layout()]]>
+            </script>
+        </chart>
+        <chart icon="" id="5" name="scatter hist" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import NullFormatter
@@ -163,8 +147,12 @@ axHisty.hist(y, bins=bins, orientation='horizontal')
 axHistx.set_xlim(axScatter.get_xlim())
 axHisty.set_ylim(axScatter.get_ylim())
 
-plt.show()</chart>
-        <chart name="rotate" type="MatplotlibChart">import time
+plt.show()]]>
+            </script>
+        </chart>
+        <chart icon="" id="6" name="rotate" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import time
 from mpl_toolkits.mplot3d import axes3d
 import matplotlib.pyplot as plt
 
@@ -192,6 +180,8 @@ def thr():
 import threading
 
 t = threading.Thread(target=thr)
-t.start()</chart>
+t.start()]]>
+            </script>
+        </chart>
     </charts>
 </analysis>
