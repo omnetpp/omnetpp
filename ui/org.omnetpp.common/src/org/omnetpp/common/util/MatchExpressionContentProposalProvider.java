@@ -20,7 +20,7 @@ import org.omnetpp.common.util.MatchExpressionSyntax.Node;
 import org.omnetpp.common.util.MatchExpressionSyntax.Token;
 
 public abstract class MatchExpressionContentProposalProvider implements IContentProposalProvider {
-    protected static final boolean debug = true;
+    protected static final boolean debug = Debug.isChannelEnabled("matchexpression_contentassist");
 
     protected static ContentProposalEx noProposal = new ContentProposalEx("", "No proposal", null);
 
