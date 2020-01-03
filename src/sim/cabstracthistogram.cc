@@ -50,18 +50,19 @@ cAbstractHistogram::Bin cAbstractHistogram::getBinInfo(int k) const
 double cAbstractHistogram::getPDF(double x) const
 {
     if (!binsAlreadySetUp())
-        throw cRuntimeError(this, "");
+        throw cRuntimeError(this, "getPDF(): bins not yet available");
 
     if (x < getMin())
         return 0;
 
-    if (x < getBinEdge(0))
+    if (x < getBinEdge(0)) {
+        // note: min <= x < binEdge(0)
         return getUnderflowSumWeights() / getSumWeights() / (getBinEdge(0) - getMin());
+    }
 
     int numBins = getNumBins();
 
-    // returns 0..1; assumes constant PDF within a bin
-    for (int i = 0; i < numBins; ++i) {
+    for (int i = 0; i < numBins; ++i) { //TODO use binary search
         double lowerEdge = getBinEdge(i);
         double upperEdge = getBinEdge(i + 1);
 
@@ -77,25 +78,40 @@ double cAbstractHistogram::getPDF(double x) const
 
 double cAbstractHistogram::getCDF(double x) const
 {
+    if (!binsAlreadySetUp())
+        throw cRuntimeError(this, "getCDF(): bins not yet available");
+
     if (x < getMin())
         return 0;
 
-    if (x < getBinEdge(0))
-        return getUnderflowSumWeights() * ((x - getMin()) / getSumWeights() / (getBinEdge(0) - getMin()));
+    if (x < getBinEdge(0)) {
+        // note: min <= x < binEdge(0)
+        double frac = (x - getMin()) / (getBinEdge(0) - getMin());
+        return frac*getUnderflowSumWeights() / getSumWeights();
+    }
 
     int numBins = getNumBins();
+    double runningSumWeights = getUnderflowSumWeights();
 
-    // returns 0..1; uses linear approximation between two markers
+    // use linear interpolation between two markers
     for (int i = 0; i < numBins; ++i) {
         double lowerEdge = getBinEdge(i);
         double upperEdge = getBinEdge(i + 1);
 
-        if (x < upperEdge)
-            return getBinValue(i) * ((x - lowerEdge) / getSumWeights() / (upperEdge - lowerEdge));
+        if (x >= upperEdge)
+            runningSumWeights += getBinValue(i);
+        else {
+            double frac = (x - lowerEdge) / (upperEdge - lowerEdge);
+            return (runningSumWeights + frac*getBinValue(i)) / getSumWeights();
+        }
     }
 
-    if (x < getMax())
-        return getOverflowSumWeights() * ((x - getBinEdge(numBins)) / getSumWeights() / (getMax() - getBinEdge(numBins)));
+    if (x < getMax()) {
+        // note: lastEdge <= x < max
+        double lastEdge = getBinEdge(numBins);
+        double frac = (x - lastEdge) / (getMax() - lastEdge);
+        return (runningSumWeights + frac*getOverflowSumWeights()) / getSumWeights();
+    }
 
     return 1;
 }
