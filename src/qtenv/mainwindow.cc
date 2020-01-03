@@ -922,11 +922,11 @@ void MainWindow::restoreGeometry()
     ui->nextTimeLabel->setVisible(showStatusDetails);
 
     // initialize simTimeLabel
-    simTimeDigitGrouping = (DigitGrouping)getQtenv()->getPref("simtimelabel-digitgrouping", int(APOSTROPHE)).value<int>();
+    simTimeDigitGrouping = (DigitGrouping)getQtenv()->getPref("simtimelabel-digitgrouping", int(SPACE)).value<int>();
     simTimeUnits = getQtenv()->getPref("simtimelabel-units", true).value<bool>();
 
     // initialize eventNumLabel
-    eventNumDigitGrouping = (DigitGrouping)getQtenv()->getPref("eventnumlabel-digitgrouping", int(APOSTROPHE)).value<int>();
+    eventNumDigitGrouping = (DigitGrouping)getQtenv()->getPref("eventnumlabel-digitgrouping", int(SPACE)).value<int>();
 }
 
 // rebuild
