@@ -1,0 +1,87 @@
+%description:
+Rudimentary test for getCDF()
+
+%includes:
+#include <iomanip>
+
+%activity:
+// bins: 40..60 step 1
+// input: normal with mean=50 sttdev=10, truncated to [30,70)
+// we'll check the CDF on [20,80)
+
+cHistogram hist("hist", new cFixedRangeHistogramStrategy(40, 60, 20));
+
+for (int i = 0; i < 1000000; i++) {
+    double d = normal(50, 10);
+    if (d >= 30 && d < 70)
+        hist.collect(d);
+}
+
+double prevCdf = -1;
+for (int i = 200; i < 800; i++) {
+    double x = i / 10.0;
+    double cdf = hist.getCDF(x);
+    EV << "cdf(" << x << ") = " << std::setprecision(3) << cdf << endl;
+    if (cdf < 0 || cdf > 1)
+        throw cRuntimeError("CDF is out of range [0,1]");
+    if (cdf < prevCdf)
+        throw cRuntimeError("CDF is not monotonically increasing");
+    prevCdf = cdf;
+}
+
+%contains: stdout
+cdf(20) = 0
+cdf(20.1) = 0
+cdf(20.2) = 0
+cdf(20.3) = 0
+
+%contains: stdout
+cdf(29.9) = 0
+cdf(30) = 0
+cdf(30.1) = 0.00143
+cdf(30.2) = 0.00285
+cdf(30.3) = 0.00428
+
+%contains: stdout
+cdf(39.5) = 0.136
+cdf(39.6) = 0.137
+cdf(39.7) = 0.138
+cdf(39.8) = 0.14
+cdf(39.9) = 0.141
+cdf(40) = 0.143
+cdf(40.1) = 0.145
+cdf(40.2) = 0.148
+cdf(40.3) = 0.151
+cdf(40.4) = 0.153
+cdf(40.5) = 0.156
+
+%contains: stdout
+cdf(59.5) = 0.844
+cdf(59.6) = 0.847
+cdf(59.7) = 0.849
+cdf(59.8) = 0.852
+cdf(59.9) = 0.855
+cdf(60) = 0.857
+cdf(60.1) = 0.859
+cdf(60.2) = 0.86
+cdf(60.3) = 0.862
+cdf(60.4) = 0.863
+
+%contains: stdout
+cdf(69.5) = 0.993
+cdf(69.6) = 0.994
+cdf(69.7) = 0.996
+cdf(69.8) = 0.997
+cdf(69.9) = 0.999
+cdf(70) = 1
+cdf(70.1) = 1
+cdf(70.2) = 1
+cdf(70.3) = 1
+cdf(70.4) = 1
+
+%contains: stdout
+cdf(79.7) = 1
+cdf(79.8) = 1
+cdf(79.9) = 1
+
+
