@@ -728,7 +728,7 @@ bool MsgAnalyzer::getPropertyAsBool(const Properties& props, const char *name, b
 //      errors->addError(it->second.getASTNode(), "invalid value in boolean property '%s':'%s'", name, values[0].c_str());
         return defval;
     }
-    errors->addError(p->getASTNode(), "property '%s' is not simple", name); //TODO revise msg
+    errors->addError(p->getASTNode(), "property '%s' does not contain a single value", name);
     return defval;
 }
 
@@ -742,7 +742,7 @@ std::string MsgAnalyzer::getProperty(const Properties& props, const char *name, 
         return "";
     else if (values.size() == 1)
         return values[0];
-    errors->addError(p->getASTNode(), "property '%s' is not simple", name); //TODO revise msg
+    errors->addError(p->getASTNode(), "property '%s' does not contain a single value", name);
     return "";
 }
 
@@ -752,7 +752,7 @@ std::string MsgAnalyzer::lookupExistingClassName(const std::string& name, const 
         return "";
 
     if (name.find("::") == 0) {
-        // if $name start with "::", take it as an explicitly qualified name
+        // if name starts with "::", take it as an explicitly qualified name
         std::string qname = name.substr(2);
         if (typeTable->isClassDefined(qname))
             return qname;
