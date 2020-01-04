@@ -1,3 +1,8 @@
+2019-12-13  Andras Varga
+
+	* IDE: Made the "Project Features" menu item more creative in finding
+	the project. (It said "Select a project first" much too often.)
+
 2019-10-07  Attila Torok
 
 	* Analysis Tool: Fix weighted histogram PDF/CDF computation (use sum of

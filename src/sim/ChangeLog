@@ -1,3 +1,11 @@
+2020-01-03  Andras Varga
+
+	* cAbstractHistogram: fixed getCDF() (bug #789)
+
+2020-12-10  Andras Varga
+
+	* cGate: implemented isGateHalf() and getOtherHalf()
+
 2019-12-08  Andras Varga
 
 	* cMessage: privateDup() changed not to affect nextMessageId.

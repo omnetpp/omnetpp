@@ -1,3 +1,11 @@
+2020-01-03  Andras Varga
+
+	* Added cHistogram_getCDF_1.test
+
+2020-12-10  Andras Varga
+
+	* Added cGate_getters_1.test
+
 2019-12-07  Andras Varga
 
 	* Added test to verify that the eventlogrecorder crash if network is not found
