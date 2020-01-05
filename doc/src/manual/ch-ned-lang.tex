@@ -556,11 +556,15 @@ Compound modules may be extended via subclassing. Inheritance may add new
 submodules and new connections as well, not only parameters and gates.
 Also, one may refer to inherited submodules, to inherited types etc. What
 is not possible is to "de-inherit" or modify submodules or connections.
+\footnote{With one exception: Since {\opp} version 5.6, reconnecting
+existing gates is possible using the \fprop{reconnect} property, see
+\ref{sec:ned-lang:reconnecting-gates}.}
 
 In the following example, we show how to assemble common protocols
 into a "stub" for wireless hosts, and add user agents via
-subclassing.\footnote{Module types, gate names, etc. used in the example
-are fictional, not based on an actual {\opp}-based model framework}
+subclassing.\footnote{Module types, gate names, etc. used in this chapter's
+code examples are entirely made-up, and not based on an actual
+{\opp}-based model framework}
 
 \begin{ned}
 module WirelessHostBase
@@ -1397,8 +1401,8 @@ module Host
 }
 \end{ned}
 
-Note that with submodule vectors, setting zero vector size can be used as an 
-alternative to the \fkeyword{if} condition. 
+Note that with submodule vectors, setting zero vector size can be used as an
+alternative to the \fkeyword{if} condition.
 
 \section{Connections}
 \label{sec:ned-lang:connections}
@@ -1538,6 +1542,48 @@ gate indices map to the connections one needs to configure. If connection
 objects could be given names to override the default name
 ``\ttt{channel}'', that would make it easier to identify connections in
 patterns. This feature is described in the next section.
+
+
+\subsection{Reconnecting Gates}
+\label{sec:ned-lang:reconnecting-gates}
+
+Normally, it is an error for NED connection to refer to a gate which is already
+connected. This behavior can be overridden with the \fprop{@reconnect}
+property. A syntax example:
+
+\begin{ned}
+a.out --> {@reconnect;} --> b.in;
+\end{ned}
+
+When a connection with the \fprop{@reconnect} property is encountered by the
+network builder, it first checks whether any of the involved gates are connected.
+If they are, it will unconnect them before proceeding to create the new connection.
+
+The usefulness of \fprop{@reconnect} lies with inheritance, as it allows one
+to modify connections in the base compound module. For example, it is possible
+to insert a new submodule in the path between two connected submodules, which
+eliminates the need for "hook" submodules in compound modules that are meant
+to be very configurable. This is illustrated in the following example:
+
+%% TODO use more intuitive module names? E.g. src, sink, tweaker
+
+\begin{ned}
+module Base {
+    submodules:
+        a: A;
+        b: B;
+    connections:
+        a.out --> b.in;
+}
+
+module Derived extends Base {
+    submodules:
+        c: C; // inserted between a and b
+    connections:
+        a.out --> {@reconnect;} --> c.in;
+        c.out --> {@reconnect;} --> b.in;
+}
+\end{ned}
 
 
 \subsection{Channel Names}
@@ -1935,7 +1981,7 @@ module Node
 }
 \end{ned}
 
-However, this pattern, when used extensively, can lead to a large number of 
+However, this pattern, when used extensively, can lead to a large number of
 string parameters. Luckily, it is also possible to achieve the same effect
 with \fkeyword{typename}, without using extra parameters:
 
@@ -1967,7 +2013,7 @@ network Network
 
 Note that this trick does not work with submodule vectors. The reason is that
 the condition applies to the vector as a whole, while type is per-element.
- 
+
 It is often also useful to be able to check, e.g. in the connections section,
 whether a conditional submodule has been created or not. This can be done with
 the \fkeyword{exists()} operator. An example:
@@ -1983,7 +2029,7 @@ module Node
 
 Limitation: \fkeyword{exists()} may only be used \textit{after} the submodule's
 occurrence in the compound module.
- 
+
 
 
 
