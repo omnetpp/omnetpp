@@ -1,3 +1,11 @@
+2019-12-03  Andras Varga
+
+	* Documented @reconnect.
+
+2019-12-03  Attila Torok
+
+	* Documented cLabelFigure::angle.
+
 2019-10-25  Attila Torok
 
 	* Mention manual connection routing using the "m" display string tag
