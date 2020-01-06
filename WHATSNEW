@@ -15,7 +15,7 @@ Regarding bugfixes, Qtenv has received quite a lot of attention.
 NED:
 
   - The new @reconnect property allows reconnecting already connected gates
-    by specifying it in the new the connection's body. This is especially
+    by specifying it in the new connection's body. This is especially
     useful in INET Framework, e.g. because it eliminates the need for "hook"
     modules in compound modules that represent network interfaces.
 
@@ -64,7 +64,7 @@ Qtenv:
   - Performance: cache min(animSpeed) in cCanvas, so that Qtenv doesn't
     have to compute it every time.
 
-  - Set a busy indicator (spinny cursor) during more potentionally long
+  - Set a busy indicator (spinny cursor) during more potentially long
     operations.
 
   - When the layouting process takes a long time (more than five seconds),
