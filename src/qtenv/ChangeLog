@@ -1,3 +1,442 @@
+2019-11-07  Attila Torok
+
+	qtenv: Extract MultiLineOutlinedTextItem from SubmoduleItem, use it for
+	ConnectionItem as well.
+
+	And accept AlignCenter instead of AlignHCenter as alignment.
+
+	This will cause the info text of connections (the "t" DisplayString tag
+	of the channel) to be left/right/center aligned as well.
+
+2019-11-21  Attila Torok
+
+	qtenv/moduleinsp: Don't use cObject* item data when the inspectors aren't
+	fresh.
+
+	This caused a crash when gathering tooltips in fast mode, and the object
+	pointer set on some figure was stale.
+
+2019-12-03  Attila Torok
+
+	sim,qtenv: Add cLabelFigure::angle.
+
+2019-11-11  Attila Torok
+
+	qtenv/loginspector: Fix assertion failure when sim is restarted with
+	empty LogBuffer.
+
+2019-11-07  Attila Torok
+
+	qtenv/modulecanvasviewer: Refresh both halves of bidirectional
+	connections.
+
+2019-05-29  Attila Torok
+
+	qtenv: Allow dragging submodules around by holding Shift, changing their
+	DisplayStrings.
+
+2019-11-10  Andras Varga
+
+	qtenv: fix copy/paste bug in Find Object dialog's code
+
+2019-11-07  Andras Varga
+
+	sim: move opp_typename() implementation to common/
+
+	Because we need it e.g. in Expression too.
+
+2019-10-30  Attila Torok
+
+	qtenv: Add some sideways offset to methodcall animation lines and text.
+
+2019-10-25  Attila Torok
+
+	qtenv/connectionitem: Make the m=[nesw] DS tag work better with
+	"border-to-border" connections.
+
+2019-10-30  Attila Torok
+
+	qtenv: Fix crashes on inspector close / network rebuild / quit.
+
+2019-11-05  Andras Varga
+
+	qtenv: display null pointers as "nullptr" instead of "NULL"
+
+2019-11-04  Andras Varga
+
+	sim: cClassDescriptor: use exception instead of returning false for
+	indicating error
+
+2019-10-24  Attila Torok
+
+	qtenv: Minor layout tweak in PreferencesDialog.
+
+2019-10-21  Attila Torok
+
+	qtenv: Add option to export module graphics to an image, and a dialog to
+	select the exported area.
+
+2019-10-22  Attila Torok
+
+	qtenv/textviewerwidget: Give one less chance for too deep recursion in
+	updateScrollbars().
+
+	This partially reverts a previous patch which fixed an assertion failure.
+
+2019-10-22  Attila Torok
+
+	qtenv/messageanimator: Fix a crash in complicated methodcall/messagesend
+	combinations.
+
+	Discovered in the INET queueing tutorial.
+
+2019-10-17  Gyorgy Szaszko
+
+	qtenv: Fix assertion failure in TextViewerWidget when inspected object is
+	deleted.
+
+2019-09-20  Attila Torok
+
+	qtenv: Fix DisplayUpdateController::skipToNextEvent().
+
+	It did not really skip if there was a non-holding animation in progress.
+
+2019-09-20  Attila Torok
+
+	qtenv: Start the simulation at t=0, not right before the first event.
+
+	Again.
+
+2019-09-10  Attila Torok
+
+	qtenv: Fix assertion failure in LogInspector when restarting the
+	simulation.
+
+2019-09-09  Attila Torok
+
+	envir,qtenv: Do not allow endSend() right after beginSend().
+
+	With no sendDirect() or sendHop() calls in between. This caused a crash,
+	so we now axplicitly disallow and avoid it. It surfaced in the "Using 3D
+	objects ..." configuration of the Visualization tutorial of INET, but
+	it's supposed to be fixed now.
+
+2019-09-16  Attila Torok
+
+	qtenv: Fix a crash when closing inspector windows with Qt >=5.12.
+
+	Before, the inspector was deleted by us manually, right inside the
+	closeEvent() callback. With older Qt versions, this caused no problems,
+	because no widget member was accessed after the event. Not so long ago
+	this changed, so we now have to rely on Qt for deleting the Inspector
+	when it is closed, but it works well.
+
+	See: https://bugreports.qt.io/browse/QTBUG-78314
+
+2019-09-20  Attila Torok
+
+	qtenv: Align the lines of info text of submodule graphics items
+	appropriately in the left/top/right positions.
+
+2019-08-27  Andras Varga
+
+	sim: canvas: cache min(animSpeed), so that Qtenv doesn't have to compute
+	it every time
+
+2019-08-26  Attila Torok
+
+	qtenv: Prevent user from manually calling finish() twice after error.
+
+2019-08-16  Andras Varga
+
+	qtenv: fix possible duplicate LF_END_RUN notification
+
+	It occurred when user exited Qtenv while the simulation was running, and
+	chose to call finish() in the dialog.
+
+	Double call reported by an Assert in OmnetppOutVectorManager::endRun()
+
+2019-08-26  Attila Torok
+
+	qtenv/goi: When counting/collectiong cObject children, catch exceptions,
+	and show the error.
+
+2019-08-27  Attila Torok
+
+	qtenv: Put "Qtenv" into argv instead of "app" - it is visible in some
+	window managers.
+
+2019-08-26  Attila Torok
+
+	qtenv: Set a busy indicator (spinny cursor) during more potentionally
+	long operations.
+
+2019-08-26  Attila Torok
+
+	qtenv: When the layouting process takes a long time, ask the user what to
+	do.
+
+	Only if without visualization.
+	"Long time" is more than five seconds.
+
+2019-07-17  Attila Torok
+
+	qtenv: Rename performAnimations->performHoldAnimations and
+	endAnimations->skipHoldAnimations.
+
+2019-07-16  Attila Torok
+
+	qtenv: Keep caret (cursor) near the same event when switching
+	LogInspector modes.
+
+2019-07-16  Attila Torok
+
+	qtenv: Remove the unused scrollbackLimit option. Update the Preferences
+	dialog accordingly.
+
+2019-08-16  Andras Varga
+
+	qtenv: nits
+
+2019-08-07  Attila Torok
+
+	qtenv: Add a "Debug Now" option to the Simulate menu.
+
+2019-07-17  Andras Varga
+
+	sim: cContextSwitcher and Co moved to their own header file
+
+2019-07-03  Andras Varga
+
+	qtenv: fix: prevent aborting when user enters invalid log prefix in
+	Preferences
+
+	To try, add '%-' to log prefix.
+
+2019-07-03  Andras Varga
+
+	envir: added "%<" (trim preceding whitespace) to log format
+
+2019-07-02  Andras Varga
+
+	qtenv: default log prefix format: use %K instead of %C.
+
+	%K only prints the context component if it is different from the event's
+	module; %C always prints it.
+
+	%K results in shorter log, without losing information (event's module is
+	already part of the event banner). In case the user wants to turn off
+	event banners and/or produce grep-friendly log, s/he will likely want to
+	adjust the log prefix format as well, to include more information.
+
+2019-07-02  Andras Varga
+
+	qtenv: logging: omit adding the context component to the line
+
+	Because it typically comes from the log prefix (%C or %K format tags).
+
+2019-07-02  Attila Torok
+
+	envir,qtenv: Add cEnvir::getConnectionLine().
+
+2019-05-03  Levente Mészáros
+
+	qtenv: Fixed method call animation when the message gets deleted before
+	the actual animation is done.
+
+2019-06-13  Attila Torok
+
+	qtenv: Add an option to disable logging from refreshDisplay().
+
+2019-06-13  Attila Torok
+
+	qtenv: Color log output prefix according to LogLevel.
+
+2019-04-04  Rudolf Hornig
+
+	build: proper dependency on the command line parameters
+
+	- rebuilds properly the output even if only the compiler command line
+	 parameters have changed.
+	- fix issue when rebuild occurred always if CFLAGS contained " delimited
+	strings
+	 (we use $(file) instead of using the shell echo command)
+
+2019-04-03  Rudolf Hornig
+
+	build: fix to allow overriding the output dir by specifiying CONFIGNAME
+	parameter on command line
+
+2019-03-21  Attila Torok
+
+	qtenv: Change some option mnemonics in the Inspect menu.
+
+	They seem more logical to me now.
+
+2019-03-21  Attila Torok
+
+	qtenv: Add more registration lists to the "Inspect Components" menu.
+
+2019-03-21  Attila Torok
+
+	qtenv: Fix connection info string (dest gate name) in context menus.
+
+2019-03-20  Andras Varga
+
+	src: remove remaining mentions of Tkenv
+
+	Some mentions in Qtenv remain, but those are relevant.
+
+2019-03-20  Andras Varga
+
+	qtenv: fix: search in lists brought up by the Inspect->Available
+	Components was not possible
+
+	Find Objects dialog did not find the object to search in.
+
+2019-03-20  Andras Varga
+
+	qtenv:  prevent the Debug dialog from kicking in when inputting a wrong
+	value in the Object Inspector
+
+2019-03-19  Andras Varga
+
+	qtenv: image loading to obey the '-s' (silent) option
+
+	But still print "Cannot load" warnings
+
+2019-03-11  Andras Varga
+
+	src: fix broken dependencies in Makefiles
+
+2019-03-07  Attila Torok
+
+	qtenv: Catch cRuntimeErrors coming from message printers in
+	TextViewerProvider of LogInspector.
+
+2019-01-30  Andras Varga
+
+	envir: EnvirBase: startRun() renamed, endRun() eliminated
+
+	startRun() was renamed to break association with startRun() methods of
+	extension classes like scheduler, output vector manager, output scalar
+	manager, etc.
+
+	endRun() was eliminated for a similar reason. Besides, it only contained
+	"notifyLifecycleListeners(LF_ON_RUN_END)", and such notifications are
+	inlined everywhere else.
+
+2019-01-28  Attila Torok
+
+	qtenv: one more fix for moduleinspector, for when the inspected module is
+	deleted
+
+2019-01-28  Attila Torok
+
+	qtenv: try fixing a crash in MessageAnimator when a marked module is
+	deleted
+
+2019-01-28  Andras Varga
+
+	qtenv: added extra guard for the existence of the system module
+
+2019-01-25  Attila Torok
+
+	qtenv: HistogramInspector: Fix compile error, add comments, name some
+	constants.
+
+2019-01-25  Andras Varga
+
+	qtenv: HistogramInspector: tolerate inf as bin value
+
+	Inf is occasionally produced by cPSquare for discrete distributions.
+
+2019-01-25  Andras Varga
+
+	qtenv: ChartTickDecimal: reject conversion from inf/nan; fix comparison
+	with inf
+
+2019-01-16  Rudolf Hornig
+
+	build: fixed build problem on linux
+
+2019-01-10  Rudolf Hornig
+
+	build: added support to build on Windows using MS ABI compatibility (i.e
+	Visual C++ libraries)
+
+2018-11-30  Attila Torok
+
+	qtenv: Make sure video crop area is never invalid (out of bounds).
+
+	By clipping it to the content area of the module inspector.
+
+2018-11-30  Attila Torok
+
+	qtenv: Rephrasing and cosmetic changes in the video recording dialog.
+
+2018-10-04  Attila Torok
+
+	qtenv: Rework video recording dialog, with added options.
+
+	Initial video recording dialog. qtenv: Properly implement video recording
+	dialog. properly handle video recording dialog cancellation video
+	recording: Add one more crop area setting, add copy command button, make
+	choices persistent video recording dialog: adjust layout before restoring
+	choices qtenv video recording dialog: minor corrections
+
+	qtenv: Only resize the MainWindow to a multiple of 2, not 4, when
+	recording video. Turns out, this is enough for yuv420p subsampling, and
+	we don't plan to use any other.
+
+2017-04-26  Attila Torok
+
+	qtenv: Report correct boundingRect in CompoundModuleItem, use getArea
+	instead.
+
+2018-10-09  Attila Torok
+
+	qtenv: Fix video recording getting stuck with holding built-in
+	animations.
+
+	In this code path, the animation time was never advanced.
+
+	Also improve behavior when switching back from recording mode.
+
+2018-10-08  Attila Torok
+
+	qtenv: Do not animate messages from different sources concurrently.
+
+2018-10-04  Attila Torok
+
+	qtenv: Add getSourceModuleId() to Animations.
+
+	To be used by the next commit.
+
+	Plus some consistency fixes with virtual and override.
+
+2018-10-04  Attila Torok
+
+	qtenv: Store the settings in the .qtenvrc file when the preferences
+	dialog is accepted.
+
+	Not only on exit. This fixes the issue where an improper shutdown
+	(crash on network teardown, etc) will not save the settings changes.
+
+2018-11-05  Attila Torok
+
+	qtenv: Fix crash when Qtenv is closed with an OutputVectorInspector open.
+
+2018-10-04  Attila Torok
+
+	qtenv: Always update the next event marker on inspector refresh.
+
+	This fixes the "red rectangle lagging behind" problem with moving
+	submodules, when stopping after express mode, or when running in normal
+	mode at higher speeds.
+
+----------- lines above this marker have been added from git log -----------
+
 2020-01-06  ------ omnetpp-5.6 released ------
 
 2019-11-07  Attila Torok

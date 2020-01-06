@@ -1,3 +1,395 @@
+2019-12-07  Andras Varga
+
+	nedxml: refine "More than one package.ned file per package" error message
+
+2019-11-25  Andras Varga
+
+	usman: added appendix to document supported msg properties
+
+2019-11-18  Andras Varga
+
+	msgc: added @custom field property, with test
+
+	Effect: field only appears in descriptors, but no code is generated for
+	it at all. Once can inject the code that implements it (getter, setter,
+	data member, etc.)  via targeted cplusplus blocks.
+
+2019-11-23  Andras Varga
+
+	msgc: targeted cplusplus blocks for generated methods
+
+	ctor, copy ctor, dtor, operator=copy, parsimPack, parsimUnpack, etc.
+
+	Copy ctor is referred to as Foo& (for class Foo)
+
+2019-11-23  Andras Varga
+
+	msgc: added infrastructure for method-targeted cplusplus blocks
+
+2019-11-23  Andras Varga
+
+	msgc: use the "=delete" syntax of C++11 in the generated code
+
+2019-11-23  Andras Varga
+
+	msgc: structs: move field initialization inline
+
+2019-11-15  Andras Varga
+
+	nedxml: msgcompilerold.cc: follow cClassDescriptor changes
+
+2019-11-12  Andras Varga
+
+	nedxml,common: JSON notation: allow namespace to be specified for object
+	type
+
+2019-11-12  Andras Varga
+
+	nedxml,sim: JSON parameter syntax: missing bits'n pieces; fixes
+
+2019-10-24  Andras Varga
+
+	sim: cPar: add OBJECT as parameter type
+
+2019-11-06  Attila Torok
+
+	ui,nedxml: replace recently removed NedParser::parseNedExpression() with
+	isValidNedExpression() [thanks Attila]
+
+	This restored expression validation in the inifile editor etc.
+
+	addendum for the removed NED expression parsing
+
+2019-11-04  Andras Varga
+
+	sim: cClassDescriptor: use exception instead of returning false for
+	indicating error
+
+2019-10-26  Andras Varga
+
+	nedxml,sim: cClassDescriptor, opp_msgtool: added support for setting
+	pointer members and array sizes via class descriptors
+
+	- cClassDescriptor: added setFieldArraySize(),
+	setFieldStructValuePointer()
+	- msg: added @resizable(), @replaceable field attributes
+	- sim_std.msg: added @resizable(false) where needed
+
+2019-10-28  Andras Varga
+
+	nedxml: cosmetics: use %empty for empty rules (more explicit)
+
+2019-10-28  Andras Varga
+
+	nedxml: ned2.y: support arbitrary number of args
+
+	Follow changes of common/expression.y
+
+2019-10-30  Andras Varga
+
+	nedxml: opp_msgtool: added "-h builtindefs" option (print built-in
+	declarations)
+
+2019-10-29  Andras Varga
+
+	nedxml: opp_msgc: fix: prevent errors from causing asserts etc. firing
+	during code generation
+
+	plus: removal of unnecessary #include
+
+2019-10-23  Andras Varga
+
+	nedxml: AstNode: getSourceLocation() changed from const char * to
+	std::string
+
+	This paves the way for storing filename and line number separately, and
+	stringpooling filename and directory.
+
+	ErrorStore::doAdd() behavior was changed in a subtle way,but original
+	behavior was a bit odd.
+
+	test: NED_xmldoc_1 updated (getSourceLocation() now returns absolute
+	path)
+
+2019-10-25  Andras Varga
+
+	nedxml: remove NED expression parsing (was unused since new
+	common::Expression class)
+
+2019-10-21  Andras Varga
+
+	sim,envir: let xmldoc() interpret the file name as relative to the dir
+	the expression comes from
+
+	That is, when xmldoc() occurs in an included ini file, the file name is
+	now interpreted as relative to the directory containing the included ini
+	file (as opposed to being relative to the main ini file or the working
+	directory.)
+
+	If xmldoc() occurs in a NED file, thr file name is relative to the
+	directory where that NED file was loaded from.
+
+	In addition to updating the implementationi of xmldoc(), it had to be
+	ensured that the function gets access to the directory where the ini
+	entry or NED expression occurred (baseDirectory). This directory was
+	added to the evalation context (cExpression::Context).
+
+	cNedFunction (and thus, Define_NED_Function()) was updated to accept an
+	alternative function signature which accepts cExpression::Context instead
+	of cComponent* as context argument.
+
+	getSourceFileDirectory() method was added to cComponentType.
+
+2019-05-13  Rudolf Hornig
+
+	msgcompiler: moved the header guard to the beginning of the generated
+	files.
+
+	The CDT Indexer got confused and parsed several times the same file if
+	the header guard is not the first #ifdef in the file. This triggered a
+	bug in CDT Indexer and caused extreme slowdowns.
+
+2019-04-29  Andras Varga
+
+	xml: move XML parser from nedxml to common, embed Yxml, remove Expat
+	support
+
+	- move XML parsers to common
+	- added Yxml-based SAX parser
+	- use subclassing instead of #ifdefs to support multiple parsers
+	- use exceptions to report parse error instead of error code +
+	getErrorMessage()
+	- removed some methods from SaxHandler (comments, CDATA start/end)
+	- removed Expat support, made redundant by Yxml
+	- updated configure.in, Makefile.inc.in, etc: XML_PARSER replaced with
+	WITH_LIBXML
+	- added test
+
+	Note that no significant functionality is lost when LibXML2 support is
+	turned off. XML module parameters as well as NED and MSG AST XML
+	export/import is still supported due to  LibXML2 is only required when
+	DTD-based validation (and possibly, default value completion) or
+	Schema-based validation is needed. Note that OMNeT++ uses the DOM API of
+	LibXML, which has much higher memory requirements than the embedded
+	SAX-style parser.
+
+2019-04-11  Andras Varga
+
+	nedxml: NED: added '=~', '<=>', and 'undefined' to the grammar; updated
+	test
+
+2019-04-13  Andras Varga
+
+	sim,nedxml: implemented 'bool' cast operator as NED function
+
+2019-03-11  Andras Varga
+
+	sim: ported NED to new Expression class
+
+	Changes in: cDynamicExpression, NedSupport, NedNetworkBuilder
+
+	main changes:
+	- Removed duality in parsing/processing NED expressions: expressions in
+	 NED files and INI files were parsed/built in totally different ways.
+	 We now use cDynamicExpression for both.
+	 Details: ExpressionBuilder was eliminated; expression parsing turned OFF
+	 in NED parser (we don't use the AST built by it)
+
+	- cDynamicExpression now relies for common::Expression for parsing and
+	 evaluation. Its old parser (expr.y, expr.lex) has been removed.
+
+	- nedsupport.h moved from include/omnetpp to src/sim: nodes must
+	 now subclass from ExprNode, so they cannot be public.
+
+	- in NED functions: context ("In function x():") was removed from error
+	messages
+	 because it will be added by the Expression class
+
+	Everything is supposed to work exactly as before. (Modulo changes in
+	error message wording.)
+
+2019-04-04  Rudolf Hornig
+
+	build: proper dependency on the command line parameters
+
+	- rebuilds properly the output even if only the compiler command line
+	 parameters have changed.
+	- fix issue when rebuild occurred always if CFLAGS contained " delimited
+	strings
+	 (we use $(file) instead of using the shell echo command)
+
+2019-04-03  Rudolf Hornig
+
+	build: fix to allow overriding the output dir by specifiying CONFIGNAME
+	parameter on command line
+
+2019-04-11  Andras Varga
+
+	nedxml: NED/MSG grammar: no need to use symbolic tokens for single-char
+	operators
+
+2019-04-11  Andras Varga
+
+	nedxml: NED/MSG grammar: rename token CHAR to COMMONCHAR
+
+2019-04-11  Andras Varga
+
+	nedxml: NED/MSG grammar: better token names for some keywords
+
+2019-04-11  Andras Varga
+
+	nedxml: NED grammar: made operator precedence more similar to C/C++
+
+2019-04-11  Andras Varga
+
+	nedxml,sim: remove incomplete "constant subexpression" support from NED
+	expressions
+
+	It was never implemented, but it was not really missed by anyone either.
+
+	'const' keyword remains reserved in NED, for whatever future use.
+
+2019-04-01  Andras Varga
+
+	nedxml: only allow one package.ned per package
+
+2019-03-25  Andras Varga
+
+	nedxml: nedtool: nits
+
+2019-03-26  Andras Varga
+
+	nedxml: NedResourceCache: loading after doneLoadingNedFiles()
+
+2019-03-26  Andras Varga
+
+	nedxml: NedResourceCache: nits
+
+2019-03-26  Andras Varga
+
+	nedxml: NedResourceCache: code style (camelize local vars)
+
+2019-03-26  Andras Varga
+
+	nedxml: NedResourceCache: fix NED loading wrt package.ned files
+
+	package.ned files were looked up in the ancestor *folders*, not in
+	ancestor *packages* as in the NED spec. This also fixes issues with NED
+	embedding when it's mixed with dynamic NED loading (such as class lookup
+	errors in inet/test/fingerprint/ethernet-*.csv when INET is build with
+	embedding the NED files under src/)
+
+2019-03-22  Andras Varga
+
+	nedxml: opp_nedtool and opp_msgtool help texts refined
+
+	also: 'convert' command default operation changed.
+
+2019-03-21  Andras Varga
+
+	envir: implemented NED exclusion path (-x option,
+	OMNETPP_NED_EXCLUSION_PATH)
+
+	excl++
+
+2019-03-21  Andras Varga
+
+	nedxml: NedResourceCache refactoring: use canonicalize() throughout
+
+2019-03-20  Andras Varga
+
+	nedxml: opp_msgtool/opp_nedtool: fix glitch introduced by recent rewrite
+
+	Superfluous <files> element was generated when a single MSG/NED file was
+	converted to XML.
+
+2019-03-11  Andras Varga
+
+	nedxml: dtdclassgen: add attribute ID constants
+
+2019-03-11  Andras Varga
+
+	src: fix broken dependencies in Makefiles
+
+2019-02-26  Andras Varga
+
+	opp_nedtool: added hint in help text
+
+2019-02-26  Andras Varga
+
+	opp_msgtool: rewritten in the style of opp_nedtool
+
+	- command line interface now uses subcommands
+	- better help
+	- msgc interface is compatible with earlier version (default command
+	 is cpp), only the rarely useful -T (type of next file) and -h (here)
+	 options have been removed
+
+2019-02-26  Andras Varga
+
+	src: NedTools::collectNedFiles() moved into fileutil.h in a more general
+	form
+
+2019-02-26  Andras Varga
+
+	opp_nedtool: cosmetics
+
+2019-02-25  Andras Varga
+
+	nedtool: rewritten for convenience and features
+
+	Main points:
+	- added support for generating C++ source
+	- added support for processing NED folders
+	- command-line interface redesigned for better usability (subcommands,
+	 better help, etc)
+	- more convenient output (no *_n.ned, *_n.xml)
+	- removed obsolete @listfile and @@listfile support
+	- fixed bugs in splitting NED files to one NED type per file
+
+2019-02-22  Andras Varga
+
+	nedxml: fix: @namespace did not always take effect
+
+	@namespace in package.ned was not taking effect in single-folder models
+	when NED embedding was used. registerPendingNedTypes() tried to resolve
+	the C++ class too eagerly, when package.ned was not yet loaded.
+
+2019-02-07  Andras Varga
+
+	sim: added intuniformexcl()
+
+	as NED function, global function, as cComponent method, as object
+	(cIntUniformExcl)
+
+2019-01-16  Rudolf Hornig
+
+	build: fixed build problem on linux
+
+2019-01-10  Rudolf Hornig
+
+	build: added support to build on Windows using MS ABI compatibility (i.e
+	Visual C++ libraries)
+
+2018-06-27  Andras Varga
+
+	nedxml: removed msg stuff opp_nedtool, now it's really just NEDtool
+
+2018-06-15  Andras Varga
+
+	opp_msgc: make --msg6 the default mode
+
+2018-07-31  Attila Torok
+
+	nedxml: Add a .gitignore for generated files, and a comment in
+	sim_std_msg.cc.
+
+2018-09-21  Attila Torok
+
+	misc: Replace $* with "$@" in a couple scripts.
+
+----------- lines above this marker have been added from git log -----------
+
 2020-01-06  ------ omnetpp-5.6 released ------
 
 2019-05-15  ------ omnetpp-5.5 released ------

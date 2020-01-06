@@ -1,3 +1,786 @@
+2019-12-03  Attila Torok
+
+	sim,qtenv: Add cLabelFigure::angle.
+
+2020-01-03  Andras Varga
+
+	sim: cAbstractHistogram::getCDF() fixed (bug #789); added test
+
+2020-01-02  Rudolf Hornig
+
+	tests: fix copy-paste error in core tests
+
+2019-12-10  Andras Varga
+
+	test/core: added cGate_getters_1
+
+	Mainly for testing isOtherHalf()/getOtherHalf().
+
+2019-12-07  Andras Varga
+
+	envir: fix eventlogrecorder crash if network is not found
+
+2019-12-06  Andras Varga
+
+	test: featuretool: new tests for newly newly added functionality
+
+2019-12-06  Andras Varga
+
+	test: opp_featuretool: use hierarchical package names (more realistic)
+
+2019-12-06  Andras Varga
+
+	test: opp_featuretool: dot files moved to data/
+
+2019-12-06  Andras Varga
+
+	test: opp_featuretool tests updated
+
+	- removed tests for removed commands 'repair' and 'validate'
+	- follow syntax of message capitalization etc.
+
+2019-12-06  Andras Varga
+
+	test: opp_featuretool tests updated
+
+2019-12-05  Andras Varga
+
+	test: opp_featuretool tests updated
+
+	In general, the tool has become more forgiving: missing .featurestates
+	file and extra/missing entries in it don't cause an error or even a
+	message. Missing file and file entries are initialized with the default
+	enablement state; extra entries are preserved (in the hope they'll be
+	useful, e.g. after switching to a different topic branch.
+
+	The content of .nedexclusions file is also adjusted (without stopping
+	with an error).
+
+2019-12-04  Andras Varga
+
+	utils: opp_featuretool: simplify XML file reading/writing
+
+2019-11-27  Andras Varga
+
+	build: do not require perl to be available as /usr/bin/perl
+
+2019-11-18  Andras Varga
+
+	msgc: added @custom field property, with test
+
+	Effect: field only appears in descriptors, but no code is generated for
+	it at all. Once can inject the code that implements it (getter, setter,
+	data member, etc.)  via targeted cplusplus blocks.
+
+2019-11-25  Andras Varga
+
+	msgc: test for targeted cplusplus blocks
+
+2019-11-23  Andras Varga
+
+	msgc: added infrastructure for method-targeted cplusplus blocks
+
+2019-11-14  Andras Varga
+
+	sim: JSON-style parameters: disallow using object parameters in
+	expressions
+
+	Reason: we have no idea of the pointer's status wrt memory management
+	- Should we dup() the object? (e.g. if it came from a volatile param,
+	 we definitely should)
+	- If it's a plain cObject (no owner info), should we delete it when
+	 no longer used? won't it lead to double deletion?
+
+2019-11-14  Andras Varga
+
+	src: JSON-style parameters: added support for filling in structs and
+	arrays of structs
+
+	More precisely: non-pointer non-cObject compound (struct or class) fields
+	Plus: test
+
+2019-11-13  Andras Varga
+
+	test: tests for JSON-style parameters updated
+
+2019-11-12  Andras Varga
+
+	tests: added NED_jsonparam_1.test, NED_jsonparam_2.test
+
+2019-11-12  Andras Varga
+
+	test: added inifile_configexpr_1.test; related fixes in src/envir
+
+2019-11-08  Rudolf Hornig
+
+	test: fixed failing tests related to matchexpression changes
+
+	- implicit OR is no longer supported
+	- property(matchexpr) should be written as propery=~matchexpr
+
+2019-11-07  Andras Varga
+
+	common: matchexpression: remove implicit OR and funcall-style field
+	matcher syntaxes
+
+	They are confusing, and makes it different to tell apart concise notation
+	from expression-style notation.
+
+2019-11-04  Andras Varga
+
+	test: MatchExpression: verify that the empty pattern does not match
+	anything
+
+2019-10-31  Rudolf Hornig
+
+	test: fix some warnings
+
+2019-10-31  Rudolf Hornig
+
+	test: fixed failing tests on Windows
+
+2019-10-30  Rudolf Hornig
+
+	samples,test: use intval_t, uintval_t instead of long, unsigned long as
+	long is not 64bit on Windows.
+
+2019-10-28  Rudolf Hornig
+
+	samples: better speed settings for cars in openstreetmaps example.
+
+2019-10-28  Andras Varga
+
+	test/core: NED_xmldoc_1.test adjusted
+
+	Ignore absolute path of xml files, introduced by a recent commit
+
+2019-10-16  Attila Torok
+
+	test/fingerprint: Do not hardcode running in debug mode.
+
+2019-10-23  Andras Varga
+
+	sim: cNedValue renamed to cValue (compatibility typedef added)
+
+	Reason: it is used as generic value by cExpression, i.e. isn't specific
+	to NED.
+
+2019-10-22  Andras Varga
+
+	ned: allow reconnecting already connected gates by specifying the
+	@reconnect property in the connection
+
+2019-10-24  Andras Varga
+
+	test: compile fix for previous commit
+
+2019-10-21  Andras Varga
+
+	sim,envir: let xmldoc() interpret the file name as relative to the dir
+	the expression comes from
+
+	That is, when xmldoc() occurs in an included ini file, the file name is
+	now interpreted as relative to the directory containing the included ini
+	file (as opposed to being relative to the main ini file or the working
+	directory.)
+
+	If xmldoc() occurs in a NED file, thr file name is relative to the
+	directory where that NED file was loaded from.
+
+	In addition to updating the implementationi of xmldoc(), it had to be
+	ensured that the function gets access to the directory where the ini
+	entry or NED expression occurred (baseDirectory). This directory was
+	added to the evalation context (cExpression::Context).
+
+	cNedFunction (and thus, Define_NED_Function()) was updated to accept an
+	alternative function signature which accepts cExpression::Context instead
+	of cComponent* as context argument.
+
+	getSourceFileDirectory() method was added to cComponentType.
+
+2019-10-17  Attila Torok
+
+	test/sqlite: Test simtime limit in vector export, ignore
+	outputXmanagerclass config entries.
+
+2019-10-16  Andras Varga
+
+	samples/routing: restore previous NED source and update fingerprint
+
+	Cause of fingerprint change: '&&' is now a shortcutting operation
+
+2019-10-16  Andras Varga
+
+	test/fingerprint: follow code change in openstreetmap example
+
+2019-10-15  Andras Varga
+
+	test/featuretool: follow changes: verbosity is off by default; wording
+
+2019-10-15  Andras Varga
+
+	test/core: adjusted expected test output
+
+	In ini files lines that set module parameters, the value can be an
+	expression, so string literals must be quoted in order to be able to
+	distinguish between things like 1+1 and "1+1", true and "true", or ""+""
+	or "\"\"+\"\"".
+
+	Values must be saved in the result files in the same way, that is,
+	strings must be quoted.
+
+	Here, "typename" counts as parameter too, as its value can be an
+	expression.
+
+	Since result file readers (e.g. the IDE Analysis Tool) remove and discard
+	one layer of quotes if present, values need to appear double-quoted in
+	the result file so that the inner quotes appear as part of the value.
+
+2019-10-18  Attila Torok
+
+	test/scave: Return nonzero from opp_charttool on exception, and from
+	runtest if any tests failed.
+
+2019-10-15  Attila Torok
+
+	test: Add a runtest script to the scave tests - uses opp_charttool.
+
+2019-10-10  Rudolf Hornig
+
+	test: fix for a test failure because of a change in an error message.
+
+2019-10-15  Andras Varga
+
+	test: sqliteresultfiles: follow rename of opp_scavetool
+
+2019-10-10  Andras Varga
+
+	utils: opp_featuretool: make it non-verbose by default; some messages
+	refined
+
+2019-08-29  Attila Torok
+
+	test/scave: Print colored diffs (expected/actual output).
+
+2019-08-28  Attila Torok
+
+	charttool: Porting to the new chart/results API, improvements
+
+	improve opp_charttool
+
+	opp_charttool/results: the get_scalars and get_vectors test charts now
+	PASS
+
+	opp_charttool: add experimental [batch] exporting option.
+
+	opp_charttool: XXX Return None as default for any missing properties.
+
+	opp_charttool: clear pyplot figure between charts in batch export mode
+
+	add statistics and histograms tests, implement querying, simplify vector
+	ops
+
+	charttool: print a hint about project mappings when no results are
+	returned by scavetool
+
+	charttool: no longer accept the (removed) complicated data format from
+	IDE-less chart.py emulation
+
+2019-08-02  Attila Torok
+
+	ide/scave: Add tests for the results API.
+
+	add some results api tests in an anf file
+
+	fix result size tests
+
+	some more results API tests
+
+	add some more get_results tests
+
+	whitespace fix for get_results test
+
+	add a CSV file to check the whole contents of the test result set
+
+	add get_runs tests, add forgotten tester.py, minor adjustment in
+	results.py
+
+	add more get_runs tests, fix tester.sanitize, some cleanup
+
+	add get_runattrs and get_itervars tests, more fixes
+
+	add more results API tests
+
+	add get_parameters tests
+
+	add incomplete get_vectors tests
+
+2019-07-29  Attila Torok
+
+	test/scave: Add a model to generate a small test dataset for scave.
+
+2019-07-29  Attila Torok
+
+	common/expression: Accept : in the middle of identifiers.
+
+	Example: attr:unit or packetDrop:count in result filters.
+
+2019-09-13  Andras Varga
+
+	test/fingerprint: added new sample simulations
+
+2019-09-01  Andras Varga
+
+	neddoc: automatic hyperlinking of URLs embedded in the text
+
+2019-08-01  Andras Varga
+
+	sim: listener to use intval_t and uintval_t
+
+	This change makes it possible to emit 64-bit values on Windows too.
+
+	including:
+	- SIMSIGNAL_[U]LONG -> SIMSIGNAL_[U]INT
+	- cITimestampedValue changed accordingly (e.g. longValue()->intValue())
+	- removed WITH_OMNETPP4x_LISTENER_SUPPORT
+
+2019-07-31  Andras Varga
+
+	test: update for incremented result file version number
+
+2019-07-30  Andras Varga
+
+	test: updated for common/Histogram change
+
+	Bin counts became less by 2 because underflows/overflows are no longer
+	counted as bins.
+
+2019-07-26  Andras Varga
+
+	sim: added cPostModuleBuildNotification
+
+	Reason: cPostModuleAddnotification was not sufficient, because it is
+	fired from the cModuleType::create() method where the module was still
+	very incomplete, and there are few meaningful ways to interact with it.
+
+2019-07-26  Andras Varga
+
+	sim: added cPostComponentInitializeNotification
+
+2019-07-23  Andras Varga
+
+	tests: updated for recent file format changes
+
+2019-07-10  Attila Torok
+
+	test: Follow attr: -> runattr: rename in scavetool export test.
+
+2019-07-10  Andras Varga
+
+	test: added test for cDynamicExpression::parse() that uses IResolver
+
+2019-07-10  Andras Varga
+
+	test: removed core/cModule_creation_n5.test due to recent initialization
+	behavior change
+
+	see 63625a69 "sim: cModule/cChannel: initialization made more permissive"
+
+2019-07-02  Attila Torok
+
+	envir,qtenv: Add cEnvir::getConnectionLine().
+
+2019-06-13  Rudolf Hornig
+
+	tests: fix a build issue because of a recent change in cXMLElement API
+	change.
+
+2019-05-07  Andras Varga
+
+	test: updated XML-related tests
+
+2019-05-06  Rudolf Hornig
+
+	tests: properly test XML parser even if LibXML is not configured.
+
+2019-04-29  Andras Varga
+
+	xml: move XML parser from nedxml to common, embed Yxml, remove Expat
+	support
+
+	- move XML parsers to common
+	- added Yxml-based SAX parser
+	- use subclassing instead of #ifdefs to support multiple parsers
+	- use exceptions to report parse error instead of error code +
+	getErrorMessage()
+	- removed some methods from SaxHandler (comments, CDATA start/end)
+	- removed Expat support, made redundant by Yxml
+	- updated configure.in, Makefile.inc.in, etc: XML_PARSER replaced with
+	WITH_LIBXML
+	- added test
+
+	Note that no significant functionality is lost when LibXML2 support is
+	turned off. XML module parameters as well as NED and MSG AST XML
+	export/import is still supported due to  LibXML2 is only required when
+	DTD-based validation (and possibly, default value completion) or
+	Schema-based validation is needed. Note that OMNeT++ uses the DOM API of
+	LibXML, which has much higher memory requirements than the embedded
+	SAX-style parser.
+
+2019-04-25  Andras Varga
+
+	sim: cXMLElement: optimize for memory usage (some users have GiB
+	files...)
+
+2019-04-16  Andras Varga
+
+	sim,common: move unit conversion functions from NED to common::Expression
+
+2019-04-13  Andras Varga
+
+	test: removed redundant test
+
+2019-04-11  Andras Varga
+
+	nedxml: NED: added '=~', '<=>', and 'undefined' to the grammar; updated
+	test
+
+2019-04-13  Andras Varga
+
+	test: NED_expr_1.test revised
+
+2019-04-11  Andras Varga
+
+	common: Expression: '%' to allow quantities as args; updated test
+
+2019-04-15  Andras Varga
+
+	test: updated NED_unit_n13.test
+
+	Location in NED file was lost because the error no longer comes from
+	"if (isAConstant()) convertToConst()" statement during network build, but
+	later, in "if (!isVolatile) convertToConst()". The constant folding code
+	in common's Expression class intentionally swallows exceptions.
+
+2019-03-29  Andras Varga
+
+	test: follow changes due to the new Expression class
+
+	Changes:
+
+	NED_*.test, cDynamicExpression_*.test:
+	- error messages now include the name of operator or function where error
+	occurred
+	- better error messages in several other cases
+
+	statistic_*.test:
+	- redundant IdentityFilter removed
+	- ExpressionRecorder is replaced by ExpressionFilter+LastValueFilter for
+	now
+	- notation change (<signalValue> -> $0/$1)
+
+	statistic_multi_1.test:
+	- nothing is emitted now until all inputs have values; before it emitted
+	'nan'
+
+	statistic_multi_n1.test:
+	- new test
+
+	NED_submodule_like_2.test:
+	- remove commented-out block
+
+	NED_functions_1.test:
+	- fix in original test: 1st line was missing from expected output
+
+	cDynamicExpression_cast_1.test, cDynamicExpression_unit_1.test:
+	- some error messages involving subtraction were incorrect/confusing,
+	 they have been fixed now
+
+2019-03-11  Andras Varga
+
+	sim: ported NED to new Expression class
+
+	Changes in: cDynamicExpression, NedSupport, NedNetworkBuilder
+
+	main changes:
+	- Removed duality in parsing/processing NED expressions: expressions in
+	 NED files and INI files were parsed/built in totally different ways.
+	 We now use cDynamicExpression for both.
+	 Details: ExpressionBuilder was eliminated; expression parsing turned OFF
+	 in NED parser (we don't use the AST built by it)
+
+	- cDynamicExpression now relies for common::Expression for parsing and
+	 evaluation. Its old parser (expr.y, expr.lex) has been removed.
+
+	- nedsupport.h moved from include/omnetpp to src/sim: nodes must
+	 now subclass from ExprNode, so they cannot be public.
+
+	- in NED functions: context ("In function x():") was removed from error
+	messages
+	 because it will be added by the Expression class
+
+	Everything is supposed to work exactly as before. (Modulo changes in
+	error message wording.)
+
+2019-02-28  Andras Varga
+
+	common: ADDED GENERIC EXPRESSION EVALUATOR CLASS.
+
+	The Expression class is a from-scratch rewrite of the old Expression
+	class, with the intent of creating generic extensible expression
+	evaluator that can be used *everywhere*. Everywhere means: NED
+	expressions, object matching, scenario constraint, statistics recording,
+	result selection in scavetool/IDE, etc. The new class is tree-based
+	instead of stack-based, because with stack machines one cannot (easily)
+	do shotcutting evaluation of logical operators
+	(AND,OR). Ap
+
+	About the Expression class:
+	- representation is an expression tree (ExprNode*), which can be extended
+	 with new node types as needed
+	- parser understands a generic expression syntax; interpretation (mapping
+	 to expression tree) is done by AST translators that the user can
+	 contribute/extend/replace
+	- ExprValue is pretty much a copy of cNedValue, minus XML, plus cObject*
+	- code in operator nodes was derived from cDynamicExpression --
+	 computations should behave exactly as in existing NED expressions
+	 (which are cDynamicExpression-based)
+	- ExprNodeFactory utility class exists
+	- the 'undefined' value (type=UNDEF) behaves a bit like NaN, anything
+	 involving 'undefined' will evaluate to 'undefined'
+	- logical operators (AND,OR) perform shortcut
+	- constant folding is implemented
+
+	Other:
+	- intutil.h was factored out from random functions throughout
+
+	Reuse existing parsers instead of writing a shiny new one; however,
+	reverse-Polish based intermediate representation was converted to a
+	simple AST representation (Expression::AstNode).
+
+	AST tree (AstNode*) is translated into expression tree (ExprNode*) using
+	translators (AstTranslator). Main method translateToExpressionTree()
+	allows full freedom in translating the tree (context-sensitive, and not
+	constrained one-to-one mapping). For basic needs, subclass
+	BasicAstTranslator.
+
+	More syntax accepted:
+	- match operator (str =~ "**.module")
+	- thre-way comparson, a.k.a. spaceship operator (<=>)
+	- ident[idx], ident.ident, ident.method(...)
+	- nan,inf,undefined
+	- bang operator (!) syntax, currently unused
+
+2019-04-11  Rudolf Hornig
+
+	build: cleanall target now properly cleans all MODEs defined in
+	Makefile.inc.in
+
+2019-04-01  Andras Varga
+
+	test/core: remove invalid test
+
+	NED Reference says package.ned files are found by package, not by folder
+	as the test case checks.
+
+2019-04-01  Andras Varga
+
+	test: unitconversion_1.test refactoring (result made more readable)
+
+2019-04-01  Andras Varga
+
+	test/core: updated for changed interpretation of negative quantity
+
+	leading minus sign now refers to the quantity as a whole, it used to
+	refer only to the first component. Old: "-1s200ms" == -1s+200ms = -0.8s;
+	new: "-1s200ms" = -(1s200ms) = -1.2s
+
+2019-04-01  Andras Varga
+
+	test/common: unitconversion_1.test: added new test cases
+
+2019-03-22  Andras Varga
+
+	test: follow scavetool's renaming to opp_scavetool, and eventlogtool's
+	similar one
+
+2019-03-20  Andras Varga
+
+	sim: cChannelType/cModuleType: error message cosmetics
+
+2019-03-20  Andras Varga
+
+	test: opp_msgtool command line options changed, e.g. --msg6 is not the
+	default
+
+2019-03-20  Andras Varga
+
+	test: update test for recently added intuniformexcl() function
+
+2019-02-21  Attila Torok
+
+	test: Fix models Makefile (generate Makefiles before cleaning).
+
+2019-02-08  Andras Varga
+
+	tests: added cSimpleModule_activity_n2.test
+
+2017-05-03  Andras Varga
+
+	test: added activity-related test cases, n2 failing
+
+	because an exception in a destructor in C++11 will call terminate
+
+2017-04-24  Andras Varga
+
+	common: MatchExpression: added 'field=~pattern' syntax as alternative to
+	'field(pattern)'
+
+2019-02-08  Rudolf Hornig
+
+	tests: run all tests in debug mode
+
+2019-02-08  Rudolf Hornig
+
+	tests: properly test various build configurations + other fixes
+
+2019-02-08  Andras Varga
+
+	test: additional test for preciseDiv()
+
+2018-01-30  Andras Varga
+
+	sim: added preciseDiv(int64_t, SimTime)
+
+2019-02-06  Andras Varga
+
+	tests.csv: histograms' Empty produces different fingerprints on different
+	machines
+
+2019-02-07  Andras Varga
+
+	sim: added intuniformexcl()
+
+	as NED function, global function, as cComponent method, as object
+	(cIntUniformExcl)
+
+2019-02-06  Andras Varga
+
+	tests: cleanup: inactive, obsolete tests moved out of the way, under
+	misc/
+
+2019-02-06  Andras Varga
+
+	test: test support models moved under models/
+
+2019-02-06  Andras Varga
+
+	tests: misc improvements
+
+2019-02-06  Andras Varga
+
+	tests: stress, pthread, anim/watch: compile fixes, porting
+
+2019-02-06  Andras Varga
+
+	tests: Makefile: MAKE IT THE OFFICIAL LIST OF TESTS THAT MUST PASS
+
+	Also: added sqliteresultfiles.
+
+2019-02-05  Andras Varga
+
+	tests: sqliteresultfiles: turned into automated test
+
+2019-02-05  Andras Varga
+
+	test: more tests for deleteModule()
+
+2019-01-29  Andras Varga
+
+	tests: remove tests obsoleted by the new cModule_deleteModule_1 test
+
+2019-01-29  Andras Varga
+
+	tests: replace existing deleteModule() tests
+
+2018-12-03  Andras Varga
+
+	samples: histograms: improved to be a better demo
+
+	- change config so that all (distribution, histogram) pairs make sense,
+	  e.g. not generate [0,1) and collect a histogram on [10,20)
+	- added hint text on canvas
+	- updated fingeprint tests
+
+2018-12-20  Attila Torok
+
+	test: Tests updated for collecting infinite values in histograms
+
+	Two new test cases for ensuring that infinities are accepted and they do
+	not affect the histogram layout.
+
+	Updated histogram save/load tests for changed file file format.
+
+	Updated fingerprint of empty histogram test (it was out of date already).
+
+	Also, fingerprint of SineWeightedLinear yielded two different values on
+	two different computers (Attila's laptop and Giga)
+
+2018-11-30  Attila Torok
+
+	test/fingerprints: Update histogram test fingerprints.
+
+2018-08-30  Rudolf Hornig
+
+	test: added extra build tests
+
+	- default toolchain is now clang
+	- test building with OSG but without OSGEARTH
+	- test building without PARSIM
+	- test building without libxml and expat
+
+2018-06-29  Andras Varga
+
+	sim: remove cHistogram deprecated methods
+
+2018-06-29  Andras Varga
+
+	sim: removed cDensityEstBase, cWeightedStdDev
+
+2018-06-28  Andras Varga
+
+	platdep: remove deprecated timeval_*() functions
+
+2018-06-27  Andras Varga
+
+	samples, etc: remove '--msg6' option as it became the default
+
+2018-06-24  Andras Varga
+
+	sim: remove obsolete histogram classes cVarHistogram, etc.
+
+	cVarHistogram, cLegacyHistogram, cLongHistogram, cDoubleHistogram
+
+2018-06-26  Andras Varga
+
+	test: remove Tkenv
+
+2018-06-26  Andras Varga
+
+	test: remove tkpath tests
+
+2018-08-17  Zoltan Bojthe
+
+	tests: added NED inheritance test with two namespace for @class without
+	namespace
+
+2018-08-17  Zoltan Bojthe
+
+	ADDED a FAILED TEST: signal type error in extended module in another
+	namespace
+
+----------- lines above this marker have been added from git log -----------
+
 2020-01-06  ------ omnetpp-5.6 released ------
 
 2020-01-03  Andras Varga

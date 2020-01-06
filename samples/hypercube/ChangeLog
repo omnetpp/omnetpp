@@ -1,3 +1,9 @@
+2018-06-27  Andras Varga
+
+	samples, etc: remove '--msg6' option as it became the default
+
+----------- lines above this marker have been added from git log -----------
+
 2020-01-06  ------ omnetpp-5.6 released ------
 
 2019-05-15  ------ omnetpp-5.5 released ------
@@ -157,4 +163,3 @@
 	* HC prefix added to Generator and Sink modules
 
 	* standardized indentation of source files
-

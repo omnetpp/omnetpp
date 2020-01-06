@@ -1,3 +1,107 @@
+2019-11-19  Andras Varga
+
+	sim: support @class() property on object parameters
+
+	@class(classname) or @class(classname?) -- latter accepts nullptr too
+
+	The named class must be registered via Register_Class() or
+	Register_Abstract_Class().
+
+2019-10-24  Andras Varga
+
+	sim: cPar: add OBJECT as parameter type
+
+2019-10-23  Andras Varga
+
+	nedxml: AstNode: getSourceLocation() changed from const char * to
+	std::string
+
+	This paves the way for storing filename and line number separately, and
+	stringpooling filename and directory.
+
+	ErrorStore::doAdd() behavior was changed in a subtle way,but original
+	behavior was a bit odd.
+
+	test: NED_xmldoc_1 updated (getSourceLocation() now returns absolute
+	path)
+
+2019-10-22  Andras Varga
+
+	ned: allow reconnecting already connected gates by specifying the
+	@reconnect property in the connection
+
+2019-10-21  Andras Varga
+
+	sim,envir: let xmldoc() interpret the file name as relative to the dir
+	the expression comes from
+
+	That is, when xmldoc() occurs in an included ini file, the file name is
+	now interpreted as relative to the directory containing the included ini
+	file (as opposed to being relative to the main ini file or the working
+	directory.)
+
+	If xmldoc() occurs in a NED file, thr file name is relative to the
+	directory where that NED file was loaded from.
+
+	In addition to updating the implementationi of xmldoc(), it had to be
+	ensured that the function gets access to the directory where the ini
+	entry or NED expression occurred (baseDirectory). This directory was
+	added to the evalation context (cExpression::Context).
+
+	cNedFunction (and thus, Define_NED_Function()) was updated to accept an
+	alternative function signature which accepts cExpression::Context instead
+	of cComponent* as context argument.
+
+	getSourceFileDirectory() method was added to cComponentType.
+
+2019-07-17  Andras Varga
+
+	sim: cContextSwitcher and Co moved to their own header file
+
+2019-07-08  Andras Varga
+
+	sim: cDynamicExpression: added support for variables, members, methods
+	and extra functions
+
+2019-04-13  Andras Varga
+
+	sim: improved error message, mention parameter name when an error occurs
+	while setting up parameter
+
+2019-03-11  Andras Varga
+
+	sim: ported NED to new Expression class
+
+	Changes in: cDynamicExpression, NedSupport, NedNetworkBuilder
+
+	main changes:
+	- Removed duality in parsing/processing NED expressions: expressions in
+	 NED files and INI files were parsed/built in totally different ways.
+	 We now use cDynamicExpression for both.
+	 Details: ExpressionBuilder was eliminated; expression parsing turned OFF
+	 in NED parser (we don't use the AST built by it)
+
+	- cDynamicExpression now relies for common::Expression for parsing and
+	 evaluation. Its old parser (expr.y, expr.lex) has been removed.
+
+	- nedsupport.h moved from include/omnetpp to src/sim: nodes must
+	 now subclass from ExprNode, so they cannot be public.
+
+	- in NED functions: context ("In function x():") was removed from error
+	messages
+	 because it will be added by the Expression class
+
+	Everything is supposed to work exactly as before. (Modulo changes in
+	error message wording.)
+
+2019-03-18  Andras Varga
+
+	src: netbuilder: remove unused members
+
+	Code uses nedsupport::LoopVar instead
+
+----------- lines above this marker have been added from git log -----------
+
 2020-01-06  ------ omnetpp-5.6 released ------
 
 2019-10-22  Andras Varga

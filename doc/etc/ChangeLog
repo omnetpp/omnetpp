@@ -1,3 +1,29 @@
+2020-01-06  Andras Varga
+
+	WHATSNEW and ChangeLog files for OMNeT++ 5.6 brought over from the
+	omnetpp-5.x branch
+
+2019-10-24  Andras Varga
+
+	sim: cPar: add OBJECT as parameter type
+
+2019-10-25  Andras Varga
+
+	nedxml: remove NED expression parsing (was unused since new
+	common::Expression class)
+
+2019-05-15  Rudolf Hornig
+
+	doc: updated WHATSNEW, ChangeLog, API-changes to match content from
+	OMNeT++ 5.5
+
+2018-08-10  Attila Torok
+
+	scave: Load .anf files manually using XML parsing, a new .anf file format
+	with a dtd, and port one .anf file to it
+
+----------- lines above this marker have been added from git log -----------
+
 2020-01-06  ------ omnetpp-5.6 released ------
 
 2019-05-15  ------ omnetpp-5.5 released ------

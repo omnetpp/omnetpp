@@ -1,3 +1,41 @@
+2019-08-26  Attila Torok
+
+	qtenv: When the layouting process takes a long time, ask the user what to
+	do.
+
+	Only if without visualization.
+	"Long time" is more than five seconds.
+
+2019-04-04  Rudolf Hornig
+
+	build: proper dependency on the command line parameters
+
+	- rebuilds properly the output even if only the compiler command line
+	 parameters have changed.
+	- fix issue when rebuild occurred always if CFLAGS contained " delimited
+	strings
+	 (we use $(file) instead of using the shell echo command)
+
+2019-04-03  Rudolf Hornig
+
+	build: fix to allow overriding the output dir by specifiying CONFIGNAME
+	parameter on command line
+
+2019-03-11  Andras Varga
+
+	src: fix broken dependencies in Makefiles
+
+2019-01-16  Rudolf Hornig
+
+	build: fixed build problem on linux
+
+2019-01-10  Rudolf Hornig
+
+	build: added support to build on Windows using MS ABI compatibility (i.e
+	Visual C++ libraries)
+
+----------- lines above this marker have been added from git log -----------
+
 2020-01-06  ------ omnetpp-5.6 released ------
 
 2019-08-26  Attila Torok

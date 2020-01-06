@@ -1,3 +1,470 @@
+2019-10-28  Attila Torok
+
+	scave: Simplification, cleanup, return nullptr instead of throwing in
+	SqliteVectorDataReader.
+
+2019-10-21  Attila Torok
+
+	scavetool: Don't reorder the runs with a multimap when querying metadata.
+
+2019-10-16  Attila Torok
+
+	scave/sqlite: Implement vector data loading from files in SQLite format.
+
+2019-10-16  Attila Torok
+
+	scave/sqlite: Don't forget to actually load parameter "results".
+
+2019-10-16  Andras Varga
+
+	scave: remove obsolete SQLite schema file
+
+	definitive schema is in common/sqliteresultfileschema.cc
+
+2019-10-03  Andras Varga
+
+	scave: fix crash introduced in previous commit
+
+	index.addVector() invalidates currentVectorRef, because it may cause
+	reallocation in std::vector into which currentVectorRef points.
+
+2019-10-03  Andras Varga
+
+	scave: fix vector file indexing bug that caused certain blocks to be left
+	out from the index
+
+	If there was a vector declaration mid-file, the data block that
+	immediately precedes it was not included in the index.
+
+	Added Assert() to ensure this does not happen again.
+
+2019-10-01  Attila Torok
+
+	scave: Comment fix for new metadata querying functions.
+
+2019-09-26  Attila Torok
+
+	opp_charttool: Add get_config_entries to results.py.
+
+2019-09-26  Attila Torok
+
+	scave: add list config entries option to the query command of
+	opp_scavetool, WIP usage in charttool
+
+2019-09-24  Attila Torok
+
+	opp_scavetool: When querying metadata, apply the filter to those, not
+	always to the results.
+
+2019-09-05  Attila Torok
+
+	common,scave: Quote/unqoute all strings written to/read from scave files.
+
+2019-08-02  Attila Torok
+
+	scave: Don't add config entries multiple times when loading results of
+	the same run from multiple files
+
+	Like a .sca and a .vec.
+
+2019-07-30  Attila Torok
+
+	ide/scave: Add a Parameters tab to the Browse Data tab by copying the
+	Scalars tab.
+
+	And allow sorting parameters by name and value on the browse data tab
+
+2019-09-02  Attila Torok
+
+	scave: Accept both "version 2" and "version 3" signatures for .vec files
+
+2019-08-01  Andras Varga
+
+	scave: opp_scavetool: assist user by printing available export formats
+	when needed
+
+2019-07-30  Andras Varga
+
+	scave/envir: result file version number bumped from 2 to 3
+
+	Reason: "par" and "config" lines added, "param" lines removed
+
+2019-07-30  Andras Varga
+
+	scave: opp_scavetool: accept exporter options via the --<key>=<value>
+	notation as well
+
+2019-07-30  Andras Varga
+
+	scave: exporters: export separate underflow/overflow values instead of
+	underflow/overflow "bins"
+
+	In the exported files, now, len(binEdges) == len(binValues)+1
+
+2019-07-18  Attila Torok
+
+	ide/scave: Added param assignment (config entry) and value querying.
+
+	some work on parameter assignments and results (python api, wired into
+	tree widget, etc) simplify itervar and runattr attachment when querying
+	results. add include_param_assignments parameters to result querying
+	functions don't run the filter twice when pickling attrs for results,
+	pass the IDList instead add include_config_entries removed
+	get_result_attrs from Python API rename ParamPatterns to ParamAssignments
+	allow filtering config options by "type"
+
+2017-07-16  Andras Varga
+
+	common: Histograms: store binEdges, binValues plus underflow/overflow
+	instead of bins
+
+	New representation is more correct (underflow/overflow are not really
+	bins because they are infinite width), and also more inline with Python's
+	histogram representation
+
+2019-07-23  Andras Varga
+
+	scave: CSV-S (spreadsheet) exporter to support exporting parameters too;
+	some features removed
+
+	- remove scalarsGroupBy option (all spreadsheet programs have pivoting
+	functionality)
+	- remove DataSorter and DataTable (ScalarDataTable, etc) classes that
+	were only used by CsvSpreadExporter
+
+2019-07-23  Andras Varga
+
+	scave: updated exporters to save parameters too (except CSV-S)
+
+2019-07-18  Andras Varga
+
+	scave: opp_scavetool updated to deal with parameters as well
+
+2019-07-18  Andras Varga
+
+	scave: "par" loading from scalar files into ResultFileManager
+
+2019-07-18  Andras Varga
+
+	scave: load "config" lines, also from SQLite files
+
+	Treat "param" lines as "config"'s obsolete, more restricted synonym.
+	ResultFileManager: paramAssignment -> configValue rename
+
+2018-07-09  Andras Varga
+
+	sim,envir,scave: result files: save full config, not only param
+	assignment lines
+
+	Essentially, "param"->"config" rename.
+
+2019-06-13  Attila Torok
+
+	scavetool,ide: Add options to limit vector data by simulation time.
+
+	Add GUI support to the IDE for exporting vector data with limited time
+	range. Add vector data time limiting to the linechart template.
+
+2019-06-06  Attila Torok
+
+	ide/scave: Try to more intelligently refine the result filter based on
+	selection.
+
+	Move selection filter generation into its own class. Fix
+	IDList::getDifference(). choose the best column for filter approximation
+	do not add a simple * for field patternss when getting the view filter
+	result selection filter generation is "good enough" in most cases.
+
+2019-05-30  Attila Torok
+
+	ide/scave: Use shared memory for matplotlib drawing and vector data
+	passing.
+
+	Limit vector data based on available system memory. Delete XYVector
+	class. Add getAvailableSystemMemoryBytes. etc...
+
+2019-06-13  Attila Torok
+
+	scavetool: Fix: Filter expression can no longer be empty, defaults to
+	'*'.
+
+2019-06-12  Rudolf Hornig
+
+	scave: removed unimplemented method from XYArray
+
+2019-06-12  Rudolf Hornig
+
+	scave: malloc_trim() is available only on Linux
+
+2019-05-29  Attila Torok
+
+	ide/scave: One fewer vector data conversion, add includePreciseX
+	parameter for loading.
+
+2019-05-28  Attila Torok
+
+	ide/scave: Wrap and call malloc_trim (and call GC) after loaded vector
+	data is no longer needed.
+
+2019-05-28  Attila Torok
+
+	ide/scave: Add memory limit and simtime range to vector data loading.
+
+2019-05-27  Attila Torok
+
+	ide/scave: Free up memory used by vector data after it is no longer
+	needed.
+
+2019-05-26  Andras Varga
+
+	ide/scave: Allow interrupting all stages of result loading/pickling.
+
+2019-05-25  Andras Varga
+
+	scave: IDList: implemented equals(), bulkAdd() etc.
+
+2019-05-25  Andras Varga
+
+	ide/scave: Data Export dialog title and description tweak
+
+2019-04-30  Attila Torok
+
+	scave: Do not allow empty or null filter expression in ResultFileManager
+	functions.
+
+2019-04-30  Attila Torok
+
+	scave: remove unused constant
+
+2019-04-23  Attila Torok
+
+	scave: Remove vector operations functionality from opp_scavetool and
+	exporters
+
+	As the underlying functionality was gone with the removal of
+	DataflowManager and filter nodes. The recommended way of processing
+	output vectors is with Python (NumPy).
+
+2019-04-23  Attila Torok
+
+	scave: Add includeEventNumbers parameter to IndexedVectorFileReader.
+
+2019-04-23  Attila Torok
+
+	scave: cleanup: Move vector data loading functions into its own source
+	files.
+
+2019-04-23  Attila Torok
+
+	scave: Add a note about IDList's "copy" constructor.
+
+2019-04-23  Attila Torok
+
+	scave: Remove vector file rebuilding (while indexing).
+
+2019-04-23  Attila Torok
+
+	scave: cleanup: Delete DataflowManager, its Nodes, and commented out all
+	usages.
+
+	Motivation:
+
+	Vector operations can be more easily and more efficiently done from
+	Python, using NumPy, because vectors are expected to fit into memory
+	nowadays.
+
+	DataflowManager was designed ~20 years ago, when memory was a much more
+	scarce resource.
+
+2019-04-23  Attila Torok
+
+	scave: Fix crashes by storing the Blocks in the VectorIndex by pointer
+	(on the heap).
+
+2019-04-18  Attila Torok
+
+	scave: Rework how IndexedVectorFileReader works, load data using a new
+	Adapter.
+
+	Also rename OutputVectorEntry to VectorDatum. Drop unnecessary ~Ex class.
+
+2019-04-18  Attila Torok
+
+	scave: Blocks are now stored in VectorFileIndex, VectorInfo points into
+	this.
+
+2019-04-18  Attila Torok
+
+	scave: cleanup: Rework how FingerPrints are checked, rename
+	indexfile.[h|cc] to vectorfileindex.[h|cc].
+
+2019-04-18  Attila Torok
+
+	scave: cleanup: Make RunData an internal class of VectorFileIndex.
+
+2019-04-18  Attila Torok
+
+	scave: cleanup: Separate IndexFileUtils into its own files.
+
+2019-04-17  Attila Torok
+
+	scave: cleanup: Rename indexedvectorfile.[h|cc] to
+	indexedvectorfilereader.[h|cc].
+
+2019-04-17  Attila Torok
+
+	scave: cleanup: Separate IndexFileReader and IndexFileWriter from
+	indexfile.[h|cc]
+
+2019-04-17  Attila Torok
+
+	scave: cleanup: Put Block and VectorInfo into VectorFileIndex and
+	separated IndexedVectorFileWriterNode into its own file.
+
+2019-04-17  Attila Torok
+
+	scave: cleanup: Remove a now useless typedef, rename a C++ class.
+
+	Blocks -> std::vector<Block> VectorData -> VectorInfo
+
+2019-04-17  Attila Torok
+
+	scave: cleanup: Renaming of several C++ classes and files
+
+	- Files renamed to match names of contained classes
+	- Add Node to end of VectorFileReader Node class names.
+	- Rename IndexFile to IndexFileUtils.
+
+2019-04-29  Andras Varga
+
+	xml: move XML parser from nedxml to common, embed Yxml, remove Expat
+	support
+
+	- move XML parsers to common
+	- added Yxml-based SAX parser
+	- use subclassing instead of #ifdefs to support multiple parsers
+	- use exceptions to report parse error instead of error code +
+	getErrorMessage()
+	- removed some methods from SaxHandler (comments, CDATA start/end)
+	- removed Expat support, made redundant by Yxml
+	- updated configure.in, Makefile.inc.in, etc: XML_PARSER replaced with
+	WITH_LIBXML
+	- added test
+
+	Note that no significant functionality is lost when LibXML2 support is
+	turned off. XML module parameters as well as NED and MSG AST XML
+	export/import is still supported due to  LibXML2 is only required when
+	DTD-based validation (and possibly, default value completion) or
+	Schema-based validation is needed. Note that OMNeT++ uses the DOM API of
+	LibXML, which has much higher memory requirements than the embedded
+	SAX-style parser.
+
+2019-02-14  Attila Torok
+
+	scave: The "attr:" prefix CHANGED MEANING in filter expressions.
+
+	It's now used for result attributes, not run attributes. Run attributes
+	can be accessed with the new "runattr:" prefix.
+
+	Plus a small copypaste bug fix. And removed TODOs.
+
+	follow "attr:" -> "runattr:" rename in filter expressions.
+
+2019-01-25  Attila Torok
+
+	scave: Implement the new results API. Itervars are no longer added as
+	scalars.
+
+2019-02-14  Attila Torok
+
+	scave: Small cosmetic changes in ResultFileManager.
+
+2019-04-11  Andras Varga
+
+	scave: ported ExpressionFilterNode to the new Expression class
+
+2019-04-04  Rudolf Hornig
+
+	build: proper dependency on the command line parameters
+
+	- rebuilds properly the output even if only the compiler command line
+	 parameters have changed.
+	- fix issue when rebuild occurred always if CFLAGS contained " delimited
+	strings
+	 (we use $(file) instead of using the shell echo command)
+
+2019-04-03  Rudolf Hornig
+
+	build: fix to allow overriding the output dir by specifiying CONFIGNAME
+	parameter on command line
+
+2019-03-22  Andras Varga
+
+	scave: scavetool: break long paragraphs
+
+2019-03-22  Andras Varga
+
+	src: rename scavetool to opp_scavetool, and eventlogtool to
+	opp_eventlogtool
+
+	Reason: consistency. We'd like all our tools to begin with opp_.
+
+2019-03-22  Andras Varga
+
+	nedxml: opp_nedtool and opp_msgtool help texts refined
+
+	also: 'convert' command default operation changed.
+
+2019-03-11  Andras Varga
+
+	src: fix broken dependencies in Makefiles
+
+2019-02-22  Andras Varga
+
+	scave: scavetool: cosmetics
+
+2019-01-16  Rudolf Hornig
+
+	build: fixed build problem on linux
+
+2019-01-10  Rudolf Hornig
+
+	build: added support to build on Windows using MS ABI compatibility (i.e
+	Visual C++ libraries)
+
+2018-11-21  Attila Torok
+
+	scave: Delete everything related to computed results.
+
+2018-10-25  Attila Torok
+
+	scave: CsvRecordsExporter: Do not emit a "value" column if there are no
+	scalars exported.
+
+2017-04-25  Andras Varga
+
+	scave: ResultItem: added getItemType(); filter now understands
+	'type(scalar)' etc
+
+2017-04-25  Andras Varga
+
+	scave: refactoring: getType() renamed to getDataType()
+
+2018-06-28  Andras Varga
+
+	platdep: remove deprecated timeval_*() functions
+
+2018-09-21  Attila Torok
+
+	misc: Replace $* with "$@" in a couple scripts.
+
+2018-11-05  Attila Torok
+
+	scave: Fix build with C++17. Contribution by
+	tomasz.jankowski.mail@gmail.com.
+
+----------- lines above this marker have been added from git log -----------
+
 2020-01-06  ------ omnetpp-5.6 released ------
 
 2019-10-03  Andras Varga

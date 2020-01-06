@@ -1,3 +1,10 @@
+2019-10-30  Rudolf Hornig
+
+	samples,test: use intval_t, uintval_t instead of long, unsigned long as
+	long is not 64bit on Windows.
+
+----------- lines above this marker have been added from git log -----------
+
 2020-01-06  ------ omnetpp-5.6 released ------
 
 2019-05-15  ------ omnetpp-5.5 released ------
