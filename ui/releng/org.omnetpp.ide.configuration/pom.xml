@@ -11,8 +11,8 @@
     <tycho.extras.version>1.3.0</tycho.extras.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <repo.url>http://download.eclipse.org/releases/latest</repo.url>
-    <update-repo.url>http://download.eclipse.org/eclipse/updates/4.13</update-repo.url>
-    <cdt-repo.url>http://download.eclipse.org/tools/cdt/releases/9.9</cdt-repo.url>
+    <update-repo.url>http://download.eclipse.org/eclipse/updates/4.14</update-repo.url>
+    <cdt-repo.url>http://download.eclipse.org/tools/cdt/releases/9.10</cdt-repo.url>
 <!--    <cdt-repo.url>http://download.eclipse.org/tools/cdt/builds/master/nightly</cdt-repo.url> -->
   </properties>
 

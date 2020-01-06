@@ -12,5 +12,5 @@ mkdir omnetpp
 # checkout the current state of the repo to the context dir
 git --git-dir ~/omnetpp-dev/.git --work-tree=omnetpp checkout -f omnest-5.x
 
-docker build -t omnetpp/distrobuild:eclipse4.13-tools180301-191212 .
+docker build -t omnetpp/distrobuild:eclipse4.14-tools180301-200106 .
 rm -rf omnetpp
