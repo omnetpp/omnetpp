@@ -1,3 +1,5 @@
+2020-01-06  ------ omnetpp-5.6 released ------
+
 2019-12-06  Andras Varga
 
 	* opp_test: fixed "io.UnsupportedOperation: can't do nonzero end-relative seeks"
