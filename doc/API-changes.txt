@@ -21,18 +21,34 @@ Legend:
 (i)     information
 
 
+OMNeT++ 5.6
+~~~~~~~~~~~
+
+(+)     SimTime: Added the fromRaw() method.
+
+(+)     cGate: Added the isGateHalf() and getOtherHalf() methods.
+
+(!)     The deleteModule() method was moved from cSimpleModule to cModule.
+
+(+)     The deleteModule() method's functionality has has been extended:
+        it is now allowed for a running module to delete itself, also as
+        part of a module tree.
+
+(+)     cLabelFigure: Added rotation support (setAngle()/getAngle() methods).
+
+
 OMNeT++ 5.5
 ~~~~~~~~~~~
 
-(+)     API in resultfiltes.h and resultrecorders.h made public:
+(+)     API in resultfilters.h and resultrecorders.h made public:
 
-        filters: WarmupPeriodFilter, CountFilter, TotalCountFilter, ConstantFilter,
+        Filters: WarmupPeriodFilter, CountFilter, TotalCountFilter, ConstantFilter,
         Constant0Filter, Constant1Filter, IdentityFilter, SkipNanFilter, SumFilter,
         MeanFilter, MinFilter, MaxFilter, AverageFilter, TimeAverageFilter,
         RemoveRepeatsFilter, PacketBytesFilter, SumPerDurationFilter, TimeFilter,
         ErrorNanFilter, CountNanFilter
 
-        recorders: VectorRecorder, CountRecorder, LastValueRecorder, SumRecorder,
+        Recorders: VectorRecorder, CountRecorder, LastValueRecorder, SumRecorder,
         MeanRecorder, Minrecorder, MaxRecorder, AverageRecorder, TimeAverageRecorder,
         StatisticsRecorder, StatsRecorder, HistogramRecorder, TimeWeightedHistoramrecorder,
         PSquareRecorder, KSplitRecorder, ErrorNanRecorder
@@ -51,13 +67,13 @@ OMNeT++ 5.5
 (+)     cComponent: Added intuniformexcl() returning a random integer with
         uniform distribution over [a,b) (i.e. [a,b-1]).
 
-(+)     SimTime: Added preciseDiv() for a precise division of an integer 
+(+)     SimTime: Added preciseDiv() for a precise division of an integer
         and a simulation time.
 
-(+)     cQueue, cPacketQueue: added a constructor that accepts a comparator 
+(+)     cQueue, cPacketQueue: added a constructor that accepts a comparator
         object (not just a function).
 
-(+)     Register_ResultFilter2(), Register_ResultRecorder2(): new macros that 
+(+)     Register_ResultFilter2(), Register_ResultRecorder2(): new macros that
         allow for registering result filters and recorders together with a
         description string.
 

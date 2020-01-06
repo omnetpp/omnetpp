@@ -1,3 +1,21 @@
+2020-01-06  ------ omnetpp-5.6 released ------
+
+2019-12-03  Andras Varga
+
+	* Documented @reconnect.
+
+2019-12-03  Attila Torok
+
+	* Documented cLabelFigure::angle.
+
+2019-10-25  Attila Torok
+
+	* Mention manual connection routing using the "m" display string tag
+
+2019-07-08  Andras Varga
+
+	* Added "%<" log prefix format char to the manual
+
 2019-05-15  ------ omnetpp-5.5 released ------
 
 2016-12-21  Rudolf Hornig

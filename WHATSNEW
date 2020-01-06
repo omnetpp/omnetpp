@@ -41,6 +41,118 @@ Samples:
     systems.
 
 
+OMNeT++ 5.6 (January 2020)
+--------------------------
+
+This is primarily a bugfix release, with a small but practically quite useful
+NED feature (@reconnect) and minor additions to the simulation library.
+Regarding bugfixes, Qtenv has received quite a lot of attention.
+
+NED:
+
+  - The new @reconnect property allows reconnecting already connected gates
+    by specifying it in the new connection's body. This is especially
+    useful in INET Framework, e.g. because it eliminates the need for "hook"
+    modules in compound modules that represent network interfaces.
+
+Simulation library:
+
+  - SimTime: Added the fromRaw() method.
+
+  - cGate: Added the isGateHalf() and getOtherHalf() methods.
+
+  - The deleteModule() method was moved from cSimpleModule to cModule, revised,
+    and its functionality extended: it is now allowed for a running module
+    to delete itself, also as part of a module tree. (Note: direct deletion
+    of a module or channel object, i.e. via the "delete" operator, is still
+    not allowed.)
+
+  - cLabelFigure: Added rotation support (setAngle() method).
+
+  - cAbstractHistogram: Fixed the getCDF() method which was broken.
+
+  - cFigure: Fixed a bug that caused adding figures to be O(n) or slower,
+    causing a huge performance penalty with 10000 or more figures.
+
+  - Several further smaller improvements.
+
+Qtenv:
+
+  - Added a "Debug Now" option to the Simulate menu.
+
+  - Allow dragging submodules around by holding Shift. (This works by changing
+    the coordinates in the display string.)
+
+  - Added option to export module graphics to an image, and a dialog to
+    select the exported area.
+
+  - Start the animation at t=0, not right before the first event.
+
+  - Add some sideways offset to methodcall animation lines and text, to
+    reduce overlap with connection arrows.
+
+  - Connection arrows: Make the "m=[nesw]" display string tag work better
+    with border-to-border connections.
+
+  - Align the lines of info text ("t" display string tag) of submodules and
+    connections appropriately in the left/top/right positions.
+
+  - Performance: cache min(animSpeed) in cCanvas, so that Qtenv doesn't
+    have to compute it every time.
+
+  - Set a busy indicator (spinny cursor) during more potentially long
+    operations.
+
+  - When the layouting process takes a long time (more than five seconds),
+    ask the user what to do (wait or finish).
+
+  - Added an option to disable logging from refreshDisplay().
+
+  - Default log prefix format changed to use %K instead of %C. (%K only prints
+    the context component if it is different from the event's module; %C always
+    prints it.)
+
+  - Log prefix format: Added the %< (trim preceding whitespace) directive.
+
+  - Keep caret (cursor) near the same event when switching Log Inspector modes.
+
+  - Removed the unused scrollback limit option. Updated the Preferences
+    dialog accordingly.
+
+  - Dozens of further bug fixes and improvements.
+
+IDE:
+
+  - Updated to use Eclipse 4.14, CDT 9.10.
+
+  - IDE: Made the "Project Features" menu item more creative in finding
+    the project. (It said "Select a project first" much too often.)
+
+  - Analysis Tool: Fix weighted histogram PDF/CDF computation (use sum of
+    weights instead of observation count).
+
+  - NED editor: added manual connection routing using the "m" tag.
+
+  - SequenceChart: Avoid out of bounds error when selecting manual axis
+    ordering, or switching between "Manual" and "Minimize crossings" modes.
+
+  - EventlogTable, SequenceChart: Strip ANSI escape sequences from log
+    message lines.
+
+  - Let the user permanently turn off the "OMNeT++ libraries not yet
+    compiled" dialog.
+
+  - Some further fixes and improvements.
+
+Other:
+
+  - scavetool: Fixed vector file indexing bug that caused certain blocks
+    to be left out from the index. This also affects the Analysis Tool in
+    the IDE, which uses the same code for result file access.
+
+  - opp_test, opp_featuretool: Various small fixes.
+
+
 OMNeT++ 5.5.1 (June 2019)
 -------------------------
 

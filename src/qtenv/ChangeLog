@@ -1,3 +1,196 @@
+2020-01-06  ------ omnetpp-5.6 released ------
+
+2019-11-07  Attila Torok
+
+	* Make info text of connections (the "t" display string tag) to be
+	left/right/center aligned as well.
+
+2019-11-21  Attila Torok
+
+	* Don't use cObject* item data when the inspectors aren't fresh.
+	This caused a crash when gathering tooltips in Fast mode, and the object
+	pointer set on some figure was stale.
+
+2019-12-03  Attila Torok
+
+	* Implemented cLabelFigure::angle.
+
+2019-11-11  Attila Torok
+
+	* LogInspector: Fix assertion failure when the simulation is restarted with
+	an empty Log buffer.
+
+2019-05-29  Attila Torok
+
+	* Allow dragging submodules around by holding Shift, changing their
+	DisplayStrings.
+
+2019-11-10  Andras Varga
+
+	* Fix copy/paste bug in Find Object dialog's code.
+
+2019-10-30  Attila Torok
+
+	* Add some sideways offset to methodcall animation lines and text, to
+	reduce overlap with connection arrows.
+
+2019-10-25  Attila Torok
+
+	* Connection items: Make the "m=[nesw]" display string tag work better
+	with "border-to-border" connections.
+
+2019-10-30  Attila Torok
+
+	* Fix crashes on inspector close / network rebuild / quit.
+
+2019-11-05  Andras Varga
+
+	* Object inspector: Display null pointers as "nullptr" instead of "NULL"
+
+2019-10-24  Attila Torok
+
+	* Minor layout tweak in PreferencesDialog.
+
+2019-10-21  Attila Torok
+
+	* Add option to export module graphics to an image, and a dialog to
+	select the exported area.
+
+2019-10-22  Attila Torok
+
+	* TextViewerWidget: Give one less chance for too deep recursion in
+	updateScrollbars().
+
+2019-10-22  Attila Torok
+
+	* Message animator: Fix a crash in complicated methodcall/messagesend
+	combinations, discovered in the INET queueing tutorial.
+
+2019-10-17  Gyorgy Szaszko
+
+	* Fix assertion failure in TextViewerWidget when inspected object is
+	deleted.
+
+2019-09-20  Attila Torok
+
+	* Fix DisplayUpdateController::skipToNextEvent(). It did not really skip
+	if there was a non-holding animation in progress.
+
+2019-09-20  Attila Torok
+
+	* Start the simulation at t=0, not right before the first event.
+
+2019-09-10  Attila Torok
+
+	* Fix assertion failure in LogInspector when restarting the	simulation.
+
+2019-09-09  Attila Torok
+
+	* Do not allow endSend() right after beginSend(), no sendDirect() or
+	sendHop() calls in between. This caused a crash, so we now explicitly
+	disallow and avoid it.
+
+2019-09-16  Attila Torok
+
+	* Fix a crash when closing inspector windows with Qt >=5.12.
+
+	Before, the inspector was deleted by us manually, right inside the
+	closeEvent() callback. With older Qt versions, this caused no problems,
+	because no widget member was accessed after the event. Not so long ago
+	this changed, so we now have to rely on Qt for deleting the Inspector
+	when it is closed, but it works well.
+
+	See: https://bugreports.qt.io/browse/QTBUG-78314
+
+2019-09-20  Attila Torok
+
+	* Align the lines of info text of submodule graphics items
+	appropriately in the left/top/right positions.
+
+2019-08-27  Andras Varga
+
+	* Performance: cache min(animSpeed) in cCanvas, so that Qtenv doesn't
+	have to compute it every time.
+
+2019-08-26  Attila Torok
+
+	* Prevent user from manually calling finish() twice after error.
+
+2019-08-16  Andras Varga
+
+	* Fix possible duplicate LF_END_RUN notification.
+
+2019-08-26  Attila Torok
+
+	* Generic Object Inspector: When counting/collectiong cObject children,
+	catch exceptions and show the error.
+
+2019-08-27  Attila Torok
+
+	* Put "Qtenv" into argv instead of "app" - it is visible in some
+	window managers.
+
+2019-08-26  Attila Torok
+
+	* Set a busy indicator (spinny cursor) during more potentionally
+	long operations.
+
+2019-08-26  Attila Torok
+
+	* When the layouting process takes a long time (more than five seconds),
+	ask the user what to do (wait or finish).
+
+2019-07-17  Attila Torok
+
+	* Internal renames: performAnimations() -> performHoldAnimations(),
+	endAnimations() -> skipHoldAnimations().
+
+2019-07-16  Attila Torok
+
+	* Keep caret (cursor) near the same event when switching
+	LogInspector modes.
+
+2019-07-16  Attila Torok
+
+	* Remove the unused scrollbackLimit option. Update the Preferences
+	dialog accordingly.
+
+2019-08-07  Attila Torok
+
+	* Add a "Debug Now" option to the Simulate menu.
+
+2019-07-03  Andras Varga
+
+	* Fix aborting when user enters invalid log prefix in Preferences.
+
+2019-07-03  Andras Varga
+
+	* Added "%<" (trim preceding whitespace) directive to the log prefix format.
+
+2019-07-02  Andras Varga
+
+	* Default log prefix format changed to use %K instead of %C. (%K only prints
+	the context component if it is different from the event's module; %C always
+	prints it.)
+
+	%K results in shorter log, without losing information (event's module is
+	already part of the event banner). In case the user wants to turn off
+	event banners and/or produce grep-friendly log, s/he will likely want to
+	adjust the log prefix format as well, to include more information.
+
+2019-07-02  Andras Varga
+
+	* Logging: omit adding the context component to the line, because it is
+	typically also printed as part of the log prefix (%C or %K format tags).
+
+2019-06-13  Attila Torok
+
+	* Add an option to disable logging from refreshDisplay().
+
+2019-06-13  Attila Torok
+
+	* Color log output prefix according to LogLevel.
+
 2019-05-15  ------ omnetpp-5.5 released ------
 
 2019-03-21  Attila Torok
@@ -36,7 +229,7 @@
 2018-10-04  Attila Torok
 
 	* Rework video recording dialog, with added options.
-	
+
 	* Only resize the MainWindow to a multiple of 2, not 4, when
 	recording video. Turns out, this is enough for yuv420p subsampling, and
 	we don't plan to use any other.
@@ -238,7 +431,7 @@
 
 2017-10-06  Attila Torok
 
-	*  Enable horizontal scrolling in the Object Tree (the top left one)
+	* Enable horizontal scrolling in the Object Tree (the top left one)
 
 2017-11-27  Attila Torok
 
