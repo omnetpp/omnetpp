@@ -123,7 +123,7 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 
                 // check for events being filtered out
                 if (eventPtr != 0)
-                    x1 = (int)sequenceChart.getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinate(eventPtr));
+                    x1 = (int)sequenceChart.getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateBegin(eventPtr));
                 else {
                     eventPtr = sequenceChartFacade.IEvent_getNonFilteredEventForEventNumber(eventNumber);
                     org.omnetpp.common.engine.BigDecimal eventSimulationTime = sequenceChartFacade.IEvent_getSimulationTime(eventPtr);
@@ -134,7 +134,7 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
                 }
 
                 if (nextEventPtr != 0)
-                    x2 = (int)sequenceChart.getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinate(nextEventPtr));
+                    x2 = (int)sequenceChart.getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateBegin(nextEventPtr));
                 else {
                     nextEventPtr = sequenceChartFacade.IEvent_getNonFilteredEventForEventNumber(nextEventNumber);
                     org.omnetpp.common.engine.BigDecimal nextEventSimulationTime = sequenceChartFacade.IEvent_getSimulationTime(nextEventPtr);

@@ -63,17 +63,24 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
 
         IEvent *getTimelineCoordinateSystemOriginEvent() { return eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber); }
         eventnumber_t getTimelineCoordinateSystemOriginEventNumber() { return timelineCoordinateOriginEventNumber; }
-        double getTimelineCoordinateDelta(double simulationTimeDelta);
+        void undefineTimelineCoordinateSystem();
+        void relocateTimelineCoordinateSystem(IEvent *event);
+
         /**
          * Calculates the timeline coordinate for the given event. Returns value from the cache if already there or calculates it
          * while taking care about the calculation limits.
          */
-        double getTimelineCoordinate(ptr_t ptr, double lowerTimelineCoordinateCalculationLimit = -DBL_MAX, double upperTimelineCoordinateCalculationLimit = DBL_MAX);
-        double getTimelineCoordinate(IEvent *event, double lowerTimelineCoordinateCalculationLimit = -DBL_MAX, double upperTimelineCoordinateCalculationLimit = DBL_MAX);
-        double getCachedTimelineCoordinate(IEvent *event);
-        double IEvent_getTimelineCoordinate(ptr_t ptr);
-        void undefineTimelineCoordinateSystem();
-        void relocateTimelineCoordinateSystem(IEvent *event);
+        double getTimelineCoordinateDelta(double simulationTimeDelta);
+        double getTimelineCoordinateDelta(IEvent *event);
+        double getTimelineCoordinateBegin(ptr_t ptr, double lowerTimelineCoordinateCalculationLimit = -DBL_MAX, double upperTimelineCoordinateCalculationLimit = DBL_MAX);
+        double getTimelineCoordinateEnd(ptr_t ptr, double lowerTimelineCoordinateCalculationLimit = -DBL_MAX, double upperTimelineCoordinateCalculationLimit = DBL_MAX);
+        double getTimelineCoordinateBegin(IEvent *event, double lowerTimelineCoordinateCalculationLimit = -DBL_MAX, double upperTimelineCoordinateCalculationLimit = DBL_MAX);
+        double getTimelineCoordinateEnd(IEvent *event, double lowerTimelineCoordinateCalculationLimit = -DBL_MAX, double upperTimelineCoordinateCalculationLimit = DBL_MAX);
+        double getCachedTimelineCoordinateBegin(IEvent *event);
+        double getCachedTimelineCoordinateEnd(IEvent *event);
+        double IEvent_getTimelineCoordinateBegin(ptr_t ptr);
+        double IEvent_getTimelineCoordinateEnd(ptr_t ptr);
+        double EventLogEntry_getTimelineCoordinate(ptr_t ptr);
 
         IEvent *getEventForNonLinearTimelineCoordinate(double timelineCoordinate, bool &forward);
         IEvent *getLastEventNotAfterTimelineCoordinate(double timelineCoordinate);

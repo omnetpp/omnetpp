@@ -1494,12 +1494,12 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                             IEvent e1 = selectionEvents.get(1);
 
                             if (e0.getEventNumber() < e1.getEventNumber()) {
-                                exportBeginX = sequenceChart.getEventXViewportCoordinate(e0.getCPtr());
-                                exportEndX = sequenceChart.getEventXViewportCoordinate(e1.getCPtr());
+                                exportBeginX = sequenceChart.getEventXViewportCoordinateBegin(e0.getCPtr());
+                                exportEndX = sequenceChart.getEventXViewportCoordinateBegin(e1.getCPtr());
                             }
                             else {
-                                exportBeginX = sequenceChart.getEventXViewportCoordinate(e1.getCPtr());
-                                exportEndX = sequenceChart.getEventXViewportCoordinate(e0.getCPtr());
+                                exportBeginX = sequenceChart.getEventXViewportCoordinateBegin(e1.getCPtr());
+                                exportEndX = sequenceChart.getEventXViewportCoordinateBegin(e0.getCPtr());
                             }
                             break;
                         case 1:
@@ -1507,8 +1507,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                             exportEndX = sequenceChart.getViewportWidth();
                             break;
                         case 2:
-                            exportBeginX = sequenceChart.getEventXViewportCoordinate(eventLog.getFirstEvent().getCPtr());
-                            exportEndX = sequenceChart.getEventXViewportCoordinate(eventLog.getLastEvent().getCPtr());
+                            exportBeginX = sequenceChart.getEventXViewportCoordinateBegin(eventLog.getFirstEvent().getCPtr());
+                            exportEndX = sequenceChart.getEventXViewportCoordinateBegin(eventLog.getLastEvent().getCPtr());
                             break;
                         default:
                             return null;

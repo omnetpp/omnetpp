@@ -236,6 +236,14 @@ const char *EventLogFacade::ComponentMethodBeginEntry_getMethod(ptr_t ptr)
     return ((ComponentMethodBeginEntry *)ptr)->method;
 }
 
+ptr_t EventLogFacade::ModuleMethodBeginEntry_getModuleMethodEndEntry(ptr_t ptr)
+{
+    BEGIN_SEND_ENTRY_PTR(ptr);
+    ModuleMethodBeginEntry *moduleMethodBeginEntry = (ModuleMethodBeginEntry *)ptr;
+    return (ptr_t)moduleMethodBeginEntry->getEvent()->getModuleMethodEndEntry(moduleMethodBeginEntry);
+}
+
+
 IMessageDependency *EventLogFacade::IMessageDependency_getMessageDependency(ptr_t ptr)
 {
     IMESSAGE_DEPENDENCY_PTR(ptr);

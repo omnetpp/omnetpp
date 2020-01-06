@@ -235,13 +235,11 @@ bool Event::isSelfMessageProcessingEvent()
 EndSendEntry *Event::getEndSendEntry(BeginSendEntry *beginSendEntry)
 {
     Assert(beginSendEntry && this == beginSendEntry->getEvent());
-    for (int i = beginSendEntry->getEntryIndex(); i < (int)eventLogEntries.size(); i++) {
+    for (int i = beginSendEntry->getEntryIndex() + 1; i < (int)eventLogEntries.size(); i++) {
         EventLogEntry *eventLogEntry = eventLogEntries[i];
-
         EndSendEntry *endSendEntry = dynamic_cast<EndSendEntry *>(eventLogEntry);
         if (endSendEntry)
             return endSendEntry;
-
         // message deleted on the channel (skip all deletes until the matching one is found)
         DeleteMessageEntry *deleteMessageEntry = dynamic_cast<DeleteMessageEntry *>(eventLogEntry);
         if (deleteMessageEntry && deleteMessageEntry->messageId == beginSendEntry->messageId)
@@ -250,6 +248,27 @@ EndSendEntry *Event::getEndSendEntry(BeginSendEntry *beginSendEntry)
 
     throw opp_runtime_error("Neither EndSendEntry nor DeleteMessageEntry found");
 }
+
+ModuleMethodEndEntry *Event::getModuleMethodEndEntry(ModuleMethodBeginEntry *moduleMethodBeginEntry)
+{
+    Assert(moduleMethodBeginEntry && this == moduleMethodBeginEntry->getEvent());
+    int level = 0;
+    for (int i = moduleMethodBeginEntry->getEntryIndex() + 1; i < (int)eventLogEntries.size(); i++) {
+        EventLogEntry *eventLogEntry = eventLogEntries[i];
+        if (dynamic_cast<ModuleMethodBeginEntry *>(eventLogEntry))
+            level++;
+        ModuleMethodEndEntry *moduleMethodEndEntry = dynamic_cast<ModuleMethodEndEntry *>(eventLogEntry);
+        if (moduleMethodEndEntry) {
+            if (!level)
+                return moduleMethodEndEntry;
+            else
+                level--;
+        }
+    }
+
+    throw opp_runtime_error("neither EndSendEntry nor DeleteMessageEntry found");
+}
+
 
 simtime_t Event::getTransmissionDelay(BeginSendEntry *beginSendEntry)
 {

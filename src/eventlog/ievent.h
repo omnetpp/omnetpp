@@ -34,7 +34,8 @@ class EVENTLOG_API IEvent
 
     public:
         // gui state for SequenceChart
-        double cachedTimelineCoordinate;
+        double cachedTimelineCoordinateBegin;
+        double cachedTimelineCoordinateEnd;
         long cachedTimelineCoordinateSystemVersion;
 
     public:

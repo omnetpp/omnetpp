@@ -29,7 +29,8 @@ void IEvent::clearInternalState()
 {
     nextEvent = nullptr;
     previousEvent = nullptr;
-    cachedTimelineCoordinate = -1;
+    cachedTimelineCoordinateBegin = -1;
+    cachedTimelineCoordinateEnd = -1;
     cachedTimelineCoordinateSystemVersion = -1;
 }
 

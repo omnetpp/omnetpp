@@ -189,8 +189,12 @@ public class SequenceChartStyleProvider {
         return MODULE_METHOD_CALL_COLOR;
     }
 
+    public int getModuleMethodCallLineStyle(long messageDependencyPtr) {
+        return SWT.LINE_SOLID;
+    }
+
     public int[] getModuleMethodCallLineDash(long moduleMethodCallPtr) {
-        return DOTTED_LINE_PATTERN;
+        return null;
     }
 
     // utils
