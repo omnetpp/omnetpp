@@ -31,8 +31,8 @@ FilteredEventLog::FilteredEventLog(IEventLog *eventLog)
     maximumCauseCollectionTime = maximumConsequenceCollectionTime = 100;
     // trace filter parameters
     tracedEventNumber = -1;
-    firstEventNumber = -1;
-    lastEventNumber = -1;
+    firstConsideredEventNumber = -1;
+    lastConsideredEventNumber = -1;
     traceCauses = true;
     traceConsequences = true;
     traceMessageReuses = true;
@@ -171,8 +171,8 @@ eventnumber_t FilteredEventLog::getApproximateNumberOfEvents()
         if (tracedEventNumber != -1) {
             // TODO: this is clearly not good and should return a much better approximation
             // TODO: maybe start from traced event number and go forward/backward and return approximation based on that?
-            if (firstEventNumber != -1 && lastEventNumber != -1)
-                return lastEventNumber - firstEventNumber;
+            if (firstConsideredEventNumber != -1 && lastConsideredEventNumber != -1)
+                return lastConsideredEventNumber - firstConsideredEventNumber;
             else
                 return 1000;
         }
@@ -280,8 +280,9 @@ bool FilteredEventLog::matchesFilter(IEvent *event)
 bool FilteredEventLog::matchesEvent(IEvent *event)
 {
     // event outside of considered range
-    if ((firstEventNumber != -1 && event->getEventNumber() < firstEventNumber) ||
-        (lastEventNumber != -1 && event->getEventNumber() > lastEventNumber))
+    if ((firstConsideredEventNumber != -1 && event->getEventNumber() < firstConsideredEventNumber) ||
+        (lastConsideredEventNumber != -1 && event->getEventNumber() > lastConsideredEventNumber))
+        return false;
         return false;
 
     // event's module
@@ -424,7 +425,7 @@ bool FilteredEventLog::isEmpty()
 FilteredEvent *FilteredEventLog::getFirstEvent()
 {
     if (!firstMatchingEvent && !eventLog->isEmpty()) {
-        eventnumber_t startEventNumber = firstEventNumber == -1 ? eventLog->getFirstEvent()->getEventNumber() : std::max(eventLog->getFirstEvent()->getEventNumber(), firstEventNumber);
+        eventnumber_t startEventNumber = firstConsideredEventNumber == -1 ? eventLog->getFirstEvent()->getEventNumber() : std::max(eventLog->getFirstEvent()->getEventNumber(), firstConsideredEventNumber);
         firstMatchingEvent = getMatchingEventInDirection(startEventNumber, true);
     }
 
@@ -434,7 +435,7 @@ FilteredEvent *FilteredEventLog::getFirstEvent()
 FilteredEvent *FilteredEventLog::getLastEvent()
 {
     if (!lastMatchingEvent && !eventLog->isEmpty()) {
-        eventnumber_t startEventNumber = lastEventNumber == -1 ? eventLog->getLastEvent()->getEventNumber() : std::min(eventLog->getLastEvent()->getEventNumber(), lastEventNumber);
+        eventnumber_t startEventNumber = lastConsideredEventNumber == -1 ? eventLog->getLastEvent()->getEventNumber() : std::min(eventLog->getLastEvent()->getEventNumber(), lastConsideredEventNumber);
         lastMatchingEvent = getMatchingEventInDirection(startEventNumber, false);
     }
 
@@ -566,8 +567,8 @@ FilteredEvent *FilteredEventLog::getMatchingEventInDirection(IEvent *event, bool
                 return firstMatchingEvent;
         }
 
-        if (firstEventNumber != -1 && event->getEventNumber() < firstEventNumber)
-            event = eventLog->getEventForEventNumber(firstEventNumber, LAST_OR_NEXT);
+        if (firstConsideredEventNumber != -1 && event->getEventNumber() < firstConsideredEventNumber)
+            event = eventLog->getEventForEventNumber(firstConsideredEventNumber, LAST_OR_NEXT);
     }
     else {
         if (lastMatchingEvent && lastMatchingEvent->getEventNumber() < event->getEventNumber()) {
@@ -576,8 +577,8 @@ FilteredEvent *FilteredEventLog::getMatchingEventInDirection(IEvent *event, bool
             else
                 return lastMatchingEvent;
         }
-        if (lastEventNumber != -1 && lastEventNumber < event->getEventNumber())
-            event = eventLog->getEventForEventNumber(lastEventNumber, FIRST_OR_PREVIOUS);
+        if (lastConsideredEventNumber != -1 && lastConsideredEventNumber < event->getEventNumber())
+            event = eventLog->getEventForEventNumber(lastConsideredEventNumber, FIRST_OR_PREVIOUS);
     }
 
     Assert(event);
@@ -595,7 +596,7 @@ FilteredEvent *FilteredEventLog::getMatchingEventInDirection(IEvent *event, bool
             eventNumber++;
             event = event->getNextEvent();
 
-            if (lastEventNumber != -1 && eventNumber > lastEventNumber)
+            if (lastConsideredEventNumber != -1 && eventNumber > lastConsideredEventNumber)
                 return nullptr;
 
             if (stopEventNumber != -1 && eventNumber > stopEventNumber)
@@ -605,7 +606,7 @@ FilteredEvent *FilteredEventLog::getMatchingEventInDirection(IEvent *event, bool
             eventNumber--;
             event = event->getPreviousEvent();
 
-            if (firstEventNumber != -1 && eventNumber < firstEventNumber)
+            if (firstConsideredEventNumber != -1 && eventNumber < firstConsideredEventNumber)
                 return nullptr;
 
             if (stopEventNumber != -1 && eventNumber < stopEventNumber)

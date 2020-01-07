@@ -45,9 +45,9 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         eventnumber_t approximateNumberOfEvents;
         double approximateMatchingEventRatio;
 
-        // filter parameters
-        eventnumber_t firstEventNumber; // the first event to be considered by the filter or -1
-        eventnumber_t lastEventNumber; // the last event to be considered by the filter or -1
+        // event parameters
+        eventnumber_t firstConsideredEventNumber; // the first event to be considered by the filter or -1
+        eventnumber_t lastConsideredEventNumber; // the last event to be considered by the filter or -1
 
         // module filter
         bool enableModuleFilter;
@@ -101,10 +101,10 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         virtual ~FilteredEventLog();
 
     public:
-        eventnumber_t getFirstEventNumber() { return firstEventNumber; }
-        void setFirstEventNumber(eventnumber_t firstEventNumber) { this->firstEventNumber = firstEventNumber; }
-        eventnumber_t getLastEventNumber() { return lastEventNumber; }
-        void setLastEventNumber(eventnumber_t lastEventNumber) { this->lastEventNumber = lastEventNumber; }
+        eventnumber_t getFirstConsideredEventNumber() { return firstConsideredEventNumber; }
+        void setFirstConsideredEventNumber(eventnumber_t firstConsideredEventNumber) { this->firstConsideredEventNumber = firstConsideredEventNumber; }
+        eventnumber_t getLastConsideredEventNumber() { return lastConsideredEventNumber; }
+        void setLastConsideredEventNumber(eventnumber_t lastConsideredEventNumber) { this->lastConsideredEventNumber = lastConsideredEventNumber; }
 
         bool getCollectMessageReuses() { return collectMessageReuses; }
         void setCollectMessageReuses(bool collectMessageReuses) { this->collectMessageReuses = collectMessageReuses; }
@@ -169,8 +169,15 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         virtual SimulationBeginEntry *getSimulationBeginEntry() override { return eventLog->getSimulationBeginEntry(); }
 
         virtual bool isEmpty() override;
+
+        virtual eventnumber_t getFirstEventNumber() override { return getFirstEvent() != nullptr ? getFirstEvent()->getEventNumber() : -1; }
+        virtual simtime_t getFirstSimulationTime() override { return getFirstEvent() != nullptr ? getFirstEvent()->getSimulationTime() : 0; }
         virtual FilteredEvent *getFirstEvent() override;
+
+        virtual eventnumber_t getLastEventNumber() override { return getLastEvent() != nullptr ? getLastEvent()->getEventNumber() : -1; }
+        virtual simtime_t getLastSimulationTime() override { return getLastEvent() != nullptr ? getLastEvent()->getSimulationTime() : 0; }
         virtual FilteredEvent *getLastEvent() override;
+
         virtual FilteredEvent *getNeighbourEvent(IEvent *event, eventnumber_t distance = 1) override;
         virtual FilteredEvent *getEventForEventNumber(eventnumber_t eventNumber, MatchKind matchKind = EXACT, bool useCacheOnly = false) override;
         virtual FilteredEvent *getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT, bool useCacheOnly = false) override;

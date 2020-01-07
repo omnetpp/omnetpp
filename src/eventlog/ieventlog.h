@@ -129,9 +129,29 @@ class EVENTLOG_API IEventLog
         virtual bool isEmpty() { return !getFirstEvent(); }
 
         /**
+         * Returns the first event number or -1 if the log is empty.
+         */
+        virtual eventnumber_t getFirstEventNumber() = 0;
+
+        /**
+         * Returns the first simulation time or 0 if the log is empty.
+         */
+        virtual simtime_t getFirstSimulationTime() = 0;
+
+        /**
          * Returns the first event or nullptr if the log is empty.
          */
         virtual IEvent *getFirstEvent() = 0;
+
+        /**
+         * Returns the last simulation time or 0 if the log is empty.
+         */
+        virtual simtime_t getLastSimulationTime() = 0;
+
+        /**
+         * Returns the last event number or -1 if the log is empty.
+         */
+        virtual eventnumber_t getLastEventNumber() = 0;
 
         /**
          * Returns the last event or nullptr if the log is empty.

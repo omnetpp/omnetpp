@@ -139,7 +139,7 @@ FilteredEvent *FilteredEvent::getCauseEvent()
         while (causeEvent) {
             filteredEventLog->progress();
 
-            if (causeEvent->getEventNumber() < filteredEventLog->getFirstEventNumber())
+            if (causeEvent->getEventNumber() < filteredEventLog->getFirstConsideredEventNumber())
                 return nullptr;
 
             if (filteredEventLog->matchesFilter(causeEvent))
@@ -177,7 +177,7 @@ IMessageDependency *FilteredEvent::getCause()
             while (causeEvent && (messageDependency = causeEvent->getCause())) {
                 filteredEventLog->progress();
 
-                if (causeEvent->getEventNumber() < filteredEventLog->getFirstEventNumber())
+                if (causeEvent->getEventNumber() < filteredEventLog->getFirstConsideredEventNumber())
                     return nullptr;
 
                 if (filteredEventLog->matchesFilter(messageDependency->getCauseEvent())) {

@@ -110,8 +110,14 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         virtual SimulationBeginEntry *getSimulationBeginEntry() override { getFirstEvent(); return simulationBeginEntry; }
         virtual SimulationEndEntry *getSimulationEndEntry() { getLastEvent(); return simulationEndEntry; }
 
+        virtual eventnumber_t getFirstEventNumber() override { return EventLogIndex::getFirstEventNumber(); }
+        virtual simtime_t getFirstSimulationTime() override { return EventLogIndex::getFirstSimulationTime(); }
         virtual Event *getFirstEvent() override;
+
+        virtual eventnumber_t getLastEventNumber() override { return EventLogIndex::getLastEventNumber(); }
+        virtual simtime_t getLastSimulationTime() override { return EventLogIndex::getLastSimulationTime(); }
         virtual Event *getLastEvent() override;
+
         virtual Event *getNeighbourEvent(IEvent *event, eventnumber_t distance = 1) override;
         virtual Event *getEventForEventNumber(eventnumber_t eventNumber, MatchKind matchKind = EXACT, bool useCacheOnly = false) override;
         virtual Event *getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT, bool useCacheOnly = false) override;

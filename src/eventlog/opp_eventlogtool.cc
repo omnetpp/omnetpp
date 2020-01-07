@@ -134,8 +134,8 @@ IEventLog *Options::createEventLog(FileReader *fileReader)
 
         filteredEventLog->setTraceCauses(traceCauses);
         filteredEventLog->setTraceConsequences(traceConsequences);
-        filteredEventLog->setFirstEventNumber(getFirstEventNumber());
-        filteredEventLog->setLastEventNumber(getLastEventNumber());
+        filteredEventLog->setFirstConsideredEventNumber(getFirstEventNumber());
+        filteredEventLog->setLastConsideredEventNumber(getLastEventNumber());
 
         return filteredEventLog;
     }
