@@ -224,3 +224,8 @@ def plot_histograms(df):
 # this is needed only because opp_charttool directly imports this impl module (for technical reasons)
 def copy_properties():
     set_plot_properties(get_configured_properties())
+
+
+def set_message(message):
+    # TODO this might not always work, depending on whether it's called before or after plotting?
+    plt.annotate(message, xy=(20, 40), xycoords="figure pixels")

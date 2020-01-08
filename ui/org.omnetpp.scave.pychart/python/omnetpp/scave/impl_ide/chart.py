@@ -114,7 +114,8 @@ def plot_bars(df):
         }
     ))
 
-def plot_lines(df): # key, label, xs, ys
+
+def plot_lines(df):  # key, label, xs, ys
     if sorted(list(df.columns)) != sorted(["key", "label", "xs", "ys"]):
         raise RuntimeError("Invalid DataFrame format in plot_lines")
 
@@ -137,7 +138,8 @@ def plot_lines(df): # key, label, xs, ys
     for o in shm_objs:
         o.unlink()
 
-def plot_histogram_data(df): # key, label, binedges, binvalues, underflows, overflows, min, max
+
+def plot_histogram_data(df):  # key, label, binedges, binvalues, underflows, overflows, min, max
     print(df)
     if sorted(list(df.columns)) != sorted(["key", "label", "binedges", "binvalues", "underflows", "overflows", "min", "max"]):
         raise RuntimeError("Invalid DataFrame format in plot_histogram_data")
@@ -146,7 +148,7 @@ def plot_histogram_data(df): # key, label, binedges, binvalues, underflows, over
         {
             "key": row.key,
             "title": row.label,
-            "sumweights": float(np.sum(row.binvalues) + row.underflows + row.overflows), # TODO remove?
+            "sumweights": float(np.sum(row.binvalues) + row.underflows + row.overflows),  # TODO remove?
 
             "edges": _list_to_bytes(row.binedges),
             "values": _list_to_bytes(row.binvalues),
@@ -191,7 +193,6 @@ def _plot_scalars_lists(row_label, labels, values):
 def _plot_scalars_DF_simple(df):
     plot_bars(df)
     # TODO: detect single-valued index/ column header levels, drop them
-
 
 
 def _plot_scalars_DF_scave(df):
@@ -446,18 +447,9 @@ def get_configured_property(key):
     return Gateway.properties_provider.getChartProperties()[key]  # TODO: could be optimized
 
 
-# def get_default_properties():
-#     return Gateway.properties_provider.getDefaultChartProperties()
-
-
 def get_name():
     return Gateway.properties_provider.getChartName()
 
 
 def set_message(message):
-    Gateway.chart_plotter.setMessage(message)
-
-"""
-def getChartContents():
-    return entry_point.getChartContents()
-"""
+    Gateway.properties_provider.setMessage(message)
