@@ -164,7 +164,7 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
 
             case TRIM: {
                 while (true) {
-                    stream.seekg(stream.tellp()-1L, stream.beg);
+                    stream.seekg(stream.tellp()-(std::streampos)1, stream.beg);
                     if (stream.peek() != ' ')
                         break;
                     stream.seekp(-1, stream.cur); // note: this does NOT truncate the stream, only moves the write pointer
