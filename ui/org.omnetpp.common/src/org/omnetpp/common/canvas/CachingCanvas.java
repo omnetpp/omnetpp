@@ -232,24 +232,9 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
                 Image image = new Image(getDisplay(), rect.width, rect.height);
                 try {
                     imageGC = new GC(image);
-                    transform = new Transform(imageGC.getDevice());
-                    // KLUDGE: FIXME: XXX: See Eclipse bug database: 245523
-                    // remove the next 3 lines when that bug is fixed, because it is an incorrect workaround
-                    // putting -1.01f does not help either, because the closer you get to -1.0 is the worse
-                    if (rect.y == 1)
-                        transform.translate(-rect.x, -2f);
-                    else
-                        transform.translate(-rect.x, -rect.y);
-                    imageGC.setTransform(transform);
-                    imageGC.setClipping(rect.x, rect.y, rect.width, rect.height);
-
                     imageGraphics = createGraphics(imageGC);
-
-                    // this should not be necessary, it's a workaround for
-                    // https://bugs.eclipse.org/bugs/show_bug.cgi?id=549626
-                    if (SWT.getPlatform().equals("gtk"))
-                        imageGraphics.setClip(new Rectangle(rect.x, rect.y, rect.width, rect.height));
-
+                    imageGraphics.translate(-rect.x, -rect.y);
+                    imageGraphics.setClip(new Rectangle(rect.x, rect.y, rect.width, rect.height));
                     paintCachableLayer(imageGraphics);
                 }
                 finally {
