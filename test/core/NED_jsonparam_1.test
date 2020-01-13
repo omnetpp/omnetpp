@@ -19,6 +19,11 @@ network Test {
     object object3 = { "f1": 100, 'f2': 200, "f3": "hello", 'f4': nullptr };
     object object4 = {arr1 : [1,2,3], arr2 : [4,5,6]};
     object object5 = {obj1 : {foo:1,bar:2}, obj2 : {FOO:10,BAR:20}};
+    object objkeys1 = {  3.14: 1,  1e6: 2,  42: 3,  5.1GHz : 4 };
+    object objkeys2 = { -3.14: 1, -1e6: 2, -42: 3, -5.1GHz : 4 };
+    object objkeys3 = { nan: 1, inf: 2, true: 4, false: 5 };
+    object objkeys4 = { -inf: 3 };
+    object objkeys5 = { null: 5, nullptr: 6 };
 
   submodules:
     dump: Dump;
@@ -40,6 +45,11 @@ module Test: Test {
         object3 = (omnetpp::cValueMap)object: {f1: 100, f2: 200, f3: "hello", f4: nullptr}
         object4 = (omnetpp::cValueMap)object: {arr1: [1, 2, 3], arr2: [4, 5, 6]}
         object5 = (omnetpp::cValueMap)object: {obj1: {bar: 2, foo: 1}, obj2: {BAR: 20, FOO: 10}}
+        objkeys1 = (omnetpp::cValueMap)object: {1e6: 2, 3.14: 1, 42: 3, 5.1 GHz: 4}
+        objkeys2 = (omnetpp::cValueMap)object: {-1e6: 2, -3.14: 1, -42: 3, -5.1 GHz: 4}
+        objkeys3 = (omnetpp::cValueMap)object: {false: 5, inf: 2, nan: 1, true: 4}
+        objkeys4 = (omnetpp::cValueMap)object: {-inf: 3}
+        objkeys5 = (omnetpp::cValueMap)object: {null: 5, nullptr: 6}
     submodules:
 }
 

@@ -1589,8 +1589,25 @@ keyvaluelist
         ;
 
 keyvalue
-        : NAME ':' expr
-        | STRINGCONSTANT ':' expr
+        : key ':' expr
+        ;
+
+key
+        : STRINGCONSTANT
+        | NAME
+        | INTCONSTANT
+        | REALCONSTANT
+        | quantity
+        | '-' INTCONSTANT
+        | '-' REALCONSTANT
+        | '-' quantity
+        | NAN_
+        | INF_
+        | '-' INF_
+        | TRUE_
+        | FALSE_
+        | NULL_
+        | NULLPTR_
         ;
 
 simple_expr

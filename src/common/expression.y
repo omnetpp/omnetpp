@@ -52,7 +52,7 @@ namespace omnetpp { class cObject; };
 }
 
 /* Reserved words */
-%token TRUE_ FALSE_ NAN_ INF_ UNDEFINED_ NULLPTR_
+%token TRUE_ FALSE_ NAN_ INF_ UNDEFINED_ NULLPTR_ NULL_
 
 /* Other tokens: identifiers, numeric literals, operators etc */
 %token <str> NAME INTCONSTANT REALCONSTANT STRINGCONSTANT
@@ -261,64 +261,91 @@ operation
 
 functioncall
         : NAME '(' opt_exprlist ')'
-            { $<node>3->type = AstNode::FUNCTION; $<node>3->name = $1; delete [] $1; $<node>$ = $<node>3; }
+                { $<node>3->type = AstNode::FUNCTION; $<node>3->name = $1; delete [] $1; $<node>$ = $<node>3; }
         ;
 
 methodcall
         : NAME '(' opt_exprlist ')'
-            { $<node>3->type = AstNode::METHOD; $<node>3->name = $1; delete [] $1; $<node>$ = $<node>3; }
+                { $<node>3->type = AstNode::METHOD; $<node>3->name = $1; delete [] $1; $<node>$ = $<node>3; }
         ;
 
 array
         : '[' opt_exprlist ']'
-            { $<node>2->type = AstNode::ARRAY; $<node>$ = $<node>2; }
+                { $<node>2->type = AstNode::ARRAY; $<node>$ = $<node>2; }
         ;
 
 object
         : '{' opt_keyvaluelist '}'
-            { $<node>2->type = AstNode::OBJECT; $<node>$ = $<node>2; }
+                { $<node>2->type = AstNode::OBJECT; $<node>$ = $<node>2; }
         | qname '{' opt_keyvaluelist '}'
-            { $<node>3->type = AstNode::OBJECT; $<node>3->name = $<str>1; delete [] $<str>1; $<node>$ = $<node>3; }
+                { $<node>3->type = AstNode::OBJECT; $<node>3->name = $<str>1; delete [] $<str>1; $<node>$ = $<node>3; }
         ;
 
 qname
         : NAME DOUBLECOLON qname
-            { $<str>$ = concat($<str>1, "::", $<str>3); delete [] $<str>1; delete [] $<str>3; }
+                { $<str>$ = concat($<str>1, "::", $<str>3); delete [] $<str>1; delete [] $<str>3; }
         | NAME
-            { $<str>$ = $<str>1; }
+                { $<str>$ = $<str>1; }
         ;
 
 opt_exprlist
         : exprlist
         | %empty
-            { $<node>$ = new AstNode(); }
+                { $<node>$ = new AstNode(); }
         ;
 
 exprlist
         : exprlist ',' expr
-            { $<node>1->children.push_back($<node>3); $<node>$ = $<node>1; }
+                { $<node>1->children.push_back($<node>3); $<node>$ = $<node>1; }
         | expr
-            { $<node>$ = new AstNode(); $<node>$->children.push_back($<node>1); }
+                { $<node>$ = new AstNode(); $<node>$->children.push_back($<node>1); }
         ;
 
 opt_keyvaluelist
         : keyvaluelist
         | %empty
-            { $<node>$ = new AstNode(); }
+                { $<node>$ = new AstNode(); }
         ;
 
 keyvaluelist
         : keyvaluelist ',' keyvalue
-            { $<node>1->children.push_back($<node>3); $<node>$ = $<node>1; }
+                { $<node>1->children.push_back($<node>3); $<node>$ = $<node>1; }
         | keyvalue
-            { $<node>$ = new AstNode(); $<node>$->children.push_back($<node>1); }
+                { $<node>$ = new AstNode(); $<node>$->children.push_back($<node>1); }
         ;
 
 keyvalue
-        : NAME ':' expr
-                { $<node>$ = new AstNode(AstNode::KEYVALUE, $1); $<node>$->children.push_back($<node>3); delete [] $1; }
-        | STRINGCONSTANT ':' expr
-                { $<node>$ = new AstNode(AstNode::KEYVALUE, opp_parsequotedstr($1,0).c_str()); $<node>$->children.push_back($<node>3); delete [] $1; }
+        : key ':' expr
+                { $<node>$ = new AstNode(AstNode::KEYVALUE, $<str>1); $<node>$->children.push_back($<node>3); delete [] $<str>1; }
+        ;
+
+key
+        : STRINGCONSTANT
+                { $<str>$ = opp_strdup(opp_parsequotedstr($1,0).c_str()); }
+        | NAME
+        | INTCONSTANT
+        | REALCONSTANT
+        | quantity
+        | '-' INTCONSTANT
+                { $<str>$ = concat("-", $<str>2); delete [] $<str>2; }
+        | '-' REALCONSTANT
+                { $<str>$ = concat("-", $<str>2); delete [] $<str>2; }
+        | '-' quantity
+                { $<str>$ = concat("-", $<str>2); delete [] $<str>2; }
+        | NAN_
+                { $<str>$ = opp_strdup("nan"); }
+        | INF_
+                { $<str>$ = opp_strdup("inf"); }
+        | '-' INF_
+                { $<str>$ = opp_strdup("-inf"); }
+        | TRUE_
+                { $<str>$ = opp_strdup("true"); }
+        | FALSE_
+                { $<str>$ = opp_strdup("false"); }
+        | NULL_
+                { $<str>$ = opp_strdup("null"); }
+        | NULLPTR_
+                { $<str>$ = opp_strdup("nullptr"); }
         ;
 
 variable
@@ -380,6 +407,8 @@ numliteral
 otherliteral
         : UNDEFINED_
                 { $<node>$ = newConstant(ExprValue()); }
+        | NULL_
+                { $<node>$ = newConstant((cObject*)nullptr); }
         | NULLPTR_
                 { $<node>$ = newConstant((cObject*)nullptr); }
         ;
