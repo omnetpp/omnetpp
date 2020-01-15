@@ -980,6 +980,7 @@ const char *MatchableResultItem::getAsString(const char *attribute) const
 const char *MatchableResultItem::getItemType() const
 {
     switch (item.getItemType()) {
+        case ResultFileManager::PARAMETER: return "parameter";
         case ResultFileManager::SCALAR: return "scalar";
         case ResultFileManager::VECTOR: return "vector";
         case ResultFileManager::STATISTICS: return "statistics";
