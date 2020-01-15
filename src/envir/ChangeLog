@@ -1,79 +1,31 @@
 2019-12-07  Andras Varga
 
-	envir: fix eventlogrecorder crash if network is not found
-
-2019-11-12  Andras Varga
-
-	test: added inifile_configexpr_1.test; related fixes in src/envir
+	* Fix eventlogrecorder crash if network is not found.
 
 2019-11-11  Rudolf Hornig
 
-	envir: changed command line doc of the the eventlog-message-pattern
-	option
-
-2019-11-07  Andras Varga
-
-	sim: refine "cConfiguration: accept expressions as value for (most)
-	config options"
-
-	The rule to decide whether the value of an optionally quoted config
-	option was an expression was a little too permissive. (Several
-	test/core/inifile* test failed.)
-
-	The new, stricter rule is: value is regarded as an expression if its
-	first character is a quotation mark.
+	* Updated documentation of the eventlog-message-pattern option: change
+	"field(pattern)" syntax to "field=~pattern".
 
 2019-11-05  Andras Varga
 
-	sim: cConfiguration: accept expressions as value for (most) config
-	options
-
-	For options that accept values both with and without quotes (types
-	STRING, FILENAME, FILENAMES, PATH), the rule is the following:
-
-	value contains quotes ==> evaluated as expression (also good for quoted
-	string literals) value contains no quotes ==> it is taken literally (no
-	evaluation takes place)
+	* Accept expressions as value for (most) config options. For options that
+	accept values both with and without quotes (types STRING, FILENAME,
+	FILENAMES, PATH), a heuristic decides whether a string is to be taken
+	literally or to be evaluated as an expression.
 
 2019-10-23  Andras Varga
 
-	sim: cNedValue renamed to cValue (compatibility typedef added)
-
-	Reason: it is used as generic value by cExpression, i.e. isn't specific
-	to NED.
+	* Follow change: cNedValue renamed to cValue
 
 2019-10-21  Andras Varga
 
-	sim,envir: let xmldoc() interpret the file name as relative to the dir
-	the expression comes from
-
-	That is, when xmldoc() occurs in an included ini file, the file name is
-	now interpreted as relative to the directory containing the included ini
-	file (as opposed to being relative to the main ini file or the working
-	directory.)
-
-	If xmldoc() occurs in a NED file, thr file name is relative to the
-	directory where that NED file was loaded from.
-
-	In addition to updating the implementationi of xmldoc(), it had to be
-	ensured that the function gets access to the directory where the ini
-	entry or NED expression occurred (baseDirectory). This directory was
-	added to the evalation context (cExpression::Context).
-
-	cNedFunction (and thus, Define_NED_Function()) was updated to accept an
-	alternative function signature which accepts cExpression::Context instead
-	of cComponent* as context argument.
-
-	getSourceFileDirectory() method was added to cComponentType.
-
-2019-10-17  Attila Torok
-
-	envir: Don't quote typename pseudo-parameter value when recording into
-	SQLite format.
+	* Follow change: cPar::parse() and cExpression::Context ctor now expect a
+	base directory argument.
 
 2019-10-12  Andras Varga
 
-	envir: fix quoting of values in result file 'config' lines
+	* Fix quoting of values in result file 'config' lines.
 
 	Certain types of config *options*, namely string options and
 	filename/filename list options, can appear in ini files with optional
@@ -84,305 +36,172 @@
 
 2019-10-10  Andras Varga
 
-	envir: spare cost of event->getClassName() on each event if possible
+	* Micro-optimization: LogFormatter to spare cost of event->getClassName()
+	on each event if possible.
 
 2019-08-01  Andras Varga
 
-	src: intpar_t renamed to intval_t
+	* Follow change: intpar_t renamed to intval_t.
 
 2019-07-31  Andras Varga
 
-	envir: result file managers: introduce 'state' variable
-
-2017-06-19  Andras Varga
-
-	envir: result file managers: slight refactoring
+	* Result file managers: refactoring: Introduce 'state' variable to better
+	ensure correct usage; rename initialize() to openFileForRun(), etc.
 
 2019-07-30  Andras Varga
 
-	scave/envir: result file version number bumped from 2 to 3
-
-	Reason: "par" and "config" lines added, "param" lines removed
+	* Result file version number bumped from 2 to 3.
 
 2019-07-30  Andras Varga
 
-	envir: scheduler-class made per-run option
-
-2019-07-30  Andras Varga
-
-	envir: debug-on-errors, print-undisposed, fingerprintcalculator-class:
-	made per-run options
-
-	fingerprintcalculator-class was actually already implemented like that.
+	* Several global config options change to be per-run: scheduler-class,
+	 debug-on-errors, print-undisposed, fingerprintcalculator-class.
 
 2017-07-16  Andras Varga
 
-	common: Histograms: store binEdges, binValues plus underflow/overflow
-	instead of bins
-
-	New representation is more correct (underflow/overflow are not really
-	bins because they are infinite width), and also more inline with Python's
-	histogram representation
+	* Follow change: The common::Histogram class now stores binEdges,
+	binValues plus underflow/overflow instead of bins.
 
 2019-07-24  Andras Varga
 
-	cmdenv: print warning about experimental features
-
-	cmdenv-fake-gui, finger print computation from figures and display
-	strings are currently experimental.
-
-	Reasons:
-	- good default (or preset modes) for frequency of calling
-	refreshDisplay()?
-	- figures: always hash all figures (slow) or only on changes (prone to
-	break on refactoring)?
+	* Added check to refuse to generate fingerprint that contains 'f' or 'y' as
+	ingredient, because cmdenv-fake-gui and computing fingerprint from figures
+	and display strings are currently experimental features.
 
 2019-07-18  Andras Varga
 
-	sim, envir: save component type as "typename" pseudo parameter
+	* Save component type as "typename" pseudo parameter to scalar files.
 
 2019-07-18  Andras Varga
 
-	sim, envir: save parameter attrs as well
+	* Output scalar files: Save parameter attrs as well.
 
 2018-07-09  Andras Varga
 
-	sim, envir: allow recording actual module/channel parameters
-
-	New config option: **.param-recording=true/false
-
-	File format change:
-	- new table ("parameter") in SQLite
-	- "par" lines in the sca file
+	* Allow recording actual module/channel parameter values into the output
+	scalar file. Added config option **.param-recording=true/false; implemented
+	recordParameter() methods.
 
 2018-07-09  Andras Varga
 
-	sim,envir,scave: result files: save full config, not only param
-	assignment lines
-
-	Essentially, "param"->"config" rename.
-
-2019-07-17  Andras Varga
-
-	sim: cContextSwitcher and Co moved to their own header file
+	* Result files: Save full config, not only param assignment lines.
 
 2019-07-10  Rudolf Hornig
 
-	sim: fix Windows specific build errors (because long being 32-bit on
-	Windows)
+	* Fix Windows-specific build error in stream.seekg() call.
 
 2019-07-03  Andras Varga
 
-	qtenv: fix: prevent aborting when user enters invalid log prefix in
-	Preferences
-
-	To try, add '%-' to log prefix.
+	* LogFormatter: Fix: Prevent aborting when user enters invalid log prefix in
+	Qtenv Preferences dialog.
 
 2019-07-03  Andras Varga
 
-	envir: added "%<" (trim preceding whitespace) to log format
-
-2019-05-09  Andras Varga
-
-	xml: YxmlParser fix startElement line number; XMLDocCache: wrap into
-	cRuntimException
+	* LogFormatter: added "%<" (trim preceding whitespace) diretive.
 
 2019-04-29  Andras Varga
 
-	xml: move XML parser from nedxml to common, embed Yxml, remove Expat
-	support
-
-	- move XML parsers to common
-	- added Yxml-based SAX parser
-	- use subclassing instead of #ifdefs to support multiple parsers
-	- use exceptions to report parse error instead of error code +
-	getErrorMessage()
-	- removed some methods from SaxHandler (comments, CDATA start/end)
-	- removed Expat support, made redundant by Yxml
-	- updated configure.in, Makefile.inc.in, etc: XML_PARSER replaced with
-	WITH_LIBXML
-	- added test
-
-	Note that no significant functionality is lost when LibXML2 support is
-	turned off. XML module parameters as well as NED and MSG AST XML
-	export/import is still supported due to  LibXML2 is only required when
-	DTD-based validation (and possibly, default value completion) or
-	Schema-based validation is needed. Note that OMNeT++ uses the DOM API of
-	LibXML, which has much higher memory requirements than the embedded
-	SAX-style parser.
+	* Follow change: XML parser moved from nedxml to common.
 
 2019-04-25  Andras Varga
 
-	sim: cXMLElement: optimize for memory usage (some users have GiB
-	files...)
+	* Follow change: cXMLElement ctor changed.
 
 2019-04-16  Andras Varga
 
-	sim,common: move unit conversion functions from NED to common::Expression
+	* "-h nedfunctions" to list unit conversion functions as well.
 
 2019-04-11  Andras Varga
 
-	sim: ported statistics recording to the new Expression class
-
-	Expression filter, @statistic source= parsing and record= parsing has
-	been reimplemented from scratch.
-
-	Issues worth mentioning:
-	- emit() uses long (may be 32 bit), ExprValue uses vs intpar_t (64-bit)
-	- multipath propagation on input still causes glitches, so we still
-	 raise error for them
-
-	Everything should work exactly as before, module some changes:
-	- ExpressionRecorder has not been implemented yet, so
-	 ExpressionFilter + LastValueRecorder is used instead in its place
-	- Old implementation used to add redundant IdentifyFilter sometimes,
-	 this has now been eliminated
-	- Notation changes in the debug-statistics-recording=true output
-	 ($0, $1, etc instead of '<signalValue>', etc)
-
-2019-04-11  Andras Varga
-
-	envir: ported constraint evaluator to the new Expression class
-
-	It should work exactly as before.
+	* Ported constraint evaluator to use the new Expression class. It should
+	work exactly as before.
 
 2019-04-04  Rudolf Hornig
 
-	build: proper dependency on the command line parameters
-
-	- rebuilds properly the output even if only the compiler command line
-	 parameters have changed.
-	- fix issue when rebuild occurred always if CFLAGS contained " delimited
-	strings
-	 (we use $(file) instead of using the shell echo command)
-
-2019-04-03  Rudolf Hornig
-
-	build: fix to allow overriding the output dir by specifiying CONFIGNAME
-	parameter on command line
+	* Makefile improvements.
 
 2019-04-02  Andras Varga
 
-	envir: cosmetics
-
-2019-04-02  Andras Varga
-
-	envir: do not deprecate NEDPATH after all; added ned-exclusion-path
-	config option
+	* Added ned-exclusion-path= config option.
 
 2019-03-21  Andras Varga
 
-	envir: cosmetic changes
+	* Accept the OMNETPP_NED_PATH environment variable in addition to NEDPATH.
 
 2019-03-21  Andras Varga
 
-	envir: prefix environment variables with OMNETPP_:
-	NEDPATH->OMNETPP_NED_PATH
+	* Implemented NED exclusion path (-x <nedexclusionpath> option,
+	OMNETPP_NED_EXCLUSION_PATH environment variable).
 
 2019-03-21  Andras Varga
 
-	envir: implemented NED exclusion path (-x option,
-	OMNETPP_NED_EXCLUSION_PATH)
-
-	excl++
+	* Removed obsolete command-line options -x, -X, -g, -G.
 
 2019-03-21  Andras Varga
 
-	envir: removed obsolete command-line options -x, -X, -g, -G
+	* Image path handling changed: Added -i <imgpath> option (may occur
+	multiple times); removed "./bitmaps" from default image path.
+
+2019-03-21  Andras Varga
+
+	* Updated help for the -n option; hide -p which belongs to a feature under
+	development.
 
 2019-03-20  Andras Varga
 
-	src: remove remaining mentions of Tkenv
-
-	Some mentions in Qtenv remain, but those are relevant.
-
-2019-03-21  Andras Varga
-
-	envir: image path handling changed: support -i options; removed
-	"./bitmaps" from default image path
-
-2019-03-21  Andras Varga
-
-	envir: updated help for the -n option
-
-	also: hide -p which belongs to a feature under development
-
-2019-03-20  Andras Varga
-
-	sim: fix: @statistic signal checking used wrong isSimple()
-
-	Also: clarify in doc how cModule::isSimple() and cModuleType::isSimple()
-	differ.
+	* EventlogRecorder: in ModuleCreatedEntry, record
+	module->getModuleType()->isSimple() instead of module->isSimple().
 
 2019-03-19  Andras Varga
 
-	envir: do not complain about missing omnetpp.ini if --network option is
-	present
+	* Do not complain about missing omnetpp.ini if a --network option is
+	present.
 
 2019-03-19  Andras Varga
 
-	envir: share ARGSPEC; associated help text updated
+	* Refactoring: Share ARGSPEC; associated help text updated.
 
 2019-03-19  Andras Varga
 
-	envir: startup code (ini reading) minor refactoring
+	* Startup code (ini reading) minor refactoring.
 
 2019-03-14  Andras Varga
 
-	envir: allow parameters to be specified on the command line; remove
-	unused code
+	* Allow parameters to be specified on the command line.
 
 2019-03-18  Andras Varga
 
-	envir: NED path handling, with behavior change
-
-	Multiple -n options are now accepted. Change: before, $NEDPATH was
-	ignored if a -n option was present, no longer so.
-
-2019-03-18  Andras Varga
-
-	envir: use last -u argument if multiple ones are given (behavior change)
-
-	So far it was the first one.
+	* NED path handling, with behavior change. Multiple -n options are now
+	accepted. Change: before, $NEDPATH was ignored if a -n option was present,
+	no longer so.
 
 2019-03-18  Andras Varga
 
-	args: make the LAST arg of a kind the default
-
-	e.g. if multiple -u options are present, the last one should take effect
+	* Args handling: If a command-line option with a value (e.g. -u <ui>) occurs
+	multiple times, take the last one.
 
 2019-02-27  Andras Varga
 
-	envir: improve -h <topic> output
+	* Improve "-h nedfunctions" output: break long lines.
 
 2019-02-27  Andras Varga
 
-	sim: added user-accessible descriptions for result filter/recorder types
-
-	- new macro: Register_ResultFilter2(), Register_ResultRecorder2()
-	- documentation is  accessible via opp_run -h resultfilters /
-	resultrecorders
-
-2019-03-11  Andras Varga
-
-	src: fix broken dependencies in Makefiles
+	* "-h resultfilters" and "-h resultrecorders" to print the descriptions of
+	the filter/recorder types.
 
 2019-02-22  Andras Varga
 
-	sim: support for embedding NED files
+	* Added support for embedding NED files: EnvirBase::setup() now loads
+	NED files embedded into the simulation program as string literals
+	(embeddedNedFiles global variable).
 
 2019-02-11  Andras Varga
 
-	eventlog: rename ModuleMethodBegin/End to ComponentMethodBegin/End
-
-	As source/target may be channel object as well, not only a module.
-
-	Fields also renamed: fromModuleId -> sourceComponentId, toModuleId ->
-	targetComponentId
+	* EventlogFileManager: Follow change: ModuleMethodBegin/End renamed to ComponentMethodBegin/End.
 
 2019-01-30  Andras Varga
 
-	envir: EnvirBase: startRun() renamed, endRun() eliminated
+	* EnvirBase: startRun() renamed to prepareForRun(), endRun() eliminated.
 
 	startRun() was renamed to break association with startRun() methods of
 	extension classes like scheduler, output vector manager, output scalar
@@ -392,87 +211,44 @@
 	"notifyLifecycleListeners(LF_ON_RUN_END)", and such notifications are
 	inlined everywhere else.
 
-2019-01-29  Andras Varga
-
-	envir: startrunDone -> startrunCalled, based on the definition of
-	LF_ON_RUN_END
-
 2019-01-30  Andras Varga
 
-	envir: SqliteOutputScalarManager: fix: there is no longer need to record
-	itervars as scalars
-
-	The same change for the native file format was done for version 5.2
-
-2019-01-29  Andras Varga
-
-	envir: SQLiteOutputVectorManager: remove duplicate/unnecessary comments;
-	cosmetics
+	* SqliteOutputScalarManager: fix: there is no longer need to record itervars
+	as scalars. The same change for the native file format was done in version 5.2.
 
 2019-01-28  Andras Varga
 
-	envir: check for existence of eventlogManager
-
-	Record eventlog button caused crash in Qtenv if there was no network set
-	up.
+	* Fix: Record eventlog button caused crash in Qtenv if there was no network
+	set up.
 
 2019-01-16  Rudolf Hornig
 
-	build: fixed build problem on linux
-
-2019-01-10  Rudolf Hornig
-
-	build: added support to build on Windows using MS ABI compatibility (i.e
-	Visual C++ libraries)
+	* Makefiles improved
 
 2018-11-30  Andras Varga
 
-	build: remove "./bitmaps;./images" from OMNETPP_IMAGE_PATH, and put them
-	into the "image-path" config option instead
+	* Remove "./bitmaps;./images" from OMNETPP_IMAGE_PATH, and put them
+	into the "image-path" config option instead.
 
 2018-06-18  Andras Varga
 
-	envir: SectionBasedConfiguration: terminology change: "group" -> "bin"
+	* SectionBasedConfiguration: cosmetics: terminology change: "group" -> "bin".
 
 2018-08-30  Rudolf Hornig
 
-	test: added extra build tests
-
-	- default toolchain is now clang
-	- test building with OSG but without OSGEARTH
-	- test building without PARSIM
-	- test building without libxml and expat
-
-2018-07-07  Andras Varga
-
-	envir: remove unused ResultFileUtils method
-
-	It was used by old recorders removed a few commits ago
+	* Include WITH_OSGEARTH in compiled-in build information string.
 
 2018-06-28  Andras Varga
 
-	sim: resultfilters.h and resultrecorders.h made public
-
-	Difficulty: ExpressionFilter and ExpressionRecorder use
-	omnetpp::common::Expression which is not available for models, so they
-	were moved into the new src/sim/resultexpr.h header file.
-
-	NaN, POSITIVE_INFINITY, NEGATIVE_INFINITY were also from common/, had to
-	be replaced with standard macros (finally they exist).
-
-2018-06-28  Andras Varga
-
-	envir: remove obsolete result file recorders
+	* Remove obsolete result file recorders.
 
 2018-06-15  Andras Varga
 
-	envir: sectionbasedconfig: remove printing porting hints for 3.x inifiles
+	* Remove printing porting hints for 3.x inifiles.
 
 2018-06-27  Andras Varga
 
-	src, build: remove Tkenv
-
------------ lines above this marker have been added from git log -----------
+	* Follow change: Tkenv removed.
 
 2020-01-06  ------ omnetpp-5.6 released ------
 

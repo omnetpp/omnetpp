@@ -1,69 +1,47 @@
 2020-01-02  Attila Torok
 
+	* Analysis Tool redesign, 2nd phase. This is a summary of several hundred
+	commits Attila Torok, over the period of 2018-08-01 through 2020-01-02.
+
+	The following is the raw list of all commit messages; needs to be replaced
+	by a compact high-level description of changes.
+
 	ide/scave: charttemplates: Update to newer chart API
 	(getting/setting/copying properties).
-
-2019-12-20  Attila Torok
 
 	ide/scave: No longer implicitly apply configured chart properties before
 	running the script
 
-2019-12-16  Attila Torok
-
 	ide/scave: Some changes to the Python API of the chart scripts
-
-2019-12-09  Attila Torok
 
 	ide/scave: Improvements to the box_and_whiskers chart template
 
 	Fix title generation, remove warnings, allow better labels by including
 	runattrs as well
 
-2019-12-13  Attila Torok
-
 	ide/scave: Add a somewhat descriptive error message about missing
 	parameter to the 3D chart template
 
-2019-12-19  Attila Torok
-
 	ide/scave: Replace a noisy System.out.println with Debug.println
-
-2019-12-19  Attila Torok
 
 	ide/scave: Potentially resolve a deadlock in ResultFileManager usage
 	(Loading files... job)
-
-2019-12-19  Rudolf Hornig
-
-	prod: dependency update to eclipse 4.14 and CDT 9.10
-
-2019-12-16  Attila Torok
 
 	ide/scave: Disable content assist in filter parameters dialog temporarily
 
 	Until it can be properly updated to the new =~ syntax
 
-2019-12-09  Attila Torok
-
 	ide/scave: Quote result filter operand strings if necessary in more
 	places
 
-2019-12-13  Attila Torok
-
 	ide/scave: Restore chart.get_default_properties() functionality
-
-2019-12-13  Attila Torok
 
 	ide/scave: Do merge_module_and_name option of the results API in Python
 
 	It's simpler, and fixes a bug too.
 
-2019-12-13  Attila Torok
-
 	ide/scave: Split the results and chart API and their implementations, add
 	API docs
-
-2019-12-16  Attila Torok
 
 	ide/scave: Don't do anything upon import in Gateway.py and
 	PythonEntryPoint.py scripts
@@ -71,154 +49,51 @@
 	It caused problems with documentation generation. Also add a workaround
 	for a PyDev issue.
 
-2019-12-13  Andras Varga
-
-	ide: made "Project Features" menu item more creative in finding the
-	project
-
-	It said "Select a project first" much too often.
-
-2019-11-18  Attila Torok
-
 	ide/scave: Silence some log messages caused by replacing the editor
 	config.
 
-2019-05-23  Attila Torok
-
 	ide/scave: Split the gigantic ChartScriptEditor ctor into smaller parts.
-
-2019-11-15  Attila Torok
 
 	ide/scave: Suppress the content assist popup of the script editor when
 	the chart viewer is focused.
 
-2019-11-14  Attila Torok
-
 	ide/scave: Append units (if any) to values in DataTable (Browse Data
 	tab).
-
-2019-11-14  Attila Torok
 
 	ide/scave: Remove old HistogramResult.getBins() correction, add spaces
 	around ..
 
-2019-11-14  Attila Torok
-
-	ide/main: Install INET 4 (the inet4 project) from FirstStepsDialog.
-
-2019-11-20  Rudolf Hornig
-
-	ide: model catalog URL updated
-
-2019-11-11  Attila Torok
-
 	ide/scave: FilterGenerator: System.out.println -> conditional
 	Debug.println
-
-2019-11-08  Attila Torok
 
 	ide/scave: FilterGenerator: Use the =~ syntax instead of the removed one
 	with parentheses.
 
-2019-11-08  Andras Varga
-
-	ide: rudimentary IDE support for new parameter type "object" -- TODO
-	refine
-
-	add to content proposals, make sure JSON object notation doesn't break
-	proposals, etc.
-
-2019-11-06  Attila Torok
-
-	ide/ned: Follow the NED DTD change in the editor (expressions were
-	removed).
-
-2019-10-25  Attila Torok
-
-	doc/manual: Mention manual connection routing using the m DS tag.
-
-2019-10-30  Attila Torok
-
-	ide/sequencechart: Avoid out of bounds error when selecting manual axis
-	ordering.
-
-	Or switching between "Manual" and "Minimize crossings" modes. This check
-	in itself is harmless, but Should Not Be Necessary. Until the root cause
-	is figured out, at least we avoid the exception.
-
-2019-10-28  Attila Torok
-
-	ide/sequencechart: Add a (potential) axis for any module with a custom
-	@class.
-
-	Instead of only those that do not have any submodules. These used to be
-	the same, but not anymore in INET, with the new
-	"tricky" compound modules that handle some messages themselves. This
-	works around issues #759 and #778.
-
-2019-10-28  Attila Torok
-
 	scave: Simplification, cleanup, return nullptr instead of throwing in
 	SqliteVectorDataReader.
 
-2019-10-28  Attila Torok
-
-	ide/[eventlogtable,sequencechart]: Strip ANSI escape sequences from log
-	message lines.
-
-2019-11-04  Attila Torok
-
 	ide/nativelibs: Add back old API of std::map wrappers with SWIG 4.0.
-
-2019-10-28  Attila Torok
 
 	ide/scave: Don't try to build an index for SQLite type vector files.
 
-2019-10-28  Attila Torok
-
 	ide/scave: Accept SQLite vector files too in VectorBrowserView.
-
-2019-11-06  Attila Torok
-
-	ui,nedxml: replace recently removed NedParser::parseNedExpression() with
-	isValidNedExpression() [thanks Attila]
-
-	This restored expression validation in the inifile editor etc.
-
-	addendum for the removed NED expression parsing
-
-2019-10-18  Attila Torok
 
 	ide/scave: Handle empty vectors on querying and plotting properly.
 
 	(As a special case, avoiding SHM altogether.)
 
-2019-10-16  Attila Torok
-
 	scave/sqlite: Implement vector data loading from files in SQLite format.
-
-2019-10-07  Attila Torok
 
 	ide/scave: Fix None dereference in results.py.
 
-2019-10-07  Attila Torok
-
 	ide/scave: Fix weighted histogram PDF/CDF computation.
-
-2019-07-29  Attila Torok
 
 	ide/scave: Fix the clipping glitch in CachingCanvas, used by the native
 	charts.
 
-2019-09-05  Attila Torok
-
 	ide/scave: Fix "UserWarning: merging different levels ..." in results.py
 
-2019-08-29  Attila Torok
-
 	ide/scave: Minor rename in the results API implementation.
-
-2019-08-28  Attila Torok
 
 	charttool: Porting to the new chart/results API, improvements
 
@@ -242,12 +117,8 @@
 	charttool: no longer accept the (removed) complicated data format from
 	IDE-less chart.py emulation
 
-2019-08-06  Attila Torok
-
 	ide/scave: Try to make Python stdout and stderr unbuffered (in two
 	different ways)
-
-2019-08-02  Attila Torok
 
 	ide/scave: Various small fixes to result querying and chart plotting.
 
@@ -265,8 +136,6 @@
 	fix include_attrs when there aren't any attrs to include
 
 	remove stray argument from get_scalars
-
-2019-08-02  Attila Torok
 
 	ide/scave: Add tests for the results API.
 
@@ -295,93 +164,57 @@
 
 	add incomplete get_vectors tests
 
-2019-08-02  Attila Torok
-
 	ide/scav: Do not error out when making a chart title out of an empty
 	dataframe.
 
-2019-08-08  Attila Torok
-
 	ide/scave: Fix Copy-Paste with open and edited chart scripts.
 
-2019-08-01  Attila Torok
-
 	ide/scave: Remove some TODO comments that (I think) no longer apply.
-
-2019-08-02  Attila Torok
 
 	ide/scave: Don't include fields and itervars as (fake) scalars in the csv
 	format results
 
-2019-08-02  Attila Torok
-
 	ide/scave: Put the error marker at the deepest point on the stack on an
 	exception
-
-2019-08-02  Attila Torok
 
 	ide/scave: Add Parameters to CSV format get_results dataframe, do the
 	rowType filtering in Java.
 
 	And comments about why malloc_trim is called.
 
-2019-08-01  Attila Torok
-
 	ide/scave: Don't call System.gc() when loading and pickling vector data.
-
-2019-08-01  Attila Torok
 
 	ide/scave: Fix saving and restoring of chart editor tab state.
 
 	Which charts were open, which one was active, etc., using the item ID.
 
-2019-07-31  Attila Torok
-
 	ide/scave: Fix the histograms_mpl chart template to work with the new
 	histogram bins/edges format.
 
-2019-07-31  Attila Torok
-
 	ide/scave: Fix vector data conversion in get_results (use shm)
 
-2019-07-31  Attila Torok
-
 	ide/scave: Change the order of result type tabs on the Browse Data tab.
-
-2019-07-30  Attila Torok
 
 	ide/scave: Add a Parameters tab to the Browse Data tab by copying the
 	Scalars tab.
 
 	And allow sorting parameters by name and value on the browse data tab
 
-2019-07-30  Attila Torok
-
 	ide/scave: Throw a RuntimeError if there's something wrong during SHM
 	handling.
-
-2019-07-29  Attila Torok
 
 	ide/scave: Include timestamp in vector data shm name.
 
 	To make it certainly unique even across different executions/instances of
 	the IDE.
 
-2019-07-18  Attila Torok
-
 	ide/scave: Show a message dialog when we couldn't connect to Python
 	process.
 
-2019-07-31  Attila Torok
-
 	ide/scave: Fix ChartScriptEditor.gotoLine()
-
-2019-09-05  Attila Torok
 
 	ide/pychart: Fix the "enter_notify_event expects xy" error in the MPL
 	backend.
-
-2019-08-01  Attila Torok
 
 	ide/scave: Take the chart script and XSWT pages only from inside the
 	CDATA section.
@@ -389,109 +222,6 @@
 	Not from the containing <script> or <dialogPage> elements. Exclude
 	surrounding indentation, which is whitespace between the
 	<script>|<dialogPage> and CDATA beginning tags.
-
-2019-09-30  Rudolf Hornig
-
-	prod: eclipse 4.12 -> 4.13 update
-
-2019-09-13  Andras Varga
-
-	build: added the new example simulations to the build system and to the
-	IDE
-
-2019-09-01  Andras Varga
-
-	neddoc: automatic hyperlinking of URLs embedded in the text
-
-2019-08-25  Andras Varga
-
-	ide: ned core: convert return type of Object[3] to struct.
-
-2019-08-24  Andras Varga
-
-	ide: NED editor: fix "Failed to create the part's controls"
-
-	Due to:
-
-	org.eclipse.core.runtime.AssertionFailedException: assertion failed: file
-	is not a NED file, or not parsed yet
-	at org.eclipse.core.runtime.Assert.isTrue(Assert.java:110)
-	at
-	org.omnetpp.ned.core.NedTypeResolver.getNedFileElement(NedTypeResolver.java:246)
-	org.eclipse.core.runtime.AssertionFailedException: assertion failed: file
-	is not a NED file, or not parsed yet
-	at org.eclipse.core.runtime.Assert.isTrue(Assert.java:110)
-	at
-	org.omnetpp.ned.core.NedTypeResolver.getNedFileElement(NedTypeResolver.java:246)
-	at
-	org.omnetpp.ned.editor.graph.GraphicalNedEditor.getModel(GraphicalNedEditor.java:608)
-	at
-	org.omnetpp.ned.editor.graph.GraphicalNedEditor.setInput(GraphicalNedEditor.java:629)
-	at
-	org.eclipse.gef.ui.parts.GraphicalEditor.init(GraphicalEditor.java:346)
-	at
-	org.omnetpp.ned.editor.graph.GraphicalNedEditor.init(GraphicalNedEditor.java:216)
-
-	Note:
-
-	   public synchronized NedFileElementEx getNedFileElement(IFile file) {
-	       Assert.isTrue(nedFiles.containsKey(file), "file is not a NED file,
-	or not parsed yet");
-	       return nedFiles.get(file);
-	   }
-
-	NedEditorLauncher needs to test the availability of the NED file in the
-	same way NED editor does: by checking whether the file was actually
-	loaded (whether resolver.nedFiles contains it)
-
-2019-08-22  Rudolf Hornig
-
-	ide: updated splash / about images for OMNeT++ 6
-
-2019-08-22  Rudolf Hornig
-
-	ide: fix an NPE during welcome view close
-
-2019-08-21  Rudolf Hornig
-
-	prod: fix incorrect product ID
-
-2019-08-06  Andras Varga
-
-	ide: let user permanently turn off "OMNeT++ libraries not yet compiled"
-	dialog
-
-2019-07-31  Andras Varga
-
-	neddoc: factor out adding an element in a list in a map
-
-2019-07-31  Andras Varga
-
-	neddoc: Implementors table to include indirect implementors as well
-
-2019-07-31  Andras Varga
-
-	neddoc: generate "Implementors" table
-
-2019-07-31  Andras Varga
-
-	neddoc: factor out generateTypePage(); call to generateExtendsTable()
-	shifted 2 lines down
-
-2019-07-31  Andras Varga
-
-	neddoc: fix: inheritance diagrams were missing in module interface pages
-
-	Even if they had implementors. This bug made INET documentation much less
-	useful.
-
-	Cause: hasBaseType was too restrictive, and its value didn't align with
-	what generateInheritanceDiagram() was doing.
-
-	Solution: always generate the dot graph, and check afterwards if it has
-	content.
-
-2019-07-18  Attila Torok
 
 	ide/scave: Added param assignment (config entry) and value querying.
 
@@ -503,51 +233,26 @@
 	get_result_attrs from Python API rename ParamPatterns to ParamAssignments
 	allow filtering config options by "type"
 
-2019-07-30  Attila Torok
-
 	ide/scave: Follow the Histogram data structure and C++ API change in
 	Java.
 
 	Include histogram overflow cells in the data tree view. Add underflows
 	and overflows to dataframe returned to python.
 
-2019-07-30  Andras Varga
-
-	ui: nativelibs: fix: remove mentions of removed header.
-
-2019-07-24  Rudolf Hornig
-
-	ide: use bundled private JRE on all platforms
-
-2019-07-24  Rudolf Hornig
-
-	ide: debug launch config uses lldbmi2 by default on macOS
-
-2019-07-18  Andras Varga
-
-	scave: "par" loading from scalar files into ResultFileManager
-
-2019-07-15  Attila Torok
+	ide/scave: "par" loading from scalar files into ResultFileManager
 
 	ide/scave: Remove RLE coding and halfResDynamic in PlotWidget.
 
-2019-07-15  Attila Torok
-
 	ide/scave: Tiny cleanup in .py files.
-
-2019-07-12  Attila Torok
 
 	scave/python: Complicated DF result format purged, all vector plotting
 	functions use shm now.
 
-2019-06-13  Attila Torok
 
 	scavetool,ide: Add options to limit vector data by simulation time.
 
 	Add GUI support to the IDE for exporting vector data with limited time
 	range. Add vector data time limiting to the linechart template.
-
-2019-06-13  Attila Torok
 
 	ide/scave: Add vector operations by modifying a property, not the script.
 
@@ -555,11 +260,7 @@
 	adding them to menus more compact, allow comments Add the operations
 	parameter and widget to the linechart_mpl template
 
-2019-06-13  Attila Torok
-
 	ide/scave: Update chart template XSWT forms (filter fields).
-
-2019-06-06  Attila Torok
 
 	ide/scave: Try to more intelligently refine the result filter based on
 	selection.
@@ -569,13 +270,10 @@
 	do not add a simple * for field patternss when getting the view filter
 	result selection filter generation is "good enough" in most cases.
 
-2019-06-26  Attila Torok
 
 	ide: Delete the nativelibs.win32 project.
 
 	It is no longer needed nor supported.
-
-2019-05-30  Attila Torok
 
 	ide/scave: Use shared memory for matplotlib drawing and vector data
 	passing.
@@ -583,130 +281,68 @@
 	Limit vector data based on available system memory. Delete XYVector
 	class. Add getAvailableSystemMemoryBytes. etc...
 
-2019-06-11  Attila Torok
-
 	ide/scave: Restore selection after filtering/sorting the table on the
 	Browse Data tab.
 
 	With an NPE fix supposedly built in.
 
-2019-07-05  Rudolf Hornig
-
-	prod: updated to use eclipse 4.12, CDT 9.8
-
-2019-07-04  Rudolf Hornig
-
-	ide: fix for missing deprecated function in eclipse 4.12
-
-2019-06-04  Attila Torok
-
 	ide/scave: Use the proper ResultType when creating new Charts from the
 	"All" tab.
 
-2019-06-04  Attila Torok
-
-	ide/cdt: Remove ancient CProjectChecker class.
-
-	It often caused a DeadlockException on startup, and is no longer
-	relevant.
-
-2019-05-30  Attila Torok
 
 	ide/scave: Do not update the actions of disposed ChartScriptEditors when
 	their Python process dies.
 
-2019-05-30  Attila Torok
-
 	ide/scave: Simplify debug printing in ScaveModelUtil.
-
-2019-05-30  Attila Torok
 
 	ide/scave: Fire DIRTY property change when Analysis model changed.
 
-2019-05-29  Andras Varga
-
 	ide/scave: eliminate IDList's toArray/fromArray
-
-2019-05-29  Attila Torok
 
 	ide/scave: One fewer vector data conversion, add includePreciseX
 	parameter for loading.
 
-2019-05-29  Attila Torok
-
 	ide/scave: LegacyAnalysisLoader: Fix multiply-by and divide-by vector
 	operations.
 
-2019-05-29  Attila Torok
-
 	ide/scave: Fix isDirty when editing chart scripts.
-
-2019-05-29  Attila Torok
 
 	ide/scave: Add Debug channels, and a lot of conditional debug output.
 
-2019-05-29  Attila Torok
-
 	ide/scave: Don't trigger the GC after each pickled vector.
-
-2019-05-29  Attila Torok
 
 	ide/scave: Replace ZoomToFit and Remove action icons. Fix
 	RemoveAction.isApplicable.
 
-2019-05-29  Attila Torok
-
 	ide/scave: Set all vector interpolation properties in one call. Clear old
 	dataset before executing script.
-
-2019-05-28  Attila Torok
 
 	ide/scave: Wrap and call malloc_trim (and call GC) after loaded vector
 	data is no longer needed.
 
-2019-05-28  Attila Torok
-
 	ide/scave: Add memory limit and simtime range to vector data loading.
 
-2019-05-28  Attila Torok
-
 	ide/scave: Improve the Bar Chart template scripts.
-
-2019-05-28  Attila Torok
 
 	ide/scave: Make EditChartPropertiesAction use the active editor page.
 
 	Instead of only the selection. Also it was renamed.
 
-2019-05-28  Attila Torok
-
 	scave/ide: Smarter filter expression building when only a few visible
 	results are not selected.
-
-2019-05-28  Attila Torok
 
 	ide/scave: When all visible items are selected for plotting, use the view
 	filter for the chart.
 
-2019-05-27  Attila Torok
-
 	ide/scave: Rename ResultType enum constants.
-
-2019-05-27  Attila Torok
 
 	ide/scave: Don't redraw the chart if its selection hasn't actually
 	changed.
 
-2019-05-27  Attila Torok
-
 	ide/scave: Free up memory used by vector data after it is no longer
 	needed.
 
-2019-05-26  Andras Varga
-
 	ide/scave: Allow interrupting all stages of result loading/pickling.
-
-2019-05-25  Andras Varga
 
 	ide/scave: optimize large selections on Browse Data page
 
@@ -715,15 +351,9 @@
 
 	Remove warning about selecting many result items.
 
-2019-05-25  Andras Varga
-
 	scave: IDList: implemented equals(), bulkAdd() etc.
 
-2019-05-25  Andras Varga
-
 	ide/scave: Data Export dialog title and description tweak
-
-2019-05-24  Andras Varga
 
 	ide/scave: performance: IDList is no longer an IStructuredSelection
 
@@ -731,36 +361,24 @@
 	it, which was a performance disaster if IDList contains many thousands of
 	IDs.
 
-2019-05-24  Andras Varga
-
 	ide/scave: IDListSelection performance improvement
 
 	"Select all" in the Browse Data page could take forever, due to internal
 	IDList <--> Long[] conversions. Now that IDListSelection stores an IDList
 	instead of Long[], most of the conversion overhead could be eliminated.
 
-2019-05-23  Andras Varga
-
 	ide/scave: Implement hyperlinks for the printed stack trace
-
-2019-05-24  Andras Varga
 
 	ide/scave: Tweak the exception message to remove stack frames related to
 	Py4J
 
-2019-05-23  Andras Varga
-
 	ide/scave: fix KeyError caused by title_col=None and try harder to make a
 	good title
-
-2019-05-23  Andras Varga
 
 	ide/scave: fix NPE in legacy ANF loading: a Group item does not have a
 	name
 
 	And datasetName was unused anyway.
-
-2019-05-23  Andras Varga
 
 	ide/scave: fix ConcurrentModificationException on chart deletion
 
@@ -768,15 +386,9 @@
 	- we accidentally closed all temp charts when one chart was deleted
 	- fix ConcurrentModificationException on chart deletion
 
-2019-05-23  Attila Torok
-
 	ide/scave: print stack trace to console
 
-2019-05-22  Andras Varga
-
 	ide/scave: added chart image; revived generate-image-constants script
-
-2019-05-22  Andras Varga
 
 	ide/scave: Fix in-place editing (F2) in Inputs page.
 
@@ -784,245 +396,131 @@
 	work on
 	(at least) on: Eclipse Photon (4.8), Build id: I20180611-0500
 
-2019-05-22  Andras Varga
-
 	ide/scave: when user clicks an item in the outline view, actually select
 	it in the editor
 
-2019-06-04  Attila Torok
-
 	ide/scave: added back content outline page
-
-2019-05-22  Andras Varga
 
 	ide/scave: fix NPE after loading invalid ANF file; cosmetics
 
-2019-05-21  Andras Varga
-
 	ide/scave: Increase robustness of chart loading from projects.
 
-2019-05-21  Andras Varga
-
 	ide/scave: added "description" field to chart templates
-
-2019-05-18  Andras Varga
 
 	ide/scave: load templates from the ANF file's project and its
 	dependencies
 
-2019-05-17  Attila Torok
-
 	ide/scave: Put editor page disposal in MultiPageEditorPartExt. Actually
 	dispose PyEdit.
-
-2019-05-17  Attila Torok
 
 	ide/scave: Get rid of the intermediate Composites between TabFolder and
 	ChartPage.
 
-2019-05-17  Andras Varga
-
 	ide/scave: load templates from projects too -- TODO only load from
 	current project and its dependencies; add error markers
 
-2019-05-16  Attila Torok
-
 	ide/scave: Fix Chart.equals, update Chart name tab on rename, etc.
 
-2019-05-16  Attila Torok
-
 	ide/scave: Allow editing InputFile entries inline by pressing F2.
-
-2019-05-16  Attila Torok
 
 	ide/scave: Update global Undo/Redo actions, so they are always
 	consistent.
 
-2019-05-16  Attila Torok
-
 	ide/scave: Update the action bars after the actions are updated.
-
-2019-05-16  Attila Torok
 
 	ide/scave: Fix copy/pasting of charts, make numbered names for the
 	copies.
 
-2019-05-16  Andras Varga
-
 	ide/scave: assert unique chart ID; Chart.toString()
 
-2019-05-15  Attila Torok
-
 	ide/scave: Update actions on selection, zoom, page change, etc.
-
-2019-05-15  Attila Torok
 
 	ide/scave: ScaveEditorContributor is no longer a Contributor, rename a
 	couple Actions
 
-2019-05-15  Attila Torok
-
 	ide/scave: Set global undo/redo action handlers on focus change.
-
-2019-05-14  Attila Torok
 
 	ide/scave: Use separate CommandStacks for each ScaveEditor page.
 
-2019-05-14  Attila Torok
-
 	ide/scave: Use separate command stacks for each ScaveEditor page.
 
-2019-05-14  Attila Torok
-
 	ide/scave: Remove a debug print.
-
-2019-05-14  Attila Torok
 
 	ide/scave: When setting up an interpreter for PyDev, also disable one of
 	its annoying dialogs.
 
-2019-05-14  Attila Torok
-
-	ide/build: Remove one more AERI (now defunct logging serice) reference.
-
-2019-05-13  Attila Torok
-
 	ide/scave: Include chart templates in the build, increment preview
 	version number.
-
-2019-05-10  Attila Torok
 
 	ide/build: Fix release build by using Require-Bundle instead of
 	Import-Package.
 
-2019-05-10  Attila Torok
-
 	ide/scave: Use template name for temporary charts.
-
-2019-05-10  Attila Torok
 
 	ide/scave: Ask to keep modified temporary charts when closing the
 	analysis editor.
 
-2019-05-10  Attila Torok
-
 	ide/scave: Fix chart defaults string conversion in chart edit dialog.
-
-2019-05-10  Attila Torok
 
 	ide/scave: Update the chart automatically when the edit dialog is closed.
 
-2019-05-10  Attila Torok
-
 	ide/scave: More cleanup.
-
-2019-05-10  Attila Torok
 
 	ide/scave: Delete yet another unnecessary, generic base class.
 
-2019-05-10  Attila Torok
-
 	ide/scave: Remove some overly generic, unused edit form classes.
-
-2019-05-10  Attila Torok
 
 	ide/scave: Ask for keeping temporary chart even when closing with the
 	other button
 
-2019-05-10  Attila Torok
-
 	ide/scave: Fix page state saving on close
-
-2019-05-09  Attila Torok
 
 	ide/scave: Do not ask to keep a temporary chart which hasn't been edited.
 
-2019-05-09  Attila Torok
-
 	ide/scave: Ask to keep a temporary chart when closing its editor page.
-
-2019-05-09  Attila Torok
 
 	ide/scave: Use a single delayedjob for chart script updating and
 	rerunning.
 
-2019-05-09  Attila Torok
-
 	ide/scave: Add two local debug flags to silence debug output from process
 	creation and pickling.
 
-2019-05-09  Attila Torok
-
 	ide/scave: Fix Analysis saving (properly use timeouts, dirty flag, etc.).
-
-2019-05-08  Attila Torok
 
 	ide/scave: Properly notify the ChartScriptEditor about the death of the
 	Python process (for any reason).
 
-2019-05-08  Attila Torok
-
 	ide/scave: Common base class for ChartViewers, handle exceptions better.
 
-2019-05-08  Attila Torok
-
 	ide/scave: Restored functionality of auto update chart switch.
-
-2019-05-08  Attila Torok
 
 	ide/scave: Fixup selection after a command changes the model.
 
 	Do not select properties or collection objects.
 
-2019-05-08  Attila Torok
-
-	ide: Remove dependency on the now defunct AERI (error reporting service).
-
-2019-05-08  Attila Torok
-
 	ide/scave: Fix setting properties to their defaults.
-
-2019-05-07  Attila Torok
 
 	ide/scave: Creating .anf file by opening .sca/.vec files was fixed.
 	Property defaults are put into the dialog, and not saved in the .anf
 	file.
 
-2019-05-07  Attila Torok
-
 	ide/scave: Charts are now opened lazily. Simplify chart opening code
 	path.
-
-2019-05-07  Attila Torok
 
 	ide/scave: Add a unique ID to AnalysisItem, store script and XSWT source
 	as CDATA.
 
-2019-05-07  Attila Torok
-
 	ide/scave: More renaming.
-
-2019-05-07  Attila Torok
 
 	ide/scave: Rename some analysis model classes and methods.
 
-2019-05-07  Attila Torok
-
 	scave: WIP try to optimize the filter expression built from an IDList
-
-2019-05-07  Attila Torok
 
 	scave: WIP improved filter expression string quoting
 
-2019-05-07  Attila Torok
-
 	ide/scave: Rename a couple *Properties classes.
 
-2019-05-07  Attila Torok
-
 	ide/inifile: Make a copy of two classes so we don't have to import EMF.
-
-2019-04-12  Attila Torok
 
 	ide/scave: Make everything work again after dropping EMF.
 
@@ -1075,36 +573,22 @@
 	form.
 	-Remove a lot of dialog building code from ChartEditForm.
 
-2019-05-07  Attila Torok
-
 	ide/scave: Move and improve chart templates. Reload them at runtime.
 
 	Also, add ColorChooser and FontChooser controls.
 
-2019-05-07  Attila Torok
-
 	ide/scave: Replace EMF generated classes with hand-crafted data model and
 	commands.
-
-2019-05-07  Attila Torok
 
 	ide/scave: Do not return any results to Python (instead of everything) if
 	the filter expression is empty.
 
-2019-05-07  Attila Torok
-
 	ide/scave: Add a pickle size limit when preparing results for Python.
 
-2019-04-23  Attila Torok
-
-	scave: Add includeEventNumbers parameter to IndexedVectorFileReader.
-
-2019-04-23  Attila Torok
+	ide/scave: Add includeEventNumbers parameter to IndexedVectorFileReader.
 
 	scave: cleanup: Move vector data loading functions into its own source
 	files.
-
-2019-04-23  Attila Torok
 
 	scave: cleanup: Delete DataflowManager, its Nodes, and commented out all
 	usages.
@@ -1118,40 +602,26 @@
 	DataflowManager was designed ~20 years ago, when memory was a much more
 	scarce resource.
 
-2019-04-18  Attila Torok
-
 	scave: Rework how IndexedVectorFileReader works, load data using a new
 	Adapter.
 
 	Also rename OutputVectorEntry to VectorDatum. Drop unnecessary ~Ex class.
 
-2019-04-18  Attila Torok
-
 	scave: cleanup: Rework how FingerPrints are checked, rename
 	indexfile.[h|cc] to vectorfileindex.[h|cc].
 
-2019-04-18  Attila Torok
-
 	scave: cleanup: Separate IndexFileUtils into its own files.
-
-2019-04-17  Attila Torok
 
 	scave: cleanup: Rename indexedvectorfile.[h|cc] to
 	indexedvectorfilereader.[h|cc].
 
-2019-04-17  Attila Torok
-
 	scave: Load vector data without DataFlowEngine in VectorDataLoader.
-
-2019-04-17  Attila Torok
 
 	scave: cleanup: Renaming of several C++ classes and files
 
 	- Files renamed to match names of contained classes
 	- Add Node to end of VectorFileReader Node class names.
 	- Rename IndexFile to IndexFileUtils.
-
-2019-04-16  Attila Torok
 
 	scave: cleanup: Deleted a bunch of .java files and dead code. Everything
 	still works.
@@ -1161,43 +631,19 @@
 	ScriptEngine, *Dataset and Scatter chart-related classes are not needed
 	because computations will be done in Python scripts.
 
-2019-05-27  Rudolf Hornig
-
-	ide: fixed bug report and model descriptor download URLs
-
-2019-04-17  Andras Varga
-
-	ui/nativelibs: updated for the new Expression class
-
-2019-04-16  Attila Torok
-
 	scave: Cosmetic changes.
-
-2018-12-07  Attila Torok
 
 	scave: Avoid array out of bounds exception when restoring chart editors.
 
-2019-03-29  Attila Torok
-
 	scave: Load legacy scatter charts with internal templates.
-
-2019-03-29  Attila Torok
 
 	scave: Report .anf file version conversion errors.
 
-2019-04-16  Attila Torok
-
 	scave: Some null checks.
-
-2019-04-15  Attila Torok
 
 	scave: Factor out model loading from ScaveEditor.
 
-2019-03-11  Attila Torok
-
 	scave: Change pandas display options.
-
-2019-02-14  Attila Torok
 
 	scave: The "attr:" prefix CHANGED MEANING in filter expressions.
 
@@ -1208,71 +654,39 @@
 
 	follow "attr:" -> "runattr:" rename in filter expressions.
 
-2019-04-15  Attila Torok
-
 	misc: Changes to scave .project and example .anf files.
-
-2019-02-28  Attila Torok
 
 	scave: Fixes for vector ops (copy rows and use transform) and chart
 	labels.
 
-2019-04-15  Attila Torok
-
 	scave: Add chart creation from template, XSWT forms, templates.
-
-2019-01-25  Attila Torok
 
 	scave: Implement the new results API. Itervars are no longer added as
 	scalars.
 
-2019-03-08  Attila Torok
-
 	scave: Add chart script working directory as Python site dir as well.
-
-2019-04-15  Attila Torok
 
 	scave: Put exception handling logic into PythonCallerThread.
 
-2019-04-15  Attila Torok
-
 	scave: Run chart script on parameter change.
-
-2019-03-07  Attila Torok
 
 	scave: Print stderr of Python process in the Console view in red.
 
-2019-03-06  Attila Torok
-
 	scave: Check for null when setting up the interpreter for PyDev.
-
-2019-04-15  Attila Torok
 
 	scave: No longer debug-print the selection on change.
 
-2019-04-15  Attila Torok
-
 	scave: Simplify .anf file saving.
 
-2019-02-14  Attila Torok
-
 	scave: Actually avoid InvalidArgumentException in PlotWidget.
-
-2019-01-11  Attila Torok
 
 	scave: Nicer error reporting when we couldn't connect to Python.
 
 	And rename the error handler class, plus remove some unnecessary imports.
 
-2018-12-07  Attila Torok
-
 	ide: Make the 16x16 px icon a little bit sharper by tweaking it by hand.
 
-2018-12-07  Attila Torok
-
 	releng: update product icon paths
-
-2018-12-07  Attila Torok
 
 	scave: Fix inactive actions in the context menu on the "Browse data" page
 	...
@@ -1280,1154 +694,504 @@
 	... after switching pages but keeping the old selection when right
 	clicking.
 
-2018-12-05  Attila Torok
-
 	scave: Call ensureInterpreterConfigured in OmnetppStartup
 
-2018-12-03  Attila Torok
-
-	common,scave: Minor changes here and there.
 
 	Remove unused imports, add @Override. And [text] antialiasing makes no
 	sense when exporting to SVG.
-
-2018-12-03  Attila Torok
 
 	scave: Factor out chart script generation from actions to its own class.
 
 	Plus some comments in a few places.
 
-2018-11-20  Attila Torok
+	scave: Trim the XML indentation spaces from the ends of chart scripts
+	upon loading.
 
-	ide/common: Avoid NPE when web browser could not be created.
+	scave: Delete everything related to computed results.
+
+	scave: Delete computed results and script parsing related code.
+
+	scave: comment out some unused time measurements...
+
+	scave: Chart script is now text content of XML node, not attribute.
+
+	scave: Fix vectorops import, add vector ops submenus to matplotlib chart
+	context menus
+
+	scave: Refresh .anf file before restoring the editor for it.
+
+	scave: e.printStackTrace -> logError(e), System.out.println ->
+	Debug.println
+
+	scave: Python API (chart, results): camelCase() -> snake_case()
+
+	scave: Make Output Vector View operational again.
+
+	scave: Fix ClosePageAction.isApplicable
+
+	scave: Delete everything related to ChartSheets and Datasets.
+
+	scave: Delete the scave_orig and model_orig plugins.
+
+	scave: Moved the .py files into one location, fixed the imports, added
+	PYTHONPATH to setenv
+
+	scave: On Windows, look for python3.exe (instead of just python).
+
+	scave: Resolve python3 executable location from $PATH when configuring
+	PyDev interpreter.
+
+	scave: Upgrade to PyDev 7.0.3 (or compatible)
+
+	scave: Dispose old Image in PlotWidget before creating the next.
+
+	scave: Enable double buffering on MPL and Native chart widgets.
+
+	scave: Make PYTHONPATH and PyDev module paths correct on Windows
+
+	scave: Check in Py4J 0.10.7 Python source, add location to PYTHONPATH.
+
+	scave: do not import any external modules implicitly into chart scripts
+
+	scave: minor fixes with label generation and imports
+
+	scave: Make "chart" a separate module, no longer an implicitly "imported"
+	global object.
+
+	scave: Made "Go to problem marker" work with Python error markers.
+
+	scave: save editor state (script visibility, splitter position) when
+	closing the page with the X in the top right corner
+
+	scave: make chart script editor page state save/restore work again
+
+	scave: show script output console on editor page activation
+
+	scave: add ability to plot histograms from transformed dataframes
+
+	scave: add getSeriesTitle to IHistogramDataset, and use it in user-facing
+	places
+
+	scave: trailing whitespace trimmed from .py files
+
+	scave: use row name + title attribute as data key
+
+	scave: rename ApplyAction to AddVectorOperationAction, add Compute
+	actions to the menu
+
+	scave: Add Apply... operations for line chart context menus.
+
+	scave: Always import operations in generated chart scripts.
+
+	scave: Use np.remainder for ops.vector_modulo instead of np.fmod.
+
+	scave: Add the conversion to the new format to generated chart scripts.
+
+	scave: in chart.plotVectors, set the LineType chart property based on the
+	interpolationmode result attribute
+
+	scave: make vector_merger and vector_aggregator return a dataframe in the
+	correct format
+
+	scave: Implemented the rest of the vector operations in Python.
+
+	scave: add vector operations and an example .anf file for testing
+
+	scave: plot scalars and vectors in the new format using the built-in
+	charts
+
+	scave: do not exclude _runattrs_ scalars during transformation
+
+	scave: changes for the summit demo
+
+	scave: parse and use data filters for legacy charts
+
+	scave: a bit more ugly parsing of iso_column
+
+	scave: Fix a python error in results
+
+	scave: WIP load and convert legacy bar charts as well
+
+	scave: HACK attempt to make converted scatter charts better
+
+	scave: Add analysis saving in the new, EMF-free XML format
+
+	scave: handle all result types in transform_results, add filter_metadata
+
+	scave: scave -> results, Make PyDev know about it, add transform_results.
+
+	scave: Load some LineCharts
+
+	scave: keep one two python processes in the pool of the editor instead of
+	just one
+
+	scave: bit longer chart update delay
+
+	scave: don't update the chart twice when its script changes...
+	scave: cache the entryPoint in PythonProcess the first time it's queried
+
+
+	scave: some primitive script generation for scatter charts
+
+	scave: remove some more debug prints, and use getChartName() in one more
+	place
+
+	scave: separate results.pivotCharts into two halves (the first is not
+	used elsewhere yet); plus some whitespace formatting changes
+
+	scave: better python exception reporting, don't leave a dangling
+	markerannotation
+
+	scave: do not dispose the python process too early with native charts
+
+	scave: whitespace formatting in PythonEntryPoint.py
+
+	scave: add chart.plotScatter to automatically pivot scalars into a
+	scatter chart
+
+	scave: comment out a couple debug prints, append Chart: prefix to tab text
+
+	scave: set the pychart PyDev project to Python 3.6 grammar
+
+	fixes the errors around "print = functools..."
+
+	scave: Load .anf files manually using XML parsing, a new .anf file format
+	with a dtd, and port one .anf file to it
+
+	scave: tuning delayed chart script autorun logic
+
+	will save script even if autoupdate is disabled
+
+	scave: some comments, and alternative ideas for ScavePlugin hack
+
+	scave: HACK to configure a PyDev interpreter on ScavePlugin start
+
+	scave: set selection to chart when ChartScriptEditor page is activated
+
+	scave: don't run chart script if native viewer widget is disposed
+
+	scave: remove some debug prints
+
+	scave: update the ChartViewer when properties are edited in the dialog
+	scave: switch "save temp chart" action to "go to chart definition" when
+	the former is triggered
+
+	scave: finishing touches that didn't fit anywhere else
+
+	scave: add kill python action, organize create actions in
+	MultiPageEditorActionBarContributor
+
+	scave: delete ChartMenuManager - the widgets are now doing it on their
+	own now
+
+	scave: update chart related EditForms
+
+	scave: add actions for creating matplotlib charts, update existing ones
+
+	scave: wire in MatplotlibChart to a few places
+
+	scave: delete ChartPage - ChartScriptEditor replaced it
+
+	scave: add ChartScriptEditor and the main related infrastructure
+
+	scave: add MatplotlibChartProperties, remove Dataset-related code from
+	other ~Properties classes
+
+	scave: add python chart actions (incl. matplotlib nav)
+
+	scave: add python datasets and picklers
+
+	scave: rename ScaveEditorPage to FormEditorPage
+
+	scave: rename ChartCanvas to ChartViewer (and add Viewer to related
+	classes), plus fix up a few actions
+
+	scave: add PyDev as a dependency
+
+	scave: rename to Analysis Tool, update version, add WHATSNEW entry
+
+	scave: add a bunch of new icons for pointers, toolbar actions and objects
+
+	scave: nuke DatasetView
+
+	scave: model: Add MatplotlibChart type, rename input to script, remove
+	operations
+
+	scave: add scave.pychart module - implements matplotlib integration,
+	includes examples
+
+	scave: many small random fixes in the scave_orig module
+
+	scave: HistogramPlot: Don't always include 0 in the X range initially, a
+	bit larger margin.
+
+
+
+2019-07-05  Rudolf Hornig
+
+	* Updated to use Eclipse 4.12, CDT 9.8
+
+2019-07-04  Rudolf Hornig
+
+	* Fix for missing deprecated function in Eclipse 4.12.
+
+2019-06-04  Attila Torok
+
+	* CDT: Remove ancient CProjectChecker class. It often caused a
+	DeadlockException on startup, and is no longer relevant.
+
+2019-05-08  Attila Torok
+
+	* Remove dependency on the now defunct AERI (error reporting service).
+
+2019-05-27  Rudolf Hornig
+
+	ide: fixed bug report and model descriptor download URLs
+
+2019-12-19  Rudolf Hornig
+
+	* Update to Eclipse 4.14 and CDT 9.10
+
+2019-11-08  Andras Varga
+
+	* Rudimentary IDE support for new parameter type "object" (syntax highlight).
+
+2019-10-28  Attila Torok
+
+	* Sequence Chart: Add a (potential) axis for any module with a custom
+	@class, instead of only those that do not have any submodules. These used to
+	be the same, but not anymore in INET, with the new "tricky" compound modules
+	that handle some messages themselves. This works around issues #759 and
+	#778.
+
+2019-11-14  Attila Torok
+
+	* Install INET 4 (the inet4 project) from FirstStepsDialog.
+
+2019-11-20  Rudolf Hornig
+
+	* Model catalog URL updated
+
+2019-09-30  Rudolf Hornig
+
+	* Updated for Eclipse 4.13.
+
+2019-09-13  Andras Varga
+
+	* Added the new example simulations to the IDE.
+
+2019-09-01  Andras Varga
+
+	* NEDDoc: Automatic hyperlinking of URLs embedded in the text.
+
+2019-08-22  Rudolf Hornig
+
+	* Updated splash / about images for OMNeT++ 6.
+
+2019-08-22  Rudolf Hornig
+
+	* Fix an NPE on closing the Welcome view
+
+2019-08-21  Rudolf Hornig
+
+	* Fix incorrect product ID.
+
+2019-07-31  Andras Varga
+
+	* NEDDoc: Implementors table to include indirect implementors as well.
+
+2019-07-31  Andras Varga
+
+	* NEDDoc: Generate "Implementors" table for interfaces.
+
+2019-07-31  Andras Varga
+
+	* NEDDoc: fix: Inheritance diagrams were missing in module interface pages,
+	even if they had implementors. This bug made INET documentation much less
+	useful.
+
+	Cause: hasBaseType was too restrictive, and its value didn't align with
+	what generateInheritanceDiagram() was doing.
+
+	Solution: always generate the dot graph, and check afterwards if it has
+	content.
+
+2019-07-24  Rudolf Hornig
+
+	* Use bundled private JRE on all platforms.
+
+2019-07-24  Rudolf Hornig
+
+	* Debug launch config to use lldbmi2 by default on macOS.
 
 2019-04-11  Rudolf Hornig
 
-	build: cleanall target now properly cleans all MODEs defined in
-	Makefile.inc.in
-
-2019-04-11  Rudolf Hornig
-
-	build: makefrag file is now properly included instead of the content
-	verbatim into the generated makefile
-
-2019-04-04  Rudolf Hornig
-
-	build: added a 'help' target to the main and model makefiles with target
-	and variable descriptions
-
-2019-04-04  Rudolf Hornig
-
-	build: proper dependency on the command line parameters
-
-	- rebuilds properly the output even if only the compiler command line
-	 parameters have changed.
-	- fix issue when rebuild occurred always if CFLAGS contained " delimited
-	strings
-	 (we use $(file) instead of using the shell echo command)
+	* Makefile improvements.
 
 2019-03-28  Rudolf Hornig
 
-	prod: use fully offline build with network turned off in the docker
+	* Use fully offline build with network turned off in the docker
 	container
 
 2019-03-27  Rudolf Hornig
 
-	prod: tycho build warning fix
-
-2019-03-27  Rudolf Hornig
-
-	prod: Eclipse 4.11 update, Tycho 1.3.0 update for building
-
-2019-03-22  Rudolf Hornig
-
-	prod: updated product definition to be compatible with eclipse 4.11
+	* Eclipse 4.11 update, Tycho 1.3.0 update for building
 
 2019-03-04  Rudolf Hornig
 
-	ide: renamed the launcher executable to opp_ide
-
-	The same launcher name will be used in both OMNeT++ and OMNEST
+	* Renamed the launcher executable to opp_ide. The same launcher name will be
+	used in both OMNeT++ and OMNEST
 
 2019-02-28  Rudolf Hornig
 
-	neddoc: ned documentation now can be generated from commandline
-
-2019-03-04  Rudolf Hornig
-
-	neddoc: eliminated UI components from the generator
+	* NEDDoc: NED documentation now can be generated from commandline
 
 2019-02-13  Rudolf Hornig
 
-	neddoc: fix: excluded directories were not working when it was empty
-
-2019-02-28  Rudolf Hornig
-
-	neddoc: renamed some variables
-
-2019-02-25  Rudolf Hornig
-
-	prod: remove crash reporting from the IDE
+	* NEDoc: fix: excluded directories were not working when it was empty
 
 2019-02-18  Rudolf Hornig
 
-	ide: fix an NPE when MakefileBuilder was running without a workbench
-	window.
+	* Fix an NPE when MakefileBuilder was running without a workbench window.
 
 2019-02-14  Rudolf Hornig
 
-	common: fix a crash when shared images was accessed in headless mode
+	* Fix a crash when shared images was accessed in headless mode
 
 2019-02-22  Rudolf Hornig
 
-	prod: updated to eclipse 4.11, tycho 1.3
+	* Updated to Eclipse 4.11, tycho 1.3.
 
-2019-02-12  Andras Varga
+2019-02-11  Andras Varga
 
-	eventlog/seqchart: follow rename with icon names
-
-2019-02-12  Andras Varga
-
-	eventlog/seqchart: adjustment after renames
+	* Sequence Chart: follow rename of ModuleMethodBegin/End to ComponentMethodBegin/End.
 
 	Note: the Sequence Chart tool cannot visualize methods calls from/to
 	channel objects, as they have no axes in the chart.
 
-2019-02-11  Andras Varga
-
-	eventlog: rename ModuleMethodBegin/End to ComponentMethodBegin/End
-
-	As source/target may be channel object as well, not only a module.
-
-	Fields also renamed: fromModuleId -> sourceComponentId, toModuleId ->
-	targetComponentId
-
 2019-02-11  Rudolf Hornig
 
-	ide: added a bookmark file specifying all used update sites.
+	* Added a bookmark file specifying all used update sites.
 
-	- the site bookmark file can be imported in the Eclipse / Preferences /
+	The site bookmark file can be imported in the Eclipse / Preferences /
 	Install/Update / Available Software Sites dialog. It contains update
-	sites for Eclipse Platform, CDT, GEF, PyDev, Linux Tools
-
-2019-02-11  Andras Varga
-
-	ide: NED editor: fix recently introduced runtime error during connecting
-	nodes
-
-2019-02-09  Andras Varga
-
-	ide: removing "bgl" display string tag, step 2
-
-	Store seed in the figure instead of the display string tag. Change
-	Relayout action accordingly.
-
-2016-12-21  Rudolf Hornig
-
-	doc,ide: removing "bgl" display string tag, step 1
-
-	The "bgl" could be used to specify the layout seed for the compound
-	module. It has not been supported by Qtenv, as it was unclear how it was
-	supposed to coexist with Qtenv's "Relayout" button. We are now removing
-	it altogether.
-
-	This commit removes mentions from the IDE and the documentation.
+	sites for Eclipse Platform, CDT, GEF, PyDev, Linux Tools.
 
 2019-01-24  Rudolf Hornig
 
-	build: fixed dependency file generation
+	* Fixed dependency file generation
 
 	The dependency file generated by a .msg and the related object file's
 	dependency file were overwriting each other.
 
 2019-01-18  Rudolf Hornig
 
-	build: IDE build refactoring
-
-2019-01-18  Rudolf Hornig
-
-	build: build process refactoring
-
-2019-01-10  Rudolf Hornig
-
-	build: added support to build on Windows using MS ABI compatibility (i.e
-	Visual C++ libraries)
+	* Build process refactoring
 
 2018-12-05  Rudolf Hornig
 
-	releng: moved to the root directory
-
-2018-12-10  Attila Torok
-
-	scave: Add the .project file in the org.omnetpp.scave.pychart project to
-	the repo.
-
-2018-10-19  Rudolf Hornig
-
-	neddoc: extracted the rendering methods into a separate class
-
-2018-10-15  Rudolf Hornig
-
-	neddoc: refactor
+	* Releng: moved to the root directory
 
 2018-10-24  Rudolf Hornig
 
-	neddoc: updated ui changelog
+	* NED documentation generator updated. [This is a summary of several commits.]
 
-2018-10-11  Rudolf Hornig
+	  - Generate material design inspired output.
 
-	neddoc: scrollbar and scrolling fixes
+	  - Navigation tree revised.
 
-2018-10-11  Rudolf Hornig
+	  - It is now possible to specify excluded directories during documentation
+	    generation, in order to be able to exclude samples, showcases etc. that
+	    are not integral part of the documentation.
 
-	neddoc: added title support for generated doc files.
+	  - Now generates nedtags.xml/msgtags.xml file which is compatible with
+	    the doxytags.xml file generated by doxygen. This allows crosslinking to
+	    the ned documentation from a sphinx based documentation (using the
+	    doxy-link plugin)
 
-2018-10-05  Rudolf Hornig
+	  - Generate usage and inheritance diagrams ONLY if they are meaningful.
 
-	neddoc: material design
-
-2018-10-03  Rudolf Hornig
-
-	neddoc: generate type diagrams in SVG.
-
-	- Text size in diagrams is now DPI independent.
-	- image watermarks removed.
-
-2018-10-01  Rudolf Hornig
-
-	neddoc: allow disabling the generation of message definitions and source
-	file listings
-
-2018-10-01  Rudolf Hornig
-
-	neddoc: support directory exclusion
-
-2018-09-27  Rudolf Hornig
-
-	neddoc: generate a single page with app packages listed on it (instead of
-	separate pages for each package)
-
-2018-09-26  Rudolf Hornig
-
-	neddoc: Messages definitions are now generated in a separate navigation
-	node
-
-2018-09-26  Rudolf Hornig
-
-	neddoc: generate usage and inheritance diagrams ONLY if they are
-	meaningful.
-
-	Skip the diagram generation if there is no supertype, implemented
-	interface, or used local types.
-
-2018-09-26  Rudolf Hornig
-
-	neddoc: use unix style line ends in generated files.
-
-2018-09-26  Rudolf Hornig
-
-	neddoc: updated style sheet. removed unnecessary files
-
-2018-09-26  Rudolf Hornig
-
-	neddoc: custom style sheet for neddoc
-
-2018-09-24  Rudolf Hornig
-
-	neddoc: use SVG files as the usage/inheritance diagram image. Removed map
-	files as SVG already contains proper links.
-
-2018-09-24  Rudolf Hornig
-
-	neddoc: removed simple/compound module item, updated type page title,
-	package reference of type pages
-
-2018-09-21  Rudolf Hornig
-
-	neddoc: navtreeindex support
-
-2018-09-21  Rudolf Hornig
-
-	neddoc: redirect page removed. no longer needed.
-
-2018-09-21  Rudolf Hornig
-
-	neddoc: use lambda instead of predicate interface
-
-2018-09-17  Rudolf Hornig
-
-	neddoc: removed topmenu and search bar
-
-2018-09-14  Rudolf Hornig
-
-	ide: generate doxy compatible ned documentation
-
-2018-09-10  Rudolf Hornig
-
-	neddoc: generate nedtags and msgtags files for cross linking with sphinx
-	documentation
-
-2018-09-07  Rudolf Hornig
-
-	neddoc: add custom header template support for doxygen
-
-2018-09-07  Rudolf Hornig
-
-	neddoc: added template support
-
-2018-09-06  Rudolf Hornig
-
-	neddoc: get page and navigation template from files
-
-2018-09-06  Rudolf Hornig
-
-	neddoc: frame template
+	  - Use SVG files as the usage/inheritance diagram image. Removed map
+	    files as SVG already contains proper links.
 
 2018-11-26  Andras Varga
 
-	doc, ui: allow SVG export and setting DLL export symbol from OMNeT++
+	* NED Editor, Sequence Chart: allow SVG export.
 
-2018-11-26  Andras Varga
-
-	doc, ui: remove obsolete leftover txt files
-
-2018-11-21  Attila Torok
-
-	scave: Trim the XML indentation spaces from the ends of chart scripts
-	upon loading.
-
-2018-11-21  Attila Torok
-
-	scave: Delete everything related to computed results.
-
-2018-11-21  Attila Torok
-
-	scave: Delete computed results and script parsing related code.
-
-2018-11-21  Attila Torok
-
-	scave: comment out some unused time measurements...
-
-2018-11-20  Attila Torok
-
-	scave: Chart script is now text content of XML node, not attribute.
-
-2018-11-20  Attila Torok
-
-	scave: Fix vectorops import, add vector ops submenus to matplotlib chart
-	context menus
-
-2018-11-20  Attila Torok
-
-	scave: Refresh .anf file before restoring the editor for it.
-
-2018-11-20  Attila Torok
-
-	scave: e.printStackTrace -> logError(e), System.out.println ->
-	Debug.println
-
-2018-11-20  Attila Torok
-
-	scave: Python API (chart, results): camelCase() -> snake_case()
-
-2018-11-20  Attila Torok
-
-	scave: Make Output Vector View operational again.
-
-2018-11-20  Attila Torok
-
-	scave: Fix ClosePageAction.isApplicable
-
-2018-11-20  Attila Torok
-
-	scave: Delete everything related to ChartSheets and Datasets.
-
-2018-11-20  Attila Torok
-
-	scave: Delete the scave_orig and model_orig plugins.
-
-2018-11-20  Attila Torok
-
-	scave: Moved the .py files into one location, fixed the imports, added
-	PYTHONPATH to setenv
-
-2018-11-19  Attila Torok
-
-	scave: On Windows, look for python3.exe (instead of just python).
-
-2018-11-20  Attila Torok
-
-	scave: Resolve python3 executable location from $PATH when configuring
-	PyDev interpreter.
-
-2018-11-12  Attila Torok
-
-	scave: Upgrade to PyDev 7.0.3 (or compatible)
-
-2018-11-12  Attila Torok
-
-	scave: Dispose old Image in PlotWidget before creating the next.
-
-2018-11-09  Attila Torok
-
-	scave: Enable double buffering on MPL and Native chart widgets.
-
-2018-11-09  Attila Torok
-
-	scave: Make PYTHONPATH and PyDev module paths correct on Windows
-
-2018-11-07  Attila Torok
-
-	scave: Check in Py4J 0.10.7 Python source, add location to PYTHONPATH.
-
-2018-10-15  Attila Torok
-
-	scave: do not import any external modules implicitly into chart scripts
-
-2018-10-15  Attila Torok
-
-	scave: minor fixes with label generation and imports
-
-2018-10-11  Attila Torok
-
-	scave: Make "chart" a separate module, no longer an implicitly "imported"
-	global object.
-
-2018-10-11  Attila Torok
-
-	scave: Made "Go to problem marker" work with Python error markers.
-
-2018-10-10  Attila Torok
-
-	scave: save editor state (script visibility, splitter position) when
-	closing the page with the X in the top right corner
-
-2018-10-10  Attila Torok
-
-	scave: make chart script editor page state save/restore work again
-
-2018-10-10  Attila Torok
-
-	scave: show script output console on editor page activation
-
-2018-10-10  Attila Torok
-
-	scave: add ability to plot histograms from transformed dataframes
-
-2018-10-10  Attila Torok
-
-	scave: add getSeriesTitle to IHistogramDataset, and use it in user-facing
-	places
-
-2018-10-04  Attila Torok
-
-	scave: trailing whitespace trimmed from .py files
-
-2018-10-03  Attila Torok
-
-	scave: use row name + title attribute as data key
-
-2018-10-03  Attila Torok
-
-	scave: rename ApplyAction to AddVectorOperationAction, add Compute
-	actions to the menu
-
-2018-10-03  Attila Torok
-
-	scave: Add Apply... operations for line chart context menus.
-
-2018-10-03  Attila Torok
-
-	scave: Always import operations in generated chart scripts.
-
-2018-10-03  Attila Torok
-
-	scave: Use np.remainder for ops.vector_modulo instead of np.fmod.
-
-2018-10-02  Attila Torok
-
-	scave: Add the conversion to the new format to generated chart scripts.
-
-2018-10-02  Attila Torok
-
-	scave: in chart.plotVectors, set the LineType chart property based on the
-	interpolationmode result attribute
-
-2018-10-02  Attila Torok
-
-	scave: make vector_merger and vector_aggregator return a dataframe in the
-	correct format
-
-2018-10-01  Attila Torok
-
-	scave: Implemented the rest of the vector operations in Python.
-
-2018-09-28  Attila Torok
-
-	scave: add vector operations and an example .anf file for testing
-
-2018-09-28  Attila Torok
-
-	scave: plot scalars and vectors in the new format using the built-in
-	charts
-
-2018-09-28  Attila Torok
-
-	scave: do not exclude _runattrs_ scalars during transformation
-
-2018-09-17  Attila Torok
-
-	scave: changes for the summit demo
-
-2018-08-30  Attila Torok
-
-	scave: parse and use data filters for legacy charts
-
-2018-08-30  Attila Torok
-
-	scave: a bit more ugly parsing of iso_column
-
-2018-08-30  Attila Torok
-
-	scave: Fix a python error in results
-
-2018-08-17  Attila Torok
-
-	scave: WIP load and convert legacy bar charts as well
-
-2018-08-17  Attila Torok
-
-	scave: HACK attempt to make converted scatter charts better
-
-2018-08-17  Attila Torok
-
-	scave: Add analysis saving in the new, EMF-free XML format
-
-2018-08-17  Attila Torok
-
-	scave: handle all result types in transform_results, add filter_metadata
-
-2018-08-16  Attila Torok
-
-	scave: scave -> results, Make PyDev know about it, add transform_results.
-
-2018-08-16  Attila Torok
-
-	scave: Load some LineCharts
-
-2018-08-15  Attila Torok
-
-	scave: keep one two python processes in the pool of the editor instead of
-	just one
-
-2018-08-15  Attila Torok
-
-	scave: bit longer chart update delay
-
-2018-08-15  Attila Torok
-
-	scave: don't update the chart twice when its script changes...
-
-2018-08-15  Attila Torok
-
-	scave: cache the entryPoint in PythonProcess the first time it's queried
-
-2018-08-14  Attila Torok
-
-	scave: some primitive script generation for scatter charts
-
-2018-08-14  Attila Torok
-
-	scave: remove some more debug prints, and use getChartName() in one more
-	place
-
-2018-08-14  Attila Torok
-
-	scave: separate results.pivotCharts into two halves (the first is not
-	used elsewhere yet)
-
-	plus some whitespace formatting changes
-
-2018-08-14  Attila Torok
-
-	scave: better python exception reporting, don't leave a dangling
-	markerannotation
-
-2018-08-14  Attila Torok
-
-	scave: do not dispose the python process too early with native charts
-
-2018-08-14  Attila Torok
-
-	scave: whitespace formatting in PythonEntryPoint.py
-
-2018-08-14  Attila Torok
-
-	scave: add chart.plotScatter to automatically pivot scalars into a
-	scatter chart
-
-2018-08-14  Attila Torok
-
-	scave: comment out a couple debug prints, append Chart: prefix to tab
-	text
-
-2018-08-14  Attila Torok
-
-	scave: set the pychart PyDev project to Python 3.6 grammar
-
-	fixes the errors around "print = functools..."
-
-2018-08-10  Attila Torok
-
-	scave: Load .anf files manually using XML parsing, a new .anf file format
-	with a dtd, and port one .anf file to it
-
-2018-08-08  Attila Torok
-
-	scave: tuning delayed chart script autorun logic
-
-	will save script even if autoupdate is disabled
-
-2018-08-08  Attila Torok
-
-	scave: some comments, and alternative ideas for ScavePlugin hack
-
-2018-08-07  Attila Torok
-
-	scave: HACK to configure a PyDev interpreter on ScavePlugin start
-
-	with a huge comment explaining why
-
-2018-08-03  Attila Torok
-
-	scave: set selection to chart when ChartScriptEditor page is activated
-
-2018-08-03  Attila Torok
-
-	scave: don't run chart script if native viewer widget is disposed
-
-2018-08-03  Attila Torok
-
-	scave: remove some debug prints
-
-2018-08-03  Attila Torok
-
-	scave: update the ChartViewer when properties are edited in the dialog
-
-2018-08-03  Attila Torok
-
-	scave: switch "save temp chart" action to "go to chart definition" when
-	the former is triggered
+	* Makemake dialog: allow setting DLL export symbol from OMNeT++.
 
 2018-08-01  Attila Torok
 
-	scave: finishing touches that didn't fit anywhere else
-
-2018-08-02  Attila Torok
-
-	scave: add kill python action, organize create actions in
-	MultiPageEditorActionBarContributor
-
-2018-08-02  Attila Torok
-
-	scave: delete ChartMenuManager - the widgets are now doing it on their
-	own now
-
-2018-08-02  Attila Torok
-
-	scave: update chart related EditForms
-
-2018-08-02  Attila Torok
-
-	scave: add actions for creating matplotlib charts, update existing ones
-
-2018-08-02  Attila Torok
-
-	scave: wire in MatplotlibChart to a few places
-
-2018-08-02  Attila Torok
-
-	scave: delete ChartPage - ChartScriptEditor replaced it
-
-2018-08-02  Attila Torok
-
-	scave: add ChartScriptEditor and the main related infrastructure
-
-2018-08-02  Attila Torok
-
-	scave: add MatplotlibChartProperties, remove Dataset-related code from
-	other ~Properties classes
-
-2018-08-01  Attila Torok
-
-	scave: add python chart actions (incl. matplotlib nav)
-
-2018-08-01  Attila Torok
-
-	scave: add python datasets and picklers
-
-2018-11-20  Attila Torok
-
-	scave: rename ScaveEditorPage to FormEditorPage
-
-2018-08-01  Attila Torok
-
-	scave: rename ChartCanvas to ChartViewer (and add Viewer to related
-	classes), plus fix up a few actions
-
-2018-08-01  Attila Torok
-
-	scave: add PyDev as a dependency
-
-2018-08-01  Attila Torok
-
-	scave: rename to Analysis Tool, update version, add WHATSNEW entry
-
-2018-08-01  Attila Torok
-
-	scave: add a bunch of new icons for pointers, toolbar actions and objects
-
-2018-08-01  Attila Torok
-
-	scave: nuke DatasetView
-
-2018-08-01  Attila Torok
-
-	scave: model: Add MatplotlibChart type, rename input to script, remove
-	operations
-
-2018-08-01  Attila Torok
-
-	scave: add scave.pychart module - implements matplotlib integration,
-	includes examples
-
-2018-08-01  Attila Torok
-
-	scave: many small random fixes in the scave_orig module
-
-2018-08-02  Attila Torok
-
-	scave: HistogramPlot: Don't always include 0 in the X range initially, a
-	bit larger margin.
-
-2018-08-02  Attila Torok
-
-	scave: IconGridViewer: Improve selection handling with right click.
-
-2018-08-01  Attila Torok
-
-	scave: CachingCanvas: Remove a workaround for Eclipse bug #245523 (fixed)
+	* CachingCanvas: Remove a workaround for Eclipse bug #245523 (fixed).
+	Affects both the Analysis Tool and Sequence Chart Tool.
 
 2017-06-07  Andras Varga
 
-	scave:  script-related fixes
+	* Analysis Tool redesign, 1st phase. This is a summary of several commits by Andras
+	Varga, 	over the period of 2017-04-07 through 2017-06-07.
 
-2017-06-07  Andras Varga
+	A partial list of changes:
 
-	scave: rename DatasetManager to ScriptEngine
+	- Data model change: added Dataset, Chartsheet and Folder
 
-2017-06-07  Andras Varga
+	- Datasets page replaced by an IconGridViewer that displays chart icons.
+	  Charts will be created from scripts instead of tree-edited steps like
+	  "add", "apply" and "chart".
 
-	scave: scripting: computed scalars, vector operations, content assist,
-	etc
+	- Remove dependency on Eclipse EMF -- ecore data model was replaced by
+	  hand-coded classed, to reduce bloat and for greater control.
 
-2017-05-29  Andras Varga
+	- Editor pages: added a toolbar to the top-right inner corner, use that
+	  instead of the main Eclipse toolbar.
 
-	scave: content assist refactoring
+	- Inputs page redesigned and rewritten (basically from scratch)
 
-	- renamed ContentProposal to IContentProposalEx+ContentProposalEx,
-	- renamed TextContentAdapter2 to TextContentAdapterEx,
-	- created org.omnetpp.scave.assist package
+	- Browse Data page: filter strip: remove "Apply" button; "Swap" button moved
+	  to left
 
-2017-05-20  Andras Varga
+	- Browse Data page: Tree Levels and Choose Table Columns actions added to
+	  toolbar
 
-	scave: scripting /1: some vector operations, etc
+	- Browse Data page: right-align numeric colums
 
-2017-05-20  Andras Varga
+	- Browse Data page: copy to clipboard action: added icon
 
-	scave: ChartEditForm: use StyledText instead of Text with SWT.MULTI
+	- Browse Data page: added Increase/Decrease Precision actions
 
-	Because it can auto-hide scrollbars, and wrapping can be turned on/off
-	dynamically
+	- Browse Data page: data tree was missing icons (used a folder icon)
+	  for some item types
 
-2017-05-20  Andras Varga
+	- Browse Data page: adjust preset tree levels: "File" -> "File / Run"
 
-	common: ContentAssistUtil: added support for StyledText widgets
+	- Browse Data page: table filter: replace RunId filter with
+	  Experiment/Measurement/Replication
 
-2017-05-20  Andras Varga
+	- Exporter improvements: validate dialog on start; enable/disable Export
+	  action based on the contents of the selection
 
-	common: added undo support for StyledText
+	- Charts: default legend positioning changed from "off" to "inside,
+	  anchor north"
 
-2017-05-18  Andras Varga
-
-	scave: content assist: fix: eliminate pointless proposal descriptions
-
-2017-05-18  Andras Varga
-
-	scave: cleaning: remove obsoleted classes, move reusable ones into
-	common.core/
-
-2017-05-18  Andras Varga
-
-	scave: datatable: add last, blank column; try to enforce a minimum column
-	width
-
-2017-05-18  Andras Varga
-
-	scave: random fixes
-
-2017-05-17  Andras Varga
-
-	scave: Inputs page: label change ("matches 19 files")
-
-2017-05-17  Andras Varga
-
-	scave: TODO items refreshed
-
-2017-05-03  Andras Varga
-
-	scave: charts: default legend positioning changed from "off" to "inside,
-	anchor north"
-
-2017-05-25  Andras Varga
-
-	common: IconGridViewer fixes (Select All, delay on rename, precise
-	up/down arrow)
-
-2017-05-15  Andras Varga
-
-	scave: EditInputFileAction refresh
-
-2017-05-12  Andras Varga
-
-	scave: InputsPage etc: some notifications and action enablement checks
-	simplified
-
-2017-05-10  Andras Varga
-
-	scave: ScaveEditor: less code
-
-2017-05-10  Andras Varga
-
-	scave: ScaveEditorContributor: method reordering (getters moved up)
-
-2017-05-10  Andras Varga
-
-	scave: ScaveEditorContributor: showOptionalToolbarActions code removed
-
-2017-05-10  Andras Varga
-
-	scave: ScaveEditorContributor: xxxAction variables: use concrete type
-
-2017-05-10  Andras Varga
-
-	scave: ScaveEditorContributor: remove code we don't need:
-
-	- LoadResourceAction, ControlAction, LiveValidationAction, ValidateAction
-	- some more
-
-	more unnecessary code removed
-
-2017-05-10  Andras Varga
-
-	scave: ScaveEditorContributor: remove "style" stuff
-
-2017-05-10  Andras Varga
-
-	scave: ScaveEditorContributor: remove generic "Create Child" and "Create
-	Sibling" submenus
-
-2017-05-10  Andras Varga
-
-	scave: ScaveEditorContributor: activeEditorPart merged with activeEditor
-
-2017-05-10  Andras Varga
-
-	scave: ScaveEditor.configureIconGridViewer() moved into ChartsPage, its
-	only caller
-
-	also: ChartsPage: refresh viewer on model change
-
-2017-05-10  Andras Varga
-
-	scave: ScaveEditorContributor: editor and contributor are no longer menu
-	listeners
-
-2017-05-17  Andras Varga
-
-	scave: Charts page: add drag&drop and direct rename support
-
-2017-05-17  Andras Varga
-
-	common: IconGridViewer improvements
-
-	- use FlowLayout instead of manual arrangement
-	- add drag-and-drop support
-	- add direct rename support (F2)
-	- misc fixes
-
-2017-05-17  Andras Varga
-
-	scave: revive and use ChartSheet
-
-	ChartSheets:
-	- revive ChartSheetPage
-	- open charts on common temp chartsheet
-	- temp charts don't need a parent object to be edited
-	- turn off edit dialog for "New Xxx Chart" actions
-	- added showAnalysisItem() to editor
-	- actions: NewChartsheetAction, SaveTempChartAction
-	- implemented vector plots
-	- new icons
-	- etc.
-
-2017-05-17  Andras Varga
-
-	scave: model change: added Dataset, Chartsheet and Folder
-
-	- added AnalysisItem as common base class of Chart, Dataset, Chartsheet
-	and Folder
-	- in Charts, rename 'charts' member to 'items'
-	- improve order of items in .ecore file
-	- added 'bool isTemporary' flag to Chart and Chartsheet
-
-2017-05-02  Andras Varga
-
-	scave: ScaveEditorContributor: 'ourDeleteAction' renamed to
-	'removeAcion', and added to Chart page toolbar
-
-2017-05-02  Andras Varga
-
-	scave: ScaveEditorContributor: remove unused 'originalDeleteAction'
-	action
-
-	we use 'ownDeleteAction' instead
-
-2017-05-02  Andras Varga
-
-	scave: ScaveEditorContributor: remove actions from the main IDE toolbar
-
-2017-04-28  Andras Varga
-
-	scave: eliminated FilterField class (reason: trivial functionality,
-	duplicated name)
-
-2017-04-28  Andras Varga
-
-	scave: moved generic content assist stuff to the common plugin.
-
-2017-05-18  Andras Varga
-
-	common: use GenericTreeLabelProvider with GenericTreeNode
-
-	fixes regression introduced by recently changed
-	GenericTreeNode.toString()
-
-2017-04-28  Andras Varga
-
-	scave: Browse Data page: filter strip: remove "Apply" button; "Swap"
-	button move to left
-
-2017-06-21  Andras Varga
-
-	scave: added DropdownAction; Browse Data page: Tree Levels and Choose
-	Table Columns actions added to toolbar
-
-	Also: exporter improvements:
-	- validate dialog on start
-	- enable/disable Export action based on the contents of the selection
-
-2017-04-26  Andras Varga
-
-	scave: Browse Data page: FlatModuleTreeAction /1; TODO icon, flip
-	operation, etc
-
-2017-04-26  Andras Varga
-
-	scave: Browse Data page: right-align numeric colums; TODO add a last
-	blank column, needed for proper resizing w/ mouse
-
-2017-04-21  Andras Varga
-
-	scave: Browse Data page: copy to clipboard action: added icon
-
-2017-04-25  Andras Varga
-
-	scave: Browse Data page: nits: improve error msg
-
-2017-04-25  Andras Varga
-
-	scave: prepare code to handle StatisticsItem at most places; TODO show
-	them on the Histograms page
-
-2017-04-21  Andras Varga
-
-	scave: TODO items added (usability)
-
-2017-04-21  Andras Varga
-
-	scave: remove configureTreeViewer
-
-2017-05-02  Andras Varga
-
-	scave: remove references to generated ScaveEditPlugin class
-
-2017-04-27  Andras Varga
-
-	scave: ResultFileManagerTreeContentProvider renamed to
-	DataTreeContentProvider
-
-2017-04-26  Andras Varga
-
-	scave: ScaveEditorPage: toolbar items made hideable
-
-2017-04-27  Andras Varga
-
-	scave: use images via a generated ScaveImages class
-
-2017-04-10  Andras Varga
-
-	scave: DatasetsAndChartsPage removed
-
-2017-04-26  Andras Varga
-
-	scave: Browse Data page: added Increase/Decrease Precision actions
-
-2017-04-26  Andras Varga
-
-	scave: ResultFileManagerTreeContentProvider: refactor, getting rid of
-	reflection (needed later)
-
-2017-04-26  Andras Varga
-
-	scave: ResultFileManagerTreeContentProvider: cosmetics
-
-2017-04-25  Andras Varga
-
-	scave: refactoring: getType() renamed to getDataType()
-
-2017-04-24  Andras Varga
-
-	scave: Inputs page redesigned and rewritten (basically from scratch)
-
-	also: GenericTreeNode.toString() change
-
-2017-04-21  Andras Varga
-
-	scave: refactoring: merge EMF-based super classes into ScaveEditor and
-	ScaveEditorContributor
-
-	Steps:
-	- AbstractEMFModelEditor merged into its subclass ScaveEditor
-	- MyContentOutlinePage merged into ScaveEditorContentOutlinePage
-	- remove unused generated classes (ScaveModelActionBarContributor,
-	ScaveModelEditor,
-	 ScaveModelModelWizard from org.omnetpp.scave.model.presentation)
-	- ScaveModelActionBarContributor merged into ScaveEditorContributor
-	- EditingDomainActionBarContributor base class merged into
-	ScaveEditorContributor
-
-2017-04-21  Andras Varga
-
-	scave: ScaveEditor, AbstractEMFModelEditor: remove unnecessary
-	multiple-resource support, marker and diagnostics stuff
-
-2017-05-03  Andras Varga
-
-	scave_orig: follow Type -> DataType renaming in the C++ code
-
-2017-04-18  Andras Varga
-
-	scave_orig: eliminate compile errors due to nativelibs change in previous
-	commit
-
-	i.e. Run.getRunNumber() was removed
-
-2017-04-14  Andras Varga
-
-	scave: chart edit dialog: content of pages organized for usability; NOTE:
-	scatter chart throws error when created on new Charts page
-
-2017-04-14  Andras Varga
-
-	scave: Edit action: icon, change title ("Properties" -> "Edit")
-
-2017-04-14  Andras Varga
-
-	scave: Run property sheet: leave only "Run Number" in the "Main" category
-
-2017-04-14  Andras Varga
-
-	scave: Chart page: added toolbar (zoom, export to svg, close, etc)
-
-2017-04-14  Andras Varga
-
-	scave: Charts page redesigned with IconGridViewer
-
-2017-04-14  Andras Varga
-
-	ui: common: added IconGridViewer
-
-2017-04-12  Andras Varga
-
-	scave: ScaveEditorPage: added a toolbar to the top-right inner corner
-
-2017-04-10  Andras Varga
-
-	scave: "Input" field added to chart forms
-
-2017-04-15  Andras Varga
-
-	scave: Browse Data page: data tree was missing icons (used a folder icon)
-	for some item types
-
-2017-04-14  Andras Varga
-
-	scave: Browse Data page: adjust preset tree levels: "File" -> "File /
-	Run"
-
-2017-04-13  Andras Varga
-
-	scave: Browse Data page: table filter: replace RunId filter with
-	Experiment/Measurement/Replication
-
-2017-04-10  Andras Varga
-
-	scave: delete code associated with deleted ecore classes
-
-2017-04-09  Andras Varga
-
-	scave: ecore model stripped down: data selection and computation moved
-	inside chart
-
-	remove datasets and dataset items; Analysis now directly contains Charts
-
-2017-04-07  Andras Varga
-
-	scave: ui: preserve existing Analysis Tool code for reference
-
-	as plugins org.omnetpp.scave_orig and org.omnetpp.scave.model_orig
+	- During development, existing Analysis Tool code was preserved for reference,
+	  as plugins org.omnetpp.scave_orig and org.omnetpp.scave.model_orig, and
+	  later removed.
 
 2018-11-22  Andras Varga
 
-	ui: removed unused IDE build scripts
-
-	Replaced by releng.
+	* Removed unused IDE build scripts. Replaced by releng.
 
 2018-11-22  Andras Varga
 
-	ui: remove abandoned Standalone Sequence Chart
-
-	Abandoned due to lack of interest.
+	* Remove abandoned Standalone Sequence Chart, due to lack of interest.
 
 2018-11-22  Andras Varga
 
-	ui: remove abandoned IDE-based animation plugins
+	* Remove abandoned IDE-based animation plugins.
 
 	This was offline animation, i.e. play-back from the eventlog file
 	recorded from the simulation.
 
-	This effort has pre-dated the Canvas API, OSG/osgEarth support, smooth
+	This effort pre-dated the Canvas API, OSG/osgEarth support, smooth
 	animation using refreshDisplay(), and Qtenv.
 
 	Originally abandoned due to scalability concerns (eventlog file can be
@@ -2436,7 +1200,7 @@
 
 2018-11-22  Andras Varga
 
-	ui: remove IDE-based simulation front-end plugin (abandoned)
+	* Remove the IDE-based simulation front-end plugin, a shelved project.
 
 	This plugin requires a custom Cmdenv, as it communicates with the
 	simulation process that runs in the background via HTTP JSON requests.
@@ -2444,66 +1208,24 @@
 	This attempt has pre-dated the Canvas API, OSG/osgEarth and Qtenv.
 	Abandoned mainly due to scalability concerns (too much socket
 	communication between simulation process and GUI front-end), and more
-	recently, due to OSG wihch would be difficult to integrate into Eclipse.
+	recently, due to OSG which would be difficult to integrate into Eclipse.
 
 2018-11-22  Andras Varga
 
-	ui: remove abandoned the Standalone Analysis Tool
-
-	Removed due to lack of interest
+	* Removed the abandoned Standalone Analysis Tool, due to lack of interest.
 
 2018-11-22  Andras Varga
 
-	ui: remove abandoned GUI tester and usage tracker plugins
-
-	Unused for ~10 years
-
-2018-07-20  Rudolf Hornig
-
-	ide: NedType and Msgtape tags had different value in C++ and Java
-
-	MSG tags were not starting with id 101 while C++ code used 101 as a
-	starting numeral. Also, when creating MSG or NED swig trees, we should
-	call the appropriate Ned or Msg factory, depending on what is the top
-	level element.
-
-2018-07-06  Rudolf Hornig
-
-	ide: fixed the trashy cursors during connection drag and new module
-	creation with GTK3
-
-	The IDE now runs with GTK3. Both the cursor issue and the missing 3state
-	checkbox issue in the launcher dialog has been fixed.
+	* Removed abandoned GUI tester and usage tracker plugins, unused for ~10
+	years.
 
 2018-07-04  Rudolf Hornig
 
-	prod: 5.4.1 -> 6.0.0 and updated to eclipse 4.8
-
-2018-06-24  Andras Varga
-
-	sim: remove obsolete histogram classes cVarHistogram, etc.
-
-	cVarHistogram, cLegacyHistogram, cLongHistogram, cDoubleHistogram
+	* Updated to Eclipse 4.8
 
 2018-06-26  Andras Varga
 
-	ui: remove Tkenv
-
------------ lines above this marker have been added from git log -----------
-
-2018-10-24  Rudolf Hornig
-
-	* NedDoc: updated ned documentation generator
-
-	  - Now generates material design inspired output.
-
-	  - It is now possible to specify excluded directories during documentation
-	    generation to exclude samples, showcases etc. that are not integral part
-	    of the documentation.
-
-	  - Neddoc now generates nedtags.xml/msgtags.xml file which is compatible with
-	    the doxytags.xml file generated by doxygen. This allows crosslinking to the ned
-	    documentation from a sphinx based documentation (using the doxy-link plugin)
+	* Follow change: Remove references to Tkenv.
 
 2020-01-06  ------ omnetpp-5.6 released ------
 

@@ -1,352 +1,88 @@
 2019-12-10  Zoltan Bojthe
 
-	opp_test: optimized rstrip, and also remove vertical TAB and new page
-	characters
-
-2019-12-10  Zoltan Bojthe
-
-	opp_test: optimized: rstrip() more faster than regexp
+	* opp_test: performance: Use rstrip() instead of regexp which was
+	taking a long time for large output files.
 
 2019-12-05  Zoltan Bojthe
 
-	opp_test: more colorization: print colorized PASS/FAIL/UNRESOLVED texts
+	* opp_test: colorization: Print PASS/FAIL/UNRESOLVED text in color.
 
 2019-12-06  Andras Varga
 
-	utils: opp_featuretool: report unresolved feature dependency
+	* opp_featuretool: Extensive refactoring as well as refinement of its
+	operation and command-line options.
 
-2019-12-06  Andras Varga
-
-	utils: opp_featuretool: detect duplicate feature id
-
-2019-12-06  Andras Varga
-
-	utils: opp_featuretool: fix error due to unnormalized folder paths
-
-	Issue was: options command printed "-X/foo/bar" instead of "-Xfoo/bar"
-
-2019-12-06  Andras Varga
-
-	utils: opp_featuretool: cosmetics: warning/error msgs: capitalize first
-	letter, remove trailing period sign
-
-2019-12-06  Andras Varga
-
-	utils: opp_featuretool: removed the validate and repair commands (all
-	commands both validate and repair now)
-
-2019-12-06  Andras Varga
-
-	utils: opp_featuretool: run Python linter
-
-2019-12-06  Andras Varga
-
-	utils: opp_featuretool: check existence of C++ source roots and NED
-	folders
-
-2019-12-05  Andras Varga
-
-	utils: opp_featuretool: remove mid-function exit() calls
-
-2019-12-05  Andras Varga
-
-	utils: opp_featuretool: auto-repair in all commands
-
-2019-12-04  Andras Varga
-
-	utils: opp_featuretool: make it complain less about fixable problems
-
-	(Auto repair made the default mode of operation.)
-
-	In general, the tool has become more forgiving: missing .featurestates
+	In general, the tool has become more forgiving: a missing ".featurestates"
 	file and extra/missing entries in it don't cause an error or even a
 	message. Missing file and file entries are initialized with the default
 	enablement state; extra entries are preserved (in the hope they'll be
-	useful, e.g. after switching to a different topic branch.
+	useful, e.g. after switching to a different topic branch. The content
+	of the ".nedexclusions" file is now also automatically adjusted without
+	stopping with an error.
 
-	The content of .nedexclusions file is also adjusted (without stopping
-	with an error).
-
-2019-12-04  Andras Varga
-
-	utils: opp_featuretool: preserve unknown features instead of fail/warn
-	about them
-
-	Reason: they often occur when switching between branches.
-
-	They are preserved in unusedFeaturestates[].
-
-2019-12-05  Andras Varga
-
-	utils: opp_featuretool: refactoring
-
-	run() made more straightforward, and doXXXCommand() methods more
-	self-contained
-
-2019-12-04  Andras Varga
-
-	utils: opp_featuretool: refactoring
-
-	- collected and documented list of members
-	- fsChanged -> featurestatesChanged
-	- errorOccurred was unused, removed
-	- introduce validateOrRepair()
-	- readXXX() -> readXXXFile(), writeXXX() -> writeXXXFile()
-
-2019-12-06  Andras Varga
-
-	utils: opp_test: fix "io.UnsupportedOperation: can't do nonzero
-	end-relative seeks" error
-
-2019-12-04  Andras Varga
-
-	utils: opp_featuretool: simplify XML file reading/writing
-
-2019-12-04  Andras Varga
-
-	util: opp_featuretool: simplify readNedExclusionsFile()
-
-	no need for "fixing"
-
-2019-12-03  Andras Varga
-
-	utils: opp_featuretool: NedFolder ann .nedfolders file loading simplified
-
-	The .nedfolders file simply contains folder names, one per line. It once
-	also contained exclusions (lines starting with '-'), but those can be
-	ignored.
-
-	NedFolder: name not needed (it's the same as path)
-
-	"prefix" is actually the package name, renamed
-
-2019-11-07  Rudolf Hornig
-
-	utils: fixed unstable order of features in opp_featuretool output causing
-	intermittent failures in tests
+	User-visible changes are the following:
+	- Removed the "validate" and "repair" commands (all commands implicitly
+	  validate and repair now).
+	- Better validation of the ".oppfeatures" file: Report detect duplicate
+	  feature IDs and unresolved feature dependencies.
+	- Check for the existence of the C++ source root and NED folders.
+	- Preserve unknown features in the ".featurestate" file instead of fail/warn
+	  about them. Reason: they often occur when switching between branches.
+	- "isenabled -v" prints list of disabled features to stdout, not to stderr
+	- Complain less about fixable problems.
+	- Non-verbose operation by default.
+	- Improved error/warning messages.
 
 2019-10-30  Rudolf Hornig
 
-	utils: use python3 in all utils scripts
-
-2019-10-15  Andras Varga
-
-	util: opp_featuretool fix: isenabled -v to print list of disabled
-	features
-
-	Change: to stdout, not to stderr.
-
-2019-10-18  Attila Torok
-
-	test/scave: Return nonzero from opp_charttool on exception, and from
-	runtest if any tests failed.
-
-2019-10-10  Andras Varga
-
-	utils: opp_featuretool: make it non-verbose by default; some messages
-	refined
+	* Use python3 in all scripts.
 
 2019-08-28  Attila Torok
 
-	charttool: Porting to the new chart/results API, improvements
-
-	improve opp_charttool
-
-	opp_charttool/results: the get_scalars and get_vectors test charts now
-	PASS
-
-	opp_charttool: add experimental [batch] exporting option.
-
-	opp_charttool: XXX Return None as default for any missing properties.
-
-	opp_charttool: clear pyplot figure between charts in batch export mode
-
-	add statistics and histograms tests, implement querying, simplify vector
-	ops
-
-	charttool: print a hint about project mappings when no results are
-	returned by scavetool
-
-	charttool: no longer accept the (removed) complicated data format from
-	IDE-less chart.py emulation
-
-2019-08-02  Andras Varga
-
-	util: opp_featuretool: error msgs: try to be more helpful; minor edits
-
-2019-07-24  Rudolf Hornig
-
-	ide: testing for GCJ in the starter scriprt is no longer needed as GCJ is
-	not used anymore in distros.
-
-2019-05-09  Andras Varga
-
-	opp_test: fix: ignore exit code if test printed "#UNRESOLVED"
+	* opp_charttool: Porting to the new chart/results API, improvements.
 
 2019-04-11  Rudolf Hornig
 
-	build: cleanall target now properly cleans all MODEs defined in
-	Makefile.inc.in
+	* opp_makemake: The "cleanall" target now properly cleans all MODEs
+	defined in Makefile.inc.in.
 
 2019-04-11  Rudolf Hornig
 
-	build: makefrag file is now properly included instead of the content
-	verbatim into the generated makefile
+	* opp_makemake: The "makefrag" file is now included instead of copied
+	into the generated makefile.
 
 2019-04-04  Rudolf Hornig
 
-	build: added a 'help' target to the main and model makefiles with target
-	and variable descriptions
+	* opp_makemake: Added a "help" target to the generated makefiles.
+	Typing "make help" now prints the list of accepted targets ("all",
+	"clean", etc.) and user-settable makefile variables ("MODE", "V",
+	"CFLAGS", etc.), complete with helpful descriptions and usage
+	examples.
 
 2019-04-04  Rudolf Hornig
 
-	build: proper dependency on the command line parameters
-
-	- rebuilds properly the output even if only the compiler command line
-	 parameters have changed.
-	- fix issue when rebuild occurred always if CFLAGS contained " delimited
-	strings
-	 (we use $(file) instead of using the shell echo command)
-
-2019-04-03  Rudolf Hornig
-
-	build: fix to allow overriding the output dir by specifiying CONFIGNAME
-	parameter on command line
-
-2019-03-27  Andras Varga
-
-	opp_test: fix "dictionary changed size during iteration" Python error
-
-2019-03-11  Andras Varga
-
-	src: fix broken dependencies in Makefiles
-
-2019-03-04  Rudolf Hornig
-
-	ide: renamed the launcher executable to opp_ide
-
-	The same launcher name will be used in both OMNeT++ and OMNEST
+	* Makefile improvements.
 
 2019-02-28  Rudolf Hornig
 
-	neddoc: ned documentation now can be generated from commandline
-
-2019-01-24  Rudolf Hornig
-
-	build: fixed dependency file generation
-
-	The dependency file generated by a .msg and the related object file's
-	dependency file were overwriting each other.
-
-2018-11-23  Attila Torok
-
-	opp_test: Convert the simulation return code to bash/windows convention.
-
-	For backward compatibility. Because test/core/error_initialize_3.test was
-	broken, as reported by Timo Kaufmann.
-
-2019-01-10  Rudolf Hornig
-
-	build: added support to build on Windows using MS ABI compatibility (i.e
-	Visual C++ libraries)
-
-2019-01-10  Rudolf Hornig
-
-	build: removed remaining Tkenv reserevces in opp_makemake
+	* Added opp_neddoc, a tool that makes it possible to generate HTML
+	documentation from NED files from the command line. opp_neddoc works by
+	launching the IDE in headless mode.
 
 2018-11-27  Andras Varga
 
-	utils: opp_test: fix bug introduced a few commits ago; less verbose
-	output
-
-	When last line in input was unterminated, printout was wrong.
-
-	Do not print "diff:" in output
-
-2018-11-27  Andras Varga
-
-	utils: opp_test: cosmetics
-
-2018-11-27  Andras Varga
-
-	utils: opp_test: <snip>
-
-2018-11-27  Andras Varga
-
-	utils: opp_test: don't colorize if output is redirected; extract
-	constants/options; lift 8K limit for printing
+	* opp_test: Don't colorize if output is redirected; lift 8K limit for printing.
 
 2018-02-02  Zoltan Bojthe
 
-	utils: opp_test: colorize diff
-
-2018-02-02  Zoltan Bojthe
-
-	utils: opp_test: hide lines from inside of diff blocks
-
-	e.g. if inserted many lines in one block, then show only first and last 3
-	inserted lines of block
-
-2018-11-27  Andras Varga
-
-	utils: opp_test: more straightforward way to keep line endings after
-	splitlines()
-
-2018-02-02  Zoltan Bojthe
-
-	utils: opp_test: remove empty lines in diff after lines begins with '?'
-
-2018-01-26  Zoltan Bojthe
-
-	utils: opp_test: show more readable diff and show a meld command
+	* opp_test: Improve diagnostic output for failed tests: Show
+	colorized diff instead of simply printing the expected and the actual
+	content.
 
 2018-11-21  Attila Torok
 
-	scave: opp_charttool: Update PYTHONPATH, accept script as text, add exec
-	context.
-
-2018-11-20  Attila Torok
-
-	scave: Moved the .py files into one location, fixed the imports, added
-	PYTHONPATH to setenv
-
-2018-10-26  Attila Torok
-
-	scave: Add opp_charttool to Makefile, add required directories to
-	PYTHONPATH automatically, fix cwd stuff
-
-2018-10-25  Attila Torok
-
-	scave: opp_scavetool: minor refactoring
-
-2018-10-25  Attila Torok
-
-	scave: add -i and -n args to opp_charttool, some deduplication in
-	results.py
-
-2018-10-25  Attila Torok
-
-	scave: opp_charttool: add more result querying functions, add partial
-	chart API, call plt.show() if needed
-
-2018-10-24  Attila Torok
-
-	scave: add opp_charttool and rexternal esults.py to load and execute .anf
-	files
-
-2018-07-06  Rudolf Hornig
-
-	ide: fixed the trashy cursors during connection drag and new module
-	creation with GTK3
-
-	The IDE now runs with GTK3. Both the cursor issue and the missing 3state
-	checkbox issue in the launcher dialog has been fixed.
-
-2018-09-21  Attila Torok
-
-	misc: Replace $* with "$@" in a couple scripts.
-
------------ lines above this marker have been added from git log -----------
+	* Added opp_charttool, a tool for "running" ANF files on the command line
+	for their side effects, i.e. automated chart export.
 
 2020-01-06  ------ omnetpp-5.6 released ------
 

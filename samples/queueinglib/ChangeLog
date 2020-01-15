@@ -1,14 +1,3 @@
-2019-07-24  Andras Varga
-
-	samples/queueinglib: SelectionStrategy adjustment based on a pull request
-	from 'mngr0'
-
-2018-06-27  Andras Varga
-
-	samples, etc: remove '--msg6' option as it became the default
-
------------ lines above this marker have been added from git log -----------
-
 2020-01-06  ------ omnetpp-5.6 released ------
 
 2019-07-24  Andras Varga

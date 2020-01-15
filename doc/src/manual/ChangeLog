@@ -1,109 +1,39 @@
-2019-12-03  Attila Torok
-
-	sim,qtenv: Add cLabelFigure::angle.
-
 2019-12-20  Attila Torok
 
-	doc/manual: Regenerate the chart API appendix LaTeX source from the
-	Python code
-
-2019-12-18  Attila Torok
-
-	ide/scave,doc/manual: Improvements to the chart API docs.
-
-2019-12-16  Attila Torok
-
-	doc/manual: Include the generated Python chart API docs in the manual
-
-2019-07-29  Attila Torok
-
-	doc/manual: Add script to generate Python chart API docs
-
-2019-11-26  Andras Varga
-
-	usman: appendix-config-options: fix missing newline after "\\"; refreshed
+	* Include the Python chart API documentation in the manual, generated
+	from Python docstrings (appendix "Python API for Chart Scripts").
 
 2019-11-25  Andras Varga
 
-	usman: added appendix to document supported msg properties
+	* Added appendix "Message Class/Field Properties" to document supported
+	msg properties.
 
 2019-10-25  Attila Torok
 
-	doc/manual: Mention manual connection routing using the m DS tag.
+	* Mention manual connection routing using the "m" display string tag.
 
 2019-10-23  Andras Varga
 
-	sim: cNedValue renamed to cValue (compatibility typedef added)
-
-	Reason: it is used as generic value by cExpression, i.e. isn't specific
-	to NED.
-
-2019-07-08  Andras Varga
-
-	doc: added "%<" log prefix format char to the manual
+	* Follow renaming of cNedValue to cValue
 
 2019-03-28  Andras Varga
 
-	usman: operator precedence table updated, added new operators <=> and =~
+	* Operator precedence table updated, added new operators <=> and =~
 
 2019-05-02  Andras Varga
 
-	doc/manual: cNedValue's documentation brought up to date
+	* cNedValue (later: cValue) documentation brought up to date
 
 2016-12-21  Rudolf Hornig
 
-	doc,ide: removing "bgl" display string tag, step 1
-
-	The "bgl" could be used to specify the layout seed for the compound
-	module. It has not been supported by Qtenv, as it was unclear how it was
-	supposed to coexist with Qtenv's "Relayout" button. We are now removing
-	it altogether.
-
-	This commit removes mentions from the IDE and the documentation.
-
-2018-11-27  Andras Varga
-
-	doc: ltoh: fixes; allow the definition of b/e verbatim etc to be
-	overridden from the specs file
-
-2018-05-08  Andras Varga
-
-	doc: ltoh fixes and improvements:
-
-	math: support $$...$$ notation; recognize \bar{}, \infty etc; added \b
-	(matches word boundary) support command names that end in '*', e.g.
-	\subsection*{}
-
-2018-05-08  Andras Varga
-
-	doc: usman.tex: latex definitions harmonized with inet user guide
-
-2018-05-07  Andras Varga
-
-	doc: clean up latex-to-html conversion a little
-
-	rename ltoh.pl to ltoh rename prephtml2 to prephtml prephtml to accept
-	command-line args for stuff hardcoded so far ltoh: "math": replace print
-	with proper log statement makefile: extract chapter list from usman.tex
-	instead of duplicating list in the Makefile
-
-2018-11-26  Andras Varga
-
-	doc: fix usman build
-
-2018-07-05  Rudolf Hornig
-
-	doc: fixed a missing escape char in the tex->html converter
+	* Follow removal of the "bgl" display string tag. "bgl" could be used to
+	specify the layout seed for the compound module. It was not supported
+	by Qtenv, as it was unclear how it was supposed to coexist with Qtenv's
+	"Relayout" function. We are now removing it altogether.
 
 2018-06-27  Andras Varga
 
-	doc: remove Tkenv
-
-2018-06-18  Rudolf Hornig
-
-	doc: use qpdf instead of pdftk for building documentation
-
------------ lines above this marker have been added from git log -----------
+	* Follow removal of Tkenv
 
 2020-01-06  ------ omnetpp-5.6 released ------
 

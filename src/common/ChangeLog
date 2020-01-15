@@ -1,290 +1,248 @@
 2019-11-26  Andras Varga
 
-	usman: appendix-config-options: fix missing newline after "\\"; refreshed
+	* opp_latexQuote(): Fix quoting bug.
 
 2019-11-23  Andras Varga
 
-	msgc: targeted cplusplus blocks for generated methods
-
-	ctor, copy ctor, dtor, operator=copy, parsimPack, parsimUnpack, etc.
-
-	Copy ctor is referred to as Foo& (for class Foo)
+	* opp_indentlines(): Nothing to do if indent is empty.
 
 2019-11-12  Andras Varga
 
-	nedxml,common: JSON notation: allow namespace to be specified for object
-	type
+	* Expression: Refine grammar: Allow '::' in object's type name in JSON
+	notation, to allow specifying namespace.
 
 2019-11-07  Attila Torok
 
-	common/stlutil: Add contains() for unordered_set.
+	* stlutil.h: Add contains() for unordered_set.
 
 2019-11-07  Andras Varga
 
-	common: matchexpression: remove implicit OR and funcall-style field
-	matcher syntaxes
-
-	They are confusing, and makes it different to tell apart concise notation
-	from expression-style notation.
+	* Matchexpression: Remove implicit OR and funcall-style field matcher
+	syntaxes. They look confusing, and made it different to tell apart concise
+	notation from expression-style notation.
 
 2019-11-08  Andras Varga
 
-	common: expression: accept string constants with apostrophes too
+	* Expression: Accept string constants with apostrophes too (makes it
+	possible to write quotation marks in strings without escaping with
+	backslash).
 
 2019-11-07  Andras Varga
 
-	common: expression: accept JSON syntax: "null" in addition to "nullptr",
-	object keys with quotes
+	* Expression: Accept JSON syntax: "null" in addition to "nullptr",
+	object keys with quotes.
 
 2019-10-28  Andras Varga
 
-	common: expression: added object and array support, and nullptr keyword
+	* Expression: Grammar extended to accept JSON-line expressions. Added
+	support for JSON object and array notation, and the nullptr keyword.
 
-	This allows a JSON-like syntax in expressions. Array syntax: [ expr,
-	expr,...] Object syntax: optional_name { key1: value1, key2: value2,...}
-
-2019-11-08  Andras Varga
-
-	common: fix regression for opp_typename()
+	Array syntax: [ expr, expr, ... ]
+	Object syntax: optional_name { key1: value1, key2: value2, ... }
 
 2019-11-07  Andras Varga
 
-	common: opp_typename(): performance optimization (became about 2x faster)
+	* opp_typename(): Performance optimization (became about 2x faster).
 
-	- eliminate the implicit conversion of the mangledName ptr to std::string
-	 before each lookup
-	- use hash table instead of tree-based map (may be faster)
+	- Eliminate the implicit conversion of the mangledName ptr to std::string
+	  before each lookup.
+	- Use hash table instead of tree-based map (may be faster).
 
 2019-11-07  Andras Varga
 
-	sim: move opp_typename() implementation to common/
-
-	Because we need it e.g. in Expression too.
+	* opp_typename() moved to here from src/sim. Motivation: we need it e.g. in
+	Expression too.
 
 2019-11-05  Attila Torok
 
-	common: Set MatchExpression flags after the pattern was parsed
-	successfully.
-
-	In case there is an exception thrown by parser or generator, leave them
-	alone.
+	* MatchExpression: Update flags only after the pattern was parsed
+	successfully. Leave them alone if an exception was thrown by parser or
+	generator.
 
 2019-10-28  Attila Torok
 
-	common: Update the bundled SQLite sources to version 3.30.1 (2019-10-10).
-
-2019-11-05  Andras Varga
-
-	common: Expression: nits
+	* Update the bundled SQLite sources to version 3.30.1 (2019-10-10).
 
 2019-10-29  Attila Torok
 
-	common: MatchExpression: Allow empty string as match-nothing expr.
+	* MatchExpression: Allow empty string as match-nothing expr.
 
 2019-10-24  Andras Varga
 
-	common: expression.y: support arbitrary number of args
-
-	Needs to use Bison's "semantic data types" ("%union) for that.
-
-2019-10-14  Gyorgy Szaszko
-
-	common: add missing include
+	* Expression: Change the parser to accept arbitrary number of args.
+	(We need to use Bison's "semantic data types", %union for that.)
 
 2019-09-05  Attila Torok
 
-	common,scave: Quote/unqoute all strings written to/read from scave files.
+	* OmnetppScalarFileWriter/OmnetppVectorFileWriter: quote all strings
+	written as needed.
 
 2019-07-29  Attila Torok
 
-	common/expression: Accept : in the middle of identifiers.
-
+	* Expression: Updated lexer to accept ":" in the middle of identifiers.
 	Example: attr:unit or packetDrop:count in result filters.
-
-2019-08-07  Andras Varga
-
-	sim,common: fix "Cannot convert integer from unit 'null'" errors
 
 2019-08-26  Attila Torok
 
-	common/stlutil: Added small optimization to remove(vector, value).
-
+	* stlutil.h: Added small optimization to remove(vector, value).
 	It seemed to help a lot in a Wireless INET simulation, in
 	qtenv::Inspector::removeFromToHistory().
 
-2019-08-25  Andras Varga
-
-	sim,common: MatchExpression: improvement on exceptions
-
 2019-08-01  Andras Varga
 
-	src: intpar_t renamed to intval_t
+	* intutil.h: intpar_t renamed to intval_t. intval_t is the type we use for
+	generic "large" integers, e.g. in the Expression class and in module
+	parameters. It is currently a signed 64-bit type.
 
 2019-07-30  Andras Varga
 
-	scave/envir: result file version number bumped from 2 to 3
-
-	Reason: "par" and "config" lines added, "param" lines removed
+	* Result files: Result file version number bumped from 2 to 3, due to recent
+	file format changes.
 
 2017-07-16  Andras Varga
 
-	common: Histograms: store binEdges, binValues plus underflow/overflow
-	instead of bins
+	* Histogram class: store binEdges, binValues plus underflow/overflow instead
+	of bins. The new representation is more correct (underflow/overflow are not
+	really bins because they are infinite width), and also more inline with
+	Python's histogram representation.
 
-	New representation is more correct (underflow/overflow are not really
-	bins because they are infinite width), and also more inline with Python's
-	histogram representation
+	Result file formats are currently unaffected (still "bin" lines, with the
+	first/last bin storing the underflows/overflows.)
 
 2019-07-18  Andras Varga
 
-	sim, envir: save parameter attrs as well
+	* Result files: Save the attributes of parameters (such as @unit) as well.
+
+	Native vector/scalar files: "par" lines may be followed by "attr" lines.
+
+	SQLite result files: Added a new table named "paramAttr", with the columns
+	"paramId", "attrName" and "attrValue".
 
 2018-07-09  Andras Varga
 
-	sim, envir: allow recording actual module/channel parameters
+	* Result files: Allow recording actual values of module/channel parameters.
+	This implies a slight file format change for the native (textual) result
+	files, and schema change for the SQLite result files.
 
-	New config option: **.param-recording=true/false
+	Native vector/scalar files: Values are written into lines of the format
+	"par <componentfullpath> <parametername> <value>".
 
-	File format change:
-	- new table ("parameter") in SQLite
-	- "par" lines in the sca file
+	SQLite result files: Added a new table named "parameter", with the
+	columns "paramId", "runId", "moduleName", "paramName" and "paramValue".
+
+	Note that the value is written in the syntax it would have to be written in
+	a NED file or in omnetpp.ini. That is, string constants include the
+	quotation marks, and the value of volatile expressions is the expression
+	itself, i.e. the value normal(0,1) of a volatile parameter will be recorded
+	as such (and not the value from its random evaluation).
+
+	Also note that the native file format uses optional quoting (strings are
+	only quoted if necessary), which means that string constants need be written
+	out with *double* quoting, i.e. the value 'hello' will appear in the file as
+	"\"hello\"". This is necessary because due to optional quoting, the parser
+	drops the first layer of quotation marks.
 
 2018-07-09  Andras Varga
 
-	sim,envir,scave: result files: save full config, not only param
-	assignment lines
+	* Result files: Save the full (flattened) contents of the inifile
+	configuration, not only parameter assignment entries as before.
+	This comes with a slight file format change for the native
+	(textual) result files, and schema change for the SQLite result files.
 
-	Essentially, "param"->"config" rename.
+	Native vector/scalar files: Configuration entries are written into
+	lines of the format "config <key> <value>". The old "param" lines
+	of similar syntax are no longer written, but still understood by
+	the readers.
+
+	SQLite result files: The "runParam" table was renamed to "runConfig",
+	and its columns were also similarly renamed: "paramKey", "paramValue"
+	and "paramOrder" became "configKey", "configValue" and "configOrder".
+	Files in the old format are not understood.
 
 2019-07-08  Andras Varga
 
-	common: exprnodes.h: added VariableNode, IndexedVariableNode, MemberNode,
+	* exprnodes.h: added VariableNode, IndexedVariableNode, MemberNode,
 	IndexedMemberNode, MethodNode; changed FunctionNode
-
-2019-07-09  Andras Varga
-
-	Revert "common: Expr: fix MulNode"
-
-	Reason: It broke a test: 2 * 10dBm ==> operator "*": Refusing to perform
-	computations involving quantities with nonlinear units (10dBm)
-
-	 This reverts commit 12d2c65e5cc0ee5d09085f885eaf283e4b2abe8c.
-
-2019-04-17  Andras Varga
-
-	common: ExprValue: assertType -> ensureType
-
-2019-04-17  Andras Varga
-
-	common: Expr: more ensureXXX methods
-
-2019-04-17  Andras Varga
-
-	common: Expr: fix MulNode
-
-2019-04-16  Andras Varga
-
-	common: ExprValue: added stdstringValue() convenience method
-
-2019-05-09  Andras Varga
-
-	xml: YxmlParser fix startElement line number; XMLDocCache: wrap into
-	cRuntimException
-
-2019-05-02  Andras Varga
-
-	xml: LibxmlParser cleanup
-
-	Remove undocumented xinclude support
 
 2019-04-29  Andras Varga
 
-	xml: move XML parser from nedxml to common, embed Yxml, remove Expat
-	support
+	* Moved XML parser here from nedxml. In an effort to reduce OMNeT++'s
+	dependencies from external libraries, we added Yxml, Yoran Heling's small
+	and fast SAX-style XML parser (https://dev.yorhel.nl/yxml) with a liberal
+	license, to the codebase. At the same time, we removed Expat support.
+	LibXML2 support remained, but very few users will actually need it.
 
-	- move XML parsers to common
-	- added Yxml-based SAX parser
+	Also some refactoring/cleanup:
 	- use subclassing instead of #ifdefs to support multiple parsers
-	- use exceptions to report parse error instead of error code +
-	getErrorMessage()
+	- use exceptions to report parse error instead of error code + getErrorMessage()
 	- removed some methods from SaxHandler (comments, CDATA start/end)
-	- removed Expat support, made redundant by Yxml
-	- updated configure.in, Makefile.inc.in, etc: XML_PARSER replaced with
-	WITH_LIBXML
-	- added test
+	- removed undocumented xinclude support
 
-	Note that no significant functionality is lost when LibXML2 support is
-	turned off. XML module parameters as well as NED and MSG AST XML
-	export/import is still supported due to  LibXML2 is only required when
-	DTD-based validation (and possibly, default value completion) or
-	Schema-based validation is needed. Note that OMNeT++ uses the DOM API of
-	LibXML, which has much higher memory requirements than the embedded
-	SAX-style parser.
+	Use of LibXML2 is optional. Note that no significant functionality is lost
+	when LibXML2 support is turned off. XML module parameters as well as NED and
+	MSG AST XML export/import are handled by Yxml just fine. LibXML2 is only
+	required when DTD-based validation (and possibly, default value completion)
+	or Schema-based validation is needed. Also note that Yxml-based parsing
+	scales much better (OMNeT++ uses the DOM API of LibXML, which has much
+	higher memory requirements than a SAX parser).
 
 2019-05-02  Andras Varga
 
-	common: StringPool: added contains(); cosmetic change (store const char*
-	instead of char*)
+	* StringPool: added contains(); cosmetic change (store const char*
+	instead of char*).
 
 2019-04-30  Andras Varga
 
-	common: opp_xmlQuote() fix: ampersand must be quoted too
-
-2019-05-02  Rudolf Hornig
-
-	common: fix build error on Windows
+	* opp_xmlQuote() fix: ampersand must be quoted too.
 
 2019-04-16  Andras Varga
 
-	sim,common: move unit conversion functions from NED to common::Expression
+	* Move unit conversion functions from NED to common::Expression.
 
 2019-04-11  Andras Varga
 
-	common: Expression: '%' to allow quantities as args; updated test
+	*  Expression: '%' to allow quantities as args.
 
 2019-04-11  Andras Varga
 
-	common: Expression: '%' op to mandate integer args (backward INCOMPATIBLE
-	change)
+	* Expression: '%' op to mandate integer args (backward INCOMPATIBLE change)
 
 2019-04-14  Andras Varga
 
-	common: Expression: fix for the '<=>' and '=~' operators
+	* Expression: fix for the '<=>' and '=~' operators.
 
 2019-03-12  Andras Varga
 
-	common: MatchExpression changed to use Expression internally
-
-	Main advantage: shortcutting boolean operators (AND, OR)
+	* MatchExpression changed to use Expression internally.
+	Main advantage: shortcutting boolean operators (AND, OR).
 
 2019-02-28  Andras Varga
 
-	common: ADDED GENERIC EXPRESSION EVALUATOR CLASS.
+	* ADDED GENERIC EXPRESSION EVALUATOR CLASS.
 
-	The Expression class is a from-scratch rewrite of the old Expression
-	class, with the intent of creating generic extensible expression
-	evaluator that can be used *everywhere*. Everywhere means: NED
+	This is kind of a big deal. The Expression class is a from-scratch rewrite
+	of the old Expression class, with the intent of creating generic extensible
+	expression evaluator that can be used *everywhere*. Everywhere means: NED
 	expressions, object matching, scenario constraint, statistics recording,
-	result selection in scavetool/IDE, etc. The new class is tree-based
-	instead of stack-based, because with stack machines one cannot (easily)
-	do shotcutting evaluation of logical operators
-	(AND,OR). Ap
+	result selection in scavetool/IDE, etc. The new class is tree-based instead
+	of stack-based, because with stack machines one cannot (easily) do
+	shotcutting evaluation of logical operators (AND,OR).
 
 	About the Expression class:
-	- representation is an expression tree (ExprNode*), which can be extended
-	 with new node types as needed
-	- parser understands a generic expression syntax; interpretation (mapping
-	 to expression tree) is done by AST translators that the user can
-	 contribute/extend/replace
-	- ExprValue is pretty much a copy of cNedValue, minus XML, plus cObject*
-	- code in operator nodes was derived from cDynamicExpression --
-	 computations should behave exactly as in existing NED expressions
-	 (which are cDynamicExpression-based)
-	- ExprNodeFactory utility class exists
-	- the 'undefined' value (type=UNDEF) behaves a bit like NaN, anything
-	 involving 'undefined' will evaluate to 'undefined'
-	- logical operators (AND,OR) perform shortcut
-	- constant folding is implemented
+	- Representation is an expression tree (ExprNode*), which can be extended
+	  with new node types as needed.
+	- Parser understands a generic expression syntax; interpretation (mapping
+	  to expression tree) is done by AST translators that the user can
+	  contribute/extend/replace.
+	- ExprValue is pretty much a copy of cNedValue, minus XML, plus cObject*.
+	- Code in operator nodes was derived from cDynamicExpression --
+	  computations should behave exactly as in existing NED expressions
+	  (which are cDynamicExpression-based).
+	- ExprNodeFactory utility class exists.
+	- The 'undefined' value (type=UNDEF) behaves a bit like NaN, anything
+	  involving 'undefined' will evaluate to 'undefined'.
+	- Logical operators (AND,OR) and inline-if (?:) perform shortcut.
+	- Supports constant folding.
 
 	Other:
 	- intutil.h was factored out from random functions throughout
@@ -306,159 +264,98 @@
 	- nan,inf,undefined
 	- bang operator (!) syntax, currently unused
 
+	NOTE: The fact that logical operators and inline-if are now shortcutting may
+	change the fingerprint of some simulations, due to consuming fewer random
+	numbers during expression evaluation.
+
 2019-04-11  Andras Varga
 
-	common: opp_runtime_error: added std::string ctor; dtor not needed
+	* opp_runtime_error: Added std::string constructor; removed unnecessary
+	destructor.
 
 2019-04-04  Rudolf Hornig
 
-	build: proper dependency on the command line parameters
-
-	- rebuilds properly the output even if only the compiler command line
-	 parameters have changed.
-	- fix issue when rebuild occurred always if CFLAGS contained " delimited
-	strings
-	 (we use $(file) instead of using the shell echo command)
-
-2019-04-03  Rudolf Hornig
-
-	build: fix to allow overriding the output dir by specifiying CONFIGNAME
-	parameter on command line
+	* Makefile improvements.
 
 2019-04-09  Andras Varga
 
-	common: UnitConversion: lookupUnit() sped up by using hash table
+	* UnitConversion: lookupUnit() sped up by using hash table.
 
 2019-04-08  Andras Varga
 
-	common: UnitConversion: added Ws, Wh, kWh, MWh
+	* UnitConversion: added Ws, Wh, kWh, MWh.
 
 2019-04-02  Andras Varga
 
-	common: opp_join(): skip empty items
+	* opp_join(): Skip empty items.
 
 2019-04-01  Andras Varga
 
-	common: UnitConversion: clarification
+	* UnitConversion: Clarification in method comments.
 
 2019-04-01  Andras Varga
 
-	common: UnitConversion: only accept minus sign at the front, to reduce
-	chance of misunderstanding
+	* UnitConversion: Only accept minus sign at the front, to reduce
+	chance of misunderstanding in arithmetic expressions. I.e. "-5s100ms"
+	is valid as a quantity string (means -5.1s), but "5s-100ms" is no longer.
 
 2019-03-21  Andras Varga
 
-	common: stringutil: resolved a todo item
-
-2019-03-20  Andras Varga
-
-	src: remove remaining mentions of Tkenv
-
-	Some mentions in Qtenv remain, but those are relevant.
+	* stringutil.h: opp_concat(): throw error on overflowing static buffer.
 
 2019-03-21  Andras Varga
 
-	envir: image path handling changed: support -i options; removed
-	"./bitmaps" from default image path
+	* stringutil.h: Added opp_removestart().
 
 2019-03-18  Andras Varga
 
-	envir: NED path handling, with behavior change
-
-	Multiple -n options are now accepted. Change: before, $NEDPATH was
-	ignored if a -n option was present, no longer so.
+	* stringutil.h: Added opp_join() for two std::strings.
 
 2019-03-03  Andras Varga
 
-	common: PatternMatcher: added str()
+	* PatternMatcher: added str().
 
 2019-03-03  Andras Varga
 
-	common: PatternMatcher: added a bunch of consts
-
-2019-03-11  Andras Varga
-
-	src: fix broken dependencies in Makefiles
+	* PatternMatcher: Added a bunch of const qualifiers to method signatures.
 
 2019-02-21  Attila Torok
 
-	common: LineTokenizer now reallocates its internal buffer for longer
-	lines.
-
-2019-03-08  Andras Varga
-
-	common: SQLite scheme: fix inet-#417: remove NOT NULL from vector values
-
-	The cannot be NOT NULL, because SQLite converts NaN double value to NULL.
-
-	Also:
-	- some doubles were stored as REAL, others as NUMERIC -- changed all to
-	REAL
-	- adjusted comments
+	* LineTokenizer: Reallocates its internal buffer for longer lines. (Before
+	it threw an error if fixed-size buffer was overflown.)
 
 2019-02-26  Andras Varga
 
-	src: NedTools::collectNedFiles() moved into fileutil.h in a more general
-	form
+	* fileutil.h: Added collectFiles().
 
 2019-02-22  Andras Varga
 
-	common: fileutil: added filenameOf() and removeFileExtension()
+	* fileutil.h: Added filenameOf() and removeFileExtension().
 
 2019-02-21  Andras Varga
 
-	common: added opp_garble() to stringutil.h
+	* stringutil.h: Added opp_garble().
 
 2017-04-24  Andras Varga
 
-	common: MatchExpression: added 'field=~pattern' syntax as alternative to
-	'field(pattern)'
-
-2019-01-30  Andras Varga
-
-	common: SqliteVectorFileWriter: nits
-
-2019-01-30  Andras Varga
-
-	common: SQLite result file writers: better error msg for db==nullptr
-
-2019-01-29  Andras Varga
-
-	common: SqliteVectorFileWriter:fix occasional "db==nullptr" error
-
-	It happens when Envir calls flush() when the file was not yet opened
-
-2019-01-16  Attila Torok
-
-	common: Minor fixes in Expression.
-
-	One is purely cosmetic, the other is mostly a precaution.
-
-2019-01-16  Rudolf Hornig
-
-	build: fixed build problem on linux
+	* MatchExpression: Added 'field=~pattern' syntax as alternative to
+	'field(pattern)'.
 
 2019-01-10  Rudolf Hornig
 
-	build: added support to build on Windows using MS ABI compatibility (i.e
-	Visual C++ libraries)
-
-2018-12-17  Andras Varga
-
-	common: OmnetppVectorFileWriter: fix VectorData leak
+	* Makefile: Added support to build on Windows using MS ABI compatibility
+	(i.e Visual C++ libraries).
 
 2018-03-21  Andras Varga
 
-	unitconversion: no longer accept 0 without measurement unit
+	* UnitConversion: no longer accept 0 without measurement unit.
 
-	reason: confusing when the unit is dB or dBm (e.g. **.power=0 --> 0W or
-	0dBm??)
+	Reason: It is confusing when the unit is dB or dBm. E.g. in
+	omnetpp.ini, should "**.power = 0" mean 0W or 0dBm?
 
 2017-04-26  Andras Varga
 
-	scave: Browse Data page: added Increase/Decrease Precision actions
-
------------ lines above this marker have been added from git log -----------
+	* stringutil.h: added opp_formatdouble()
 
 2020-01-06  ------ omnetpp-5.6 released ------
 

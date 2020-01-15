@@ -1,17 +1,7 @@
 2019-10-30  Rudolf Hornig
 
-	samples,test: use intval_t, uintval_t instead of long, unsigned long as
-	long is not 64bit on Windows.
-
-2019-09-12  Andras Varga
-
-	samples: fixes in aloha/README.txt
-
-2018-11-30  Andras Varga
-
-	samples: fix: unit can no longer be omitted in zero values
-
------------ lines above this marker have been added from git log -----------
+	* Use intval_t, uintval_t instead of long, unsigned long as long is
+	not 64-bit on Windows.
 
 2020-01-06  ------ omnetpp-5.6 released ------
 

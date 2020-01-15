@@ -1,137 +1,82 @@
-2019-11-21  Attila Torok
-
-	misc: Modernize the implementation of noncopyable
-
-2019-12-03  Attila Torok
-
-	sim,qtenv: Add cLabelFigure::angle.
-
-2019-12-21  Andras Varga
-
-	include: fix typo in simtime.h: wrong unit in description of
-	SimTime::inUnit()
-
-	https://github.com/omnetpp/omnetpp/issues/787
-
-2019-12-14  Andras Varga
-
-	sim: SimTime: added fromRaw()
-
-2019-12-10  Andras Varga
-
-	sim: cGate: added the isGateHalf() and getOtherHalf() methods
-
-2019-12-06  Andras Varga
-
-	OMNETPP_BUILDNUM bumped
-
 2019-11-19  Andras Varga
 
-	sim: support @class() property on object parameters
-
-	@class(classname) or @class(classname?) -- latter accepts nullptr too
-
-	The named class must be registered via Register_Class() or
-	Register_Abstract_Class().
+	* Added cParImpl::setExpectedType() internal method.
 
 2019-11-20  Andras Varga
 
-	sim: cparimpl: delete useless pack/unpack methods
+	* cParImpl: Deleted useless pack/unpack methods.
 
 2019-11-18  Andras Varga
 
-	sim: cValue class descriptor refined
+	* cValue: Added internal method for use by class descriptor.
 
 2019-11-14  Andras Varga
 
-	sim: cValueMap descriptor
-
-2019-11-08  Andras Varga
-
-	sim: object-valued parameters: refinement
-
-	Verified that there is nothing wrong with caching cObjectParImpl
-	instances, and updated the code accordingly.
-
-	cPar::parse(): restore older code (with one improvement
-	(componentType->getName() does not need to be part of the key, because
-	maps are already per-componemtType)
+	* cValueMap: Added internal method for use by class descriptor.
 
 2019-10-31  Andras Varga
 
-	sim: cObject class docu rewritten; getDescriptor() made public API; other
-	fixes on doxygen comments
-
-2019-11-06  Attila Torok
-
-	misc: Fix a copypasted typo in some doc comments.
+	* cObject class documentation rewritten; getDescriptor() made public API
 
 2019-10-28  Andras Varga
 
-	sim: creation of typed objects via createOne() and cClassDescriptor
-
-2019-10-28  Andras Varga
-
-	sim: added cValueArray and cValueObject; translate arrays and objects in
-	expressions to cValueArray/cValueObject
+	* Added cValueArray and cValueObject classes, to be used with JSON-style
+	parameter values.
 
 2019-10-24  Andras Varga
 
-	sim: cPar: add OBJECT as parameter type
+	* cPar: add OBJECT as parameter type. New constant: cPar::Type::OBJECT.
+	New methods: setObjectValue(), objectValue(), operator=(cObject*),
+	operator cObject*.
 
 2019-11-04  Andras Varga
 
-	sim: cClassDescriptor: use exception instead of returning false for
-	indicating error
+	* cClassDescriptor: Use exception instead of returning false for
+	indicating error. The return type of the following method changed
+	from void to bool: setFieldValueAsString(), setFieldArraySize(),
+	setFieldStructValuePointer().
 
 2019-11-02  Andras Varga
 
-	sim: cDefaultList -> cDefaultOwner
+	* cDefaultList renamed to cDefaultOwner.
 
 2019-11-02  Andras Varga
 
-	sim: takeAllObjectsFrom() moved from cDefaultList to cObject
+	* takeAllObjectsFrom() moved from cDefaultList to cObject.
 
 2019-10-30  Andras Varga
 
-	sim: cObject: move isSoftOwner() from cOwnedObject to cObject
+	* isSoftOwner() moved from cOwnedObject to cObject.
 
 2019-10-26  Andras Varga
 
-	nedxml,sim: cClassDescriptor, opp_msgtool: added support for setting
-	pointer members and array sizes via class descriptors
+	* cClassDescriptor: Added support for setting pointer members and array
+	sizes via class descriptors. New methods: setFieldArraySize(),
+	setFieldStructValuePointer().
 
-	- cClassDescriptor: added setFieldArraySize(),
-	setFieldStructValuePointer()
-	- msg: added @resizable(), @replaceable field attributes
-	- sim_std.msg: added @resizable(false) where needed
+	* sim_std.msg: Added @resizable(false) where needed.
 
 2019-10-29  Andras Varga
 
-	sim: cPolyline, cPolygon: added setNumPoints(), primarily for sim_std.msg
-
-2019-10-30  Rudolf Hornig
-
-	sim: bump API version
+	* cPolyline, cPolygon: Added setNumPoints(), primarily for sim_std.msg.
 
 2019-10-23  Andras Varga
 
-	sim: cNedValue renamed to cValue (compatibility typedef added)
-
+	* cNedValue renamed to cValue (compatibility typedef added).
 	Reason: it is used as generic value by cExpression, i.e. isn't specific
 	to NED.
 
 2019-10-21  Andras Varga
 
-	sim,envir: let xmldoc() interpret the file name as relative to the dir
-	the expression comes from
+	* Allow xmldoc() (and possibly other functions taking filename as input)
+	interpret the file name as relative to the dir the expression comes from.
 
 	That is, when xmldoc() occurs in an included ini file, the file name is
 	now interpreted as relative to the directory containing the included ini
 	file (as opposed to being relative to the main ini file or the working
 	directory.)
 
-	If xmldoc() occurs in a NED file, thr file name is relative to the
+	If xmldoc() occurs in a NED file, the file name is relative to the
 	directory where that NED file was loaded from.
 
 	In addition to updating the implementationi of xmldoc(), it had to be
@@ -143,92 +88,59 @@
 	alternative function signature which accepts cExpression::Context instead
 	of cComponent* as context argument.
 
-	getSourceFileDirectory() method was added to cComponentType.
+	Details:
+	- cComponentType: added getSourceFileDirectory()
+	- cExpression::Context: added baseDirectory
+	- added NedFunctionExt, which takes cExpression::Context *context instead of Component *context
+	- cNedFunction to accept NedFunctionExt as alternative to NedFunction
+	- cPar::parse(): added optional baseDirectory argument
+	- Define_NED_Function() accepts NedFunctionExt too
 
 2019-10-22  Andras Varga
 
-	sim: cNamedObject: rename internal stringpool to more specific name
-
-2019-10-01  Attila Torok
-
-	sim,platdep: Fix build on Windows and macOS. (long/intval_t confusion,
-	::raise).
+	* cNamedObject: rename internal stringpool to more specific name
 
 2019-08-01  Attila Torok
 
-	misc: clang-tidy: Class members are initialized inline using an
+	* ccanvas.h: Initialize class members inline using an
 	assignment instead of in the constructor.
-
-2019-09-09  Attila Torok
-
-	envir,qtenv: Do not allow endSend() right after beginSend().
-
-	With no sendDirect() or sendHop() calls in between. This caused a crash,
-	so we now axplicitly disallow and avoid it. It surfaced in the "Using 3D
-	objects ..." configuration of the Visualization tutorial of INET, but
-	it's supposed to be fixed now.
-
-2019-08-07  Andras Varga
-
-	sim: cNedValue: cosmetics until CDT can parse '[[deprecated]]' in enums
-
-2019-09-09  Andras Varga
-
-	sim: more intval_t replacements
-
-	Amendment for: "sim: listener to use intval_t and uintval_t"
 
 2019-08-31  Andras Varga
 
-	sim: cFigure::Point: added getAngle()
-
-2019-08-26  Andras Varga
-
-	sim: typo
-
-2019-08-27  Andras Varga
-
-	sim: canvas: cache min(animSpeed), so that Qtenv doesn't have to compute
-	it every time
-
-2019-08-23  Andras Varga
-
-	sim: fix: cFigure: eliminate recursion where not needed
+	* cFigure::Point: Added getAngle().
 
 2019-08-05  Andras Varga
 
-	sim: bump OMNETPP_BUILDNUM
-
-2019-08-05  Andras Varga
-
-	sim: added back cNedValue::XML as deprecated name
+	* Added back cNedValue::XML as deprecated name.
 
 2019-08-01  Andras Varga
 
-	sim: listener to use intval_t and uintval_t
+	* Change listeners to use intval_t and uintval_t instead of long and
+	unsigned long. This change was necessary because long is only 32-bit
+	wide on Windows. This affects methods of cListener and subclasses like
+	cResultFilter/cResultRecorder.
 
-	This change makes it possible to emit 64-bit values on Windows too.
-
-	including:
+	Related changes:
 	- SIMSIGNAL_[U]LONG -> SIMSIGNAL_[U]INT
 	- cITimestampedValue changed accordingly (e.g. longValue()->intValue())
 	- removed WITH_OMNETPP4x_LISTENER_SUPPORT
 
 2019-08-01  Andras Varga
 
-	sim: added uintval_t
+	* Added uintval_t.
 
 2019-08-01  Andras Varga
 
-	src: intpar_t renamed to intval_t
+	* intpar_t renamed to intval_t. Affects cPar, cNedValue, cExpression, etc.
 
 2019-07-29  Andras Varga
 
-	sim: getBinEdges(), getBinValues() made available in cAbstractHistogram
+	* cHistogram methods getBinEdges(), getBinValues() added to base class
+	cAbstractHistogram.
 
 2019-07-26  Andras Varga
 
-	sim: added cPostModuleBuildNotification
+	* Added cPostModuleBuildNotification.
 
 	Reason: cPostModuleAddnotification was not sufficient, because it is
 	fired from the cModuleType::create() method where the module was still
@@ -236,409 +148,173 @@
 
 2019-07-26  Andras Varga
 
-	sim: added cPostComponentInitializeNotification
-
-2019-07-26  Andras Varga
-
-	sim: remove duplicate lines in doxygen comment
+	* Added cPostComponentInitializeNotification
 
 2019-07-17  Andras Varga
 
-	sim: fingerprint: added options to hash display strings and figure
-	geometry
+	* Added cFingerprint::addVisuals(), and two new fingerprint ingredients:
+	- y: display strings of all modules, added on refreshDisplay() calls
+	- f: essential properties (geometry) of all figures on all module
+	  canvases, added on refreshDisplay() calls
 
-	to try: ./simulation -u Cmdenv --cmdenv-fake-gui=true  --fingerprint=0/yf
+	See cmdenv-fake-gui config option for context.
 
 2019-07-13  Andras Varga
 
-	canvas: figure hashing
+	* Added cFigure::hashGeometry().
 
 2019-07-18  Andras Varga
 
-	sim, envir: save component type as "typename" pseudo parameter
-
-2019-07-18  Andras Varga
-
-	sim, envir: save parameter attrs as well
+	* Added cEnvir::recordComponentType().
 
 2018-07-09  Andras Varga
 
-	sim, envir: allow recording actual module/channel parameters
-
-	New config option: **.param-recording=true/false
-
-	File format change:
-	- new table ("parameter") in SQLite
-	- "par" lines in the sca file
+	* Added cEnvir::recordParameter().
 
 2019-07-17  Andras Varga
 
-	sim: cContextSwitcher and Co moved to their own header file
+	* cContextSwitcher and related classes/macros moved to their own header
+	file ccontextswitcher.h
 
 2019-07-17  Andras Varga
 
-	sim: removed an #include
-
-2019-07-17  Andras Varga
-
-	sim: cContextSwitcher, cContextTypeSwitcher: micro-optimization
-
+	* cContextSwitcher, cContextTypeSwitcher: micro-optimization.
 	Inlining significantly speeds up debug builds, esp. with Cmdenv's
 	FakeGUI.
 
 2019-07-16  Andras Varga
 
-	sim: optimized cModule::ChannelIterator
+	* Optimized cModule::ChannelIterator by letting cModule maintain a linked
+	list of channels (cChannel), so that ChannelIterator doesn't have to search
+	through the whole compound module to find them.
 
 	ChannelIterator is used e.g. in initialize() and refreshDisplay(). This
 	change significantly speeds up Cmdenv's FakeGUI mode.
 
+	* cModule::ChannelIterator: added postfix ++ and -- operators.
+
 2019-07-15  Andras Varga
 
-	sim: cfingerprint: modernize
+	* cMultiFingerprintCalculator: Use C++11-style "for" loops.
 
 2019-07-11  Andras Varga
 
-	sim: added cSimulation::callRefreshDisplay()
+	* Added cSimulation::callRefreshDisplay().
 
 2019-07-08  Andras Varga
 
-	sim: cDynamicExpression: added support for variables, members, methods
-	and extra functions
+	* cDynamicExpression: added support for variables, members, methods
+	and extra functions. New inner classes: IResolver, ResolverBase,
+	SymbolTable; added parse() overloads that take an IResolver or
+	a symbol table.
 
 2019-07-09  Andras Varga
 
-	sim: cNedValue: replace 'XML' type with 'OBJECT'
+	* cNedValue: replace 'XML' type with 'OBJECT'.
 
 2019-07-02  Attila Torok
 
-	envir,qtenv: Add cEnvir::getConnectionLine().
-
-2019-05-19  Andras Varga
-
-	sim: cXMLElement: getSourceLocation() changed back to const char *, for
-	compatibility
-
-2019-05-15  Rudolf Hornig
-
-	sim: added a cXMLElement constructor for backward compatibility.
-
-2019-04-25  Andras Varga
-
-	sim: cXMLElement: optimize for memory usage (some users have GiB
-	files...)
-
-2019-04-11  Andras Varga
-
-	sim: ported statistics recording to the new Expression class
-
-	Expression filter, @statistic source= parsing and record= parsing has
-	been reimplemented from scratch.
-
-	Issues worth mentioning:
-	- emit() uses long (may be 32 bit), ExprValue uses vs intpar_t (64-bit)
-	- multipath propagation on input still causes glitches, so we still
-	 raise error for them
-
-	Everything should work exactly as before, module some changes:
-	- ExpressionRecorder has not been implemented yet, so
-	 ExpressionFilter + LastValueRecorder is used instead in its place
-	- Old implementation used to add redundant IdentifyFilter sometimes,
-	 this has now been eliminated
-	- Notation changes in the debug-statistics-recording=true output
-	 ($0, $1, etc instead of '<signalValue>', etc)
+	* Added cEnvir::getConnectionLine().
 
 2019-03-11  Andras Varga
 
-	sim: ported NED to new Expression class
-
-	Changes in: cDynamicExpression, NedSupport, NedNetworkBuilder
-
-	main changes:
-	- Removed duality in parsing/processing NED expressions: expressions in
-	 NED files and INI files were parsed/built in totally different ways.
-	 We now use cDynamicExpression for both.
-	 Details: ExpressionBuilder was eliminated; expression parsing turned OFF
-	 in NED parser (we don't use the AST built by it)
-
-	- cDynamicExpression now relies for common::Expression for parsing and
-	 evaluation. Its old parser (expr.y, expr.lex) has been removed.
-
-	- nedsupport.h moved from include/omnetpp to src/sim: nodes must
-	 now subclass from ExprNode, so they cannot be public.
-
-	- in NED functions: context ("In function x():") was removed from error
-	messages
-	 because it will be added by the Expression class
-
-	Everything is supposed to work exactly as before. (Modulo changes in
-	error message wording.)
+	* Ported cDynamicExpression to the new Expression class. Removed its inner
+	classes Elem, Functor, and enum OpType; removed setExpression(); added
+	a NED-specific parse() method [renamed to parseNedExpr() in a later commit].
 
 2019-04-05  Andras Varga
 
-	sim: cResultFilter: added hasDelegate()
+	* cResultFilter: Added hasDelegate().
 
 2019-04-05  Andras Varga
 
-	sim: cComponent: disallow emitting nullptr as string
-
-	As it cannot be represented by std::string, e.g. in statistical
-	expressions.
+	* cComponent: Disallow emitting nullptr in the const char * overload
+	of emit(). The reason is that nullptr cannot be represented in
+	std::string, which causes problems e.g. in result filters/recorders.
 
 2019-04-11  Andras Varga
 
-	nedxml,sim: remove incomplete "constant subexpression" support from NED
-	expressions
-
-	It was never implemented, but it was not really missed by anyone either.
-
-	'const' keyword remains reserved in NED, for whatever future use.
+	* cExpression, cDynamicExpression, cParImpl: Remove
+	containsConstSubexpressions() and evaluateConstSubexpressions() methods.
+	They were supposed to be used in the "constant subexpressions" NED feature
+	which was never implemented.
 
 2019-03-21  Andras Varga
 
-	envir: implemented NED exclusion path (-x option,
-	OMNETPP_NED_EXCLUSION_PATH)
-
-	excl++
+	* cSimulation: Added exclusionPath parameter to loadNedSourceFolder().
 
 2019-03-20  Andras Varga
 
-	src: remove remaining mentions of Tkenv
-
-	Some mentions in Qtenv remain, but those are relevant.
+	* Remove remaining mentions of Tkenv from Doxygen comments.
 
 2019-03-20  Andras Varga
 
-	sim: cModuleType/cChannelType: protected methods changed to be internal
-
-2019-03-20  Andras Varga
-
-	sim: fix: @statistic signal checking used wrong isSimple()
-
-	Also: clarify in doc how cModule::isSimple() and cModuleType::isSimple()
-	differ.
-
-2019-03-13  Andras Varga
-
-	sim: added new result recorders/filters: totalCount, errorNan, nanCount
-
-2019-03-13  Andras Varga
-
-	sim: fix RemoveRepeatsFilter (repeated NaNs were not filtered out)
-
-2019-02-27  Andras Varga
-
-	sim: added user-accessible descriptions for result filter/recorder types
-
-	- new macro: Register_ResultFilter2(), Register_ResultRecorder2()
-	- documentation is  accessible via opp_run -h resultfilters /
-	resultrecorders
-
-2019-02-26  Andras Varga
-
-	sim: fix: prevent NaN coming from filters expressions like
-	count(foo)+count(bar)
-
-	solution: count(),sum(),etc. and are now able to provide the initial
-	value via getInitialDoubleValue()
-
-2019-03-12  Andras Varga
-
-	sim: cQueue: added possibility to use comparator object (not just
-	function)
-
-2019-03-12  Andras Varga
-
-	sim: cQueue: move CompareFunc inside cQueue
-
-2019-03-12  Andras Varga
-
-	sim: cQueue: style: use member initializers, etc.
-
-2019-03-12  Andras Varga
-
-	sim: cQueue refactoring: rename n to len
-
-	Cannot be "length" because the name is taken by the length() method.
-
-2019-03-06  Andras Varga
-
-	sim: cNedValue: doc fix
+	* cModuleType/cChannelType: protected methods changed to be internal:
+	createModuleObject(), addParametersAndGatesTo(), setupGateVectors(),
+	buildInside(), instantiateModuleClass().
 
 2019-02-22  Andras Varga
 
-	sim: support for embedding NED files
-
-2019-02-12  Andras Varga
-
-	sim: added TimeFilter
+	* Support for embedding NED files: Added embeddedNedFiles global variable.
 
 2017-04-24  Andras Varga
 
-	common: MatchExpression: added 'field=~pattern' syntax as alternative to
-	'field(pattern)'
-
-2018-01-30  Andras Varga
-
-	sim: added preciseDiv(int64_t, SimTime)
+	* cMatchExpression: Updated documentation to reflect that it now accepts
+	the 'field=~pattern' syntax too, as alternative to 'field(pattern)'.
 
 2019-02-07  Andras Varga
 
-	sim: revert removal of deprecated methods empty() and length() in cQueue
-
+	* cQueue: Revert removal of deprecated methods empty() and length().
 	These methods are used quite a lot in older models, and leaving them in
 	somewhat eases getting them compiled with new OMNeT++ versions.
 
-2019-02-07  Andras Varga
-
-	sim: added intuniformexcl()
-
-	as NED function, global function, as cComponent method, as object
-	(cIntUniformExcl)
-
-2019-01-29  Andras Varga
-
-	sim: deleteModule() refactoring
-
-2018-06-11  Andras Varga
-
-	sim: revised module/channel deletion (destructors, deleteModule(), etc).
-
-	Motivation: recent changes in C++ do not allow throwing exception from
-	destructor.
-
-	Changes:
-	- cModule, cChannel destructor: added clarification that direct deletion
-	 of module/channel objects is not allowed
-	- use FL_DELETING flag to authorize destructor call from deleteModule()
-	 and disconnect()
-	- allow deleting submodule tree containing the currently active activity
-	 module; use cDeleteModuleException for that
-	- disallow deleting the system module, unless as part of network cleanup
-	- disallow deleting modules before/during initialization (latter would
-	 crash the multi-stage initialization code), unless as part of network
-	 cleanup
-
-2019-01-21  Andras Varga
-
-	sim: cComponent, cModule, cChannel: making room for the DELETING flag
-
 2019-01-27  Andras Varga
 
-	sim: cModule: added containsModule()
-
-2019-01-27  Andras Varga
-
-	sim: cSimpleModule: remove deprecated legacy constructor
-
-2019-01-22  Attila Torok
-
-	sim: Add infinity counting to cAbstractHistogram and subclasses.
-
-	Collecting positive/negative infinity no longer breaks the histogram.
-	Instead, infinities are counted as overflows/underflows, and the bins are
-	set up as if the infinities were not there.
-
-	This also changes the ad-hoc text file format used by saveToFile()/
-	loadFromFile(), because the classes need to keep the number of finite and
-	infinite overflows, finite extrema, etc. in addition to data kept so far.
-
-2019-01-22  Andras Varga
-
-	sim: fix: cKSplit, cPSquare: added missing clear() implementation
-
-2019-01-16  Attila Torok
-
-	sim: Remove old and unused (internal) plotline function from
-	cPrecollDensityEst.
-
-2019-01-16  Attila Torok
-
-	sim: Add cAbstractHistogram::dup() override.
-
-	Just so the return type is correct.
-
-2019-01-16  Attila Torok
-
-	include: Documentation fixes for cAbstractHistogram.
-
-2018-12-20  Attila Torok
-
-	include,sim: Minor fixes in comments/docs.
-
-2018-12-03  Andras Varga
-
-	include: envirext.h: use noncopyable
-
-2016-03-08  Andras Varga
-
-	include: csimulation.h: clarification
-
-2018-07-04  Rudolf Hornig
-
-	prod: 5.4.1 -> 6.0.0 and updated to eclipse 4.8
+	* cSimpleModule: Removed deprecated legacy constructor.
 
 2018-06-29  Andras Varga
 
-	sim: remove cAbstractHistogram (ex cDensityEstBase) deprecated methods
+	* Removed cAbstractHistogram (ex-cDensityEstBase) deprecated methods
+	isTransformed(), transform(), getNumCells(), getBasepoint(), getCellValue(),
+	getCellPDF(), getUnderflowCell(), getOverflowCell(), getCellInfo().
+	Replacements: binsAlreadySetUp(), setUpBins(), getNumBins(), getBinEdge(),
+	getBinValue(), getBinPDF(), getNumUnderflows(), getNumUnderflows(),
+	getBinInfo().
 
-2018-06-29  Andras Varga
+	* Removed cFigure/cCanvas deprecated methods: addFigureAbove(),
+	addFigureBelow(). Replacements: insertBelow(), insertAbove().
 
-	sim: remove cFigure/cCanvas deprecated methods
+	* Removed cStatistic deprecated methods getWeights(),collect2(), random(),
+	clearResult(). Replacements: getSumWeights(), collectWeighted(), draw(),
+	clear().
 
-2018-06-29  Andras Varga
+	* Removed cPar/cNedValue deprecated method longValue(), use intValue() instead.
 
-	sim: remove cStatistic deprecated methods
+	* Removed cObject deprecated method info(), detailedInfo(), use str() instead.
 
-2018-06-29  Andras Varga
+	* Removed cModule deprecated method size(), use getVectorSize() instead.
 
-	sim: remove more deprecated methods: info(), length(), size(), empty(),
-	longValue() etc
+	* Removed cQueue deprecated methods length(), empty() [they will be added back]
 
-2018-06-29  Andras Varga
+	* Removed deprecated operator() of iterator classes in cArray, cModule,
+	cQueue. Use operator* instead.
 
-	sim: remove deprecated operator() of iterator classes
+	* Remove cHistogram deprecated methods setRangeAuto(), setRangeAutoLower(),
+	setRangeAutoUpper(), setNumCells(), setCellSize(). Replacements:
+	setNumPrecollectedValues()+setRangeExtensionFactor()+setRange(),
+	setNumBins(), setBinSize().
 
-2018-06-29  Andras Varga
+	* Removed deprecated cDensityEstBase class. Replacement: cAbstractHistogram.
 
-	sim: remove cHistogram deprecated methods
+	* Removed deprecated cWeightedStdDev class. Use cStddev in weighted mode instead.
 
-2018-06-29  Andras Varga
+	* Removed deprecated timeval_*() functions: timeval_usec(), to_timeval(),
+	timeval_add(), timeval_addto(), etc. Use opp_get_monotonic_clock_usecs() or
+	opp_get_monotonic_clock_nsecs() instead, and perform arithmetic in int64_t.
 
-	sim: removed cDensityEstBase, cWeightedStdDev
-
-2018-06-28  Andras Varga
-
-	platdep: remove deprecated timeval_*() functions
-
-2018-06-28  Andras Varga
-
-	sim: resultfilters.h and resultrecorders.h made public
-
-	Difficulty: ExpressionFilter and ExpressionRecorder use
-	omnetpp::common::Expression which is not available for models, so they
-	were moved into the new src/sim/resultexpr.h header file.
-
-	NaN, POSITIVE_INFINITY, NEGATIVE_INFINITY were also from common/, had to
-	be replaced with standard macros (finally they exist).
-
-2018-06-24  Andras Varga
-
-	sim: remove obsolete histogram classes cVarHistogram, etc.
-
-	cVarHistogram, cLegacyHistogram, cLongHistogram, cDoubleHistogram
-
-2018-06-27  Andras Varga
-
-	src, build: remove Tkenv
-
-2018-09-19  Attila Torok
-
-	#define NOGDI as well before #include <windows.h> to further reduce bloat
-
-	Original reason: Name conflict with PC_NONE, see 7b3042a
-
------------ lines above this marker have been added from git log -----------
+	* Removed obsolete histogram classes: cVarHistogram, cLegacyHistogram,
+	cLongHistogram, cDoubleHistogram. Use cHistogram with the appropriate
+	histogram strategy instead.
 
 2020-01-06  ------ omnetpp-5.6 released ------
 

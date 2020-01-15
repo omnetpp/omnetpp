@@ -1,56 +1,23 @@
 2019-04-04  Rudolf Hornig
 
-	build: proper dependency on the command line parameters
-
-	- rebuilds properly the output even if only the compiler command line
-	 parameters have changed.
-	- fix issue when rebuild occurred always if CFLAGS contained " delimited
-	strings
-	 (we use $(file) instead of using the shell echo command)
-
-2019-04-03  Rudolf Hornig
-
-	build: fix to allow overriding the output dir by specifiying CONFIGNAME
-	parameter on command line
+	* Makefile improvements.
 
 2019-03-22  Andras Varga
 
-	src: rename scavetool to opp_scavetool, and eventlogtool to
-	opp_eventlogtool
-
-	Reason: consistency. We'd like all our tools to begin with opp_.
-
-2019-03-11  Andras Varga
-
-	src: fix broken dependencies in Makefiles
+	* eventlogtool renamed to opp_eventlogtool, for consistency.
+	We'd like all our tools to begin with opp_.
 
 2019-02-11  Andras Varga
 
-	eventlog: rename ModuleMethodBegin/End to ComponentMethodBegin/End
-
-	As source/target may be channel object as well, not only a module.
-
+	* Rename ModuleMethodBegin/End to ComponentMethodBegin/End, as
+	the source/target may be channel object as well, not only a module.
 	Fields also renamed: fromModuleId -> sourceComponentId, toModuleId ->
-	targetComponentId
-
-2019-01-16  Rudolf Hornig
-
-	build: fixed build problem on linux
+	targetComponentId.
 
 2019-01-10  Rudolf Hornig
 
-	build: added support to build on Windows using MS ABI compatibility (i.e
-	Visual C++ libraries)
-
-2018-11-05  Zoltan Bojthe
-
-	eventlogtool: fix: event number printf format: remove extra tail "d"
-
-2018-09-21  Attila Torok
-
-	misc: Replace $* with "$@" in a couple scripts.
-
------------ lines above this marker have been added from git log -----------
+	* Makefile: Added support to build on Windows using MS ABI compatibility
+	(i.e. Visual C++ libraries).
 
 2020-01-06  ------ omnetpp-5.6 released ------
 

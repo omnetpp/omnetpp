@@ -1,58 +1,8 @@
 2019-12-20  Attila Torok
 
-	samples: Clean up and update some sample .anf files to new API
-
-2019-11-11  Rudolf Hornig
-
-	samples: ANF files converted to use =~ notation instead of filter()
-
-2018-11-21  Attila Torok
-
-	scave: Convert more .anf files to the newer format.
-
-2018-11-20  Attila Torok
-
-	scave: camelCase() to snake_case() in .anf files
-
-2018-11-20  Attila Torok
-
-	scave: Moved the .py files into one location, fixed the imports, added
-	PYTHONPATH to setenv
-
-2018-10-15  Attila Torok
-
-	scave: Update example .anf files.
-
-2018-10-04  Attila Torok
-
-	scave: anf file changes
-
-2018-10-02  Attila Torok
-
-	scave: make vector_merger and vector_aggregator return a dataframe in the
-	correct format
-
-2018-10-01  Attila Torok
-
-	scave: Implemented the rest of the vector operations in Python.
-
-2018-09-28  Attila Torok
-
-	scave: add vector operations and an example .anf file for testing
-
-2018-09-17  Attila Torok
-
-	scave: changes for the summit demo
-
-2018-08-02  Attila Torok
-
-	update the resultfiles and tictos samples for testing
-
-2018-07-31  Attila Torok
-
-	scave: samples/resultfiles: updated .sca .vec and .vci files
-
------------ lines above this marker have been added from git log -----------
+	* During the development of the Python-based Analysis Tool in the IDE,
+	ANF files in this directory were converted to the new format and updated
+	severals times. Result files were also kept up to date.
 
 2020-01-06  ------ omnetpp-5.6 released ------
 

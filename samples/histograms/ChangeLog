@@ -1,25 +1,20 @@
 2018-12-03  Andras Varga
 
-	samples: histograms: improved to be a better demo
+	* Improved to be a better demo: updated omnetpp.ini so that all
+	(distribution, histogram) pairs make sense, e.g. not generate
+	[0,1) and collect a histogram on [10,20).
 
-	- change config so that all (distribution, histogram) pairs make sense,
-	  e.g. not generate [0,1) and collect a histogram on [10,20)
-	- added hint text on canvas
-	- updated fingeprint tests
+	* Added usage hint to the canvas.
 
 2019-01-24  Andras Varga
 
-	samples: histograms: eliminate AutoRangeStrategyBuilder for code
-	simplicity
+	* histograms.cc: Eliminate AutoRangeStrategyBuilder for code simplicity.
 
 2018-12-03  Attila Torok
 
-	samples/histograms: Remove a lot of configs and histogram setups.
-
-	As this sample is no longer used for fingerprint testing, there is no
-	need to have it so complicated.
-
------------ lines above this marker have been added from git log -----------
+	* Remove a lot of configs and histogram setups. As this sample is
+	no longer used for fingerprint testing, there is no need to have
+	it so complicated.
 
 2020-01-06  ------ omnetpp-5.6 released ------
 

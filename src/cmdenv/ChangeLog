@@ -1,102 +1,43 @@
 2019-07-24  Andras Varga
 
-	cmdenv: print warning about experimental features
-
-	cmdenv-fake-gui, finger print computation from figures and display
-	strings are currently experimental.
-
-	Reasons:
-	- good default (or preset modes) for frequency of calling
-	refreshDisplay()?
-	- figures: always hash all figures (slow) or only on changes (prone to
-	break on refactoring)?
+	* Print a warning that Fake GUI is an experimental feature.
 
 2019-07-11  Andras Varga
 
-	cmdenv: added cmdenv-fake-gui option
-
-	Fake GUI is useful for testing simulation models with visualization using
-	Cmdenv, e.g. in smoke or fingerprint tests.
-
-2019-07-12  Andras Varga
-
-	cmdenv: comments
-
-	# Conflicts:
-	#	src/cmdenv/cmdenv.cc
+	* Added cmdenv-fake-gui=true/false option. Fake GUI means that
+	refreshDisplay() is called periodically during simulation, in order to mimic
+	the behavior of a graphical user interface like Qtenv. It is useful for
+	testing simulation models with visualization using Cmdenv, e.g. in smoke or
+	fingerprint tests.
 
 2019-07-11  Andras Varga
 
-	cmdenv: factor out cSimulation ptr to spare repeated getSimulation()
-	calls in event loop
+	* Micro-optimization: Spare repeated getSimulation() calls in the event loop
 
 2019-07-11  Andras Varga
 
-	cmdenv: eliminate warnings in CDT
-
-2019-07-11  Andras Varga
-
-	cmdenv: changed config option constants to match option names (added
+	* Cosmetics: Changed config option constants to match option names (added
 	"CMDENV_" to them)
 
 2019-07-02  Attila Torok
 
-	envir,qtenv: Add cEnvir::getConnectionLine().
+	* Implemented cEnvir::getConnectionLine() as dummy
 
 2019-04-04  Rudolf Hornig
 
-	build: proper dependency on the command line parameters
-
-	- rebuilds properly the output even if only the compiler command line
-	 parameters have changed.
-	- fix issue when rebuild occurred always if CFLAGS contained " delimited
-	strings
-	 (we use $(file) instead of using the shell echo command)
-
-2019-04-03  Rudolf Hornig
-
-	build: fix to allow overriding the output dir by specifiying CONFIGNAME
-	parameter on command line
+	* More Makefile refinements
 
 2019-03-19  Andras Varga
 
-	cmdenv: nicer error message about missing network= option
-
-2019-03-11  Andras Varga
-
-	src: fix broken dependencies in Makefiles
+	* Nicer error message about missing network= option
 
 2019-01-30  Andras Varga
 
-	envir: EnvirBase: startRun() renamed, endRun() eliminated
-
-	startRun() was renamed to break association with startRun() methods of
-	extension classes like scheduler, output vector manager, output scalar
-	manager, etc.
-
-	endRun() was eliminated for a similar reason. Besides, it only contained
-	"notifyLifecycleListeners(LF_ON_RUN_END)", and such notifications are
-	inlined everywhere else.
-
-2019-01-29  Andras Varga
-
-	envir: startrunDone -> startrunCalled, based on the definition of
-	LF_ON_RUN_END
-
-2019-01-21  Andras Varga
-
-	cmdenv: remove misplaced comment
+	* Follow EnvirBase changes: startRun() renamed, endRun() eliminated.
 
 2019-01-16  Rudolf Hornig
 
-	build: fixed build problem on linux
-
-2019-01-10  Rudolf Hornig
-
-	build: added support to build on Windows using MS ABI compatibility (i.e
-	Visual C++ libraries)
-
------------ lines above this marker have been added from git log -----------
+	* Makefile refinements
 
 2020-01-06  ------ omnetpp-5.6 released ------
 

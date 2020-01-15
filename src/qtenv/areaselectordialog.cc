@@ -52,7 +52,6 @@ AreaSelectorDialog::Area AreaSelectorDialog::getArea()
         return VIEWPORT;
 
     ASSERT(false);
-    return VIEWPORT;
 }
 
 int AreaSelectorDialog::getMargin()
