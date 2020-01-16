@@ -14,6 +14,17 @@ public abstract class LayoutBuilder {
         ConstructorInfo result = new ConstructorInfo();
 
         Constructor[] constructors = valueType.getConstructors();
+
+        // This special case is here because for some reason when we tried to convert strings like
+        // "30" or "90" into strings (yeah...), we found the String(byte[]) ctor first, and DataParser was
+        // happy to assist us with that, so we got the 30th ASCII character in a 1-long string instead of "30"
+        if (valueType.equals(String.class) && argList.size() == 1)
+            try {
+                constructors = new Constructor[] { String.class.getConstructor(String.class) };
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
         for (int i = 0; i < constructors.length; ++i) {
             result.constructor = constructors[i];
 
