@@ -487,7 +487,10 @@ public class ChartScriptEditor extends PyEdit {
 
         MenuManager manager = new MenuManager();
 
-        manager.add(new GotoChartDefinitionAction());
+        if (chart.isTemporary())
+            manager.add(new SaveTempChartAction());
+        else
+            manager.add(new GotoChartDefinitionAction());
         manager.add(new Separator());
 
         manager.add(toggleShowSourceAction);
@@ -553,7 +556,11 @@ public class ChartScriptEditor extends PyEdit {
 
         MenuManager manager = new MenuManager();
 
-        manager.add(new GotoChartDefinitionAction());
+        if (chart.isTemporary())
+            manager.add(new SaveTempChartAction());
+        else
+            manager.add(new GotoChartDefinitionAction());
+        manager.add(new Separator());
         manager.add(toggleShowSourceAction);
         manager.add(new EditChartPropertiesAction());
         manager.add(new Separator());
