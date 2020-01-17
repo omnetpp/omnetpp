@@ -86,6 +86,7 @@ public class ScaveImages {
     public static final String IMG_OBJ16_LINE_SAMPLEHOLD = "icons/full/obj16/line_samplehold.png";
     public static final String IMG_OBJ16_MEASUREMENT = "icons/full/obj16/measurement.png";
     public static final String IMG_OBJ16_PARAMASSIGNMENT = "icons/full/obj16/paramassignment.png";
+    public static final String IMG_OBJ16_CONFIGENTRY = "icons/full/obj16/configentry.png";
     public static final String IMG_OBJ16_REPLICATION = "icons/full/obj16/replication.png";
     public static final String IMG_OBJ16_RUNATTR = "icons/full/obj16/runattr.png";
     public static final String IMG_OBJ16_RUNFILTER = "icons/full/obj16/runfilter.png";

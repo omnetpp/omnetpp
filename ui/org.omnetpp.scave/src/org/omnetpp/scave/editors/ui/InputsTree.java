@@ -68,7 +68,7 @@ public class InputsTree extends TreeViewer {
         AttrGroup(String name, List<AttrNode> attrs) {this.name = name; this.attrs = attrs;}
     }
 
-    enum AttrType { ATTR, ITERVAR, PARAMASSIGNMENT };
+    enum AttrType { ATTR, ITERVAR, PARAMASSIGNMENT, CONFIGENTRY };
 
     class AttrNode {
         AttrType type;
@@ -126,12 +126,14 @@ public class InputsTree extends TreeViewer {
                                     runNode.attrGroups.add(new AttrGroup("Iteration Variables", convert(run.getIterationVariables(), AttrType.ITERVAR)));
                                     runNode.attrGroups.add(new AttrGroup("Run Attributes", convert(run.getAttributes(), AttrType.ATTR)));
                                     runNode.attrGroups.add(new AttrGroup("Parameter Assignments", convert(run.getParamAssignments(), AttrType.PARAMASSIGNMENT)));
+                                    runNode.attrGroups.add(new AttrGroup("Configuration", convert(run.getNonParamAssignmentConfigEntries(), AttrType.CONFIGENTRY)));
                                 }
                                 else {
                                     runNode.attrs = new ArrayList<>();
                                     runNode.attrs.addAll(convert(run.getIterationVariables(), AttrType.ITERVAR));
                                     runNode.attrs.addAll(convert(run.getAttributes(), AttrType.ATTR));
                                     runNode.attrs.addAll(convert(run.getParamAssignments(), AttrType.PARAMASSIGNMENT));
+                                    runNode.attrs.addAll(convert(run.getNonParamAssignmentConfigEntries(), AttrType.CONFIGENTRY));
                                 }
                             }
                         }
@@ -238,6 +240,7 @@ public class InputsTree extends TreeViewer {
                     case ATTR: return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_RUNATTR);
                     case ITERVAR: return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_ITERVAR);
                     case PARAMASSIGNMENT: return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_PARAMASSIGNMENT);
+                    case CONFIGENTRY: return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_CONFIGENTRY);
                 }
             }
             return null;
