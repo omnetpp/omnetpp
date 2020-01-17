@@ -1391,6 +1391,19 @@ public class ScaveEditor extends MultiPageEditorPartExt
         }
     }
 
+    public final Chart findOpenChartById(int chartId) {
+        int count = getPageCount();
+        for (int i = 0; i < count; i++) {
+            IEditorPart editor = getEditor(i);
+            if (editor != null && editor.getEditorInput() instanceof ChartScriptEditorInput) {
+                Chart chart = ((ChartScriptEditorInput)editor.getEditorInput()).chart;
+                if (chart.getId() == chartId)
+                    return chart;
+            }
+        }
+        return null;
+    }
+
     /*
      * IGotoMarker
      */
@@ -1401,9 +1414,24 @@ public class ScaveEditor extends MultiPageEditorPartExt
             boolean sourceIdIsInteger = sourceId != null && sourceId.matches("[\\d]+");
 
             if (marker.getType().equals(IMarker.PROBLEM) && sourceIdIsInteger) {
-                int chartIndex = Integer.parseInt(sourceId);
+                int chartId = Integer.parseInt(sourceId);
 
-                Chart chart = (Chart) analysis.getCharts().getCharts().get(chartIndex);
+                Chart chart = null;
+                for (AnalysisItem i : analysis.getCharts().getCharts()) {
+                    if (!(i instanceof Chart))
+                        continue;
+                    Chart c = (Chart)i;
+                    if (c.getId() == chartId) {
+                        chart = c;
+                        break;
+                    }
+                }
+
+                if (chart == null)
+                    chart = findOpenChartById(chartId);
+
+                if (chart == null)
+                    return;
 
                 IEditorPart[] parts = findEditors(new ChartScriptEditorInput(chart));
 

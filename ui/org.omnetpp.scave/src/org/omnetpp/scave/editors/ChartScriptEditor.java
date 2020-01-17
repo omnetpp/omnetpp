@@ -805,7 +805,7 @@ public class ChartScriptEditor extends PyEdit {
             errorMarker.setAttribute(IMarker.TRANSIENT, true);
             errorMarker.setAttribute(IMarker.MESSAGE, problemMessage);
             errorMarker.setAttribute(IMarker.LINE_NUMBER, line);
-            errorMarker.setAttribute(IMarker.SOURCE_ID, Integer.toString(scaveEditor.getAnalysis().getCharts().getCharts().indexOf(chart)));
+            errorMarker.setAttribute(IMarker.SOURCE_ID, chart.getId());
 
             errorMarkerAnnotation = new MarkerAnnotation(errorMarker);
             documentProvider.annotationModel.addAnnotation(errorMarkerAnnotation, new Position(offset, length));
