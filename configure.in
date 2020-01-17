@@ -700,6 +700,70 @@ fi
 AC_ARG_VAR(SWIG, The Swig interface generator)
 AC_CHECK_PROG(SWIG, swig, swig, not found)
 
+#---------------------------
+# Check for python3 and its modules
+#---------------------------
+
+# Python 3 is used for many command line tools, and in the IDE for result analysis
+AC_ARG_VAR(PYTHON3, The Python 3 interpreter)
+AC_CHECK_PROG(PYTHON3, python3, python3, not found)
+if test "$PYTHON3" = "not found"; then
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  python3"
+   AC_MSG_WARN(Python (python3) not found -- please install it! Python is required by many command-line tools and by the Analysis Tool in the IDE.)
+fi
+
+AC_MSG_CHECKING(if all necessary Python modules are available)
+
+PYTHON_PACKAGE_CHECK_CODE=$(cat <<-EOT
+
+# These should always be available by default, but just as a sanity check:
+import argparse, pickle, math, io, sys, os, platform, mmap, pprint, json, \
+       re, itertools, importlib, inspect, glob, functools, csv, string, \
+       struct, socket, subprocess, time, traceback, threading, types, copy, \
+       tempfile, select, shlex, unittest, weakref, logging, multiprocessing, xml
+
+failed = list()
+
+def try_import(name):
+  global failed
+  try:
+    importlib.import_module(name)
+  except:
+    failed.append(name)
+
+try_import("difflib") # for opp_test and scave python tester
+
+# for the Analysis Tool:
+try_import("numpy")
+try_import("pandas")
+try_import("matplotlib")
+
+if os.name == 'posix':
+  try_import("posix_ipc")
+  try_import("fcntl")
+else:
+  try_import("msvcrt")
+
+if failed:
+  print("Failed to import: " + ", ".join(failed))
+  exit(1)
+
+EOT
+)
+
+if output=$(python3 -c "$PYTHON_PACKAGE_CHECK_CODE") ; then
+    AC_MSG_RESULT(yes)
+else
+    AC_MSG_RESULT(fail)
+    AC_MSG_ERROR([Some required packages were not found. $output])
+fi
+
+# The following ones are optional, and are used only by some sample ANF scripts:
+#   import pylab,
+#   import prettyplotlib
+#   import seaborn
+#   import scipy
+
 
 #----------------------
 # Checks for standard libraries.
@@ -1271,4 +1335,5 @@ and re-run configure.
 EOT
   fi
 fi
+
 
