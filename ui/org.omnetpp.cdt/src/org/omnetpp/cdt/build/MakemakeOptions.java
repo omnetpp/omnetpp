@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.cdt.managedbuilder.core.IConfiguration;
+import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.cdt.managedbuilder.macros.IBuildMacroProvider;
 import org.eclipse.core.resources.IProject;
@@ -431,7 +433,9 @@ public class MakemakeOptions implements Cloneable {
 
         // resolve macros for this configuration
         IBuildMacroProvider provider = ManagedBuildManager.getBuildMacroProvider();
-        arg = provider.resolveValue(arg, "", " ", IBuildMacroProvider.CONTEXT_CONFIGURATION, ManagedBuildManager.getBuildInfo(project).getDefaultConfiguration());
+        IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(project);
+        IConfiguration config = buildInfo == null ? null : buildInfo.getDefaultConfiguration();
+        arg = provider.resolveValue(arg, "", " ", IBuildMacroProvider.CONTEXT_CONFIGURATION, config);
 
         // resolve global eclipse variables
         arg = StringUtils.substituteVariables(arg);

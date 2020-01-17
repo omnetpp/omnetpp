@@ -191,6 +191,7 @@ public class CDTUtils {
     public static void invalidateDiscoveredPathInfo(IProject project) {
         //MakeCorePlugin.getDefault().getDiscoveryManager().removeDiscoveredInfo(project); // this one is ineffective
         IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(project);
+        IConfiguration cfg = buildInfo == null ? null : buildInfo.getDefaultConfiguration();
         if (buildInfo != null)
             for (IConfiguration config : buildInfo.getManagedProject().getConfigurations())
                 CfgDiscoveredPathManager.getInstance().removeDiscoveredInfo(project, new CfgInfoContext(config));

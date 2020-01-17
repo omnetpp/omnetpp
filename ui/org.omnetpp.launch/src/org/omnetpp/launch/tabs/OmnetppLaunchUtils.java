@@ -17,12 +17,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
+import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.cdt.ui.newui.CDTPropertyManager;
 import org.eclipse.core.resources.IContainer;
@@ -580,24 +582,33 @@ public class OmnetppLaunchUtils {
     }
 
     /**
-     * Detect if the active configuration of the CDT project is built with release mode omnetpp toolchain.
+     * Return "debug", "release" or whatever mode the CDT project has.
      * Returns null if the detection was unsuccessful.
      * @throws CoreException
      */
-    private static Boolean isReleaseModeCDTProject(IProject project) throws CoreException {
+    private static String getCdtProjectActiveMode(IProject project) throws CoreException {
         Assert.isTrue(project.hasNature(CDT_CC_NATURE_ID));
 
-        IConfiguration cfg = ManagedBuildManager.getBuildInfo(project).getDefaultConfiguration();
+        // Config IDs look like "org.omnetpp.cdt.gnu.config.release", "org.omnetpp.cdt.gnu.config.debug",
+        // or something; see IDs defined in the plugin.xml.
+        //
+        // NOTE: At many other places in the IDE we simply check the config's name (whether it contains the string "release" or "debug")
+        //
+        String CONFIGID_PREFIX = "org.omnetpp.cdt.gnu.config.";
+
+        IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(project);
+        IConfiguration cfg = buildInfo == null ? null : buildInfo.getDefaultConfiguration();
         while (cfg != null) {
-            // compare with the release toolchain names. (they must match with the IDs defined in the plugin.xml)
-            if (cfg.getId().equals("org.omnetpp.cdt.gnu.config.release"))
-                return Boolean.TRUE;
-            // for a debug toolchain we must use opp_run (which is also built in debug mode)
-            if (cfg.getId().equals("org.omnetpp.cdt.gnu.config.debug"))
-                return Boolean.FALSE;
+            String configId = cfg.getId();
+            if (configId.startsWith(CONFIGID_PREFIX)) {
+                String rest = configId.substring(CONFIGID_PREFIX.length());
+                if (!rest.contains("."))
+                    return rest;
+            }
             cfg = cfg.getParent();
         }
-        // we cannot detect our own toolchain
+
+        // cannot detect
         return null;
     }
 
@@ -634,33 +645,29 @@ public class OmnetppLaunchUtils {
             throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Cannot launch simulation: the working directory path is not accessible."));
 
         IProject[] projects = ProjectUtils.getAllReferencedProjects(resource.getProject(), false, true);
-        Boolean commonReleaseMode = null;
-        boolean inconsistency = false;
-        String releaseProjects = "";
-        String debugProjects = "";
-        for (IProject project : projects)
+
+        Map<String,String> projectsByMode = new HashMap<>();
+        for (IProject project : projects) {
             if (project.hasNature(CDT_CC_NATURE_ID)) {
-                Boolean projectReleaseMode = isReleaseModeCDTProject(project);
-                if (projectReleaseMode != null && commonReleaseMode != null && projectReleaseMode != commonReleaseMode)
-                    inconsistency = true;
-
-                if (projectReleaseMode)
-                    releaseProjects += project.getName()+" ";
+                String mode = getCdtProjectActiveMode(project);
+                if (mode == null)
+                    mode = "unknown";
+                if (!projectsByMode.containsKey(mode))
+                    projectsByMode.put(mode, project.getName());
                 else
-                    debugProjects += project.getName()+" ";
-
-                if (projectReleaseMode != null)
-                    commonReleaseMode = projectReleaseMode;
+                    projectsByMode.put(mode, projectsByMode.get(mode) + " " + project.getName()); // append
             }
+        }
 
-        if (inconsistency)
-            throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID,
-                    "Inconsistent project configurations: make sure required projects are "
-                    + "set to consistent build configurations."
-                    + "\n\nDebug mode: "+debugProjects
-                    + "\nRelease mode: "+releaseProjects));
+        boolean inconsistency = projectsByMode.size() != 1;
+        if (inconsistency) {
+            String report = projectsByMode.entrySet().stream().map(e -> e.getValue() + ": " + e.getKey()).collect(Collectors.joining("\n"));
+            throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Make sure to select consistent build configurations "
+                    + "across all involved projects, i.e. they should be all debug or all release. Current settings:\n\n" + report));
 
-        return commonReleaseMode == null ? false : commonReleaseMode;  // if mode not detected, use debug mode
+        }
+        boolean allProjectsAreRelease = projectsByMode.containsKey("release") && !inconsistency;
+        return allProjectsAreRelease; // if mode not detected or there are other modes, use debug mode
     }
 
     /**
