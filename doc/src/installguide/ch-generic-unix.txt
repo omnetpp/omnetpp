@@ -9,7 +9,7 @@ distributions not covered in other chapters.
 
 [NOTE]
 ===============================================================
-In addition to Windows and macOS, the Simulation IDE will only work
+In addition to Windows 10 and macOS, the Simulation IDE will only work
 on Linux x86 64-bit platforms. Other operating systems (FreeBSD,
 Solaris, etc.) and architectures may still be used as simulation
 platforms, without the IDE.
@@ -19,7 +19,7 @@ platforms, without the IDE.
 
 The following packages are required for @OMNETPP@ to work:
 
-build-essential, GNU make, gcc, g\++, bison (2.4+), flex, perl::
+build-essential, GNU make, gcc, g\++, bison (3.0+), flex, perl, python3::
   These packages are needed for compiling @OMNETPP@ and simulation models,
   and also for certain @OMNETPP@ tools to work. C++ compilers other than
   g++, will also be accepted.
@@ -32,11 +32,7 @@ You may opt to use clang and clang++ instead of the gcc and g++ compilers.
 The following packages are strongly recommended, because their absence
 results in severe feature loss:
 
-LibXML2 or Expat::
-  Either one of these XML parsers are needed for @OMNETPP@ to be able
-  to read XML files. The 'devel' packages (that include the header files)
-  are needed. LibXML2 is the preferred one.
-OpenJDK, version 8.0 or later::
+OpenJDK, version 11.0 or later::
   The Java runtime is required to run the Eclipse-based Simulation IDE.
   Other implementations, for example Kaffe, have been found to have problems
   running the IDE. You do not need this package if you do not plan
@@ -44,12 +40,16 @@ OpenJDK, version 8.0 or later::
 Qt 5.4 or later::
   Required by the Qtenv simulation runtime environment.
   You need the 'devel' packages that include header files as well.
-  OpenSceneGraph (3.2+) and osgEarth (2.7+)::
+OpenSceneGraph (3.4+) and osgEarth (2.9+)::
   These packages will enable 3D visualization in Qtenv.
   You need the 'devel' packages that include header files as well.
 
 The following packages are required if you want to take advantage of some advanced
 @OMNETPP@ features:
+
+LibXML2::
+  LibXML2 is needed for @OMNETPP@ to be able to DTD validate an XML file.
+  The 'devel' packages (that include the header files) are needed.
 
 GraphViz, Doxygen::
   These packages are used by the NED documentation generation feature
@@ -62,12 +62,6 @@ MPI::
 Akaroa::
   Implements Multiple Replications In Parallel (MRIP). Akaroa can be downloaded
   from the project's website.
-
-Pcap::
-  The optional Pcap library allows simulation models to capture and
-  transmit network packets bypassing the operating system's protocol stack.
-  It is not used directly by @OMNETPP@, but models may need it to support
-  network emulation.
 
 The exact names of these packages may differ across distributions.
 
@@ -95,7 +89,7 @@ The IDE is not supported on Unix platforms other than Linux, so JRE is not requi
 either. We have tested various other Java runtimes ('gcj', 'kaffe', etc.), and
 the IDE does not work well with them.
 
-Java version 1.8 (i.e. JRE 1.8) or later is required.
+Java version 1.11 (i.e. JRE 1.11) or later is required.
 
 ==== MPI
 
@@ -211,7 +205,7 @@ nice gui windows and dialogs.
 
 [NOTE]
 ===============================================================
-The IDE is supported only on 64-bit versions of Windows, macOS X and Linux.
+The IDE is supported only on 64-bit versions of Windows, macOS and Linux.
 ===============================================================
 
 You can run the IDE by typing the following command in the terminal:
@@ -266,13 +260,6 @@ Configure, build and install the Akaroa library. By default, it will be installe
 
 Go to the @OMNETPP@ directory, and (re-)run the `configure` script. Akaroa will be
 automatically detected if you installed it to the default location.
-
-==== PCAP
-
-The optional Pcap library allows simulation models to capture and
-transmit network packets bypassing the operating system's protocol stack.
-It is not used directly by @OMNETPP@, but @OMNETPP@ detects the necessary
-compiler and linker options for models in case they need it.
 
 ifdef::OMNEST[]
 

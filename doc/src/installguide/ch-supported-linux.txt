@@ -5,10 +5,10 @@
 This chapter provides instructions for installing @OMNETPP@ on selected Linux
 distributions:
 
-* Ubuntu 16.04 LTS
-* Fedora Core 25
-* Red Hat Enterprise Linux Desktop Workstation 7.x
-* OpenSUSE 42
+* Ubuntu 18.04 and 20.4 LTS
+* Fedora Workstation 31
+* Red Hat Enterprise Linux Desktop Workstation 8.x
+* OpenSUSE Leap 15
 
 This chapter describes the overall process.
 Distro-specific information, such as how to install the prerequisite
@@ -57,13 +57,13 @@ chapter.
 === Downloading and Unpacking
 
 Download @OMNETPP@ from {DOWNLOADSITE}. Make sure you select to download
-the generic archive, `@omnetpp@-@version@-src.tgz`.
+the generic archive, `@omnetpp@-@version@-src-linux.tgz`.
 
 Copy the archive to the directory where you want to install it. This is usually
 your home directory, `/home/<you>`. Open a terminal, and extract the archive
 using the following command:
 
-  $ tar xvfz @omnetpp@-@version@-src.tgz
+  $ tar xvfz @omnetpp@-@version@-src-linux.tgz
 
 This will create an `@omnetpp@-@version@` subdirectory with the @OMNETPP@ files in it.
 
@@ -81,7 +81,7 @@ specific to your Linux distribution.
 directory and source the `setenv` script:
 
   $ cd @omnetpp@-@version@
-  $ . setenv
+  $ source setenv
 
 The script also adds the `lib/` subdirectory to `LD_LIBRARY_PATH`, which may be
 necessary on systems that don't support the rpath mechanism.
@@ -168,8 +168,8 @@ If you only want to build one set of the libraries, specify
 You can now verify that the sample simulations run correctly. For example,
 the dyna simulation is started by entering the following commands:
 
-    $ cd samples/dyna
-    $ ./dyna
+    $ cd samples/aloha
+    $ ./aloha
 
 By default, the samples will run using the Qtenv environment. You should see
 nice gui windows and dialogs.
@@ -246,7 +246,7 @@ Note that at this point, MPI, Doxygen and GraphViz have been installed as part o
 
 ==== Qtenv
 
-@OMNETPP@ 5 comes with a new Qt based runtime environment that supports also 3D visualization.
+@OMNETPP@ comes with a Qt based runtime environment that supports also 3D visualization.
 The new environment can be disabled by the WITH_QTENV=no variable in the configure.user
 file and then running `./configure`.
 
@@ -282,13 +282,6 @@ Configure, build and install the Akaroa library. By default, it will be installe
 
 Go to the @OMNETPP@ directory, and (re-)run the `configure` script. Akaroa will be
 automatically detected if you installed it to the default location.
-
-==== PCAP
-
-The optional Pcap library allows simulation models to capture and
-transmit network packets bypassing the operating system's protocol stack.
-It is not used directly by @OMNETPP@, but models may need it to support
-network emulation.
 
 ifdef::OMNEST[]
 

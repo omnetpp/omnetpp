@@ -2,7 +2,7 @@
 
 === Supported Windows Versions
 
-@OMNETPP@ supports 64-bit versions of Windows 7 and 10.
+@OMNETPP@ is supported only on 64-bit versions of Windows 10.
 
 [NOTE]
 ===============================================================
@@ -12,7 +12,7 @@ builds on Windows, we recommend using @OMNETPP@ 5.0
 
 === Installing @OMNETPP@
 
-Download the @OMNETPP@ source code from http://omnetpp.org. Make sure
+Download the @OMNETPP@ source code from https://omnetpp.org. Make sure
 you select the Windows-specific archive, named
 `@omnetpp@-@version@-src-windows.zip`.
 
@@ -79,9 +79,9 @@ to start the IDE by typing:
 
 We recommend that you start the IDE from the command-line.
 Yo can also create a shortcut for starting the IDE. To do so, locate
-the `omnetpp.exe` program in the `@omnetpp@-@version@/ide` directory in Windows
+the `opp_ide.exe` program in the `@omnetpp@-@version@/ide` directory in Windows
 Explorer, right-click it, and choose 'Send To > Desktop (create shortcut)' from
-the menu. On Windows 7, you can right-click the taskbar icon while the IDE is running,
+the menu. You can right-click the taskbar icon while the IDE is running,
 and select 'Pin this program to taskbar' from the context menu.
 
 
@@ -145,17 +145,10 @@ to the `lib/` and `bin/` subdirs.
 @OMNETPP@ has been tested with both the gcc and the clang compiler from
 the MinGW-w64 package.
 
-NOTE: MinGW/Clang 3.8 generates incorrect code when you use multiple inheritance
-in your code. Because of this, we do not recommend using MinGW/clang at the moment.
-Later versions of clang my fix this issue.
-
-Microsoft Visual C++/ClangC2 is not supported in the Academic Edition.
+Microsoft Visual C++ is not supported in the Academic Edition.
 
 
 === Additional Packages
-
-Note that Doxygen and GraphViz are already included in the @OMNETPP@ package,
-and do not need to be downloaded.
 
 ==== MPI
 

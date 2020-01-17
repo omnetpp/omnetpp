@@ -7,66 +7,34 @@ macOS.
 
 The following releases are covered:
 
-* macOS 10.12
+* macOS 10.15
 
 === Installing the Prerequisite Packages
 
- * Install the Java Runtime from http://support.apple.com/kb/DL1572 , because
-   masOS does not provide it by default. Additionally you must install the latest
-   version of Java Runtime Environment from http://java.com (version 8 or later.)
- * Install the command line developer tools for masOS from
-   http://developer.apple.com/downloads/index.action?=Command%20Line%20Tools
-   (you will need a free Apple Developer Account for the download.)
+ * Install the command line developer tools for macOS (compiler, debugger, etc.)
+
+   $ xcode-select --install
 
 Installing additional packages will enable more functionality in @OMNETPP@; see
 the 'Additional packages' section at the end of this chapter.
 
-=== Additional Steps Required on macOS to Use GDB as the Debugger.
+=== Additional Steps Required on macOS to Use the Debugger.
 
-The Command Line Tools package on macOS no longer contains gcc and gdb;
-instead it contains the Clang compiler and lldb. (The `gcc` and `g++` commands
-actually run `clang`.) @OMNETPP@ will use Clang automatically. However, the
-@OMNETPP@ IDE can only use gdb as the underlying debugger, but not lldb.
+The Command Line Developer Tools package contains the `lldb` debugger.
+@OMNETPP@ 6.0 and later contains the necessary driver binary (`lldbmi2`)
+that allows `lldb` to be used in the @OMNETPP@ IDE. If you are upgrading
+from an earlier version of @OMNETPP@, be sure to delete and recreate
+all Launch Configurations in the IDE. This is required because older
+Launch Configurations were using `gdb` as the debugger, but the new
+IDE uses `lldbmi2` as the debugger executable.
 
-To be able to debug from the IDE, you have to install gdb from Homebrew.
-Alternatively, you can use XCode for debugging.
-
-To do the former, first install the Homebrew package manager at http://brew.sh.
-Follow the instrunctions on the website.
-
-Then you can install gdb:
-
-    $ brew install gdb
-
-macOS 10.10 and later requires that you sign the `gdb` executable with a self-signed
-certificate (or with your own certificate, if you have one.)
-
-Start the 'Keychain Access' application. Choose 'Keychain Access > Certificate
-Assistant > Create a Certificate...' from the menu.
-
-Choose a name (e.g. `gdb-cert`), set 'Identity Type' to 'Self Signed Root', set
-'Certificate Type' to 'Code Signing' and select the 'Let me override defaults'.
-Click several times on 'Continue' until you get to the 'Specify a
-Location For The Certificate' screen, then set 'Keychain' to 'System'.
-
-If you can't store the certificate in the 'System' keychain, create it in the
-'Login' keychain, then export it. You can then import it into the 'System' keychain.
-
-Finally, using the context menu for the certificate, select 'Get Info', open
-the 'Trust' item, and set 'Code Signing' to 'Always Trust'.
-
-You must quit the 'Keychain Access' application in order to use the certificate and
-restart the system.
-
-Now sign the executable:
-
-    $ sudo codesign -s gdb-cert /usr/local/bin/gdb
-
+On the first debug session the OS may prompt you to allow debugging
+with the `lldb` executable.
 
 === Downloading and Unpacking @OMNETPP@
 
 Download @OMNETPP@ from {DOWNLOADSITE}. Make sure you select to download
-the generic archive, `@omnetpp@-@version@-src-macosx.tgz`.
+the macOS specific archive, `@omnetpp@-@version@-src-macosx.tgz`.
 
 Copy the archive to the directory where you want to install it. This is usually
 your home directory, `/Users/<you>`. Open a terminal, and extract the archive
@@ -94,7 +62,7 @@ To add them to `PATH` temporarily (in the current shell only), change into the @
 directory and source the `setenv` script:
 
   $ cd @omnetpp@-@version@
-  $ . setenv
+  $ source setenv
 
 To set the environment variables permanently, edit `.bashrc` in your home
 directory. Use your favourite text editor to edit `.bashrc`, for example TextEdit:
@@ -120,9 +88,10 @@ you need to log out and log in again for the changes to take effect.
 
 [NOTE]
 ===============================================================
-If you use a shell other than the default one, 'bash', consult the man page
-of that shell to find out which startup file to edit, and how to set and
-export variables.
+If you use a shell other than 'bash' (new installations of macOS may use
+the 'zsh' shell by default), consult the man page of that shell
+to find out which startup file to edit, and how to set and
+export variables. e.g.: for 'zsh' use `~/.zshrc` and `~/.zsh_profile`.
 ===============================================================
 
 
@@ -193,8 +162,8 @@ nice gui windows and dialogs.
 
 === Starting the IDE
 
-@OMNETPP@ comes with an Eclipse-based Simulation IDE. On macOS 10.10 (Lion) or later,
-the Java Runtime must be installed (see prerequisites) before you can use the IDE.
+@OMNETPP@ comes with an Eclipse-based simulation IDE.
+
 Start the IDE by typing:
 
     $ @omnetpp@
@@ -276,39 +245,6 @@ You can install it from the Homebrew repo (http://brew.sh) by typing
 `brew install open-mpi`. In this case, you have to manually set
 the MPI_CFLAGS and MPI_LIBS variables in `configure.user` and re-run
 `./configure`.
-
-==== GraphViz
-
-GraphViz is needed if you want to have diagrams in HTML documentation
-that you generate from NED files in the IDE ('Generate NED Documentation...'
-item in the project context menu).
-
-You can install it from the Homebrew project (http://brew.sh) by typing
-`brew install graphviz`.
-
-After installation, make sure that the `dot` program is available
-from the command line. Open a terminal, and type
-
-  $ dot -V
-
-Note the capital 'V'. The command should normally work out of the box.
-If you get the '"command not found"' error, you need to put `dot` into the path.
-Find the `dot` program in the GraphViz installation directory, and
-soft link it into `/usr/local/bin` (`sudo ln -s <path>/dot /usr/local/bin`).
-
-==== Doxygen
-
-Doxygen is needed if you want to generate documentation for C++ code,
-as part of the HTML documentation that you generate from NED files in the IDE
-('Generate NED Documentation...' item in the project context menu).
-
-You can install it from the Homebrew project (http://brew.sh) by typing
-`homebrew install doxygen`.
-
-After installation, ensure that the `doxygen` program is available
-from the command line. Open a terminal, and type
-
-  $ doxygen
 
 ==== Akaroa
 

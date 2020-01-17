@@ -8,11 +8,11 @@ in the 'Linux' chapter.
 
 The following Ubuntu releases are covered:
 
-* Ubuntu 16.04 LTS or 18.04 LTS
+* Ubuntu 18.04 LTS or 20.04 LTS
 
 They were tested on the following architectures:
 
-* Intel 64-bit
+* Intel/AMD 64-bit
 
 The instructions below assume that you use the default desktop and the bash shell.
 If you use another desktop environment or shell, you may need to adjust the
@@ -38,20 +38,14 @@ Type in the terminal:
 To install the required packages, type in the terminal:
 
   $ sudo apt-get install build-essential gcc g++ bison flex perl \
-       python python3 qt5-default libqt5opengl5-dev \
-       libxml2-dev zlib1g-dev default-jre doxygen graphviz libwebkitgtk-3.0-0
+       python3 qt5-default libqt5opengl5-dev \
+       libxml2-dev zlib1g-dev default-jre doxygen graphviz libwebkit2gtk-4.0-37
+  $ pip3 install --user --upgrade numpy pandas matplotlib posix_ipc
 
 To use Qtenv with 3D visualization support, install the development packages
-for OpenSceneGraph (3.2 or later) and the osgEarth (2.7 or later) packages. (You
-may need to enable the 'Universe' software repository in Software Sources. In
-case of Ubuntu 16.04 (Xenial), you have to add the `ubuntugis/ppa` repository
-manually to your software sources, because Xenial contains only osgEarth 2.5 which
-is too old.):
+for OpenSceneGraph (3.4 or later) and the osgEarth (2.9 or later) packages. (You
+may need to enable the 'Universe' software repository in Software Sources.
 
-  # for Ubuntu 16.04 add extra GIS repo
-  $ sudo add-apt-repository ppa:ubuntugis/ppa
-  $ sudo apt-get update
-  # install osgearth development package (and OpenSceneGraph, too)
   $ sudo apt-get install openscenegraph-plugin-osgearth libosgearth-dev
 
 [NOTE]
@@ -69,15 +63,6 @@ At the confirmation questions ('Do you want to continue? [Y/N]'), answer 'Y'.
 
 image::pictures/terminal-package-install.png[title="Command-Line Package Installation",align="center",scaledwidth="75%"]
 
-==== PCAP
-
-The optional Pcap library allows simulation models to capture and
-transmit network packets bypassing the operating system's protocol stack.
-It is not used directly by @OMNETPP@, but models may need it to support
-network emulation.
-
-  $ sudo apt-get install libpcap-dev
-
 ==== Graphical Installation
 
 Open the dash and type 'Synaptic'.
@@ -92,8 +77,8 @@ If the 'Mark additional required changes?' dialog comes up, choose the 'Mark' bu
 
 The packages:
 
-* required: build-essential, gcc, g++, bison, flex, perl, qt5-default,
-  libxml2-dev, zlib1g-dev, default-jre, doxygen, graphviz, libwebkitgtk-3.0-0
+* required: build-essential, gcc, g++, bison, flex, perl, qt5-default, python3,
+  libxml2-dev, zlib1g-dev, default-jre, doxygen, graphviz, libwebkit2gtk-4.0-37
 * recommended: libopenscenegraph-dev, openscenegraph-plugin-osgearth, libosgearth-dev,
   openmpi-bin, libopenmpi-dev
 
@@ -101,6 +86,10 @@ image::pictures/ubuntu-synaptic.png[title="Synaptic Package Manager",align="cent
 
 Click 'Apply', then in the 'Apply the following changes?' window, click 'Apply' again.
 In the 'Changes applied' window, click 'Close'.
+
+After this, you still have to install some required python packages from command line:
+
+  $ pip3 install --user --upgrade numpy pandas matplotlib posix_ipc
 
 
 ==== Post-Installation Steps

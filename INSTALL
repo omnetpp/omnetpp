@@ -14,7 +14,7 @@ by letting us know about it.
 
 If you are an expert in building software from source and want to start quickly
 without reading the Install Guide, then enter the commands
-  $ . setenv
+  $ source setenv
   $ ./configure
   $ make
 on the bash prompt. If you have any questions or there are issues, please read
