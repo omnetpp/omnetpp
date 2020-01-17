@@ -317,9 +317,9 @@ def _plot_vectors_DF_scave(df):
             elif interpolation == "linear":
                 properties["Line.Type/" + key] = "Linear"
             elif interpolation == "sample-hold":
-                properties["Line.Type/" + key] = "SampleHold"
+                properties["Line.Type/" + key] = "Sample-Hold"
             elif interpolation == "backward-sample-hold":
-                properties["Line.Type/" + key] = "BackwardSampleHold"
+                properties["Line.Type/" + key] = "Backward Sample-Hold"
 
     set_plot_properties(properties)
 
