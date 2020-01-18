@@ -79,10 +79,10 @@
 	If xmldoc() occurs in a NED file, the file name is relative to the
 	directory where that NED file was loaded from.
 
-	In addition to updating the implementationi of xmldoc(), it had to be
+	In addition to updating the implementation of xmldoc(), it had to be
 	ensured that the function gets access to the directory where the ini
 	entry or NED expression occurred (baseDirectory). This directory was
-	added to the evalation context (cExpression::Context).
+	added to the evaluation context (cExpression::Context).
 
 	cNedFunction (and thus, Define_NED_Function()) was updated to accept an
 	alternative function signature which accepts cExpression::Context instead
@@ -142,7 +142,7 @@
 
 	* Added cPostModuleBuildNotification.
 
-	Reason: cPostModuleAddnotification was not sufficient, because it is
+	Reason: cPostModuleAddNotification was not sufficient, because it is
 	fired from the cModuleType::create() method where the module was still
 	very incomplete, and there are few meaningful ways to interact with it.
 

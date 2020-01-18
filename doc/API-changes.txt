@@ -21,6 +21,162 @@ Legend:
 (i)     information
 
 
+OMNeT++ 6.0
+~~~~~~~~~~~
+
+(+)     cObject: getDescriptor() made public API.
+
+(+)     Added cValueArray and cValueObject classes, to be used with JSON-style
+        parameter values.
+
+(+)     cPar: add OBJECT as parameter type. New constant: cPar::Type::OBJECT.
+        New methods: setObjectValue(), objectValue(), operator=(cObject*),
+        operator cObject*.
+
+(!)     cDefaultList renamed to cDefaultOwner.
+
+(+)     takeAllObjectsFrom() moved from cDefaultList to cObject.
+
+(+)     isSoftOwner() moved from cOwnedObject to cObject.
+
+(+)     cClassDescriptor: Added methods setFieldArraySize() and
+        setFieldStructValuePointer().
+
+(!)     cClassDescriptor: setFieldValueAsString(), setFieldArraySize(),
+        setFieldStructValuePointer(): Changed return type from void to bool.
+        (They now report errors via exceptions instead of returning false.)
+
+(+)     cPolyline, cPolygon: Added setNumPoints().
+
+(+)     cNedValue: added type 'OBJECT'. Type 'XML' became a deprecated synonym of 'OBJECT'.
+
+(!)     cNedValue renamed to cValue. (cNedValue still exists as a compatibility typedef.)
+
+(+)     Added NedFunctionExt, which is like NedFunction, but takes
+        cExpression::Context * instead of Component * as context argument.
+
+(+)     cNedFunction: Added constructor which accepts NedFunctionExt instead of NedFunction.
+
+(+)     cNedFunction::invoke(): type of first argument (context) changed from
+        cComponent * to cExpression::Context *.
+
+(+)     cComponentType: added getSourceFileDirectory().
+
+(!)     cExpression::Context: added baseDirectory.
+
+(+)     cPar::parse(): added optional baseDirectory argument
+
+(+)     cFigure::Point: Added getAngle().
+
+(!)     intpar_t renamed to intval_t. Affects cPar, cNedValue, cExpression, etc.
+
+(+)     Added uintval_t.
+
+(!)     cListener: receiveSignal() overloads for the long and unsigned long data
+        types have been changed to use intval_t and uintval_t instead. Signal
+        listener classes that override those methods will need to be updated.
+
+(!)     SimsignalType enum: added SIMSIGNAL_INT and SIMSIGNAL_UINT, deprecated
+        SIMSIGNAL_LONG and SIMSIGNAL_ULONG.
+
+(!)     cITimestampedValue: constructors that take long and unsigned long were
+        changed to take intval_t and uintval_t instead. Also, the methods
+        longValue() and unsignedLongValue() were deprecated, and methods
+        intValue() and uintValue() were added instead.
+
+(!)     cResultFilter: fire() method overloads for the long and unsigned long data
+        types have been changed to use intval_t and uintval_t instead. Result
+        filter classes that override those methods will need to be updated.
+
+(+)     cHistogram methods getBinEdges(), getBinValues() added to base class
+        cAbstractHistogram.
+
+(+)     Added cPostModuleBuildNotification.
+
+(+)     Added cPostComponentInitializeNotification.
+
+(+)     Added cFingerprint::addVisuals().
+
+(+)     Added cFigure::hashGeometry().
+
+(+)     cEnvir: Added methods recordComponentType(), recordParameter(),
+        getConnectionLine().
+
+(+)     cModule::ChannelIterator: added postfix ++ and -- operators.
+
+(+)     cMatchExpression: Accept 'field=~pattern' syntax as alternative
+        to 'field(pattern)'.
+
+(+)     Added cSimulation::callRefreshDisplay().
+
+(!)     cDynamicExpression: Added inner classes: IResolver, ResolverBase,
+        SymbolTable; added parse() overloads that take an IResolver or
+        a symbol table; added parseNedExpr()
+
+(!)     cDynamicExpression: Removed inner classes Elem, Functor, and enum
+        OpType; removed setExpression() method.
+
+(+)     cSimulation: Added exclusionPath parameter to loadNedSourceFolder().
+
+(+)     cResultFilter: Added hasDelegate().
+
+(!)     cComponent: Disallow emitting nullptr in the const char * overload
+        of emit().
+
+(!)     cModuleType, cChannelType: protected methods changed to be internal:
+        createModuleObject(), addParametersAndGatesTo(), setupGateVectors(),
+        buildInside(), instantiateModuleClass().
+
+(-)     cIListener: removed support for the WITH_OMNETPP4x_LISTENER_SUPPORT
+        macro and the receiveSignal() overloads it added (those without the
+        cObject *details argument).
+
+(-)     cExpression, cDynamicExpression, cParImpl: Removed method
+        containsConstSubexpressions() and evaluateConstSubexpressions().
+
+(-)     cSimpleModule: Removed deprecated legacy constructor.
+
+(-)     Removed cStatistic deprecated methods getWeights(),collect2(), random(),
+        clearResult(). Replacements: getSumWeights(), collectWeighted(), draw(),
+        clear().
+
+(-)     Removed cAbstractHistogram (ex-cDensityEstBase) deprecated methods:
+        isTransformed(), transform(), getNumCells(), getBasepoint(), getCellValue(),
+        getCellPDF(), getUnderflowCell(), getOverflowCell(), getCellInfo().
+        Replacements: binsAlreadySetUp(), setUpBins(), getNumBins(), getBinEdge(),
+        getBinValue(), getBinPDF(), getNumUnderflows(), getNumUnderflows(),
+        getBinInfo().
+
+(-)     Removed cFigure/cCanvas deprecated methods: addFigureAbove(),
+        addFigureBelow(). Replacements: insertBelow(), insertAbove().
+
+(-)     Removed cPar/cNedValue deprecated method longValue(); use intValue() instead.
+
+(-)     Removed cObject deprecated method info(), detailedInfo(); use str() instead.
+
+(-)     Removed cModule deprecated method size(); use getVectorSize() instead.
+
+(-)     Removed deprecated operator() of iterator classes in cArray, cModule,
+        cQueue. Use operator* instead.
+
+(-)     Remove cHistogram deprecated methods: setRangeAuto(), setRangeAutoLower(),
+        setRangeAutoUpper(), setNumCells(), setCellSize(). Replacements:
+        setNumPrecollectedValues()+setRangeExtensionFactor()+setRange(),
+        setNumBins(), setBinSize().
+
+(-)     Removed deprecated cDensityEstBase class. Replacement: cAbstractHistogram.
+
+(-)     Removed deprecated cWeightedStdDev class. Use cStddev in weighted mode instead.
+
+(-)     Removed deprecated timeval_*() functions: timeval_usec(), to_timeval(),
+        timeval_add(), timeval_addto(), etc. Use opp_get_monotonic_clock_usecs() or
+        opp_get_monotonic_clock_nsecs() instead, and perform arithmetic in int64_t.
+
+(-)     Removed obsolete histogram classes: cVarHistogram, cLegacyHistogram,
+        cLongHistogram, cDoubleHistogram. Use cHistogram with the appropriate
+        histogram strategy instead.
+
+
 OMNeT++ 5.6
 ~~~~~~~~~~~
 
@@ -34,7 +190,7 @@ OMNeT++ 5.6
         it is now allowed for a running module to delete itself, also as
         part of a module tree.
 
-(+)     cLabelFigure: Added rotation support (setAngle()/getAngle() methods).
+(+)     cLabelFigure: Added setAngle() and getAngle() methods.
 
 
 OMNeT++ 5.5
