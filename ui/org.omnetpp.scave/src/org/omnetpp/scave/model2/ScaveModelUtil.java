@@ -21,7 +21,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.scave.charting.properties.ChartVisualProperties;
 import org.omnetpp.scave.charttemplates.ChartTemplate;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.engine.IDList;
@@ -32,7 +31,6 @@ import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.Chart.ChartType;
 import org.omnetpp.scave.model.Chart.DialogPage;
 import org.omnetpp.scave.model.Charts;
 import org.omnetpp.scave.model.InputFile;
@@ -60,23 +58,6 @@ public class ScaveModelUtil {
         return input;
     }
 
-    public static Chart createChart(String name, String title, ResultType type) {
-        Chart chart;
-        // XXX STATISTICS type? MATPLOTLIB chart?
-        if (type==ResultType.SCALAR)
-            chart = new Chart(ChartType.BAR, name);
-        else if (type==ResultType.VECTOR)
-            chart = new Chart(ChartType.LINE, name);
-        else if (type==ResultType.HISTOGRAM)
-            chart = new Chart(ChartType.HISTOGRAM, name);
-        else
-            throw new IllegalArgumentException();
-
-        Property property = new Property(ChartVisualProperties.PROP_GRAPH_TITLE, title);
-        chart.addProperty(property);
-
-        return chart;
-    }
 
     public static Chart createChartFromTemplate(ChartTemplateRegistry chartTemplateRegistry, String templateId) {
         return createChartFromTemplate(chartTemplateRegistry.getTemplateByID(templateId));
@@ -112,29 +93,6 @@ public class ScaveModelUtil {
         ICommand command = new CompoundCommand("Add input files", addCommands);
         commandStack.execute(command);
     }
-
-    public static String makeItemCopyName(List<String> existingNames, String name) {
-        String nameWithoutNumber = name.replaceAll(" \\(\\d+\\)$", "");
-        String pattern = "^" + Pattern.quote(nameWithoutNumber) + " \\((\\d+)\\)$";
-
-        int maxNum = -1;
-        for (String existing : existingNames) {
-            int num = -1;
-
-            if (existing.equals(nameWithoutNumber))
-                num = 0;
-
-            Matcher matcher = Pattern.compile(pattern).matcher(existing);
-            if (matcher.matches())
-                num = Integer.parseInt(matcher.group(1));
-
-            if (num > maxNum)
-                maxNum = num;
-        }
-
-        return nameWithoutNumber + (maxNum == -1 ? "" : maxNum == 0 ? " (2)" : (" (" + (maxNum + 1) + ")"));
-    }
-
 
     public static void moveElements(CommandStack commandStack, Charts charts, Object[] elements, int index) {
         // the elements[] array contains the elements in no particular order. We need to keep

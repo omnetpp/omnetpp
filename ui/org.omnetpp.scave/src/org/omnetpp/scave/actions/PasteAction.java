@@ -54,19 +54,11 @@ public class PasteAction extends AbstractScaveAction {
             if (pasteIndex < 0)
                 pasteIndex = charts.size();
 
-            List<String> existingNames = new ArrayList<String>();
-
-            for (AnalysisItem i : editor.getAnalysis().getCharts().getCharts())
-                existingNames.add(i.getName());
-
             List<Object> toSelect = new ArrayList<Object>();
             for (Object o : objects) {
                 if (o instanceof AnalysisItem) {
                     AnalysisItem itemToPaste = (AnalysisItem)((AnalysisItem)o).dup();
                     itemToPaste.assignNewId();
-                    String newName = ScaveModelUtil.makeItemCopyName(existingNames, itemToPaste.getName());
-                    itemToPaste.setName(newName);
-                    existingNames.add(newName);
                     command.append(new AddChartCommand(editor.getAnalysis(), itemToPaste, pasteIndex));
                     toSelect.add(itemToPaste);
                     pasteIndex += 1;
