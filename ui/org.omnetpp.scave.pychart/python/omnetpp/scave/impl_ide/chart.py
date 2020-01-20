@@ -8,7 +8,7 @@ from omnetpp.scave import results
 from omnetpp.internal import Gateway
 
 
-def get_configured_properties():
+def get_properties():
     return Gateway.properties_provider.getChartProperties()
 
 

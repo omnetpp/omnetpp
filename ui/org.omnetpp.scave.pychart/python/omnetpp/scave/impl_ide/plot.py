@@ -247,7 +247,7 @@ def _plot_vectors_DF_scave(df):
             elif interpolation == "backward-sample-hold":
                 properties["Line.Type/" + key] = "Backward Sample-Hold"
 
-    set_plot_properties(properties)
+    set_properties(properties)
 
 
 def plot_vectors(df_or_list):
@@ -361,7 +361,7 @@ def set_plot_property(key, value):
     Gateway.chart_plotter.setChartProperty(key, value)
 
 
-def set_plot_properties(props):
+def set_properties(props):
     Gateway.chart_plotter.setChartProperties(props)
 
 

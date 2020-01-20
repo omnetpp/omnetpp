@@ -166,7 +166,7 @@ def set_plot_property(key, value):
     return impl.set_plot_property(**locals())
 
 
-def set_plot_properties(props):
+def set_properties(props):
     """
     Updates or adds any number of properties of the chart with the values given in `props.
     Any existing property values will be overwritten, and any new keys will be inserted.
@@ -176,7 +176,7 @@ def set_plot_properties(props):
     changes some visual property on its view. This change is not persistent and is not
     reflected in later calls to `get_property()` or `get_properties()`.
     """
-    return impl.set_plot_properties(**locals())
+    return impl.set_properties(**locals())
 
 
 def set_message(message):

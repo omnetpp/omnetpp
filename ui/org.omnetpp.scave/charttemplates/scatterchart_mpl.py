@@ -7,7 +7,7 @@ pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
 
-params = chart.get_configured_properties()
+params = chart.get_properties()
 
 
 def aggfunc(x):

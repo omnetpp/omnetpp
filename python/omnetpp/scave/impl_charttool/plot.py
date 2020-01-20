@@ -15,7 +15,7 @@ properties = NoneDict()
 name = ""
 
 
-def set_plot_properties(*vargs, **kwargs):
+def set_properties(*vargs, **kwargs):
     for a in vargs:
         properties.update(a)
     properties.update(kwargs)

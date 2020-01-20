@@ -4,7 +4,7 @@ import pandas as pd
 import re
 from distutils.util import strtobool
 
-params = chart.get_configured_properties()
+params = chart.get_properties()
 
 filter_expression = params["filter"]
 

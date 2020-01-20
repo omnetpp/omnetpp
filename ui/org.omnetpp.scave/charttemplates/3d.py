@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from omnetpp.scave import results, chart
 
-params = chart.get_configured_properties()
+params = chart.get_properties()
 
 if not (params["x_attr"] and params["y_attr"]):
     raise Exception("Please select axis attributes in the properties dialog!")

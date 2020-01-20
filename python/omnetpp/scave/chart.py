@@ -14,12 +14,12 @@ else:
     from .impl_charttool import chart as impl
 
 
-def get_configured_properties():
+def get_properties():
     """
     Returns the currently set properties of the chart as a `dict`
     whose keys and values are both all strings.
     """
-    return impl.get_configured_properties(**locals())
+    return impl.get_properties(**locals())
 
 
 def get_configured_property(key):

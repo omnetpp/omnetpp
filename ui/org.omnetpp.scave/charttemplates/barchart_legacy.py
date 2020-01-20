@@ -1,7 +1,7 @@
 from omnetpp.scave import results, chart
 import pandas as pd
 
-params = chart.get_configured_properties()
+params = chart.get_properties()
 
 filter_expression = params["filter"]
 
@@ -14,7 +14,7 @@ if not groups:
 if not bars:
     bars = "name,measurement"
 
-# TODO: make sure no column is present in both lists 
+# TODO: make sure no column is present in both lists
 
 # The data is returned as a Pandas DataFrame
 df = results.get_scalars(filter_expression, include_attrs=True, include_itervars=True, include_runattrs=True)

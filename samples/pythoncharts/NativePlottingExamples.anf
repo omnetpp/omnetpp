@@ -368,7 +368,7 @@ chart.plot_scalars(df)
 
 chart.copy_properties()
 
-chart.set_plot_properties({
+chart.set_properties({
     "Graph.Title": "This is a nice chart!",
     "Plot.BackgroundColor": "lightgreen",
 
@@ -392,13 +392,13 @@ print(df)
 chart.plot_scalars(df)
 
 print("\nThese properties are set in the form:")
-print(chart.get_configured_properties())
+print(chart.get_properties())
 
 # print("\nAnd these are all the defaults:")
 # print(chart.get_default_plot_properties())
 
 # effective = chart.get_default_properties()
-# effective.update(chart.get_configured_properties())
+# effective.update(chart.get_properties())
 
 # print("\nSo the effective set of properties (before the script is executed):")
 

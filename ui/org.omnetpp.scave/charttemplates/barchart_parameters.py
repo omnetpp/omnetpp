@@ -1,7 +1,7 @@
 from omnetpp.scave import results, chart
 import pandas as pd
 
-params = chart.get_configured_properties()
+params = chart.get_properties()
 
 # This expression selects the results (you might be able to logically simplify it)
 

@@ -618,9 +618,9 @@ chart.plot_vectors(aloha_pivot)
 #for c in aloha_pivot:
 #    chart.plot_vectors(pd.DataFrame({"time":aloha_pivot.index, "numHosts=" + str(c): aloha_pivot[c]}))
 
-print(chart.get_configured_properties())
+print(chart.get_properties())
 
-chart.set_plot_properties({
+chart.set_properties({
     "Graph.Title": "Pure Aloha Experiment",
     "X.Axis.Title": "Mean packet inter-arrival time (s)",
     "Y.Axis.Title": "Channel utilization (%)",

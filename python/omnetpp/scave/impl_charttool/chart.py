@@ -10,7 +10,7 @@ properties = NoneDict()
 name = ""
 
 
-def get_configured_properties():
+def get_properties():
     return properties
 
 
