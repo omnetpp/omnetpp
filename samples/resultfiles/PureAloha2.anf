@@ -5,16 +5,16 @@
         <input pattern="/resultfiles/PureAloha2-*.sca"/>
     </inputs>
     <charts>
-        <chart name="Chart2" type="LineChart">from omnetpp.scave import results, chart
+        <chart name="Chart2" type="LineChart">from omnetpp.scave import results, chart, plot
 
 df = results.get_vectors("""
 ADD vectors WHERE run=~PureAloha2-0-20170320-11:14:54-11186 AND module=~Aloha.server AND name=~serverChannelState:vector
 ADD vectors WHERE run=~PureAloha2-0-20170320-11:14:54-11186 AND module=~Aloha.host[6] AND name=~radioState:vector
 """)
 
-chart.plot_vectors(df)<property name="Graph.Title" value="PureAloha2  #0"/>
+plot.plot_vectors(df)<property name="Graph.Title" value="PureAloha2  #0"/>
         </chart>
-        <chart name="Chart7" type="BarChart">from omnetpp.scave import results, chart
+        <chart name="Chart7" type="BarChart">from omnetpp.scave import results, chart, plot
 
 # This expression selects the results (you might be able to logically simplify it)
 filter_expression = """
@@ -37,7 +37,7 @@ print(df)
 # You can perform any transformations on the data here
 
 # Finally, the results are plotted
-# chart.plot_scalars(df)
+# plot.plot_scalars(df)
 <property name="Graph.Title" value="Aloha.server"/>
         </chart>
     </charts>

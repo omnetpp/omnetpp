@@ -1,4 +1,4 @@
-from omnetpp.scave import results, chart
+from omnetpp.scave import results, chart, plot
 import pandas as pd
 
 params = chart.get_properties()
@@ -32,6 +32,6 @@ else:
 print(df)
 
 # Finally, the results are plotted
-chart.plot_scalars(df)
+plot.plot_scalars(df)
 
-chart.copy_properties()
+plot.set_properties(chart.get_properties())

@@ -4,7 +4,7 @@ import matplotlib as mpl
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-from omnetpp.scave import results, chart
+from omnetpp.scave import results, chart, plot
 
 params = chart.get_properties()
 

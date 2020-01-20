@@ -408,7 +408,7 @@ def add_subplot_axes(ax,rect,axisbg='w'):
     height = box.height
     inax_position  = ax.transAxes.transform(rect[0:2])
     transFigure = fig.transFigure.inverted()
-    infig_position = transFigure.transform(inax_position)    
+    infig_position = transFigure.transform(inax_position)
     x = infig_position[0]
     y = infig_position[1]
     width *= rect[2]
@@ -517,7 +517,7 @@ sns.jointplot(x, y, kind="hex", stat_func=kendalltau, color="#4CB391")
         </chart>
         <chart icon="" id="279" name="big vector" template="" type="MATPLOTLIB">
             <script>
-                <![CDATA[from omnetpp.scave import results
+                <![CDATA[from omnetpp.scave import results, plot
 import pandas as pd
 import matplotlib.pyplot as plt
 import time
@@ -550,7 +550,7 @@ plt.tight_layout()
             <script>
                 <![CDATA[import pandas as pd
 import matplotlib.pyplot as plt
-from omnetpp.scave import results
+from omnetpp.scave import results, plot
 
 pd.set_option('display.width', 1000)
 pd.set_option('display.max_columns', 500)
@@ -563,7 +563,7 @@ plt.show()]]>
         </chart>
         <chart icon="" id="281" name="print vectors" template="" type="MATPLOTLIB">
             <script>
-                <![CDATA[from omnetpp.scave import results
+                <![CDATA[from omnetpp.scave import results, plot
 import matplotlib.pyplot as plt
 
 vectors = results.get_vectors('*')
@@ -575,7 +575,7 @@ plt.show()]]>
         </chart>
         <chart icon="" id="282" name="print histograms" template="" type="MATPLOTLIB">
             <script>
-                <![CDATA[from omnetpp.scave import results
+                <![CDATA[from omnetpp.scave import results, plot
 import matplotlib.pyplot as plt
 histograms = results.get_histograms('*')
 
@@ -590,7 +590,7 @@ plt.show()]]>
                 <![CDATA[import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from omnetpp.scave import results
+from omnetpp.scave import results, plot
 
 aloha = results.get_scalars('run =~ "PureAlohaExperiment*" AND runattr:replication =~ "#1" AND module =~ "Aloha.server" AND name =~ "channelUtilization:last"', include_itervars=True)
 
@@ -614,9 +614,9 @@ aloha_pivot = aloha.pivot_table(index='iaMean', columns='numHosts', values='valu
 print(aloha_pivot)
 
 aloha_pivot *= 100
-chart.plot_vectors(aloha_pivot)
+plot.plot_vectors(aloha_pivot)
 #for c in aloha_pivot:
-#    chart.plot_vectors(pd.DataFrame({"time":aloha_pivot.index, "numHosts=" + str(c): aloha_pivot[c]}))
+#    plot.plot_vectors(pd.DataFrame({"time":aloha_pivot.index, "numHosts=" + str(c): aloha_pivot[c]}))
 
 print(chart.get_properties())
 
@@ -657,7 +657,7 @@ def update_annot(ind):
 
     pos = sc.get_offsets()[ind["ind"][0]]
     annot.xy = pos
-    text = "{}, {}".format(" ".join(list(map(str,ind["ind"]))), 
+    text = "{}, {}".format(" ".join(list(map(str,ind["ind"]))),
                            " ".join([names[n] for n in ind["ind"]]))
     annot.set_text(text)
     annot.get_bbox_patch().set_facecolor(cmap(norm(c[ind["ind"][0]])))
@@ -692,18 +692,18 @@ import pandas as pd
 import matplotlib.pyplot as plt
 df = results.get_scalars("""ADD scalars WHERE name(txBytes:sum) OR name(rxBytes:sum)""")
 df = results.pivot_scalars(df)
-chart.plot_scalars(df)]]>
+plot.plot_scalars(df)]]>
             </script>
         </chart>
         <chart icon="" id="287" name="line and points" template="" type="LINE">
             <script>
                 <![CDATA[import numpy as np
-from omnetpp.scave import results, chart
+from omnetpp.scave import results, chart, plot
 
 df = results.get_vectors('name =~ "rxBytes:vector"')
 df.vecvalue = df.vecvalue.apply(np.cumsum)
 
-chart.plot_vectors(df)
+plot.plot_vectors(df)
 
 ]]>
             </script>
@@ -711,7 +711,7 @@ chart.plot_vectors(df)
         </chart>
         <chart icon="" id="288" name="queue length" template="" type="MATPLOTLIB">
             <script>
-                <![CDATA[from omnetpp.scave import results
+                <![CDATA[from omnetpp.scave import results, plot
 import matplotlib.pyplot as plt
 
 df = results.get_vectors("name =~ qlen:vector")

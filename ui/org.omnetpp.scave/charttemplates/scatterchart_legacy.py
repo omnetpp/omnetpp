@@ -1,4 +1,4 @@
-from omnetpp.scave import results, chart
+from omnetpp.scave import results, chart, plot
 import numpy as np
 import pandas as pd
 import re
@@ -85,6 +85,6 @@ for i, c in df.iteritems():
 df.columns = ["time"] + lbls[1:]
 print(df)
 
-chart.plot_vectors(df)
+plot.plot_vectors(df)
 
-chart.copy_properties()
+plot.set_properties(chart.get_properties())

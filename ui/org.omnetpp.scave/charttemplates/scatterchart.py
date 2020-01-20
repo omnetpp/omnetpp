@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from omnetpp.scave import results, chart
+from omnetpp.scave import results, chart, plot
 
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
@@ -75,7 +75,7 @@ df = pd.pivot_table(values, columns=iso_column, index=xaxis_column, values=yaxis
 df.reset_index(inplace=True)
 df.rename({xaxis_column: "time"}, axis="columns", inplace=True)
 
-chart.plot_vectors(df)
+plot.plot_vectors(df)
 
 if titles is not None:
     chart.set_plot_property("Graph.Title", ', '.join(titles[yaxis_column].unique()))

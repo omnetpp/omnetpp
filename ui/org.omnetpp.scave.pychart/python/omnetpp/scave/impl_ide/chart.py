@@ -4,7 +4,7 @@ import functools
 
 print = functools.partial(print, flush=True)
 
-from omnetpp.scave import results
+from omnetpp.scave import results, plot
 from omnetpp.internal import Gateway
 
 

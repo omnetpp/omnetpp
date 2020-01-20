@@ -1,4 +1,4 @@
-from omnetpp.scave import results, chart, vectorops as ops
+from omnetpp.scave import results, chart, plot, vectorops as ops
 import math
 
 params = chart.get_properties()
@@ -20,6 +20,6 @@ df = ops.perform_vector_ops(df, params["vector_operations"])
 print(df)
 
 # Finally, the results are plotted
-chart.plot_vectors(df)
+plot.plot_vectors(df)
 
-chart.copy_properties()
+plot.set_properties(chart.get_properties())

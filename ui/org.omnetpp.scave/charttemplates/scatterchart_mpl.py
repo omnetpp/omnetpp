@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from omnetpp.scave import results, chart
+from omnetpp.scave import results, chart, plot
 
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)

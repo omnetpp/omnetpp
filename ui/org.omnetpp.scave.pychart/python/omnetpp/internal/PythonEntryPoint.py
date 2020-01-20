@@ -12,7 +12,7 @@ from omnetpp.internal.TimeAndGuard import TimeAndGuard
 from omnetpp.internal import Gateway
 
 from omnetpp.scave import results
-from omnetpp.scave import chart
+from omnetpp.scave import chart, plot
 
 try:
     import matplotlib as mpl

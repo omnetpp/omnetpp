@@ -7,13 +7,13 @@
     <charts>
         <chart icon="" id="1" name="CutThrough vs Store and Forward" template="" type="LINE">
             <script>
-                <![CDATA[from omnetpp.scave import results, chart
+                <![CDATA[from omnetpp.scave import results, chart, plot
 
 filter_string = "name =~ endToEndDelay:mean AND module=~*.rte[1].app "
 
 df = results.get_scalars(filter_string, include_itervars=True)
 
-names = chart.plot_scatter(df, "iaMean", "cutThrough")
+names = plot.plot_scatter(df, "iaMean", "cutThrough")
 ]]>
             </script>
         </chart>

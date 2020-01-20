@@ -1,4 +1,4 @@
-from omnetpp.scave import results, chart
+from omnetpp.scave import results, chart, plot
 import pandas as pd
 
 params = chart.get_properties()
@@ -26,6 +26,6 @@ df = pd.pivot_table(df, values="value", index=groups.split(","), columns=bars.sp
 # You can perform any transformations on the data here
 
 # Finally, the results are plotted
-chart.plot_scalars(df)
+plot.plot_scalars(df)
 
-chart.copy_properties()
+plot.set_properties(chart.get_properties())

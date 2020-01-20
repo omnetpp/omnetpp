@@ -11,11 +11,11 @@
     <charts>
         <chart icon="" id="40" name="scalars simple 1" template="" type="BAR">
             <script>
-                <![CDATA[from omnetpp.scave import chart
+                <![CDATA[from omnetpp.scave import chart, plot
 
-chart.plot_scalars([10, 13, 18, 20], ["a", "b", "c", "d"])
+plot.plot_scalars([10, 13, 18, 20], ["a", "b", "c", "d"])
 
-chart.copy_properties()
+plot.set_properties(chart.get_properties())
 ]]>
             </script>
             <dialogPage id="PROPERTIES" label="Properties"/>
@@ -23,13 +23,13 @@ chart.copy_properties()
         </chart>
         <chart icon="" id="41" name="scalars simple 2" template="" type="BAR">
             <script>
-                <![CDATA[from omnetpp.scave import chart
+                <![CDATA[from omnetpp.scave import chart, plot
 
-chart.plot_scalars([10, 13, 18],
+plot.plot_scalars([10, 13, 18],
                   labels=["a little", "a bit more", "quite a lot"],
                   row_label="amount of milk")
 
-chart.copy_properties()
+plot.set_properties(chart.get_properties())
 ]]>
             </script>
             <dialogPage id="PROPERTIES" label="Properties"/>
@@ -40,7 +40,7 @@ chart.copy_properties()
         <chart icon="" id="42" name="scalars dataframe 1" template="" type="BAR">
             <script>
                 <![CDATA[import pandas as pd
-from omnetpp.scave import chart
+from omnetpp.scave import chart, plot
 
 df = pd.DataFrame(
     [[10, 30],
@@ -50,9 +50,9 @@ df = pd.DataFrame(
 
 print(df)
 
-chart.plot_scalars(df)
+plot.plot_scalars(df)
 
-chart.copy_properties()
+plot.set_properties(chart.get_properties())
 ]]>
             </script>
             <dialogPage id="PROPERTIES" label="Properties"/>
@@ -60,7 +60,7 @@ chart.copy_properties()
         <chart icon="" id="43" name="scalars dataframe 2" template="" type="BAR">
             <script>
                 <![CDATA[import pandas as pd
-from omnetpp.scave import chart
+from omnetpp.scave import chart, plot
 
 df = pd.DataFrame(
     [[10, 300, 11, 320],
@@ -72,22 +72,22 @@ df = pd.DataFrame(
 )
 
 print(df)
-chart.plot_scalars(df)
+plot.plot_scalars(df)
 
-chart.copy_properties()
+plot.set_properties(chart.get_properties())
 ]]>
             </script>
             <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
         <chart icon="" id="44" name="scalars dataframe 3" template="" type="BAR">
             <script>
-                <![CDATA[from omnetpp.scave import results, chart
+                <![CDATA[from omnetpp.scave import results, chart, plot
 
 df = results.get_scalars("name=~rxBytes:sum OR name=~txBytes:sum")
 print(df)
-chart.plot_scalars(df)
+plot.plot_scalars(df)
 
-chart.copy_properties()]]>
+plot.set_properties(chart.get_properties())]]>
             </script>
             <dialogPage id="PROPERTIES" label="Properties"/>
             <property name="Axes.Grid" value="None"/>
@@ -95,7 +95,7 @@ chart.copy_properties()]]>
         <chart icon="" id="45" name="scalars dataframe 4" template="" type="BAR">
             <script>
                 <![CDATA[import pandas as pd
-from omnetpp.scave import results, chart
+from omnetpp.scave import results, chart, plot
 
 df = results.get_scalars("name=~rxBytes:sum OR name=~txBytes:sum", include_itervars=True)
 print(df)
@@ -103,39 +103,39 @@ print(df)
 df = pd.pivot_table(df, columns="name", index="iaMean", values="value")
 print(df)
 
-chart.plot_scalars(df/1000000)
+plot.plot_scalars(df/1000000)
 
-chart.copy_properties()]]>
+plot.set_properties(chart.get_properties())]]>
             </script>
             <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
         <chart icon="" id="46" name="vectors simple 1" template="" type="LINE">
             <script>
-                <![CDATA[from omnetpp.scave import chart
+                <![CDATA[from omnetpp.scave import chart, plot
 
-chart.plot_vector("trend", [0, 1, 2, 3], [3,6,7,9])
+plot.plot_vector("trend", [0, 1, 2, 3], [3,6,7,9])
 
-chart.copy_properties()
+plot.set_properties(chart.get_properties())
 ]]>
             </script>
             <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
         <chart icon="" id="47" name="vectors simple 2" template="" type="LINE">
             <script>
-                <![CDATA[from omnetpp.scave import chart
+                <![CDATA[from omnetpp.scave import chart, plot
 
-chart.plot_vector("trend 1", [0, 1, 2, 3], [3,6,7,9])
-chart.plot_vector("trend 2", [0, 1, 2, 3], [4,8,7,5])
-chart.plot_vector("trend 3", [0, 1.5, 2.5, 3], [9,7,4,1])
+plot.plot_vector("trend 1", [0, 1, 2, 3], [3,6,7,9])
+plot.plot_vector("trend 2", [0, 1, 2, 3], [4,8,7,5])
+plot.plot_vector("trend 3", [0, 1.5, 2.5, 3], [9,7,4,1])
 
-chart.copy_properties()
+plot.set_properties(chart.get_properties())
 ]]>
             </script>
             <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
         <chart icon="" id="48" name="vectors simple 3" template="" type="LINE">
             <script>
-                <![CDATA[from omnetpp.scave import chart
+                <![CDATA[from omnetpp.scave import chart, plot
 
 data = [
 	("apples", [2000, 2010, 2020], [300, 367, 341]),
@@ -143,9 +143,9 @@ data = [
     ("pears", [1999, 2003, 2014], [235, 340, 320])
 ]
 
-chart.plot_vectors(data)
+plot.plot_vectors(data)
 
-chart.copy_properties()
+plot.set_properties(chart.get_properties())
 
 
 
@@ -170,16 +170,16 @@ chart.copy_properties()
         <chart icon="" id="49" name="vectors dataframe 1" template="" type="LINE">
             <script>
                 <![CDATA[import pandas as pd
-from omnetpp.scave import chart
+from omnetpp.scave import chart, plot
 
 df = pd.DataFrame({
     "N": [120, 161, 283],
     "A": [300, 320, 345]
 })
 print(df)
-chart.plot_vectors(df)
+plot.plot_vectors(df)
 
-chart.copy_properties()
+plot.set_properties(chart.get_properties())
 ]]>
             </script>
             <dialogPage id="PROPERTIES" label="Properties"/>
@@ -187,7 +187,7 @@ chart.copy_properties()
         <chart icon="" id="50" name="vectors dataframe 2" template="" type="LINE">
             <script>
                 <![CDATA[import pandas as pd
-from omnetpp.scave import chart
+from omnetpp.scave import chart, plot
 
 df = pd.DataFrame({
     "M": [120, 161, 283],
@@ -195,30 +195,30 @@ df = pd.DataFrame({
     "time": [0.1, 0.2, 0.45]
 })
 print(df)
-chart.plot_vectors(df)
+plot.plot_vectors(df)
 
-chart.copy_properties()
+plot.set_properties(chart.get_properties())
 ]]>
             </script>
             <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
         <chart icon="" id="51" name="vectors dataframe 3" template="" type="LINE">
             <script>
-                <![CDATA[from omnetpp.scave import results, chart
+                <![CDATA[from omnetpp.scave import results, chart, plot
 
 df = results.get_vectors("name =~ hopCount:vector", include_attrs=True)
 
 print(df)
 
-chart.plot_vectors(df)
+plot.plot_vectors(df)
 
-chart.copy_properties()]]>
+plot.set_properties(chart.get_properties())]]>
             </script>
             <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
         <chart icon="" id="52" name="vectors dataframe 4" template="" type="LINE">
             <script>
-                <![CDATA[from omnetpp.scave import results, chart
+                <![CDATA[from omnetpp.scave import results, chart, plot
 
 
 df = results.get_vectors("name =~ rxBytes:vector OR name =~ txBytes:vector", include_attrs=True)
@@ -227,37 +227,37 @@ df = results.get_vectors("name =~ rxBytes:vector OR name =~ txBytes:vector", inc
 
 print(df)
 
-chart.plot_vectors(df)
+plot.plot_vectors(df)
 
-chart.copy_properties()]]>
+plot.set_properties(chart.get_properties())]]>
             </script>
             <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
         <chart icon="" id="53" name="histograms simple 1" template="" type="HISTOGRAM">
             <script>
-                <![CDATA[from omnetpp.scave import chart
+                <![CDATA[from omnetpp.scave import chart, plot
 
-chart.plot_histogram(label="IQ", binedges=[80, 90, 100, 110, 120, 130], binvalues=[2, 3, 7, 6, 4])
+plot.plot_histogram(label="IQ", binedges=[80, 90, 100, 110, 120, 130], binvalues=[2, 3, 7, 6, 4])
 
-chart.copy_properties()]]>
+plot.set_properties(chart.get_properties())]]>
             </script>
             <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
         <chart icon="" id="54" name="histograms simple 2" template="" type="HISTOGRAM">
             <script>
-                <![CDATA[from omnetpp.scave import chart
+                <![CDATA[from omnetpp.scave import chart, plot
 
-chart.plot_histogram("A", [80, 90, 105, 118, 130], [2, 3, 7, 4])
-chart.plot_histogram("B", [83, 97, 101, 110, 124, 137], [0.6, 0.8, 1.5, 1.1, 0.9])
+plot.plot_histogram("A", [80, 90, 105, 118, 130], [2, 3, 7, 4])
+plot.plot_histogram("B", [83, 97, 101, 110, 124, 137], [0.6, 0.8, 1.5, 1.1, 0.9])
 
-chart.copy_properties()]]>
+plot.set_properties(chart.get_properties())]]>
             </script>
             <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
         <chart icon="" id="55" name="histograms simple 3" template="" type="HISTOGRAM">
             <script>
                 <![CDATA[import numpy as np
-from omnetpp.scave import chart
+from omnetpp.scave import chart, plot
 
 samples = np.random.normal(loc=42, scale=6.28, size=1000000)
 
@@ -266,23 +266,23 @@ values, edges = np.histogram(samples, bins=64)
 print(edges)
 print(values)
 
-chart.plot_histogram("bell", edges, values)
+plot.plot_histogram("bell", edges, values)
 
-chart.copy_properties()]]>
+plot.set_properties(chart.get_properties())]]>
             </script>
             <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
         <chart icon="" id="56" name="histograms dataframe 1" template="" type="HISTOGRAM">
             <script>
-                <![CDATA[from omnetpp.scave import results, chart
+                <![CDATA[from omnetpp.scave import results, chart, plot
 
 df = results.get_histograms("name =~ collisionLength:histogram")
 
 print(df)
 
-chart.plot_histograms(df)
+plot.plot_histograms(df)
 
-chart.copy_properties()]]>
+plot.set_properties(chart.get_properties())]]>
             </script>
             <dialogPage id="PROPERTIES" label="Properties"/>
         </chart>
@@ -290,7 +290,7 @@ chart.copy_properties()]]>
             <script>
                 <![CDATA[import pandas as pd
 
-from omnetpp.scave import chart
+from omnetpp.scave import chart, plot
 
 df = pd.DataFrame(
     [[10, 30],
@@ -300,9 +300,9 @@ df = pd.DataFrame(
 
 print(df)
 
-chart.plot_scalars(df)
+plot.plot_scalars(df)
 
-chart.copy_properties()
+plot.set_properties(chart.get_properties())
 
 chart.set_plot_property("Graph.Title", "This is a nice chart!")
 chart.set_plot_property("Plot.BackgroundColor", "lightgreen")
@@ -336,7 +336,7 @@ chart.set_plot_property("Legend.Font", "Arial-bold-18")
         <chart icon="" id="58" name="styling 2" template="" type="BAR">
             <script>
                 <![CDATA[import pandas as pd
-from omnetpp.scave import chart
+from omnetpp.scave import chart, plot
 
 df = pd.DataFrame(
     [[10, 30],
@@ -344,9 +344,9 @@ df = pd.DataFrame(
     columns=["X", "Y"],
     index=["alpha", "beta"])
 print(df)
-chart.plot_scalars(df)
+plot.plot_scalars(df)
 
-chart.copy_properties()
+plot.set_properties(chart.get_properties())
 
 chart.set_plot_property("Bar.Color/X", "purple")
 chart.set_plot_property("Bar.Color/Y", "yellow")]]>
@@ -356,7 +356,7 @@ chart.set_plot_property("Bar.Color/Y", "yellow")]]>
         <chart icon="" id="59" name="styling 3" template="" type="BAR">
             <script>
                 <![CDATA[import pandas as pd
-from omnetpp.scave import chart
+from omnetpp.scave import chart, plot
 
 df = pd.DataFrame(
     [[10, 30],
@@ -364,9 +364,9 @@ df = pd.DataFrame(
     columns=["X", "Y"],
     index=["alpha", "beta"])
 print(df)
-chart.plot_scalars(df)
+plot.plot_scalars(df)
 
-chart.copy_properties()
+plot.set_properties(chart.get_properties())
 
 chart.set_properties({
     "Graph.Title": "This is a nice chart!",
@@ -381,7 +381,7 @@ chart.set_properties({
         <chart icon="" id="60" name="styling 4" template="" type="BAR">
             <script>
                 <![CDATA[import pandas as pd
-from omnetpp.scave import chart
+from omnetpp.scave import chart, plot
 
 df = pd.DataFrame(
     [[10, 30],
@@ -389,7 +389,7 @@ df = pd.DataFrame(
     columns=["X", "Y"],
     index=["alpha", "beta"])
 print(df)
-chart.plot_scalars(df)
+plot.plot_scalars(df)
 
 print("\nThese properties are set in the form:")
 print(chart.get_properties())
@@ -473,7 +473,7 @@ charts.chart_function_native()]]>
         <chart icon="" id="64" name="importing 4" template="" type="MATPLOTLIB">
             <script>
                 <![CDATA[from charts import scripts
-from omnetpp.scave import chart
+from omnetpp.scave import chart, plot
 
 scripts[chart.get_name()]()]]>
             </script>
@@ -481,7 +481,7 @@ scripts[chart.get_name()]()]]>
         </chart>
         <chart icon="" id="65" name="importing 5" template="" type="BAR">
             <script>
-                <![CDATA[from omnetpp.scave import chart
+                <![CDATA[from omnetpp.scave import chart, plot
 from charts import scripts
 
 scripts[chart.get_name()]()]]>

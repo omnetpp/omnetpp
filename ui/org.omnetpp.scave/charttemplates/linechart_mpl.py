@@ -1,4 +1,4 @@
-from omnetpp.scave import results, chart, vectorops as ops
+from omnetpp.scave import results, chart, plot, vectorops as ops
 import matplotlib.pyplot as plt
 import math
 

@@ -14,7 +14,7 @@ import functools
 from math import inf
 print = functools.partial(print, flush=True)
 
-from omnetpp.scave import results
+from omnetpp.scave import results, plot
 from omnetpp.internal import Gateway
 
 from omnetpp.scave.utils import *

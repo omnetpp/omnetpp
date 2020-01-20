@@ -1,4 +1,4 @@
-from omnetpp.scave import chart
+from omnetpp.scave import chart, plot
 import difflib
 
 def sanitize_row(row):
@@ -18,8 +18,8 @@ def sanitize(df):
     df = df.sort_values(axis=0, by=list(filter(lambda c: c in df, ["runID", "module", "type", "name", "attrname"])))
     df = df.reset_index(drop=True)
     return df
-    
-    
+
+
 def compressOneDiff(tmpDiff, maxLines):
     if len(tmpDiff) <= 2 * maxLines + 3:
         return tmpDiff
@@ -75,13 +75,13 @@ def sanitize_and_compare_csv(df, ref_filename):
             return True
         else:
             #print("expected: " + expected + " actual: " + actual)
-            
-            
+
+
             diff = difflib.ndiff(addMissingNewLine(expected).splitlines(True), addMissingNewLine(actual).splitlines(True))
             diff = compressDiff(diff)
             diff = colorDiff(diff)
             difftxt = ''.join(diff)
-            
+
             print(difftxt)
 
 
@@ -99,7 +99,7 @@ def run_tests(locals):
         if name in outcomes:
             raise RuntimeError("Duplicate test name: " + name)
         outcomes[name] = successful
-    
+
     loc = list(locals.keys())
     for l in loc:
         if l.startswith("test_"):
@@ -113,7 +113,7 @@ def run_tests(locals):
             passed = (o is None) or o # "void" methods are successful if they don't raise an Exception
             print("PASS" if passed else "FAIL")
             add_outcome(l, passed)
-    
+
     chart.set_property("Graph.Title", "See console for test results.")
 
     failed_names = [n for n, s in outcomes.items() if not s]
