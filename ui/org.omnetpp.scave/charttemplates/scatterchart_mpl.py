@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from omnetpp.scave import results, chart
 
 pd.set_option('display.max_rows', 500)
@@ -70,15 +71,25 @@ units = df["unit"] if "unit" in df else None
 
 values[yaxis_column] = pd.to_numeric(values[yaxis_column], errors="ignore")
 
+# values[iso_column] = values[iso_column].apply(lambda x: 1 if x == 'true' else 0)
+# values.plot.scatter( x=xaxis_column,y=yaxis_column, c=iso_column, colormap='rainbow')
+
 df = pd.pivot_table(values, columns=iso_column, index=xaxis_column, values=yaxis_column, dropna=False)
 
-df.reset_index(inplace=True)
-df.rename({xaxis_column: "time"}, axis="columns", inplace=True)
+if False:
+    ax = plt.subplot(1, 2, 1)
+    ax.table(cellText=df.values, colLabels=df.columns, loc='center')
 
-chart.plot_vectors(df)
+    df.plot.line(ax=plt.subplot(1, 2, 2))
+else:
+    df.plot.line()
 
 if titles is not None:
-    chart.set_plot_property("Graph.Title", ', '.join(titles[yaxis_column].unique()))
+    plt.title(', '.join(titles[yaxis_column].unique()))
 
 if units is not None:
-    chart.set_plot_property("Y.Axis.Title", "[" + ', '.join(units[yaxis_column].unique()) + "]")
+    plt.gca().get_yaxis().set_label_text(plt.gca().get_yaxis().get_label_text() + " [" + ', '.join(units[yaxis_column].unique()) + "]")
+
+plt.tight_layout()
+
+plt.grid()
