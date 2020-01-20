@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ Common Classes
 Bundle-SymbolicName: org.omnetpp.common; singleton:=true
-Bundle-Version: 5.6.0.qualifier
+Bundle-Version: 5.6.1.qualifier
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.core.filesystem,

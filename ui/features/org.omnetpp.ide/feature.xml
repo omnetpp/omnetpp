@@ -2,7 +2,7 @@
 <feature
       id="org.omnetpp.ide"
       label="OMNeT++ IDE"
-      version="5.6.0.qualifier"
+      version="5.6.1.qualifier"
       provider-name="OpenSim Ltd."
       os="linux,macosx,win32"
       ws="cocoa,gtk,win32"

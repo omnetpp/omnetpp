@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ Native library plug-in
 Bundle-SymbolicName: org.omnetpp.ide.nativelibs
-Bundle-Version: 5.6.0.qualifier
+Bundle-Version: 5.6.1.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: OpenSim Ltd.

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ Integrated Development Environment
 Bundle-SymbolicName: org.omnetpp.main.sequencechart;singleton:=true
-Bundle-Version: 5.6.0.qualifier
+Bundle-Version: 5.6.1.qualifier
 Bundle-Localization: plugin
 Bundle-Vendor: OpenSim Ltd.
 Eclipse-LazyStart: true
