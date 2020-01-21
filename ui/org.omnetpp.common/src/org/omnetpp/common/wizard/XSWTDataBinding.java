@@ -57,8 +57,13 @@ public class XSWTDataBinding {
             return ((Scale) control).getSelection(); // -> Integer
         if (control instanceof Slider)
             return ((Slider) control).getSelection(); // -> Integer
-        if (control instanceof Spinner)
-            return ((Spinner) control).getSelection(); // -> Integer
+        if (control instanceof Spinner) {
+            Spinner spinner = ((Spinner) control);
+            if (spinner.getDigits() == 0)
+                return spinner.getSelection(); // -> Integer
+            else
+                return spinner.getSelection() / Math.pow(10, spinner.getDigits()); // -> Double
+        }
         if (control instanceof StyledText)
             return ((StyledText) control).getText();
         if (control instanceof Text)
@@ -130,8 +135,15 @@ public class XSWTDataBinding {
             ((Scale) control).setSelection(toInt(value));
         else if (control instanceof Slider)
             ((Slider) control).setSelection(toInt(value));
-        else if (control instanceof Spinner)
-            ((Spinner) control).setSelection(toInt(value));
+        else if (control instanceof Spinner) {
+            Spinner spinner = ((Spinner) control);
+            if (spinner.getDigits() == 0)
+                spinner.setSelection(toInt(value));
+            else {
+                double e = Math.pow(10, spinner.getDigits());
+                spinner.setSelection((int)(toDouble(value) * e));
+            }
+        }
         else if (control instanceof StyledText) {
             ((StyledText) control).setText(toString(value));
             ((StyledText) control).selectAll();
@@ -193,6 +205,17 @@ public class XSWTDataBinding {
         else
             return Integer.parseInt(value.toString().trim());
     }
+
+    /**
+     * May throw NumberFormatException.
+     */
+    public static double toDouble(Object value) {
+        if (value instanceof Number)
+            return ((Number) value).doubleValue();
+        else
+            return Double.parseDouble(value.toString().trim());
+    }
+
 
     /**
      * Note: this method CANNOT HANDLE QUOTES. Use JSON parsing for anything serious.
