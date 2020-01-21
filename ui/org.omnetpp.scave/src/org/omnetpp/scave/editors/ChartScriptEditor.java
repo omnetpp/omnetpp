@@ -1019,7 +1019,7 @@ public class ChartScriptEditor extends PyEdit {
         if (scriptNotYetExecuted)
             runChartScript();
         scaveEditor.setSelection(new StructuredSelection(chart));
-        console.activate();
+        console.activate(); // TODO: also do this when the editor tab is activated
         getChartViewer().getWidget().setFocus();
     }
 
