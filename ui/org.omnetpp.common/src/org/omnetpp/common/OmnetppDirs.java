@@ -67,6 +67,13 @@ public class OmnetppDirs {
     }
 
     /**
+     * Returns the omnetpp python directory, or empty string "" if the omnetpp root dir is not defined.
+     */
+    public static String getOmnetppPythonDir() {
+        return  getOmnetppSubdir("python");
+    }
+
+    /**
      * Returns the omnetpp samples directory, or empty string "" if omnetpp root dir is not defined.
      */
     public static String getOmnetppSamplesDir() {

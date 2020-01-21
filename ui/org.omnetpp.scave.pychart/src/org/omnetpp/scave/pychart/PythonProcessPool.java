@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import org.omnetpp.common.Debug;
+import org.omnetpp.common.OmnetppDirs;
 
 import py4j.ClientServer;
 
@@ -64,15 +65,16 @@ public class PythonProcessPool {
         // This only worked with the internal test app, and not when used from within the IDE.
         //String location = PythonProcessPool.class.getResource("python").getPath();
 
-        String locationBase = "NULL";
+        String pychartPluginLocation = null;
         try {
-            locationBase = new File(PythonProcessPool.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getAbsolutePath();
+            pychartPluginLocation = new File(PythonProcessPool.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getAbsolutePath();
         }
         catch (URISyntaxException e) {
-            PyChartPlugin.logError(e);
+            throw new RuntimeException(e);
         }
 
-        String location = locationBase + File.separator + "python";
+        String locationsToPrepend = OmnetppDirs.getOmnetppPythonDir() + File.pathSeparator // the <omnetpp_root>/python dir
+                + pychartPluginLocation + File.separator + "python"; // the plugin-local python dir
 
         ProcessBuilder pb = new ProcessBuilder()
                 .command("python3", "-u", "-m", "omnetpp.internal.PythonEntryPoint", Integer.toString(javaPort))
@@ -82,9 +84,9 @@ public class PythonProcessPool {
 
         Map<String, String> env = pb.environment();
         if (env.containsKey("PYTHONPATH"))
-            env.put("PYTHONPATH", location + File.pathSeparator + env.get("PYTHONPATH"));
+            env.put("PYTHONPATH", locationsToPrepend + File.pathSeparator + env.get("PYTHONPATH"));
         else
-            env.put("PYTHONPATH", location);
+            env.put("PYTHONPATH", locationsToPrepend);
 
         env.put("WITHIN_OMNETPP_IDE", "yes");
 

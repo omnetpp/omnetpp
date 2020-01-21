@@ -13,7 +13,8 @@ Bundle-Vendor: OpenSim Ltd.
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.workbench,
  org.eclipse.jface,
- org.omnetpp.common.core
+ org.omnetpp.common.core,
+ org.omnetpp.common
 Export-Package: 
  net.razorvine.examples,
  net.razorvine.pickle,
