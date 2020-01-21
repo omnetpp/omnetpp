@@ -142,6 +142,23 @@ simtime_t cDatarateChannel::calculateDuration(cMessage *msg) const
 
 void cDatarateChannel::processMessage(cMessage *msg, simtime_t t, result_t& result)
 {
+    // channel must be idle
+    if (txFinishTime > t)
+        throw cRuntimeError("Cannot send message (%s)%s on gate %s: Channel is currently "
+                            "busy with an ongoing transmission -- please rewrite the sender "
+                            "simple module to only send when the previous transmission has "
+                            "already finished, using cGate::getTransmissionFinishTime(), scheduleAt(), "
+                            "and possibly a cQueue for storing messages waiting to be transmitted",
+                msg->getClassName(), msg->getFullName(), getFullPath().c_str());
+
+    // message must not have its duration set already
+    bool isPacket = msg->isPacket();
+    if (isPacket && ((cPacket *)msg)->getDuration() != SIMTIME_ZERO)
+        throw cRuntimeError(this, "Packet (%s)%s already has a duration set; there "
+                                  "may be more than one channel with data rate in the connection path, or "
+                                  "it was sent with a sendDirect() call that specified duration as well",
+                                  msg->getClassName(), msg->getName());
+
     // if channel is disabled, signal that message should be deleted
     if (flags & FL_ISDISABLED) {
         result.discard = true;
@@ -161,6 +178,7 @@ void cDatarateChannel::processMessage(cMessage *msg, simtime_t t, result_t& resu
         simtime_t duration = pkt->getBitLength() / datarate;
         result.duration = duration;
         txFinishTime = t + duration;
+        pkt->setDuration(duration);
     }
     else {
         txFinishTime = t;

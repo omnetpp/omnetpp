@@ -490,43 +490,14 @@ bool cGate::deliver(cMessage *msg, simtime_t t)
             throw cRuntimeError(channel, "Channel not initialized (did you forget to invoke "
                                          "callInitialize() for a dynamically created channel or "
                                          "a dynamically created compound module that contains it?)");
-        if (!channel->isTransmissionChannel()) {
-            cChannel::result_t tmp;
-            channel->processMessage(msg, t, tmp);
-            EVCB.messageSendHop(msg, this, tmp.delay, SIMTIME_ZERO, tmp.discard);  // tmp.duration ignored for non-transmission channels
-            if (tmp.discard)
-                return false;
-            return nextGate->deliver(msg, t + tmp.delay);
-        }
-        else {
-            // transmission channel:
-            // channel must be idle
-            if (channel->getTransmissionFinishTime() > t)
-                throw cRuntimeError("Cannot send message (%s)%s on gate %s: Channel is currently "
-                                    "busy with an ongoing transmission -- please rewrite the sender "
-                                    "simple module to only send when the previous transmission has "
-                                    "already finished, using cGate::getTransmissionFinishTime(), scheduleAt(), "
-                                    "and possibly a cQueue for storing messages waiting to be transmitted",
-                        msg->getClassName(), msg->getFullName(), getFullPath().c_str());
 
-            // message must not have its duration set already
-            bool isPacket = msg->isPacket();
-            if (isPacket && ((cPacket *)msg)->getDuration() != SIMTIME_ZERO)
-                throw cRuntimeError(this, "Packet (%s)%s already has a duration set; there "
-                                          "may be more than one channel with data rate in the connection path, or "
-                                          "it was sent with a sendDirect() call that specified duration as well",
-                        msg->getClassName(), msg->getName());
-
-            // process
-            cChannel::result_t tmp;
-            channel->processMessage(msg, t, tmp);
-            if (isPacket)
-                ((cPacket *)msg)->setDuration(tmp.duration);
-            EVCB.messageSendHop(msg, this, tmp.delay, tmp.duration, tmp.discard);
-            if (tmp.discard)
-                return false;
-            return nextGate->deliver(msg, t + tmp.delay);
-        }
+        // let the channel process the message
+        cChannel::result_t tmp;
+        channel->processMessage(msg, t, tmp);
+        EVCB.messageSendHop(msg, this, tmp.delay, tmp.duration, tmp.discard);
+        if (tmp.discard)
+            return false;
+        return nextGate->deliver(msg, t + tmp.delay);
     }
 }
 
