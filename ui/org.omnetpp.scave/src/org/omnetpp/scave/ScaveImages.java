@@ -10,7 +10,7 @@ package org.omnetpp.scave;
 /**
  * Image file constants.
  *
- * Remember: other sources of images are: 
+ * Remember: other sources of images are:
  * - org.eclipse.ui.ISharedImages (use PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_xxx))
  * - org.omnetpp.common.image.ImageFactory
  *
@@ -78,12 +78,12 @@ public class ScaveImages {
     public static final String IMG_OBJ16_INPUTFILE_INACTIVE = "icons/full/obj16/inputfile_inactive.png";
     public static final String IMG_OBJ16_INPUTFILE = "icons/full/obj16/inputfile.png";
     public static final String IMG_OBJ16_ITERVAR = "icons/full/obj16/itervar.png";
-    public static final String IMG_OBJ16_LINE_BKSAMPLEHOLD = "icons/full/obj16/line_bksamplehold.png";
     public static final String IMG_OBJ16_LINE_DOTS = "icons/full/obj16/line_dots.png";
     public static final String IMG_OBJ16_LINE_LINEAR = "icons/full/obj16/line_linear.png";
     public static final String IMG_OBJ16_LINE_PINS = "icons/full/obj16/line_pins.png";
     public static final String IMG_OBJ16_LINE_POINTS = "icons/full/obj16/line_points.png";
-    public static final String IMG_OBJ16_LINE_SAMPLEHOLD = "icons/full/obj16/line_samplehold.png";
+    public static final String IMG_OBJ16_LINE_STEPS_POST = "icons/full/obj16/line_steps_post.png";
+    public static final String IMG_OBJ16_LINE_STEPS_PRE = "icons/full/obj16/line_steps_pre.png";
     public static final String IMG_OBJ16_MEASUREMENT = "icons/full/obj16/measurement.png";
     public static final String IMG_OBJ16_PARAMASSIGNMENT = "icons/full/obj16/paramassignment.png";
     public static final String IMG_OBJ16_CONFIGENTRY = "icons/full/obj16/configentry.png";

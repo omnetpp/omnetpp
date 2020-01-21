@@ -19,12 +19,12 @@ import org.omnetpp.scave.charting.dataset.IXYDataset;
  *
  * @author Andras
  */
-public class SampleHoldVectorPlotter extends VectorPlotter {
+public class StepsVectorPlotter extends VectorPlotter {
 
-    boolean backward;
+    boolean pre; // or post
 
-    public SampleHoldVectorPlotter(boolean backward) {
-        this.backward = backward;
+    public StepsVectorPlotter(boolean pre) {
+        this.pre = pre;
     }
 
     public boolean plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol, int timeLimitMillis) {
@@ -58,7 +58,7 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
         int[] dots = new int[] {1,2};
         graphics.setLineDash(dots);
 
-        if (!prevIsNaN && backward)
+        if (!prevIsNaN && pre)
             LargeGraphics.drawPoint(graphics, prevX, prevY);
 
         long startTime = System.currentTimeMillis();
@@ -81,7 +81,7 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
             //if (i%5==1) x = prevX;
 
             if (x != prevX) {
-                if (!isNaN && backward) {
+                if (!isNaN && pre) {
                     graphics.setLineStyle(SWT.LINE_SOLID);
                     LargeGraphics.drawLine(graphics, prevX, y, x, y); // horizontal
 
@@ -90,7 +90,7 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
                         LargeGraphics.drawLine(graphics, prevX, prevY, prevX, y); // vertical
                     }
                 }
-                else if (!prevIsNaN && !backward) { // forward
+                else if (!prevIsNaN && !pre) { // forward
                     graphics.setLineStyle(SWT.LINE_SOLID);
                     LargeGraphics.drawLine(graphics, prevX, prevY, x, prevY); // horizontal
 
@@ -121,7 +121,7 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
             prevIsNaN = isNaN;
         }
 
-        if (!prevIsNaN && !backward)
+        if (!prevIsNaN && !pre)
             LargeGraphics.drawPoint(graphics, prevX, prevY);
 
         // draw symbols

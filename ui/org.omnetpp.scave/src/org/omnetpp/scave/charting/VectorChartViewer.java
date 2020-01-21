@@ -246,8 +246,8 @@ public class VectorChartViewer extends ChartViewer {
         switch (mode) {
         case None: return LineType.Dots;
         case Linear: return LineType.Linear;
-        case SampleHold: return LineType.SampleHold;
-        case BackwardSampleHold: return LineType.BackwardSampleHold;
+        case SampleHold: return LineType.StepsPost;
+        case BackwardSampleHold: return LineType.StepsPre;
         }
         return LineType.Linear;
     }

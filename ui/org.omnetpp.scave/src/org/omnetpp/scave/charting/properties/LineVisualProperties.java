@@ -54,8 +54,8 @@ public class LineVisualProperties extends PropertySource {
         Pins("Pins", ScaveImages.IMG_OBJ16_LINE_PINS),
         Dots("Dots", ScaveImages.IMG_OBJ16_LINE_DOTS),
         Points("Points", ScaveImages.IMG_OBJ16_LINE_POINTS),
-        SampleHold("SampleHold", ScaveImages.IMG_OBJ16_LINE_SAMPLEHOLD),
-        BackwardSampleHold("BackwardSampleHold", ScaveImages.IMG_OBJ16_LINE_BKSAMPLEHOLD);
+        StepsPost("Steps-Post", ScaveImages.IMG_OBJ16_LINE_STEPS_POST),
+        StepsPre("Steps-Pre", ScaveImages.IMG_OBJ16_LINE_STEPS_PRE);
 
         private String name;
         private String imageId;
