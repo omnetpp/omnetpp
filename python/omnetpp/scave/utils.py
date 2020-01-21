@@ -1,3 +1,5 @@
+from omnetpp.scave import chart
+import matplotlib as mpl
 
 
 def extract_label_columns(df):
@@ -106,3 +108,12 @@ def make_chart_title(df, title_col, legend_cols):
         what += " and other variables"
     by_what = (" (by " + ", ".join([id[1] for id in legend_cols]) + ")") if legend_cols else ""
     return what + by_what
+
+
+def update_matplotlib_rcparams(props):
+    """
+    Updates `mpl.rcParams` taking suitable values from the `props` dictionary.
+    """
+    allowed_keys = mpl.rcParams.keys()
+    mpl.rcParams.update({k:v for (k, v) in props.items() if k in allowed_keys})
+

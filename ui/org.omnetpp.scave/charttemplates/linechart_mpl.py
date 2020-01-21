@@ -2,19 +2,20 @@ from omnetpp.scave import results, chart, utils, plot, vectorops as ops
 import matplotlib.pyplot as plt
 import math
 
-params = chart.get_properties()
+props = chart.get_properties()
+utils.update_matplotlib_rcparams(props)
 
 # This expression selects the results (you might be able to logically simplify it)
 
-filter_expression = params["filter"]
+filter_expression = props["filter"]
 
-start_time = float(params["vector_start_time"] or -math.inf)
-end_time = float(params["vector_end_time"] or math.inf)
+start_time = float(props["vector_start_time"] or -math.inf)
+end_time = float(props["vector_end_time"] or math.inf)
 
 # The data is returned as a Pandas DataFrame
 df = results.get_vectors(filter_expression, include_attrs=True, include_itervars=True, start_time=start_time, end_time=end_time)
 
-df = ops.perform_vector_ops(df, params["vector_operations"])
+df = ops.perform_vector_ops(df, props["vector_operations"])
 
 # You can perform any transformations on the data here
 
@@ -32,7 +33,7 @@ for t in df.itertuples(index=False):
             style['linestyle'] = ' '
             style['marker'] = '.'
         elif interp == "linear":
-            pass # nothing to do
+            pass  # nothing to do
         elif interp == "sample-hold":
             style['drawstyle'] = 'steps-post'
         elif interp == "backward-sample-hold":
@@ -40,8 +41,8 @@ for t in df.itertuples(index=False):
 
     plt.plot(t.vectime, t.vecvalue, label=utils.make_legend_label(legend, t), **style)
 
-if 'title' in params and params['title']:
-    plt.title(params['title'])
+if 'title' in props and props['title']:
+    plt.title(props['title'])
 else:
     plt.title(utils.make_chart_title(df, title, legend))
 
