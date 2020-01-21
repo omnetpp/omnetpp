@@ -698,7 +698,7 @@ plot.plot_scalars(df)]]>
         <chart icon="" id="287" name="line and points" template="" type="LINE">
             <script>
                 <![CDATA[import numpy as np
-from omnetpp.scave import results, chart, plot
+from omnetpp.scave import results, chart, utils, plot
 
 df = results.get_vectors('name =~ "rxBytes:vector"')
 df.vecvalue = df.vecvalue.apply(np.cumsum)
@@ -820,7 +820,7 @@ show()]]>
         </chart>
         <chart icon="icons/full/obj/linechart.png" id="300" name="Line Chart" template="linechart" type="LINE">
             <script>
-                <![CDATA[from omnetpp.scave import results, chart, plot, vectorops as ops
+                <![CDATA[from omnetpp.scave import results, chart, utils, plot, vectorops as ops
 import math
 
 params = chart.get_properties()

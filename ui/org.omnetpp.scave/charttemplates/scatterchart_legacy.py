@@ -1,4 +1,4 @@
-from omnetpp.scave import results, chart, plot
+from omnetpp.scave import results, chart, utils, plot
 import numpy as np
 import pandas as pd
 import re
@@ -33,7 +33,7 @@ def module_name_runattr_from_pattern(pattern):
     return module, name, runattr
 
 x_pattern = params["x_pattern"]
-x_module, x_name, x_runattr = module_name_runattr_from_pattern(x_pattern) 
+x_module, x_name, x_runattr = module_name_runattr_from_pattern(x_pattern)
 
 iso_pattern = params["iso_patterns"].split(";")[0]
 iso_module, iso_name, iso_runattr = module_name_runattr_from_pattern(iso_pattern)

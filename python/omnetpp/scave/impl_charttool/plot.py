@@ -21,7 +21,7 @@ def set_properties(*vargs, **kwargs):
     properties.update(kwargs)
 
 
-def set_plot_property(key, value):
+def set_property(key, value):
     properties[key] = value
 
 

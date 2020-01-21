@@ -1,4 +1,4 @@
-from omnetpp.scave import results, chart, plot
+from omnetpp.scave import results, chart, utils, plot
 import matplotlib.pyplot as plt
 
 params = chart.get_properties()
@@ -13,14 +13,14 @@ df = results.get_histograms(filter_expression, include_attrs=True, include_iterv
 
 print(df)
 
-title, legend = chart.extract_label_columns(df)
+title, legend = utils.extract_label_columns(df)
 
 df.sort_values(by=[l for i, l in legend], axis='index', inplace=True)
 
 for t in df.itertuples(index=False):
-    plt.hist(bins=t.binedges, x=t.binedges[:-1], weights=t.binvalues, label=chart.make_legend_label(legend, t), histtype='stepfilled')
+    plt.hist(bins=t.binedges, x=t.binedges[:-1], weights=t.binvalues, label=utils.make_legend_label(legend, t), histtype='stepfilled')
 
-plt.title(chart.make_chart_title(df, title, legend))
+plt.title(utils.make_chart_title(df, title, legend))
 
 plt.legend()
 plt.grid()

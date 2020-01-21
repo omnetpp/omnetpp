@@ -14,7 +14,7 @@ import functools
 from math import inf
 print = functools.partial(print, flush=True)
 
-from omnetpp.scave import results, plot
+from omnetpp.scave import results, chart, plot
 from omnetpp.internal import Gateway
 
 from omnetpp.scave.utils import *
@@ -346,8 +346,8 @@ def _plot_histograms_DF_scave(df):
     ], columns=["key", "label", "binedges", "binvalues", "underflows", "overflows", "min", "max"]))
 
     title = make_chart_title(df, title_col, legend_cols)
-    if not get_configured_property("Graph.Title"):
-        set_plot_property("Graph.Title", title)
+    if not chart.get_property("Graph.Title"):
+        set_property("Graph.Title", title)
 
 
 def plot_histograms(df):
@@ -357,7 +357,7 @@ def plot_histograms(df):
         pass  # TODO - add other formats as well?
 
 
-def set_plot_property(key, value):
+def set_property(key, value):
     Gateway.chart_plotter.setChartProperty(key, value)
 
 

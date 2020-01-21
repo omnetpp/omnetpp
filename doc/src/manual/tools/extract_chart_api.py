@@ -3,7 +3,7 @@
 import sys
 import os
 
-from omnetpp.scave import results, chart, plot
+from omnetpp.scave import results, chart, utils, plot
 
 import mistune
 import inspect

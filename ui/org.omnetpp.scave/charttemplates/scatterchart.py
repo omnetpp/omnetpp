@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from omnetpp.scave import results, chart, plot
+from omnetpp.scave import results, chart, utils, plot
 
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
@@ -78,7 +78,7 @@ df.rename({xaxis_column: "time"}, axis="columns", inplace=True)
 plot.plot_vectors(df)
 
 if titles is not None:
-    chart.set_plot_property("Graph.Title", ', '.join(titles[yaxis_column].unique()))
+    plot.set_property("Graph.Title", ', '.join(titles[yaxis_column].unique()))
 
 if units is not None:
-    chart.set_plot_property("Y.Axis.Title", "[" + ', '.join(units[yaxis_column].unique()) + "]")
+    plot.set_property("Y.Axis.Title", "[" + ', '.join(units[yaxis_column].unique()) + "]")

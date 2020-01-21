@@ -1,4 +1,4 @@
-from omnetpp.scave import results, chart, plot, vectorops as ops
+from omnetpp.scave import results, chart, utils, plot, vectorops as ops
 import matplotlib.pyplot as plt
 import math
 
@@ -22,7 +22,7 @@ print(df)
 
 plt.xlabel('Simulation time (s)')
 
-title, legend = chart.extract_label_columns(df)
+title, legend = utils.extract_label_columns(df)
 
 for t in df.itertuples(index=False):
     style = dict()
@@ -38,12 +38,12 @@ for t in df.itertuples(index=False):
         elif interp == "backward-sample-hold":
             style['drawstyle'] = 'steps-pre'
 
-    plt.plot(t.vectime, t.vecvalue, label=chart.make_legend_label(legend, t), **style)
+    plt.plot(t.vectime, t.vecvalue, label=utils.make_legend_label(legend, t), **style)
 
 if 'title' in params and params['title']:
     plt.title(params['title'])
 else:
-    plt.title(chart.make_chart_title(df, title, legend))
+    plt.title(utils.make_chart_title(df, title, legend))
 
 plt.legend()
 plt.grid()

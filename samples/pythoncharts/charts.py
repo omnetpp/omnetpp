@@ -10,7 +10,7 @@ def chart_function():
 def chart_function_native():
     df = results.get_scalars("name =~ rxBytes:sum OR name =~ txBytes:sum", include_runattrs=True)
 
-    print(chart.extract_label_columns(df))
+    print(utils.extract_label_columns(df))
     df = pd.pivot_table(df, columns=["name", "replication"], index=["module"])
     print(df)
     plot.plot_scalars(df)
@@ -23,7 +23,7 @@ def importing_4():
 def importing_5():
     df = results.get_scalars("name =~ rxBytes:sum OR name =~ txBytes:sum", include_runattrs=True)
 
-    print(chart.extract_label_columns(df))
+    print(utils.extract_label_columns(df))
     df = pd.pivot_table(df, columns=["name", "replication"], index=["module"])
     print(df)
     plot.plot_scalars(df)

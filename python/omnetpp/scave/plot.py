@@ -153,7 +153,7 @@ def plot_histograms(df):
     return impl.plot_histograms(**locals())
 
 
-def set_plot_property(key, value):
+def set_property(key, value):
     """
     Sets one property of the chart to the given value. If there was no property with the given
     name (key) yet, it is added.
@@ -163,7 +163,7 @@ def set_plot_property(key, value):
     changes some visual property on its view. It is not persistent and is not reflected
     in later calls to `get_property()` or `get_properties()`.
     """
-    return impl.set_plot_property(**locals())
+    return impl.set_property(**locals())
 
 
 def set_properties(props):

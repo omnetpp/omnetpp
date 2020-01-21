@@ -14,7 +14,7 @@ def get_properties():
     return properties
 
 
-def get_configured_property(key):
+def get_property(key):
     return properties[key]
 
 

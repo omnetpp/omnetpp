@@ -1,4 +1,4 @@
-from omnetpp.scave import results, chart, plot, vectorops as ops
+from omnetpp.scave import results, chart, utils, plot, vectorops as ops
 import math
 
 params = chart.get_properties()

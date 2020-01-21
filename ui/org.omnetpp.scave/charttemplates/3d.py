@@ -4,7 +4,7 @@ import matplotlib as mpl
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-from omnetpp.scave import results, chart, plot
+from omnetpp.scave import results, chart, utils, plot
 
 params = chart.get_properties()
 
@@ -18,7 +18,7 @@ df[params["y_attr"]] = pd.to_numeric(df[params["y_attr"]])
 
 #print(df)
 
-title_col, legend_cols = chart.extract_label_columns(df)
+title_col, legend_cols = utils.extract_label_columns(df)
 
 print(legend_cols)
 title = str(list(df[title_col])[0]) if title_col else None
@@ -39,7 +39,7 @@ max_height = np.max(df.values)   # get range of colorbars so we can normalize
 min_height = np.min(df.values)
 top = df.values.ravel()
 rgba = [cmap((k-min_height)/max_height) for k in top]
- 
+
 
 type = params["chart_type"]
 

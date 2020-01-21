@@ -114,7 +114,7 @@ def run_tests(locals):
             print("PASS" if passed else "FAIL")
             add_outcome(l, passed)
 
-    chart.set_property("Graph.Title", "See console for test results.")
+    plot.set_property("Graph.Title", "See console for test results.")
 
     failed_names = [n for n, s in outcomes.items() if not s]
     faileds = ", ".join(failed_names)

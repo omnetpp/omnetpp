@@ -1,4 +1,4 @@
-from omnetpp.scave import results, chart, plot
+from omnetpp.scave import results, chart, utils, plot
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -17,7 +17,7 @@ def customized_box_plot(percentiles, axes, redraw = True, *args, **kwargs):
     Generates a customized boxplot based on the given percentile values
     """
     n_box = len(percentiles)
-    box_plot = axes.boxplot([[-9, -4, 2, 4, 9],]*n_box, showmeans=True, meanprops=dict(marker='+'), *args, **kwargs) 
+    box_plot = axes.boxplot([[-9, -4, 2, 4, 9],]*n_box, showmeans=True, meanprops=dict(marker='+'), *args, **kwargs)
     # Creates len(percentiles) no of box plots
 
     min_y, max_y = float('inf'), -float('inf')
@@ -69,7 +69,7 @@ def customized_box_plot(percentiles, axes, redraw = True, *args, **kwargs):
             max_y = max(q4_end, max_y)
 
         mid_y = (min_y + max_y) / 2
-        # The y axis is rescaled to fit the new box plot completely with 10% 
+        # The y axis is rescaled to fit the new box plot completely with 10%
         # of the maximum value at both ends
         axes.set_ylim([mid_y - (mid_y - min_y) * 1.25, mid_y + (max_y - mid_y) * 1.25])
 
@@ -80,7 +80,7 @@ def customized_box_plot(percentiles, axes, redraw = True, *args, **kwargs):
     return box_plot
 
 
-title, legend = chart.extract_label_columns(df)
+title, legend = utils.extract_label_columns(df)
 
 df.sort_values(by=[l for i, l in legend], axis='index', inplace=True)
 
@@ -94,10 +94,10 @@ customized_box_plot([(r.min, r.mean - r.stddev * coeff, r.mean, r.mean + r.stdde
                             if r.count > 0
                     ], plt.gca())
 
-plt.title(chart.make_chart_title(df, title, legend))
+plt.title(utils.make_chart_title(df, title, legend))
 
 plt.gca().set_xticklabels([
-    chart.make_legend_label(legend, r) for r in df.itertuples(index=False)
+    utils.make_legend_label(legend, r) for r in df.itertuples(index=False)
      if r.count > 0], rotation=60)
 
 plt.tight_layout()

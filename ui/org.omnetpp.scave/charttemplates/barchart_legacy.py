@@ -1,4 +1,4 @@
-from omnetpp.scave import results, chart, plot
+from omnetpp.scave import results, chart, utils, plot
 import pandas as pd
 
 params = chart.get_properties()

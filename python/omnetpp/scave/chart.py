@@ -22,12 +22,12 @@ def get_properties():
     return impl.get_properties(**locals())
 
 
-def get_configured_property(key):
+def get_property(key):
     """
     Returns the value of a single property of the chart, or `None` if there is
     no property with the given name (key) set on the chart.
     """
-    return impl.get_configured_property(**locals())
+    return impl.get_property(**locals())
 
 
 def get_name():

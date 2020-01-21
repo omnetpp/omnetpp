@@ -7,7 +7,7 @@
     <charts>
         <chart icon="" id="1" name="CutThrough vs Store and Forward" template="" type="LINE">
             <script>
-                <![CDATA[from omnetpp.scave import results, chart, plot
+                <![CDATA[from omnetpp.scave import results, chart, utils, plot
 
 filter_string = "name =~ endToEndDelay:mean AND module=~*.rte[1].app "
 

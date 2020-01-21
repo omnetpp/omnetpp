@@ -293,7 +293,7 @@ plot.plot_vectors(df)
         </chart>
         <chart icon="" id="385" name="Chart3" template="" type="LINE">
             <script>
-                <![CDATA[from omnetpp.scave import results, chart, plot, vectorops as ops
+                <![CDATA[from omnetpp.scave import results, chart, utils, plot, vectorops as ops
 
 # This expression selects the results (you might be able to logically simplify it)
 filter_expression = """
@@ -317,7 +317,7 @@ plot.plot_vectors(df)
         </chart>
         <chart icon="icons/full/obj/linechart.png" id="441" name="Reception data rate" template="linechart" type="LINE">
             <script>
-                <![CDATA[from omnetpp.scave import results, chart, plot, vectorops as ops
+                <![CDATA[from omnetpp.scave import results, chart, utils, plot, vectorops as ops
 import math
 
 params = chart.get_properties()

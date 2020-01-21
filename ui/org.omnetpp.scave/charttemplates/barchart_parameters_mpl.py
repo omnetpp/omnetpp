@@ -1,4 +1,4 @@
-from omnetpp.scave import results, chart, plot
+from omnetpp.scave import results, chart, utils, plot
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -15,14 +15,14 @@ df = results.get_parameters(filter_expression, include_attrs=True, include_iterv
 
 print(df)
 
-title, legend = chart.extract_label_columns(df)
+title, legend = utils.extract_label_columns(df)
 
 for i, c in legend:
     df[c] = pd.to_numeric(df[c], errors="ignore")
 
 df.sort_values(by=[l for i, l in legend], axis='index', inplace=True)
 
-plt.title(chart.make_chart_title(df, title, legend))
+plt.title(utils.make_chart_title(df, title, legend))
 
 if len(legend) == 2:
     df = pd.pivot_table(df, index=legend[0][1], columns=legend[1][1], values='value')

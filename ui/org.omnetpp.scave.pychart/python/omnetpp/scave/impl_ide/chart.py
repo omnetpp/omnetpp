@@ -12,7 +12,7 @@ def get_properties():
     return Gateway.properties_provider.getChartProperties()
 
 
-def get_configured_property(key):
+def get_property(key):
     return Gateway.properties_provider.getChartProperties()[key]  # TODO: could be optimized
 
 
