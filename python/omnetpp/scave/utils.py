@@ -141,6 +141,7 @@ def update_matplotlib_rcparams(props):
 
 import numpy as np
 from matplotlib.text import Text
+import matplotlib.pyplot as plt
 import math
 
 
