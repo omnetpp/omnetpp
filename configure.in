@@ -1368,6 +1368,7 @@ def try_import(name):
 try_import("numpy")
 try_import("pandas")
 try_import("matplotlib")
+try_import("matplotlib.pyplot")
 
 if os.name == 'posix':
   try_import("fcntl")
