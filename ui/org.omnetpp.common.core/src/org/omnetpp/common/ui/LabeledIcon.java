@@ -20,6 +20,7 @@ public class LabeledIcon extends Figure implements PositionConstants {
     private String text = "";
     private Dimension iconSize; // cached
     private int iconTextGap = 3;
+    private boolean horizontal = false;
     private org.eclipse.swt.graphics.Rectangle textBounds = null;
 
     /**
@@ -34,6 +35,15 @@ public class LabeledIcon extends Figure implements PositionConstants {
     public LabeledIcon(String s, Image i) {
         setText(s);
         setIcon(i);
+    }
+
+    /**
+     * Choose between horizontal layout (text on the right of the icon) and
+     * vertical layout (text below the icon, both center-aligned/justified).
+     */
+    public void setLayout(boolean horizontal) {
+        this.horizontal = horizontal;
+        repaint();
     }
 
     /**
@@ -76,7 +86,27 @@ public class LabeledIcon extends Figure implements PositionConstants {
 
     public Rectangle getTextBounds() {
         Rectangle figureBounds = getBounds();
-        return new Rectangle(figureBounds.x + textBounds.x, figureBounds.bottom() + textBounds.y - textBounds.height, textBounds.width, textBounds.height);
+        return new Rectangle(figureBounds.x + textBounds.x, figureBounds.y + textBounds.y, textBounds.width, textBounds.height);
+    }
+
+    private TextLayout makeTextLayout(int width) {
+        TextLayout textLayout = new TextLayout(Display.getCurrent());
+        textLayout.setText(getText());
+        textLayout.setAlignment(horizontal ? SWT.LEFT : SWT.CENTER);
+        textLayout.setWidth(width);
+        return textLayout;
+    }
+
+    private org.eclipse.swt.graphics.Rectangle measureText(int width) {
+        TextLayout textLayout = makeTextLayout(width);
+        org.eclipse.swt.graphics.Rectangle result = textLayout.getBounds();
+        textLayout.dispose();
+        return result;
+    }
+
+    private static void setRectanglePos(org.eclipse.swt.graphics.Rectangle rect, int x, int y) {
+        rect.x = x;
+        rect.y = y;
     }
 
     /**
@@ -85,16 +115,20 @@ public class LabeledIcon extends Figure implements PositionConstants {
     public Dimension getPreferredSize(int wHint, int hHint) {
         Assert.isNotNull(icon);
         Dimension size = prefSize == null ? new Dimension() : prefSize.getCopy();
-        if (size.width == -1)
-            size.width = iconSize.width; // let the icon define the width
-        if (size.height == -1) {
-            TextLayout textLayout = new TextLayout(Display.getCurrent());
-            textLayout.setText(getText());
-            textLayout.setAlignment(SWT.CENTER);
-            textLayout.setWidth(size.width);
-            int textHeight = textLayout.getBounds().height;
-            textLayout.dispose();
-            size.height = iconSize.height + iconTextGap + textHeight;
+        if (horizontal) {
+            org.eclipse.swt.graphics.Rectangle textSize = measureText(size.width == -1 ? -1 : Math.max(10, size.width - iconSize.width - iconTextGap));
+            if (size.width == -1)
+                size.width = iconSize.width + iconTextGap + textSize.width;
+            if (size.height == -1)
+                size.height = Math.max(iconSize.height, textSize.height);
+        }
+        else {
+            if (size.width == -1)
+                size.width = iconSize.width; // let the icon define the width
+            if (size.height == -1) {
+                int textHeight = measureText(size.width).height;
+                size.height = iconSize.height + iconTextGap + textHeight;
+            }
         }
         return size;
     }
@@ -109,15 +143,25 @@ public class LabeledIcon extends Figure implements PositionConstants {
 
         Rectangle figureBounds = getBounds();
         graphics.translate(figureBounds.x, figureBounds.y);
-        graphics.drawImage(icon, figureBounds.width/2 - iconSize.width/2, 0);
 
-        TextLayout textLayout = new TextLayout(Display.getCurrent());
-        textLayout.setText(getText());
-        textLayout.setAlignment(SWT.CENTER);
-        textLayout.setWidth(figureBounds.width);
-        textBounds = textLayout.getBounds();
-        graphics.drawTextLayout(textLayout, figureBounds.width/2 - textBounds.width/2, iconSize.height + iconTextGap);
-        textLayout.dispose();
+        if (horizontal) {
+            graphics.drawImage(icon, 0, figureBounds.height/2 - iconSize.height/2);
+
+            TextLayout textLayout = makeTextLayout(figureBounds.width - (iconSize.width + iconTextGap));
+            textBounds = textLayout.getBounds();
+            setRectanglePos(textBounds, iconSize.width + iconTextGap, figureBounds.height/2 - textBounds.height/2);
+            graphics.drawTextLayout(textLayout, textBounds.x, textBounds.y);
+            textLayout.dispose();
+        }
+        else {
+            graphics.drawImage(icon, figureBounds.width/2 - iconSize.width/2, 0);
+
+            TextLayout textLayout = makeTextLayout(figureBounds.width);
+            textBounds = textLayout.getBounds();
+            setRectanglePos(textBounds, figureBounds.width/2 - textBounds.width/2, iconSize.height + iconTextGap);
+            graphics.drawTextLayout(textLayout, textBounds.x, textBounds.y);
+            textLayout.dispose();
+        }
 
         graphics.translate(-figureBounds.x, -figureBounds.y);
     }
