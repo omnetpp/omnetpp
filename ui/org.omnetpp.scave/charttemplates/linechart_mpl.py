@@ -28,45 +28,7 @@ plt.xlabel('Simulation time (s)')
 title, legend = utils.extract_label_columns(df)
 
 for t in df.itertuples(index=False):
-    style = dict()
-
-    ds = props["drawstyle"]
-    if not ds or ds == "auto":
-        interp = t.interpolationmode if 'interpolationmode' in df else 'sample-hold' if 'enum' in df else None
-        if interp:
-            if interp == "none":
-                ds = "dots"
-            elif interp == "linear":
-                ds = "linear"
-            elif interp == "sample-hold":
-                ds = "steps-post"
-            elif interp == "backward-sample-hold":
-                ds = 'steps-pre'
-            else:
-                print("Unknown interpolationmode for", t, ":", interp, file=sys.stderr)
-                ds = None
-        else:
-            ds = "linear"
-
-    if ds == "dots":
-        style['linestyle'] = ' '
-        style['marker'] = '.'
-    elif ds == "points":
-        style['linestyle'] = ' '
-        style['marker'] = '.'
-        style['markersize'] = 1
-    elif ds == "linear":
-        pass  # nothing to do
-    elif ds == 'steps-pre':
-        style['drawstyle'] = 'steps-pre'
-    elif ds == "steps-mid":
-        style['drawstyle'] = 'steps-mid'
-    elif ds == "steps-post":
-        style['drawstyle'] = 'steps-post'
-    else:
-        if ds:
-            print("Unknown drawstyle:", ds, file=sys.stderr)
-
+    style = utils.interpolationmode_to_plot_params(props["drawstyle"], t.interpolationmode if "interpolationmode" in df else None, "enum" in df)
     plt.plot(t.vectime, t.vecvalue, label=utils.make_legend_label(legend, t), **style)
 
 if 'title' in props and props['title']:
