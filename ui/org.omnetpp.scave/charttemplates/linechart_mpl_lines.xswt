@@ -33,6 +33,7 @@ Symbol Options {
     <!-- drawStyle:dots/points/linear/pins/steps-pre/steps-post -->
     <label text="Marker:"/>
     <combo x:id="lines.marker" x:style="BORDER|READ_ONLY">
+      <add x:p0="None"/>
       <add x:p0="."/>
       <add x:p0=","/>
       <add x:p0="o"/>
@@ -40,7 +41,7 @@ Symbol Options {
       <add x:p0="+"/>
       <add x:p0="x"/>
       <add x:p0="*"/>
-      <setText x:p0="o"/>
+      <setText x:p0="None"/>
     </combo>
 
     <!--  -->
@@ -49,26 +50,18 @@ Symbol Options {
     <label text="Marker size:"/>
     <spinner x:id="lines.markersize" selection="6" minimum="0" maximum="100" x:style="BORDER"/>
 
-<!-- TODO
-  None("None", ScaveImages.IMG_OBJ16_SYM_NONE),
-        Cross("Cross", ScaveImages.IMG_OBJ16_SYM_CROSS),
-        Diamond("Diamond", ScaveImages.IMG_OBJ16_SYM_DIAMOND),
-        Dot("Dot", ScaveImages.IMG_OBJ16_SYM_DOT),
-        Plus("Plus", ScaveImages.IMG_OBJ16_SYM_PLUS),
-        Square("Square", ScaveImages.IMG_OBJ16_SYM_SQUARE),
-        Triangle("Triangle", ScaveImages.IMG_OBJ16_SYM_TRIANGLE);
-
     
-    <label text="Symbol type:"/>
-    <combo x:id="Symbols.Type" x:style="BORDER|READ_ONLY">
-      <add x:p0="None"/>
+    <label text="Draw style:"/>
+    <combo x:id="drawstyle" x:style="BORDER|READ_ONLY">
+      <add x:p0="auto"/>
+      <add x:p0="dots"/>
       <add x:p0="points"/>
       <add x:p0="linear"/>
-      <add x:p0="pins"/>
       <add x:p0="steps-pre"/>
+      <add x:p0="steps-mid"/>
       <add x:p0="steps-post"/>
+      <setText x:p0="auto"/>
     </combo>
--->
 
 
     <!--  -->
