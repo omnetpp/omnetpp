@@ -54,7 +54,7 @@ def plot_scalars(df_or_values, labels=None, row_label=None):
     return impl.plot_scalars(**locals())
 
 
-def plot_vector(label, xs, ys):
+def plot_vector(label, xs, ys, key = None):
     """
     Plots a single vector as a "native" line chart - using the
     IDE's built-in drawing widget.

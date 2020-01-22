@@ -29,14 +29,15 @@ Symbol Options {
     
     <!-- drawStyle:dots/points/linear/pins/steps-pre/steps-post -->
     <label text="Draw style:"/>
-    <combo x:id="Line.Type" x:style="BORDER|READ_ONLY">
-      <add x:p0="Linear"/>
-      <add x:p0="Pins"/>
-      <add x:p0="Dots"/>
-      <add x:p0="Points"/>
-      <add x:p0="Steps-Post"/>
-      <add x:p0="Steps-Pre"/>
-      
+    <combo x:id="drawstyle" x:style="BORDER|READ_ONLY">
+      <add x:p0="auto"/>
+      <add x:p0="linear"/>
+      <add x:p0="pins"/>
+      <add x:p0="dots"/>
+      <add x:p0="points"/>
+      <add x:p0="steps-post"/>
+      <add x:p0="steps-pre"/>
+      <setText x:p0="auto"/>
     </combo>
 
     <!--  -->

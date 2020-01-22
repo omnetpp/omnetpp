@@ -180,9 +180,11 @@ def _put_array_in_shm(arr, shm_objs, mmap_objs):
     return name + " " + str(arr.nbytes)
 
 
-def plot_vector(label, xs, ys):
+def plot_vector(label, xs, ys, key=None):
+    if key is None:
+        key = label
     plot_lines(pd.DataFrame({
-        "key": [label],
+        "key": [str(key)],
         "label": [label],
         "xs": [np.array(xs)],
         "ys": [np.array(ys)]

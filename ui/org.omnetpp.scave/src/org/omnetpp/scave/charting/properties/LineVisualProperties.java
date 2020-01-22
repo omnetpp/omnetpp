@@ -50,12 +50,12 @@ public class LineVisualProperties extends PropertySource {
     }
 
     public enum LineType {
-        Linear("Linear", ScaveImages.IMG_OBJ16_LINE_LINEAR),
-        Pins("Pins", ScaveImages.IMG_OBJ16_LINE_PINS),
-        Dots("Dots", ScaveImages.IMG_OBJ16_LINE_DOTS),
-        Points("Points", ScaveImages.IMG_OBJ16_LINE_POINTS),
-        StepsPost("Steps-Post", ScaveImages.IMG_OBJ16_LINE_STEPS_POST),
-        StepsPre("Steps-Pre", ScaveImages.IMG_OBJ16_LINE_STEPS_PRE);
+        Linear("linear", ScaveImages.IMG_OBJ16_LINE_LINEAR),
+        Pins("pins", ScaveImages.IMG_OBJ16_LINE_PINS),
+        Dots("dots", ScaveImages.IMG_OBJ16_LINE_DOTS),
+        Points("points", ScaveImages.IMG_OBJ16_LINE_POINTS),
+        StepsPost("steps-post", ScaveImages.IMG_OBJ16_LINE_STEPS_POST),
+        StepsPre("steps-pre", ScaveImages.IMG_OBJ16_LINE_STEPS_PRE);
 
         private String name;
         private String imageId;

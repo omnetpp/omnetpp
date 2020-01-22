@@ -182,44 +182,49 @@ def make_fancy_xticklabels(ax):
     ax.callbacks.connect('xlim_changed', on_xlims_change)
 
 
+def interpolationmode_to_drawstyle(interpolationmode, hasenum):
+    interp = interpolationmode if interpolationmode else 'sample-hold' if 'hasenum' else None
+    if not interp:
+        ds = "linear"
+    elif interp == "none":
+        ds = "dots"
+    elif interp == "linear":
+        ds = "linear"
+    elif interp == "sample-hold":
+        ds = "steps-post"
+    elif interp == "backward-sample-hold":
+        ds = 'steps-pre'
+    else:
+        print("Unknown interpolationmode:", interp, file=sys.stderr)
+        ds = None
+
+    return ds
+
+
 def interpolationmode_to_plot_params(drawstyle, interpolationmode, hasenum):
     style = dict()
 
-    ds = drawstyle
-    if not ds or ds == "auto":
-        interp = interpolationmode if interpolationmode else 'sample-hold' if 'hasenum' else None
-        if interp:
-            if interp == "none":
-                ds = "dots"
-            elif interp == "linear":
-                ds = "linear"
-            elif interp == "sample-hold":
-                ds = "steps-post"
-            elif interp == "backward-sample-hold":
-                ds = 'steps-pre'
-            else:
-                print("Unknown interpolationmode for", t, ":", interp, file=sys.stderr)
-                ds = None
-        else:
-            ds = "linear"
+    if not drawstyle or drawstyle == "auto":
+        drawstyle = interpolationmode_to_drawstyle(interpolationmode, hasenum)
 
-    if ds == "dots":
+    if not drawstyle:
+        pass  # nothing to do
+    elif drawstyle == "dots":
         style['linestyle'] = ' '
         style['marker'] = '.'
-    elif ds == "points":
+    elif drawstyle == "points":
         style['linestyle'] = ' '
         style['marker'] = '.'
         style['markersize'] = 1
-    elif ds == "linear":
+    elif drawstyle == "linear":
         pass  # nothing to do
-    elif ds == 'steps-pre':
+    elif drawstyle == 'steps-pre':
         style['drawstyle'] = 'steps-pre'
-    elif ds == "steps-mid":
+    elif drawstyle == "steps-mid":
         style['drawstyle'] = 'steps-mid'
-    elif ds == "steps-post":
+    elif drawstyle == "steps-post":
         style['drawstyle'] = 'steps-post'
     else:
-        if ds:
-            print("Unknown drawstyle:", ds, file=sys.stderr)
+        print("Unknown drawstyle:", drawstyle, file=sys.stderr)
 
     return style
