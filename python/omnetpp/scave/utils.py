@@ -110,6 +110,25 @@ def make_chart_title(df, title_col, legend_cols):
     return what + by_what
 
 
+def parse_matplotlib_rcparams(rc_content):
+    rc_temp = {}
+    for line_no, line in enumerate(rc_content.split("\n"), 1):
+        strippedline = line.split('#', 1)[0].strip()
+        if not strippedline:
+            continue
+        tup = strippedline.split(':', 1)
+        if len(tup) != 2:
+            raise RuntimeError("Illegal rc line #" + str(line_no)) + ": " + line
+        key, val = tup
+        key = key.strip()
+        val = val.strip()
+        if key in rc_temp:
+            raise RuntimeError("Duplicate key " + key + " on line " + str(line_no))
+        rc_temp[key] = val
+
+    return rc_temp
+
+
 def update_matplotlib_rcparams(props):
     """
     Updates `mpl.rcParams` taking suitable values from the `props` dictionary.
