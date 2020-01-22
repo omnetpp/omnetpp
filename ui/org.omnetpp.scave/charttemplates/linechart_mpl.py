@@ -4,6 +4,7 @@ import math
 
 props = chart.get_properties()
 utils.update_matplotlib_rcparams(props)
+utils.update_matplotlib_rcparams(utils.parse_matplotlib_rcparams(props["matplotlibrc"] or ""))
 
 # This expression selects the results (you might be able to logically simplify it)
 

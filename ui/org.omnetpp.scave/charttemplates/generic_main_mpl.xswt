@@ -53,8 +53,13 @@ Colors {
       <x:children>
 
     <!-- backgroundColor -->
-    <label text="Background color:"/>
-    <ColorChooser x:id="background_color" x:style="BORDER">
+    <label text="Figure background color:"/>
+    <ColorChooser x:id="figure.facecolor" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </ColorChooser>
+    
+    <label text="Axes background color:"/>
+    <ColorChooser x:id="axes.facecolor" x:style="BORDER">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </ColorChooser>
 

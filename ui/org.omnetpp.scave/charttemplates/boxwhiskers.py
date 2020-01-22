@@ -2,10 +2,12 @@ from omnetpp.scave import results, chart, utils, plot
 import matplotlib.pyplot as plt
 import pandas as pd
 
-params = chart.get_properties()
+props = chart.get_properties()
+utils.update_matplotlib_rcparams(props)
+utils.update_matplotlib_rcparams(utils.parse_matplotlib_rcparams(props["matplotlibrc"] or ""))
 
-stats = results.get_statistics(params["filter"], include_attrs=True, include_runattrs=True, include_itervars=True)
-hists = results.get_histograms(params["filter"], include_attrs=True, include_runattrs=True, include_itervars=True)
+stats = results.get_statistics(props["filter"], include_attrs=True, include_runattrs=True, include_itervars=True)
+hists = results.get_histograms(props["filter"], include_attrs=True, include_runattrs=True, include_itervars=True)
 
 df = pd.concat([stats, hists], sort=False)
 print(df)

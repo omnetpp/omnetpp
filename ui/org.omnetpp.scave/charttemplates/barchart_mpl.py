@@ -2,10 +2,12 @@ from omnetpp.scave import results, chart, utils, plot
 import matplotlib.pyplot as plt
 import pandas as pd
 
-params = chart.get_properties()
+props = chart.get_properties()
+utils.update_matplotlib_rcparams(props)
+utils.update_matplotlib_rcparams(utils.parse_matplotlib_rcparams(props["matplotlibrc"] or ""))
 
 # This expression selects the results (you might be able to logically simplify it)
-filter_expression = params["filter"]
+filter_expression = props["filter"]
 
 # The data is returned as a Pandas DataFrame
 df = results.get_scalars(filter_expression, include_attrs=True, include_itervars=True)

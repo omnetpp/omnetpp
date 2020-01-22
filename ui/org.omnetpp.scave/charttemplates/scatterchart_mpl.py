@@ -3,11 +3,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from omnetpp.scave import results, chart, utils, plot
 
-pd.set_option('display.max_rows', 500)
-pd.set_option('display.max_columns', 500)
-pd.set_option('display.width', 1000)
-
-params = chart.get_properties()
+props = chart.get_properties()
+utils.update_matplotlib_rcparams(props)
+utils.update_matplotlib_rcparams(utils.parse_matplotlib_rcparams(props["matplotlibrc"] or ""))
 
 
 def aggfunc(x):
@@ -36,7 +34,7 @@ def get_data(filter):
 
 
 def filter_for(what):
-    return "(" + params["common_filter"] + ") AND (" + params[what] + ")"
+    return "(" + props["common_filter"] + ") AND (" + props[what] + ")"
 
 
 xa = get_data(filter_for("xaxis_filter"))
