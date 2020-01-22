@@ -28,6 +28,8 @@ import org.eclipse.ui.part.MultiPageEditorPart;
  *
  * @author Andras
  */
+// TODO: make middle-clicking on tabs close them.
+// also, maybe a context menu to close all other tabs, all abs to the left/right
 public abstract class MultiPageEditorPartExt extends MultiPageEditorPart {
 
 
