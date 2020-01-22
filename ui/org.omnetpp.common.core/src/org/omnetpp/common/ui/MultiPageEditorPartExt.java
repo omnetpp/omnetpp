@@ -13,8 +13,11 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
@@ -27,6 +30,26 @@ import org.eclipse.ui.part.MultiPageEditorPart;
  */
 public abstract class MultiPageEditorPartExt extends MultiPageEditorPart {
 
+
+    public void createPartControl(Composite parent) {
+        super.createPartControl(parent);
+
+        CTabFolder folder = getTabFolder();
+        folder.addListener(SWT.MouseDown, (Event event) -> {
+            switch (event.button) {
+                case 2: { // middle click
+                    CTabItem item = folder.getItem(new Point(event.x, event.y));
+                    if (item != null)
+                        item.dispose();
+                }
+                case 3: { // right click
+                    // TODO: show context menu to close tabs other/left/right to the clicked item
+                }
+                default:
+                    // no-op
+            }
+        });
+    }
     /**
      * Adds a closable page to the multi-page editor. This is
      * a variant of
@@ -65,16 +88,6 @@ public abstract class MultiPageEditorPartExt extends MultiPageEditorPart {
         CTabItem item = new CTabItem(ctabFolder, SWT.CLOSE, index);
         item.setData(editorPart);
         item.setControl(control);
-
-        // CTabItem does not dispose the page contents widget, only calls
-        // setVisible(false) on it; so we have to do it here
-        item.addDisposeListener(new DisposeListener() {
-            public void widgetDisposed(DisposeEvent e) {
-                Control client = ((CTabItem)e.widget).getControl();
-                pageClosed(client);
-                client.dispose();
-            }
-        });
 
         item.addDisposeListener(new DisposeListener() {
             public void widgetDisposed(DisposeEvent e) {
