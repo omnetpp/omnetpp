@@ -179,5 +179,5 @@ def set_properties(props):
     return impl.set_properties(**locals())
 
 
-def set_message(message):
-    impl.set_message(**locals())
+def set_warning(warning):
+    impl.set_warning(**locals())

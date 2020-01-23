@@ -51,6 +51,12 @@ public class MatplotlibChartViewer extends ChartViewerBase {
         }
 
         @Override
+        public void setWarning(String warning) {
+            if (plotWidget != null)
+                plotWidget.setWarning(warning);
+        }
+
+        @Override
         public IPlotWidget getWidget(int figureNumber, IPyFigureCanvas canvas) {
             if (MatplotlibChartViewer.this.figureNumber >= 0 && figureNumber != MatplotlibChartViewer.this.figureNumber)
                 throw new RuntimeException("Only one figure per chart is allowed - figure number 1.");
@@ -79,6 +85,7 @@ public class MatplotlibChartViewer extends ChartViewerBase {
             return;
 
         killPythonProcess();
+        plotWidget.setWarning(null);
 
         if (script == null || script.isEmpty()) {
             plotWidget.setMessage("No Python script given");
@@ -101,7 +108,7 @@ public class MatplotlibChartViewer extends ChartViewerBase {
 
         ExceptionHandler ownRunAfterError = (proc, e ) -> {
             runAfterError.handle(proc, e);
-            plotWidget.setMessage("An exception occurred during Python execution.");
+            plotWidget.setWarning("An exception occurred during Python execution.");
         };
 
         proc.pythonCallerThread.asyncExec(() -> {

@@ -151,6 +151,6 @@ def plot_histograms(df):
         _plot_histograms_DF(df)
 
 
-def set_message(message):
+def set_warning(warning):
     # TODO this might not always work, depending on whether it's called before or after plotting?
-    plt.annotate(message, xy=(20, 40), xycoords="figure pixels")
+    plt.annotate(warning, xy=(20, 40), xycoords="figure pixels", color="red")

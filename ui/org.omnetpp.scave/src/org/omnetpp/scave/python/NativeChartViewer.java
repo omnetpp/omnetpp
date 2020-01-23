@@ -72,6 +72,13 @@ public class NativeChartViewer extends ChartViewerBase {
                 Debug.println("setProperties syncExec end");
         }
 
+        @Override
+        public void setWarning(String warning) {
+            Display.getDefault().syncExec(() -> {
+                chartView.setWarningText(warning); // TODO separate text for this
+            });
+        }
+
         public void reset() {
 
             if (xyDataset != null)
@@ -115,6 +122,7 @@ public class NativeChartViewer extends ChartViewerBase {
             return;
 
         killPythonProcess();
+        chartView.setWarningText(null);
 
         if (script == null || script.isEmpty()) {
             chartView.setStatusText("No Python script given");

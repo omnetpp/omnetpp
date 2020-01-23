@@ -83,6 +83,7 @@ public abstract class ChartViewer extends ZoomableCachingCanvas implements IChar
     protected LegendTooltip legendTooltip;
 
     private String statusText = "No data available."; // displayed when there's no dataset
+    private String warningText = null;
 
     /* bounds specified by the user*/
     protected RectangularArea userDefinedArea =
@@ -297,6 +298,15 @@ public abstract class ChartViewer extends ZoomableCachingCanvas implements IChar
 
     public void setStatusText(String statusText) {
         this.statusText = statusText;
+        chartChanged();
+    }
+
+    public String getWarningText() {
+        return warningText;
+    }
+
+    public void setWarningText(String warningText) {
+        this.warningText = warningText;
         chartChanged();
     }
 
@@ -562,10 +572,19 @@ public abstract class ChartViewer extends ZoomableCachingCanvas implements IChar
     }
 
     protected void drawStatusText(Graphics graphics) {
-        if (getStatusText() != null) {
+        Rectangle rect = getViewportRectangle();
+        int warningY = rect.y+10;
+
+        if (getStatusText() != null && !getStatusText().isBlank()) {
             resetDrawingStylesAndColors(graphics);
-            Rectangle rect = getViewportRectangle();
             graphics.drawText(getStatusText(), rect.x+10, rect.y+10);
+            warningY += 20;
+        }
+
+        if (getWarningText() != null) {
+            resetDrawingStylesAndColors(graphics);
+            graphics.setForegroundColor(new Color(getDisplay(), 255, 0, 0));
+            graphics.drawText(getWarningText(), rect.x+10, warningY);
         }
     }
 

@@ -360,12 +360,16 @@ def plot_histograms(df):
 
 
 def set_property(key, value):
-    Gateway.chart_plotter.setChartProperty(key, value)
+    Gateway.chart_plotter.setProperty(key, value)
 
 
 def set_properties(props):
-    Gateway.chart_plotter.setChartProperties(props)
+    Gateway.chart_plotter.setProperties(props)
 
 
-def set_message(message):
-    Gateway.properties_provider.setMessage(message)
+def set_warning(warning):
+    if Gateway.widget_provider:
+        Gateway.widget_provider.setWarning(warning)
+
+    if Gateway.chart_plotter:
+        Gateway.chart_plotter.setWarning(warning)

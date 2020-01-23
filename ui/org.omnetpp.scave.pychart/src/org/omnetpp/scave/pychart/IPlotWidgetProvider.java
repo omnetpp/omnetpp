@@ -10,4 +10,5 @@ public interface IPlotWidgetProvider {
     void setPlotActions(int figureNumber, List<ActionDescription> actions);
 
     void updateActiveAction(int figureNumber, String action);
+    void setWarning(String warning);
 }

@@ -42,4 +42,5 @@ public interface IPlotWidget {
     void setCursorType(int cursor);
 
     void setMessage(String s);
+    void setWarning(String s);
 }

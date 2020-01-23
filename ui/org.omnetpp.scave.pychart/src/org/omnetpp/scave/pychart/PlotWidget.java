@@ -41,6 +41,7 @@ public class PlotWidget extends Canvas implements IPlotWidget {
     boolean mouseIsOverMe;
     boolean isRefreshing = false;
     String message;
+    String warning;
 
     int cursorType = SWT.CURSOR_ARROW;
     Menu contextMenu;
@@ -77,6 +78,17 @@ public class PlotWidget extends Canvas implements IPlotWidget {
                 Point textSize = e.gc.textExtent(message);
                 e.gc.fillRectangle(6, getSize().y - 14 - textSize.y, textSize.x + 20, textSize.y + 8);
                 e.gc.drawText(message, 16, getSize().y - 10 - textSize.y, true);
+            }
+
+            if (warning != null && !warning.isEmpty()) {
+                e.gc.setFont(JFaceResources.getTextFont());
+                Point textSize = e.gc.textExtent(warning);
+                e.gc.setBackground(new Color(e.gc.getDevice(), 255, 31, 0));
+                e.gc.setAlpha(128);
+                e.gc.fillRectangle(6, 10, textSize.x + 20, textSize.y + 8);
+                e.gc.setForeground(new Color(e.gc.getDevice(), 0, 0, 0));
+                e.gc.setAlpha(255);
+                e.gc.drawText(warning, 16, 14, true);
             }
 
             if (!rect.isEmpty()) {
@@ -321,6 +333,14 @@ public class PlotWidget extends Canvas implements IPlotWidget {
     public void setMessage(String s) {
         if (message == null || !message.equals(s)) {
             message = s;
+            Display.getDefault().asyncExec(() -> redraw());
+        }
+    }
+
+    @Override
+    public void setWarning(String s) {
+        if (warning == null || !warning.equals(s)) {
+            warning = s;
             Display.getDefault().asyncExec(() -> redraw());
         }
     }

@@ -104,4 +104,10 @@ public class MultiWidgetProvider implements IPlotWidgetProvider {
     public void updateActiveAction(int figureNumber, String action) {
 
     }
+
+    @Override
+    public void setWarning(String warning) {
+        // TODO Auto-generated method stub
+
+    }
 }

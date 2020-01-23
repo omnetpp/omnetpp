@@ -9,4 +9,6 @@ public interface INativeChartPlotter {
 
     void setChartProperty(String key, String value); // this is asymmetric, but.....
     void setChartProperties(Map<String, String> properties);
+
+    void setWarning(String warning);
 }
