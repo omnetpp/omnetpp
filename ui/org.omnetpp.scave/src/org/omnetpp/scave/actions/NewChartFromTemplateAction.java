@@ -16,8 +16,12 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 public class NewChartFromTemplateAction extends NewAnalysisItemAction {
 
     public NewChartFromTemplateAction(ChartTemplate template) {
+        this(template, true);
+    }
+
+    public NewChartFromTemplateAction(ChartTemplate template, boolean prefix) {
         super(ScaveModelUtil.createChartFromTemplate(template));
-        setText("New " + template.getName());
+        setText(prefix ? "New " + template.getName() : template.getName());
 
         String iconName = template.getToolbarIconPath();
 
