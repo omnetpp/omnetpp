@@ -7,6 +7,7 @@
 
 package org.omnetpp.scave.editors.ui;
 
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.eclipse.jface.action.IMenuManager;
@@ -25,11 +26,14 @@ import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.CopyChartFilterAction;
+import org.omnetpp.scave.actions.CreateTempChartAction;
+import org.omnetpp.scave.actions.CreateTempChartFromTemplateAction;
 import org.omnetpp.scave.actions.DecreaseDecimalPlacesAction;
 import org.omnetpp.scave.actions.FlatModuleTreeAction;
 import org.omnetpp.scave.actions.IncreaseDecimalPlacesAction;
 import org.omnetpp.scave.actions.SetChartFilterAction;
 import org.omnetpp.scave.actions.SetFilterAction2;
+import org.omnetpp.scave.charttemplates.ChartTemplate;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ScaveEditorActions;
@@ -195,8 +199,19 @@ public class BrowseDataPage extends FormEditorPage {
     private void configureContextMenu(FilteredDataPanel panel) {
         // populate the popup menu of the panel
         IMenuManager contextMenuManager = panel.getDataControl().getContextMenuManager();
+        contextMenuManager.removeAll();
         ScaveEditorActions actions = scaveEditor.getActions();
         if (actions != null) {
+            IDList selectedIDs = panel.getDataControl().getSelectedIDs();
+            if (selectedIDs != null) {
+                int selectedItemTypes = selectedIDs.getItemTypes();
+                List<ChartTemplate> supportingChartTemplates = scaveEditor.getChartTemplateRegistry().getChartTemplatesForResultTypes(selectedItemTypes);
+
+                for (ChartTemplate templ : supportingChartTemplates)
+                    contextMenuManager.add(new CreateTempChartFromTemplateAction(templ));
+
+                contextMenuManager.add(new Separator());
+            }
             contextMenuManager.add(actions.createTempChartAction);
             contextMenuManager.add(actions.createTempMatplotlibChartAction);
 
@@ -359,6 +374,12 @@ public class BrowseDataPage extends FormEditorPage {
             IDataControl control = panel.getDataControl();
             scaveEditor.setSelection(new IDListSelection(control.getSelectedIDs(), control.getResultFileManager()));
             setFilterAction.update(panel);
+
+            configureContextMenu(tabFolder.getAllPanel());
+            configureContextMenu(tabFolder.getScalarsPanel());
+            configureContextMenu(tabFolder.getParametersPanel());
+            configureContextMenu(tabFolder.getVectorsPanel());
+            configureContextMenu(tabFolder.getHistogramsPanel());
         }
     }
 

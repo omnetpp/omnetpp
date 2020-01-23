@@ -332,7 +332,10 @@ public class DataTable extends Table implements IDataControl {
 
     public IDList getSelectedIDs() {
         int[] selectionIndices = getSelectionIndices();
-        return idList.getSubsetByIndices(selectionIndices);
+        if (idList != null)
+            return idList.getSubsetByIndices(selectionIndices);
+        else
+            return null;
     }
 
     public ResultItem[] getSelectedItems() {

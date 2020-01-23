@@ -20,6 +20,7 @@ public class ChartTemplate {
     private int toolbarOrder = -1;
     private String toolbarIconPath;
     private List<String> propertyNames = new ArrayList<String>();
+    private int supportedResultTypes; // a bitwise OR of the constants in ResultFileManager
 
     public ChartTemplate(String id, String name, String description, ChartType chartType, String iconPath, String pythonScript, List<DialogPage> dialogPages, int toolbarOrder, String toolbarIconPath) {
         this.id = id;
@@ -111,6 +112,14 @@ public class ChartTemplate {
 
     public void setPropertyNames(List<String> propertyNames) {
         this.propertyNames = propertyNames;
+    }
+
+    public int getSupportedResultTypes() {
+        return supportedResultTypes;
+    }
+
+    public void setSupportedResultTypes(int supportedResultTypes) {
+        this.supportedResultTypes = supportedResultTypes;
     }
 
     @Override

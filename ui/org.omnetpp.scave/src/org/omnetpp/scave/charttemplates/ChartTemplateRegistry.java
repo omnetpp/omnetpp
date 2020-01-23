@@ -20,6 +20,7 @@ import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.Markers;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Chart.ChartType;
 import org.omnetpp.scave.model.Chart.DialogPage;
@@ -137,7 +138,31 @@ public class ChartTemplateRegistry {
             template.setPropertyNames(propertyNames);
         }
 
+        String resultTypesProp = props.getProperty("resultTypes");
+        if (resultTypesProp != null) {
+            int resultTypes = 0;
+            for (String resultType : resultTypesProp.split(","))
+                switch (resultType) {
+                    case "parameter":  resultTypes |= ResultFileManager.PARAMETER;  break;
+                    case "scalar":     resultTypes |= ResultFileManager.SCALAR;     break;
+                    case "vector":     resultTypes |= ResultFileManager.VECTOR;     break;
+                    case "statistics": resultTypes |= ResultFileManager.STATISTICS; break;
+                    case "histogram":  resultTypes |= ResultFileManager.HISTOGRAM;  break;
+                }
+
+            template.setSupportedResultTypes(resultTypes);
+        }
+
         return template;
+    }
+
+    public List<ChartTemplate> getChartTemplatesForResultTypes(int resultTypes) {
+        List<ChartTemplate> result = new ArrayList<ChartTemplate>();
+
+        for (ChartTemplate templ : getAllTemplates())
+            if ((resultTypes & templ.getSupportedResultTypes()) == resultTypes)
+                result.add(templ);
+        return result;
     }
 
     public String readFile(String name, IProject fromProject) throws IOException, CoreException {
