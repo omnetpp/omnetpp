@@ -83,6 +83,7 @@ public class IconGridViewer extends ContentViewer {
     // configuration
     private static final int DEFAULT_MARGIN = 20;
     private static final int DEFAULT_HORIZ_SPACING = 20, DEFAULT_VERT_SPACING = 20;
+    private static final int DEFAULT_FIGURE_WIDTH = 100;
     private Color dragRectangleOutlineColor = ColorFactory.LIGHT_BLUE4;
     private Color dragRectangleFillColor = ColorFactory.LIGHT_BLUE;
     private Color selectionFillColor = new Color(Display.getDefault(), 216, 235, 243); // very light blue
@@ -740,7 +741,7 @@ public class IconGridViewer extends ContentViewer {
         LabeledIcon label = new LabeledIcon();
         label.setBackgroundColor(selectionFillColor);  // note: only takes effect when 'opaque' is set; we use this for selection
         label.setBorder(new MarginBorder(1));
-        label.setPreferredSize(new Dimension(100, -1));
+        label.setPreferredSize(new Dimension(DEFAULT_FIGURE_WIDTH, -1));
         return label;
     }
 
