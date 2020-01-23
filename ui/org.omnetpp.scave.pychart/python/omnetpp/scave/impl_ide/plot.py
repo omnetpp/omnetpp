@@ -368,6 +368,7 @@ def set_properties(props):
 
 
 def set_warning(warning):
+    # TODO maybe we need a common interface?
     if Gateway.widget_provider:
         Gateway.widget_provider.setWarning(warning)
 
