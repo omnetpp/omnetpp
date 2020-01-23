@@ -90,6 +90,8 @@ public class PythonProcessPool {
 
         env.put("WITHIN_OMNETPP_IDE", "yes");
 
+        env.put("MPLBACKEND", "module://omnetpp.internal.backend_SWTAgg");
+
         if (PythonProcess.debug)
             Debug.println("starting python process... with path " + env.get("PYTHONPATH"));
 

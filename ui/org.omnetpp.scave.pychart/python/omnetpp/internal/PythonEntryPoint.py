@@ -16,8 +16,8 @@ from omnetpp.scave import chart, plot
 
 try:
     import matplotlib as mpl
-    mpl.use('module://omnetpp.internal.backend_SWTAgg')
-
+    import matplotlib.pyplot as plt
+    import numpy as np
     import pandas as pd
 except ImportError as e:
     print("can't import " + e.name)
