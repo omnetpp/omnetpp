@@ -24,6 +24,8 @@ public class ScaveImages {
     public static final String IMG_ETOOL16_AUTOREFRESH = "icons/full/etool16/autorefresh.gif";
     public static final String IMG_ETOOL16_CHOOSETABLECOLUMN = "icons/full/etool16/choosetablecolumn.png";
     public static final String IMG_ETOOL16_CLOSE = "icons/full/etool16/close.png";
+    public static final String IMG_ETOOL16_CODE = "icons/full/etool16/code.png";
+    public static final String IMG_ETOOL16_COGWHEEL = "icons/full/etool16/cogwheel.png";
     public static final String IMG_ETOOL16_COLLAPSE = "icons/full/etool16/collapse.png";
     public static final String IMG_ETOOL16_COMPUTE = "icons/full/etool16/compute.png";
     public static final String IMG_ETOOL16_COPY = "icons/full/etool16/copy.png";
@@ -48,6 +50,7 @@ public class ScaveImages {
     public static final String IMG_ETOOL16_PLOTMATPLOTLIB = "icons/full/etool16/plotmatplotlib.png";
     public static final String IMG_ETOOL16_PLOT = "icons/full/etool16/plot.png";
     public static final String IMG_ETOOL16_PROPERTIES = "icons/full/etool16/properties.png";
+    public static final String IMG_ETOOL16_EDITPYTHON = "icons/full/etool16/editpython.png";
     public static final String IMG_ETOOL16_REFRESH2 = "icons/full/etool16/refresh2.png";
     public static final String IMG_ETOOL16_REFRESHPLOT = "icons/full/etool16/refreshplot.png";
     public static final String IMG_ETOOL16_SHOWBOTH = "icons/full/etool16/showboth.png";
@@ -57,6 +60,7 @@ public class ScaveImages {
     public static final String IMG_ETOOL16_SPLITTERLEFT = "icons/full/etool16/splitterleft.png";
     public static final String IMG_ETOOL16_SPLITTER = "icons/full/etool16/splitter.png";
     public static final String IMG_ETOOL16_SPLITTERRIGHT = "icons/full/etool16/splitterright.png";
+    public static final String IMG_ETOOL16_SPLITVIEW = "icons/full/etool16/splitview.png";
     public static final String IMG_ETOOL16_TRASHCAN = "icons/full/etool16/trashcan.png";
     public static final String IMG_ETOOL16_TREELEVELS = "icons/full/etool16/treelevels.png";
     public static final String IMG_ETOOL16_VIEW_ICONS = "icons/full/etool16/view_icons.png";

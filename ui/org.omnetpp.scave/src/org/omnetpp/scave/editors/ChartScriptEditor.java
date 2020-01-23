@@ -601,8 +601,8 @@ public class ChartScriptEditor extends PyEdit {
 
         formEditor.addSeparatorToToolbar();
 
-        formEditor.addToToolbar(toggleShowSourceAction);
         formEditor.addToToolbar(new EditChartPropertiesAction());
+        formEditor.addToToolbar(toggleShowSourceAction);
 
         toggleAutoUpdateAction = new ToggleAutoUpdateAction();
         toggleAutoUpdateAction.setChecked(true);
