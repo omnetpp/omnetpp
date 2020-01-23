@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.common.ui.IconGridViewer;
+import org.omnetpp.common.ui.IconGridViewer.ViewMode;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScaveImages;
@@ -82,6 +83,7 @@ public class ChartsPage extends FormEditorPage {
         viewer = new IconGridViewer(getContent());
         viewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         viewer.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+        viewer.setViewMode(ViewMode.ICONS);
 
         ScaveEditorActions actions = scaveEditor.getActions();
 

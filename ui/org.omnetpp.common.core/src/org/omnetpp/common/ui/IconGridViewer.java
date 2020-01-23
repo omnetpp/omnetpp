@@ -24,7 +24,6 @@ import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.XYLayout;
-import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.util.LocalSelectionTransfer;
@@ -80,14 +79,18 @@ import org.omnetpp.common.color.ColorFactory;
 //TODO keyboard: proper up/down, pngup/pgdn
 //TODO fix shift+cursor keys
 public class IconGridViewer extends ContentViewer {
+    public enum ViewMode { ICONS, LIST, MULTICOLUMN_LIST };
+
     // configuration
     private static final int DEFAULT_MARGIN = 20;
     private static final int DEFAULT_HORIZ_SPACING = 20, DEFAULT_VERT_SPACING = 20;
-    private static final int DEFAULT_FIGURE_WIDTH = 100;
     private Color dragRectangleOutlineColor = ColorFactory.LIGHT_BLUE4;
     private Color dragRectangleFillColor = ColorFactory.LIGHT_BLUE;
     private Color selectionFillColor = new Color(Display.getDefault(), 216, 235, 243); // very light blue
     private Color focusElementBorderColor = ColorFactory.LIGHT_BLUE;
+    private ViewMode viewMode = ViewMode.ICONS;
+    private int iconsModeItemWidth = 100;
+    private int multicolumnListModeColumnWidth = 400;
 
     //  widgets
     private ScrolledComposite scrolledComposite;
@@ -416,6 +419,16 @@ public class IconGridViewer extends ContentViewer {
 
     }
 
+    protected void updateItems(boolean horizontal, int itemWidth) {
+        for (Map.Entry<Object,IFigure> entry : elementsToFigures.entrySet()) {
+            LabeledIcon labeledIcon = (LabeledIcon)entry.getValue();
+            labeledIcon.setHorizontalLayout(horizontal);
+            labeledIcon.setPreferredSize(itemWidth, -1);
+        }
+        FlowLayout layout = (FlowLayout)contentLayer.getLayoutManager();
+        layout.invalidate();
+    }
+
     public void setMargin(int margin) {
         contentLayer.setBorder(new MarginBorder(margin));
     }
@@ -444,6 +457,39 @@ public class IconGridViewer extends ContentViewer {
     public void setBackground(Color color) {
         scrolledComposite.setBackground(color);
         canvas.setBackground(color);
+    }
+
+    public void setViewMode(ViewMode viewMode) {
+        if (this.viewMode != viewMode) {
+            this.viewMode = viewMode;
+            updateItems(viewMode!=ViewMode.ICONS, getItemWidth());
+        }
+    }
+
+    public ViewMode getViewMode() {
+        return viewMode;
+    }
+
+    public void setIconsModeItemWidth(int iconsModeItemWidth) {
+        if (this.iconsModeItemWidth != iconsModeItemWidth) {
+            this.iconsModeItemWidth = iconsModeItemWidth;
+            updateItems(viewMode!=ViewMode.ICONS, getItemWidth());
+        }
+    }
+
+    public int getIconsModeItemWidth() {
+        return iconsModeItemWidth;
+    }
+
+    public void setMulticolumnListModeColumnWidth(int multicolumnListModeColumnWidth) {
+        if (this.multicolumnListModeColumnWidth != multicolumnListModeColumnWidth) {
+            this.multicolumnListModeColumnWidth = multicolumnListModeColumnWidth;
+            updateItems(viewMode!=ViewMode.ICONS, getItemWidth());
+        }
+    }
+
+    public int getMulticolumnListModeColumnWidth() {
+        return multicolumnListModeColumnWidth;
     }
 
     public void setFocus() {
@@ -731,6 +777,15 @@ public class IconGridViewer extends ContentViewer {
             adjustCanvasSize();
     }
 
+    protected int getItemWidth() {
+        switch (viewMode) {
+        case ICONS: return iconsModeItemWidth;
+        case LIST: return 5000; //TODO ???
+        case MULTICOLUMN_LIST: return multicolumnListModeColumnWidth;
+        default: return -1;
+        }
+    }
+
     @Override
     protected void inputChanged(Object input, Object oldInput) {
         super.inputChanged(input, oldInput);
@@ -741,7 +796,8 @@ public class IconGridViewer extends ContentViewer {
         LabeledIcon label = new LabeledIcon();
         label.setBackgroundColor(selectionFillColor);  // note: only takes effect when 'opaque' is set; we use this for selection
         label.setBorder(new MarginBorder(1));
-        label.setPreferredSize(new Dimension(DEFAULT_FIGURE_WIDTH, -1));
+        label.setPreferredSize(getItemWidth(), -1);
+        label.setHorizontalLayout(viewMode != ViewMode.ICONS);
         return label;
     }
 

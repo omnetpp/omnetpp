@@ -41,9 +41,13 @@ public class LabeledIcon extends Figure implements PositionConstants {
      * Choose between horizontal layout (text on the right of the icon) and
      * vertical layout (text below the icon, both center-aligned/justified).
      */
-    public void setLayout(boolean horizontal) {
+    public void setHorizontalLayout(boolean horizontal) {
         this.horizontal = horizontal;
         repaint();
+    }
+
+    public boolean isHorizontalLayout() {
+        return horizontal;
     }
 
     /**
