@@ -2061,5 +2061,265 @@ Axis Titles {
             <property name="Y.Axis.Min" value=""/>
             <property name="Symbols.Size" value="2"/>
         </chart>
+        <chart icon="icons/full/obj/linechart.png" id="313" name="Line Chart with Matplotlib" template="linechart_mpl" type="MATPLOTLIB">
+            <script>
+                <![CDATA[from omnetpp.scave import results, chart, utils, plot, vectorops as ops
+import matplotlib.pyplot as plt
+import math
+
+props = chart.get_properties()
+utils.update_matplotlib_rcparams(props)
+
+# This expression selects the results (you might be able to logically simplify it)
+
+filter_expression = props["filter"]
+
+start_time = float(props["vector_start_time"] or -math.inf)
+end_time = float(props["vector_end_time"] or math.inf)
+
+# The data is returned as a Pandas DataFrame
+df = results.get_vectors(filter_expression, include_attrs=True, include_itervars=True, start_time=start_time, end_time=end_time)
+
+df = ops.perform_vector_ops(df, props["vector_operations"])
+
+# You can perform any transformations on the data here
+
+print(df)
+
+plt.xlabel('Simulation time (s)')
+
+title, legend = utils.extract_label_columns(df)
+
+for t in df.itertuples(index=False):
+    style = dict()
+    interp = t.interpolationmode if 'interpolationmode' in df else 'sample-hold' if 'enum' in df else None
+    if interp:
+        if interp == "none":
+            style['linestyle'] = ' '
+            style['marker'] = '.'
+        elif interp == "linear":
+            pass  # nothing to do
+        elif interp == "sample-hold":
+            style['drawstyle'] = 'steps-post'
+        elif interp == "backward-sample-hold":
+            style['drawstyle'] = 'steps-pre'
+
+    plt.plot(t.vectime, t.vecvalue, label=utils.make_legend_label(legend, t), **style)
+
+if 'title' in props and props['title']:
+    plt.title(props['title'])
+else:
+    plt.title(utils.make_chart_title(df, title, legend))
+
+plt.legend()
+plt.grid()
+]]>
+            </script>
+            <dialogPage id="Main" label="Main">
+                <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2"/>
+
+  <x:children>
+
+    <!-- page generated from the following spec:
+Names {
+	chartName,
+},
+Options {
+	Use antialias?,
+	Use caching?,
+},
+Colors {
+	backgroundColor
+}    
+    -->
+    
+    <!-- Names { -->
+    <group text="Names">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- chartName -->
+    <label text="Chart name:"/>
+    <text x:id="chart_name" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <!--  -->
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+    <!-- Colors { -->
+    <group text="Colors">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- backgroundColor -->
+    <label text="Background color:"/>
+    <ColorChooser x:id="background_color" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </ColorChooser>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+  </x:children>
+</xswt>
+]]>
+            </dialogPage>
+            <dialogPage id="Input" label="Input">
+                <![CDATA[<?xml version='1.0' encoding='UTF-8'?>
+<xswt xmlns:x='http://sweet_swt.sf.net/xswt'>
+  <import xmlns='http://sweet_swt.sf.net/xswt'>
+    <package name='java.lang'/>
+    <package name='org.eclipse.swt.widgets' />
+    <package name='org.eclipse.swt.graphics' />
+    <package name='org.eclipse.swt.layout' />
+    <package name='org.eclipse.swt.custom' />
+  </import>
+  <layout x:class='GridLayout' numColumns='1'/>
+  <x:children>
+    <label text="Chart Title:"/>
+    <text x:id="title" x:style="BORDER">
+        <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+	</text>
+
+    <label text="Filter expression:">
+        <layoutData x:class="GridData" horizontalAlignment="BEGINNING" verticalAlignment="BEGINNING"/>
+    </label>
+    <text x:id="filter" x:style="BORDER|WRAP|MULTI" x:id.isFilter="true">
+        <layoutData x:class="GridData" horizontalAlignment="FILL" verticalAlignment="FILL" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true"/>
+    </text>
+
+    <label text="Vector operations:"/>
+    <text x:id="vector_operations" x:style="BORDER|MULTI">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true"/>
+    </text>
+
+    <label text="Vector start time (seconds):"/>
+    <text x:id="vector_start_time" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+    </text>
+
+    <label text="Vector end time (seconds):"/>
+    <text x:id="vector_end_time" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+    </text>
+
+  </x:children>
+</xswt>]]>
+            </dialogPage>
+            <dialogPage id="Lines" label="Lines">
+                <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2"/>
+
+  <x:children>
+
+    <!-- page generated from the following spec:
+Line Options {
+lineWidth%,
+lineStyle:solid/dashed/dotted,
+drawStyle:dots/points/linear/pins/steps-pre/steps-post,
+},
+Symbol Options {
+    symbolSize%,
+    showSymbols?,
+}    
+    -->
+    
+    <label text="Line width:"/>
+    <spinner x:id="lines.linewidth" minimum="0" selection="2" maximum="100" x:style="BORDER"/>
+    
+    <!-- drawStyle:dots/points/linear/pins/steps-pre/steps-post -->
+    <label text="Marker:"/>
+    <combo x:id="lines.marker" x:style="BORDER|READ_ONLY">
+      <add x:p0="."/>
+      <add x:p0=","/>
+      <add x:p0="o"/>
+      <add x:p0="s"/>
+      <add x:p0="+"/>
+      <add x:p0="x"/>
+      <add x:p0="*"/>
+      <setText x:p0="o"/>
+    </combo>
+
+    <!--  -->
+
+    <!-- symbolSize% -->
+    <label text="Marker size:"/>
+    <spinner x:id="lines.markersize" selection="5" minimum="0" maximum="100" x:style="BORDER"/>
+
+<!-- TODO
+  None("None", ScaveImages.IMG_OBJ16_SYM_NONE),
+        Cross("Cross", ScaveImages.IMG_OBJ16_SYM_CROSS),
+        Diamond("Diamond", ScaveImages.IMG_OBJ16_SYM_DIAMOND),
+        Dot("Dot", ScaveImages.IMG_OBJ16_SYM_DOT),
+        Plus("Plus", ScaveImages.IMG_OBJ16_SYM_PLUS),
+        Square("Square", ScaveImages.IMG_OBJ16_SYM_SQUARE),
+        Triangle("Triangle", ScaveImages.IMG_OBJ16_SYM_TRIANGLE);
+
+    
+    <label text="Symbol type:"/>
+    <combo x:id="Symbols.Type" x:style="BORDER|READ_ONLY">
+      <add x:p0="None"/>
+      <add x:p0="points"/>
+      <add x:p0="linear"/>
+      <add x:p0="pins"/>
+      <add x:p0="steps-pre"/>
+      <add x:p0="steps-post"/>
+    </combo>
+-->
+
+
+    <!--  -->
+
+
+    <label x:text="These settings can be overwritten in the Python script for individual lines." x:style="WRAP">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </label>
+    
+  </x:children>
+</xswt>
+]]>
+            </dialogPage>
+            <property name="filter" value="runattr:experiment =~ PureAlohaExperiment AND runattr:measurement =~ &quot;$numHosts=10, $iaMean=9&quot; AND runattr:replication =~ &quot;#0&quot; AND module =~ &quot;Aloha.host[5]&quot; AND name =~ radioState:vector"/>
+            <property name="vector_start_time" value=""/>
+            <property name="vector_operations" value=""/>
+            <property name="background_color" value=""/>
+            <property name="lines.marker" value="o"/>
+            <property name="vector_end_time" value=""/>
+            <property name="lines.linewidth" value="2"/>
+            <property name="title" value=""/>
+            <property name="lines.markersize" value="5"/>
+        </chart>
     </charts>
 </analysis>
