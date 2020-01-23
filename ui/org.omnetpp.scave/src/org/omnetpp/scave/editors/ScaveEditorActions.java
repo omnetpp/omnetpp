@@ -27,6 +27,8 @@ import org.eclipse.ui.part.IPage;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
+import org.omnetpp.common.ui.IconGridViewer;
+import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.ChartMouseModeAction;
 import org.omnetpp.scave.actions.CopyAction;
@@ -52,10 +54,10 @@ import org.omnetpp.scave.actions.SaveTempChartAction;
 import org.omnetpp.scave.actions.SelectAllAction;
 import org.omnetpp.scave.actions.ShowOutputVectorViewAction;
 import org.omnetpp.scave.actions.UndoAction;
+import org.omnetpp.scave.actions.ViewModeAction;
 import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.charting.IChartView;
 import org.omnetpp.scave.charttemplates.ChartTemplate;
-import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.python.KillPythonProcessAction;
 
 public class ScaveEditorActions {
@@ -70,6 +72,10 @@ public class ScaveEditorActions {
     public final SelectAllAction selectAllAction = registerAction(new SelectAllAction());
     public final ExportChartsAction exportChartsAction = registerAction(new ExportChartsAction());
     public final RemoveAction removeAction = registerAction(new RemoveAction());
+
+    public final ViewModeAction viewIconsAction = registerAction(new ViewModeAction(IconGridViewer.ViewMode.ICONS, "Icons", ScaveImages.IMG_ETOOL16_VIEW_ICONS));
+    public final ViewModeAction viewListAction = registerAction(new ViewModeAction(IconGridViewer.ViewMode.LIST, "List", ScaveImages.IMG_ETOOL16_VIEW_LIST));
+    public final ViewModeAction viewMulticolumnListAction = registerAction(new ViewModeAction(IconGridViewer.ViewMode.MULTICOLUMN_LIST, "Multicolumn", ScaveImages.IMG_ETOOL16_VIEW_MULTICOLUMN));
 
     // ChartPage actions
     public final ZoomChartAction hzoomInAction = registerAction(new ZoomChartAction(true, false, 2.0));

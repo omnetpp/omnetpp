@@ -36,7 +36,6 @@ import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.NewChartFromTemplateAction;
 import org.omnetpp.scave.charttemplates.ChartTemplate;
-import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ScaveEditorActions;
 import org.omnetpp.scave.model.Analysis;
@@ -87,20 +86,18 @@ public class ChartsPage extends FormEditorPage {
 
         ScaveEditorActions actions = scaveEditor.getActions();
 
-        List<ChartTemplate> templates = new ArrayList<ChartTemplate>();
-
-        for (ChartTemplate templ : scaveEditor.getChartTemplateRegistry().getAllTemplates())
-            if (templ.getToolbarOrder() >= 0)
-                templates.add(templ);
-
-        templates.sort((ChartTemplate a, ChartTemplate b) ->  {
-            return Integer.compare(a.getToolbarOrder(), b.getToolbarOrder());
-        });
-
+        List<ChartTemplate> templates = getTemplatesForToolbar();
         for (ChartTemplate templ : templates)
             addToToolbar(new NewChartFromTemplateAction(templ));
 
         addSeparatorToToolbar();
+
+        addToToolbar(actions.viewIconsAction);
+        addToToolbar(actions.viewMulticolumnListAction);
+        addToToolbar(actions.viewListAction);
+
+        addSeparatorToToolbar();
+
         addToToolbar(actions.editAction);
         addToToolbar(actions.removeAction);
         addToToolbar(actions.openAction);
@@ -116,6 +113,17 @@ public class ChartsPage extends FormEditorPage {
 
         // ensure that focus gets restored correctly after user goes somewhere else and then comes back
         setFocusManager(new FocusManager(this));
+    }
+
+    protected List<ChartTemplate> getTemplatesForToolbar() {
+        List<ChartTemplate> templates = new ArrayList<ChartTemplate>();
+        for (ChartTemplate templ : scaveEditor.getChartTemplateRegistry().getAllTemplates())
+            if (templ.getToolbarOrder() >= 0)
+                templates.add(templ);
+        templates.sort((ChartTemplate a, ChartTemplate b) ->  {
+            return Integer.compare(a.getToolbarOrder(), b.getToolbarOrder());
+        });
+        return templates;
     }
 
     public IconGridViewer getViewer() {
@@ -255,7 +263,6 @@ public class ChartsPage extends FormEditorPage {
 //            }
 //        });
     }
-
 }
 
 

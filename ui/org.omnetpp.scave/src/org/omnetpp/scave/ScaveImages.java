@@ -59,6 +59,9 @@ public class ScaveImages {
     public static final String IMG_ETOOL16_SPLITTERRIGHT = "icons/full/etool16/splitterright.png";
     public static final String IMG_ETOOL16_TRASHCAN = "icons/full/etool16/trashcan.png";
     public static final String IMG_ETOOL16_TREELEVELS = "icons/full/etool16/treelevels.png";
+    public static final String IMG_ETOOL16_VIEW_ICONS = "icons/full/etool16/view_icons.png";
+    public static final String IMG_ETOOL16_VIEW_LIST = "icons/full/etool16/view_list.png";
+    public static final String IMG_ETOOL16_VIEW_MULTICOLUMN = "icons/full/etool16/view_multicolumn.png";
     public static final String IMG_ETOOL16_VZOOMIN = "icons/full/etool16/vzoomin.png";
     public static final String IMG_ETOOL16_VZOOMOUT = "icons/full/etool16/vzoomout.png";
     public static final String IMG_ETOOL16_ZOOMIN = "icons/full/etool16/zoomin.png";
