@@ -88,6 +88,7 @@ import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
+import org.eclipse.ui.part.PageSite;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
@@ -215,8 +216,12 @@ public class ScaveEditor extends MultiPageEditorPartExt
      * This listens for when the outline becomes active
      */
     protected IPartListener partListener = new IPartListener() {
-        // TODO probably not needed
         public void partActivated(IWorkbenchPart p) {
+            if (p == ScaveEditor.this) {
+                ChartScriptEditor activeChartScriptEditor = getActiveChartScriptEditor();
+                if (activeChartScriptEditor != null)
+                    activeChartScriptEditor.pageActivated();
+            }
             if (p instanceof ContentOutline) {
                 if (((ContentOutline) p).getCurrentPage() == contentOutlinePage) {
                     //getActionBarContributor().setActiveEditor(ScaveEditor.this);
@@ -232,6 +237,10 @@ public class ScaveEditor extends MultiPageEditorPartExt
         }
 
         public void partClosed(IWorkbenchPart p) {
+            if (p == ScaveEditor.this) {
+                getSite().getPage().removePartListener(this);
+                saveState();
+            }
         }
 
         public void partDeactivated(IWorkbenchPart p) {
@@ -349,34 +358,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
         IFile fileInput = ((IFileEditorInput) editorInput).getFile();
         if (!editorInput.exists())
             throw new PartInitException("File '" + fileInput.getFullPath().toString() + "' does not exist");
-
-        // add part listener to save the editor state *before* it is disposed
-        final IWorkbenchPage page = site.getPage();
-        page.addPartListener(new IPartListener() {
-            @Override
-            public void partActivated(IWorkbenchPart part) {
-            }
-
-            @Override
-            public void partBroughtToTop(IWorkbenchPart part) {
-            }
-
-            @Override
-            public void partDeactivated(IWorkbenchPart part) {
-            }
-
-            @Override
-            public void partOpened(IWorkbenchPart part) {
-            }
-
-            @Override
-            public void partClosed(IWorkbenchPart part) {
-                if (part == ScaveEditor.this) {
-                    page.removePartListener(this);
-                    saveState();
-                }
-            }
-        });
 
         // init super. Note that this does not load the model yet -- it's done in
         // createModel() called from createPages().
