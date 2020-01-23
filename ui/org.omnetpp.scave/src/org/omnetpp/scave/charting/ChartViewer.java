@@ -575,7 +575,7 @@ public abstract class ChartViewer extends ZoomableCachingCanvas implements IChar
         Rectangle rect = getViewportRectangle();
         int warningY = rect.y+10;
 
-        if (getStatusText() != null && !getStatusText().isBlank()) {
+        if (getStatusText() != null && !StringUtils.isBlank(getStatusText())) {
             resetDrawingStylesAndColors(graphics);
             graphics.drawText(getStatusText(), rect.x+10, rect.y+10);
             warningY += 20;
