@@ -7,8 +7,8 @@ public interface INativeChartPlotter {
     void plotVectors(byte[] pickledData);
     void plotHistograms(byte[] pickledData);
 
-    void setChartProperty(String key, String value); // this is asymmetric, but.....
-    void setChartProperties(Map<String, String> properties);
+    void setProperty(String key, String value);
+    void setProperties(Map<String, String> properties);
 
     void setWarning(String warning);
 }

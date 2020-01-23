@@ -50,7 +50,7 @@ public class NativeChartViewer extends ChartViewerBase {
         }
 
         @Override
-        public void setChartProperty(String key, String value) {
+        public void setProperty(String key, String value) {
             if(debug)
                 Debug.println("setProperty syncExec begin: " + key + " : " + value);
             Display.getDefault().syncExec(() -> {
@@ -61,7 +61,7 @@ public class NativeChartViewer extends ChartViewerBase {
         }
 
         @Override
-        public void setChartProperties(Map<String, String> properties) {
+        public void setProperties(Map<String, String> properties) {
             if(debug)
                 Debug.println("setProperties syncExec begin");
             Display.getDefault().syncExec(() -> {
