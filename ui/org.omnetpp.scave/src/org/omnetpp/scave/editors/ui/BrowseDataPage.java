@@ -375,6 +375,9 @@ public class BrowseDataPage extends FormEditorPage {
             scaveEditor.setSelection(new IDListSelection(control.getSelectedIDs(), control.getResultFileManager()));
             setFilterAction.update(panel);
 
+            // TODO FIXME HACK this is just to make the "available templates" actually update when the selection changes,
+            // but actually, we do not need to be this eager, we would be fine if we did this every time
+            // the user requests a context menu
             configureContextMenu(tabFolder.getAllPanel());
             configureContextMenu(tabFolder.getScalarsPanel());
             configureContextMenu(tabFolder.getParametersPanel());
