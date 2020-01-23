@@ -34,7 +34,7 @@ def extract_label_columns(df):
                  "binedges", "binvalues", "underflows", "overflows",
                  "count", "sumweights", "mean", "stddev", "min", "max",
                  "processid", "iterationvars", "iterationvarsf", "datetime",
-                 "source", "interpolationmode", "enum", "title", 'runnumber', 'seedset']
+                 "source", "interpolationmode", "enum", "title", "unit", 'runnumber', 'seedset']
 
     title_col = None
 
