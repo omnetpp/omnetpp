@@ -11,7 +11,8 @@ utils.update_matplotlib_rcparams(props)
 utils.update_matplotlib_rcparams(utils.parse_matplotlib_rcparams(props["matplotlibrc"] or ""))
 
 if not (props["x_attr"] and props["y_attr"]):
-    raise Exception("Please select axis attributes in the properties dialog!")
+    plot.set_warning("Please select axis attributes in the properties dialog!")
+    exit(1)
 
 df = results.get_scalars(props["scalar_filter"], include_attrs=True, include_itervars=True, include_runattrs=True)
 
