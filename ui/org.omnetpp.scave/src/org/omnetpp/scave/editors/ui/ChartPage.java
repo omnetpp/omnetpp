@@ -29,7 +29,7 @@ public class ChartPage extends FormEditorPage {
     @Override
     public void updatePage(ModelChangeEvent event) {
         // TODO update description
-        setPageTitle(chartScriptEditor.getChartName());
-        setFormTitle(chartScriptEditor.getChartName());
+        setPageTitle(chartScriptEditor.getChartDisplayName());
+        setFormTitle(chartScriptEditor.getChartDisplayName());
     }
 }

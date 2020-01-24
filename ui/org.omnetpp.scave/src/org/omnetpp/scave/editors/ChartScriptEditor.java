@@ -206,7 +206,7 @@ public class ChartScriptEditor extends PyEdit {
 
             addToolbarActions();
 
-            formEditor.setFormTitle(getChartName());
+            formEditor.setFormTitle(getChartDisplayName());
             GridLayout layout = new GridLayout(1, true);
             layout.marginWidth = 0;
             layout.marginHeight = 0;
@@ -443,7 +443,7 @@ public class ChartScriptEditor extends PyEdit {
 
         this.documentProvider = new ChartScriptDocumentProvider();
 
-        console = new IOConsole("Chart script output of " + getChartName(), null);
+        console = new IOConsole("Chart script output of " + getChartDisplayName(), null);
         IConsoleManager consoleManager = ConsolePlugin.getDefault().getConsoleManager();
         consoleManager.addConsoles(new IConsole[] { console });
         outputStream = console.newOutputStream();
@@ -923,7 +923,7 @@ public class ChartScriptEditor extends PyEdit {
         return originalChart;
     }
 
-    public String getChartName() {
+    public String getChartDisplayName() {
         return StringUtils.defaultIfEmpty(chart.getName(), "<unnamed>");
     }
 
