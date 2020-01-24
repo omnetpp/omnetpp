@@ -96,6 +96,8 @@ def run_chart(wd, c, export):
     ] + sys.path
 
     chart.name = c.name
+    chart.chart_type = c.type
+    chart.properties.clear()
     chart.properties.update(c.properties)
 
     global _show_called

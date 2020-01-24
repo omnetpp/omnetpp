@@ -76,4 +76,14 @@ public class PropertiesProvider implements IChartPropertiesProvider {
     public String getChartName() {
         return chart.getName();
     }
+
+    @Override
+    public String getChartType() {
+        return chart.getType().toString().toLowerCase();
+    }
+
+    @Override
+    public void setSuggestedChartName(String name) {
+        System.out.println("SUGGESTED NAME: " + name);
+    }
 }

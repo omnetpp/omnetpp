@@ -180,4 +180,7 @@ def set_properties(props):
 
 
 def set_warning(warning):
+    """
+    Displays the given warning text in the plot.
+    """
     impl.set_warning(**locals())

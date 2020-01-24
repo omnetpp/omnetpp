@@ -29,9 +29,28 @@ def get_property(key):
     """
     return impl.get_property(**locals())
 
-
 def get_name():
     """
     Returns the name of the chart as a string.
     """
     return impl.get_name(**locals())
+
+def get_chart_type():
+    """
+    Returns the chart type, one of the strings "bar"/"histogram"/"line"/"matplotlib"
+    """
+    return impl.get_chart_type(**locals())
+
+def is_native_chart():
+    """
+    Returns True if this chart uses the IDE's built-in plotting widgets.
+    """
+    return get_chart_type() != "matplotlib"
+
+def set_suggested_chart_name(name):
+    """
+    Sets a proposed name for the chart. The IDE may offer this name to the user
+    when saving the chart.
+    """
+    return impl.set_suggested_chart_name(**locals())
+

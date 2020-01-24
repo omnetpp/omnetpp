@@ -19,3 +19,8 @@ def get_property(key):
 def get_name():
     return Gateway.properties_provider.getChartName()
 
+def get_chart_type():
+    return Gateway.properties_provider.getChartType()
+
+def set_suggested_chart_name(name):
+    return Gateway.properties_provider.setSuggestedChartName(name)

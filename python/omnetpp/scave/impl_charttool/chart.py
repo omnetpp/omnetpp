@@ -8,7 +8,7 @@ class NoneDict(dict):
 
 properties = NoneDict()
 name = ""
-
+chart_type = None # "bar"/"histogram"/"line"/"matplotlib"
 
 def get_properties():
     return properties
@@ -20,3 +20,10 @@ def get_property(key):
 
 def get_name():
     return name
+
+def get_chart_type():
+    return chart_type
+
+def set_suggested_chart_name(name):
+    pass
+
