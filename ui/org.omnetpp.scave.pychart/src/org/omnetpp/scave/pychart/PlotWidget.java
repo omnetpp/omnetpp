@@ -82,11 +82,7 @@ public class PlotWidget extends Canvas implements IPlotWidget {
 
             if (warning != null && !warning.isEmpty()) {
                 e.gc.setFont(JFaceResources.getTextFont());
-                Point textSize = e.gc.textExtent(warning);
-                e.gc.setBackground(new Color(e.gc.getDevice(), 255, 31, 0));
-                e.gc.setAlpha(128);
-                e.gc.fillRectangle(6, 10, textSize.x + 20, textSize.y + 8);
-                e.gc.setForeground(new Color(e.gc.getDevice(), 0, 0, 0));
+                e.gc.setForeground(new Color(e.gc.getDevice(), 255, 31, 0));
                 e.gc.setAlpha(255);
                 e.gc.drawText(warning, 16, 14, true);
             }
