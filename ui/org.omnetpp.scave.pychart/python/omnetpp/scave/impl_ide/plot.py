@@ -21,6 +21,9 @@ from omnetpp.scave.utils import *
 
 vector_data_counter = 0
 
+def _assert_is_native_chart():
+    if not Gateway.chart_plotter:
+        raise RuntimeError("This method can only be used on native charts")
 
 def _list_to_bytes(l):
     """
@@ -32,6 +35,7 @@ def _list_to_bytes(l):
 
 def plot_bars(df):
     # TODO: add check for one-layer indices? numbers-only data?
+    _assert_is_native_chart()
     Gateway.chart_plotter.plotScalars(pl.dumps(
         {
             "columnKeys": [_to_label(c) for c in list(df.columns)],
@@ -42,6 +46,7 @@ def plot_bars(df):
 
 
 def plot_lines(df):  # key, label, xs, ys
+    _assert_is_native_chart()
     if sorted(list(df.columns)) != sorted(["key", "label", "xs", "ys"]):
         raise RuntimeError("Invalid DataFrame format in plot_lines")
 
@@ -66,7 +71,7 @@ def plot_lines(df):  # key, label, xs, ys
 
 
 def plot_histogram_data(df):  # key, label, binedges, binvalues, underflows, overflows, min, max
-    print(df)
+    _assert_is_native_chart()
     if sorted(list(df.columns)) != sorted(["key", "label", "binedges", "binvalues", "underflows", "overflows", "min", "max"]):
         raise RuntimeError("Invalid DataFrame format in plot_histogram_data")
 
@@ -129,6 +134,7 @@ def _plot_scalars_DF_scave(df):
 
 # This method only does dynamic dispatching based on its first argument.
 def plot_scalars(df_or_values, labels=None, row_label=None):
+    _assert_is_native_chart()
     if isinstance(df_or_values, pd.DataFrame):
         df = df_or_values
         if "value" in df.columns and "module" in df.columns and "name" in df.columns:
@@ -181,6 +187,7 @@ def _put_array_in_shm(arr, shm_objs, mmap_objs):
 
 
 def plot_vector(label, xs, ys, key=None):
+    _assert_is_native_chart()
     if key is None:
         key = label
     plot_lines(pd.DataFrame({
@@ -253,6 +260,7 @@ def _plot_vectors_DF_scave(df):
 
 
 def plot_vectors(df_or_list):
+    _assert_is_native_chart()
     if isinstance(df_or_list, pd.DataFrame):
         df = df_or_list
         if "vectime" in df.columns and "vecvalue" in df.columns:
@@ -264,6 +272,7 @@ def plot_vectors(df_or_list):
 
 
 def plot_scatter(df, xdata, iso_column=None):
+    _assert_is_native_chart()
     # names = set(df["name"].values)
     # names.discard(None)
     # names.discard(xdata)
@@ -318,6 +327,7 @@ def plot_scatter(df, xdata, iso_column=None):
 
 
 def plot_histogram(label, binedges, binvalues, underflows=0.0, overflows=0.0, minvalue=math.nan, maxvalue=math.nan):
+    _assert_is_native_chart()
     plot_histogram_data(pd.DataFrame({
         "key": [label],
         "label": [label],
@@ -353,6 +363,7 @@ def _plot_histograms_DF_scave(df):
 
 
 def plot_histograms(df):
+    _assert_is_native_chart()
     if "binedges" in df.columns and "binvalues" in df.columns:
         _plot_histograms_DF_scave(df)
     else:
@@ -360,10 +371,12 @@ def plot_histograms(df):
 
 
 def set_property(key, value):
+    _assert_is_native_chart()
     Gateway.chart_plotter.setProperty(key, value)
 
 
 def set_properties(props):
+    _assert_is_native_chart()
     Gateway.chart_plotter.setProperties(props)
 
 
