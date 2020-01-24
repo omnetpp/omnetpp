@@ -88,7 +88,6 @@ import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
-import org.eclipse.ui.part.PageSite;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
@@ -152,7 +151,8 @@ import org.xml.sax.SAXException;
  */
 public class ScaveEditor extends MultiPageEditorPartExt
         implements ISelectionProvider, IGotoMarker, INavigationLocationProvider {
-    public static final String ACTIVE_PAGE = "ActivePage", PAGE = "Page", PAGE_ID = "PageId";
+    public static final String ACTIVE_PAGE = "ActivePage", PAGE = "Page",
+            PAGE_ID = "PageId", TEMPLATE_TIMESTAMPS = "TemplateTimestamps";
 
     private InputsPage inputsPage;
     private BrowseDataPage browseDataPage;
@@ -1300,6 +1300,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
     private void saveState(IMemento memento) {
         memento.putInteger(ACTIVE_PAGE, getActivePage());
+        memento.putString(TEMPLATE_TIMESTAMPS, getChartTemplateRegistry().storeTimestamps());
         for (AnalysisItem openedObject : closablePages.keySet()) {
             Control p = closablePages.get(openedObject);
             if (p instanceof FormEditorPage) {
@@ -1332,6 +1333,9 @@ public class ScaveEditor extends MultiPageEditorPartExt
         int activePage = memento.getInteger(ACTIVE_PAGE);
         if (activePage >= 0 && activePage < getPageCount())
             setActivePage(activePage);
+        String timestamps = memento.getString(TEMPLATE_TIMESTAMPS);
+        if (!StringUtils.isBlank(timestamps))
+            getChartTemplateRegistry().restoreTimestamps(timestamps);
     }
 
     public void saveState() {

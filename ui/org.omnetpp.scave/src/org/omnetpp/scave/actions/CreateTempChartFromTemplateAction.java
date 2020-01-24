@@ -8,12 +8,10 @@
 
 package org.omnetpp.scave.actions;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charttemplates.ChartTemplate;
-import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.IDList;
@@ -22,7 +20,6 @@ import org.omnetpp.scave.engine.ResultItemField;
 import org.omnetpp.scave.engine.RunAttribute;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
-import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model2.ResultSelectionFilterGenerator;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
@@ -38,7 +35,6 @@ public class CreateTempChartFromTemplateAction extends AbstractScaveAction {
         this.template = template;
         setText("Plot using " + template.getName());
         setToolTipText("Plot using " + template.getName());
-
 
         String iconName = template.getToolbarIconPath();
 
@@ -65,6 +61,8 @@ public class CreateTempChartFromTemplateAction extends AbstractScaveAction {
         String filter = ResultFileManager.callWithReadLock(manager, () -> { return ResultSelectionFilterGenerator.getIDListAsFilterExpression(idList, filterFields, viewFilter, manager); });
         Property property = new Property("filter", filter);
         chart.addProperty(property);
+
+        editor.getChartTemplateRegistry().markTemplateUsage(template);
 
         chart.setTemporary(true);
         editor.openPage(chart);

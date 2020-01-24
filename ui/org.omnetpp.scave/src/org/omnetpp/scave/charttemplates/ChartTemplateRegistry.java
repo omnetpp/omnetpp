@@ -5,7 +5,10 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang3.EnumUtils;
@@ -38,6 +41,8 @@ public class ChartTemplateRegistry {
     private ArrayList<ChartTemplate> templates = null;
 
     private long lastTimeLoaded = 0;
+
+    private Map<String, Long> templatesLastUsageTimestamps = new HashMap<String, Long>();
 
     public void setProject(IProject project) {
         if (project != this.project) {
@@ -162,6 +167,28 @@ public class ChartTemplateRegistry {
         for (ChartTemplate templ : getAllTemplates())
             if ((resultTypes & templ.getSupportedResultTypes()) == resultTypes)
                 result.add(templ);
+
+        result.sort(new Comparator<ChartTemplate>() {
+            @Override
+            public int compare(ChartTemplate a, ChartTemplate b) {
+                long ta = templatesLastUsageTimestamps.getOrDefault(a.getId(), 0l);
+                long tb = templatesLastUsageTimestamps.getOrDefault(b.getId(), 0l);
+                int result = -Long.compare(ta, tb); // decreasing order of last usage timestamp
+
+                if (result == 0) { // most likely neither of them have been used yet, sort by toolbar order
+                    int oa = a.getToolbarOrder();
+                    int ob = b.getToolbarOrder();
+                    if (oa != -1 && ob != -1)
+                        result = Long.compare(oa, ob);
+                    else if (oa == -1 && ob != -1) // ob is on the toolbar, oa isn't
+                        result = Long.compare(ob+1, ob);
+                    else if (oa != -1 && ob == -1) // oa is on the toolbar, ob isn't
+                        result = Long.compare(oa, oa+1);
+                }
+
+                return result;
+            }
+        });
         return result;
     }
 
@@ -224,6 +251,34 @@ public class ChartTemplateRegistry {
         if (templ == null)
             throw new RuntimeException("No such chart template: " + id);
         return templ;
+    }
+
+    public void markTemplateUsage(ChartTemplate t) {
+        templatesLastUsageTimestamps.put(t.getId(), System.currentTimeMillis());
+    }
+
+    public String storeTimestamps() {
+        String result = "";
+        for (String id : templatesLastUsageTimestamps.keySet()) {
+            if (!result.isEmpty())
+                result += ",";
+            result += id + "=" + templatesLastUsageTimestamps.get(id);
+        }
+        return result;
+    }
+
+    public void restoreTimestamps(String pref) {
+        templatesLastUsageTimestamps.clear();
+        for (String i : pref.split(",")) {
+            String[] kv = i.split("=", 2);
+            if (kv.length != 2)
+                continue;
+            try {
+                templatesLastUsageTimestamps.put(kv[0], Long.parseLong(kv[1]));
+            } catch (NumberFormatException e) {
+                // ignore
+            }
+        }
     }
 }
 
