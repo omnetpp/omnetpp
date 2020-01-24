@@ -1,4 +1,4 @@
-from omnetpp.scave import chart
+from omnetpp.scave import chart, plot
 import matplotlib as mpl
 import sys
 
@@ -232,7 +232,7 @@ def interpolationmode_to_plot_params(drawstyle, interpolationmode, hasenum):
 
 def set_plot_title(title, suggested_chart_name=None):
     if chart.is_native_chart():
-        plot.set_title(title)
+        plot.set_property("Graph.Title", title)
     else:
         plt.title(title)
     chart.set_suggested_chart_name(suggested_chart_name if suggested_chart_name is not None else title)

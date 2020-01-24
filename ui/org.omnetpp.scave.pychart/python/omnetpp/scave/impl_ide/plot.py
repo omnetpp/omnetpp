@@ -357,10 +357,6 @@ def _plot_histograms_DF_scave(df):
         for i, row in enumerate(df.itertuples(index=False))
     ], columns=["key", "label", "binedges", "binvalues", "underflows", "overflows", "min", "max"]))
 
-    title = make_chart_title(df, title_col, legend_cols)
-    if not chart.get_property("Graph.Title"):
-        set_property("Graph.Title", title)
-
 
 def plot_histograms(df):
     _assert_is_native_chart()

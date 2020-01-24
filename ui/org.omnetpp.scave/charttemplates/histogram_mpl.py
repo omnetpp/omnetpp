@@ -22,7 +22,11 @@ df.sort_values(by=[l for i, l in legend], axis='index', inplace=True)
 for t in df.itertuples(index=False):
     plt.hist(bins=t.binedges, x=t.binedges[:-1], weights=t.binvalues, label=utils.make_legend_label(legend, t), histtype='stepfilled')
 
-utils.set_plot_title(utils.make_chart_title(df, title, legend))
-
 plt.legend()
 plt.grid()
+
+title = chart.get_property("title")
+if not title:
+    title_cols, legend_cols = utils.extract_label_columns(df)
+    title = utils.make_chart_title(df, title_cols, legend_cols)
+utils.set_plot_title(title)
