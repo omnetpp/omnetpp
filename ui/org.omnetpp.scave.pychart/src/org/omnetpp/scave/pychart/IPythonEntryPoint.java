@@ -10,7 +10,7 @@ public interface IPythonEntryPoint {
     boolean check();
 
     void setResultsProvider(IScaveResultsPickleProvider resultsProvider);
-    void setChartPropertiesProvider(IChartPropertiesProvider propertiesProvider);
+    void setChartProvider(IChartProvider chartProvider);
 
     void setPlotWidgetProvider(IPlotWidgetProvider widgetProvider);
     void setNativeChartPlotter(INativeChartPlotter chartPlotter);

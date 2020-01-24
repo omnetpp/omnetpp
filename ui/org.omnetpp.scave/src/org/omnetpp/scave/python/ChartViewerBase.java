@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Control;
-import org.omnetpp.scave.editors.PropertiesProvider;
+import org.omnetpp.scave.editors.ChartProvider;
 import org.omnetpp.scave.editors.ResultsProvider;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
@@ -68,7 +68,7 @@ public abstract class ChartViewerBase {
         }
 
         proc.getEntryPoint().setResultsProvider(new ResultsProvider(rfm, proc.getInterruptedFlag()));
-        proc.getEntryPoint().setChartPropertiesProvider(new PropertiesProvider(chart));
+        proc.getEntryPoint().setChartProvider(chartProvider = new ChartProvider(chart));
     }
 
     protected void changePythonIntoDirectory(File workingDir) {

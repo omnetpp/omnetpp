@@ -12,7 +12,7 @@ from py4j.java_gateway import DEFAULT_PORT
 from py4j.clientserver import ClientServer, JavaParameters, PythonParameters
 
 
-properties_provider = None  # will be set later
+chart_provider = None  # will be set later
 results_provider = None  # will be set later
 widget_provider = None  # will be set later
 chart_plotter = None  # will be set later

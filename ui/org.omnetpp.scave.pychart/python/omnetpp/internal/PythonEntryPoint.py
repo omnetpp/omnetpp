@@ -41,8 +41,8 @@ class PythonEntryPoint(object):
         Gateway.results_provider = results_provider
         chart.results_provider = results_provider
 
-    def setChartPropertiesProvider(self, properties_provider):
-        Gateway.properties_provider = properties_provider
+    def setChartProvider(self, chart_provider):
+        Gateway.chart_provider = chart_provider
 
     def setPlotWidgetProvider(self, widget_provider):
         Gateway.widget_provider = widget_provider

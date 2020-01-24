@@ -9,18 +9,18 @@ from omnetpp.internal import Gateway
 
 
 def get_properties():
-    return Gateway.properties_provider.getChartProperties()
+    return Gateway.chart_provider.getChartProperties()
 
 
 def get_property(key):
-    return Gateway.properties_provider.getChartProperties()[key]  # TODO: could be optimized
+    return Gateway.chart_provider.getChartProperties()[key]  # TODO: could be optimized
 
 
 def get_name():
-    return Gateway.properties_provider.getChartName()
+    return Gateway.chart_provider.getChartName()
 
 def get_chart_type():
-    return Gateway.properties_provider.getChartType()
+    return Gateway.chart_provider.getChartType()
 
 def set_suggested_chart_name(name):
-    return Gateway.properties_provider.setSuggestedChartName(name)
+    return Gateway.chart_provider.setSuggestedChartName(name)
