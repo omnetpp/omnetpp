@@ -6,7 +6,7 @@ pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
 
-params = chart.get_properties()
+props = chart.get_properties()
 
 
 def aggfunc(x):
@@ -35,7 +35,7 @@ def get_data(filter):
 
 
 def filter_for(what):
-    return "(" + params["common_filter"] + ") AND (" + params[what] + ")"
+    return "(" + props["common_filter"] + ") AND (" + props[what] + ")"
 
 
 xa = get_data(filter_for("xaxis_filter"))
@@ -77,8 +77,8 @@ df.rename({xaxis_column: "time"}, axis="columns", inplace=True)
 
 plot.plot_vectors(df)
 
-if titles is not None:
-    plot.set_property("Graph.Title", ', '.join(titles[yaxis_column].unique()))
+title = props["title"] or ', '.join(titles[yaxis_column].unique())
+utils.set_plot_title(title)
 
 if units is not None:
     plot.set_property("Y.Axis.Title", "[" + ', '.join(units[yaxis_column].unique()) + "]")

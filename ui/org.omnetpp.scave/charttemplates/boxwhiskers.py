@@ -96,7 +96,7 @@ customized_box_plot([(r.min, r.mean - r.stddev * coeff, r.mean, r.mean + r.stdde
                             if r.count > 0
                     ], plt.gca())
 
-plt.title(utils.make_chart_title(df, title, legend))
+utils.set_plot_title(utils.make_chart_title(df, title, legend))
 
 plt.gca().set_xticklabels([
     utils.make_legend_label(legend, r) for r in df.itertuples(index=False)

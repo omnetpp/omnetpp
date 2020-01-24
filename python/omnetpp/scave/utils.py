@@ -229,3 +229,10 @@ def interpolationmode_to_plot_params(drawstyle, interpolationmode, hasenum):
         print("Unknown drawstyle:", drawstyle, file=sys.stderr)
 
     return style
+
+def set_plot_title(title, suggested_chart_name=None):
+    if chart.is_native_chart():
+        plot.set_title(title)
+    else:
+        plt.title(title)
+    chart.set_suggested_chart_name(suggested_chart_name if suggested_chart_name is not None else title)

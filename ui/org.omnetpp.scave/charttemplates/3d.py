@@ -62,4 +62,4 @@ ax.set_yticks(df.index)
 ax.get_yaxis().set_label_text(df.index.name)
 
 if title:
-    plt.title(title)
+    utils.set_plot_title(title)

@@ -83,7 +83,9 @@ else:
     df.plot.line()
 
 if titles is not None:
-    plt.title(', '.join(titles[yaxis_column].unique()))
+    utils.set_plot_title(', '.join(titles[yaxis_column].unique()))
+
+utils.set_plot_title(utils.make_chart_title(df, title, legend))
 
 if units is not None:
     plt.gca().get_yaxis().set_label_text(plt.gca().get_yaxis().get_label_text() + " [" + ', '.join(units[yaxis_column].unique()) + "]")

@@ -31,10 +31,8 @@ for t in df.itertuples(index=False):
     style = utils.interpolationmode_to_plot_params(props["drawstyle"], t.interpolationmode if "interpolationmode" in df else None, "enum" in df)
     plt.plot(t.vectime, t.vecvalue, label=utils.make_legend_label(legend, t), **style)
 
-if 'title' in props and props['title']:
-    plt.title(props['title'])
-else:
-    plt.title(utils.make_chart_title(df, title, legend))
+title = props['title'] or utils.make_chart_title(df, title, legend)
+utils.set_plot_title(title)
 
 plt.legend()
 plt.grid()
