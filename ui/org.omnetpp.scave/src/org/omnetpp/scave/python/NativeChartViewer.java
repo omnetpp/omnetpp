@@ -199,7 +199,8 @@ public class NativeChartViewer extends ChartViewerBase {
             runAfterError.handle(proc, e);
             if (!proc.isKilledByUs()) {
                 Display.getDefault().syncExec(() -> {
-                    chartView.setStatusText("An exception occurred during Python execution.");
+                    chartView.setStatusText(null);
+                    chartView.setWarningText("An exception occurred during Python execution.");
                     chartView.update();
                 });
             }
