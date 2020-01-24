@@ -927,6 +927,14 @@ public class ChartScriptEditor extends PyEdit {
         return StringUtils.defaultIfEmpty(chart.getName(), "<unnamed>");
     }
 
+    /**
+     * Suggested chart name, usually set by "chart.set_suggested_chart_name()" in Python.
+     * May be null.
+     */
+    public String getSuggestedChartName() {
+        return getChartViewer().getSuggestedChartName();
+    }
+
     @Override
     public boolean isDirty() {
         return scriptChangedFlag || commandStack.isSaveNeeded();

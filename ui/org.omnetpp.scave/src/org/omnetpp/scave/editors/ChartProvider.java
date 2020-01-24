@@ -11,7 +11,8 @@ import org.omnetpp.scave.pychart.IChartProvider;
  * Implements the methods in the "omnetpp.scave.chart" Python module.
  */
 public class ChartProvider implements IChartProvider {
-    Chart chart;
+    private Chart chart;
+    private String suggestedChartName;
 
     public ChartProvider(Chart chart) {
         this.chart = chart;
@@ -39,6 +40,10 @@ public class ChartProvider implements IChartProvider {
 
     @Override
     public void setSuggestedChartName(String name) {
-        System.out.println("SUGGESTED NAME: " + name);
+        suggestedChartName = name;
+    }
+
+    public String getSuggestedChartName() {
+        return suggestedChartName;
     }
 }

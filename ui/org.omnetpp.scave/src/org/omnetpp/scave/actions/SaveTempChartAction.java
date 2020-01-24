@@ -8,13 +8,18 @@
 package org.omnetpp.scave.actions;
 
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.ISharedImages;
+import org.omnetpp.common.ui.InputDialog;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.commands.AddChartCommand;
+import org.omnetpp.scave.model.commands.CompoundCommand;
 import org.omnetpp.scave.model.commands.ICommand;
+import org.omnetpp.scave.model.commands.SetChartNameCommand;
 
 /**
  * Saves a temporary chart.
@@ -35,65 +40,23 @@ public class SaveTempChartAction extends AbstractScaveAction {
     protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
         Chart chart = getActiveTemporaryChart(scaveEditor);
         if (chart != null) {
-            chart.setTemporary(false);
-
-            ICommand command = new AddChartCommand(scaveEditor.getAnalysis(), chart);
             ChartScriptEditor activeChartScriptEditor = scaveEditor.getActiveChartScriptEditor();
-            activeChartScriptEditor.updateActions();
-            scaveEditor.getChartsPage().getCommandStack().execute(command);
-            scaveEditor.showAnalysisItem(chart);
+            String suggestedName = StringUtils.nullToEmpty(activeChartScriptEditor.getSuggestedChartName());
+            InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), "Create Chart", "Enter chart name", suggestedName, null);
 
-//TODO offer dialog to simplify input filters
-//                final Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
-//
-//                final CreateChartTemplateDialog dialog = new CreateChartTemplateDialog(scaveEditor.getSite().getShell());
-//                dialog.setChartName(chart.getName());
-//                dialog.setDatasetName(chart.getName());
-//
-//                if (dialog.open() == Window.OK) {
-//                    EditingDomain domain = scaveEditor.getEditingDomain();
-//                    ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
-//                    final ResultFileManager manager = scaveEditor.getResultFileManager();
-//                    Pair<Collection<Add>,Collection<Add>> adds =
-//                        ResultFileManager.callWithReadLock(manager, new Callable<Pair<Collection<Add>,Collection<Add>>>() {
-//                            public Pair<Collection<Add>, Collection<Add>> call() {
-//                                ResultType type = resultTypeForChart(chart);
-//                                IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, null, type);
-//                                ResultItem[] items = ScaveModelUtil.getResultItems(idlist, manager);
-//                                Collection<Add> origAdds = getOriginalAdds(dataset);
-//                                Collection<Add> adds = ScaveModelUtil.createAddsWithFields(items, dialog.getFilterFields());
-//                                return pair(origAdds, adds);
-//                            }
-//                        });
-//
-//                    CompoundCommand command = new CompoundCommand();
-//                    command.append(SetCommand.create( // set dataset name
-//                                        domain,
-//                                        dataset,
-//                                        pkg.getDataset_Name(),
-//                                        dialog.getDatasetName()));
-//                    command.append(SetCommand.create( // set chart name
-//                                        domain,
-//                                        chart,
-//                                        pkg.getChart_Name(),
-//                                        dialog.getChartName()));
-//                    command.append(RemoveCommand.create(domain, adds.first)); // change Add items
-//                    command.append(AddCommand.create(
-//                                        domain,
-//                                        dataset,
-//                                        pkg.getDataset_Items(),
-//                                        adds.second,
-//                                        0));
-//                    command.append(RemoveCommand.create(domain, dataset)); // move Dataset
-//                    command.append(AddCommand.create(
-//                                        domain,
-//                                        scaveEditor.getAnalysis().getDatasets(),
-//                                        ScaveModelPackage.eINSTANCE.getDatasets_Datasets(),
-//                                        dataset));
-//                    scaveEditor.executeCommand(command);
-//
-//                    scaveEditor.showChartsPage();
-//                }
+            if (dialog.open() == InputDialog.OK) {
+                chart.setTemporary(false);
+
+                CompoundCommand command = new CompoundCommand("Save chart");
+                ICommand setNameCommand = new SetChartNameCommand(chart, dialog.getValue());
+                ICommand addCommand = new AddChartCommand(scaveEditor.getAnalysis(), chart);
+                command.append(setNameCommand);
+                command.append(addCommand);
+                scaveEditor.getChartsPage().getCommandStack().execute(command);
+
+                activeChartScriptEditor.updateActions();
+                scaveEditor.showAnalysisItem(chart);
+            }
         }
     }
 
@@ -111,15 +74,4 @@ public class SaveTempChartAction extends AbstractScaveAction {
         }
         return null;
     }
-
-//    private ResultType resultTypeForChart(Chart chart) {
-//        if (chart instanceof LineChart)
-//            return ResultType.VECTOR_LITERAL;
-//        else if (chart instanceof BarChart)
-//            return ResultType.SCALAR_LITERAL;
-//        else if (chart instanceof HistogramChart)
-//            return ResultType.HISTOGRAM_LITERAL;
-//        else
-//            throw new IllegalArgumentException("Unknown chart type: " + chart.getClass().getName());
-//    }
 }

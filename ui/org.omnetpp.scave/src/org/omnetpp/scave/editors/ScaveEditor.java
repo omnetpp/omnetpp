@@ -1762,7 +1762,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
 //            }
 //        });
 
-        int index = addClosablePage(editor, input, editor.getChartName());
+        int index = addClosablePage(editor, input, editor.getChartDisplayName());
 
         IMemento editorMemento = getMementoFor(editor);
         if (editorMemento != null)

@@ -26,6 +26,8 @@ public abstract class ChartViewerBase {
     protected List<IOutputListener> outputListeners = new ArrayList<IOutputListener>();
     protected List<IStateChangeListener> stateChangeListeners = new ArrayList<IStateChangeListener>();
 
+    private ChartProvider chartProvider;
+
     public ChartViewerBase(PythonProcessPool processPool, Chart chart, ResultFileManager rfm) {
         this.processPool = processPool;
         this.chart = chart;
@@ -82,6 +84,10 @@ public abstract class ChartViewerBase {
 
     public void dispose() {
         killPythonProcess();
+    }
+
+    public String getSuggestedChartName() {
+        return chartProvider == null ? null : chartProvider.getSuggestedChartName();
     }
 
     public abstract void runPythonScript(String script, File workingDir, Runnable runAfterDone, ExceptionHandler runAfterError);
