@@ -88,8 +88,8 @@ public class IconGridViewer extends ContentViewer {
     private Color selectionFillColor = new Color(Display.getDefault(), 216, 235, 243); // very light blue
     private Color focusElementBorderColor = ColorFactory.LIGHT_BLUE;
     private ViewMode viewMode = ViewMode.ICONS;
-    private int iconsModeItemWidth = 100;
-    private int multicolumnListModeColumnWidth = 400;
+    private int itemWidth = 100; // in ICONS mode
+    private int columnWidth = 400; // in MULTICOLUMN_LIST mode
 
     //  widgets
     private ScrolledComposite scrolledComposite;
@@ -462,7 +462,7 @@ public class IconGridViewer extends ContentViewer {
     public void setViewMode(ViewMode viewMode) {
         if (this.viewMode != viewMode) {
             this.viewMode = viewMode;
-            updateItems(viewMode!=ViewMode.ICONS, getItemWidth());
+            updateItems(viewMode!=ViewMode.ICONS, getEffectiveItemWidth());
         }
     }
 
@@ -470,50 +470,78 @@ public class IconGridViewer extends ContentViewer {
         return viewMode;
     }
 
-    public void setIconsModeItemWidth(int iconsModeItemWidth) {
-        if (this.iconsModeItemWidth != iconsModeItemWidth) {
-            this.iconsModeItemWidth = iconsModeItemWidth;
-            updateItems(viewMode!=ViewMode.ICONS, getItemWidth());
+    /**
+     * Sets the item width in ICONS mode.
+     */
+    public void setItemWidth(int width) {
+        if (this.itemWidth != width) {
+            this.itemWidth = width;
+            updateItems(viewMode!=ViewMode.ICONS, getEffectiveItemWidth());
         }
     }
 
-    public int getIconsModeItemWidth() {
-        return iconsModeItemWidth;
+    /**
+     * Returns the item width in ICONS mode.
+     */
+    public int getItemWidth() {
+        return itemWidth;
     }
 
+    /**
+     * Computes and returns the number of items that fit in a row in ICONS mode,
+     * given the currently set item width and viewer size.
+     */
     public int getNumItemsPerRow() {
-        int areaWidth = getCanvas().getClientArea().width - 2*DEFAULT_MARGIN;
-        int n = (areaWidth + DEFAULT_HORIZ_SPACING) / (iconsModeItemWidth + DEFAULT_HORIZ_SPACING);
-        return n;
+        int areaWidth = getCanvas().getClientArea().width - 2*getMargin();
+        int numItems = (areaWidth + getHorizontalSpacing()) / (itemWidth + getHorizontalSpacing());
+        return numItems;
     }
 
-    public void setNumItemsPerRow(int n) {
-        int areaWidth = getCanvas().getClientArea().width - 2*DEFAULT_MARGIN;
-        int itemWidth = (areaWidth + DEFAULT_HORIZ_SPACING) / n - DEFAULT_HORIZ_SPACING;
-        setIconsModeItemWidth(itemWidth);
+    /**
+     * Sets the item width for ICONS mode such that the given number of items fit into a row,
+     * given the current viewer size.
+     */
+    public void setNumItemsPerRow(int numItems) {
+        int areaWidth = getCanvas().getClientArea().width - 2*getMargin();
+        int itemWidth = (areaWidth + getHorizontalSpacing()) / numItems - getHorizontalSpacing();
+        setItemWidth(itemWidth);
     }
 
-    public void setMulticolumnListModeColumnWidth(int multicolumnListModeColumnWidth) {
-        if (this.multicolumnListModeColumnWidth != multicolumnListModeColumnWidth) {
-            this.multicolumnListModeColumnWidth = multicolumnListModeColumnWidth;
-            updateItems(viewMode!=ViewMode.ICONS, getItemWidth());
+    /**
+     * Sets the column width for the MULTICOLOMN_LIST mode.
+     */
+    public void setColumnWidth(int width) {
+        if (this.columnWidth != width) {
+            this.columnWidth = width;
+            updateItems(viewMode!=ViewMode.ICONS, getEffectiveItemWidth());
         }
     }
 
-    public int getMulticolumnListModeColumnWidth() {
-        return multicolumnListModeColumnWidth;
+    /**
+     * Returns the column width for the MULTICOLOMN_LIST mode.
+     */
+    public int getColumnWidth() {
+        return columnWidth;
     }
 
+    /**
+     * Computes and returns the number of columns that fit in a row in MULTICOLUMN_LIST mode,
+     * given the currently set column width and viewer size.
+     */
     public int getNumColumns() {
-        int areaWidth = getCanvas().getClientArea().width - 2*DEFAULT_MARGIN;
-        int n = (areaWidth + DEFAULT_HORIZ_SPACING) / (getMulticolumnListModeColumnWidth() + DEFAULT_HORIZ_SPACING);
-        return n;
+        int areaWidth = getCanvas().getClientArea().width - 2*getMargin();
+        int numCols = (areaWidth + getHorizontalSpacing()) / (getColumnWidth() + getHorizontalSpacing());
+        return numCols;
     }
 
-    public void setNumColumns(int n) {
-        int areaWidth = getCanvas().getClientArea().width - 2*DEFAULT_MARGIN;
-        int columnWidth = (areaWidth + DEFAULT_HORIZ_SPACING) / n - DEFAULT_HORIZ_SPACING;
-        setMulticolumnListModeColumnWidth(columnWidth);
+    /**
+     * Sets the column width for MULTICOLUMN_LIST mode such that the given number of columns
+     * fit into a row, given the current viewer size.
+     */
+    public void setNumColumns(int numCols) {
+        int areaWidth = getCanvas().getClientArea().width - 2*getMargin();
+        int columnWidth = (areaWidth + getHorizontalSpacing()) / numCols - getHorizontalSpacing();
+        setColumnWidth(columnWidth);
     }
 
     public void setFocus() {
@@ -801,11 +829,11 @@ public class IconGridViewer extends ContentViewer {
             adjustCanvasSize();
     }
 
-    protected int getItemWidth() {
+    protected int getEffectiveItemWidth() {
         switch (viewMode) {
-        case ICONS: return iconsModeItemWidth;
+        case ICONS: return itemWidth;
         case LIST: return 5000; //TODO ???
-        case MULTICOLUMN_LIST: return multicolumnListModeColumnWidth;
+        case MULTICOLUMN_LIST: return columnWidth;
         default: return -1;
         }
     }
@@ -820,7 +848,7 @@ public class IconGridViewer extends ContentViewer {
         LabeledIcon label = new LabeledIcon();
         label.setBackgroundColor(selectionFillColor);  // note: only takes effect when 'opaque' is set; we use this for selection
         label.setBorder(new MarginBorder(1));
-        label.setPreferredSize(getItemWidth(), -1);
+        label.setPreferredSize(getEffectiveItemWidth(), -1);
         label.setHorizontalLayout(viewMode != ViewMode.ICONS);
         return label;
     }

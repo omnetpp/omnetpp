@@ -34,14 +34,14 @@ public class SetItemWidthAction extends AbstractScaveAction {
             if (n >= 3)
                 viewer.setNumItemsPerRow(n-1);
             else
-                viewer.setIconsModeItemWidth(60);
+                viewer.setItemWidth(60);
         }
         else if (viewer.getViewMode() == ViewMode.MULTICOLUMN_LIST) {
             int n = viewer.getNumColumns();
             if (n >= 3)
                 viewer.setNumColumns(n-1);
             else
-                viewer.setMulticolumnListModeColumnWidth(200);
+                viewer.setColumnWidth(200);
         }
     }
 
