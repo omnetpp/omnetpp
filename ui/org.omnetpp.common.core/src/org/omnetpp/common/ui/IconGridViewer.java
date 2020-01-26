@@ -832,8 +832,8 @@ public class IconGridViewer extends ContentViewer {
     protected int getEffectiveItemWidth() {
         switch (viewMode) {
         case ICONS: return itemWidth;
-        case LIST: return 5000; //TODO ???
         case MULTICOLUMN_LIST: return columnWidth;
+        case LIST: return Display.getCurrent().getBounds().width; // not very elegant, but works
         default: return -1;
         }
     }
