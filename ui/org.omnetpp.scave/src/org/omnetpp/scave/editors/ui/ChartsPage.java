@@ -95,6 +95,7 @@ public class ChartsPage extends FormEditorPage {
         addToToolbar(actions.viewIconsAction);
         addToToolbar(actions.viewMulticolumnListAction);
         addToToolbar(actions.viewListAction);
+        addToToolbar(actions.setItemWidthAction);
 
         addSeparatorToToolbar();
 

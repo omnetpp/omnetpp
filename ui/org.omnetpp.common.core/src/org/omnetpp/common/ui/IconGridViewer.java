@@ -481,6 +481,18 @@ public class IconGridViewer extends ContentViewer {
         return iconsModeItemWidth;
     }
 
+    public int getNumItemsPerRow() {
+        int areaWidth = getCanvas().getClientArea().width - 2*DEFAULT_MARGIN;
+        int n = (areaWidth + DEFAULT_HORIZ_SPACING) / (iconsModeItemWidth + DEFAULT_HORIZ_SPACING);
+        return n;
+    }
+
+    public void setNumItemsPerRow(int n) {
+        int areaWidth = getCanvas().getClientArea().width - 2*DEFAULT_MARGIN;
+        int itemWidth = (areaWidth + DEFAULT_HORIZ_SPACING) / n - DEFAULT_HORIZ_SPACING;
+        setIconsModeItemWidth(itemWidth);
+    }
+
     public void setMulticolumnListModeColumnWidth(int multicolumnListModeColumnWidth) {
         if (this.multicolumnListModeColumnWidth != multicolumnListModeColumnWidth) {
             this.multicolumnListModeColumnWidth = multicolumnListModeColumnWidth;
@@ -490,6 +502,18 @@ public class IconGridViewer extends ContentViewer {
 
     public int getMulticolumnListModeColumnWidth() {
         return multicolumnListModeColumnWidth;
+    }
+
+    public int getNumColumns() {
+        int areaWidth = getCanvas().getClientArea().width - 2*DEFAULT_MARGIN;
+        int n = (areaWidth + DEFAULT_HORIZ_SPACING) / (getMulticolumnListModeColumnWidth() + DEFAULT_HORIZ_SPACING);
+        return n;
+    }
+
+    public void setNumColumns(int n) {
+        int areaWidth = getCanvas().getClientArea().width - 2*DEFAULT_MARGIN;
+        int columnWidth = (areaWidth + DEFAULT_HORIZ_SPACING) / n - DEFAULT_HORIZ_SPACING;
+        setMulticolumnListModeColumnWidth(columnWidth);
     }
 
     public void setFocus() {

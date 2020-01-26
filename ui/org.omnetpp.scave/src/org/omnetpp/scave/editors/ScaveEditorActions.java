@@ -52,6 +52,7 @@ import org.omnetpp.scave.actions.RefreshChartAction;
 import org.omnetpp.scave.actions.RemoveAction;
 import org.omnetpp.scave.actions.SaveTempChartAction;
 import org.omnetpp.scave.actions.SelectAllAction;
+import org.omnetpp.scave.actions.SetItemWidthAction;
 import org.omnetpp.scave.actions.ShowOutputVectorViewAction;
 import org.omnetpp.scave.actions.UndoAction;
 import org.omnetpp.scave.actions.ViewModeAction;
@@ -76,6 +77,7 @@ public class ScaveEditorActions {
     public final ViewModeAction viewIconsAction = registerAction(new ViewModeAction(IconGridViewer.ViewMode.ICONS, "Icons", ScaveImages.IMG_ETOOL16_VIEW_ICONS));
     public final ViewModeAction viewListAction = registerAction(new ViewModeAction(IconGridViewer.ViewMode.LIST, "List", ScaveImages.IMG_ETOOL16_VIEW_LIST));
     public final ViewModeAction viewMulticolumnListAction = registerAction(new ViewModeAction(IconGridViewer.ViewMode.MULTICOLUMN_LIST, "Multicolumn", ScaveImages.IMG_ETOOL16_VIEW_MULTICOLUMN));
+    public final SetItemWidthAction setItemWidthAction = registerAction(new SetItemWidthAction());
 
     // ChartPage actions
     public final ZoomChartAction hzoomInAction = registerAction(new ZoomChartAction(true, false, 2.0));
