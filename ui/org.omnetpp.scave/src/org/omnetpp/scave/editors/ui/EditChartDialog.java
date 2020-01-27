@@ -9,8 +9,6 @@ package org.omnetpp.scave.editors.ui;
 
 import java.util.Map;
 
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
@@ -18,10 +16,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
-import org.omnetpp.common.util.StatusUtil;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.charttemplates.ChartTemplate;
 import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Chart;
@@ -38,26 +34,12 @@ public class EditChartDialog extends TitleAreaDialog {
     private Chart chart;
     private ChartEditForm form;
 
-    /**
-     * Creates the dialog.
-     *
-     * @param parentShell    the parent shell
-     * @param chart          chart to be edited
-     * @param editor         the editor
-     * @param formParameters key-value pairs understood by the form; may be null
-     */
     public EditChartDialog(Shell parentShell, Chart chart, ScaveEditor editor) {
         super(parentShell);
         setShellStyle(getShellStyle() | SWT.RESIZE);
         this.editor = editor;
         this.chart = chart;
         this.form = new ChartEditForm(chart, editor.getChartTemplateRegistry(), editor.getResultFileManager());
-
-        // TODO
-//        this.form.addChangeListener(new BaseScaveObjectEditForm.Listener() {
-//            public void editFormChanged(BaseScaveObjectEditForm form) {
-//                updateButtonsAndErrorMessage();
-//            }});
     }
 
     @Override
@@ -123,7 +105,6 @@ public class EditChartDialog extends TitleAreaDialog {
         applyChanges();
     }
 
-    // TODO
 //    protected void updateButtonsAndErrorMessage() {
 //        IStatus status = form.validate();
 //        boolean enabled = !status.matches(IStatus.ERROR);
