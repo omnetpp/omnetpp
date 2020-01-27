@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.util.StatusUtil;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.charttemplates.ChartTemplate;
 import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Chart;
@@ -94,10 +95,22 @@ public class EditChartDialog extends TitleAreaDialog {
 
         setTitle("Edit Chart");
 
-        // setMessage(chart.getDescription()); // TODO
+        //ChartTemplate template = editor.getChartTemplateRegistry().getTemplateByID(chart.getTemplateID());
+        setMessage(makeMessage(chart));
 
         form.populatePanel(panel);
         return composite;
+    }
+
+    protected String makeMessage(Chart chart) {
+        String type = "n/a";
+        switch (chart.getType()) {
+            case BAR: type = "bar chart"; break;
+            case LINE: type = "line plot"; break;
+            case HISTOGRAM: type = "histogram plot"; break;
+            case MATPLOTLIB: type = "Matplotlib plot"; break;
+        }
+        return "Type: " + type;
     }
 
     @Override
@@ -122,23 +135,23 @@ public class EditChartDialog extends TitleAreaDialog {
 //            applyButton.setEnabled(enabled);
 //        setErrorMessage(status);
 //    }
-
-    private void setErrorMessage(IStatus status) {
-        String message = null;
-        if (status.matches(IStatus.ERROR)) {
-            IStatus error = StatusUtil.getFirstDescendantWithSeverity(status, IStatus.ERROR);
-            Assert.isNotNull(error);
-            message = status.isMultiStatus() ? status.getMessage() + ": " : "";
-            message += error.getMessage();
-        }
-        else if (status.matches(IStatus.WARNING)) {
-            IStatus warning = StatusUtil.getFirstDescendantWithSeverity(status, IStatus.WARNING);
-            Assert.isNotNull(warning);
-            message = status.isMultiStatus() ? status.getMessage() + ": " : "";
-            message += warning.getMessage();
-        }
-        setErrorMessage(message);
-    }
+//
+//    private void setErrorMessage(IStatus status) {
+//        String message = null;
+//        if (status.matches(IStatus.ERROR)) {
+//            IStatus error = StatusUtil.getFirstDescendantWithSeverity(status, IStatus.ERROR);
+//            Assert.isNotNull(error);
+//            message = status.isMultiStatus() ? status.getMessage() + ": " : "";
+//            message += error.getMessage();
+//        }
+//        else if (status.matches(IStatus.WARNING)) {
+//            IStatus warning = StatusUtil.getFirstDescendantWithSeverity(status, IStatus.WARNING);
+//            Assert.isNotNull(warning);
+//            message = status.isMultiStatus() ? status.getMessage() + ": " : "";
+//            message += warning.getMessage();
+//        }
+//        setErrorMessage(message);
+//    }
 
     private void applyChanges() {
 
@@ -160,8 +173,10 @@ public class EditChartDialog extends TitleAreaDialog {
             ChartScriptEditor chartScriptEditor = ((ChartPage)editorPage).chartScriptEditor;
             chartScriptEditor.getCommandStack().execute(command);
             chartScriptEditor.refreshChart();
-        } // TODO else
-
+        }
+        else {
+            editor.getChartsPage().getCommandStack().execute(command);
+        }
     }
 
 }
