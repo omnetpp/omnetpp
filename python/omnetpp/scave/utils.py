@@ -236,3 +236,28 @@ def set_plot_title(title, suggested_chart_name=None):
     else:
         plt.title(title)
     chart.set_suggested_chart_name(suggested_chart_name if suggested_chart_name is not None else title)
+
+def plot_vectors(df, props):
+    if chart.is_native_chart():
+        _plot_vectors_native(df, props)
+    else:
+        _plot_vectors_mpl(df, props)
+
+def _plot_vectors_native(df, props):
+    raise "TODO" #TODO
+
+def _plot_vectors_mpl(df, props):
+    update_matplotlib_rcparams(props)
+    update_matplotlib_rcparams(parse_matplotlib_rcparams(props["matplotlibrc"] or ""))
+    
+    title, legend = extract_label_columns(df)
+    
+    for t in df.itertuples(index=False):
+        style = interpolationmode_to_plot_params(props["drawstyle"], t.interpolationmode if "interpolationmode" in df else None, "enum" in df)
+        plt.plot(t.vectime, t.vecvalue, label=make_legend_label(legend, t), **style)
+    
+    title = props['title'] or make_chart_title(df, title, legend)
+    set_plot_title(title)
+    
+    plt.legend()
+    plt.grid()
