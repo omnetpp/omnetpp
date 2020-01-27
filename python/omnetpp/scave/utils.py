@@ -244,20 +244,33 @@ def plot_vectors(df, props):
         _plot_vectors_mpl(df, props)
 
 def _plot_vectors_native(df, props):
-    raise "TODO" #TODO
+    title_col, legend_cols = extract_label_columns(df)
+    
+    drawstyle = props["drawstyle"] or "auto"
+    
+    #TODO reduce differences with mpl version
+    for i, t in enumerate(df.itertuples(index=False)):
+        if drawstyle == "auto":
+            linetype = interpolationmode_to_drawstyle(t.interpolationmode if "interpolationmode" in df else None, "enum" in df)
+        else:
+            linetype = props["drawstyle"] or "linear"
+        props["Line.Type/" + str(i)] = linetype
+        plot.plot_vector(make_legend_label(legend_cols, t), t.vectime, t.vecvalue, i)
+    
+    plot.set_properties(props)
 
 def _plot_vectors_mpl(df, props):
     update_matplotlib_rcparams(props)
     update_matplotlib_rcparams(parse_matplotlib_rcparams(props["matplotlibrc"] or ""))
     
-    title, legend = extract_label_columns(df)
+    title_col, legend_cols = extract_label_columns(df)
     
     for t in df.itertuples(index=False):
         style = interpolationmode_to_plot_params(props["drawstyle"], t.interpolationmode if "interpolationmode" in df else None, "enum" in df)
-        plt.plot(t.vectime, t.vecvalue, label=make_legend_label(legend, t), **style)
+        plt.plot(t.vectime, t.vecvalue, label=make_legend_label(legend_cols, t), **style)
     
-    title = props['title'] or make_chart_title(df, title, legend)
-    set_plot_title(title)
+    title_col = props['title_col'] or make_chart_title(df, title_col, legend_cols)
+    set_plot_title(title_col)
     
     plt.legend()
     plt.grid()
