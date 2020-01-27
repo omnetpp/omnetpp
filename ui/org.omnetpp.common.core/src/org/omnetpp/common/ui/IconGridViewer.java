@@ -427,6 +427,8 @@ public class IconGridViewer extends ContentViewer {
         }
         FlowLayout layout = (FlowLayout)contentLayer.getLayoutManager();
         layout.invalidate();
+        layout.layout(contentLayer);
+        adjustCanvasSize();
     }
 
     public void setMargin(int margin) {
