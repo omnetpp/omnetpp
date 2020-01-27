@@ -28,7 +28,7 @@ public abstract class ChartViewerBase {
 
     private ChartProvider chartProvider;
 
-    public ChartViewerBase(PythonProcessPool processPool, Chart chart, ResultFileManager rfm) {
+    public ChartViewerBase(Chart chart, PythonProcessPool processPool, ResultFileManager rfm) {
         this.processPool = processPool;
         this.chart = chart;
         this.rfm = rfm;
@@ -95,6 +95,5 @@ public abstract class ChartViewerBase {
     public abstract Control getWidget();
 
     public abstract void setVisible(boolean visible);
-
 
 }

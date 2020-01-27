@@ -71,12 +71,12 @@ public class MatplotlibChartViewer extends ChartViewerBase {
         }
     };
 
-    int figureNumber = -1;
+    private int figureNumber = -1;
     private MatplotlibWidget plotWidget;
-    String lastActiveAction = "";
+    private String lastActiveAction = "";
 
-    public MatplotlibChartViewer(PythonProcessPool processPool, Chart chart, ResultFileManager rfm, Composite parent) {
-        super(processPool, chart, rfm);
+    public MatplotlibChartViewer(Composite parent, Chart chart, PythonProcessPool processPool, ResultFileManager rfm) {
+        super(chart, processPool, rfm);
         plotWidget = new MatplotlibWidget(parent, SWT.DOUBLE_BUFFERED, proc, null);
     }
 

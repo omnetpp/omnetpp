@@ -267,7 +267,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
             };
 
             if (chart.getType() == ChartType.MATPLOTLIB) {
-                matplotlibChartViewer = new MatplotlibChartViewer(scaveEditor.processPool, chart, scaveEditor.getResultFileManager(), sashForm);
+                matplotlibChartViewer = new MatplotlibChartViewer(sashForm, chart, scaveEditor.processPool, scaveEditor.getResultFileManager());
 
                 matplotlibChartViewer.addOutputListener(outputListener);
                 matplotlibChartViewer.addStateChangeListener(stateChangeListener);
@@ -276,7 +276,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
                 plotWidget.setMenu(createMatplotlibMenuManager().createContextMenu(plotWidget));
             }
             else {
-                nativeChartViewer = new NativeChartViewer(scaveEditor.getPythonProcessPool(), chart, scaveEditor.getResultFileManager(), sashForm);
+                nativeChartViewer = new NativeChartViewer(sashForm, chart, scaveEditor.getPythonProcessPool(), scaveEditor.getResultFileManager());
 
                 nativeChartViewer.addOutputListener(outputListener);
                 nativeChartViewer.addStateChangeListener(stateChangeListener);

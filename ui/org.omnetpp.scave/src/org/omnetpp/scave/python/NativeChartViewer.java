@@ -95,11 +95,11 @@ public class NativeChartViewer extends ChartViewerBase {
         }
     }
 
-    ChartPlotter chartPlotter = new ChartPlotter();
-    PlotViewerBase plotViewer;
+    private ChartPlotter chartPlotter = new ChartPlotter();
+    private PlotViewerBase plotViewer;
 
-    public NativeChartViewer(PythonProcessPool pool, Chart chart, ResultFileManager rfm, Composite parent) {
-        super(pool, chart, rfm);
+    public NativeChartViewer(Composite parent, Chart chart, PythonProcessPool pool, ResultFileManager rfm) {
+        super(chart, pool, rfm);
 
         switch (chart.getType()) {
         case BAR:
