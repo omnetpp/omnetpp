@@ -20,9 +20,7 @@ import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
-import org.omnetpp.scave.model.commands.AddChartPropertyCommand;
 import org.omnetpp.scave.model.commands.CommandStack;
-import org.omnetpp.scave.model.commands.RemoveChartPropertyCommand;
 import org.omnetpp.scave.model.commands.SetChartPropertyCommand;
 
 /**

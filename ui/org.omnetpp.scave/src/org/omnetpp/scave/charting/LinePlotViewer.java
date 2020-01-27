@@ -16,13 +16,6 @@ import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_X_AXIS
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_Y_AXIS_TITLE;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_AXIS_TITLE_FONT;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LABEL_FONT;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_XY_GRID;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_AXIS_TITLE;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_LABELS_ROTATE_BY;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.LinePlotProperties.PROP_X_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.LinePlotProperties.PROP_X_AXIS_MAX;
 import static org.omnetpp.scave.charting.properties.LinePlotProperties.PROP_X_AXIS_MIN;
@@ -32,6 +25,13 @@ import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_LI
 import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_LINE_TYPE;
 import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_SYMBOL_SIZE;
 import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_SYMBOL_TYPE;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_AXIS_TITLE_FONT;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LABEL_FONT;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_XY_GRID;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_LABELS_ROTATE_BY;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_TITLE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,14 +62,15 @@ import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset.InterpolationMode;
 import org.omnetpp.scave.charting.plotter.ChartSymbolFactory;
-import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 import org.omnetpp.scave.charting.plotter.ILinePlotter;
+import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 import org.omnetpp.scave.charting.plotter.LinePlotterFactory;
-import org.omnetpp.scave.charting.properties.PlotProperties.ShowGrid;
 import org.omnetpp.scave.charting.properties.LinePlotProperties;
 import org.omnetpp.scave.charting.properties.LineVisualProperties.LineType;
 import org.omnetpp.scave.charting.properties.LineVisualProperties.SymbolType;
+import org.omnetpp.scave.charting.properties.PlotProperties.ShowGrid;
 import org.omnetpp.scave.preferences.ScavePreferenceConstants;
+import org.omnetpp.scave.python.PythonXYDataset;
 
 
 /**
@@ -449,6 +450,13 @@ public class LinePlotViewer extends PlotViewerBase {
             setLineColor(getElementId(name), ColorFactory.asRGB(value));
         else
             super.setProperty(name, value);
+    }
+
+    @Override
+    public void clear() {
+        super.doClear(new LinePlotProperties(null));
+        lineProperties.clear();
+        setDataset(new PythonXYDataset(null));
     }
 
     public void setXAxisTitle(String value) {

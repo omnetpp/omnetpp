@@ -42,4 +42,9 @@ class PropertyMap<T> {
         }
         return props;
     }
+
+    void clear() {
+        properties.clear();
+    }
+
 }

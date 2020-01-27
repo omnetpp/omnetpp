@@ -7,6 +7,9 @@
 
 package org.omnetpp.scave.charting;
 
+import static org.omnetpp.scave.charting.properties.BarPlotVisualProperties.PROP_BAR_BASELINE;
+import static org.omnetpp.scave.charting.properties.BarPlotVisualProperties.PROP_BAR_PLACEMENT;
+import static org.omnetpp.scave.charting.properties.BarPlotVisualProperties.PROP_WRAP_LABELS;
 import static org.omnetpp.scave.charting.properties.BarVisualProperties.PROP_BAR_COLOR;
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_BAR_BASELINE;
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_BAR_PLACEMENT;
@@ -24,9 +27,6 @@ import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_AXIS_T
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_LABELS_ROTATE_BY;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_TITLE;
-import static org.omnetpp.scave.charting.properties.BarPlotVisualProperties.PROP_BAR_BASELINE;
-import static org.omnetpp.scave.charting.properties.BarPlotVisualProperties.PROP_BAR_PLACEMENT;
-import static org.omnetpp.scave.charting.properties.BarPlotVisualProperties.PROP_WRAP_LABELS;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.draw2d.Graphics;
@@ -49,12 +49,12 @@ import org.omnetpp.scave.charting.dataset.IScalarDataset;
 import org.omnetpp.scave.charting.dataset.IStringValueScalarDataset;
 import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 import org.omnetpp.scave.charting.plotter.SquareSymbol;
-import org.omnetpp.scave.charting.properties.PlotProperties.ShowGrid;
-import org.omnetpp.scave.charting.properties.PlotProperties;
 import org.omnetpp.scave.charting.properties.BarPlotVisualProperties;
 import org.omnetpp.scave.charting.properties.BarPlotVisualProperties.BarPlacement;
+import org.omnetpp.scave.charting.properties.PlotProperties.ShowGrid;
 import org.omnetpp.scave.engine.Statistics;
 import org.omnetpp.scave.model2.StatUtils;
+import org.omnetpp.scave.python.PythonScalarDataset;
 
 /**
  * Bar plot.
@@ -178,6 +178,13 @@ public class BarPlotViewer extends PlotViewerBase {
             setLogarithmicY(Converter.stringToBoolean(value));
         else
             super.setProperty(name, value);
+    }
+
+    @Override
+    public void clear() {
+        super.doClear(new BarPlotVisualProperties(null));
+        properties.clear();
+        setDataset(new PythonScalarDataset(null));
     }
 
     public String getTitle() {

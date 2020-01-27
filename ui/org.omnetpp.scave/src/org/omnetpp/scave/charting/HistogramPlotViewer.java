@@ -45,6 +45,7 @@ import org.omnetpp.scave.charting.properties.ChartDefaults;
 import org.omnetpp.scave.charting.properties.HistogramPlotProperties;
 import org.omnetpp.scave.charting.properties.HistogramPlotProperties.HistogramBar;
 import org.omnetpp.scave.charting.properties.HistogramPlotProperties.HistogramDataType;
+import org.omnetpp.scave.python.PythonHistogramDataset;
 
 public class HistogramPlotViewer extends PlotViewerBase {
 
@@ -124,6 +125,13 @@ public class HistogramPlotViewer extends PlotViewerBase {
             setLogarithmicY(Converter.stringToBoolean(value));
         else
             super.setProperty(name, value);
+    }
+
+    @Override
+    public void clear() {
+        super.doClear(new HistogramPlotProperties(null));
+        properties.clear();
+        setDataset(new PythonHistogramDataset(null));
     }
 
     public void setXAxisTitle(String value) {

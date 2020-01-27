@@ -131,19 +131,7 @@ public class NativeChartViewer extends ChartViewerBase {
 
         plotViewer.setStatusText("Running Python script...");
 
-        // TODO: should clear _ALL_ properties here (some are not included in the defaults, like per-line style)
-
-        // resetting properties to factory defaults
-        IPropertySource2 propSource = ChartVisualProperties.createPropertySource(chart);
-        for (IPropertyDescriptor desc : propSource.getPropertyDescriptors()) {
-            String id = (String)desc.getId();
-            // applying the values stored in the chart model object will have to be done explicitly in the script
-            // Property prop = chart.lookupProperty(id);
-            // if (prop != null)
-            //     chartView.setProperty(id, prop.getValue());
-            // else
-            plotViewer.setProperty(id, Converter.objectToString(ChartDefaults.getDefaultPropertyValue(id)));
-        }
+        plotViewer.clear();
 
         try {
             acquireNewProcess();
@@ -157,15 +145,6 @@ public class NativeChartViewer extends ChartViewerBase {
         }
 
         chartPlotter.reset();
-
-        // clearing existing (old) dataset from chartView
-        switch (chart.getType()) {
-        case BAR: plotViewer.setDataset(new PythonScalarDataset(null)); break;
-        case HISTOGRAM: plotViewer.setDataset(new PythonHistogramDataset(null)); break;
-        case LINE: plotViewer.setDataset(new PythonXYDataset(null)); break;
-        case MATPLOTLIB: // fallthrough
-        default: throw new RuntimeException("Wrong chart type.");
-        }
 
         Runnable ownRunAfterDone = () -> {
             runAfterDone.run();
