@@ -14,10 +14,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.scave.pychart.ActionDescription;
-import org.omnetpp.scave.pychart.IPlotWidget;
+import org.omnetpp.scave.pychart.IMatplotlibWidget;
 import org.omnetpp.scave.pychart.IPlotWidgetProvider;
-import org.omnetpp.scave.pychart.IPyFigureCanvas;
-import org.omnetpp.scave.pychart.PlotWidget;
+import org.omnetpp.scave.pychart.IMatplotlibFigureCanvas;
+import org.omnetpp.scave.pychart.MatplotlibWidget;
 import org.omnetpp.scave.pychart.PythonProcess;
 
 public class MultiWidgetProvider implements IPlotWidgetProvider {
@@ -25,7 +25,7 @@ public class MultiWidgetProvider implements IPlotWidgetProvider {
     PythonProcess pythonProcess;
 
     class FigureData {
-        public FigureData(Shell shell, IPlotWidget widget, Composite toolbar, IPyFigureCanvas canvas) {
+        public FigureData(Shell shell, IMatplotlibWidget widget, Composite toolbar, IMatplotlibFigureCanvas canvas) {
             this.shell = shell;
             this.widget = widget;
             this.toolbar = toolbar;
@@ -33,9 +33,9 @@ public class MultiWidgetProvider implements IPlotWidgetProvider {
         }
 
         public Shell shell;
-        public IPlotWidget widget;
+        public IMatplotlibWidget widget;
         public Composite toolbar;
-        public IPyFigureCanvas pythonCanvas;
+        public IMatplotlibFigureCanvas pythonCanvas;
     }
 
     Map<Integer, FigureData> figures = new HashMap<Integer, FigureData>();
@@ -46,7 +46,7 @@ public class MultiWidgetProvider implements IPlotWidgetProvider {
     }
 
     @Override
-    public IPlotWidget getWidget(int figureNumber, IPyFigureCanvas canvas) {
+    public IMatplotlibWidget getWidget(int figureNumber, IMatplotlibFigureCanvas canvas) {
 
         Display.getDefault().syncExec(() -> {
             if (figures.containsKey(figureNumber))
@@ -56,7 +56,7 @@ public class MultiWidgetProvider implements IPlotWidgetProvider {
             shell.setText("Figure " + figureNumber);
 
             shell.setLayout(new GridLayout(1, true));
-            PlotWidget widget = new PlotWidget(shell, SWT.NONE, pythonProcess, canvas);
+            MatplotlibWidget widget = new MatplotlibWidget(shell, SWT.NONE, pythonProcess, canvas);
             widget.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
             Composite toolbar = new Composite(shell, SWT.NONE);

@@ -80,7 +80,7 @@ import org.omnetpp.scave.model.Chart.ChartType;
 import org.omnetpp.scave.model.IModelChangeListener;
 import org.omnetpp.scave.model.ModelChangeEvent;
 import org.omnetpp.scave.model.commands.CommandStack;
-import org.omnetpp.scave.pychart.PlotWidget;
+import org.omnetpp.scave.pychart.MatplotlibWidget;
 import org.omnetpp.scave.pychart.PythonCallerThread.ExceptionHandler;
 import org.omnetpp.scave.pychart.PythonOutputMonitoringThread.IOutputListener;
 import org.omnetpp.scave.python.BackAction;
@@ -272,7 +272,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
                 matplotlibChartViewer.addOutputListener(outputListener);
                 matplotlibChartViewer.addStateChangeListener(stateChangeListener);
 
-                PlotWidget plotWidget = matplotlibChartViewer.getPlotWidget();
+                MatplotlibWidget plotWidget = matplotlibChartViewer.getPlotWidget();
                 plotWidget.setMenu(createMatplotlibMenuManager().createContextMenu(plotWidget));
             }
             else {

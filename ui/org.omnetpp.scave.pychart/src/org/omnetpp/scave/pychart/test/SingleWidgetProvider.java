@@ -11,28 +11,28 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.omnetpp.scave.pychart.ActionDescription;
-import org.omnetpp.scave.pychart.IPlotWidget;
+import org.omnetpp.scave.pychart.IMatplotlibWidget;
 import org.omnetpp.scave.pychart.IPlotWidgetProvider;
-import org.omnetpp.scave.pychart.IPyFigureCanvas;
-import org.omnetpp.scave.pychart.PlotWidget;
+import org.omnetpp.scave.pychart.IMatplotlibFigureCanvas;
+import org.omnetpp.scave.pychart.MatplotlibWidget;
 
 public class SingleWidgetProvider implements IPlotWidgetProvider {
     Shell shell;
-    PlotWidget widget;
-    IPyFigureCanvas pythonCanvas = null;
+    MatplotlibWidget widget;
+    IMatplotlibFigureCanvas pythonCanvas = null;
 
     public SingleWidgetProvider(Shell shell) {
         this.shell = shell;
     }
 
     @Override
-    public IPlotWidget getWidget(int figureNumber, IPyFigureCanvas canvas) {
+    public IMatplotlibWidget getWidget(int figureNumber, IMatplotlibFigureCanvas canvas) {
         // Assert.isTrue(number == 1, "Only a single canvas is supported");
         Assert.isTrue(pythonCanvas == null, "A canvas was already created");
 
         pythonCanvas = canvas;
 
-        widget = new PlotWidget(shell, SWT.NONE, null, canvas);
+        widget = new MatplotlibWidget(shell, SWT.NONE, null, canvas);
 
         widget.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
         return widget;

@@ -362,7 +362,7 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
             self.shmMmap.close()
 
     class Java:
-        implements = ["org.omnetpp.scave.pychart.IPyFigureCanvas"]
+        implements = ["org.omnetpp.scave.pychart.IMatplotlibFigureCanvas"]
 
     def blit(self, bbox=None):
         # TODO use SHM here as well!
@@ -392,13 +392,13 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
         FigureCanvasAgg.draw(self)
 
         buffer = self.buffer_rgba()
-        
+
         if isinstance(buffer, bytes):
             bl = len(buffer)
         else:
             # it is assumed to be a memoryview
             bl = buffer.nbytes
-        
+
         if self.useSharedMemory:
             if not self.shmMmap or self.shmMmap.size() < bl:
                 if self.shmMmap:
@@ -422,7 +422,7 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
                     self.shmMmap = mmap.mmap(shm.fd, bl)
 
                     self.widget.setSharedMemoryNameAndSize(name, bl)
-    
+
                     # the mapping from Java will keep it alive until the async drawing occurs
                     shm.close_fd()
                     shm.unlink()

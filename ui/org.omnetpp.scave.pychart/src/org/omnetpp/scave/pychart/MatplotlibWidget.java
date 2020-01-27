@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.omnetpp.scave.engine.ScaveEngine;
 
-public class PlotWidget extends Canvas implements IPlotWidget {  // TODO MatplotlibCanvas?
+public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
     ByteBuffer buf;
     ImageData imageData;
     Image image;
@@ -35,7 +35,7 @@ public class PlotWidget extends Canvas implements IPlotWidget {  // TODO Matplot
 
     public int figureNumber = 0;
 
-    IPyFigureCanvas pyCanvas = null;
+    IMatplotlibFigureCanvas pyCanvas = null;
     PythonProcess pythonProcess;
 
     boolean mouseIsOverMe;
@@ -52,7 +52,7 @@ public class PlotWidget extends Canvas implements IPlotWidget {  // TODO Matplot
     static final int EVENTSTREAM_MOUSEMOVE = 1;
     static final int EVENTSTREAM_RESIZE = 2;
 
-    public PlotWidget(Composite parent, int style, PythonProcess proc, IPyFigureCanvas canvas) {
+    public MatplotlibWidget(Composite parent, int style, PythonProcess proc, IMatplotlibFigureCanvas canvas) {
         super(parent, style);
 
         pyCanvas = canvas;
@@ -267,7 +267,7 @@ public class PlotWidget extends Canvas implements IPlotWidget {  // TODO Matplot
         });
     }
 
-    public void rebindToNewProcess(PythonProcess pythonProcess, IPyFigureCanvas canvas) {
+    public void rebindToNewProcess(PythonProcess pythonProcess, IMatplotlibFigureCanvas canvas) {
         this.pythonProcess = pythonProcess;
         this.pyCanvas = canvas;
         int x = getSize().x;
@@ -350,7 +350,7 @@ public class PlotWidget extends Canvas implements IPlotWidget {  // TODO Matplot
         return pythonProcess;
     }
 
-    public IPyFigureCanvas getCanvas() {
+    public IMatplotlibFigureCanvas getCanvas() {
         return pyCanvas;
     }
 

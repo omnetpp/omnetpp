@@ -8,7 +8,7 @@ import java.util.HashMap;
  * 
  * @author attila
  */
-public interface IPyFigureCanvas {
+public interface IMatplotlibFigureCanvas {
 
     // Declaration of event handlers:
     //
@@ -43,7 +43,7 @@ public interface IPyFigureCanvas {
      * 
      */
 
-    void setWidget(IPlotWidget w);
+    void setWidget(IMatplotlibWidget w);
 
     void performAction(String action);
 

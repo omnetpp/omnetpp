@@ -23,10 +23,10 @@ import org.omnetpp.common.image.ImageUtils;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.pychart.ActionDescription;
-import org.omnetpp.scave.pychart.IPlotWidget;
+import org.omnetpp.scave.pychart.IMatplotlibWidget;
 import org.omnetpp.scave.pychart.IPlotWidgetProvider;
-import org.omnetpp.scave.pychart.IPyFigureCanvas;
-import org.omnetpp.scave.pychart.PlotWidget;
+import org.omnetpp.scave.pychart.IMatplotlibFigureCanvas;
+import org.omnetpp.scave.pychart.MatplotlibWidget;
 import org.omnetpp.scave.pychart.PythonCallerThread.ExceptionHandler;
 import org.omnetpp.scave.pychart.PythonProcessPool;
 
@@ -57,7 +57,7 @@ public class MatplotlibChartViewer extends ChartViewerBase {
         }
 
         @Override
-        public IPlotWidget getWidget(int figureNumber, IPyFigureCanvas canvas) {
+        public IMatplotlibWidget getWidget(int figureNumber, IMatplotlibFigureCanvas canvas) {
             if (MatplotlibChartViewer.this.figureNumber >= 0 && figureNumber != MatplotlibChartViewer.this.figureNumber)
                 throw new RuntimeException("Only one figure per chart is allowed - figure number 1.");
 
@@ -72,12 +72,12 @@ public class MatplotlibChartViewer extends ChartViewerBase {
     };
 
     int figureNumber = -1;
-    private PlotWidget plotWidget;
+    private MatplotlibWidget plotWidget;
     String lastActiveAction = "";
 
     public MatplotlibChartViewer(PythonProcessPool processPool, Chart chart, ResultFileManager rfm, Composite parent) {
         super(processPool, chart, rfm);
-        plotWidget = new PlotWidget(parent, SWT.DOUBLE_BUFFERED, proc, null);
+        plotWidget = new MatplotlibWidget(parent, SWT.DOUBLE_BUFFERED, proc, null);
     }
 
     public void runPythonScript(String script, File workingDir, Runnable runAfterDone, ExceptionHandler runAfterError) {
@@ -126,7 +126,7 @@ public class MatplotlibChartViewer extends ChartViewerBase {
         plotWidget.setVisible(visible);
     }
 
-    public PlotWidget getPlotWidget() {
+    public MatplotlibWidget getPlotWidget() {
         return plotWidget;
     }
 
@@ -188,7 +188,7 @@ public class MatplotlibChartViewer extends ChartViewerBase {
     }
 
     public void export(String name) {
-        IPyFigureCanvas canvas = plotWidget.getCanvas();
+        IMatplotlibFigureCanvas canvas = plotWidget.getCanvas();
 
         if (canvas != null) {
             HashMap<String, ArrayList<String>> types = canvas.getSupportedFiletypes();

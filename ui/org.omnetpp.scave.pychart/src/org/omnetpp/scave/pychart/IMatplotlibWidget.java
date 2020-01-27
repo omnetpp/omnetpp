@@ -3,12 +3,12 @@ package org.omnetpp.scave.pychart;
 import java.util.ArrayList;
 
 /**
- * This is the interface that Python expects from a PlotWidget.
+ * This is the interface that Matplotlib expects from a MatplotlibWidget.
  *
  * @author attila
  *
  */
-public interface IPlotWidget {
+public interface IMatplotlibWidget {
 
     /**
      * This is the main drawing method. Calling it will replace

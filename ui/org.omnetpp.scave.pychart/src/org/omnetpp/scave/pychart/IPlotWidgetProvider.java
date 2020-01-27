@@ -5,7 +5,7 @@ import java.util.List;
 import py4j.Py4JException;
 
 public interface IPlotWidgetProvider {
-    IPlotWidget getWidget(int figureNumber, IPyFigureCanvas canvas) throws Py4JException;
+    IMatplotlibWidget getWidget(int figureNumber, IMatplotlibFigureCanvas canvas) throws Py4JException;
 
     void setPlotActions(int figureNumber, List<ActionDescription> actions);
 
