@@ -88,7 +88,7 @@ public class IconGridViewer extends ContentViewer {
     private Color selectionFillColor = new Color(Display.getDefault(), 216, 235, 243); // very light blue
     private Color focusElementBorderColor = ColorFactory.LIGHT_BLUE;
     private ViewMode viewMode = ViewMode.ICONS;
-    private int itemWidth = 100; // in ICONS mode
+    private int itemWidth = 140; // in ICONS mode
     private int columnWidth = 400; // in MULTICOLUMN_LIST mode
 
     //  widgets
