@@ -15,19 +15,6 @@
 
   <x:children>
 
-    <!-- page generated from the following spec:
-Names {
-	chartName,
-},
-Options {
-	Use antialias?,
-	Use caching?,
-},
-Colors {
-	backgroundColor
-}    
-    -->
-    
     <!-- Names { -->
     <group text="Names">
       <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
@@ -39,8 +26,6 @@ Colors {
     <text x:id="chart_name" x:style="BORDER">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </text>
-
-    <!--  -->
 
     <!-- } -->
       </x:children>
@@ -54,12 +39,12 @@ Colors {
 
     <!-- backgroundColor -->
     <label text="Figure background color:"/>
-    <ColorChooser x:id="figure.facecolor" x:style="BORDER">
+    <ColorChooser x:id="matplotlibrc.figure.facecolor" x:style="BORDER">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </ColorChooser>
     
     <label text="Axes background color:"/>
-    <ColorChooser x:id="axes.facecolor" x:style="BORDER">
+    <ColorChooser x:id="matplotlibrc.axes.facecolor" x:style="BORDER">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </ColorChooser>
 

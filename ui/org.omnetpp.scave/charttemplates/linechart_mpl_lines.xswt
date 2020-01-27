@@ -14,25 +14,12 @@
   <layout x:class="GridLayout" numColumns="2"/>
 
   <x:children>
-
-    <!-- page generated from the following spec:
-Line Options {
-lineWidth%,
-lineStyle:solid/dashed/dotted,
-drawStyle:dots/points/linear/pins/steps-pre/steps-post,
-},
-Symbol Options {
-    symbolSize%,
-    showSymbols?,
-}    
-    -->
     
     <label text="Line width:"/>
-    <spinner x:id="lines.linewidth" minimum="0" digits="1" selection="15" maximum="1000" x:style="BORDER"/>
+    <spinner x:id="matplotlibrc.lines.linewidth" minimum="0" digits="1" selection="15" maximum="1000" x:style="BORDER"/>
     
-    <!-- drawStyle:dots/points/linear/pins/steps-pre/steps-post -->
     <label text="Marker:"/>
-    <combo x:id="lines.marker" x:style="BORDER|READ_ONLY">
+    <combo x:id="matplotlibrc.lines.marker" x:style="BORDER|READ_ONLY">
       <add x:p0="None"/>
       <add x:p0="."/>
       <add x:p0=","/>
@@ -48,7 +35,7 @@ Symbol Options {
 
     <!-- symbolSize% -->
     <label text="Marker size:"/>
-    <spinner x:id="lines.markersize" selection="6" minimum="0" maximum="100" x:style="BORDER"/>
+    <spinner x:id="matplotlibrc.lines.markersize" selection="6" minimum="0" maximum="100" x:style="BORDER"/>
 
     
     <label text="Draw style:"/>

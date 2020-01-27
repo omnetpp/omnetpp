@@ -135,7 +135,7 @@ def update_matplotlib_rcparams(props):
     Updates `mpl.rcParams` taking suitable values from the `props` dictionary.
     """
     allowed_keys = mpl.rcParams.keys()
-    filtered_props = {k:v for (k, v) in props.items() if k in allowed_keys and v}
+    filtered_props = {k[len("matplotlibrc."):] : v for (k, v) in props.items() if k.startswith("matplotlibrc.") and v}
     mpl.rcParams.update(filtered_props)
 
 
