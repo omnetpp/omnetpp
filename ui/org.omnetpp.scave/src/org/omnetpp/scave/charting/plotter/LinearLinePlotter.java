@@ -19,11 +19,11 @@ import org.omnetpp.scave.charting.ILinePlot;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 
 /**
- * Vector plotter that connects data points with lines.
+ * Line plotter that connects data points with lines.
  *
  * @author Andras
  */
-public class LinesVectorPlotter extends VectorPlotter {
+public class LinearLinePlotter extends LinePlotter {
 
     public boolean plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol, int timeLimitMillis) {
         IXYDataset dataset = plot.getDataset();

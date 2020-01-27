@@ -13,13 +13,13 @@ import org.omnetpp.common.canvas.LargeGraphics;
 import org.omnetpp.scave.charting.ILinePlot;
 
 /**
- * Vector plotter simply drawing pixels (and no lines or symbols). Note that despite
- * common sense, LinesVectorPlotter is *faster* than this one, probably due to the
+ * Line plotter simply drawing pixels (and no lines or symbols). Note that despite
+ * common sense, LinearLinePlotter is *faster* than this one, probably due to the
  * HashSet in plotSymbols().
  *
  * @author Andras
  */
-public class PointsVectorPlotter extends VectorPlotter {
+public class PointsLinePlotter extends LinePlotter {
 
     public boolean plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol, int timeLimitMillis) {
         //

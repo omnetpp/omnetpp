@@ -15,11 +15,11 @@ import org.omnetpp.scave.charting.ILinePlot;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 
 /**
- * Pins vector plotter
+ * Pins line plotter
  *
  * @author Andras
  */
-public class PinsVectorPlotter extends VectorPlotter {
+public class PinsLinePlotter extends LinePlotter {
 
     protected double referenceLevel = 0;  // baseline for the pins
 

@@ -9,16 +9,16 @@ package org.omnetpp.scave.charting.plotter;
 
 import org.omnetpp.scave.charting.properties.LineVisualProperties.LineType;
 
-public class VectorPlotterFactory {
+public class LinePlotterFactory {
 
-    public static IVectorPlotter createVectorPlotter(LineType lineType) {
+    public static ILinePlotter createVectorPlotter(LineType lineType) {
         switch (lineType) {
-        case Dots: return new DotsVectorPlotter();
-        case Linear: return new LinesVectorPlotter();
-        case StepsPost: return new StepsVectorPlotter(false);
-        case StepsPre: return new StepsVectorPlotter(true);
-        case Pins: return new PinsVectorPlotter();
-        case Points: return new PointsVectorPlotter();
+        case Dots: return new DotsLinePlotter();
+        case Linear: return new LinearLinePlotter();
+        case StepsPost: return new StepsLinePlotter(false);
+        case StepsPre: return new StepsLinePlotter(true);
+        case Pins: return new PinsLinePlotter();
+        case Points: return new PointsLinePlotter();
         default: throw new IllegalArgumentException("unknown line style: " + lineType);
         }
     }

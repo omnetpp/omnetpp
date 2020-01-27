@@ -23,7 +23,7 @@ import org.omnetpp.scave.charting.dataset.IXYDataset;
  *
  * @author andras
  */
-public abstract class VectorPlotter implements IVectorPlotter {
+public abstract class LinePlotter implements ILinePlotter {
 
     public int[] indexRange(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping) {
         IXYDataset dataset = plot.getDataset();

@@ -15,15 +15,15 @@ import org.omnetpp.scave.charting.ILinePlot;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 
 /**
- * Sample-hold vector plotter
+ * Sample-hold line plotter
  *
  * @author Andras
  */
-public class StepsVectorPlotter extends VectorPlotter {
+public class StepsLinePlotter extends LinePlotter {
 
     boolean pre; // or post
 
-    public StepsVectorPlotter(boolean pre) {
+    public StepsLinePlotter(boolean pre) {
         this.pre = pre;
     }
 

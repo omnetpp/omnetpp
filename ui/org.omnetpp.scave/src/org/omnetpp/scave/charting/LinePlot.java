@@ -19,7 +19,7 @@ import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.scave.charting.VectorChartViewer.LineProperties;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
-import org.omnetpp.scave.charting.plotter.IVectorPlotter;
+import org.omnetpp.scave.charting.plotter.ILinePlotter;
 
 class LinePlot implements ILinePlot {
 
@@ -157,7 +157,7 @@ class LinePlot implements ILinePlot {
                 LineProperties props = chart.getLineProperties(series);
                 if (props.getDisplayLine()) {
 
-                    IVectorPlotter plotter = props.getPlotter();
+                    ILinePlotter plotter = props.getPlotter();
                     IChartSymbol symbol = props.getSymbol();
                     Color color = props.getColor();
                     chart.resetDrawingStylesAndColors(graphics);

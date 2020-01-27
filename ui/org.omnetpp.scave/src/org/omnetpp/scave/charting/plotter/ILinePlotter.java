@@ -16,7 +16,7 @@ import org.omnetpp.scave.charting.ILinePlot;
  *
  * @author Andras
  */
-public interface IVectorPlotter {
+public interface ILinePlotter {
     /**
      * Draw the given series of the plot on the graphics with the given coordinate mapping;
      * it must not take more than the given time limit.

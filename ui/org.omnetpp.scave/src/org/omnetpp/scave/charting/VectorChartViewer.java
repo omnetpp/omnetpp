@@ -63,8 +63,8 @@ import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset.InterpolationMode;
 import org.omnetpp.scave.charting.plotter.ChartSymbolFactory;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
-import org.omnetpp.scave.charting.plotter.IVectorPlotter;
-import org.omnetpp.scave.charting.plotter.VectorPlotterFactory;
+import org.omnetpp.scave.charting.plotter.ILinePlotter;
+import org.omnetpp.scave.charting.plotter.LinePlotterFactory;
 import org.omnetpp.scave.charting.properties.ChartVisualProperties.ShowGrid;
 import org.omnetpp.scave.charting.properties.LineVisualProperties.LineType;
 import org.omnetpp.scave.charting.properties.LineVisualProperties.SymbolType;
@@ -211,10 +211,10 @@ public class VectorChartViewer extends ChartViewer { //TODO LinePlot?
             this.lineColor = lineColor;
         }
 
-        public IVectorPlotter getPlotter() {
+        public ILinePlotter getPlotter() {
             Assert.isTrue(this != defaultProperties);
             LineType type = getLineType();
-            IVectorPlotter plotter = VectorPlotterFactory.createVectorPlotter(type);
+            ILinePlotter plotter = LinePlotterFactory.createVectorPlotter(type);
             return plotter;
         }
 
