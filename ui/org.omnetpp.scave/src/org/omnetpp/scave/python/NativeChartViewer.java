@@ -17,7 +17,7 @@ import org.omnetpp.scave.charting.HistogramPlotViewer;
 import org.omnetpp.scave.charting.BarPlotViewer;
 import org.omnetpp.scave.charting.LinePlotViewer;
 import org.omnetpp.scave.charting.properties.ChartDefaults;
-import org.omnetpp.scave.charting.properties.ChartVisualProperties;
+import org.omnetpp.scave.charting.properties.PlotProperties;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.pychart.INativeChartPlotter;

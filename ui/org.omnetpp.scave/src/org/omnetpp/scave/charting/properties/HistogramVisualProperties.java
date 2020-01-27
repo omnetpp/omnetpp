@@ -15,10 +15,10 @@ public class HistogramVisualProperties extends PropertySource {
     public static final String
         PROP_HIST_COLOR         = "Hist.Color";
 
-    private final ChartVisualProperties chartProps;
+    private final PlotProperties chartProps;
     private String histogramId;
 
-    public HistogramVisualProperties(ChartVisualProperties chartProps, String histogramId) {
+    public HistogramVisualProperties(PlotProperties chartProps, String histogramId) {
         this.chartProps = chartProps;
         this.histogramId = histogramId;
     }

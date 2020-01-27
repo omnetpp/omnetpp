@@ -10,7 +10,7 @@ package org.omnetpp.scave.charting.properties;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.commands.CommandStack;
 
-public class LineChartVisualProperties extends ChartVisualProperties
+public class LinePlotProperties extends PlotProperties
 {
     // private static final String DEFAULT_LINE_PROPERTIES_ID = "default";
 
@@ -20,11 +20,11 @@ public class LineChartVisualProperties extends ChartVisualProperties
         PROP_X_AXIS_LOGARITHMIC = "X.Axis.Log";
 
 
-    public LineChartVisualProperties(Chart chart) {
+    public LinePlotProperties(Chart chart) {
         this(chart, null);
     }
 
-    public LineChartVisualProperties(Chart chart, CommandStack commandStack) {
+    public LinePlotProperties(Chart chart, CommandStack commandStack) {
         super(chart, commandStack);
     }
 

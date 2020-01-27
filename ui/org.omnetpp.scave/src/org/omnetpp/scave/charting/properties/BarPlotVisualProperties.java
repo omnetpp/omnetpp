@@ -10,7 +10,7 @@ package org.omnetpp.scave.charting.properties;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.commands.CommandStack;
 
-public class BarChartVisualProperties extends ChartVisualProperties
+public class BarPlotVisualProperties extends PlotProperties
 {
     // private static final String DEFAULT_BAR_PROPERTIES_ID = "default";
 
@@ -28,11 +28,11 @@ public class BarChartVisualProperties extends ChartVisualProperties
         Stacked,
     }
 
-    public BarChartVisualProperties(Chart chart) {
+    public BarPlotVisualProperties(Chart chart) {
         this(chart, null);
     }
 
-    public BarChartVisualProperties(Chart chart, CommandStack commandStack) {
+    public BarPlotVisualProperties(Chart chart, CommandStack commandStack) {
         super(chart, commandStack);
     }
 

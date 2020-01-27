@@ -11,7 +11,7 @@ import org.omnetpp.common.properties.Property;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.commands.CommandStack;
 
-public class HistogramChartVisualProperties extends ChartVisualProperties
+public class HistogramPlotProperties extends PlotProperties
 {
     // private static final String DEFAULT_HIST_PROPERTIES_ID = "default";
 
@@ -42,11 +42,11 @@ public class HistogramChartVisualProperties extends ChartVisualProperties
         }
     }
 
-    public HistogramChartVisualProperties(Chart chart) {
+    public HistogramPlotProperties(Chart chart) {
         this(chart, null);
     }
 
-    public HistogramChartVisualProperties(Chart chart, CommandStack commandStack) {
+    public HistogramPlotProperties(Chart chart, CommandStack commandStack) {
         super(chart, commandStack);
     }
 

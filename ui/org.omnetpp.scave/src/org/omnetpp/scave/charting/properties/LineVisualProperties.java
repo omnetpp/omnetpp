@@ -74,10 +74,10 @@ public class LineVisualProperties extends PropertySource {
             return imageId;
         }
     }
-    private final ChartVisualProperties chartProps;
+    private final PlotProperties chartProps;
     private String lineId;
 
-    public LineVisualProperties(ChartVisualProperties chartProps, String lineId) {
+    public LineVisualProperties(PlotProperties chartProps, String lineId) {
         this.chartProps = chartProps;
         this.lineId = lineId;
     }

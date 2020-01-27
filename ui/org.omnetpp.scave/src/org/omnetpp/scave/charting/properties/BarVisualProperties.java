@@ -15,10 +15,10 @@ public class BarVisualProperties extends PropertySource {
     public static final String
         PROP_BAR_COLOR          = "Bar.Color";
 
-    private final ChartVisualProperties chartProps;
+    private final PlotProperties chartProps;
     private String barId;
 
-    public BarVisualProperties(ChartVisualProperties chartProps, String barId) {
+    public BarVisualProperties(PlotProperties chartProps, String barId) {
         this.chartProps = chartProps;
         this.barId = barId;
     }

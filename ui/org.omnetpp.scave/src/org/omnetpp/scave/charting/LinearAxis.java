@@ -25,7 +25,7 @@ import org.eclipse.swt.graphics.Point;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.LargeGraphics;
 import org.omnetpp.common.util.GraphicsUtils;
-import org.omnetpp.scave.charting.properties.ChartVisualProperties.ShowGrid;
+import org.omnetpp.scave.charting.properties.PlotProperties.ShowGrid;
 
 /**
  * Draws a (horizontal or vertical) chart axis, with the corresponding axis

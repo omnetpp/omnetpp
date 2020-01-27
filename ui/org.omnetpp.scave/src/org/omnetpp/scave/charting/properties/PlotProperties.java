@@ -29,14 +29,14 @@ import org.omnetpp.scave.model.commands.SetChartPropertyCommand;
  * Property source for charts.
  * @author tomi
  */
-public class ChartVisualProperties extends PropertySource {
+public class PlotProperties extends PropertySource {
 
     /**
      * Property names used in the model.
      */
     public static final String
         // Titles
-        PROP_GRAPH_TITLE        = "Graph.Title",  //TODO Plot.Title
+        PROP_GRAPH_TITLE        = "plot.title",  //TODO Plot.Title
         PROP_GRAPH_TITLE_FONT   = "Graph.Title.Font",
         PROP_X_AXIS_TITLE       = "X.Axis.Title",
         PROP_Y_AXIS_TITLE       = "Y.Axis.Title",
@@ -104,11 +104,6 @@ public class ChartVisualProperties extends PropertySource {
 
     public ChartVisualProperties(Chart chart) {
         this(chart, null);
-    }
-
-    public ChartVisualProperties(Chart chart, CommandStack commandStack) {
-        this.chart = chart;
-        this.commandStack = commandStack;
     }
 
     /*======================================================================

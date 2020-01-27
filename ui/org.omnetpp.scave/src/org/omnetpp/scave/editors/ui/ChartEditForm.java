@@ -50,7 +50,7 @@ import org.omnetpp.common.wizard.XSWTDataBinding;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.assist.FilterContentProposalProvider;
 import org.omnetpp.scave.charting.properties.ChartDefaults;
-import org.omnetpp.scave.charting.properties.ChartVisualProperties;
+import org.omnetpp.scave.charting.properties.PlotProperties;
 import org.omnetpp.scave.charttemplates.ChartTemplate;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -124,7 +124,7 @@ public class ChartEditForm {
 
         Set<String> templatePropertyNames = new HashSet<String>(template.getPropertyNames());
 
-        IPropertySource2 propertySource = ChartVisualProperties.createPropertySource(chart);
+        IPropertySource2 propertySource = PlotProperties.createPropertySource(chart);
         for (IPropertyDescriptor desc : propertySource.getPropertyDescriptors())
             templatePropertyNames.add((String)desc.getId());
 
@@ -230,10 +230,10 @@ public class ChartEditForm {
             }
         }
 
-        ChartVisualProperties propertySource = null;
-        IPropertySource2 ps = ChartVisualProperties.createPropertySource(chart);
-        if (ps instanceof ChartVisualProperties)
-            propertySource = (ChartVisualProperties)ps;
+        PlotProperties propertySource = null;
+        IPropertySource2 ps = PlotProperties.createPropertySource(chart);
+        if (ps instanceof PlotProperties)
+            propertySource = (PlotProperties)ps;
 
         for (String propId : xswtWidgetMap.keySet()) {
             String value = null;
