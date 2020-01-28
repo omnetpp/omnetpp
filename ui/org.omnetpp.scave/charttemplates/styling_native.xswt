@@ -64,6 +64,20 @@
       </x:children>
     </group>
 
+    <!-- Legend { -->
+    <group text="Legend">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <button x:id="Legend.Border" text="Border" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
     <!-- Options { -->
     <group text="Options">
       <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>

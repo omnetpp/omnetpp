@@ -241,7 +241,8 @@ def plot_vectors(df, props):
         _plot_vectors_mpl(df, props)
 
 def _plot_vectors_native(df, props):
-    plot.set_properties(_filter_by_key_prefix(props,"plot."))  #TODO this was after plotting, was that intentional?
+    #plot.set_properties(_filter_by_key_prefix(props,"plot."))  #TODO this was after plotting, was that intentional?
+    plot.set_properties(props)  #TODO this was after plotting, was that intentional? + how to filter?
     plot.set_properties(parse_rcparams(props["plot.properties"] or ""))
     
     title_col, legend_cols = extract_label_columns(df)
