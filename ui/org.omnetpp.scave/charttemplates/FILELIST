@@ -1,5 +1,6 @@
 linechart_legacy.properties
 linechart_mpl.properties
 linechart_native.properties
+generic_mpl.properties
 generic_xyplot_mpl.properties
 generic_xyplot_native.properties
