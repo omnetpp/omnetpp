@@ -322,7 +322,7 @@ def plot_scatter(df, xdata, iso_column=None):
 
     # TODO: set_property('Y.Axis.Title', ', '.join(names))
     set_property('X.Axis.Title', xdata)
-    set_property('Graph.Title', get_name())
+    set_property('Plot.Title', get_name())
     """
 
 

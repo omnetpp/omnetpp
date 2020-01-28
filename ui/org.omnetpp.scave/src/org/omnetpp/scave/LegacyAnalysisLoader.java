@@ -148,7 +148,7 @@ public class LegacyAnalysisLoader {
 
 
         if ("scave:BarChart".equals(chartType)) {
-            setProperty(chart, "Graph.Title", chart.getName());
+            setProperty(chart, "Plot.Title", chart.getName());
             setProperty(chart, "filter", makeFilterString(ops, filters));
 
             ArrayList<String> bars = XmlUtils.collectChildTextsFromElementsWithTag(chartNode, "barFields");
@@ -160,7 +160,7 @@ public class LegacyAnalysisLoader {
             // NOTE: averagedFields elements are not used, because they belong "to the rest"
         }
         else if ("scave:HistogramChart".equals(chartType)) {
-            setProperty(chart, "Graph.Title", chart.getName());
+            setProperty(chart, "Plot.Title", chart.getName());
             setProperty(chart, "filter", makeFilterString(ops, filters));
         }
         else if ("scave:ScatterChart".equals(chartType)) {
@@ -169,14 +169,14 @@ public class LegacyAnalysisLoader {
             String averageReplications = avgRepls != null ? avgRepls.getNodeValue() : "true";
             ArrayList<String> isoDataPatterns = XmlUtils.collectChildTextsFromElementsWithTag(chartNode, "isoDataPattern");
 
-            setProperty(chart, "Graph.Title", chart.getName());
+            setProperty(chart, "Plot.Title", chart.getName());
             setProperty(chart, "filter", makeFilterString(ops, filters));
             setProperty(chart, "x_pattern", xDataPattern);
             setProperty(chart, "iso_patterns", StringUtils.join(isoDataPatterns, ";"));
             setProperty(chart, "average_replications", averageReplications);
         }
         else if ("scave:LineChart".equals(chartType)) {
-            setProperty(chart, "Graph.Title", chart.getName());
+            setProperty(chart, "Plot.Title", chart.getName());
             setProperty(chart, "filter", makeFilterString(ops, filters));
 
             ArrayList<String> vecOpStrings = new ArrayList<String>();

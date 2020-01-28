@@ -21,7 +21,7 @@ for i, c in legend:
 
 df.sort_values(by=[l for i, l in legend], axis='index', inplace=True)
 
-plot.set_property("Graph.Title", utils.make_chart_title(df, title, legend))
+plot.set_property("Plot.Title", utils.make_chart_title(df, title, legend))
 
 if len(legend) == 2:
     df = pd.pivot_table(df, index=legend[0][1], columns=legend[1][1], values='value')

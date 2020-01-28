@@ -38,13 +38,13 @@ Axis Titles {
 
     <!-- Graph title -->
     <label text="Graph title:"/>
-    <text x:id="Graph.Title" x:style="BORDER">
+    <text x:id="Plot.Title" x:style="BORDER">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </text>
 
     <!-- Title font -->
     <label text="Title font:"/>
-    <FontChooser x:id="Graph.Title.Font" x:style="BORDER">
+    <FontChooser x:id="Plot.Title.Font" x:style="BORDER">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </FontChooser>
 
