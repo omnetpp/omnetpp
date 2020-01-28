@@ -1,34 +1,46 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<xswt xmlns:x='http://sweet_swt.sf.net/xswt'>
-  <import xmlns='http://sweet_swt.sf.net/xswt'>
-    <package name='java.lang'/>
-    <package name='org.eclipse.swt.widgets' />
-    <package name='org.eclipse.swt.graphics' />
-    <package name='org.eclipse.swt.layout' />
-    <package name='org.eclipse.swt.custom' />
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang" />
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
   </import>
-  <layout x:class='GridLayout' numColumns='1'/>
+  <layout x:class="GridLayout" numColumns="1" />
   <x:children>
-    <label text="Filter expression:"/>
-    <text x:id="filter" x:style="BORDER|MULTI" x:id.isFilter="true"> 
-      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true"/>
+    <label text="Filter expression:" />
+    <text x:id="filter" x:style="BORDER|MULTI" x:id.isFilter="true">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true" />
     </text>
-    
-    <label text="Vector operations:"/>
-    <text x:id="vector_operations" x:style="BORDER|MULTI"> 
-      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true"/>
-    </text>
-    
-    
-    <label text="Vector start time (seconds):"/>
-    <text x:id="vector_start_time" x:style="BORDER"> 
-      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
-    </text>
-    
-    <label text="Vector end time (seconds):"/>
-    <text x:id="vector_end_time" x:style="BORDER"> 
-      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
-    </text>
-    
+    <composite>
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" />
+      <layout x:class="GridLayout" numColumns="2" />
+      <x:children>
+        <group text="Vector operations (one per line)">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true" />
+          <layout x:class="GridLayout" numColumns="1" />
+          <x:children>
+            <text x:id="vector_operations" x:style="BORDER|MULTI">
+              <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true" />
+            </text>
+          </x:children>
+        </group>
+        <group text="Crop interval">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true" />
+          <layout x:class="GridLayout" numColumns="2" />
+          <x:children>
+            <label text="Start time (sec):" />
+            <text x:id="vector_start_time" x:style="BORDER">
+              <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false" />
+            </text>
+            <label text="End time (sec):" />
+            <text x:id="vector_end_time" x:style="BORDER">
+              <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false" />
+            </text>
+          </x:children>
+        </group>
+      </x:children>
+    </composite>
   </x:children>
 </xswt>

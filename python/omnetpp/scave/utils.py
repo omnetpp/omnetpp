@@ -263,6 +263,9 @@ def _plot_vectors_mpl(df, props):
     update_matplotlib_rcparams(props)
     update_matplotlib_rcparams(parse_matplotlib_rcparams(props["matplotlibrc"] or ""))
     
+    if (props['plt.style']):
+        plt.style.use(props['plt.style'])
+    
     title_col, legend_cols = extract_label_columns(df)
     
     for t in df.itertuples(index=False):

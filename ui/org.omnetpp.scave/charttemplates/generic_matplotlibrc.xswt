@@ -9,9 +9,8 @@
   </import>
   <layout x:class='GridLayout' numColumns='1'/>
   <x:children>
-    <label text="You can customize various Matplotlib properties."/>
-    <label text="matplotlibrc file snippet:"/>
-    <label text="See https://matplotlib.org/tutorials/introductory/customizing.html#matplotlibrc-sample for example."/>    
+    <label text="Here you can further customize the plot using matplotlibrc properties."/>
+    <label text="The syntax is one entry per line in the 'key : value' format; comments (#) are also accepted."/>
     <text x:id="matplotlibrc" x:style="BORDER|MULTI" x:id.isFilter="true"> 
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true"/>
     </text>
