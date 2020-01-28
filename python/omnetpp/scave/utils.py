@@ -232,7 +232,7 @@ def interpolationmode_to_plot_params(drawstyle, interpolationmode, hasenum):
 
 def set_plot_title(title, suggested_chart_name=None):
     if chart.is_native_chart():
-        plot.set_property("Graph.Title", title)
+        plot.title(title)
     else:
         plt.title(title)
     chart.set_suggested_chart_name(suggested_chart_name if suggested_chart_name is not None else title)
@@ -245,9 +245,9 @@ def plot_vectors(df, props):
 
 def _plot_vectors_native(df, props):
     title_col, legend_cols = extract_label_columns(df)
-    
+
     drawstyle = props["drawstyle"] or "auto"
-    
+
     #TODO reduce differences with mpl version
     for i, t in enumerate(df.itertuples(index=False)):
         if drawstyle == "auto":
@@ -256,24 +256,38 @@ def _plot_vectors_native(df, props):
             linetype = props["drawstyle"] or "linear"
         props["Line.Type/" + str(i)] = linetype
         plot.plot_vector(make_legend_label(legend_cols, t), t.vectime, t.vecvalue, i)
-    
+
     plot.set_properties(props)
+    
+    title = props['title'] or make_chart_title(df, title_col, legend_cols)
+    set_plot_title(title)
+
+    if props["xaxis_title"]:
+        plot.xlabel(props["xaxis_title"])
+    if props["yaxis_title"]:
+        plot.ylabel(props["yaxis_title"])
+    
 
 def _plot_vectors_mpl(df, props):
     update_matplotlib_rcparams(props)
     update_matplotlib_rcparams(parse_matplotlib_rcparams(props["matplotlibrc"] or ""))
-    
+
     if (props['plt.style']):
         plt.style.use(props['plt.style'])
-    
+
     title_col, legend_cols = extract_label_columns(df)
-    
+
     for t in df.itertuples(index=False):
         style = interpolationmode_to_plot_params(props["drawstyle"], t.interpolationmode if "interpolationmode" in df else None, "enum" in df)
         plt.plot(t.vectime, t.vecvalue, label=make_legend_label(legend_cols, t), **style)
-    
-    title_col = props['title_col'] or make_chart_title(df, title_col, legend_cols)
-    set_plot_title(title_col)
-    
+
+    title = props['title'] or make_chart_title(df, title_col, legend_cols)
+    set_plot_title(title)
+
+    if props["xaxis_title"]:
+        plt.xlabel(props["xaxis_title"])
+    if props["yaxis_title"]:
+        plt.ylabel(props["yaxis_title"])
+
     plt.legend()
     plt.grid()

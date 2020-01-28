@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2"/>
+
+  <x:children>
+
+    <!-- Colors { -->
+    <group text="Colors">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- backgroundColor -->
+    <label text="Background color:"/>
+    <ColorChooser x:id="Plot.BackgroundColor" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </ColorChooser>
+
+    <!-- } -->
+      </x:children>
+    </group>
+    
+    <group text="Fonts">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- Title font -->
+    <label text="Title font:"/>
+    <FontChooser x:id="Plot.Title.Font" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </FontChooser>
+
+    <!-- Axis title font -->
+    <label text="Axis title font:"/>
+    <FontChooser x:id="Axis.Title.Font" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </FontChooser>
+
+    <!-- Label font -->
+    <label text="Label font:"/>
+    <FontChooser x:id="Label.Font" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </FontChooser>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+    <!-- Options { -->
+    <group text="Options">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- Use antialias? -->
+    <button x:id="Plot.Antialias" text="Use antialias" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <!-- Use caching? -->
+    <button x:id="Plot.Caching" text="Use caching" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <!-- Rotate X labels by:0/30/45/60/90 -->
+    <label text="Rotate x labels by:"/>
+    <combo x:id="X.Label.RotateBy" x:style="BORDER|READ_ONLY">
+      <add x:p0="0"/>
+      <add x:p0="30"/>
+      <add x:p0="45"/>
+      <add x:p0="60"/>
+      <add x:p0="90"/>
+    </combo>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+  </x:children>
+</xswt>

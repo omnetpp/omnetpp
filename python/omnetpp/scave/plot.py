@@ -184,3 +184,21 @@ def set_warning(warning):
     Displays the given warning text in the plot.
     """
     impl.set_warning(**locals())
+
+def title(str):
+    """
+    Sets plot title.
+    """
+    set_property("Plot.Title", str)
+
+def xlabel(str):
+    """
+    Sets the label of the X axis.
+    """
+    set_property("X.Axis.Title", str)
+
+def ylabel(str):
+    """
+    Sets the label of the Y axis.
+    """
+    set_property("Y.Axis.Title", str)

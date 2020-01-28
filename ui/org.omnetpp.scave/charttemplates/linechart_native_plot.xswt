@@ -15,21 +15,35 @@
 
   <x:children>
 
-    <!-- page generated from the following spec:
-Axis Bounds {
-    Y axis min,
-    Y axis max
-},
-Axis Options {
-    Logarithmic Y axis?
-},
-Grid {
-    Show grid:None/Major/All
-}    
-    -->
-    
-    <!-- Axis Bounds { -->
-    <group text="Axis bounds">
+    <group text="Title and labels">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- Plot title -->
+    <label text="Plot title:"/>
+    <text x:id="title" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <!-- X axis title -->
+    <label text="X axis title:"/>
+    <text x:id="xaxis_title" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <!-- Y axis title -->
+    <label text="Y axis title:"/>
+    <text x:id="yaxis_title" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+   
+    <group text="Axes">
       <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
       <layout x:class="GridLayout" numColumns="2"/>
       <x:children>
@@ -57,16 +71,6 @@ Grid {
     <text x:id="Y.Axis.Max" x:style="BORDER">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </text>
-
-    <!-- } -->
-      </x:children>
-    </group>
-
-    <!-- Axis Options { -->
-    <group text="Axis options">
-      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
-      <layout x:class="GridLayout" numColumns="2"/>
-      <x:children>
 
     <!-- Logarithmic Y axis? -->
     <button x:id="Y.Axis.Log" text="Logarithmic y axis" x:style="CHECK">
