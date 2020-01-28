@@ -310,10 +310,35 @@ def _plot_vectors_mpl(df, props):
     if props["yaxis_max"]:
         plt.ylim(right=props["yaxis_max"])
 
-    # TODO: loc="outside..." is not supported by pyplot, but can be emulated
-    plt.legend(frameon=_parse_opt_bool(props["legend_border"]), loc=props["legend_placement"] or None)
+    plt.legend(frameon=_parse_opt_bool(props["legend_border"]))
     if not _parse_opt_bool(props["legend_show"]):
         plt.gca().get_legend().remove()
+    if props["legend_placement"]:
+        _mpl_legend_set_location(props["legend_placement"]) # TODO very ugly -- make an abstracted utils.legend() instead!
 
     #TODO
     plt.grid()
+
+def _mpl_legend_set_location(loc):
+    if not loc.startswith("outside"):
+        plt.legend(loc=loc)
+    else:
+        mapping = {
+            "outside top left": ("lower left", (0,1.05)), #TODO finish
+            "outside top center": ("lower center", (0.5,1.05)),
+            "outside top right": ("lower right", (1,1.05)),
+            "outside bottom left": ("upper left", (0,-0.05)),
+            "outside bottom center": ("upper center", (0.5,-0.05)),
+            "outside bottom right": ("upper right", (1,-0.05)),
+            "outside left top": ("upper right", (-0.03, 1)),
+            "outside left center": ("center right", (-0.03,0.5)),
+            "outside left bottom": ("lower right", (-0.03,0)),
+            "outside right top": ("upper left", (1.03,1)),
+            "outside right center": ("center left", (1.03,0.5)),
+            "outside right bottom": ("lower left", (1.03,0)),
+        }
+        if loc not in mapping:
+            raise ValueError("loc='{}' is not recognized/supported".format(loc))
+
+        (anchorloc, relpos) = mapping[loc]
+        plt.gca().legend(loc=anchorloc, bbox_to_anchor=relpos)
