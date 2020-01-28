@@ -15,19 +15,6 @@
 
   <x:children>
 
-    <!-- page generated from the following spec:
-Display Legend?,
-Appearance {
-	Border?,
-	Logend font
-},
-Positioning {
-	Position:inside/above/below/left/right,
-	Anchoring:north/northeast/east/southeast/south/southwest/west/northwest
-}
-    
-    -->
-    
     <!-- Display Legend? -->
     <button x:id="Legend.Display" text="Display legend" x:style="CHECK">
       <layoutData x:class="GridData" horizontalSpan="2"/>
@@ -39,16 +26,11 @@ Positioning {
       <layout x:class="GridLayout" numColumns="2"/>
       <x:children>
 
+
     <!-- Border? -->
     <button x:id="Legend.Border" text="Border" x:style="CHECK">
       <layoutData x:class="GridData" horizontalSpan="2"/>
     </button>
-
-    <!-- Legend font -->
-    <label text="Legend font:"/>
-    <FontChooser x:id="Legend.Font" x:style="BORDER">
-      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
-    </FontChooser>
 
     <!-- } -->
       </x:children>

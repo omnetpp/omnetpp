@@ -54,6 +54,12 @@
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </FontChooser>
 
+    <!-- Legend font -->
+    <label text="Legend font:"/>
+    <FontChooser x:id="Legend.Font" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </FontChooser>
+
     <!-- } -->
       </x:children>
     </group>
