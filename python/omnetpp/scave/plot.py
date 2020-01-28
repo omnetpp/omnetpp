@@ -202,3 +202,21 @@ def ylabel(str):
     Sets the label of the Y axis.
     """
     set_property("Y.Axis.Title", str)
+    
+def xlim(left=None, right=None):
+    """
+    Sets the limits of the X axis.
+    """
+    if (left is not None):
+        set_property("X.Axis.Min", str(left))
+    if (right is not None):
+        set_property("X.Axis.Max", str(right))
+            
+def ylim(left=None, right=None):    
+    """
+    Sets the limits of the Y axis.
+    """
+    if (left is not None):
+        set_property("Y.Axis.Min", str(left))
+    if (right is not None):
+        set_property("Y.Axis.Max", str(right))

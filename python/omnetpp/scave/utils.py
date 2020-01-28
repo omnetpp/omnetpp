@@ -259,6 +259,7 @@ def _plot_vectors_native(df, props):
 
     plot.set_properties(props)
     
+    # TODO the following is almost the same as in the mpl variant
     title = props['title'] or make_chart_title(df, title_col, legend_cols)
     set_plot_title(title)
 
@@ -266,6 +267,15 @@ def _plot_vectors_native(df, props):
         plot.xlabel(props["xaxis_title"])
     if props["yaxis_title"]:
         plot.ylabel(props["yaxis_title"])
+
+    if props["xaxis_min"]:
+        plot.xlim(left=float(props["xaxis_min"]))
+    if props["xaxis_max"]:
+        plot.xlim(right=float(props["xaxis_max"]))
+    if props["yaxis_min"]:
+        plot.ylim(left=float(props["yaxis_min"]))
+    if props["yaxis_max"]:
+        plot.ylim(right=float(props["yaxis_max"]))
     
 
 def _plot_vectors_mpl(df, props):
@@ -288,6 +298,15 @@ def _plot_vectors_mpl(df, props):
         plt.xlabel(props["xaxis_title"])
     if props["yaxis_title"]:
         plt.ylabel(props["yaxis_title"])
+
+    if props["xaxis_min"]:
+        plt.xlim(left=props["xaxis_min"])
+    if props["xaxis_max"]:
+        plt.xlim(right=props["xaxis_max"])
+    if props["yaxis_min"]:
+        plt.ylim(left=props["yaxis_min"])
+    if props["yaxis_max"]:
+        plt.ylim(right=props["yaxis_max"])
 
     plt.legend()
     plt.grid()
