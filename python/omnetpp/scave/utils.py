@@ -111,7 +111,7 @@ def make_chart_title(df, title_col, legend_cols):
     return what + by_what
 
 
-def parse_matplotlib_rcparams(rc_content):
+def parse_rcparams(rc_content):
     rc_temp = {}
     for line_no, line in enumerate(rc_content.split("\n"), 1):
         strippedline = line.split('#', 1)[0].strip()
@@ -130,14 +130,11 @@ def parse_matplotlib_rcparams(rc_content):
     return rc_temp
 
 
-def update_matplotlib_rcparams(props):
-    """
-    Updates `mpl.rcParams` taking suitable values from the `props` dictionary.
-    """
-    allowed_keys = mpl.rcParams.keys()
-    filtered_props = {k[len("matplotlibrc."):] : v for (k, v) in props.items() if k.startswith("matplotlibrc.") and v}
-    mpl.rcParams.update(filtered_props)
+def _filter_by_key_prefix(props, prefix):
+    return {k[len(prefix):] : v for (k, v) in props.items() if k.startswith(prefix) and v}
 
+def _parse_opt_bool(value):
+    return value.lower()=="true" if value else None # maps "" to None
 
 import numpy as np
 from matplotlib.text import Text
@@ -244,6 +241,9 @@ def plot_vectors(df, props):
         _plot_vectors_mpl(df, props)
 
 def _plot_vectors_native(df, props):
+    plot.set_properties(_filter_by_key_prefix(props,"plot."))  #TODO this was after plotting, was that intentional?
+    plot.set_properties(parse_rcparams(props["plot.properties"] or ""))
+    
     title_col, legend_cols = extract_label_columns(df)
 
     drawstyle = props["drawstyle"] or "auto"
@@ -256,9 +256,7 @@ def _plot_vectors_native(df, props):
             linetype = props["drawstyle"] or "linear"
         props["Line.Type/" + str(i)] = linetype
         plot.plot_vector(make_legend_label(legend_cols, t), t.vectime, t.vecvalue, i)
-
-    plot.set_properties(props)
-    
+   
     # TODO the following is almost the same as in the mpl variant
     title = props['title'] or make_chart_title(df, title_col, legend_cols)
     set_plot_title(title)
@@ -277,14 +275,14 @@ def _plot_vectors_native(df, props):
     if props["yaxis_max"]:
         plot.ylim(right=float(props["yaxis_max"]))
 
-    plot.legend(show=props["legend_show"], frameon=props["legend_border"], loc=props["loc"])
-    
+    plot.legend(show=_parse_opt_bool(props["legend_show"]), frameon=_parse_opt_bool(props["legend_border"]), loc=props["legend_placement"] or None)
+
     #TODO
     plot.grid()
 
 def _plot_vectors_mpl(df, props):
-    update_matplotlib_rcparams(props)
-    update_matplotlib_rcparams(parse_matplotlib_rcparams(props["matplotlibrc"] or ""))
+    mpl.rcParams.update(_filter_by_key_prefix(props,"matplotlibrc."))
+    mpl.rcParams.update(parse_rcparams(props["matplotlibrc"] or ""))
 
     if (props['plt.style']):
         plt.style.use(props['plt.style'])
@@ -313,8 +311,8 @@ def _plot_vectors_mpl(df, props):
         plt.ylim(right=props["yaxis_max"])
 
     # TODO: loc="outside..." is not supported by pyplot, but can be emulated
-    plt.legend(frameon=props["legend_border"], loc=props["legend_placement"])
-    if "legend_show" in props and props["legend_show"] != "true":
+    plt.legend(frameon=_parse_opt_bool(props["legend_border"]), loc=props["legend_placement"] or None)
+    if not _parse_opt_bool(props["legend_show"]):
         plt.gca().get_legend().remove()
 
     #TODO
