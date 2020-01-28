@@ -276,7 +276,11 @@ def _plot_vectors_native(df, props):
         plot.ylim(left=float(props["yaxis_min"]))
     if props["yaxis_max"]:
         plot.ylim(right=float(props["yaxis_max"]))
+
+    plot.legend(show=props["legend_show"], frameon=props["legend_border"], loc=props["loc"])
     
+    #TODO
+    plot.grid()
 
 def _plot_vectors_mpl(df, props):
     update_matplotlib_rcparams(props)
@@ -308,5 +312,10 @@ def _plot_vectors_mpl(df, props):
     if props["yaxis_max"]:
         plt.ylim(right=props["yaxis_max"])
 
-    plt.legend()
+    # TODO: loc="outside..." is not supported by pyplot, but can be emulated
+    plt.legend(frameon=props["legend_border"], loc=props["legend_placement"])
+    if "legend_show" in props and props["legend_show"] != "true":
+        plt.gca().get_legend().remove()
+
+    #TODO
     plt.grid()

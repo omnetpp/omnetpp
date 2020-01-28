@@ -236,3 +236,44 @@ def yscale(value):
     if value not in ["linear", "log"]:
         raise ValueError("scale='{}' is not supported, only 'linear' and 'log'".format(value))
     set_property("Y.Axis.Log", "true" if value == "log" else "false")
+
+def legend(show=None, frameon=None, loc=None):
+    if show is not None:
+        set_property("Legend.Display", "true" if show else "false")
+
+    if frameon is not None:
+        set_property("Legend.Border", "true" if frameon else "false")
+
+    if loc is not None:
+        mapping = {
+            "best": ("Inside", "NorthEast"),
+            "upper right": ("Inside", "NorthEast"),
+            "upper left": ("Inside", "NorthWest"),
+            "lower left": ("Inside", "SouthWest"),
+            "lower right": ("Inside", "SouthEast"),
+            "right": ("Inside", "East"),
+            "center left": ("Inside", "West"),
+            "center right": ("Inside", "East"),
+            "lower center": ("Inside", "South"),
+            "upper center": ("Inside", "North"),
+            #"center": unsupported
+            "outside top left": ("Above", "West"),
+            "outside top center": ("Above", "South"),
+            "outside top right": ("Above", "East"),
+            "outside bottom left": ("Below", "West"),
+            "outside bottom center": ("Below", "North"),
+            "outside bottom right": ("Below", "East"),
+            "outside left top": ("Left", "North"),
+            "outside left center": ("Left", "East"),
+            "outside left bottom": ("Left", "South"),
+            "outside right top": ("Right", "North"),
+            "outside right center": ("Right", "West"),
+            "outside right bottom": ("Right", "South")
+        }
+        if loc not in mapping:
+            raise ValueError("loc='{}' is not recognized/supported".format(loc))
+
+        (position, anchoring) = mapping[loc]
+        set_property("Legend.Position", position)
+        set_property("Legend.Anchoring", anchoring)
+
