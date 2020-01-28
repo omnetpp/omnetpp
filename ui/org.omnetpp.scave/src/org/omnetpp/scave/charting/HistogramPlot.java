@@ -26,7 +26,7 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.charting.dataset.IHistogramDataset;
 import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 import org.omnetpp.scave.charting.plotter.SquareSymbol;
-import org.omnetpp.scave.charting.properties.ChartDefaults;
+import org.omnetpp.scave.charting.properties.PlotDefaults;
 import org.omnetpp.scave.charting.properties.HistogramPlotProperties.HistogramBar;
 import org.omnetpp.scave.charting.properties.HistogramPlotProperties.HistogramDataType;
 
@@ -35,8 +35,8 @@ public class HistogramPlot {
     HistogramPlotViewer canvas;
     Rectangle area = Rectangle.SINGLETON;
 
-    HistogramBar barType = ChartDefaults.DEFAULT_HIST_BAR;
-    boolean showOverflowCell = ChartDefaults.DEFAULT_SHOW_OVERFLOW_CELL;
+    HistogramBar barType = PlotDefaults.DEFAULT_HIST_BAR;
+    boolean showOverflowCell = PlotDefaults.DEFAULT_SHOW_OVERFLOW_CELL;
     ICellValueTransform valueTransform;
     double baseline = 0.0;
 
@@ -45,7 +45,7 @@ public class HistogramPlot {
 
     HistogramPlot(HistogramPlotViewer canvas) {
         this.canvas = canvas;
-        setHistogramData(ChartDefaults.DEFAULT_HIST_DATA);
+        setHistogramData(PlotDefaults.DEFAULT_HIST_DATA);
     }
 
     Rectangle getArea() {

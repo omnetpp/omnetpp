@@ -8,11 +8,11 @@
 package org.omnetpp.scave.charting;
 
 import static org.omnetpp.scave.charting.properties.BarPlotVisualProperties.PROP_BAR_BASELINE;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_BAR_BASELINE;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_LABELS_FONT;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_X_AXIS_TITLE;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_Y_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_Y_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_BAR_BASELINE;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_LABELS_FONT;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_X_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_Y_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_Y_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.HistogramPlotProperties.PROP_HIST_BAR;
 import static org.omnetpp.scave.charting.properties.HistogramPlotProperties.PROP_HIST_DATA;
 import static org.omnetpp.scave.charting.properties.HistogramPlotProperties.PROP_SHOW_OVERFLOW_CELL;
@@ -41,7 +41,7 @@ import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IHistogramDataset;
-import org.omnetpp.scave.charting.properties.ChartDefaults;
+import org.omnetpp.scave.charting.properties.PlotDefaults;
 import org.omnetpp.scave.charting.properties.HistogramPlotProperties;
 import org.omnetpp.scave.charting.properties.HistogramPlotProperties.HistogramBar;
 import org.omnetpp.scave.charting.properties.HistogramPlotProperties.HistogramDataType;
@@ -164,14 +164,14 @@ public class HistogramPlotViewer extends PlotViewerBase {
 
     public void setBarType(HistogramBar barType) {
         if (barType == null)
-            barType = ChartDefaults.DEFAULT_HIST_BAR;
+            barType = PlotDefaults.DEFAULT_HIST_BAR;
         plot.setBarType(barType);
         chartChanged();
     }
 
     public void setHistogramDataTransform(HistogramDataType dataTransform) {
         if (dataTransform == null)
-            dataTransform = ChartDefaults.DEFAULT_HIST_DATA;
+            dataTransform = PlotDefaults.DEFAULT_HIST_DATA;
         plot.setHistogramData(dataTransform);
         chartArea = calculatePlotArea();
         updateArea();
@@ -180,7 +180,7 @@ public class HistogramPlotViewer extends PlotViewerBase {
 
     public void setShowOverflowCell(Boolean value) {
         if (value == null)
-            value = ChartDefaults.DEFAULT_SHOW_OVERFLOW_CELL;
+            value = PlotDefaults.DEFAULT_SHOW_OVERFLOW_CELL;
         plot.showOverflowCell = value;
         chartArea = calculatePlotArea();
         updateArea();

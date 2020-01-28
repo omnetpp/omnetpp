@@ -7,13 +7,13 @@
 
 package org.omnetpp.scave.charting;
 
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_AXIS_COLOR;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_AXIS_TITLE_FONT;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_GRID_COLOR;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_LABELS_FONT;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_SHOW_GRID;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_X_AXIS_TITLE;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_Y_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_AXIS_COLOR;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_AXIS_TITLE_FONT;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_GRID_COLOR;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_LABELS_FONT;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_SHOW_GRID;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_X_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_Y_AXIS_TITLE;
 
 import java.math.BigDecimal;
 import org.eclipse.draw2d.Graphics;

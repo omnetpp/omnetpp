@@ -15,8 +15,8 @@ import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_AXIS_TIT
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_BACKGROUND_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_CACHING;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_DISPLAY_LEGEND;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_GRAPH_TITLE;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_GRAPH_TITLE_FONT;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_PLOT_TITLE;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_PLOT_TITLE_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LABEL_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LEGEND_ANCHORING;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LEGEND_BORDER;
@@ -57,7 +57,7 @@ import org.omnetpp.scave.charting.properties.LineVisualProperties.LineType;
  *
  * @author tomi, andras
  */
-public class ChartDefaults {
+public class PlotDefaults {
     // general
     public static final boolean DEFAULT_ANTIALIAS = true;
     public static final boolean DEFAULT_CANVAS_CACHING = true;
@@ -125,8 +125,8 @@ public class ChartDefaults {
         defaults.put(PROP_CACHING, DEFAULT_CANVAS_CACHING);
         defaults.put(PROP_BACKGROUND_COLOR, DEFAULT_BACKGROUND_COLOR.getRGB());
 
-        defaults.put(PROP_GRAPH_TITLE, DEFAULT_TITLE);
-        defaults.put(PROP_GRAPH_TITLE_FONT, DEFAULT_TITLE_FONTDATA);
+        defaults.put(PROP_PLOT_TITLE, DEFAULT_TITLE);
+        defaults.put(PROP_PLOT_TITLE_FONT, DEFAULT_TITLE_FONTDATA);
 
         // TODO: INSETS_BACKGROUND_COLOR
         // TODO: INSETS_LINE_COLOR

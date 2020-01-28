@@ -53,22 +53,22 @@ public class HistogramPlotProperties extends PlotProperties
     @Property(category="Plot",id=PROP_HIST_BAR,description="Histogram drawing method.")
     public HistogramBar getBarType() { return getEnumProperty(PROP_HIST_BAR, HistogramBar.class); }
     public void setBarType(HistogramBar placement) { setProperty(PROP_HIST_BAR, placement); }
-    public HistogramBar defaultBarType() { return ChartDefaults.DEFAULT_HIST_BAR; }
+    public HistogramBar defaultBarType() { return PlotDefaults.DEFAULT_HIST_BAR; }
 
     @Property(category="Plot",id=PROP_BAR_BASELINE,description="Baseline of the bars.")
     public Double getBarBaseline() { return getDoubleProperty(PROP_BAR_BASELINE); }
     public void setBarBaseline(Double baseline) { setProperty(PROP_BAR_BASELINE, baseline); }
-    public Double defaultBarBaseline() { return ChartDefaults.DEFAULT_BAR_BASELINE; }
+    public Double defaultBarBaseline() { return PlotDefaults.DEFAULT_BAR_BASELINE; }
 
     @Property(category="Plot",id=PROP_HIST_DATA,description="Histogram data. Counts, probability density and cumulative density can be displayed.")
     public HistogramDataType getHistogramDataType() { return getEnumProperty(PROP_HIST_DATA, HistogramDataType.class); }
     public void setHistogramDataType(HistogramDataType data) { setProperty(PROP_HIST_DATA, data); }
-    public HistogramDataType defaultHistogramData() { return ChartDefaults.DEFAULT_HIST_DATA; }
+    public HistogramDataType defaultHistogramData() { return PlotDefaults.DEFAULT_HIST_DATA; }
 
     @Property(category="Plot",id=PROP_SHOW_OVERFLOW_CELL,description="Show over/underflow cells.")
     public boolean getShowOverflowCell() { return getBooleanProperty(PROP_SHOW_OVERFLOW_CELL); }
     public void setShowOverflowCell(boolean value) { setProperty(PROP_SHOW_OVERFLOW_CELL, value); }
-    public boolean defaultShowOverflowCell() { return ChartDefaults.DEFAULT_SHOW_OVERFLOW_CELL; }
+    public boolean defaultShowOverflowCell() { return PlotDefaults.DEFAULT_SHOW_OVERFLOW_CELL; }
 
 //    /*======================================================================
 //     *                             Histograms

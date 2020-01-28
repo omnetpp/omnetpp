@@ -45,7 +45,7 @@ public class LinePlotProperties extends PlotProperties
             description="Applies a logarithmic transformation to the x values.")
     public boolean getXAxisLogarithmic() { return getBooleanProperty(PROP_X_AXIS_LOGARITHMIC); }
     public void setXAxisLogarithmic(boolean flag) { setProperty(PROP_X_AXIS_LOGARITHMIC, flag); }
-    public boolean defaultXAxisLogarithmic() { return ChartDefaults.DEFAULT_X_AXIS_LOGARITHMIC; }
+    public boolean defaultXAxisLogarithmic() { return PlotDefaults.DEFAULT_X_AXIS_LOGARITHMIC; }
 
 //    /*======================================================================
 //     *                             Lines

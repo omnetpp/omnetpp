@@ -7,24 +7,24 @@
 
 package org.omnetpp.scave.charting;
 
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_ANTIALIAS;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_BACKGROUND_COLOR;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_CANVAS_CACHING;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_DISPLAY_LEGEND;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_INSETS_BACKGROUND_COLOR;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_INSETS_LINE_COLOR;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_LEGEND_ANCHOR;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_LEGEND_BORDER;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_LEGEND_FONT;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_LEGEND_POSITION;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_TITLE;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_TITLE_FONT;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_ANTIALIAS;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_BACKGROUND_COLOR;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_CANVAS_CACHING;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_DISPLAY_LEGEND;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_INSETS_BACKGROUND_COLOR;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_INSETS_LINE_COLOR;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_LEGEND_ANCHOR;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_LEGEND_BORDER;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_LEGEND_FONT;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_LEGEND_POSITION;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_TITLE;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_TITLE_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_ANTIALIAS;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_BACKGROUND_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_CACHING;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_DISPLAY_LEGEND;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_GRAPH_TITLE;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_GRAPH_TITLE_FONT;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_PLOT_TITLE;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_PLOT_TITLE_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LEGEND_ANCHORING;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LEGEND_BORDER;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LEGEND_FONT;
@@ -61,7 +61,7 @@ import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.dataset.IDataset;
-import org.omnetpp.scave.charting.properties.ChartDefaults;
+import org.omnetpp.scave.charting.properties.PlotDefaults;
 import org.omnetpp.scave.charting.properties.PlotProperties;
 import org.omnetpp.scave.charting.properties.PlotProperties.LegendAnchor;
 import org.omnetpp.scave.charting.properties.PlotProperties.LegendPosition;
@@ -319,9 +319,9 @@ public abstract class PlotViewerBase extends ZoomableCachingCanvas implements IP
 
     public void setProperty(String name, String value) {
         // Titles
-        if (PROP_GRAPH_TITLE.equals(name))
+        if (PROP_PLOT_TITLE.equals(name))
             setTitle(value);
-        else if (PROP_GRAPH_TITLE_FONT.equals(name))
+        else if (PROP_PLOT_TITLE_FONT.equals(name))
             setTitleFont(Converter.stringToSwtfont(value));
         // Legend
         else if (PROP_DISPLAY_LEGEND.equals(name))
@@ -353,7 +353,7 @@ public abstract class PlotViewerBase extends ZoomableCachingCanvas implements IP
     protected void doClear(IPropertySource2 propSource) {
         for (IPropertyDescriptor desc : propSource.getPropertyDescriptors()) {
             String id = (String)desc.getId();
-            setProperty(id, Converter.objectToString(ChartDefaults.getDefaultPropertyValue(id)));
+            setProperty(id, Converter.objectToString(PlotDefaults.getDefaultPropertyValue(id)));
         }
     }
 
@@ -550,7 +550,7 @@ public abstract class PlotViewerBase extends ZoomableCachingCanvas implements IP
         graphics.setAntialias(antialias ? SWT.ON : SWT.OFF);
         graphics.setAlpha(255);
         graphics.setBackgroundColor(backgroundColor);
-        graphics.setForegroundColor(ChartDefaults.DEFAULT_FOREGROUND_COLOR);
+        graphics.setForegroundColor(PlotDefaults.DEFAULT_FOREGROUND_COLOR);
         graphics.setLineWidth(0);
         graphics.setLineStyle(SWT.LINE_SOLID);
         //graphics.setFillRule();

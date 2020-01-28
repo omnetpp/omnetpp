@@ -7,15 +7,15 @@
 
 package org.omnetpp.scave.charting;
 
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_DISPLAY_LINE;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_LABELS_FONT;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_LINE_STYLE;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_SHOW_GRID;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_SYMBOL_SIZE;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_X_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_X_AXIS_TITLE;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_Y_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_Y_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_DISPLAY_LINE;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_LABELS_FONT;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_LINE_STYLE;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_SHOW_GRID;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_SYMBOL_SIZE;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_X_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_X_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_Y_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_Y_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.LinePlotProperties.PROP_X_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.LinePlotProperties.PROP_X_AXIS_MAX;
 import static org.omnetpp.scave.charting.properties.LinePlotProperties.PROP_X_AXIS_MIN;

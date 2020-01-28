@@ -95,7 +95,7 @@ public class LineVisualProperties extends PropertySource {
             description="Displays the line.")
     public boolean getDisplayLine() { return chartProps.getBooleanProperty(propertyName(PROP_DISPLAY_LINE)); }
     public void setDisplayLine(boolean display) { chartProps.setProperty(propertyName(PROP_DISPLAY_LINE), display); }
-    public boolean defaultDisplayLine() { return ChartDefaults.DEFAULT_DISPLAY_LINE; }
+    public boolean defaultDisplayLine() { return PlotDefaults.DEFAULT_DISPLAY_LINE; }
 
     @org.omnetpp.common.properties.Property(category="Lines",id=PROP_SYMBOL_TYPE,optional=true,
             description="The symbol drawn at the data points.")
@@ -107,7 +107,7 @@ public class LineVisualProperties extends PropertySource {
             description="The size of the symbol drawn at the data points.")
     public Integer getSymbolSize() { return chartProps.getIntegerProperty(propertyName(PROP_SYMBOL_SIZE), lineId==null); }
     public void setSymbolSize(Integer size) { chartProps.setProperty(propertyName(PROP_SYMBOL_SIZE), size); }
-    public Integer defaultSymbolSize() { return lineId == null ? ChartDefaults.DEFAULT_SYMBOL_SIZE : null; }
+    public Integer defaultSymbolSize() { return lineId == null ? PlotDefaults.DEFAULT_SYMBOL_SIZE : null; }
 
     @org.omnetpp.common.properties.Property(category="Lines",id=PROP_LINE_TYPE,optional=true,
             description="Line drawing method. One of Linear, Pins, Dots, Points, Sample-Hold or Backward Sample-Hold.")

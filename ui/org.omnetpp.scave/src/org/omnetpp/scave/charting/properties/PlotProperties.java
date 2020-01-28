@@ -34,8 +34,8 @@ public class PlotProperties extends PropertySource {
      */
     public static final String
         // Titles
-        PROP_GRAPH_TITLE        = "plot.title",  //TODO Plot.Title
-        PROP_GRAPH_TITLE_FONT   = "Graph.Title.Font",
+        PROP_PLOT_TITLE         = "Plot.Title",
+        PROP_PLOT_TITLE_FONT    = "Plot.Title.Font",
         PROP_X_AXIS_TITLE       = "X.Axis.Title",
         PROP_Y_AXIS_TITLE       = "Y.Axis.Title",
         PROP_AXIS_TITLE_FONT    = "Axis.Title.Font",
@@ -111,46 +111,46 @@ public class PlotProperties extends PropertySource {
             description="Enables antialising.")
     public boolean getAntialias() { return getBooleanProperty(PROP_ANTIALIAS); }
     public void setAntialias(boolean flag) { setProperty(PROP_ANTIALIAS, flag); }
-    public boolean defaultAntialias() { return ChartDefaults.DEFAULT_ANTIALIAS; }
+    public boolean defaultAntialias() { return PlotDefaults.DEFAULT_ANTIALIAS; }
 
     @org.omnetpp.common.properties.Property(category="Main",id=PROP_CACHING,displayName="caching",
             description="Enables caching. Caching makes scrolling faster, but sometimes the plot might not be correct.")
     public boolean getCaching() { return getBooleanProperty(PROP_CACHING); }
     public void setCaching(boolean flag) { setProperty(PROP_CACHING, flag); }
-    public boolean defaultCaching() { return ChartDefaults.DEFAULT_CANVAS_CACHING; }
+    public boolean defaultCaching() { return PlotDefaults.DEFAULT_CANVAS_CACHING; }
 
     @org.omnetpp.common.properties.Property(category="Main",id=PROP_BACKGROUND_COLOR,displayName="background color",
             descriptorClass=ColorPropertyDescriptor.class, description="Background color of the chart.")
     public String getBackgroundColor() { return getStringProperty(PROP_BACKGROUND_COLOR); }
     public void setBackgroundColor(String rgb) { setProperty(PROP_BACKGROUND_COLOR, rgb); }
-    public String defaultBackgroundColor() { return ColorFactory.asString(ChartDefaults.DEFAULT_BACKGROUND_COLOR.getRGB()); }
+    public String defaultBackgroundColor() { return ColorFactory.asString(PlotDefaults.DEFAULT_BACKGROUND_COLOR.getRGB()); }
 
     /*======================================================================
      *                             Titles
      *======================================================================*/
-    @org.omnetpp.common.properties.Property(category="Titles",id=PROP_GRAPH_TITLE,
+    @org.omnetpp.common.properties.Property(category="Titles",id=PROP_PLOT_TITLE,
             descriptorClass=TitlePatternPropertyDescriptor.class, description="Main title of the chart.")
-    public String getGraphTitle() { return getStringProperty(PROP_GRAPH_TITLE); }
-    public void setGraphTitle(String title) { setProperty(PROP_GRAPH_TITLE, title); }
-    public String defaultGraphTitle() { return ChartDefaults.DEFAULT_TITLE; }
+    public String getGraphTitle() { return getStringProperty(PROP_PLOT_TITLE); }
+    public void setGraphTitle(String title) { setProperty(PROP_PLOT_TITLE, title); }
+    public String defaultGraphTitle() { return PlotDefaults.DEFAULT_TITLE; }
 
-    @org.omnetpp.common.properties.Property(category="Titles",id=PROP_GRAPH_TITLE_FONT,
+    @org.omnetpp.common.properties.Property(category="Titles",id=PROP_PLOT_TITLE_FONT,
             description="Font used to draw the title.")
-    public FontData getGraphTitleFont() { return getFontProperty(PROP_GRAPH_TITLE_FONT); }
-    public void setGraphTitleFont(FontData font) { setProperty(PROP_GRAPH_TITLE_FONT, font); }
-    public FontData getDefaultTitleFont() { return getDefaultFontProperty(PROP_GRAPH_TITLE_FONT); }
+    public FontData getGraphTitleFont() { return getFontProperty(PROP_PLOT_TITLE_FONT); }
+    public void setGraphTitleFont(FontData font) { setProperty(PROP_PLOT_TITLE_FONT, font); }
+    public FontData getDefaultTitleFont() { return getDefaultFontProperty(PROP_PLOT_TITLE_FONT); }
 
     @org.omnetpp.common.properties.Property(category="Titles",id=PROP_X_AXIS_TITLE,
             description="Title of the horizontal axis.")
     public String getXAxisTitle() { return getStringProperty(PROP_X_AXIS_TITLE); }
     public void setXAxisTitle(String title) { setProperty(PROP_X_AXIS_TITLE, title); }
-    public String defaultXAxisTitle() { return ChartDefaults.DEFAULT_X_AXIS_TITLE; }
+    public String defaultXAxisTitle() { return PlotDefaults.DEFAULT_X_AXIS_TITLE; }
 
     @org.omnetpp.common.properties.Property(category="Titles",id=PROP_Y_AXIS_TITLE,
             description="Title of the vertical axis.")
     public String getYAxisTitle() { return getStringProperty(PROP_Y_AXIS_TITLE); }
     public void setYAxisTitle(String title) { setProperty(PROP_Y_AXIS_TITLE, title); }
-    public String defaultYAxisTitle() { return ChartDefaults.DEFAULT_Y_AXIS_TITLE; }
+    public String defaultYAxisTitle() { return PlotDefaults.DEFAULT_Y_AXIS_TITLE; }
 
     @org.omnetpp.common.properties.Property(category="Titles",id=PROP_AXIS_TITLE_FONT,
             description="Font used to draw the axes titles.")
@@ -168,7 +168,7 @@ public class PlotProperties extends PropertySource {
             description="Rotates the tick labels of the horizontal axis by the given angle (in degrees).")
     public Double getXLabelsRotate() { return getDoubleProperty(PROP_X_LABELS_ROTATE_BY); }
     public void setXLabelsRotate(Double value) { setProperty(PROP_X_LABELS_ROTATE_BY, value); }
-    public Double defaultXLabelsRotate() { return ChartDefaults.DEFAULT_X_LABELS_ROTATED_BY; }
+    public Double defaultXLabelsRotate() { return PlotDefaults.DEFAULT_X_LABELS_ROTATED_BY; }
 
     /*======================================================================
      *                             Axes
@@ -187,13 +187,13 @@ public class PlotProperties extends PropertySource {
             description="Applies a logarithmic transformation to the y values.")
     public boolean getYAxisLogarithmic() { return getBooleanProperty(PROP_Y_AXIS_LOGARITHMIC); }
     public void setYAxisLogarithmic(boolean flag) { setProperty(PROP_Y_AXIS_LOGARITHMIC, flag); }
-    public boolean defaultYAxisLogarithmic() { return ChartDefaults.DEFAULT_Y_AXIS_LOGARITHMIC; }
+    public boolean defaultYAxisLogarithmic() { return PlotDefaults.DEFAULT_Y_AXIS_LOGARITHMIC; }
 
     @org.omnetpp.common.properties.Property(category="Axes",id=PROP_XY_GRID,displayName="grid",
             description="Add grid lines to the plot.")
     public ShowGrid getXYGrid() { return getEnumProperty(PROP_XY_GRID, ShowGrid.class); }
     public void setXYGrid(ShowGrid showgrid) { setProperty(PROP_XY_GRID, showgrid); }
-    public ShowGrid defaultXYGrid() { return ChartDefaults.DEFAULT_SHOW_GRID; }
+    public ShowGrid defaultXYGrid() { return PlotDefaults.DEFAULT_SHOW_GRID; }
 
     /*======================================================================
      *                             Legend
@@ -202,13 +202,13 @@ public class PlotProperties extends PropertySource {
             displayName="display", description="Displays the legend.")
     public boolean getDisplayLegend() { return getBooleanProperty(PROP_DISPLAY_LEGEND); }
     public void setDisplayLegend(boolean flag) { setProperty(PROP_DISPLAY_LEGEND, flag); }
-    public boolean defaultDisplayLegend() { return ChartDefaults.DEFAULT_DISPLAY_LEGEND; }
+    public boolean defaultDisplayLegend() { return PlotDefaults.DEFAULT_DISPLAY_LEGEND; }
 
     @org.omnetpp.common.properties.Property(category="Legend", id=PROP_LEGEND_BORDER,
             displayName="border", description="Add border around the legend.")
     public boolean getLegendBorder() { return getBooleanProperty(PROP_LEGEND_BORDER); }
     public void setLegendBorder(boolean flag) { setProperty(PROP_LEGEND_BORDER, flag); }
-    public boolean defaultLegendBorder() { return ChartDefaults.DEFAULT_LEGEND_BORDER; }
+    public boolean defaultLegendBorder() { return PlotDefaults.DEFAULT_LEGEND_BORDER; }
 
     @org.omnetpp.common.properties.Property(category="Legend", id=PROP_LEGEND_FONT,
             displayName="font", description="Font used to draw the legend items.")
@@ -220,13 +220,13 @@ public class PlotProperties extends PropertySource {
             displayName="position", description="Position of the legend.")
     public LegendPosition getLegendPosition() { return getEnumProperty(PROP_LEGEND_POSITION, LegendPosition.class); }
     public void setLegendPosition(LegendPosition position) { setProperty(PROP_LEGEND_POSITION, position); }
-    public LegendPosition defaultLegendPosition() { return ChartDefaults.DEFAULT_LEGEND_POSITION; }
+    public LegendPosition defaultLegendPosition() { return PlotDefaults.DEFAULT_LEGEND_POSITION; }
 
     @org.omnetpp.common.properties.Property(category="Legend",id=PROP_LEGEND_ANCHORING,
             displayName="anchor point", description="Anchor point of the legend.")
     public LegendAnchor getLegendAnchoring() { return getEnumProperty(PROP_LEGEND_ANCHORING, LegendAnchor.class); }
     public void setLegendAnchoring(LegendAnchor anchoring) { setProperty(PROP_LEGEND_ANCHORING, anchoring); }
-    public LegendAnchor defaultLegendAnchor() { return ChartDefaults.DEFAULT_LEGEND_ANCHOR; }
+    public LegendAnchor defaultLegendAnchor() { return PlotDefaults.DEFAULT_LEGEND_ANCHOR; }
 
     /*---------------------------------------------------------------
      *                   Helpers
@@ -334,7 +334,7 @@ public class PlotProperties extends PropertySource {
     }
 
     public String getDefaultStringProperty(String propertyName) {
-        Object defaultValue = ChartDefaults.getDefaultPropertyValue(propertyName);
+        Object defaultValue = PlotDefaults.getDefaultPropertyValue(propertyName);
         if (defaultValue instanceof String)
             return (String)defaultValue;
         else
@@ -342,7 +342,7 @@ public class PlotProperties extends PropertySource {
     }
 
     public boolean getDefaultBooleanProperty(String propertyName) {
-        Object defaultValue = ChartDefaults.getDefaultPropertyValue(propertyName);
+        Object defaultValue = PlotDefaults.getDefaultPropertyValue(propertyName);
         if (defaultValue instanceof Boolean)
             return (Boolean)defaultValue;
         else
@@ -351,7 +351,7 @@ public class PlotProperties extends PropertySource {
 
     @SuppressWarnings("unchecked")
     public <T extends Enum<T>> T getDefaultEnumProperty(String propertyName, Class<T> type) {
-        Object defaultValue = ChartDefaults.getDefaultPropertyValue(propertyName);
+        Object defaultValue = PlotDefaults.getDefaultPropertyValue(propertyName);
         if (defaultValue != null && type.isInstance(defaultValue))
             return (T)defaultValue;
         else
@@ -359,7 +359,7 @@ public class PlotProperties extends PropertySource {
     }
 
     public FontData getDefaultFontProperty(String propertyName) {
-        Object defaultValue = ChartDefaults.getDefaultPropertyValue(propertyName);
+        Object defaultValue = PlotDefaults.getDefaultPropertyValue(propertyName);
         if (defaultValue instanceof FontData)
             return (FontData)defaultValue;
         else
@@ -367,7 +367,7 @@ public class PlotProperties extends PropertySource {
     }
 
     public RGB getDefaultColorProperty(String propertyName) {
-        Object defaultValue = ChartDefaults.getDefaultPropertyValue(propertyName);
+        Object defaultValue = PlotDefaults.getDefaultPropertyValue(propertyName);
         if (defaultValue instanceof RGB)
             return (RGB)defaultValue;
         else
@@ -375,7 +375,7 @@ public class PlotProperties extends PropertySource {
     }
 
     public Integer getDefaultIntegerProperty(String propertyName) {
-        Object defaultValue = ChartDefaults.getDefaultPropertyValue(propertyName);
+        Object defaultValue = PlotDefaults.getDefaultPropertyValue(propertyName);
         if (defaultValue instanceof Integer)
             return (Integer)defaultValue;
         else
@@ -383,7 +383,7 @@ public class PlotProperties extends PropertySource {
     }
 
     public Double getDefaultDoubleProperty(String propertyName) {
-        Object defaultValue = ChartDefaults.getDefaultPropertyValue(propertyName);
+        Object defaultValue = PlotDefaults.getDefaultPropertyValue(propertyName);
         if (defaultValue instanceof Double)
             return (Double)defaultValue;
         else

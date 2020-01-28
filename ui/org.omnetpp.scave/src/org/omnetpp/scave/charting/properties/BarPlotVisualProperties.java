@@ -43,7 +43,7 @@ public class BarPlotVisualProperties extends PlotProperties
             description="If true labels are wrapped, otherwise aligned vertically.")
     public boolean getWrapLabels() { return getBooleanProperty(PROP_WRAP_LABELS); }
     public void setWrapLabels(boolean wrap) { setProperty(PROP_WRAP_LABELS, wrap); }
-    public boolean defaultWrapLabels() { return ChartDefaults.DEFAULT_WRAP_LABELS; }
+    public boolean defaultWrapLabels() { return PlotDefaults.DEFAULT_WRAP_LABELS; }
 
     /*======================================================================
      *                             Bars
@@ -52,13 +52,13 @@ public class BarPlotVisualProperties extends PlotProperties
             description="Baseline of the bars.")
     public Double getBarBaseline() { return getDoubleProperty(PROP_BAR_BASELINE); }
     public void setBarBaseline(Double baseline) { setProperty(PROP_BAR_BASELINE, baseline); }
-    public Double defaultBarBaseline() { return ChartDefaults.DEFAULT_BAR_BASELINE; }
+    public Double defaultBarBaseline() { return PlotDefaults.DEFAULT_BAR_BASELINE; }
 
     @org.omnetpp.common.properties.Property(category="Plot",id=PROP_BAR_PLACEMENT,
             description="Arrangement of the bars within a group.")
     public BarPlacement getBarPlacement() { return getEnumProperty(PROP_BAR_PLACEMENT, BarPlacement.class); }
     public void setBarPlacement(BarPlacement placement) { setProperty(PROP_BAR_PLACEMENT, placement); }
-    public BarPlacement defaultBarPlacement() { return ChartDefaults.DEFAULT_BAR_PLACEMENT; }
+    public BarPlacement defaultBarPlacement() { return PlotDefaults.DEFAULT_BAR_PLACEMENT; }
 
 //    @org.omnetpp.common.properties.Property(category="Plot",id="Bars",displayName="Bars",
 //            description="Properties of individual bars. Default is applied to all properties not set individually.")

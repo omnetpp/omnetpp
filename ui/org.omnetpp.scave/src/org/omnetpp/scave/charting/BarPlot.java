@@ -7,9 +7,9 @@
 
 package org.omnetpp.scave.charting;
 
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_BAR_BASELINE;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_BAR_OUTLINE_COLOR;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_BAR_PLACEMENT;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_BAR_BASELINE;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_BAR_OUTLINE_COLOR;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_BAR_PLACEMENT;
 
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -21,7 +21,7 @@ import org.omnetpp.common.canvas.LargeRect;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.charting.dataset.IScalarDataset;
-import org.omnetpp.scave.charting.properties.ChartDefaults;
+import org.omnetpp.scave.charting.properties.PlotDefaults;
 import org.omnetpp.scave.charting.properties.BarPlotVisualProperties.BarPlacement;
 
 /**
@@ -76,7 +76,7 @@ class BarPlot {
             graphics.pushState();
 
             long y = coordsMapping.toCanvasY(baseline);
-            graphics.setForegroundColor(ChartDefaults.DEFAULT_BAR_BASELINE_COLOR);
+            graphics.setForegroundColor(PlotDefaults.DEFAULT_BAR_BASELINE_COLOR);
             LargeGraphics.drawLine(graphics, rect.x + 1, y, rect.x + rect.width - 1, y);
 
             graphics.popState();

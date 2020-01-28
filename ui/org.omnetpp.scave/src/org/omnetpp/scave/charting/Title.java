@@ -16,7 +16,7 @@ import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.util.GraphicsUtils;
-import org.omnetpp.scave.charting.properties.ChartDefaults;
+import org.omnetpp.scave.charting.properties.PlotDefaults;
 
 
 /**
@@ -29,7 +29,7 @@ public class Title {
     private boolean visible = true;
     private String text;
     private Font font;
-    private Color color = ChartDefaults.DEFAULT_TITLE_COLOR;
+    private Color color = PlotDefaults.DEFAULT_TITLE_COLOR;
     private Rectangle bounds;
 
     public Title() {
@@ -87,7 +87,7 @@ public class Title {
         textLayout.setAlignment(SWT.CENTER);
         textLayout.setStyle(new TextStyle(font, color, null), 0, Integer.MAX_VALUE);
         if (!GraphicsUtils.isSVGGraphics(graphics)) {
-            graphics.setBackgroundColor(ChartDefaults.DEFAULT_INSETS_BACKGROUND_COLOR);
+            graphics.setBackgroundColor(PlotDefaults.DEFAULT_INSETS_BACKGROUND_COLOR);
             graphics.fillRectangle(0, 0, bounds.width, bounds.height);
         }
         graphics.setFont(font);

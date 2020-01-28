@@ -49,7 +49,7 @@ import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.common.wizard.XSWTDataBinding;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.assist.FilterContentProposalProvider;
-import org.omnetpp.scave.charting.properties.ChartDefaults;
+import org.omnetpp.scave.charting.properties.PlotDefaults;
 import org.omnetpp.scave.charting.properties.PlotProperties;
 import org.omnetpp.scave.charttemplates.ChartTemplate;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
@@ -245,7 +245,7 @@ public class ChartEditForm {
                 if (prop != null)
                     value = prop.getValue();
                 else if (propertySource != null) {
-                    Object defaultPropertyValue = ChartDefaults.getDefaultPropertyValue(propId);
+                    Object defaultPropertyValue = PlotDefaults.getDefaultPropertyValue(propId);
                     if (defaultPropertyValue != null)
                         value = Converter.objectToString(defaultPropertyValue);
                 }
@@ -319,7 +319,7 @@ public class ChartEditForm {
             Property chartProperty = chart.lookupProperty(k);
             String chartValueString = chartProperty == null ? null : chartProperty.getValue();
             String formValueString = Converter.objectToString(value);
-            String defaultString = Converter.objectToString(ChartDefaults.getDefaultPropertyValue(k));
+            String defaultString = Converter.objectToString(PlotDefaults.getDefaultPropertyValue(k));
 
             if (formValueString.equals(defaultString))
                 result.put(k, null);
