@@ -11,7 +11,7 @@
     <package name="org.omnetpp.ned.editor.wizards.support" />
     <package name="org.omnetpp.cdt.wizard.support" />
   </import>
-  <layout x:class="GridLayout" numColumns="2"/>
+  <layout x:class="GridLayout" numColumns="2" makeColumnsEqualWidth="true"/>
 
   <x:children>
 
@@ -82,6 +82,11 @@
       <layout x:class="GridLayout" numColumns="2"/>
       <x:children>
 
+    <!-- Logarithmic X axis? -->
+    <button x:id="xaxis_log" text="Logarithmic x axis" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
     <!-- Logarithmic Y axis? -->
     <button x:id="yaxis_log" text="Logarithmic y axis" x:style="CHECK">
       <layoutData x:class="GridData" horizontalSpan="2"/>
@@ -93,16 +98,52 @@
 
     <!-- Grid { -->
     <group text="Grid">
-      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layoutData x:class="GridData" horizontalSpan="1" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
       <layout x:class="GridLayout" numColumns="2"/>
       <x:children>
 
+    <!-- Display Legend? -->
+    <button x:id="Grid.Display" text="Show grid" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
     <!-- Show grid:None/Major/All -->
-    <label text="Show grid:"/>
+    <label text="Options:"/>
     <combo x:id="grid_show" x:style="BORDER|READ_ONLY">
-      <add x:p0="None"/>
       <add x:p0="Major"/>
       <add x:p0="All"/>
+    </combo>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+    <!-- Legend { -->
+    <group text="Legend">
+      <layoutData x:class="GridData" horizontalSpan="1" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- Display Legend? -->
+    <button x:id="Legend.Display" text="Show legend" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <!-- Display titles or names? -->
+    <label text="Label source:"/>
+    <combo x:id="Legend.ition" x:style="BORDER|READ_ONLY">
+      <add x:p0="result names"/>
+      <add x:p0="result titles"/>
+    </combo>
+
+    <!-- Position:inside/above/below/left/right -->
+    <label text="Position:"/>
+    <combo x:id="Legend.Position" x:style="BORDER|READ_ONLY">
+      <add x:p0="inside"/>
+      <add x:p0="above"/>
+      <add x:p0="below"/>
+      <add x:p0="left"/>
+      <add x:p0="right"/>
     </combo>
 
     <!-- } -->

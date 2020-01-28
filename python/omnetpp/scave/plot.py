@@ -202,7 +202,7 @@ def ylabel(str):
     Sets the label of the Y axis.
     """
     set_property("Y.Axis.Title", str)
-    
+
 def xlim(left=None, right=None):
     """
     Sets the limits of the X axis.
@@ -211,8 +211,8 @@ def xlim(left=None, right=None):
         set_property("X.Axis.Min", str(left))
     if (right is not None):
         set_property("X.Axis.Max", str(right))
-            
-def ylim(left=None, right=None):    
+
+def ylim(left=None, right=None):
     """
     Sets the limits of the Y axis.
     """
@@ -220,3 +220,19 @@ def ylim(left=None, right=None):
         set_property("Y.Axis.Min", str(left))
     if (right is not None):
         set_property("Y.Axis.Max", str(right))
+
+def xscale(value):
+    """
+    Sets the scale of the X axis. Possible values are 'linear' and 'log'.
+    """
+    if value not in ["linear", "log"]:
+        raise ValueError("scale='{}' is not supported, only 'linear' and 'log'".format(value))
+    set_property("X.Axis.Log", "true" if value == "log" else "false")
+
+def yscale(value):
+    """
+    Sets the scale of the Y axis. Possible values are 'linear' and 'log'.
+    """
+    if value not in ["linear", "log"]:
+        raise ValueError("scale='{}' is not supported, only 'linear' and 'log'".format(value))
+    set_property("Y.Axis.Log", "true" if value == "log" else "false")
