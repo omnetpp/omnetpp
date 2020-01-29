@@ -22,7 +22,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
@@ -34,7 +33,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -64,7 +62,7 @@ import com.swtworkbench.community.xswt.XSWT;
 
 public class ChartEditForm {
 
-    public static final String PROP_DEFAULT_TAB = "default-page";
+    public static final String PROP_ACTIVE_TAB = "active-tab";
 
     protected Chart chart;
     protected ChartTemplateRegistry chartTemplateRegistry;
@@ -92,17 +90,14 @@ public class ChartEditForm {
 
         validatePropertyNames();
 
-        // switch to the requested page
-        // TODO
-//        String defaultPage = formParameters==null ? null : (String) formParameters.get(PROP_DEFAULT_TAB);
-//        if (defaultPage == null)
-//            defaultPage = getDialogSettings().get(PROP_DEFAULT_TAB);
-//        if (defaultPage != null)
-//            for (TabItem tabItem : tabfolder.getItems())
-//                if (tabItem.getText().equals(defaultPage)) {
-//                    tabfolder.setSelection(tabItem);
-//                    break;
-//                }
+        // switch to the last used page
+        String defaultPage = getDialogSettings().get(PROP_ACTIVE_TAB);
+        if (defaultPage != null)
+            for (TabItem tabItem : tabfolder.getItems())
+                if (tabItem.getText().equals(defaultPage)) {
+                    tabfolder.setSelection(tabItem);
+                    break;
+                }
 
         // save current tab as dialog setting (the code is here because there's no convenient function that is invoked on dialog close (???))
         tabfolder.addSelectionListener(new SelectionAdapter() {
@@ -110,7 +105,7 @@ public class ChartEditForm {
             public void widgetSelected(SelectionEvent e) {
                 TabItem[] selectedTabs = tabfolder.getSelection();
                 if (selectedTabs.length > 0)
-                    getDialogSettings().put(PROP_DEFAULT_TAB, selectedTabs[0].getText());
+                    getDialogSettings().put(PROP_ACTIVE_TAB, selectedTabs[0].getText());
             }
         });
     }
@@ -292,19 +287,6 @@ public class ChartEditForm {
         DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         db.parse(new ByteArrayInputStream(xswtForm.getBytes()));
     }
-
-//
-//    /**
-//     * Sets the properties in <code>newProps</code> from the values of the controls.
-//     */
-//    protected void collectProperties(ChartVisualProperties newProps) {
-//
-//        for (String k : xswtWidgetMap.keySet()) {
-//            Control control = xswtWidgetMap.get(k);
-//            Object value = XSWTDataBinding.getValueFromControl(control, null);
-//            newProps.setProperty(k, value.toString());
-//        }
-//    }
 
     public Map<String, String> collectProperties() {
         Map<String, String> result = new HashMap<>();
