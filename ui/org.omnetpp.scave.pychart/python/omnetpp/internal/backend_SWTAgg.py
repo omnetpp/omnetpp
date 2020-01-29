@@ -364,6 +364,26 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
     class Java:
         implements = ["org.omnetpp.scave.pychart.IMatplotlibFigureCanvas"]
 
+    def getAxisLimits(self):
+        limits = list()
+
+        for ax in self.figure.axes:
+            limits += [*ax.get_xlim(), *ax.get_ylim()]
+
+        java_list = ListConverter().convert(limits, Gateway.gateway._gateway_client)
+        return java_list
+
+    def setAxisLimits(self, limits):
+        for ax in self.figure.axes:
+            if len(limits) < 4:
+                break
+            l = limits[:4]
+
+            ax.set_xlim(l[0], l[1])
+            ax.set_ylim(l[2], l[3])
+
+            limits = limits[4:]
+
     def blit(self, bbox=None):
         # TODO use SHM here as well!
         if bbox is None and self.figure:

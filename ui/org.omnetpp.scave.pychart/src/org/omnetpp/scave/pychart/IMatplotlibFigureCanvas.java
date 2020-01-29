@@ -2,6 +2,7 @@ package org.omnetpp.scave.pychart;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * This is an interface to the our custom FigureCanvas, implemented in Python.
@@ -52,4 +53,7 @@ public interface IMatplotlibFigureCanvas {
     HashMap<String, ArrayList<String>> getSupportedFiletypes();
 
     String getDefaultFiletype();
+
+    List<Object> getAxisLimits();
+    void setAxisLimits(List<Object> limits);
 }

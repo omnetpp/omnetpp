@@ -8,16 +8,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
-import org.eclipse.ui.views.properties.IPropertySource2;
 import org.omnetpp.common.Debug;
-import org.omnetpp.common.util.Converter;
-import org.omnetpp.scave.charting.PlotViewerBase;
-import org.omnetpp.scave.charting.HistogramPlotViewer;
 import org.omnetpp.scave.charting.BarPlotViewer;
+import org.omnetpp.scave.charting.HistogramPlotViewer;
 import org.omnetpp.scave.charting.LinePlotViewer;
-import org.omnetpp.scave.charting.properties.PlotDefaults;
-import org.omnetpp.scave.charting.properties.PlotProperties;
+import org.omnetpp.scave.charting.PlotViewerBase;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.pychart.INativeChartPlotter;
@@ -121,6 +116,11 @@ public class NativeChartViewer extends ChartViewerBase {
         if (plotViewer.isDisposed())
             return;
 
+        final double zx = plotViewer.getZoomX();
+        final double zy = plotViewer.getZoomY();
+        final long vt = plotViewer.getViewportTop();
+        final long vl = plotViewer.getViewportLeft();
+
         killPythonProcess();
         plotViewer.setWarningText(null);
 
@@ -169,6 +169,11 @@ public class NativeChartViewer extends ChartViewerBase {
 
                 plotViewer.setStatusText("");
                 plotViewer.update();
+
+                plotViewer.setZoomX(zx);
+                plotViewer.setZoomY(zy);
+                plotViewer.scrollVerticalTo(vt);
+                plotViewer.scrollHorizontalTo(vl);
 
                 killPythonProcess();
             });
