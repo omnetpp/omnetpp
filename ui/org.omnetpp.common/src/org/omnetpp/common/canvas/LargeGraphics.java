@@ -1,6 +1,5 @@
 package org.omnetpp.common.canvas;
 
-import java.util.Arrays;
 import java.util.Vector;
 
 import org.eclipse.core.runtime.Assert;
@@ -63,27 +62,29 @@ public class LargeGraphics {
             graphics.drawPoint(toIntCoordinate(x), toIntCoordinate(y));
     }
 
+    private static long[] buffer = new long[4]; // to eliminate allocations in potentially performance-critical clipping methods (consider plotting of output vectors in Scave)
+
     public static void drawLine(Graphics graphics, long x1, long y1, long x2, long y2) {
         // calculate the intersection with supported coordinate range, there's no need to get the actual clipping
-        long[] points = CohenSutherland.clipLine(x1, y1, x2, y2, MIN_COORDINATE, MIN_COORDINATE, MAX_COORDINATE, MAX_COORDINATE);
+        long[] points = CohenSutherland.clipLine(x1, y1, x2, y2, MIN_COORDINATE, MIN_COORDINATE, MAX_COORDINATE, MAX_COORDINATE, buffer);
         if (points != null)
             graphics.drawLine(toIntCoordinate(points[0]), toIntCoordinate(points[1]), toIntCoordinate(points[2]), toIntCoordinate(points[3]));
     }
 
     public static void drawRectangle(Graphics graphics, long x, long y, long width, long height) {
-        long[] points = clipRectangle(x, y, width, height, MIN_COORDINATE, MIN_COORDINATE, MAX_COORDINATE, MAX_COORDINATE);
+        long[] points = clipRectangle(x, y, width, height, MIN_COORDINATE, MIN_COORDINATE, MAX_COORDINATE, MAX_COORDINATE, buffer);
         if (points != null)
             graphics.drawRectangle(toIntCoordinate(points[0]), toIntCoordinate(points[1]), toIntSize(points[2]), toIntSize(points[3]));
     }
 
     public static void fillRectangle(Graphics graphics, long x, long y, long width, long height) {
-        long[] points = clipRectangle(x, y, width, height, MIN_COORDINATE, MIN_COORDINATE, MAX_COORDINATE, MAX_COORDINATE);
+        long[] points = clipRectangle(x, y, width, height, MIN_COORDINATE, MIN_COORDINATE, MAX_COORDINATE, MAX_COORDINATE, buffer);
         if (points != null)
             graphics.fillRectangle(toIntCoordinate(points[0]), toIntCoordinate(points[1]), toIntSize(points[2]), toIntSize(points[3]));
     }
 
     public static void drawOval(Graphics graphics, long x, long y, long width, long height) {
-        long[] points = clipRectangle(x, y, width, height, MIN_COORDINATE, MIN_COORDINATE, MAX_COORDINATE, MAX_COORDINATE);
+        long[] points = clipRectangle(x, y, width, height, MIN_COORDINATE, MIN_COORDINATE, MAX_COORDINATE, MAX_COORDINATE, buffer);
         if (points != null)
             // KLUDGE: draw with the original coordinates and cross our fingers and hope that
             // nobody wants to draw big ovals hanging into the clipping area from far away
@@ -91,7 +92,7 @@ public class LargeGraphics {
     }
 
     public static void fillOval(Graphics graphics, long x, long y, long width, long height) {
-        long[] points = clipRectangle(x, y, width, height, MIN_COORDINATE, MIN_COORDINATE, MAX_COORDINATE, MAX_COORDINATE);
+        long[] points = clipRectangle(x, y, width, height, MIN_COORDINATE, MIN_COORDINATE, MAX_COORDINATE, MAX_COORDINATE, buffer);
         if (points != null)
             // KLUDGE: draw with the original coordinates and cross our fingers and hope that
             // nobody wants to draw big ovals hanging into the clipping area from far away
@@ -145,14 +146,15 @@ public class LargeGraphics {
             return code;
         }
 
-        public final static long[] clipLine(long x1, long y1, long x2, long y2, long xmin, long ymin, long xmax, long ymax) {
+        public final static long[] clipLine(long x1, long y1, long x2, long y2, long xmin, long ymin, long xmax, long ymax, long[] buffer) {
             // regions for P0, P1, and whatever point lies outside the clip rectangle
             int region0, region1, regionOut, count = 0;
             region0 = regionCode(x1, y1, xmin, ymin, xmax, ymax);
             region1 = regionCode(x2, y2, xmin, ymin, xmax, ymax);
             do {
-                if ((region0 | region1) == 0){
-                    return new long[] {x1, y1, x2, y2};
+                if ((region0 | region1) == 0) {
+                    buffer[0] = x1; buffer[1] = y1; buffer[2] = x2; buffer[3] = y2;
+                    return buffer;
                 }
                 else if ((region0 & region1) > 0)
                     return null;
@@ -202,15 +204,17 @@ public class LargeGraphics {
         }
     }
 
-    private final static long[] clipRectangle(long x, long y, long width, long height, long xmin, long ymin, long xmax, long ymax) {
+    private final static long[] clipRectangle(long x, long y, long width, long height, long xmin, long ymin, long xmax, long ymax, long[] buffer) {
         long x1 = Math.max(x, xmin);
         long x2 = Math.min(x + width, xmax);
         long y1 = Math.max(y, ymin);
         long y2 = Math.min(y + height, ymax);
         if (((x2 - x1) < 0) || ((y2 - y1) < 0))
             return null;
-        else
-            return new long[] {x1, y1, x2 - x1, y2 - y1};
+        else {
+            buffer[0] = x1; buffer[1] = y1; buffer[2] = x2 - x1; buffer[3] = y2 - y1;
+            return buffer;
+        }
     }
 
     /**
