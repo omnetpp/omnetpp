@@ -9,8 +9,6 @@ package org.omnetpp.scave.charting.plotter;
 
 import static org.omnetpp.common.canvas.ICoordsMapping.NAN_PIX;
 
-import java.util.HashSet;
-
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.swt.SWT;
 import org.omnetpp.common.canvas.ICoordsMapping;
@@ -38,11 +36,6 @@ public class LinearLinePlotter extends LinePlotter {
         int[] range = indexRange(plot, series, graphics, mapping);
         int first = range[0], last = range[1];
 
-        // chart y range in canvas coordinates
-        int[] yrange = canvasYRange(graphics, symbol);
-        int top = yrange[0], bottom = yrange[1];  // top < bottom
-
-
         // Performance optimization: avoid painting the same pixels over and over
         // when drawing vertical lines. This results in magnitudes faster
         // execution for large datasets.
@@ -54,10 +47,6 @@ public class LinearLinePlotter extends LinePlotter {
 
         // turn off antialias for vertical lines
         int origAntialias = graphics.getAntialias();
-
-        // used for preventing painting the same symbol on the same pixels over and over.
-        HashSet<Long> yset = new HashSet<Long>();
-        long prevSymbolX = Long.MIN_VALUE;
 
         long startTime = System.currentTimeMillis();
 
@@ -86,7 +75,7 @@ public class LinearLinePlotter extends LinePlotter {
                     minY = y;
                 }
                 else if (y > maxY) {
-                    graphics.setAntialias(SWT.OFF);
+                    graphics.setAntialias(SWT.OFF);//TODO optimize
                     LargeGraphics.drawLine(graphics, x, maxY, x, y);
                     graphics.setAntialias(origAntialias);
                     maxY = y;
@@ -97,25 +86,10 @@ public class LinearLinePlotter extends LinePlotter {
                 prevX = Long.MIN_VALUE; // invalidate minX/maxX
             }
             prevY = y;
-
-            // draw symbol (see VectorPlotter.plotSymbols() for explanation on yset-based optimization)
-            // note: top <= y <= bottom condition also filters out NaNs
-            if (symbol != null && top <= y && y <= bottom) {
-                if (prevSymbolX != x) {
-                    yset.clear();
-                    symbol.drawSymbol(graphics, x, y);
-                    yset.add(y);
-                }
-                else if (!yset.contains(y)) {
-                    symbol.drawSymbol(graphics, x, y);
-                    yset.add(y);
-                }
-                else {
-                    // already plotted
-                }
-            }
-            prevSymbolX = x;
         }
-        return true;
+
+        // and draw symbols
+        int remainingTime = Math.max(0, timeLimitMillis - (int)(System.currentTimeMillis()-startTime));
+        return plotSymbols(plot, series, graphics, mapping, symbol, remainingTime);
     }
 }
