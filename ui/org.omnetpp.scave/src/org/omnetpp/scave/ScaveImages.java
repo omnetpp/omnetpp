@@ -86,10 +86,9 @@ public class ScaveImages {
     public static final String IMG_OBJ16_INPUTFILE_INACTIVE = "icons/full/obj16/inputfile_inactive.png";
     public static final String IMG_OBJ16_INPUTFILE = "icons/full/obj16/inputfile.png";
     public static final String IMG_OBJ16_ITERVAR = "icons/full/obj16/itervar.png";
-    public static final String IMG_OBJ16_LINE_DOTS = "icons/full/obj16/line_dots.png";
+    public static final String IMG_OBJ16_LINE_NONE = "icons/full/obj16/line_none.png";
     public static final String IMG_OBJ16_LINE_LINEAR = "icons/full/obj16/line_linear.png";
     public static final String IMG_OBJ16_LINE_PINS = "icons/full/obj16/line_pins.png";
-    public static final String IMG_OBJ16_LINE_POINTS = "icons/full/obj16/line_points.png";
     public static final String IMG_OBJ16_LINE_STEPS_POST = "icons/full/obj16/line_steps_post.png";
     public static final String IMG_OBJ16_LINE_STEPS_PRE = "icons/full/obj16/line_steps_pre.png";
     public static final String IMG_OBJ16_MEASUREMENT = "icons/full/obj16/measurement.png";
@@ -104,6 +103,7 @@ public class ScaveImages {
     public static final String IMG_OBJ16_SYM_DIAMOND = "icons/full/obj16/sym_diamond.png";
     public static final String IMG_OBJ16_SYM_DOT = "icons/full/obj16/sym_dot.png";
     public static final String IMG_OBJ16_SYM_NONE = "icons/full/obj16/sym_none.png";
+    public static final String IMG_OBJ16_SYM_POINT = "icons/full/obj16/sym_point.png";
     public static final String IMG_OBJ16_SYM_PLUS = "icons/full/obj16/sym_plus.png";
     public static final String IMG_OBJ16_SYM_SQUARE = "icons/full/obj16/sym_square.png";
     public static final String IMG_OBJ16_SYM_TRIANGLE = "icons/full/obj16/sym_triangle.png";

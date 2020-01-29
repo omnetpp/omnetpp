@@ -16,6 +16,7 @@ public class ChartSymbolFactory {
             return null;
         switch (type) {
         case None: return null;
+        case Point: return new PointSymbol();
         case Cross: return new CrossSymbol(size);
         case Diamond: return new DiamondSymbol(size);
         case Dot: return new OvalSymbol(size);
