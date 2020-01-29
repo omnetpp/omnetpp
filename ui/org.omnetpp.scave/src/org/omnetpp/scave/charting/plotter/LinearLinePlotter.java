@@ -47,6 +47,7 @@ public class LinearLinePlotter extends LinePlotter {
 
         // turn off antialias for vertical lines
         int origAntialias = graphics.getAntialias();
+        int antialias = origAntialias;
 
         long startTime = System.currentTimeMillis();
 
@@ -64,20 +65,20 @@ public class LinearLinePlotter extends LinePlotter {
             // draw line
             if (y != NAN_PIX) {
                 if (x != prevX) {
-                    if (prevY != NAN_PIX)
+                    if (prevY != NAN_PIX) {
+                        if (antialias != origAntialias) graphics.setAntialias(antialias= origAntialias);
                         LargeGraphics.drawLine(graphics, prevX, prevY, x, y);
+                    }
                     minY = maxY = y;
                 }
                 else if (y < minY) {
-                    graphics.setAntialias(SWT.OFF);
+                    if (antialias != SWT.OFF) graphics.setAntialias(antialias= SWT.OFF);
                     LargeGraphics.drawLine(graphics, x, minY, x, y);
-                    graphics.setAntialias(origAntialias);
                     minY = y;
                 }
                 else if (y > maxY) {
-                    graphics.setAntialias(SWT.OFF);//TODO optimize
+                    if (antialias != SWT.OFF) graphics.setAntialias(antialias= SWT.OFF);
                     LargeGraphics.drawLine(graphics, x, maxY, x, y);
-                    graphics.setAntialias(origAntialias);
                     maxY = y;
                 }
                 prevX = x;
@@ -87,6 +88,8 @@ public class LinearLinePlotter extends LinePlotter {
             }
             prevY = y;
         }
+
+        graphics.setAntialias(origAntialias);
 
         // and draw symbols
         int remainingTime = Math.max(0, timeLimitMillis - (int)(System.currentTimeMillis()-startTime));
