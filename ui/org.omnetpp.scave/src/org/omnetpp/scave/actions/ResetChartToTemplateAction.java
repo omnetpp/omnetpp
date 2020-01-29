@@ -46,9 +46,14 @@ public class ResetChartToTemplateAction extends AbstractScaveAction {
         }
 
         ChartTemplate template = scaveEditor.getChartTemplateRegistry().findTemplateByID(chart.getTemplateID());
-        ResetChartToTemplateCommand command = new ResetChartToTemplateCommand(chart, template.getPythonScript(), template.getDialogPages());
-
-        scaveEditor.getActiveCommandStack().execute(command);
+        if (template == null) {
+            MessageDialog.openInformation(scaveEditor.getSite().getShell(), "Chart template not found",
+                    "The template of this chart was not found by its id: \"" + chart.getTemplateID() + "\"");
+        }
+        else {
+            ResetChartToTemplateCommand command = new ResetChartToTemplateCommand(chart, template.getPythonScript(), template.getDialogPages());
+            scaveEditor.getActiveCommandStack().execute(command);
+        }
     }
 
     @Override
