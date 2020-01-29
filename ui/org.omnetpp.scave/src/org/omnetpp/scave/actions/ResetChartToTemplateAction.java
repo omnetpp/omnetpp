@@ -7,11 +7,14 @@
 
 package org.omnetpp.scave.actions;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.ISharedImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charttemplates.ChartTemplate;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.editors.ui.FormEditorPage;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.commands.ResetChartToTemplateCommand;
 
@@ -28,11 +31,19 @@ public class ResetChartToTemplateAction extends AbstractScaveAction {
 
     @Override
     protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
-        Chart chart = scaveEditor.getActiveChartScriptEditor().getChart();
+        Chart chart = getChartFromSelection(selection);
 
-        //InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), "Create Chart", "Enter chart name", suggestedName, null);
+        FormEditorPage editorPage = scaveEditor.getEditorPage(chart);
 
-        //if (dialog.open() == InputDialog.OK) {
+        if (editorPage != null) {
+            boolean result = MessageDialog.openQuestion(scaveEditor.getSite().getShell(), "Chart is open",
+                    "The chart you are trying to reset is currently open, but it needs to be closed to reset. Close it now?");
+
+            if (result)
+                scaveEditor.closePage(chart);
+            else
+                return;
+        }
 
         ChartTemplate template = scaveEditor.getChartTemplateRegistry().findTemplateByID(chart.getTemplateID());
         ResetChartToTemplateCommand command = new ResetChartToTemplateCommand(chart, template.getPythonScript(), template.getDialogPages());
@@ -42,6 +53,18 @@ public class ResetChartToTemplateAction extends AbstractScaveAction {
 
     @Override
     protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
-        return editor.getActiveChartScriptEditor() != null && editor.getActiveChartScriptEditor().getChart() != null;
+        return getChartFromSelection(selection) != null;
+    }
+
+    Chart getChartFromSelection(ISelection selection) {
+        if (!(selection instanceof IStructuredSelection))
+            return null;
+
+        IStructuredSelection structuredSelection = (IStructuredSelection)selection;
+
+        if (structuredSelection.size() == 1 && (structuredSelection.getFirstElement() instanceof Chart))
+            return (Chart)structuredSelection.getFirstElement();
+
+        return null;
     }
 }
