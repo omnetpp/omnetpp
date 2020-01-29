@@ -9,7 +9,6 @@ package org.omnetpp.scave.actions;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.ISharedImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charttemplates.ChartTemplate;
@@ -17,6 +16,7 @@ import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ui.FormEditorPage;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.commands.ResetChartToTemplateCommand;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * Resets either the dialog pages, or the script of a chart to its template.
@@ -31,7 +31,7 @@ public class ResetChartToTemplateAction extends AbstractScaveAction {
 
     @Override
     protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
-        Chart chart = getChartFromSelection(selection);
+        Chart chart = ScaveModelUtil.getChartFromSingleSelection(selection);
 
         FormEditorPage editorPage = scaveEditor.getEditorPage(chart);
 
@@ -53,18 +53,6 @@ public class ResetChartToTemplateAction extends AbstractScaveAction {
 
     @Override
     protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
-        return getChartFromSelection(selection) != null;
-    }
-
-    Chart getChartFromSelection(ISelection selection) {
-        if (!(selection instanceof IStructuredSelection))
-            return null;
-
-        IStructuredSelection structuredSelection = (IStructuredSelection)selection;
-
-        if (structuredSelection.size() == 1 && (structuredSelection.getFirstElement() instanceof Chart))
-            return (Chart)structuredSelection.getFirstElement();
-
-        return null;
+        return ScaveModelUtil.getChartFromSingleSelection(selection) != null;
     }
 }

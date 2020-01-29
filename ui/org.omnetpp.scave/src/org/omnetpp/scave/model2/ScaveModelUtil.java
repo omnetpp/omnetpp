@@ -19,6 +19,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charttemplates.ChartTemplate;
@@ -130,6 +132,18 @@ public class ScaveModelUtil {
             if (item instanceof Chart)
                 charts.add((Chart)item);
         return charts;
+    }
+
+    public static Chart getChartFromSingleSelection(ISelection selection) {
+        if (!(selection instanceof IStructuredSelection))
+            return null;
+
+        IStructuredSelection structuredSelection = (IStructuredSelection)selection;
+
+        if (structuredSelection.size() == 1 && (structuredSelection.getFirstElement() instanceof Chart))
+            return (Chart)structuredSelection.getFirstElement();
+
+        return null;
     }
 
     public static boolean isInputsChange(ModelChangeEvent event) {

@@ -50,6 +50,7 @@ import org.omnetpp.scave.actions.PasteAction;
 import org.omnetpp.scave.actions.RedoAction;
 import org.omnetpp.scave.actions.RefreshChartAction;
 import org.omnetpp.scave.actions.RemoveAction;
+import org.omnetpp.scave.actions.RenameChartAction;
 import org.omnetpp.scave.actions.ResetChartToTemplateAction;
 import org.omnetpp.scave.actions.SaveTempChartAction;
 import org.omnetpp.scave.actions.SelectAllAction;
@@ -72,6 +73,7 @@ public class ScaveEditorActions {
     public final EditChartPropertiesAction editAction = registerAction(new EditChartPropertiesAction());
     public final EditInputFileAction editInputFileAction = registerAction(new EditInputFileAction());
     public final SelectAllAction selectAllAction = registerAction(new SelectAllAction());
+    public final RenameChartAction renameChartAction = registerAction(new RenameChartAction());
     public final ExportChartsAction exportChartsAction = registerAction(new ExportChartsAction());
     public final ResetChartToTemplateAction resetToTemplateAction = registerAction(new ResetChartToTemplateAction());
     public final RemoveAction removeAction = registerAction(new RemoveAction());
@@ -211,6 +213,7 @@ public class ScaveEditorActions {
 
         menuManager.insertBefore("edit", openAction);
         menuManager.insertBefore("edit", editAction);
+        menuManager.insertBefore("edit", renameChartAction);
         // menuManager.insertBefore("edit", new EditScriptAction());
 
         menuManager.insertAfter("additions-end", new Separator());
