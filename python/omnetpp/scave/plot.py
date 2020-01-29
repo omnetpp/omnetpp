@@ -72,6 +72,92 @@ def plot_vector(label, xs, ys, key = None):
     """
     return impl.plot_vector(**locals())
 
+def plot(xs, ys, key, label=None, drawstyle=None, linestyle=None, linewidth=None, color=None, marker=None, markersize=None):
+    props = {}
+    props["Line.Name/"+key] = key
+    if label:
+        props["Line.Display/"+key] = label or key
+    if drawstyle:
+        props["Line.Type/"+key] = _translate_drawstyle(drawstyle)
+    if linestyle:
+        props["Line.Style/"+key] = _translate_linestyle(linestyle) #TODO implement in Java
+    if linewidth:
+        props["Line.Width/"+key] = str(linewidth) #TODO implement in Java
+    if color:
+        props["Line.Color/"+key] = _translate_color(color)
+    if marker:
+        props["Symbols.Type/"+key] = _translate_marker(marker)
+    if markersize:
+        props["Symbols.Size/"+key] = str(markersize)
+
+    set_properties(props)
+    return plot_vector(label or key, xs, ys, key)
+
+def _translate_drawstyle(drawstyle):
+    mapping = {
+        "default" : "linear",
+        "steps" : "steps-post",
+        "steps-pre" : "steps-pre",
+        "steps-mid" : None, # "steps-mid" TODO implement
+        "steps-post" : "steps-post",
+    }
+    if drawstyle not in mapping or mapping[drawstyle] is None:
+        raise ValueError("unsupported drawstyle")  #TODO
+    return mapping[drawstyle]
+
+def _translate_linestyle(linestyle):
+    mapping = {
+        ' '  : "none",
+        '-'  : "solid",
+        '--' : "dashed",
+        '-.' : "dash-dot",
+        ':'  : "dotted",
+    }
+    if linestyle not in mapping or mapping[linestyle] is None:
+        raise ValueError("unsupported linestyle")  #TODO
+    return mapping[linestyle]
+
+def _translate_color(color):
+    mapping = {
+        "b" : "blue",
+        "g" : "green",
+        "r" : "red",
+        "c" : "cyan",
+        "m" : "magenta",
+        "y" : "yellow",
+        "k" : "black",
+        "w" : "white"
+    }
+    return mapping[color] if color in mapping else color
+
+def _translate_marker(marker):
+    mapping = {
+        '.' : "dot",
+        ',' : "point",
+        'o' : None, # TODO "circle",
+        'v' : None, # TODO "triangle_down",
+        '^' : "triangle", # triangle_up
+        '<' : None, # TODO "triangle_left",
+        '>' : None, # TODO "triangle_right",
+        '1' : None, # TODO "tri_down",
+        '2' : None, # TODO "tri_up",
+        '3' : None, # TODO "tri_left",
+        '4' : None, # TODO "tri_right",
+        's' : "square",
+        'p' : None, # TODO "pentagon",
+        '*' : None, # TODO "star",
+        'h' : None, # TODO "hexagon1",
+        'H' : None, # TODO "hexagon2",
+        '+' : "plus",
+        'x' : "cross",
+        'D' : "diamond",
+        'd' : None, # TODO "thin_diamond",
+        '|' : None, # TODO "vline",
+        '_' : None, # TODO "hline"
+    }
+    if marker not in mapping or mapping[marker] is None:
+        raise ValueError("unsupported/unrecognized marker")  #TODO
+    return mapping[marker]
 
 def plot_vectors(df_or_list):
     """
