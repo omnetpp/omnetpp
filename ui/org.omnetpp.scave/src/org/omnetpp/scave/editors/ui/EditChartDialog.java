@@ -140,14 +140,8 @@ public class EditChartDialog extends TitleAreaDialog {
 
         Map<String, String> props = form.collectProperties();
 
-        for (String k : props.keySet()) {
-            if (k.equals(ChartEditForm.CHART_NAME_PROPERTY_KEY))
-                command.append(new SetChartNameCommand(chart, props.get(ChartEditForm.CHART_NAME_PROPERTY_KEY)));
-            else {
-                String newValue = props.get(k);
-                command.append(new SetChartPropertyCommand(chart, k, newValue));
-            }
-        }
+        for (String k : props.keySet())
+            command.append(new SetChartPropertyCommand(chart, k, props.get(k)));
 
         FormEditorPage editorPage = editor.getEditorPage(chart);
         if (editorPage instanceof ChartPage) {

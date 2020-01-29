@@ -65,7 +65,6 @@ import com.swtworkbench.community.xswt.XSWT;
 public class ChartEditForm {
 
     public static final String PROP_DEFAULT_TAB = "default-page";
-    public static final String CHART_NAME_PROPERTY_KEY = "chart_name";
 
     protected Chart chart;
     protected ChartTemplateRegistry chartTemplateRegistry;
@@ -238,17 +237,14 @@ public class ChartEditForm {
         for (String propId : xswtWidgetMap.keySet()) {
             String value = null;
 
-            if (propId.equals(CHART_NAME_PROPERTY_KEY))
-               value = chart.getName();
-            else {
-                Property prop = chart.lookupProperty(propId);
-                if (prop != null)
-                    value = prop.getValue();
-                else if (propertySource != null) {
-                    Object defaultPropertyValue = PlotDefaults.getDefaultPropertyValue(propId);
-                    if (defaultPropertyValue != null)
-                        value = Converter.objectToString(defaultPropertyValue);
-                }
+
+            Property prop = chart.lookupProperty(propId);
+            if (prop != null)
+                value = prop.getValue();
+            else if (propertySource != null) {
+                Object defaultPropertyValue = PlotDefaults.getDefaultPropertyValue(propId);
+                if (defaultPropertyValue != null)
+                    value = Converter.objectToString(defaultPropertyValue);
             }
 
             if (value != null)
