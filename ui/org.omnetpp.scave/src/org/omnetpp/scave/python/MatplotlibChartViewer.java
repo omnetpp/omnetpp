@@ -84,7 +84,14 @@ public class MatplotlibChartViewer extends ChartViewerBase {
         if (plotWidget.isDisposed())
             return;
 
-        final List<Object> limits = (plotWidget.getCanvas() != null) ? plotWidget.getCanvas().getAxisLimits() : null;
+        final List<Object> limits = new ArrayList<Object>();
+        try {
+            if (getPythonProcess() != null && getPythonProcess().isAlive() && plotWidget.getCanvas() != null);
+                limits.addAll(plotWidget.getCanvas().getAxisLimits());
+        }
+        catch (Exception e) {
+            // ignore
+        }
 
         killPythonProcess();
         plotWidget.setWarning(null);
@@ -115,8 +122,12 @@ public class MatplotlibChartViewer extends ChartViewerBase {
 
         Runnable ownRunAfterDone = () -> {
             runAfterDone.run();
-            if (plotWidget.getCanvas() != null && limits != null)
-                plotWidget.getCanvas().setAxisLimits(limits);
+            try {
+                if (getPythonProcess() != null && getPythonProcess().isAlive() && plotWidget.getCanvas() != null && limits != null)
+                    plotWidget.getCanvas().setAxisLimits(limits);
+            } catch (Exception e) {
+                // ignore
+            }
         };
 
         proc.pythonCallerThread.asyncExec(() -> {
