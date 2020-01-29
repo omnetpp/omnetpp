@@ -24,6 +24,7 @@ public class LineVisualProperties extends PropertySource {
 
     public enum SymbolType {
         None("None", ScaveImages.IMG_OBJ16_SYM_NONE),
+        Point("Point", ScaveImages.IMG_OBJ16_SYM_DOT), //TODO dedicated image
         Cross("Cross", ScaveImages.IMG_OBJ16_SYM_CROSS),
         Diamond("Diamond", ScaveImages.IMG_OBJ16_SYM_DIAMOND),
         Dot("Dot", ScaveImages.IMG_OBJ16_SYM_DOT),
@@ -50,10 +51,9 @@ public class LineVisualProperties extends PropertySource {
     }
 
     public enum LineType {
+        None("none", ScaveImages.IMG_OBJ16_LINE_POINTS),
         Linear("linear", ScaveImages.IMG_OBJ16_LINE_LINEAR),
         Pins("pins", ScaveImages.IMG_OBJ16_LINE_PINS),
-        Dots("dots", ScaveImages.IMG_OBJ16_LINE_DOTS),
-        Points("points", ScaveImages.IMG_OBJ16_LINE_POINTS),
         StepsPost("steps-post", ScaveImages.IMG_OBJ16_LINE_STEPS_POST),
         StepsPre("steps-pre", ScaveImages.IMG_OBJ16_LINE_STEPS_PRE);
 

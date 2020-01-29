@@ -169,7 +169,7 @@ class LinePlot implements ILinePlot {
                     int lineTimeout = Math.min(Math.max(100, remainingTime), perLineTimeLimitMillis); // give it at least 100ms, even if time is over
 
                     boolean lineOK = plotter.plot(this, series, graphics, coordsMapping, symbol, lineTimeout);
-                    ok = ok && lineOK; // do NOT merge with previous line! lazy evaluation would prevent lines after 1st timeout to be drawn
+                    ok = ok && lineOK; // do NOT merge with previous line! shortcutting would prevent lines after 1st timeout to be drawn
 
                     // if drawing is taking too long, display busy cursor
                     if (System.currentTimeMillis() - startTime > 1000) {

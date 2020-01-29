@@ -246,12 +246,13 @@ public class LinePlotViewer extends PlotViewerBase {
 
     public static LineType getLineTypeForInterpolationMode(InterpolationMode mode) {
         switch (mode) {
-        case None: return LineType.Dots;
+        case None: return LineType.None;
         case Linear: return LineType.Linear;
         case SampleHold: return LineType.StepsPost;
         case BackwardSampleHold: return LineType.StepsPre;
+        case Unspecified: return LineType.Linear;
+        default: throw new IllegalArgumentException("unknown interpolation mode: " + mode);
         }
-        return LineType.Linear;
     }
 
     public LinePlotViewer(Composite parent, int style) {

@@ -13,12 +13,11 @@ public class LinePlotterFactory {
 
     public static ILinePlotter createVectorPlotter(LineType lineType) {
         switch (lineType) {
-        case Dots: return new DotsLinePlotter();
+        case None: return new NoLinePlotter();
         case Linear: return new LinearLinePlotter();
         case StepsPost: return new StepsLinePlotter(false);
         case StepsPre: return new StepsLinePlotter(true);
         case Pins: return new PinsLinePlotter();
-        case Points: return new PointsLinePlotter();
         default: throw new IllegalArgumentException("unknown line style: " + lineType);
         }
     }
