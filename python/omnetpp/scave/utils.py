@@ -241,10 +241,8 @@ def plot_vectors(df, props):
         _plot_vectors_mpl(df, props)
 
 def _plot_vectors_native(df, props):
-    #plot.set_properties(_filter_by_key_prefix(props,"plot."))  #TODO this was after plotting, was that intentional?
-    plot.set_properties(props)  #TODO this was after plotting, was that intentional? + how to filter?
-    plot.set_properties(parse_rcparams(props["plot.properties"] or ""))
-    
+    preconfigure_plot(props)
+
     title_col, legend_cols = extract_label_columns(df)
 
     drawstyle = props["drawstyle"] or "auto"
@@ -262,33 +260,10 @@ def _plot_vectors_native(df, props):
     title = props['title'] or make_chart_title(df, title_col, legend_cols)
     set_plot_title(title)
 
-    if props["xaxis_title"]:
-        plot.xlabel(props["xaxis_title"])
-    if props["yaxis_title"]:
-        plot.ylabel(props["yaxis_title"])
-
-    if props["xaxis_min"]:
-        plot.xlim(left=float(props["xaxis_min"]))
-    if props["xaxis_max"]:
-        plot.xlim(right=float(props["xaxis_max"]))
-    if props["yaxis_min"]:
-        plot.ylim(left=float(props["yaxis_min"]))
-    if props["yaxis_max"]:
-        plot.ylim(right=float(props["yaxis_max"]))
-
-    legend(show=_parse_opt_bool(props["legend_show"]), 
-           frameon=_parse_opt_bool(props["legend_border"]),
-           loc=props["legend_placement"] or None)
-
-    #TODO
-    plot.grid()
+    postconfigure_plot(props)
 
 def _plot_vectors_mpl(df, props):
-    mpl.rcParams.update(_filter_by_key_prefix(props,"matplotlibrc."))
-    mpl.rcParams.update(parse_rcparams(props["matplotlibrc"] or ""))
-
-    if (props['plt.style']):
-        plt.style.use(props['plt.style'])
+    preconfigure_plot(props)
 
     title_col, legend_cols = extract_label_columns(df)
 
@@ -299,26 +274,43 @@ def _plot_vectors_mpl(df, props):
     title = props['title'] or make_chart_title(df, title_col, legend_cols)
     set_plot_title(title)
 
+    postconfigure_plot(props)
+
+def preconfigure_plot(props):
+    if chart.is_native_chart():
+        #plot.set_properties(_filter_by_key_prefix(props,"plot."))  #TODO this was after plotting, was that intentional?
+        plot.set_properties(props)  #TODO this was after plotting, was that intentional? + how to filter?
+        plot.set_properties(parse_rcparams(props["plot.properties"] or ""))
+    else:
+        if (props['plt.style']):
+            plt.style.use(props['plt.style'])
+        mpl.rcParams.update(_filter_by_key_prefix(props,"matplotlibrc."))
+        mpl.rcParams.update(parse_rcparams(props["matplotlibrc"] or ""))
+
+
+def postconfigure_plot(props):
+    p = plot if chart.is_native_chart() else plt
+    
     if props["xaxis_title"]:
-        plt.xlabel(props["xaxis_title"])
+        p.xlabel(props["xaxis_title"])
     if props["yaxis_title"]:
-        plt.ylabel(props["yaxis_title"])
+        p.ylabel(props["yaxis_title"])
 
     if props["xaxis_min"]:
-        plt.xlim(left=props["xaxis_min"])
+        p.xlim(left=props["xaxis_min"])
     if props["xaxis_max"]:
-        plt.xlim(right=props["xaxis_max"])
+        p.xlim(right=props["xaxis_max"])
     if props["yaxis_min"]:
-        plt.ylim(left=props["yaxis_min"])
+        p.ylim(left=props["yaxis_min"])
     if props["yaxis_max"]:
-        plt.ylim(right=props["yaxis_max"])
+        p.ylim(right=props["yaxis_max"])
 
     legend(show=_parse_opt_bool(props["legend_show"]), 
            frameon=_parse_opt_bool(props["legend_border"]),
            loc=props["legend_placement"] or None)
 
     #TODO
-    plt.grid()
+    #plt.grid()
 
 def legend(*args, **kwargs):
     if chart.is_native_chart():
