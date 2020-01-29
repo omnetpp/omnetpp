@@ -19,7 +19,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 public class RenameChartAction extends AbstractScaveAction {
 
     public RenameChartAction() {
-        setText("Rename chart");
+        setText("Rename");
         setDescription("Initiates the renaming of the selected chart");
     }
 
@@ -27,9 +27,7 @@ public class RenameChartAction extends AbstractScaveAction {
     protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
         Chart chart = ScaveModelUtil.getChartFromSingleSelection(selection);
         ChartsPage chartsPage = scaveEditor.getChartsPage();
-
-        if (chart != null)
-            chartsPage.getViewer().startDirectRename(chart);
+        chartsPage.getViewer().startDirectRename(chart);
     }
 
     @Override

@@ -26,7 +26,6 @@ import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.CopyChartFilterAction;
-import org.omnetpp.scave.actions.CreateTempChartAction;
 import org.omnetpp.scave.actions.CreateTempChartFromTemplateAction;
 import org.omnetpp.scave.actions.DecreaseDecimalPlacesAction;
 import org.omnetpp.scave.actions.FlatModuleTreeAction;
@@ -175,8 +174,7 @@ public class BrowseDataPage extends FormEditorPage {
         addToToolbar(new IncreaseDecimalPlacesAction());
         addToToolbar(new DecreaseDecimalPlacesAction());  //TODO get these refreshed when min/max precision is reached
         addSeparatorToToolbar();
-        addToToolbar(actions.createTempChartAction);
-        addToToolbar(actions.createTempMatplotlibChartAction);
+        addToToolbar(actions.plotAction);
 
         // show/hide actions that are specific to tab pages
         tabFolder.addSelectionListener(new SelectionAdapter() {
@@ -212,8 +210,6 @@ public class BrowseDataPage extends FormEditorPage {
 
                 contextMenuManager.add(new Separator());
             }
-            contextMenuManager.add(actions.createTempChartAction);
-            contextMenuManager.add(actions.createTempMatplotlibChartAction);
 
             contextMenuManager.add(new CopyChartFilterAction());
             MenuManager setFilterSubmenu = new MenuManager("Set filter to existing chart...");
@@ -314,11 +310,7 @@ public class BrowseDataPage extends FormEditorPage {
 
             @Override
             public void widgetDefaultSelected(SelectionEvent e) {
-                ScaveEditorActions actions = scaveEditor.getActions();
-                if (actions.createTempChartAction.isEnabled())
-                    actions.createTempChartAction.run();
-                else
-                    actions.createTempMatplotlibChartAction.run();
+                scaveEditor.getActions().plotAction.run();
             }
         };
 
