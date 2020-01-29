@@ -37,6 +37,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -129,13 +130,13 @@ import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.ModelChangeEvent;
 import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Property;
-import org.omnetpp.scave.model.commands.AddChartCommand;
 import org.omnetpp.scave.model.commands.AddInputFileCommand;
 import org.omnetpp.scave.model.commands.CommandStack;
 import org.omnetpp.scave.model.commands.CommandStackListener;
 import org.omnetpp.scave.model.commands.ICommand;
 import org.omnetpp.scave.model.commands.SetChartContentsCommand;
 import org.omnetpp.scave.model2.ResultItemRef;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 import org.omnetpp.scave.pychart.PythonProcessPool;
 import org.omnetpp.scave.python.MatplotlibChartViewer;
 import org.omnetpp.scave.python.NativeChartViewer;
@@ -757,11 +758,15 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
             switch (result) {
             case 0:
-                chart.setTemporary(false);
-                ICommand command = new AddChartCommand(getAnalysis(), chart);
-                chartsPage.getCommandStack().execute(command);
-                showAnalysisItem(chart);
-                return true;
+                String suggestedName = StringUtils.nullToEmpty(editor.getSuggestedChartName());
+                InputDialog dialog = new InputDialog(getSite().getShell(), "Keep Chart", "Enter chart name", suggestedName, null);
+
+                if (dialog.open() == InputDialog.OK) {
+                    ScaveModelUtil.saveChart(chartsPage.getCommandStack(), chart, dialog.getValue(), getAnalysis());
+                    return true;
+                }
+                else
+                    return false;
             case 1:
                 // no-op
                 return true;

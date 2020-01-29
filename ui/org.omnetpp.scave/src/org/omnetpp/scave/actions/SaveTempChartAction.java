@@ -16,10 +16,7 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.commands.AddChartCommand;
-import org.omnetpp.scave.model.commands.CompoundCommand;
-import org.omnetpp.scave.model.commands.ICommand;
-import org.omnetpp.scave.model.commands.SetChartNameCommand;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * Saves a temporary chart.
@@ -45,15 +42,7 @@ public class SaveTempChartAction extends AbstractScaveAction {
             InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), "Create Chart", "Enter chart name", suggestedName, null);
 
             if (dialog.open() == InputDialog.OK) {
-                chart.setTemporary(false);
-
-                CompoundCommand command = new CompoundCommand("Save chart");
-                ICommand setNameCommand = new SetChartNameCommand(chart, dialog.getValue());
-                ICommand addCommand = new AddChartCommand(scaveEditor.getAnalysis(), chart);
-                command.append(setNameCommand);
-                command.append(addCommand);
-                scaveEditor.getChartsPage().getCommandStack().execute(command);
-
+                ScaveModelUtil.saveChart(scaveEditor.getChartsPage().getCommandStack(), chart, dialog.getValue(), scaveEditor.getAnalysis());
                 activeChartScriptEditor.updateActions();
                 scaveEditor.showAnalysisItem(chart);
             }

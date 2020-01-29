@@ -14,8 +14,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
@@ -41,11 +39,14 @@ import org.omnetpp.scave.model.ModelChangeEvent;
 import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ResultType;
+import org.omnetpp.scave.model.commands.AddChartCommand;
 import org.omnetpp.scave.model.commands.AddInputFileCommand;
 import org.omnetpp.scave.model.commands.CommandStack;
 import org.omnetpp.scave.model.commands.CompoundCommand;
 import org.omnetpp.scave.model.commands.ICommand;
 import org.omnetpp.scave.model.commands.MoveChartCommand;
+import org.omnetpp.scave.model.commands.SetChartIsTemporaryCommand;
+import org.omnetpp.scave.model.commands.SetChartNameCommand;
 
 /**
  * A collection of static methods to manipulate model objects
@@ -109,6 +110,16 @@ public class ScaveModelUtil {
         CompoundCommand command = new CompoundCommand("Move analysis items");
         for (AnalysisItem item : itemsToMove)
             command.append(new MoveChartCommand(charts, item, index));
+        commandStack.execute(command);
+    }
+
+    public static void saveChart(CommandStack commandStack, Chart chart, String name, Analysis analysis) {
+        CompoundCommand command = new CompoundCommand("Save chart");
+
+        command.append(new SetChartIsTemporaryCommand(chart, false));
+        command.append(new SetChartNameCommand(chart, name));
+        command.append(new AddChartCommand(analysis, chart));
+
         commandStack.execute(command);
     }
 
