@@ -70,6 +70,10 @@ public abstract class LinePlotter implements ILinePlotter {
         double[] valueRange = valueRange(graphics, mapping, symbol);
         double lo = valueRange[0], hi = valueRange[1];
 
+        // reset graphics
+        graphics.setLineWidth(1);
+        graphics.setLineStyle(Graphics.LINE_SOLID);
+
         //
         // Performance optimization: with large datasets it occurs that the same symbol
         // on the screen is painted over and over. We eliminate this by keeping track of

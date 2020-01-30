@@ -102,19 +102,21 @@ def _translate_drawstyle(drawstyle):
         "steps-post" : "steps-post",
     }
     if drawstyle not in mapping or mapping[drawstyle] is None:
-        raise ValueError("unsupported drawstyle")  #TODO
+        raise ValueError("Unrecognized drawstyle '{}'".format(drawstyle))
     return mapping[drawstyle]
 
 def _translate_linestyle(linestyle):
+    if linestyle in ["none", "solid", "dashed", "dashdot", "dotted"]:
+        return linestyle
     mapping = {
         ' '  : "none",
         '-'  : "solid",
         '--' : "dashed",
-        '-.' : "dash-dot",
+        '-.' : "dashdot",
         ':'  : "dotted",
     }
-    if linestyle not in mapping or mapping[linestyle] is None:
-        raise ValueError("unsupported linestyle")  #TODO
+    if linestyle not in mapping:
+        raise ValueError("Unrecognized linestyle '{}'".format(linestyle))
     return mapping[linestyle]
 
 def _translate_color(color):

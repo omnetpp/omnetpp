@@ -346,8 +346,9 @@ public abstract class PlotViewerBase extends ZoomableCachingCanvas implements IP
             setYMin(Converter.stringToDouble(value));
         else if (PROP_Y_AXIS_MAX.equals(name))
             setYMax(Converter.stringToDouble(value));
-        /*else
-            ScavePlugin.logError(new RuntimeException("unrecognized chart property: "+name));*/
+        else
+            System.out.println("Unrecognized chart property: " + name + " = " + value);
+            //ScavePlugin.logError(new RuntimeException("unrecognized chart property: "+name));
     }
 
     protected void doClear(IPropertySource2 propSource) {

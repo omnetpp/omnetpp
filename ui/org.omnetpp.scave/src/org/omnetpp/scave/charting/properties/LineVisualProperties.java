@@ -7,6 +7,7 @@
 
 package org.omnetpp.scave.charting.properties;
 
+import org.eclipse.draw2d.Graphics;
 import org.omnetpp.common.properties.ColorPropertyDescriptor;
 import org.omnetpp.common.properties.PropertySource;
 import org.omnetpp.scave.ScaveImages;
@@ -19,7 +20,9 @@ public class LineVisualProperties extends PropertySource {
         PROP_SYMBOL_TYPE        = "Symbols.Type",
         PROP_SYMBOL_SIZE        = "Symbols.Size",
         PROP_LINE_TYPE          = "Line.Type",
-        PROP_LINE_COLOR         = "Line.Color";
+        PROP_LINE_COLOR         = "Line.Color",
+        PROP_LINE_STYLE         = "Line.Style",
+        PROP_LINE_WIDTH         = "Line.Width";
 
 
     public enum SymbolType {
@@ -74,6 +77,40 @@ public class LineVisualProperties extends PropertySource {
             return imageId;
         }
     }
+
+    public enum LineStyle {
+        None("none", Graphics.LINE_SOLID /*doesn't matter*/, null),
+        Solid("solid", Graphics.LINE_SOLID, null),
+        Dotted("dotted", Graphics.LINE_DOT, null),
+        Dashed("dashed", Graphics.LINE_DASH, null),
+        DashDot("dashdot", Graphics.LINE_DASHDOT, null);
+
+        private String name;
+        private int draw2dConstant;
+        private String imageId;
+
+        private LineStyle(String name, int draw2dConstant, String img) {
+            this.name = name;
+            this.draw2dConstant = draw2dConstant;
+            this.imageId = img;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+
+        public int getDraw2DConstant() {
+            return draw2dConstant;
+        }
+
+        public String getImageId() {
+            return imageId;
+        }
+
+    }
+
+
     private final PlotProperties chartProps;
     private String lineId;
 
@@ -110,7 +147,7 @@ public class LineVisualProperties extends PropertySource {
     public Integer defaultSymbolSize() { return lineId == null ? PlotDefaults.DEFAULT_SYMBOL_SIZE : null; }
 
     @org.omnetpp.common.properties.Property(category="Lines",id=PROP_LINE_TYPE,optional=true,
-            description="Line drawing method. One of Linear, Pins, Dots, Points, Sample-Hold or Backward Sample-Hold.")
+            description="Line drawing method. One of none, linear, pins, steps, steps-post, steps-pre.")
     public LineType getLineType() { return chartProps.getEnumProperty(propertyName(PROP_LINE_TYPE), LineType.class); }
     public void setLineType(LineType style) { chartProps.setProperty(propertyName(PROP_LINE_TYPE), style); }
     public LineType defaultLineType() { return null; }
@@ -120,4 +157,17 @@ public class LineVisualProperties extends PropertySource {
     public String getLineColor() { return chartProps.getStringProperty(propertyName(PROP_LINE_COLOR)); } // FIXME use RGB
     public void setLineColor(String color) { chartProps.setProperty(propertyName(PROP_LINE_COLOR), color); }
     public String defaultLineColor() { return null; }
+
+    @org.omnetpp.common.properties.Property(category="Lines",id=PROP_LINE_STYLE,descriptorClass=ColorPropertyDescriptor.class,optional=true,
+            description="Line style. One of none, solid, dashed, dotted, dashdot.")
+    public LineStyle getLineStyle() { return chartProps.getEnumProperty(propertyName(PROP_LINE_STYLE), LineStyle.class); }
+    public void setLineStyle(LineStyle style) { chartProps.setProperty(propertyName(PROP_LINE_STYLE), style); }
+    public LineStyle defaultLineStyle() { return PlotDefaults.DEFAULT_LINE_STYLE; }
+
+    @org.omnetpp.common.properties.Property(category="Lines",id=PROP_LINE_WIDTH,
+            description="The line width.")
+    public Integer getLineWidth() { return chartProps.getIntegerProperty(propertyName(PROP_LINE_WIDTH), lineId==null); }
+    public void setLineWidth(Integer linewidth) { chartProps.setProperty(propertyName(PROP_LINE_WIDTH), linewidth); }
+    public Integer defaultLineWidth() { return PlotDefaults.DEFAULT_LINE_WIDTH; }
+
 }

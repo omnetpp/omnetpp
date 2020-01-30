@@ -10,29 +10,31 @@ package org.omnetpp.scave.charting.properties;
 import static org.omnetpp.scave.charting.properties.BarPlotVisualProperties.PROP_BAR_BASELINE;
 import static org.omnetpp.scave.charting.properties.BarPlotVisualProperties.PROP_BAR_PLACEMENT;
 import static org.omnetpp.scave.charting.properties.BarPlotVisualProperties.PROP_WRAP_LABELS;
+import static org.omnetpp.scave.charting.properties.HistogramPlotProperties.PROP_HIST_BAR;
+import static org.omnetpp.scave.charting.properties.HistogramPlotProperties.PROP_SHOW_OVERFLOW_CELL;
+import static org.omnetpp.scave.charting.properties.LinePlotProperties.PROP_X_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_DISPLAY_LINE;
+import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_LINE_STYLE;
+import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_LINE_TYPE;
+import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_LINE_WIDTH;
+import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_SYMBOL_SIZE;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_ANTIALIAS;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_AXIS_TITLE_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_BACKGROUND_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_CACHING;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_DISPLAY_LEGEND;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_PLOT_TITLE;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_PLOT_TITLE_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LABEL_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LEGEND_ANCHORING;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LEGEND_BORDER;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LEGEND_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LEGEND_POSITION;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_PLOT_TITLE;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_PLOT_TITLE_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_XY_GRID;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_LABELS_ROTATE_BY;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_TITLE;
-import static org.omnetpp.scave.charting.properties.HistogramPlotProperties.PROP_HIST_BAR;
-import static org.omnetpp.scave.charting.properties.HistogramPlotProperties.PROP_SHOW_OVERFLOW_CELL;
-import static org.omnetpp.scave.charting.properties.LinePlotProperties.PROP_X_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_DISPLAY_LINE;
-import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_LINE_TYPE;
-import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_SYMBOL_SIZE;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,12 +46,13 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.charting.properties.BarPlotVisualProperties.BarPlacement;
+import org.omnetpp.scave.charting.properties.HistogramPlotProperties.HistogramBar;
+import org.omnetpp.scave.charting.properties.HistogramPlotProperties.HistogramDataType;
+import org.omnetpp.scave.charting.properties.LineVisualProperties.LineStyle;
+import org.omnetpp.scave.charting.properties.LineVisualProperties.LineType;
 import org.omnetpp.scave.charting.properties.PlotProperties.LegendAnchor;
 import org.omnetpp.scave.charting.properties.PlotProperties.LegendPosition;
 import org.omnetpp.scave.charting.properties.PlotProperties.ShowGrid;
-import org.omnetpp.scave.charting.properties.HistogramPlotProperties.HistogramBar;
-import org.omnetpp.scave.charting.properties.HistogramPlotProperties.HistogramDataType;
-import org.omnetpp.scave.charting.properties.LineVisualProperties.LineType;
 
 /**
  * Defines defaults for the chart. Used by both the chart widgets
@@ -107,8 +110,10 @@ public class PlotDefaults {
 
     // lines
     public static final boolean DEFAULT_DISPLAY_LINE = true;
-    public static final LineType DEFAULT_LINE_STYLE = null; // = use interpolationmode attr of vectors
+    public static final LineType DEFAULT_LINE_TYPE = null; // = use interpolationmode attr of vectors
     public static final Integer DEFAULT_SYMBOL_SIZE = 4;
+    public static final LineStyle DEFAULT_LINE_STYLE = LineStyle.Solid;
+    public static final Integer DEFAULT_LINE_WIDTH = 1;
 
     // histogram chart
     public static final HistogramBar DEFAULT_HIST_BAR = HistogramBar.Solid;
@@ -155,7 +160,9 @@ public class PlotDefaults {
         // TODO: BAR_OUTLINE_COLOR
         defaults.put(PROP_DISPLAY_LINE, DEFAULT_DISPLAY_LINE);
         defaults.put(PROP_SYMBOL_SIZE, DEFAULT_SYMBOL_SIZE);
-        defaults.put(PROP_LINE_TYPE, DEFAULT_LINE_STYLE);
+        defaults.put(PROP_LINE_TYPE, DEFAULT_LINE_TYPE);
+        defaults.put(PROP_LINE_STYLE, DEFAULT_LINE_STYLE);
+        defaults.put(PROP_LINE_WIDTH, DEFAULT_LINE_WIDTH);
 
         defaults.put(PROP_HIST_BAR, DEFAULT_HIST_BAR);
         defaults.put(PROP_SHOW_OVERFLOW_CELL, DEFAULT_SHOW_OVERFLOW_CELL);
