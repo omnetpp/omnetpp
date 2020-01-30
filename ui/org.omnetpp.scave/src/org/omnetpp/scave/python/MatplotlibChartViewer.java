@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -90,7 +91,7 @@ public class MatplotlibChartViewer extends ChartViewerBase {
                 limits.addAll(plotWidget.getCanvas().getAxisLimits());
         }
         catch (Exception e) {
-            // ignore
+            // ignore, since this is mostly a convenience feature
         }
 
         killPythonProcess();
@@ -111,10 +112,6 @@ public class MatplotlibChartViewer extends ChartViewerBase {
             return;
         }
 
-        lastActiveAction = "";
-        for (IStateChangeListener l : stateChangeListeners)
-            l.activeActionChanged("");
-
         ExceptionHandler ownRunAfterError = (proc, e ) -> {
             runAfterError.handle(proc, e);
             plotWidget.setWarning("An exception occurred during Python execution.");
@@ -126,8 +123,16 @@ public class MatplotlibChartViewer extends ChartViewerBase {
                 if (getPythonProcess() != null && getPythonProcess().isAlive() && plotWidget.getCanvas() != null && limits != null)
                     plotWidget.getCanvas().setAxisLimits(limits);
             } catch (Exception e) {
-                // ignore
+                // ignore, since this is mostly a convenience feature
             }
+            try {
+                if (getPythonProcess() != null && getPythonProcess().isAlive() && plotWidget.getCanvas() != null && !StringUtils.isBlank(lastActiveAction)) {
+                    plotWidget.getCanvas().performAction(lastActiveAction);
+                }
+            } catch (Exception e) {
+                // ignore, since this is mostly a convenience feature
+            }
+
         };
 
         proc.pythonCallerThread.asyncExec(() -> {

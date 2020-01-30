@@ -54,6 +54,19 @@ public interface IMatplotlibFigureCanvas {
 
     String getDefaultFiletype();
 
+    /**
+     * The members are actually Double instances, but we don't use them from
+     * Java, only pass them back in to the next Python process.
+     * The (flat) list contains 4 elements [xmin, xmax, ymin, ymax] for each
+     * axes object ("subplot") of the figure.
+     */
     List<Object> getAxisLimits();
+
+    /**
+     * Accepts the same kind of List as getAxisLimit returns.
+     * If there are more elements than axes in the (now potentially different)
+     * figure, the unneeded values are ignored at the end. If there are fewer,
+     * the remaining axes objects are untouched.
+     */
     void setAxisLimits(List<Object> limits);
 }
