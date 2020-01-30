@@ -364,7 +364,10 @@ public class BrowseDataPage extends FormEditorPage {
         FilteredDataPanel panel = tabFolder.getActivePanel();
         if (panel != null) {
             IDataControl control = panel.getDataControl();
-            scaveEditor.setSelection(new IDListSelection(control.getSelectedIDs(), control.getResultFileManager()));
+            IDList idList = control.getSelectedIDs();
+            if (idList == null)
+                idList = IDList.EMPTY;
+            scaveEditor.setSelection(new IDListSelection(idList, control.getResultFileManager()));
             setFilterAction.update(panel);
 
             // TODO FIXME HACK this is just to make the "available templates" actually update when the selection changes,
