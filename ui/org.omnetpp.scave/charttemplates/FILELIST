@@ -5,3 +5,4 @@ generic_mpl.properties
 generic_xyplot_mpl.properties
 generic_xyplot_native.properties
 scatterchart_itervars_native.properties
+scatterchart_itervars_mpl.properties

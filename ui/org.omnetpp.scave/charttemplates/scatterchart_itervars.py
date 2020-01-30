@@ -1,4 +1,5 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 from omnetpp.scave import results, chart, utils, plot, vectorops as ops
 
 # get chart properties
@@ -43,7 +44,7 @@ for i, c in enumerate(df.columns):
     style = utils._make_line_args(props, c, df)
     if chart.is_native_chart():
         style['key'] = str(i)  # khmm..
-    p.plot(df.index.values, df[c].values, label=iso_itervar + "=" + str(df[c].name), **style)
+    p.plot(pd.to_numeric(df.index.values), df[c].values, label=iso_itervar + "=" + str(df[c].name), **style)
 
 utils.set_plot_title(scalar_name + " vs. " + xaxis_itervar)
 
