@@ -44,12 +44,6 @@ public class TriangleSymbol extends PlotSymbol {
         else if (sizeHint==1) {
             LargeGraphics.drawPoint(graphics, x, y);
         }
-        else if (sizeHint==2 || sizeHint==3) {
-            LargeGraphics.drawPoint(graphics, x, y);
-            LargeGraphics.drawPoint(graphics, x-1, y);
-            LargeGraphics.drawPoint(graphics, x+1, y);
-            LargeGraphics.drawPoint(graphics, x, y-1);
-        }
         else {
             // manual translation; XXX try gc.setTransform(), maybe it's faster?
             work[0] = x + poly[0];
