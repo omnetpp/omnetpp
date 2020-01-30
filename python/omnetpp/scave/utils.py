@@ -198,6 +198,39 @@ def interpolationmode_to_drawstyle(interpolationmode, hasenum):
 
     return ds
 
+def _make_line_args(props, t, df):
+    style = dict()
+
+    if props["linestyle"]:
+        style["linestyle"] = props["linestyle"]  # note: must precede 'drawstyle' setting
+
+    if not props["drawstyle"] or props["drawstyle"] == "auto":
+        interpolationmode = t.interpolationmode if "interpolationmode" in df else None
+        hasenum = "enum" in df
+        style["drawstyle"] = interpolationmode_to_drawstyle(interpolationmode, hasenum)
+    elif props["drawstyle"] == "none":
+        style["drawstyle"] = props["default"]
+        style["linestyle"] = " "
+    else:
+        style["drawstyle"] = props["drawstyle"] if props["drawstyle"] != "linear" else "default"
+
+    if props["linecolor"]:
+        style["color"] = props["linecolor"]
+
+    if props["linewidth"]:
+        style["linewidth"] = props["linewidth"]
+
+    if not props["marker"] or props["marker"] == "auto":
+        pass
+    elif props["marker"] == 'none':
+        style["marker"] = ' '
+    else:
+        style["marker"] = props["marker"][0] # take first character only, as Matplotlib uses 1-char codes; this allows us to include a description
+
+    if props["markersize"]:
+        style["markersize"] = props["markersize"]
+
+    return style
 
 def set_plot_title(title, suggested_chart_name=None):
     if chart.is_native_chart():
@@ -214,26 +247,7 @@ def plot_vectors(df, props):
     title_col, legend_cols = extract_label_columns(df)
 
     for i, t in enumerate(df.itertuples(index=False)):
-        style = dict()
-        if props["linestyle"]:
-            style["linestyle"] = props["linestyle"]  # note: must precede 'drawstyle' setting
-        if not props["drawstyle"] or props["drawstyle"] == "auto":
-            interpolationmode = t.interpolationmode if "interpolationmode" in df else None
-            hasenum = "enum" in df            
-            style["drawstyle"] = interpolationmode_to_drawstyle(interpolationmode, hasenum)
-        elif props["drawstyle"] == "none":
-            style["drawstyle"] = props["default"]
-            style["linestyle"] = " "
-        else:
-            style["drawstyle"] = props["drawstyle"] if props["drawstyle"] != "linear" else "default"
-        if props["linecolor"]:
-            style["color"] = props["linecolor"]
-        if props["linewidth"]:
-            style["linewidth"] = props["linewidth"]
-        if props["marker"] and props["marker"] != "auto":
-            style["marker"] = props["marker"]
-        if props["markersize"]:
-            style["markersize"] = props["markersize"]
+        style = _make_line_args(props, t, df)
         if chart.is_native_chart():
             style['key'] = str(i)  # khmm..
         p.plot(t.vectime, t.vecvalue, label=make_legend_label(legend_cols, t), **style)

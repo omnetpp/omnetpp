@@ -135,6 +135,7 @@ def _translate_color(color):
 
 def _translate_marker(marker):
     mapping = {
+        ' ' : "none",
         '.' : "dot",
         ',' : "point",
         'o' : None, # TODO "circle",
@@ -159,7 +160,7 @@ def _translate_marker(marker):
         '_' : None, # TODO "hline"
     }
     if marker not in mapping or mapping[marker] is None:
-        raise ValueError("unsupported/unrecognized marker")  #TODO
+        raise ValueError("Unrecognized marker '{}'".format(marker))
     return mapping[marker]
 
 def plot_vectors(df_or_list):

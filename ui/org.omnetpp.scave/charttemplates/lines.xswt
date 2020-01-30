@@ -38,6 +38,7 @@
 
     <label text="Line style:"/>
     <combo x:id="linestyle" x:style="BORDER|READ_ONLY">
+      <add x:p0="none"/>
       <add x:p0="solid"/>
       <add x:p0="dots"/>
       <add x:p0="dashes"/>
@@ -59,14 +60,15 @@
     <label text="Marker:"/>
     <combo x:id="marker" x:style="BORDER">
       <add x:p0="auto"/>
-      <add x:p0=" "/>
-      <add x:p0="."/>
-      <add x:p0=","/>
-      <add x:p0="o"/>
-      <add x:p0="s"/>
-      <add x:p0="+"/>
-      <add x:p0="x"/>
-      <add x:p0="D"/>
+      <add x:p0="none"/>
+      <add x:p0=". (dot)"/>
+      <add x:p0=", (point)"/>
+      <add x:p0="^ (triangle up)"/>
+      <add x:p0="s (square)"/>
+      <add x:p0="+ (plus)"/>
+      <add x:p0="x (cross)"/>
+      <add x:p0="D (diamond)"/>
+      <!-- TODO the rest... triangle down/left/right, tri up/down/left/right, vline/hline, etc. -->
       <setText x:p0="auto"/>
     </combo>
 
