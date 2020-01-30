@@ -15,7 +15,7 @@ import static org.omnetpp.scave.charting.properties.HistogramPlotProperties.PROP
 import static org.omnetpp.scave.charting.properties.LinePlotProperties.PROP_X_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_DISPLAY_LINE;
 import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_LINE_STYLE;
-import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_LINE_TYPE;
+import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_DRAW_STYLE;
 import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_LINE_WIDTH;
 import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_SYMBOL_SIZE;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_ANTIALIAS;
@@ -49,7 +49,7 @@ import org.omnetpp.scave.charting.properties.BarPlotVisualProperties.BarPlacemen
 import org.omnetpp.scave.charting.properties.HistogramPlotProperties.HistogramBar;
 import org.omnetpp.scave.charting.properties.HistogramPlotProperties.HistogramDataType;
 import org.omnetpp.scave.charting.properties.LineVisualProperties.LineStyle;
-import org.omnetpp.scave.charting.properties.LineVisualProperties.LineType;
+import org.omnetpp.scave.charting.properties.LineVisualProperties.DrawStyle;
 import org.omnetpp.scave.charting.properties.PlotProperties.LegendAnchor;
 import org.omnetpp.scave.charting.properties.PlotProperties.LegendPosition;
 import org.omnetpp.scave.charting.properties.PlotProperties.ShowGrid;
@@ -110,7 +110,7 @@ public class PlotDefaults {
 
     // lines
     public static final boolean DEFAULT_DISPLAY_LINE = true;
-    public static final LineType DEFAULT_LINE_TYPE = null; // = use interpolationmode attr of vectors
+    public static final DrawStyle DEFAULT_DRAW_STYLE = null; // = use interpolationmode attr of vectors
     public static final Integer DEFAULT_SYMBOL_SIZE = 4;
     public static final LineStyle DEFAULT_LINE_STYLE = LineStyle.Solid;
     public static final Integer DEFAULT_LINE_WIDTH = 1;
@@ -160,7 +160,7 @@ public class PlotDefaults {
         // TODO: BAR_OUTLINE_COLOR
         defaults.put(PROP_DISPLAY_LINE, DEFAULT_DISPLAY_LINE);
         defaults.put(PROP_SYMBOL_SIZE, DEFAULT_SYMBOL_SIZE);
-        defaults.put(PROP_LINE_TYPE, DEFAULT_LINE_TYPE);
+        defaults.put(PROP_DRAW_STYLE, DEFAULT_DRAW_STYLE);
         defaults.put(PROP_LINE_STYLE, DEFAULT_LINE_STYLE);
         defaults.put(PROP_LINE_WIDTH, DEFAULT_LINE_WIDTH);
 

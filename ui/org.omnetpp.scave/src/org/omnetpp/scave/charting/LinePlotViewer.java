@@ -14,14 +14,14 @@ import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_DI
 import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_DISPLAY_NAME;
 import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_LINE_COLOR;
 import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_LINE_STYLE;
-import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_LINE_TYPE;
+import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_DRAW_STYLE;
 import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_LINE_WIDTH;
 import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_SYMBOL_SIZE;
 import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_SYMBOL_TYPE;
 import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_DISPLAY_LINE;
 import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_LABELS_FONT;
 import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_LINE_STYLE;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_LINE_TYPE;
+import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_DRAW_STYLE;
 import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_LINE_WIDTH;
 import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_SHOW_GRID;
 import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_SYMBOL_SIZE;
@@ -72,7 +72,7 @@ import org.omnetpp.scave.charting.plotter.LinePlotterFactory;
 import org.omnetpp.scave.charting.plotter.NoLinePlotter;
 import org.omnetpp.scave.charting.properties.LinePlotProperties;
 import org.omnetpp.scave.charting.properties.LineVisualProperties.LineStyle;
-import org.omnetpp.scave.charting.properties.LineVisualProperties.LineType;
+import org.omnetpp.scave.charting.properties.LineVisualProperties.DrawStyle;
 import org.omnetpp.scave.charting.properties.LineVisualProperties.SymbolType;
 import org.omnetpp.scave.charting.properties.PlotProperties.ShowGrid;
 import org.omnetpp.scave.preferences.ScavePreferenceConstants;
@@ -108,7 +108,7 @@ public class LinePlotViewer extends PlotViewerBase {
         String displayName;
         SymbolType symbolType;
         Integer symbolSize;
-        LineType lineType;
+        DrawStyle drawStyle;
         RGB lineColor;
         LineStyle lineStyle;
         Integer lineWidth;
@@ -119,7 +119,7 @@ public class LinePlotViewer extends PlotViewerBase {
         private LineProperties() {
             this.displayLine = DEFAULT_DISPLAY_LINE;
             this.symbolSize = DEFAULT_SYMBOL_SIZE;
-            this.lineType = DEFAULT_LINE_TYPE;
+            this.drawStyle = DEFAULT_DRAW_STYLE;
             this.lineStyle = DEFAULT_LINE_STYLE;
             this.lineWidth = DEFAULT_LINE_WIDTH;
             this.series = -1;
@@ -200,16 +200,16 @@ public class LinePlotViewer extends PlotViewerBase {
             this.symbolSize = symbolSize;
         }
 
-        public LineType getLineType() {
-            if (lineType == null && fallback != null && fallback.lineType != null)
-                return fallback.lineType;
-            return lineType == null ? lineTypeFromInterpolationMode() : lineType;
+        public DrawStyle getDrawStyle() {
+            if (drawStyle == null && fallback != null && fallback.drawStyle != null)
+                return fallback.drawStyle;
+            return drawStyle == null ? drawStyleFromInterpolationMode() : drawStyle;
         }
 
-        public void setLineType(LineType lineType) {
-            if (lineType == null && this == defaultProperties)
-                lineType = DEFAULT_LINE_TYPE;
-            this.lineType = lineType;
+        public void setDrawStyle(DrawStyle drawStyle) {
+            if (drawStyle == null && this == defaultProperties)
+                drawStyle = DEFAULT_DRAW_STYLE;
+            this.drawStyle = drawStyle;
         }
 
         public RGB getLineColor() {
@@ -248,7 +248,7 @@ public class LinePlotViewer extends PlotViewerBase {
             Assert.isTrue(this != defaultProperties);
             if (getLineStyle()==LineStyle.None)
                 return new NoLinePlotter();
-            LineType type = getLineType();
+            DrawStyle type = getDrawStyle();
             ILinePlotter plotter = LinePlotterFactory.createVectorPlotter(type);
             return plotter;
         }
@@ -269,21 +269,21 @@ public class LinePlotViewer extends PlotViewerBase {
                 return ColorFactory.getGoodDarkColor(series);
         }
 
-        private LineType lineTypeFromInterpolationMode() {
+        private DrawStyle drawStyleFromInterpolationMode() {
             if (series < 0)
-                return LineType.Linear;
+                return DrawStyle.Linear;
             InterpolationMode mode = dataset.getSeriesInterpolationMode(series);
-            return getLineTypeForInterpolationMode(mode);
+            return getDrawStyleForInterpolationMode(mode);
         }
     }
 
-    public static LineType getLineTypeForInterpolationMode(InterpolationMode mode) {
+    public static DrawStyle getDrawStyleForInterpolationMode(InterpolationMode mode) {
         switch (mode) {
-        case None: return LineType.None;
-        case Linear: return LineType.Linear;
-        case SampleHold: return LineType.StepsPost;
-        case BackwardSampleHold: return LineType.StepsPre;
-        case Unspecified: return LineType.Linear;
+        case None: return DrawStyle.None;
+        case Linear: return DrawStyle.Linear;
+        case SampleHold: return DrawStyle.StepsPost;
+        case BackwardSampleHold: return DrawStyle.StepsPre;
+        case Unspecified: return DrawStyle.Linear;
         default: throw new IllegalArgumentException("unknown interpolation mode: " + mode);
         }
     }
@@ -478,8 +478,8 @@ public class LinePlotViewer extends PlotViewerBase {
             setSymbolType(getElementId(name), Converter.stringToEnum(value, SymbolType.class));
         else if (name.startsWith(PROP_SYMBOL_SIZE))
             setSymbolSize(getElementId(name), Converter.stringToInteger(value));
-        else if (name.startsWith(PROP_LINE_TYPE))
-            setLineType(getElementId(name), Converter.stringToEnum(value, LineType.class));
+        else if (name.startsWith(PROP_DRAW_STYLE))
+            setDrawStyle(getElementId(name), Converter.stringToEnum(value, DrawStyle.class));
         else if (name.startsWith(PROP_LINE_COLOR))
             setLineColor(getElementId(name), ColorFactory.asRGB(value));
         else if (name.startsWith(PROP_LINE_STYLE))
@@ -529,9 +529,9 @@ public class LinePlotViewer extends PlotViewerBase {
         chartChanged();
     }
 
-    public void setLineType(String key, LineType type) {
+    public void setDrawStyle(String key, DrawStyle type) {
         LineProperties props = getOrCreateLineProperties(key);
-        props.setLineType(type);
+        props.setDrawStyle(type);
         chartChanged();
     }
 

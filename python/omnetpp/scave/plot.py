@@ -78,11 +78,11 @@ def plot(xs, ys, key, label=None, drawstyle=None, linestyle=None, linewidth=None
     if label:
         props["Line.Display/"+key] = label or key
     if drawstyle:
-        props["Line.Type/"+key] = _translate_drawstyle(drawstyle)
+        props["Line.DrawStyle/"+key] = _translate_drawstyle(drawstyle)
     if linestyle:
-        props["Line.Style/"+key] = _translate_linestyle(linestyle) #TODO implement in Java
+        props["Line.Style/"+key] = _translate_linestyle(linestyle)
     if linewidth:
-        props["Line.Width/"+key] = str(linewidth) #TODO implement in Java
+        props["Line.Width/"+key] = str(linewidth)
     if color:
         props["Line.Color/"+key] = _translate_color(color)
     if marker:
@@ -94,6 +94,7 @@ def plot(xs, ys, key, label=None, drawstyle=None, linestyle=None, linewidth=None
     return plot_vector(label or key, xs, ys, key)
 
 def _translate_drawstyle(drawstyle):
+    #TODO accept *exactly* what mpl accepts 
     mapping = {
         "default" : "linear",
         "steps" : "steps-post",

@@ -215,14 +215,17 @@ def plot_vectors(df, props):
 
     for i, t in enumerate(df.itertuples(index=False)):
         style = dict()
-        if props["drawstyle"] and props["drawstyle"] != "auto":
-            style["drawstyle"] = props["drawstyle"] if props["drawstyle"] != "linear" else "default"
-        else:
+        if props["linestyle"]:
+            style["linestyle"] = props["linestyle"]  # note: must precede 'drawstyle' setting
+        if not props["drawstyle"] or props["drawstyle"] == "auto":
             interpolationmode = t.interpolationmode if "interpolationmode" in df else None
             hasenum = "enum" in df            
             style["drawstyle"] = interpolationmode_to_drawstyle(interpolationmode, hasenum)
-        if props["linestyle"]:
-            style["linestyle"] = props["linestyle"]
+        elif props["drawstyle"] == "none":
+            style["drawstyle"] = props["default"]
+            style["linestyle"] = " "
+        else:
+            style["drawstyle"] = props["drawstyle"] if props["drawstyle"] != "linear" else "default"
         if props["linecolor"]:
             style["color"] = props["linecolor"]
         if props["linewidth"]:

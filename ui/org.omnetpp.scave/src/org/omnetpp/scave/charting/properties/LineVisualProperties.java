@@ -19,7 +19,7 @@ public class LineVisualProperties extends PropertySource {
         PROP_DISPLAY_LINE       = "Line.Display",
         PROP_SYMBOL_TYPE        = "Symbols.Type",
         PROP_SYMBOL_SIZE        = "Symbols.Size",
-        PROP_LINE_TYPE          = "Line.Type",
+        PROP_DRAW_STYLE          = "Line.DrawStyle",
         PROP_LINE_COLOR         = "Line.Color",
         PROP_LINE_STYLE         = "Line.Style",
         PROP_LINE_WIDTH         = "Line.Width";
@@ -53,7 +53,7 @@ public class LineVisualProperties extends PropertySource {
         }
     }
 
-    public enum LineType {
+    public enum DrawStyle {
         None("none", ScaveImages.IMG_OBJ16_LINE_NONE),
         Linear("linear", ScaveImages.IMG_OBJ16_LINE_LINEAR),
         Pins("pins", ScaveImages.IMG_OBJ16_LINE_PINS),
@@ -63,7 +63,7 @@ public class LineVisualProperties extends PropertySource {
         private String name;
         private String imageId;
 
-        private LineType(String name, String img) {
+        private DrawStyle(String name, String img) {
             this.name = name;
             this.imageId = img;
         }
@@ -146,11 +146,11 @@ public class LineVisualProperties extends PropertySource {
     public void setSymbolSize(Integer size) { chartProps.setProperty(propertyName(PROP_SYMBOL_SIZE), size); }
     public Integer defaultSymbolSize() { return lineId == null ? PlotDefaults.DEFAULT_SYMBOL_SIZE : null; }
 
-    @org.omnetpp.common.properties.Property(category="Lines",id=PROP_LINE_TYPE,optional=true,
+    @org.omnetpp.common.properties.Property(category="Lines",id=PROP_DRAW_STYLE,optional=true,
             description="Line drawing method. One of none, linear, pins, steps, steps-post, steps-pre.")
-    public LineType getLineType() { return chartProps.getEnumProperty(propertyName(PROP_LINE_TYPE), LineType.class); }
-    public void setLineType(LineType style) { chartProps.setProperty(propertyName(PROP_LINE_TYPE), style); }
-    public LineType defaultLineType() { return null; }
+    public DrawStyle getDrawStyle() { return chartProps.getEnumProperty(propertyName(PROP_DRAW_STYLE), DrawStyle.class); }
+    public void setDrawStyle(DrawStyle style) { chartProps.setProperty(propertyName(PROP_DRAW_STYLE), style); }
+    public DrawStyle defaultDrawStyle() { return null; }
 
     @org.omnetpp.common.properties.Property(category="Lines",id=PROP_LINE_COLOR,descriptorClass=ColorPropertyDescriptor.class,optional=true,
             description="Color of the line. Color name or #RRGGBB. Press Ctrl+Space for a list of color names.")

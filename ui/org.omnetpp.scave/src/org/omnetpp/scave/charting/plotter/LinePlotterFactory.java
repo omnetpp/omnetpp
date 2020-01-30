@@ -7,18 +7,18 @@
 
 package org.omnetpp.scave.charting.plotter;
 
-import org.omnetpp.scave.charting.properties.LineVisualProperties.LineType;
+import org.omnetpp.scave.charting.properties.LineVisualProperties.DrawStyle;
 
 public class LinePlotterFactory {
 
-    public static ILinePlotter createVectorPlotter(LineType lineType) {
-        switch (lineType) {
+    public static ILinePlotter createVectorPlotter(DrawStyle drawStyle) {
+        switch (drawStyle) {
         case None: return new NoLinePlotter();
         case Linear: return new LinearLinePlotter();
         case StepsPost: return new StepsLinePlotter(false);
         case StepsPre: return new StepsLinePlotter(true);
         case Pins: return new PinsLinePlotter();
-        default: throw new IllegalArgumentException("unknown line style: " + lineType);
+        default: throw new IllegalArgumentException("unknown line style: " + drawStyle);
         }
     }
 }
