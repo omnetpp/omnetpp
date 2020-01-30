@@ -39,6 +39,8 @@ public class RemoveAction extends AbstractScaveAction {
 
     @Override
     public boolean isApplicable(ScaveEditor editor, ISelection selection) {
+        if (!(selection instanceof IStructuredSelection))
+            return false;
         for (Object element : asStructuredOrEmpty(selection).toArray())
             if (!(element instanceof ModelObject))  //TODO || editor.isTemporaryObject((AnalysisObject)element)
                 return false;
