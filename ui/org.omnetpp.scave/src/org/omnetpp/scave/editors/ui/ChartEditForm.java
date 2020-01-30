@@ -218,6 +218,7 @@ public class ChartEditForm {
 
             if (control instanceof Combo && content != null) {
                 Combo combo = (Combo)control;
+                combo.removeAll();
                 for (String comboItem : getComboContents(content))
                     combo.add(comboItem);
             }
