@@ -374,6 +374,8 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
         return java_list
 
     def setAxisLimits(self, limits):
+        self.figure.canvas.toolbar.push_current()
+        did_change = False
         for ax in self.figure.axes:
             if len(limits) < 4:
                 break
@@ -381,8 +383,11 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
 
             ax.set_xlim(l[0], l[1])
             ax.set_ylim(l[2], l[3])
-
+            did_change = True
             limits = limits[4:]
+
+        if did_change:
+            self.figure.canvas.toolbar.push_current()
 
     def blit(self, bbox=None):
         # TODO use SHM here as well!
