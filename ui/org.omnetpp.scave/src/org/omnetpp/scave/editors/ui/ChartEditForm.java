@@ -208,6 +208,8 @@ public class ChartEditForm {
      * Creates the controls of the given tab.
      */
     protected void populateTabItem(TabItem item) {
+        // TODO: we fill each control multiple times, because we are
+        // iterating on _all_ controls in the map, for every tab the dialog has.
         for (String key : xswtWidgetMap.keySet()) {
             Control control = xswtWidgetMap.get(key);
             String content = (String)control.getData("content");

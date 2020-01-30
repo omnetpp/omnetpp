@@ -116,6 +116,7 @@ public class NativeChartViewer extends ChartViewerBase {
         if (plotViewer.isDisposed())
             return;
 
+        // TODO: do not store these if the dataset is empty!
         final double zx = plotViewer.getZoomX();
         final double zy = plotViewer.getZoomY();
         final long vt = plotViewer.getViewportTop();
