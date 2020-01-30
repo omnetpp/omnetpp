@@ -27,6 +27,7 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -211,6 +212,7 @@ public class ChartEditForm {
             Control control = xswtWidgetMap.get(key);
             String content = (String)control.getData("content");
             String isFilter = (String)control.getData("isFilter");
+            String isEnabler = (String)control.getData("isEnabler");
 
             if (control instanceof Combo && content != null) {
                 Combo combo = (Combo)control;
@@ -221,6 +223,23 @@ public class ChartEditForm {
                 // TODO: enable when it is updated to the new =~ syntax
                 // FilterContentProposalProvider filterProposalProvider = new FilterContentProposalProvider();
                 // ContentAssistUtil.configureText((Text)control, filterProposalProvider);
+            }
+            else if (control instanceof Button && isEnabler != null && isEnabler.equalsIgnoreCase("true")) {
+                Button button = (Button)control;
+
+                button.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        for (Control sibling: control.getParent().getChildren())
+                            if (sibling != control)
+                                sibling.setEnabled(button.getSelection());
+                    }
+                });
+
+                // apply initial state
+                for (Control sibling: control.getParent().getChildren())
+                    if (sibling != control)
+                        sibling.setEnabled(button.getSelection());
             }
         }
 

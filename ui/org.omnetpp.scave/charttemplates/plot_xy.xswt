@@ -95,7 +95,7 @@
       <x:children>
 
     <!-- Display Legend? -->
-    <button x:id="grid_show" text="Show grid" x:style="CHECK">
+    <button x:id="grid_show" text="Show grid" x:style="CHECK" x:id.isEnabler="true">
       <layoutData x:class="GridData" horizontalSpan="2"/>
     </button>
 
@@ -117,7 +117,7 @@
       <x:children>
 
     <!-- Display Legend? -->
-    <button x:id="legend_show" text="Show legend" x:style="CHECK">
+    <button x:id="legend_show" text="Show legend" x:style="CHECK" x:id.isEnabler="true" >
       <layoutData x:class="GridData" horizontalSpan="2"/>
     </button>
 
