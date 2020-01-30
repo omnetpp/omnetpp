@@ -199,34 +199,6 @@ def interpolationmode_to_drawstyle(interpolationmode, hasenum):
     return ds
 
 
-def interpolationmode_to_plot_params(drawstyle, interpolationmode, hasenum):
-    style = dict()
-
-    if not drawstyle or drawstyle == "auto":
-        drawstyle = interpolationmode_to_drawstyle(interpolationmode, hasenum)
-
-    if not drawstyle:
-        pass  # nothing to do
-    elif drawstyle == "dots":
-        style['linestyle'] = ' '
-        style['marker'] = '.'
-    elif drawstyle == "points":
-        style['linestyle'] = ' '
-        style['marker'] = '.'
-        style['markersize'] = 1
-    elif drawstyle == "linear":
-        pass  # nothing to do
-    elif drawstyle == 'steps-pre':
-        style['drawstyle'] = 'steps-pre'
-    elif drawstyle == "steps-mid":
-        style['drawstyle'] = 'steps-mid'
-    elif drawstyle == "steps-post":
-        style['drawstyle'] = 'steps-post'
-    else:
-        print("Unknown drawstyle:", drawstyle, file=sys.stderr)
-
-    return style
-
 def set_plot_title(title, suggested_chart_name=None):
     if chart.is_native_chart():
         plot.title(title)
@@ -235,41 +207,33 @@ def set_plot_title(title, suggested_chart_name=None):
     chart.set_suggested_chart_name(suggested_chart_name if suggested_chart_name is not None else title)
 
 def plot_vectors(df, props):
-    if chart.is_native_chart():
-        _plot_vectors_native(df, props)
-    else:
-        _plot_vectors_mpl(df, props)
-
-def _plot_vectors_native(df, props):
+    p = plot if chart.is_native_chart() else plt
+    
     preconfigure_plot(props)
 
     title_col, legend_cols = extract_label_columns(df)
 
-    drawstyle = props["drawstyle"] or "auto"
-
-    #TODO reduce differences with mpl version
     for i, t in enumerate(df.itertuples(index=False)):
-        if drawstyle == "auto":
-            linetype = interpolationmode_to_drawstyle(t.interpolationmode if "interpolationmode" in df else None, "enum" in df)
+        style = dict()
+        if props["drawstyle"] and props["drawstyle"] != "auto":
+            style["drawstyle"] = props["drawstyle"] if props["drawstyle"] != "linear" else "default"
         else:
-            linetype = props["drawstyle"] or "linear"
-        props["Line.Type/" + str(i)] = linetype
-        plot.plot_vector(make_legend_label(legend_cols, t), t.vectime, t.vecvalue, i)
-   
-    # TODO the following is almost the same as in the mpl variant
-    title = props['title'] or make_chart_title(df, title_col, legend_cols)
-    set_plot_title(title)
-
-    postconfigure_plot(props)
-
-def _plot_vectors_mpl(df, props):
-    preconfigure_plot(props)
-
-    title_col, legend_cols = extract_label_columns(df)
-
-    for t in df.itertuples(index=False):
-        style = interpolationmode_to_plot_params(props["drawstyle"], t.interpolationmode if "interpolationmode" in df else None, "enum" in df)
-        plt.plot(t.vectime, t.vecvalue, label=make_legend_label(legend_cols, t), **style)
+            interpolationmode = t.interpolationmode if "interpolationmode" in df else None
+            hasenum = "enum" in df            
+            style["drawstyle"] = interpolationmode_to_drawstyle(interpolationmode, hasenum)
+        if props["linestyle"]:
+            style["linestyle"] = props["linestyle"]
+        if props["linecolor"]:
+            style["color"] = props["linecolor"]
+        if props["linewidth"]:
+            style["linewidth"] = props["linewidth"]
+        if props["marker"] and props["marker"] != "auto":
+            style["marker"] = props["marker"]
+        if props["markersize"]:
+            style["markersize"] = props["markersize"]
+        if chart.is_native_chart():
+            style['key'] = str(i)  # khmm..
+        p.plot(t.vectime, t.vecvalue, label=make_legend_label(legend_cols, t), **style)
 
     title = props['title'] or make_chart_title(df, title_col, legend_cols)
     set_plot_title(title)
