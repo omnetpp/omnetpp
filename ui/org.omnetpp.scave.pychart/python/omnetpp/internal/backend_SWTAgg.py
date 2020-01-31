@@ -368,7 +368,8 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
         limits = list()
 
         for ax in self.figure.axes:
-            limits += [*ax.get_xlim(), *ax.get_ylim()]
+            if ax.lines or ax.collections:
+                limits += [*ax.get_xlim(), *ax.get_ylim()]
 
         java_list = ListConverter().convert(limits, Gateway.gateway._gateway_client)
         return java_list

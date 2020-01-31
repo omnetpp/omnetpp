@@ -45,6 +45,14 @@ public class NativeChartViewer extends ChartViewerBase {
         }
 
         @Override
+        public boolean isEmpty() {
+            return scalarDataset.getColumnCount() == 0
+                    && scalarDataset.getRowCount() == 0
+                    && xyDataset.getSeriesCount() == 0
+                    && histogramDataset.getSeriesCount() == 0;
+        }
+
+        @Override
         public void setProperty(String key, String value) {
             if(debug)
                 Debug.println("setProperty syncExec begin: " + key + " : " + value);
@@ -116,9 +124,10 @@ public class NativeChartViewer extends ChartViewerBase {
         if (plotViewer.isDisposed())
             return;
 
+
         // TODO: do not store these if the dataset is empty!
-        final double zx = plotViewer.getZoomX();
-        final double zy = plotViewer.getZoomY();
+        final double zx = chartPlotter.isEmpty() ? Double.NaN : plotViewer.getZoomX();
+        final double zy = chartPlotter.isEmpty() ? Double.NaN : plotViewer.getZoomY();
         final long vt = plotViewer.getViewportTop();
         final long vl = plotViewer.getViewportLeft();
 
@@ -171,10 +180,12 @@ public class NativeChartViewer extends ChartViewerBase {
                 plotViewer.setStatusText("");
                 plotViewer.update();
 
-                plotViewer.setZoomX(zx);
-                plotViewer.setZoomY(zy);
-                plotViewer.scrollVerticalTo(vt);
-                plotViewer.scrollHorizontalTo(vl);
+                if (Double.isFinite(zx)) {
+                    plotViewer.setZoomX(zx);
+                    plotViewer.setZoomY(zy);
+                    plotViewer.scrollVerticalTo(vt);
+                    plotViewer.scrollHorizontalTo(vl);
+                }
 
                 killPythonProcess();
             });

@@ -7,6 +7,8 @@ public interface INativeChartPlotter {
     void plotVectors(byte[] pickledData);
     void plotHistograms(byte[] pickledData);
 
+    boolean isEmpty();
+
     void setProperty(String key, String value);
     void setProperties(Map<String, String> properties);
 

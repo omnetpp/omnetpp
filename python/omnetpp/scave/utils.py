@@ -293,7 +293,8 @@ def postconfigure_plot(props):
     #TODO
     #plt.grid()
 
-    plt.tight_layout()
+    if not chart.is_native_chart():
+        plt.tight_layout()
 
 def legend(*args, **kwargs):
     if chart.is_native_chart():
