@@ -17,6 +17,9 @@ if not xaxis_itervar or not iso_itervar:
 # query vector data into a data frame
 df = results.get_scalars(filter_expression, include_attrs=True, include_itervars=True)
 
+df[xaxis_itervar] = pd.to_numeric(df[xaxis_itervar], errors="ignore")
+df[iso_itervar] = pd.to_numeric(df[iso_itervar], errors="ignore")
+
 if df.empty:
     plot.set_warning("Select scalars for the Y axis in the Properties dialog")
     exit(1)
@@ -35,10 +38,11 @@ legend_cols, _ = utils.extract_label_columns(df)
 
 p = plot if chart.is_native_chart() else plt
 
-p.xlabel(xaxis_itervar)
-p.ylabel(scalar_name)
 
 utils.preconfigure_plot(props)
+
+p.xlabel(xaxis_itervar)
+p.ylabel(scalar_name)
 
 for i, c in enumerate(df.columns):
     style = utils._make_line_args(props, c, df)
