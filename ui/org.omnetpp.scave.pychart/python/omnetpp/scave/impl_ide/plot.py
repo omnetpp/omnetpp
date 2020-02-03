@@ -19,6 +19,8 @@ from omnetpp.internal import Gateway
 
 from omnetpp.scave.utils import *
 
+from py4j.java_collections import MapConverter
+
 vector_data_counter = 0
 
 def _assert_is_native_chart():
@@ -45,7 +47,7 @@ def plot_bars(df):
     ))
 
 
-def plot_lines(df):  # key, label, xs, ys
+def plot_lines(df, props = dict()):  # key, label, xs, ys
     _assert_is_native_chart()
     if sorted(list(df.columns)) != sorted(["key", "label", "xs", "ys"]):
         raise RuntimeError("Invalid DataFrame format in plot_lines")
@@ -63,7 +65,7 @@ def plot_lines(df):  # key, label, xs, ys
             "ys": _put_array_in_shm(row.ys, shm_objs, mmap_objs)
         }
         for row in df.itertuples(index=False)
-    ]))
+    ]), MapConverter().convert(props, Gateway.gateway._gateway_client))
 
     # this is a no-op on Windows
     for o in shm_objs:
@@ -186,17 +188,17 @@ def _put_array_in_shm(arr, shm_objs, mmap_objs):
     return name + " " + str(arr.nbytes)
 
 
-def plot_vector(label, xs, ys, key=None):
+def plot_vector(label, xs, ys, key=None, props = dict()):
     _assert_is_native_chart()
     if key is None:
         key = label
     plot_lines(pd.DataFrame({
-        "key": [str(key)],
+        "key": [key],
         "label": [label],
         "xs": [np.array(xs)],
         "ys": [np.array(ys)]
         }
-    ))
+    ), props)
 
 
 def _plot_vectors_tuplelist(vectors):

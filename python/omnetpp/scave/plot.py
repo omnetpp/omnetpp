@@ -54,7 +54,7 @@ def plot_scalars(df_or_values, labels=None, row_label=None):
     return impl.plot_scalars(**locals())
 
 
-def plot_vector(label, xs, ys, key = None):
+def plot_vector(label, xs, ys, key = None, props = dict()):
     """
     Plots a single vector as a "native" line chart - using the
     IDE's built-in drawing widget.
@@ -72,29 +72,27 @@ def plot_vector(label, xs, ys, key = None):
     """
     return impl.plot_vector(**locals())
 
-def plot(xs, ys, key, label=None, drawstyle=None, linestyle=None, linewidth=None, color=None, marker=None, markersize=None):
+def plot(xs, ys, key=None, label=None, drawstyle=None, linestyle=None, linewidth=None, color=None, marker=None, markersize=None):
     props = {}
-    props["Line.Name/"+key] = key
     if label:
-        props["Line.Display/"+key] = label or key
+        props["Line.Name"] = label
     if drawstyle:
-        props["Line.DrawStyle/"+key] = _translate_drawstyle(drawstyle)
+        props["Line.DrawStyle"] = _translate_drawstyle(drawstyle)
     if linestyle:
-        props["Line.Style/"+key] = _translate_linestyle(linestyle)
+        props["Line.Style"] = _translate_linestyle(linestyle)
     if linewidth:
-        props["Line.Width/"+key] = str(linewidth)
+        props["Line.Width"] = str(linewidth)
     if color:
-        props["Line.Color/"+key] = _translate_color(color)
+        props["Line.Color"] = _translate_color(color)
     if marker:
-        props["Symbols.Type/"+key] = _translate_marker(marker)
+        props["Symbols.Type"] = _translate_marker(marker)
     if markersize:
-        props["Symbols.Size/"+key] = str(markersize)
+        props["Symbols.Size"] = str(markersize)
 
-    set_properties(props)
-    return plot_vector(label or key, xs, ys, key)
+    return plot_vector(label, xs, ys, key, props)
 
 def _translate_drawstyle(drawstyle):
-    #TODO accept *exactly* what mpl accepts 
+    #TODO accept *exactly* what mpl accepts
     mapping = {
         "default" : "linear",
         "steps" : "steps-post",

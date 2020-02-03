@@ -1,6 +1,7 @@
 package org.omnetpp.scave.python;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.swt.SWT;
@@ -35,8 +36,14 @@ public class NativeChartViewer extends ChartViewerBase {
         }
 
         @Override
-        public void plotVectors(byte[] pickledData) {
-            xyDataset.addVectors(pickledData);
+        public void plotVectors(byte[] pickledData, Map<String, String> props) {
+            List<String> lineKeys = xyDataset.addVectors(pickledData);
+
+            Display.getDefault().syncExec(() -> {
+                for (String lineKey : lineKeys)
+                    for (String propKey : props.keySet())
+                        plotViewer.setProperty(propKey + "/" + lineKey, props.get(propKey));
+            });
         }
 
         @Override

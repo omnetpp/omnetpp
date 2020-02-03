@@ -31,6 +31,21 @@ public class PythonXYDataset implements IXYDataset {
         }
     }
 
+    protected String generateUniqueKey() {
+        int maxKey = 0;
+        for (SeriesData sd: series) {
+            try {
+                int key = Integer.parseInt(sd.key);
+                if (key > maxKey)
+                    maxKey = key;
+            }
+            catch (Exception e) {
+                // ignore
+            }
+        }
+        return Integer.toString(maxKey + 1);
+    }
+
     ArrayList<SeriesData> series = new ArrayList<SeriesData>();
 
     public void dispose() {
@@ -54,8 +69,10 @@ public class PythonXYDataset implements IXYDataset {
             return (ByteBuffer)ScaveEngine.mapSharedMemory(name, size);
     }
 
-    public void addVectors(byte[] pickledData) {
+    public List<String> addVectors(byte[] pickledData) {
+        // TODO FIXME: should take props as parameter, and set them here instead of returning line keys
         Unpickler unpickler = new Unpickler();
+        List<String> keys = new ArrayList<String>();
 
         try {
             @SuppressWarnings("unchecked")
@@ -65,7 +82,12 @@ public class PythonXYDataset implements IXYDataset {
 
                 SeriesData seriesData = new SeriesData();
 
-                seriesData.key = (String) d.get("key");
+                String key = (String) d.get("key");
+                if (key == null)
+                    key = generateUniqueKey();
+
+                seriesData.key = key;
+                keys.add(key);
                 seriesData.title = (String) d.get("title");
 
                 String xName = (String)d.get("xs");
@@ -81,6 +103,8 @@ public class PythonXYDataset implements IXYDataset {
         catch (PickleException | IOException e) {
             ScavePlugin.logError(e);
         }
+
+        return keys;
     }
 
     @Override
