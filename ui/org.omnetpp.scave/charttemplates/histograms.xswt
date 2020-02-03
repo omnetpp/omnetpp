@@ -24,27 +24,27 @@ Show over_underflow cell?
     
     <!-- Baseline -->
     <label text="Baseline:"/>
-    <text x:id="Bars.Baseline" x:style="BORDER">
+    <text x:id="baseline" x:style="BORDER">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </text>
 
     <!-- Bar type:Solid/Outline -->
-    <label text="Bar type:"/>
-    <combo x:id="Hist.Bar" x:style="BORDER|READ_ONLY">
+    <label text="Draw style:"/>
+    <combo x:id="drawstyle" x:style="BORDER|READ_ONLY">
       <add x:p0="Solid"/>
       <add x:p0="Outline"/>
     </combo>
 
-    <!-- Data type:Count/Probability density/Cumulative density -->
-    <label text="Data type:"/>
-    <combo x:id="Hist.Data" x:style="BORDER|READ_ONLY">
-      <add x:p0="Count"/>
-      <add x:p0="Probability density"/>
-      <add x:p0="Cumulative density"/>
-    </combo>
+    <button x:id="normalize" text="Normalize" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+    
+    <button x:id="cumulative" text="Cumulative" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
 
     <!-- Show over_underflow cell? -->
-    <button x:id="Hist.ShowOverflowCell" text="Show over_underflow cell" x:style="CHECK">
+    <button x:id="show_overflows" text="Show over_underflow cell" x:style="CHECK">
       <layoutData x:class="GridData" horizontalSpan="2"/>
     </button>
 

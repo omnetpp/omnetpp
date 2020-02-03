@@ -2,6 +2,7 @@ linechart_legacy.properties
 linechart_mpl.properties
 linechart_native.properties
 histogramchart_native.properties
+histogramchart_mpl.properties
 generic_mpl.properties
 generic_xyplot_mpl.properties
 generic_xyplot_native.properties
