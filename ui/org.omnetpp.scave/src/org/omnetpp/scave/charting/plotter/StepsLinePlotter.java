@@ -21,10 +21,16 @@ import org.omnetpp.scave.charting.dataset.IXYDataset;
  */
 public class StepsLinePlotter extends LinePlotter {
 
-    boolean pre; // or post
+    public enum Mode {
+        PRE,
+        POST,
+        MID // TODO implement
+    }
 
-    public StepsLinePlotter(boolean pre) {
-        this.pre = pre;
+    Mode mode;
+
+    public StepsLinePlotter(Mode mode) {
+        this.mode = mode;
     }
 
     public boolean plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IPlotSymbol symbol, int timeLimitMillis) {
@@ -55,10 +61,11 @@ public class StepsLinePlotter extends LinePlotter {
         int origAntialias = graphics.getAntialias();
         graphics.setAntialias(SWT.OFF);
 
+        int origLineStyle = graphics.getLineStyle();
         int[] dots = new int[] {1,2};
         graphics.setLineDash(dots);
 
-        if (!prevIsNaN && pre)
+        if (!prevIsNaN && mode == Mode.PRE)
             LargeGraphics.drawPoint(graphics, prevX, prevY);
 
         long startTime = System.currentTimeMillis();
@@ -77,27 +84,53 @@ public class StepsLinePlotter extends LinePlotter {
             long x = mapping.toCanvasX(plot.transformX(dataset.getX(series, i)));
             long y = mapping.toCanvasY(value); // note: this maps +-INF to +-MAXPIX, which works out just fine here
 
+            long nextX = x;
+            if (i < dataset.getItemCount(series)-1)
+                nextX = mapping.toCanvasX(plot.transformX(dataset.getX(series, i+1)));
+
+            // nextY is not needed
+
             // for testing:
             //if (i%5==1) x = prevX;
 
             if (x != prevX) {
-                if (!isNaN && pre) {
-                    graphics.setLineStyle(SWT.LINE_SOLID);
-                    LargeGraphics.drawLine(graphics, prevX, y, x, y); // horizontal
-
-                    graphics.setLineDash(dots);
-                    if (!prevIsNaN) {
-                        LargeGraphics.drawLine(graphics, prevX, prevY, prevX, y); // vertical
-                    }
-                }
-                else if (!prevIsNaN && !pre) { // forward
-                    graphics.setLineStyle(SWT.LINE_SOLID);
-                    LargeGraphics.drawLine(graphics, prevX, prevY, x, prevY); // horizontal
-
-                    graphics.setLineDash(dots);
+                switch (mode) {
+                case MID:
                     if (!isNaN) {
-                        LargeGraphics.drawLine(graphics, x, prevY, x, y); // vertical
+                        long fromX = (prevX + x) / 2;
+                        long toX = (x + nextX) / 2;
+
+                        graphics.setLineStyle(origLineStyle);
+                        LargeGraphics.drawLine(graphics, fromX, y, toX, y); // horizontal
+
+                        graphics.setLineDash(dots);
+                        if (!prevIsNaN) {
+                            LargeGraphics.drawLine(graphics, fromX, prevY, fromX, y); // vertical
+                        }
                     }
+                    break;
+                case POST:
+                    if (!prevIsNaN) { // forward
+                        graphics.setLineStyle(origLineStyle);
+                        LargeGraphics.drawLine(graphics, prevX, prevY, x, prevY); // horizontal
+
+                        graphics.setLineDash(dots);
+                        if (!isNaN) {
+                            LargeGraphics.drawLine(graphics, x, prevY, x, y); // vertical
+                        }
+                    }
+                    break;
+                case PRE:
+                    if (!isNaN) {
+                        graphics.setLineStyle(origLineStyle);
+                        LargeGraphics.drawLine(graphics, prevX, y, x, y); // horizontal
+
+                        graphics.setLineDash(dots);
+                        if (!prevIsNaN) {
+                            LargeGraphics.drawLine(graphics, prevX, prevY, prevX, y); // vertical
+                        }
+                    }
+                    break;
                 }
 
                 minY = maxY = y;
@@ -121,12 +154,12 @@ public class StepsLinePlotter extends LinePlotter {
             prevIsNaN = isNaN;
         }
 
-        if (!prevIsNaN && !pre)
+        if (!prevIsNaN && mode == Mode.POST)
             LargeGraphics.drawPoint(graphics, prevX, prevY);
 
         // draw symbols
         graphics.setAntialias(origAntialias);
-        graphics.setLineStyle(SWT.LINE_SOLID);
+        graphics.setLineStyle(origLineStyle);
 
         int remainingTime = Math.max(0, timeLimitMillis - (int)(System.currentTimeMillis()-startTime));
         return plotSymbols(plot, series, graphics, mapping, symbol, remainingTime);

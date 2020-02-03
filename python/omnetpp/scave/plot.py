@@ -97,7 +97,7 @@ def _translate_drawstyle(drawstyle):
         "default" : "linear",
         "steps" : "steps-post",
         "steps-pre" : "steps-pre",
-        "steps-mid" : None, # "steps-mid" TODO implement
+        "steps-mid" : "steps-mid",
         "steps-post" : "steps-post",
     }
     if drawstyle not in mapping or mapping[drawstyle] is None:

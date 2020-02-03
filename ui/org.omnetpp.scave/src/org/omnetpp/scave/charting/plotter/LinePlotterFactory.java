@@ -7,6 +7,7 @@
 
 package org.omnetpp.scave.charting.plotter;
 
+import org.omnetpp.scave.charting.plotter.StepsLinePlotter.Mode;
 import org.omnetpp.scave.charting.properties.LineVisualProperties.DrawStyle;
 
 public class LinePlotterFactory {
@@ -15,8 +16,9 @@ public class LinePlotterFactory {
         switch (drawStyle) {
         case None: return new NoLinePlotter();
         case Linear: return new LinearLinePlotter();
-        case StepsPost: return new StepsLinePlotter(false);
-        case StepsPre: return new StepsLinePlotter(true);
+        case StepsPost: return new StepsLinePlotter(Mode.POST);
+        case StepsPre: return new StepsLinePlotter(Mode.PRE);
+        case StepsMid: return new StepsLinePlotter(Mode.MID);
         case Pins: return new PinsLinePlotter();
         default: throw new IllegalArgumentException("unknown line style: " + drawStyle);
         }
