@@ -65,8 +65,18 @@ public class StepsLinePlotter extends LinePlotter {
         int[] dots = new int[] {1,2};
         graphics.setLineDash(dots);
 
-        if (!prevIsNaN && mode == Mode.PRE)
-            LargeGraphics.drawPoint(graphics, prevX, prevY);
+        if (!prevIsNaN) {
+            if (mode == Mode.PRE)
+                LargeGraphics.drawPoint(graphics, prevX, prevY);
+            else if (mode == Mode.MID) {
+                // the first "half line"
+                if (first+1 < n-1) {
+                    long x = mapping.toCanvasX(plot.transformX(dataset.getX(series, first+1)));
+                    graphics.setLineStyle(origLineStyle);
+                    LargeGraphics.drawLine(graphics, prevX, prevY, (prevX + x) / 2, prevY);
+                }
+            }
+        }
 
         long startTime = System.currentTimeMillis();
 
@@ -85,7 +95,7 @@ public class StepsLinePlotter extends LinePlotter {
             long y = mapping.toCanvasY(value); // note: this maps +-INF to +-MAXPIX, which works out just fine here
 
             long nextX = x;
-            if (i < dataset.getItemCount(series)-1)
+            if (i < n-1)
                 nextX = mapping.toCanvasX(plot.transformX(dataset.getX(series, i+1)));
 
             // nextY is not needed
