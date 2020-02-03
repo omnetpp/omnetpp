@@ -259,8 +259,6 @@ def plot_vectors(df, props):
 
     for i, t in enumerate(df.itertuples(index=False)):
         style = _make_line_args(props, t, df)
-        if chart.is_native_chart():
-            style['key'] = str(i)  # khmm..
         p.plot(t.vectime, t.vecvalue, label=make_legend_label(legend_cols, t), **style)
 
     title = props['title'] or make_chart_title(df, title_col, legend_cols)
