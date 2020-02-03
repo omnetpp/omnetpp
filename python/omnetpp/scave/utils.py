@@ -232,6 +232,17 @@ def _make_line_args(props, t, df):
 
     return style
 
+def _make_histline_args(props, t, df):
+    style = dict()
+
+    if props["color"]:
+        style["color"] = props["color"]
+
+    if props["linewidth"]:
+        style["linewidth"] = props["linewidth"]
+
+    return style
+
 def set_plot_title(title, suggested_chart_name=None):
     if chart.is_native_chart():
         plot.title(title)
@@ -251,6 +262,22 @@ def plot_vectors(df, props):
         if chart.is_native_chart():
             style['key'] = str(i)  # khmm..
         p.plot(t.vectime, t.vecvalue, label=make_legend_label(legend_cols, t), **style)
+
+    title = props['title'] or make_chart_title(df, title_col, legend_cols)
+    set_plot_title(title)
+
+    postconfigure_plot(props)
+
+def plot_histograms(df, props):
+    p = plot if chart.is_native_chart() else plt
+
+    preconfigure_plot(props)
+
+    title_col, legend_cols = extract_label_columns(df)
+
+    for i, t in enumerate(df.itertuples(index=False)):
+        style = _make_histline_args(props, t, df)
+        p.hist(t.binedges[:-1], t.binedges, weights=t.binvalues, label=make_legend_label(legend_cols, t), **style)
 
     title = props['title'] or make_chart_title(df, title_col, legend_cols)
     set_plot_title(title)

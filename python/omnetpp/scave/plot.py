@@ -14,6 +14,7 @@ else:
     from .impl_charttool import plot as impl
 
 import math
+import numpy as np
 
 
 def plot_bars(df):
@@ -90,6 +91,11 @@ def plot(xs, ys, key=None, label=None, drawstyle=None, linestyle=None, linewidth
         props["Symbols.Size"] = str(markersize)
 
     return plot_vector(label, xs, ys, key, props)
+
+def hist(x, bins, density=None, weights=None, cumulative=False, bottom=None, histtype='bar', color=None, label=None, linewidth=None):
+    if not np.array_equal(x, bins[:-1]):
+        raise ValueError("TODO")
+    plot_histogram(label, bins, weights)
 
 def _translate_drawstyle(drawstyle):
     #TODO accept *exactly* what mpl accepts
