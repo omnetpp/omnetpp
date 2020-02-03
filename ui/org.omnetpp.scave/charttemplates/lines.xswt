@@ -40,8 +40,8 @@
     <combo x:id="linestyle" x:style="BORDER|READ_ONLY">
       <add x:p0="none"/>
       <add x:p0="solid"/>
-      <add x:p0="dots"/>
-      <add x:p0="dashes"/>
+      <add x:p0="dotted"/>
+      <add x:p0="dashed"/>
       <add x:p0="dashdot"/>
       <setText x:p0="solid"/>
     </combo>

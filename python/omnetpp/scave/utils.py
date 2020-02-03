@@ -185,7 +185,7 @@ def interpolationmode_to_drawstyle(interpolationmode, hasenum):
     if not interp:
         ds = "linear"
     elif interp == "none":
-        ds = "dots"
+        ds = "none"
     elif interp == "linear":
         ds = "linear"
     elif interp == "sample-hold":
@@ -209,8 +209,8 @@ def _make_line_args(props, t, df):
         hasenum = "enum" in df
         style["drawstyle"] = interpolationmode_to_drawstyle(interpolationmode, hasenum)
     elif props["drawstyle"] == "none":
-        style["drawstyle"] = props["default"]
         style["linestyle"] = " "
+        style["drawstyle"] = "default"  # or any valid value, doesn't matter
     else:
         style["drawstyle"] = props["drawstyle"] if props["drawstyle"] != "linear" else "default"
 
