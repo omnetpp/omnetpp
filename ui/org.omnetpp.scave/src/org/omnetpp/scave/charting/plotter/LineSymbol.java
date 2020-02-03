@@ -8,23 +8,23 @@
 package org.omnetpp.scave.charting.plotter;
 
 /**
- * Draws a square symbol.
+ * Draws a "line" symbol.
  *
  * @author andras
  */
-public class SquareSymbol extends PolygonSymbol {
-    public SquareSymbol(int size) {
+public class LineSymbol extends MultilineSymbol {
+
+    public LineSymbol(int size, boolean vertical) {
         super(size);
+        if (vertical)
+            rotate90(points);
     }
 
     @Override
-    protected int[] getPoints(int sizeHint) {
+    protected int[] getLines(int sizeHint) {
         int d = sizeHint/2;
         return new int[] {
-            -d, -d,
-            -d, +d,
-            +d, +d,
-            +d, -d,
+            0,  -d, 0,  d,
         };
     }
 }

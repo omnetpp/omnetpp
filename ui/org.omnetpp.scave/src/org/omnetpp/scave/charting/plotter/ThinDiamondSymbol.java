@@ -8,23 +8,25 @@
 package org.omnetpp.scave.charting.plotter;
 
 /**
- * Draws a square symbol.
+ * Draws a thin diamond symbol.
  *
  * @author andras
  */
-public class SquareSymbol extends PolygonSymbol {
-    public SquareSymbol(int size) {
+public class ThinDiamondSymbol extends PolygonSymbol {
+
+    public ThinDiamondSymbol(int size) {
+        // matplotlib only supports "vertical" thin diamond, with no rotation
         super(size);
     }
 
     @Override
     protected int[] getPoints(int sizeHint) {
-        int d = sizeHint/2;
+        int dy = (sizeHint*71+50)/100; // make same area as square; 1.41=sqrt(2) ; /2 = 0.71
+        int dx = sizeHint/2;
         return new int[] {
-            -d, -d,
-            -d, +d,
-            +d, +d,
-            +d, -d,
-        };
+                -dx,   0,
+                  0, -dy,
+                 dx,   0,
+                  0,  dy};
     }
 }

@@ -8,23 +8,31 @@
 package org.omnetpp.scave.charting.plotter;
 
 /**
- * Draws a square symbol.
+ * Draws an octagon symbol.
  *
  * @author andras
  */
-public class SquareSymbol extends PolygonSymbol {
-    public SquareSymbol(int size) {
+public class OctagonSymbol extends PolygonSymbol {
+    public OctagonSymbol(int size) {
         super(size);
     }
 
     @Override
     protected int[] getPoints(int sizeHint) {
-        int d = sizeHint/2;
+        int d2 = sizeHint/2;
+        int d4 = sizeHint/4;
         return new int[] {
-            -d, -d,
-            -d, +d,
-            +d, +d,
-            +d, -d,
+            -d2, -d4,
+            -d4, -d2,
+
+            +d4, -d2,
+            +d2, -d4,
+
+            +d2, +d4,
+            +d4, +d2,
+
+            -d4, +d2,
+            -d2, +d4,
         };
     }
 }

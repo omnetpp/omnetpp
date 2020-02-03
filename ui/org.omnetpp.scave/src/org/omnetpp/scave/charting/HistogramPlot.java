@@ -235,7 +235,7 @@ public class HistogramPlot {
     void updateLegend(ILegend legend) {
         legend.clearItems();
         IHistogramDataset dataset = canvas.getDataset();
-        IPlotSymbol symbol = new SquareSymbol();
+        IPlotSymbol symbol = new SquareSymbol(6);
         for (int series = 0; series < dataset.getSeriesCount(); ++series) {
             legend.addItem(getHistogramColor(series), dataset.getSeriesTitle(series), symbol, false);
         }

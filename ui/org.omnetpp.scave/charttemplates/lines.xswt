@@ -63,12 +63,25 @@
       <add x:p0="none"/>
       <add x:p0=". (dot)"/>
       <add x:p0=", (point)"/>
+      <add x:p0="v (triangle down)"/>
       <add x:p0="^ (triangle up)"/>
+      <add x:p0="&lt; (triangle left)"/>
+      <add x:p0="&gt; (triangle right)"/>
+      <add x:p0="1 (tri down)"/>
+      <add x:p0="2 (tri up)"/>
+      <add x:p0="3 (tri left)"/>
+      <add x:p0="4 (tri right)"/>
+      <add x:p0="| (vline)"/>
+      <add x:p0="_ (hline)"/>
+      <add x:p0="8 (octagon)"/>
       <add x:p0="s (square)"/>
+      <add x:p0="p (pentagon)"/>
+      <add x:p0="* (star)"/>
       <add x:p0="+ (plus)"/>
       <add x:p0="x (cross)"/>
       <add x:p0="D (diamond)"/>
-      <!-- TODO the rest... triangle down/left/right, tri up/down/left/right, vline/hline, etc. -->
+      <add x:p0="d (thin diamond)"/>
+      <!-- TODO the rest...  -->
       <setText x:p0="auto"/>
     </combo>
 

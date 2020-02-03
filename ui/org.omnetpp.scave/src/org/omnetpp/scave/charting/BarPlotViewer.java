@@ -138,7 +138,7 @@ public class BarPlotViewer extends PlotViewerBase {
 
     private void updateLegend(ILegend legend) {
         legend.clearItems();
-        IPlotSymbol symbol = new SquareSymbol();
+        IPlotSymbol symbol = new SquareSymbol(6);
         if (dataset != null) {
             for (int i = 0; i < dataset.getColumnCount(); ++i) {
                 legend.addItem(plot.getBarColor(i), dataset.getColumnKey(i), symbol, false);

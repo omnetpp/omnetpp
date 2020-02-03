@@ -30,10 +30,23 @@ public class LineVisualProperties extends PropertySource {
         Point("Point", ScaveImages.IMG_OBJ16_SYM_POINT),
         Cross("Cross", ScaveImages.IMG_OBJ16_SYM_CROSS),
         Diamond("Diamond", ScaveImages.IMG_OBJ16_SYM_DIAMOND),
+        ThinDiamond("thin_diamond", ScaveImages.IMG_OBJ16_SYM_DIAMOND),
         Dot("Dot", ScaveImages.IMG_OBJ16_SYM_DOT),
         Plus("Plus", ScaveImages.IMG_OBJ16_SYM_PLUS),
+        HLine("HLine", ScaveImages.IMG_OBJ16_SYM_PLUS),
+        VLine("VLine", ScaveImages.IMG_OBJ16_SYM_PLUS),
+        Octagon("Octagon", ScaveImages.IMG_OBJ16_SYM_SQUARE),
         Square("Square", ScaveImages.IMG_OBJ16_SYM_SQUARE),
-        Triangle("Triangle", ScaveImages.IMG_OBJ16_SYM_TRIANGLE);
+        Pentagon("Pentagon", ScaveImages.IMG_OBJ16_SYM_SQUARE),
+        Star("Star", ScaveImages.IMG_OBJ16_SYM_SQUARE),
+        Triangle_Up("triangle_up", ScaveImages.IMG_OBJ16_SYM_TRIANGLE),
+        Triangle_Down("triangle_down", ScaveImages.IMG_OBJ16_SYM_TRIANGLE),
+        Triangle_Left("triangle_left", ScaveImages.IMG_OBJ16_SYM_TRIANGLE),
+        Triangle_Right("triangle_right", ScaveImages.IMG_OBJ16_SYM_TRIANGLE),
+        Tri_Up("tri_up", ScaveImages.IMG_OBJ16_SYM_TRIANGLE),
+        Tri_Down("tri_down", ScaveImages.IMG_OBJ16_SYM_TRIANGLE),
+        Tri_Left("tri_left", ScaveImages.IMG_OBJ16_SYM_TRIANGLE),
+        Tri_Right("tri_right", ScaveImages.IMG_OBJ16_SYM_TRIANGLE);
 
         private String name;
         private String imageId;

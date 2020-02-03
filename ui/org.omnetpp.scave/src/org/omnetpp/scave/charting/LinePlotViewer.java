@@ -172,7 +172,7 @@ public class LinePlotViewer extends PlotViewerBase {
                 switch (series % 6) {
                 case 0: symbolType = SymbolType.Square; break;
                 case 1: symbolType = SymbolType.Dot; break;
-                case 2: symbolType = SymbolType.Triangle; break;
+                case 2: symbolType = SymbolType.Triangle_Up; break;
                 case 3: symbolType = SymbolType.Diamond; break;
                 case 4: symbolType = SymbolType.Cross; break;
                 case 5: symbolType = SymbolType.Plus; break;
