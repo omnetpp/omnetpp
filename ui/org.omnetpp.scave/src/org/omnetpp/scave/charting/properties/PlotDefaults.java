@@ -113,7 +113,7 @@ public class PlotDefaults {
     public static final DrawStyle DEFAULT_DRAW_STYLE = null; // = use interpolationmode attr of vectors
     public static final Integer DEFAULT_SYMBOL_SIZE = 4;
     public static final LineStyle DEFAULT_LINE_STYLE = LineStyle.Solid;
-    public static final Integer DEFAULT_LINE_WIDTH = 1;
+    public static final Float DEFAULT_LINE_WIDTH = 1.5f;
 
     // histogram chart
     public static final HistogramBar DEFAULT_HIST_BAR = HistogramBar.Solid;

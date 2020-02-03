@@ -165,7 +165,7 @@ class LinePlot implements ILinePlot {
                     graphics.setForegroundColor(color);
                     graphics.setBackgroundColor(color);
                     graphics.setLineStyle(props.getLineStyle().getDraw2DConstant());
-                    graphics.setLineWidth(props.getLineWidth());
+                    graphics.setLineWidthFloat(props.getLineWidth());
 
                     int remainingTime = totalTimeLimitMillis - (int)(System.currentTimeMillis() - startTime);
                     int lineTimeout = Math.min(Math.max(100, remainingTime), perLineTimeLimitMillis); // give it at least 100ms, even if time is over

@@ -111,7 +111,7 @@ public class LinePlotViewer extends PlotViewerBase {
         DrawStyle drawStyle;
         RGB lineColor;
         LineStyle lineStyle;
-        Integer lineWidth;
+        Float lineWidth;
 
         /**
          * Constructor for the defaults.
@@ -234,13 +234,13 @@ public class LinePlotViewer extends PlotViewerBase {
             this.lineStyle = lineStyle;
         }
 
-        public int getLineWidth() {
+        public float getLineWidth() {
             if (lineWidth == null && fallback != null)
                 return fallback.getLineWidth();
             return lineWidth;
         }
 
-        public void setLineWidth(Integer lineWidth) {
+        public void setLineWidth(Float lineWidth) {
             this.lineWidth = lineWidth;
         }
 
@@ -485,7 +485,7 @@ public class LinePlotViewer extends PlotViewerBase {
         else if (name.startsWith(PROP_LINE_STYLE))
             setLineStyle(getElementId(name), Converter.stringToEnum(value, LineStyle.class));
         else if (name.startsWith(PROP_LINE_WIDTH))
-            setLineWidth(getElementId(name), Converter.stringToInteger(StringUtils.substringBefore(value + ".", "."))); // FIXME proper rounding OR support float linewidth
+            setLineWidth(getElementId(name), Converter.stringToFloat(value));
         else
             super.setProperty(name, value);
     }
@@ -542,7 +542,7 @@ public class LinePlotViewer extends PlotViewerBase {
         chartChanged();
     }
 
-    public void setLineWidth(String key, Integer lineWidth) {
+    public void setLineWidth(String key, Float lineWidth) {
         LineProperties props = getOrCreateLineProperties(key);
         props.setLineWidth(lineWidth);
         chartChanged();

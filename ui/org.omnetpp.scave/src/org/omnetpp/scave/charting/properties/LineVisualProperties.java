@@ -180,8 +180,8 @@ public class LineVisualProperties extends PropertySource {
 
     @org.omnetpp.common.properties.Property(category="Lines",id=PROP_LINE_WIDTH,
             description="The line width.")
-    public Integer getLineWidth() { return chartProps.getIntegerProperty(propertyName(PROP_LINE_WIDTH), lineId==null); }
-    public void setLineWidth(Integer linewidth) { chartProps.setProperty(propertyName(PROP_LINE_WIDTH), linewidth); }
-    public Integer defaultLineWidth() { return PlotDefaults.DEFAULT_LINE_WIDTH; }
+    public Float getLineWidth() { return chartProps.getFloatProperty(propertyName(PROP_LINE_WIDTH)); }
+    public void setLineWidth(Float linewidth) { chartProps.setProperty(propertyName(PROP_LINE_WIDTH), linewidth); }
+    public Float defaultLineWidth() { return PlotDefaults.DEFAULT_LINE_WIDTH; }
 
 }

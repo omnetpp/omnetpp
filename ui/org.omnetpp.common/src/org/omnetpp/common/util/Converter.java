@@ -100,8 +100,22 @@ public class Converter {
         }
     }
 
+    public static String floatToString(Float value) {
+        return value != null ? StringConverter.asString(value) : null;
+    }
+
     public static String doubleToString(Double value) {
         return value != null ? StringConverter.asString(value) : null;
+    }
+
+    public static Float stringToFloat(String value) {
+        if (value == null)
+            return null;
+        try {
+            return StringConverter.asFloat(value);
+        } catch (DataFormatException e) {
+            return null;
+        }
     }
 
     public static Double stringToDouble(String value) {

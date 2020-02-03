@@ -273,6 +273,11 @@ public class PlotProperties extends PropertySource {
                                   null;
     }
 
+    public Float getFloatProperty(String propertyName) {
+        Double dbl = getDoubleProperty(propertyName);
+        return dbl == null ? null : dbl.floatValue();
+    }
+
     public Double getDoubleProperty(String propertyName) {
         Property property = getProperty(propertyName);
         return property != null ? Converter.stringToDouble(property.getValue()) :
@@ -324,6 +329,13 @@ public class PlotProperties extends PropertySource {
         if (defaultValue != null && defaultValue.equals(propertyValue))
             propertyValue = null;
         doSetProperty(propertyName, Converter.integerToString(propertyValue));
+    }
+
+    public void setProperty(String propertyName, Float propertyValue) {
+        Float defaultValue = getDefaultFloatProperty(propertyName);
+        if (defaultValue != null && defaultValue.equals(propertyValue))
+            propertyValue = null;
+        doSetProperty(propertyName, Converter.floatToString(propertyValue));
     }
 
     public void setProperty(String propertyName, Double propertyValue) {
@@ -378,6 +390,14 @@ public class PlotProperties extends PropertySource {
         Object defaultValue = PlotDefaults.getDefaultPropertyValue(propertyName);
         if (defaultValue instanceof Integer)
             return (Integer)defaultValue;
+        else
+            return null;
+    }
+
+    public Float getDefaultFloatProperty(String propertyName) {
+        Object defaultValue = PlotDefaults.getDefaultPropertyValue(propertyName);
+        if (defaultValue instanceof Float)
+            return (Float)defaultValue;
         else
             return null;
     }
