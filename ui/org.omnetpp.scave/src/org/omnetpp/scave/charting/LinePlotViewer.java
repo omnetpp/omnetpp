@@ -485,7 +485,7 @@ public class LinePlotViewer extends PlotViewerBase {
         else if (name.startsWith(PROP_LINE_STYLE))
             setLineStyle(getElementId(name), Converter.stringToEnum(value, LineStyle.class));
         else if (name.startsWith(PROP_LINE_WIDTH))
-            setLineWidth(getElementId(name), Converter.stringToInteger(value));
+            setLineWidth(getElementId(name), Converter.stringToInteger(StringUtils.substringBefore(value + ".", "."))); // FIXME proper rounding OR support float linewidth
         else
             super.setProperty(name, value);
     }
