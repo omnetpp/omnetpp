@@ -55,7 +55,7 @@ public abstract class PolygonSymbol extends PlotSymbol {
                 work[i+1] = y + points[i+1];
             }
             graphics.setBackgroundColor(graphics.getForegroundColor());
-            LargeGraphics.fillPolygon(graphics, work);  //XXX make filled/unfilled version
+            LargeGraphics.fillSmallPolygon(graphics, work);  //XXX make filled/unfilled version
         }
     }
 }

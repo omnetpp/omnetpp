@@ -71,6 +71,13 @@ public class LargeGraphics {
             graphics.drawLine(toIntCoordinate(points[0]), toIntCoordinate(points[1]), toIntCoordinate(points[2]), toIntCoordinate(points[3]));
     }
 
+    // only checking if the first point is within the technical bounds,
+    // without clipping the actual line
+    public static void drawSmallLine(Graphics graphics, long x1, long y1, long x2, long y2) {
+        if (validCoordinate(x1) && validCoordinate(y1))
+            graphics.drawLine(toIntCoordinate(x1), toIntCoordinate(y1), toIntCoordinate(x2), toIntCoordinate(y2));
+    }
+
     public static void drawRectangle(Graphics graphics, long x, long y, long width, long height) {
         long[] points = clipRectangle(x, y, width, height, MIN_COORDINATE, MIN_COORDINATE, MAX_COORDINATE, MAX_COORDINATE, buffer);
         if (points != null)
@@ -110,6 +117,13 @@ public class LargeGraphics {
     public static void fillPolygon(Graphics graphics, long[] points) {
         points = SutherlandHodgman.clipPolygon(points, true, MIN_COORDINATE, MIN_COORDINATE, MAX_COORDINATE, MAX_COORDINATE);
         if (points != null)
+            graphics.fillPolygon(toIntCoordinates(points));
+    }
+
+    // only checking if the first point is within the technical bounds,
+    // without clipping the actual shape
+    public static void fillSmallPolygon(Graphics graphics, long[] points) {
+        if (validCoordinate(points[0]) && validCoordinate(points[1]))
             graphics.fillPolygon(toIntCoordinates(points));
     }
 

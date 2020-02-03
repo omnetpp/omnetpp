@@ -55,7 +55,7 @@ public abstract class MultilineSymbol extends PlotSymbol {
             }
             graphics.setBackgroundColor(graphics.getForegroundColor());
             for (int i = 0; i < work.length; i += 4)
-                LargeGraphics.drawLine(graphics, work[i], work[i+1], work[i+2], work[i+3]);
+                LargeGraphics.drawSmallLine(graphics, work[i], work[i+1], work[i+2], work[i+3]);
         }
     }
 }
