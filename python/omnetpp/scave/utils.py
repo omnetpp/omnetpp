@@ -250,6 +250,33 @@ def set_plot_title(title, suggested_chart_name=None):
         plt.title(title)
     chart.set_suggested_chart_name(suggested_chart_name if suggested_chart_name is not None else title)
 
+def plot_bars(df, props, names=None):
+    p = plot if chart.is_native_chart() else plt
+
+    preconfigure_plot(props)
+
+    ind = np.arange(len(df.index))  # the x locations for the groups
+    width = 0.8 / len(df.columns)  # the width of the bars
+
+    ax = plt.gca()
+    for i, column in enumerate(df):
+        p.bar(ind - 0.4 + width*i + width * 0.5, df[column], width, label=column)
+
+    # Add some text for labels, title and custom x-axis tick labels, etc.
+    groups = props["groups"].split(",")
+    series = props["series"].split(",")
+
+    if not chart.is_native_chart():
+        ax.set_xticks(ind)
+        ax.set_xticklabels(df.index)
+
+    p.xlabel(df.index.names[0])
+    if names:
+        p.ylabel(", ".join(names))
+        set_plot_title(", ".join(names) + " by " + ", ".join(groups+series))
+
+    postconfigure_plot(props)
+
 def plot_vectors(df, props):
     p = plot if chart.is_native_chart() else plt
     
