@@ -45,6 +45,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.util.Converter;
 import org.omnetpp.scave.charting.properties.BarPlotVisualProperties.BarPlacement;
 import org.omnetpp.scave.charting.properties.HistogramPlotProperties.HistogramBar;
 import org.omnetpp.scave.charting.properties.HistogramPlotProperties.HistogramDataType;
@@ -168,8 +169,12 @@ public class PlotDefaults {
         defaults.put(PROP_SHOW_OVERFLOW_CELL, DEFAULT_SHOW_OVERFLOW_CELL);
     }
 
+    public static String getDefaultPropertyValueAsString(String propertyName) {
+        return Converter.objectToString(getDefaultPropertyValue(propertyName));
+    }
+
     public static Object getDefaultPropertyValue(String propertyName) {
-        return defaults.get(getBasePropertyName(propertyName)); //XXX Assert if not found?
+        return defaults.get(getBasePropertyName(propertyName));
     }
 
     public static String getBasePropertyName(String propertyName) {

@@ -306,7 +306,7 @@ public class ChartEditForm {
             Property chartProperty = chart.lookupProperty(k);
             String chartValueString = chartProperty == null ? null : chartProperty.getValue();
             String formValueString = Converter.objectToString(value);
-            String defaultString = Converter.objectToString(PlotDefaults.getDefaultPropertyValue(k));
+            String defaultString = PlotDefaults.getDefaultPropertyValueAsString(k);
 
             if (formValueString.equals(defaultString))
                 result.put(k, null);
