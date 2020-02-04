@@ -8,15 +8,15 @@
 package org.omnetpp.scave.charting;
 
 import static org.omnetpp.scave.charting.properties.BarPlotVisualProperties.PROP_BAR_BASELINE;
+import static org.omnetpp.scave.charting.properties.HistogramPlotProperties.PROP_HIST_BAR;
+import static org.omnetpp.scave.charting.properties.HistogramPlotProperties.PROP_HIST_DATA;
+import static org.omnetpp.scave.charting.properties.HistogramPlotProperties.PROP_SHOW_OVERFLOW_CELL;
+import static org.omnetpp.scave.charting.properties.HistogramVisualProperties.PROP_HIST_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_BAR_BASELINE;
 import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_LABELS_FONT;
 import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_Y_AXIS_TITLE;
-import static org.omnetpp.scave.charting.properties.HistogramPlotProperties.PROP_HIST_BAR;
-import static org.omnetpp.scave.charting.properties.HistogramPlotProperties.PROP_HIST_DATA;
-import static org.omnetpp.scave.charting.properties.HistogramPlotProperties.PROP_SHOW_OVERFLOW_CELL;
-import static org.omnetpp.scave.charting.properties.HistogramVisualProperties.PROP_HIST_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_AXIS_TITLE_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LABEL_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_AXIS_TITLE;
@@ -41,10 +41,9 @@ import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IHistogramDataset;
-import org.omnetpp.scave.charting.properties.PlotDefaults;
-import org.omnetpp.scave.charting.properties.HistogramPlotProperties;
 import org.omnetpp.scave.charting.properties.HistogramPlotProperties.HistogramBar;
 import org.omnetpp.scave.charting.properties.HistogramPlotProperties.HistogramDataType;
+import org.omnetpp.scave.charting.properties.PlotDefaults;
 import org.omnetpp.scave.python.PythonHistogramDataset;
 
 public class HistogramPlotViewer extends PlotViewerBase {
@@ -57,7 +56,7 @@ public class HistogramPlotViewer extends PlotViewerBase {
     private LinearAxis yAxis = new LinearAxis(true, DEFAULT_Y_AXIS_LOGARITHMIC, false);
     private HistogramPlot plot;
 
-    private PropertyMap<HistogramProperties> properties = new PropertyMap<HistogramProperties>(HistogramProperties.class);
+    private PropertyMap<HistogramProperties> histogramProperties = new PropertyMap<HistogramProperties>(HistogramProperties.class);
     static class HistogramProperties {
         RGB color;
     }
@@ -130,7 +129,7 @@ public class HistogramPlotViewer extends PlotViewerBase {
     @Override
     public void clear() {
         super.clear();
-        properties.clear();
+        histogramProperties.clear();
         setDataset(new PythonHistogramDataset(null));
     }
 
@@ -207,14 +206,14 @@ public class HistogramPlotViewer extends PlotViewerBase {
     }
 
     public RGB getHistogramColor(String key) {
-        HistogramProperties histProps = properties.getProperties(key);
+        HistogramProperties histProps = histogramProperties.getProperties(key);
         if (histProps == null || histProps.color == null)
-            histProps = properties.getDefaultProperties();
+            histProps = histogramProperties.getDefaultProperties();
         return histProps != null ? histProps.color : null;
     }
 
     public void setHistogramColor(String key, RGB color) {
-        HistogramProperties histProps = properties.getOrCreateProperties(key);
+        HistogramProperties histProps = histogramProperties.getOrCreateProperties(key);
         histProps.color = color;
         updateLegends();
         chartChanged();

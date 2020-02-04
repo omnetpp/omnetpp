@@ -68,7 +68,7 @@ public class BarPlotViewer extends PlotViewerBase {
     private DomainAxis domainAxis = new DomainAxis(this);
     private BarPlot plot;
 
-    private PropertyMap<BarProperties> properties = new PropertyMap<BarProperties>(BarProperties.class);
+    private PropertyMap<BarProperties> barProperties = new PropertyMap<BarProperties>(BarProperties.class);
     static class BarProperties {
         RGB color;
     }
@@ -183,7 +183,7 @@ public class BarPlotViewer extends PlotViewerBase {
     @Override
     public void clear() {
         super.clear();
-        properties.clear();
+        barProperties.clear();
         setDataset(new PythonScalarDataset(null));
     }
 
@@ -295,14 +295,14 @@ public class BarPlotViewer extends PlotViewerBase {
     }
 
     public RGB getBarColor(String key) {
-        BarProperties barProps = properties.getProperties(key);
+        BarProperties barProps = barProperties.getProperties(key);
         if (barProps == null || barProps.color == null)
-            barProps = properties.getDefaultProperties();
+            barProps = barProperties.getDefaultProperties();
         return barProps != null ? barProps.color : null;
     }
 
     public void setBarColor(String key, RGB color) {
-        BarProperties barProps = properties.getOrCreateProperties(key);
+        BarProperties barProps = barProperties.getOrCreateProperties(key);
         barProps.color = color;
         updateLegends();
         chartChanged();
