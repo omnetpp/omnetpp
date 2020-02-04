@@ -19,12 +19,12 @@
       <x:children>
 
         <label text="Itervar for X axis:"/>
-        <combo x:id="xaxis_itervar" x:id.content="itervarnames" x:style="BORDER">
+        <combo x:id="xaxis_itervar" x:id.content="$itervarnames" x:style="BORDER">
             <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
         </combo>
 
         <label text="Itervar for iso lines:"/>
-        <combo x:id="iso_itervar" x:id.content="itervarnames" x:style="BORDER">
+        <combo x:id="iso_itervar" x:id.content="$itervarnames" x:style="BORDER">
             <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
         </combo>
          

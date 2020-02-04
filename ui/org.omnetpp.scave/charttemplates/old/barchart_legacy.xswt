@@ -23,12 +23,12 @@
             </text>
 
             <label text="Groups:"/>
-            <combo x:id="groups" x:style="BORDER" x:id.content="itervarnames,runattrnames"> 
+            <combo x:id="groups" x:style="BORDER" x:id.content="$itervarnames,$runattrnames"> 
                 <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
             </combo>
 
             <label text="Bars:"/>
-            <combo x:id="bars" x:style="BORDER" x:id.content="itervarnames,runattrnames"> 
+            <combo x:id="bars" x:style="BORDER" x:id.content="$itervarnames,$runattrnames"> 
                 <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
             </combo>
             

@@ -23,17 +23,17 @@
             </text>
 
             <label text="Filter for X axis data:"/>
-            <combo x:id="xaxis_filter" x:id.content="scalarnames,itervarnames,runattrnames" x:style="BORDER">
+            <combo x:id="xaxis_filter" x:id.content="$scalarnames,$itervarnames,$runattrnames" x:style="BORDER">
                 <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
             </combo>
 
             <label text="Filter for Y axis data:"/>
-            <combo x:id="yaxis_filter" x:id.content="scalarnames,itervarnames,runattrnames" x:style="BORDER">
+            <combo x:id="yaxis_filter" x:id.content="$scalarnames,$itervarnames,$runattrnames" x:style="BORDER">
                 <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
             </combo>
 
             <label text="Filter for iso line data:"/>
-            <combo x:id="iso_filter" x:id.content="scalarnames,itervarnames,runattrnames" x:style="BORDER">
+            <combo x:id="iso_filter" x:id.content="$scalarnames,$itervarnames,$runattrnames" x:style="BORDER">
                 <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
             </combo>
       </x:children>

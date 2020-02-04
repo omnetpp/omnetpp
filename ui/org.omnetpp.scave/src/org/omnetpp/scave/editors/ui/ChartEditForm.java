@@ -161,41 +161,49 @@ public class ChartEditForm {
         ResultFileManager.callWithReadLock(manager, () -> {
 
             for (String part : contentString.split(",")) {
-                switch (part) {
-                case "scalarnames":
-                    for (String name : manager.getUniqueNames(manager.getAllScalars(false, false)).keys().toArray())
-                        result.add(name);
-                    break;
-                case "vectornames":
-                    for (String name : manager.getUniqueNames(manager.getAllVectors()).keys().toArray())
-                        result.add(name);
-                    break;
-                case "histogramnames":
-                    for (String name : manager.getUniqueNames(manager.getAllHistograms()).keys().toArray())
-                        result.add(name);
-                    break;
-                case "statisticnames":
-                    for (String name : manager.getUniqueNames(manager.getAllStatistics()).keys().toArray())
-                        result.add(name);
-                    break;
-                case "itervarnames":
-                    Set<String> itervars = new HashSet<String>();
+                if (part.startsWith("$")) {
+                    switch (part) {
+                    case "$scalarnames":
+                        for (String name : manager.getUniqueNames(manager.getAllScalars(false, false)).keys().toArray())
+                            result.add(name);
+                        break;
+                    case "$vectornames":
+                        for (String name : manager.getUniqueNames(manager.getAllVectors()).keys().toArray())
+                            result.add(name);
+                        break;
+                    case "$histogramnames":
+                        for (String name : manager.getUniqueNames(manager.getAllHistograms()).keys().toArray())
+                            result.add(name);
+                        break;
+                    case "$statisticnames":
+                        for (String name : manager.getUniqueNames(manager.getAllStatistics()).keys().toArray())
+                            result.add(name);
+                        break;
+                    case "$itervarnames":
+                        Set<String> itervars = new HashSet<String>();
 
-                    for (Run run : manager.getRuns().toArray())
-                        for (String itervar : run.getIterationVariables().keys().toArray())
-                            itervars.add(itervar);
+                        for (Run run : manager.getRuns().toArray())
+                            for (String itervar : run.getIterationVariables().keys().toArray())
+                                itervars.add(itervar);
 
-                    result.addAll(itervars);
-                    break;
-                case "runattrnames":
-                    Set<String> runattrs = new HashSet<String>();
+                        result.addAll(itervars);
+                        break;
+                    case "$runattrnames":
+                        Set<String> runattrs = new HashSet<String>();
 
-                    for (Run run : manager.getRuns().toArray())
-                        for (String runattr : run.getAttributes().keys().toArray())
-                            runattrs.add(runattr);
+                        for (Run run : manager.getRuns().toArray())
+                            for (String runattr : run.getAttributes().keys().toArray())
+                                runattrs.add(runattr);
 
-                    result.addAll(runattrs);
-                    break;
+                        result.addAll(runattrs);
+                        break;
+                    default:
+                        result.add("Unknown: " + part);
+                        break;
+                    }
+                }
+                else {
+                    result.add(part);
                 }
             }
             return null; // unused
