@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xswt xmlns:x='http://sweet_swt.sf.net/xswt'>
+  <import xmlns='http://sweet_swt.sf.net/xswt'>
+    <package name='java.lang'/>
+    <package name='org.eclipse.swt.widgets' />
+    <package name='org.eclipse.swt.graphics' />
+    <package name='org.eclipse.swt.layout' />
+    <package name='org.eclipse.swt.custom' />
+  </import>
+  <layout x:class='GridLayout' numColumns='1'/>
+  <x:children>
+    <group text=''>
+
+      <layoutData x:class='GridData' horizontalAlignment='FILL' verticalAlignment='FILL' grabExcessHorizontalSpace='true' grabExcessVerticalSpace="true"/>
+      <layout x:class='GridLayout' numColumns='2'/>
+
+      <x:children>
+            <label text="Filter expression:">
+            	<layoutData x:class="GridData" horizontalAlignment="BEGINNING" verticalAlignment="BEGINNING"/>
+            </label>
+            <text x:id="filter" x:style="BORDER|WRAP|MULTI" x:id.isFilter="true"> 
+                <layoutData x:class="GridData" horizontalAlignment="FILL" verticalAlignment="FILL" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true"/>
+            </text>
+
+            <label text="Groups:"/>
+            <combo x:id="groups" x:style="BORDER" x:id.content="$itervarnames,$runattrnames"> 
+                <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+            </combo>
+
+            <label text="Bars:"/>
+            <combo x:id="bars" x:style="BORDER" x:id.content="$itervarnames,$runattrnames"> 
+                <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+            </combo>
+            
+            <label text="Averaged:"/>
+            <combo x:id="averaged" x:style="BORDER" x:id.content="$itervarnames,$runattrnames"> 
+                <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+            </combo>
+            
+      </x:children>
+    </group>
+  </x:children>
+</xswt>

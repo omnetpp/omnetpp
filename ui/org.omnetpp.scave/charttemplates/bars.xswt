@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2"/>
+
+  <x:children>
+
+    <!-- Baseline -->
+    <label text="Baseline:"/>
+    <text x:id="baseline" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <!-- Bar placement:Aligned/Overlap/InFront/Stacked -->
+    <label text="Bar placement:"/>
+    <combo x:id="bar_placement" x:style="BORDER|READ_ONLY">
+      <add x:p0="Aligned"/>
+      <add x:p0="Overlap"/>
+      <add x:p0="InFront"/>
+      <add x:p0="Stacked"/>
+    </combo>
+    
+
+  </x:children>
+</xswt>

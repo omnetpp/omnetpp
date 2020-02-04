@@ -104,6 +104,11 @@
       <add x:p0="90"/>
     </combo>
 
+        <!-- Border? -->
+    <button x:id="X.Label.Wrap" text="Wrap labels" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
     <!-- } -->
       </x:children>
     </group>

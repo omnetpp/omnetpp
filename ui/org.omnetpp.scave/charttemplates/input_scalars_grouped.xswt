@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang" />
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2" />
+  <x:children>
+    <label text="Filter expression:" >
+        <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </label>
+    
+    <text x:id="filter" x:style="BORDER|MULTI" x:id.isFilter="true">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true" />
+    </text>
+    
+    <label text="Multiple attributes can be selected in both fields below, separated by commas.">
+        <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </label>
+    
+    <label text="Groups:"/>
+    <combo x:id="groups" x:style="BORDER" x:id.content="module,name,experiment,module+name,$itervarnames,$runattrnames"> 
+        <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </combo>
+
+    <label text="Series:"/>
+    <combo x:id="series" x:style="BORDER" x:id.content="module,name,experiment,module+name,$itervarnames,$runattrnames"> 
+        <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </combo>
+    
+    <label text="Scalar values will be averaged across all attributes not selected above.">
+        <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </label>
+    
+  </x:children>
+</xswt>
