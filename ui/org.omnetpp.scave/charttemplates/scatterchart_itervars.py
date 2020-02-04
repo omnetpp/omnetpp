@@ -4,6 +4,7 @@ from omnetpp.scave import results, chart, utils, plot, vectorops as ops
 
 # get chart properties
 props = chart.get_properties()
+utils.preconfigure_plot(props)
 
 # collect parameters for query
 filter_expression = props["filter"]
@@ -39,15 +40,11 @@ legend_cols, _ = utils.extract_label_columns(df)
 p = plot if chart.is_native_chart() else plt
 
 
-utils.preconfigure_plot(props)
-
 p.xlabel(xaxis_itervar)
 p.ylabel(scalar_name)
 
 for i, c in enumerate(df.columns):
     style = utils._make_line_args(props, c, df)
-    if chart.is_native_chart():
-        style['key'] = str(i)  # khmm..
     p.plot(pd.to_numeric(df.index.values), df[c].values, label=iso_itervar + "=" + str(df[c].name), **style)
 
 utils.set_plot_title(scalar_name + " vs. " + xaxis_itervar)

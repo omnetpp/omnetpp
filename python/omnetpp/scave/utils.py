@@ -253,8 +253,6 @@ def set_plot_title(title, suggested_chart_name=None):
 def plot_bars(df, props, names=None):
     p = plot if chart.is_native_chart() else plt
 
-    preconfigure_plot(props)
-
     ind = np.arange(len(df.index))  # the x locations for the groups
     width = 0.8 / len(df.columns)  # the width of the bars
 
@@ -275,12 +273,8 @@ def plot_bars(df, props, names=None):
         p.ylabel(", ".join(names))
         set_plot_title(", ".join(names) + " by " + ", ".join(groups+series))
 
-    postconfigure_plot(props)
-
 def plot_vectors(df, props):
     p = plot if chart.is_native_chart() else plt
-    
-    preconfigure_plot(props)
 
     title_col, legend_cols = extract_label_columns(df)
 
@@ -291,12 +285,8 @@ def plot_vectors(df, props):
     title = props['title'] or make_chart_title(df, title_col, legend_cols)
     set_plot_title(title)
 
-    postconfigure_plot(props)
-
 def plot_histograms(df, props):
     p = plot if chart.is_native_chart() else plt
-
-    preconfigure_plot(props)
 
     title_col, legend_cols = extract_label_columns(df)
 
@@ -306,8 +296,6 @@ def plot_histograms(df, props):
 
     title = props['title'] or make_chart_title(df, title_col, legend_cols)
     set_plot_title(title)
-
-    postconfigure_plot(props)
 
 def preconfigure_plot(props):
     if chart.is_native_chart():

@@ -3,6 +3,7 @@ from omnetpp.scave import results, chart, utils, vectorops as ops
 
 # get chart properties
 props = chart.get_properties()
+utils.preconfigure_plot(props)
 
 # collect parameters for query 
 filter_expression = props["filter"]
@@ -17,3 +18,5 @@ df = ops.perform_vector_ops(df, props["vector_operations"])
 
 # plot
 utils.plot_vectors(df, props)
+
+utils.postconfigure_plot(props)

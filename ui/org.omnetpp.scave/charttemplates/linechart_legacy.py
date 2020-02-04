@@ -1,6 +1,7 @@
 from omnetpp.scave import results, chart, utils, plot, vectorops as ops
 
 params = chart.get_properties()
+utils.preconfigure_plot(props)
 
 # This expression selects the results (you might be able to logically simplify it)
 
@@ -18,4 +19,4 @@ print(df)
 # Finally, the results are plotted
 plot.plot_vectors(df)
 
-plot.set_properties(chart.get_properties())
+utils.postconfigure_plot(props)

@@ -3,6 +3,7 @@ from omnetpp.scave import results, chart, plot, utils
 
 # get chart properties
 props = chart.get_properties()
+utils.preconfigure_plot(props)
 
 if not props["groups"] or not props["series"]:
     plot.set_warning("Please select group and series attributes in the Properties dialog!")
@@ -26,3 +27,5 @@ names = df["title" if "title" in df else "name"].unique()
 df = pd.pivot_table(df, index=groups, columns=series, values='value')
 
 utils.plot_bars(df, props, names=names)
+
+utils.postconfigure_plot(props)

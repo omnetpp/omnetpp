@@ -2,6 +2,7 @@ from omnetpp.scave import results, chart, utils
 
 # get chart properties
 props = chart.get_properties()
+utils.preconfigure_plot(props)
 
 # collect parameters for query
 filter_expression = props["filter"]
@@ -11,3 +12,4 @@ df = results.get_histograms(filter_expression, include_attrs=True, include_iterv
 
 # plot
 utils.plot_histograms(df, props)
+utils.postconfigure_plot(props)
