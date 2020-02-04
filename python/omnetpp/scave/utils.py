@@ -256,7 +256,6 @@ def plot_bars(df, props, names=None):
     ind = np.arange(len(df.index))  # the x locations for the groups
     width = 0.8 / len(df.columns)  # the width of the bars
 
-    ax = plt.gca()
     for i, column in enumerate(df):
         p.bar(ind - 0.4 + width*i + width * 0.5, df[column], width, label=column)
 
@@ -265,8 +264,9 @@ def plot_bars(df, props, names=None):
     series = props["series"].split(",")
 
     if not chart.is_native_chart():
+        ax = plt.gca()
         ax.set_xticks(ind)
-        ax.set_xticklabels(df.index)
+        ax.set_xticklabels(df.index, rotation=30, horizontalalignment="right")
 
     p.xlabel(df.index.names[0])
     if names:

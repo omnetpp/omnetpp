@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
+import org.eclipse.core.runtime.Assert;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.dataset.IScalarDataset;
 
@@ -28,8 +29,15 @@ public class PythonScalarDataset implements IScalarDataset {
         try {
             Map<String, Object> data = (Map<String, Object>)unpickler.loads(pickledData);
 
-            rowKeys = (ArrayList<String>)data.get("rowKeys");
-            columnKeys = (ArrayList<String>)data.get("columnKeys");
+            ArrayList<String> rowKeys = (ArrayList<String>)data.get("rowKeys");
+            ArrayList<String> columnKeys = (ArrayList<String>)data.get("columnKeys");
+
+            if (this.rowKeys.isEmpty())
+                this.rowKeys = rowKeys;
+
+            Assert.isTrue(this.rowKeys.equals(rowKeys));
+
+            this.columnKeys.addAll(columnKeys);
 
             double[] doubleValues = ResultPicklingUtils.bytesToDoubles((byte[])data.get("values"));
 

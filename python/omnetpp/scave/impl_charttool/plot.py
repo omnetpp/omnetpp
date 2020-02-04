@@ -154,3 +154,37 @@ def plot_histograms(df):
 def set_warning(warning):
     # TODO this might not always work, depending on whether it's called before or after plotting?
     plt.annotate(warning, xy=(20, 40), xycoords="figure pixels", color="red")
+
+def plot(xs, ys, key=None, label=None, drawstyle=None, linestyle=None, linewidth=None, color=None, marker=None, markersize=None):
+    return plt.plot(**locals())
+
+def hist(x, bins, density=None, weights=None, cumulative=False, bottom=None, histtype='bar', color=None, label=None, linewidth=None):
+    return plt.hist(**locals())
+
+def bar(x, height, width=0.8, label=None):
+    return plt.bar(**locals())
+
+def title(str):
+    plt.title(**locals())
+
+def xlabel(str):
+    plt.xlabel(**locals())
+
+def ylabel(str):
+    plt.ylabel(**locals())
+
+def xlim(left=None, right=None):
+    plt.xlim(**locals())
+
+def ylim(left=None, right=None):
+    plt.ylim(**locals())
+
+def xscale(value):
+    plt.xscale(**locals())
+
+def yscale(value):
+    plt.yscale(**locals())
+
+def legend(show=None, frameon=None, loc=None):
+    plt.legend(**locals())
+

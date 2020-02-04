@@ -50,8 +50,10 @@ def _make_chart(i, c):
     script = c.get('script') if 'script' in c.keys() else c.text
 
     sn = c.find('script')
-    if sn is not None:
+    if sn is not None and sn.text is not None:
         script = sn.text.strip() # should get the CDATA contents instead, but shouldn't matter much
+    else:
+        script = ""
 
     props = { p.get('name') : p.get('value') for p in c.findall('property') }
     return Chart(i, c.get('type'), c.get('name'), script, props)

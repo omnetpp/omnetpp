@@ -74,99 +74,13 @@ def plot_vector(label, xs, ys, key = None, props = dict()):
     return impl.plot_vector(**locals())
 
 def plot(xs, ys, key=None, label=None, drawstyle=None, linestyle=None, linewidth=None, color=None, marker=None, markersize=None):
-    props = {}
-    if label:
-        props["Line.Name"] = label
-    if drawstyle:
-        props["Line.DrawStyle"] = _translate_drawstyle(drawstyle)
-    if linestyle:
-        props["Line.Style"] = _translate_linestyle(linestyle)
-    if linewidth:
-        props["Line.Width"] = str(linewidth)
-    if color:
-        props["Line.Color"] = _translate_color(color)
-    if marker:
-        props["Symbols.Type"] = _translate_marker(marker)
-    if markersize:
-        props["Symbols.Size"] = str(markersize)
-
-    return plot_vector(label, xs, ys, key, props)
+    return impl.plot(**locals())
 
 def hist(x, bins, density=None, weights=None, cumulative=False, bottom=None, histtype='bar', color=None, label=None, linewidth=None):
-    if not np.array_equal(x, bins[:-1]):
-        raise ValueError("TODO")
-    plot_histogram(label, bins, weights)
+    return impl.hist(**locals())
 
-def _translate_drawstyle(drawstyle):
-    #TODO accept *exactly* what mpl accepts
-    mapping = {
-        "default" : "linear",
-        "steps" : "steps-post",
-        "steps-pre" : "steps-pre",
-        "steps-mid" : "steps-mid",
-        "steps-post" : "steps-post",
-    }
-    if drawstyle not in mapping or mapping[drawstyle] is None:
-        raise ValueError("Unrecognized drawstyle '{}'".format(drawstyle))
-    return mapping[drawstyle]
-
-def _translate_linestyle(linestyle):
-    if linestyle in ["none", "solid", "dashed", "dashdot", "dotted"]:
-        return linestyle
-    mapping = {
-        ' '  : "none",
-        '-'  : "solid",
-        '--' : "dashed",
-        '-.' : "dashdot",
-        ':'  : "dotted",
-    }
-    if linestyle not in mapping:
-        raise ValueError("Unrecognized linestyle '{}'".format(linestyle))
-    return mapping[linestyle]
-
-def _translate_color(color):
-    mapping = {
-        "b" : "blue",
-        "g" : "green",
-        "r" : "red",
-        "c" : "cyan",
-        "m" : "magenta",
-        "y" : "yellow",
-        "k" : "black",
-        "w" : "white"
-    }
-    return mapping[color] if color in mapping else color
-
-def _translate_marker(marker):
-    mapping = {
-        ' ' : "none",
-        '.' : "dot",
-        ',' : "point",
-        'o' : None, # TODO "circle",
-        'v' : "triangle_down",
-        '^' : "triangle_up",
-        '<' : "triangle_left",
-        '>' : "triangle_right",
-        '1' : "tri_down",
-        '2' : "tri_up",
-        '3' : "tri_left",
-        '4' : "tri_right",
-        '8' : "octagon",
-        's' : "square",
-        'p' : "pentagon",
-        '*' : "star",
-        'h' : None, # TODO "hexagon1",
-        'H' : None, # TODO "hexagon2",
-        '+' : "plus",
-        'x' : "cross",
-        'D' : "diamond",
-        'd' : "thin_diamond",
-        '|' : "vline",
-        '_' : "hline"
-    }
-    if marker not in mapping or mapping[marker] is None:
-        raise ValueError("Unrecognized marker '{}'".format(marker))
-    return mapping[marker]
+def bar(x, height, width=0.8, label=None):
+    return impl.bar(**locals())
 
 def plot_vectors(df_or_list):
     """
@@ -280,95 +194,49 @@ def set_warning(warning):
     """
     impl.set_warning(**locals())
 
+
 def title(str):
     """
     Sets plot title.
     """
-    set_property("Plot.Title", str)
+    impl.title(**locals())
 
 def xlabel(str):
     """
     Sets the label of the X axis.
     """
-    set_property("X.Axis.Title", str)
+    impl.xlabel(**locals())
 
 def ylabel(str):
     """
     Sets the label of the Y axis.
     """
-    set_property("Y.Axis.Title", str)
+    impl.ylabel(**locals())
 
 def xlim(left=None, right=None):
     """
     Sets the limits of the X axis.
     """
-    if (left is not None):
-        set_property("X.Axis.Min", str(left))
-    if (right is not None):
-        set_property("X.Axis.Max", str(right))
+    impl.xlim(**locals())
 
 def ylim(left=None, right=None):
     """
     Sets the limits of the Y axis.
     """
-    if (left is not None):
-        set_property("Y.Axis.Min", str(left))
-    if (right is not None):
-        set_property("Y.Axis.Max", str(right))
+    impl.ylim(**locals())
 
 def xscale(value):
     """
     Sets the scale of the X axis. Possible values are 'linear' and 'log'.
     """
-    if value not in ["linear", "log"]:
-        raise ValueError("scale='{}' is not supported, only 'linear' and 'log'".format(value))
-    set_property("X.Axis.Log", "true" if value == "log" else "false")
+    impl.xscale(**locals())
 
 def yscale(value):
     """
     Sets the scale of the Y axis. Possible values are 'linear' and 'log'.
     """
-    if value not in ["linear", "log"]:
-        raise ValueError("scale='{}' is not supported, only 'linear' and 'log'".format(value))
-    set_property("Y.Axis.Log", "true" if value == "log" else "false")
+    impl.yscale(**locals())
 
 def legend(show=None, frameon=None, loc=None):
-    if show is not None:
-        set_property("Legend.Display", "true" if show else "false")
-
-    if frameon is not None:
-        set_property("Legend.Border", "true" if frameon else "false")
-
-    if loc is not None:
-        mapping = {
-            "best": ("Inside", "NorthEast"),
-            "upper right": ("Inside", "NorthEast"),
-            "upper left": ("Inside", "NorthWest"),
-            "lower left": ("Inside", "SouthWest"),
-            "lower right": ("Inside", "SouthEast"),
-            "right": ("Inside", "East"),
-            "center left": ("Inside", "West"),
-            "center right": ("Inside", "East"),
-            "lower center": ("Inside", "South"),
-            "upper center": ("Inside", "North"),
-            #"center": unsupported
-            "outside top left": ("Above", "West"),
-            "outside top center": ("Above", "South"),
-            "outside top right": ("Above", "East"),
-            "outside bottom left": ("Below", "West"),
-            "outside bottom center": ("Below", "North"),
-            "outside bottom right": ("Below", "East"),
-            "outside left top": ("Left", "North"),
-            "outside left center": ("Left", "East"),
-            "outside left bottom": ("Left", "South"),
-            "outside right top": ("Right", "North"),
-            "outside right center": ("Right", "West"),
-            "outside right bottom": ("Right", "South")
-        }
-        if loc not in mapping:
-            raise ValueError("loc='{}' is not recognized/supported".format(loc))
-
-        (position, anchoring) = mapping[loc]
-        set_property("Legend.Position", position)
-        set_property("Legend.Anchoring", anchoring)
+    impl.legend(**locals())
 
