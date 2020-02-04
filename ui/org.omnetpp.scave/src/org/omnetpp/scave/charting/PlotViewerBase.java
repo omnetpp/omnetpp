@@ -48,8 +48,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
-import org.eclipse.ui.views.properties.IPropertySource2;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
@@ -348,13 +346,6 @@ public abstract class PlotViewerBase extends ZoomableCachingCanvas implements IP
         else
             System.out.println("Unrecognized chart property: " + name + " = " + value);
             //ScavePlugin.logError(new RuntimeException("unrecognized chart property: "+name));
-    }
-
-    protected void doClear(IPropertySource2 propSource) {
-        for (IPropertyDescriptor desc : propSource.getPropertyDescriptors()) {
-            String id = (String)desc.getId();
-            setProperty(id, Converter.objectToString(PlotDefaults.getDefaultPropertyValue(id)));
-        }
     }
 
     /*
