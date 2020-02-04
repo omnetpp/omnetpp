@@ -20,15 +20,11 @@ import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_SY
 import static org.omnetpp.scave.charting.properties.LineVisualProperties.PROP_SYMBOL_TYPE;
 import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_DISPLAY_LINE;
 import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_DRAW_STYLE;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_LABELS_FONT;
 import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_LINE_STYLE;
 import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_LINE_WIDTH;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_SHOW_GRID;
 import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_SYMBOL_SIZE;
 import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_X_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_Y_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_Y_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_AXIS_TITLE_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LABEL_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_XY_GRID;
@@ -444,7 +440,8 @@ public class LinePlotViewer extends PlotViewerBase {
      *==================================*/
     @Override
     public void setProperty(String name, String value) {
-        Assert.isLegal(name != null);
+        Assert.isNotNull(name);
+        Assert.isNotNull(value);
         Debug.println("VectorChart.setProperty: "+name+"='"+value+"'");
         // Titles
         if (PROP_X_AXIS_TITLE.equals(name))
@@ -497,21 +494,22 @@ public class LinePlotViewer extends PlotViewerBase {
     }
 
     public void setXAxisTitle(String value) {
-        xAxis.setTitle(value != null ? value : DEFAULT_X_AXIS_TITLE);
+        Assert.isNotNull(value);
+        xAxis.setTitle(value);
         chartChanged();
     }
 
     public void setYAxisTitle(String value) {
-        yAxis.setTitle(value != null ? value : DEFAULT_Y_AXIS_TITLE);
+        Assert.isNotNull(value);
+        yAxis.setTitle(value);
         chartChanged();
     }
 
     public void setAxisTitleFont(Font value) {
-        if (value != null) {
-            xAxis.setTitleFont(value);
-            yAxis.setTitleFont(value);
-            chartChanged();
-        }
+        Assert.isNotNull(value);
+        xAxis.setTitleFont(value);
+        yAxis.setTitleFont(value);
+        chartChanged();
     }
 
     public void setDisplayLine(String key, Boolean value) {
@@ -566,37 +564,32 @@ public class LinePlotViewer extends PlotViewerBase {
         chartChanged();
     }
 
-   public void setLogarithmicX(Boolean value) {
-        boolean logarithmic = value != null ? value : DEFAULT_X_AXIS_LOGARITHMIC;
-        xAxis.setLogarithmic(logarithmic);
+   public void setLogarithmicX(boolean value) {
+        xAxis.setLogarithmic(value);
         chartArea = calculatePlotArea();
         updateArea();
         chartChanged();
     }
 
-    public void setLogarithmicY(Boolean value) {
-        boolean logarithmic = value != null ? value : DEFAULT_Y_AXIS_LOGARITHMIC;
-        yAxis.setLogarithmic(logarithmic);
+    public void setLogarithmicY(boolean value) {
+        yAxis.setLogarithmic(value);
         chartArea = calculatePlotArea();
         updateArea();
         chartChanged();
     }
 
     public void setShowGrid(ShowGrid value) {
-        ShowGrid showGrid = value != null ? value : DEFAULT_SHOW_GRID;
-        xAxis.setShowGrid(showGrid);
-        yAxis.setShowGrid(showGrid);
+        Assert.isNotNull(value);
+        xAxis.setShowGrid(value);
+        yAxis.setShowGrid(value);
         chartChanged();
     }
 
     public void setTickLabelFont(Font font) {
-        if (font == null)
-            font = DEFAULT_LABELS_FONT;
-        if (font != null) {
-            xAxis.setTickFont(font);
-            yAxis.setTickFont(font);
-            chartChanged();
-        }
+        Assert.isNotNull(font);
+        xAxis.setTickFont(font);
+        yAxis.setTickFont(font);
+        chartChanged();
     }
 
     @Override

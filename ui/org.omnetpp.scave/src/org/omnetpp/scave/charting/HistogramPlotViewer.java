@@ -12,11 +12,7 @@ import static org.omnetpp.scave.charting.properties.HistogramPlotProperties.PROP
 import static org.omnetpp.scave.charting.properties.HistogramPlotProperties.PROP_HIST_DATA;
 import static org.omnetpp.scave.charting.properties.HistogramPlotProperties.PROP_SHOW_OVERFLOW_CELL;
 import static org.omnetpp.scave.charting.properties.HistogramVisualProperties.PROP_HIST_COLOR;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_BAR_BASELINE;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_LABELS_FONT;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_Y_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_Y_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_AXIS_TITLE_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LABEL_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_AXIS_TITLE;
@@ -43,13 +39,11 @@ import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IHistogramDataset;
 import org.omnetpp.scave.charting.properties.HistogramPlotProperties.HistogramBar;
 import org.omnetpp.scave.charting.properties.HistogramPlotProperties.HistogramDataType;
-import org.omnetpp.scave.charting.properties.PlotDefaults;
 import org.omnetpp.scave.python.PythonHistogramDataset;
 
 public class HistogramPlotViewer extends PlotViewerBase {
 
     private static final boolean debug = false;
-
 
     private IHistogramDataset dataset = IHistogramDataset.EMPTY;
     private LinearAxis xAxis = new LinearAxis(false, false, false);
@@ -97,7 +91,8 @@ public class HistogramPlotViewer extends PlotViewerBase {
 
     @Override
     public void setProperty(String name, String value) {
-        Assert.isLegal(name != null);
+        Assert.isNotNull(name);
+        Assert.isNotNull(value);
         if (debug) Debug.println("HistogramChartViewer.setProperty: "+name+"='"+value+"'");
 
         if (PROP_X_AXIS_TITLE.equals(name))
@@ -134,52 +129,46 @@ public class HistogramPlotViewer extends PlotViewerBase {
     }
 
     public void setXAxisTitle(String value) {
-        xAxis.setTitle(value != null ? value : DEFAULT_X_AXIS_TITLE);
+        Assert.isNotNull(value);
+        xAxis.setTitle(value);
         chartChanged();
     }
 
     public void setYAxisTitle(String value) {
-        yAxis.setTitle(value != null ? value : DEFAULT_Y_AXIS_TITLE);
+        Assert.isNotNull(value);
+        yAxis.setTitle(value);
         chartChanged();
     }
 
     public void setAxisTitleFont(Font value) {
-        if (value != null) {
-            xAxis.setTitleFont(value);
-            yAxis.setTitleFont(value);
-            chartChanged();
-        }
+        Assert.isNotNull(value);
+        xAxis.setTitleFont(value);
+        yAxis.setTitleFont(value);
+        chartChanged();
     }
 
     public void setTickLabelFont(Font font) {
-        if (font == null)
-            font = DEFAULT_LABELS_FONT;
-        if (font != null) {
-            xAxis.setTickFont(font);
-            yAxis.setTickFont(font);
-            chartChanged();
-        }
+        Assert.isNotNull(font);
+        xAxis.setTickFont(font);
+        yAxis.setTickFont(font);
+        chartChanged();
     }
 
     public void setBarType(HistogramBar barType) {
-        if (barType == null)
-            barType = PlotDefaults.DEFAULT_HIST_BAR;
+        Assert.isNotNull(barType);
         plot.setBarType(barType);
         chartChanged();
     }
 
     public void setHistogramDataTransform(HistogramDataType dataTransform) {
-        if (dataTransform == null)
-            dataTransform = PlotDefaults.DEFAULT_HIST_DATA;
+        Assert.isNotNull(dataTransform);
         plot.setHistogramData(dataTransform);
         chartArea = calculatePlotArea();
         updateArea();
         chartChanged();
     }
 
-    public void setShowOverflowCell(Boolean value) {
-        if (value == null)
-            value = PlotDefaults.DEFAULT_SHOW_OVERFLOW_CELL;
+    public void setShowOverflowCell(boolean value) {
         plot.showOverflowCell = value;
         chartArea = calculatePlotArea();
         updateArea();
@@ -187,19 +176,15 @@ public class HistogramPlotViewer extends PlotViewerBase {
     }
 
 
-    public void setBarBaseline(Double value) {
-        if (value == null)
-            value = DEFAULT_BAR_BASELINE;
-
+    public void setBarBaseline(double value) {
         plot.baseline = value;
         chartArea = calculatePlotArea();
         updateArea();
         chartChanged();
     }
 
-    public void setLogarithmicY(Boolean value) {
-        boolean logarithmic = value != null ? value : DEFAULT_Y_AXIS_LOGARITHMIC;
-        yAxis.setLogarithmic(logarithmic);
+    public void setLogarithmicY(boolean value) {
+        yAxis.setLogarithmic(value);
         chartArea = calculatePlotArea();
         updateArea();
         chartChanged();
@@ -207,12 +192,11 @@ public class HistogramPlotViewer extends PlotViewerBase {
 
     public RGB getHistogramColor(String key) {
         HistogramProperties histProps = histogramProperties.getProperties(key);
-        if (histProps == null || histProps.color == null)
-            histProps = histogramProperties.getDefaultProperties();
         return histProps != null ? histProps.color : null;
     }
 
     public void setHistogramColor(String key, RGB color) {
+        Assert.isNotNull(color);
         HistogramProperties histProps = histogramProperties.getOrCreateProperties(key);
         histProps.color = color;
         updateLegends();

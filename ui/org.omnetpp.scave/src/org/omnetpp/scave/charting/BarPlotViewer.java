@@ -11,15 +11,7 @@ import static org.omnetpp.scave.charting.properties.BarPlotVisualProperties.PROP
 import static org.omnetpp.scave.charting.properties.BarPlotVisualProperties.PROP_BAR_PLACEMENT;
 import static org.omnetpp.scave.charting.properties.BarPlotVisualProperties.PROP_WRAP_LABELS;
 import static org.omnetpp.scave.charting.properties.BarVisualProperties.PROP_BAR_COLOR;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_BAR_BASELINE;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_BAR_PLACEMENT;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_LABELS_FONT;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_SHOW_GRID;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_WRAP_LABELS;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_X_AXIS_TITLE;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_X_LABELS_ROTATED_BY;
 import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_Y_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_Y_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_AXIS_TITLE_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LABEL_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_XY_GRID;
@@ -29,6 +21,7 @@ import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_L
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_TITLE;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -49,7 +42,6 @@ import org.omnetpp.scave.charting.dataset.IScalarDataset;
 import org.omnetpp.scave.charting.dataset.IStringValueScalarDataset;
 import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 import org.omnetpp.scave.charting.plotter.SquareSymbol;
-import org.omnetpp.scave.charting.properties.BarPlotVisualProperties;
 import org.omnetpp.scave.charting.properties.BarPlotVisualProperties.BarPlacement;
 import org.omnetpp.scave.charting.properties.PlotProperties.ShowGrid;
 import org.omnetpp.scave.engine.Statistics;
@@ -151,6 +143,8 @@ public class BarPlotViewer extends PlotViewerBase {
      *=============================================*/
     @Override
     public void setProperty(String name, String value) {
+        Assert.isNotNull(name);
+        Assert.isNotNull(value);  // use defaults.getDefaultValue(name) if you have a null ptr!
         // Titles
         if (PROP_X_AXIS_TITLE.equals(name))
             setXAxisTitle(value);
@@ -200,9 +194,7 @@ public class BarPlotViewer extends PlotViewerBase {
     }
 
     public void setXAxisTitle(String title) {
-        if (title == null)
-            title = DEFAULT_X_AXIS_TITLE;
-
+        Assert.isNotNull(title);
         domainAxis.title = title;
         chartChanged();
     }
@@ -212,7 +204,8 @@ public class BarPlotViewer extends PlotViewerBase {
     }
 
     public void setYAxisTitle(String title) {
-        valueAxis.setTitle(title==null ? DEFAULT_Y_AXIS_TITLE : title);
+        Assert.isNotNull(title);
+        valueAxis.setTitle(title);
         chartChanged();
     }
 
@@ -221,31 +214,25 @@ public class BarPlotViewer extends PlotViewerBase {
     }
 
     public void setAxisTitleFont(Font font) {
-        if (font != null) {
-            domainAxis.titleFont = font;
-            valueAxis.setTitleFont(font);
-            chartChanged();
-        }
+        Assert.isNotNull(font);
+        domainAxis.titleFont = font;
+        valueAxis.setTitleFont(font);
+        chartChanged();
     }
 
     public void setLabelFont(Font font) {
-        if (font == null)
-            font = DEFAULT_LABELS_FONT;
+        Assert.isNotNull(font);
         domainAxis.labelsFont = font;
         valueAxis.setTickFont(font);
         chartChanged();
     }
 
-    public void setXAxisLabelsRotatedBy(Double angle) {
-        if (angle == null)
-            angle = DEFAULT_X_LABELS_ROTATED_BY;
+    public void setXAxisLabelsRotatedBy(double angle) {
         domainAxis.rotation = Math.max(0, Math.min(90, angle));
         chartChanged();
     }
 
-    public void setWrapLabels(Boolean value) {
-        if (value == null)
-            value = DEFAULT_WRAP_LABELS;
+    public void setWrapLabels(boolean value) {
         domainAxis.wrapLabels = value;
         chartChanged();
     }
@@ -254,10 +241,7 @@ public class BarPlotViewer extends PlotViewerBase {
         return plot.barBaseline;
     }
 
-    public void setBarBaseline(Double value) {
-        if (value == null)
-            value = DEFAULT_BAR_BASELINE;
-
+    public void setBarBaseline(double value) {
         plot.barBaseline = value;
         chartArea = calculatePlotArea();
         updateArea();
@@ -269,17 +253,14 @@ public class BarPlotViewer extends PlotViewerBase {
     }
 
     public void setBarPlacement(BarPlacement value) {
-        if (value == null)
-            value = DEFAULT_BAR_PLACEMENT;
-
+        Assert.isNotNull(value);
         plot.barPlacement = value;
         chartArea = calculatePlotArea();
         updateArea();
         chartChanged();
     }
 
-    public void setLogarithmicY(Boolean value) {
-        boolean logarithmic = value != null ? value : DEFAULT_Y_AXIS_LOGARITHMIC;
+    public void setLogarithmicY(boolean logarithmic) {
         valueAxis.setLogarithmic(logarithmic);
         chartArea = calculatePlotArea();
         updateArea();
@@ -287,21 +268,18 @@ public class BarPlotViewer extends PlotViewerBase {
     }
 
     public void setShowGrid(ShowGrid value) {
-        if (value == null)
-            value = DEFAULT_SHOW_GRID;
-
+        Assert.isNotNull(value);
         valueAxis.setShowGrid(value);
         chartChanged();
     }
 
     public RGB getBarColor(String key) {
         BarProperties barProps = barProperties.getProperties(key);
-        if (barProps == null || barProps.color == null)
-            barProps = barProperties.getDefaultProperties();
-        return barProps != null ? barProps.color : null;
+        return barProps == null ? null : barProps.color;
     }
 
     public void setBarColor(String key, RGB color) {
+        Assert.isNotNull(color);
         BarProperties barProps = barProperties.getOrCreateProperties(key);
         barProps.color = color;
         updateLegends();
