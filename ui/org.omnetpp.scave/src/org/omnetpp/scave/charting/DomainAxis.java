@@ -40,7 +40,7 @@ import org.omnetpp.scave.charting.dataset.IScalarDataset;
  */
 class DomainAxis {
 
-    BarPlotViewer chart;
+    BarPlot chart;
     Rectangle rect; // strip below the plotArea where the axis text etc goes
     Vector<LineData> lines = new Vector<LineData>();
     String title = DEFAULT_X_AXIS_TITLE;
@@ -83,7 +83,7 @@ class DomainAxis {
         }
     }
 
-    public DomainAxis(BarPlotViewer chart) {
+    public DomainAxis(BarPlot chart) {
         this.chart = chart;
     }
 

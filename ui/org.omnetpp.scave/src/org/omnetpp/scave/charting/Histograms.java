@@ -32,7 +32,7 @@ import org.omnetpp.scave.charting.properties.PlotProperties.HistogramDataType;
 
 public class Histograms {
 
-    HistogramPlotViewer canvas;
+    HistogramPlot canvas;
     Rectangle area = Rectangle.SINGLETON;
 
     HistogramBar barType = PlotDefaults.DEFAULT_HIST_BAR;
@@ -43,7 +43,7 @@ public class Histograms {
     RectangularArea bars[][] = new RectangularArea[0][];
     double transformedBaseline;
 
-    Histograms(HistogramPlotViewer canvas) {
+    Histograms(HistogramPlot canvas) {
         this.canvas = canvas;
         setHistogramData(PlotDefaults.DEFAULT_HIST_DATA);
     }

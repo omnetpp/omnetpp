@@ -40,7 +40,7 @@ import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.scave.charting.LinePlotViewer.LineProperties;
+import org.omnetpp.scave.charting.LinePlot.LineProperties;
 import org.omnetpp.scave.charting.dataset.DatasetUtils;
 import org.omnetpp.scave.charting.dataset.IAveragedXYDataset;
 import org.omnetpp.scave.charting.dataset.IStringValueXYDataset;
@@ -63,7 +63,7 @@ class CrossHair {
     private static final int MAXCOUNT = 100;
     private static final int HALO = 3;
 
-    private final LinePlotViewer viewer;
+    private final LinePlot viewer;
 
     private boolean detailedTooltip = false; // turned on while hovering
 
@@ -84,10 +84,10 @@ class CrossHair {
         }
     }
 
-    public CrossHair(LinePlotViewer viewer) {
+    public CrossHair(LinePlot viewer) {
         this.viewer = viewer;
 
-        final LinePlotViewer finalViewer = viewer;
+        final LinePlot finalViewer = viewer;
         // add key listener to restore the cross cursor, after other cursor is turned off
         // (by ZoomableCanvasMouseSupport for example)
         viewer.addKeyListener(new KeyAdapter() {

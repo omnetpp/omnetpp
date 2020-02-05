@@ -41,7 +41,7 @@ import org.omnetpp.scave.charting.properties.PlotProperties.HistogramBar;
 import org.omnetpp.scave.charting.properties.PlotProperties.HistogramDataType;
 import org.omnetpp.scave.python.PythonHistogramDataset;
 
-public class HistogramPlotViewer extends PlotViewerBase {
+public class HistogramPlot extends PlotViewerBase {
     private static final boolean debug = false;
 
     private static final String[] HISTOGRAMPLOT_PROPERTY_NAMES = ArrayUtils.addAll(PLOTBASE_PROPERTY_NAMES, new String[] {
@@ -68,7 +68,7 @@ public class HistogramPlotViewer extends PlotViewerBase {
         RGB color;
     }
 
-    public HistogramPlotViewer(Composite parent, int style) {
+    public HistogramPlot(Composite parent, int style) {
         super(parent, style);
         plot = new Histograms(this);
         new Tooltip(this);

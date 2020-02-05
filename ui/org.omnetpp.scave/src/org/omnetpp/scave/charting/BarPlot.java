@@ -55,7 +55,7 @@ import org.omnetpp.scave.python.PythonScalarDataset;
  *
  * @author tomi
  */
-public class BarPlotViewer extends PlotViewerBase {
+public class BarPlot extends PlotViewerBase {
     private static final boolean debug = false;
 
     protected final static String[] BARPLOT_PROPERTY_NAMES = ArrayUtils.addAll(PLOTBASE_PROPERTY_NAMES, new String[] {
@@ -87,7 +87,7 @@ public class BarPlotViewer extends PlotViewerBase {
         // TODO selection on ScalarCharts
     }
 
-    public BarPlotViewer(Composite parent, int style) {
+    public BarPlot(Composite parent, int style) {
         super(parent, style);
         plot = new Bars(this);
         new Tooltip(this);
@@ -409,7 +409,7 @@ public class BarPlotViewer extends PlotViewerBase {
                 double halfInterval = Double.NaN;
                 if (dataset instanceof IAveragedScalarDataset) {
                     Statistics stat = ((IAveragedScalarDataset)dataset).getStatistics(row, column);
-                    halfInterval = StatUtils.confidenceInterval(stat, BarPlotViewer.CONFIDENCE_LEVEL);
+                    halfInterval = StatUtils.confidenceInterval(stat, BarPlot.CONFIDENCE_LEVEL);
                 }
                 valueStr = formatValue(value, halfInterval);
             }

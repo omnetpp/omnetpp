@@ -76,7 +76,7 @@ import org.omnetpp.scave.python.PythonXYDataset;
 /**
  * Line plot.
  */
-public class LinePlotViewer extends PlotViewerBase {
+public class LinePlot extends PlotViewerBase {
     private static final boolean debug = false;
 
     private static final String[] LINEPLOT_PROPERTY_NAMES = ArrayUtils.addAll(PLOTBASE_PROPERTY_NAMES, new String[] {
@@ -302,7 +302,7 @@ public class LinePlotViewer extends PlotViewerBase {
         }
     }
 
-    public LinePlotViewer(Composite parent, int style) {
+    public LinePlot(Composite parent, int style) {
         super(parent, style);
         // important: add the CrossHair to the chart AFTER the ZoomableCanvasMouseSupport added
         crosshair = new CrossHair(this);
@@ -316,7 +316,7 @@ public class LinePlotViewer extends PlotViewerBase {
                 int count = crosshair.dataPointsNear(e.x, e.y, 3, points, 1, getOptimizedCoordinateMapper());
                 if (count > 0) {
                     CrossHair.DataPoint point = points.get(0);
-                    setSelection(new LinePlotSelection(LinePlotViewer.this, point));
+                    setSelection(new LinePlotSelection(LinePlot.this, point));
                 }
                 else
                     setSelection(null);

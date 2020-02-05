@@ -17,7 +17,7 @@ import org.omnetpp.common.canvas.LargeGraphics;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.util.GraphicsUtils;
-import org.omnetpp.scave.charting.LinePlotViewer.LineProperties;
+import org.omnetpp.scave.charting.LinePlot.LineProperties;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 
 /**
@@ -27,7 +27,7 @@ import org.omnetpp.scave.charting.dataset.IXYDataset;
  */
 public class LinePlotSelection implements IPlotSelection {
 
-    private final LinePlotViewer viewer;
+    private final LinePlot viewer;
 
     // the series of the line within the chart's dataset
     private int series;
@@ -40,7 +40,7 @@ public class LinePlotSelection implements IPlotSelection {
     private double x,y;
 
 
-    public LinePlotSelection(LinePlotViewer viewer, CrossHair.DataPoint point) {
+    public LinePlotSelection(LinePlot viewer, CrossHair.DataPoint point) {
         IXYDataset dataset = viewer.getDataset();
         this.viewer = viewer;
         this.series = point.series;

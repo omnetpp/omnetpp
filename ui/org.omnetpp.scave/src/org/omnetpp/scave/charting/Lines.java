@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
-import org.omnetpp.scave.charting.LinePlotViewer.LineProperties;
+import org.omnetpp.scave.charting.LinePlot.LineProperties;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 import org.omnetpp.scave.charting.plotter.ILinePlotter;
@@ -25,10 +25,10 @@ class Lines implements ILinePlot {
 
     private static final boolean debug = false;
 
-    private LinePlotViewer viewer;
+    private LinePlot viewer;
     private Rectangle rect = new Rectangle(0,0,1,1);
 
-    public Lines(LinePlotViewer viewer) {
+    public Lines(LinePlot viewer) {
         this.viewer = viewer;
     }
 

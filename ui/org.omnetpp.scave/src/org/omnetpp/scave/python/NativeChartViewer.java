@@ -10,9 +10,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.omnetpp.common.Debug;
-import org.omnetpp.scave.charting.BarPlotViewer;
-import org.omnetpp.scave.charting.HistogramPlotViewer;
-import org.omnetpp.scave.charting.LinePlotViewer;
+import org.omnetpp.scave.charting.BarPlot;
+import org.omnetpp.scave.charting.HistogramPlot;
+import org.omnetpp.scave.charting.LinePlot;
 import org.omnetpp.scave.charting.PlotViewerBase;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
@@ -113,13 +113,13 @@ public class NativeChartViewer extends ChartViewerBase {
 
         switch (chart.getType()) {
         case BAR:
-            plotViewer = new BarPlotViewer(parent, SWT.DOUBLE_BUFFERED);
+            plotViewer = new BarPlot(parent, SWT.DOUBLE_BUFFERED);
             break;
         case HISTOGRAM:
-            plotViewer = new HistogramPlotViewer(parent, SWT.DOUBLE_BUFFERED);
+            plotViewer = new HistogramPlot(parent, SWT.DOUBLE_BUFFERED);
             break;
         case LINE:
-            plotViewer = new LinePlotViewer(parent, SWT.DOUBLE_BUFFERED);
+            plotViewer = new LinePlot(parent, SWT.DOUBLE_BUFFERED);
             break;
         case MATPLOTLIB:
         default:
