@@ -34,7 +34,6 @@ import org.omnetpp.scave.actions.ChartMouseModeAction;
 import org.omnetpp.scave.actions.CopyAction;
 import org.omnetpp.scave.actions.CopyChartImageToClipboardAction;
 import org.omnetpp.scave.actions.CopyDataToClipboardAction;
-import org.omnetpp.scave.actions.PlotAction;
 import org.omnetpp.scave.actions.CutAction;
 import org.omnetpp.scave.actions.EditChartPropertiesAction;
 import org.omnetpp.scave.actions.EditInputFileAction;
@@ -46,11 +45,13 @@ import org.omnetpp.scave.actions.IScaveAction;
 import org.omnetpp.scave.actions.NewChartFromTemplateAction;
 import org.omnetpp.scave.actions.OpenChartAction;
 import org.omnetpp.scave.actions.PasteAction;
+import org.omnetpp.scave.actions.PlotAction;
 import org.omnetpp.scave.actions.RedoAction;
 import org.omnetpp.scave.actions.RefreshChartAction;
 import org.omnetpp.scave.actions.RemoveAction;
 import org.omnetpp.scave.actions.RenameChartAction;
 import org.omnetpp.scave.actions.ResetChartToTemplateAction;
+import org.omnetpp.scave.actions.SaveChartAsTemplateAction;
 import org.omnetpp.scave.actions.SaveTempChartAction;
 import org.omnetpp.scave.actions.SelectAllAction;
 import org.omnetpp.scave.actions.SetItemWidthAction;
@@ -75,6 +76,7 @@ public class ScaveEditorActions {
     public final RenameChartAction renameChartAction = registerAction(new RenameChartAction());
     public final ExportChartsAction exportChartsAction = registerAction(new ExportChartsAction());
     public final ResetChartToTemplateAction resetToTemplateAction = registerAction(new ResetChartToTemplateAction());
+    public final SaveChartAsTemplateAction saveChartAsTemplateAction = registerAction(new SaveChartAsTemplateAction());
     public final RemoveAction removeAction = registerAction(new RemoveAction());
 
     public final ViewModeAction viewIconsAction = registerAction(new ViewModeAction(IconGridViewer.ViewMode.ICONS, "Icons", ScaveImages.IMG_ETOOL16_VIEW_ICONS));
@@ -191,6 +193,7 @@ public class ScaveEditorActions {
         menuManager.add(new ActionContributionItem(pasteAction));
         menuManager.add(new Separator());
         menuManager.add(new ActionContributionItem(resetToTemplateAction));
+        menuManager.add(new ActionContributionItem(saveChartAsTemplateAction));
         menuManager.add(new ActionContributionItem(removeAction));
         menuManager.add(new Separator());
 
