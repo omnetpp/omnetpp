@@ -23,12 +23,16 @@
 
     <label text="Style:"/>
     <combo x:id="plt.style" x:style="BORDER">
-      <add x:p0="ggplot"/>
+      <add x:p0="default"/>
       <add x:p0="classic"/>
+      <add x:p0="ggplot"/>
       <add x:p0="grayscale"/>
       <add x:p0="dark_background"/>
       <add x:p0="bmh"/>
       <add x:p0="fast"/>
+      <add x:p0="fivethirtyeight"/>
+      <add x:p0="tableau-colorblind10"/>
+      <add x:p0="Solarize_Light2"/>
       <add x:p0="seaborn"/>
       <add x:p0="seaborn-bright"/>
       <add x:p0="seaborn-colorblind"/>
@@ -36,7 +40,6 @@
       <add x:p0="seaborn-darkgrid"/>
       <add x:p0="seaborn-dark-palette"/>
       <add x:p0="seaborn-deep"/>
-      <add x:p0="seaborn-fivethirtyeight"/>
       <add x:p0="seaborn-muted"/>
       <add x:p0="seaborn-notebook"/>
       <add x:p0="seaborn-paper"/>
@@ -46,7 +49,6 @@
       <add x:p0="seaborn-ticks"/>
       <add x:p0="seaborn-white"/>
       <add x:p0="seaborn-whitegrid"/>
-      <add x:p0="tableau-colorblind10"/>
     </combo>
 
     <!-- } -->
