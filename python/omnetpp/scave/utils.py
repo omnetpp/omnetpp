@@ -182,7 +182,7 @@ def make_fancy_xticklabels(ax):
 
 
 def interpolationmode_to_drawstyle(interpolationmode, hasenum):
-    interp = interpolationmode if interpolationmode else 'sample-hold' if 'hasenum' else None
+    interp = interpolationmode if interpolationmode else 'sample-hold' if hasenum else None
     if not interp:
         ds = "linear"
     elif interp == "none":
@@ -205,15 +205,17 @@ def _make_line_args(props, t, df):
     if props["linestyle"]:
         style["linestyle"] = props["linestyle"]  # note: must precede 'drawstyle' setting
 
-    if not props["drawstyle"] or props["drawstyle"] == "auto":
+    ds = props["drawstyle"]
+    if not ds or ds == "auto":
         interpolationmode = t.interpolationmode if "interpolationmode" in df else None
         hasenum = "enum" in df
-        style["drawstyle"] = interpolationmode_to_drawstyle(interpolationmode, hasenum)
-    elif props["drawstyle"] == "none":
+        ds = interpolationmode_to_drawstyle(interpolationmode, hasenum)
+
+    if ds == "none":
         style["linestyle"] = " "
         style["drawstyle"] = "default"  # or any valid value, doesn't matter
     else:
-        style["drawstyle"] = props["drawstyle"] if props["drawstyle"] != "linear" else "default"
+        style["drawstyle"] = ds if props["drawstyle"] != "linear" else "default"
 
     if props["linecolor"]:
         style["color"] = props["linecolor"]
