@@ -1,9 +1,10 @@
 from omnetpp.scave import chart, plot
 import matplotlib as mpl
+import matplotlib.pyplot as plt
 import sys
 
 
-def extract_label_columns(df):
+def extract_label_columns(df, preferred_legend_column="title"):
 
     """
     Utility function to make a reasonable guess as to which column of
@@ -28,7 +29,10 @@ def extract_label_columns(df):
     """
 
     titles = ["title", "name", "module", "experiment", "measurement", "replication"]
-    legends = ["title", "name", "module", "experiment", "measurement", "replication"]
+    titles.remove(preferred_legend_column)
+    titles = [preferred_legend_column] + titles
+
+    legends = titles
 
     blacklist = ["runID", "value", "attrvalue", "vectime", "vecvalue",
                  "binedges", "binvalues", "underflows", "overflows",
@@ -276,7 +280,8 @@ def plot_bars(df, props, names=None):
 def plot_vectors(df, props):
     p = plot if chart.is_native_chart() else plt
 
-    title_col, legend_cols = extract_label_columns(df)
+    column = "name" if props["legend_labels"] == "result names" else "title"
+    title_col, legend_cols = extract_label_columns(df, column)
 
     for i, t in enumerate(df.itertuples(index=False)):
         style = _make_line_args(props, t, df)
@@ -318,20 +323,25 @@ def postconfigure_plot(props):
         p.ylabel(props["yaxis_title"])
 
     if props["xaxis_min"]:
-        p.xlim(left=props["xaxis_min"])
+        p.xlim(left=float(props["xaxis_min"]))
     if props["xaxis_max"]:
-        p.xlim(right=props["xaxis_max"])
+        p.xlim(right=float(props["xaxis_max"]))
     if props["yaxis_min"]:
-        p.ylim(left=props["yaxis_min"])
+        p.ylim(bottom=float(props["yaxis_min"]))
     if props["yaxis_max"]:
-        p.ylim(right=props["yaxis_max"])
+        p.ylim(top=float(props["yaxis_max"]))
+
+    if props["xaxis_log"]:
+        p.xscale("log" if _parse_opt_bool(props["xaxis_log"]) else "linear")
+    if props["yaxis_log"]:
+        p.yscale("log" if _parse_opt_bool(props["yaxis_log"]) else "linear")
 
     legend(show=_parse_opt_bool(props["legend_show"]), 
            frameon=_parse_opt_bool(props["legend_border"]),
            loc=props["legend_placement"] or None)
 
-    #TODO
-    #plt.grid()
+    plt.grid(_parse_opt_bool(props["grid_show"]),
+             "major" if (props["grid_density"] or "").lower() == "major" else "both") # grid_density is "Major" or "All"
 
     if not chart.is_native_chart():
         plt.tight_layout()
