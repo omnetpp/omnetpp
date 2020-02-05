@@ -42,6 +42,7 @@ import org.omnetpp.scave.charting.dataset.IScalarDataset;
 import org.omnetpp.scave.charting.dataset.IStringValueScalarDataset;
 import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 import org.omnetpp.scave.charting.plotter.SquareSymbol;
+import org.omnetpp.scave.charting.properties.PlotDefaults;
 import org.omnetpp.scave.charting.properties.BarPlotVisualProperties.BarPlacement;
 import org.omnetpp.scave.charting.properties.PlotProperties.ShowGrid;
 import org.omnetpp.scave.engine.Statistics;
@@ -96,6 +97,8 @@ public class BarPlotViewer extends PlotViewerBase {
                 setSelection(new BarSelection());
             }
         });
+
+        resetProperties();
     }
 
     @Override
@@ -166,6 +169,8 @@ public class BarPlotViewer extends PlotViewerBase {
     public void setProperty(String name, String value) {
         Assert.isNotNull(name);
         Assert.isNotNull(value);  // use defaults.getDefaultValue(name) if you have a null ptr!
+        if (value.isEmpty())
+            value = PlotDefaults.getDefaultPropertyValueAsString(name); //TODO maybe move into call sites?
         // Titles
         if (PROP_X_AXIS_TITLE.equals(name))
             setXAxisTitle(value);

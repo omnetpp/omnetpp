@@ -80,6 +80,8 @@ public class HistogramPlotViewer extends PlotViewerBase {
                 });
             }
         });
+
+        resetProperties();
     }
 
     @Override

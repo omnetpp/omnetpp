@@ -322,6 +322,8 @@ public class LinePlotViewer extends PlotViewerBase {
                     setSelection(null);
             }
         });
+
+        resetProperties();
     }
 
     @Override

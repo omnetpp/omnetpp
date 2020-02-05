@@ -111,7 +111,6 @@ public abstract class PlotViewerBase extends ZoomableCachingCanvas implements IP
 
     public PlotViewerBase(Composite parent, int style) {
         super(parent, style);
-        resetProperties();
         setToolTipText(null); // prevents "Close" tooltip of the TabItem from coming up (Linux only)
 
         legendTooltip = new LegendTooltip(this);
@@ -357,8 +356,13 @@ public abstract class PlotViewerBase extends ZoomableCachingCanvas implements IP
     }
 
     protected void resetProperties() {
-        for (String name : getPropertyNames())
-            setProperty(name, PlotDefaults.getDefaultPropertyValueAsString(name));
+        for (String name : getPropertyNames()) {
+            String value = PlotDefaults.getDefaultPropertyValueAsString(name);
+            if (value == null)
+                Debug.println("WARNING: Property " + name + " has no default value");
+            else
+                setProperty(name, value);
+        }
     }
 
     /*
