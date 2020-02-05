@@ -23,8 +23,6 @@ import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_DRAW_ST
 import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_LINE_STYLE;
 import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_LINE_WIDTH;
 import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_SYMBOL_SIZE;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_X_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_AXIS_TITLE_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LABEL_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_XY_GRID;
@@ -67,7 +65,6 @@ import org.omnetpp.scave.charting.plotter.ILinePlotter;
 import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 import org.omnetpp.scave.charting.plotter.LinePlotterFactory;
 import org.omnetpp.scave.charting.plotter.NoLinePlotter;
-import org.omnetpp.scave.charting.properties.PlotDefaults;
 import org.omnetpp.scave.charting.properties.LineVisualProperties.DrawStyle;
 import org.omnetpp.scave.charting.properties.LineVisualProperties.LineStyle;
 import org.omnetpp.scave.charting.properties.LineVisualProperties.SymbolType;
@@ -107,8 +104,8 @@ public class LinePlotViewer extends PlotViewerBase {
     private List<LineProperties> lineProperties;
     private LineProperties defaultProperties;
 
-    private LinearAxis xAxis = new LinearAxis(false, DEFAULT_X_AXIS_LOGARITHMIC, true);
-    private LinearAxis yAxis = new LinearAxis(true, DEFAULT_Y_AXIS_LOGARITHMIC, true);
+    private LinearAxis xAxis = new LinearAxis(false, false, true);
+    private LinearAxis yAxis = new LinearAxis(true, false, true);
     private CrossHair crosshair;
     private LinePlot plot;
 
@@ -701,7 +698,7 @@ public class LinePlotViewer extends PlotViewerBase {
     }
 
     @Override
-    public void setDisplayAxesDetails(Boolean value) {
+    public void setDisplayAxesDetails(boolean value) {
         xAxis.setDrawTickLabels(value);
         xAxis.setDrawTitle(value);
         yAxis.setDrawTickLabels(value);

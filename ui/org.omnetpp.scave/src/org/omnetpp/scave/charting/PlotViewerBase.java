@@ -7,18 +7,8 @@
 
 package org.omnetpp.scave.charting;
 
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_ANTIALIAS;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_BACKGROUND_COLOR;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_CANVAS_CACHING;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_DISPLAY_LEGEND;
 import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_INSETS_BACKGROUND_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_INSETS_LINE_COLOR;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_LEGEND_ANCHOR;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_LEGEND_BORDER;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_LEGEND_FONT;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_LEGEND_POSITION;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_TITLE;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_TITLE_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_ANTIALIAS;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_BACKGROUND_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_CACHING;
@@ -32,12 +22,8 @@ import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_PLOT_TIT
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_MAX;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_MIN;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
@@ -94,11 +80,11 @@ public abstract class PlotViewerBase extends ZoomableCachingCanvas implements IP
     // when displaying confidence intervals, XXX chart parameter?
     protected static final double CONFIDENCE_LEVEL = 0.95;
 
-    protected boolean antialias = DEFAULT_ANTIALIAS;
-    protected Color backgroundColor = DEFAULT_BACKGROUND_COLOR;
-    protected Title title = new Title(DEFAULT_TITLE, DEFAULT_TITLE_FONT);
-    protected String titleText = null;
-    protected Legend legend = new Legend(DEFAULT_DISPLAY_LEGEND, DEFAULT_LEGEND_BORDER, DEFAULT_LEGEND_FONT, DEFAULT_LEGEND_POSITION, DEFAULT_LEGEND_ANCHOR);
+    protected boolean antialias;
+    protected Color backgroundColor;
+    protected Title title = new Title();
+    protected String titleText;
+    protected Legend legend = new Legend();
     protected LegendTooltip legendTooltip;
 
     private String statusText = "No data available."; // displayed when there's no dataset
@@ -114,11 +100,11 @@ public abstract class PlotViewerBase extends ZoomableCachingCanvas implements IP
     private RectangularArea zoomedArea;
 
     private ZoomableCanvasMouseSupport mouseSupport;
-    private Color insetsBackgroundColor = DEFAULT_INSETS_BACKGROUND_COLOR;
-    private Color insetsLineColor = DEFAULT_INSETS_LINE_COLOR;
+    private Color insetsBackgroundColor = DEFAULT_INSETS_BACKGROUND_COLOR; //TODO make this a proper property
+    private Color insetsLineColor = DEFAULT_INSETS_LINE_COLOR; //TODO make this a proper property
 
     protected IPlotSelection selection;
-    private ListenerList listeners = new ListenerList();
+    private ListenerList<IChartSelectionListener> listeners = new ListenerList<>();
 
     private int layoutDepth = 0; // how many layoutChart() calls are on the stack
     private IDataset dataset;
@@ -126,9 +112,7 @@ public abstract class PlotViewerBase extends ZoomableCachingCanvas implements IP
     public PlotViewerBase(Composite parent, int style) {
         super(parent, style);
         resetProperties();
-        setCaching(DEFAULT_CANVAS_CACHING);
-        setBackground(backgroundColor);
-        setToolTipText(null); // XXX prevent "Close" tooltip of the TabItem to come up (Linux only)
+        setToolTipText(null); // prevents "Close" tooltip of the TabItem from coming up (Linux only)
 
         legendTooltip = new LegendTooltip(this);
 
@@ -393,28 +377,30 @@ public abstract class PlotViewerBase extends ZoomableCachingCanvas implements IP
         return antialias;
     }
 
-    public void setAntialias(Boolean antialias) {
-        this.antialias = antialias != null ? antialias : DEFAULT_ANTIALIAS;
+    public void setAntialias(boolean antialias) {
+        this.antialias = antialias;
         chartChanged();
     }
 
-    public void setCaching(Boolean caching) {
-        super.setCaching(caching != null ? caching : DEFAULT_CANVAS_CACHING);
+    public void setCaching(boolean caching) {
+        super.setCaching(caching);
         chartChanged();
     }
 
     public void setBackgroundColor(RGB rgb) {
-        this.backgroundColor = rgb != null ? new Color(null, rgb) : DEFAULT_BACKGROUND_COLOR;
+        Assert.isNotNull(rgb);
+        this.backgroundColor = new Color(null, rgb);
         chartChanged();
     }
 
     public void setTitle(String value) {
+        Assert.isNotNull(value);
         titleText = value;
         updateTitle();
     }
 
     private void updateTitle() {
-        String newTitle = StringUtils.defaultString(titleText, DEFAULT_TITLE);
+        String newTitle = titleText;
         if (dataset != null)
             newTitle = StringUtils.defaultString(dataset.getTitle(titleText), newTitle);
         if (!ObjectUtils.equals(newTitle, title.getText())) {
@@ -424,79 +410,71 @@ public abstract class PlotViewerBase extends ZoomableCachingCanvas implements IP
     }
 
     public void setTitleFont(Font value) {
-        if (value == null)
-            value = DEFAULT_TITLE_FONT;
+        Assert.isNotNull(value);
         title.setFont(value);
         chartChanged();
     }
 
-    public abstract void setDisplayAxesDetails(Boolean value);
+    public abstract void setDisplayAxesDetails(boolean value);
 
-    public void setDisplayTitle(Boolean value) {
+    public void setDisplayTitle(boolean value) {
         title.setVisible(value);
         chartChanged();
     }
 
-    public void setDisplayLegend(Boolean value) {
-        if (value == null)
-            value = DEFAULT_DISPLAY_LEGEND;
+    public void setDisplayLegend(boolean value) {
         legend.setVisible(value);
         chartChanged();
     }
 
-    public void setDisplayLegendTooltip(Boolean value) {
+    public void setDisplayLegendTooltip(boolean value) {
         legendTooltip.setVisible(value);
         chartChanged();
     }
 
-    public void setLegendBorder(Boolean value) {
-        if (value == null)
-            value = DEFAULT_LEGEND_BORDER;
+    public void setLegendBorder(boolean value) {
         legend.setDrawBorder(value);
         chartChanged();
     }
 
     public void setLegendFont(Font value) {
-        if (value == null)
-            value = DEFAULT_LEGEND_FONT;
+        Assert.isNotNull(value);
         legend.setFont(value);
         chartChanged();
     }
 
     public void setLegendPosition(LegendPosition value) {
-        if (value == null)
-            value = DEFAULT_LEGEND_POSITION;
+        Assert.isNotNull(value);
         legend.setPosition(value);
         chartChanged();
     }
 
     public void setLegendAnchor(LegendAnchor value) {
-        if (value == null)
-            value = DEFAULT_LEGEND_ANCHOR;
+        Assert.isNotNull(value);
         legend.setAnchor(value);
         chartChanged();
     }
 
-    public void setXMin(Double value) {
-        userDefinedArea.minX = value != null ? value : Double.NEGATIVE_INFINITY;
+    public void setXMin(double value) {
+        userDefinedArea.minX = value;
         updateArea();
         chartChanged();
     }
 
-    public void setXMax(Double value) {
-        userDefinedArea.maxX = value != null ? value : Double.POSITIVE_INFINITY;
+    public void setXMax(double value) {
+        userDefinedArea.maxX = value;
         updateArea();
         chartChanged();
     }
 
-    public void setYMin(Double value) {
-        userDefinedArea.minY = value != null ? value : Double.NEGATIVE_INFINITY;
+    public void setYMin(double value) {
+        userDefinedArea.minY = value;
         updateArea();
         chartChanged();
     }
 
-    public void setYMax(Double value) {
-        userDefinedArea.maxY = value != null ? value : Double.POSITIVE_INFINITY;
+    public void setYMax(double value) {
+        userDefinedArea.maxY = value;
         updateArea();
         chartChanged();
     }

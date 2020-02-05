@@ -12,7 +12,6 @@ import static org.omnetpp.scave.charting.properties.HistogramPlotProperties.PROP
 import static org.omnetpp.scave.charting.properties.HistogramPlotProperties.PROP_HIST_DATA;
 import static org.omnetpp.scave.charting.properties.HistogramPlotProperties.PROP_SHOW_OVERFLOW_CELL;
 import static org.omnetpp.scave.charting.properties.HistogramVisualProperties.PROP_HIST_COLOR;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_AXIS_TITLE_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LABEL_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_AXIS_TITLE;
@@ -61,7 +60,7 @@ public class HistogramPlotViewer extends PlotViewerBase {
 
     private IHistogramDataset dataset = IHistogramDataset.EMPTY;
     private LinearAxis xAxis = new LinearAxis(false, false, false);
-    private LinearAxis yAxis = new LinearAxis(true, DEFAULT_Y_AXIS_LOGARITHMIC, false);
+    private LinearAxis yAxis = new LinearAxis(true, false, false);
     private HistogramPlot plot;
 
     private PropertyMap<HistogramProperties> histogramProperties = new PropertyMap<HistogramProperties>(HistogramProperties.class);
@@ -312,7 +311,7 @@ public class HistogramPlotViewer extends PlotViewerBase {
     }
 
     @Override
-    public void setDisplayAxesDetails(Boolean value) {
+    public void setDisplayAxesDetails(boolean value) {
         xAxis.setDrawTickLabels(value);
         xAxis.setDrawTitle(value);
         yAxis.setDrawTickLabels(value);

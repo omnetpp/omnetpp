@@ -11,7 +11,6 @@ import static org.omnetpp.scave.charting.properties.BarPlotVisualProperties.PROP
 import static org.omnetpp.scave.charting.properties.BarPlotVisualProperties.PROP_BAR_PLACEMENT;
 import static org.omnetpp.scave.charting.properties.BarPlotVisualProperties.PROP_WRAP_LABELS;
 import static org.omnetpp.scave.charting.properties.BarVisualProperties.PROP_BAR_COLOR;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_AXIS_TITLE_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LABEL_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_XY_GRID;
@@ -73,7 +72,7 @@ public class BarPlotViewer extends PlotViewerBase {
 
     private IScalarDataset dataset;
 
-    private LinearAxis valueAxis = new LinearAxis(true, DEFAULT_Y_AXIS_LOGARITHMIC, false);
+    private LinearAxis valueAxis = new LinearAxis(true, false, false);
     private DomainAxis domainAxis = new DomainAxis(this);
     private BarPlot plot;
 
@@ -426,7 +425,7 @@ public class BarPlotViewer extends PlotViewerBase {
     }
 
     @Override
-    public void setDisplayAxesDetails(Boolean value) {
+    public void setDisplayAxesDetails(boolean value) {
         valueAxis.setDrawTickLabels(value);
         valueAxis.setDrawTitle(value);
         domainAxis.setLabels(value);
