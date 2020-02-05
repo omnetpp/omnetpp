@@ -25,7 +25,7 @@ import org.omnetpp.scave.charting.properties.PlotDefaults;
 import org.omnetpp.scave.charting.properties.PlotProperties.BarPlacement;
 
 /**
- * Draws the bars of the bar chart.
+ * The content area of a bar plot.
  */
 class Bars {
     private Rectangle rect = new Rectangle(0,0,1,1);
@@ -38,10 +38,10 @@ class Bars {
     // y coordinates might be logarithmic
     private RectangularArea[][] bars;
 
-    private BarPlot chart;
+    private BarPlot parent;
 
-    public Bars(BarPlot chart) {
-        this.chart = chart;
+    public Bars(BarPlot parent) {
+        this.parent = parent;
     }
 
     public Rectangle getRectangle() {
@@ -103,17 +103,17 @@ class Bars {
     }
 
     private int getRowColumn(double x, boolean before) {
-        int cRows = chart.getDataset().getRowCount();
-        int cColumns = chart.getDataset().getColumnCount();
+        int cRows = parent.getDataset().getRowCount();
+        int cColumns = parent.getDataset().getColumnCount();
         return before ? 0 : (cRows*cColumns-1);
     }
 
     public int findRowColumn(double x, double y) {
-        IScalarDataset dataset = chart.getDataset();
+        IScalarDataset dataset = parent.getDataset();
         if (dataset == null || bars == null)
             return -1;
-        int cRows = chart.getDataset().getRowCount();
-        int cColumns = chart.getDataset().getColumnCount();
+        int cRows = parent.getDataset().getRowCount();
+        int cColumns = parent.getDataset().getColumnCount();
 
         for (int row = 0; row < cRows; ++row)
             // search columns in Z-order
@@ -125,7 +125,7 @@ class Bars {
     }
 
     protected Color getBarColor(int column) {
-        RGB color = chart.getBarColor(chart.getKeyFor(column));
+        RGB color = parent.getBarColor(parent.getKeyFor(column));
         if (color != null)
             return new Color(null, color);
         else
@@ -140,9 +140,9 @@ class Bars {
         double right = bar.maxX;
 
         if (Double.isInfinite(top))
-            top = top < 0.0 ? chart.chartArea.minY : chart.chartArea.maxY;
+            top = top < 0.0 ? parent.chartArea.minY : parent.chartArea.maxY;
         if (Double.isInfinite(bottom))
-            bottom = bottom < 0.0 ? chart.chartArea.minY : chart.chartArea.maxY;
+            bottom = bottom < 0.0 ? parent.chartArea.minY : parent.chartArea.maxY;
 
         long x = coordsMapping.toCanvasX(left);
         long y = coordsMapping.toCanvasY(top);
@@ -158,7 +158,7 @@ class Bars {
         final double horizontalInset = 1.0;   // left/right inset relative to the bars' width
         final double verticalInset = 0.1;   // top inset relative to the height of the highest bar
 
-        IScalarDataset dataset = chart.getDataset();
+        IScalarDataset dataset = parent.getDataset();
         bars = null;
         if (dataset == null)
             return new RectangularArea(0, 0, 1, 1);
@@ -194,7 +194,7 @@ class Bars {
             bars[row] = new RectangularArea[cColumns];
             for (int column = 0; column < cColumns; ++column) {
                 RectangularArea bar = bars[row][column] = new RectangularArea();
-                double value = chart.getDataset().getValue(row, column);
+                double value = parent.getDataset().getValue(row, column);
 
                 // calculate x coordinates
                 switch (barPlacement) {
@@ -282,7 +282,7 @@ class Bars {
     }
 
     protected double transformValue(double y) {
-        return chart.transformY(y);
+        return parent.transformY(y);
     }
 
     protected double getTransformedBaseline() {

@@ -74,7 +74,7 @@ import org.omnetpp.scave.python.PythonXYDataset;
 
 
 /**
- * Line plot.
+ * Line plot widget.
  */
 public class LinePlot extends PlotViewerBase {
     private static final boolean debug = false;
@@ -107,7 +107,7 @@ public class LinePlot extends PlotViewerBase {
     private LinearAxis xAxis = new LinearAxis(false, false, true);
     private LinearAxis yAxis = new LinearAxis(true, false, true);
     private CrossHair crosshair;
-    private Lines plot;
+    private Lines lines;
 
     /**
      * Class representing the properties of one line of the chart.
@@ -308,7 +308,7 @@ public class LinePlot extends PlotViewerBase {
         crosshair = new CrossHair(this);
         lineProperties = new ArrayList<LineProperties>();
         defaultProperties = new LineProperties();
-        plot = new Lines(this);
+        lines = new Lines(this);
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseDown(MouseEvent e) {
@@ -332,7 +332,7 @@ public class LinePlot extends PlotViewerBase {
     }
 
     public Rectangle getPlotRectangle() {
-        return plot != null ? plot.getPlotRectangle() : Rectangle.SINGLETON;
+        return lines != null ? lines.getPlotRectangle() : Rectangle.SINGLETON;
     }
 
     @Override
@@ -620,7 +620,7 @@ public class LinePlot extends PlotViewerBase {
 
     @Override
     protected RectangularArea calculatePlotArea() {
-        return plot.calculatePlotArea();
+        return lines.calculatePlotArea();
     }
 
     Rectangle mainArea; // containing plots and axes
@@ -650,7 +650,7 @@ public class LinePlot extends PlotViewerBase {
             // will appear, and can calculate the occupied space from the longest tick label.
             yAxis.layout(graphics, mainArea, axesInsets, coordsMapping, pass);
             xAxis.layout(graphics, mainArea, axesInsets, coordsMapping, pass);
-            Rectangle plotArea = plot.layout(graphics, mainArea.getCopy().crop(axesInsets));
+            Rectangle plotArea = lines.layout(graphics, mainArea.getCopy().crop(axesInsets));
             crosshair.layout(graphics, plotArea);
             legend.layout(graphics, plotArea, pass);
             //FIXME how to handle it when plotArea.height/width comes out negative??
@@ -670,12 +670,12 @@ public class LinePlot extends PlotViewerBase {
         int totalTimeLimitMillis = store.getInt(ScavePreferenceConstants.TOTAL_DRAW_TIME_LIMIT_MILLIS);
         int perLineTimeLimitMillis = store.getInt(ScavePreferenceConstants.PER_LINE_DRAW_TIME_LIMIT_MILLIS);
 
-        boolean completed = plot.draw(graphics, coordsMapping, totalTimeLimitMillis, perLineTimeLimitMillis);
+        boolean completed = lines.draw(graphics, coordsMapping, totalTimeLimitMillis, perLineTimeLimitMillis);
 
         if (!completed) {
             Rectangle clip = GraphicsUtils.getClip(graphics);
             graphics.setForegroundColor(ColorFactory.BLACK);
-            graphics.drawText("Drawing operation timed out, plot is incomplete! Change zoom level to refresh.", clip.x+2, clip.y+2);
+            graphics.drawText("Drawing operation timed out, lines is incomplete! Change zoom level to refresh.", clip.x+2, clip.y+2);
         }
     }
 

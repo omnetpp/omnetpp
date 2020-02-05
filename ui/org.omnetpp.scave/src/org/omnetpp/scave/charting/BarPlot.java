@@ -18,7 +18,6 @@ import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_AXIS_T
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_LABELS_ROTATE_BY;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_TITLE;
-import static org.omnetpp.scave.charting.properties.PlotProperties.BarPlacement;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -51,9 +50,7 @@ import org.omnetpp.scave.model2.StatUtils;
 import org.omnetpp.scave.python.PythonScalarDataset;
 
 /**
- * Bar plot.
- *
- * @author tomi
+ * Bar plot widget.
  */
 public class BarPlot extends PlotViewerBase {
     private static final boolean debug = false;
@@ -76,7 +73,7 @@ public class BarPlot extends PlotViewerBase {
 
     private LinearAxis valueAxis = new LinearAxis(true, false, false);
     private DomainAxis domainAxis = new DomainAxis(this);
-    private Bars plot;
+    private Bars bars;
 
     private PropertyMap<BarProperties> barProperties = new PropertyMap<BarProperties>(BarProperties.class);
     static class BarProperties {
@@ -89,7 +86,7 @@ public class BarPlot extends PlotViewerBase {
 
     public BarPlot(Composite parent, int style) {
         super(parent, style);
-        plot = new Bars(this);
+        bars = new Bars(this);
         new Tooltip(this);
 
         this.addMouseListener(new MouseAdapter() {
@@ -135,12 +132,12 @@ public class BarPlot extends PlotViewerBase {
     }
 
     public Bars getPlot() {
-        return plot;
+        return bars;
     }
 
     @Override
     protected RectangularArea calculatePlotArea() {
-        return plot.calculatePlotArea();
+        return bars.calculatePlotArea();
     }
 
     private void updateLegends() {
@@ -153,7 +150,7 @@ public class BarPlot extends PlotViewerBase {
         IPlotSymbol symbol = new SquareSymbol(6);
         if (dataset != null) {
             for (int i = 0; i < dataset.getColumnCount(); ++i) {
-                legend.addItem(plot.getBarColor(i), dataset.getColumnKey(i), symbol, false);
+                legend.addItem(bars.getBarColor(i), dataset.getColumnKey(i), symbol, false);
             }
         }
     }
@@ -265,23 +262,23 @@ public class BarPlot extends PlotViewerBase {
     }
 
     public Double getBarBaseline() {
-        return plot.barBaseline;
+        return bars.barBaseline;
     }
 
     public void setBarBaseline(double value) {
-        plot.barBaseline = value;
+        bars.barBaseline = value;
         chartArea = calculatePlotArea();
         updateArea();
         chartChanged();
     }
 
     public BarPlacement getBarPlacement() {
-        return plot.barPlacement;
+        return bars.barPlacement;
     }
 
     public void setBarPlacement(BarPlacement value) {
         Assert.isNotNull(value);
-        plot.barPlacement = value;
+        bars.barPlacement = value;
         chartArea = calculatePlotArea();
         updateArea();
         chartChanged();
@@ -353,7 +350,7 @@ public class BarPlot extends PlotViewerBase {
             Rectangle remaining = mainArea.getCopy().crop(axesInsets);
             remaining = legend.layout(graphics, remaining, pass);
             //FIXME how to handle it when plotArea.height/width comes out negative??
-            Rectangle plotArea = plot.layout(graphics, remaining);
+            Rectangle plotArea = bars.layout(graphics, remaining);
             return plotArea;
         }
         else
@@ -364,13 +361,13 @@ public class BarPlot extends PlotViewerBase {
     protected void doPaintCachableLayer(Graphics graphics, ICoordsMapping coordsMapping) {
         graphics.fillRectangle(GraphicsUtils.getClip(graphics));
         valueAxis.drawGrid(graphics, coordsMapping);
-        plot.draw(graphics, coordsMapping);
+        bars.draw(graphics, coordsMapping);
     }
 
     @Override
     protected void doPaintNoncachableLayer(Graphics graphics, ICoordsMapping coordsMapping) {
         paintInsets(graphics);
-        plot.drawBaseline(graphics, coordsMapping);
+        bars.drawBaseline(graphics, coordsMapping);
         title.draw(graphics);
         legend.draw(graphics);
         valueAxis.drawAxis(graphics, coordsMapping);
@@ -394,7 +391,7 @@ public class BarPlot extends PlotViewerBase {
 
     @Override
     String getHoverHtmlText(int x, int y) {
-        int rowColumn = plot.findRowColumn(fromCanvasX(x), fromCanvasY(y));
+        int rowColumn = bars.findRowColumn(fromCanvasX(x), fromCanvasY(y));
         if (rowColumn != -1) {
             int numColumns = dataset.getColumnCount();
             int row = rowColumn / numColumns;

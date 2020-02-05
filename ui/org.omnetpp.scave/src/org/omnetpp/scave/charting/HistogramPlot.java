@@ -41,6 +41,9 @@ import org.omnetpp.scave.charting.properties.PlotProperties.HistogramBar;
 import org.omnetpp.scave.charting.properties.PlotProperties.HistogramDataType;
 import org.omnetpp.scave.python.PythonHistogramDataset;
 
+/**
+ * Histogram plot widget.
+ */
 public class HistogramPlot extends PlotViewerBase {
     private static final boolean debug = false;
 
@@ -61,7 +64,7 @@ public class HistogramPlot extends PlotViewerBase {
     private IHistogramDataset dataset = IHistogramDataset.EMPTY;
     private LinearAxis xAxis = new LinearAxis(false, false, false);
     private LinearAxis yAxis = new LinearAxis(true, false, false);
-    private Histograms plot;
+    private Histograms histograms;
 
     private PropertyMap<HistogramProperties> histogramProperties = new PropertyMap<HistogramProperties>(HistogramProperties.class);
     static class HistogramProperties {
@@ -70,7 +73,7 @@ public class HistogramPlot extends PlotViewerBase {
 
     public HistogramPlot(Composite parent, int style) {
         super(parent, style);
-        plot = new Histograms(this);
+        histograms = new Histograms(this);
         new Tooltip(this);
 
         this.addMouseListener(new MouseAdapter() {
@@ -179,20 +182,20 @@ public class HistogramPlot extends PlotViewerBase {
 
     public void setBarType(HistogramBar barType) {
         Assert.isNotNull(barType);
-        plot.setBarType(barType);
+        histograms.setBarType(barType);
         chartChanged();
     }
 
     public void setHistogramDataTransform(HistogramDataType dataTransform) {
         Assert.isNotNull(dataTransform);
-        plot.setHistogramData(dataTransform);
+        histograms.setHistogramData(dataTransform);
         chartArea = calculatePlotArea();
         updateArea();
         chartChanged();
     }
 
     public void setShowOverflowCell(boolean value) {
-        plot.showOverflowCell = value;
+        histograms.showOverflowCell = value;
         chartArea = calculatePlotArea();
         updateArea();
         chartChanged();
@@ -200,7 +203,7 @@ public class HistogramPlot extends PlotViewerBase {
 
 
     public void setBarBaseline(double value) {
-        plot.baseline = value;
+        histograms.baseline = value;
         chartArea = calculatePlotArea();
         updateArea();
         chartChanged();
@@ -241,21 +244,21 @@ public class HistogramPlot extends PlotViewerBase {
     }
 
     private void updateLegends() {
-        plot.updateLegend(legendTooltip);
-        plot.updateLegend(legend);
+        histograms.updateLegend(legendTooltip);
+        histograms.updateLegend(legend);
     }
 
     @Override
     String getHoverHtmlText(int x, int y) {
-        if (plot.getArea().contains(x, y))
-            return plot.getTooltipText(x, y);
+        if (histograms.getArea().contains(x, y))
+            return histograms.getTooltipText(x, y);
         else
             return null;
     }
 
     @Override
     protected RectangularArea calculatePlotArea() {
-        return plot.calculatePlotArea();
+        return histograms.calculatePlotArea();
     }
 
     Rectangle mainArea; // containing plots and axes
@@ -285,7 +288,7 @@ public class HistogramPlot extends PlotViewerBase {
             yAxis.layout(graphics, mainArea, axesInsets, coordsMapping, pass);
             xAxis.layout(graphics, mainArea, axesInsets, coordsMapping, pass);
             Rectangle remaining = mainArea.getCopy().crop(axesInsets);
-            Rectangle plotArea = plot.layout(graphics, remaining);
+            Rectangle plotArea = histograms.layout(graphics, remaining);
             legend.layout(graphics, plotArea, pass);
             //FIXME how to handle it when plotArea.height/width comes out negative??
             return plotArea;
@@ -297,7 +300,7 @@ public class HistogramPlot extends PlotViewerBase {
     protected void doPaintCachableLayer(Graphics graphics, ICoordsMapping coordsMapping) {
         graphics.fillRectangle(GraphicsUtils.getClip(graphics));
         yAxis.drawGrid(graphics, coordsMapping);
-        plot.draw(graphics, coordsMapping);
+        histograms.draw(graphics, coordsMapping);
     }
 
     @Override

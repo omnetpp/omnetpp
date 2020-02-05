@@ -21,35 +21,38 @@ import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 import org.omnetpp.scave.charting.plotter.ILinePlotter;
 
+/**
+ * The content area of a line plot.
+ */
 class Lines implements ILinePlot {
 
     private static final boolean debug = false;
 
-    private LinePlot viewer;
+    private LinePlot parent;
     private Rectangle rect = new Rectangle(0,0,1,1);
 
-    public Lines(LinePlot viewer) {
-        this.viewer = viewer;
+    public Lines(LinePlot parent) {
+        this.parent = parent;
     }
 
     public IXYDataset getDataset() {
-        return viewer.getDataset();
+        return parent.getDataset();
     }
 
     public double transformX(double x) {
-        return viewer.transformX(x);
+        return parent.transformX(x);
     }
 
     public double transformY(double y) {
-        return viewer.transformY(y);
+        return parent.transformY(y);
     }
 
     public double inverseTransformX(double x) {
-        return viewer.inverseTransformX(x);
+        return parent.inverseTransformX(x);
     }
 
     public double inverseTransformY(double y) {
-        return viewer.inverseTransformY(y);
+        return parent.inverseTransformY(y);
     }
 
 
@@ -72,7 +75,7 @@ class Lines implements ILinePlot {
             area.maxY = dataset.getMaxY();
 
             // try to find the area by transforming the dataset range
-            area = viewer.transformArea(area);
+            area = parent.transformArea(area);
 
             if (!area.isFinite()) {
                 // some bounds are outside of the transformation domain,
@@ -91,7 +94,7 @@ class Lines implements ILinePlot {
                     if (n > 0) {
                         // X must be increasing
                         for (int i = 0; i < n; i++) {
-                            double x = viewer.transformX(dataset.getX(series,i));
+                            double x = parent.transformX(dataset.getX(series,i));
                             if (!Double.isNaN(x) && !Double.isInfinite(x))
                             {
                                 area.minX = Math.min(area.minX, x);
@@ -99,7 +102,7 @@ class Lines implements ILinePlot {
                             }
                         }
                         for (int i = n-1; i >= 0; i--) {
-                            double x = viewer.transformX(dataset.getX(series,i));
+                            double x = parent.transformX(dataset.getX(series,i));
                             if (!Double.isNaN(x) && !Double.isInfinite(x))
                             {
                                 area.maxX = Math.max(area.maxX, x);
@@ -107,7 +110,7 @@ class Lines implements ILinePlot {
                             }
                         }
                         for (int i = 0; i < n; i++) {
-                            double y = viewer.transformY(dataset.getY(series, i));
+                            double y = parent.transformY(dataset.getY(series, i));
                             if (!Double.isNaN(y) && !Double.isInfinite(y)) {
                                 area.minY = Math.min(area.minY, y);
                                 area.maxY = Math.max(area.maxY, y);
@@ -154,14 +157,14 @@ class Lines implements ILinePlot {
             boolean ok = true;
 
             for (int series = 0; series < dataset.getSeriesCount(); series++) {
-                LineProperties props = viewer.getLineProperties(series);
+                LineProperties props = parent.getLineProperties(series);
                 if (props.getDisplayLine()) {
 
                     ILinePlotter plotter = props.getPlotter();
                     IPlotSymbol symbol = props.getSymbol();
                     Color color = props.getColor();
-                    viewer.resetDrawingStylesAndColors(graphics);
-                    graphics.setAntialias(viewer.antialias ? SWT.ON : SWT.OFF);
+                    parent.resetDrawingStylesAndColors(graphics);
+                    graphics.setAntialias(parent.antialias ? SWT.ON : SWT.OFF);
                     graphics.setForegroundColor(color);
                     graphics.setBackgroundColor(color);
                     graphics.setLineStyle(props.getLineStyle().getDraw2DConstant());
@@ -176,12 +179,12 @@ class Lines implements ILinePlot {
                     // if drawing is taking too long, display busy cursor
                     if (System.currentTimeMillis() - startTime > 1000) {
                         Cursor cursor = Display.getCurrent().getSystemCursor(SWT.CURSOR_WAIT);
-                        viewer.getShell().setCursor(cursor);
-                        viewer.setCursor(null); // crosshair cursor would override shell's busy cursor
+                        parent.getShell().setCursor(cursor);
+                        parent.setCursor(null); // crosshair cursor would override shell's busy cursor
                     }
                 }
             }
-            viewer.getShell().setCursor(null);
+            parent.getShell().setCursor(null);
             if (debug) Debug.println("plotting: "+(System.currentTimeMillis()-startTime)+" ms");
             return ok;
         }

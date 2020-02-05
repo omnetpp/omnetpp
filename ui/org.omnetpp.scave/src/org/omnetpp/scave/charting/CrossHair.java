@@ -63,7 +63,7 @@ class CrossHair {
     private static final int MAXCOUNT = 100;
     private static final int HALO = 3;
 
-    private final LinePlot viewer;
+    private final LinePlot parent;
 
     private boolean detailedTooltip = false; // turned on while hovering
 
@@ -84,29 +84,29 @@ class CrossHair {
         }
     }
 
-    public CrossHair(LinePlot viewer) {
-        this.viewer = viewer;
+    public CrossHair(LinePlot parent) {
+        this.parent = parent;
 
-        final LinePlot finalViewer = viewer;
+        final LinePlot finalParent = parent;
         // add key listener to restore the cross cursor, after other cursor is turned off
         // (by ZoomableCanvasMouseSupport for example)
-        viewer.addKeyListener(new KeyAdapter() {
+        parent.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (finalViewer.getCursor() == null)
-                    finalViewer.setCursor(CROSS_CURSOR);
+                if (finalParent.getCursor() == null)
+                    finalParent.setCursor(CROSS_CURSOR);
             }
             @Override
             public void keyReleased(KeyEvent e) {
-                if (finalViewer.getCursor() == null)
-                    finalViewer.setCursor(CROSS_CURSOR);
+                if (finalParent.getCursor() == null)
+                    finalParent.setCursor(CROSS_CURSOR);
             }
         });
-        viewer.addMouseMoveListener(new MouseMoveListener() {
+        parent.addMouseMoveListener(new MouseMoveListener() {
             public void mouseMove(MouseEvent e) {
                 if ((e.stateMask & SWT.BUTTON_MASK) != 0) {
                     invalidatePosition();
-                    finalViewer.redraw();
+                    finalParent.redraw();
                     return;
                 }
 
@@ -114,59 +114,59 @@ class CrossHair {
                 canvasY = e.y;
                 detailedTooltip = false;
 
-                finalViewer.redraw();  //XXX this is killer if canvas is not cached. unfortunately, graphics.setXORMode() cannot be used
+                finalParent.redraw();  //XXX this is killer if parent is not cached. unfortunately, graphics.setXORMode() cannot be used
 
                 // set cursor
                 if (plotArea != null && plotArea.contains(canvasX,canvasY)) {
-                    if (finalViewer.getCursor() == null)
-                        finalViewer.setCursor(CROSS_CURSOR);
+                    if (finalParent.getCursor() == null)
+                        finalParent.setCursor(CROSS_CURSOR);
                 }
                 else
-                    finalViewer.setCursor(null);
+                    finalParent.setCursor(null);
             }
         });
-        viewer.addMouseTrackListener(new MouseTrackAdapter() {
+        parent.addMouseTrackListener(new MouseTrackAdapter() {
             @Override
             public void mouseEnter(MouseEvent e) {
                 invalidatePosition();
-                finalViewer.redraw();
+                finalParent.redraw();
             }
             @Override
             public void mouseExit(MouseEvent e) {
                 invalidatePosition();
-                finalViewer.redraw();
+                finalParent.redraw();
             }
             @Override
             public void mouseHover(MouseEvent e) {
                 detailedTooltip = true;
-                finalViewer.redraw();
+                finalParent.redraw();
             }
         });
-        viewer.addMouseListener(new MouseListener() {
+        parent.addMouseListener(new MouseListener() {
             public void mouseDoubleClick(MouseEvent e) {
             }
 
             public void mouseDown(MouseEvent e) {
                 invalidatePosition();
-                finalViewer.redraw();
+                finalParent.redraw();
             }
 
             public void mouseUp(MouseEvent e) {
-                if (finalViewer.getCursor() == null)
-                    finalViewer.setCursor(CROSS_CURSOR);
+                if (finalParent.getCursor() == null)
+                    finalParent.setCursor(CROSS_CURSOR);
 
                 canvasX = e.x;
                 canvasY = e.y;
                 detailedTooltip = false;
-                finalViewer.redraw();
+                finalParent.redraw();
             }
         });
         HoverSupport hoverSupport = new HoverSupport();
         hoverSupport.setHoverSizeConstaints(500, 400);
-        hoverSupport.adapt(viewer, new IHoverInfoProvider() {
+        hoverSupport.adapt(parent, new IHoverInfoProvider() {
             @Override
             public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
-                return new HtmlHoverInfo(getHoverText(x, y, finalViewer.getOptimizedCoordinateMapper()));
+                return new HtmlHoverInfo(getHoverText(x, y, finalParent.getOptimizedCoordinateMapper()));
             }
         });
     }
@@ -192,9 +192,9 @@ class CrossHair {
             // snap to data point
             DataPoint dataPoint = dataPoints.isEmpty() ? null : dataPoints.get(0);
             if (dataPoint != null) {
-                IXYDataset dataset = viewer.getDataset();
-                double x = viewer.transformX(dataset.getX(dataPoint.series, dataPoint.index));
-                double y = viewer.transformY(dataset.getY(dataPoint.series, dataPoint.index));
+                IXYDataset dataset = parent.getDataset();
+                double x = parent.transformX(dataset.getX(dataPoint.series, dataPoint.index));
+                double y = parent.transformY(dataset.getY(dataPoint.series, dataPoint.index));
                 canvasX = (int)coordsMapping.toCanvasX(x);
                 canvasY = (int)coordsMapping.toCanvasY(y);
             }
@@ -219,8 +219,8 @@ class CrossHair {
         graphics.setFont(CROSSHAIR_NORMAL_FONT);
 
         if (dataPoints.isEmpty() || !detailedTooltip) {
-            double x = viewer.inverseTransformX(coordsMapping.fromCanvasX(canvasX));
-            double y = viewer.inverseTransformY(coordsMapping.fromCanvasY(canvasY));
+            double x = parent.inverseTransformX(coordsMapping.fromCanvasX(canvasX));
+            double y = parent.inverseTransformY(coordsMapping.fromCanvasY(canvasY));
             String coordinates = String.format("%g, %g", x, y); //FIXME precision: the x distance one pixel represents!
             Point size = GraphicsUtils.getTextExtent(graphics, coordinates);
             int left = canvasX + 3;
@@ -242,8 +242,8 @@ class CrossHair {
             Collections.sort(dataPoints, new Comparator<DataPoint> () {
                 @Override
                 public int compare(DataPoint dp1, DataPoint dp2) {
-                    String key1 = viewer.getDataset().getSeriesKey(dp1.series);
-                    String key2 = viewer.getDataset().getSeriesKey(dp2.series);
+                    String key1 = parent.getDataset().getSeriesKey(dp1.series);
+                    String key2 = parent.getDataset().getSeriesKey(dp2.series);
                     return StringUtils.dictionaryCompare(key1, key2);
                 }
             });
@@ -254,7 +254,7 @@ class CrossHair {
             htmlText.append("<table>");
             int lineNo = 0;
             for (DataPoint dp : dataPoints) {
-                LineProperties props = viewer.getLineProperties(dp.series);
+                LineProperties props = parent.getLineProperties(dp.series);
                 Color color = props.getColor();
                 String text = getText(dp);
                 IPlotSymbol symbol = props.getSymbol();
@@ -278,7 +278,7 @@ class CrossHair {
                 htmlText.append(String.format("<tr><td></td><td>... and %d more</td></tr>", totalFound - dataPoints.size()));
             htmlText.append("</table>");
 
-            TextLayout textLayout = new TextLayout(viewer.getDisplay());
+            TextLayout textLayout = new TextLayout(parent.getDisplay());
             textLayout.setText(plainText.toString());
             textLayout.setWidth(320); // comes from HoverSupport
             org.eclipse.swt.graphics.Rectangle bounds= textLayout.getBounds();
@@ -296,7 +296,7 @@ class CrossHair {
     }
 
     private String getText(DataPoint dataPoint) {
-        IXYDataset dataset = viewer.getDataset();
+        IXYDataset dataset = parent.getDataset();
         //String coordinates = String.format("%g, %g", dataset.getXValue(dataPoint.series, dataPoint.index), dataset.getYValue(dataPoint.series, dataPoint.index));
         int series = dataPoint.series;
         int index = dataPoint.index;
@@ -313,7 +313,7 @@ class CrossHair {
                 Statistics xStat = ((IAveragedXYDataset)dataset).getXStatistics(series, index);
                 xConf = StatUtils.confidenceInterval(xStat, PlotViewerBase.CONFIDENCE_LEVEL);
             }
-            xStr = (xp != null ? xp.toString() : viewer.formatValue(x, xConf));
+            xStr = (xp != null ? xp.toString() : parent.formatValue(x, xConf));
         }
         if (yStr == null) {
             BigDecimal yp = dataset.getPreciseY(series, index);
@@ -322,7 +322,7 @@ class CrossHair {
                 Statistics yStat = ((IAveragedXYDataset)dataset).getYStatistics(series, index);
                 yConf = StatUtils.confidenceInterval(yStat, PlotViewerBase.CONFIDENCE_LEVEL);
             }
-            yStr = (yp != null ? yp.toString() : viewer.formatValue(y, yConf));
+            yStr = (yp != null ? yp.toString() : parent.formatValue(y, yConf));
         }
         String seriesStr = dataset.getSeriesKey(series);
         //seriesStr = StringUtils.abbreviate(series, series.length(), 25);
@@ -331,24 +331,24 @@ class CrossHair {
 
     // XXX move this method into a VectorPlot class
     protected int dataPointsNear(int x, int y, int d, List<DataPoint> result, int maxCount, ICoordsMapping coordsMapping) {
-        IXYDataset dataset = viewer.getDataset();
+        IXYDataset dataset = parent.getDataset();
         if (dataset==null)
             return 0;
 
         // for each series, collect data points close to (x,y), at most maxCount of them
         int totalFound = 0;
         for (int series = 0; series < dataset.getSeriesCount(); ++series) {
-            LineProperties props = viewer.getLineProperties(series);
+            LineProperties props = parent.getLineProperties(series);
             if (!props.getDisplayLine())
                 continue;
             // find data point nearest to cursor x, using binary search
-            int mid = DatasetUtils.findXLowerLimit(dataset, series, viewer.inverseTransformX(coordsMapping.fromCanvasX(x)));
+            int mid = DatasetUtils.findXLowerLimit(dataset, series, parent.inverseTransformX(coordsMapping.fromCanvasX(x)));
 
             // then search downwards and upwards for data points close to (x,y)
             for (int i = mid; i >= 0; --i) {
                 try {
-                    double xx = viewer.transformX(dataset.getX(series, i));
-                    double yy = viewer.transformY(dataset.getY(series, i));
+                    double xx = parent.transformX(dataset.getX(series, i));
+                    double yy = parent.transformY(dataset.getY(series, i));
                     int dx = (int)coordsMapping.toCanvasX(xx) - x;
                     int dy = (int)coordsMapping.toCanvasY(yy) - y;
                     if (addAndCheck(mulAndCheck(dx, dx), mulAndCheck(dy, dy)) <= d * d)
@@ -364,8 +364,8 @@ class CrossHair {
             }
             for (int i = mid + 1; i < dataset.getItemCount(series); ++i) {
                 try {
-                    double xx = viewer.transformX(dataset.getX(series, i));
-                    double yy = viewer.transformY(dataset.getY(series, i));
+                    double xx = parent.transformX(dataset.getX(series, i));
+                    double yy = parent.transformY(dataset.getY(series, i));
                     int dx = (int)coordsMapping.toCanvasX(xx) - x;
                     int dy = (int)coordsMapping.toCanvasY(yy) - y;
                     if (addAndCheck(mulAndCheck(dx, dx), mulAndCheck(dy, dy)) <= d * d)

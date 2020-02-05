@@ -30,9 +30,12 @@ import org.omnetpp.scave.charting.properties.PlotDefaults;
 import org.omnetpp.scave.charting.properties.PlotProperties.HistogramBar;
 import org.omnetpp.scave.charting.properties.PlotProperties.HistogramDataType;
 
-public class Histograms {
+/**
+ * The content area of a histogram plot.
+ */
+class Histograms {
 
-    HistogramPlot canvas;
+    HistogramPlot parent;
     Rectangle area = Rectangle.SINGLETON;
 
     HistogramBar barType = PlotDefaults.DEFAULT_HIST_BAR;
@@ -43,8 +46,8 @@ public class Histograms {
     RectangularArea bars[][] = new RectangularArea[0][];
     double transformedBaseline;
 
-    Histograms(HistogramPlot canvas) {
-        this.canvas = canvas;
+    Histograms(HistogramPlot parent) {
+        this.parent = parent;
         setHistogramData(PlotDefaults.DEFAULT_HIST_DATA);
     }
 
@@ -66,7 +69,7 @@ public class Histograms {
     }
 
     protected RectangularArea calculatePlotArea() {
-        IHistogramDataset dataset = canvas.getDataset();
+        IHistogramDataset dataset = parent.getDataset();
         double minX = Double.POSITIVE_INFINITY, maxX = Double.NEGATIVE_INFINITY;
         double minY = 0.0, maxY = 0.0;
 
@@ -127,7 +130,7 @@ public class Histograms {
         double baseline = getTransformedBaseline();
 
         if (Double.isInfinite(baseline)) {
-            IHistogramDataset dataset = canvas.getDataset();
+            IHistogramDataset dataset = parent.getDataset();
             int histCount = dataset.getSeriesCount();
 
             double newBaseline = baseline < 0.0 ? Double.POSITIVE_INFINITY : Double.NEGATIVE_INFINITY;
@@ -234,7 +237,7 @@ public class Histograms {
 
     void updateLegend(ILegend legend) {
         legend.clearItems();
-        IHistogramDataset dataset = canvas.getDataset();
+        IHistogramDataset dataset = parent.getDataset();
         IPlotSymbol symbol = new SquareSymbol(6);
         for (int series = 0; series < dataset.getSeriesCount(); ++series) {
             legend.addItem(getHistogramColor(series), dataset.getSeriesTitle(series), symbol, false);
@@ -245,7 +248,7 @@ public class Histograms {
         Integer[] seriesAndIndeces = findHistogramColumns(x,y);
         if (seriesAndIndeces.length == 0)
             return null;
-        IHistogramDataset dataset = canvas.getDataset();
+        IHistogramDataset dataset = parent.getDataset();
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < seriesAndIndeces.length; i+=2) {
             int series = seriesAndIndeces[i];
@@ -276,9 +279,9 @@ public class Histograms {
     }
 
     private Integer[] findHistogramColumns(int x, int y) {
-        double xx = canvas.fromCanvasX(x);
-        double yy = canvas.fromCanvasY(y);
-        IHistogramDataset dataset = canvas.getDataset();
+        double xx = parent.fromCanvasX(x);
+        double yy = parent.fromCanvasY(y);
+        IHistogramDataset dataset = parent.getDataset();
         List<Integer> result = new ArrayList<Integer>();
         for (int series = 0; series < dataset.getSeriesCount(); ++series) {
             int index = findBin(bars[series], series, xx);
@@ -289,7 +292,7 @@ public class Histograms {
                 case Solid: isOver = bar.contains(xx, yy);  break;
                 case Outline:
                     double dy = yy > transformedBaseline ? yy - bar.maxY : yy - bar.minY;
-                    isOver = Math.abs(canvas.toCanvasDistY(dy)) <= 2;
+                    isOver = Math.abs(parent.toCanvasDistY(dy)) <= 2;
                     break;
                 default: isOver = false; Assert.isTrue(false, "Unknown HistogramBar type: " + barType); break;
                 }
@@ -320,8 +323,8 @@ public class Histograms {
     }
 
     protected Color getHistogramColor(int series) {
-        String key = canvas.getDataset().getSeriesKey(series);
-        RGB color = canvas.getHistogramColor(key);
+        String key = parent.getDataset().getSeriesKey(series);
+        RGB color = parent.getHistogramColor(key);
         if (color != null)
             return new Color(null, color);
         else
@@ -329,7 +332,7 @@ public class Histograms {
     }
 
     protected double transformValue(double y) {
-        return canvas.transformY(y);
+        return parent.transformY(y);
     }
 
     protected double getTransformedBaseline() {
@@ -348,13 +351,13 @@ public class Histograms {
 
     private class NullTransform implements ICellValueTransform {
         public double getCellValue(int series, int index) {
-            return canvas.getDataset().getCellValue(series, index);
+            return parent.getDataset().getCellValue(series, index);
         }
     }
 
     private class PdfTransform implements ICellValueTransform {
         public double getCellValue(int series, int index) {
-            IHistogramDataset dataset = canvas.getDataset();
+            IHistogramDataset dataset = parent.getDataset();
             double value = dataset.getCellValue(series, index);
             double sumWeights = dataset.getSumWeights(series);
             double cellMin = dataset.getCellLowerBound(series, index);
@@ -375,7 +378,7 @@ public class Histograms {
         double prevValue = 0.0;
 
         public double getCellValue(int series, int index) {
-            IHistogramDataset dataset = canvas.getDataset();
+            IHistogramDataset dataset = parent.getDataset();
             if (series != prevSeries) {
                 prevValue = 0.0;
                 prevIndex = -1;
