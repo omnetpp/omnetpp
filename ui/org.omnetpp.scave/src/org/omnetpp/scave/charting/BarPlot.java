@@ -19,6 +19,9 @@ import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_LABELS
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_TITLE;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.core.runtime.Assert;
@@ -75,10 +78,11 @@ public class BarPlot extends PlotViewerBase {
     private DomainAxis domainAxis = new DomainAxis(this);
     private Bars bars;
 
-    private PropertyMap<BarProperties> barProperties = new PropertyMap<BarProperties>(BarProperties.class);
     static class BarProperties {
         RGB color;
     }
+
+    private Map<String,BarProperties> barProperties = new HashMap<>();
 
     static class BarSelection implements IPlotSelection {
         // TODO selection on ScalarCharts
@@ -298,13 +302,13 @@ public class BarPlot extends PlotViewerBase {
     }
 
     public RGB getBarColor(String key) {
-        BarProperties barProps = barProperties.getProperties(key);
+        BarProperties barProps = barProperties.get(key);
         return barProps == null ? null : barProps.color;
     }
 
     public void setBarColor(String key, RGB color) {
         Assert.isNotNull(color);
-        BarProperties barProps = barProperties.getOrCreateProperties(key);
+        BarProperties barProps = getOrCreateBarProperties(key);
         barProps.color = color;
         updateLegends();
         chartChanged();
@@ -315,6 +319,15 @@ public class BarPlot extends PlotViewerBase {
             return dataset.getColumnKey(columnIndex);
         else
             return null;
+    }
+
+    private BarProperties getOrCreateBarProperties(String key) {
+        BarProperties properties = barProperties.get(key);
+        if (properties == null) {
+            properties = new BarProperties();
+            barProperties.put(key, properties);
+        }
+        return properties;
     }
 
     /*=============================================

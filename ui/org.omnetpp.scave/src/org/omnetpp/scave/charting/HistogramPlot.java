@@ -19,6 +19,9 @@ import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_LABELS
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_TITLE;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Graphics;
@@ -66,10 +69,11 @@ public class HistogramPlot extends PlotViewerBase {
     private LinearAxis yAxis = new LinearAxis(true, false, false);
     private Histograms histograms;
 
-    private PropertyMap<HistogramProperties> histogramProperties = new PropertyMap<HistogramProperties>(HistogramProperties.class);
     static class HistogramProperties {
         RGB color;
     }
+
+    private Map<String,HistogramProperties> histogramProperties = new HashMap<>();
 
     public HistogramPlot(Composite parent, int style) {
         super(parent, style);
@@ -217,16 +221,25 @@ public class HistogramPlot extends PlotViewerBase {
     }
 
     public RGB getHistogramColor(String key) {
-        HistogramProperties histProps = histogramProperties.getProperties(key);
+        HistogramProperties histProps = histogramProperties.get(key);
         return histProps != null ? histProps.color : null;
     }
 
     public void setHistogramColor(String key, RGB color) {
         Assert.isNotNull(color);
-        HistogramProperties histProps = histogramProperties.getOrCreateProperties(key);
+        HistogramProperties histProps = getOrCreateHistogramProperties(key);
         histProps.color = color;
         updateLegends();
         chartChanged();
+    }
+
+    private HistogramProperties getOrCreateHistogramProperties(String key) {
+        HistogramProperties properties = histogramProperties.get(key);
+        if (properties == null) {
+            properties = new HistogramProperties();
+            histogramProperties.put(key, properties);
+        }
+        return properties;
     }
 
     @Override
