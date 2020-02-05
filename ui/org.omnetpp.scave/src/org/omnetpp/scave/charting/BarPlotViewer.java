@@ -76,7 +76,7 @@ public class BarPlotViewer extends PlotViewerBase {
 
     private LinearAxis valueAxis = new LinearAxis(true, false, false);
     private DomainAxis domainAxis = new DomainAxis(this);
-    private BarPlot plot;
+    private Bars plot;
 
     private PropertyMap<BarProperties> barProperties = new PropertyMap<BarProperties>(BarProperties.class);
     static class BarProperties {
@@ -89,7 +89,7 @@ public class BarPlotViewer extends PlotViewerBase {
 
     public BarPlotViewer(Composite parent, int style) {
         super(parent, style);
-        plot = new BarPlot(this);
+        plot = new Bars(this);
         new Tooltip(this);
 
         this.addMouseListener(new MouseAdapter() {
@@ -134,7 +134,7 @@ public class BarPlotViewer extends PlotViewerBase {
         return dataset;
     }
 
-    public BarPlot getPlot() {
+    public Bars getPlot() {
         return plot;
     }
 

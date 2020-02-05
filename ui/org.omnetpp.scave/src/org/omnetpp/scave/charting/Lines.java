@@ -21,14 +21,14 @@ import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 import org.omnetpp.scave.charting.plotter.ILinePlotter;
 
-class LinePlot implements ILinePlot {
+class Lines implements ILinePlot {
 
     private static final boolean debug = false;
 
     private LinePlotViewer viewer;
     private Rectangle rect = new Rectangle(0,0,1,1);
 
-    public LinePlot(LinePlotViewer viewer) {
+    public Lines(LinePlotViewer viewer) {
         this.viewer = viewer;
     }
 

@@ -61,7 +61,7 @@ public class HistogramPlotViewer extends PlotViewerBase {
     private IHistogramDataset dataset = IHistogramDataset.EMPTY;
     private LinearAxis xAxis = new LinearAxis(false, false, false);
     private LinearAxis yAxis = new LinearAxis(true, false, false);
-    private HistogramPlot plot;
+    private Histograms plot;
 
     private PropertyMap<HistogramProperties> histogramProperties = new PropertyMap<HistogramProperties>(HistogramProperties.class);
     static class HistogramProperties {
@@ -70,7 +70,7 @@ public class HistogramPlotViewer extends PlotViewerBase {
 
     public HistogramPlotViewer(Composite parent, int style) {
         super(parent, style);
-        plot = new HistogramPlot(this);
+        plot = new Histograms(this);
         new Tooltip(this);
 
         this.addMouseListener(new MouseAdapter() {

@@ -107,7 +107,7 @@ public class LinePlotViewer extends PlotViewerBase {
     private LinearAxis xAxis = new LinearAxis(false, false, true);
     private LinearAxis yAxis = new LinearAxis(true, false, true);
     private CrossHair crosshair;
-    private LinePlot plot;
+    private Lines plot;
 
     /**
      * Class representing the properties of one line of the chart.
@@ -308,7 +308,7 @@ public class LinePlotViewer extends PlotViewerBase {
         crosshair = new CrossHair(this);
         lineProperties = new ArrayList<LineProperties>();
         defaultProperties = new LineProperties();
-        plot = new LinePlot(this);
+        plot = new Lines(this);
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseDown(MouseEvent e) {

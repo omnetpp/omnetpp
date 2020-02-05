@@ -27,7 +27,7 @@ import org.omnetpp.scave.charting.properties.PlotProperties.BarPlacement;
 /**
  * Draws the bars of the bar chart.
  */
-class BarPlot {
+class Bars {
     private Rectangle rect = new Rectangle(0,0,1,1);
 
     double barBaseline = DEFAULT_BAR_BASELINE;
@@ -40,7 +40,7 @@ class BarPlot {
 
     private BarPlotViewer chart;
 
-    public BarPlot(BarPlotViewer chart) {
+    public Bars(BarPlotViewer chart) {
         this.chart = chart;
     }
 

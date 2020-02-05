@@ -114,7 +114,7 @@ class DomainAxis {
             graphics.setFont(labelsFont);
             lines.add(new LineData());
             IScalarDataset dataset = chart.getDataset();
-            BarPlot plot = chart.getPlot();
+            Bars plot = chart.getPlot();
             Dimension maxSize = new Dimension(-1, Math.max(bounds.height / 2, 10));
             if (dataset != null) {
                 // dispose previous TextLayouts
@@ -206,7 +206,7 @@ class DomainAxis {
         graphics.setLineWidth(1);
         graphics.setForegroundColor(ColorFactory.BLACK);
 
-        BarPlot plot = chart.getPlot();
+        Bars plot = chart.getPlot();
         Rectangle plotRect = plot.getRectangle();
 
         // draw labels
