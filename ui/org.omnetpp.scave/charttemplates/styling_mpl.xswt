@@ -83,7 +83,7 @@
       <layout x:class="GridLayout" numColumns="2"/>
       <x:children>
 
-    <button x:id="matplotlibrc.legend.frameon" text="Frame" x:style="CHECK">
+    <button x:id="matplotlibrc.legend.frameon" text="Frame" x:style="CHECK"  x:id.isEnabler="true">
       <layoutData x:class="GridData" horizontalSpan="2"/>
     </button>
 
