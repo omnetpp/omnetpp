@@ -140,47 +140,44 @@ def _filter_by_key_prefix(props, prefix):
 def _parse_opt_bool(value):
     return value.lower()=="true" if value else None # maps "" to None
 
-import numpy as np
-from matplotlib.text import Text
-import matplotlib.pyplot as plt
-import math
-
-
-# Declare and register callbacks
-def on_xlims_change(ax):
-    display_xs = list()
-    fontheight = 24
-    for p in ax.get_xticks():
-        xdisplay, ydisplay = ax.transData.transform_point((p, 0))
-        display_xs.append(xdisplay)
-
-    dxa = np.array(display_xs)
-    dxd = dxa[1:] - dxa[:-1]
-    min_dx = dxd.min() + 12
-
-    tes = list()
-    for l in ax.get_xticklabels():
-        text = Text(text=l, figure=ax.figure)
-        extent = text.get_window_extent()
-        tes.append(extent.width)
-        fontheight = extent.height
-
-    max_tx = np.array(tes).max()
-
-    if min_dx > max_tx:
-        angle = 0
-    elif min_dx < fontheight * 2:
-        angle = 90
-    else:
-        angle = math.atan(fontheight / (min_dx - fontheight * 2)) / math.pi * 180
-
-    angle = max(0, min(90, angle))
-
-    plt.xticks(rotation=angle, horizontalalignment="right")
-    plt.tight_layout()
-
-
 def make_fancy_xticklabels(ax):
+
+    import math
+    import numpy as np
+    from matplotlib.text import Text
+
+    # Declare and register callbacks
+    def on_xlims_change(ax):
+        display_xs = list()
+        fontheight = 24
+        for p in ax.get_xticks():
+            xdisplay, ydisplay = ax.transData.transform_point((p, 0))
+            display_xs.append(xdisplay)
+        dxa = np.array(display_xs)
+        dxd = dxa[1:] - dxa[:-1]
+        min_dx = dxd.min() + 12
+
+        tes = list()
+        for l in ax.get_xticklabels():
+            text = Text(text=l, figure=ax.figure)
+            extent = text.get_window_extent()
+            tes.append(extent.width)
+            fontheight = extent.height
+
+        max_tx = np.array(tes).max()
+
+        if min_dx > max_tx:
+            angle = 0
+        elif min_dx < fontheight * 2:
+            angle = 90
+        else:
+            angle = math.atan(fontheight / (min_dx - fontheight * 2)) / math.pi * 180
+
+        angle = max(0, min(90, angle))
+
+        plt.xticks(rotation=angle, horizontalalignment="right")
+        plt.tight_layout()
+
     ax.callbacks.connect('xlim_changed', on_xlims_change)
 
 
