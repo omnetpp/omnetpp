@@ -87,7 +87,7 @@ public class MatplotlibChartViewer extends ChartViewerBase {
 
         final List<Object> limits = new ArrayList<Object>();
         try {
-            if (getPythonProcess() != null && getPythonProcess().isAlive() && plotWidget.getCanvas() != null);
+            if (getPythonProcess() != null && getPythonProcess().isAlive() && plotWidget.getCanvas() != null)
                 limits.addAll(plotWidget.getCanvas().getAxisLimits());
         }
         catch (Exception e) {
