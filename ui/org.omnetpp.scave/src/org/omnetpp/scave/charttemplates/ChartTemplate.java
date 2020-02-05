@@ -1,13 +1,17 @@
 package org.omnetpp.scave.charttemplates;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Chart.ChartType;
 import org.omnetpp.scave.model.Chart.DialogPage;
 
+/**
+ * Represents a chart template.
+ */
 public class ChartTemplate {
 
     private String id;
@@ -15,23 +19,26 @@ public class ChartTemplate {
     private String description;
     private ChartType chartType;
     private String iconPath;
+    private int supportedResultTypes; // a bitwise OR of the constants in ResultFileManager
     private String pythonScript;
     private List<DialogPage> dialogPages;
     private int toolbarOrder = -1;
     private String toolbarIconPath;
-    private List<String> propertyNames = new ArrayList<String>();
-    private int supportedResultTypes; // a bitwise OR of the constants in ResultFileManager
+    private Map<String,String> properties;
 
-    public ChartTemplate(String id, String name, String description, ChartType chartType, String iconPath, String pythonScript, List<DialogPage> dialogPages, int toolbarOrder, String toolbarIconPath) {
+    public ChartTemplate(String id, String name, String description, ChartType chartType, String iconPath, int supportedResultTypes,
+            String pythonScript, List<DialogPage> dialogPages, int toolbarOrder, String toolbarIconPath, Map<String,String> properties) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.chartType = chartType;
         this.iconPath = iconPath;
+        this.supportedResultTypes = supportedResultTypes;
         this.pythonScript = pythonScript;
         this.dialogPages = dialogPages;
         this.toolbarOrder = toolbarOrder;
         this.toolbarIconPath = toolbarIconPath;
+        this.properties = properties;
     }
 
     public String getId() {
@@ -46,56 +53,28 @@ public class ChartTemplate {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public Chart.ChartType getChartType() {
         return chartType;
     }
 
-    public void setChartType(Chart.ChartType chartType) {
-        this.chartType = chartType;
-    }
-
     public String getIconPath() {
         return iconPath;
-    }
-
-    public void setIconPath(String iconPath) {
-        this.iconPath = iconPath;
     }
 
     public String getPythonScript() {
         return pythonScript;
     }
 
-    public void setPythonScript(String pythonScript) {
-        this.pythonScript = pythonScript;
-    }
-
     public List<DialogPage> getDialogPages() {
         return Collections.unmodifiableList(dialogPages);
     }
 
-    public void setDialogPages(List<DialogPage> dialogPages) {
-        this.dialogPages = dialogPages;
-    }
-
     public int getToolbarOrder() {
         return toolbarOrder;
-    }
-
-    public void setToolbarOrder(int toolbarOrder) {
-        this.toolbarOrder = toolbarOrder;
     }
 
     public String getToolbarIconPath() {
@@ -106,20 +85,16 @@ public class ChartTemplate {
         this.toolbarIconPath = toolbarIconPath;
     }
 
-    public List<String> getPropertyNames() {
-        return Collections.unmodifiableList(propertyNames);
+    public Set<String> getPropertyNames() {
+        return Collections.unmodifiableSet(properties.keySet());
     }
 
-    public void setPropertyNames(List<String> propertyNames) {
-        this.propertyNames = propertyNames;
+    public String getPropertyDefault(String name) {
+        return properties.get(name);
     }
 
     public int getSupportedResultTypes() {
         return supportedResultTypes;
-    }
-
-    public void setSupportedResultTypes(int supportedResultTypes) {
-        this.supportedResultTypes = supportedResultTypes;
     }
 
     @Override

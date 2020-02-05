@@ -85,8 +85,6 @@ public class AddVectorOperationAction extends AbstractScaveAction {
         if (template == null)
             return false;
 
-        Set<String> templatePropertyNames = new HashSet<String>(template.getPropertyNames());
-
-        return templatePropertyNames.contains("vector_operations");
+        return template.getPropertyNames().contains("vector_operations");
     }
 }

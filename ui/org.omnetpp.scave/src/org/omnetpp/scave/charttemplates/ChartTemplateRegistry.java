@@ -23,6 +23,7 @@ import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.Markers;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.charting.properties.PlotDefaults;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Chart.ChartType;
@@ -96,23 +97,18 @@ public class ChartTemplateRegistry {
         Properties props = new Properties();
         props.load(new StringReader(readFile(propertiesFile, fromProject)));
 
+        // base properties
         String id = props.getProperty("id");
         String name = props.getProperty("name");
         String description = props.getProperty("description");
         String type = props.getProperty("type");
         String icon = props.getProperty("icon");
         String scriptFile = props.getProperty("scriptFile");
-
-        int toolbarOrder = -1;
-
-        String toolbarOrderProp = props.getProperty("toolbarOrder");
-        if (toolbarOrderProp != null)
-            toolbarOrder = Integer.parseInt(toolbarOrderProp);
-
         String toolbarIcon = props.getProperty("toolbarIcon");
+        int toolbarOrder = Integer.parseInt(props.getProperty("toolbarOrder", "-1"));
 
+        // dialog pages
         List<Chart.DialogPage> pages = new ArrayList<Chart.DialogPage>();
-
         for (int i = 0; true; ++i) {
             String pageId = props.getProperty("dialogPage." + i + ".label");
 
@@ -127,26 +123,35 @@ public class ChartTemplateRegistry {
             pages.add(page);
         }
 
+        // chart type
         ChartType chartType = EnumUtils.getEnum(Chart.ChartType.class, type);
-        if (chartType == null) {
-            addErrorMarker(fromProject.getFolder(CHARTTEMPLATES_FOLDER).getFile(propertiesFile),
-                    "Not a valid chart type '" + type + "', use one of: " + StringUtils.join(Chart.ChartType.values(), ","));
-            chartType = Chart.ChartType.MATPLOTLIB;
-        }
+        if (chartType == null)
+            throw new RuntimeException("Unrecognized chart type '" + type + "', use one of: " + StringUtils.join(Chart.ChartType.values(), ","));
 
+        // chart script
         String script = scriptFile != null ? readFile(scriptFile, fromProject) : "";
-        ChartTemplate template = new ChartTemplate(id, name, description, chartType, icon, script, pages, toolbarOrder, toolbarIcon);
 
-        String propertyNamesProp = props.getProperty("propertyNames");
-        if (propertyNamesProp != null) {
-            List<String> propertyNames = Arrays.asList(propertyNamesProp.split(","));
-            template.setPropertyNames(propertyNames);
+        // collect chart property declarations with their default values
+        HashMap<String,String> properties = new HashMap<>();
+        String propertyNamesProp = props.getProperty("propertyNames", "");
+        for (String item : propertyNamesProp.split(",")) {
+            String pname, pvalue = null;
+            if (item.contains(":")) {
+                pname = StringUtils.substringBefore(item, ":").trim();
+                pvalue = StringUtils.substringAfter(item, ":").trim();
+            }
+            else {
+                pname = item.trim();
+                pvalue = StringUtils.nullToEmpty(PlotDefaults.getDefaultPropertyValueAsString(pname));
+            }
+            properties.put(pname,  pvalue);
         }
 
+        // parse result types
+        int resultTypes = 0;
         String resultTypesProp = props.getProperty("resultTypes");
         if (resultTypesProp != null) {
-            int resultTypes = 0;
-            for (String resultType : resultTypesProp.split(","))
+            for (String resultType : resultTypesProp.split(",")) {
                 switch (resultType) {
                     case "parameter":  resultTypes |= ResultFileManager.PARAMETER;  break;
                     case "scalar":     resultTypes |= ResultFileManager.SCALAR;     break;
@@ -154,9 +159,10 @@ public class ChartTemplateRegistry {
                     case "statistics": resultTypes |= ResultFileManager.STATISTICS; break;
                     case "histogram":  resultTypes |= ResultFileManager.HISTOGRAM;  break;
                 }
-
-            template.setSupportedResultTypes(resultTypes);
+            }
         }
+
+        ChartTemplate template = new ChartTemplate(id, name, description, chartType, icon, resultTypes, script, pages, toolbarOrder, toolbarIcon, properties);
 
         return template;
     }
