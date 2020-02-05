@@ -83,6 +83,12 @@ public class ScaveModelUtil {
         chart.setName(template.getName());
         chart.setTemporary(false);
         chart.setIconPath(template.getIconPath());
+
+        List<Property> properties = new ArrayList<>();
+        for (String name : template.getPropertyNames())
+            properties.add(new Property(name, template.getPropertyDefault(name)));
+        chart.setProperties(properties);
+
         return chart;
     }
 

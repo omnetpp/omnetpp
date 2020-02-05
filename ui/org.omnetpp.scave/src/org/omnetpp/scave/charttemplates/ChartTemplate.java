@@ -89,6 +89,10 @@ public class ChartTemplate {
         return Collections.unmodifiableSet(properties.keySet());
     }
 
+    public Map<String,String> getProperties() {
+        return Collections.unmodifiableMap(properties);
+    }
+
     public String getPropertyDefault(String name) {
         return properties.get(name);
     }

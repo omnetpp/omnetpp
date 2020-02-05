@@ -23,6 +23,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -250,8 +251,14 @@ public class ChartEditForm {
             Property prop = chart.lookupProperty(propId);
             if (prop != null) {
                 String value = prop.getValue();
-                if (value != null)
-                    XSWTDataBinding.putValueIntoControl(xswtWidgetMap.get(propId), value, null);
+                if (value != null) {
+                    Control control = xswtWidgetMap.get(propId);
+                    try {
+                        XSWTDataBinding.putValueIntoControl(control, value, null);
+                    } catch (Exception e) {
+                        MessageDialog.openError(null, "Error", String.format("Error populating dialog field '%s' (%s) with value '%s': ", propId, control.getClass().getSimpleName(), value) + e.getMessage());
+                    }
+                }
             }
         }
     }

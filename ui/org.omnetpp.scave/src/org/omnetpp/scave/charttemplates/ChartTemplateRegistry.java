@@ -142,7 +142,7 @@ public class ChartTemplateRegistry {
             }
             else {
                 pname = item.trim();
-                pvalue = StringUtils.nullToEmpty(PlotDefaults.getDefaultPropertyValueAsString(pname));
+                pvalue = PlotDefaults.getDefaultPropertyValueAsString(pname); // null if not a recognized native plot property
             }
             properties.put(pname,  pvalue);
         }
