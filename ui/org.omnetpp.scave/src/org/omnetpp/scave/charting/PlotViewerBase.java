@@ -32,6 +32,11 @@ import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_PLOT_TIT
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_MAX;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_MIN;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.Graphics;
@@ -69,8 +74,22 @@ import org.omnetpp.scave.charting.properties.PlotProperties.LegendPosition;
  * @author tomi, andras
  */
 public abstract class PlotViewerBase extends ZoomableCachingCanvas implements IPlotViewer {
-
     private static final boolean debug = false;
+
+    protected static final String[] PLOTBASE_PROPERTY_NAMES = new String[] {
+            PROP_PLOT_TITLE,
+            PROP_PLOT_TITLE_FONT,
+            PROP_DISPLAY_LEGEND,
+            PROP_LEGEND_BORDER,
+            PROP_LEGEND_FONT,
+            PROP_LEGEND_POSITION,
+            PROP_LEGEND_ANCHORING,
+            PROP_ANTIALIAS,
+            PROP_CACHING,
+            PROP_BACKGROUND_COLOR,
+            PROP_Y_AXIS_MIN,
+            PROP_Y_AXIS_MAX
+    };
 
     // when displaying confidence intervals, XXX chart parameter?
     protected static final double CONFIDENCE_LEVEL = 0.95;
@@ -106,6 +125,7 @@ public abstract class PlotViewerBase extends ZoomableCachingCanvas implements IP
 
     public PlotViewerBase(Composite parent, int style) {
         super(parent, style);
+        resetProperties();
         setCaching(DEFAULT_CANVAS_CACHING);
         setBackground(backgroundColor);
         setToolTipText(null); // XXX prevent "Close" tooltip of the TabItem to come up (Linux only)
@@ -314,6 +334,10 @@ public abstract class PlotViewerBase extends ZoomableCachingCanvas implements IP
      *                            Properties
      *----------------------------------------------------------------------*/
 
+    public String[] getPropertyNames() {
+        return PLOTBASE_PROPERTY_NAMES;
+    }
+
     public void setProperty(String name, String value) {
         // Titles
         if (PROP_PLOT_TITLE.equals(name))
@@ -348,12 +372,16 @@ public abstract class PlotViewerBase extends ZoomableCachingCanvas implements IP
             //ScavePlugin.logError(new RuntimeException("unrecognized chart property: "+name));
     }
 
+    protected void resetProperties() {
+        for (String name : getPropertyNames())
+            setProperty(name, PlotDefaults.getDefaultPropertyValueAsString(name));
+    }
+
     /*
      * Clears all data and resets the visual properties to their defaults.
      */
     public void clear() {
-        // resetting properties to factory defaults
-        System.out.println("TODO clear() must be implemented!");
+        resetProperties();
     }
 
     protected String getElementId(String propertyName) {

@@ -20,6 +20,7 @@ import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_LABELS
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_TITLE;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Graphics;
@@ -54,6 +55,22 @@ import org.omnetpp.scave.python.PythonScalarDataset;
  * @author tomi
  */
 public class BarPlotViewer extends PlotViewerBase {
+    private static final boolean debug = false;
+
+    protected final static String[] BARPLOT_PROPERTY_NAMES = ArrayUtils.addAll(PLOTBASE_PROPERTY_NAMES, new String[] {
+            PROP_X_AXIS_TITLE,
+            PROP_Y_AXIS_TITLE,
+            PROP_AXIS_TITLE_FONT,
+            PROP_LABEL_FONT,
+            PROP_X_LABELS_ROTATE_BY,
+            PROP_WRAP_LABELS,
+            PROP_BAR_BASELINE,
+            PROP_BAR_PLACEMENT,
+            PROP_BAR_COLOR,
+            PROP_XY_GRID,
+            PROP_Y_AXIS_LOGARITHMIC
+    });
+
     private IScalarDataset dataset;
 
     private LinearAxis valueAxis = new LinearAxis(true, DEFAULT_Y_AXIS_LOGARITHMIC, false);
@@ -141,6 +158,11 @@ public class BarPlotViewer extends PlotViewerBase {
     /*=============================================
      *               Properties
      *=============================================*/
+
+    public String[] getPropertyNames() {
+        return BARPLOT_PROPERTY_NAMES;
+    }
+
     @Override
     public void setProperty(String name, String value) {
         Assert.isNotNull(name);

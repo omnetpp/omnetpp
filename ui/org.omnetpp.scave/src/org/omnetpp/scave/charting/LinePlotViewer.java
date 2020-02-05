@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Insets;
@@ -66,6 +67,7 @@ import org.omnetpp.scave.charting.plotter.ILinePlotter;
 import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 import org.omnetpp.scave.charting.plotter.LinePlotterFactory;
 import org.omnetpp.scave.charting.plotter.NoLinePlotter;
+import org.omnetpp.scave.charting.properties.PlotDefaults;
 import org.omnetpp.scave.charting.properties.LineVisualProperties.DrawStyle;
 import org.omnetpp.scave.charting.properties.LineVisualProperties.LineStyle;
 import org.omnetpp.scave.charting.properties.LineVisualProperties.SymbolType;
@@ -78,8 +80,28 @@ import org.omnetpp.scave.python.PythonXYDataset;
  * Line plot.
  */
 public class LinePlotViewer extends PlotViewerBase {
-
     private static final boolean debug = false;
+
+    private static final String[] LINEPLOT_PROPERTY_NAMES = ArrayUtils.addAll(PLOTBASE_PROPERTY_NAMES, new String[] {
+            PROP_X_AXIS_TITLE,
+            PROP_Y_AXIS_TITLE,
+            PROP_AXIS_TITLE_FONT,
+            PROP_LABEL_FONT,
+            PROP_X_LABELS_ROTATE_BY,
+            PROP_X_AXIS_MIN,
+            PROP_X_AXIS_MAX,
+            PROP_X_AXIS_LOGARITHMIC,
+            PROP_Y_AXIS_LOGARITHMIC,
+            PROP_XY_GRID,
+            PROP_DISPLAY_LINE,
+            PROP_DISPLAY_NAME,
+            PROP_SYMBOL_TYPE,
+            PROP_SYMBOL_SIZE,
+            PROP_DRAW_STYLE,
+            PROP_LINE_COLOR,
+            PROP_LINE_STYLE,
+            PROP_LINE_WIDTH
+    });
 
     private IXYDataset dataset = null;
     private List<LineProperties> lineProperties;
@@ -438,6 +460,11 @@ public class LinePlotViewer extends PlotViewerBase {
     /*==================================
      *          Properties
      *==================================*/
+
+    public String[] getPropertyNames() {
+        return LINEPLOT_PROPERTY_NAMES;
+    }
+
     @Override
     public void setProperty(String name, String value) {
         Assert.isNotNull(name);

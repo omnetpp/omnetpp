@@ -20,6 +20,7 @@ import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_LABELS
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_TITLE;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Insets;
@@ -42,8 +43,21 @@ import org.omnetpp.scave.charting.properties.HistogramPlotProperties.HistogramDa
 import org.omnetpp.scave.python.PythonHistogramDataset;
 
 public class HistogramPlotViewer extends PlotViewerBase {
-
     private static final boolean debug = false;
+
+    private static final String[] HISTOGRAMPLOT_PROPERTY_NAMES = ArrayUtils.addAll(PLOTBASE_PROPERTY_NAMES, new String[] {
+            PROP_X_AXIS_TITLE,
+            PROP_Y_AXIS_TITLE,
+            PROP_AXIS_TITLE_FONT,
+            PROP_LABEL_FONT,
+            PROP_X_LABELS_ROTATE_BY,
+            PROP_HIST_BAR,
+            PROP_HIST_DATA,
+            PROP_SHOW_OVERFLOW_CELL,
+            PROP_BAR_BASELINE,
+            PROP_HIST_COLOR,
+            PROP_Y_AXIS_LOGARITHMIC,
+    });
 
     private IHistogramDataset dataset = IHistogramDataset.EMPTY;
     private LinearAxis xAxis = new LinearAxis(false, false, false);
@@ -87,6 +101,14 @@ public class HistogramPlotViewer extends PlotViewerBase {
     @Override
     protected double inverseTransformY(double y) {
         return yAxis.inverseTransform(y);
+    }
+
+    /*=============================================
+     *               Properties
+     *=============================================*/
+
+    public String[] getPropertyNames() {
+        return HISTOGRAMPLOT_PROPERTY_NAMES;
     }
 
     @Override
