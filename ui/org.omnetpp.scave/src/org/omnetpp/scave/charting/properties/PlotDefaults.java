@@ -36,6 +36,7 @@ import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_AXIS_M
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_LABELS_ROTATE_BY;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_MAX;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_MIN;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_TITLE;
 
@@ -160,7 +161,7 @@ public class PlotDefaults {
         defaults.put(PROP_X_AXIS_MIN, DEFAULT_X_AXIS_MIN);
         defaults.put(PROP_X_AXIS_MAX, DEFAULT_X_AXIS_MAX);
         defaults.put(PROP_Y_AXIS_MIN, DEFAULT_Y_AXIS_MIN);
-        defaults.put(PROP_Y_AXIS_MIN, DEFAULT_Y_AXIS_MAX);
+        defaults.put(PROP_Y_AXIS_MAX, DEFAULT_Y_AXIS_MAX);
         defaults.put(PROP_X_AXIS_LOGARITHMIC, DEFAULT_X_AXIS_LOGARITHMIC);
         defaults.put(PROP_Y_AXIS_LOGARITHMIC, DEFAULT_Y_AXIS_LOGARITHMIC);
 
