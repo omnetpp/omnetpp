@@ -36,7 +36,7 @@ class NumberCellEditor extends TextCellEditor
 
     @Override
     protected Object doGetValue() {
-        return Converter.stringToDouble((String)super.doGetValue());
+        return Converter.tolerantStringToOptionalDouble((String)super.doGetValue());
     }
 
     @Override

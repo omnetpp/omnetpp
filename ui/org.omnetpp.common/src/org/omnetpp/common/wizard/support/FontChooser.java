@@ -33,7 +33,7 @@ public class FontChooser extends Composite implements IWidgetAdapter {
                 if (!text.isDisposed()) {
                     FontDialog dialog = new FontDialog(text.getShell());
 
-                    FontData font = Converter.stringToFontdata(text.getText());
+                    FontData font = Converter.tolerantStringToOptionalFontdata(text.getText());
                     if (font != null)
                         dialog.setFontList(new FontData[] {font});
                     font = dialog.open();

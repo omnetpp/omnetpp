@@ -36,7 +36,7 @@ class IntegerCellEditor extends TextCellEditor
 
     @Override
     protected Object doGetValue() {
-        return Converter.stringToInteger((String)super.doGetValue());
+        return Converter.tolerantStringToOptionalInteger((String)super.doGetValue());
     }
 
     @Override

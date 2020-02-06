@@ -130,23 +130,23 @@ public class HistogramPlot extends PlotViewerBase {
         else if (PROP_Y_AXIS_TITLE.equals(name))
             setYAxisTitle(value);
         else if (PROP_AXIS_TITLE_FONT.equals(name))
-            setAxisTitleFont(Converter.stringToSwtfont(value));
+            setAxisTitleFont(Converter.tolerantStringToOptionalSwtfont(value));
         else if (PROP_LABEL_FONT.equals(name))
-            setTickLabelFont(Converter.stringToSwtfont(value));
+            setTickLabelFont(Converter.tolerantStringToOptionalSwtfont(value));
         else if (PROP_X_LABELS_ROTATE_BY.equals(name))
             ; //TODO PROP_X_LABELS_ROTATE_BY
         else if (PROP_HIST_BAR.equals(name))
-            setBarType(Converter.stringToEnum(value, HistogramBar.class));
+            setBarType(Converter.tolerantStringToOptionalEnum(value, HistogramBar.class));
         else if (PROP_HIST_DATA.equals(name))
-            setHistogramDataTransform(Converter.stringToEnum(value, HistogramDataType.class));
+            setHistogramDataTransform(Converter.tolerantStringToOptionalEnum(value, HistogramDataType.class));
         else if (PROP_SHOW_OVERFLOW_CELL.equals(name))
-            setShowOverflowCell(Converter.stringToBoolean(value));
+            setShowOverflowCell(Converter.tolerantStringToOptionalBoolean(value));
         else if (PROP_BAR_BASELINE.equals(name))
-            setBarBaseline(Converter.stringToDouble(value));
+            setBarBaseline(Converter.tolerantStringToOptionalDouble(value));
         else if (name.startsWith(PROP_HIST_COLOR))
             setHistogramColor(getElementId(name), ColorFactory.asRGB(value));
         else if (PROP_Y_AXIS_LOGARITHMIC.equals(name))
-            setLogarithmicY(Converter.stringToBoolean(value));
+            setLogarithmicY(Converter.tolerantStringToOptionalBoolean(value));
         else
             super.setProperty(name, value);
     }

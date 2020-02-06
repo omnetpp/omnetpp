@@ -107,7 +107,7 @@ public class LinePlot extends PlotViewerBase {
 
     // plot-wide line properties, individual line may override
     private boolean defaultDisplayLine;
-    private SymbolType defaultSymbolType; // note: null is allowed and means "auto"; TODO we need something for "none"
+    private SymbolType defaultSymbolType; // note: null is allowed and means "auto"
     private int defaultSymbolSize;
     private DrawStyle defaultDrawStyle; // note: null is allowed and means "auto"
     private RGB defaultLineColor; // note: null is allowed and means "auto"
@@ -167,7 +167,7 @@ public class LinePlot extends PlotViewerBase {
                 default: symbolType = null; break;
                 }
             }
-            Assert.isTrue(symbolType != null); //TODO how to plot "no symbol"?
+            Assert.isTrue(symbolType != null);
             return symbolType;
         }
 
@@ -180,7 +180,7 @@ public class LinePlot extends PlotViewerBase {
             return drawStyle == null ? drawStyleFromInterpolationMode() : drawStyle;
         }
 
-        public Color getEffectiveLineColor() { //TODO return RGB
+        public Color getEffectiveLineColor() {
             RGB color = lineColor == null ? defaultLineColor : lineColor;
             if (color != null)
                 return new Color(Display.getDefault(),color);
@@ -401,54 +401,54 @@ public class LinePlot extends PlotViewerBase {
         else if (PROP_Y_AXIS_TITLE.equals(name))
             setYAxisTitle(value);
         else if (PROP_AXIS_TITLE_FONT.equals(name))
-            setAxisTitleFont(Converter.stringToSwtfont(value));
+            setAxisTitleFont(Converter.tolerantStringToOptionalSwtfont(value));
         else if (PROP_LABEL_FONT.equals(name))
-            setTickLabelFont(Converter.stringToSwtfont(value));
+            setTickLabelFont(Converter.tolerantStringToOptionalSwtfont(value));
         else if (PROP_X_LABELS_ROTATE_BY.equals(name))
             ; //TODO PROP_X_LABELS_ROTATE_BY
         // Axes
         else if (PROP_X_AXIS_MIN.equals(name))
-            setXMin(Converter.stringToDouble(value));
+            setXMin(Converter.tolerantStringToOptionalDouble(value));
         else if (PROP_X_AXIS_MAX.equals(name))
-            setXMax(Converter.stringToDouble(value));
+            setXMax(Converter.tolerantStringToOptionalDouble(value));
         else if (PROP_X_AXIS_LOGARITHMIC.equals(name))
-            setLogarithmicX(Converter.stringToBoolean(value));
+            setLogarithmicX(Converter.tolerantStringToOptionalBoolean(value));
         else if (PROP_Y_AXIS_LOGARITHMIC.equals(name))
-            setLogarithmicY(Converter.stringToBoolean(value));
+            setLogarithmicY(Converter.tolerantStringToOptionalBoolean(value));
         else if (PROP_XY_GRID.equals(name))
-            setShowGrid(Converter.stringToEnum(value, ShowGrid.class));
+            setShowGrid(Converter.tolerantStringToOptionalEnum(value, ShowGrid.class));
         // Line defaults
         else if (name.equals(PROP_DISPLAY_LINE))
             setDisplayLine(StringConverter.asBoolean(value));
         else if (name.equals(PROP_SYMBOL_TYPE))
-            setSymbolType(Converter.stringToEnum(value, SymbolType.class));
+            setSymbolType(Converter.tolerantStringToOptionalEnum(value, SymbolType.class));
         else if (name.equals(PROP_SYMBOL_SIZE)) //note: "" is not OK
-            setSymbolSize(Converter.stringToInteger(value));
+            setSymbolSize(Converter.tolerantStringToOptionalInteger(value));
         else if (name.equals(PROP_DRAW_STYLE))
-            setDrawStyle(Converter.stringToEnum(value, DrawStyle.class));
+            setDrawStyle(Converter.tolerantStringToOptionalEnum(value, DrawStyle.class));
         else if (name.equals(PROP_LINE_COLOR))
             setLineColor(ColorFactory.asRGB(value));
         else if (name.equals(PROP_LINE_STYLE)) // note: "" is not OK
-            setLineStyle(Converter.stringToEnum(value, LineStyle.class));
+            setLineStyle(Converter.tolerantStringToOptionalEnum(value, LineStyle.class));
         else if (name.equals(PROP_LINE_WIDTH))
             setLineWidth(StringConverter.asFloat(value));
         // Lines
         else if (name.startsWith(PROP_DISPLAY_LINE))
-            setDisplayLine(getElementId(name), Converter.stringToBoolean(value));
+            setDisplayLine(getElementId(name), Converter.tolerantStringToOptionalBoolean(value));
         else if (name.startsWith(PROP_DISPLAY_NAME))
             setDisplayName(getElementId(name), value);
         else if (name.startsWith(PROP_SYMBOL_TYPE))
-            setSymbolType(getElementId(name), Converter.stringToEnum(value, SymbolType.class));
+            setSymbolType(getElementId(name), Converter.tolerantStringToOptionalEnum(value, SymbolType.class));
         else if (name.startsWith(PROP_SYMBOL_SIZE))
-            setSymbolSize(getElementId(name), Converter.stringToInteger(value));
+            setSymbolSize(getElementId(name), Converter.tolerantStringToOptionalInteger(value));
         else if (name.startsWith(PROP_DRAW_STYLE))
-            setDrawStyle(getElementId(name), Converter.stringToEnum(value, DrawStyle.class));
+            setDrawStyle(getElementId(name), Converter.tolerantStringToOptionalEnum(value, DrawStyle.class));
         else if (name.startsWith(PROP_LINE_COLOR))
             setLineColor(getElementId(name), ColorFactory.asRGB(value));
         else if (name.startsWith(PROP_LINE_STYLE))
-            setLineStyle(getElementId(name), Converter.stringToEnum(value, LineStyle.class));
+            setLineStyle(getElementId(name), Converter.tolerantStringToOptionalEnum(value, LineStyle.class));
         else if (name.startsWith(PROP_LINE_WIDTH))
-            setLineWidth(getElementId(name), Converter.stringToFloat(value));
+            setLineWidth(getElementId(name), Converter.tolerantStringToOptionalFloat(value));
         else
             super.setProperty(name, value);
     }

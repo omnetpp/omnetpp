@@ -179,25 +179,25 @@ public class BarPlot extends PlotViewerBase {
         else if (PROP_Y_AXIS_TITLE.equals(name))
             setYAxisTitle(value);
         else if (PROP_AXIS_TITLE_FONT.equals(name))
-            setAxisTitleFont(Converter.stringToSwtfont(value));
+            setAxisTitleFont(Converter.tolerantStringToOptionalSwtfont(value));
         else if (PROP_LABEL_FONT.equals(name))
-            setLabelFont(Converter.stringToSwtfont(value));
+            setLabelFont(Converter.tolerantStringToOptionalSwtfont(value));
         else if (PROP_X_LABELS_ROTATE_BY.equals(name))
-            setXAxisLabelsRotatedBy(Converter.stringToDouble(value));
+            setXAxisLabelsRotatedBy(Converter.tolerantStringToOptionalDouble(value));
         else if (PROP_WRAP_LABELS.equals(name))
-            setWrapLabels(Converter.stringToBoolean(value));
+            setWrapLabels(Converter.tolerantStringToOptionalBoolean(value));
         // Bars
         else if (PROP_BAR_BASELINE.equals(name))
-            setBarBaseline(Converter.stringToDouble(value));
+            setBarBaseline(Converter.tolerantStringToOptionalDouble(value));
         else if (PROP_BAR_PLACEMENT.equals(name))
-            setBarPlacement(Converter.stringToEnum(value, BarPlacement.class));
+            setBarPlacement(Converter.tolerantStringToOptionalEnum(value, BarPlacement.class));
         else if (name.startsWith(PROP_BAR_COLOR))
             setBarColor(getElementId(name), ColorFactory.asRGB(value));
         // Axes
         else if (PROP_XY_GRID.equals(name))
-            setShowGrid(Converter.stringToEnum(value, ShowGrid.class));
+            setShowGrid(Converter.tolerantStringToOptionalEnum(value, ShowGrid.class));
         else if (PROP_Y_AXIS_LOGARITHMIC.equals(name))
-            setLogarithmicY(Converter.stringToBoolean(value));
+            setLogarithmicY(Converter.tolerantStringToOptionalBoolean(value));
         else
             super.setProperty(name, value);
     }

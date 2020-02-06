@@ -22,46 +22,62 @@ import org.omnetpp.common.color.ColorFactory;
 public class Converter {
 
     public static java.awt.Font fontdataToAwtfont(FontData fontdata) {
-        if (fontdata == null)
-            return null;
-        return new java.awt.Font(fontdata.getName(), fontdata.getStyle(), fontdata.getHeight());
+        return fontdata == null ? null : new java.awt.Font(fontdata.getName(), fontdata.getStyle(), fontdata.getHeight());
     }
 
     public static FontData awtfontToFontdata(java.awt.Font font) {
-        if (font == null)
-            return null;
-        return new FontData(font.getName(), font.getSize(), font.getStyle());
+        return font == null ? null : new FontData(font.getName(), font.getSize(), font.getStyle());
     }
 
     public static org.eclipse.swt.graphics.Font fontdataToSwtfont(FontData fontdata) {
-        if (fontdata == null)
-            return null;
-        return new org.eclipse.swt.graphics.Font(Display.getDefault(), fontdata);
+        return fontdata == null ? null : new org.eclipse.swt.graphics.Font(Display.getDefault(), fontdata);
     }
 
     public static FontData swtfontToFontdata(org.eclipse.swt.graphics.Font font) {
-        if (font == null)
-            return null;
-        return font.getFontData()[0];
+        return font == null ? null : font.getFontData()[0];
     }
 
     public static java.awt.Font stringToAwtfont(String font) {
         return fontdataToAwtfont(stringToFontdata(font));
     }
 
+    public static java.awt.Font stringToOptionalAwtfont(String font) {
+        return fontdataToAwtfont(stringToOptionalFontdata(font));
+    }
+
+    public static java.awt.Font tolerantStringToOptionalAwtfont(String font) {
+        return fontdataToAwtfont(tolerantStringToOptionalFontdata(font));
+    }
+
     public static org.eclipse.swt.graphics.Font stringToSwtfont(String font) {
         return fontdataToSwtfont(stringToFontdata(font));
     }
 
-    public static <T extends Enum<T>> T stringToEnum(String value, Class<T> enumType) {
-        if (value == null)
-            return null;
+    public static org.eclipse.swt.graphics.Font stringToOptionalSwtfont(String font) {
+        return fontdataToSwtfont(stringToOptionalFontdata(font));
+    }
 
+    public static org.eclipse.swt.graphics.Font tolerantStringToOptionalSwtfont(String font) {
+        return fontdataToSwtfont(tolerantStringToOptionalFontdata(font));
+    }
+
+    public static <T extends Enum<T>> T stringToEnum(String value, Class<T> enumType) {
         for (T option : enumType.getEnumConstants())
             if (option.toString().equalsIgnoreCase(value))
                 return option;
+        throw new IllegalArgumentException("Invalid value '" + value + "' for " + enumType.getSimpleName());
+    }
 
-        return null;
+    public static <T extends Enum<T>> T stringToOptionalEnum(String value, Class<T> enumType) {
+        return StringUtils.isEmpty(value) ? null : stringToEnum(value, enumType);
+    }
+
+    public static <T extends Enum<T>> T tolerantStringToOptionalEnum(String value, Class<T> enumType) {
+        try {
+            return stringToOptionalEnum(value, enumType);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 
     /*
@@ -71,16 +87,20 @@ public class Converter {
      */
 
     public static String fontdataToString(FontData fontdata) {
-        if (fontdata == null)
-            return null;
-        return StringConverter.asString(fontdata);
+        return fontdata == null ? null : StringConverter.asString(fontdata);
     }
 
     public static FontData stringToFontdata(String value) {
-        if (value == null)
-            return null;
+        return StringConverter.asFontData(value);
+    }
+
+    public static FontData stringToOptionalFontdata(String value) {
+        return StringUtils.isEmpty(value) ? null : StringConverter.asFontData(value);
+    }
+
+    public static FontData tolerantStringToOptionalFontdata(String value) {
         try {
-            return StringConverter.asFontData(value);
+            return stringToOptionalFontdata(value);
         } catch (DataFormatException e) {
             return null;
         }
@@ -90,11 +110,17 @@ public class Converter {
         return value != null ? StringConverter.asString(value) : null;
     }
 
-    public static Boolean stringToBoolean(String value) {
-        if (value == null)
-            return null;
+    public static boolean stringToBoolean(String value) {
+        return StringConverter.asBoolean(value);
+    }
+
+    public static Boolean stringToOptionalBoolean(String value) {
+        return StringUtils.isEmpty(value) ? null : StringConverter.asBoolean(value);
+    }
+
+    public static Boolean tolerantStringToOptionalBoolean(String value) {
         try {
-            return StringConverter.asBoolean(value);
+            return stringToOptionalBoolean(value);
         } catch (DataFormatException e) {
             return null;
         }
@@ -108,21 +134,33 @@ public class Converter {
         return value != null ? StringConverter.asString(value) : null;
     }
 
-    public static Float stringToFloat(String value) {
-        if (value == null)
-            return null;
+    public static float stringToFloat(String value) {
+        return StringConverter.asFloat(value);
+    }
+
+    public static Float stringToOptionalFloat(String value) {
+        return StringUtils.isEmpty(value) ? null : StringConverter.asFloat(value);
+    }
+
+    public static Float tolerantStringToOptionalFloat(String value) {
         try {
-            return StringConverter.asFloat(value);
+            return stringToOptionalFloat(value);
         } catch (DataFormatException e) {
             return null;
         }
     }
 
-    public static Double stringToDouble(String value) {
-        if (value == null)
-            return null;
+    public static double stringToDouble(String value) {
+        return StringConverter.asDouble(value);
+    }
+
+    public static Double stringToOptionalDouble(String value) {
+        return StringUtils.isEmpty(value) ? null : StringConverter.asDouble(value);
+    }
+
+    public static Double tolerantStringToOptionalDouble(String value) {
         try {
-            return StringConverter.asDouble(value);
+            return stringToOptionalDouble(value);
         } catch (DataFormatException e) {
             return null;
         }
@@ -132,11 +170,17 @@ public class Converter {
         return value != null ? StringConverter.asString(value) : null;
     }
 
-    public static Integer stringToInteger(String value) {
-        if (value == null)
-            return null;
+    public static int stringToInteger(String value) {
+        return StringConverter.asInt(value);
+    }
+
+    public static Integer stringToOptionalInteger(String value) {
+        return StringUtils.isEmpty(value) ? null : StringConverter.asInt(value);
+    }
+
+    public static Integer tolerantStringToOptionalInteger(String value) {
         try {
-            return StringConverter.asInt(value);
+            return stringToOptionalInteger(value);
         } catch (DataFormatException e) {
             return null;
         }
@@ -149,25 +193,31 @@ public class Converter {
     }
 
     public static RGB stringToRGB(String value) {
-        if (value == null || value.length() != 7 || value.charAt(0) != '#')
-            return null;
+        // note: value=null will/should cause NPE
+        if (value.length() != 7 || value.charAt(0) != '#')
+            throw new DataFormatException("Not a valid RGB string: " + value);
+        int red = Integer.parseInt(value.substring(1,3), 16);
+        int green = Integer.parseInt(value.substring(3,5), 16);
+        int blue = Integer.parseInt(value.substring(5,7), 16);
+        return new RGB(red, green, blue);
+    }
+
+    public static RGB stringToOptionalRGB(String value) {
+        return StringUtils.isEmpty(value) ? null : stringToRGB(value);
+    }
+
+    public static RGB tolerantStringToOptionalRGB(String value) {
         try {
-            int red = Integer.parseInt(value.substring(1,3), 16);
-            int green = Integer.parseInt(value.substring(3,5), 16);
-            int blue = Integer.parseInt(value.substring(5,7), 16);
-            return new RGB(red, green, blue);
-        }
-        catch (NumberFormatException e) {
+            return stringToOptionalRGB(value);
+        } catch (NumberFormatException|DataFormatException e) {
             return null;
         }
     }
 
-
     public static String objectToString(Object value) {
         if (value == null)
             return null;
-
-        if (value instanceof FontData)
+        else if (value instanceof FontData)
             return fontdataToString((FontData)value);
         else if (value instanceof Boolean)
             return booleanToString((Boolean)value);
