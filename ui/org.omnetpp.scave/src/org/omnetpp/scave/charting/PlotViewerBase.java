@@ -326,42 +326,39 @@ public abstract class PlotViewerBase extends ZoomableCachingCanvas implements IP
         if (PROP_PLOT_TITLE.equals(name))
             setTitle(value);
         else if (PROP_PLOT_TITLE_FONT.equals(name))
-            setTitleFont(Converter.tolerantStringToOptionalSwtfont(value));
+            setTitleFont(Converter.stringToSwtfont(value));
         // Legend
         else if (PROP_DISPLAY_LEGEND.equals(name))
-            setDisplayLegend(Converter.tolerantStringToOptionalBoolean(value));
+            setDisplayLegend(Converter.stringToBoolean(value));
         else if (PROP_LEGEND_BORDER.equals(name))
-            setLegendBorder(Converter.tolerantStringToOptionalBoolean(value));
+            setLegendBorder(Converter.stringToBoolean(value));
         else if (PROP_LEGEND_FONT.equals(name))
-            setLegendFont(Converter.tolerantStringToOptionalSwtfont(value));
+            setLegendFont(Converter.stringToSwtfont(value));
         else if (PROP_LEGEND_POSITION.equals(name))
-            setLegendPosition(Converter.tolerantStringToOptionalEnum(value, LegendPosition.class));
+            setLegendPosition(Converter.stringToEnum(value, LegendPosition.class));
         else if (PROP_LEGEND_ANCHORING.equals(name))
-            setLegendAnchor(Converter.tolerantStringToOptionalEnum(value, LegendAnchor.class));
+            setLegendAnchor(Converter.stringToEnum(value, LegendAnchor.class));
         // Plot
         else if (PROP_ANTIALIAS.equals(name))
-            setAntialias(Converter.tolerantStringToOptionalBoolean(value));
+            setAntialias(Converter.stringToBoolean(value));
         else if (PROP_CACHING.equals(name))
-            setCaching(Converter.tolerantStringToOptionalBoolean(value));
+            setCaching(Converter.stringToBoolean(value));
         else if (PROP_BACKGROUND_COLOR.equals(name))
-            setBackgroundColor(ColorFactory.asRGB(value));
+            setBackgroundColor(Converter.stringToRGB(value));
         // Axes
         else if (PROP_Y_AXIS_MIN.equals(name))
-            setYMin(Converter.tolerantStringToOptionalDouble(value));
+            setYMin(Converter.stringToDouble(value));
         else if (PROP_Y_AXIS_MAX.equals(name))
-            setYMax(Converter.tolerantStringToOptionalDouble(value));
+            setYMax(Converter.stringToDouble(value));
         else
-            System.out.println("Unrecognized chart property: " + name + " = " + value);
-            //ScavePlugin.logError(new RuntimeException("unrecognized chart property: "+name));
+            throw new RuntimeException("unrecognized plot property in " + getClass().getSimpleName() + ": "  + name + " = " + value);
     }
 
     protected void resetProperties() {
         for (String name : getPropertyNames()) {
+            Assert.isTrue(PlotDefaults.hasDefaultValue(name));
             String value = PlotDefaults.getDefaultPropertyValueAsString(name);
-            if (value == null)
-                Debug.println("WARNING: Property " + name + " has no default value");
-            else
-                setProperty(name, value);
+            setProperty(name, value);
         }
     }
 

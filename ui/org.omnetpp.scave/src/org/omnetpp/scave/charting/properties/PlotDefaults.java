@@ -187,6 +187,11 @@ public class PlotDefaults {
 
         defaults.put(PROP_HIST_BAR, DEFAULT_HIST_BAR);
         defaults.put(PROP_SHOW_OVERFLOW_CELL, DEFAULT_SHOW_OVERFLOW_CELL);
+
+    }
+
+    public static boolean hasDefaultValue(String propertyName) {
+        return defaults.containsKey(getBasePropertyName(propertyName));
     }
 
     public static String getDefaultPropertyValueAsString(String propertyName) {
