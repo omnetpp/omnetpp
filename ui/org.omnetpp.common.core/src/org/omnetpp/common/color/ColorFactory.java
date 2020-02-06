@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.eclipse.jface.resource.ColorRegistry;
+import org.eclipse.jface.resource.DataFormatException;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -642,43 +643,56 @@ public class ColorFactory {
 
     /**
      * Parses a string into an RGB object. The format can be "#RRGGBB", "@HHSSII",
-     * or and English color name like "red" or "green". Returns null if the color
+     * or and English color name like "red" or "green". Throws exception if the color
      * is not recognized.
-     *
-     * @param value String to be parsed
-     * @return RGB or <code>null</code> on parse error
      */
-    public static RGB asRGB(String value) {
-        if (value == null)
-            return null;
-
-        RGB result = null;
+    public static RGB asRGBStrict(String value) {
         try {
-            // check for color constants
-            RGB constRGB = stringToRgbMap.getRGB(value.toLowerCase());
-
-            // return a new RGB object, because RGB is mutable
-            if (constRGB != null)
-                return new RGB(constRGB.red, constRGB.green, constRGB.blue);
-
-            // if no constant name found, try to parse as hex string
+            // Try as RGB hex string: #rrggbb
             if (value.startsWith("#")) {
+                if (value.length() != 7)
+                    throw new DataFormatException("Invalid RGB color constant '"+value+"'");
                 int rgbVal = Integer.parseInt(value.substring(1), 16);
-                result = new RGB((rgbVal >> 16) & 0xFF, (rgbVal >> 8) & 0xFF, rgbVal & 0xFF);
+                return new RGB((rgbVal >> 16) & 0xFF, (rgbVal >> 8) & 0xFF, rgbVal & 0xFF);
             }
 
-            // check for HSB syntax and convert
+            // Try as HSB hex string: @hhssbb
             if (value.startsWith("@")) {
+                if (value.length() != 7)
+                    throw new DataFormatException("Invalid HSV color constant '"+value+"'");
                 int hsbVal = Integer.parseInt(value.substring(1), 16);
                 float hue = ((hsbVal >> 16) & 0xFF) / 256.0f * 360.0f;  // 0..360
                 float saturation = ((hsbVal >> 8) & 0xFF) / 256.0f ;    // 0..1
                 float brightness = (hsbVal & 0xFF) / 256.0f;            // 0..1
-                result = new RGB(hue, saturation, brightness);
+                return new RGB(hue, saturation, brightness);
             }
 
-        } catch (NumberFormatException e) {
+            // Try as English color name
+            RGB rgb = stringToRgbMap.getRGB(value.toLowerCase());
+            if (rgb == null)
+                throw new DataFormatException("Unrecognized color name '"+value+"'");
+
+            // return a new RGB object, because RGB is mutable
+            return new RGB(rgb.red, rgb.green, rgb.blue);
         }
-        return result;
+        catch (NumberFormatException e) { // from Integer.parseInt()
+            throw new DataFormatException("Invalid color constant '"+value+"'");
+        }
+    }
+
+    /**
+     * Parses a string into an RGB object. The format can be "#RRGGBB", "@HHSSII",
+     * or and English color name like "red" or "green". Returns null if the color
+     * is not recognized.
+     */
+    public static RGB asRGB(String value) {
+        if (value == null || value.isEmpty())
+            return null;
+        try {
+            return asRGBStrict(value);
+        } catch(Exception e) {
+            return null;
+        }
     }
 
     /**
