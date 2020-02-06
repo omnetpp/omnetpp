@@ -237,6 +237,9 @@ def yscale(value):
     """
     impl.yscale(**locals())
 
+def grid(show=True, which="major"):
+    impl.grid(**locals())
+
 def legend(show=None, frameon=None, loc=None):
     impl.legend(**locals())
 

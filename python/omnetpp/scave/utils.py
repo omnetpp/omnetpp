@@ -339,12 +339,13 @@ def postconfigure_plot(props):
            frameon=_parse_opt_bool(props["legend_border"]),
            loc=props["legend_placement"] or None)
 
-    plt.grid(_parse_opt_bool(props["grid_show"]),
+    p.grid(_parse_opt_bool(props["grid_show"]),
              "major" if (props["grid_density"] or "").lower() == "major" else "both") # grid_density is "Major" or "All"
 
     if not chart.is_native_chart():
         plt.tight_layout()
 
+# XXX: why is this here, and not in plot.py?
 def legend(*args, **kwargs):
     if chart.is_native_chart():
         plot.legend(*args, **kwargs)

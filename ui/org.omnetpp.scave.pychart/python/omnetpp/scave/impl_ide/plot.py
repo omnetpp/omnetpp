@@ -538,6 +538,16 @@ def yscale(value):
         raise ValueError("scale='{}' is not supported, only 'linear' and 'log'".format(value))
     set_property("Y.Axis.Log", "true" if value == "log" else "false")
 
+def grid(show=True, which="major"):
+    if which not in ["major", "both"]:
+        raise ValueError("which='{}' is not supported, only 'major', and 'both'".format(which))
+    if not show:
+        set_property("Axes.Grid", "None")
+    elif which == "major":
+        set_property("Axes.Grid", "Major")
+    else:
+        set_property("Axes.Grid", "All")
+
 def legend(show=None, frameon=None, loc=None):
     if show is not None:
         set_property("Legend.Display", "true" if show else "false")

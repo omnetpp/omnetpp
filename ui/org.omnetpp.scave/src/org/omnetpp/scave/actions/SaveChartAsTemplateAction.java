@@ -85,7 +85,9 @@ public class SaveChartAsTemplateAction extends AbstractScaveAction {
             for (Property p : chart.getProperties()) {
                 if (!first)
                     pfw.write(",\\\n    ");
-                pfw.write(p.getName()); // TODO: add default values
+                pfw.write(p.getName());
+                if (p.getValue() != null && !p.getName().equals("filter"))
+                    pfw.write(":" + p.getValue()); // TODO: what if the value contains a comma? should quote...
                 first = false;
             }
 
