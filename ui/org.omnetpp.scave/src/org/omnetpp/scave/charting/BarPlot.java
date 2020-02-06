@@ -179,25 +179,25 @@ public class BarPlot extends PlotViewerBase {
         else if (PROP_Y_AXIS_TITLE.equals(name))
             setYAxisTitle(value);
         else if (PROP_AXIS_TITLE_FONT.equals(name))
-            setAxisTitleFont(Converter.tolerantStringToOptionalSwtfont(value));
+            setAxisTitleFont(Converter.stringToSwtfont(value));
         else if (PROP_LABEL_FONT.equals(name))
-            setLabelFont(Converter.tolerantStringToOptionalSwtfont(value));
+            setLabelFont(Converter.stringToSwtfont(value));
         else if (PROP_X_LABELS_ROTATE_BY.equals(name))
-            setXAxisLabelsRotatedBy(Converter.tolerantStringToOptionalDouble(value));
+            setXAxisLabelsRotatedBy(Converter.stringToDouble(value));
         else if (PROP_WRAP_LABELS.equals(name))
-            setWrapLabels(Converter.tolerantStringToOptionalBoolean(value));
+            setWrapLabels(Converter.stringToBoolean(value));
         // Bars
         else if (PROP_BAR_BASELINE.equals(name))
-            setBarBaseline(Converter.tolerantStringToOptionalDouble(value));
+            setBarBaseline(Converter.stringToDouble(value));
         else if (PROP_BAR_PLACEMENT.equals(name))
-            setBarPlacement(Converter.tolerantStringToOptionalEnum(value, BarPlacement.class));
+            setBarPlacement(Converter.stringToEnum(value, BarPlacement.class));
         else if (name.startsWith(PROP_BAR_COLOR))
-            setBarColor(getElementId(name), ColorFactory.asRGB(value));
+            setBarColor(getElementId(name), Converter.stringToOptionalRGB(value));
         // Axes
         else if (PROP_XY_GRID.equals(name))
-            setShowGrid(Converter.tolerantStringToOptionalEnum(value, ShowGrid.class));
+            setShowGrid(Converter.stringToEnum(value, ShowGrid.class));
         else if (PROP_Y_AXIS_LOGARITHMIC.equals(name))
-            setLogarithmicY(Converter.tolerantStringToOptionalBoolean(value));
+            setLogarithmicY(Converter.stringToBoolean(value));
         else
             super.setProperty(name, value);
     }
