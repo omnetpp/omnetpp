@@ -91,12 +91,11 @@ public class NativeChartViewer extends ChartViewerBase {
         @Override
         public void setWarning(String warning) {
             Display.getDefault().syncExec(() -> {
-                plotViewer.setWarningText(warning); // TODO separate text for this
+                plotViewer.setWarningText(warning);
             });
         }
 
         public void reset() {
-
             if (xyDataset != null)
                 xyDataset.dispose();
 
