@@ -75,8 +75,11 @@ public class NativeChartViewer extends ChartViewerBase {
             if(debug)
                 Debug.println("setProperties syncExec begin");
             Display.getDefault().syncExec(() -> {
-                for (String k : properties.keySet())
-                    plotViewer.setProperty(k, properties.get(k));
+                for (String k : properties.keySet()) {
+                    String v = properties.get(k);
+                    if (v != null)
+                        plotViewer.setProperty(k, v);
+                }
             });
             if(debug)
                 Debug.println("setProperties syncExec end");
