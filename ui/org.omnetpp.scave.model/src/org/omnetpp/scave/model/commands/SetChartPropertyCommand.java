@@ -3,6 +3,8 @@ package org.omnetpp.scave.model.commands;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.apache.commons.lang3.ObjectUtils;
+import org.eclipse.core.runtime.Assert;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Property;
@@ -18,22 +20,19 @@ public class SetChartPropertyCommand implements ICommand {
         this.chart = chart;
         this.propertyName = propertyName;
         this.newValue = newValue;
+
+        Assert.isNotNull(newValue);
     }
 
     private static void setPropertyValue(Chart chart, String name, String toValue) {
         Property property = chart.lookupProperty(name);
-        String fromValue = property == null ? null : property.getValue();
+        Assert.isNotNull(property);
+        String fromValue = property.getValue();
 
-        if (fromValue == null && toValue == null)
-            return;
-        else if (fromValue != null && toValue != null)
-            property.setValue(toValue);
-        else if (fromValue == null)
-            chart.addProperty(new Property(name, toValue));
-        else if (toValue == null)
-            chart.removeProperty(property);
-        else
-            throw new RuntimeException("cannot happen");
+        if (ObjectUtils.equals(fromValue, toValue))
+            return; // nothing to do
+
+        property.setValue(toValue);
     }
 
     @Override

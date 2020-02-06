@@ -1,5 +1,7 @@
 package org.omnetpp.scave.model;
 
+import org.apache.commons.lang3.ObjectUtils;
+
 public class Property extends ModelObject {
     protected String name;
     protected String value;
@@ -36,14 +38,13 @@ public class Property extends ModelObject {
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
-        if (!(obj instanceof Property))
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
             return false;
 
-        Property other = (Property)obj;
+        Property other = (Property) obj;
 
-        if (value == null && other.value != null)
-            return false;
-
-        return name.equals(other.name) && value.equals(other.value);
+        return ObjectUtils.equals(name, other.name) && ObjectUtils.equals(value, other.value);
     }
 }

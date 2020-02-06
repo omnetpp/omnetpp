@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -142,7 +141,10 @@ public class ChartTemplateRegistry {
             }
             else {
                 pname = item.trim();
-                pvalue = PlotDefaults.getDefaultPropertyValueAsString(pname); // null if not a recognized native plot property
+                pvalue = PlotDefaults.getDefaultPropertyValueAsString(pname);
+
+                if (pvalue == null)
+                    throw new RuntimeException("Chart property " + pname + " has no default value.");
             }
             properties.put(pname,  pvalue);
         }
