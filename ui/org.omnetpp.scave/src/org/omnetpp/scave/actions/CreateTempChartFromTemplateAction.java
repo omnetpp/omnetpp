@@ -59,8 +59,12 @@ public class CreateTempChartFromTemplateAction extends AbstractScaveAction {
                 ResultItemField.MODULE, ResultItemField.NAME };
         String viewFilter = editor.getBrowseDataPage().getActivePanel().getFilter().getFilterPattern();
         String filter = ResultFileManager.callWithReadLock(manager, () -> { return ResultSelectionFilterGenerator.getIDListAsFilterExpression(idList, filterFields, viewFilter, manager); });
-        Property property = new Property("filter", filter);
-        chart.addProperty(property);
+
+        Property filterProperty = chart.lookupProperty("filter");
+        if (filterProperty != null)
+            filterProperty.setValue(filter);
+        else
+            chart.addProperty(new Property("filter", filter));
 
         editor.getChartTemplateRegistry().markTemplateUsage(template);
 
