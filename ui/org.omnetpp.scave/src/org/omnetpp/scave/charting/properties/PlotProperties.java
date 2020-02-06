@@ -57,7 +57,6 @@ public class PlotProperties {
     PROP_X_AXIS_MAX         = "X.Axis.Max",
     PROP_X_AXIS_LOGARITHMIC = "X.Axis.Log",
     // Lines
-    PROP_DISPLAY_NAME       = "Line.Name",
     PROP_DISPLAY_LINE       = "Line.Display",
     PROP_DRAW_STYLE         = "Line.DrawStyle",
     PROP_LINE_COLOR         = "Line.Color",

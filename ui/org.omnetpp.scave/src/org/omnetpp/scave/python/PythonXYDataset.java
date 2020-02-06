@@ -123,7 +123,7 @@ public class PythonXYDataset implements IXYDataset {
     }
 
     @Override
-    public String getSeriesTitle(int series, String format) {
+    public String getSeriesTitle(int series) {
         return this.series.get(series).title;
     }
 

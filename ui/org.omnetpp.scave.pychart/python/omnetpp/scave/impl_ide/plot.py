@@ -37,8 +37,6 @@ def _list_to_bytes(l):
 
 def plot(xs, ys, key=None, label=None, drawstyle=None, linestyle=None, linewidth=None, color=None, marker=None, markersize=None):
     props = {}
-    if label:
-        props["Line.Name"] = label
     if drawstyle:
         props["Line.DrawStyle"] = _translate_drawstyle(drawstyle)
     if linestyle:

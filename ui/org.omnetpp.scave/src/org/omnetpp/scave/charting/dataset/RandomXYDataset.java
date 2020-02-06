@@ -51,7 +51,7 @@ public class RandomXYDataset extends XYDatasetSupport implements IXYDataset {
         return seriesKeys[series];
     }
 
-    public String getSeriesTitle(int series, String format) {
+    public String getSeriesTitle(int series) {
         return getSeriesKey(series); // TODO
     }
 

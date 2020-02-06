@@ -9,7 +9,6 @@ package org.omnetpp.scave.charting;
 
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_AXIS_TITLE_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_DISPLAY_LINE;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_DISPLAY_NAME;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_DRAW_STYLE;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LABEL_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LINE_COLOR;
@@ -85,7 +84,6 @@ public class LinePlot extends PlotViewerBase {
             PROP_Y_AXIS_LOGARITHMIC,
             PROP_XY_GRID,
             PROP_DISPLAY_LINE,
-            PROP_DISPLAY_NAME,
             PROP_SYMBOL_TYPE,
             PROP_SYMBOL_SIZE,
             PROP_DRAW_STYLE,
@@ -120,7 +118,6 @@ public class LinePlot extends PlotViewerBase {
         private int series;
         private String lineId;
         private Boolean displayLine;
-        private String displayName;
         private SymbolType symbolType;
         private Integer symbolSize;
         private DrawStyle drawStyle;
@@ -143,10 +140,9 @@ public class LinePlot extends PlotViewerBase {
         }
 
         public String getEffectiveDisplayName() {
-            String format = StringUtils.isEmpty(displayName) ? null : displayName;
             String name = "";
             if (dataset != null && series != -1)
-                name = dataset.getSeriesTitle(series, format);
+                name = dataset.getSeriesTitle(series);
             return StringUtils.isEmpty(name) ? lineId : name;
         }
 
@@ -430,8 +426,6 @@ public class LinePlot extends PlotViewerBase {
         // Lines
         else if (name.startsWith(PROP_DISPLAY_LINE))
             setDisplayLine(getElementId(name), Converter.stringToOptionalBoolean(value));
-        else if (name.startsWith(PROP_DISPLAY_NAME))
-            setDisplayName(getElementId(name), value);
         else if (name.startsWith(PROP_SYMBOL_TYPE))
             setSymbolType(getElementId(name), Converter.stringToOptionalEnum(value, SymbolType.class));
         else if (name.startsWith(PROP_SYMBOL_SIZE))
@@ -516,13 +510,6 @@ public class LinePlot extends PlotViewerBase {
     public void setDisplayLine(String key, Boolean value) {
         LineProperties props = getOrCreateLineProperties(key);
         props.displayLine = value;
-        updateLegends();
-        chartChanged();
-    }
-
-    public void setDisplayName(String key, String name) {
-        LineProperties props = getOrCreateLineProperties(key);
-        props.displayName = name;
         updateLegends();
         chartChanged();
     }
