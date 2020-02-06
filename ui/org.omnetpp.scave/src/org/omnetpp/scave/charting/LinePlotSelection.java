@@ -82,7 +82,7 @@ public class LinePlotSelection implements IPlotSelection {
 
     protected void draw(Graphics graphics, ICoordsMapping coordsMapping) {
         LineProperties props = this.viewer.getLineProperties(series);
-        if (props != null && props.getDisplayLine()) {
+        if (props != null && props.getEffectiveDisplayLine()) {
             long xx = coordsMapping.toCanvasX(this.viewer.transformX(x));
             long yy = coordsMapping.toCanvasY(this.viewer.transformY(y));
             Rectangle clipping = GraphicsUtils.getClip(graphics);

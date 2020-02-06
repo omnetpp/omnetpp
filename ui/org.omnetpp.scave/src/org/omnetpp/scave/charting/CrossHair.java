@@ -255,9 +255,9 @@ class CrossHair {
             int lineNo = 0;
             for (DataPoint dp : dataPoints) {
                 LineProperties props = parent.getLineProperties(dp.series);
-                Color color = props.getColor();
+                Color color = props.getEffectiveLineColor();
                 String text = getText(dp);
-                IPlotSymbol symbol = props.getSymbol();
+                IPlotSymbol symbol = props.getSymbolPlotter();
                 String imageFile = SymbolImageFactory.getImageFile(color, symbol, true);
                 htmlText.append("<tr>");
                 htmlText.append("<td>");
@@ -339,7 +339,7 @@ class CrossHair {
         int totalFound = 0;
         for (int series = 0; series < dataset.getSeriesCount(); ++series) {
             LineProperties props = parent.getLineProperties(series);
-            if (!props.getDisplayLine())
+            if (!props.getEffectiveDisplayLine())
                 continue;
             // find data point nearest to cursor x, using binary search
             int mid = DatasetUtils.findXLowerLimit(dataset, series, parent.inverseTransformX(coordsMapping.fromCanvasX(x)));

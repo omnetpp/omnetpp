@@ -7,11 +7,6 @@
 
 package org.omnetpp.scave.charting;
 
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_DISPLAY_LINE;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_DRAW_STYLE;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_LINE_STYLE;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_LINE_WIDTH;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_SYMBOL_SIZE;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_AXIS_TITLE_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_DISPLAY_LINE;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_DISPLAY_NAME;
@@ -43,12 +38,14 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
@@ -102,12 +99,20 @@ public class LinePlot extends PlotViewerBase {
 
     private IXYDataset dataset = null;
     private List<LineProperties> lineProperties;
-    private LineProperties defaultProperties;
 
     private LinearAxis xAxis = new LinearAxis(false, false, true);
     private LinearAxis yAxis = new LinearAxis(true, false, true);
     private CrossHair crosshair;
     private Lines lines;
+
+    // plot-wide line properties, individual line may override
+    private boolean defaultDisplayLine;
+    private SymbolType defaultSymbolType; // note: null is allowed and means "auto"; TODO we need something for "none"
+    private int defaultSymbolSize;
+    private DrawStyle defaultDrawStyle; // note: null is allowed and means "auto"
+    private RGB defaultLineColor; // note: null is allowed and means "auto"
+    private LineStyle defaultLineStyle;
+    private float defaultLineWidth;
 
     /**
      * Class representing the properties of one line of the chart.
@@ -115,56 +120,32 @@ public class LinePlot extends PlotViewerBase {
      * Property getters fallback to the default if the property is not set for the line.
      */
     class LineProperties {
-        LineProperties fallback;
-        int series;
-        String lineId;
-        Boolean displayLine;
-        String displayName;
-        SymbolType symbolType;
-        Integer symbolSize;
-        DrawStyle drawStyle;
-        RGB lineColor;
-        LineStyle lineStyle;
-        Float lineWidth;
-
-        /**
-         * Constructor for the defaults.
-         */
-        private LineProperties() {
-            this.displayLine = DEFAULT_DISPLAY_LINE;
-            this.symbolSize = DEFAULT_SYMBOL_SIZE;
-            this.drawStyle = DEFAULT_DRAW_STYLE;
-            this.lineStyle = DEFAULT_LINE_STYLE;
-            this.lineWidth = DEFAULT_LINE_WIDTH;
-            this.series = -1;
-            this.lineId = null;
-        }
+        private int series;
+        private String lineId;
+        private Boolean displayLine;
+        private String displayName;
+        private SymbolType symbolType;
+        private Integer symbolSize;
+        private DrawStyle drawStyle;
+        private RGB lineColor;
+        private LineStyle lineStyle;
+        private Float lineWidth;
 
         public LineProperties(String lineId, int series) {
             Assert.isLegal(lineId != null);
             this.lineId = lineId;
             this.series = series;
-            fallback = defaultProperties;
         }
 
         public String getLineId() {
             return lineId;
         }
 
-        public boolean getDisplayLine() {
-            if (displayLine == null && fallback != null)
-                return fallback.getDisplayLine();
-            Assert.isTrue(displayLine != null);
-            return displayLine;
+        public boolean getEffectiveDisplayLine() {
+            return displayLine != null ? displayLine : defaultDisplayLine;
         }
 
-        public void setDisplayLine(Boolean displayLine) {
-            if (displayLine == null && this == defaultProperties)
-                displayLine = DEFAULT_DISPLAY_LINE;
-            this.displayLine = displayLine;
-        }
-
-        public String getDisplayName() {
+        public String getEffectiveDisplayName() {
             String format = StringUtils.isEmpty(displayName) ? null : displayName;
             String name = "";
             if (dataset != null && series != -1)
@@ -172,15 +153,8 @@ public class LinePlot extends PlotViewerBase {
             return StringUtils.isEmpty(name) ? lineId : name;
         }
 
-        public void setDisplayName(String name) {
-            this.displayName = name;
-        }
-
-        public SymbolType getSymbolType() {
-            SymbolType symbolType = this.symbolType;
-
-            if (symbolType == null && fallback != null)
-                symbolType = fallback.getSymbolType();
+        public SymbolType getEffectiveSymbolType() {
+            SymbolType symbolType = this.symbolType == null ? defaultSymbolType : this.symbolType;
 
             if (symbolType == null) {
                 switch (series % 6) {
@@ -193,94 +167,47 @@ public class LinePlot extends PlotViewerBase {
                 default: symbolType = null; break;
                 }
             }
-            //Assert.isTrue(symbolType != null);
+            Assert.isTrue(symbolType != null); //TODO how to plot "no symbol"?
             return symbolType;
         }
 
-        public void setSymbolType(SymbolType symbolType) {
-            this.symbolType = symbolType;
+        public int getEffectiveSymbolSize() {
+            return symbolSize == null ? defaultSymbolSize : symbolSize;
         }
 
-        public int getSymbolSize() {
-            if (symbolSize == null && fallback != null)
-                return fallback.getSymbolSize();
-            Assert.isTrue(symbolSize != null);
-            return symbolSize;
-        }
-
-        public void setSymbolSize(Integer symbolSize) {
-            if (symbolSize == null && this == defaultProperties)
-                symbolSize = DEFAULT_SYMBOL_SIZE;
-            this.symbolSize = symbolSize;
-        }
-
-        public DrawStyle getDrawStyle() {
-            if (drawStyle == null && fallback != null && fallback.drawStyle != null)
-                return fallback.drawStyle;
+        public DrawStyle getEffectiveDrawStyle() {
+            DrawStyle drawStyle = this.drawStyle == null ? defaultDrawStyle : this.drawStyle;
             return drawStyle == null ? drawStyleFromInterpolationMode() : drawStyle;
         }
 
-        public void setDrawStyle(DrawStyle drawStyle) {
-            if (drawStyle == null && this == defaultProperties)
-                drawStyle = DEFAULT_DRAW_STYLE;
-            this.drawStyle = drawStyle;
+        public Color getEffectiveLineColor() { //TODO return RGB
+            RGB color = lineColor == null ? defaultLineColor : lineColor;
+            if (color != null)
+                return new Color(Display.getDefault(),color);
+            else
+                return ColorFactory.getGoodDarkColor(series);
         }
 
-        public RGB getLineColor() {
-            if (lineColor == null && fallback != null)
-                return fallback.getLineColor();
-            return lineColor;
+        public LineStyle getEffectiveLineStyle() {
+            return lineStyle == null ? defaultLineStyle : lineStyle;
         }
 
-        public void setLineColor(RGB lineColor) {
-            this.lineColor = lineColor;
+        public float getEffectiveLineWidth() {
+            return lineWidth == null ? defaultLineWidth : lineWidth;
         }
 
-        public LineStyle getLineStyle() {
-            if (lineStyle == null && fallback != null)
-                return fallback.lineStyle;
-            return lineStyle;
-        }
-
-        public void setLineStyle(LineStyle lineStyle) {
-            if (lineStyle == null && this == defaultProperties)
-                lineStyle = DEFAULT_LINE_STYLE;
-            this.lineStyle = lineStyle;
-        }
-
-        public float getLineWidth() {
-            if (lineWidth == null && fallback != null)
-                return fallback.getLineWidth();
-            return lineWidth;
-        }
-
-        public void setLineWidth(Float lineWidth) {
-            this.lineWidth = lineWidth;
-        }
-
-        public ILinePlotter getPlotter() {
-            Assert.isTrue(this != defaultProperties);
-            if (getLineStyle()==LineStyle.None)
+        public ILinePlotter getLinePlotter() {
+            if (getEffectiveLineStyle()==LineStyle.None)
                 return new NoLinePlotter();
-            DrawStyle type = getDrawStyle();
+            DrawStyle type = getEffectiveDrawStyle();
             ILinePlotter plotter = LinePlotterFactory.createVectorPlotter(type);
             return plotter;
         }
 
-        public IPlotSymbol getSymbol() {
-            Assert.isTrue(this != defaultProperties);
-            SymbolType type = getSymbolType();
-            int size = getSymbolSize();
+        public IPlotSymbol getSymbolPlotter() {
+            SymbolType type = getEffectiveSymbolType();
+            int size = getEffectiveSymbolSize();
             return ChartSymbolFactory.createChartSymbol(type, size);
-        }
-
-        public Color getColor() {
-            Assert.isTrue(this != defaultProperties);
-            RGB color = getLineColor();
-            if (color != null)
-                return ColorFactory.asColor(ColorFactory.asString(color));
-            else
-                return ColorFactory.getGoodDarkColor(series);
         }
 
         private DrawStyle drawStyleFromInterpolationMode() {
@@ -307,7 +234,6 @@ public class LinePlot extends PlotViewerBase {
         // important: add the CrossHair to the chart AFTER the ZoomableCanvasMouseSupport added
         crosshair = new CrossHair(this);
         lineProperties = new ArrayList<LineProperties>();
-        defaultProperties = new LineProperties();
         lines = new Lines(this);
         this.addMouseListener(new MouseAdapter() {
             @Override
@@ -362,8 +288,7 @@ public class LinePlot extends PlotViewerBase {
     }
 
     public LineProperties getLineProperties(String lineId) {
-        if (lineId == null)
-            return defaultProperties;
+        Assert.isLegal(lineId != null && !lineId.isEmpty());
         for (LineProperties props : lineProperties)
             if (lineId.equals(props.lineId))
                 return props;
@@ -371,6 +296,7 @@ public class LinePlot extends PlotViewerBase {
     }
 
     public LineProperties getOrCreateLineProperties(String lineId) {
+        Assert.isLegal(lineId != null && !lineId.isEmpty());
         LineProperties props = getLineProperties(lineId);
         if (props == null) {
             props = new LineProperties(lineId, -1);
@@ -446,10 +372,10 @@ public class LinePlot extends PlotViewerBase {
 
             for (String key : keys) {
                 LineProperties props = getLineProperties(key);
-                if (props.getDisplayLine()) {
-                    String name = props.getDisplayName();
-                    Color color = props.getColor();
-                    IPlotSymbol symbol = props.getSymbol();
+                if (props.getEffectiveDisplayLine()) {
+                    String name = props.getEffectiveDisplayName();
+                    Color color = props.getEffectiveLineColor();
+                    IPlotSymbol symbol = props.getSymbolPlotter();
                     legend.addItem(color, name, symbol, true);
                 }
             }
@@ -491,6 +417,21 @@ public class LinePlot extends PlotViewerBase {
             setLogarithmicY(Converter.stringToBoolean(value));
         else if (PROP_XY_GRID.equals(name))
             setShowGrid(Converter.stringToEnum(value, ShowGrid.class));
+        // Line defaults
+        else if (name.equals(PROP_DISPLAY_LINE))
+            setDisplayLine(StringConverter.asBoolean(value));
+        else if (name.equals(PROP_SYMBOL_TYPE))
+            setSymbolType(Converter.stringToEnum(value, SymbolType.class));
+        else if (name.equals(PROP_SYMBOL_SIZE)) //note: "" is not OK
+            setSymbolSize(Converter.stringToInteger(value));
+        else if (name.equals(PROP_DRAW_STYLE))
+            setDrawStyle(Converter.stringToEnum(value, DrawStyle.class));
+        else if (name.equals(PROP_LINE_COLOR))
+            setLineColor(ColorFactory.asRGB(value));
+        else if (name.equals(PROP_LINE_STYLE)) // note: "" is not OK
+            setLineStyle(Converter.stringToEnum(value, LineStyle.class));
+        else if (name.equals(PROP_LINE_WIDTH))
+            setLineWidth(StringConverter.asFloat(value));
         // Lines
         else if (name.startsWith(PROP_DISPLAY_LINE))
             setDisplayLine(getElementId(name), Converter.stringToBoolean(value));
@@ -538,55 +479,94 @@ public class LinePlot extends PlotViewerBase {
         chartChanged();
     }
 
+    public void setDisplayLine(boolean value) {
+        defaultDisplayLine = value;
+        updateLegends();
+        chartChanged();
+    }
+
+    public void setDrawStyle(DrawStyle value) {
+        defaultDrawStyle = value; // note: null is ok
+        chartChanged();
+    }
+
+    public void setLineColor(RGB value) {
+        defaultLineColor = value; // note: null is ok
+        updateLegends();
+        chartChanged();
+    }
+
+    public void setLineWidth(float value) {
+        defaultLineWidth = value;
+        chartChanged();
+    }
+
+    public void setLineStyle(LineStyle value) {
+        Assert.isNotNull(value);
+        defaultLineStyle = value;
+        chartChanged();
+    }
+
+    public void setSymbolType(SymbolType value) {
+        defaultSymbolType = value; // note: null is ok
+        updateLegends();
+        chartChanged();
+    }
+
+    public void setSymbolSize(int value) {
+        defaultSymbolSize = value;
+        chartChanged();
+    }
+
     public void setDisplayLine(String key, Boolean value) {
         LineProperties props = getOrCreateLineProperties(key);
-        props.setDisplayLine(value);
+        props.displayLine = value;
         updateLegends();
         chartChanged();
     }
 
     public void setDisplayName(String key, String name) {
         LineProperties props = getOrCreateLineProperties(key);
-        props.setDisplayName(name);
+        props.displayName = name;
         updateLegends();
         chartChanged();
     }
 
     public void setDrawStyle(String key, DrawStyle type) {
         LineProperties props = getOrCreateLineProperties(key);
-        props.setDrawStyle(type);
+        props.drawStyle = type;
         chartChanged();
     }
 
     public void setLineColor(String key, RGB color) {
         LineProperties props = getOrCreateLineProperties(key);
-        props.setLineColor(color);
+        props.lineColor = color;
         updateLegends();
         chartChanged();
     }
 
     public void setLineWidth(String key, Float lineWidth) {
         LineProperties props = getOrCreateLineProperties(key);
-        props.setLineWidth(lineWidth);
+        props.lineWidth = lineWidth;
         chartChanged();
     }
 
     public void setLineStyle(String key, LineStyle style) {
         LineProperties props = getOrCreateLineProperties(key);
-        props.setLineStyle(style);
+        props.lineStyle = style;
         chartChanged();
     }
 
     public void setSymbolType(String key, SymbolType symbolType) {
         LineProperties props = getOrCreateLineProperties(key);
-        props.setSymbolType(symbolType);
+        props.symbolType = symbolType;
         updateLegends();
         chartChanged();
     }
 
     public void setSymbolSize(String key, Integer size) {
         LineProperties props = getOrCreateLineProperties(key);
-        props.setSymbolSize(size);
+        props.symbolSize = size;
         chartChanged();
     }
 

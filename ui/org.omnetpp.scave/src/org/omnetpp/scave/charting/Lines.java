@@ -158,17 +158,17 @@ class Lines implements ILinePlot {
 
             for (int series = 0; series < dataset.getSeriesCount(); series++) {
                 LineProperties props = parent.getLineProperties(series);
-                if (props.getDisplayLine()) {
+                if (props.getEffectiveDisplayLine()) {
 
-                    ILinePlotter plotter = props.getPlotter();
-                    IPlotSymbol symbol = props.getSymbol();
-                    Color color = props.getColor();
+                    ILinePlotter plotter = props.getLinePlotter();
+                    IPlotSymbol symbol = props.getSymbolPlotter();
+                    Color color = props.getEffectiveLineColor();
                     parent.resetDrawingStylesAndColors(graphics);
                     graphics.setAntialias(parent.antialias ? SWT.ON : SWT.OFF);
                     graphics.setForegroundColor(color);
                     graphics.setBackgroundColor(color);
-                    graphics.setLineStyle(props.getLineStyle().getDraw2DConstant());
-                    graphics.setLineWidthFloat(props.getLineWidth());
+                    graphics.setLineStyle(props.getEffectiveLineStyle().getDraw2DConstant());
+                    graphics.setLineWidthFloat(props.getEffectiveLineWidth());
 
                     int remainingTime = totalTimeLimitMillis - (int)(System.currentTimeMillis() - startTime);
                     int lineTimeout = Math.min(Math.max(100, remainingTime), perLineTimeLimitMillis); // give it at least 100ms, even if time is over
