@@ -86,6 +86,7 @@ import time
 import traceback
 
 # posix_ipc is required for POSIX shm on Linux and Mac
+# Although on Python >=3.8 we could do without it.
 if os.name != 'nt':
     import posix_ipc
 import mmap
@@ -401,13 +402,16 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
             bl = buffer.nbytes
         
         if self.useSharedMemory:
-            global figure_counter
-            name = "/plot-" + str(os.getpid()) + "-" + str(self.num) + "-" + str(figure_counter)
-            figure_counter += 1
-
             if not self.shmMmap or self.shmMmap.size() < bl:
                 if self.shmMmap:
                     self.shmMmap.close()
+
+                global figure_counter
+                # The & 0xFFFF operations are there to make sure that name is not longer than 31 bytes,
+                # because macOS has silly limitations regarding this. The fixed part is 8 characters,
+                # and each of the 3 numbers are limited to 5 digits, so we should be fine.
+                name = "/plot-" + str(os.getpid() & 0xFFFF) + "-" + str(self.num & 0xFFFF) + "-" + str(figure_counter & 0xFFFF)
+                figure_counter += 1
 
                 if os.name == 'nt':
                     # on Windows, the mmap module in itself provides shared memory functionality

@@ -54,8 +54,11 @@ public class ResultPicklingUtils {
             return;
         }
 
-        String nameX = "/vectordata-" + System.nanoTime() + "-" + shmSerial + "-x";
-        String nameY = "/vectordata-" + System.nanoTime() + "-" + shmSerial + "-y";
+        // The & 0xFFFF thingies are there to limit the length of the decimal numbers, because on macOS,
+        // the max SHM name length (SHM_NAME_MAX) is 31 - which is... quite a bit less than NAME_MAX (255).
+        // The fixed part is 15 characters, and both numbers should be limited to 5 characters, so we are well #under30
+        String nameX = "/vectordata-" + (System.nanoTime() & 0xFFFF) + "-" + (shmSerial & 0xFFFF) + "-x";
+        String nameY = "/vectordata-" + (System.nanoTime() & 0xFFFF) + "-" + (shmSerial & 0xFFFF) + "-y";
         shmSerial += 1;
 
         // X
