@@ -17,7 +17,7 @@ import org.omnetpp.common.color.ColorFactory;
 /**
  * Some useful conversion between fonts, colors, strings, etc.
  *
- * @author tomi
+ * @author tomi, andras
  */
 public class Converter {
 
@@ -187,19 +187,11 @@ public class Converter {
     }
 
     public static String rgbToString(RGB value) {
-        if (value == null)
-            return null;
-        return String.format("#%02X%02X%02X", value.red, value.green, value.blue);
+        return value == null ? null : String.format("#%02X%02X%02X", value.red, value.green, value.blue);
     }
 
     public static RGB stringToRGB(String value) {
-        // note: value=null will/should cause NPE
-        if (value.length() != 7 || value.charAt(0) != '#')
-            throw new DataFormatException("Not a valid RGB string: " + value);
-        int red = Integer.parseInt(value.substring(1,3), 16);
-        int green = Integer.parseInt(value.substring(3,5), 16);
-        int blue = Integer.parseInt(value.substring(5,7), 16);
-        return new RGB(red, green, blue);
+        return ColorFactory.asRGBStrict(value);
     }
 
     public static RGB stringToOptionalRGB(String value) {

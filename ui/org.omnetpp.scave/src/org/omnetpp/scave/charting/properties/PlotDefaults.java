@@ -31,9 +31,12 @@ import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_SYMBOL_S
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_WRAP_LABELS;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_XY_GRID;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_AXIS_MAX;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_AXIS_MIN;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_LABELS_ROTATE_BY;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_MIN;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_TITLE;
 
 import java.util.HashMap;
@@ -95,6 +98,10 @@ public class PlotDefaults {
     public static final FontData DEFAULT_LABELS_FONTDATA = new FontData("Arial", 8, SWT.NORMAL);
     public static final Font DEFAULT_LABELS_FONT = new Font(null, DEFAULT_LABELS_FONTDATA);
     public static final double DEFAULT_X_LABELS_ROTATED_BY = 0.0;
+    public static final double DEFAULT_X_AXIS_MIN = Double.NEGATIVE_INFINITY;
+    public static final double DEFAULT_X_AXIS_MAX = Double.POSITIVE_INFINITY;
+    public static final double DEFAULT_Y_AXIS_MIN = Double.NEGATIVE_INFINITY;
+    public static final double DEFAULT_Y_AXIS_MAX = Double.POSITIVE_INFINITY;
     public static final boolean DEFAULT_X_AXIS_LOGARITHMIC = false;
     public static final boolean DEFAULT_Y_AXIS_LOGARITHMIC = false;
 
@@ -150,7 +157,10 @@ public class PlotDefaults {
         defaults.put(PROP_LABEL_FONT, DEFAULT_LABELS_FONTDATA);
         defaults.put(PROP_X_LABELS_ROTATE_BY, DEFAULT_X_LABELS_ROTATED_BY);
         defaults.put(PROP_WRAP_LABELS, DEFAULT_WRAP_LABELS);
-
+        defaults.put(PROP_X_AXIS_MIN, DEFAULT_X_AXIS_MIN);
+        defaults.put(PROP_X_AXIS_MAX, DEFAULT_X_AXIS_MAX);
+        defaults.put(PROP_Y_AXIS_MIN, DEFAULT_Y_AXIS_MIN);
+        defaults.put(PROP_Y_AXIS_MIN, DEFAULT_Y_AXIS_MAX);
         defaults.put(PROP_X_AXIS_LOGARITHMIC, DEFAULT_X_AXIS_LOGARITHMIC);
         defaults.put(PROP_Y_AXIS_LOGARITHMIC, DEFAULT_Y_AXIS_LOGARITHMIC);
 

@@ -22,7 +22,6 @@ import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_AXIS_L
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_AXIS_MAX;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_AXIS_MIN;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_AXIS_TITLE;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_LABELS_ROTATE_BY;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_TITLE;
 
@@ -38,7 +37,6 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Color;
@@ -81,7 +79,6 @@ public class LinePlot extends PlotViewerBase {
             PROP_Y_AXIS_TITLE,
             PROP_AXIS_TITLE_FONT,
             PROP_LABEL_FONT,
-            PROP_X_LABELS_ROTATE_BY,
             PROP_X_AXIS_MIN,
             PROP_X_AXIS_MAX,
             PROP_X_AXIS_LOGARITHMIC,
@@ -404,8 +401,6 @@ public class LinePlot extends PlotViewerBase {
             setAxisTitleFont(Converter.stringToSwtfont(value));
         else if (PROP_LABEL_FONT.equals(name))
             setTickLabelFont(Converter.stringToSwtfont(value));
-        else if (PROP_X_LABELS_ROTATE_BY.equals(name))
-            ; //TODO PROP_X_LABELS_ROTATE_BY
         // Axes
         else if (PROP_X_AXIS_MIN.equals(name))
             setXMin(Converter.stringToDouble(value));

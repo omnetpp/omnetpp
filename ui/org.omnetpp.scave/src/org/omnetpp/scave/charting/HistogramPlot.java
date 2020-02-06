@@ -15,7 +15,6 @@ import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_HIST_DAT
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LABEL_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_SHOW_OVERFLOW_CELL;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_AXIS_TITLE;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_LABELS_ROTATE_BY;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_TITLE;
 
@@ -55,7 +54,6 @@ public class HistogramPlot extends PlotViewerBase {
             PROP_Y_AXIS_TITLE,
             PROP_AXIS_TITLE_FONT,
             PROP_LABEL_FONT,
-            PROP_X_LABELS_ROTATE_BY,
             PROP_HIST_BAR,
             PROP_HIST_DATA,
             PROP_SHOW_OVERFLOW_CELL,
@@ -133,8 +131,6 @@ public class HistogramPlot extends PlotViewerBase {
             setAxisTitleFont(Converter.stringToSwtfont(value));
         else if (PROP_LABEL_FONT.equals(name))
             setTickLabelFont(Converter.stringToSwtfont(value));
-        else if (PROP_X_LABELS_ROTATE_BY.equals(name))
-            ; //TODO PROP_X_LABELS_ROTATE_BY
         else if (PROP_HIST_BAR.equals(name))
             setBarType(Converter.stringToEnum(value, HistogramBar.class));
         else if (PROP_HIST_DATA.equals(name))
