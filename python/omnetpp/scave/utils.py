@@ -137,8 +137,12 @@ def parse_rcparams(rc_content):
 def _filter_by_key_prefix(props, prefix):
     return {k[len(prefix):] : v for (k, v) in props.items() if k.startswith(prefix) and v}
 
-def _parse_opt_bool(value):
-    return value.lower()=="true" if value else None # maps "" to None
+def _parse_optional_bool(value):
+    if value is None:
+        return None
+    if value.lower() not in ["true", "false"]:
+        raise ValueError("Invalid boolean property value: " + value)
+    return value.lower() == "true"
 
 def make_fancy_xticklabels(ax):
 
@@ -304,7 +308,8 @@ def plot_histograms(df, props):
 def preconfigure_plot(props):
     if chart.is_native_chart():
         #plot.set_properties(_filter_by_key_prefix(props,"plot."))  #TODO this was after plotting, was that intentional?
-        plot.set_properties(props)  #TODO this was after plotting, was that intentional? + how to filter?
+        supported_keys = plot.get_supported_property_keys()
+        plot.set_properties({ k: v for k, v in props.items() if k in supported_keys})
         plot.set_properties(parse_rcparams(props["plot.properties"] or ""))
     else:
         if (props['plt.style']):
@@ -316,31 +321,34 @@ def preconfigure_plot(props):
 def postconfigure_plot(props):
     p = plot if chart.is_native_chart() else plt
     
-    if props["xaxis_title"]:
+    def get_prop(k):
+        return props[k] if k in props else None
+
+    if get_prop("yaxis_title"):
         p.xlabel(props["xaxis_title"])
-    if props["yaxis_title"]:
+    if get_prop("yaxis_title"):
         p.ylabel(props["yaxis_title"])
 
-    if props["xaxis_min"]:
+    if get_prop("xaxis_min"):
         p.xlim(left=float(props["xaxis_min"]))
-    if props["xaxis_max"]:
+    if get_prop("xaxis_max"):
         p.xlim(right=float(props["xaxis_max"]))
-    if props["yaxis_min"]:
+    if get_prop("yaxis_min"):
         p.ylim(bottom=float(props["yaxis_min"]))
-    if props["yaxis_max"]:
+    if get_prop("yaxis_max"):
         p.ylim(top=float(props["yaxis_max"]))
 
-    if props["xaxis_log"]:
-        p.xscale("log" if _parse_opt_bool(props["xaxis_log"]) else "linear")
-    if props["yaxis_log"]:
-        p.yscale("log" if _parse_opt_bool(props["yaxis_log"]) else "linear")
+    if get_prop("xaxis_log"):
+        p.xscale("log" if _parse_optional_bool(props["xaxis_log"]) else "linear")
+    if get_prop("yaxis_log"):
+        p.yscale("log" if _parse_optional_bool(props["yaxis_log"]) else "linear")
 
-    legend(show=_parse_opt_bool(props["legend_show"]), 
-           frameon=_parse_opt_bool(props["legend_border"]),
-           loc=props["legend_placement"] or None)
+    legend(show=_parse_optional_bool(get_prop("legend_show")),
+           frameon=_parse_optional_bool(get_prop("legend_border")),
+           loc=get_prop("legend_placement"))
 
-    p.grid(_parse_opt_bool(props["grid_show"]),
-             "major" if (props["grid_density"] or "").lower() == "major" else "both") # grid_density is "Major" or "All"
+    p.grid(_parse_optional_bool(get_prop("grid_show")),
+             "major" if (get_prop("grid_density") or "").lower() == "major" else "both") # grid_density is "Major" or "All"
 
     if not chart.is_native_chart():
         plt.tight_layout()

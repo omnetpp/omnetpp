@@ -120,8 +120,6 @@ public class HistogramPlot extends PlotViewerBase {
     @Override
     public void setProperty(String name, String value) {
         Assert.isNotNull(name);
-        Assert.isNotNull(value);
-        if (debug) Debug.println("HistogramChartViewer.setProperty: "+name+"='"+value+"'");
 
         if (PROP_X_AXIS_TITLE.equals(name))
             setXAxisTitle(value);

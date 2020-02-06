@@ -386,8 +386,7 @@ public class LinePlot extends PlotViewerBase {
     @Override
     public void setProperty(String name, String value) {
         Assert.isNotNull(name);
-        Assert.isNotNull(value);
-        Debug.println("VectorChart.setProperty: "+name+"='"+value+"'");
+
         // Titles
         if (PROP_X_AXIS_TITLE.equals(name))
             setXAxisTitle(value);

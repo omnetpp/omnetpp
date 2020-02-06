@@ -170,9 +170,7 @@ public class BarPlot extends PlotViewerBase {
     @Override
     public void setProperty(String name, String value) {
         Assert.isNotNull(name);
-        Assert.isNotNull(value);  // use defaults.getDefaultValue(name) if you have a null ptr!
-        if (value.isEmpty())
-            value = PlotDefaults.getDefaultPropertyValueAsString(name); //TODO maybe move into call sites?
+
         // Titles
         if (PROP_X_AXIS_TITLE.equals(name))
             setXAxisTitle(value);
