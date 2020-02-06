@@ -41,6 +41,9 @@ public class Property extends ModelObject {
 
         Property other = (Property)obj;
 
+        if (value == null && other.value != null)
+            return false;
+
         return name.equals(other.name) && value.equals(other.value);
     }
 }
