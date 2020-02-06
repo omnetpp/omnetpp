@@ -94,16 +94,6 @@
       <layoutData x:class="GridData" horizontalSpan="2"/>
     </button>
 
-    <!-- Rotate X labels by:0/30/45/60/90 -->
-    <label text="Rotate x labels by:"/>
-    <combo x:id="X.Label.RotateBy" x:style="BORDER|READ_ONLY">
-      <add x:p0="0"/>
-      <add x:p0="30"/>
-      <add x:p0="45"/>
-      <add x:p0="60"/>
-      <add x:p0="90"/>
-    </combo>
-
         <!-- Border? -->
     <button x:id="X.Label.Wrap" text="Wrap labels" x:style="CHECK">
       <layoutData x:class="GridData" horizontalSpan="2"/>

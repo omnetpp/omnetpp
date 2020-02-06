@@ -29,7 +29,16 @@
       <add x:p0="InFront"/>
       <add x:p0="Stacked"/>
     </combo>
-    
+
+    <!-- Rotate X labels by:0/30/45/60/90 -->
+    <label text="Rotate x labels by:"/>
+    <combo x:id="xlabel_rotation" x:style="BORDER|READ_ONLY">
+      <add x:p0="0"/>
+      <add x:p0="30"/>
+      <add x:p0="45"/>
+      <add x:p0="60"/>
+      <add x:p0="90"/>
+    </combo>
 
   </x:children>
 </xswt>
