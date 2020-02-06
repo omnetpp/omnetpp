@@ -1,6 +1,7 @@
 package org.omnetpp.scave.pychart;
 
 import java.util.Map;
+import java.util.Set;
 
 public interface INativeChartPlotter {
     void plotScalars(byte[] pickledData) throws UnsupportedOperationException;
@@ -13,4 +14,6 @@ public interface INativeChartPlotter {
     void setProperties(Map<String, String> properties);
 
     void setWarning(String warning);
+
+    Set<String> getSupportedPropertyKeys();
 }

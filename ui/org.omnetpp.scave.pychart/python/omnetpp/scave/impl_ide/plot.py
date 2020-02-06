@@ -478,6 +478,11 @@ def set_properties(props):
     Gateway.chart_plotter.setProperties(props)
 
 
+def get_supported_property_keys():
+    _assert_is_native_chart()
+    return set(Gateway.chart_plotter.getSupportedPropertyKeys())
+
+
 def set_warning(warning):
     # TODO maybe we need a common interface?
     if Gateway.widget_provider:

@@ -1,8 +1,11 @@
 package org.omnetpp.scave.python;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -105,6 +108,13 @@ public class NativeChartViewer extends ChartViewerBase {
         public void dispose() {
             if (xyDataset != null)
                 xyDataset.dispose();
+        }
+
+        @Override
+        public Set<String> getSupportedPropertyKeys() {
+            Set<String> result = new HashSet<String>();
+            result.addAll(Arrays.asList(plotViewer.getPropertyNames()));
+            return result;
         }
     }
 

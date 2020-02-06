@@ -188,6 +188,19 @@ def set_properties(props):
     return impl.set_properties(**locals())
 
 
+def get_supported_property_keys():
+    """
+    Updates or adds any number of properties of the chart with the values given in `props.
+    Any existing property values will be overwritten, and any new keys will be inserted.
+
+    Please note that this function does not change or affect the actual chart
+    object at all (as that is treated strictly as a read-only input); instead, it only
+    changes some visual property on its view. This change is not persistent and is not
+    reflected in later calls to `get_property()` or `get_properties()`.
+    """
+    return impl.get_supported_property_keys(**locals())
+
+
 def set_warning(warning):
     """
     Displays the given warning text in the plot.
