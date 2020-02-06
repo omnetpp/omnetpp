@@ -22,12 +22,14 @@ import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LEGEND_A
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LEGEND_BORDER;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LEGEND_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LEGEND_POSITION;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LINE_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LINE_STYLE;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LINE_WIDTH;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_PLOT_TITLE;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_PLOT_TITLE_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_SHOW_OVERFLOW_CELL;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_SYMBOL_SIZE;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_SYMBOL_TYPE;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_WRAP_LABELS;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_XY_GRID;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_AXIS_LOGARITHMIC;
@@ -58,6 +60,7 @@ import org.omnetpp.scave.charting.properties.PlotProperties.LegendAnchor;
 import org.omnetpp.scave.charting.properties.PlotProperties.LegendPosition;
 import org.omnetpp.scave.charting.properties.PlotProperties.LineStyle;
 import org.omnetpp.scave.charting.properties.PlotProperties.ShowGrid;
+import org.omnetpp.scave.charting.properties.PlotProperties.SymbolType;
 
 /**
  * Defines defaults for the chart. Used by both the chart widgets
@@ -121,8 +124,10 @@ public class PlotDefaults {
     public static final boolean DEFAULT_DISPLAY_LINE = true;
     public static final DrawStyle DEFAULT_DRAW_STYLE = null; // = use interpolationmode attr of vectors
     public static final Integer DEFAULT_SYMBOL_SIZE = 4;
+    public static final SymbolType DEFAULT_SYMBOL_TYPE = null;
     public static final LineStyle DEFAULT_LINE_STYLE = LineStyle.Solid;
     public static final Float DEFAULT_LINE_WIDTH = 1.5f;
+    public static final Color DEFAULT_LINE_COLOR = null;
 
     // histogram chart
     public static final HistogramBar DEFAULT_HIST_BAR = HistogramBar.Solid;
@@ -170,11 +175,15 @@ public class PlotDefaults {
         defaults.put(PROP_BAR_BASELINE, DEFAULT_BAR_BASELINE);
         defaults.put(PROP_BAR_PLACEMENT, DEFAULT_BAR_PLACEMENT);
         // TODO: BAR_OUTLINE_COLOR
+
+        // Lines
         defaults.put(PROP_DISPLAY_LINE, DEFAULT_DISPLAY_LINE);
-        defaults.put(PROP_SYMBOL_SIZE, DEFAULT_SYMBOL_SIZE);
         defaults.put(PROP_DRAW_STYLE, DEFAULT_DRAW_STYLE);
         defaults.put(PROP_LINE_STYLE, DEFAULT_LINE_STYLE);
         defaults.put(PROP_LINE_WIDTH, DEFAULT_LINE_WIDTH);
+        defaults.put(PROP_LINE_COLOR, DEFAULT_LINE_COLOR);
+        defaults.put(PROP_SYMBOL_TYPE, DEFAULT_SYMBOL_TYPE);
+        defaults.put(PROP_SYMBOL_SIZE, DEFAULT_SYMBOL_SIZE);
 
         defaults.put(PROP_HIST_BAR, DEFAULT_HIST_BAR);
         defaults.put(PROP_SHOW_OVERFLOW_CELL, DEFAULT_SHOW_OVERFLOW_CELL);
