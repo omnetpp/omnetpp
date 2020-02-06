@@ -219,7 +219,7 @@ def xlim(left=None, right=None):
     """
     impl.xlim(**locals())
 
-def ylim(left=None, right=None):
+def ylim(bottom=None, top=None):
     """
     Sets the limits of the Y axis.
     """

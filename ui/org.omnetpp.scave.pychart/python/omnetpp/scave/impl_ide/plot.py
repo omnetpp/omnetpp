@@ -513,14 +513,14 @@ def xlim(left=None, right=None):
     if (right is not None):
         set_property("X.Axis.Max", str(right))
 
-def ylim(left=None, right=None):
+def ylim(bottom=None, top=None):
     """
     Sets the limits of the Y axis.
     """
-    if (left is not None):
-        set_property("Y.Axis.Min", str(left))
-    if (right is not None):
-        set_property("Y.Axis.Max", str(right))
+    if (bottom is not None):
+        set_property("Y.Axis.Min", str(bottom))
+    if (top is not None):
+        set_property("Y.Axis.Max", str(top))
 
 def xscale(value):
     """
