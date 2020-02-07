@@ -11,9 +11,11 @@ import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_AXIS_TIT
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_BAR_BASELINE;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_HIST_BAR;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_HIST_COLOR;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_HIST_DATA;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_HIST_CUMULATIVE;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_HIST_DENSITY;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LABEL_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_SHOW_OVERFLOW_CELL;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_XY_GRID;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_TITLE;
@@ -23,24 +25,25 @@ import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.AssertionFailedException;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
-import org.omnetpp.common.Debug;
+import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
-import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GraphicsUtils;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IHistogramDataset;
 import org.omnetpp.scave.charting.properties.PlotProperties.HistogramBar;
-import org.omnetpp.scave.charting.properties.PlotProperties.HistogramDataType;
 import org.omnetpp.scave.python.PythonHistogramDataset;
 
 /**
@@ -52,13 +55,15 @@ public class HistogramPlot extends PlotViewerBase {
     private static final String[] HISTOGRAMPLOT_PROPERTY_NAMES = ArrayUtils.addAll(PLOTBASE_PROPERTY_NAMES, new String[] {
             PROP_X_AXIS_TITLE,
             PROP_Y_AXIS_TITLE,
+            PROP_XY_GRID,
             PROP_AXIS_TITLE_FONT,
             PROP_LABEL_FONT,
             PROP_HIST_BAR,
-            PROP_HIST_DATA,
             PROP_SHOW_OVERFLOW_CELL,
             PROP_BAR_BASELINE,
             PROP_HIST_COLOR,
+            PROP_HIST_CUMULATIVE,
+            PROP_HIST_DENSITY,
             PROP_Y_AXIS_LOGARITHMIC,
     });
 
@@ -67,8 +72,27 @@ public class HistogramPlot extends PlotViewerBase {
     private LinearAxis yAxis = new LinearAxis(true, false, false);
     private Histograms histograms;
 
-    static class HistogramProperties {
+    private RGB defaultHistogramColor; // note: null is allowed and means "auto"
+    private boolean defaultHistogramCumulative;
+    private boolean defaultHistogramDensity;
+
+    class HistogramProperties {
+        Boolean cumulative;
+        Boolean density;
         RGB color;
+
+
+        public boolean getEffectiveCumulative() {
+            return cumulative != null ? cumulative : defaultHistogramCumulative;
+        }
+
+        public boolean getEffectiveDensity() {
+            return density != null ? density : defaultHistogramDensity;
+        }
+
+        public Color getEffectiveColor() {
+            return new Color(Display.getCurrent(), color != null ? color : defaultHistogramColor);
+        }
     }
 
     private Map<String,HistogramProperties> histogramProperties = new HashMap<>();
@@ -125,20 +149,30 @@ public class HistogramPlot extends PlotViewerBase {
             setXAxisTitle(value);
         else if (PROP_Y_AXIS_TITLE.equals(name))
             setYAxisTitle(value);
+        else if (PROP_XY_GRID.equals(name))
+            ; // TODO
         else if (PROP_AXIS_TITLE_FONT.equals(name))
             setAxisTitleFont(Converter.stringToSwtfont(value));
         else if (PROP_LABEL_FONT.equals(name))
             setTickLabelFont(Converter.stringToSwtfont(value));
         else if (PROP_HIST_BAR.equals(name))
             setBarType(Converter.stringToEnum(value, HistogramBar.class));
-        else if (PROP_HIST_DATA.equals(name))
-            setHistogramDataTransform(Converter.stringToEnum(value, HistogramDataType.class));
+        else if (PROP_HIST_COLOR.equals(name))
+            setHistogramColor(Converter.stringToOptionalRGB(value));
+        else if (PROP_HIST_CUMULATIVE.equals(name))
+            setHistogramCumulative(Converter.stringToBoolean(value));
+        else if (PROP_HIST_DENSITY.equals(name))
+            setHistogramDensity(Converter.stringToBoolean(value));
         else if (PROP_SHOW_OVERFLOW_CELL.equals(name))
             setShowOverflowCell(Converter.stringToBoolean(value));
         else if (PROP_BAR_BASELINE.equals(name))
             setBarBaseline(Converter.stringToDouble(value));
         else if (name.startsWith(PROP_HIST_COLOR))
-            setHistogramColor(getElementId(name), Converter.stringToRGB(value));
+            setHistogramColor(getElementId(name), Converter.stringToOptionalRGB(value));
+        else if (name.startsWith(PROP_HIST_CUMULATIVE))
+            setHistogramCumulative(getElementId(name), Converter.stringToOptionalBoolean(value));
+        else if (name.startsWith(PROP_HIST_DENSITY))
+            setHistogramDensity(getElementId(name), Converter.stringToOptionalBoolean(value));
         else if (PROP_Y_AXIS_LOGARITHMIC.equals(name))
             setLogarithmicY(Converter.stringToBoolean(value));
         else
@@ -184,11 +218,44 @@ public class HistogramPlot extends PlotViewerBase {
         chartChanged();
     }
 
-    public void setHistogramDataTransform(HistogramDataType dataTransform) {
-        Assert.isNotNull(dataTransform);
-        histograms.setHistogramData(dataTransform);
+    public void setHistogramColor(RGB color) {
+        defaultHistogramColor = color;
+        updateLegends();
+        chartChanged();
+    }
+
+    public void setHistogramCumulative(boolean value) {
+        defaultHistogramCumulative = value;
         chartArea = calculatePlotArea();
         updateArea();
+        updateLegends();
+        chartChanged();
+    }
+
+    public void setHistogramDensity(boolean value) {
+        defaultHistogramDensity = value;
+        chartArea = calculatePlotArea();
+        updateArea();
+        updateLegends();
+        chartChanged();
+    }
+
+
+    public void setHistogramCumulative(String key, Boolean value) {
+        HistogramProperties histProps = getOrCreateHistogramProperties(key);
+        histProps.cumulative = value;
+        chartArea = calculatePlotArea();
+        updateArea();
+        updateLegends();
+        chartChanged();
+    }
+
+    public void setHistogramDensity(String key, boolean value) {
+        HistogramProperties histProps = getOrCreateHistogramProperties(key);
+        histProps.density = value;
+        chartArea = calculatePlotArea();
+        updateArea();
+        updateLegends();
         chartChanged();
     }
 
@@ -216,7 +283,8 @@ public class HistogramPlot extends PlotViewerBase {
 
     public RGB getHistogramColor(String key) {
         HistogramProperties histProps = histogramProperties.get(key);
-        return histProps != null ? histProps.color : null;
+        RGB color = (histProps == null || histProps.color == null) ? defaultHistogramColor : histProps.color;
+        return color;
     }
 
     public void setHistogramColor(String key, RGB color) {
@@ -227,7 +295,7 @@ public class HistogramPlot extends PlotViewerBase {
         chartChanged();
     }
 
-    private HistogramProperties getOrCreateHistogramProperties(String key) {
+    protected HistogramProperties getOrCreateHistogramProperties(String key) {
         HistogramProperties properties = histogramProperties.get(key);
         if (properties == null) {
             properties = new HistogramProperties();

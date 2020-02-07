@@ -50,8 +50,14 @@ public class NativeChartViewer extends ChartViewerBase {
         }
 
         @Override
-        public void plotHistograms(byte[] pickledData) {
-            histogramDataset.addValues(pickledData);
+        public void plotHistograms(byte[] pickledData, Map<String, String> props) {
+            List<String> histKeys = histogramDataset.addValues(pickledData);
+
+            Display.getDefault().syncExec(() -> {
+                for (String histKey : histKeys)
+                    for (String propKey : props.keySet())
+                        plotViewer.setProperty(propKey + "/" + histKey, props.get(propKey));
+            });
         }
 
         @Override

@@ -28,7 +28,6 @@ import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 import org.omnetpp.scave.charting.plotter.SquareSymbol;
 import org.omnetpp.scave.charting.properties.PlotDefaults;
 import org.omnetpp.scave.charting.properties.PlotProperties.HistogramBar;
-import org.omnetpp.scave.charting.properties.PlotProperties.HistogramDataType;
 
 /**
  * The content area of a histogram plot.
@@ -40,7 +39,6 @@ class Histograms {
 
     HistogramBar barType = PlotDefaults.DEFAULT_HIST_BAR;
     boolean showOverflowCell = PlotDefaults.DEFAULT_SHOW_OVERFLOW_CELL;
-    ICellValueTransform valueTransform;
     double baseline = 0.0;
 
     RectangularArea bars[][] = new RectangularArea[0][];
@@ -48,7 +46,7 @@ class Histograms {
 
     Histograms(HistogramPlot parent) {
         this.parent = parent;
-        setHistogramData(PlotDefaults.DEFAULT_HIST_DATA);
+        calculatePlotArea();
     }
 
     Rectangle getArea() {
@@ -57,15 +55,6 @@ class Histograms {
 
     void setBarType(HistogramBar barType) {
         this.barType = barType;
-    }
-
-    void setHistogramData(HistogramDataType histData) {
-        switch (histData) {
-        case Count: valueTransform = new NullTransform(); break;
-        case Pdf: valueTransform = new PdfTransform(); break;
-        case Cdf: valueTransform = new CdfTransform(); break;
-        default: Assert.isLegal(false, "Unknown histogram data transformation: " + histData); break;
-        }
     }
 
     protected RectangularArea calculatePlotArea() {
@@ -79,6 +68,7 @@ class Histograms {
         transformedBaseline = calculateBaseline();
 
         for (int series = 0; series < histCount; ++series) {
+            ICellValueTransform valueTransform = getEffectiveValueTransform(series);
             int count = dataset.getCellsCount(series);
             double minValue = dataset.getMinValue(series);
             double maxValue = dataset.getMaxValue(series);
@@ -93,7 +83,7 @@ class Histograms {
                     continue;
                 double lowerBound = dataset.getCellLowerBound(series, index);
                 double upperBound = dataset.getCellUpperBound(series, index);
-                double value = getCellValue(series, index);
+                double value = valueTransform.getCellValue(series, index);
                 double transformedValue = transformValue(value);
                 double yTop = Math.max(transformedValue, transformedBaseline);
                 double yBottom = Math.min(transformedValue, transformedBaseline);
@@ -126,6 +116,21 @@ class Histograms {
         return new RectangularArea(minX, minY, maxX, maxY);
     }
 
+    private ICellValueTransform getEffectiveValueTransform(int series) {
+        String key = parent.getDataset().getSeriesKey(series);
+        boolean cumulative = parent.getOrCreateHistogramProperties(key).getEffectiveCumulative();
+        boolean density = parent.getOrCreateHistogramProperties(key).getEffectiveDensity();
+
+        if (cumulative && density)
+            return new CdfTransform();
+        else if (!cumulative && density)
+            return new PdfTransform();
+        else if (!cumulative && !density)
+            return new NullTransform();
+        else
+            return new AccTransform();
+}
+
     private double calculateBaseline() {
         double baseline = getTransformedBaseline();
 
@@ -135,9 +140,10 @@ class Histograms {
 
             double newBaseline = baseline < 0.0 ? Double.POSITIVE_INFINITY : Double.NEGATIVE_INFINITY;
             for (int series = 0; series < histCount; ++series) {
+                ICellValueTransform valueTransform = getEffectiveValueTransform(series);
                 int cellCount = dataset.getCellsCount(series);
                 for (int column = 0; column < cellCount; ++column) {
-                    double value = transformValue(getCellValue(series, column));
+                    double value = transformValue(valueTransform.getCellValue(series, column));
                     if (!Double.isNaN(value) && !Double.isInfinite(value)) {
                         if (baseline < 0.0)
                             newBaseline = Math.min(newBaseline, value);
@@ -256,7 +262,8 @@ class Histograms {
             String title = dataset.getSeriesTitle(series);
             double lowerBound = dataset.getCellLowerBound(series, index);
             double upperBound = dataset.getCellUpperBound(series, index);
-            double value = getCellValue(series, index);
+            ICellValueTransform valueTransform = getEffectiveValueTransform(series);
+            double value = valueTransform.getCellValue(series, index);
             boolean isIntegerType = dataset.isIntegerType(series);
             result.append(title + "<br>");
             result.append("[" + toIntegerAwareString(lowerBound, isIntegerType) + ", ");
@@ -341,10 +348,6 @@ class Histograms {
         return Double.isNaN(baseline) ? Double.NEGATIVE_INFINITY : baseline;
     }
 
-    private double getCellValue(int series, int index) {
-        return valueTransform.getCellValue(series, index);
-    }
-
     private interface ICellValueTransform {
         double getCellValue(int series, int index);
     }
@@ -403,6 +406,40 @@ class Histograms {
             prevIndex = index;
             prevValue = value;
             return sumWeights > 0 ? value / sumWeights : 0.0;
+        }
+    }
+
+    private class AccTransform implements ICellValueTransform {
+        int prevSeries=-1, prevIndex=-1;
+        double sumWeights;
+        double prevValue = 0.0;
+
+        public double getCellValue(int series, int index) {
+            IHistogramDataset dataset = parent.getDataset();
+            if (series != prevSeries) {
+                prevValue = 0.0;
+                prevIndex = -1;
+                sumWeights = dataset.getSumWeights(series);
+            }
+            double value = prevValue;
+            if (index > prevIndex) {
+                for (int i = prevIndex + 1; i <= index; ++i)
+                    value += dataset.getCellValue(series, i);
+            }
+            else if (index < prevIndex / 2) {
+                value = 0.0;
+                for (int i = 0; i <= index; ++i)
+                    value += dataset.getCellValue(series, i);
+            }
+            else if (index < prevIndex) {
+                for (int i = prevIndex - 1; i >= index; --i)
+                    value -= dataset.getCellValue(series, i);
+            }
+
+            prevSeries = series;
+            prevIndex = index;
+            prevValue = value;
+            return sumWeights > 0 ? value : 0.0;
         }
     }
 }

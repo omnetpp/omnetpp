@@ -17,6 +17,9 @@ import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_CACHING;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_DISPLAY_LEGEND;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_DISPLAY_LINE;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_HIST_BAR;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_HIST_COLOR;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_HIST_CUMULATIVE;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_HIST_DENSITY;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LABEL_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LEGEND_ANCHORING;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LEGEND_BORDER;
@@ -56,7 +59,6 @@ import org.omnetpp.common.util.Converter;
 import org.omnetpp.scave.charting.properties.PlotProperties.BarPlacement;
 import org.omnetpp.scave.charting.properties.PlotProperties.DrawStyle;
 import org.omnetpp.scave.charting.properties.PlotProperties.HistogramBar;
-import org.omnetpp.scave.charting.properties.PlotProperties.HistogramDataType;
 import org.omnetpp.scave.charting.properties.PlotProperties.LegendAnchor;
 import org.omnetpp.scave.charting.properties.PlotProperties.LegendPosition;
 import org.omnetpp.scave.charting.properties.PlotProperties.LineStyle;
@@ -133,7 +135,9 @@ public class PlotDefaults {
 
     // histogram chart
     public static final HistogramBar DEFAULT_HIST_BAR = HistogramBar.Solid;
-    public static final HistogramDataType DEFAULT_HIST_DATA = HistogramDataType.Count;
+    public static final boolean DEFAULT_HIST_CUMULATIVE = false;
+    public static final boolean DEFAULT_HIST_DENSITY= false;
+    public static final Color DEFAULT_HIST_COLOR = null;
     public static final boolean DEFAULT_SHOW_OVERFLOW_CELL = false;
 
     // Maps property names to default values
@@ -188,6 +192,9 @@ public class PlotDefaults {
         defaults.put(PROP_SYMBOL_TYPE, DEFAULT_SYMBOL_TYPE);
         defaults.put(PROP_SYMBOL_SIZE, DEFAULT_SYMBOL_SIZE);
 
+        defaults.put(PROP_HIST_CUMULATIVE, DEFAULT_HIST_CUMULATIVE);
+        defaults.put(PROP_HIST_DENSITY, DEFAULT_HIST_DENSITY);
+        defaults.put(PROP_HIST_COLOR, DEFAULT_HIST_COLOR);
         defaults.put(PROP_HIST_BAR, DEFAULT_HIST_BAR);
         defaults.put(PROP_SHOW_OVERFLOW_CELL, DEFAULT_SHOW_OVERFLOW_CELL);
 

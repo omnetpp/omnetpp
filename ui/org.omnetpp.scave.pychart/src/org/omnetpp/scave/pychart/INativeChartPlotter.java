@@ -6,7 +6,7 @@ import java.util.Set;
 public interface INativeChartPlotter {
     void plotScalars(byte[] pickledData) throws UnsupportedOperationException;
     void plotVectors(byte[] pickledData, Map<String, String> props);
-    void plotHistograms(byte[] pickledData);
+    void plotHistograms(byte[] pickledData, Map<String, String> props);
 
     boolean isEmpty();
 

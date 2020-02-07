@@ -243,11 +243,14 @@ def _make_line_args(props, t, df):
 def _make_histline_args(props, t, df):
     style = dict()
 
-    if props["color"]:
+    if "color" in props and props["color"]:
         style["color"] = props["color"]
 
-    if props["linewidth"]:
+    if "linewidth" in props and props["linewidth"]:
         style["linewidth"] = props["linewidth"]
+
+    style["density"] = _parse_optional_bool(props["normalize"])
+    style["cumulative"] = _parse_optional_bool(props["cumulative"])
 
     return style
 

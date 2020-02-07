@@ -49,9 +49,10 @@ public class PlotProperties {
     PROP_BAR_BASELINE       = "Bars.Baseline",
     // Histograms
     PROP_HIST_BAR           = "Hist.Bar",
-    PROP_HIST_DATA          = "Hist.Data",
     PROP_SHOW_OVERFLOW_CELL = "Hist.ShowOverflowCell",
     PROP_HIST_COLOR         = "Hist.Color",
+    PROP_HIST_CUMULATIVE    = "Hist.Cumulative",
+    PROP_HIST_DENSITY       = "Hist.Density",
     // Line Plot
     PROP_X_AXIS_MIN         = "X.Axis.Min",
     PROP_X_AXIS_MAX         = "X.Axis.Max",
@@ -101,22 +102,6 @@ public class PlotProperties {
     public enum HistogramBar {
         Solid,
         Outline,
-    }
-
-    public enum HistogramDataType {
-        Count("count"),
-        Pdf("probability density"),
-        Cdf("cumulative density");
-
-        private String displayName;
-
-        private HistogramDataType(String displayName) {
-            this.displayName = displayName;
-        }
-
-        @Override public String toString() {
-            return displayName;
-        }
     }
 
     public enum SymbolType {

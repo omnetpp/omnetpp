@@ -53,10 +53,17 @@ def plot(xs, ys, key=None, label=None, drawstyle=None, linestyle=None, linewidth
     return plot_vector(label, xs, ys, key, props)
 
 
-def hist(x, bins, density=None, weights=None, cumulative=False, bottom=None, histtype='bar', color=None, label=None, linewidth=None):
+def hist(x, bins, density=False, weights=None, cumulative=False, bottom=None, histtype='bar', color=None, label=None, linewidth=None):
+    props = {}
+
+    props["Hist.Cumulative"] = str(cumulative)
+    props["Hist.Density"] = str(density)
+
+    # check if we really got a precomputed histogram, using the trick documented for pyplot.hist
     if not np.array_equal(x, bins[:-1]):
-        raise ValueError("TODO")
-    plot_histogram(label, bins, weights)
+        raise ValueError("Histogram computation is not performed.")
+
+    plot_histogram(label, bins, weights, props=props)
 
 
 def bar(x, height, width=0.8, label=None):
@@ -99,7 +106,7 @@ def plot_lines(df, props = dict()):  # key, label, xs, ys
         o.unlink()
 
 
-def plot_histogram_data(df):  # key, label, binedges, binvalues, underflows, overflows, min, max
+def plot_histogram_data(df, props=dict()):  # key, label, binedges, binvalues, underflows, overflows, min, max
     _assert_is_native_chart()
     if sorted(list(df.columns)) != sorted(["key", "label", "binedges", "binvalues", "underflows", "overflows", "min", "max"]):
         raise RuntimeError("Invalid DataFrame format in plot_histogram_data")
@@ -120,7 +127,7 @@ def plot_histogram_data(df):  # key, label, binedges, binvalues, underflows, ove
             "max": float(row.max),
         }
         for row in df.itertuples(index=False)
-    ]))
+    ]), MapConverter().convert(props, Gateway.gateway._gateway_client))
 
 
 def _to_label(x):
@@ -288,8 +295,6 @@ def _translate_marker(marker):
 
 def plot_vector(label, xs, ys, key=None, props = dict()):
     _assert_is_native_chart()
-    if key is None:
-        key = label
     plot_lines(pd.DataFrame({
         "key": [key],
         "label": [label],
@@ -426,10 +431,10 @@ def plot_scatter(df, xdata, iso_column=None):
     """
 
 
-def plot_histogram(label, binedges, binvalues, underflows=0.0, overflows=0.0, minvalue=math.nan, maxvalue=math.nan):
+def plot_histogram(label, binedges, binvalues, underflows=0.0, overflows=0.0, minvalue=math.nan, maxvalue=math.nan, key=None, props=dict()):
     _assert_is_native_chart()
     plot_histogram_data(pd.DataFrame({
-        "key": [label],
+        "key": [key],
         "label": [label],
         "binedges": [np.array(binedges)],
         "binvalues": [np.array(binvalues)],
@@ -437,7 +442,7 @@ def plot_histogram(label, binedges, binvalues, underflows=0.0, overflows=0.0, mi
         "overflows": [overflows],
         "min": [float(np.min(binedges)) if minvalue == math.nan else minvalue],
         "max": [float(np.max(binedges)) if maxvalue == math.nan else maxvalue]
-    }))
+    }), props)
 
 
 def _plot_histograms_DF_scave(df):

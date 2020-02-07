@@ -30,8 +30,24 @@ public class PythonHistogramDataset implements IHistogramDataset {
         this.title = title;
     }
 
-    public void addValues(byte[] pickledData) {
+    protected String generateUniqueKey() {
+        int maxKey = 0;
+        for (HistogramData hd: histograms) {
+            try {
+                int key = Integer.parseInt(hd.key);
+                if (key > maxKey)
+                    maxKey = key;
+            }
+            catch (Exception e) {
+                // ignore
+            }
+        }
+        return Integer.toString(maxKey + 1);
+    }
+
+    public List<String> addValues(byte[] pickledData) {
         Unpickler unpickler = new Unpickler();
+        List<String> keys = new ArrayList<String>();
 
         try {
             @SuppressWarnings("unchecked")
@@ -42,13 +58,15 @@ public class PythonHistogramDataset implements IHistogramDataset {
                 HistogramData histogramData = new HistogramData();
 
                 String key = (String) d.get("key");
-                // TODO: if missing (null), generate a unique one, also, return the list of keys
+                if (key == null)
+                    key = generateUniqueKey();
+
                 for (HistogramData hd : histograms)
                     if (hd.key.equals(key))
                         System.out.println("WARNING: Series key '" + key + "' is not unique in HistogramDataset!");
 
                 histogramData.key = key;
-
+                keys.add(key);
                 histogramData.title = (String) d.get("title");
 
                 histogramData.sumWeights = (Double) d.get("sumweights");
@@ -66,6 +84,8 @@ public class PythonHistogramDataset implements IHistogramDataset {
         catch (PickleException | IOException e) {
             ScavePlugin.logError(e);
         }
+
+        return keys;
     }
 
     @Override
