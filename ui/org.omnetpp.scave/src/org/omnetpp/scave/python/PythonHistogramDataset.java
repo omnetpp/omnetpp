@@ -41,7 +41,14 @@ public class PythonHistogramDataset implements IHistogramDataset {
 
                 HistogramData histogramData = new HistogramData();
 
-                histogramData.key = (String) d.get("key");
+                String key = (String) d.get("key");
+                // TODO: if missing (null), generate a unique one, also, return the list of keys
+                for (HistogramData hd : histograms)
+                    if (hd.key.equals(key))
+                        System.out.println("WARNING: Series key '" + key + "' is not unique in HistogramDataset!");
+
+                histogramData.key = key;
+
                 histogramData.title = (String) d.get("title");
 
                 histogramData.sumWeights = (Double) d.get("sumweights");

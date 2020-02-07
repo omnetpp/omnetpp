@@ -86,6 +86,10 @@ public class PythonXYDataset implements IXYDataset {
                 if (key == null)
                     key = generateUniqueKey();
 
+                for (SeriesData sd : series)
+                    if (sd.key.equals(key))
+                        System.out.println("WARNING: Series key '" + key + "' is not unique in XYDataset!");
+
                 seriesData.key = key;
                 keys.add(key);
                 seriesData.title = (String) d.get("title");
