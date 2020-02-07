@@ -24,9 +24,10 @@ import org.omnetpp.scave.model2.ResultSelectionFilterGenerator;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
- * Creates a temporary chart from the selection on the BrowseDataPage, and opens it.
+ * Creates a temporary chart from the selection on the BrowseDataPage, using
+ * the given template, then opens it.
  */
-// TODO merge with CreateTempMatplotlibChartAction (common base?)
+// TODO consider merging/subclassing with PlotAction?
 public class CreateTempChartFromTemplateAction extends AbstractScaveAction {
 
     ChartTemplate template;

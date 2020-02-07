@@ -28,7 +28,8 @@ import org.omnetpp.scave.model2.ResultSelectionFilterGenerator;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
- * Creates a temporary chart from the selection on the BrowseDataPage, and opens it.
+ * Creates a temporary chart from the selection on the BrowseDataPage, automatically
+ * choosing the template to use, then opens it.
  */
 public class PlotAction extends AbstractScaveAction {
     public PlotAction() {
@@ -53,8 +54,11 @@ public class PlotAction extends AbstractScaveAction {
         String viewFilter = editor.getBrowseDataPage().getActivePanel().getFilter().getFilterPattern();
         String filter = ResultFileManager.callWithReadLock(manager, () -> { return ResultSelectionFilterGenerator.getIDListAsFilterExpression(idList, filterFields, viewFilter, manager); });
 
-        Property property = new Property("filter", filter);
-        chart.addProperty(property);
+        Property filterProperty = chart.lookupProperty("filter");
+        if (filterProperty != null)
+            filterProperty.setValue(filter);
+        else
+            chart.addProperty(new Property("filter", filter));
 
         chart.setTemporary(true);
         editor.openPage(chart);
