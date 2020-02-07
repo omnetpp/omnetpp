@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
+
 public class Chart extends AnalysisItem {
 
     public static class DialogPage {
@@ -104,6 +106,8 @@ public class Chart extends AnalysisItem {
     }
 
     public void addProperty(Property property) {
+        Assert.isTrue(lookupProperty(property.getName()) == null,
+                "Duplicate property key: " + property.getName() + " on chart " + getName());
         property.parent = this;
         properties.add(property);
         notifyListeners();
