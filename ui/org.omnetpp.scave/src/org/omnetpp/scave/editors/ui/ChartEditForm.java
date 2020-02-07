@@ -201,16 +201,12 @@ public class ChartEditForm {
 
     protected void populateControls() {
         for (String propId : xswtWidgetMap.keySet()) {
-            System.out.println("widget propId: " + propId);
             Property prop = chart.lookupProperty(propId);
             if (prop != null) {
-                System.out.println("  prop is found");
                 String value = prop.getValue();
                 if (value != null) {
-                    System.out.println("  prop value is not null");
                     Control control = xswtWidgetMap.get(propId);
                     try {
-                        System.out.println("putting " + value + " into " + control + " for property " + propId);
                         XSWTDataBinding.putValueIntoControl(control, value, null);
                     } catch (Exception e) {
                         MessageDialog.openError(null, "Error", String.format("Error populating dialog field '%s' (%s) with value '%s': ", propId, control.getClass().getSimpleName(), value) + e.getMessage());

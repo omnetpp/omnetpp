@@ -61,7 +61,7 @@ public class DataTreeContentProvider {
     public final static Class[] LEVELS5 = new Class[] { FileNameNode.class, RunIdNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
     public final static Class[] LEVELS6 = new Class[] { RunIdNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
 
-    private static boolean debug = true;
+    private static boolean debug = false;
 
     protected ResultFileManagerEx manager;
 
