@@ -323,7 +323,7 @@ public class IconGridViewer extends ContentViewer {
     private void hookListeners() {
         scrolledComposite.addControlListener(new ControlAdapter() {
             public void controlResized(ControlEvent e) {
-                adjustCanvasSize();
+                refreshLayout();
             }
         });
 
@@ -425,10 +425,7 @@ public class IconGridViewer extends ContentViewer {
             labeledIcon.setHorizontalLayout(horizontal);
             labeledIcon.setPreferredSize(itemWidth, -1);
         }
-        FlowLayout layout = (FlowLayout)contentLayer.getLayoutManager();
-        layout.invalidate();
-        layout.layout(contentLayer);
-        adjustCanvasSize();
+        refreshLayout();
     }
 
     public void setMargin(int margin) {
@@ -828,7 +825,7 @@ public class IconGridViewer extends ContentViewer {
         setSelectionToWidget();
 
         if (elementListChanged)
-            adjustCanvasSize();
+            refreshLayout();
     }
 
     protected int getEffectiveItemWidth() {
@@ -855,7 +852,13 @@ public class IconGridViewer extends ContentViewer {
         return label;
     }
 
-    protected void adjustCanvasSize() {
+    protected void refreshLayout() {
+        // layout the items on canvas
+        FlowLayout layout = (FlowLayout)contentLayer.getLayoutManager();
+        layout.invalidate();
+        layout.layout(contentLayer);
+
+        // adjust canvas size
         int figuresMaxY = 0;
         if (elements != null)
             for (Object element : elements)

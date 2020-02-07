@@ -144,7 +144,7 @@ public class ChartTemplateRegistry {
                 pvalue = PlotDefaults.getDefaultPropertyValueAsString(pname);
 
                 if (pvalue == null)
-                    throw new RuntimeException("Chart property " + pname + " of template " + name + " has no default value.");
+                    throw new RuntimeException("Chart property '" + pname + "' in chart template '" + name + "' has no default value.");
             }
             properties.put(pname,  pvalue);
         }
