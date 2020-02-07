@@ -1,4 +1,5 @@
 from omnetpp.scave import chart, plot
+import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import sys
@@ -276,7 +277,7 @@ def plot_bars(df, props, names=None):
         ax.set_xticklabels(df.index, rotation=30, horizontalalignment="right")
 
     p.xlabel(df.index.names[0])
-    if names:
+    if len(names):
         p.ylabel(", ".join(names))
         set_plot_title(", ".join(names) + " by " + ", ".join(groups+series))
 
