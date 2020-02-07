@@ -139,7 +139,7 @@ public class LinePlot extends PlotViewerBase {
             return displayLine != null ? displayLine : defaultDisplayLine;
         }
 
-        public String getEffectiveDisplayName() {
+        public String getLabel() {
             String name = "";
             if (dataset != null && series != -1)
                 name = dataset.getSeriesTitle(series);
@@ -366,10 +366,10 @@ public class LinePlot extends PlotViewerBase {
             for (String key : keys) {
                 LineProperties props = getLineProperties(key);
                 if (props.getEffectiveDisplayLine()) {
-                    String name = props.getEffectiveDisplayName();
+                    String label = props.getLabel();
                     Color color = props.getEffectiveLineColor();
                     IPlotSymbol symbol = props.getSymbolPlotter();
-                    legend.addItem(color, name, symbol, true);
+                    legend.addItem(color, label, symbol, true);
                 }
             }
         }
