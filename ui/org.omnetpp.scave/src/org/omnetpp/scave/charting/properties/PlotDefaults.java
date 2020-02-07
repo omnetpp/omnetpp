@@ -11,11 +11,11 @@ import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_ANTIALIA
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_AXIS_TITLE_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_BACKGROUND_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_BAR_BASELINE;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_BAR_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_BAR_PLACEMENT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_CACHING;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_DISPLAY_LEGEND;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_DISPLAY_LINE;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LINE_DRAW_STYLE;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_HIST_BAR;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LABEL_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LEGEND_ANCHORING;
@@ -23,6 +23,7 @@ import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LEGEND_B
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LEGEND_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LEGEND_POSITION;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LINE_COLOR;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LINE_DRAW_STYLE;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LINE_STYLE;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LINE_WIDTH;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_PLOT_TITLE;
@@ -114,6 +115,7 @@ public class PlotDefaults {
     public static final Color DEFAULT_GRID_COLOR = ColorFactory.GREY80;
 
     // bar chart
+    public static final Color DEFAULT_BAR_COLOR = null;
     public static final double DEFAULT_BAR_BASELINE = 0.0;
     public static final BarPlacement DEFAULT_BAR_PLACEMENT = BarPlacement.Aligned;
     public static final Color DEFAULT_BAR_OUTLINE_COLOR = ColorFactory.GREY80;
@@ -172,6 +174,7 @@ public class PlotDefaults {
 
         defaults.put(PROP_XY_GRID, DEFAULT_SHOW_GRID);
 
+        defaults.put(PROP_BAR_COLOR, DEFAULT_BAR_COLOR);
         defaults.put(PROP_BAR_BASELINE, DEFAULT_BAR_BASELINE);
         defaults.put(PROP_BAR_PLACEMENT, DEFAULT_BAR_PLACEMENT);
         // TODO: BAR_OUTLINE_COLOR

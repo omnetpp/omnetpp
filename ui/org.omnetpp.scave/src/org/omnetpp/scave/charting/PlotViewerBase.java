@@ -356,7 +356,7 @@ public abstract class PlotViewerBase extends ZoomableCachingCanvas implements IP
 
     protected void resetProperties() {
         for (String name : getPropertyNames()) {
-            Assert.isTrue(PlotDefaults.hasDefaultValue(name));
+            Assert.isTrue(PlotDefaults.hasDefaultValue(name), "Property " + name + " has no default value.");
             String value = PlotDefaults.getDefaultPropertyValueAsString(name);
             setProperty(name, value);
         }

@@ -305,7 +305,6 @@ public class BarPlot extends PlotViewerBase {
     }
 
     public void setBarColor(String key, RGB color) {
-        Assert.isNotNull(color);
         BarProperties barProps = getOrCreateBarProperties(key);
         barProps.color = color;
         updateLegends();
