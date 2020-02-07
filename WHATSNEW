@@ -5,6 +5,12 @@ This file summarizes OMNeT++ changes in each release. For changes related to
 simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
+OMNeT++ 5.6.1 (February 2020)
+-----------------------------
+
+This release contains minor stability fixes.
+
+
 OMNeT++ 5.6 (January 2020)
 --------------------------
 
