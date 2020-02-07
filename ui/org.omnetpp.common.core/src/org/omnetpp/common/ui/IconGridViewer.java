@@ -853,6 +853,11 @@ public class IconGridViewer extends ContentViewer {
     }
 
     protected void refreshLayout() {
+        // set width because it's an important input for the layout
+        org.eclipse.swt.graphics.Rectangle controlArea = scrolledComposite.getClientArea();
+        if (canvas.getBounds().width != controlArea.width)
+            canvas.setSize(controlArea.width, controlArea.height); // initially, then we'll adjust the height
+
         // layout the items on canvas
         FlowLayout layout = (FlowLayout)contentLayer.getLayoutManager();
         layout.invalidate();
@@ -863,8 +868,6 @@ public class IconGridViewer extends ContentViewer {
         if (elements != null)
             for (Object element : elements)
                 figuresMaxY = Math.max(figuresMaxY, elementsToFigures.get(element).getBounds().bottom());
-
-        org.eclipse.swt.graphics.Rectangle controlArea = scrolledComposite.getClientArea();
         canvas.setSize(controlArea.width, Math.max(figuresMaxY + getMargin(), controlArea.height));
     }
 
