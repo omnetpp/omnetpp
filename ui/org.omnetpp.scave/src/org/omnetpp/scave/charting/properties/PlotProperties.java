@@ -58,7 +58,7 @@ public class PlotProperties {
     PROP_X_AXIS_LOGARITHMIC = "X.Axis.Log",
     // Lines
     PROP_DISPLAY_LINE       = "Line.Display",
-    PROP_DRAW_STYLE         = "Line.DrawStyle",
+    PROP_LINE_DRAW_STYLE    = "Line.DrawStyle",
     PROP_LINE_COLOR         = "Line.Color",
     PROP_LINE_STYLE         = "Line.Style",
     PROP_LINE_WIDTH         = "Line.Width",

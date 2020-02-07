@@ -9,7 +9,7 @@ package org.omnetpp.scave.charting;
 
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_AXIS_TITLE_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_DISPLAY_LINE;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_DRAW_STYLE;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LINE_DRAW_STYLE;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LABEL_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LINE_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LINE_STYLE;
@@ -86,7 +86,7 @@ public class LinePlot extends PlotViewerBase {
             PROP_DISPLAY_LINE,
             PROP_SYMBOL_TYPE,
             PROP_SYMBOL_SIZE,
-            PROP_DRAW_STYLE,
+            PROP_LINE_DRAW_STYLE,
             PROP_LINE_COLOR,
             PROP_LINE_STYLE,
             PROP_LINE_WIDTH
@@ -414,7 +414,7 @@ public class LinePlot extends PlotViewerBase {
             setSymbolType(Converter.stringToOptionalEnum(value, SymbolType.class));
         else if (name.equals(PROP_SYMBOL_SIZE))
             setSymbolSize(Converter.stringToInteger(value));
-        else if (name.equals(PROP_DRAW_STYLE))
+        else if (name.equals(PROP_LINE_DRAW_STYLE))
             setDrawStyle(Converter.stringToOptionalEnum(value, DrawStyle.class));
         else if (name.equals(PROP_LINE_COLOR))
             setLineColor(Converter.stringToOptionalRGB(value));
@@ -429,7 +429,7 @@ public class LinePlot extends PlotViewerBase {
             setSymbolType(getElementId(name), Converter.stringToOptionalEnum(value, SymbolType.class));
         else if (name.startsWith(PROP_SYMBOL_SIZE))
             setSymbolSize(getElementId(name), Converter.stringToOptionalInteger(value));
-        else if (name.startsWith(PROP_DRAW_STYLE))
+        else if (name.startsWith(PROP_LINE_DRAW_STYLE))
             setDrawStyle(getElementId(name), Converter.stringToOptionalEnum(value, DrawStyle.class));
         else if (name.startsWith(PROP_LINE_COLOR))
             setLineColor(getElementId(name), Converter.stringToOptionalRGB(value));

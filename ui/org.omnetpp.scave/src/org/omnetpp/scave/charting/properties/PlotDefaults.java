@@ -15,7 +15,7 @@ import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_BAR_PLAC
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_CACHING;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_DISPLAY_LEGEND;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_DISPLAY_LINE;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_DRAW_STYLE;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LINE_DRAW_STYLE;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_HIST_BAR;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LABEL_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LEGEND_ANCHORING;
@@ -122,7 +122,7 @@ public class PlotDefaults {
 
     // lines
     public static final boolean DEFAULT_DISPLAY_LINE = true;
-    public static final DrawStyle DEFAULT_DRAW_STYLE = null; // = use interpolationmode attr of vectors
+    public static final DrawStyle DEFAULT_LINE_DRAW_STYLE = null; // = use interpolationmode attr of vectors
     public static final Integer DEFAULT_SYMBOL_SIZE = 4;
     public static final SymbolType DEFAULT_SYMBOL_TYPE = null;
     public static final LineStyle DEFAULT_LINE_STYLE = LineStyle.Solid;
@@ -178,7 +178,7 @@ public class PlotDefaults {
 
         // Lines
         defaults.put(PROP_DISPLAY_LINE, DEFAULT_DISPLAY_LINE);
-        defaults.put(PROP_DRAW_STYLE, DEFAULT_DRAW_STYLE);
+        defaults.put(PROP_LINE_DRAW_STYLE, DEFAULT_LINE_DRAW_STYLE);
         defaults.put(PROP_LINE_STYLE, DEFAULT_LINE_STYLE);
         defaults.put(PROP_LINE_WIDTH, DEFAULT_LINE_WIDTH);
         defaults.put(PROP_LINE_COLOR, DEFAULT_LINE_COLOR);
