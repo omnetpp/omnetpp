@@ -7,17 +7,17 @@
 
 package org.omnetpp.scave.charting;
 
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_AXIS_TITLE_FONT;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_BAR_BASELINE;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_BAR_COLOR;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_BAR_PLACEMENT;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LABEL_FONT;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_WRAP_LABELS;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_XY_GRID;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_AXIS_TITLE;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_LABELS_ROTATE_BY;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_AXIS_TITLE_FONT;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_BAR_BASELINE;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_BAR_COLOR;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_BAR_PLACEMENT;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LABEL_FONT;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_WRAP_LABELS;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_XY_GRID;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_LABELS_ROTATE_BY;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_TITLE;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +36,6 @@ import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
-import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.scave.charting.dataset.IAveragedScalarDataset;
@@ -45,9 +44,9 @@ import org.omnetpp.scave.charting.dataset.IScalarDataset;
 import org.omnetpp.scave.charting.dataset.IStringValueScalarDataset;
 import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 import org.omnetpp.scave.charting.plotter.SquareSymbol;
-import org.omnetpp.scave.charting.properties.PlotDefaults;
-import org.omnetpp.scave.charting.properties.PlotProperties.BarPlacement;
-import org.omnetpp.scave.charting.properties.PlotProperties.ShowGrid;
+import org.omnetpp.scave.charting.properties.PlotProperty;
+import org.omnetpp.scave.charting.properties.PlotProperty.BarPlacement;
+import org.omnetpp.scave.charting.properties.PlotProperty.ShowGrid;
 import org.omnetpp.scave.engine.Statistics;
 import org.omnetpp.scave.model2.StatUtils;
 import org.omnetpp.scave.python.PythonScalarDataset;
@@ -58,7 +57,7 @@ import org.omnetpp.scave.python.PythonScalarDataset;
 public class BarPlot extends PlotViewerBase {
     private static final boolean debug = false;
 
-    protected final static String[] BARPLOT_PROPERTY_NAMES = ArrayUtils.addAll(PLOTBASE_PROPERTY_NAMES, new String[] {
+    protected final static PlotProperty[] BARPLOT_PROPERTIES = ArrayUtils.addAll(PLOTBASE_PROPERTIES, new PlotProperty[] {
             PROP_X_AXIS_TITLE,
             PROP_Y_AXIS_TITLE,
             PROP_AXIS_TITLE_FONT,
@@ -163,41 +162,37 @@ public class BarPlot extends PlotViewerBase {
      *               Properties
      *=============================================*/
 
-    public String[] getPropertyNames() {
-        return BARPLOT_PROPERTY_NAMES;
+    public PlotProperty[] getProperties() {
+        return BARPLOT_PROPERTIES;
     }
 
     @Override
-    public void setProperty(String name, String value) {
-        Assert.isNotNull(name);
-
+    public void setProperty(PlotProperty prop, String value) {
+        switch (prop) {
         // Titles
-        if (PROP_X_AXIS_TITLE.equals(name))
-            setXAxisTitle(value);
-        else if (PROP_Y_AXIS_TITLE.equals(name))
-            setYAxisTitle(value);
-        else if (PROP_AXIS_TITLE_FONT.equals(name))
-            setAxisTitleFont(Converter.stringToSwtfont(value));
-        else if (PROP_LABEL_FONT.equals(name))
-            setLabelFont(Converter.stringToSwtfont(value));
-        else if (PROP_X_LABELS_ROTATE_BY.equals(name))
-            setXAxisLabelsRotatedBy(Converter.stringToDouble(value));
-        else if (PROP_WRAP_LABELS.equals(name))
-            setWrapLabels(Converter.stringToBoolean(value));
+        case PROP_X_AXIS_TITLE: setXAxisTitle(value); break;
+        case PROP_Y_AXIS_TITLE: setYAxisTitle(value); break;
+        case PROP_AXIS_TITLE_FONT: setAxisTitleFont(Converter.stringToSwtfont(value)); break;
+        case PROP_LABEL_FONT: setLabelFont(Converter.stringToSwtfont(value)); break;
+        case PROP_X_LABELS_ROTATE_BY: setXAxisLabelsRotatedBy(Converter.stringToDouble(value)); break;
+        case PROP_WRAP_LABELS: setWrapLabels(Converter.stringToBoolean(value)); break;
         // Bars
-        else if (PROP_BAR_BASELINE.equals(name))
-            setBarBaseline(Converter.stringToDouble(value));
-        else if (PROP_BAR_PLACEMENT.equals(name))
-            setBarPlacement(Converter.stringToEnum(value, BarPlacement.class));
-        else if (name.startsWith(PROP_BAR_COLOR))
-            setBarColor(getElementId(name), Converter.stringToOptionalRGB(value));
+        case PROP_BAR_BASELINE: setBarBaseline(Converter.stringToDouble(value)); break;
+        case PROP_BAR_PLACEMENT: setBarPlacement(Converter.stringToEnum(value, BarPlacement.class)); break;
+        case PROP_BAR_COLOR: break; //TODO
         // Axes
-        else if (PROP_XY_GRID.equals(name))
-            setShowGrid(Converter.stringToEnum(value, ShowGrid.class));
-        else if (PROP_Y_AXIS_LOGARITHMIC.equals(name))
-            setLogarithmicY(Converter.stringToBoolean(value));
-        else
-            super.setProperty(name, value);
+        case PROP_XY_GRID: setShowGrid(Converter.stringToEnum(value, ShowGrid.class)); break;
+        case PROP_Y_AXIS_LOGARITHMIC: setLogarithmicY(Converter.stringToBoolean(value)); break;
+        default: super.setProperty(prop, value);
+        }
+    }
+
+    @Override
+    public void setProperty(PlotProperty prop, String key, String value) {
+        switch (prop) {
+        case PROP_BAR_COLOR: setBarColor(key, Converter.stringToOptionalRGB(value)); break;
+        default: super.setProperty(prop, key, value);
+        }
     }
 
     @Override

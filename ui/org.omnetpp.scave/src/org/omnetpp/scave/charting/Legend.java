@@ -19,8 +19,8 @@ import org.eclipse.swt.graphics.Point;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.scave.charting.plotter.IPlotSymbol;
-import org.omnetpp.scave.charting.properties.PlotProperties.LegendAnchor;
-import org.omnetpp.scave.charting.properties.PlotProperties.LegendPosition;
+import org.omnetpp.scave.charting.properties.PlotProperty.LegendAnchor;
+import org.omnetpp.scave.charting.properties.PlotProperty.LegendPosition;
 
 /**
  * This class layouts and draws the legend on a vector chart.

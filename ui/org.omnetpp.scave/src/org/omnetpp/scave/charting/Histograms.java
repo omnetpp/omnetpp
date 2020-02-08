@@ -27,7 +27,7 @@ import org.omnetpp.scave.charting.dataset.IHistogramDataset;
 import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 import org.omnetpp.scave.charting.plotter.SquareSymbol;
 import org.omnetpp.scave.charting.properties.PlotDefaults;
-import org.omnetpp.scave.charting.properties.PlotProperties.HistogramBar;
+import org.omnetpp.scave.charting.properties.PlotProperty.HistogramBar;
 
 /**
  * The content area of a histogram plot.
@@ -37,9 +37,9 @@ class Histograms {
     HistogramPlot parent;
     Rectangle area = Rectangle.SINGLETON;
 
-    HistogramBar barType = PlotDefaults.DEFAULT_HIST_BAR;
-    boolean showOverflowCell = PlotDefaults.DEFAULT_SHOW_OVERFLOW_CELL;
-    double baseline = 0.0;
+    HistogramBar barType;
+    boolean showOverflowCell;
+    double baseline;
 
     RectangularArea bars[][] = new RectangularArea[0][];
     double transformedBaseline;

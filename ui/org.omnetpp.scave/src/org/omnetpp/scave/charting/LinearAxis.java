@@ -7,13 +7,7 @@
 
 package org.omnetpp.scave.charting;
 
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_AXIS_COLOR;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_AXIS_TITLE_FONT;
 import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_GRID_COLOR;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_LABELS_FONT;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_SHOW_GRID;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_X_AXIS_TITLE;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_Y_AXIS_TITLE;
 
 import java.math.BigDecimal;
 import org.eclipse.draw2d.Graphics;
@@ -21,11 +15,14 @@ import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.LargeGraphics;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.GraphicsUtils;
-import org.omnetpp.scave.charting.properties.PlotProperties.ShowGrid;
+import org.omnetpp.scave.charting.properties.PlotProperty;
+import org.omnetpp.scave.charting.properties.PlotProperty.ShowGrid;
 
 /**
  * Draws a (horizontal or vertical) chart axis, with the corresponding axis
@@ -38,12 +35,12 @@ public class LinearAxis {
     private boolean vertical;    // horizontal or vertical axis
     private boolean logarithmic; // logarithmic axis
     private boolean drawAxisToPlot;
-    private ShowGrid showGrid = DEFAULT_SHOW_GRID;
+    private ShowGrid showGrid;
     private boolean drawTickLabels = true;
     private boolean drawTitle = true;
     private String title;
-    private Font titleFont = DEFAULT_AXIS_TITLE_FONT;
-    private Font tickFont = DEFAULT_LABELS_FONT;
+    private Font titleFont;
+    private Font tickFont;
 
 
     /* Layout parameters */
@@ -57,7 +54,6 @@ public class LinearAxis {
         this.vertical = vertical;
         this.logarithmic = logarithmic;
         this.drawAxisToPlot = drawAxisToPlot;
-        this.title = vertical ? DEFAULT_Y_AXIS_TITLE : DEFAULT_X_AXIS_TITLE;
     }
 
     public double transform(double coord) {
@@ -69,7 +65,7 @@ public class LinearAxis {
     }
 
     /**
-     * Modifies insets to accomodate room for axis title, ticks, tick labels etc.
+     * Modifies insets to accommodate room for axis title, ticks, tick labels etc.
      * Also returns insets for convenience.
      */
     public Insets layout(Graphics graphics, Rectangle bounds, Insets insets, ICoordsMapping mapping, int pass) {
@@ -171,7 +167,7 @@ public class LinearAxis {
         // draw axis line and title
         graphics.setLineWidth(1);
         graphics.setLineStyle(SWT.LINE_SOLID);
-        graphics.setForegroundColor(DEFAULT_AXIS_COLOR);
+        graphics.setForegroundColor(ColorFactory.BLACK);
         graphics.setFont(titleFont);
 
         Point titleSize = GraphicsUtils.getTextExtent(graphics, title);

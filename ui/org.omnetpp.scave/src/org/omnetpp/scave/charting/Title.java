@@ -15,6 +15,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.scave.charting.properties.PlotDefaults;
 
@@ -29,7 +30,7 @@ public class Title {
     private boolean visible = true;
     private String text;
     private Font font;
-    private Color color = PlotDefaults.DEFAULT_TITLE_COLOR;
+    private Color color;
     private Rectangle bounds;
 
     public Title() {

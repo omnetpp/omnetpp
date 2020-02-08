@@ -7,10 +7,6 @@
 
 package org.omnetpp.scave.charting;
 
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_BAR_BASELINE;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_BAR_OUTLINE_COLOR;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_BAR_PLACEMENT;
-
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
@@ -22,7 +18,7 @@ import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.charting.dataset.IScalarDataset;
 import org.omnetpp.scave.charting.properties.PlotDefaults;
-import org.omnetpp.scave.charting.properties.PlotProperties.BarPlacement;
+import org.omnetpp.scave.charting.properties.PlotProperty.BarPlacement;
 
 /**
  * The content area of a bar plot.
@@ -30,9 +26,10 @@ import org.omnetpp.scave.charting.properties.PlotProperties.BarPlacement;
 class Bars {
     private Rectangle rect = new Rectangle(0,0,1,1);
 
-    double barBaseline = DEFAULT_BAR_BASELINE;
-    BarPlacement barPlacement = DEFAULT_BAR_PLACEMENT;
-    Color barOutlineColor = DEFAULT_BAR_OUTLINE_COLOR;
+    double barBaseline;
+    BarPlacement barPlacement;
+    Color barOutlineColor;
+
     // coordinates of the bars, in row/column order
     // rows are sorted according to the x coordinate
     // y coordinates might be logarithmic

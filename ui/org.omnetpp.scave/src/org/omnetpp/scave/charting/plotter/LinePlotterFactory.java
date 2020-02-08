@@ -8,7 +8,7 @@
 package org.omnetpp.scave.charting.plotter;
 
 import org.omnetpp.scave.charting.plotter.StepsLinePlotter.Mode;
-import org.omnetpp.scave.charting.properties.PlotProperties.DrawStyle;
+import org.omnetpp.scave.charting.properties.PlotProperty.DrawStyle;
 
 public class LinePlotterFactory {
 

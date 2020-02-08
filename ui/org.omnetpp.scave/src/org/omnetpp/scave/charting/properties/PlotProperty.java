@@ -7,65 +7,118 @@
 
 package org.omnetpp.scave.charting.properties;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.collections.map.HashedMap;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Graphics;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
+import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.util.Converter;
 import org.omnetpp.scave.ScaveImages;
 
 /**
  * Property names and types plots.
  */
-public class PlotProperties {
-
-    /**
-     * Property names for plots.
-     */
-    public static final String
+public enum PlotProperty {
     // Titles
-    PROP_PLOT_TITLE         = "Plot.Title",
-    PROP_PLOT_TITLE_FONT    = "Plot.Title.Font",
-    PROP_X_AXIS_TITLE       = "X.Axis.Title",
-    PROP_Y_AXIS_TITLE       = "Y.Axis.Title",
-    PROP_AXIS_TITLE_FONT    = "Axis.Title.Font",
-    PROP_LABEL_FONT         = "Label.Font",
-    PROP_X_LABELS_ROTATE_BY = "X.Label.RotateBy",
+    PROP_PLOT_TITLE("Plot.Title", String.class, ""),
+    PROP_PLOT_TITLE_FONT("Plot.Title.Font", Font.class, getArial10()),
+    PROP_X_AXIS_TITLE("X.Axis.Title", String.class, ""),
+    PROP_Y_AXIS_TITLE("Y.Axis.Title", String.class, ""),
+    PROP_AXIS_TITLE_FONT("Axis.Title.Font", Font.class, getArial8()),
+    PROP_LABEL_FONT("Label.Font", Font.class, getArial8()),
+    PROP_X_LABELS_ROTATE_BY("X.Label.RotateBy", Integer.class, 0),
     // Axes
-    PROP_Y_AXIS_MIN         = "Y.Axis.Min",
-    PROP_Y_AXIS_MAX         = "Y.Axis.Max",
-    PROP_Y_AXIS_LOGARITHMIC = "Y.Axis.Log",
-    PROP_XY_GRID            = "Axes.Grid",
+    PROP_Y_AXIS_MIN("Y.Axis.Min", Double.class, Double.NEGATIVE_INFINITY),
+    PROP_Y_AXIS_MAX("Y.Axis.Max", Double.class, Double.POSITIVE_INFINITY),
+    PROP_Y_AXIS_LOGARITHMIC("Y.Axis.Log", Boolean.class, false),
+    PROP_XY_GRID("Axes.Grid", ShowGrid.class, ShowGrid.Major),
     // Legend
-    PROP_DISPLAY_LEGEND     = "Legend.Display",
-    PROP_LEGEND_BORDER      = "Legend.Border",
-    PROP_LEGEND_FONT        = "Legend.Font",
-    PROP_LEGEND_POSITION    = "Legend.Position",
-    PROP_LEGEND_ANCHORING   = "Legend.Anchoring",
+    PROP_DISPLAY_LEGEND("Legend.Display", Boolean.class, true),
+    PROP_LEGEND_BORDER("Legend.Border", Boolean.class, false),
+    PROP_LEGEND_FONT("Legend.Font", Font.class, new Font(null, new FontData("Arial", 8, SWT.NORMAL))),
+    PROP_LEGEND_POSITION("Legend.Position", LegendPosition.class, PlotProperty.LegendPosition.Inside),
+    PROP_LEGEND_ANCHORING("Legend.Anchoring", LegendAnchor.class, PlotProperty.LegendAnchor.North),
     // Plot
-    PROP_ANTIALIAS          = "Plot.Antialias",
-    PROP_CACHING            = "Plot.Caching",
-    PROP_BACKGROUND_COLOR   = "Plot.BackgroundColor",
+    PROP_ANTIALIAS("Plot.Antialias", Boolean.class, true),
+    PROP_CACHING("Plot.Caching", Boolean.class, true),
+    PROP_BACKGROUND_COLOR("Plot.BackgroundColor", Color.class, ColorFactory.WHITE),
     // Bar Plot
-    PROP_WRAP_LABELS        = "X.Label.Wrap",
-    PROP_BAR_PLACEMENT      = "Bar.Placement",
-    PROP_BAR_COLOR          = "Bar.Color",
-    PROP_BAR_BASELINE       = "Bars.Baseline",
+    PROP_WRAP_LABELS("X.Label.Wrap", Boolean.class, true),
+    PROP_BAR_PLACEMENT("Bar.Placement", BarPlacement.class, PlotProperty.BarPlacement.Aligned),
+    PROP_BAR_COLOR("Bar.Color", Color.class, null),
+    PROP_BAR_BASELINE("Bars.Baseline", Double.class, 0.0),
     // Histograms
-    PROP_HIST_BAR           = "Hist.Bar",
-    PROP_SHOW_OVERFLOW_CELL = "Hist.ShowOverflowCell",
-    PROP_HIST_COLOR         = "Hist.Color",
-    PROP_HIST_CUMULATIVE    = "Hist.Cumulative",
-    PROP_HIST_DENSITY       = "Hist.Density",
+    PROP_HIST_BAR("Hist.Bar", HistogramBar.class, PlotProperty.HistogramBar.Solid),
+    PROP_SHOW_OVERFLOW_CELL("Hist.ShowOverflowCell", Boolean.class, false),
+    PROP_HIST_COLOR("Hist.Color", Color.class, null),
+    PROP_HIST_CUMULATIVE("Hist.Cumulative", Boolean.class, false),
+    PROP_HIST_DENSITY("Hist.Density", Boolean.class, false),
     // Line Plot
-    PROP_X_AXIS_MIN         = "X.Axis.Min",
-    PROP_X_AXIS_MAX         = "X.Axis.Max",
-    PROP_X_AXIS_LOGARITHMIC = "X.Axis.Log",
+    PROP_X_AXIS_MIN("X.Axis.Min", Double.class, Double.NEGATIVE_INFINITY),
+    PROP_X_AXIS_MAX("X.Axis.Max", Double.class, Double.POSITIVE_INFINITY),
+    PROP_X_AXIS_LOGARITHMIC("X.Axis.Log", Boolean.class, false),
     // Lines
-    PROP_DISPLAY_LINE       = "Line.Display",
-    PROP_LINE_DRAW_STYLE    = "Line.DrawStyle",
-    PROP_LINE_COLOR         = "Line.Color",
-    PROP_LINE_STYLE         = "Line.Style",
-    PROP_LINE_WIDTH         = "Line.Width",
-    PROP_SYMBOL_TYPE        = "Symbols.Type",
-    PROP_SYMBOL_SIZE        = "Symbols.Size";
+    PROP_DISPLAY_LINE("Line.Display", Boolean.class, true),
+    PROP_LINE_DRAW_STYLE("Line.DrawStyle", DrawStyle.class, null),
+    PROP_LINE_COLOR("Line.Color", Color.class, null),
+    PROP_LINE_STYLE("Line.Style", LineStyle.class, PlotProperty.LineStyle.Solid),
+    PROP_LINE_WIDTH("Line.Width", Float.class, 1.5f),
+    PROP_SYMBOL_TYPE("Symbols.Type", SymbolType.class, null),
+    PROP_SYMBOL_SIZE("Symbols.Size", Integer.class, 4);
 
+    private static Font getArial10() {return new Font(null, new FontData("Arial", 10, SWT.NORMAL));}
+    private static Font getArial8() {return new Font(null, new FontData("Arial", 8, SWT.NORMAL));}
+
+    private String name;
+    private Class<?> type;
+    private Object defaultValue;
+    private static Map<String,PlotProperty> map = null;
+
+    PlotProperty(String name, Class<?> type, Object defaultValue) {
+        this.name = name;
+        this.type = type;
+        this.defaultValue = defaultValue;
+        if (defaultValue != null)
+            Assert.isTrue(type.isInstance(defaultValue));
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Class<?> getType() {
+        return type;
+    }
+
+    public Object getDefaultValue() {
+        return defaultValue;
+    }
+
+    public String getDefaultValueAsString() {
+        return Converter.objectToString(getDefaultValue());
+    }
+
+    public static PlotProperty loookup(String propertyName) {
+        if (map == null) {
+            map = new HashMap<>();
+            for (PlotProperty p : PlotProperty.values())
+               map.put(p.getName(), p);
+        }
+        String baseName = getBasePropertyName(propertyName);
+        return map.get(baseName);
+
+    }
+
+     public static String getBasePropertyName(String propertyName) {
+        int index = propertyName.indexOf('/');
+        return index < 0 ? propertyName : propertyName.substring(0, index);
+    }
 
     public enum LegendPosition {
         Inside,

@@ -7,12 +7,6 @@
 
 package org.omnetpp.scave.charting;
 
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_AXIS_TITLE_FONT;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_LABELS_FONT;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_WRAP_LABELS;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_X_AXIS_TITLE;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_X_LABELS_ROTATED_BY;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -39,17 +33,17 @@ import org.omnetpp.scave.charting.dataset.IScalarDataset;
  * Domain axis for bar chart.
  */
 class DomainAxis {
-
     BarPlot chart;
     Rectangle rect; // strip below the plotArea where the axis text etc goes
     Vector<LineData> lines = new Vector<LineData>();
-    String title = DEFAULT_X_AXIS_TITLE;
-    boolean drawLabels = true;
-    boolean drawTitle = true;
-    Font titleFont = DEFAULT_AXIS_TITLE_FONT;
-    Font labelsFont = DEFAULT_LABELS_FONT;
-    double rotation = DEFAULT_X_LABELS_ROTATED_BY;
-    boolean wrapLabels = DEFAULT_WRAP_LABELS;
+
+    String title;
+    boolean drawLabels;
+    boolean drawTitle;
+    Font titleFont;
+    Font labelsFont;
+    double rotation;
+    boolean wrapLabels;
     int gap = 4;  // between chart and axis
 
     static class LabelData {

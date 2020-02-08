@@ -23,6 +23,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.Markers;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.properties.PlotDefaults;
+import org.omnetpp.scave.charting.properties.PlotProperty;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Chart.ChartType;
@@ -141,10 +142,10 @@ public class ChartTemplateRegistry {
             }
             else {
                 pname = item.trim();
-                pvalue = PlotDefaults.getDefaultPropertyValueAsString(pname);
-
-                if (pvalue == null)
+                PlotProperty prop = PlotProperty.loookup(pname);
+                if (prop == null)
                     throw new RuntimeException("Chart property '" + pname + "' in chart template '" + name + "' has no default value.");
+                pvalue = prop.getDefaultValueAsString();
             }
             properties.put(pname,  pvalue);
         }

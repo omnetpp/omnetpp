@@ -7,25 +7,24 @@
 
 package org.omnetpp.scave.charting;
 
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_AXIS_TITLE_FONT;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_BAR_BASELINE;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_HIST_BAR;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_HIST_COLOR;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_HIST_CUMULATIVE;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_HIST_DENSITY;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LABEL_FONT;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_SHOW_OVERFLOW_CELL;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_XY_GRID;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_AXIS_TITLE;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_AXIS_TITLE_FONT;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_BAR_BASELINE;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_HIST_BAR;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_HIST_COLOR;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_HIST_CUMULATIVE;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_HIST_DENSITY;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LABEL_FONT;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_SHOW_OVERFLOW_CELL;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_XY_GRID;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_TITLE;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.AssertionFailedException;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -40,10 +39,10 @@ import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GraphicsUtils;
-import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IHistogramDataset;
-import org.omnetpp.scave.charting.properties.PlotProperties.HistogramBar;
+import org.omnetpp.scave.charting.properties.PlotProperty;
+import org.omnetpp.scave.charting.properties.PlotProperty.HistogramBar;
 import org.omnetpp.scave.python.PythonHistogramDataset;
 
 /**
@@ -52,7 +51,7 @@ import org.omnetpp.scave.python.PythonHistogramDataset;
 public class HistogramPlot extends PlotViewerBase {
     private static final boolean debug = false;
 
-    private static final String[] HISTOGRAMPLOT_PROPERTY_NAMES = ArrayUtils.addAll(PLOTBASE_PROPERTY_NAMES, new String[] {
+    private static final PlotProperty[] HISTOGRAMPLOT_PROPERTIES = ArrayUtils.addAll(PLOTBASE_PROPERTIES, new PlotProperty[] {
             PROP_X_AXIS_TITLE,
             PROP_Y_AXIS_TITLE,
             PROP_XY_GRID,
@@ -137,46 +136,37 @@ public class HistogramPlot extends PlotViewerBase {
      *               Properties
      *=============================================*/
 
-    public String[] getPropertyNames() {
-        return HISTOGRAMPLOT_PROPERTY_NAMES;
+    public PlotProperty[] getProperties() {
+        return HISTOGRAMPLOT_PROPERTIES;
     }
 
     @Override
-    public void setProperty(String name, String value) {
-        Assert.isNotNull(name);
+    public void setProperty(PlotProperty prop, String value) {
+        switch (prop) {
+        case PROP_X_AXIS_TITLE: setXAxisTitle(value); break;
+        case PROP_Y_AXIS_TITLE: setYAxisTitle(value); break;
+        case PROP_XY_GRID:  break; // TODO
+        case PROP_AXIS_TITLE_FONT: setAxisTitleFont(Converter.stringToSwtfont(value)); break;
+        case PROP_LABEL_FONT: setTickLabelFont(Converter.stringToSwtfont(value)); break;
+        case PROP_HIST_BAR: setBarType(Converter.stringToEnum(value, HistogramBar.class)); break;
+        case PROP_HIST_COLOR: setHistogramColor(Converter.stringToOptionalRGB(value)); break;
+        case PROP_HIST_CUMULATIVE: setHistogramCumulative(Converter.stringToBoolean(value)); break;
+        case PROP_HIST_DENSITY: setHistogramDensity(Converter.stringToBoolean(value)); break;
+        case PROP_SHOW_OVERFLOW_CELL: setShowOverflowCell(Converter.stringToBoolean(value)); break;
+        case PROP_BAR_BASELINE: setBarBaseline(Converter.stringToDouble(value)); break;
+        case PROP_Y_AXIS_LOGARITHMIC: setLogarithmicY(Converter.stringToBoolean(value)); break;
+        default: super.setProperty(prop, value);
+        }
+    }
 
-        if (PROP_X_AXIS_TITLE.equals(name))
-            setXAxisTitle(value);
-        else if (PROP_Y_AXIS_TITLE.equals(name))
-            setYAxisTitle(value);
-        else if (PROP_XY_GRID.equals(name))
-            ; // TODO
-        else if (PROP_AXIS_TITLE_FONT.equals(name))
-            setAxisTitleFont(Converter.stringToSwtfont(value));
-        else if (PROP_LABEL_FONT.equals(name))
-            setTickLabelFont(Converter.stringToSwtfont(value));
-        else if (PROP_HIST_BAR.equals(name))
-            setBarType(Converter.stringToEnum(value, HistogramBar.class));
-        else if (PROP_HIST_COLOR.equals(name))
-            setHistogramColor(Converter.stringToOptionalRGB(value));
-        else if (PROP_HIST_CUMULATIVE.equals(name))
-            setHistogramCumulative(Converter.stringToBoolean(value));
-        else if (PROP_HIST_DENSITY.equals(name))
-            setHistogramDensity(Converter.stringToBoolean(value));
-        else if (PROP_SHOW_OVERFLOW_CELL.equals(name))
-            setShowOverflowCell(Converter.stringToBoolean(value));
-        else if (PROP_BAR_BASELINE.equals(name))
-            setBarBaseline(Converter.stringToDouble(value));
-        else if (name.startsWith(PROP_HIST_COLOR))
-            setHistogramColor(getElementId(name), Converter.stringToOptionalRGB(value));
-        else if (name.startsWith(PROP_HIST_CUMULATIVE))
-            setHistogramCumulative(getElementId(name), Converter.stringToOptionalBoolean(value));
-        else if (name.startsWith(PROP_HIST_DENSITY))
-            setHistogramDensity(getElementId(name), Converter.stringToOptionalBoolean(value));
-        else if (PROP_Y_AXIS_LOGARITHMIC.equals(name))
-            setLogarithmicY(Converter.stringToBoolean(value));
-        else
-            super.setProperty(name, value);
+    @Override
+    public void setProperty(PlotProperty prop, String key, String value) {
+        switch (prop) {
+        case PROP_HIST_COLOR: setHistogramColor(key, Converter.stringToOptionalRGB(value)); break;
+        case PROP_HIST_CUMULATIVE: setHistogramCumulative(key, Converter.stringToOptionalBoolean(value)); break;
+        case PROP_HIST_DENSITY: setHistogramDensity(key, Converter.stringToOptionalBoolean(value)); break;
+        default: super.setProperty(prop, key, value);
+        }
     }
 
     @Override

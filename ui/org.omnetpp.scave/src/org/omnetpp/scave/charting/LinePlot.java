@@ -7,22 +7,22 @@
 
 package org.omnetpp.scave.charting;
 
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_AXIS_TITLE_FONT;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_DISPLAY_LINE;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LINE_DRAW_STYLE;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LABEL_FONT;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LINE_COLOR;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LINE_STYLE;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LINE_WIDTH;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_SYMBOL_SIZE;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_SYMBOL_TYPE;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_XY_GRID;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_AXIS_MAX;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_AXIS_MIN;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_AXIS_TITLE;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_AXIS_TITLE_FONT;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_DISPLAY_LINE;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LABEL_FONT;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LINE_COLOR;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LINE_DRAW_STYLE;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LINE_STYLE;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LINE_WIDTH;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_SYMBOL_SIZE;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_SYMBOL_TYPE;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_XY_GRID;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_MAX;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_MIN;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_TITLE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,10 +59,11 @@ import org.omnetpp.scave.charting.plotter.ILinePlotter;
 import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 import org.omnetpp.scave.charting.plotter.LinePlotterFactory;
 import org.omnetpp.scave.charting.plotter.NoLinePlotter;
-import org.omnetpp.scave.charting.properties.PlotProperties.DrawStyle;
-import org.omnetpp.scave.charting.properties.PlotProperties.LineStyle;
-import org.omnetpp.scave.charting.properties.PlotProperties.ShowGrid;
-import org.omnetpp.scave.charting.properties.PlotProperties.SymbolType;
+import org.omnetpp.scave.charting.properties.PlotProperty;
+import org.omnetpp.scave.charting.properties.PlotProperty.DrawStyle;
+import org.omnetpp.scave.charting.properties.PlotProperty.LineStyle;
+import org.omnetpp.scave.charting.properties.PlotProperty.ShowGrid;
+import org.omnetpp.scave.charting.properties.PlotProperty.SymbolType;
 import org.omnetpp.scave.preferences.ScavePreferenceConstants;
 import org.omnetpp.scave.python.PythonXYDataset;
 
@@ -73,7 +74,7 @@ import org.omnetpp.scave.python.PythonXYDataset;
 public class LinePlot extends PlotViewerBase {
     private static final boolean debug = false;
 
-    private static final String[] LINEPLOT_PROPERTY_NAMES = ArrayUtils.addAll(PLOTBASE_PROPERTY_NAMES, new String[] {
+    private static final PlotProperty[] LINEPLOT_PROPERTIES = ArrayUtils.addAll(PLOTBASE_PROPERTIES, new PlotProperty[] {
             PROP_X_AXIS_TITLE,
             PROP_Y_AXIS_TITLE,
             PROP_AXIS_TITLE_FONT,
@@ -379,66 +380,49 @@ public class LinePlot extends PlotViewerBase {
      *          Properties
      *==================================*/
 
-    public String[] getPropertyNames() {
-        return LINEPLOT_PROPERTY_NAMES;
+    public PlotProperty[] getProperties() {
+        return LINEPLOT_PROPERTIES;
     }
 
     @Override
-    public void setProperty(String name, String value) {
-        Assert.isNotNull(name);
-
+    public void setProperty(PlotProperty prop, String value) {
+        switch (prop) {
         // Titles
-        if (PROP_X_AXIS_TITLE.equals(name))
-            setXAxisTitle(value);
-        else if (PROP_Y_AXIS_TITLE.equals(name))
-            setYAxisTitle(value);
-        else if (PROP_AXIS_TITLE_FONT.equals(name))
-            setAxisTitleFont(Converter.stringToSwtfont(value));
-        else if (PROP_LABEL_FONT.equals(name))
-            setTickLabelFont(Converter.stringToSwtfont(value));
+        case PROP_X_AXIS_TITLE: setXAxisTitle(value); break;
+        case PROP_Y_AXIS_TITLE: setYAxisTitle(value); break;
+        case PROP_AXIS_TITLE_FONT: setAxisTitleFont(Converter.stringToSwtfont(value)); break;
+        case PROP_LABEL_FONT: setTickLabelFont(Converter.stringToSwtfont(value)); break;
         // Axes
-        else if (PROP_X_AXIS_MIN.equals(name))
-            setXMin(Converter.stringToDouble(value));
-        else if (PROP_X_AXIS_MAX.equals(name))
-            setXMax(Converter.stringToDouble(value));
-        else if (PROP_X_AXIS_LOGARITHMIC.equals(name))
-            setLogarithmicX(Converter.stringToBoolean(value));
-        else if (PROP_Y_AXIS_LOGARITHMIC.equals(name))
-            setLogarithmicY(Converter.stringToBoolean(value));
-        else if (PROP_XY_GRID.equals(name))
-            setShowGrid(Converter.stringToEnum(value, ShowGrid.class));
+        case PROP_X_AXIS_MIN: setXMin(Converter.stringToDouble(value)); break;
+        case PROP_X_AXIS_MAX: setXMax(Converter.stringToDouble(value)); break;
+        case PROP_X_AXIS_LOGARITHMIC: setLogarithmicX(Converter.stringToBoolean(value)); break;
+        case PROP_Y_AXIS_LOGARITHMIC: setLogarithmicY(Converter.stringToBoolean(value)); break;
+        case PROP_XY_GRID: setShowGrid(Converter.stringToEnum(value, ShowGrid.class)); break;
         // Line defaults
-        else if (name.equals(PROP_DISPLAY_LINE))
-            setDisplayLine(Converter.stringToBoolean(value));
-        else if (name.equals(PROP_SYMBOL_TYPE))
-            setSymbolType(Converter.stringToOptionalEnum(value, SymbolType.class));
-        else if (name.equals(PROP_SYMBOL_SIZE))
-            setSymbolSize(Converter.stringToInteger(value));
-        else if (name.equals(PROP_LINE_DRAW_STYLE))
-            setDrawStyle(Converter.stringToOptionalEnum(value, DrawStyle.class));
-        else if (name.equals(PROP_LINE_COLOR))
-            setLineColor(Converter.stringToOptionalRGB(value));
-        else if (name.equals(PROP_LINE_STYLE))
-            setLineStyle(Converter.stringToEnum(value, LineStyle.class));
-        else if (name.equals(PROP_LINE_WIDTH))
-            setLineWidth(Converter.stringToFloat(value));
+        case PROP_DISPLAY_LINE: setDisplayLine(Converter.stringToBoolean(value)); break;
+        case PROP_SYMBOL_TYPE: setSymbolType(Converter.stringToOptionalEnum(value, SymbolType.class)); break;
+        case PROP_SYMBOL_SIZE: setSymbolSize(Converter.stringToInteger(value)); break;
+        case PROP_LINE_DRAW_STYLE: setDrawStyle(Converter.stringToOptionalEnum(value, DrawStyle.class)); break;
+        case PROP_LINE_COLOR: setLineColor(Converter.stringToOptionalRGB(value)); break;
+        case PROP_LINE_STYLE: setLineStyle(Converter.stringToEnum(value, LineStyle.class)); break;
+        case PROP_LINE_WIDTH: setLineWidth(Converter.stringToFloat(value)); break;
+        default: super.setProperty(prop, value);
+        }
+    }
+
+    @Override
+    public void setProperty(PlotProperty prop, String key, String value) {
+        switch (prop) {
         // Lines
-        else if (name.startsWith(PROP_DISPLAY_LINE))
-            setDisplayLine(getElementId(name), Converter.stringToOptionalBoolean(value));
-        else if (name.startsWith(PROP_SYMBOL_TYPE))
-            setSymbolType(getElementId(name), Converter.stringToOptionalEnum(value, SymbolType.class));
-        else if (name.startsWith(PROP_SYMBOL_SIZE))
-            setSymbolSize(getElementId(name), Converter.stringToOptionalInteger(value));
-        else if (name.startsWith(PROP_LINE_DRAW_STYLE))
-            setDrawStyle(getElementId(name), Converter.stringToOptionalEnum(value, DrawStyle.class));
-        else if (name.startsWith(PROP_LINE_COLOR))
-            setLineColor(getElementId(name), Converter.stringToOptionalRGB(value));
-        else if (name.startsWith(PROP_LINE_STYLE))
-            setLineStyle(getElementId(name), Converter.stringToOptionalEnum(value, LineStyle.class));
-        else if (name.startsWith(PROP_LINE_WIDTH))
-            setLineWidth(getElementId(name), Converter.stringToOptionalFloat(value));
-        else
-            super.setProperty(name, value);
+        case PROP_DISPLAY_LINE: setDisplayLine(key, Converter.stringToOptionalBoolean(value)); break;
+        case PROP_SYMBOL_TYPE: setSymbolType(key, Converter.stringToOptionalEnum(value, SymbolType.class)); break;
+        case PROP_SYMBOL_SIZE: setSymbolSize(key, Converter.stringToOptionalInteger(value)); break;
+        case PROP_LINE_DRAW_STYLE: setDrawStyle(key, Converter.stringToOptionalEnum(value, DrawStyle.class)); break;
+        case PROP_LINE_COLOR: setLineColor(key, Converter.stringToOptionalRGB(value)); break;
+        case PROP_LINE_STYLE: setLineStyle(key, Converter.stringToOptionalEnum(value, LineStyle.class)); break;
+        case PROP_LINE_WIDTH: setLineWidth(key, Converter.stringToOptionalFloat(value)); break;
+        default: super.setProperty(prop, key, value);
+        }
     }
 
     @Override

@@ -9,18 +9,18 @@ package org.omnetpp.scave.charting;
 
 import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_INSETS_BACKGROUND_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_INSETS_LINE_COLOR;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_ANTIALIAS;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_BACKGROUND_COLOR;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_CACHING;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_DISPLAY_LEGEND;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LEGEND_ANCHORING;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LEGEND_BORDER;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LEGEND_FONT;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LEGEND_POSITION;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_PLOT_TITLE;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_PLOT_TITLE_FONT;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_MAX;
-import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_MIN;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_ANTIALIAS;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_BACKGROUND_COLOR;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_CACHING;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_DISPLAY_LEGEND;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LEGEND_ANCHORING;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LEGEND_BORDER;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LEGEND_FONT;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LEGEND_POSITION;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_PLOT_TITLE;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_PLOT_TITLE_FONT;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_MAX;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_MIN;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.core.runtime.Assert;
@@ -51,8 +51,9 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.properties.PlotDefaults;
-import org.omnetpp.scave.charting.properties.PlotProperties.LegendAnchor;
-import org.omnetpp.scave.charting.properties.PlotProperties.LegendPosition;
+import org.omnetpp.scave.charting.properties.PlotProperty;
+import org.omnetpp.scave.charting.properties.PlotProperty.LegendAnchor;
+import org.omnetpp.scave.charting.properties.PlotProperty.LegendPosition;
 
 /**
  * Base class for all plot widgets.
@@ -62,7 +63,7 @@ import org.omnetpp.scave.charting.properties.PlotProperties.LegendPosition;
 public abstract class PlotViewerBase extends ZoomableCachingCanvas implements IPlotViewer {
     private static final boolean debug = false;
 
-    protected static final String[] PLOTBASE_PROPERTY_NAMES = new String[] {
+    protected static final PlotProperty[] PLOTBASE_PROPERTIES = new PlotProperty[] {
             PROP_PLOT_TITLE,
             PROP_PLOT_TITLE_FONT,
             PROP_DISPLAY_LEGEND,
@@ -317,48 +318,63 @@ public abstract class PlotViewerBase extends ZoomableCachingCanvas implements IP
      *                            Properties
      *----------------------------------------------------------------------*/
 
-    public String[] getPropertyNames() {
-        return PLOTBASE_PROPERTY_NAMES;
+    public PlotProperty[] getProperties() {
+        return PLOTBASE_PROPERTIES;
     }
 
-    public void setProperty(String name, String value) {
-        // Titles
-        if (PROP_PLOT_TITLE.equals(name))
-            setTitle(value);
-        else if (PROP_PLOT_TITLE_FONT.equals(name))
-            setTitleFont(Converter.stringToSwtfont(value));
-        // Legend
-        else if (PROP_DISPLAY_LEGEND.equals(name))
-            setDisplayLegend(Converter.stringToBoolean(value));
-        else if (PROP_LEGEND_BORDER.equals(name))
-            setLegendBorder(Converter.stringToBoolean(value));
-        else if (PROP_LEGEND_FONT.equals(name))
-            setLegendFont(Converter.stringToSwtfont(value));
-        else if (PROP_LEGEND_POSITION.equals(name))
-            setLegendPosition(Converter.stringToEnum(value, LegendPosition.class));
-        else if (PROP_LEGEND_ANCHORING.equals(name))
-            setLegendAnchor(Converter.stringToEnum(value, LegendAnchor.class));
-        // Plot
-        else if (PROP_ANTIALIAS.equals(name))
-            setAntialias(Converter.stringToBoolean(value));
-        else if (PROP_CACHING.equals(name))
-            setCaching(Converter.stringToBoolean(value));
-        else if (PROP_BACKGROUND_COLOR.equals(name))
-            setBackgroundColor(Converter.stringToRGB(value));
-        // Axes
-        else if (PROP_Y_AXIS_MIN.equals(name))
-            setYMin(Converter.stringToDouble(value));
-        else if (PROP_Y_AXIS_MAX.equals(name))
-            setYMax(Converter.stringToDouble(value));
-        else
+    public String[] getPropertyNames() {
+        PlotProperty[] props = getProperties();
+        String[] names = new String[props.length];
+        for (int i=0; i<props.length; i++)
+            names[i] = props[i].getName();
+        return names;
+    }
+
+    public void setProperty(String propertyName, String value) {
+        int index = propertyName.indexOf('/');
+        String name = index >= 0 ? propertyName.substring(0, index) : propertyName;
+        String key = index >= 0 ? propertyName.substring(index+1) : null;
+
+        PlotProperty prop = PlotProperty.loookup(name);
+        if (prop == null)
             throw new RuntimeException("unrecognized plot property in " + getClass().getSimpleName() + ": "  + name + " = " + value);
+
+        if (key == null)
+            setProperty(prop, value);
+        else
+            setProperty(prop, key, value);
+    }
+
+    public void setProperty(PlotProperty prop, String value) {
+        switch (prop) {
+        // Titles
+        case PROP_PLOT_TITLE: setTitle(value); break;
+        case PROP_PLOT_TITLE_FONT: setTitleFont(Converter.stringToSwtfont(value)); break;
+        // Legend
+        case PROP_DISPLAY_LEGEND: setDisplayLegend(Converter.stringToBoolean(value)); break;
+        case PROP_LEGEND_BORDER: setLegendBorder(Converter.stringToBoolean(value)); break;
+        case PROP_LEGEND_FONT: setLegendFont(Converter.stringToSwtfont(value)); break;
+        case PROP_LEGEND_POSITION: setLegendPosition(Converter.stringToEnum(value, LegendPosition.class)); break;
+        case PROP_LEGEND_ANCHORING: setLegendAnchor(Converter.stringToEnum(value, LegendAnchor.class)); break;
+        // Plot
+        case PROP_ANTIALIAS: setAntialias(Converter.stringToBoolean(value)); break;
+        case PROP_CACHING: setCaching(Converter.stringToBoolean(value)); break;
+        case PROP_BACKGROUND_COLOR: setBackgroundColor(Converter.stringToRGB(value)); break;
+        // Axes
+        case PROP_Y_AXIS_MIN: setYMin(Converter.stringToDouble(value)); break;
+        case PROP_Y_AXIS_MAX: setYMax(Converter.stringToDouble(value)); break;
+        default: throw new RuntimeException("unsupported plot property in " + getClass().getSimpleName() + ": "  + prop.getName() + " = " + value);
+        }
+    }
+
+    public void setProperty(PlotProperty prop, String key, String value) {
+        throw new RuntimeException("unsupported per-item plot property in " + getClass().getSimpleName() + ": "  + prop.getName() + "/" + key + " = " + value);
     }
 
     protected void resetProperties() {
-        for (String name : getPropertyNames()) {
-            Assert.isTrue(PlotDefaults.hasDefaultValue(name), "Property " + name + " has no default value.");
-            String value = PlotDefaults.getDefaultPropertyValueAsString(name);
-            setProperty(name, value);
+        for (PlotProperty prop : getProperties()) {
+            String value = prop.getDefaultValueAsString();
+            setProperty(prop, value);
         }
     }
 
@@ -367,11 +383,6 @@ public abstract class PlotViewerBase extends ZoomableCachingCanvas implements IP
      */
     public void clear() {
         resetProperties();
-    }
-
-    protected String getElementId(String propertyName) {
-        int index = propertyName.indexOf('/');
-        return index >= 0 ? propertyName.substring(index + 1) : null;
     }
 
     public boolean getAntialias() {
@@ -548,7 +559,7 @@ public abstract class PlotViewerBase extends ZoomableCachingCanvas implements IP
         graphics.setAntialias(antialias ? SWT.ON : SWT.OFF);
         graphics.setAlpha(255);
         graphics.setBackgroundColor(backgroundColor);
-        graphics.setForegroundColor(PlotDefaults.DEFAULT_FOREGROUND_COLOR);
+        graphics.setForegroundColor(ColorFactory.BLACK);
         graphics.setLineWidth(0);
         graphics.setLineStyle(SWT.LINE_SOLID);
         //graphics.setFillRule();
