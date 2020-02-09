@@ -9,6 +9,7 @@ package org.omnetpp.common.util;
 
 import org.eclipse.jface.resource.DataFormatException;
 import org.eclipse.jface.resource.StringConverter;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
@@ -209,17 +210,29 @@ public class Converter {
     public static String objectToString(Object value) {
         if (value == null)
             return null;
-        else if (value instanceof FontData)
-            return fontdataToString((FontData)value);
+        else if (value instanceof String)
+            return (String)value;
         else if (value instanceof Boolean)
             return booleanToString((Boolean)value);
+        else if (value instanceof Float)
+            return floatToString((Float)value);
         else if (value instanceof Double)
             return doubleToString((Double)value);
         else if (value instanceof Integer)
             return integerToString((Integer)value);
+        else if (value instanceof Enum)
+            return ((Enum<?>)value).toString();
+        else if (value instanceof Color)
+            return ColorFactory.asString(((Color)value).getRGB());
         else if (value instanceof RGB)
             return ColorFactory.asString((RGB)value);
-
-        return value.toString();
+        else if (value instanceof org.eclipse.swt.graphics.Font)
+            return fontdataToString(swtfontToFontdata((org.eclipse.swt.graphics.Font)value));
+        else if (value instanceof java.awt.Font)
+            return fontdataToString(awtfontToFontdata((java.awt.Font)value));
+        else if (value instanceof FontData)
+            return fontdataToString((FontData)value);
+        else
+            throw new IllegalArgumentException("unsupported type " + value.getClass().getName()); // DO NOT change this to "return value.toString()", as this class is not able to convert the result back to object form
     }
 }
