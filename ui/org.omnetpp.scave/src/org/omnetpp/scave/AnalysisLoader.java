@@ -6,10 +6,10 @@ import java.util.List;
 
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.XmlUtils;
-import org.omnetpp.scave.charttemplates.ChartTemplate;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.ChartTemplate;
 import org.omnetpp.scave.model.Chart.ChartType;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Property;

@@ -60,7 +60,7 @@ import org.omnetpp.scave.actions.UndoAction;
 import org.omnetpp.scave.actions.ViewModeAction;
 import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.charting.IPlotViewer;
-import org.omnetpp.scave.charttemplates.ChartTemplate;
+import org.omnetpp.scave.model.ChartTemplate;
 import org.omnetpp.scave.python.KillPythonProcessAction;
 
 public class ScaveEditorActions {

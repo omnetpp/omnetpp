@@ -11,10 +11,10 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.ISharedImages;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.charttemplates.ChartTemplate;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ui.FormEditorPage;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.ChartTemplate;
 import org.omnetpp.scave.model.commands.ResetChartToTemplateCommand;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
@@ -51,7 +51,8 @@ public class ResetChartToTemplateAction extends AbstractScaveAction {
                     "The template of this chart was not found by its id: \"" + chart.getTemplateID() + "\"");
         }
         else {
-            ResetChartToTemplateCommand command = new ResetChartToTemplateCommand(chart, template.getPythonScript(), template.getDialogPages());
+            // TODO: dialog to ask for parameters
+            ResetChartToTemplateCommand command = new ResetChartToTemplateCommand(chart, template, false);
             scaveEditor.getActiveCommandStack().execute(command);
         }
     }

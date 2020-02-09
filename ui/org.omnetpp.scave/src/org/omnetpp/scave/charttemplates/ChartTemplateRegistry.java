@@ -26,6 +26,7 @@ import org.omnetpp.scave.charting.properties.PlotDefaults;
 import org.omnetpp.scave.charting.properties.PlotProperty;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.ChartTemplate;
 import org.omnetpp.scave.model.Chart.ChartType;
 import org.omnetpp.scave.model.Chart.DialogPage;
 

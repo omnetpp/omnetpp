@@ -290,7 +290,7 @@ def plot_bars(df, props, names=None):
 
     p.xlabel(df.index.names[0])
     if len(names):
-        p.ylabel(", ".join(names))
+        p.ylabel(", ".join(names))  # TODO: TypeError: sequence item 5: expected str instance, float found
         set_plot_title(", ".join(names) + " by " + ", ".join(groups+series))
 
 def plot_vectors(df, props):

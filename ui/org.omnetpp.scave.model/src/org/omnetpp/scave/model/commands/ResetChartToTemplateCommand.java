@@ -1,46 +1,32 @@
 package org.omnetpp.scave.model.commands;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.Chart.DialogPage;
+import org.omnetpp.scave.model.ChartTemplate;
 import org.omnetpp.scave.model.ModelObject;
+import org.omnetpp.scave.model.Property;
 
-public class ResetChartToTemplateCommand implements ICommand {
+public class ResetChartToTemplateCommand extends CompoundCommand {
 
     private Chart chart;
-    private String oldScript;
-    private String newScript;
-    private List<DialogPage> oldDialogPages;
-    private List<DialogPage> newDialogPages;
 
-    public ResetChartToTemplateCommand(Chart chart, String newScript, List<DialogPage> dialogPages) {
+    public ResetChartToTemplateCommand(Chart chart, ChartTemplate template, boolean preserveScript) {
+        super("Reset chart to template");
         this.chart = chart;
-        this.newScript = newScript;
-        this.newDialogPages = dialogPages;
-    }
 
-    @Override
-    public void execute() {
-        oldScript = chart.getScript();
-        oldDialogPages = new ArrayList<DialogPage>(chart.getDialogPages());
+        append(new SetChartDialogPagesCommand(chart, template.getDialogPages()));
+        if (!preserveScript)
+            append(new SetChartScriptCommand(chart, template.getPythonScript()));
 
-        chart.setScript(newScript);
-        chart.setDialogPages(new ArrayList<DialogPage>(newDialogPages));
-    }
+        for (Property p : chart.getProperties())
+            if (!template.getPropertyNames().contains(p.getName()))
+                append(new RemoveChartPropertyCommand(chart, p));
 
-    @Override
-    public void undo() {
-        chart.setScript(oldScript);
-        chart.setDialogPages(new ArrayList<DialogPage>(oldDialogPages));
-    }
-
-    @Override
-    public void redo() {
-        execute();
+        for (String pn : template.getProperties().keySet())
+            if (chart.lookupProperty(pn) == null)
+                append(new AddChartPropertyCommand(chart, new Property(pn, template.getPropertyDefault(pn))));
     }
 
     @Override

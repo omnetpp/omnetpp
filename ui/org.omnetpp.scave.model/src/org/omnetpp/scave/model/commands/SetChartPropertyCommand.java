@@ -26,7 +26,7 @@ public class SetChartPropertyCommand implements ICommand {
 
     private static void setPropertyValue(Chart chart, String name, String toValue) {
         Property property = chart.lookupProperty(name);
-        Assert.isNotNull(property);
+        Assert.isNotNull(property); //TODO should be able to ADD a property
         String fromValue = property.getValue();
 
         if (ObjectUtils.equals(fromValue, toValue))

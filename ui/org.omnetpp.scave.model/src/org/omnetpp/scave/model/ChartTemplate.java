@@ -1,11 +1,10 @@
-package org.omnetpp.scave.charttemplates;
+package org.omnetpp.scave.model;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Chart.ChartType;
 import org.omnetpp.scave.model.Chart.DialogPage;
 

@@ -32,7 +32,6 @@ import org.omnetpp.scave.actions.FlatModuleTreeAction;
 import org.omnetpp.scave.actions.IncreaseDecimalPlacesAction;
 import org.omnetpp.scave.actions.SetChartFilterAction;
 import org.omnetpp.scave.actions.SetFilterAction2;
-import org.omnetpp.scave.charttemplates.ChartTemplate;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ScaveEditorActions;
@@ -50,6 +49,7 @@ import org.omnetpp.scave.engineext.ResultFileManagerChangeEvent;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.ChartTemplate;
 import org.omnetpp.scave.model.ResultType;
 
 /**

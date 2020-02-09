@@ -9,7 +9,7 @@ package org.omnetpp.scave.actions;
 
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.charttemplates.ChartTemplate;
+import org.omnetpp.scave.model.ChartTemplate;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 
