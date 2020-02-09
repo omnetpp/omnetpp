@@ -207,10 +207,13 @@ def interpolationmode_to_drawstyle(interpolationmode, hasenum):
 def _make_line_args(props, t, df):
     style = dict()
 
-    if props["linestyle"]:
-        style["linestyle"] = props["linestyle"]  # note: must precede 'drawstyle' setting
+    def get_prop(k):
+        return props[k] if k in props else None
 
-    ds = props["drawstyle"]
+    if get_prop("linestyle"):
+        style["linestyle"] = get_prop("linestyle")  # note: must precede 'drawstyle' setting
+
+    ds = get_prop("drawstyle")
     if not ds or ds == "auto":
         interpolationmode = t.interpolationmode if "interpolationmode" in df else None
         hasenum = "enum" in df
@@ -220,37 +223,40 @@ def _make_line_args(props, t, df):
         style["linestyle"] = " "
         style["drawstyle"] = "default"  # or any valid value, doesn't matter
     else:
-        style["drawstyle"] = ds if props["drawstyle"] != "linear" else "default"
+        style["drawstyle"] = ds if get_prop("drawstyle") != "linear" else "default"
 
-    if props["linecolor"]:
-        style["color"] = props["linecolor"]
+    if get_prop("linecolor"):
+        style["color"] = get_prop("linecolor")
 
-    if props["linewidth"]:
-        style["linewidth"] = props["linewidth"]
+    if get_prop("linewidth"):
+        style["linewidth"] = get_prop("linewidth")
 
-    if not props["marker"] or props["marker"] == "auto":
+    if not get_prop("marker") or get_prop("marker") == "auto":
         pass
-    elif props["marker"] == 'none':
+    elif get_prop("marker") == 'none':
         style["marker"] = ' '
     else:
-        style["marker"] = props["marker"][0] # take first character only, as Matplotlib uses 1-char codes; this allows us to include a description
+        style["marker"] = get_prop("marker")[0] # take first character only, as Matplotlib uses 1-char codes; this allows us to include a description
 
-    if props["markersize"]:
-        style["markersize"] = props["markersize"]
+    if get_prop("markersize"):
+        style["markersize"] = get_prop("markersize")
 
     return style
 
 def _make_histline_args(props, t, df):
     style = dict()
 
-    if "color" in props and props["color"]:
-        style["color"] = props["color"]
+    def get_prop(k):
+        return props[k] if k in props else None
 
-    if "linewidth" in props and props["linewidth"]:
-        style["linewidth"] = props["linewidth"]
+    if get_prop("color"):
+        style["color"] = get_prop("color")
 
-    style["density"] = _parse_optional_bool(props["normalize"])
-    style["cumulative"] = _parse_optional_bool(props["cumulative"])
+    if get_prop("linewidth"):
+        style["linewidth"] = get_prop("linewidth")
+
+    style["density"] = _parse_optional_bool(get_prop("normalize"))
+    style["cumulative"] = _parse_optional_bool(get_prop("cumulative"))
 
     return style
 
@@ -264,6 +270,9 @@ def set_plot_title(title, suggested_chart_name=None):
 def plot_bars(df, props, names=None):
     p = plot if chart.is_native_chart() else plt
 
+    def get_prop(k):
+        return props[k] if k in props else None
+
     ind = np.arange(len(df.index))  # the x locations for the groups
     width = 0.8 / len(df.columns)  # the width of the bars
 
@@ -271,8 +280,8 @@ def plot_bars(df, props, names=None):
         p.bar(ind - 0.4 + width*i + width * 0.5, df[column], width, label=column)
 
     # Add some text for labels, title and custom x-axis tick labels, etc.
-    groups = props["groups"].split(",")
-    series = props["series"].split(",")
+    groups = get_prop("groups").split(",")
+    series = get_prop("series").split(",")
 
     if not chart.is_native_chart():
         ax = plt.gca()
@@ -287,18 +296,24 @@ def plot_bars(df, props, names=None):
 def plot_vectors(df, props):
     p = plot if chart.is_native_chart() else plt
 
-    column = "name" if props["legend_labels"] == "result names" else "title"
+    def get_prop(k):
+        return props[k] if k in props else None
+
+    column = "name" if get_prop("legend_labels") == "result names" else "title"
     title_col, legend_cols = extract_label_columns(df, column)
 
     for i, t in enumerate(df.itertuples(index=False)):
         style = _make_line_args(props, t, df)
         p.plot(t.vectime, t.vecvalue, label=make_legend_label(legend_cols, t), **style)
 
-    title = props['title'] or make_chart_title(df, title_col, legend_cols)
+    title = get_prop("title") or make_chart_title(df, title_col, legend_cols)
     set_plot_title(title)
 
 def plot_histograms(df, props):
     p = plot if chart.is_native_chart() else plt
+
+    def get_prop(k):
+        return props[k] if k in props else None
 
     title_col, legend_cols = extract_label_columns(df)
 
@@ -306,20 +321,23 @@ def plot_histograms(df, props):
         style = _make_histline_args(props, t, df)
         p.hist(t.binedges[:-1], t.binedges, weights=t.binvalues, label=make_legend_label(legend_cols, t), **style)
 
-    title = props['title'] or make_chart_title(df, title_col, legend_cols)
+    title = get_prop("title") or make_chart_title(df, title_col, legend_cols)
     set_plot_title(title)
 
 def preconfigure_plot(props):
+    def get_prop(k):
+        return props[k] if k in props else None
+    
     if chart.is_native_chart():
         #plot.set_properties(_filter_by_key_prefix(props,"plot."))  #TODO this was after plotting, was that intentional?
         supported_keys = plot.get_supported_property_keys()
         plot.set_properties({ k: v for k, v in props.items() if k in supported_keys})
-        plot.set_properties(parse_rcparams(props["plot.properties"] or ""))
+        plot.set_properties(parse_rcparams(get_prop("plot.properties") or ""))
     else:
-        if (props['plt.style']):
-            plt.style.use(props['plt.style'])
+        if get_prop("plt.style"):
+            plt.style.use(get_prop("plt.style"))
         mpl.rcParams.update(_filter_by_key_prefix(props,"matplotlibrc."))
-        mpl.rcParams.update(parse_rcparams(props["matplotlibrc"] or ""))
+        mpl.rcParams.update(parse_rcparams(get_prop("matplotlibrc") or ""))
 
 
 def postconfigure_plot(props):
@@ -329,23 +347,23 @@ def postconfigure_plot(props):
         return props[k] if k in props else None
 
     if get_prop("yaxis_title"):
-        p.xlabel(props["xaxis_title"])
+        p.xlabel(get_prop("xaxis_title"))
     if get_prop("yaxis_title"):
-        p.ylabel(props["yaxis_title"])
+        p.ylabel(get_prop("yaxis_title"))
 
     if get_prop("xaxis_min"):
-        p.xlim(left=float(props["xaxis_min"]))
+        p.xlim(left=float(get_prop("xaxis_min")))
     if get_prop("xaxis_max"):
-        p.xlim(right=float(props["xaxis_max"]))
+        p.xlim(right=float(get_prop("xaxis_max")))
     if get_prop("yaxis_min"):
-        p.ylim(bottom=float(props["yaxis_min"]))
+        p.ylim(bottom=float(get_prop("yaxis_min")))
     if get_prop("yaxis_max"):
-        p.ylim(top=float(props["yaxis_max"]))
+        p.ylim(top=float(get_prop("yaxis_max")))
 
     if get_prop("xaxis_log"):
-        p.xscale("log" if _parse_optional_bool(props["xaxis_log"]) else "linear")
+        p.xscale("log" if _parse_optional_bool(get_prop("xaxis_log")) else "linear")
     if get_prop("yaxis_log"):
-        p.yscale("log" if _parse_optional_bool(props["yaxis_log"]) else "linear")
+        p.yscale("log" if _parse_optional_bool(get_prop("yaxis_log")) else "linear")
 
     legend(show=_parse_optional_bool(get_prop("legend_show")),
            frameon=_parse_optional_bool(get_prop("legend_border")),
