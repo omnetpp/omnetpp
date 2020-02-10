@@ -76,7 +76,8 @@ def plot_vector(label, xs, ys, key = None, props = dict()):
 def plot(xs, ys, key=None, label=None, drawstyle=None, linestyle=None, linewidth=None, color=None, marker=None, markersize=None):
     return impl.plot(**locals())
 
-def hist(x, bins, density=None, weights=None, cumulative=False, bottom=None, histtype='bar', color=None, label=None, linewidth=None):
+# note: the default of histtype is not bar, because we don't support that
+def hist(x, bins, density=None, weights=None, cumulative=False, bottom=None, histtype='stepfilled', color=None, label=None, linewidth=None):
     return impl.hist(**locals())
 
 def bar(x, height, width=0.8, label=None):

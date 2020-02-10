@@ -27,6 +27,7 @@ import org.omnetpp.scave.charting.dataset.IHistogramDataset;
 import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 import org.omnetpp.scave.charting.plotter.SquareSymbol;
 import org.omnetpp.scave.charting.properties.PlotDefaults;
+import org.omnetpp.scave.charting.properties.PlotProperty;
 import org.omnetpp.scave.charting.properties.PlotProperty.HistogramBar;
 
 /**
@@ -37,7 +38,6 @@ class Histograms {
     HistogramPlot parent;
     Rectangle area = Rectangle.SINGLETON;
 
-    HistogramBar barType;
     boolean showOverflowCell;
     double baseline;
 
@@ -51,10 +51,6 @@ class Histograms {
 
     Rectangle getArea() {
         return area;
-    }
-
-    void setBarType(HistogramBar barType) {
-        this.barType = barType;
     }
 
     protected RectangularArea calculatePlotArea() {
@@ -165,11 +161,18 @@ class Histograms {
     }
 
     void draw(Graphics graphics, ICoordsMapping coordsMapping) {
-        switch (barType) {
-        case Solid:
-            graphics.setForegroundColor(ColorFactory.BLACK);
-            for (int series = 0; series < bars.length; ++series) {
+        graphics.setLineStyle(SWT.LINE_SOLID);
+
+        for (int series = 0; series < bars.length; ++series) {
+            String key = parent.getDataset().getSeriesKey(series);
+            PlotProperty.HistogramBar barType = parent.getBarType(key);
+            switch (barType) {
+            case Solid:
+                graphics.setLineWidth(1);
+                graphics.setForegroundColor(ColorFactory.BLACK);
                 graphics.setBackgroundColor(getHistogramColor(series));
+                graphics.setAlpha(255);
+
                 for (int index = 0; index < bars[series].length; ++index) {
                     double xl = bars[series][index].minX;
                     double xr = bars[series][index].maxX;
@@ -190,15 +193,13 @@ class Histograms {
                         }
                     }
                 }
-            }
-            break;
-        case Outline:
-            graphics.setLineWidth(4);
-            graphics.setLineStyle(SWT.LINE_SOLID);
-            graphics.setAlpha(128);
-            long baselineY = coordsMapping.toCanvasY(transformedBaseline);
-            for (int series = 0; series < bars.length; ++series) {
+                break;
+            case Outline:
+                graphics.setLineWidth(2);
                 graphics.setForegroundColor(getHistogramColor(series));
+                graphics.setAlpha(192);
+
+                long baselineY = coordsMapping.toCanvasY(transformedBaseline);
                 long prevY = baselineY;
                 int cellCount = bars[series].length;
                 ArrayList<Long> points = new ArrayList<Long>(3*cellCount);
@@ -236,8 +237,9 @@ class Histograms {
                 }
                 if (points.size() > 0)
                     LargeGraphics.drawPolyline(graphics, ArrayUtils.toPrimitive(points.toArray(new Long[0])));
+
+                break;
             }
-            break;
         }
     }
 
@@ -246,7 +248,15 @@ class Histograms {
         IHistogramDataset dataset = parent.getDataset();
         IPlotSymbol symbol = new SquareSymbol(6);
         for (int series = 0; series < dataset.getSeriesCount(); ++series) {
-            legend.addItem(getHistogramColor(series), dataset.getSeriesTitle(series), symbol, false);
+            String key = parent.getDataset().getSeriesKey(series);
+            switch (parent.getBarType(key)) {
+            case Outline:
+                legend.addItem(getHistogramColor(series), dataset.getSeriesTitle(series), null, true);
+                break;
+            case Solid:
+                legend.addItem(getHistogramColor(series), dataset.getSeriesTitle(series), symbol, false);
+                break;
+            }
         }
     }
 
@@ -291,6 +301,8 @@ class Histograms {
         IHistogramDataset dataset = parent.getDataset();
         List<Integer> result = new ArrayList<Integer>();
         for (int series = 0; series < dataset.getSeriesCount(); ++series) {
+            String key = parent.getDataset().getSeriesKey(series);
+            PlotProperty.HistogramBar barType = parent.getBarType(key);
             int index = findBin(bars[series], series, xx);
             if (index >= 0) {
                 RectangularArea bar = bars[series][index];

@@ -53,11 +53,13 @@ def plot(xs, ys, key=None, label=None, drawstyle=None, linestyle=None, linewidth
     return plot_vector(label, xs, ys, key, props)
 
 
-def hist(x, bins, density=False, weights=None, cumulative=False, bottom=None, histtype='bar', color=None, label=None, linewidth=None):
+def hist(x, bins, density=False, weights=None, cumulative=False, bottom=None, histtype='stepfilled', color=None, label=None, linewidth=None):
     props = {}
 
     props["Hist.Cumulative"] = str(cumulative)
     props["Hist.Density"] = str(density)
+
+    props["Hist.Bar"] = _translate_histtype(histtype)
 
     # check if we really got a precomputed histogram, using the trick documented for pyplot.hist
     if not np.array_equal(x, bins[:-1]):
@@ -292,6 +294,17 @@ def _translate_marker(marker):
     if marker not in mapping or mapping[marker] is None:
         raise ValueError("Unrecognized marker '{}'".format(marker))
     return mapping[marker]
+
+
+def _translate_histtype(histtype):
+    mapping = {
+        'step'       : "Outline",
+        'stepfilled' : "Solid",
+    }
+    if histtype not in mapping:
+        raise ValueError("Unrecognized histtype '{}'".format(histtype))
+    return mapping[histtype]
+
 
 def plot_vector(label, xs, ys, key=None, props = dict()):
     _assert_is_native_chart()

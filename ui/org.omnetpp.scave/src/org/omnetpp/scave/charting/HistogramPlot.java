@@ -74,12 +74,13 @@ public class HistogramPlot extends PlotBase {
     private RGB defaultHistogramColor; // note: null is allowed and means "auto"
     private boolean defaultHistogramCumulative;
     private boolean defaultHistogramDensity;
+    private PlotProperty.HistogramBar defaultBarType;
 
     class HistogramProperties {
         Boolean cumulative;
         Boolean density;
         RGB color;
-
+        HistogramBar drawStyle;
 
         public boolean getEffectiveCumulative() {
             return cumulative != null ? cumulative : defaultHistogramCumulative;
@@ -165,6 +166,7 @@ public class HistogramPlot extends PlotBase {
         case PROP_HIST_COLOR: setHistogramColor(key, Converter.stringToOptionalRGB(value)); break;
         case PROP_HIST_CUMULATIVE: setHistogramCumulative(key, Converter.stringToOptionalBoolean(value)); break;
         case PROP_HIST_DENSITY: setHistogramDensity(key, Converter.stringToOptionalBoolean(value)); break;
+        case PROP_HIST_BAR: setBarType(key, Converter.stringToEnum(value, HistogramBar.class)); break;
         default: super.setProperty(prop, key, value);
         }
     }
@@ -202,12 +204,6 @@ public class HistogramPlot extends PlotBase {
         chartChanged();
     }
 
-    public void setBarType(HistogramBar barType) {
-        Assert.isNotNull(barType);
-        histograms.setBarType(barType);
-        chartChanged();
-    }
-
     public void setHistogramColor(RGB color) {
         defaultHistogramColor = color;
         updateLegends();
@@ -230,6 +226,12 @@ public class HistogramPlot extends PlotBase {
         chartChanged();
     }
 
+    public void setBarType(PlotProperty.HistogramBar barType) {
+        defaultBarType = barType;
+        updateLegends();
+        chartChanged();
+    }
+
 
     public void setHistogramCumulative(String key, Boolean value) {
         HistogramProperties histProps = getOrCreateHistogramProperties(key);
@@ -245,6 +247,14 @@ public class HistogramPlot extends PlotBase {
         histProps.density = value;
         chartArea = calculatePlotArea();
         updateArea();
+        updateLegends();
+        chartChanged();
+    }
+
+    public void setBarType(String key, PlotProperty.HistogramBar barType) {
+        HistogramProperties histProps = getOrCreateHistogramProperties(key);
+        histProps.drawStyle = barType;
+        chartArea = calculatePlotArea();
         updateLegends();
         chartChanged();
     }
@@ -275,6 +285,12 @@ public class HistogramPlot extends PlotBase {
         HistogramProperties histProps = histogramProperties.get(key);
         RGB color = (histProps == null || histProps.color == null) ? defaultHistogramColor : histProps.color;
         return color;
+    }
+
+    public PlotProperty.HistogramBar getBarType(String key) {
+        HistogramProperties histProps = histogramProperties.get(key);
+        PlotProperty.HistogramBar barType = (histProps == null || histProps.drawStyle == null) ? defaultBarType: histProps.drawStyle;
+        return barType;
     }
 
     public void setHistogramColor(String key, RGB color) {

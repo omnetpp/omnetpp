@@ -255,6 +255,12 @@ def _make_histline_args(props, t, df):
     if get_prop("linewidth"):
         style["linewidth"] = get_prop("linewidth")
 
+    ds = get_prop("drawstyle")
+    if ds == "Solid":
+        style["histtype"] = "stepfilled"
+    elif ds == "Outline":
+        style["histtype"] = "step"
+
     style["density"] = _parse_optional_bool(get_prop("normalize"))
     style["cumulative"] = _parse_optional_bool(get_prop("cumulative"))
 

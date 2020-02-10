@@ -152,7 +152,7 @@ def set_warning(warning):
 def plot(xs, ys, key=None, label=None, drawstyle=None, linestyle=None, linewidth=None, color=None, marker=None, markersize=None):
     return plt.plot(**locals())
 
-def hist(x, bins, density=None, weights=None, cumulative=False, bottom=None, histtype='bar', color=None, label=None, linewidth=None):
+def hist(x, bins, density=None, weights=None, cumulative=False, bottom=None, histtype='stepfilled', color=None, label=None, linewidth=None):
     return plt.hist(**locals())
 
 def bar(x, height, width=0.8, label=None):
