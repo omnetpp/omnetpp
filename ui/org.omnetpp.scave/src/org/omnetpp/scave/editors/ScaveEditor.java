@@ -713,12 +713,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
         FormEditorPage activePage = getActiveEditorPage();
         if (activePage != null)
             return activePage.getActivePlot();
-        ChartScriptEditor activeEditor = getActiveChartScriptEditor();
-
-        if (activeEditor != null) {
-            NativeChartViewer nativeChartViewer = activeEditor.getPlot();
-            return (nativeChartViewer != null) ? nativeChartViewer.getPlot() : null;
-        }
 
         return null;
     }
