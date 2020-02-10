@@ -28,7 +28,6 @@
       <add x:p0="steps-pre"/>
       <add x:p0="steps-mid"/>
       <add x:p0="steps-post"/>
-      <setText x:p0="auto"/>
     </combo>
 
     <label text="Line color:"/>
@@ -43,7 +42,6 @@
       <add x:p0="dotted"/>
       <add x:p0="dashed"/>
       <add x:p0="dashdot"/>
-      <setText x:p0="solid"/>
     </combo>
     
     <label text="Line width:"/>
@@ -82,7 +80,6 @@
       <add x:p0="D (diamond)"/>
       <add x:p0="d (thin diamond)"/>
       <!-- TODO the rest...  -->
-      <setText x:p0="auto"/>
     </combo>
 
     <label text="Marker size:"/>
