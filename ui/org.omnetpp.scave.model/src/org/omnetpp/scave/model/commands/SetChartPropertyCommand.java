@@ -3,18 +3,21 @@ package org.omnetpp.scave.model.commands;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Property;
 
+/**
+ * Command to set (or add if doesn't exist) a chart property.
+ */
 public class SetChartPropertyCommand implements ICommand {
 
     private Chart chart;
-    String propertyName;
+    private String propertyName;
     private String oldValue;
     private String newValue;
+    private boolean isNewProperty;
 
     public SetChartPropertyCommand(Chart chart, String propertyName, String newValue) {
         this.chart = chart;
@@ -24,27 +27,25 @@ public class SetChartPropertyCommand implements ICommand {
         Assert.isNotNull(newValue);
     }
 
-    private static void setPropertyValue(Chart chart, String name, String toValue) {
-        Property property = chart.lookupProperty(name);
-        Assert.isNotNull(property); //TODO should be able to ADD a property
-        String fromValue = property.getValue();
-
-        if (ObjectUtils.equals(fromValue, toValue))
-            return; // nothing to do
-
-        property.setValue(toValue);
-    }
-
     @Override
     public void execute() {
         Property property = chart.lookupProperty(propertyName);
-        oldValue = property == null ? null : property.getValue();
-        setPropertyValue(chart, propertyName, newValue);
+        isNewProperty = (property == null);
+        if (isNewProperty)
+            chart.addProperty(new Property(propertyName, newValue));
+        else {
+            oldValue = property.getValue();
+            property.setValue(newValue);
+        }
     }
 
     @Override
     public void undo() {
-        setPropertyValue(chart, propertyName, oldValue);
+        Property property = chart.lookupProperty(propertyName);
+        if (isNewProperty)
+            chart.removeProperty(property);
+        else
+            property.setValue(oldValue);
     }
 
     @Override
