@@ -111,7 +111,7 @@ import org.omnetpp.scave.AnalysisSaver;
 import org.omnetpp.scave.LegacyAnalysisLoader;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.charting.PlotViewerBase;
+import org.omnetpp.scave.charting.PlotBase;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
 import org.omnetpp.scave.editors.ui.ChartPage;
@@ -709,15 +709,15 @@ public class ScaveEditor extends MultiPageEditorPartExt
         return null;
     }
 
-    public PlotViewerBase getActivePlotViewer() {
+    public PlotBase getActivePlot() {
         FormEditorPage activePage = getActiveEditorPage();
         if (activePage != null)
-            return activePage.getActiveChartViewer();
+            return activePage.getActivePlot();
         ChartScriptEditor activeEditor = getActiveChartScriptEditor();
 
         if (activeEditor != null) {
-            NativeChartViewer nativePlotViewer = activeEditor.getNativeChartViewer();
-            return (nativePlotViewer != null) ? nativePlotViewer.getPlotViewer() : null;
+            NativeChartViewer nativeChartViewer = activeEditor.getPlot();
+            return (nativeChartViewer != null) ? nativeChartViewer.getPlot() : null;
         }
 
         return null;

@@ -48,7 +48,7 @@ import org.omnetpp.scave.python.PythonHistogramDataset;
 /**
  * Histogram plot widget.
  */
-public class HistogramPlot extends PlotViewerBase {
+public class HistogramPlot extends PlotBase {
     private static final boolean debug = false;
 
     private static final PlotProperty[] HISTOGRAMPLOT_PROPERTIES = ArrayUtils.addAll(PLOTBASE_PROPERTIES, new PlotProperty[] {

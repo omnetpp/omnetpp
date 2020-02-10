@@ -49,7 +49,7 @@ class LegendTooltip implements ILegend
         }
     }
 
-    public LegendTooltip(PlotViewerBase parent) {
+    public LegendTooltip(PlotBase parent) {
         button = new Button(parent, SWT.FLAT | SWT.CENTER | SWT.NO_FOCUS);
         Image icon = ImageFactory.global().getImage(ImageFactory.TOOLBAR_IMAGE_LEGEND);
         button.setImage(icon);

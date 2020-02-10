@@ -311,7 +311,7 @@ class CrossHair {
             double x = dataset.getX(series, index);
             if (dataset instanceof IAveragedXYDataset) {
                 Statistics xStat = ((IAveragedXYDataset)dataset).getXStatistics(series, index);
-                xConf = StatUtils.confidenceInterval(xStat, PlotViewerBase.CONFIDENCE_LEVEL);
+                xConf = StatUtils.confidenceInterval(xStat, PlotBase.CONFIDENCE_LEVEL);
             }
             xStr = (xp != null ? xp.toString() : parent.formatValue(x, xConf));
         }
@@ -320,7 +320,7 @@ class CrossHair {
             double y = dataset.getY(series, index);
             if (dataset instanceof IAveragedXYDataset) {
                 Statistics yStat = ((IAveragedXYDataset)dataset).getYStatistics(series, index);
-                yConf = StatUtils.confidenceInterval(yStat, PlotViewerBase.CONFIDENCE_LEVEL);
+                yConf = StatUtils.confidenceInterval(yStat, PlotBase.CONFIDENCE_LEVEL);
             }
             yStr = (yp != null ? yp.toString() : parent.formatValue(y, yConf));
         }

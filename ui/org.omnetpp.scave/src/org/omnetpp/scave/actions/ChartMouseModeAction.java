@@ -12,7 +12,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.scave.charting.PlotViewerBase;
+import org.omnetpp.scave.charting.PlotBase;
 import org.omnetpp.scave.editors.ScaveEditor;
 
 /**
@@ -43,15 +43,15 @@ public class ChartMouseModeAction extends AbstractScaveAction {
 
     @Override
     protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
-        PlotViewerBase canvas = scaveEditor.getActivePlotViewer();
-        if (isChecked() && canvas != null) {
-            canvas.setMouseMode(destMode);
+        PlotBase plot = scaveEditor.getActivePlot();
+        if (isChecked() && plot != null) {
+            plot.setMouseMode(destMode);
         }
     }
 
     @Override
     protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
-        PlotViewerBase canvas = editor.getActivePlotViewer();
+        PlotBase canvas = editor.getActivePlot();
         return canvas != null;
     }
 }

@@ -2,7 +2,7 @@ package org.omnetpp.scave.editors.ui;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.omnetpp.scave.charting.PlotViewerBase;
+import org.omnetpp.scave.charting.PlotBase;
 import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.ModelChangeEvent;
@@ -21,9 +21,9 @@ public class ChartPage extends FormEditorPage {
     }
 
     @Override
-    public PlotViewerBase getActiveChartViewer() {
+    public PlotBase getActivePlot() {
         Control viewer = chartScriptEditor.getChartViewer().getWidget();
-        return viewer instanceof PlotViewerBase ? (PlotViewerBase)viewer : null;
+        return viewer instanceof PlotBase ? (PlotBase)viewer : null;
     }
 
     @Override

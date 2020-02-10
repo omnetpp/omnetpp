@@ -54,7 +54,7 @@ import org.omnetpp.scave.python.PythonScalarDataset;
 /**
  * Bar plot widget.
  */
-public class BarPlot extends PlotViewerBase {
+public class BarPlot extends PlotBase {
     private static final boolean debug = false;
 
     protected final static PlotProperty[] BARPLOT_PROPERTIES = ArrayUtils.addAll(PLOTBASE_PROPERTIES, new PlotProperty[] {

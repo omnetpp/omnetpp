@@ -71,7 +71,7 @@ import org.omnetpp.scave.python.PythonXYDataset;
 /**
  * Line plot widget.
  */
-public class LinePlot extends PlotViewerBase {
+public class LinePlot extends PlotBase {
     private static final boolean debug = false;
 
     private static final PlotProperty[] LINEPLOT_PROPERTIES = ArrayUtils.addAll(PLOTBASE_PROPERTIES, new PlotProperty[] {

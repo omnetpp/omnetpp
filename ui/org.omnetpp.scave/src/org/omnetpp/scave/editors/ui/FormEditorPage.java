@@ -36,7 +36,7 @@ import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.charting.PlotViewerBase;
+import org.omnetpp.scave.charting.PlotBase;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.ModelChangeEvent;
 
@@ -222,7 +222,7 @@ public class FormEditorPage extends Composite {
     /**
      * Returns the active chart on this page.
      */
-    public PlotViewerBase getActiveChartViewer() {
+    public PlotBase getActivePlot() {
         return null;
     }
 

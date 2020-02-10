@@ -50,7 +50,6 @@ import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.dataset.IDataset;
-import org.omnetpp.scave.charting.properties.PlotDefaults;
 import org.omnetpp.scave.charting.properties.PlotProperty;
 import org.omnetpp.scave.charting.properties.PlotProperty.LegendAnchor;
 import org.omnetpp.scave.charting.properties.PlotProperty.LegendPosition;
@@ -60,7 +59,7 @@ import org.omnetpp.scave.charting.properties.PlotProperty.LegendPosition;
  *
  * @author tomi, andras
  */
-public abstract class PlotViewerBase extends ZoomableCachingCanvas implements IPlotViewer {
+public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotViewer {
     private static final boolean debug = false;
 
     protected static final PlotProperty[] PLOTBASE_PROPERTIES = new PlotProperty[] {
@@ -110,7 +109,7 @@ public abstract class PlotViewerBase extends ZoomableCachingCanvas implements IP
     private int layoutDepth = 0; // how many layoutChart() calls are on the stack
     private IDataset dataset;
 
-    public PlotViewerBase(Composite parent, int style) {
+    public PlotBase(Composite parent, int style) {
         super(parent, style);
         setToolTipText(null); // prevents "Close" tooltip of the TabItem from coming up (Linux only)
 

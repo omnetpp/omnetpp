@@ -12,7 +12,7 @@ import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.charting.PlotViewerBase;
+import org.omnetpp.scave.charting.PlotBase;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.python.MatplotlibChartViewer;
 
@@ -31,12 +31,12 @@ public class CopyChartImageToClipboardAction extends AbstractScaveAction {
 
         // TODO: lift copyImageToClipboard to the common ViewerBase class, use that instead of dispatching here
 
-        final PlotViewerBase nativeChart = editor.getActivePlotViewer();
+        final PlotBase plot = editor.getActivePlot();
 
-        if (nativeChart != null) {
+        if (plot != null) {
             BusyIndicator.showWhile(Display.getDefault(), new Runnable() {
                 public void run() {
-                    nativeChart.copyImageToClipboard();
+                    plot.copyImageToClipboard();
                 }
             });
         }
@@ -55,6 +55,6 @@ public class CopyChartImageToClipboardAction extends AbstractScaveAction {
 
     @Override
     protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
-        return editor.getActivePlotViewer() != null || editor.getActiveMatplotlibChartViewer() != null;
+        return editor.getActivePlot() != null || editor.getActiveMatplotlibChartViewer() != null;
     }
 }

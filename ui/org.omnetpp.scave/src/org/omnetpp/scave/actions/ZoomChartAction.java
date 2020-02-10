@@ -11,7 +11,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.charting.PlotViewerBase;
+import org.omnetpp.scave.charting.PlotBase;
 import org.omnetpp.scave.editors.ScaveEditor;
 
 /**
@@ -48,31 +48,31 @@ public class ZoomChartAction extends AbstractScaveAction {
     @Override
     protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
         Assert.isTrue(isEnabled());
-        PlotViewerBase canvas = scaveEditor.getActivePlotViewer();
-        if (canvas != null) {
+        PlotBase plot = scaveEditor.getActivePlot();
+        if (plot != null) {
             if (horizontally) {
                 if (zoomFactor == 0.0)
-                    canvas.zoomToFitX();
+                    plot.zoomToFitX();
                 else
-                    canvas.zoomXBy(zoomFactor);
+                    plot.zoomXBy(zoomFactor);
             }
             if (vertically) {
                 if (zoomFactor == 0.0)
-                    canvas.zoomToFitY();
+                    plot.zoomToFitY();
                 else
-                    canvas.zoomYBy(zoomFactor);
+                    plot.zoomYBy(zoomFactor);
             }
         }
     }
 
     @Override
     protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
-        PlotViewerBase canvas = editor.getActivePlotViewer();
-        if (canvas != null) {
-            boolean res = zoomFactor > 1.0 && horizontally && canvas.getZoomX() < canvas.getMaxZoomX() ||
-                   zoomFactor > 1.0 && vertically && canvas.getZoomY() < canvas.getMaxZoomY() ||
-                   zoomFactor < 1.0 && horizontally && canvas.getMinZoomX() < canvas.getZoomX() ||
-                   zoomFactor < 1.0 && vertically && canvas.getMinZoomY() < canvas.getZoomY();
+        PlotBase plot = editor.getActivePlot();
+        if (plot != null) {
+            boolean res = zoomFactor > 1.0 && horizontally && plot.getZoomX() < plot.getMaxZoomX() ||
+                   zoomFactor > 1.0 && vertically && plot.getZoomY() < plot.getMaxZoomY() ||
+                   zoomFactor < 1.0 && horizontally && plot.getMinZoomX() < plot.getZoomX() ||
+                   zoomFactor < 1.0 && vertically && plot.getMinZoomY() < plot.getZoomY();
            return res;
         }
         return false;
