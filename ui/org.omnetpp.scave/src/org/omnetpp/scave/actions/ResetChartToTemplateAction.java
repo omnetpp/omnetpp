@@ -24,7 +24,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 public class ResetChartToTemplateAction extends AbstractScaveAction {
 
     public ResetChartToTemplateAction() {
-        setText("Reset Chart to Template");
+        setText("Reset to Template");
         setDescription("Resets the script and the dialog of a chart to those of its template");
         setImageDescriptor(ScavePlugin.getSharedImageDescriptor(ISharedImages.IMG_ETOOL_CLEAR));
     }

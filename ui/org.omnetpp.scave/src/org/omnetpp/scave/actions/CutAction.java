@@ -24,7 +24,7 @@ import org.omnetpp.scave.model.commands.RemoveChartCommand;
  */
 public class CutAction extends AbstractScaveAction {
     public CutAction() {
-        setText("Cut to Clipboard");
+        setText("Cut");
         setImageDescriptor(ScavePlugin.getSharedImageDescriptor(ISharedImages.IMG_TOOL_CUT));
     }
 

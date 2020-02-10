@@ -21,14 +21,13 @@ import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.commands.AddChartCommand;
 import org.omnetpp.scave.model.commands.CompoundCommand;
-import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * Copy model objects to the clipboard.
  */
 public class PasteAction extends AbstractScaveAction {
     public PasteAction() {
-        setText("Paste from Clipboard");
+        setText("Paste");
         setImageDescriptor(ScavePlugin.getSharedImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
     }
 

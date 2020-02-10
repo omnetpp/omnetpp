@@ -13,7 +13,6 @@ import java.io.IOException;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.ISharedImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
@@ -24,7 +23,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 
 public class SaveChartAsTemplateAction extends AbstractScaveAction {
     public SaveChartAsTemplateAction() {
-        setText("Save Chart as Template");
+        setText("Save as Template");
         setImageDescriptor(ScavePlugin.getSharedImageDescriptor(ISharedImages.IMG_ETOOL_SAVEAS_EDIT));
     }
 

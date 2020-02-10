@@ -602,7 +602,6 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         formEditor.addSeparatorToToolbar();
 
         formEditor.addToToolbar(new EditChartPropertiesAction());
-        formEditor.addToToolbar(toggleShowSourceAction);
 
         toggleAutoUpdateAction = new ToggleAutoUpdateAction();
         toggleAutoUpdateAction.setChecked(true);
@@ -617,16 +616,6 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
             formEditor.addToToolbar(homeAction);
             formEditor.addToToolbar(backAction);
             formEditor.addToToolbar(forwardAction);
-            formEditor.addSeparatorToToolbar();
-            formEditor.addSeparatorToToolbar();
-            formEditor.addToToolbar(toggleAutoUpdateAction);
-            formEditor.addToToolbar(new RefreshChartAction());
-            formEditor.addToToolbar(killAction = new KillPythonProcessAction());
-            formEditor.addSeparatorToToolbar();
-            formEditor.addToToolbar(new CopyChartImageToClipboardAction());
-            formEditor.addToToolbar(exportAction);
-            formEditor.addSeparatorToToolbar();
-            formEditor.addToToolbar(new ClosePageAction());
         }
         else {
             formEditor.addSeparatorToToolbar();
@@ -640,17 +629,21 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
             formEditor.addToToolbar(zoomOutHorizAction);
             formEditor.addToToolbar(zoomInVertAction);
             formEditor.addToToolbar(zoomOutVertAction);
-            formEditor.addSeparatorToToolbar();
-            formEditor.addSeparatorToToolbar();
-            formEditor.addToToolbar(toggleAutoUpdateAction);
-            formEditor.addToToolbar(new RefreshChartAction());
-            formEditor.addToToolbar(killAction = new KillPythonProcessAction());
-            formEditor.addSeparatorToToolbar();
-            formEditor.addToToolbar(new CopyChartImageToClipboardAction());
-            formEditor.addToToolbar(new ExportToSVGAction());
-            formEditor.addSeparatorToToolbar();
-            formEditor.addToToolbar(new ClosePageAction());
         }
+
+        formEditor.addSeparatorToToolbar();
+        formEditor.addToToolbar(toggleShowSourceAction);
+        formEditor.addToToolbar(toggleAutoUpdateAction);
+        formEditor.addToToolbar(new RefreshChartAction());
+        formEditor.addToToolbar(killAction = new KillPythonProcessAction());
+        formEditor.addSeparatorToToolbar();
+        formEditor.addToToolbar(new CopyChartImageToClipboardAction());
+        if (chart.getType() == ChartType.MATPLOTLIB)
+            formEditor.addToToolbar(exportAction);
+        else
+            formEditor.addToToolbar(new ExportToSVGAction());
+        formEditor.addSeparatorToToolbar();
+        formEditor.addToToolbar(new ClosePageAction());
     }
 
     // Overriding this is only necessary because we are replacing the SourceViewerConfiguration,

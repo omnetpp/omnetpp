@@ -30,7 +30,7 @@ import org.omnetpp.scave.model.ModelObject;
  */
 public class CopyAction extends AbstractScaveAction {
     public CopyAction() {
-        setText("Copy to Clipboard");
+        setText("Copy");
         setImageDescriptor(ScavePlugin.getSharedImageDescriptor(ISharedImages.IMG_TOOL_COPY));
     }
 

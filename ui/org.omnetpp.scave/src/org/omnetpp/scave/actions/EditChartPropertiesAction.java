@@ -24,7 +24,7 @@ public class EditChartPropertiesAction extends AbstractScaveAction {
      * Creates the action with an default title and icon, and without parameters.
      */
     public EditChartPropertiesAction() {
-        setText("Edit properties");
+        setText("Edit Chart...");
         setToolTipText("Edit Chart Properties");
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_EDIT));
     }
