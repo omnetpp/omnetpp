@@ -28,7 +28,7 @@ class Bars {
 
     double barBaseline;
     BarPlacement barPlacement;
-    Color barOutlineColor;
+    Color barOutlineColor = ColorFactory.BLACK; // TODO: turn into property
 
     // coordinates of the bars, in row/column order
     // rows are sorted according to the x coordinate

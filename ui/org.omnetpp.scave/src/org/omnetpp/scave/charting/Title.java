@@ -30,7 +30,7 @@ public class Title {
     private boolean visible = true;
     private String text;
     private Font font;
-    private Color color;
+    private Color color = ColorFactory.BLACK; // TODO: turn into property
     private Rectangle bounds;
 
     public Title() {
