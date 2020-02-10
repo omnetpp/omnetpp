@@ -127,7 +127,7 @@ public class ChartEditForm {
             onFormNotDeclared.removeAll(templatePropertyNames);
 
             if (!declaredNotOnForm.isEmpty())
-                Debug.println("Uneditable chart properties: " + declaredNotOnForm);
+                Debug.println("Uneditable chart properties of template '" + template.getName() + "' : " + declaredNotOnForm);
             if (!onFormNotDeclared.isEmpty())
                 throw new RuntimeException("Edited properties not declared: " + onFormNotDeclared);
         }
