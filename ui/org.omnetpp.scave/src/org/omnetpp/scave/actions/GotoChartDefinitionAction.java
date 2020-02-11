@@ -9,7 +9,6 @@ public class GotoChartDefinitionAction extends AbstractScaveAction {
 
     public GotoChartDefinitionAction() {
         setText("Go to Chart Definition");
-        setDescription("TODO");
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_GOTOITEMDEFINITION));
     }
 

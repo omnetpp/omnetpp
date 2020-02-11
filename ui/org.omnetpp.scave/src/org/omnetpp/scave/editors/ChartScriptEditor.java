@@ -487,12 +487,6 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
 
         MenuManager manager = new MenuManager();
 
-        if (chart.isTemporary())
-            manager.add(new SaveTempChartAction());
-        else
-            manager.add(new GotoChartDefinitionAction());
-        manager.add(new Separator());
-
         manager.add(new EditChartPropertiesAction());
         manager.add(new Separator());
 
@@ -527,6 +521,12 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         manager.add(killAction);
         manager.add(new Separator());
 
+        if (chart.isTemporary())
+            manager.add(new SaveTempChartAction());
+        else
+            manager.add(new GotoChartDefinitionAction());
+        manager.add(new Separator());
+
         manager.add(new CopyChartImageToClipboardAction());
         manager.add(exportAction);
 
@@ -556,11 +556,6 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
 
         MenuManager manager = new MenuManager();
 
-        if (chart.isTemporary())
-            manager.add(new SaveTempChartAction());
-        else
-            manager.add(new GotoChartDefinitionAction());
-        manager.add(new Separator());
         manager.add(new EditChartPropertiesAction());
         manager.add(new Separator());
 
@@ -581,8 +576,14 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         manager.add(toggleAutoUpdateAction);
         manager.add(new RefreshChartAction());
         manager.add(killAction);
-
         manager.add(new Separator());
+
+        if (chart.isTemporary())
+            manager.add(new SaveTempChartAction());
+        else
+            manager.add(new GotoChartDefinitionAction());
+        manager.add(new Separator());
+
         manager.add(new CopyChartImageToClipboardAction());
         manager.add(new ExportToSVGAction());
 
