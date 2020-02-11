@@ -6,10 +6,10 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
 
-public class ExportAction extends AbstractScaveAction {
+public class ExportMplChartImageAction extends AbstractScaveAction {
 
-    public ExportAction() {
-        setText("Export SVG");
+    public ExportMplChartImageAction() {
+        setText("Export Image...");
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_EXPORTTOSVG));
     }
 

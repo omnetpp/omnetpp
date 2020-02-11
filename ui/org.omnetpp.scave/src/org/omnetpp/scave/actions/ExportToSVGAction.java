@@ -24,7 +24,7 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.PlotBase;
 import org.omnetpp.scave.editors.ScaveEditor;
 
-public class ExportToSVGAction extends AbstractScaveAction {
+public class ExportToSVGAction extends AbstractScaveAction { //TODO generalize (e.g. support PNG too), and merge with ExportMplChartImageAction
     public ExportToSVGAction() {
         setText("Export Image to SVG...");
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_EXPORTTOSVG));

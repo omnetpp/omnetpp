@@ -68,7 +68,7 @@ import org.omnetpp.scave.actions.ChartMouseModeAction;
 import org.omnetpp.scave.actions.ClosePageAction;
 import org.omnetpp.scave.actions.CopyChartImageToClipboardAction;
 import org.omnetpp.scave.actions.EditChartPropertiesAction;
-import org.omnetpp.scave.actions.ExportAction;
+import org.omnetpp.scave.actions.ExportMplChartImageAction;
 import org.omnetpp.scave.actions.ExportToSVGAction;
 import org.omnetpp.scave.actions.ForwardAction;
 import org.omnetpp.scave.actions.GotoChartDefinitionAction;
@@ -135,7 +135,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
     SaveTempChartAction saveTempChartAction;
     GotoChartDefinitionAction gotoChartDefinitionAction;
 
-    ExportAction exportAction = new ExportAction();
+    ExportMplChartImageAction exportAction = new ExportMplChartImageAction();
 
     InteractAction interactAction = new InteractAction();
     PanAction panAction = new PanAction();
