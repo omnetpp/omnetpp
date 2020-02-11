@@ -34,6 +34,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.actions.NewChartFromSelectedTemplateAction;
 import org.omnetpp.scave.actions.NewChartFromTemplateAction;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ScaveEditorActions;
@@ -99,6 +100,7 @@ public class ChartsPage extends FormEditorPage {
 
         addSeparatorToToolbar();
 
+        addToToolbar(actions.newChartFromTemplateAction);
         addToToolbar(actions.editAction);
         addToToolbar(actions.removeAction);
         addToToolbar(actions.openAction);

@@ -42,6 +42,7 @@ import org.omnetpp.scave.actions.ExportDataAction;
 import org.omnetpp.scave.actions.ExportToSVGAction;
 import org.omnetpp.scave.actions.IScaveAction;
 import org.omnetpp.scave.actions.KillPythonProcessAction;
+import org.omnetpp.scave.actions.NewChartFromSelectedTemplateAction;
 import org.omnetpp.scave.actions.NewChartFromTemplateAction;
 import org.omnetpp.scave.actions.OpenChartAction;
 import org.omnetpp.scave.actions.PasteAction;
@@ -74,6 +75,7 @@ public class ScaveEditorActions {
     public final SelectAllAction selectAllAction = registerAction(new SelectAllAction());
     public final RenameChartAction renameChartAction = registerAction(new RenameChartAction());
     public final ExportChartsAction exportChartsAction = registerAction(new ExportChartsAction());
+    public final NewChartFromSelectedTemplateAction newChartFromTemplateAction = registerAction(new NewChartFromSelectedTemplateAction());
     public final ResetChartToTemplateAction resetToTemplateAction = registerAction(new ResetChartToTemplateAction());
     public final SaveChartAsTemplateAction saveChartAsTemplateAction = registerAction(new SaveChartAsTemplateAction());
     public final RemoveAction removeAction = registerAction(new RemoveAction());
