@@ -231,7 +231,7 @@ public class ScaveEditorActions {
 
     protected void addGlobalActions(IMenuManager menuManager) {
         menuManager.insertAfter("additions-end", new Separator("ui-actions"));
-        menuManager.insertAfter("ui-actions", showPropertiesViewAction);
+        //menuManager.insertAfter("ui-actions", showPropertiesViewAction);
     }
 
     public IMenuManager createExportMenu() {
