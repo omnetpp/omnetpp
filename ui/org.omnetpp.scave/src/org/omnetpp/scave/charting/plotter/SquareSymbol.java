@@ -19,7 +19,7 @@ public class SquareSymbol extends PolygonSymbol {
 
     @Override
     protected int[] getPoints(int sizeHint) {
-        int d = sizeHint/2;
+        int d = sizeHint * 141 / 100 / 2;
         return new int[] {
             -d, -d,
             -d, +d,

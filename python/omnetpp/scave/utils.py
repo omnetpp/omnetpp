@@ -232,7 +232,7 @@ def _make_line_args(props, t, df):
         style["linewidth"] = get_prop("linewidth")
 
     if not get_prop("marker") or get_prop("marker") == "auto":
-        pass
+        pass # style["marker"] = '.' # ??? should cycle here? it's difficult to do with MPL...
     elif get_prop("marker") == 'none':
         style["marker"] = ' '
     else:

@@ -57,7 +57,7 @@ public class Legend implements ILegend {
 
             // draw line
             if (drawLine) {
-                graphics.setLineWidth(1);
+                graphics.setLineWidth(2);
                 graphics.setLineStyle(SWT.LINE_SOLID);
                 graphics.drawLine(x+1, y+height/2, x+15, y+height/2);
             }
