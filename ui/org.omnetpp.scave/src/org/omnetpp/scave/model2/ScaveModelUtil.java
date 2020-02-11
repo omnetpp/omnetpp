@@ -7,6 +7,9 @@
 
 package org.omnetpp.scave.model2;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,10 +19,12 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.Debug;
+import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.engine.IDList;
@@ -261,6 +266,68 @@ public class ScaveModelUtil {
                 }
             });
         }
+    }
+
+
+    public static void saveChartAsTemplate(Chart chart, File templatesDir, String templateId) throws IOException {
+        if (!templatesDir.exists())
+            templatesDir.mkdirs();
+
+        String scriptFileName = templateId + ".py";
+        String propertiesFileName = templateId + ".properties";
+
+        writeNewTextFile(templatesDir, scriptFileName, chart.getScript());
+        writeNewTextFile(templatesDir, propertiesFileName, makeTemplatePropertiesContent(chart, templateId));
+
+        for (DialogPage dp : chart.getDialogPages()) {
+            String xswtFileName = templateId + "_" + dp.id + ".xswt";
+            writeNewTextFile(templatesDir, xswtFileName, dp.xswtForm);
+        }
+    }
+
+    private static void writeNewTextFile(File dir, String filename, String content) throws IOException {
+        File file = new File(dir.getAbsolutePath() + File.separator + filename);
+        if (file.exists())
+            throw new RuntimeException(file.getAbsolutePath() + " already exists");
+        FileUtils.writeTextFile(file, content, null);
+    }
+
+    private static String makeTemplatePropertiesContent(Chart chart, String templateId) throws IOException {
+        String scriptFileName = templateId + ".py";
+        StringBuffer buf = new StringBuffer();
+        buf.append("id = " + templateId + "\n");
+        buf.append("name = " + chart.getName() + "\n");
+        buf.append("type = " + chart.getType().toString() + "\n");
+        buf.append("scriptFile = " + scriptFileName + "\n");
+        buf.append("icon = " + chart.getIconPath() + "\n");
+        // omitting toolbarOrder and resultTypes
+        buf.append("\n");
+
+        buf.append("propertyNames = ");
+        boolean first=true;
+        for (Property p : chart.getProperties()) {
+            if (!first)
+                buf.append(",\\\n    ");
+            buf.append(p.getName());
+            if (p.getValue() != null && !p.getName().equals("filter"))
+                buf.append(":" + p.getValue()); // TODO: what if the value contains a comma? should quote...
+            first = false;
+        }
+
+        buf.append("\n\n");
+
+        int i = 0;
+        for (DialogPage dp : chart.getDialogPages()) {
+            String xswtFileName = templateId + "_" + dp.id + ".xswt";
+            buf.append("\n");
+            buf.append("dialogPage." + i + ".id = " + dp.id + "\n");
+            buf.append("dialogPage." + i + ".label = " + dp.label + "\n");
+            buf.append("dialogPage." + i + ".xswtFile = " + xswtFileName + "\n");
+            i++;
+        }
+        buf.append("\n\n");
+
+        return buf.toString();
     }
 
 }
