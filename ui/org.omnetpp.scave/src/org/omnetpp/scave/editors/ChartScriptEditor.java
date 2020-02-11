@@ -493,7 +493,6 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
             manager.add(new GotoChartDefinitionAction());
         manager.add(new Separator());
 
-        manager.add(toggleShowSourceAction);
         manager.add(new EditChartPropertiesAction());
         manager.add(new Separator());
 
@@ -522,6 +521,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         manager.add(computeSubmenuManager);
         manager.add(new Separator());
 
+        manager.add(toggleShowSourceAction);
         manager.add(toggleAutoUpdateAction);
         manager.add(new RefreshChartAction());
         manager.add(killAction);
@@ -561,7 +561,6 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         else
             manager.add(new GotoChartDefinitionAction());
         manager.add(new Separator());
-        manager.add(toggleShowSourceAction);
         manager.add(new EditChartPropertiesAction());
         manager.add(new Separator());
 
@@ -578,6 +577,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         manager.add(zoomSubmenuManager);
 
         manager.add(new Separator());
+        manager.add(toggleShowSourceAction);
         manager.add(toggleAutoUpdateAction);
         manager.add(new RefreshChartAction());
         manager.add(killAction);

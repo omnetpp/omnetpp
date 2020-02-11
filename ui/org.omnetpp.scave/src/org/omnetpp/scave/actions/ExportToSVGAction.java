@@ -26,9 +26,9 @@ import org.omnetpp.scave.editors.ScaveEditor;
 
 public class ExportToSVGAction extends AbstractScaveAction {
     public ExportToSVGAction() {
-        setText("Export to SVG...");
+        setText("Export Image to SVG...");
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_EXPORTTOSVG));
-        setToolTipText("Export char to SVG format");
+        setToolTipText("Export chart to SVG format");
     }
 
     @Override

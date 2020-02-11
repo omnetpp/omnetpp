@@ -10,8 +10,7 @@ import org.omnetpp.scave.editors.ScaveEditor;
 public class ToggleAutoUpdateAction extends AbstractScaveAction {
     public ToggleAutoUpdateAction() {
         super(AS_CHECK_BOX);
-        setText("Toggle auto update");
-        setDescription("TODO.");
+        setText("Auto Update");
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_AUTOREFRESH2));
     }
 

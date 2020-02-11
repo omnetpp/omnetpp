@@ -10,7 +10,6 @@ import org.omnetpp.scave.editors.ScaveEditor;
 public class HomeAction extends AbstractScaveAction {
     public HomeAction() {
         setText("Home Tool");
-        setDescription("TODO.");
         setImageDescriptor(
                 PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_ETOOL_HOME_NAV));
     }

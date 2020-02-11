@@ -10,11 +10,8 @@ import org.omnetpp.scave.editors.ScaveEditor;
 public class KillPythonProcessAction extends AbstractScaveAction {
 
     public KillPythonProcessAction() {
-        setText("Kill the Python process of the chart");
-        setDescription("TODO.");
-        // setImageDescriptor(ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_ZOOMTOFIT));
-        setImageDescriptor(
-                PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_ELCL_STOP));
+        setText("Kill the Python Process of the Chart");
+        setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_ELCL_STOP));
     }
 
     @Override

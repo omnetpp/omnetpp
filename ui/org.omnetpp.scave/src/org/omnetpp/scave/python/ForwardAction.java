@@ -10,7 +10,6 @@ import org.omnetpp.scave.editors.ScaveEditor;
 public class ForwardAction extends AbstractScaveAction {
     public ForwardAction() {
         setText("Forward");
-        setDescription("TODO.");
         setImageDescriptor(
                 PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_FORWARD));
     }

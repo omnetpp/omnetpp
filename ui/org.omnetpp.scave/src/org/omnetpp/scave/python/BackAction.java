@@ -10,7 +10,6 @@ import org.omnetpp.scave.editors.ScaveEditor;
 public class BackAction extends AbstractScaveAction {
     public BackAction() {
         setText("Back");
-        setDescription("TODO.");
         setImageDescriptor(
                 PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_BACK));
     }

@@ -10,7 +10,7 @@ public class ToggleShowSourceAction extends AbstractScaveAction {
 
     public ToggleShowSourceAction() {
         super(IAction.AS_CHECK_BOX);
-        setText("Edit Code");
+        setText("Show Code Editor");
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_CODE));
     }
 
