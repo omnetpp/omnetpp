@@ -578,7 +578,8 @@ public class ColorFactory {
     public static final Color YELLOW4 = addMapping("yellow4",new RGB(139,139,0));
 
     static {
-
+        /*
+        // our custom old ("legacy") palettes
         goodDarkColors = new Color[] {
                 ColorFactory.asColor("darkblue"),
                 ColorFactory.asColor("red2"),
@@ -608,6 +609,93 @@ public class ColorFactory {
                 ColorFactory.asColor("lightGrey"),
                 ColorFactory.asColor("mediumPurple"),
         };
+        */
+
+        /*
+        // the Tableau 10 palette
+        goodDarkColors = new Color[] {
+                new Color(null, 255, 127, 14),
+                new Color(null, 214, 39, 40),
+                new Color(null, 148, 103, 189),
+                new Color(null, 44, 160, 44),
+                new Color(null, 31, 119, 180),
+                new Color(null, 227, 119, 194),
+                new Color(null, 188, 189, 34),
+                new Color(null, 140, 86, 75),
+                new Color(null, 127, 127, 127),
+                new Color(null, 23, 190, 207),
+        };
+
+        // the Tableau 10 Light palette
+        goodLightColors = new Color[] {
+                new Color(null, 255, 187, 120),
+                new Color(null, 255, 152, 150),
+                new Color(null, 197, 176, 213),
+                new Color(null, 174, 199, 232),
+                new Color(null, 152, 223, 138),
+                new Color(null, 247, 182, 210),
+                new Color(null, 219, 219, 141),
+                new Color(null, 199, 199, 199),
+                new Color(null, 196, 156, 148),
+                new Color(null, 158, 218, 229),
+        };
+        */
+
+
+        // half of the Tableau 20 palette, in reverse order
+        goodDarkColors = new Color[] {
+                new Color(null, 31, 119, 180),
+                new Color(null, 255, 127, 14),
+                new Color(null, 44, 160, 44),
+                new Color(null, 214, 39, 40),
+                new Color(null, 148, 103, 189),
+                new Color(null, 140, 86, 75),
+                new Color(null, 227, 119, 194),
+                new Color(null, 127, 127, 127),
+                new Color(null, 188, 189, 34),
+                new Color(null, 23, 190, 207),
+        };
+
+        // the other half of the Tableau 20 palette, in reverse order
+        goodLightColors = new Color[] {
+                new Color(null, 174, 199, 232),
+                new Color(null, 255, 187, 120),
+                new Color(null, 152, 223, 138),
+                new Color(null, 255, 152, 150),
+                new Color(null, 197, 176, 213),
+                new Color(null, 196, 156, 148),
+                new Color(null, 247, 182, 210),
+                new Color(null, 199, 199, 199),
+                new Color(null, 219, 219, 141),
+                new Color(null, 158, 218, 229),
+        };
+
+
+        /*
+        // part of the GNOME 3.32 palette
+        goodDarkColors = new Color[] {
+                new Color(null, 27, 95, 180),
+                new Color(null, 38, 161, 104),
+                new Color(null, 229, 164, 10),
+                new Color(null, 198, 70, 0),
+                new Color(null, 165, 28, 44),
+                new Color(null, 97, 53, 132),
+                new Color(null, 99, 69, 43),
+                new Color(null, 60, 56, 70),
+        };
+
+        // part of the GNOME 3.32 palette
+        goodLightColors = new Color[] {
+                new Color(null, 153, 193, 242),
+                new Color(null, 143, 240, 163),
+                new Color(null, 249, 241, 108),
+                new Color(null, 255, 189, 111),
+                new Color(null, 247, 97, 82),
+                new Color(null, 220, 138, 222),
+                new Color(null, 205, 171, 143),
+                new Color(null, 192, 191, 187),
+        };
+        */
     };
 
     /**
