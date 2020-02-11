@@ -1,21 +1,25 @@
-/*--------------------------------------------------------------*
-  Copyright (C) 2006-2015 OpenSim Ltd.
-
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  'License' for details on this and other legal matters.
-*--------------------------------------------------------------*/
-
 package org.omnetpp.scave.actions;
 
+import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.editors.ScaveEditor;
 
-/**
- * Opens the Chart object on the Charts page.
- */
-public class GotoChartDefinitionAction extends GotoItemDefinitionAction {
+public class GotoChartDefinitionAction extends AbstractScaveAction {
+
     public GotoChartDefinitionAction() {
-        setText("Go to Chart Sheet Definition");
+        setText("Go to Chart Definition");
+        setDescription("TODO");
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_GOTOITEMDEFINITION));
+    }
+
+    @Override
+    protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
+        scaveEditor.showAnalysisItem(scaveEditor.getActiveChartScriptEditor().getChart());
+    }
+
+    @Override
+    protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
+        return true;
     }
 }

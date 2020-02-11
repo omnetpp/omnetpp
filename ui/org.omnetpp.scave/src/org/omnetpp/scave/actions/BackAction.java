@@ -1,23 +1,23 @@
-package org.omnetpp.scave.python;
+package org.omnetpp.scave.actions;
 
 import org.eclipse.jface.viewers.ISelection;
-import org.omnetpp.scave.ScaveImages;
-import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.actions.AbstractScaveAction;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
 
-public class ExportAction extends AbstractScaveAction {
-
-    public ExportAction() {
-        setText("Export SVG");
-        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_EXPORTTOSVG));
+public class BackAction extends AbstractScaveAction {
+    public BackAction() {
+        setText("Back");
+        setImageDescriptor(
+                PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_BACK));
     }
 
     @Override
     protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
         ChartScriptEditor editor = scaveEditor.getActiveChartScriptEditor();
-        editor.getMatplotlibChartViewer().export(editor.getChart().getName());
+        if (editor != null)
+            editor.getMatplotlibChartViewer().back();
     }
 
     @Override

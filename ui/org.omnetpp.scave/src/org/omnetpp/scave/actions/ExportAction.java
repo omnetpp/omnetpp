@@ -1,23 +1,22 @@
-package org.omnetpp.scave.python;
+package org.omnetpp.scave.actions;
 
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
-import org.omnetpp.scave.actions.AbstractScaveAction;
+import org.omnetpp.scave.ScaveImages;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
 
-public class KillPythonProcessAction extends AbstractScaveAction {
+public class ExportAction extends AbstractScaveAction {
 
-    public KillPythonProcessAction() {
-        setText("Kill the Python Process of the Chart");
-        setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_ELCL_STOP));
+    public ExportAction() {
+        setText("Export SVG");
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_EXPORTTOSVG));
     }
 
     @Override
     protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
         ChartScriptEditor editor = scaveEditor.getActiveChartScriptEditor();
-        editor.killPythonProcess();
+        editor.getMatplotlibChartViewer().export(editor.getChart().getName());
     }
 
     @Override

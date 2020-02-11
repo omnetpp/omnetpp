@@ -1,29 +1,28 @@
-package org.omnetpp.scave.python;
+package org.omnetpp.scave.actions;
 
 import org.eclipse.jface.viewers.ISelection;
-import org.omnetpp.scave.ScaveImages;
-import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.actions.AbstractScaveAction;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
 
-public class ToggleAutoUpdateAction extends AbstractScaveAction {
-    public ToggleAutoUpdateAction() {
-        super(AS_CHECK_BOX);
-        setText("Auto Update");
-        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_AUTOREFRESH2));
+public class ForwardAction extends AbstractScaveAction {
+    public ForwardAction() {
+        setText("Forward");
+        setImageDescriptor(
+                PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_FORWARD));
     }
 
     @Override
     protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
         ChartScriptEditor editor = scaveEditor.getActiveChartScriptEditor();
         if (editor != null)
-            editor.setAutoUpdateChart(isChecked());
+            editor.getMatplotlibChartViewer().forward();
     }
 
     @Override
     protected boolean isApplicable(ScaveEditor scaveEditor, ISelection selection) {
         ChartScriptEditor editor = scaveEditor.getActiveChartScriptEditor();
-        return editor != null;
+        return editor != null && editor.isPythonProcessAlive();
     }
 }

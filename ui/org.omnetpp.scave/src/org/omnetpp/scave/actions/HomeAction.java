@@ -1,24 +1,23 @@
-package org.omnetpp.scave.python;
+package org.omnetpp.scave.actions;
 
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
-import org.omnetpp.scave.actions.AbstractScaveAction;
 import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
 
-public class ForwardAction extends AbstractScaveAction {
-    public ForwardAction() {
-        setText("Forward");
+public class HomeAction extends AbstractScaveAction {
+    public HomeAction() {
+        setText("Home Tool");
         setImageDescriptor(
-                PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_FORWARD));
+                PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_ETOOL_HOME_NAV));
     }
 
     @Override
     protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
         ChartScriptEditor editor = scaveEditor.getActiveChartScriptEditor();
         if (editor != null)
-            editor.getMatplotlibChartViewer().forward();
+            editor.getMatplotlibChartViewer().home();
     }
 
     @Override

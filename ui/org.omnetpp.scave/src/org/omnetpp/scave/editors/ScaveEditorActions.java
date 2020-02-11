@@ -40,8 +40,8 @@ import org.omnetpp.scave.actions.EditInputFileAction;
 import org.omnetpp.scave.actions.ExportChartsAction;
 import org.omnetpp.scave.actions.ExportDataAction;
 import org.omnetpp.scave.actions.ExportToSVGAction;
-import org.omnetpp.scave.actions.GotoChartDefinitionAction;
 import org.omnetpp.scave.actions.IScaveAction;
+import org.omnetpp.scave.actions.KillPythonProcessAction;
 import org.omnetpp.scave.actions.NewChartFromTemplateAction;
 import org.omnetpp.scave.actions.OpenChartAction;
 import org.omnetpp.scave.actions.PasteAction;
@@ -61,7 +61,6 @@ import org.omnetpp.scave.actions.ViewModeAction;
 import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.charting.IPlotViewer;
 import org.omnetpp.scave.model.ChartTemplate;
-import org.omnetpp.scave.python.KillPythonProcessAction;
 
 public class ScaveEditorActions {
 
@@ -94,8 +93,6 @@ public class ScaveEditorActions {
     public final ChartMouseModeAction switchChartToZoomModeAction = registerAction(new ChartMouseModeAction(ZoomableCanvasMouseSupport.ZOOM_MODE));
     public final CopyChartImageToClipboardAction copyChartToClipboardAction = registerAction(new CopyChartImageToClipboardAction());
     public final RefreshChartAction refreshChartAction = registerAction(new RefreshChartAction());
-    public final GotoChartDefinitionAction gotoChartDefinitionAction = registerAction(new GotoChartDefinitionAction());
-
 
     public final CutAction cutAction = registerAction(new CutAction());
     public final CopyAction copyAction = registerAction(new CopyAction());
