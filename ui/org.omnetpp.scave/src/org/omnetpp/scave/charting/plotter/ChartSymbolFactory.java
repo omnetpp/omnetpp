@@ -20,7 +20,8 @@ public class ChartSymbolFactory {
         case Cross: return new CrossSymbol(size);
         case Diamond: return new DiamondSymbol(size);
         case ThinDiamond: return new ThinDiamondSymbol(size);
-        case Dot: return new OvalSymbol(size);
+        case Circle: return new OvalSymbol(size);
+        case Dot: return new OvalSymbol(size / 2);
         case Plus: return new PlusSymbol(size);
         case VLine: return new LineSymbol(size, false);
         case HLine: return new LineSymbol(size, true);

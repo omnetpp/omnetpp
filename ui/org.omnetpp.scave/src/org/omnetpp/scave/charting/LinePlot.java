@@ -153,7 +153,7 @@ public class LinePlot extends PlotBase {
             if (symbolType == null) {
                 switch (series % 6) {
                 case 0: symbolType = SymbolType.Square; break;
-                case 1: symbolType = SymbolType.Dot; break;
+                case 1: symbolType = SymbolType.Circle; break;
                 case 2: symbolType = SymbolType.Triangle_Up; break;
                 case 3: symbolType = SymbolType.Diamond; break;
                 case 4: symbolType = SymbolType.Cross; break;

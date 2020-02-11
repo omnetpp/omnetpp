@@ -72,6 +72,7 @@
       <add x:p0="| (vline)"/>
       <add x:p0="_ (hline)"/>
       <add x:p0="8 (octagon)"/>
+      <add x:p0="o (circle)"/>
       <add x:p0="s (square)"/>
       <add x:p0="p (pentagon)"/>
       <add x:p0="* (star)"/>

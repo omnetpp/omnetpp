@@ -164,6 +164,7 @@ public enum PlotProperty {
         Diamond("Diamond", ScaveImages.IMG_OBJ16_SYM_DIAMOND),
         ThinDiamond("thin_diamond", ScaveImages.IMG_OBJ16_SYM_DIAMOND),
         Dot("Dot", ScaveImages.IMG_OBJ16_SYM_DOT),
+        Circle("Circle", ScaveImages.IMG_OBJ16_SYM_DOT),
         Plus("Plus", ScaveImages.IMG_OBJ16_SYM_PLUS),
         HLine("HLine", ScaveImages.IMG_OBJ16_SYM_PLUS),
         VLine("VLine", ScaveImages.IMG_OBJ16_SYM_PLUS),

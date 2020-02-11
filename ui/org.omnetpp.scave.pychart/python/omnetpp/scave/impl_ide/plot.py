@@ -269,7 +269,7 @@ def _translate_marker(marker):
         ' ' : "none",
         '.' : "dot",
         ',' : "point",
-        'o' : None, # TODO "circle",
+        'o' : "circle",
         'v' : "triangle_down",
         '^' : "triangle_up",
         '<' : "triangle_left",

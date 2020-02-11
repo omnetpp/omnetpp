@@ -40,12 +40,6 @@ public class OvalSymbol extends PlotSymbol {
         else if (size==1) {
             LargeGraphics.drawPoint(graphics, x, y);
         }
-        else if (size==2 || size==3) {
-            LargeGraphics.drawPoint(graphics, x-1, y);
-            LargeGraphics.drawPoint(graphics, x+1, y);
-            LargeGraphics.drawPoint(graphics, x, y-1);
-            LargeGraphics.drawPoint(graphics, x, y+1);
-        }
         else {
             graphics.setBackgroundColor(graphics.getForegroundColor());
             LargeGraphics.fillOval(graphics, x-size/2, y-size/2, size, size); //XXX make filled/unfilled version
