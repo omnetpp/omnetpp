@@ -820,6 +820,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
     public void showAnalysisItem(AnalysisItem item) {
         showChartsPage();
         getChartsPage().getViewer().setSelection(new StructuredSelection(item));
+        getChartsPage().getViewer().reveal(item);
     }
 
     public void gotoObject(Object object) { // XXX useful?
