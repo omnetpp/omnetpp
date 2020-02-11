@@ -115,7 +115,7 @@ public class MatplotlibChartViewer extends ChartViewerBase {
             return;
         }
 
-        ExceptionHandler ownRunAfterError = (proc, e ) -> {
+        ExceptionHandler ownRunAfterError = (proc, e) -> {
             runAfterError.handle(proc, e);
             plotWidget.setWarning("An exception occurred during Python execution.");
         };
