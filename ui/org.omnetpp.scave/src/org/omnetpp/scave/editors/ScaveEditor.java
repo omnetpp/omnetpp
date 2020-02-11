@@ -1054,7 +1054,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
             UIUtils.createContextMenuFor(contentOutlineViewer.getControl(), true, new IMenuListener() {
                 @Override
                 public void menuAboutToShow(IMenuManager menuManager) {
-                    actions.populateContextMenu(menuManager);
+                    actions.populateContextMenu(menuManager, false);
                 }
             });
         }

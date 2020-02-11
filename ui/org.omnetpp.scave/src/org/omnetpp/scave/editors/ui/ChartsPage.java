@@ -229,7 +229,8 @@ public class ChartsPage extends FormEditorPage {
         IMenuListener menuListener = new IMenuListener() {
             @Override
             public void menuAboutToShow(IMenuManager menuManager) {
-                scaveEditor.getActions().populateContextMenu(menuManager);
+                boolean emptyAreaClicked = modelViewer.getSelection().isEmpty();
+                scaveEditor.getActions().populateContextMenu(menuManager, emptyAreaClicked);
             }
         };
 

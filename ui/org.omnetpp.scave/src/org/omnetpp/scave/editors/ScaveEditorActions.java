@@ -178,7 +178,7 @@ public class ScaveEditorActions {
         plotViewer.addPropertyChangeListener(zoomListener);
     }
 
-    public void populateContextMenu(IMenuManager menuManager) {
+    public void populateContextMenu(IMenuManager menuManager, boolean showNewSubmenu) {
         menuManager.add(new Separator("edit"));
 
         // Add the edit menu actions.
@@ -202,20 +202,19 @@ public class ScaveEditorActions {
 
         addGlobalActions(menuManager);
 
-        MenuManager submenuManager = new MenuManager("New");
-
-        for (ChartTemplate t : editor.getChartTemplateRegistry().getAllTemplates())
-            submenuManager.add(new NewChartFromTemplateAction(t, false));
-
-        menuManager.insertBefore("edit", submenuManager);
+        if (showNewSubmenu) {
+            MenuManager submenuManager = new MenuManager("New");
+            for (ChartTemplate t : editor.getChartTemplateRegistry().getAllTemplates())
+                submenuManager.add(new NewChartFromTemplateAction(t, false));
+            menuManager.insertBefore("edit", submenuManager);
+        }
 
         menuManager.insertBefore("edit", openAction);
         menuManager.insertBefore("edit", editAction);
         menuManager.insertBefore("edit", renameChartAction);
-        // menuManager.insertBefore("edit", new EditScriptAction());
 
         menuManager.insertAfter("additions-end", new Separator());
-        menuManager.insertAfter("additions-end", createExportMenu());
+        menuManager.insertAfter("additions-end", createExportDataMenu());
         menuManager.insertAfter("additions-end", exportChartsAction);
     }
 
@@ -234,11 +233,11 @@ public class ScaveEditorActions {
         //menuManager.insertAfter("ui-actions", showPropertiesViewAction);
     }
 
-    public IMenuManager createExportMenu() {
-        return createExportMenu(new MenuManager("Export Data"));
+    public IMenuManager createExportDataMenu() {
+        return createExportDataMenu(new MenuManager("Export Data"));
     }
 
-    public IMenuManager createExportMenu(IMenuManager exportMenu) {
+    public IMenuManager createExportDataMenu(IMenuManager exportMenu) {
         if (exportActions != null) {
             for (String format : ExportDataAction.FORMATS) {
                 IAction action = exportActions.get(format);
