@@ -776,12 +776,10 @@ public class ScaveEditor extends MultiPageEditorPartExt
         return analysis;
     }
 
-    public File getAnfFileDirectory() {
+    public IFile getAnfFile() {
         IEditorInput input = getEditorInput();
-
         IFile file = ((FileEditorInput) input).getFile();
-
-        return file.getLocation().removeLastSegments(1).toFile();
+        return file;
     }
 
     /**

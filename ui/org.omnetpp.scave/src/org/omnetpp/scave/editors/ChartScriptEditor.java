@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
@@ -743,7 +744,8 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
                 });
             };
 
-            getChartViewer().runPythonScript(getDocument().get(), scaveEditor.getAnfFileDirectory(), afterRun, errorHandler);
+            File anfFileDirectory = scaveEditor.getAnfFile().getLocation().removeLastSegments(1).toFile();
+            getChartViewer().runPythonScript(getDocument().get(), anfFileDirectory, afterRun, errorHandler);
         });
     }
 

@@ -11,9 +11,15 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.ISharedImages;
+import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Chart;
@@ -32,18 +38,26 @@ public class SaveChartAsTemplateAction extends AbstractScaveAction {
         Chart chart = ScaveModelUtil.getChartFromSingleSelection(selection);
 
         String filenames;
-        // TODO should get current project root directory instead
-        File anfFileDirectory = editor.getAnfFileDirectory();
 
-        File templatesDir = new File(anfFileDirectory.getAbsolutePath() + "/charttemplates");
+        IProject currentProject = editor.getAnfFile().getProject();
+        IFolder templatesFolder = currentProject.getFolder("charttemplates");
+        File templatesDir = templatesFolder.getLocation().toFile();
+
+        InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(),
+                "Save Chart as Template",
+                "Enter filename base below. Files will be created in the analysis file's project, " +
+                "under " + templatesFolder.getFullPath().toString()+ ".",
+                chart.getTemplateID() + "_" + chart.getId(), null);
+        if (dialog.open() != Dialog.OK)
+            return;
+
+        String newTemplateId = dialog.getValue();
 
         if (templatesDir.exists() && !templatesDir.isDirectory())
             throw new RuntimeException("\"charttemplates\" exists in the project, but is not a directory");
 
         if (!templatesDir.exists())
             templatesDir.mkdirs();
-
-        String newTemplateId = chart.getTemplateID() + "_" + chart.getId();
 
         String propertiesFileName = newTemplateId + ".properties";
         File propertiesFile = new File(templatesDir.getAbsolutePath() + "/" + propertiesFileName);
