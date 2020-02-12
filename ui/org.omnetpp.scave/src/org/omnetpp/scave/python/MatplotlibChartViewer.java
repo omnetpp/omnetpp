@@ -258,6 +258,7 @@ public class MatplotlibChartViewer extends ChartViewerBase {
         }
     }
 
+    @Override
     public void copyImageToClipboard() {
         Clipboard cp = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
         ClipboardOwner owner = new java.awt.datatransfer.ClipboardOwner() {
@@ -292,6 +293,7 @@ public class MatplotlibChartViewer extends ChartViewerBase {
         cp.setContents(new ImageTransferable(ImageUtils.convertToAWT(image)), owner);
     }
 
+    @Override
     public void dispose() {
         super.dispose();
 
