@@ -31,14 +31,14 @@ public enum PlotProperty {
     PROP_X_AXIS_TITLE("X.Axis.Title", String.class, ""),
     PROP_Y_AXIS_TITLE("Y.Axis.Title", String.class, ""),
     PROP_AXIS_TITLE_FONT("Axis.Title.Font", Font.class, getArial8()),
-    PROP_LABEL_FONT("Label.Font", Font.class, getArial8()),
+    PROP_AXIS_LABEL_FONT("Axis.Label.Font", Font.class, getArial8()),
     PROP_X_LABELS_ROTATE_BY("X.Label.RotateBy", Integer.class, 0),
     // Axes
     PROP_Y_AXIS_MIN("Y.Axis.Min", Double.class, Double.NEGATIVE_INFINITY),
     PROP_Y_AXIS_MAX("Y.Axis.Max", Double.class, Double.POSITIVE_INFINITY),
     PROP_Y_AXIS_LOGARITHMIC("Y.Axis.Log", Boolean.class, false),
-    PROP_XY_GRID("Axes.Grid", ShowGrid.class, ShowGrid.Major),
-    PROP_XY_GRID_COLOR("Axes.GridColor", Color.class, ColorFactory.GREY80),
+    PROP_GRID("Axes.Grid", ShowGrid.class, ShowGrid.Major),
+    PROP_GRID_COLOR("Axes.GridColor", Color.class, ColorFactory.GREY80),
     PROP_INSETS_LINE_COLOR("Insets.LineColor", Color.class, ColorFactory.BLACK),
     PROP_INSETS_BACKGROUND_COLOR("Insets.BackgroundColor", Color.class, Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND)),
     // Legend

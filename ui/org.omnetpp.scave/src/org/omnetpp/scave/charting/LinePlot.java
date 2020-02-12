@@ -9,15 +9,15 @@ package org.omnetpp.scave.charting;
 
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_AXIS_TITLE_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_DISPLAY_LINE;
-import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LABEL_FONT;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_AXIS_LABEL_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LINE_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LINE_DRAW_STYLE;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LINE_STYLE;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LINE_WIDTH;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_SYMBOL_SIZE;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_SYMBOL_TYPE;
-import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_XY_GRID;
-import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_XY_GRID_COLOR;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_GRID;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_GRID_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_MAX;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_MIN;
@@ -79,13 +79,13 @@ public class LinePlot extends PlotBase {
             PROP_X_AXIS_TITLE,
             PROP_Y_AXIS_TITLE,
             PROP_AXIS_TITLE_FONT,
-            PROP_LABEL_FONT,
+            PROP_AXIS_LABEL_FONT,
             PROP_X_AXIS_MIN,
             PROP_X_AXIS_MAX,
             PROP_X_AXIS_LOGARITHMIC,
             PROP_Y_AXIS_LOGARITHMIC,
-            PROP_XY_GRID,
-            PROP_XY_GRID_COLOR,
+            PROP_GRID,
+            PROP_GRID_COLOR,
             PROP_DISPLAY_LINE,
             PROP_SYMBOL_TYPE,
             PROP_SYMBOL_SIZE,
@@ -393,14 +393,14 @@ public class LinePlot extends PlotBase {
         case PROP_X_AXIS_TITLE: setXAxisTitle(value); break;
         case PROP_Y_AXIS_TITLE: setYAxisTitle(value); break;
         case PROP_AXIS_TITLE_FONT: setAxisTitleFont(Converter.stringToSwtfont(value)); break;
-        case PROP_LABEL_FONT: setTickLabelFont(Converter.stringToSwtfont(value)); break;
+        case PROP_AXIS_LABEL_FONT: setTickLabelFont(Converter.stringToSwtfont(value)); break;
         // Axes
         case PROP_X_AXIS_MIN: setXMin(Converter.stringToDouble(value)); break;
         case PROP_X_AXIS_MAX: setXMax(Converter.stringToDouble(value)); break;
         case PROP_X_AXIS_LOGARITHMIC: setLogarithmicX(Converter.stringToBoolean(value)); break;
         case PROP_Y_AXIS_LOGARITHMIC: setLogarithmicY(Converter.stringToBoolean(value)); break;
-        case PROP_XY_GRID: setShowGrid(Converter.stringToEnum(value, ShowGrid.class)); break;
-        case PROP_XY_GRID_COLOR: setGridColor(Converter.stringToRGB(value)); break;
+        case PROP_GRID: setShowGrid(Converter.stringToEnum(value, ShowGrid.class)); break;
+        case PROP_GRID_COLOR: setGridColor(Converter.stringToRGB(value)); break;
         // Line defaults
         case PROP_DISPLAY_LINE: setDisplayLine(Converter.stringToBoolean(value)); break;
         case PROP_SYMBOL_TYPE: setSymbolType(Converter.stringToOptionalEnum(value, SymbolType.class)); break;

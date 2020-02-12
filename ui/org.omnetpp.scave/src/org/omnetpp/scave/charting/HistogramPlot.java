@@ -13,10 +13,10 @@ import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_HIST_BAR;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_HIST_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_HIST_CUMULATIVE;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_HIST_DENSITY;
-import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LABEL_FONT;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_AXIS_LABEL_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_SHOW_OVERFLOW_CELL;
-import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_XY_GRID;
-import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_XY_GRID_COLOR;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_GRID;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_GRID_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_TITLE;
@@ -56,10 +56,10 @@ public class HistogramPlot extends PlotBase {
     private static final PlotProperty[] HISTOGRAMPLOT_PROPERTIES = ArrayUtils.addAll(PLOTBASE_PROPERTIES, new PlotProperty[] {
             PROP_X_AXIS_TITLE,
             PROP_Y_AXIS_TITLE,
-            PROP_XY_GRID,
-            PROP_XY_GRID_COLOR,
+            PROP_GRID,
+            PROP_GRID_COLOR,
             PROP_AXIS_TITLE_FONT,
-            PROP_LABEL_FONT,
+            PROP_AXIS_LABEL_FONT,
             PROP_HIST_BAR,
             PROP_SHOW_OVERFLOW_CELL,
             PROP_BAR_BASELINE,
@@ -149,10 +149,10 @@ public class HistogramPlot extends PlotBase {
         switch (prop) {
         case PROP_X_AXIS_TITLE: setXAxisTitle(value); break;
         case PROP_Y_AXIS_TITLE: setYAxisTitle(value); break;
-        case PROP_XY_GRID: setShowGrid(Converter.stringToEnum(value, ShowGrid.class)); break;
-        case PROP_XY_GRID_COLOR: setGridColor(Converter.stringToRGB(value)); break;
+        case PROP_GRID: setShowGrid(Converter.stringToEnum(value, ShowGrid.class)); break;
+        case PROP_GRID_COLOR: setGridColor(Converter.stringToRGB(value)); break;
         case PROP_AXIS_TITLE_FONT: setAxisTitleFont(Converter.stringToSwtfont(value)); break;
-        case PROP_LABEL_FONT: setTickLabelFont(Converter.stringToSwtfont(value)); break;
+        case PROP_AXIS_LABEL_FONT: setTickLabelFont(Converter.stringToSwtfont(value)); break;
         case PROP_HIST_BAR: setBarType(Converter.stringToEnum(value, HistogramBar.class)); break;
         case PROP_HIST_COLOR: setHistogramColor(Converter.stringToOptionalRGB(value)); break;
         case PROP_HIST_CUMULATIVE: setHistogramCumulative(Converter.stringToBoolean(value)); break;

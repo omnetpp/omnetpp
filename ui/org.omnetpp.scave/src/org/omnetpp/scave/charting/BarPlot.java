@@ -11,10 +11,10 @@ import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_AXIS_TITLE
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_BAR_BASELINE;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_BAR_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_BAR_PLACEMENT;
-import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LABEL_FONT;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_AXIS_LABEL_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_WRAP_LABELS;
-import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_XY_GRID;
-import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_XY_GRID_COLOR;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_GRID;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_GRID_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_LABELS_ROTATE_BY;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_LOGARITHMIC;
@@ -62,14 +62,14 @@ public class BarPlot extends PlotBase {
             PROP_X_AXIS_TITLE,
             PROP_Y_AXIS_TITLE,
             PROP_AXIS_TITLE_FONT,
-            PROP_LABEL_FONT,
+            PROP_AXIS_LABEL_FONT,
             PROP_X_LABELS_ROTATE_BY,
             PROP_WRAP_LABELS,
             PROP_BAR_BASELINE,
             PROP_BAR_PLACEMENT,
             PROP_BAR_COLOR,
-            PROP_XY_GRID,
-            PROP_XY_GRID_COLOR,
+            PROP_GRID,
+            PROP_GRID_COLOR,
             PROP_Y_AXIS_LOGARITHMIC
     });
 
@@ -175,7 +175,7 @@ public class BarPlot extends PlotBase {
         case PROP_X_AXIS_TITLE: setXAxisTitle(value); break;
         case PROP_Y_AXIS_TITLE: setYAxisTitle(value); break;
         case PROP_AXIS_TITLE_FONT: setAxisTitleFont(Converter.stringToSwtfont(value)); break;
-        case PROP_LABEL_FONT: setLabelFont(Converter.stringToSwtfont(value)); break;
+        case PROP_AXIS_LABEL_FONT: setLabelFont(Converter.stringToSwtfont(value)); break;
         case PROP_X_LABELS_ROTATE_BY: setXAxisLabelsRotatedBy(Converter.stringToDouble(value)); break;
         case PROP_WRAP_LABELS: setWrapLabels(Converter.stringToBoolean(value)); break;
         // Bars
@@ -183,8 +183,8 @@ public class BarPlot extends PlotBase {
         case PROP_BAR_PLACEMENT: setBarPlacement(Converter.stringToEnum(value, BarPlacement.class)); break;
         case PROP_BAR_COLOR: break; //TODO
         // Axes
-        case PROP_XY_GRID: setShowGrid(Converter.stringToEnum(value, ShowGrid.class)); break;
-        case PROP_XY_GRID_COLOR: setGridColor(Converter.stringToRGB(value)); break;
+        case PROP_GRID: setShowGrid(Converter.stringToEnum(value, ShowGrid.class)); break;
+        case PROP_GRID_COLOR: setGridColor(Converter.stringToRGB(value)); break;
         case PROP_Y_AXIS_LOGARITHMIC: setLogarithmicY(Converter.stringToBoolean(value)); break;
         default: super.setProperty(prop, value);
         }
