@@ -10,13 +10,13 @@ package org.omnetpp.scave.charting.properties;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.collections.map.HashedMap;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.scave.ScaveImages;
@@ -39,6 +39,8 @@ public enum PlotProperty {
     PROP_Y_AXIS_LOGARITHMIC("Y.Axis.Log", Boolean.class, false),
     PROP_XY_GRID("Axes.Grid", ShowGrid.class, ShowGrid.Major),
     PROP_XY_GRID_COLOR("Axes.GridColor", Color.class, ColorFactory.GREY80),
+    PROP_INSETS_LINE_COLOR("Insets.LineColor", Color.class, ColorFactory.BLACK),
+    PROP_INSETS_BACKGROUND_COLOR("Insets.BackgroundColor", Color.class, Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND)),
     // Legend
     PROP_DISPLAY_LEGEND("Legend.Display", Boolean.class, true),
     PROP_LEGEND_BORDER("Legend.Border", Boolean.class, false),

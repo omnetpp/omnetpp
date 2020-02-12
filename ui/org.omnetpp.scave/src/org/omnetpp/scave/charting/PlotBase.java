@@ -7,12 +7,12 @@
 
 package org.omnetpp.scave.charting;
 
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_INSETS_BACKGROUND_COLOR;
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_INSETS_LINE_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_ANTIALIAS;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_BACKGROUND_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_CACHING;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_DISPLAY_LEGEND;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_INSETS_BACKGROUND_COLOR;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_INSETS_LINE_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LEGEND_ANCHORING;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LEGEND_BORDER;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LEGEND_FONT;
@@ -73,6 +73,8 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
             PROP_ANTIALIAS,
             PROP_CACHING,
             PROP_BACKGROUND_COLOR,
+            PROP_INSETS_LINE_COLOR,
+            PROP_INSETS_BACKGROUND_COLOR,
             PROP_Y_AXIS_MIN,
             PROP_Y_AXIS_MAX
     };
@@ -82,6 +84,8 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
 
     protected boolean antialias;
     protected Color backgroundColor;
+    protected Color insetsBackgroundColor;
+    protected Color insetsLineColor;
     protected Title title = new Title();
     protected String titleText;
     protected Legend legend = new Legend();
@@ -100,8 +104,6 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
     private RectangularArea zoomedArea;
 
     private ZoomableCanvasMouseSupport mouseSupport;
-    private Color insetsBackgroundColor = DEFAULT_INSETS_BACKGROUND_COLOR; //TODO make this a proper property
-    private Color insetsLineColor = DEFAULT_INSETS_LINE_COLOR; //TODO make this a proper property
 
     protected IPlotSelection selection;
     private ListenerList<IChartSelectionListener> listeners = new ListenerList<>();
@@ -359,6 +361,8 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
         case PROP_ANTIALIAS: setAntialias(Converter.stringToBoolean(value)); break;
         case PROP_CACHING: setCaching(Converter.stringToBoolean(value)); break;
         case PROP_BACKGROUND_COLOR: setBackgroundColor(Converter.stringToRGB(value)); break;
+        case PROP_INSETS_LINE_COLOR: setInsetsLineColor(Converter.stringToRGB(value)); break;
+        case PROP_INSETS_BACKGROUND_COLOR: setInsetsBackgroundColor(Converter.stringToRGB(value)); break;
         // Axes
         case PROP_Y_AXIS_MIN: setYMin(Converter.stringToDouble(value)); break;
         case PROP_Y_AXIS_MAX: setYMax(Converter.stringToDouble(value)); break;
@@ -401,6 +405,18 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
     public void setBackgroundColor(RGB rgb) {
         Assert.isNotNull(rgb);
         this.backgroundColor = new Color(null, rgb);
+        chartChanged();
+    }
+
+    public void setInsetsLineColor(RGB rgb) {
+        Assert.isNotNull(rgb);
+        this.insetsLineColor = new Color(null, rgb);
+        chartChanged();
+    }
+
+    public void setInsetsBackgroundColor(RGB rgb) {
+        Assert.isNotNull(rgb);
+        this.insetsBackgroundColor = new Color(null, rgb);
         chartChanged();
     }
 

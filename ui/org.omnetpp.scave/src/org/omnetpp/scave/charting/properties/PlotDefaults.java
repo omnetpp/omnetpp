@@ -7,9 +7,7 @@
 
 package org.omnetpp.scave.charting.properties;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
 
 /**
@@ -20,8 +18,6 @@ import org.omnetpp.common.color.ColorFactory;
  */
 public class PlotDefaults {
     //TODO turn these into properties!!!
-    public static final Color DEFAULT_INSETS_BACKGROUND_COLOR = Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
-    public static final Color DEFAULT_INSETS_LINE_COLOR = ColorFactory.BLACK;
     public static final Color DEFAULT_BAR_OUTLINE_COLOR = ColorFactory.GREY80;
     public static final Color DEFAULT_BAR_BASELINE_COLOR = ColorFactory.GREY80;
 }

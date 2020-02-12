@@ -141,7 +141,7 @@ public class LinearAxis {
         if (ticks != null) {
             graphics.pushState();
             graphics.setLineStyle(Graphics.LINE_DOT);
-            graphics.setForegroundColor(new Color(Display.getDefault(), gridColor));
+            graphics.setForegroundColor(new Color(null, gridColor));
             for (BigDecimal tick : ticks) {
                 if (showGrid == ShowGrid.All || ticks.isMajorTick(tick)) {
                     if (vertical) {
