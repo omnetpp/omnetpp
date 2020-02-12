@@ -43,7 +43,10 @@ public class SaveChartAsTemplateAction extends AbstractScaveAction {
                 "Save Chart as Template",
                 "Enter filename base below. Files will be created in the analysis file's project, " +
                 "under " + templatesFolder.getFullPath().toString()+ ".",
-                chart.getTemplateID() + "_" + chart.getId(), null);
+                chart.getTemplateID() + "_" + chart.getId(), (String newText) -> {
+                    IStatus status = templatesFolder.getWorkspace().validateName(newText, IResource.FILE);
+                    return status.isOK() ? null : status.getMessage();
+                });
         if (dialog.open() != Dialog.OK)
             return;
 
@@ -51,6 +54,7 @@ public class SaveChartAsTemplateAction extends AbstractScaveAction {
 
         try {
             ScaveModelUtil.saveChartAsTemplate(chart, templatesFolder.getLocation().toFile(), newTemplateId);
+            templatesFolder.refreshLocal(IFile.DEPTH_ONE, null);
         } catch (IOException e) {
             throw ScavePlugin.wrapIntoCoreException(e);
         }
