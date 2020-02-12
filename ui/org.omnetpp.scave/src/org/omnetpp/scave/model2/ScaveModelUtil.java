@@ -309,8 +309,10 @@ public class ScaveModelUtil {
             if (!first)
                 buf.append(",\\\n    ");
             buf.append(p.getName());
-            if (p.getValue() != null && !p.getName().equals("filter"))
-                buf.append(":" + p.getValue()); // TODO: what if the value contains a comma? should quote...
+            if (p.getValue() != null) {
+                String value = p.getName().equals("filter") ? "" : p.getValue();
+                buf.append(":" + value); // TODO: what if the value contains a comma? should quote...
+            }
             first = false;
         }
 
