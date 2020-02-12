@@ -26,14 +26,14 @@
     <ColorChooser x:id="Plot.BackgroundColor" x:style="BORDER">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </ColorChooser>
-    
+
     <label text="Cycle seed:"/>
     <spinner x:id="cycle_seed" selection="0" minimum="0" maximum="1000000" x:style="BORDER"/>
 
     <!-- } -->
       </x:children>
     </group>
-    
+
     <group text="Fonts">
       <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
       <layout x:class="GridLayout" numColumns="2"/>
@@ -53,7 +53,7 @@
 
     <!-- Label font -->
     <label text="Label font:"/>
-    <FontChooser x:id="Label.Font" x:style="BORDER">
+    <FontChooser x:id="Axis.Label.Font" x:style="BORDER">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </FontChooser>
 
