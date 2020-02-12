@@ -49,7 +49,7 @@ public enum PlotProperty {
     // Legend
     PROP_DISPLAY_LEGEND("Legend.Display", Boolean.class, true),
     PROP_LEGEND_BORDER("Legend.Border", Boolean.class, false),
-    PROP_LEGEND_FONT("Legend.Font", Font.class, new Font(null, new FontData("Arial", 8, SWT.NORMAL))),
+    PROP_LEGEND_FONT("Legend.Font", Font.class, getArial8()),
     PROP_LEGEND_POSITION("Legend.Position", LegendPosition.class, PlotProperty.LegendPosition.Inside),
     PROP_LEGEND_ANCHORING("Legend.Anchoring", LegendAnchor.class, PlotProperty.LegendAnchor.North),
     // Plot

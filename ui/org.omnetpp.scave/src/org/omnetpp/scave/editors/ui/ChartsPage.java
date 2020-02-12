@@ -87,6 +87,12 @@ public class ChartsPage extends FormEditorPage {
 
         ScaveEditorActions actions = scaveEditor.getActions();
 
+        addToToolbar(actions.newChartFromTemplateAction);
+        addToToolbar(actions.editAction);
+        addToToolbar(actions.removeAction);
+
+        addSeparatorToToolbar();
+
         List<ChartTemplate> templates = getTemplatesForToolbar();
         for (ChartTemplate templ : templates)
             addToToolbar(new NewChartFromTemplateAction(templ));
@@ -100,9 +106,6 @@ public class ChartsPage extends FormEditorPage {
 
         addSeparatorToToolbar();
 
-        addToToolbar(actions.newChartFromTemplateAction);
-        addToToolbar(actions.editAction);
-        addToToolbar(actions.removeAction);
         addToToolbar(actions.openAction);
 
         viewer.setFocus();

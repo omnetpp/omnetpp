@@ -114,7 +114,7 @@ public class NewChartFromTemplateDialog extends TitleAreaDialog {
         tableViewer.setLabelProvider(new ChartTemplateLabelProvider());
         tableViewer.setInput(editor.getChartTemplateRegistry().getAllTemplates());
 
-        styledText = new StyledText(sashForm, SWT.BORDER);
+        styledText = new StyledText(sashForm, SWT.BORDER|SWT.READ_ONLY|SWT.DOUBLE_BUFFERED);
         GridData data2 = new GridData(GridData.FILL_BOTH);
         styledText.setLayoutData(data2);
 
@@ -123,7 +123,7 @@ public class NewChartFromTemplateDialog extends TitleAreaDialog {
             public void selectionChanged(SelectionChangedEvent event) {
                 ChartTemplate template = getTableSelection();
                 if (template != null)
-                    renderTempleteDescription(template);
+                    renderTemplateDescription(template);
             }
         });
 
@@ -139,7 +139,7 @@ public class NewChartFromTemplateDialog extends TitleAreaDialog {
         return composite;
     }
 
-    protected void renderTempleteDescription(ChartTemplate template) {
+    protected void renderTemplateDescription(ChartTemplate template) {
         styledText.setText("");
         HTMLUtils.htmlToStyledText("<h2>" + template.getName() + "</h2>\n", styledText, null);
 
