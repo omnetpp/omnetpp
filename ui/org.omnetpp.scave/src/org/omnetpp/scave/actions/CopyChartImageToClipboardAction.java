@@ -12,13 +12,11 @@ import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.charting.PlotBase;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.python.ChartViewerBase;
-import org.omnetpp.scave.python.MatplotlibChartViewer;
 
 /**
- * Copy chart contents to the clipboard.
+ * Copy chart image to the clipboard.
  */
 public class CopyChartImageToClipboardAction extends AbstractScaveAction {
     public CopyChartImageToClipboardAction() {
@@ -29,25 +27,12 @@ public class CopyChartImageToClipboardAction extends AbstractScaveAction {
 
     @Override
     protected void doRun(ScaveEditor editor, ISelection selection) {
-
-        // TODO: lift copyImageToClipboard to the common ViewerBase class, use that instead of dispatching here
-
-        final PlotBase plot = editor.getActivePlot();
-
-        if (plot != null) {
-            BusyIndicator.showWhile(Display.getDefault(), new Runnable() {
-                public void run() {
-                    plot.copyImageToClipboard();
-                }
-            });
-        }
-
         final ChartViewerBase chartViewer = editor.getActiveChartViewer();
 
-        if (chartViewer instanceof MatplotlibChartViewer) {
+        if (chartViewer != null) {
             BusyIndicator.showWhile(Display.getDefault(), new Runnable() {
                 public void run() {
-                    ((MatplotlibChartViewer)chartViewer).copyImageToClipboard();
+                    chartViewer.copyImageToClipboard();
                 }
             });
         }
@@ -56,6 +41,6 @@ public class CopyChartImageToClipboardAction extends AbstractScaveAction {
 
     @Override
     protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
-        return editor.getActivePlot() != null || (editor.getActiveChartViewer() instanceof MatplotlibChartViewer);
+        return editor.getActiveChartViewer() != null;
     }
 }

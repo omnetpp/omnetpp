@@ -96,4 +96,6 @@ public abstract class ChartViewerBase {
 
     public abstract void setVisible(boolean visible);
 
+    public abstract void copyImageToClipboard();
+
 }
