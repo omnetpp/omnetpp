@@ -2,6 +2,7 @@ package org.omnetpp.scave.python;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,7 @@ public class NativeChartViewer extends ChartViewerBase {
 
     private PlotBase plot;
     private ChartPlotter chartPlotter = new ChartPlotter();
+    Map<String, String> pendingPropertyChanges = new HashMap<>();
 
     class ChartPlotter implements INativeChartPlotter {
         GroupsSeriesDataset scalarDataset = new GroupsSeriesDataset(null);
@@ -43,32 +45,29 @@ public class NativeChartViewer extends ChartViewerBase {
         public void plotScalars(byte[] pickledData, Map<String, String> props) {
             List<String> seriesKeys = scalarDataset.addValues(pickledData);
 
-            Display.getDefault().syncExec(() -> {
-                for (String seriesKey : seriesKeys)
-                    for (String propKey : props.keySet())
-                        plot.setProperty(propKey + "/" + seriesKey, props.get(propKey));
-            });
+            pendingPropertyChanges.putAll(props);
+            for (String seriesKey : seriesKeys)
+                for (String propKey : props.keySet())
+                    pendingPropertyChanges.put(propKey + "/" + seriesKey, props.get(propKey));
         }
 
         @Override
         public void plotVectors(byte[] pickledData, Map<String, String> props) {
             List<String> lineKeys = xyDataset.addVectors(pickledData);
 
-            Display.getDefault().syncExec(() -> {
-                for (String lineKey : lineKeys)
-                    for (String propKey : props.keySet())
-                        plot.setProperty(propKey + "/" + lineKey, props.get(propKey));
-            });
+            for (String lineKey : lineKeys)
+                for (String propKey : props.keySet())
+                    pendingPropertyChanges.put(propKey + "/" + lineKey, props.get(propKey));
         }
 
         @Override
         public void plotHistograms(byte[] pickledData, Map<String, String> props) {
             List<String> histKeys = histogramDataset.addValues(pickledData);
 
-            Display.getDefault().syncExec(() -> {
+            Display.getDefault().asyncExec(() -> {
                 for (String histKey : histKeys)
                     for (String propKey : props.keySet())
-                        plot.setProperty(propKey + "/" + histKey, props.get(propKey));
+                        pendingPropertyChanges.put(propKey + "/" + histKey, props.get(propKey));
             });
         }
 
@@ -80,30 +79,52 @@ public class NativeChartViewer extends ChartViewerBase {
                     && histogramDataset.getSeriesCount() == 0;
         }
 
+        protected void doSetProperty(String key, String value) {
+            final RuntimeException exc[] = new RuntimeException[] { null };
+            Display.getDefault().syncExec(() -> {
+                try {
+                    plot.setProperty(key, value);
+                }
+                catch (RuntimeException e) {
+                    exc[0] = e;
+                }
+            });
+            if (exc[0] != null)
+                throw exc[0];
+        }
+
+        protected void doSetProperties(Map<String, String> props) {
+            final RuntimeException exc[] = new RuntimeException[] { null };
+            Display.getDefault().syncExec(() -> {
+                try {
+                    for (String k : props.keySet())
+                        plot.setProperty(k, props.get(k));
+                }
+                catch (RuntimeException e) {
+                    exc[0] = e;
+                }
+            });
+            if (exc[0] != null)
+                throw exc[0];
+        }
+
+        public void applyPendingPropertyChanges() {
+            try {
+                doSetProperties(pendingPropertyChanges);
+            }
+            finally {
+                pendingPropertyChanges.clear();
+            }
+        }
+
         @Override
         public void setProperty(String key, String value) {
-            if(debug)
-                Debug.println("setProperty syncExec begin: " + key + " : " + value);
-            Display.getDefault().syncExec(() -> {
-                plot.setProperty(key, value);
-            });
-            if(debug)
-                Debug.println("setProperty syncExec end");
+           pendingPropertyChanges.put(key, value);
         }
 
         @Override
         public void setProperties(Map<String, String> properties) {
-            if(debug)
-                Debug.println("setProperties syncExec begin");
-            Display.getDefault().syncExec(() -> {
-                for (String k : properties.keySet()) {
-                    String v = properties.get(k);
-                    if (v != null)
-                        plot.setProperty(k, v);
-                }
-            });
-            if(debug)
-                Debug.println("setProperties syncExec end");
+            pendingPropertyChanges.putAll(properties);
         }
 
         @Override
@@ -178,8 +199,9 @@ public class NativeChartViewer extends ChartViewerBase {
         }
 
         plot.setStatusText("Running Python script...");
-
         plot.clear();
+        chartPlotter.applyPendingPropertyChanges();
+
 
         try {
             acquireNewProcess();
@@ -203,6 +225,7 @@ public class NativeChartViewer extends ChartViewerBase {
                     Debug.println("data received, starting drawing");
 
                 plot.setStatusText("Rendering chart...");
+                chartPlotter.applyPendingPropertyChanges();
                 plot.update();
                 if(debug)
                     Debug.println("status text updated");
@@ -216,6 +239,7 @@ public class NativeChartViewer extends ChartViewerBase {
                 }
 
                 plot.setStatusText("");
+                chartPlotter.applyPendingPropertyChanges();
                 plot.update();
 
                 if (Double.isFinite(zx)) {
