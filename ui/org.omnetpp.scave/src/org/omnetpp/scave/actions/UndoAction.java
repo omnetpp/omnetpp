@@ -7,6 +7,7 @@
 
 package org.omnetpp.scave.actions;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.ISharedImages;
 import org.omnetpp.scave.ScavePlugin;
@@ -26,7 +27,7 @@ public class UndoAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor editor, ISelection selection) {
+    protected void doRun(ScaveEditor editor, ISelection selection) throws CoreException {
         editor.getActiveCommandStack().undo();
     }
 

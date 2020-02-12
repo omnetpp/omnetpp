@@ -9,9 +9,14 @@ package org.omnetpp.scave.actions;
 
 import java.io.IOException;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Display;
@@ -28,7 +33,7 @@ public class SaveChartAsTemplateAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor editor, ISelection selection) {
+    protected void doRun(ScaveEditor editor, ISelection selection) throws CoreException {
         Chart chart = ScaveModelUtil.getChartFromSingleSelection(selection);
 
         IProject currentProject = editor.getAnfFile().getProject();
@@ -47,7 +52,7 @@ public class SaveChartAsTemplateAction extends AbstractScaveAction {
         try {
             ScaveModelUtil.saveChartAsTemplate(chart, templatesFolder.getLocation().toFile(), newTemplateId);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw ScavePlugin.wrapIntoCoreException(e);
         }
 
 //        MessageDialog.openInformation(editor.getSite().getShell(), "Chart saved as template",

@@ -10,6 +10,7 @@ package org.omnetpp.scave.actions;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
@@ -29,7 +30,7 @@ public class OpenChartAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
+    protected void doRun(ScaveEditor scaveEditor, ISelection selection) throws CoreException {
         // collect charts and chartsheets from the selection
         List<Chart> charts = new ArrayList<>();
         for (Object element : asStructuredOrEmpty(selection).toArray()) {

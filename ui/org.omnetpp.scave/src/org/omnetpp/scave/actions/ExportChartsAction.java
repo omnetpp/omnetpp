@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.window.Window;
@@ -28,7 +29,7 @@ public class ExportChartsAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor editor, ISelection selection) {
+    protected void doRun(ScaveEditor editor, ISelection selection) throws CoreException {
         // we'll display the list of all charts, and check the selected one(s) and those under selected ones
         final List<Chart> allCharts = ScaveModelUtil.collectCharts(editor.getAnalysis().getCharts().getCharts());
         List<Chart> initialSelection = new ArrayList<Chart>();

@@ -1,5 +1,6 @@
 package org.omnetpp.scave.actions;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.common.image.ImageFactory;
@@ -17,7 +18,7 @@ public class InteractAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
+    protected void doRun(ScaveEditor scaveEditor, ISelection selection) throws CoreException {
         if (isChecked()) {
             ChartScriptEditor editor = scaveEditor.getActiveChartScriptEditor();
             if (editor != null)

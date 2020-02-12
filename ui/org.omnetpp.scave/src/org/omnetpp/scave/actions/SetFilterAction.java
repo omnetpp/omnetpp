@@ -10,6 +10,7 @@ package org.omnetpp.scave.actions;
 import static org.omnetpp.scave.engine.ResultItemField.FILE;
 import static org.omnetpp.scave.engine.ResultItemField.RUN;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.scave.editors.ScaveEditor;
@@ -35,7 +36,7 @@ public class SetFilterAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
+    protected void doRun(ScaveEditor scaveEditor, ISelection selection) throws CoreException {
         Object selected = asStructuredOrEmpty(selection).getFirstElement();
         FilterUtil filterUtil = getFilterParams(selected);
         if (filterUtil != null) {

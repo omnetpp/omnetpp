@@ -11,6 +11,7 @@ package org.omnetpp.scave.actions;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
@@ -39,7 +40,7 @@ public class PlotAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor editor, ISelection selection) {
+    protected void doRun(ScaveEditor editor, ISelection selection) throws CoreException {
         IDList idList = ((IDListSelection)selection).getIDList();
         ResultFileManager manager = editor.getResultFileManager();
 

@@ -7,6 +7,7 @@
 
 package org.omnetpp.scave.actions;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.ISelection;
@@ -25,7 +26,7 @@ public class ShowOutputVectorViewAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
+    protected void doRun(ScaveEditor scaveEditor, ISelection selection) throws CoreException {
         try {
             IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
             workbenchPage.showView(VectorBrowserView.ID);

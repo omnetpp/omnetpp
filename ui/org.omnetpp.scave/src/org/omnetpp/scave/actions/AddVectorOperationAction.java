@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
@@ -43,7 +44,7 @@ public class AddVectorOperationAction extends AbstractScaveAction {
 
 
     @Override
-    protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
+    protected void doRun(ScaveEditor scaveEditor, ISelection selection) throws CoreException {
         Assert.isTrue(isEnabled());
 
         ChartScriptEditor scriptEditor = scaveEditor.getActiveChartScriptEditor();

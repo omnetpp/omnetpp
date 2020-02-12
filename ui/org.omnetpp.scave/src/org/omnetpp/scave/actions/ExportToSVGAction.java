@@ -9,6 +9,7 @@ package org.omnetpp.scave.actions;
 
 import java.io.File;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
@@ -32,7 +33,7 @@ public class ExportToSVGAction extends AbstractScaveAction { //TODO generalize (
     }
 
     @Override
-    protected void doRun(final ScaveEditor editor, ISelection selection) {
+    protected void doRun(final ScaveEditor editor, ISelection selection) throws CoreException {
         final PlotBase plot = editor.getActivePlot();
         if (plot != null) {
             BusyIndicator.showWhile(Display.getDefault(), new Runnable() {

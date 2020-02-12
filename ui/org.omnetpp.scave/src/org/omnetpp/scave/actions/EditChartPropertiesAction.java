@@ -7,6 +7,7 @@
 
 package org.omnetpp.scave.actions;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.scave.ScaveImages;
@@ -30,7 +31,7 @@ public class EditChartPropertiesAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(final ScaveEditor scaveEditor, ISelection selection) {
+    protected void doRun(final ScaveEditor scaveEditor, ISelection selection) throws CoreException {
         if (isApplicable(scaveEditor, selection)) {
             Chart editedChart = getEditedChart(scaveEditor, selection);
             EditChartDialog dialog = new EditChartDialog(scaveEditor.getSite().getShell(), editedChart, scaveEditor);

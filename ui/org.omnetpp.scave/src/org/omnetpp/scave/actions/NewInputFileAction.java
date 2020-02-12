@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.ui.part.FileEditorInput;
@@ -29,7 +30,7 @@ public class NewInputFileAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor editor, ISelection selection) {
+    protected void doRun(ScaveEditor editor, ISelection selection) throws CoreException {
         IContainer baseDir = ((FileEditorInput)editor.getEditorInput()).getFile().getParent();
         InputFileDialog dialog = new InputFileDialog(editor.getSite().getShell(), "Create Input", "", true, baseDir);
         if (dialog.open() == Window.OK) {

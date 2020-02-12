@@ -7,6 +7,7 @@
 
 package org.omnetpp.scave.actions;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Display;
@@ -29,7 +30,7 @@ public class NewChartFromSelectedTemplateAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor editor, ISelection selection) {
+    protected void doRun(ScaveEditor editor, ISelection selection) throws CoreException {
         NewChartFromTemplateDialog dialog = new NewChartFromTemplateDialog(Display.getCurrent().getActiveShell(), editor);
         if (dialog.open() != Dialog.OK)
             return;

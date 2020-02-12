@@ -9,6 +9,7 @@ package org.omnetpp.scave.actions;
 
 import java.util.Iterator;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.scave.ScaveImages;
@@ -32,7 +33,7 @@ public class RemoveAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
+    protected void doRun(ScaveEditor scaveEditor, ISelection selection) throws CoreException {
         ICommand command = createCommand((IStructuredSelection)selection);
         scaveEditor.getActiveCommandStack().execute(command);
     }

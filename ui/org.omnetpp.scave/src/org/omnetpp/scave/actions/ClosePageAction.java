@@ -7,6 +7,7 @@
 
 package org.omnetpp.scave.actions;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
@@ -27,7 +28,7 @@ public class ClosePageAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
+    protected void doRun(ScaveEditor scaveEditor, ISelection selection) throws CoreException {
         int page = scaveEditor.getActivePage();
         scaveEditor.saveState();
         ChartScriptEditor editor = scaveEditor.getActiveChartScriptEditor();

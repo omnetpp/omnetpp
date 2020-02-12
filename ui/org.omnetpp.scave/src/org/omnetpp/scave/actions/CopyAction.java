@@ -9,6 +9,7 @@ package org.omnetpp.scave.actions;
 
 import java.util.concurrent.Callable;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.Transfer;
@@ -35,7 +36,7 @@ public class CopyAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor editor, ISelection selection) {
+    protected void doRun(ScaveEditor editor, ISelection selection) throws CoreException {
 
         if (selection instanceof IDListSelection) {
             // TODO this is not the proper way

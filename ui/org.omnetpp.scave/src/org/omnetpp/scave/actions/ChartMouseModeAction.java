@@ -8,6 +8,7 @@
 package org.omnetpp.scave.actions;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
@@ -42,7 +43,7 @@ public class ChartMouseModeAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
+    protected void doRun(ScaveEditor scaveEditor, ISelection selection) throws CoreException {
         PlotBase plot = scaveEditor.getActivePlot();
         if (isChecked() && plot != null) {
             plot.setMouseMode(destMode);

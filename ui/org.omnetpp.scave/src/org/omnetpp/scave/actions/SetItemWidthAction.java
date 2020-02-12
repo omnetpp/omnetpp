@@ -7,6 +7,7 @@
 
 package org.omnetpp.scave.actions;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.common.ui.IconGridViewer;
 import org.omnetpp.common.ui.IconGridViewer.ViewMode;
@@ -27,7 +28,7 @@ public class SetItemWidthAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
+    protected void doRun(ScaveEditor scaveEditor, ISelection selection) throws CoreException {
         IconGridViewer viewer = scaveEditor.getChartsPage().getViewer();
         if (viewer.getViewMode() == ViewMode.ICONS) {
             int n = viewer.getNumItemsPerRow();

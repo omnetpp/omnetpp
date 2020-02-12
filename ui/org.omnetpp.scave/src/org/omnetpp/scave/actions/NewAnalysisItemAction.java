@@ -7,6 +7,7 @@
 
 package org.omnetpp.scave.actions;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.AnalysisItem;
@@ -24,7 +25,7 @@ public class NewAnalysisItemAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor editor, ISelection selection) {
+    protected void doRun(ScaveEditor editor, ISelection selection) throws CoreException {
         AnalysisItem element = elementPrototype;
 
         AnalysisItem newItem = (AnalysisItem)elementPrototype.dup();

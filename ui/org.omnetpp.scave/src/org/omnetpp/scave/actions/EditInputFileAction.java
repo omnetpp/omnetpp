@@ -8,6 +8,7 @@
 package org.omnetpp.scave.actions;
 
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.ui.part.FileEditorInput;
@@ -30,7 +31,7 @@ public class EditInputFileAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor editor, ISelection selection) {
+    protected void doRun(ScaveEditor editor, ISelection selection) throws CoreException {
         InputFile inputFile = (InputFile) asStructuredOrEmpty(selection).getFirstElement();
         IContainer baseDir = ((FileEditorInput)editor.getEditorInput()).getFile().getParent();
         InputFileDialog dialog = new InputFileDialog(editor.getSite().getShell(), "Edit Input", inputFile.getName(), false, baseDir);

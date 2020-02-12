@@ -9,6 +9,7 @@ package org.omnetpp.scave.actions;
 
 import java.util.concurrent.Callable;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.ISharedImages;
 import org.omnetpp.scave.ScavePlugin;
@@ -27,7 +28,7 @@ public class CopyDataToClipboardAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor editor, ISelection selection) {
+    protected void doRun(ScaveEditor editor, ISelection selection) throws CoreException {
         final FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
         if (activePanel != null) {
             ResultFileManager.callWithReadLock(activePanel.getResultFileManager(), new Callable<Object>() {

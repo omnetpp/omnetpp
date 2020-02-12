@@ -7,6 +7,7 @@
 
 package org.omnetpp.scave.actions;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
@@ -63,15 +64,16 @@ public abstract class AbstractScaveAction extends Action implements IScaveAction
                 doRun((ScaveEditor)editor, selection);
         }
         catch (Exception e) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Internal error: " + e.toString());
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "An error occurred: " + e.toString());
             ScavePlugin.logError(e);
         }
     }
 
     /**
      * Gets invoked from run() if the editor is ScaveEditor -- redefine it to do the real work.
+     * @throws CoreException TODO
      */
-    protected abstract void doRun(ScaveEditor scaveEditor, ISelection selection);
+    protected abstract void doRun(ScaveEditor scaveEditor, ISelection selection) throws CoreException;
 
     /**
      * To be called from a JFace {@link ISelectionChangedListener} or the selection service's

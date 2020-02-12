@@ -1,5 +1,6 @@
 package org.omnetpp.scave.actions;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
@@ -14,7 +15,7 @@ public class BackAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
+    protected void doRun(ScaveEditor scaveEditor, ISelection selection) throws CoreException {
         ChartScriptEditor editor = scaveEditor.getActiveChartScriptEditor();
         if (editor != null)
             editor.getMatplotlibChartViewer().back();
