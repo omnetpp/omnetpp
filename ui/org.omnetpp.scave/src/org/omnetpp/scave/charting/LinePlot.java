@@ -7,17 +7,17 @@
 
 package org.omnetpp.scave.charting;
 
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_AXIS_LABEL_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_AXIS_TITLE_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_DISPLAY_LINE;
-import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_AXIS_LABEL_FONT;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_GRID;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_GRID_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LINE_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LINE_DRAW_STYLE;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LINE_STYLE;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LINE_WIDTH;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_SYMBOL_SIZE;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_SYMBOL_TYPE;
-import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_GRID;
-import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_GRID_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_MAX;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_MIN;
@@ -43,7 +43,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
@@ -54,7 +53,6 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
-import org.omnetpp.scave.charting.dataset.IXYDataset.InterpolationMode;
 import org.omnetpp.scave.charting.plotter.ChartSymbolFactory;
 import org.omnetpp.scave.charting.plotter.ILinePlotter;
 import org.omnetpp.scave.charting.plotter.IPlotSymbol;
@@ -105,10 +103,10 @@ public class LinePlot extends PlotBase {
 
     // plot-wide line properties, individual line may override
     private boolean defaultDisplayLine;
-    private SymbolType defaultSymbolType; // note: null is allowed and means "auto"
+    private SymbolType defaultSymbolType;
     private int defaultSymbolSize;
-    private DrawStyle defaultDrawStyle; // note: null is allowed and means "auto"
-    private RGB defaultLineColor; // note: null is allowed and means "auto"
+    private DrawStyle defaultDrawStyle;
+    private RGB defaultLineColor;
     private LineStyle defaultLineStyle;
     private float defaultLineWidth;
 
@@ -150,21 +148,7 @@ public class LinePlot extends PlotBase {
         }
 
         public SymbolType getEffectiveSymbolType() {
-            SymbolType symbolType = this.symbolType == null ? defaultSymbolType : this.symbolType;
-
-            if (symbolType == null) {
-                switch (series % 6) {
-                case 0: symbolType = SymbolType.Square; break;
-                case 1: symbolType = SymbolType.Circle; break;
-                case 2: symbolType = SymbolType.Triangle_Up; break;
-                case 3: symbolType = SymbolType.Diamond; break;
-                case 4: symbolType = SymbolType.Cross; break;
-                case 5: symbolType = SymbolType.Plus; break;
-                default: symbolType = null; break;
-                }
-            }
-            Assert.isTrue(symbolType != null);
-            return symbolType;
+            return symbolType == null ? defaultSymbolType : symbolType;
         }
 
         public int getEffectiveSymbolSize() {
@@ -172,16 +156,11 @@ public class LinePlot extends PlotBase {
         }
 
         public DrawStyle getEffectiveDrawStyle() {
-            DrawStyle drawStyle = this.drawStyle == null ? defaultDrawStyle : this.drawStyle;
-            return drawStyle == null ? drawStyleFromInterpolationMode() : drawStyle;
+            return drawStyle == null ? defaultDrawStyle : drawStyle;
         }
 
         public Color getEffectiveLineColor() {
-            RGB color = lineColor == null ? defaultLineColor : lineColor;
-            if (color != null)
-                return new Color(Display.getDefault(),color);
-            else
-                return ColorFactory.getGoodDarkColor(series);
+            return new Color(null, lineColor == null ? defaultLineColor : lineColor);
         }
 
         public LineStyle getEffectiveLineStyle() {
@@ -204,24 +183,6 @@ public class LinePlot extends PlotBase {
             SymbolType type = getEffectiveSymbolType();
             int size = getEffectiveSymbolSize();
             return ChartSymbolFactory.createChartSymbol(type, size);
-        }
-
-        private DrawStyle drawStyleFromInterpolationMode() {
-            if (series < 0)
-                return DrawStyle.Linear;
-            InterpolationMode mode = dataset.getSeriesInterpolationMode(series);
-            return getDrawStyleForInterpolationMode(mode);
-        }
-    }
-
-    public static DrawStyle getDrawStyleForInterpolationMode(InterpolationMode mode) {
-        switch (mode) {
-        case None: return DrawStyle.None;
-        case Linear: return DrawStyle.Linear;
-        case SampleHold: return DrawStyle.StepsPost;
-        case BackwardSampleHold: return DrawStyle.StepsPre;
-        case Unspecified: return DrawStyle.Linear;
-        default: throw new IllegalArgumentException("unknown interpolation mode: " + mode);
         }
     }
 
@@ -403,10 +364,10 @@ public class LinePlot extends PlotBase {
         case PROP_GRID_COLOR: setGridColor(Converter.stringToRGB(value)); break;
         // Line defaults
         case PROP_DISPLAY_LINE: setDisplayLine(Converter.stringToBoolean(value)); break;
-        case PROP_SYMBOL_TYPE: setSymbolType(Converter.stringToOptionalEnum(value, SymbolType.class)); break;
+        case PROP_SYMBOL_TYPE: setSymbolType(Converter.stringToEnum(value, SymbolType.class)); break;
         case PROP_SYMBOL_SIZE: setSymbolSize(Converter.stringToInteger(value)); break;
-        case PROP_LINE_DRAW_STYLE: setDrawStyle(Converter.stringToOptionalEnum(value, DrawStyle.class)); break;
-        case PROP_LINE_COLOR: setLineColor(Converter.stringToOptionalRGB(value)); break;
+        case PROP_LINE_DRAW_STYLE: setDrawStyle(Converter.stringToEnum(value, DrawStyle.class)); break;
+        case PROP_LINE_COLOR: setLineColor(Converter.stringToRGB(value)); break;
         case PROP_LINE_STYLE: setLineStyle(Converter.stringToEnum(value, LineStyle.class)); break;
         case PROP_LINE_WIDTH: setLineWidth(Converter.stringToFloat(value)); break;
         default: super.setProperty(prop, value);
@@ -461,12 +422,14 @@ public class LinePlot extends PlotBase {
     }
 
     public void setDrawStyle(DrawStyle value) {
-        defaultDrawStyle = value; // note: null is ok
+        Assert.isNotNull(value);
+        defaultDrawStyle = value;
         chartChanged();
     }
 
     public void setLineColor(RGB value) {
-        defaultLineColor = value; // note: null is ok
+        Assert.isNotNull(value);
+        defaultLineColor = value;
         updateLegends();
         chartChanged();
     }
@@ -483,7 +446,8 @@ public class LinePlot extends PlotBase {
     }
 
     public void setSymbolType(SymbolType value) {
-        defaultSymbolType = value; // note: null is ok
+        Assert.isNotNull(value);
+        defaultSymbolType = value;
         updateLegends();
         chartChanged();
     }

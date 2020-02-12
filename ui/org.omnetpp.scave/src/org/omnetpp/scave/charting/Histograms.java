@@ -18,7 +18,6 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.RGB;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.LargeGraphics;
 import org.omnetpp.common.canvas.RectangularArea;
@@ -341,11 +340,7 @@ class Histograms {
 
     protected Color getHistogramColor(int series) {
         String key = parent.getDataset().getSeriesKey(series);
-        RGB color = parent.getHistogramColor(key);
-        if (color != null)
-            return new Color(null, color);
-        else
-            return ColorFactory.getGoodDarkColor(series);
+        return new Color(null, parent.getHistogramColor(key));
     }
 
     protected double transformValue(double y) {

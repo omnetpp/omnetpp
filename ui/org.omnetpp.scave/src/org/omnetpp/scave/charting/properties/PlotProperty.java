@@ -66,16 +66,16 @@ public enum PlotProperty {
     // Histograms
     PROP_HIST_BAR("Hist.Bar", HistogramBar.class, PlotProperty.HistogramBar.Solid),
     PROP_SHOW_OVERFLOW_CELL("Hist.ShowOverflowCell", Boolean.class, false),
-    PROP_HIST_COLOR("Hist.Color", Color.class, null),
+    PROP_HIST_COLOR("Hist.Color", Color.class, ColorFactory.BLUE),
     PROP_HIST_CUMULATIVE("Hist.Cumulative", Boolean.class, false),
     PROP_HIST_DENSITY("Hist.Density", Boolean.class, false),
     // Lines
     PROP_DISPLAY_LINE("Line.Display", Boolean.class, true),
-    PROP_LINE_DRAW_STYLE("Line.DrawStyle", DrawStyle.class, null),
-    PROP_LINE_COLOR("Line.Color", Color.class, null),
+    PROP_LINE_DRAW_STYLE("Line.DrawStyle", DrawStyle.class, DrawStyle.Linear),
+    PROP_LINE_COLOR("Line.Color", Color.class, ColorFactory.BLUE), // note: no auto-cycling
     PROP_LINE_STYLE("Line.Style", LineStyle.class, PlotProperty.LineStyle.Solid),
     PROP_LINE_WIDTH("Line.Width", Float.class, 1.5f),
-    PROP_SYMBOL_TYPE("Symbols.Type", SymbolType.class, null),
+    PROP_SYMBOL_TYPE("Symbols.Type", SymbolType.class, SymbolType.Square), // note: no auto-cycling
     PROP_SYMBOL_SIZE("Symbols.Size", Integer.class, 4);
 
     private static Font getArial10() {return new Font(null, new FontData("Arial", 10, SWT.NORMAL));}

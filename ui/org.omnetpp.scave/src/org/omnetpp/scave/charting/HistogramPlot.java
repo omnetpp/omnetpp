@@ -74,7 +74,7 @@ public class HistogramPlot extends PlotBase {
     private LinearAxis yAxis = new LinearAxis(true, false, false);
     private Histograms histograms;
 
-    private RGB defaultHistogramColor; // note: null is allowed and means "auto"
+    private RGB defaultHistogramColor;
     private boolean defaultHistogramCumulative;
     private boolean defaultHistogramDensity;
     private PlotProperty.HistogramBar defaultBarType;
@@ -154,7 +154,7 @@ public class HistogramPlot extends PlotBase {
         case PROP_AXIS_TITLE_FONT: setAxisTitleFont(Converter.stringToSwtfont(value)); break;
         case PROP_AXIS_LABEL_FONT: setTickLabelFont(Converter.stringToSwtfont(value)); break;
         case PROP_HIST_BAR: setBarType(Converter.stringToEnum(value, HistogramBar.class)); break;
-        case PROP_HIST_COLOR: setHistogramColor(Converter.stringToOptionalRGB(value)); break;
+        case PROP_HIST_COLOR: setHistogramColor(Converter.stringToRGB(value)); break;
         case PROP_HIST_CUMULATIVE: setHistogramCumulative(Converter.stringToBoolean(value)); break;
         case PROP_HIST_DENSITY: setHistogramDensity(Converter.stringToBoolean(value)); break;
         case PROP_SHOW_OVERFLOW_CELL: setShowOverflowCell(Converter.stringToBoolean(value)); break;
@@ -170,7 +170,7 @@ public class HistogramPlot extends PlotBase {
         case PROP_HIST_COLOR: setHistogramColor(key, Converter.stringToOptionalRGB(value)); break;
         case PROP_HIST_CUMULATIVE: setHistogramCumulative(key, Converter.stringToOptionalBoolean(value)); break;
         case PROP_HIST_DENSITY: setHistogramDensity(key, Converter.stringToOptionalBoolean(value)); break;
-        case PROP_HIST_BAR: setBarType(key, Converter.stringToEnum(value, HistogramBar.class)); break;
+        case PROP_HIST_BAR: setBarType(key, Converter.stringToOptionalEnum(value, HistogramBar.class)); break;
         default: super.setProperty(prop, key, value);
         }
     }
@@ -223,6 +223,7 @@ public class HistogramPlot extends PlotBase {
     }
 
     public void setHistogramColor(RGB color) {
+        Assert.isNotNull(color);
         defaultHistogramColor = color;
         updateLegends();
         chartChanged();
