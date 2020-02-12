@@ -10,18 +10,18 @@
   <layout x:class="GridLayout" numColumns="1" />
   <x:children>
     <label text="Filter expression:" />
-    <text x:id="filter" x:style="BORDER|MULTI" x:id.isFilter="true">
+    <text x:id="filter" x:style="BORDER|MULTI|V_SCROLL|H_SCROLL" x:id.isFilter="true">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true" />
     </text>
     <composite>
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" />
-      <layout x:class="GridLayout" numColumns="2" />
+      <layout x:class="GridLayout" numColumns="2" makeColumnsEqualWidth="true" />
       <x:children>
         <group text="Vector operations (one per line)">
           <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true" />
           <layout x:class="GridLayout" numColumns="1" />
           <x:children>
-            <text x:id="vector_operations" x:style="BORDER|MULTI">
+            <text x:id="vector_operations" x:style="BORDER|MULTI|V_SCROLL|H_SCROLL">
               <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true" />
             </text>
           </x:children>

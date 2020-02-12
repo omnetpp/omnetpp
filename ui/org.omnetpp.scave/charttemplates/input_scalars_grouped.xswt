@@ -13,7 +13,7 @@
         <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </label>
     
-    <text x:id="filter" x:style="BORDER|MULTI" x:id.isFilter="true">
+    <text x:id="filter" x:style="BORDER|MULTI|V_SCROLL|H_SCROLL" x:id.isFilter="true">
       <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true" />
     </text>
     
