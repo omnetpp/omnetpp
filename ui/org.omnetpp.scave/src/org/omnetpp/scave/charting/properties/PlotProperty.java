@@ -25,18 +25,22 @@ import org.omnetpp.scave.ScaveImages;
  * Property names and types plots.
  */
 public enum PlotProperty {
-    // Titles
+    // Title
     PROP_PLOT_TITLE("Plot.Title", String.class, ""),
     PROP_PLOT_TITLE_FONT("Plot.Title.Font", Font.class, getArial10()),
-    PROP_X_AXIS_TITLE("X.Axis.Title", String.class, ""),
-    PROP_Y_AXIS_TITLE("Y.Axis.Title", String.class, ""),
-    PROP_AXIS_TITLE_FONT("Axis.Title.Font", Font.class, getArial8()),
-    PROP_AXIS_LABEL_FONT("Axis.Label.Font", Font.class, getArial8()),
-    PROP_X_LABELS_ROTATE_BY("X.Label.RotateBy", Integer.class, 0),
     // Axes
+    PROP_X_AXIS_TITLE("X.Axis.Title", String.class, ""),
+    PROP_X_AXIS_MIN("X.Axis.Min", Double.class, Double.NEGATIVE_INFINITY),
+    PROP_X_AXIS_MAX("X.Axis.Max", Double.class, Double.POSITIVE_INFINITY),
+    PROP_X_AXIS_LOGARITHMIC("X.Axis.Log", Boolean.class, false),
+    PROP_X_LABELS_ROTATE_BY("X.Label.RotateBy", Integer.class, 0),
+    PROP_Y_AXIS_TITLE("Y.Axis.Title", String.class, ""),
     PROP_Y_AXIS_MIN("Y.Axis.Min", Double.class, Double.NEGATIVE_INFINITY),
     PROP_Y_AXIS_MAX("Y.Axis.Max", Double.class, Double.POSITIVE_INFINITY),
     PROP_Y_AXIS_LOGARITHMIC("Y.Axis.Log", Boolean.class, false),
+    PROP_AXIS_TITLE_FONT("Axis.Title.Font", Font.class, getArial8()),
+    PROP_AXIS_LABEL_FONT("Axis.Label.Font", Font.class, getArial8()),
+    // Grid
     PROP_GRID("Axes.Grid", ShowGrid.class, ShowGrid.Major),
     PROP_GRID_COLOR("Axes.GridColor", Color.class, ColorFactory.GREY80),
     PROP_INSETS_LINE_COLOR("Insets.LineColor", Color.class, ColorFactory.BLACK),
@@ -62,10 +66,6 @@ public enum PlotProperty {
     PROP_HIST_COLOR("Hist.Color", Color.class, null),
     PROP_HIST_CUMULATIVE("Hist.Cumulative", Boolean.class, false),
     PROP_HIST_DENSITY("Hist.Density", Boolean.class, false),
-    // Line Plot
-    PROP_X_AXIS_MIN("X.Axis.Min", Double.class, Double.NEGATIVE_INFINITY),
-    PROP_X_AXIS_MAX("X.Axis.Max", Double.class, Double.POSITIVE_INFINITY),
-    PROP_X_AXIS_LOGARITHMIC("X.Axis.Log", Boolean.class, false),
     // Lines
     PROP_DISPLAY_LINE("Line.Display", Boolean.class, true),
     PROP_LINE_DRAW_STYLE("Line.DrawStyle", DrawStyle.class, null),
