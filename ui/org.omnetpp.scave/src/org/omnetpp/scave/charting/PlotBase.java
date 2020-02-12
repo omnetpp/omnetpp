@@ -18,6 +18,7 @@ import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LEGEND_BOR
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LEGEND_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LEGEND_POSITION;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_PLOT_TITLE;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_PLOT_TITLE_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_PLOT_TITLE_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_MAX;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_MIN;
@@ -65,6 +66,7 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
     protected static final PlotProperty[] PLOTBASE_PROPERTIES = new PlotProperty[] {
             PROP_PLOT_TITLE,
             PROP_PLOT_TITLE_FONT,
+            PROP_PLOT_TITLE_COLOR,
             PROP_DISPLAY_LEGEND,
             PROP_LEGEND_BORDER,
             PROP_LEGEND_FONT,
@@ -351,6 +353,7 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
         // Titles
         case PROP_PLOT_TITLE: setTitle(value); break;
         case PROP_PLOT_TITLE_FONT: setTitleFont(Converter.stringToSwtfont(value)); break;
+        case PROP_PLOT_TITLE_COLOR: setTitleColor(Converter.stringToRGB(value)); break;
         // Legend
         case PROP_DISPLAY_LEGEND: setDisplayLegend(Converter.stringToBoolean(value)); break;
         case PROP_LEGEND_BORDER: setLegendBorder(Converter.stringToBoolean(value)); break;
@@ -439,6 +442,12 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
     public void setTitleFont(Font value) {
         Assert.isNotNull(value);
         title.setFont(value);
+        chartChanged();
+    }
+
+    public void setTitleColor(RGB value) {
+        Assert.isNotNull(value);
+        title.setColor(value);
         chartChanged();
     }
 

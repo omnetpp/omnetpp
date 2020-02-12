@@ -12,10 +12,10 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Display;
-import org.omnetpp.common.color.ColorFactory;
 
 
 /**
@@ -28,7 +28,7 @@ public class Title {
     private boolean visible = true;
     private String text;
     private Font font;
-    private Color color = ColorFactory.BLACK; // TODO: turn into property
+    private Color color;
     private Rectangle bounds;
 
     public Title() {
@@ -57,6 +57,10 @@ public class Title {
 
     public void setFont(Font font) {
         this.font = font;
+    }
+
+    public void setColor(RGB color) {
+        this.color = new Color(null, color);
     }
 
     public Rectangle layout(Graphics graphics, Rectangle parent) {

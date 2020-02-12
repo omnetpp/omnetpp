@@ -28,6 +28,7 @@ public enum PlotProperty {
     // Title
     PROP_PLOT_TITLE("Plot.Title", String.class, ""),
     PROP_PLOT_TITLE_FONT("Plot.Title.Font", Font.class, getArial10()),
+    PROP_PLOT_TITLE_COLOR("Plot.Title.Color", Color.class, ColorFactory.BLACK),
     // Axes
     PROP_X_AXIS_TITLE("X.Axis.Title", String.class, ""),
     PROP_X_AXIS_MIN("X.Axis.Min", Double.class, Double.NEGATIVE_INFINITY),
