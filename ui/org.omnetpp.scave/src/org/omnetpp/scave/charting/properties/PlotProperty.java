@@ -59,7 +59,8 @@ public enum PlotProperty {
     // Bar Plot
     PROP_WRAP_LABELS("X.Label.Wrap", Boolean.class, true),
     PROP_BAR_PLACEMENT("Bar.Placement", BarPlacement.class, PlotProperty.BarPlacement.Aligned),
-    PROP_BAR_COLOR("Bar.Color", Color.class, null),
+    PROP_BAR_COLOR("Bar.Color", Color.class, ColorFactory.GREY80),
+    PROP_BAR_OUTLINE_COLOR("Bar.OutlineColor", Color.class, ColorFactory.BLACK),
     PROP_BAR_BASELINE("Bars.Baseline", Double.class, 0.0),
     // Histograms
     PROP_HIST_BAR("Hist.Bar", HistogramBar.class, PlotProperty.HistogramBar.Solid),

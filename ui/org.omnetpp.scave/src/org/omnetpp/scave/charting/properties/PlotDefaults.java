@@ -18,6 +18,5 @@ import org.omnetpp.common.color.ColorFactory;
  */
 public class PlotDefaults {
     //TODO turn these into properties!!!
-    public static final Color DEFAULT_BAR_OUTLINE_COLOR = ColorFactory.GREY80;
     public static final Color DEFAULT_BAR_BASELINE_COLOR = ColorFactory.GREY80;
 }

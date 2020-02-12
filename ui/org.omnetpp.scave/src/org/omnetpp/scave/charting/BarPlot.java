@@ -7,14 +7,15 @@
 
 package org.omnetpp.scave.charting;
 
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_AXIS_LABEL_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_AXIS_TITLE_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_BAR_BASELINE;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_BAR_COLOR;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_BAR_OUTLINE_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_BAR_PLACEMENT;
-import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_AXIS_LABEL_FONT;
-import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_WRAP_LABELS;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_GRID;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_GRID_COLOR;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_WRAP_LABELS;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_LABELS_ROTATE_BY;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_LOGARITHMIC;
@@ -68,10 +69,14 @@ public class BarPlot extends PlotBase {
             PROP_BAR_BASELINE,
             PROP_BAR_PLACEMENT,
             PROP_BAR_COLOR,
+            PROP_BAR_OUTLINE_COLOR,
             PROP_GRID,
             PROP_GRID_COLOR,
             PROP_Y_AXIS_LOGARITHMIC
     });
+
+    private RGB defaultBarColor;
+    private RGB defaultBarOutlineColor;
 
     private IScalarDataset dataset;
 
@@ -81,6 +86,7 @@ public class BarPlot extends PlotBase {
 
     static class BarProperties {
         RGB color;
+        public RGB outlineColor;
     }
 
     private Map<String,BarProperties> barProperties = new HashMap<>();
@@ -181,7 +187,8 @@ public class BarPlot extends PlotBase {
         // Bars
         case PROP_BAR_BASELINE: setBarBaseline(Converter.stringToDouble(value)); break;
         case PROP_BAR_PLACEMENT: setBarPlacement(Converter.stringToEnum(value, BarPlacement.class)); break;
-        case PROP_BAR_COLOR: break; //TODO
+        case PROP_BAR_COLOR: setBarColor(Converter.stringToRGB(value)); break;
+        case PROP_BAR_OUTLINE_COLOR: setBarOutlineColor(Converter.stringToRGB(value)); break;
         // Axes
         case PROP_GRID: setShowGrid(Converter.stringToEnum(value, ShowGrid.class)); break;
         case PROP_GRID_COLOR: setGridColor(Converter.stringToRGB(value)); break;
@@ -194,6 +201,7 @@ public class BarPlot extends PlotBase {
     public void setProperty(PlotProperty prop, String key, String value) {
         switch (prop) {
         case PROP_BAR_COLOR: setBarColor(key, Converter.stringToOptionalRGB(value)); break;
+        case PROP_BAR_OUTLINE_COLOR: setBarOutlineColor(key, Converter.stringToOptionalRGB(value)); break;
         default: super.setProperty(prop, key, value);
         }
     }
@@ -284,6 +292,18 @@ public class BarPlot extends PlotBase {
         chartChanged();
     }
 
+    public void setBarColor(RGB color) {
+        defaultBarColor = color;
+        updateLegends();
+        chartChanged();
+    }
+
+    public void setBarOutlineColor(RGB color) {
+        defaultBarOutlineColor = color;
+        updateLegends();
+        chartChanged();
+    }
+
     public void setLogarithmicY(boolean logarithmic) {
         valueAxis.setLogarithmic(logarithmic);
         chartArea = calculatePlotArea();
@@ -308,11 +328,28 @@ public class BarPlot extends PlotBase {
         return barProps == null ? null : barProps.color;
     }
 
+    public RGB getEffectiveBarColor(String key) {
+        BarProperties barProps = barProperties.get(key);
+        return (barProps == null || barProps.color == null) ? defaultBarColor : barProps.color;
+    }
+
     public void setBarColor(String key, RGB color) {
         BarProperties barProps = getOrCreateBarProperties(key);
         barProps.color = color;
         updateLegends();
         chartChanged();
+    }
+
+    public void setBarOutlineColor(String key, RGB color) {
+        BarProperties barProps = getOrCreateBarProperties(key);
+        barProps.outlineColor = color;
+        updateLegends();
+        chartChanged();
+    }
+
+    public RGB getEffectiveBarOutlineColor(String key) {
+        BarProperties barProps = barProperties.get(key);
+        return (barProps == null || barProps.outlineColor == null) ? defaultBarOutlineColor : barProps.outlineColor;
     }
 
     public String getKeyFor(int columnIndex) {

@@ -15,7 +15,6 @@ import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.LargeGraphics;
 import org.omnetpp.common.canvas.LargeRect;
 import org.omnetpp.common.canvas.RectangularArea;
-import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.charting.dataset.IScalarDataset;
 import org.omnetpp.scave.charting.properties.PlotDefaults;
 import org.omnetpp.scave.charting.properties.PlotProperty.BarPlacement;
@@ -28,7 +27,6 @@ class Bars {
 
     double barBaseline;
     BarPlacement barPlacement;
-    Color barOutlineColor = ColorFactory.BLACK; // TODO: turn into property
 
     // coordinates of the bars, in row/column order
     // rows are sorted according to the x coordinate
@@ -85,9 +83,9 @@ class Bars {
         rect.width = Math.max(rect.width, 1);
         rect.height = Math.max(rect.height, 1);
         graphics.setBackgroundColor(getBarColor(column));
+        graphics.setForegroundColor(getBarOutlineColor(column));
         LargeGraphics.fillRectangle(graphics, rect.x, rect.y, rect.width, rect.height);
         if (rect.width >= 4 && rect.height >= 3) {
-            graphics.setForegroundColor(barOutlineColor);
             LargeGraphics.drawRectangle(graphics, rect.x, rect.y, rect.width, rect.height);
         }
     }
@@ -122,11 +120,13 @@ class Bars {
     }
 
     protected Color getBarColor(int column) {
-        RGB color = parent.getBarColor(parent.getKeyFor(column));
-        if (color != null)
-            return new Color(null, color);
-        else
-            return ColorFactory.getGoodDarkColor(column);
+        RGB color = parent.getEffectiveBarColor(parent.getKeyFor(column));
+        return new Color(null, color);
+    }
+
+    protected Color getBarOutlineColor(int column) {
+        RGB color = parent.getEffectiveBarOutlineColor(parent.getKeyFor(column));
+        return new Color(null, color);
     }
 
     protected LargeRect getBarRectangle(int row, int column, ICoordsMapping coordsMapping) {
