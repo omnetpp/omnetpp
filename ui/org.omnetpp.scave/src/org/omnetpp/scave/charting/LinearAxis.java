@@ -7,21 +7,21 @@
 
 package org.omnetpp.scave.charting;
 
-import static org.omnetpp.scave.charting.properties.PlotDefaults.DEFAULT_GRID_COLOR;
-
 import java.math.BigDecimal;
+
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.LargeGraphics;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.GraphicsUtils;
-import org.omnetpp.scave.charting.properties.PlotProperty;
 import org.omnetpp.scave.charting.properties.PlotProperty.ShowGrid;
 
 /**
@@ -36,6 +36,7 @@ public class LinearAxis {
     private boolean logarithmic; // logarithmic axis
     private boolean drawAxisToPlot;
     private ShowGrid showGrid;
+    private RGB gridColor;
     private boolean drawTickLabels = true;
     private boolean drawTitle = true;
     private String title;
@@ -140,7 +141,7 @@ public class LinearAxis {
         if (ticks != null) {
             graphics.pushState();
             graphics.setLineStyle(Graphics.LINE_DOT);
-            graphics.setForegroundColor(DEFAULT_GRID_COLOR);
+            graphics.setForegroundColor(new Color(Display.getDefault(), gridColor));
             for (BigDecimal tick : ticks) {
                 if (showGrid == ShowGrid.All || ticks.isMajorTick(tick)) {
                     if (vertical) {
@@ -306,6 +307,10 @@ public class LinearAxis {
 
     public void setShowGrid(ShowGrid showGrid) {
         this.showGrid = showGrid;
+    }
+
+    public void setGridColor(RGB color) {
+        this.gridColor = color;
     }
 
     public boolean isDrawTickLabels() {

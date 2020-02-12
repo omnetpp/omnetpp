@@ -17,6 +17,7 @@ import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LINE_WIDTH
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_SYMBOL_SIZE;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_SYMBOL_TYPE;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_XY_GRID;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_XY_GRID_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_MAX;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_MIN;
@@ -84,6 +85,7 @@ public class LinePlot extends PlotBase {
             PROP_X_AXIS_LOGARITHMIC,
             PROP_Y_AXIS_LOGARITHMIC,
             PROP_XY_GRID,
+            PROP_XY_GRID_COLOR,
             PROP_DISPLAY_LINE,
             PROP_SYMBOL_TYPE,
             PROP_SYMBOL_SIZE,
@@ -398,6 +400,7 @@ public class LinePlot extends PlotBase {
         case PROP_X_AXIS_LOGARITHMIC: setLogarithmicX(Converter.stringToBoolean(value)); break;
         case PROP_Y_AXIS_LOGARITHMIC: setLogarithmicY(Converter.stringToBoolean(value)); break;
         case PROP_XY_GRID: setShowGrid(Converter.stringToEnum(value, ShowGrid.class)); break;
+        case PROP_XY_GRID_COLOR: setGridColor(Converter.stringToRGB(value)); break;
         // Line defaults
         case PROP_DISPLAY_LINE: setDisplayLine(Converter.stringToBoolean(value)); break;
         case PROP_SYMBOL_TYPE: setSymbolType(Converter.stringToOptionalEnum(value, SymbolType.class)); break;
@@ -553,6 +556,13 @@ public class LinePlot extends PlotBase {
         Assert.isNotNull(value);
         xAxis.setShowGrid(value);
         yAxis.setShowGrid(value);
+        chartChanged();
+    }
+
+    public void setGridColor(RGB color) {
+        Assert.isNotNull(color);
+        xAxis.setGridColor(color);
+        yAxis.setGridColor(color);
         chartChanged();
     }
 

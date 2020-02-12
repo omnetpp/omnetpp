@@ -38,6 +38,7 @@ public enum PlotProperty {
     PROP_Y_AXIS_MAX("Y.Axis.Max", Double.class, Double.POSITIVE_INFINITY),
     PROP_Y_AXIS_LOGARITHMIC("Y.Axis.Log", Boolean.class, false),
     PROP_XY_GRID("Axes.Grid", ShowGrid.class, ShowGrid.Major),
+    PROP_XY_GRID_COLOR("Axes.GridColor", Color.class, ColorFactory.GREY80),
     // Legend
     PROP_DISPLAY_LEGEND("Legend.Display", Boolean.class, true),
     PROP_LEGEND_BORDER("Legend.Border", Boolean.class, false),

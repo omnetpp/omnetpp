@@ -22,7 +22,6 @@ public class PlotDefaults {
     //TODO turn these into properties!!!
     public static final Color DEFAULT_INSETS_BACKGROUND_COLOR = Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
     public static final Color DEFAULT_INSETS_LINE_COLOR = ColorFactory.BLACK;
-    public static final Color DEFAULT_GRID_COLOR = ColorFactory.GREY80;
     public static final Color DEFAULT_BAR_OUTLINE_COLOR = ColorFactory.GREY80;
     public static final Color DEFAULT_BAR_BASELINE_COLOR = ColorFactory.GREY80;
 }

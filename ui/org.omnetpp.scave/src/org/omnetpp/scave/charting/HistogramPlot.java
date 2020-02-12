@@ -16,6 +16,7 @@ import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_HIST_DENSI
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LABEL_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_SHOW_OVERFLOW_CELL;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_XY_GRID;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_XY_GRID_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_TITLE;
@@ -43,6 +44,7 @@ import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IHistogramDataset;
 import org.omnetpp.scave.charting.properties.PlotProperty;
 import org.omnetpp.scave.charting.properties.PlotProperty.HistogramBar;
+import org.omnetpp.scave.charting.properties.PlotProperty.ShowGrid;
 import org.omnetpp.scave.python.PythonHistogramDataset;
 
 /**
@@ -55,6 +57,7 @@ public class HistogramPlot extends PlotBase {
             PROP_X_AXIS_TITLE,
             PROP_Y_AXIS_TITLE,
             PROP_XY_GRID,
+            PROP_XY_GRID_COLOR,
             PROP_AXIS_TITLE_FONT,
             PROP_LABEL_FONT,
             PROP_HIST_BAR,
@@ -146,7 +149,8 @@ public class HistogramPlot extends PlotBase {
         switch (prop) {
         case PROP_X_AXIS_TITLE: setXAxisTitle(value); break;
         case PROP_Y_AXIS_TITLE: setYAxisTitle(value); break;
-        case PROP_XY_GRID:  break; // TODO
+        case PROP_XY_GRID: setShowGrid(Converter.stringToEnum(value, ShowGrid.class)); break;
+        case PROP_XY_GRID_COLOR: setGridColor(Converter.stringToRGB(value)); break;
         case PROP_AXIS_TITLE_FONT: setAxisTitleFont(Converter.stringToSwtfont(value)); break;
         case PROP_LABEL_FONT: setTickLabelFont(Converter.stringToSwtfont(value)); break;
         case PROP_HIST_BAR: setBarType(Converter.stringToEnum(value, HistogramBar.class)); break;
@@ -201,6 +205,20 @@ public class HistogramPlot extends PlotBase {
         Assert.isNotNull(font);
         xAxis.setTickFont(font);
         yAxis.setTickFont(font);
+        chartChanged();
+    }
+
+    public void setShowGrid(ShowGrid value) {
+        Assert.isNotNull(value);
+        xAxis.setShowGrid(value);
+        yAxis.setShowGrid(value);
+        chartChanged();
+    }
+
+    public void setGridColor(RGB color) {
+        Assert.isNotNull(color);
+        xAxis.setGridColor(color);
+        yAxis.setGridColor(color);
         chartChanged();
     }
 

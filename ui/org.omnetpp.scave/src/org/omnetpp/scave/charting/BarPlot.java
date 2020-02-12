@@ -14,6 +14,7 @@ import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_BAR_PLACEM
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_LABEL_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_WRAP_LABELS;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_XY_GRID;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_XY_GRID_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_LABELS_ROTATE_BY;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_LOGARITHMIC;
@@ -68,6 +69,7 @@ public class BarPlot extends PlotBase {
             PROP_BAR_PLACEMENT,
             PROP_BAR_COLOR,
             PROP_XY_GRID,
+            PROP_XY_GRID_COLOR,
             PROP_Y_AXIS_LOGARITHMIC
     });
 
@@ -182,6 +184,7 @@ public class BarPlot extends PlotBase {
         case PROP_BAR_COLOR: break; //TODO
         // Axes
         case PROP_XY_GRID: setShowGrid(Converter.stringToEnum(value, ShowGrid.class)); break;
+        case PROP_XY_GRID_COLOR: setGridColor(Converter.stringToRGB(value)); break;
         case PROP_Y_AXIS_LOGARITHMIC: setLogarithmicY(Converter.stringToBoolean(value)); break;
         default: super.setProperty(prop, value);
         }
@@ -291,6 +294,12 @@ public class BarPlot extends PlotBase {
     public void setShowGrid(ShowGrid value) {
         Assert.isNotNull(value);
         valueAxis.setShowGrid(value);
+        chartChanged();
+    }
+
+    public void setGridColor(RGB color) {
+        Assert.isNotNull(color);
+        valueAxis.setGridColor(color);
         chartChanged();
     }
 
