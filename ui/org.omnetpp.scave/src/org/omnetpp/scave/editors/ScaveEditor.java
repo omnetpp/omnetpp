@@ -7,7 +7,6 @@
 
 package org.omnetpp.scave.editors;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -138,7 +137,7 @@ import org.omnetpp.scave.model.commands.SetChartContentsCommand;
 import org.omnetpp.scave.model2.ResultItemRef;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 import org.omnetpp.scave.pychart.PythonProcessPool;
-import org.omnetpp.scave.python.MatplotlibChartViewer;
+import org.omnetpp.scave.python.ChartViewerBase;
 import org.omnetpp.scave.python.NativeChartViewer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -709,21 +708,18 @@ public class ScaveEditor extends MultiPageEditorPartExt
         return null;
     }
 
-    public PlotBase getActivePlot() {
+    public ChartViewerBase getActiveChartViewer() {
         FormEditorPage activePage = getActiveEditorPage();
-        if (activePage != null)
-            return activePage.getActivePlot();
-
-        return null;
+        return (activePage != null) ? activePage.getActiveChartViewer() : null;
     }
 
-    public MatplotlibChartViewer getActiveMatplotlibChartViewer() {
-        ChartScriptEditor activeEditor = getActiveChartScriptEditor();
-
-        if (activeEditor != null)
-            return activeEditor.getMatplotlibChartViewer();
-
-        return null;
+    /**
+     * Returns the active native plot widget if the current page has one,
+     * else (e.g. if the page contains a Matplotlib plot) returns null.
+     */
+    public PlotBase getActivePlot() {
+        ChartViewerBase chartViewer = getActiveChartViewer();
+        return chartViewer instanceof NativeChartViewer ? ((NativeChartViewer)chartViewer).getPlot() : null;
     }
 
     public void applyChartEdits(ChartScriptEditor editor) {

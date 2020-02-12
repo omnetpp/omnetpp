@@ -14,6 +14,7 @@ import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.PlotBase;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.python.ChartViewerBase;
 import org.omnetpp.scave.python.MatplotlibChartViewer;
 
 /**
@@ -41,12 +42,12 @@ public class CopyChartImageToClipboardAction extends AbstractScaveAction {
             });
         }
 
-        final MatplotlibChartViewer matplotlibChart = editor.getActiveMatplotlibChartViewer();
+        final ChartViewerBase chartViewer = editor.getActiveChartViewer();
 
-        if (matplotlibChart != null) {
+        if (chartViewer instanceof MatplotlibChartViewer) {
             BusyIndicator.showWhile(Display.getDefault(), new Runnable() {
                 public void run() {
-                    matplotlibChart.copyImageToClipboard();
+                    ((MatplotlibChartViewer)chartViewer).copyImageToClipboard();
                 }
             });
         }
@@ -55,6 +56,6 @@ public class CopyChartImageToClipboardAction extends AbstractScaveAction {
 
     @Override
     protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
-        return editor.getActivePlot() != null || editor.getActiveMatplotlibChartViewer() != null;
+        return editor.getActivePlot() != null || (editor.getActiveChartViewer() instanceof MatplotlibChartViewer);
     }
 }

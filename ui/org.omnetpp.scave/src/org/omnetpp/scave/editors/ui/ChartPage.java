@@ -1,11 +1,10 @@
 package org.omnetpp.scave.editors.ui;
 
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.omnetpp.scave.charting.PlotBase;
 import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.ModelChangeEvent;
+import org.omnetpp.scave.python.ChartViewerBase;
 
 public class ChartPage extends FormEditorPage {
 
@@ -21,9 +20,8 @@ public class ChartPage extends FormEditorPage {
     }
 
     @Override
-    public PlotBase getActivePlot() {
-        Control viewer = chartScriptEditor.getChartViewer().getWidget();
-        return viewer instanceof PlotBase ? (PlotBase)viewer : null;
+    public ChartViewerBase getActiveChartViewer() {
+        return chartScriptEditor.getChartViewer();
     }
 
     @Override

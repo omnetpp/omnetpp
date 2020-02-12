@@ -36,9 +36,9 @@ import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.charting.PlotBase;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.ModelChangeEvent;
+import org.omnetpp.scave.python.ChartViewerBase;
 
 /**
  * Common functionality of Scave multi-page editor pages with title and toolbar.
@@ -220,9 +220,9 @@ public class FormEditorPage extends Composite {
     }
 
     /**
-     * Returns the active chart on this page.
+     * Returns the active chart viewer on this page.
      */
-    public PlotBase getActivePlot() {
+    public ChartViewerBase getActiveChartViewer() {
         return null;
     }
 

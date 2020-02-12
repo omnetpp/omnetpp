@@ -23,9 +23,15 @@ import org.omnetpp.scave.pychart.INativeChartPlotter;
 import org.omnetpp.scave.pychart.PythonCallerThread.ExceptionHandler;
 import org.omnetpp.scave.pychart.PythonProcessPool;
 
+/**
+ * Displays a chart in a native plot widget.
+ */
 public class NativeChartViewer extends ChartViewerBase {
 
     public static boolean debug = Debug.isChannelEnabled("nativechartviewer");
+
+    private PlotBase plot;
+    private ChartPlotter chartPlotter = new ChartPlotter();
 
     class ChartPlotter implements INativeChartPlotter {
         PythonScalarDataset scalarDataset = new PythonScalarDataset(null);
@@ -123,9 +129,6 @@ public class NativeChartViewer extends ChartViewerBase {
         }
     }
 
-    private ChartPlotter chartPlotter = new ChartPlotter();
-    private PlotBase plot;
-
     public NativeChartViewer(Composite parent, Chart chart, PythonProcessPool pool, ResultFileManager rfm) {
         super(chart, pool, rfm);
 
@@ -148,7 +151,6 @@ public class NativeChartViewer extends ChartViewerBase {
     public void runPythonScript(String script, File workingDir, Runnable runAfterDone, ExceptionHandler runAfterError) {
         if (plot.isDisposed())
             return;
-
 
         // TODO: do not store these if the dataset is empty!
         final double zx = chartPlotter.isEmpty() ? Double.NaN : plot.getZoomX();

@@ -31,7 +31,14 @@ import org.omnetpp.scave.pychart.MatplotlibWidget;
 import org.omnetpp.scave.pychart.PythonCallerThread.ExceptionHandler;
 import org.omnetpp.scave.pychart.PythonProcessPool;
 
+/**
+ * Displays a chart in a Matplotlib plot.
+ */
 public class MatplotlibChartViewer extends ChartViewerBase {
+
+    private int figureNumber = -1;
+    private MatplotlibWidget plotWidget;
+    private String lastActiveAction = "";
 
     public interface IStateChangeListener {
         void activeActionChanged(String action);
@@ -71,10 +78,6 @@ public class MatplotlibChartViewer extends ChartViewerBase {
             return plotWidget;
         }
     };
-
-    private int figureNumber = -1;
-    private MatplotlibWidget plotWidget;
-    private String lastActiveAction = "";
 
     public MatplotlibChartViewer(Composite parent, Chart chart, PythonProcessPool processPool, ResultFileManager rfm) {
         super(chart, processPool, rfm);
