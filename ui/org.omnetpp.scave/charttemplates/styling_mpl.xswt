@@ -50,6 +50,9 @@
       <add x:p0="seaborn-white"/>
       <add x:p0="seaborn-whitegrid"/>
     </combo>
+    
+    <label text="Cycle seed:"/>
+    <spinner x:id="cycle_seed" selection="0" minimum="0" maximum="1000000" x:style="BORDER"/>
 
     <!-- } -->
       </x:children>

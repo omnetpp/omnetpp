@@ -1,9 +1,13 @@
 from omnetpp.scave import chart, plot
 import numpy as np
+import random
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+from itertools import cycle
 import sys
 
+_marker_cycle = None
+_color_cycle = None
 
 def extract_label_columns(df, preferred_legend_column="title"):
 
@@ -204,7 +208,9 @@ def interpolationmode_to_drawstyle(interpolationmode, hasenum):
 
     return ds
 
+
 def _make_line_args(props, t, df):
+    global _marker_cycle
     style = dict()
 
     def get_prop(k):
@@ -227,12 +233,14 @@ def _make_line_args(props, t, df):
 
     if get_prop("linecolor"):
         style["color"] = get_prop("linecolor")
+    else:
+        style["color"] = next(_color_cycle)
 
     if get_prop("linewidth"):
         style["linewidth"] = get_prop("linewidth")
 
     if not get_prop("marker") or get_prop("marker") == "auto":
-        pass # style["marker"] = '.' # ??? should cycle here? it's difficult to do with MPL...
+        style["marker"] = next(_marker_cycle)
     elif get_prop("marker") == 'none':
         style["marker"] = ' '
     else:
@@ -330,10 +338,39 @@ def plot_histograms(df, props):
     title = get_prop("title") or make_chart_title(df, title_col, legend_cols)
     set_plot_title(title)
 
+
+def _initialize_cycles(props):
+    def get_prop(k):
+        return props[k] if k in props else None
+
+    global _marker_cycle
+    global _color_cycle
+
+    seed = int(get_prop('cycle_seed') or 0)
+    r = random.Random(seed)
+
+    ml = list("osv^<>pDd")
+    if seed != 0:
+        random.shuffle(ml, r.random)
+    _marker_cycle = cycle(ml)
+
+    prop_cycler = plt.rcParams['axes.prop_cycle']
+
+    if chart.is_native_chart():
+        num_colors = 10
+    else:
+        num_colors = len(prop_cycler.by_key()['color']) if "color" in prop_cycler.keys else 1
+
+    cl = ["C" + str(i) for i in range(num_colors)]
+    if seed != 0:
+        random.shuffle(cl, r.random)
+    _color_cycle = cycle(cl)
+
+
 def preconfigure_plot(props):
     def get_prop(k):
         return props[k] if k in props else None
-    
+
     if chart.is_native_chart():
         #plot.set_properties(_filter_by_key_prefix(props,"plot."))  #TODO this was after plotting, was that intentional?
         supported_keys = plot.get_supported_property_keys()
@@ -344,6 +381,8 @@ def preconfigure_plot(props):
             plt.style.use(get_prop("plt.style"))
         mpl.rcParams.update(_filter_by_key_prefix(props,"matplotlibrc."))
         mpl.rcParams.update(parse_rcparams(get_prop("matplotlibrc") or ""))
+
+    _initialize_cycles(props)
 
 
 def postconfigure_plot(props):

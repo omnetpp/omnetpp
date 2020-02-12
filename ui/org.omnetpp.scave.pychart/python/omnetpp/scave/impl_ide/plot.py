@@ -4,6 +4,7 @@ import math
 import pickle as pl
 import os
 import platform
+import matplotlib.colors as mplc
 
 # posix_ipc is required for POSIX shm on Linux and Mac
 if platform.system() in ['Linux', 'Darwin']:
@@ -252,6 +253,9 @@ def _translate_linestyle(linestyle):
     return mapping[linestyle]
 
 def _translate_color(color):
+    if color and len(color) >= 2 and color[:1] == "C" and color[1:].isdigit():
+        return mplc.to_hex(color)
+
     mapping = {
         "b" : "blue",
         "g" : "green",
