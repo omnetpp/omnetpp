@@ -10,6 +10,7 @@ package org.omnetpp.scave.charting;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_AXIS_LABEL_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_AXIS_TITLE_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_BAR_BASELINE;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_BAR_BASELINE_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_BAR_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_BAR_OUTLINE_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_BAR_PLACEMENT;
@@ -67,6 +68,7 @@ public class BarPlot extends PlotBase {
             PROP_X_LABELS_ROTATE_BY,
             PROP_WRAP_LABELS,
             PROP_BAR_BASELINE,
+            PROP_BAR_BASELINE_COLOR,
             PROP_BAR_PLACEMENT,
             PROP_BAR_COLOR,
             PROP_BAR_OUTLINE_COLOR,
@@ -186,6 +188,7 @@ public class BarPlot extends PlotBase {
         case PROP_WRAP_LABELS: setWrapLabels(Converter.stringToBoolean(value)); break;
         // Bars
         case PROP_BAR_BASELINE: setBarBaseline(Converter.stringToDouble(value)); break;
+        case PROP_BAR_BASELINE_COLOR: setBarBaselineColor(Converter.stringToRGB(value)); break;
         case PROP_BAR_PLACEMENT: setBarPlacement(Converter.stringToEnum(value, BarPlacement.class)); break;
         case PROP_BAR_COLOR: setBarColor(Converter.stringToRGB(value)); break;
         case PROP_BAR_OUTLINE_COLOR: setBarOutlineColor(Converter.stringToRGB(value)); break;
@@ -276,6 +279,13 @@ public class BarPlot extends PlotBase {
     public void setBarBaseline(double value) {
         bars.barBaseline = value;
         chartArea = calculatePlotArea();
+        updateArea();
+        chartChanged();
+    }
+
+    public void setBarBaselineColor(RGB value) {
+        Assert.isNotNull(value);
+        bars.barBaselineColor = value;
         updateArea();
         chartChanged();
     }

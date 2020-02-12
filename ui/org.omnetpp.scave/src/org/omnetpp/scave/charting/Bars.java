@@ -16,7 +16,6 @@ import org.omnetpp.common.canvas.LargeGraphics;
 import org.omnetpp.common.canvas.LargeRect;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.scave.charting.dataset.IScalarDataset;
-import org.omnetpp.scave.charting.properties.PlotDefaults;
 import org.omnetpp.scave.charting.properties.PlotProperty.BarPlacement;
 
 /**
@@ -27,6 +26,7 @@ class Bars {
 
     double barBaseline;
     BarPlacement barPlacement;
+    RGB barBaselineColor;
 
     // coordinates of the bars, in row/column order
     // rows are sorted according to the x coordinate
@@ -71,7 +71,7 @@ class Bars {
             graphics.pushState();
 
             long y = coordsMapping.toCanvasY(baseline);
-            graphics.setForegroundColor(PlotDefaults.DEFAULT_BAR_BASELINE_COLOR);
+            graphics.setForegroundColor(new Color(null, barBaselineColor));
             LargeGraphics.drawLine(graphics, rect.x + 1, y, rect.x + rect.width - 1, y);
 
             graphics.popState();

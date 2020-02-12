@@ -46,13 +46,12 @@ import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.common.wizard.XSWTDataBinding;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.assist.FilterContentProposalProvider;
-import org.omnetpp.scave.charting.properties.PlotDefaults;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.ChartTemplate;
 import org.omnetpp.scave.model.Chart.DialogPage;
+import org.omnetpp.scave.model.ChartTemplate;
 import org.omnetpp.scave.model.Property;
 import org.xml.sax.SAXException;
 

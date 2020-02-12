@@ -62,6 +62,7 @@ public enum PlotProperty {
     PROP_BAR_COLOR("Bar.Color", Color.class, ColorFactory.GREY80),
     PROP_BAR_OUTLINE_COLOR("Bar.OutlineColor", Color.class, ColorFactory.BLACK),
     PROP_BAR_BASELINE("Bars.Baseline", Double.class, 0.0),
+    PROP_BAR_BASELINE_COLOR("Bars.Baseline.Color", Color.class, ColorFactory.GREY80),
     // Histograms
     PROP_HIST_BAR("Hist.Bar", HistogramBar.class, PlotProperty.HistogramBar.Solid),
     PROP_SHOW_OVERFLOW_CELL("Hist.ShowOverflowCell", Boolean.class, false),

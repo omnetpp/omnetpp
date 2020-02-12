@@ -26,9 +26,7 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.charting.dataset.IHistogramDataset;
 import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 import org.omnetpp.scave.charting.plotter.SquareSymbol;
-import org.omnetpp.scave.charting.properties.PlotDefaults;
 import org.omnetpp.scave.charting.properties.PlotProperty;
-import org.omnetpp.scave.charting.properties.PlotProperty.HistogramBar;
 
 /**
  * The content area of a histogram plot.
