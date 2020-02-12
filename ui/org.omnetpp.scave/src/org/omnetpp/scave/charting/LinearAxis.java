@@ -17,7 +17,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.LargeGraphics;
 import org.omnetpp.common.color.ColorFactory;
@@ -163,7 +162,7 @@ public class LinearAxis {
     }
 
     public void drawAxis(Graphics graphics, ICoordsMapping mapping) {
-        Rectangle plotArea = bounds.getCopy().crop(insets);
+        Rectangle plotArea = bounds.getCopy().shrink(insets);
 
         // draw axis line and title
         graphics.setLineWidth(1);

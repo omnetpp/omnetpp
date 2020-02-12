@@ -51,7 +51,7 @@ import org.omnetpp.scave.python.PythonHistogramDataset;
  * Histogram plot widget.
  */
 public class HistogramPlot extends PlotBase {
-    private static final boolean debug = false;
+    //private static final boolean debug = false;
 
     private static final PlotProperty[] HISTOGRAMPLOT_PROPERTIES = ArrayUtils.addAll(PLOTBASE_PROPERTIES, new PlotProperty[] {
             PROP_X_AXIS_TITLE,
@@ -378,7 +378,7 @@ public class HistogramPlot extends PlotBase {
             axesInsets = yAxis.layout(graphics, mainArea, axesInsets, coordsMapping, pass);
 
             // tentative plotArea calculation (y axis ticks width missing from the picture yet)
-            Rectangle plotArea = mainArea.getCopy().crop(axesInsets);
+            Rectangle plotArea = mainArea.getCopy().shrink(axesInsets);
             return plotArea;
         }
         else if (pass == 2) {
@@ -386,7 +386,7 @@ public class HistogramPlot extends PlotBase {
             // will appear, and can calculate the occupied space from the longest tick label.
             yAxis.layout(graphics, mainArea, axesInsets, coordsMapping, pass);
             xAxis.layout(graphics, mainArea, axesInsets, coordsMapping, pass);
-            Rectangle remaining = mainArea.getCopy().crop(axesInsets);
+            Rectangle remaining = mainArea.getCopy().shrink(axesInsets);
             Rectangle plotArea = histograms.layout(graphics, remaining);
             legend.layout(graphics, plotArea, pass);
             //FIXME how to handle it when plotArea.height/width comes out negative??

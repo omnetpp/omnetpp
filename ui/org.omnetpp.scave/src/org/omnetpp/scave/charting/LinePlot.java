@@ -597,7 +597,7 @@ public class LinePlot extends PlotBase {
             axesInsets = yAxis.layout(graphics, mainArea, axesInsets, coordsMapping, pass);
 
             // tentative plotArea calculation (y axis ticks width missing from the picture yet)
-            Rectangle plotArea = mainArea.getCopy().crop(axesInsets);
+            Rectangle plotArea = mainArea.getCopy().shrink(axesInsets);
             return plotArea;
         }
         else if (pass == 2) {
@@ -605,7 +605,7 @@ public class LinePlot extends PlotBase {
             // will appear, and can calculate the occupied space from the longest tick label.
             yAxis.layout(graphics, mainArea, axesInsets, coordsMapping, pass);
             xAxis.layout(graphics, mainArea, axesInsets, coordsMapping, pass);
-            Rectangle plotArea = lines.layout(graphics, mainArea.getCopy().crop(axesInsets));
+            Rectangle plotArea = lines.layout(graphics, mainArea.getCopy().shrink(axesInsets));
             crosshair.layout(graphics, plotArea);
             legend.layout(graphics, plotArea, pass);
             //FIXME how to handle it when plotArea.height/width comes out negative??

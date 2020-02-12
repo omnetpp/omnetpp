@@ -56,7 +56,7 @@ import org.omnetpp.scave.python.PythonScalarDataset;
  * Bar plot widget.
  */
 public class BarPlot extends PlotBase {
-    private static final boolean debug = false;
+    //private static final boolean debug = false;
 
     protected final static PlotProperty[] BARPLOT_PROPERTIES = ArrayUtils.addAll(PLOTBASE_PROPERTIES, new PlotProperty[] {
             PROP_X_AXIS_TITLE,
@@ -353,7 +353,7 @@ public class BarPlot extends PlotBase {
             axesInsets = valueAxis.layout(graphics, mainArea, axesInsets, mapping, pass);
 
             // tentative plotArea calculation (y axis ticks width missing from the picture yet)
-            Rectangle plotArea = mainArea.getCopy().crop(axesInsets);
+            Rectangle plotArea = mainArea.getCopy().shrink(axesInsets);
             return plotArea;
         }
         else if (pass == 2) {
@@ -361,7 +361,7 @@ public class BarPlot extends PlotBase {
             // will appear, and can calculate the occupied space from the longest tick label.
             valueAxis.layout(graphics, mainArea, axesInsets, mapping, pass);
             domainAxis.layout(graphics, mainArea, axesInsets, mapping, pass);
-            Rectangle remaining = mainArea.getCopy().crop(axesInsets);
+            Rectangle remaining = mainArea.getCopy().shrink(axesInsets);
             remaining = legend.layout(graphics, remaining, pass);
             //FIXME how to handle it when plotArea.height/width comes out negative??
             Rectangle plotArea = bars.layout(graphics, remaining);
@@ -430,7 +430,7 @@ public class BarPlot extends PlotBase {
             TextLayout textLayout = new TextLayout(getDisplay());
             textLayout.setText(line1 + "\n" + line2);
             textLayout.setWidth(320);
-            org.eclipse.swt.graphics.Rectangle bounds= textLayout.getBounds();
+//          org.eclipse.swt.graphics.Rectangle bounds= textLayout.getBounds();
 //          outSizeConstraint.preferredWidth = 20 + bounds.width;
 //          outSizeConstraint.preferredHeight = 20 + bounds.height;
 
