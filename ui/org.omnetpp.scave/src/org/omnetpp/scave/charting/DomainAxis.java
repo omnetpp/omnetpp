@@ -27,7 +27,7 @@ import org.omnetpp.common.canvas.LargeGraphics;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.GeomUtils;
 import org.omnetpp.common.util.GraphicsUtils;
-import org.omnetpp.scave.charting.dataset.IScalarDataset;
+import org.omnetpp.scave.charting.dataset.IGroupsSeriesDataset;
 
 /**
  * Domain axis for bar chart.
@@ -107,7 +107,7 @@ class DomainAxis {
             int titleHeight = !drawTitle || title.equals("") ? 0 : GraphicsUtils.getTextExtent(graphics, title).y;
             graphics.setFont(labelsFont);
             lines.add(new LineData());
-            IScalarDataset dataset = chart.getDataset();
+            IGroupsSeriesDataset dataset = chart.getDataset();
             Bars plot = chart.getPlot();
             Dimension maxSize = new Dimension(-1, Math.max(bounds.height / 2, 10));
             if (dataset != null) {
@@ -118,8 +118,8 @@ class DomainAxis {
                 lines.clear();
                 lines.add(new LineData());
 
-                int cColumns = dataset.getColumnCount();
-                int cRows = dataset.getRowCount();
+                int cColumns = dataset.getSeriesCount();
+                int cRows = dataset.getGroupCount();
                 for (int row = 0; row < cRows; ++row) {
                     long left = plot.getBarRectangle(row, 0, coordsMapping).x;
                     long right = plot.getBarRectangle(row, cColumns - 1, coordsMapping).right();
@@ -176,7 +176,7 @@ class DomainAxis {
 
     private LabelData layoutGroupLabel(int row, Font font, double rotation , Graphics graphics, Dimension maxSize) {
         LabelData data = new LabelData();
-        String label = chart.getDataset().getRowKey(row);
+        String label = chart.getDataset().getGroupKey(row);
         data.row = row;
         data.textLayout = new TextLayout(Display.getDefault());
         data.textLayout.setText(label.replace(';', '\u00ad')); // hyphenate at ';'
@@ -205,10 +205,10 @@ class DomainAxis {
 
         // draw labels
         if (drawLabels) {
-            IScalarDataset dataset = chart.getDataset();
+            IGroupsSeriesDataset dataset = chart.getDataset();
             if (dataset != null) {
-                int cColumns = dataset.getColumnCount();
-                int cRows = dataset.getRowCount();
+                int cColumns = dataset.getSeriesCount();
+                int cRows = dataset.getGroupCount();
 
                 // draw lines
                 for (int row = 0; row < cRows; ++row) {

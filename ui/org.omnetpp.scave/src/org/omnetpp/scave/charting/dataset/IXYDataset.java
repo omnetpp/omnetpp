@@ -82,6 +82,11 @@ public interface IXYDataset extends IDataset {
     public double getX(int series, int item);
 
     /**
+     * For tooltips.
+     */
+    public String getXAsString(int series, int item);
+
+    /**
      * Returns the x-value as a BigDecimal for an item within a series.
      *
      * @param series  the series index (zero-based).
@@ -110,6 +115,11 @@ public interface IXYDataset extends IDataset {
      * @return The y-value.
      */
     public double getY(int series, int item);
+
+    /**
+     * For tooltips.
+     */
+    public String getYAsString(int series, int item);
 
     /**
      * Returns the y-value as a BigDecimal.

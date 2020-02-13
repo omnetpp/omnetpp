@@ -45,7 +45,7 @@ import org.omnetpp.scave.charting.dataset.IHistogramDataset;
 import org.omnetpp.scave.charting.properties.PlotProperty;
 import org.omnetpp.scave.charting.properties.PlotProperty.HistogramBar;
 import org.omnetpp.scave.charting.properties.PlotProperty.ShowGrid;
-import org.omnetpp.scave.python.PythonHistogramDataset;
+import org.omnetpp.scave.python.HistogramDataset;
 
 /**
  * Histogram plot widget.
@@ -179,7 +179,7 @@ public class HistogramPlot extends PlotBase {
     public void clear() {
         super.clear();
         histogramProperties.clear();
-        setDataset(new PythonHistogramDataset(null));
+        setDataset(new HistogramDataset(null));
     }
 
     public void setXAxisTitle(String value) {

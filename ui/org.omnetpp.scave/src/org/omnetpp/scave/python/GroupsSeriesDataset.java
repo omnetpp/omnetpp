@@ -6,21 +6,21 @@ import java.util.List;
 import java.util.Map;
 
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.charting.dataset.IScalarDataset;
+import org.omnetpp.scave.charting.dataset.IGroupsSeriesDataset;
 
 import net.razorvine.pickle.PickleException;
 import net.razorvine.pickle.Unpickler;
 
-public class PythonScalarDataset implements IScalarDataset {
+public class GroupsSeriesDataset implements IGroupsSeriesDataset {
     String title;
 
-    class BarSeries {
+    class Series {
         String key;
         String title;
         double[] values;
     }
 
-    ArrayList<BarSeries> series = new ArrayList<BarSeries>();
+    ArrayList<Series> serieses = new ArrayList<Series>();
 
     // X axis labels
     ArrayList<String> rowKeys = new ArrayList<String>();
@@ -28,7 +28,7 @@ public class PythonScalarDataset implements IScalarDataset {
 
     protected String generateUniqueKey() {
         int maxKey = 0;
-        for (BarSeries bs : series) {
+        for (Series bs : serieses) {
             try {
                 int key = Integer.parseInt(bs.key);
                 if (key > maxKey)
@@ -42,7 +42,7 @@ public class PythonScalarDataset implements IScalarDataset {
     }
 
 
-    public PythonScalarDataset(String title) {
+    public GroupsSeriesDataset(String title) {
         this.title = title;
     }
 
@@ -56,13 +56,13 @@ public class PythonScalarDataset implements IScalarDataset {
 
             for (Map<String, Object> d : data) {
 
-                BarSeries barSeries = new BarSeries();
+                Series barSeries = new Series();
 
                 String key = (String) d.get("key");
                 if (key == null)
                     key = generateUniqueKey();
 
-                for (BarSeries bs: series)
+                for (Series bs: serieses)
                     if (bs.key.equals(key))
                         System.out.println("WARNING: Series key '" + key + "' is not unique in HistogramDataset!");
 
@@ -72,7 +72,7 @@ public class PythonScalarDataset implements IScalarDataset {
 
                 barSeries.values = ResultPicklingUtils.bytesToDoubles((byte[]) d.get("edges"));
 
-                series.add(barSeries);
+                serieses.add(barSeries);
             }
         }
         catch (PickleException | IOException e) {
@@ -92,27 +92,32 @@ public class PythonScalarDataset implements IScalarDataset {
     }
 
     @Override
-    public int getRowCount() {
+    public int getGroupCount() {
         return rowKeys.size();
     }
 
     @Override
-    public String getRowKey(int row) {
+    public String getGroupKey(int row) {
         return rowKeys.get(row);
     }
 
     @Override
-    public int getColumnCount() {
-        return series.size();
+    public int getSeriesCount() {
+        return serieses.size();
     }
 
     @Override
-    public String getColumnKey(int column) {
-        return series.get(column).key;
+    public String getSeriesKey(int column) {
+        return serieses.get(column).key;
     }
 
     @Override
     public double getValue(int row, int column) {
-        return series.get(column).values[row];
+        return serieses.get(column).values[row];
+    }
+
+    @Override
+    public String getValueAsString(int row, int column) {
+        return String.format("%g", getValue(row, column));
     }
 }

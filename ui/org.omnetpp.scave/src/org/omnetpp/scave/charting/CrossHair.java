@@ -34,7 +34,6 @@ import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;
@@ -42,7 +41,6 @@ import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.LinePlot.LineProperties;
 import org.omnetpp.scave.charting.dataset.DatasetUtils;
-import org.omnetpp.scave.charting.dataset.IStringValueXYDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 
@@ -278,13 +276,6 @@ class CrossHair {
             TextLayout textLayout = new TextLayout(parent.getDisplay());
             textLayout.setText(plainText.toString());
             textLayout.setWidth(320); // comes from HoverSupport
-            org.eclipse.swt.graphics.Rectangle bounds= textLayout.getBounds();
-//          preferredSize.preferredWidth = 20 + bounds.width;
-//          preferredSize.preferredHeight = 25 + bounds.height + (lineNo > 1 ? (lineNo - 1) * 6 : 0);
-
-//          Point preferredSize2 = computePreferedSize(htmlText.toString(), 320);
-//          preferredSize.preferredWidth =  preferredSize2.x; //20 + maxTextLength * 7;
-//          preferredSize.preferredHeight = preferredSize2.y; //25 + dataPoints.size() * 12;
 
             return HoverSupport.addHTMLStyleSheet(htmlText.toString());
         }
@@ -297,22 +288,10 @@ class CrossHair {
         //String coordinates = String.format("%g, %g", dataset.getXValue(dataPoint.series, dataPoint.index), dataset.getYValue(dataPoint.series, dataPoint.index));
         int series = dataPoint.series;
         int index = dataPoint.index;
-        double xConf = Double.NaN, yConf = Double.NaN; // TODO
-        String xStr = null, yStr = null;
-        if (dataset instanceof IStringValueXYDataset) {
-            xStr = ((IStringValueXYDataset)dataset).getXAsString(series, index);
-            yStr = ((IStringValueXYDataset)dataset).getYAsString(series, index);
-        }
-        if (xStr == null) {
-            BigDecimal xp = dataset.getPreciseX(series, index);
-            double x = dataset.getX(series, index);
-            xStr = (xp != null ? xp.toString() : parent.formatValue(x, xConf));
-        }
-        if (yStr == null) {
-            BigDecimal yp = dataset.getPreciseY(series, index);
-            double y = dataset.getY(series, index);
-            yStr = (yp != null ? yp.toString() : parent.formatValue(y, yConf));
-        }
+
+        String xStr = dataset.getXAsString(series, index);
+        String yStr = dataset.getYAsString(series, index);
+
         String seriesStr = dataset.getSeriesKey(series);
         //seriesStr = StringUtils.abbreviate(series, series.length(), 25);
         return String.format("%s, %s - %s", xStr, yStr, seriesStr);

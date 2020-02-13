@@ -15,7 +15,7 @@ import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.LargeGraphics;
 import org.omnetpp.common.canvas.LargeRect;
 import org.omnetpp.common.canvas.RectangularArea;
-import org.omnetpp.scave.charting.dataset.IScalarDataset;
+import org.omnetpp.scave.charting.dataset.IGroupsSeriesDataset;
 import org.omnetpp.scave.charting.properties.PlotProperty.BarPlacement;
 
 /**
@@ -98,17 +98,17 @@ class Bars {
     }
 
     private int getRowColumn(double x, boolean before) {
-        int cRows = parent.getDataset().getRowCount();
-        int cColumns = parent.getDataset().getColumnCount();
+        int cRows = parent.getDataset().getGroupCount();
+        int cColumns = parent.getDataset().getSeriesCount();
         return before ? 0 : (cRows*cColumns-1);
     }
 
     public int findRowColumn(double x, double y) {
-        IScalarDataset dataset = parent.getDataset();
+        IGroupsSeriesDataset dataset = parent.getDataset();
         if (dataset == null || bars == null)
             return -1;
-        int cRows = parent.getDataset().getRowCount();
-        int cColumns = parent.getDataset().getColumnCount();
+        int cRows = parent.getDataset().getGroupCount();
+        int cColumns = parent.getDataset().getSeriesCount();
 
         for (int row = 0; row < cRows; ++row)
             // search columns in Z-order
@@ -155,13 +155,13 @@ class Bars {
         final double horizontalInset = 1.0;   // left/right inset relative to the bars' width
         final double verticalInset = 0.1;   // top inset relative to the height of the highest bar
 
-        IScalarDataset dataset = parent.getDataset();
+        IGroupsSeriesDataset dataset = parent.getDataset();
         bars = null;
         if (dataset == null)
             return new RectangularArea(0, 0, 1, 1);
 
-        int cRows = dataset.getRowCount();
-        int cColumns = dataset.getColumnCount();
+        int cRows = dataset.getGroupCount();
+        int cColumns = dataset.getSeriesCount();
         double baseline = getTransformedBaseline();
 
         System.out.println("rows: " + cRows + " columns: " + cColumns);

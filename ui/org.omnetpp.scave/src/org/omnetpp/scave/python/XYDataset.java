@@ -14,7 +14,7 @@ import org.omnetpp.scave.engine.ScaveEngine;
 import net.razorvine.pickle.PickleException;
 import net.razorvine.pickle.Unpickler;
 
-public class PythonXYDataset implements IXYDataset {
+public class XYDataset implements IXYDataset {
     String title;
 
     class SeriesData {
@@ -54,7 +54,7 @@ public class PythonXYDataset implements IXYDataset {
         series.clear();
     }
 
-    public PythonXYDataset(String title) {
+    public XYDataset(String title) {
         this.title = title;
     }
 
@@ -220,6 +220,20 @@ public class PythonXYDataset implements IXYDataset {
             }
 
         return max;
+    }
+
+    @Override
+    public String getXAsString(int series, int item) {
+        BigDecimal xp = getPreciseX(series, item);
+        double x = getX(series, item);
+        return xp != null ? xp.toString() : String.format("%g", x);
+    }
+
+    @Override
+    public String getYAsString(int series, int item) {
+        BigDecimal yp = getPreciseY(series, item);
+        double y = getY(series, item);
+        return yp != null ? yp.toString() : String.format("%g", y);
     }
 
 }

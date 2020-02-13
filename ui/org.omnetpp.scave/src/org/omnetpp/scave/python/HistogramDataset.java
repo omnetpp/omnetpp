@@ -11,7 +11,7 @@ import org.omnetpp.scave.charting.dataset.IHistogramDataset;
 import net.razorvine.pickle.PickleException;
 import net.razorvine.pickle.Unpickler;
 
-public class PythonHistogramDataset implements IHistogramDataset {
+public class HistogramDataset implements IHistogramDataset {
     String title;
 
     class HistogramData {
@@ -26,7 +26,7 @@ public class PythonHistogramDataset implements IHistogramDataset {
 
     ArrayList<HistogramData> histograms = new ArrayList<HistogramData>();
 
-    public PythonHistogramDataset(String title) {
+    public HistogramDataset(String title) {
         this.title = title;
     }
 

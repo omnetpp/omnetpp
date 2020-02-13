@@ -42,14 +42,13 @@ import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.scave.charting.dataset.IDataset;
-import org.omnetpp.scave.charting.dataset.IScalarDataset;
-import org.omnetpp.scave.charting.dataset.IStringValueScalarDataset;
+import org.omnetpp.scave.charting.dataset.IGroupsSeriesDataset;
 import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 import org.omnetpp.scave.charting.plotter.SquareSymbol;
 import org.omnetpp.scave.charting.properties.PlotProperty;
 import org.omnetpp.scave.charting.properties.PlotProperty.BarPlacement;
 import org.omnetpp.scave.charting.properties.PlotProperty.ShowGrid;
-import org.omnetpp.scave.python.PythonScalarDataset;
+import org.omnetpp.scave.python.GroupsSeriesDataset;
 
 /**
  * Bar plot widget.
@@ -77,7 +76,7 @@ public class BarPlot extends PlotBase {
     private RGB defaultBarColor;
     private RGB defaultBarOutlineColor;
 
-    private IScalarDataset dataset;
+    private IGroupsSeriesDataset dataset;
 
     private LinearAxis valueAxis = new LinearAxis(true, false, false);
     private DomainAxis domainAxis = new DomainAxis(this);
@@ -127,17 +126,17 @@ public class BarPlot extends PlotBase {
 
     @Override
     public void doSetDataset(IDataset dataset) {
-        if (dataset != null && !(dataset instanceof IScalarDataset))
+        if (dataset != null && !(dataset instanceof IGroupsSeriesDataset))
             throw new IllegalArgumentException("must be an IScalarDataset");
 
-        this.dataset = (IScalarDataset)dataset;
+        this.dataset = (IGroupsSeriesDataset)dataset;
         updateLegends();
         chartArea = calculatePlotArea();
         updateArea();
         chartChanged();
     }
 
-    public IScalarDataset getDataset() {
+    public IGroupsSeriesDataset getDataset() {
         return dataset;
     }
 
@@ -159,8 +158,8 @@ public class BarPlot extends PlotBase {
         legend.clearItems();
         IPlotSymbol symbol = new SquareSymbol(6);
         if (dataset != null) {
-            for (int i = 0; i < dataset.getColumnCount(); ++i) {
-                legend.addItem(bars.getBarColor(i), dataset.getColumnKey(i), symbol, false);
+            for (int i = 0; i < dataset.getSeriesCount(); ++i) {
+                legend.addItem(bars.getBarColor(i), dataset.getSeriesKey(i), symbol, false);
             }
         }
     }
@@ -210,7 +209,7 @@ public class BarPlot extends PlotBase {
     public void clear() {
         super.clear();
         barProperties.clear();
-        setDataset(new PythonScalarDataset(null));
+        setDataset(new GroupsSeriesDataset(null));
     }
 
     public String getTitle() {
@@ -360,8 +359,8 @@ public class BarPlot extends PlotBase {
     }
 
     public String getKeyFor(int columnIndex) {
-        if (columnIndex >= 0 && columnIndex < dataset.getColumnCount())
-            return dataset.getColumnKey(columnIndex);
+        if (columnIndex >= 0 && columnIndex < dataset.getSeriesCount())
+            return dataset.getSeriesKey(columnIndex);
         else
             return null;
     }
@@ -451,31 +450,19 @@ public class BarPlot extends PlotBase {
     String getHoverHtmlText(int x, int y) {
         int rowColumn = bars.findRowColumn(fromCanvasX(x), fromCanvasY(y));
         if (rowColumn != -1) {
-            int numColumns = dataset.getColumnCount();
+            int numColumns = dataset.getSeriesCount();
             int row = rowColumn / numColumns;
             int column = rowColumn % numColumns;
-            String key = dataset.getColumnKey(column);
-            String valueStr = null;
-            if (dataset instanceof IStringValueScalarDataset) {
-                valueStr = ((IStringValueScalarDataset)dataset).getValueAsString(row, column);
-            }
-            if (valueStr == null) {
-                double value = dataset.getValue(row, column);
-                double halfInterval = Double.NaN; // TODO
-                valueStr = formatValue(value, halfInterval);
-            }
+            String valueStr = dataset.getValueAsString(row, column);
+            String key = dataset.getSeriesKey(column);
+
             String line1 = StringEscapeUtils.escapeHtml4(key);
             String line2 = "value: " + valueStr;
-            //int maxLength = Math.max(line1.length(), line2.length());
+
             TextLayout textLayout = new TextLayout(getDisplay());
             textLayout.setText(line1 + "\n" + line2);
             textLayout.setWidth(320);
-//          org.eclipse.swt.graphics.Rectangle bounds= textLayout.getBounds();
-//          outSizeConstraint.preferredWidth = 20 + bounds.width;
-//          outSizeConstraint.preferredHeight = 20 + bounds.height;
 
-//          outSizeConstraint.preferredWidth = 20 + maxLength * 7;
-//          outSizeConstraint.preferredHeight = 25 + 2 * 12;
             return line1 + "<br>" + line2;
         }
         return null;

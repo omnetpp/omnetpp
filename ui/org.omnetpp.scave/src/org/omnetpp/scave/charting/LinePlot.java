@@ -64,7 +64,7 @@ import org.omnetpp.scave.charting.properties.PlotProperty.LineStyle;
 import org.omnetpp.scave.charting.properties.PlotProperty.ShowGrid;
 import org.omnetpp.scave.charting.properties.PlotProperty.SymbolType;
 import org.omnetpp.scave.preferences.ScavePreferenceConstants;
-import org.omnetpp.scave.python.PythonXYDataset;
+import org.omnetpp.scave.python.XYDataset;
 
 
 /**
@@ -393,7 +393,7 @@ public class LinePlot extends PlotBase {
     public void clear() {
         super.clear();
         lineProperties.clear();
-        setDataset(new PythonXYDataset(null));
+        setDataset(new XYDataset(null));
     }
 
     public void setXAxisTitle(String value) {

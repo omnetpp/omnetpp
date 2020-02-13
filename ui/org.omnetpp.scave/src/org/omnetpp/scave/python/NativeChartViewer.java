@@ -34,9 +34,9 @@ public class NativeChartViewer extends ChartViewerBase {
     private ChartPlotter chartPlotter = new ChartPlotter();
 
     class ChartPlotter implements INativeChartPlotter {
-        PythonScalarDataset scalarDataset = new PythonScalarDataset(null);
-        PythonXYDataset xyDataset = new PythonXYDataset(null);
-        PythonHistogramDataset histogramDataset = new PythonHistogramDataset(null);
+        GroupsSeriesDataset scalarDataset = new GroupsSeriesDataset(null);
+        XYDataset xyDataset = new XYDataset(null);
+        HistogramDataset histogramDataset = new HistogramDataset(null);
 
 
         @Override
@@ -74,8 +74,8 @@ public class NativeChartViewer extends ChartViewerBase {
 
         @Override
         public boolean isEmpty() {
-            return scalarDataset.getColumnCount() == 0
-                    && scalarDataset.getRowCount() == 0
+            return scalarDataset.getSeriesCount() == 0
+                    && scalarDataset.getGroupCount() == 0
                     && xyDataset.getSeriesCount() == 0
                     && histogramDataset.getSeriesCount() == 0;
         }
@@ -117,9 +117,9 @@ public class NativeChartViewer extends ChartViewerBase {
             if (xyDataset != null)
                 xyDataset.dispose();
 
-            scalarDataset = new PythonScalarDataset(null);
-            xyDataset = new PythonXYDataset(null);
-            histogramDataset = new PythonHistogramDataset(null);
+            scalarDataset = new GroupsSeriesDataset(null);
+            xyDataset = new XYDataset(null);
+            histogramDataset = new HistogramDataset(null);
         }
 
         public void dispose() {
