@@ -44,9 +44,6 @@ public class ChartTemplate {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -78,10 +75,6 @@ public class ChartTemplate {
 
     public String getToolbarIconPath() {
         return toolbarIconPath;
-    }
-
-    public void setToolbarIconPath(String toolbarIconPath) {
-        this.toolbarIconPath = toolbarIconPath;
     }
 
     public Set<String> getPropertyNames() {
