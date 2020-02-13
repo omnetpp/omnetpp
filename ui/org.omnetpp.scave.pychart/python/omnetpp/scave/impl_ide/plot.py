@@ -62,6 +62,8 @@ def hist(x, bins, density=False, weights=None, cumulative=False, bottom=None, hi
 
     props["Hist.Bar"] = _translate_histtype(histtype)
 
+    props["Bars.Baseline"] = str(bottom)
+
     # check if we really got a precomputed histogram, using the trick documented for pyplot.hist
     if not np.array_equal(x, bins[:-1]):
         raise ValueError("Histogram computation is not performed.")
@@ -69,19 +71,30 @@ def hist(x, bins, density=False, weights=None, cumulative=False, bottom=None, hi
     plot_histogram(label, bins, weights, props=props)
 
 
-def bar(x, height, width=0.8, label=None):
-    return plot_bars(pd.DataFrame({label: height}))
+def bar(x, height, width=0.8, label=None, color=None, edgecolor=None):
+    props = {}
+
+    # check if we really got a precomputed histogram, using the trick documented for pyplot.hist
+    if not np.array_equal(x, bins[:-1]):
+        raise ValueError("Histogram computation is not performed.")
+
+    plot_histogram(label, bins, weights, props=props)
+
+    plot_bars(pd.DataFrame({label: height}))
 
 def plot_bars(df):
     # TODO: add check for one-layer indices? numbers-only data?
     _assert_is_native_chart()
-    Gateway.chart_plotter.plotScalars(pl.dumps(
+
+    Gateway.chart_plotter.plotScalars(pl.dumps([
         {
-            "columnKeys": [_to_label(c) for c in list(df.columns)],
-            "rowKeys": [_to_label(i) for i in list(df.index)],
-            "values": _list_to_bytes(df.values.flatten('F'))
+            "key": row.key,
+            "title": row.label,
+            "values": _list_to_bytes(row.values),
         }
-    ))
+        for row in df.itertuples(index=False)
+    ]))
+
 
 
 def plot_lines(df, props = dict()):  # key, label, xs, ys
@@ -161,15 +174,29 @@ def _plot_scalars_lists(row_label, labels, values):
 
 
 def _plot_scalars_DF_simple(df):
-    plot_bars(df)
+    print("plot DF simple not yet done")
+    pass
+    #plot_bars(df)
     # TODO: detect single-valued index/ column header levels, drop them
 
 
 def _plot_scalars_DF_scave(df):
     # TODO: pivot in the other direction (transposed)?
     # TODO: this is... wrong?
-    _plot_scalars_DF_simple(pd.pivot_table(df, index="module", columns="name", values="value"))
+    
+    title_col, legend_cols = extract_label_columns(df)
 
+    df2 = pd.DataFrame.from_records([(
+            str(i),
+            make_legend_label(legend_cols, row),
+            row.vectime,
+            row.vecvalue
+        )
+        for i, row in enumerate(df.itertuples(index=False))
+        if row.vectime is not None and row.vecvalue is not None
+    ], columns=["key", "label", "values"])
+
+    plot_bars(df2)
 
 # This method only does dynamic dispatching based on its first argument.
 def plot_scalars(df_or_values, labels=None, row_label=None):

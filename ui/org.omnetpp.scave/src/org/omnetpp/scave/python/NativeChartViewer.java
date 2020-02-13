@@ -40,8 +40,14 @@ public class NativeChartViewer extends ChartViewerBase {
 
 
         @Override
-        public void plotScalars(byte[] pickledData) {
-            scalarDataset.addValues(pickledData);
+        public void plotScalars(byte[] pickledData, Map<String, String> props) {
+            List<String> seriesKeys = scalarDataset.addValues(pickledData);
+
+            Display.getDefault().syncExec(() -> {
+                for (String seriesKey : seriesKeys)
+                    for (String propKey : props.keySet())
+                        plot.setProperty(propKey + "/" + seriesKey, props.get(propKey));
+            });
         }
 
         @Override

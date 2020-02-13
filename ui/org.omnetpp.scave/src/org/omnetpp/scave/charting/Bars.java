@@ -164,6 +164,8 @@ class Bars {
         int cColumns = dataset.getColumnCount();
         double baseline = getTransformedBaseline();
 
+        System.out.println("rows: " + cRows + " columns: " + cColumns);
+
         if (Double.isInfinite(baseline)) {
             double newBaseline = baseline < 0.0 ? Double.POSITIVE_INFINITY : Double.NEGATIVE_INFINITY;
             for (int row = 0; row < cRows; ++row)

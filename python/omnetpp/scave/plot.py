@@ -80,7 +80,7 @@ def plot(xs, ys, key=None, label=None, drawstyle=None, linestyle=None, linewidth
 def hist(x, bins, density=None, weights=None, cumulative=False, bottom=None, histtype='stepfilled', color=None, label=None, linewidth=None):
     return impl.hist(**locals())
 
-def bar(x, height, width=0.8, label=None):
+def bar(x, height, width=0.8, label=None, color=None, edgecolor=None):
     return impl.bar(**locals())
 
 def plot_vectors(df_or_list):

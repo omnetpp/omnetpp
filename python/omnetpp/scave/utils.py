@@ -251,7 +251,7 @@ def _make_line_args(props, t, df):
 
     return style
 
-def _make_histline_args(props, t, df):
+def _make_histline_args(props, t, df): # ??? is t and df needed at all?
     style = dict()
 
     def get_prop(k):
@@ -259,6 +259,8 @@ def _make_histline_args(props, t, df):
 
     if get_prop("color"):
         style["color"] = get_prop("color")
+    else:
+        style["color"] = next(_color_cycle)
 
     if get_prop("linewidth"):
         style["linewidth"] = get_prop("linewidth")
@@ -274,12 +276,29 @@ def _make_histline_args(props, t, df):
 
     return style
 
+
+def _make_bar_args(props, df): # ??? is df needed at all? should we also get the column name?
+    style = dict()
+
+    def get_prop(k):
+        return props[k] if k in props else None
+
+    if get_prop("color"):
+        style["color"] = get_prop("color")
+    else:
+        style["color"] = next(_color_cycle)
+
+    return style
+
+
+
 def set_plot_title(title, suggested_chart_name=None):
     if chart.is_native_chart():
         plot.title(title)
     else:
         plt.title(title)
     chart.set_suggested_chart_name(suggested_chart_name if suggested_chart_name is not None else title)
+
 
 def plot_bars(df, props, names=None):
     p = plot if chart.is_native_chart() else plt
@@ -291,7 +310,8 @@ def plot_bars(df, props, names=None):
     width = 0.8 / len(df.columns)  # the width of the bars
 
     for i, column in enumerate(df):
-        p.bar(ind - 0.4 + width*i + width * 0.5, df[column], width, label=column)
+        style = _make_bar_args(props, df)
+        p.bar(ind - 0.4 + width * i + width * 0.5, df[column], width, label=column, **style)
 
     # Add some text for labels, title and custom x-axis tick labels, etc.
     groups = get_prop("groups").split(",")
@@ -306,6 +326,7 @@ def plot_bars(df, props, names=None):
     if len(names):
         p.ylabel(", ".join(names))  # TODO: TypeError: sequence item 5: expected str instance, float found
         set_plot_title(", ".join(names) + " by " + ", ".join(groups+series))
+
 
 def plot_vectors(df, props):
     p = plot if chart.is_native_chart() else plt

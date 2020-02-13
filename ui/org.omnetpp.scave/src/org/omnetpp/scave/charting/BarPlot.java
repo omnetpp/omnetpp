@@ -41,7 +41,6 @@ import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GraphicsUtils;
-import org.omnetpp.scave.charting.dataset.IAveragedScalarDataset;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IScalarDataset;
 import org.omnetpp.scave.charting.dataset.IStringValueScalarDataset;
@@ -50,8 +49,6 @@ import org.omnetpp.scave.charting.plotter.SquareSymbol;
 import org.omnetpp.scave.charting.properties.PlotProperty;
 import org.omnetpp.scave.charting.properties.PlotProperty.BarPlacement;
 import org.omnetpp.scave.charting.properties.PlotProperty.ShowGrid;
-import org.omnetpp.scave.engine.Statistics;
-import org.omnetpp.scave.model2.StatUtils;
 import org.omnetpp.scave.python.PythonScalarDataset;
 
 /**
@@ -464,11 +461,7 @@ public class BarPlot extends PlotBase {
             }
             if (valueStr == null) {
                 double value = dataset.getValue(row, column);
-                double halfInterval = Double.NaN;
-                if (dataset instanceof IAveragedScalarDataset) {
-                    Statistics stat = ((IAveragedScalarDataset)dataset).getStatistics(row, column);
-                    halfInterval = StatUtils.confidenceInterval(stat, BarPlot.CONFIDENCE_LEVEL);
-                }
+                double halfInterval = Double.NaN; // TODO
                 valueStr = formatValue(value, halfInterval);
             }
             String line1 = StringEscapeUtils.escapeHtml4(key);

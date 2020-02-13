@@ -2,10 +2,9 @@ package org.omnetpp.scave.python;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.runtime.Assert;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.dataset.IScalarDataset;
 
@@ -14,45 +13,73 @@ import net.razorvine.pickle.Unpickler;
 
 public class PythonScalarDataset implements IScalarDataset {
     String title;
+
+    class BarSeries {
+        String key;
+        String title;
+        double[] values;
+    }
+
+    ArrayList<BarSeries> series = new ArrayList<BarSeries>();
+
+    // X axis labels
     ArrayList<String> rowKeys = new ArrayList<String>();
-    ArrayList<String> columnKeys = new ArrayList<String>();
-    ArrayList<double[]> columns = new ArrayList<double[]>();
+
+
+    protected String generateUniqueKey() {
+        int maxKey = 0;
+        for (BarSeries bs : series) {
+            try {
+                int key = Integer.parseInt(bs.key);
+                if (key > maxKey)
+                    maxKey = key;
+            }
+            catch (Exception e) {
+                // ignore
+            }
+        }
+        return Integer.toString(maxKey + 1);
+    }
+
 
     public PythonScalarDataset(String title) {
         this.title = title;
     }
 
-    @SuppressWarnings("unchecked")
-    public void addValues(byte[] pickledData) {
+    public List<String> addValues(byte[] pickledData) {
         Unpickler unpickler = new Unpickler();
+        List<String> keys = new ArrayList<String>();
 
         try {
-            Map<String, Object> data = (Map<String, Object>)unpickler.loads(pickledData);
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> data = (List<Map<String, Object>>) unpickler.loads(pickledData);
 
-            ArrayList<String> rowKeys = (ArrayList<String>)data.get("rowKeys");
-            ArrayList<String> columnKeys = (ArrayList<String>)data.get("columnKeys");
+            for (Map<String, Object> d : data) {
 
-            if (this.rowKeys.isEmpty())
-                this.rowKeys = rowKeys;
+                BarSeries barSeries = new BarSeries();
 
-            Assert.isTrue(this.rowKeys.equals(rowKeys));
+                String key = (String) d.get("key");
+                if (key == null)
+                    key = generateUniqueKey();
 
-            this.columnKeys.addAll(columnKeys);
+                for (BarSeries bs: series)
+                    if (bs.key.equals(key))
+                        System.out.println("WARNING: Series key '" + key + "' is not unique in HistogramDataset!");
 
-            double[] doubleValues = ResultPicklingUtils.bytesToDoubles((byte[])data.get("values"));
+                barSeries.key = key;
+                keys.add(key);
+                barSeries.title = (String) d.get("title");
 
-            int numRows = doubleValues.length / columnKeys.size();
-            for (int i = 0; i < columnKeys.size(); ++i)
-                columns.add(Arrays.copyOfRange(doubleValues, i * numRows, (i + 1) * numRows));
+                barSeries.values = ResultPicklingUtils.bytesToDoubles((byte[]) d.get("edges"));
+
+                series.add(barSeries);
+            }
         }
         catch (PickleException | IOException e) {
             ScavePlugin.logError(e);
         }
-    }
 
-    public void addColumn(String columnKey, byte[] valuesToAdd) {
-        columnKeys.add(columnKey);
-        columns.add(ResultPicklingUtils.bytesToDoubles(valuesToAdd));
+        return keys;
     }
 
     public void setRowKeys(ArrayList<String> rowKeys) {
@@ -76,16 +103,16 @@ public class PythonScalarDataset implements IScalarDataset {
 
     @Override
     public int getColumnCount() {
-        return columnKeys.size();
+        return series.size();
     }
 
     @Override
     public String getColumnKey(int column) {
-        return columnKeys.get(column);
+        return series.get(column).key;
     }
 
     @Override
     public double getValue(int row, int column) {
-        return columns.get(column)[row];
+        return series.get(column).values[row];
     }
 }

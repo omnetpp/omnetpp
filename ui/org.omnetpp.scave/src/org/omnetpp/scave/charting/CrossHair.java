@@ -42,12 +42,9 @@ import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.LinePlot.LineProperties;
 import org.omnetpp.scave.charting.dataset.DatasetUtils;
-import org.omnetpp.scave.charting.dataset.IAveragedXYDataset;
 import org.omnetpp.scave.charting.dataset.IStringValueXYDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.plotter.IPlotSymbol;
-import org.omnetpp.scave.engine.Statistics;
-import org.omnetpp.scave.model2.StatUtils;
 
 /**
  * Displays crosshair mouse cursor for VectorChart.
@@ -300,7 +297,7 @@ class CrossHair {
         //String coordinates = String.format("%g, %g", dataset.getXValue(dataPoint.series, dataPoint.index), dataset.getYValue(dataPoint.series, dataPoint.index));
         int series = dataPoint.series;
         int index = dataPoint.index;
-        double xConf = Double.NaN, yConf = Double.NaN;
+        double xConf = Double.NaN, yConf = Double.NaN; // TODO
         String xStr = null, yStr = null;
         if (dataset instanceof IStringValueXYDataset) {
             xStr = ((IStringValueXYDataset)dataset).getXAsString(series, index);
@@ -309,19 +306,11 @@ class CrossHair {
         if (xStr == null) {
             BigDecimal xp = dataset.getPreciseX(series, index);
             double x = dataset.getX(series, index);
-            if (dataset instanceof IAveragedXYDataset) {
-                Statistics xStat = ((IAveragedXYDataset)dataset).getXStatistics(series, index);
-                xConf = StatUtils.confidenceInterval(xStat, PlotBase.CONFIDENCE_LEVEL);
-            }
             xStr = (xp != null ? xp.toString() : parent.formatValue(x, xConf));
         }
         if (yStr == null) {
             BigDecimal yp = dataset.getPreciseY(series, index);
             double y = dataset.getY(series, index);
-            if (dataset instanceof IAveragedXYDataset) {
-                Statistics yStat = ((IAveragedXYDataset)dataset).getYStatistics(series, index);
-                yConf = StatUtils.confidenceInterval(yStat, PlotBase.CONFIDENCE_LEVEL);
-            }
             yStr = (yp != null ? yp.toString() : parent.formatValue(y, yConf));
         }
         String seriesStr = dataset.getSeriesKey(series);
