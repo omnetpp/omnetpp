@@ -17,9 +17,13 @@ import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_BAR_PLACEM
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_GRID;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_GRID_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_WRAP_LABELS;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_SHOW_LABELS;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_SHOW_TITLE;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_LABELS_ROTATE_BY;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_SHOW_LABELS;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_SHOW_TITLE;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_TITLE;
 
 import java.util.HashMap;
@@ -58,10 +62,15 @@ public class BarPlot extends PlotBase {
 
     protected final static PlotProperty[] BARPLOT_PROPERTIES = ArrayUtils.addAll(PLOTBASE_PROPERTIES, new PlotProperty[] {
             PROP_X_AXIS_TITLE,
+            PROP_X_LABELS_ROTATE_BY,
+            PROP_X_AXIS_SHOW_TITLE,
+            PROP_X_AXIS_SHOW_LABELS,
             PROP_Y_AXIS_TITLE,
+            PROP_Y_AXIS_LOGARITHMIC,
+            PROP_Y_AXIS_SHOW_TITLE,
+            PROP_Y_AXIS_SHOW_LABELS,
             PROP_AXIS_TITLE_FONT,
             PROP_AXIS_LABEL_FONT,
-            PROP_X_LABELS_ROTATE_BY,
             PROP_WRAP_LABELS,
             PROP_BAR_BASELINE,
             PROP_BAR_BASELINE_COLOR,
@@ -70,7 +79,6 @@ public class BarPlot extends PlotBase {
             PROP_BAR_OUTLINE_COLOR,
             PROP_GRID,
             PROP_GRID_COLOR,
-            PROP_Y_AXIS_LOGARITHMIC
     });
 
     private RGB defaultBarColor;
@@ -192,6 +200,10 @@ public class BarPlot extends PlotBase {
         case PROP_GRID: setShowGrid(Converter.stringToEnum(value, ShowGrid.class)); break;
         case PROP_GRID_COLOR: setGridColor(Converter.stringToRGB(value)); break;
         case PROP_Y_AXIS_LOGARITHMIC: setLogarithmicY(Converter.stringToBoolean(value)); break;
+        case PROP_X_AXIS_SHOW_TITLE:  setXAxisShowTitle(Converter.stringToBoolean(value)); break;
+        case PROP_X_AXIS_SHOW_LABELS:  setXAxisShowLabels(Converter.stringToBoolean(value)); break;
+        case PROP_Y_AXIS_SHOW_TITLE:  setYAxisShowTitle(Converter.stringToBoolean(value)); break;
+        case PROP_Y_AXIS_SHOW_LABELS:  setYAxisShowLabels(Converter.stringToBoolean(value)); break;
         default: super.setProperty(prop, value);
         }
     }
@@ -312,6 +324,34 @@ public class BarPlot extends PlotBase {
 
     public void setLogarithmicY(boolean logarithmic) {
         valueAxis.setLogarithmic(logarithmic);
+        chartArea = calculatePlotArea();
+        updateArea();
+        chartChanged();
+    }
+
+    public void setXAxisShowTitle(boolean show) {
+        domainAxis.setDrawTitle(show);
+        chartArea = calculatePlotArea();
+        updateArea();
+        chartChanged();
+    }
+
+    public void setXAxisShowLabels(boolean show) {
+        domainAxis.setLabels(show);
+        chartArea = calculatePlotArea();
+        updateArea();
+        chartChanged();
+    }
+
+    public void setYAxisShowTitle(boolean show) {
+        valueAxis.setDrawTitle(show);
+        chartArea = calculatePlotArea();
+        updateArea();
+        chartChanged();
+    }
+
+    public void setYAxisShowLabels(boolean show) {
+        valueAxis.setDrawTickLabels(show);
         chartArea = calculatePlotArea();
         updateArea();
         chartChanged();

@@ -21,8 +21,12 @@ import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_SYMBOL_TYP
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_MAX;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_MIN;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_SHOW_LABELS;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_SHOW_TITLE;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_SHOW_LABELS;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_SHOW_TITLE;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_TITLE;
 
 import java.util.ArrayList;
@@ -82,6 +86,10 @@ public class LinePlot extends PlotBase {
             PROP_X_AXIS_MAX,
             PROP_X_AXIS_LOGARITHMIC,
             PROP_Y_AXIS_LOGARITHMIC,
+            PROP_X_AXIS_SHOW_TITLE,
+            PROP_Y_AXIS_SHOW_TITLE,
+            PROP_X_AXIS_SHOW_LABELS,
+            PROP_Y_AXIS_SHOW_LABELS,
             PROP_GRID,
             PROP_GRID_COLOR,
             PROP_DISPLAY_LINE,
@@ -90,7 +98,7 @@ public class LinePlot extends PlotBase {
             PROP_LINE_DRAW_STYLE,
             PROP_LINE_COLOR,
             PROP_LINE_STYLE,
-            PROP_LINE_WIDTH
+            PROP_LINE_WIDTH,
     });
 
     private IXYDataset dataset = null;
@@ -362,6 +370,10 @@ public class LinePlot extends PlotBase {
         case PROP_Y_AXIS_LOGARITHMIC: setLogarithmicY(Converter.stringToBoolean(value)); break;
         case PROP_GRID: setShowGrid(Converter.stringToEnum(value, ShowGrid.class)); break;
         case PROP_GRID_COLOR: setGridColor(Converter.stringToRGB(value)); break;
+        case PROP_X_AXIS_SHOW_TITLE:  setXAxisShowTitle(Converter.stringToBoolean(value)); break;
+        case PROP_X_AXIS_SHOW_LABELS:  setXAxisShowLabels(Converter.stringToBoolean(value)); break;
+        case PROP_Y_AXIS_SHOW_TITLE:  setYAxisShowTitle(Converter.stringToBoolean(value)); break;
+        case PROP_Y_AXIS_SHOW_LABELS:  setYAxisShowLabels(Converter.stringToBoolean(value)); break;
         // Line defaults
         case PROP_DISPLAY_LINE: setDisplayLine(Converter.stringToBoolean(value)); break;
         case PROP_SYMBOL_TYPE: setSymbolType(Converter.stringToEnum(value, SymbolType.class)); break;
@@ -527,6 +539,34 @@ public class LinePlot extends PlotBase {
         Assert.isNotNull(color);
         xAxis.setGridColor(color);
         yAxis.setGridColor(color);
+        chartChanged();
+    }
+
+    public void setXAxisShowTitle(boolean show) {
+        xAxis.setDrawTitle(show);
+        chartArea = calculatePlotArea();
+        updateArea();
+        chartChanged();
+    }
+
+    public void setXAxisShowLabels(boolean show) {
+        xAxis.setDrawTickLabels(show);
+        chartArea = calculatePlotArea();
+        updateArea();
+        chartChanged();
+    }
+
+    public void setYAxisShowTitle(boolean show) {
+        yAxis.setDrawTitle(show);
+        chartArea = calculatePlotArea();
+        updateArea();
+        chartChanged();
+    }
+
+    public void setYAxisShowLabels(boolean show) {
+        yAxis.setDrawTickLabels(show);
+        chartArea = calculatePlotArea();
+        updateArea();
         chartChanged();
     }
 

@@ -7,18 +7,22 @@
 
 package org.omnetpp.scave.charting;
 
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_AXIS_LABEL_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_AXIS_TITLE_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_BAR_BASELINE;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_GRID;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_GRID_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_HIST_BAR;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_HIST_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_HIST_CUMULATIVE;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_HIST_DENSITY;
-import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_AXIS_LABEL_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_SHOW_OVERFLOW_CELL;
-import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_GRID;
-import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_GRID_COLOR;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_SHOW_LABELS;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_SHOW_TITLE;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_SHOW_LABELS;
+import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_SHOW_TITLE;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_Y_AXIS_TITLE;
 
 import java.util.HashMap;
@@ -42,7 +46,6 @@ import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IHistogramDataset;
-import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.properties.PlotProperty;
 import org.omnetpp.scave.charting.properties.PlotProperty.HistogramBar;
 import org.omnetpp.scave.charting.properties.PlotProperty.ShowGrid;
@@ -59,6 +62,10 @@ public class HistogramPlot extends PlotBase {
             PROP_Y_AXIS_TITLE,
             PROP_GRID,
             PROP_GRID_COLOR,
+            PROP_X_AXIS_SHOW_TITLE,
+            PROP_X_AXIS_SHOW_LABELS,
+            PROP_Y_AXIS_SHOW_TITLE,
+            PROP_Y_AXIS_SHOW_LABELS,
             PROP_AXIS_TITLE_FONT,
             PROP_AXIS_LABEL_FONT,
             PROP_HIST_BAR,
@@ -152,6 +159,10 @@ public class HistogramPlot extends PlotBase {
         case PROP_Y_AXIS_TITLE: setYAxisTitle(value); break;
         case PROP_GRID: setShowGrid(Converter.stringToEnum(value, ShowGrid.class)); break;
         case PROP_GRID_COLOR: setGridColor(Converter.stringToRGB(value)); break;
+        case PROP_X_AXIS_SHOW_TITLE:  setXAxisShowTitle(Converter.stringToBoolean(value)); break;
+        case PROP_X_AXIS_SHOW_LABELS:  setXAxisShowLabels(Converter.stringToBoolean(value)); break;
+        case PROP_Y_AXIS_SHOW_TITLE:  setYAxisShowTitle(Converter.stringToBoolean(value)); break;
+        case PROP_Y_AXIS_SHOW_LABELS:  setYAxisShowLabels(Converter.stringToBoolean(value)); break;
         case PROP_AXIS_TITLE_FONT: setAxisTitleFont(Converter.stringToSwtfont(value)); break;
         case PROP_AXIS_LABEL_FONT: setTickLabelFont(Converter.stringToSwtfont(value)); break;
         case PROP_HIST_BAR: setBarType(Converter.stringToEnum(value, HistogramBar.class)); break;
@@ -220,6 +231,34 @@ public class HistogramPlot extends PlotBase {
         Assert.isNotNull(color);
         xAxis.setGridColor(color);
         yAxis.setGridColor(color);
+        chartChanged();
+    }
+
+    public void setXAxisShowTitle(boolean show) {
+        xAxis.setDrawTitle(show);
+        chartArea = calculatePlotArea();
+        updateArea();
+        chartChanged();
+    }
+
+    public void setXAxisShowLabels(boolean show) {
+        xAxis.setDrawTickLabels(show);
+        chartArea = calculatePlotArea();
+        updateArea();
+        chartChanged();
+    }
+
+    public void setYAxisShowTitle(boolean show) {
+        yAxis.setDrawTitle(show);
+        chartArea = calculatePlotArea();
+        updateArea();
+        chartChanged();
+    }
+
+    public void setYAxisShowLabels(boolean show) {
+        yAxis.setDrawTickLabels(show);
+        chartArea = calculatePlotArea();
+        updateArea();
         chartChanged();
     }
 
