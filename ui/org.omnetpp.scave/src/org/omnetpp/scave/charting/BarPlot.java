@@ -159,7 +159,7 @@ public class BarPlot extends PlotBase {
         IPlotSymbol symbol = new SquareSymbol(6);
         if (dataset != null) {
             for (int i = 0; i < dataset.getSeriesCount(); ++i) {
-                legend.addItem(bars.getBarColor(i), dataset.getSeriesKey(i), symbol, false);
+                legend.addItem(bars.getBarColor(i), dataset.getSeriesTitle(i), symbol, false);
             }
         }
     }
@@ -453,10 +453,10 @@ public class BarPlot extends PlotBase {
             int numSeries = dataset.getSeriesCount();
             int group = groupSeries / numSeries;
             int series = groupSeries % numSeries;
-            String valueStr = dataset.getValueAsString(group, series);
-            String key = dataset.getSeriesKey(series);
+            String valueStr = dataset.getValueAsString(series, group);
+            String title = dataset.getSeriesTitle(series);
 
-            String line1 = StringEscapeUtils.escapeHtml4(key);
+            String line1 = StringEscapeUtils.escapeHtml4(title);
             String line2 = "value: " + valueStr;
 
             TextLayout textLayout = new TextLayout(getDisplay());

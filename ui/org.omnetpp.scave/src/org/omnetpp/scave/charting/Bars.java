@@ -160,15 +160,15 @@ class Bars {
         if (dataset == null)
             return new RectangularArea(0, 0, 1, 1);
 
-        int numGroups = dataset.getGroupCount();
         int numSeries = dataset.getSeriesCount();
+        int numGroups = dataset.getGroupCount();
         double baseline = getTransformedBaseline();
 
         if (Double.isInfinite(baseline)) {
             double newBaseline = baseline < 0.0 ? Double.POSITIVE_INFINITY : Double.NEGATIVE_INFINITY;
             for (int group = 0; group < numGroups; ++group)
                 for (int series = 0; series < numSeries; ++series) {
-                    double value = transformValue(dataset.getValue(group, series));
+                    double value = transformValue(dataset.getValue(series, group));
                     if (!Double.isNaN(value) && !Double.isInfinite(value)) {
                         if (baseline < 0.0)
                             newBaseline = Math.min(newBaseline, value);
@@ -191,7 +191,7 @@ class Bars {
             bars[group] = new RectangularArea[numSeries];
             for (int series = 0; series < numSeries; ++series) {
                 RectangularArea bar = bars[group][series] = new RectangularArea();
-                double value = parent.getDataset().getValue(group, series);
+                double value = parent.getDataset().getValue(series, group);
 
                 // calculate x coordinates
                 switch (barPlacement) {

@@ -71,18 +71,22 @@ def hist(x, bins, density=False, weights=None, cumulative=False, bottom=None, hi
     plot_histogram(label, bins, weights, props=props)
 
 
-def bar(x, height, width=0.8, label=None, color=None, edgecolor=None):
+def bar(x, height, width=0.8, key=None, label=None, color=None, edgecolor=None):
     props = {}
+    _assert_is_native_chart()
 
-    # check if we really got a precomputed histogram, using the trick documented for pyplot.hist
-    if not np.array_equal(x, bins[:-1]):
-        raise ValueError("Histogram computation is not performed.")
+    if color:
+        props["Bar.Color"] = _translate_color(color)
 
-    plot_histogram(label, bins, weights, props=props)
+    plot_bars(pd.DataFrame(
+        {
+            "key": [key],
+            "label": [str(label)],
+            "values": [np.array(height)]
+        }
+    ), props)
 
-    plot_bars(pd.DataFrame({label: height}))
-
-def plot_bars(df):
+def plot_bars(df, props=dict()):
     # TODO: add check for one-layer indices? numbers-only data?
     _assert_is_native_chart()
 
@@ -93,7 +97,7 @@ def plot_bars(df):
             "values": _list_to_bytes(row.values),
         }
         for row in df.itertuples(index=False)
-    ]))
+    ]), props)
 
 
 

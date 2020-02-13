@@ -176,7 +176,7 @@ class DomainAxis {
 
     private LabelData layoutGroupLabel(int row, Font font, double rotation , Graphics graphics, Dimension maxSize) {
         LabelData data = new LabelData();
-        String label = chart.getDataset().getGroupKey(row);
+        String label = chart.getDataset().getGroupTitle(row);
         data.row = row;
         data.textLayout = new TextLayout(Display.getDefault());
         data.textLayout.setText(label.replace(';', '\u00ad')); // hyphenate at ';'
