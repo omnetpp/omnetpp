@@ -7,6 +7,8 @@
 
 package org.omnetpp.scave.editors.ui;
 
+import java.util.List;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -33,6 +35,7 @@ import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.ChartTemplate;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 
 
 public class NewChartFromTemplateDialog extends TitleAreaDialog {
@@ -122,8 +125,12 @@ public class NewChartFromTemplateDialog extends TitleAreaDialog {
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
                 ChartTemplate template = getTableSelection();
-                if (template != null)
-                    renderTemplateDescription(template);
+                if (template != null) {
+                    String html = getDescriptionAsHtml(template);
+                    styledText.setText("");
+                    HTMLUtils.htmlToStyledText(html, styledText, null);
+                    styledText.replaceTextRange(0, 2, ""); // KLUDGE: remove blank line at top (which got there how...?)
+                }
             }
         });
 
@@ -139,13 +146,20 @@ public class NewChartFromTemplateDialog extends TitleAreaDialog {
         return composite;
     }
 
-    protected void renderTemplateDescription(ChartTemplate template) {
-        styledText.setText("");
-        HTMLUtils.htmlToStyledText("<h2>" + template.getName() + "</h2>\n", styledText, null);
+    protected String getDescriptionAsHtml(ChartTemplate template) {
+        String html = "";
 
-        String description = template.getDescription();
-        if (!StringUtils.isBlank(description))
-            HTMLUtils.htmlToStyledText(description, styledText, null);
+        html += "<p><small>";
+        html += "Template ID: " + template.getId() + " / ";
+        html += "type: " + template.getChartType() + " / ";
+        List<String> supportedResultTypes = ScaveModelUtil.getTemplateSupportedResultTypesAsString(template);
+        html += "supports: " + StringUtils.defaultIfEmpty(StringUtils.join(supportedResultTypes, ","), "-");
+        html += "</small></p>\n";
+
+        html += "<h2>" + template.getName() + "</h2>\n";
+
+        html += StringUtils.nullToEmpty(template.getDescription());
+        return html;
     }
 
     protected Label createLabel(Composite composite, String text) {

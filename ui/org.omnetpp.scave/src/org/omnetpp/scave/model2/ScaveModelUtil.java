@@ -97,6 +97,22 @@ public class ScaveModelUtil {
         return chart;
     }
 
+    public static List<String> getTemplateSupportedResultTypesAsString(ChartTemplate template) {
+        List<String> names = new ArrayList<>();
+        int resultTypes = template.getSupportedResultTypes();
+        if ((resultTypes & ResultFileManager.PARAMETER) != 0)
+            names.add("parameters");
+        if ((resultTypes & ResultFileManager.SCALAR) != 0)
+            names.add("scalars");
+        if ((resultTypes & ResultFileManager.VECTOR) != 0)
+            names.add("vectors");
+        if ((resultTypes & ResultFileManager.STATISTICS) != 0)
+            names.add("statistics");
+        if ((resultTypes & ResultFileManager.HISTOGRAM) != 0)
+            names.add("histograms");
+        return names;
+    }
+
     public static void addInputFiles(CommandStack commandStack, Analysis analysis, List<String> list) {
         List<ICommand> addCommands = new ArrayList<ICommand>();
 
