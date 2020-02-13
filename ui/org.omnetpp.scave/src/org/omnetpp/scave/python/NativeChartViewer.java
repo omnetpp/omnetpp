@@ -107,6 +107,11 @@ public class NativeChartViewer extends ChartViewerBase {
         }
 
         @Override
+        public void setGroupTitles(List<String> titles) {
+             scalarDataset.setGroupTitles(titles);
+        }
+
+        @Override
         public void setWarning(String warning) {
             Display.getDefault().syncExec(() -> {
                 plot.setWarningText(warning);

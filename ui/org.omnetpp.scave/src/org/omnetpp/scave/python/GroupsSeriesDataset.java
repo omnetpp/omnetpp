@@ -115,9 +115,11 @@ public class GroupsSeriesDataset implements IGroupsSeriesDataset {
         return !groupTitles.isEmpty() ? groupTitles.get(group) : "";
     }
 
-    public void setGroupTitles(ArrayList<String> groupKeys) {
+    @Override
+    public void setGroupTitles(List<String> groupTitles) {
         // TODO assert length
-        this.groupTitles = groupKeys;
+        this.groupTitles.clear();
+        this.groupTitles.addAll(groupTitles);
     }
 
     @Override

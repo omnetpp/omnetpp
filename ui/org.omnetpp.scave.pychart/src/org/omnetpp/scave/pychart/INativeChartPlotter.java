@@ -1,5 +1,6 @@
 package org.omnetpp.scave.pychart;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,6 +13,8 @@ public interface INativeChartPlotter {
 
     void setProperty(String key, String value);
     void setProperties(Map<String, String> properties);
+
+    void setGroupTitles(List<String> titles);
 
     void setWarning(String warning);
 

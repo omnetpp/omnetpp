@@ -7,6 +7,7 @@
 
 package org.omnetpp.scave.charting.dataset;
 
+import java.util.List;
 
 /**
  * Interface for datasets displayed on bar charts.
@@ -41,6 +42,7 @@ public interface IGroupsSeriesDataset extends IDataset {
      */
     public String getGroupTitle(int group);
 
+    public void setGroupTitles(List<String> groupTitles);
 
     /**
      * Returns the value associated with the specified cell.

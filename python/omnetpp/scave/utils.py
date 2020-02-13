@@ -311,7 +311,9 @@ def plot_bars(df, props, names=None):
 
     for i, column in enumerate(df):
         style = _make_bar_args(props, df)
-        p.bar(ind - 0.4 + width * i + width * 0.5, df[column], width, label=column, **style)
+        p.bar(ind - 0.4 + width * i + width * 0.5, df[column], width, label=df.columns.name + "=" + str(column), **style)
+
+    p.xticks(list(ind), list([df.index.name + "=" + str(i) for i in df.index.values]))
 
     # Add some text for labels, title and custom x-axis tick labels, etc.
     groups = get_prop("groups").split(",")

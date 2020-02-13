@@ -594,6 +594,9 @@ def yscale(value):
         raise ValueError("scale='{}' is not supported, only 'linear' and 'log'".format(value))
     set_property("Y.Axis.Log", "true" if value == "log" else "false")
 
+def xticks(ticks=None, labels=None):
+    Gateway.chart_plotter.setGroupTitles(labels)
+
 def grid(show=True, which="major"):
     if which not in ["major", "both"]:
         raise ValueError("which='{}' is not supported, only 'major', and 'both'".format(which))
