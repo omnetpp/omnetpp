@@ -28,8 +28,8 @@ class Bars {
     BarPlacement barPlacement;
     RGB barBaselineColor;
 
-    // coordinates of the bars, in row/column order
-    // rows are sorted according to the x coordinate
+    // coordinates of the bars, in group/series order
+    // groups are sorted according to the x coordinate
     // y coordinates might be logarithmic
     private RectangularArea[][] bars;
 
@@ -54,12 +54,12 @@ class Bars {
             graphics.pushState();
 
             Rectangle clip = graphics.getClip(new Rectangle());
-            int cColumns = bars[0].length;
-            int[] indices = getRowColumnsInRectangle(clip);
+            int numSeries = bars[0].length;
+            int[] indices = getGroupSeriessInRectangle(clip);
             for (int i = indices[1]; i >= indices[0]; --i) {
-                int row = i / cColumns;
-                int column = i % cColumns;
-                drawBar(graphics, row, column, coordsMapping);
+                int group = i / numSeries;
+                int series = i % numSeries;
+                drawBar(graphics, group, series, coordsMapping);
             }
             graphics.popState();
         }
@@ -78,59 +78,59 @@ class Bars {
         }
     }
 
-    protected void drawBar(Graphics graphics, int row, int column, ICoordsMapping coordsMapping) {
-        LargeRect rect = getBarRectangle(row, column, coordsMapping);
+    protected void drawBar(Graphics graphics, int group, int series, ICoordsMapping coordsMapping) {
+        LargeRect rect = getBarRectangle(group, series, coordsMapping);
         rect.width = Math.max(rect.width, 1);
         rect.height = Math.max(rect.height, 1);
-        graphics.setBackgroundColor(getBarColor(column));
-        graphics.setForegroundColor(getBarOutlineColor(column));
+        graphics.setBackgroundColor(getBarColor(series));
+        graphics.setForegroundColor(getBarOutlineColor(series));
         LargeGraphics.fillRectangle(graphics, rect.x, rect.y, rect.width, rect.height);
         if (rect.width >= 4 && rect.height >= 3) {
             LargeGraphics.drawRectangle(graphics, rect.x, rect.y, rect.width, rect.height);
         }
     }
 
-    protected int[] getRowColumnsInRectangle(org.eclipse.draw2d.geometry.Rectangle rect) {
+    protected int[] getGroupSeriessInRectangle(org.eclipse.draw2d.geometry.Rectangle rect) {
         int[] result = new int[2];
-        result[0] = getRowColumn(rect.x, true);
-        result[1] = getRowColumn(rect.x + rect.width, false);
+        result[0] = getGroupSeries(rect.x, true);
+        result[1] = getGroupSeries(rect.x + rect.width, false);
         return result;
     }
 
-    private int getRowColumn(double x, boolean before) {
-        int cRows = parent.getDataset().getGroupCount();
-        int cColumns = parent.getDataset().getSeriesCount();
-        return before ? 0 : (cRows*cColumns-1);
+    private int getGroupSeries(double x, boolean before) {
+        int numGroups = parent.getDataset().getGroupCount();
+        int numSeries = parent.getDataset().getSeriesCount();
+        return before ? 0 : (numGroups*numSeries-1);
     }
 
-    public int findRowColumn(double x, double y) {
+    public int findGroupSeries(double x, double y) {
         IGroupsSeriesDataset dataset = parent.getDataset();
         if (dataset == null || bars == null)
             return -1;
-        int cRows = parent.getDataset().getGroupCount();
-        int cColumns = parent.getDataset().getSeriesCount();
+        int numGroups = parent.getDataset().getGroupCount();
+        int numSeries = parent.getDataset().getSeriesCount();
 
-        for (int row = 0; row < cRows; ++row)
-            // search columns in Z-order
-            for (int column = 0; column < cColumns; ++column)
-                if (bars[row][column].contains(x, y))
-                    return row * cColumns + column;
+        for (int group = 0; group < numGroups; ++group)
+            // search seriess in Z-order
+            for (int series = 0; series < numSeries; ++series)
+                if (bars[group][series].contains(x, y))
+                    return group * numSeries + series;
 
         return -1;
     }
 
-    protected Color getBarColor(int column) {
-        RGB color = parent.getEffectiveBarColor(parent.getKeyFor(column));
+    protected Color getBarColor(int series) {
+        RGB color = parent.getEffectiveBarColor(parent.getKeyFor(series));
         return new Color(null, color);
     }
 
-    protected Color getBarOutlineColor(int column) {
-        RGB color = parent.getEffectiveBarOutlineColor(parent.getKeyFor(column));
+    protected Color getBarOutlineColor(int series) {
+        RGB color = parent.getEffectiveBarOutlineColor(parent.getKeyFor(series));
         return new Color(null, color);
     }
 
-    protected LargeRect getBarRectangle(int row, int column, ICoordsMapping coordsMapping) {
-        RectangularArea bar = bars[row][column];
+    protected LargeRect getBarRectangle(int group, int series, ICoordsMapping coordsMapping) {
+        RectangularArea bar = bars[group][series];
         double top =  bar.maxY;
         double bottom = bar.minY;
         double left = bar.minX;
@@ -160,17 +160,15 @@ class Bars {
         if (dataset == null)
             return new RectangularArea(0, 0, 1, 1);
 
-        int cRows = dataset.getGroupCount();
-        int cColumns = dataset.getSeriesCount();
+        int numGroups = dataset.getGroupCount();
+        int numSeries = dataset.getSeriesCount();
         double baseline = getTransformedBaseline();
-
-        System.out.println("rows: " + cRows + " columns: " + cColumns);
 
         if (Double.isInfinite(baseline)) {
             double newBaseline = baseline < 0.0 ? Double.POSITIVE_INFINITY : Double.NEGATIVE_INFINITY;
-            for (int row = 0; row < cRows; ++row)
-                for (int column = 0; column < cColumns; ++column) {
-                    double value = transformValue(dataset.getValue(row, column));
+            for (int group = 0; group < numGroups; ++group)
+                for (int series = 0; series < numSeries; ++series) {
+                    double value = transformValue(dataset.getValue(group, series));
                     if (!Double.isNaN(value) && !Double.isInfinite(value)) {
                         if (baseline < 0.0)
                             newBaseline = Math.min(newBaseline, value);
@@ -187,13 +185,13 @@ class Bars {
 
         double x = horizontalInset * widthBar;
         double y = 0;
-        bars = new RectangularArea[cRows][];
-        for (int row = 0; row < cRows; ++row) {
+        bars = new RectangularArea[numGroups][];
+        for (int group = 0; group < numGroups; ++group) {
             y = 0;
-            bars[row] = new RectangularArea[cColumns];
-            for (int column = 0; column < cColumns; ++column) {
-                RectangularArea bar = bars[row][column] = new RectangularArea();
-                double value = parent.getDataset().getValue(row, column);
+            bars[group] = new RectangularArea[numSeries];
+            for (int series = 0; series < numSeries; ++series) {
+                RectangularArea bar = bars[group][series] = new RectangularArea();
+                double value = parent.getDataset().getValue(group, series);
 
                 // calculate x coordinates
                 switch (barPlacement) {
@@ -201,23 +199,23 @@ class Bars {
                     bar.minX = x;
                     bar.maxX = x + widthBar;
                     x += widthBar;
-                    if (column < cColumns - 1)
+                    if (series < numSeries - 1)
                         x += hgapMinor;
-                    else if (row < cRows - 1)
-                        x += hgapMajor * (widthBar * cColumns + (hgapMinor * (cColumns - 1)));
+                    else if (group < numGroups - 1)
+                        x += hgapMajor * (widthBar * numSeries + (hgapMinor * (numSeries - 1)));
                     break;
                 case Overlap:
-                    bar.minX = x + widthBar * column / 2.0;
-                    bar.maxX = bar.minX + widthBar * cColumns / 2.0;
-                    if (column == cColumns - 1 && row < cRows - 1)
-                        x += widthBar * cColumns + hgapMajor * widthBar * cColumns;
+                    bar.minX = x + widthBar * series / 2.0;
+                    bar.maxX = bar.minX + widthBar * numSeries / 2.0;
+                    if (series == numSeries - 1 && group < numGroups - 1)
+                        x += widthBar * numSeries + hgapMajor * widthBar * numSeries;
                     break;
                 case InFront:
                 case Stacked:
                     bar.minX = x;
-                    bar.maxX = x + widthBar * cColumns;
-                    if (column == cColumns - 1 && row < cRows - 1)
-                        x += widthBar * cColumns + hgapMajor * widthBar * cColumns;
+                    bar.maxX = x + widthBar * numSeries;
+                    if (series == numSeries - 1 && group < numGroups - 1)
+                        x += widthBar * numSeries + hgapMajor * widthBar * numSeries;
                     break;
                 }
 

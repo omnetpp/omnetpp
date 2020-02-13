@@ -358,9 +358,9 @@ public class BarPlot extends PlotBase {
         return (barProps == null || barProps.outlineColor == null) ? defaultBarOutlineColor : barProps.outlineColor;
     }
 
-    public String getKeyFor(int columnIndex) {
-        if (columnIndex >= 0 && columnIndex < dataset.getSeriesCount())
-            return dataset.getSeriesKey(columnIndex);
+    public String getKeyFor(int seriesIndex) {
+        if (seriesIndex >= 0 && seriesIndex < dataset.getSeriesCount())
+            return dataset.getSeriesKey(seriesIndex);
         else
             return null;
     }
@@ -448,13 +448,13 @@ public class BarPlot extends PlotBase {
 
     @Override
     String getHoverHtmlText(int x, int y) {
-        int rowColumn = bars.findRowColumn(fromCanvasX(x), fromCanvasY(y));
-        if (rowColumn != -1) {
-            int numColumns = dataset.getSeriesCount();
-            int row = rowColumn / numColumns;
-            int column = rowColumn % numColumns;
-            String valueStr = dataset.getValueAsString(row, column);
-            String key = dataset.getSeriesKey(column);
+        int groupSeries = bars.findGroupSeries(fromCanvasX(x), fromCanvasY(y));
+        if (groupSeries != -1) {
+            int numSeries = dataset.getSeriesCount();
+            int group = groupSeries / numSeries;
+            int series = groupSeries % numSeries;
+            String valueStr = dataset.getValueAsString(group, series);
+            String key = dataset.getSeriesKey(series);
 
             String line1 = StringEscapeUtils.escapeHtml4(key);
             String line2 = "value: " + valueStr;

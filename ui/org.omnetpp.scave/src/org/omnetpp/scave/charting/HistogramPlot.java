@@ -42,6 +42,7 @@ import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IHistogramDataset;
+import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.properties.PlotProperty;
 import org.omnetpp.scave.charting.properties.PlotProperty.HistogramBar;
 import org.omnetpp.scave.charting.properties.PlotProperty.ShowGrid;
@@ -331,7 +332,8 @@ public class HistogramPlot extends PlotBase {
 
     @Override
     void doSetDataset(IDataset dataset) {
-        Assert.isLegal(dataset instanceof IHistogramDataset, "must be an IScalarDataset");
+        if (dataset != null && !(dataset instanceof IHistogramDataset))
+            throw new IllegalArgumentException("must be an IHistogramDataset");
         this.dataset = (IHistogramDataset)dataset;
         updateLegends();
         chartArea = calculatePlotArea();
