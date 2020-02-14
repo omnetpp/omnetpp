@@ -42,7 +42,7 @@ ToInt checked_int_cast(FromInt x, const char *errmsg=nullptr)
     static_assert(std::is_integral<ToInt>::value && std::is_integral<FromInt>::value, "checked_int_cast expects integers");
     ToInt res = x;
     if ((x<0) != (res<0) || x-res != 0)  // note: x!=res would result in warning: signed-unsigned comparison
-        intCastError(std::to_string(x), errmsg);
+        omnetpp::common::intCastError(std::to_string(x), errmsg);
     return res;
 }
 
@@ -56,7 +56,7 @@ ToInt checked_int_cast(double d, const char *errmsg=nullptr)
 {
     static_assert(std::is_integral<ToInt>::value, "checked_int_cast expects integer template argument");
     if (d < std::numeric_limits<ToInt>::min() || d > std::numeric_limits<ToInt>::max())
-        intCastError(std::to_string(d), errmsg);
+        omnetpp::common::intCastError(std::to_string(d), errmsg);
     return (ToInt)d;
 }
 
@@ -71,11 +71,11 @@ inline double safeCastToDouble(intval_t x)
 
 // safe integer operations (throw exception on overflow):
 
-intval_t safeAdd(intval_t a, intval_t b);
-intval_t safeSub(intval_t a, intval_t b);
-intval_t safeMul(intval_t a, intval_t b);
-intval_t intPow(intval_t base, intval_t exp);
-intval_t shift(intval_t a, intval_t b);
+COMMON_API intval_t safeAdd(intval_t a, intval_t b);
+COMMON_API intval_t safeSub(intval_t a, intval_t b);
+COMMON_API intval_t safeMul(intval_t a, intval_t b);
+COMMON_API intval_t intPow(intval_t base, intval_t exp);
+COMMON_API intval_t shift(intval_t a, intval_t b);
 
 }  // namespace common
 }  // namespace omnetpp

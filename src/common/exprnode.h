@@ -41,7 +41,7 @@ struct Context {
 /**
  * Node in the expression evaluation tree.
  */
-class ExprNode {
+class COMMON_API ExprNode {
 public:
     enum Precedence {
         ELEM = 0,    // constant, variable, function
@@ -157,14 +157,14 @@ inline void ExprNode::ensureDimlessDoubleArg(ExprValue& value)
 }
 
 
-class LeafNode : public ExprNode {
+class COMMON_API LeafNode : public ExprNode {
 public:
     virtual Precedence getPrecedence() const override {return ELEM;}
     virtual void setChildren(const std::vector<ExprNode*>& children) override {Assert(children.empty());}
     virtual std::vector<ExprNode*> getChildren() const override {return std::vector<ExprNode*>{};}
 };
 
-class UnaryNode : public ExprNode {
+class COMMON_API UnaryNode : public ExprNode {
 protected:
     ExprNode *child=nullptr;
 public:
@@ -174,7 +174,7 @@ public:
     virtual std::vector<ExprNode*> getChildren() const override {return std::vector<ExprNode*>{child};}
 };
 
-class BinaryNode : public ExprNode {
+class COMMON_API BinaryNode : public ExprNode {
 protected:
     ExprNode *child1=nullptr, *child2=nullptr;
 public:
@@ -184,7 +184,7 @@ public:
     virtual std::vector<ExprNode*> getChildren() const override {return std::vector<ExprNode*>{child1,child2};}
 };
 
-class TernaryNode : public ExprNode {
+class COMMON_API TernaryNode : public ExprNode {
 protected:
     ExprNode *child1=nullptr, *child2=nullptr, *child3=nullptr;
 public:
@@ -194,7 +194,7 @@ public:
     virtual std::vector<ExprNode*> getChildren() const override {return std::vector<ExprNode*>{child1,child2,child3};}
 };
 
-class NaryNode : public ExprNode {
+class COMMON_API NaryNode : public ExprNode {
 protected:
     std::vector<ExprNode*> children;
 public:

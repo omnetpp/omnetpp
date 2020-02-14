@@ -7,8 +7,9 @@
 // `license' for details on this and other legal matters.
 //
 
-#include "OpenStreetMap.h"
 #include <cstring>
+#include <cstdlib>
+#include "OpenStreetMap.h"
 
 namespace osm {
 
@@ -19,9 +20,9 @@ inline double strtod(const char *s)
     return std::strtod(s, nullptr);
 }
 
-inline double strtoll(const char *s)
+inline long strtol(const char *s)
 {
-    return std::strtoll(s, nullptr, 10);
+    return std::strtol(s, nullptr, 10);
 }
 
 OpenStreetMap::~OpenStreetMap()
@@ -61,7 +62,7 @@ Map OpenStreetMap::loadMap(cXMLElement *mapRoot)
 
     for (cXMLElement *child : mapRoot->getChildrenByTagName("node")) {
         Node *node = new Node();
-        node->id = strtoll(child->getAttribute("id"));
+        node->id = strtol(child->getAttribute("id"));
         node->lat = strtod(child->getAttribute("lat"));
         node->lon = strtod(child->getAttribute("lon"));
 
@@ -78,10 +79,10 @@ Map OpenStreetMap::loadMap(cXMLElement *mapRoot)
 
     for (cXMLElement *child : mapRoot->getChildrenByTagName("way")) {
         Way *way = new Way();
-        way->id = strtoll(child->getAttribute("id"));
+        way->id = strtol(child->getAttribute("id"));
         for (cXMLElement *wayChild : child->getChildren()) {
             if (strcmp(wayChild->getTagName(),"nd")==0) {
-                id_t ref = strtoll(wayChild->getAttribute("ref"));
+                id_t ref = strtol(wayChild->getAttribute("ref"));
                 ASSERT(nodeById.find(ref) != nodeById.end());
                 Node *node = nodeById[ref];
                 way->nodes.push_back(node);

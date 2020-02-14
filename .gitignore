@@ -103,6 +103,8 @@ Thumbs.db
 /samples/osg-indoor/osg-indoor
 /samples/osg-earth/osg-earth
 /samples/osg-satellites/osg-satellites
+/samples/openstreetmap/openstreetmap
+/samples/petrinets/petrinets
 /samples/aloha/aloha_dbg
 /samples/cqn/cqn_dbg
 /samples/dyna/dyna_dbg
@@ -121,6 +123,8 @@ Thumbs.db
 /samples/osg-indoor/osg-indoor_dbg
 /samples/osg-earth/osg-earth_dbg
 /samples/osg-satellites/osg-satellites_dbg
+/samples/openstreetmap/openstreetmap_dbg
+/samples/petrinets/petrinets_dbg
 /samples/rundemo.bat
 /samples/*/results/
 /samples/*/*/results/

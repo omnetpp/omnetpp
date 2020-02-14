@@ -61,7 +61,7 @@ public:
      * should translate the given AST into expression tree if it is capable of doing so,
      * otherwise it should return nullptr to give other translators a chance.
      */
-    class AstTranslator {
+    class COMMON_API AstTranslator {
     protected:
         virtual ExprNode *translateChild(AstNode *astChild, AstTranslator *translatorForChildren); // utility
         virtual void translateChildren(AstNode *astNode, ExprNode *node, AstTranslator *translatorForChildren); // utility
@@ -73,7 +73,7 @@ public:
     /**
      * Try multiple translators until one succeeds. If none does, return nullptr.
      */
-    class MultiAstTranslator : public AstTranslator {
+    class COMMON_API MultiAstTranslator : public AstTranslator {
     protected:
         std::vector<AstTranslator*> translators;
     public:
@@ -92,7 +92,7 @@ public:
      * description when the function or variable was recognized, but it is used incorrectly
      * (e.g. with the wrong number or type of parameters).
      */
-    class BasicAstTranslator : public AstTranslator {
+    class COMMON_API BasicAstTranslator : public AstTranslator {
     public:
         virtual ExprNode *translateToExpressionTree(AstNode *astNode, AstTranslator *translatorForChildren);
     protected:

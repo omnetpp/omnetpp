@@ -26,25 +26,25 @@ namespace omnetpp {
 namespace common {
 namespace expression {
 
-class ValueNode : public LeafNode {
+class COMMON_API ValueNode : public LeafNode {
 public:
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
-class UnaryOperatorNode : public UnaryNode {
+class COMMON_API UnaryOperatorNode : public UnaryNode {
 public:
     virtual void print(std::ostream& out, int spaciousness) const override;
 };
 
-class BinaryOperatorNode : public BinaryNode {
+class COMMON_API BinaryOperatorNode : public BinaryNode {
 public:
     virtual void print(std::ostream& out, int spaciousness) const override;
 };
 
-class TernaryOperatorNode : public TernaryNode {
+class COMMON_API TernaryOperatorNode : public TernaryNode {
 };
 
-class ExprNodeFactory {
+class COMMON_API ExprNodeFactory {
 public:
     static LeafNode *createConstant(const ExprValue& value);
     static UnaryNode *createUnaryOperator(const char *op);
@@ -60,7 +60,7 @@ public:
 
 //--------
 
-class ConstantNode : public ValueNode {
+class COMMON_API ConstantNode : public ValueNode {
 protected:
     ExprValue value;
 protected:
@@ -72,7 +72,7 @@ public:
     virtual std::string getName() const override {return value.str();}
 };
 
-class VariableNode : public ValueNode {
+class COMMON_API VariableNode : public ValueNode {
 protected:
     std::string name;
 protected:
@@ -85,7 +85,7 @@ public:
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
-class IndexedVariableNode : public UnaryNode
+class COMMON_API IndexedVariableNode : public UnaryNode
 {
 protected:
     std::string name;
@@ -99,7 +99,7 @@ public:
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
-class MemberNode : public UnaryNode {
+class COMMON_API MemberNode : public UnaryNode {
 protected:
     std::string name;
 protected:
@@ -112,7 +112,7 @@ public:
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
-class IndexedMemberNode : public BinaryNode
+class COMMON_API IndexedMemberNode : public BinaryNode
 {
 protected:
     std::string name;
@@ -126,7 +126,7 @@ public:
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
-class NegateNode : public UnaryOperatorNode {
+class COMMON_API NegateNode : public UnaryOperatorNode {
 protected:
     virtual ExprValue evaluate(Context *context) const override;
 public:
@@ -136,7 +136,7 @@ public:
 };
 
 
-class AddNode : public BinaryOperatorNode {
+class COMMON_API AddNode : public BinaryOperatorNode {
 protected:
     virtual ExprValue evaluate(Context *context) const override;
 public:
@@ -145,7 +145,7 @@ public:
     virtual Precedence getPrecedence() const override {return ADDSUB;}
 };
 
-class SubNode : public BinaryOperatorNode {
+class COMMON_API SubNode : public BinaryOperatorNode {
 protected:
     virtual ExprValue evaluate(Context *context) const override;
 public:
@@ -154,7 +154,7 @@ public:
     virtual Precedence getPrecedence() const override {return ADDSUB;}
 };
 
-class MulNode : public BinaryOperatorNode {
+class COMMON_API MulNode : public BinaryOperatorNode {
 protected:
     virtual ExprValue evaluate(Context *context) const override;
 public:
@@ -163,7 +163,7 @@ public:
     virtual Precedence getPrecedence() const override {return MULDIV;}
 };
 
-class DivNode : public BinaryOperatorNode {
+class COMMON_API DivNode : public BinaryOperatorNode {
 protected:
     virtual ExprValue evaluate(Context *context) const override;
 public:
@@ -172,7 +172,7 @@ public:
     virtual Precedence getPrecedence() const override {return MULDIV;}
 };
 
-class ModNode : public BinaryOperatorNode {
+class COMMON_API ModNode : public BinaryOperatorNode {
 protected:
     virtual ExprValue evaluate(Context *context) const override;
 public:
@@ -181,7 +181,7 @@ public:
     virtual Precedence getPrecedence() const override {return MULDIV;}
 };
 
-class PowNode : public BinaryOperatorNode {
+class COMMON_API PowNode : public BinaryOperatorNode {
 protected:
     virtual ExprValue evaluate(Context *context) const override;
 public:
@@ -190,13 +190,13 @@ public:
     virtual Precedence getPrecedence() const override {return POW;}
 };
 
-class CompareNode : public BinaryOperatorNode {
+class COMMON_API CompareNode : public BinaryOperatorNode {
 protected:
     virtual ExprValue compute(double diff) const = 0;
     virtual ExprValue evaluate(Context *context) const override;
 };
 
-class ThreeWayComparisonNode : public CompareNode {
+class COMMON_API ThreeWayComparisonNode : public CompareNode {
 protected:
     virtual ExprValue compute(double diff) const override { return std::isnan(diff) ? diff : double((0<diff) - (diff<0)); }
 public:
@@ -205,7 +205,7 @@ public:
     virtual Precedence getPrecedence() const override {return RELATIONAL_EQ;}
 };
 
-class EqualNode : public CompareNode {
+class COMMON_API EqualNode : public CompareNode {
 protected:
     virtual ExprValue compute(double diff) const override { return diff == 0; }
 public:
@@ -214,7 +214,7 @@ public:
     virtual Precedence getPrecedence() const override {return RELATIONAL_EQ;}
 };
 
-class NotEqualNode : public CompareNode {
+class COMMON_API NotEqualNode : public CompareNode {
 protected:
     virtual ExprValue compute(double diff) const override { return diff != 0; }
 public:
@@ -223,7 +223,7 @@ public:
     virtual Precedence getPrecedence() const override {return RELATIONAL_EQ;}
 };
 
-class GreaterThanNode : public CompareNode {
+class COMMON_API GreaterThanNode : public CompareNode {
 protected:
     virtual ExprValue compute(double diff) const override { return diff > 0; }
 public:
@@ -232,7 +232,7 @@ public:
     virtual Precedence getPrecedence() const override {return RELATIONAL_LT;}
 };
 
-class LessThanNode : public CompareNode {
+class COMMON_API LessThanNode : public CompareNode {
 protected:
     virtual ExprValue compute(double diff) const override { return diff < 0; }
 public:
@@ -241,7 +241,7 @@ public:
     virtual Precedence getPrecedence() const override {return RELATIONAL_LT;}
 };
 
-class LessOrEqualNode : public CompareNode {
+class COMMON_API LessOrEqualNode : public CompareNode {
 protected:
     virtual ExprValue compute(double diff) const override { return diff <= 0; }
 public:
@@ -250,7 +250,7 @@ public:
     virtual Precedence getPrecedence() const override {return RELATIONAL_LT;}
 };
 
-class GreaterOrEqualNode : public CompareNode {
+class COMMON_API GreaterOrEqualNode : public CompareNode {
 protected:
     virtual ExprValue compute(double diff) const override { return diff >= 0; }
 public:
@@ -259,7 +259,7 @@ public:
     virtual Precedence getPrecedence() const override {return RELATIONAL_LT;}
 };
 
-class MatchNode : public BinaryOperatorNode {
+class COMMON_API MatchNode : public BinaryOperatorNode {
 protected:
     virtual ExprValue evaluate(Context *context) const override;
 public:
@@ -268,7 +268,7 @@ public:
     virtual Precedence getPrecedence() const override {return MATCH;}
 };
 
-class MatchConstPatternNode : public UnaryNode {
+class COMMON_API MatchConstPatternNode : public UnaryNode {
 protected:
     PatternMatcher matcher;
 protected:
@@ -283,7 +283,7 @@ public:
     virtual Precedence getPrecedence() const override {return MATCH;}
 };
 
-class InlineIfNode : public TernaryOperatorNode {
+class COMMON_API InlineIfNode : public TernaryOperatorNode {
 protected:
     virtual void print(std::ostream& out, int spaciousness) const override;
     virtual ExprValue evaluate(Context *context) const override;
@@ -293,7 +293,7 @@ public:
     virtual Precedence getPrecedence() const override {return IIF;}
 };
 
-class NotNode : public UnaryOperatorNode {
+class COMMON_API NotNode : public UnaryOperatorNode {
 protected:
     virtual ExprValue evaluate(Context *context) const override;
 public:
@@ -302,14 +302,14 @@ public:
     virtual Precedence getPrecedence() const override {return UNARY;}
 };
 
-class LogicalInfixOperatorNode : public BinaryOperatorNode {
+class COMMON_API LogicalInfixOperatorNode : public BinaryOperatorNode {
 protected:
     virtual ExprValue evaluate(Context *context) const override;
     virtual bool shortcut(bool left) const = 0;
     virtual bool compute(bool a, bool b) const = 0;
 };
 
-class AndNode : public LogicalInfixOperatorNode {
+class COMMON_API AndNode : public LogicalInfixOperatorNode {
 protected:
     virtual bool shortcut(bool a) const override {return a == false;}
     virtual bool compute(bool a, bool b) const override {return a && b; }
@@ -319,7 +319,7 @@ public:
     virtual Precedence getPrecedence() const override {return LOGICAL_AND;}
 };
 
-class OrNode : public LogicalInfixOperatorNode {
+class COMMON_API OrNode : public LogicalInfixOperatorNode {
 protected:
     virtual bool shortcut(bool a) const override {return a == true;}
     virtual bool compute(bool a, bool b) const override {return a || b; }
@@ -329,7 +329,7 @@ public:
     virtual Precedence getPrecedence() const override {return LOGICAL_OR;}
 };
 
-class XorNode : public LogicalInfixOperatorNode {
+class COMMON_API XorNode : public LogicalInfixOperatorNode {
 protected:
     virtual bool shortcut(bool a) const override {return false;}
     virtual bool compute(bool a, bool b) const override {return a != b; }
@@ -339,7 +339,7 @@ public:
     virtual Precedence getPrecedence() const override {return LOGICAL_XOR;}
 };
 
-class BitwiseNotNode : public UnaryOperatorNode {
+class COMMON_API BitwiseNotNode : public UnaryOperatorNode {
 protected:
     virtual ExprValue evaluate(Context *context) const override;
 public:
@@ -348,13 +348,13 @@ public:
     virtual Precedence getPrecedence() const override {return UNARY;}
 };
 
-class BitwiseInfixOperatorNode : public BinaryOperatorNode {
+class COMMON_API BitwiseInfixOperatorNode : public BinaryOperatorNode {
 protected:
     virtual intval_t compute(intval_t a, intval_t b) const = 0;
     virtual ExprValue evaluate(Context *context) const override;
 };
 
-class BitwiseAndNode : public BitwiseInfixOperatorNode {
+class COMMON_API BitwiseAndNode : public BitwiseInfixOperatorNode {
 protected:
     virtual intval_t compute(intval_t a, intval_t b) const override { return a & b; }
 public:
@@ -363,7 +363,7 @@ public:
     virtual Precedence getPrecedence() const override {return BITWISE_AND;}
 };
 
-class BitwiseOrNode : public BitwiseInfixOperatorNode {
+class COMMON_API BitwiseOrNode : public BitwiseInfixOperatorNode {
 protected:
     virtual intval_t compute(intval_t a, intval_t b) const override { return a | b; }
 public:
@@ -372,7 +372,7 @@ public:
     virtual Precedence getPrecedence() const override {return BITWISE_OR;}
 };
 
-class BitwiseXorNode : public BitwiseInfixOperatorNode {
+class COMMON_API BitwiseXorNode : public BitwiseInfixOperatorNode {
 protected:
     virtual intval_t compute(intval_t a, intval_t b) const override { return a ^ b; }
 public:
@@ -381,7 +381,7 @@ public:
     virtual Precedence getPrecedence() const override {return BITWISE_XOR;}
 };
 
-class LShiftNode : public BitwiseInfixOperatorNode {
+class COMMON_API LShiftNode : public BitwiseInfixOperatorNode {
 protected:
     virtual intval_t compute(intval_t a, intval_t b) const override { return shift(a,b); }
 public:
@@ -390,7 +390,7 @@ public:
     virtual Precedence getPrecedence() const override {return SHIFT;}
 };
 
-class RShiftNode : public BitwiseInfixOperatorNode {
+class COMMON_API RShiftNode : public BitwiseInfixOperatorNode {
 protected:
     virtual intval_t compute(intval_t a, intval_t b) const override { return shift(a,-b); }
 public:
@@ -401,7 +401,7 @@ public:
 
 //---
 
-class IntCastNode : public UnaryNode {
+class COMMON_API IntCastNode : public UnaryNode {
 protected:
     virtual void print(std::ostream& out, int spaciousness) const override;
     virtual ExprValue evaluate(Context *context) const override;
@@ -411,7 +411,7 @@ public:
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
-class DoubleCastNode : public UnaryNode {
+class COMMON_API DoubleCastNode : public UnaryNode {
 protected:
     virtual void print(std::ostream& out, int spaciousness) const override;
     virtual ExprValue evaluate(Context *context) const override;
@@ -421,7 +421,7 @@ public:
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
-class UnitConversionNode : public UnaryNode {
+class COMMON_API UnitConversionNode : public UnaryNode {
 protected:
     std::string name;
 protected:
@@ -434,7 +434,7 @@ public:
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
-class MathFunc0Node : public LeafNode {
+class COMMON_API MathFunc0Node : public LeafNode {
 protected:
     std::string name;
     double (*f)();
@@ -448,7 +448,7 @@ public:
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
-class MathFunc1Node : public UnaryNode {
+class COMMON_API MathFunc1Node : public UnaryNode {
 protected:
     std::string name;
     double (*f)(double);
@@ -462,7 +462,7 @@ public:
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
-class MathFunc2Node : public BinaryNode {
+class COMMON_API MathFunc2Node : public BinaryNode {
 protected:
     std::string name;
     double (*f)(double,double);
@@ -476,7 +476,7 @@ public:
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
-class MathFunc3Node : public TernaryNode {
+class COMMON_API MathFunc3Node : public TernaryNode {
 protected:
     std::string name;
     double (*f)(double,double,double);
@@ -490,7 +490,7 @@ public:
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
-class MathFunc4Node : public NaryNode {
+class COMMON_API MathFunc4Node : public NaryNode {
 protected:
     std::string name;
     double (*f)(double,double,double,double);
@@ -504,7 +504,7 @@ public:
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
-class FunctionNode : public NaryNode {
+class COMMON_API FunctionNode : public NaryNode {
 protected:
     std::string name;
     mutable ExprValue *values = nullptr; // preallocated buffer
@@ -519,7 +519,7 @@ public:
     virtual Precedence getPrecedence() const override {return ELEM;}
 };
 
-class MethodNode : public NaryNode {
+class COMMON_API MethodNode : public NaryNode {
 protected:
     std::string name;
     mutable ExprValue *values = nullptr; // preallocated buffer

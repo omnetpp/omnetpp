@@ -15,6 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <algorithm>
 #include "omnetpp/cvaluearray.h"
 #include "omnetpp/checkandcast.h"
 

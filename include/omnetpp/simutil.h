@@ -51,7 +51,7 @@ ToInt checked_int_cast(FromInt x, const char *errmsg=nullptr)
     static_assert(std::is_integral<ToInt>::value && std::is_integral<FromInt>::value, "checked_int_cast expects integers");
     ToInt res = x;
     if ((x<0) != (res<0) || x-res != 0)  // note: x!=res would result in warning: signed-unsigned comparison
-        intCastError(std::to_string(x), errmsg);
+        omnetpp::intCastError(std::to_string(x), errmsg);
     return res;
 }
 
@@ -66,7 +66,7 @@ ToInt checked_int_cast(FromInt x, const cObject *context, const char *errmsg=nul
     static_assert(std::is_integral<ToInt>::value && std::is_integral<FromInt>::value, "checked_int_cast expects integers");
     ToInt res = x;
     if ((x<0) != (res<0) || x-res != 0)  // note: x!=res would result in warning: signed-unsigned comparison
-        intCastError(std::to_string(x), context, errmsg);
+        omnetpp::intCastError(std::to_string(x), context, errmsg);
     return res;
 }
 
@@ -80,7 +80,7 @@ ToInt checked_int_cast(double d, const char *errmsg=nullptr)
 {
     static_assert(std::is_integral<ToInt>::value, "checked_int_cast expects integer template argument");
     if (d < std::numeric_limits<ToInt>::min() || d > std::numeric_limits<ToInt>::max())
-        intCastError(std::to_string(d), errmsg);
+        omnetpp::intCastError(std::to_string(d), errmsg);
     return (ToInt)d;
 }
 

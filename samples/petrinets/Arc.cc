@@ -7,6 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
+#include <algorithm>
 #include <omnetpp.h>
 #include "Transition.h"
 #include "TransitionScheduler.h"
