@@ -7,12 +7,18 @@
 
 package org.omnetpp.scave.editors.ui;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -22,10 +28,12 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.swt.custom.StyledText;
@@ -42,12 +50,17 @@ public class NewChartFromTemplateDialog extends TitleAreaDialog {
     private String title;
     private ScaveEditor editor;
     private TableViewer tableViewer;
-
-    // the result
-    private ChartTemplate selectedTemplate;
     private StyledText styledText;
     private SashForm sashForm;
 
+    private ImageRegistry imageRegistry = new ImageRegistry();
+
+    // the result
+    private ChartTemplate selectedTemplate;
+
+    /**
+     * LabelProvider for chart templates.
+     */
     public class ChartTemplateLabelProvider extends LabelProvider {
         @Override
         public Image getImage(Object element) {
@@ -81,15 +94,26 @@ public class NewChartFromTemplateDialog extends TitleAreaDialog {
         return UIUtils.getDialogSettings(ScavePlugin.getDefault(), getClass().getName());
     }
 
+    @Override
     protected void configureShell(Shell shell) {
         super.configureShell(shell);
         if (title != null)
             shell.setText(title);
     }
 
-    /* (non-Javadoc)
-     * Method declared on Dialog.
-     */
+    protected Label createLabel(Composite composite, String text) {
+        Label label = new Label(composite, SWT.NONE);
+        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+        label.setText(text);
+        return label;
+    }
+
+    protected void createButtonsForButtonBar(Composite parent) {
+        createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
+        createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
+    }
+
+    @Override
     protected Control createDialogArea(Composite parent) {
         setTitle("Select Chart Template");
         setMessage("Select template for the new chart");
@@ -128,8 +152,7 @@ public class NewChartFromTemplateDialog extends TitleAreaDialog {
                 if (template != null) {
                     String html = getDescriptionAsHtml(template);
                     styledText.setText("");
-                    HTMLUtils.htmlToStyledText(html, styledText, null);
-                    styledText.replaceTextRange(0, 2, ""); // KLUDGE: remove blank line at top (which got there how...?)
+                    HTMLUtils.htmlToStyledText(html, styledText, (String name)->getCachedImage(template, name));
                 }
             }
         });
@@ -158,20 +181,44 @@ public class NewChartFromTemplateDialog extends TitleAreaDialog {
 
         html += "<h2>" + template.getName() + "</h2>\n";
 
-        html += StringUtils.nullToEmpty(template.getDescription());
+        String description = StringUtils.nullToEmpty(template.getDescription());
+        boolean looksLikeHtml = description.trim().startsWith("<");
+        html += looksLikeHtml ? description : "<pre>"+description+"</pre>";
         return html;
     }
 
-    protected Label createLabel(Composite composite, String text) {
-        Label label = new Label(composite, SWT.NONE);
-        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-        label.setText(text);
-        return label;
+    protected Image getCachedImage(ChartTemplate template, String imageName) {
+        String imagePath = template.getOriginFolder() + "/" + imageName;
+
+        Image image = imageRegistry.get(imagePath);
+        if (image == null) {
+            image = loadImage(imagePath);
+            imageRegistry.put(imagePath, image);
+        }
+        return image;
     }
 
-    protected void createButtonsForButtonBar(Composite parent) {
-        createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
-        createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
+    protected Image loadImage(String imagePath) {
+        InputStream stream = null;
+        try {
+            stream = getStream(imagePath);
+            if (stream == null)
+                return null;
+            ImageData imageData = new ImageData(stream);
+            return new Image(Display.getCurrent(), imageData);
+        } catch (Exception e) {
+            ScavePlugin.logError("Cannot load image from '"+imagePath+"' for chart template description", e);
+            return null;
+        } finally {
+            try {stream.close();} catch (IOException ex) {}
+        }
+    }
+
+    protected InputStream getStream(String imagePath) throws IOException, CoreException {
+        if (imagePath.startsWith("plugin:"))
+            return ScavePlugin.getDefault().openStream(new Path(imagePath.substring(7)));
+        else
+            return ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(imagePath)).getContents(true);
     }
 
     protected ChartTemplate getTableSelection() {
@@ -183,6 +230,8 @@ public class NewChartFromTemplateDialog extends TitleAreaDialog {
 
     @Override
     public boolean close() {
+        imageRegistry.dispose();
+
         int w0 = sashForm.getChildren()[0].getBounds().width;
         int w1 = sashForm.getChildren()[1].getBounds().width;
         getDialogBoundsSettings().put("sash.weight0", Integer.toString(w0));
