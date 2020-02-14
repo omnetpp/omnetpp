@@ -68,14 +68,14 @@ public class StyledTextInformationControl extends AbstractInformationControl imp
     @Override
     public void setInformation(String information) {
         styledText.setText("");
-        HTMLUtils.htmlToStyledText(information, styledText, null);
+        HTMLUtils.htmlToStyledText(information, styledText);
     }
 
     @Override
     public void setInput(Object input) {
         styledText.setText("");
         if (input instanceof String)
-            HTMLUtils.htmlToStyledText((String)input, styledText, null);
+            HTMLUtils.htmlToStyledText((String)input, styledText);
         else {
             HtmlInput htmlInput = (HtmlInput)input;
             HTMLUtils.htmlToStyledText(htmlInput.getContent(), styledText, htmlInput.getImageMap());

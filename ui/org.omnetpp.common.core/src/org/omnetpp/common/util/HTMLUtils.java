@@ -24,6 +24,7 @@ import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
 
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ST;
 import org.eclipse.swt.graphics.Font;
@@ -35,6 +36,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.omnetpp.common.CommonCorePlugin;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.swt.custom.Bullet;
 import org.omnetpp.common.swt.custom.PaintObjectEvent;
@@ -68,13 +70,21 @@ import org.omnetpp.common.swt.custom.StyledText;
  */
 public class HTMLUtils {
     /**
-     * WORKAROUND: document.getForeground()/getBackground() methods return "black" 
-     * when no color was specified, instead of returning null. As a workaround, 
-     * we detect the absence of explicit colors by adding a low-priority rule 
-     * to the stylesheet with this FALLBACK_COLOR -- when the methods return 
+     * WORKAROUND: document.getForeground()/getBackground() methods return "black"
+     * when no color was specified, instead of returning null. As a workaround,
+     * we detect the absence of explicit colors by adding a low-priority rule
+     * to the stylesheet with this FALLBACK_COLOR -- when the methods return
      * that value, we take it as null.
      */
     private final static Color FALLBACK_COLOR = new Color(1, 2, 3);
+
+    /**
+     * For resolving "img" tags. Its get() method receives the value of the "src" attribute,
+     * and should return the image for it (or null if could not be resolved).
+     */
+    public interface IImageProvider {
+        Image get(String name);
+    }
 
     /**
      * This font must be set on the StyledText before it is actually shown. See above.
@@ -83,22 +93,46 @@ public class HTMLUtils {
         return new Font(Display.getDefault(), translateFontFamily("Monospaced"), 1, SWT.NORMAL);
     }
 
-    /**
-     * Converts an HTML 3.2 page and appends it as content to the given StyledText.
-     *
-     * @param htmlText the content of the page (HTML 3.2 subset)
-     * @param styledText the widget where the content will be appended
-     * @param imageMap a map from names (to be used as img tag sources) to images
-     */
+    public static void htmlToStyledText(String htmlText, StyledText styledText) {
+        htmlToStyledText(new StringReader(htmlText), styledText, (IImageProvider)null);
+    }
+
     public static void htmlToStyledText(String htmlText, StyledText styledText, Map<String, Image> imageMap) {
         htmlToStyledText(new StringReader(htmlText), styledText, imageMap);
+    }
+
+    public static void htmlToStyledText(String htmlText, StyledText styledText, IImageProvider imageProvider) {
+        htmlToStyledText(new StringReader(htmlText), styledText, imageProvider);
+    }
+
+    public static void htmlToStyledText(InputStream inputStream, StyledText styledText) {
+        htmlToStyledText(new InputStreamReader(inputStream), styledText, (IImageProvider)null);
     }
 
     public static void htmlToStyledText(InputStream inputStream, StyledText styledText, Map<String, Image> imageMap) {
         htmlToStyledText(new InputStreamReader(inputStream), styledText, imageMap);
     }
 
+    public static void htmlToStyledText(InputStream inputStream, StyledText styledText, IImageProvider imageProvider) {
+        htmlToStyledText(new InputStreamReader(inputStream), styledText, imageProvider);
+    }
+
+    public static void htmlToStyledText(Reader reader, StyledText styledText) {
+        htmlToStyledText(reader, styledText, (IImageProvider)null);
+    }
+
     public static void htmlToStyledText(Reader reader, StyledText styledText, Map<String, Image> imageMap) {
+        htmlToStyledText(reader, styledText, (String name) -> imageMap.get(name));
+    }
+
+    /**
+     * Converts an HTML 3.2 page and appends it as content to the given StyledText.
+     *
+     * @param htmlText the content of the page (HTML 3.2 subset)
+     * @param styledText the widget where the content will be appended
+     * @param imageProvider maps from names (to be used as img tag sources) to images
+     */
+    public static void htmlToStyledText(Reader reader, StyledText styledText, IImageProvider imageProvider) {
         try {
             HTMLEditorKit editorKit = new HTMLEditorKit();
             HTMLDocument document = (HTMLDocument)editorKit.createDefaultDocument();
@@ -108,7 +142,7 @@ public class HTMLUtils {
             styles.addRule("body, p, h1, h2, h3, h4, h5, h6, pre, code, ol, ul, dl, li, td, th, blockquote { color: " + fallbackColor + "; background-color: " + fallbackColor + "; }");
             editorKit.read(reader, document, 0);
             for (Element rootElement : document.getRootElements())
-                htmlToStyledTextRecursive(new Context(), rootElement, styledText, imageMap);
+                htmlToStyledTextRecursive(new Context(), rootElement, styledText, imageProvider);
             // KLUDGE: for correct tooltip background/foreground colors
             styledText.setColorLock(true);
         }
@@ -117,16 +151,19 @@ public class HTMLUtils {
         }
     }
 
-    private static void htmlToStyledTextRecursive(Context context, Element element, StyledText styledText, Map<String, Image> imageMap) throws BadLocationException {
+    private static void htmlToStyledTextRecursive(Context context, Element element, StyledText styledText, IImageProvider imageProvider) throws BadLocationException {
         String stringName = element.getName();
         HTMLDocument document = (HTMLDocument)element.getDocument();
         if (element instanceof RunElement) {
             if (stringName.equals("br"))
                 styledText.append("\n");
             else if (stringName.equals("img")) {
-                if (imageMap != null) {
-                    final int startOffset = styledText.getCharCount();
-                    final Image image = imageMap.get(getAttributeValue(element, "src"));
+                if (imageProvider != null) {
+                    int startOffset = styledText.getCharCount();
+                    Image image = imageProvider.get(getAttributeValue(element, "src"));
+                    if (image == null)
+                        image = CommonCorePlugin.getCachedImage("icons/unknown.png");
+                    final Image finalImage = image;
                     Rectangle rectangle = image.getBounds();
                     // images are recognized in the text flow by this special unicode character
                     styledText.append("\uFFFC");
@@ -144,7 +181,7 @@ public class HTMLUtils {
                             if (startOffset == style.start) {
                                 int x = event.x;
                                 int y = event.y + event.ascent - style.metrics.ascent;
-                                gc.drawImage(image, x, y);
+                                gc.drawImage(finalImage, x, y);
                             }
                         }
                     });
@@ -221,7 +258,7 @@ public class HTMLUtils {
                 insertVerticalSpacing(((Number)spaceAbove).intValue(), styledText);
             // recurse into tag
             for (int i = 0; i < abstractElement.getElementCount(); i++)
-                htmlToStyledTextRecursive(context, abstractElement.getElement(i), styledText, imageMap);
+                htmlToStyledTextRecursive(context, abstractElement.getElement(i), styledText, imageProvider);
             // handle space below
             Object spaceBelow = attributeSet.getAttribute(StyleConstants.SpaceBelow);
             if (realTag && spaceBelow instanceof Number)
