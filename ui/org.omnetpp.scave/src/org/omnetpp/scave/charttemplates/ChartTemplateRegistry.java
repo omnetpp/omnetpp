@@ -11,11 +11,14 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang3.EnumUtils;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.FileUtils;
@@ -57,8 +60,9 @@ public class ChartTemplateRegistry {
 
         try {
             // load from the plugin
-            for (String propertiesFile : readFile("FILELIST", null).split("\n"))
-                registerChartTemplate(propertiesFile, null);
+            String pluginTemplatesFolder = getTemplatesFolder(null);
+            for (String propertiesFile : readFile(pluginTemplatesFolder, "FILELIST").split("\n"))
+                registerChartTemplate(pluginTemplatesFolder, propertiesFile);
 
             // load from projects
             IProject[] projectsToScan = ProjectUtils.getAllReferencedProjects(project, true, true);
@@ -66,7 +70,7 @@ public class ChartTemplateRegistry {
                 if (project.getFolder(CHARTTEMPLATES_FOLDER).exists())
                     for (IResource member : project.getFolder(CHARTTEMPLATES_FOLDER).members())
                         if (member instanceof IFile && member.getName().endsWith(".properties"))
-                            registerChartTemplate(member.getName(), project);
+                            registerChartTemplate(getTemplatesFolder(project), member.getName());
         }
         catch (IOException|CoreException e ) {
             ScavePlugin.logError("Error loading chart templates", e);
@@ -75,27 +79,27 @@ public class ChartTemplateRegistry {
         lastTimeLoaded = System.currentTimeMillis();
     }
 
-    private void registerChartTemplate(String propertiesFile, IProject fromProject) {
+    private void registerChartTemplate(String templatesFolder, String propertiesFile) {
+        IContainer workspaceFolder = getWorkspaceFolder(templatesFolder);
         try {
-            if (fromProject != null)
-                fromProject.getFolder(CHARTTEMPLATES_FOLDER).getFile(propertiesFile).deleteMarkers(Markers.CHARTTEMPLATE_PROBLEMMARKER_ID, true, IResource.DEPTH_ZERO);
-            ChartTemplate chartTemplate = loadChartTemplate(propertiesFile, fromProject);
+            if (workspaceFolder != null)
+                workspaceFolder.getFile(new Path(propertiesFile)).deleteMarkers(Markers.CHARTTEMPLATE_PROBLEMMARKER_ID, true, IResource.DEPTH_ZERO);
+            ChartTemplate chartTemplate = loadChartTemplate(templatesFolder, propertiesFile);
             if (doFindTemplateByID(templates, chartTemplate.getId()) != null)
                 throw new RuntimeException("template ID is not unique");
             templates.add(chartTemplate);
             Debug.println("Loaded chart template " + chartTemplate);
         }
         catch (Exception e) {
-            String location = fromProject == null ? "plugin " + ScavePlugin.PLUGIN_ID : "project " + fromProject.getName();
-            ScavePlugin.logError("Cannot load chart template " + propertiesFile + " from " + location, e);
-            if (fromProject != null)
-                addErrorMarker(fromProject.getFolder(CHARTTEMPLATES_FOLDER).getFile(propertiesFile), e.getMessage());
+            ScavePlugin.logError("Cannot load chart template " + propertiesFile + " from " + templatesFolder, e);
+            if (workspaceFolder != null)
+                addErrorMarker(workspaceFolder.getFile(new Path(propertiesFile)), e.getMessage());
         }
     }
 
-    private ChartTemplate loadChartTemplate(String propertiesFile, IProject fromProject) throws IOException, CoreException {
+    private ChartTemplate loadChartTemplate(String templatesFolder, String propertiesFile) throws IOException, CoreException {
         Properties props = new Properties();
-        props.load(new StringReader(readFile(propertiesFile, fromProject)));
+        props.load(new StringReader(readFile(templatesFolder, propertiesFile)));
 
         // base properties
         String id = props.getProperty("id");
@@ -106,6 +110,7 @@ public class ChartTemplateRegistry {
         String scriptFile = props.getProperty("scriptFile");
         String toolbarIcon = props.getProperty("toolbarIcon");
         int toolbarOrder = Integer.parseInt(props.getProperty("toolbarOrder", "-1"));
+        String originFolder = new Path(templatesFolder + "/" + propertiesFile).removeLastSegments(1).toString();
 
         // dialog pages
         List<Chart.DialogPage> pages = new ArrayList<Chart.DialogPage>();
@@ -118,7 +123,7 @@ public class ChartTemplateRegistry {
             String pageLabel = props.getProperty("dialogPage." + i + ".label", "");
             String xswtFile = props.getProperty("dialogPage." + i + ".xswtFile");
 
-            String xswtContent = xswtFile != null ? readFile(xswtFile, fromProject) : "";
+            String xswtContent = xswtFile != null ? readFile(templatesFolder, xswtFile) : "";
             Chart.DialogPage page = new DialogPage(pageId, pageLabel, xswtContent);
             pages.add(page);
         }
@@ -129,7 +134,7 @@ public class ChartTemplateRegistry {
             throw new RuntimeException("Unrecognized chart type '" + type + "', use one of: " + StringUtils.join(Chart.ChartType.values(), ","));
 
         // chart script
-        String script = scriptFile != null ? readFile(scriptFile, fromProject) : "";
+        String script = scriptFile != null ? readFile(templatesFolder, scriptFile) : "";
 
         // collect chart property declarations with their default values
         HashMap<String,String> properties = new HashMap<>();
@@ -165,9 +170,17 @@ public class ChartTemplateRegistry {
             }
         }
 
-        ChartTemplate template = new ChartTemplate(id, name, description, chartType, icon, resultTypes, script, pages, toolbarOrder, toolbarIcon, properties);
+        ChartTemplate template = new ChartTemplate(id, name, description, chartType, icon, resultTypes, script, pages, toolbarOrder, toolbarIcon, properties, originFolder.toString());
 
         return template;
+    }
+
+    protected String getTemplatesFolder(IProject project) {
+        return project == null ? "plugin:/" + CHARTTEMPLATES_FOLDER : project.getName() + "/" + CHARTTEMPLATES_FOLDER;
+    }
+
+    protected IContainer getWorkspaceFolder(String folder) {
+        return folder.startsWith("plugin:") ? null : ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(folder));
     }
 
     public List<ChartTemplate> getChartTemplatesForResultTypes(int resultTypes) {
@@ -201,16 +214,16 @@ public class ChartTemplateRegistry {
         return result;
     }
 
-    public String readFile(String name, IProject fromProject) throws IOException, CoreException {
+    public String readFile(String folder, String name) throws IOException, CoreException {
+        String path = folder + "/" + name;
         InputStream stream;
-        if (fromProject == null) {
-            String path = "/" + CHARTTEMPLATES_FOLDER + "/" + name;
-            stream = ChartTemplateRegistry.class.getResourceAsStream(path);
+        if (path.startsWith("plugin:")) {
+            stream = ScavePlugin.getDefault().openStream(new Path(path.substring(7)));
             if (stream == null)
                 throw new IOException("Could not read resource file: " + path);
         }
         else {
-            IFile file = fromProject.getFolder(CHARTTEMPLATES_FOLDER).getFile(name);
+            IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path));
             stream = file.getContents();
             if (stream == null) {
                 addErrorMarker(file, "Could not read file: " + file.getFullPath());

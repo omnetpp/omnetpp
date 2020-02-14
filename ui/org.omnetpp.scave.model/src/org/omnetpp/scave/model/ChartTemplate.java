@@ -12,7 +12,6 @@ import org.omnetpp.scave.model.Chart.DialogPage;
  * Represents a chart template.
  */
 public class ChartTemplate {
-
     private String id;
     private String name;
     private String description;
@@ -24,9 +23,10 @@ public class ChartTemplate {
     private int toolbarOrder = -1;
     private String toolbarIconPath;
     private Map<String,String> properties;
+    private String originFolder; // workspace path or plugin-relative path (latter starts with "plugin:")
 
     public ChartTemplate(String id, String name, String description, ChartType chartType, String iconPath, int supportedResultTypes,
-            String pythonScript, List<DialogPage> dialogPages, int toolbarOrder, String toolbarIconPath, Map<String,String> properties) {
+            String pythonScript, List<DialogPage> dialogPages, int toolbarOrder, String toolbarIconPath, Map<String,String> properties, String originFolder) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -38,6 +38,7 @@ public class ChartTemplate {
         this.toolbarOrder = toolbarOrder;
         this.toolbarIconPath = toolbarIconPath;
         this.properties = properties;
+        this.originFolder = originFolder;
     }
 
     public String getId() {
@@ -59,6 +60,10 @@ public class ChartTemplate {
 
     public String getIconPath() {
         return iconPath;
+    }
+
+    public int getSupportedResultTypes() {
+        return supportedResultTypes;
     }
 
     public String getPythonScript() {
@@ -89,8 +94,8 @@ public class ChartTemplate {
         return properties.get(name);
     }
 
-    public int getSupportedResultTypes() {
-        return supportedResultTypes;
+    public String getOriginFolder() {
+        return originFolder;
     }
 
     @Override
