@@ -113,10 +113,6 @@ AC_DEFUN([AC_PROG_CXX_OPTION], [
 # Autoconf initialization
 #
 AC_INIT
-AC_CONFIG_SRCDIR(include/omnetpp.h)
-AC_LANG(C++)
-AC_CONFIG_AUX_DIR(src/utils)
-AC_CANONICAL_HOST()
 
 #
 # OMNeT++/OMNEST version number
@@ -150,6 +146,18 @@ AC_MSG_NOTICE(-----------------------------------------------)
 AC_MSG_NOTICE(reading configure.user for your custom settings)
 AC_MSG_NOTICE(-----------------------------------------------)
 . ./configure.user
+
+# force MS-ABI / x64 compatible target if requested by the user
+if test "$USE_MS_ABI" = "yes"; then
+  CFLAGS="$CFLAGS --target=x86_64-windows-msvc" 
+  CXXFLAGS="$CXXFLAGS --target=x86_64-windows-msvc" 
+  LDFLAGS="$LDFLAGS --target=x86_64-windows-msvc"
+fi
+
+AC_CONFIG_SRCDIR(include/omnetpp.h)
+AC_LANG(C++)
+AC_CONFIG_AUX_DIR(src/utils)
+AC_CANONICAL_HOST()
 
 # check command line arguments and override the values set in configure.user with them
 for arg in $ac_configure_args
@@ -185,7 +193,7 @@ CFLAGS_DEBUG=${CFLAGS_DEBUG:- -g -Wall}
 CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O3 -DNDEBUG=1}
 CFLAGS=${CFLAGS:-}
 DEPENDFLAGS=${DEPENDFLAGS:- -MMD -MP -MF \$@.d}
-CXXFLAGS=${CXXFLAGS:- -std=c++11}
+CXXFLAGS=${CXXFLAGS:- -std=c++14}
 DEFINES=${DEFINES:-}
 PREFER_CLANG=${PREFER_CLANG:-yes}
 USE_MS_ABI=${USE_MS_ABI:-no}
@@ -336,10 +344,8 @@ else
             TOOLCHAIN_NAME="clang-msabi"
             echo "checking whether we are using MS ABI compatible libraries... yes"
             DEFINES="$DEFINES -D_MT -D_WINDOWS -D_WIN32 -DWIN32 -DWIN64 -D_USRDLL -D_WINDLL -D_DLL"
-            CFLAGS="$CFLAGS --target=x86_64-windows-msvc"
             CFLAGS_ARCH="$CFLAGS_ARCH -Wno-deprecated-declarations -isystem /visualc/include"
-            CXXFLAGS="-std=c++14 -fcxx-exceptions"
-            LDFLAGS="$LDFLAGS --target=x86_64-windows-msvc"
+            CXXFLAGS="-fcxx-exceptions"
             LDFLAG_LIBPATH="-Wl,-libpath:"
             LDFLAG_INCLUDE="-Wl,-include:"
             LDFLAG_LIB="-Wl,-wholearchive:"
@@ -451,22 +457,22 @@ if echo $CFLAGS | grep -i -- "-fPIC" >/dev/null 2>/dev/null; then
     PIC_FLAGS=-fPIC
 fi
 if test "$fpic" = "x" && \
-   $CXX -c conftest.cc >/dev/null 2>/dev/null && \
-   $SHLIB_LD -o conftest.so conftest.o >/dev/null 2>/dev/null; \
+   $CXX $CFLAGS -c conftest.cc >/dev/null 2>/dev/null && \
+   $SHLIB_LD $LDFLAGS -o conftest.so conftest.o >/dev/null 2>/dev/null; \
 then
    AC_MSG_RESULT(no)
    fpic=""
 fi
 if test "$fpic" = "x" && \
-   $CXX -fPIC -c conftest.cc >/dev/null 2>/dev/null && \
-   $SHLIB_LD -fPIC -o conftest.so conftest.o >/dev/null 2>/dev/null; \
+   $CXX $CFLAGS -fPIC -c conftest.cc >/dev/null 2>/dev/null && \
+   $SHLIB_LD $LDFLAGS -fPIC -o conftest.so conftest.o >/dev/null 2>/dev/null; \
 then
    AC_MSG_RESULT(yes)
    fpic="-fPIC"
 fi
 if test "$fpic" = "x" && \
-   $CXX -fpic -c conftest.cc >/dev/null 2>/dev/null && \
-   $SHLIB_LD -fpic -o conftest.so conftest.o >/dev/null 2>/dev/null; \
+   $CXX $CFLAGS -fpic -c conftest.cc >/dev/null 2>/dev/null && \
+   $SHLIB_LD $LDFLAGS -fpic -o conftest.so conftest.o >/dev/null 2>/dev/null; \
 then
    AC_MSG_RESULT(-fpic)
    fpic="-fpic"
@@ -773,23 +779,23 @@ SYS_LIBS=""
 
 if test "$TOOLCHAIN_NAME" != "clang-msabi"; then
   # math functions
-  OPP_CHECK_LIB(math, math.h, floor(0), , , math_ok)
+  OPP_CHECK_LIB(math, math.h, floor(0), $CFLAGS, , math_ok)
   if test $math_ok = no; then
-     OPP_CHECK_LIB(math, math.h, floor(0), , -lm, math_ok, SYS_LIBS="-lm $SYS_LIBS")
+     OPP_CHECK_LIB(math, math.h, floor(0), $CFLAGS, -lm, math_ok, SYS_LIBS="-lm $SYS_LIBS")
   fi
   if test $math_ok = no; then
      AC_MSG_ERROR([Standard C math library -lm not found])
   fi
 
   # Check for standard C++ library
-  OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lstdc++, stdcpp_ok, SYS_LIBS="-lstdc++ $SYS_LIBS")
+  OPP_CHECK_LIB(standard C++ lib, iostream, /**/, $CFLAGS, -lstdc++, stdcpp_ok, SYS_LIBS="-lstdc++ $SYS_LIBS")
   # standard C++ library for clang on Mac
   if test $stdcpp_ok = no; then
-      OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lc++, stdcpp_ok, SYS_LIBS="-lc++ $SYS_LIBS")
+      OPP_CHECK_LIB(standard C++ lib, iostream, /**/, $CFLAGS, -lc++, stdcpp_ok, SYS_LIBS="-lc++ $SYS_LIBS")
   fi
   # standard C++ library for the intel compiler
   if test $stdcpp_ok = no; then
-      OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lcxa, stdcpp_ok, SYS_LIBS="-lcxa $SYS_LIBS")
+      OPP_CHECK_LIB(standard C++ lib, iostream, /**/, $CFLAGS, -lcxa, stdcpp_ok, SYS_LIBS="-lcxa $SYS_LIBS")
   fi
   if test $stdcpp_ok = no; then
      AC_MSG_ERROR([Standard C++ library -lstdc++_s or -lstdc++ or -lcxx or -lcxa or -lc++ not found])
@@ -797,9 +803,9 @@ if test "$TOOLCHAIN_NAME" != "clang-msabi"; then
 fi # end clang-msabi
 
 # dlopen()
-OPP_CHECK_LIB(dlopen, dlfcn.h, dlopen("",0), , , dl_ok)
+OPP_CHECK_LIB(dlopen, dlfcn.h, dlopen("",0), $CFLAGS, , dl_ok)
 if test $dl_ok = no; then
-   OPP_CHECK_LIB(dlopen, dlfcn.h, dlopen("",0), , -ldl, dl_ok, SYS_LIBS="-ldl $SYS_LIBS")
+   OPP_CHECK_LIB(dlopen, dlfcn.h, dlopen("",0), $CFLAGS, -ldl, dl_ok, SYS_LIBS="-ldl $SYS_LIBS")
 fi
 if test $dl_ok = yes; then
    HAVE_DLOPEN=1

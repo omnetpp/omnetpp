@@ -2019,6 +2019,50 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
+#
+# OMNeT++/OMNEST version number
+#
+OMNETPP_PRODUCT="OMNeT++"
+OMNETPP_RELEASE=`cat Version`
+OMNETPP_VERSION=`cat Version | sed 's/^.*-//'`
+OMNETPP_BUILDID="internal"
+
+#
+# Edition identifier in banner: Academic / Commercial / Evaluation
+OMNETPP_EDITION="Academic Public License -- NOT FOR COMMERCIAL USE"
+
+# IDE executable name
+if test "$OMNETPP_PRODUCT" = "OMNeT++"; then
+    OMNETPP_IDE_EXECUTABLE="omnetpp"
+else
+    OMNETPP_IDE_EXECUTABLE="omnest"
+fi
+
+# We'll collect in this variable the components we've detected problems with
+OPP_PROBLEM_PACKAGES=
+
+# determine OMNETPP_ROOT
+OMNETPP_ROOT=$(cd $(dirname "$0"); pwd)
+
+#----------------------
+# Read user settings (and allow override the above settings)
+#----------------------
+{ $as_echo "$as_me:${as_lineno-$LINENO}: -----------------------------------------------" >&5
+$as_echo "$as_me: -----------------------------------------------" >&6;}
+{ $as_echo "$as_me:${as_lineno-$LINENO}: reading configure.user for your custom settings" >&5
+$as_echo "$as_me: reading configure.user for your custom settings" >&6;}
+{ $as_echo "$as_me:${as_lineno-$LINENO}: -----------------------------------------------" >&5
+$as_echo "$as_me: -----------------------------------------------" >&6;}
+. ./configure.user
+
+# force MS-ABI / x64 compatible target if requested by the user
+if test "$USE_MS_ABI" = "yes"; then
+  CFLAGS="$CFLAGS --target=x86_64-windows-msvc"
+  CXXFLAGS="$CXXFLAGS --target=x86_64-windows-msvc"
+  LDFLAGS="$LDFLAGS --target=x86_64-windows-msvc"
+fi
+
+
 ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -2126,42 +2170,6 @@ case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
 
 
 
-#
-# OMNeT++/OMNEST version number
-#
-OMNETPP_PRODUCT="OMNeT++"
-OMNETPP_RELEASE=`cat Version`
-OMNETPP_VERSION=`cat Version | sed 's/^.*-//'`
-OMNETPP_BUILDID="internal"
-
-#
-# Edition identifier in banner: Academic / Commercial / Evaluation
-OMNETPP_EDITION="Academic Public License -- NOT FOR COMMERCIAL USE"
-
-# IDE executable name
-if test "$OMNETPP_PRODUCT" = "OMNeT++"; then
-    OMNETPP_IDE_EXECUTABLE="omnetpp"
-else
-    OMNETPP_IDE_EXECUTABLE="omnest"
-fi
-
-# We'll collect in this variable the components we've detected problems with
-OPP_PROBLEM_PACKAGES=
-
-# determine OMNETPP_ROOT
-OMNETPP_ROOT=$(cd $(dirname "$0"); pwd)
-
-#----------------------
-# Read user settings (and allow override the above settings)
-#----------------------
-{ $as_echo "$as_me:${as_lineno-$LINENO}: -----------------------------------------------" >&5
-$as_echo "$as_me: -----------------------------------------------" >&6;}
-{ $as_echo "$as_me:${as_lineno-$LINENO}: reading configure.user for your custom settings" >&5
-$as_echo "$as_me: reading configure.user for your custom settings" >&6;}
-{ $as_echo "$as_me:${as_lineno-$LINENO}: -----------------------------------------------" >&5
-$as_echo "$as_me: -----------------------------------------------" >&6;}
-. ./configure.user
-
 # check command line arguments and override the values set in configure.user with them
 for arg in $ac_configure_args
 do
@@ -2196,7 +2204,7 @@ CFLAGS_DEBUG=${CFLAGS_DEBUG:- -g -Wall}
 CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O3 -DNDEBUG=1}
 CFLAGS=${CFLAGS:-}
 DEPENDFLAGS=${DEPENDFLAGS:- -MMD -MP -MF \$@.d}
-CXXFLAGS=${CXXFLAGS:- -std=c++11}
+CXXFLAGS=${CXXFLAGS:- -std=c++14}
 DEFINES=${DEFINES:-}
 PREFER_CLANG=${PREFER_CLANG:-yes}
 USE_MS_ABI=${USE_MS_ABI:-no}
@@ -3327,10 +3335,8 @@ else
             TOOLCHAIN_NAME="clang-msabi"
             echo "checking whether we are using MS ABI compatible libraries... yes"
             DEFINES="$DEFINES -D_MT -D_WINDOWS -D_WIN32 -DWIN32 -DWIN64 -D_USRDLL -D_WINDLL -D_DLL"
-            CFLAGS="$CFLAGS --target=x86_64-windows-msvc"
             CFLAGS_ARCH="$CFLAGS_ARCH -Wno-deprecated-declarations -isystem /visualc/include"
-            CXXFLAGS="-std=c++14 -fcxx-exceptions"
-            LDFLAGS="$LDFLAGS --target=x86_64-windows-msvc"
+            CXXFLAGS="-fcxx-exceptions"
             LDFLAG_LIBPATH="-Wl,-libpath:"
             LDFLAG_INCLUDE="-Wl,-include:"
             LDFLAG_LIB="-Wl,-wholearchive:"
@@ -3554,24 +3560,24 @@ $as_echo "skip (already in CFLAGS)" >&6; }
     PIC_FLAGS=-fPIC
 fi
 if test "$fpic" = "x" && \
-   $CXX -c conftest.cc >/dev/null 2>/dev/null && \
-   $SHLIB_LD -o conftest.so conftest.o >/dev/null 2>/dev/null; \
+   $CXX $CFLAGS -c conftest.cc >/dev/null 2>/dev/null && \
+   $SHLIB_LD $LDFLAGS -o conftest.so conftest.o >/dev/null 2>/dev/null; \
 then
    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
    fpic=""
 fi
 if test "$fpic" = "x" && \
-   $CXX -fPIC -c conftest.cc >/dev/null 2>/dev/null && \
-   $SHLIB_LD -fPIC -o conftest.so conftest.o >/dev/null 2>/dev/null; \
+   $CXX $CFLAGS -fPIC -c conftest.cc >/dev/null 2>/dev/null && \
+   $SHLIB_LD $LDFLAGS -fPIC -o conftest.so conftest.o >/dev/null 2>/dev/null; \
 then
    { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
    fpic="-fPIC"
 fi
 if test "$fpic" = "x" && \
-   $CXX -fpic -c conftest.cc >/dev/null 2>/dev/null && \
-   $SHLIB_LD -fpic -o conftest.so conftest.o >/dev/null 2>/dev/null; \
+   $CXX $CFLAGS -fpic -c conftest.cc >/dev/null 2>/dev/null && \
+   $SHLIB_LD $LDFLAGS -fpic -o conftest.so conftest.o >/dev/null 2>/dev/null; \
 then
    { $as_echo "$as_me:${as_lineno-$LINENO}: result: -fpic" >&5
 $as_echo "-fpic" >&6; }
@@ -4317,11 +4323,11 @@ if test "$TOOLCHAIN_NAME" != "clang-msabi"; then
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS=""
+   CXXFLAGS="$CFLAGS"
    LIBS=""
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for math with CFLAGS=\"\" LIBS=\"\"" >&5
-$as_echo_n "checking for math with CFLAGS=\"\" LIBS=\"\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for math with CFLAGS=\"$CFLAGS\" LIBS=\"\"" >&5
+$as_echo_n "checking for math with CFLAGS=\"$CFLAGS\" LIBS=\"\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -4352,11 +4358,11 @@ rm -f core conftest.err conftest.$ac_objext \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS=""
+   CXXFLAGS="$CFLAGS"
    LIBS="-lm"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for math with CFLAGS=\"\" LIBS=\"-lm\"" >&5
-$as_echo_n "checking for math with CFLAGS=\"\" LIBS=\"-lm\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for math with CFLAGS=\"$CFLAGS\" LIBS=\"-lm\"" >&5
+$as_echo_n "checking for math with CFLAGS=\"$CFLAGS\" LIBS=\"-lm\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -4392,11 +4398,11 @@ rm -f core conftest.err conftest.$ac_objext \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS=""
+   CXXFLAGS="$CFLAGS"
    LIBS="-lstdc++"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for standard C++ lib with CFLAGS=\"\" LIBS=\"-lstdc++\"" >&5
-$as_echo_n "checking for standard C++ lib with CFLAGS=\"\" LIBS=\"-lstdc++\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for standard C++ lib with CFLAGS=\"$CFLAGS\" LIBS=\"-lstdc++\"" >&5
+$as_echo_n "checking for standard C++ lib with CFLAGS=\"$CFLAGS\" LIBS=\"-lstdc++\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -4428,11 +4434,11 @@ rm -f core conftest.err conftest.$ac_objext \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS=""
+   CXXFLAGS="$CFLAGS"
    LIBS="-lc++"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for standard C++ lib with CFLAGS=\"\" LIBS=\"-lc++\"" >&5
-$as_echo_n "checking for standard C++ lib with CFLAGS=\"\" LIBS=\"-lc++\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for standard C++ lib with CFLAGS=\"$CFLAGS\" LIBS=\"-lc++\"" >&5
+$as_echo_n "checking for standard C++ lib with CFLAGS=\"$CFLAGS\" LIBS=\"-lc++\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -4465,11 +4471,11 @@ rm -f core conftest.err conftest.$ac_objext \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS=""
+   CXXFLAGS="$CFLAGS"
    LIBS="-lcxa"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for standard C++ lib with CFLAGS=\"\" LIBS=\"-lcxa\"" >&5
-$as_echo_n "checking for standard C++ lib with CFLAGS=\"\" LIBS=\"-lcxa\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for standard C++ lib with CFLAGS=\"$CFLAGS\" LIBS=\"-lcxa\"" >&5
+$as_echo_n "checking for standard C++ lib with CFLAGS=\"$CFLAGS\" LIBS=\"-lcxa\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -4506,11 +4512,11 @@ fi # end clang-msabi
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS=""
+   CXXFLAGS="$CFLAGS"
    LIBS=""
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for dlopen with CFLAGS=\"\" LIBS=\"\"" >&5
-$as_echo_n "checking for dlopen with CFLAGS=\"\" LIBS=\"\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for dlopen with CFLAGS=\"$CFLAGS\" LIBS=\"\"" >&5
+$as_echo_n "checking for dlopen with CFLAGS=\"$CFLAGS\" LIBS=\"\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -4541,11 +4547,11 @@ if test $dl_ok = no; then
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS=""
+   CXXFLAGS="$CFLAGS"
    LIBS="-ldl"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for dlopen with CFLAGS=\"\" LIBS=\"-ldl\"" >&5
-$as_echo_n "checking for dlopen with CFLAGS=\"\" LIBS=\"-ldl\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for dlopen with CFLAGS=\"$CFLAGS\" LIBS=\"-ldl\"" >&5
+$as_echo_n "checking for dlopen with CFLAGS=\"$CFLAGS\" LIBS=\"-ldl\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
