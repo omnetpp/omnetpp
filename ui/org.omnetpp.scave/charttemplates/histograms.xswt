@@ -44,7 +44,7 @@ Show over_underflow cell?
     </button>
 
     <!-- Show over_underflow cell? -->
-    <button x:id="show_overflows" text="Show over_underflow cell" x:style="CHECK">
+    <button x:id="show_overflows" text="Show under/overflows" x:style="CHECK">
       <layoutData x:class="GridData" horizontalSpan="2"/>
     </button>
 
