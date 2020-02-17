@@ -290,6 +290,11 @@ public class LargeGraphics {
             // loop through all for clipping edges
             for (byte edgeID = 0; edgeID < 4; edgeID++) {
                 clippedPolygon.clear();
+                if (!closed && polygon.size() >= 2) {
+                    long[] clippedLine = CohenSutherland.clipLine(polygon.get(0).x, polygon.get(0).y, polygon.get(1).x, polygon.get(1).y, xmin, ymin, xmax, ymax, buffer);
+                    if (clippedLine != null)
+                        clippedPolygon.add(new LargePoint(clippedLine[0], clippedLine[1]));
+                }
                 for (int i = 0; i < polygon.size() - 1; i++) {
                     currentPoint = polygon.get(i);
                     nextPoint = polygon.get(i+1);
