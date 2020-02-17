@@ -24,15 +24,15 @@ import org.omnetpp.common.canvas.LargeGraphics;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.charting.dataset.IHistogramDataset;
-import org.omnetpp.scave.charting.plotter.IChartSymbol;
+import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 import org.omnetpp.scave.charting.plotter.SquareSymbol;
 import org.omnetpp.scave.charting.properties.ChartDefaults;
 import org.omnetpp.scave.charting.properties.HistogramChartVisualProperties.HistogramBar;
 import org.omnetpp.scave.charting.properties.HistogramChartVisualProperties.HistogramDataType;
 
-class HistogramPlot {
+public class HistogramPlot {
 
-    HistogramChartViewer canvas;
+    HistogramPlotViewer canvas;
     Rectangle area = Rectangle.SINGLETON;
 
     HistogramBar barType = ChartDefaults.DEFAULT_HIST_BAR;
@@ -43,7 +43,7 @@ class HistogramPlot {
     RectangularArea bars[][] = new RectangularArea[0][];
     double transformedBaseline;
 
-    HistogramPlot(HistogramChartViewer canvas) {
+    HistogramPlot(HistogramPlotViewer canvas) {
         this.canvas = canvas;
         setHistogramData(ChartDefaults.DEFAULT_HIST_DATA);
     }
@@ -235,7 +235,7 @@ class HistogramPlot {
     void updateLegend(ILegend legend) {
         legend.clearItems();
         IHistogramDataset dataset = canvas.getDataset();
-        IChartSymbol symbol = new SquareSymbol();
+        IPlotSymbol symbol = new SquareSymbol();
         for (int series = 0; series < dataset.getSeriesCount(); ++series) {
             legend.addItem(getHistogramColor(series), dataset.getSeriesTitle(series), symbol, false);
         }

@@ -15,7 +15,7 @@ import org.omnetpp.common.canvas.LargeGraphics;
  *
  * @author andras
  */
-public class OvalSymbol extends ChartSymbol {
+public class OvalSymbol extends PlotSymbol {
     private int size;
 
     public OvalSymbol() {

@@ -11,7 +11,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.charting.ChartViewer;
+import org.omnetpp.scave.charting.PlotViewerBase;
 import org.omnetpp.scave.editors.ScaveEditor;
 
 /**
@@ -48,7 +48,7 @@ public class ZoomChartAction extends AbstractScaveAction {
     @Override
     protected void doRun(ScaveEditor scaveEditor, ISelection selection) {
         Assert.isTrue(isEnabled());
-        ChartViewer canvas = scaveEditor.getActiveChartViewer();
+        PlotViewerBase canvas = scaveEditor.getActivePlotViewer();
         if (canvas != null) {
             if (horizontally) {
                 if (zoomFactor == 0.0)
@@ -67,7 +67,7 @@ public class ZoomChartAction extends AbstractScaveAction {
 
     @Override
     protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
-        ChartViewer canvas = editor.getActiveChartViewer();
+        PlotViewerBase canvas = editor.getActivePlotViewer();
         if (canvas != null) {
             boolean res = zoomFactor > 1.0 && horizontally && canvas.getZoomX() < canvas.getMaxZoomX() ||
                    zoomFactor > 1.0 && vertically && canvas.getZoomY() < canvas.getMaxZoomY() ||

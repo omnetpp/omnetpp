@@ -57,7 +57,7 @@ import org.omnetpp.scave.actions.ShowOutputVectorViewAction;
 import org.omnetpp.scave.actions.UndoAction;
 import org.omnetpp.scave.actions.ViewModeAction;
 import org.omnetpp.scave.actions.ZoomChartAction;
-import org.omnetpp.scave.charting.IChartView;
+import org.omnetpp.scave.charting.IPlotViewer;
 import org.omnetpp.scave.charttemplates.ChartTemplate;
 import org.omnetpp.scave.python.KillPythonProcessAction;
 
@@ -173,8 +173,8 @@ public class ScaveEditorActions {
     /**
      * Listen on zoom state changes of the chart.
      */
-    public void registerChart(final IChartView chartView) {
-        chartView.addPropertyChangeListener(zoomListener);
+    public void registerPlot(final IPlotViewer plotViewer) {
+        plotViewer.addPropertyChangeListener(zoomListener);
     }
 
     public void populateContextMenu(IMenuManager menuManager) {

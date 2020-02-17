@@ -18,7 +18,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.GraphicsUtils;
-import org.omnetpp.scave.charting.plotter.IChartSymbol;
+import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 import org.omnetpp.scave.charting.properties.ChartVisualProperties.LegendAnchor;
 import org.omnetpp.scave.charting.properties.ChartVisualProperties.LegendPosition;
 
@@ -32,12 +32,12 @@ public class Legend implements ILegend {
     class Item {
         String text;
         Color color;
-        IChartSymbol symbol;
+        IPlotSymbol symbol;
         boolean drawLine;
         int x, y;   // location relative to the legend top-left
         int width, height;
 
-        public Item(Color color, String text, IChartSymbol symbol, boolean drawLine) {
+        public Item(Color color, String text, IPlotSymbol symbol, boolean drawLine) {
             this.color = color;
             this.text = text;
             this.symbol = symbol;
@@ -110,7 +110,7 @@ public class Legend implements ILegend {
         items.clear();
     }
 
-    public void addItem(Color color, String text, IChartSymbol symbol, boolean drawLine) {
+    public void addItem(Color color, String text, IPlotSymbol symbol, boolean drawLine) {
         items.add(new Item(color, text, symbol, drawLine));
     }
 

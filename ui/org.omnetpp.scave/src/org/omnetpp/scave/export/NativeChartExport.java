@@ -10,7 +10,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 //import org.omnetpp.scave.charting.ChartViewerFactory;
-import org.omnetpp.scave.charting.IChartView;
+import org.omnetpp.scave.charting.IPlotViewer;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 
@@ -34,7 +34,7 @@ public class NativeChartExport implements IChartExport {
             if (monitor != null)
                 monitor.beginTask("Exporting chart " + chart.getName(), 2);
             Display.getDefault().syncExec(new Runnable() {
-                private IChartView chartView;
+                private IPlotViewer plotViewer;
 
                 public void run() {
                     /*

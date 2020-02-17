@@ -27,7 +27,7 @@ public class StepsLinePlotter extends LinePlotter {
         this.pre = pre;
     }
 
-    public boolean plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol, int timeLimitMillis) {
+    public boolean plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IPlotSymbol symbol, int timeLimitMillis) {
         IXYDataset dataset = plot.getDataset();
         int n = dataset.getItemCount(series);
         if (n==0)

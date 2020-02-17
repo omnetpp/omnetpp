@@ -15,7 +15,7 @@ import org.omnetpp.common.canvas.LargeGraphics;
  *
  * @author andras
  */
-public class PlusSymbol extends ChartSymbol {
+public class PlusSymbol extends PlotSymbol {
     private int size;
 
     public PlusSymbol() {

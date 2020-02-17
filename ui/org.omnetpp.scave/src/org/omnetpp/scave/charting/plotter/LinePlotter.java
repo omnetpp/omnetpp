@@ -38,7 +38,7 @@ public abstract class LinePlotter implements ILinePlotter {
         return new int[] {first, last};
     }
 
-    public int[] canvasYRange(Graphics graphics, IChartSymbol symbol) {
+    public int[] canvasYRange(Graphics graphics, IPlotSymbol symbol) {
         Rectangle clip = GraphicsUtils.getClip(graphics);
         int extra = symbol==null ? 0 : 2*symbol.getSizeHint(); // to be safe
         int top = clip.y - extra;
@@ -46,7 +46,7 @@ public abstract class LinePlotter implements ILinePlotter {
         return new int[] {top, bottom};
     }
 
-    public double[] valueRange(Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol) {
+    public double[] valueRange(Graphics graphics, ICoordsMapping mapping, IPlotSymbol symbol) {
         Rectangle clip = GraphicsUtils.getClip(graphics);
         int extra = symbol==null ? 0 : 2*symbol.getSizeHint(); // to be safe
         double hi = mapping.fromCanvasY(clip.y - extra);
@@ -57,7 +57,7 @@ public abstract class LinePlotter implements ILinePlotter {
     /**
      * Utility function to plot the symbols
      */
-    protected boolean plotSymbols(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol, int timeLimitMillis) {
+    protected boolean plotSymbols(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IPlotSymbol symbol, int timeLimitMillis) {
         if (symbol == null)
             return true;
 

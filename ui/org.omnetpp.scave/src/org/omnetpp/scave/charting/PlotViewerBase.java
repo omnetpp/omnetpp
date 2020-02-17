@@ -64,11 +64,11 @@ import org.omnetpp.scave.charting.properties.ChartVisualProperties.LegendAnchor;
 import org.omnetpp.scave.charting.properties.ChartVisualProperties.LegendPosition;
 
 /**
- * Base class for all chart widgets.
+ * Base class for all plot widgets.
  *
  * @author tomi, andras
  */
-public abstract class ChartViewer extends ZoomableCachingCanvas implements IChartView {
+public abstract class PlotViewerBase extends ZoomableCachingCanvas implements IPlotViewer {
 
     private static final boolean debug = false;
 
@@ -98,13 +98,13 @@ public abstract class ChartViewer extends ZoomableCachingCanvas implements IChar
     private Color insetsBackgroundColor = DEFAULT_INSETS_BACKGROUND_COLOR;
     private Color insetsLineColor = DEFAULT_INSETS_LINE_COLOR;
 
-    protected IChartSelection selection;
+    protected IPlotSelection selection;
     private ListenerList listeners = new ListenerList();
 
     private int layoutDepth = 0; // how many layoutChart() calls are on the stack
     private IDataset dataset;
 
-    public ChartViewer(Composite parent, int style) {
+    public PlotViewerBase(Composite parent, int style) {
         super(parent, style);
         setCaching(DEFAULT_CANVAS_CACHING);
         setBackground(backgroundColor);
@@ -255,11 +255,11 @@ public abstract class ChartViewer extends ZoomableCachingCanvas implements IChar
      */
     protected abstract RectangularArea calculatePlotArea();
 
-    public IChartSelection getSelection() {
+    public IPlotSelection getSelection() {
         return selection;
     }
 
-    public void setSelection(IChartSelection selection) {
+    public void setSelection(IPlotSelection selection) {
         if (!ObjectUtils.equals(this.selection, selection)) {
             this.selection = selection;
             chartChanged();
@@ -275,7 +275,7 @@ public abstract class ChartViewer extends ZoomableCachingCanvas implements IChar
         listeners.remove(listener);
     }
 
-    protected void fireChartSelectionChange(IChartSelection selection) {
+    protected void fireChartSelectionChange(IPlotSelection selection) {
         for (Object listener : listeners.getListeners())
             ((IChartSelectionListener)listener).selectionChanged(selection);
     }

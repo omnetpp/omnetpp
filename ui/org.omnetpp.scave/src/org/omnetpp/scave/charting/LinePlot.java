@@ -16,40 +16,40 @@ import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
-import org.omnetpp.scave.charting.VectorChartViewer.LineProperties;
+import org.omnetpp.scave.charting.LinePlotViewer.LineProperties;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
-import org.omnetpp.scave.charting.plotter.IChartSymbol;
+import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 import org.omnetpp.scave.charting.plotter.ILinePlotter;
 
 class LinePlot implements ILinePlot {
 
     private static final boolean debug = false;
 
-    private VectorChartViewer chart;
+    private LinePlotViewer viewer;
     private Rectangle rect = new Rectangle(0,0,1,1);
 
-    public LinePlot(VectorChartViewer chart) {
-        this.chart = chart;
+    public LinePlot(LinePlotViewer viewer) {
+        this.viewer = viewer;
     }
 
     public IXYDataset getDataset() {
-        return chart.getDataset();
+        return viewer.getDataset();
     }
 
     public double transformX(double x) {
-        return chart.transformX(x);
+        return viewer.transformX(x);
     }
 
     public double transformY(double y) {
-        return chart.transformY(y);
+        return viewer.transformY(y);
     }
 
     public double inverseTransformX(double x) {
-        return chart.inverseTransformX(x);
+        return viewer.inverseTransformX(x);
     }
 
     public double inverseTransformY(double y) {
-        return chart.inverseTransformY(y);
+        return viewer.inverseTransformY(y);
     }
 
 
@@ -72,7 +72,7 @@ class LinePlot implements ILinePlot {
             area.maxY = dataset.getMaxY();
 
             // try to find the area by transforming the dataset range
-            area = chart.transformArea(area);
+            area = viewer.transformArea(area);
 
             if (!area.isFinite()) {
                 // some bounds are outside of the transformation domain,
@@ -91,7 +91,7 @@ class LinePlot implements ILinePlot {
                     if (n > 0) {
                         // X must be increasing
                         for (int i = 0; i < n; i++) {
-                            double x = chart.transformX(dataset.getX(series,i));
+                            double x = viewer.transformX(dataset.getX(series,i));
                             if (!Double.isNaN(x) && !Double.isInfinite(x))
                             {
                                 area.minX = Math.min(area.minX, x);
@@ -99,7 +99,7 @@ class LinePlot implements ILinePlot {
                             }
                         }
                         for (int i = n-1; i >= 0; i--) {
-                            double x = chart.transformX(dataset.getX(series,i));
+                            double x = viewer.transformX(dataset.getX(series,i));
                             if (!Double.isNaN(x) && !Double.isInfinite(x))
                             {
                                 area.maxX = Math.max(area.maxX, x);
@@ -107,7 +107,7 @@ class LinePlot implements ILinePlot {
                             }
                         }
                         for (int i = 0; i < n; i++) {
-                            double y = chart.transformY(dataset.getY(series, i));
+                            double y = viewer.transformY(dataset.getY(series, i));
                             if (!Double.isNaN(y) && !Double.isInfinite(y)) {
                                 area.minY = Math.min(area.minY, y);
                                 area.maxY = Math.max(area.maxY, y);
@@ -154,14 +154,14 @@ class LinePlot implements ILinePlot {
             boolean ok = true;
 
             for (int series = 0; series < dataset.getSeriesCount(); series++) {
-                LineProperties props = chart.getLineProperties(series);
+                LineProperties props = viewer.getLineProperties(series);
                 if (props.getDisplayLine()) {
 
                     ILinePlotter plotter = props.getPlotter();
-                    IChartSymbol symbol = props.getSymbol();
+                    IPlotSymbol symbol = props.getSymbol();
                     Color color = props.getColor();
-                    chart.resetDrawingStylesAndColors(graphics);
-                    graphics.setAntialias(chart.antialias ? SWT.ON : SWT.OFF);
+                    viewer.resetDrawingStylesAndColors(graphics);
+                    graphics.setAntialias(viewer.antialias ? SWT.ON : SWT.OFF);
                     graphics.setForegroundColor(color);
                     graphics.setBackgroundColor(color);
 
@@ -174,12 +174,12 @@ class LinePlot implements ILinePlot {
                     // if drawing is taking too long, display busy cursor
                     if (System.currentTimeMillis() - startTime > 1000) {
                         Cursor cursor = Display.getCurrent().getSystemCursor(SWT.CURSOR_WAIT);
-                        chart.getShell().setCursor(cursor);
-                        chart.setCursor(null); // crosshair cursor would override shell's busy cursor
+                        viewer.getShell().setCursor(cursor);
+                        viewer.setCursor(null); // crosshair cursor would override shell's busy cursor
                     }
                 }
             }
-            chart.getShell().setCursor(null);
+            viewer.getShell().setCursor(null);
             if (debug) Debug.println("plotting: "+(System.currentTimeMillis()-startTime)+" ms");
             return ok;
         }

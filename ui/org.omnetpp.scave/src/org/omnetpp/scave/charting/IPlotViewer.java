@@ -4,7 +4,7 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.scave.charting.dataset.IDataset;
 
-public interface IChartView {
+public interface IPlotViewer {
 
     ZoomableCachingCanvas getCanvas();
 
@@ -15,7 +15,7 @@ public interface IChartView {
     void addPropertyChangeListener(IPropertyChangeListener listener);
     void removePropertyChangeListener(IPropertyChangeListener listener);
 
-    IChartSelection getSelection();
+    IPlotSelection getSelection();
 
     void addChartSelectionListener(IChartSelectionListener listener);
     void removeChartSelectionListener(IChartSelectionListener listener);

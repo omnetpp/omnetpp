@@ -47,7 +47,7 @@ import org.omnetpp.scave.charting.dataset.IAveragedScalarDataset;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IScalarDataset;
 import org.omnetpp.scave.charting.dataset.IStringValueScalarDataset;
-import org.omnetpp.scave.charting.plotter.IChartSymbol;
+import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 import org.omnetpp.scave.charting.plotter.SquareSymbol;
 import org.omnetpp.scave.charting.properties.ChartVisualProperties.ShowGrid;
 import org.omnetpp.scave.charting.properties.BarChartVisualProperties.BarPlacement;
@@ -55,11 +55,11 @@ import org.omnetpp.scave.engine.Statistics;
 import org.omnetpp.scave.model2.StatUtils;
 
 /**
- * Bar chart.
+ * Bar plot.
  *
  * @author tomi
  */
-public class ScalarChartViewer extends ChartViewer {  //TODO BarPlot
+public class BarPlotViewer extends PlotViewerBase {
     private IScalarDataset dataset;
 
     private LinearAxis valueAxis = new LinearAxis(true, DEFAULT_Y_AXIS_LOGARITHMIC, false);
@@ -71,11 +71,11 @@ public class ScalarChartViewer extends ChartViewer {  //TODO BarPlot
         RGB color;
     }
 
-    static class BarSelection implements IChartSelection {
+    static class BarSelection implements IPlotSelection {
         // TODO selection on ScalarCharts
     }
 
-    public ScalarChartViewer(Composite parent, int style) {
+    public BarPlotViewer(Composite parent, int style) {
         super(parent, style);
         plot = new BarPlot(this);
         new Tooltip(this);
@@ -136,7 +136,7 @@ public class ScalarChartViewer extends ChartViewer {  //TODO BarPlot
 
     private void updateLegend(ILegend legend) {
         legend.clearItems();
-        IChartSymbol symbol = new SquareSymbol();
+        IPlotSymbol symbol = new SquareSymbol();
         if (dataset != null) {
             for (int i = 0; i < dataset.getColumnCount(); ++i) {
                 legend.addItem(plot.getBarColor(i), dataset.getColumnKey(i), symbol, false);
@@ -395,7 +395,7 @@ public class ScalarChartViewer extends ChartViewer {  //TODO BarPlot
                 double halfInterval = Double.NaN;
                 if (dataset instanceof IAveragedScalarDataset) {
                     Statistics stat = ((IAveragedScalarDataset)dataset).getStatistics(row, column);
-                    halfInterval = StatUtils.confidenceInterval(stat, ScalarChartViewer.CONFIDENCE_LEVEL);
+                    halfInterval = StatUtils.confidenceInterval(stat, BarPlotViewer.CONFIDENCE_LEVEL);
                 }
                 valueStr = formatValue(value, halfInterval);
             }

@@ -26,7 +26,7 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;
-import org.omnetpp.scave.charting.plotter.IChartSymbol;
+import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 
 /**
  * Legend tooltip.
@@ -42,14 +42,14 @@ class LegendTooltip implements ILegend
         String label;
         Image image;
 
-        public Item(Color color, String label, IChartSymbol symbol, boolean drawLine) {
+        public Item(Color color, String label, IPlotSymbol symbol, boolean drawLine) {
             this.color = color;
             this.label = label;
             this.image = SymbolImageFactory.createSymbolImage(symbol, color, drawLine);
         }
     }
 
-    public LegendTooltip(ChartViewer parent) {
+    public LegendTooltip(PlotViewerBase parent) {
         button = new Button(parent, SWT.FLAT | SWT.CENTER | SWT.NO_FOCUS);
         Image icon = ImageFactory.global().getImage(ImageFactory.TOOLBAR_IMAGE_LEGEND);
         button.setImage(icon);
@@ -84,7 +84,7 @@ class LegendTooltip implements ILegend
         items.clear();
     }
 
-    public void addItem(Color color, String label, IChartSymbol symbol, boolean drawLine) {
+    public void addItem(Color color, String label, IPlotSymbol symbol, boolean drawLine) {
         items.add(new Item(color, label, symbol, drawLine));
     }
 

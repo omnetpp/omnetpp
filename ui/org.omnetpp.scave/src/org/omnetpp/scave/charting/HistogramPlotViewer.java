@@ -45,7 +45,7 @@ import org.omnetpp.scave.charting.properties.ChartDefaults;
 import org.omnetpp.scave.charting.properties.HistogramChartVisualProperties.HistogramBar;
 import org.omnetpp.scave.charting.properties.HistogramChartVisualProperties.HistogramDataType;
 
-public class HistogramChartViewer extends ChartViewer { //TODO HistogramPlot
+public class HistogramPlotViewer extends PlotViewerBase {
 
     private static final boolean debug = false;
 
@@ -60,7 +60,7 @@ public class HistogramChartViewer extends ChartViewer { //TODO HistogramPlot
         RGB color;
     }
 
-    public HistogramChartViewer(Composite parent, int style) {
+    public HistogramPlotViewer(Composite parent, int style) {
         super(parent, style);
         plot = new HistogramPlot(this);
         new Tooltip(this);
@@ -68,7 +68,7 @@ public class HistogramChartViewer extends ChartViewer { //TODO HistogramPlot
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseDown(MouseEvent e) {
-                setSelection(new IChartSelection() {
+                setSelection(new IPlotSelection() {
                 });
             }
         });

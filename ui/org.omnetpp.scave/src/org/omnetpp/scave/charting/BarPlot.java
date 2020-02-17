@@ -38,9 +38,9 @@ class BarPlot {
     // y coordinates might be logarithmic
     private RectangularArea[][] bars;
 
-    private ScalarChartViewer chart;
+    private BarPlotViewer chart;
 
-    public BarPlot(ScalarChartViewer chart) {
+    public BarPlot(BarPlotViewer chart) {
         this.chart = chart;
     }
 

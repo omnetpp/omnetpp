@@ -72,7 +72,7 @@ import org.omnetpp.scave.actions.RefreshChartAction;
 import org.omnetpp.scave.actions.SaveTempChartAction;
 import org.omnetpp.scave.actions.ToggleShowSourceAction;
 import org.omnetpp.scave.actions.ZoomChartAction;
-import org.omnetpp.scave.charting.ChartViewer;
+import org.omnetpp.scave.charting.PlotViewerBase;
 import org.omnetpp.scave.editors.ui.ChartPage;
 import org.omnetpp.scave.editors.ui.FormEditorPage;
 import org.omnetpp.scave.model.Chart;
@@ -281,7 +281,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
                 nativeChartViewer.addOutputListener(outputListener);
                 nativeChartViewer.addStateChangeListener(stateChangeListener);
 
-                ChartViewer chartViewer = nativeChartViewer.getChartViewer();
+                PlotViewerBase chartViewer = nativeChartViewer.getPlotViewer();
 
                 chartViewer.addPropertyChangeListener(new IPropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent event) {
@@ -295,7 +295,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
                 });
 
                 chartViewer.setMenu(createNativeMenuManager().createContextMenu(chartViewer));
-                scaveEditor.getActions().registerChart(chartViewer);
+                scaveEditor.getActions().registerPlot(chartViewer);
             }
 
             sourceViewer.getTextWidget().addFocusListener(new FocusListener() {

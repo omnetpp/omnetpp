@@ -15,7 +15,7 @@ import org.omnetpp.common.canvas.LargeGraphics;
  *
  * @author andras
  */
-public class TriangleSymbol extends ChartSymbol {
+public class TriangleSymbol extends PlotSymbol {
     private int height;
     private int[] poly;
     private long[] work = new long[6];

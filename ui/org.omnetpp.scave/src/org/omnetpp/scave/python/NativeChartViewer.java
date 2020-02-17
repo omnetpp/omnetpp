@@ -12,10 +12,10 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.Converter;
-import org.omnetpp.scave.charting.ChartViewer;
-import org.omnetpp.scave.charting.HistogramChartViewer;
-import org.omnetpp.scave.charting.ScalarChartViewer;
-import org.omnetpp.scave.charting.VectorChartViewer;
+import org.omnetpp.scave.charting.PlotViewerBase;
+import org.omnetpp.scave.charting.HistogramPlotViewer;
+import org.omnetpp.scave.charting.BarPlotViewer;
+import org.omnetpp.scave.charting.LinePlotViewer;
 import org.omnetpp.scave.charting.properties.ChartDefaults;
 import org.omnetpp.scave.charting.properties.ChartVisualProperties;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -54,7 +54,7 @@ public class NativeChartViewer extends ChartViewerBase {
             if(debug)
                 Debug.println("setProperty syncExec begin: " + key + " : " + value);
             Display.getDefault().syncExec(() -> {
-                chartView.setProperty(key, value);
+                plotViewer.setProperty(key, value);
             });
             if(debug)
                 Debug.println("setProperty syncExec end");
@@ -66,7 +66,7 @@ public class NativeChartViewer extends ChartViewerBase {
                 Debug.println("setProperties syncExec begin");
             Display.getDefault().syncExec(() -> {
                 for (String k : properties.keySet())
-                    chartView.setProperty(k, properties.get(k));
+                    plotViewer.setProperty(k, properties.get(k));
             });
             if(debug)
                 Debug.println("setProperties syncExec end");
@@ -75,7 +75,7 @@ public class NativeChartViewer extends ChartViewerBase {
         @Override
         public void setWarning(String warning) {
             Display.getDefault().syncExec(() -> {
-                chartView.setWarningText(warning); // TODO separate text for this
+                plotViewer.setWarningText(warning); // TODO separate text for this
             });
         }
 
@@ -96,20 +96,20 @@ public class NativeChartViewer extends ChartViewerBase {
     }
 
     ChartPlotter chartPlotter = new ChartPlotter();
-    ChartViewer chartView;
+    PlotViewerBase plotViewer;
 
     public NativeChartViewer(PythonProcessPool pool, Chart chart, ResultFileManager rfm, Composite parent) {
         super(pool, chart, rfm);
 
         switch (chart.getType()) {
         case BAR:
-            chartView = new ScalarChartViewer(parent, SWT.DOUBLE_BUFFERED);
+            plotViewer = new BarPlotViewer(parent, SWT.DOUBLE_BUFFERED);
             break;
         case HISTOGRAM:
-            chartView = new HistogramChartViewer(parent, SWT.DOUBLE_BUFFERED);
+            plotViewer = new HistogramPlotViewer(parent, SWT.DOUBLE_BUFFERED);
             break;
         case LINE:
-            chartView = new VectorChartViewer(parent, SWT.DOUBLE_BUFFERED);
+            plotViewer = new LinePlotViewer(parent, SWT.DOUBLE_BUFFERED);
             break;
         case MATPLOTLIB:
         default:
@@ -118,18 +118,18 @@ public class NativeChartViewer extends ChartViewerBase {
     }
 
     public void runPythonScript(String script, File workingDir, Runnable runAfterDone, ExceptionHandler runAfterError) {
-        if (chartView.isDisposed())
+        if (plotViewer.isDisposed())
             return;
 
         killPythonProcess();
-        chartView.setWarningText(null);
+        plotViewer.setWarningText(null);
 
         if (script == null || script.isEmpty()) {
-            chartView.setStatusText("No Python script given");
+            plotViewer.setStatusText("No Python script given");
             return;
         }
 
-        chartView.setStatusText("Running Python script...");
+        plotViewer.setStatusText("Running Python script...");
 
         // TODO: should clear _ALL_ properties here (some are not included in the defaults, like per-line style)
 
@@ -142,7 +142,7 @@ public class NativeChartViewer extends ChartViewerBase {
             // if (prop != null)
             //     chartView.setProperty(id, prop.getValue());
             // else
-            chartView.setProperty(id, Converter.objectToString(ChartDefaults.getDefaultPropertyValue(id)));
+            plotViewer.setProperty(id, Converter.objectToString(ChartDefaults.getDefaultPropertyValue(id)));
         }
 
         try {
@@ -160,9 +160,9 @@ public class NativeChartViewer extends ChartViewerBase {
 
         // clearing existing (old) dataset from chartView
         switch (chart.getType()) {
-        case BAR: chartView.setDataset(new PythonScalarDataset(null)); break;
-        case HISTOGRAM: chartView.setDataset(new PythonHistogramDataset(null)); break;
-        case LINE: chartView.setDataset(new PythonXYDataset(null)); break;
+        case BAR: plotViewer.setDataset(new PythonScalarDataset(null)); break;
+        case HISTOGRAM: plotViewer.setDataset(new PythonHistogramDataset(null)); break;
+        case LINE: plotViewer.setDataset(new PythonXYDataset(null)); break;
         case MATPLOTLIB: // fallthrough
         default: throw new RuntimeException("Wrong chart type.");
         }
@@ -175,21 +175,21 @@ public class NativeChartViewer extends ChartViewerBase {
                 if(debug)
                     Debug.println("data received, starting drawing");
 
-                chartView.setStatusText("Rendering chart...");
-                chartView.update();
+                plotViewer.setStatusText("Rendering chart...");
+                plotViewer.update();
                 if(debug)
                     Debug.println("status text updated");
 
                 switch (chart.getType()) {
-                case BAR: chartView.setDataset(chartPlotter.scalarDataset); break;
-                case HISTOGRAM: chartView.setDataset(chartPlotter.histogramDataset); break;
-                case LINE: chartView.setDataset(chartPlotter.xyDataset); break;
+                case BAR: plotViewer.setDataset(chartPlotter.scalarDataset); break;
+                case HISTOGRAM: plotViewer.setDataset(chartPlotter.histogramDataset); break;
+                case LINE: plotViewer.setDataset(chartPlotter.xyDataset); break;
                 case MATPLOTLIB: // fallthrough
                 default: throw new RuntimeException("Wrong chart type.");
                 }
 
-                chartView.setStatusText("");
-                chartView.update();
+                plotViewer.setStatusText("");
+                plotViewer.update();
 
                 killPythonProcess();
             });
@@ -199,9 +199,9 @@ public class NativeChartViewer extends ChartViewerBase {
             runAfterError.handle(proc, e);
             if (!proc.isKilledByUs()) {
                 Display.getDefault().syncExec(() -> {
-                    chartView.setStatusText(null);
-                    chartView.setWarningText("An exception occurred during Python execution.");
-                    chartView.update();
+                    plotViewer.setStatusText(null);
+                    plotViewer.setWarningText("An exception occurred during Python execution.");
+                    plotViewer.update();
                 });
             }
         };
@@ -214,11 +214,11 @@ public class NativeChartViewer extends ChartViewerBase {
 
     @Override
     public Control getWidget() {
-        return chartView;
+        return plotViewer;
     }
 
     public void setVisible(boolean visible) {
-        chartView.setVisible(visible);
+        plotViewer.setVisible(visible);
     }
 
 //
@@ -254,15 +254,15 @@ public class NativeChartViewer extends ChartViewerBase {
 //    }
 
 
-    public ChartViewer getChartViewer() {
-        return chartView;
+    public PlotViewerBase getPlotViewer() {
+        return plotViewer;
     }
 
     public void dispose() {
         super.dispose();
 
         chartPlotter.dispose();
-        if (chartView != null)
-            chartView.dispose();
+        if (plotViewer != null)
+            plotViewer.dispose();
     }
 }

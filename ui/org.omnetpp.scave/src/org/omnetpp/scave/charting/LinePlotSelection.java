@@ -17,17 +17,17 @@ import org.omnetpp.common.canvas.LargeGraphics;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.util.GraphicsUtils;
-import org.omnetpp.scave.charting.VectorChartViewer.LineProperties;
+import org.omnetpp.scave.charting.LinePlotViewer.LineProperties;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 
 /**
- * Draws the selection to a vector chart.
+ * Draws the selection to a line plot.
  *
  * @author tomi
  */
-public class VectorChartSelection implements IChartSelection {
+public class LinePlotSelection implements IPlotSelection {
 
-    private final VectorChartViewer vectorChart;
+    private final LinePlotViewer viewer;
 
     // the series of the line within the chart's dataset
     private int series;
@@ -40,9 +40,9 @@ public class VectorChartSelection implements IChartSelection {
     private double x,y;
 
 
-    public VectorChartSelection(VectorChartViewer vectorChart, CrossHair.DataPoint point) {
-        IXYDataset dataset = vectorChart.getDataset();
-        this.vectorChart = vectorChart;
+    public LinePlotSelection(LinePlotViewer viewer, CrossHair.DataPoint point) {
+        IXYDataset dataset = viewer.getDataset();
+        this.viewer = viewer;
         this.series = point.series;
         this.key = dataset.getSeriesKey(series);
         this.index = point.index;
@@ -81,12 +81,12 @@ public class VectorChartSelection implements IChartSelection {
     }
 
     protected void draw(Graphics graphics, ICoordsMapping coordsMapping) {
-        LineProperties props = this.vectorChart.getLineProperties(series);
+        LineProperties props = this.viewer.getLineProperties(series);
         if (props != null && props.getDisplayLine()) {
-            long xx = coordsMapping.toCanvasX(this.vectorChart.transformX(x));
-            long yy = coordsMapping.toCanvasY(this.vectorChart.transformY(y));
+            long xx = coordsMapping.toCanvasX(this.viewer.transformX(x));
+            long yy = coordsMapping.toCanvasY(this.viewer.transformY(y));
             Rectangle clipping = GraphicsUtils.getClip(graphics);
-            org.eclipse.draw2d.geometry.Rectangle plotArea = vectorChart.getPlotRectangle();
+            org.eclipse.draw2d.geometry.Rectangle plotArea = viewer.getPlotRectangle();
             graphics.setClip(clipping.intersect(new Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height)));
             graphics.setForegroundColor(ColorFactory.RED);
             graphics.setLineWidth(1);

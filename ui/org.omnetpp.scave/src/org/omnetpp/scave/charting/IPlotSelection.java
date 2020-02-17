@@ -12,6 +12,6 @@ package org.omnetpp.scave.charting;
  *
  * @author tomi
  */
-public interface IChartSelection {
+public interface IPlotSelection {
     // nothing yet
 }

@@ -21,13 +21,13 @@ import org.omnetpp.scave.charting.ILinePlot;
  */
 public class PointsLinePlotter extends LinePlotter {
 
-    public boolean plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol, int timeLimitMillis) {
+    public boolean plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IPlotSymbol symbol, int timeLimitMillis) {
         //
         // Note: profiling shows that substituting the gc.drawPoint() call
         // into the plotSymbols() would make no measurable difference in
         // performance, so we just invoke the stock plotSymbols() here.
         //
-        ChartSymbol pixelSymbol = new ChartSymbol() {
+        PlotSymbol pixelSymbol = new PlotSymbol() {
             public void drawSymbol(Graphics graphics, long x, long y) {
                 LargeGraphics.drawPoint(graphics, x, y);
             }

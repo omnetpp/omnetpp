@@ -62,7 +62,7 @@ import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset.InterpolationMode;
 import org.omnetpp.scave.charting.plotter.ChartSymbolFactory;
-import org.omnetpp.scave.charting.plotter.IChartSymbol;
+import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 import org.omnetpp.scave.charting.plotter.ILinePlotter;
 import org.omnetpp.scave.charting.plotter.LinePlotterFactory;
 import org.omnetpp.scave.charting.properties.ChartVisualProperties.ShowGrid;
@@ -72,9 +72,9 @@ import org.omnetpp.scave.preferences.ScavePreferenceConstants;
 
 
 /**
- * Line chart.
+ * Line plot.
  */
-public class VectorChartViewer extends ChartViewer { //TODO LinePlot?
+public class LinePlotViewer extends PlotViewerBase {
 
     private static final boolean debug = false;
 
@@ -218,7 +218,7 @@ public class VectorChartViewer extends ChartViewer { //TODO LinePlot?
             return plotter;
         }
 
-        public IChartSymbol getSymbol() {
+        public IPlotSymbol getSymbol() {
             Assert.isTrue(this != defaultProperties);
             SymbolType type = getSymbolType();
             int size = getSymbolSize();
@@ -252,7 +252,7 @@ public class VectorChartViewer extends ChartViewer { //TODO LinePlot?
         return LineType.Linear;
     }
 
-    public VectorChartViewer(Composite parent, int style) {
+    public LinePlotViewer(Composite parent, int style) {
         super(parent, style);
         // important: add the CrossHair to the chart AFTER the ZoomableCanvasMouseSupport added
         crosshair = new CrossHair(this);
@@ -266,7 +266,7 @@ public class VectorChartViewer extends ChartViewer { //TODO LinePlot?
                 int count = crosshair.dataPointsNear(e.x, e.y, 3, points, 1, getOptimizedCoordinateMapper());
                 if (count > 0) {
                     CrossHair.DataPoint point = points.get(0);
-                    setSelection(new VectorChartSelection(VectorChartViewer.this, point));
+                    setSelection(new LinePlotSelection(LinePlotViewer.this, point));
                 }
                 else
                     setSelection(null);
@@ -275,8 +275,8 @@ public class VectorChartViewer extends ChartViewer { //TODO LinePlot?
     }
 
     @Override
-    public VectorChartSelection getSelection() {
-        return (VectorChartSelection)selection;
+    public LinePlotSelection getSelection() {
+        return (LinePlotSelection)selection;
     }
 
     public Rectangle getPlotRectangle() {
@@ -397,7 +397,7 @@ public class VectorChartViewer extends ChartViewer { //TODO LinePlot?
                 if (props.getDisplayLine()) {
                     String name = props.getDisplayName();
                     Color color = props.getColor();
-                    IChartSymbol symbol = props.getSymbol();
+                    IPlotSymbol symbol = props.getSymbol();
                     legend.addItem(color, name, symbol, true);
                 }
             }

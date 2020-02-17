@@ -18,7 +18,7 @@ import org.omnetpp.scave.charting.ILinePlot;
  */
 public class DotsLinePlotter extends LinePlotter {
 
-    public boolean plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol, int timeLimitMillis) {
+    public boolean plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IPlotSymbol symbol, int timeLimitMillis) {
         return plotSymbols(plot, series, graphics, mapping, symbol, timeLimitMillis);
     }
 }

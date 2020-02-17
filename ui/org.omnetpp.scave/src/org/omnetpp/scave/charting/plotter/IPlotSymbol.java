@@ -14,7 +14,7 @@ import org.eclipse.draw2d.Graphics;
  *
  * @author andras
  */
-public interface IChartSymbol {
+public interface IPlotSymbol {
 
 //XXX implementation note: fillOval(), fillPolygon() etc are more efficient than bltting images of the same size. see test code below.
 //  graphics.setBackgroundColor(new Color(null,100,0,0));

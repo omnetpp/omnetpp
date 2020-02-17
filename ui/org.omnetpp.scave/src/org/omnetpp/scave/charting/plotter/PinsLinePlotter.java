@@ -31,7 +31,7 @@ public class PinsLinePlotter extends LinePlotter {
         this.referenceLevel = referenceLevel;
     }
 
-    public boolean plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol, int timeLimitMillis) {
+    public boolean plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IPlotSymbol symbol, int timeLimitMillis) {
         // dataset index range to iterate over
         int[] range = indexRange(plot, series, graphics, mapping);
         int first = range[0], last = range[1];

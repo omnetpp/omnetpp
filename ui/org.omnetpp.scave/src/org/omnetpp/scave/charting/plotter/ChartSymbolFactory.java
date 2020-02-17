@@ -11,7 +11,7 @@ import org.omnetpp.scave.charting.properties.LineVisualProperties.SymbolType;
 
 public class ChartSymbolFactory {
 
-    public static IChartSymbol createChartSymbol(SymbolType type, int size) {
+    public static IPlotSymbol createChartSymbol(SymbolType type, int size) {
         if (type == null)
             return null;
         switch (type) {

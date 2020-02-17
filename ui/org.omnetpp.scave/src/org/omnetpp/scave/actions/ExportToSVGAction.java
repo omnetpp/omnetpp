@@ -21,7 +21,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.part.FileEditorInput;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.charting.ChartViewer;
+import org.omnetpp.scave.charting.PlotViewerBase;
 import org.omnetpp.scave.editors.ScaveEditor;
 
 public class ExportToSVGAction extends AbstractScaveAction {
@@ -33,7 +33,7 @@ public class ExportToSVGAction extends AbstractScaveAction {
 
     @Override
     protected void doRun(final ScaveEditor editor, ISelection selection) {
-        final ChartViewer chart = editor.getActiveChartViewer();
+        final PlotViewerBase chart = editor.getActivePlotViewer();
         if (chart != null) {
             BusyIndicator.showWhile(Display.getDefault(), new Runnable() {
                 public void run() {
@@ -47,7 +47,7 @@ public class ExportToSVGAction extends AbstractScaveAction {
 
     @Override
     protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
-        return editor.getActiveChartViewer() != null;
+        return editor.getActivePlotViewer() != null;
     }
 
     private String askFileName(ScaveEditor editor) {

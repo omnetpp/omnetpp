@@ -17,7 +17,7 @@ import org.omnetpp.common.canvas.LargeGraphics;
  *
  * @author andras
  */
-public class DiamondSymbol extends ChartSymbol {
+public class DiamondSymbol extends PlotSymbol {
     private int size;
     private int[] poly;
     private long[] work = new long[8];

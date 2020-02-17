@@ -15,7 +15,7 @@ import org.omnetpp.common.canvas.LargeGraphics;
  *
  * @author andras
  */
-public class CrossSymbol extends ChartSymbol {
+public class CrossSymbol extends PlotSymbol {
     private int size;
 
     public CrossSymbol() {

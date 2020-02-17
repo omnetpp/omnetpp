@@ -18,7 +18,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.scave.charting.plotter.IChartSymbol;
+import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 
 /**
  * Helper class for generating images of symbols displayed
@@ -34,7 +34,7 @@ public class SymbolImageFactory {
      * Returns the file name of the image containing the given symbol
      * in the given color.
      */
-    public static String getImageFile(Color color, IChartSymbol symbol, boolean drawLine) {
+    public static String getImageFile(Color color, IPlotSymbol symbol, boolean drawLine) {
         MultiKey key = new MultiKey(color, symbol == null ? null : symbol.getClass(), drawLine);
         String fileName = imageFileMap.get(key);
         if (fileName == null) {
@@ -44,7 +44,7 @@ public class SymbolImageFactory {
         return fileName;
     }
 
-    private static String createImageFile(Color color, IChartSymbol symbol, boolean drawLine) {
+    private static String createImageFile(Color color, IPlotSymbol symbol, boolean drawLine) {
         Image image = null;
         try {
             image = createSymbolImage(symbol, color, drawLine);
@@ -62,7 +62,7 @@ public class SymbolImageFactory {
         }
     }
 
-    public static Image createSymbolImage(IChartSymbol symbol, Color color, boolean drawLine) {
+    public static Image createSymbolImage(IPlotSymbol symbol, Color color, boolean drawLine) {
         int size = symbol != null ? symbol.getSizeHint() : 0;
         Image image = null;
         GC gc = null;
