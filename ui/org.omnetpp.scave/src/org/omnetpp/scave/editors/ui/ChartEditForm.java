@@ -82,10 +82,12 @@ public class ChartEditForm {
         panel.setLayout(new GridLayout(1, false));
         final TabFolder tabfolder = createTabFolder(panel);
 
-        populateTabFolder(tabfolder);
-        for (int i=0; i < tabfolder.getItemCount(); ++i)
-            populateTabItem(tabfolder.getItem(i));
+        for (DialogPage page : chart.getDialogPages())
+            createTab(tabfolder, page.label, page.xswtForm);
 
+        fillComboBoxes();
+        populateControls();
+        addExtraWidgetLogic();
         validatePropertyNames();
 
         // switch to the last used page
@@ -138,14 +140,6 @@ public class ChartEditForm {
         if (section == null)
             section = dialogSettings.addNewSection(KEY);
         return section;
-    }
-
-    /**
-     * Creates the tabs of the dialog.
-     */
-    protected void populateTabFolder(TabFolder tabfolder) {
-        for (DialogPage page : chart.getDialogPages())
-            createTab(tabfolder, page.label, page.xswtForm);
     }
 
     List<String> getComboContents(String contentString) {
@@ -205,28 +199,37 @@ public class ChartEditForm {
         return result;
     }
 
-    /**
-     * Creates the controls of the given tab.
-     */
-    protected void populateTabItem(TabItem item) {
-        // TODO: we fill each control multiple times, because we are
-        // iterating on _all_ controls in the map, for every tab the dialog has.
+    protected void populateControls() {
+        for (String propId : xswtWidgetMap.keySet()) {
+            System.out.println("widget propId: " + propId);
+            Property prop = chart.lookupProperty(propId);
+            if (prop != null) {
+                System.out.println("  prop is found");
+                String value = prop.getValue();
+                if (value != null) {
+                    System.out.println("  prop value is not null");
+                    Control control = xswtWidgetMap.get(propId);
+                    try {
+                        System.out.println("putting " + value + " into " + control + " for property " + propId);
+                        XSWTDataBinding.putValueIntoControl(control, value, null);
+                    } catch (Exception e) {
+                        MessageDialog.openError(null, "Error", String.format("Error populating dialog field '%s' (%s) with value '%s': ", propId, control.getClass().getSimpleName(), value) + e.getMessage());
+                    }
+                }
+            }
+        }
+    }
+
+    protected void addExtraWidgetLogic() {
+        // setting up content assist and "enabler" checkboxes
         for (String key : xswtWidgetMap.keySet()) {
             Control control = xswtWidgetMap.get(key);
-            String content = (String)control.getData("content");
             String isFilter = (String)control.getData("isFilter");
             String isEnabler = (String)control.getData("isEnabler");
 
-            if (control instanceof Combo && content != null) {
-                Combo combo = (Combo)control;
-                combo.removeAll();
-                for (String comboItem : getComboContents(content))
-                    combo.add(comboItem);
-            }
-            else if (control instanceof Text && isFilter != null && isFilter.equalsIgnoreCase("true")) {
-                // TODO: enable when it is updated to the new =~ syntax
-                // FilterContentProposalProvider filterProposalProvider = new FilterContentProposalProvider();
-                // ContentAssistUtil.configureText((Text)control, filterProposalProvider);
+            if (control instanceof Text && isFilter != null && isFilter.equalsIgnoreCase("true")) {
+                FilterContentProposalProvider filterProposalProvider = new FilterContentProposalProvider();
+                ContentAssistUtil.configureText((Text)control, filterProposalProvider);
             }
             else if (control instanceof Button && isEnabler != null && isEnabler.equalsIgnoreCase("true")) {
                 Button button = (Button)control;
@@ -246,19 +249,16 @@ public class ChartEditForm {
                         sibling.setEnabled(button.getSelection());
             }
         }
+    }
 
-        for (String propId : xswtWidgetMap.keySet()) {
-            Property prop = chart.lookupProperty(propId);
-            if (prop != null) {
-                String value = prop.getValue();
-                if (value != null) {
-                    Control control = xswtWidgetMap.get(propId);
-                    try {
-                        XSWTDataBinding.putValueIntoControl(control, value, null);
-                    } catch (Exception e) {
-                        MessageDialog.openError(null, "Error", String.format("Error populating dialog field '%s' (%s) with value '%s': ", propId, control.getClass().getSimpleName(), value) + e.getMessage());
-                    }
-                }
+    protected void fillComboBoxes() {
+        for (String key : xswtWidgetMap.keySet()) {
+            Control control = xswtWidgetMap.get(key);
+            String content = (String)control.getData("content");
+            if (control instanceof Combo && content != null) {
+                Combo combo = (Combo)control;
+                for (String comboItem : getComboContents(content))
+                    combo.add(comboItem);
             }
         }
     }
@@ -313,11 +313,8 @@ public class ChartEditForm {
             Property chartProperty = chart.lookupProperty(k);
             String chartValueString = chartProperty == null ? null : chartProperty.getValue();
             String formValueString = Converter.objectToString(value);
-            String defaultString = PlotDefaults.getDefaultPropertyValueAsString(k);
 
-            if (formValueString.equals(defaultString))
-                result.put(k, null);
-            else if (!formValueString.equals(chartValueString))
+            if (!formValueString.equals(chartValueString))
                 result.put(k, formValueString);
         }
         return result;
