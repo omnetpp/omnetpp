@@ -27,7 +27,6 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -38,8 +37,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
-import org.eclipse.ui.views.properties.IPropertySource2;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.contentassist.ContentAssistUtil;
 import org.omnetpp.common.ui.SWTFactory;
@@ -49,7 +46,6 @@ import org.omnetpp.common.wizard.XSWTDataBinding;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.assist.FilterContentProposalProvider;
 import org.omnetpp.scave.charting.properties.PlotDefaults;
-import org.omnetpp.scave.charting.properties.PlotProperties;
 import org.omnetpp.scave.charttemplates.ChartTemplate;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -118,10 +114,6 @@ public class ChartEditForm {
             return;
 
         Set<String> templatePropertyNames = new HashSet<String>(template.getPropertyNames());
-
-        IPropertySource2 propertySource = PlotProperties.createPropertySource(chart);
-        for (IPropertyDescriptor desc : propertySource.getPropertyDescriptors())
-            templatePropertyNames.add((String)desc.getId());
 
         Set<String> formPropertyNames = xswtWidgetMap.keySet();
         if (!formPropertyNames.equals(templatePropertyNames)) {
@@ -254,26 +246,13 @@ public class ChartEditForm {
             }
         }
 
-        PlotProperties propertySource = null;
-        IPropertySource2 ps = PlotProperties.createPropertySource(chart);
-        if (ps instanceof PlotProperties)
-            propertySource = (PlotProperties)ps;
-
         for (String propId : xswtWidgetMap.keySet()) {
-            String value = null;
-
-
             Property prop = chart.lookupProperty(propId);
-            if (prop != null)
-                value = prop.getValue();
-            else if (propertySource != null) {
-                Object defaultPropertyValue = PlotDefaults.getDefaultPropertyValue(propId);
-                if (defaultPropertyValue != null)
-                    value = Converter.objectToString(defaultPropertyValue);
+            if (prop != null) {
+                String value = prop.getValue();
+                if (value != null)
+                    XSWTDataBinding.putValueIntoControl(xswtWidgetMap.get(propId), value, null);
             }
-
-            if (value != null)
-                XSWTDataBinding.putValueIntoControl(xswtWidgetMap.get(propId), value, null);
         }
     }
 

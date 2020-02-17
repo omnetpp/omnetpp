@@ -129,7 +129,7 @@ public class HistogramPlotViewer extends PlotViewerBase {
 
     @Override
     public void clear() {
-        super.doClear(new HistogramPlotProperties(null));
+        super.clear();
         properties.clear();
         setDataset(new PythonHistogramDataset(null));
     }

@@ -12,7 +12,7 @@ import org.omnetpp.common.properties.ColorPropertyDescriptor;
 import org.omnetpp.common.properties.PropertySource;
 import org.omnetpp.scave.ScaveImages;
 
-public class LineVisualProperties extends PropertySource {
+public class LineVisualProperties {
 
     public static final String
         PROP_DISPLAY_NAME       = "Line.Name",
@@ -123,65 +123,4 @@ public class LineVisualProperties extends PropertySource {
         }
 
     }
-
-
-    private final PlotProperties chartProps;
-    private String lineId;
-
-    public LineVisualProperties(PlotProperties chartProps, String lineId) {
-        this.chartProps = chartProps;
-        this.lineId = lineId;
-    }
-
-    private String propertyName(String baseName) {
-        return lineId == null ? baseName : baseName + "/" + lineId;
-    }
-
-    @org.omnetpp.common.properties.Property(category="Lines",id=PROP_DISPLAY_NAME,optional=true,
-            description="Display name of the line.")
-    public String getDisplayName() { return chartProps.getStringProperty(propertyName(PROP_DISPLAY_NAME)); }
-    public void setDisplayName(String name) { chartProps.setProperty(propertyName(PROP_DISPLAY_NAME), name); }
-
-    @org.omnetpp.common.properties.Property(category="Lines",id=PROP_DISPLAY_LINE,optional=true,
-            description="Displays the line.")
-    public boolean getDisplayLine() { return chartProps.getBooleanProperty(propertyName(PROP_DISPLAY_LINE)); }
-    public void setDisplayLine(boolean display) { chartProps.setProperty(propertyName(PROP_DISPLAY_LINE), display); }
-    public boolean defaultDisplayLine() { return PlotDefaults.DEFAULT_DISPLAY_LINE; }
-
-    @org.omnetpp.common.properties.Property(category="Lines",id=PROP_SYMBOL_TYPE,optional=true,
-            description="The symbol drawn at the data points.")
-    public SymbolType getSymbolType() { return chartProps.getEnumProperty(propertyName(PROP_SYMBOL_TYPE), SymbolType.class); }
-    public void setSymbolType(SymbolType type) { chartProps.setProperty(propertyName(PROP_SYMBOL_TYPE), type); }
-    public SymbolType defaultSymbolType() { return null; }
-
-    @org.omnetpp.common.properties.Property(category="Lines",id=PROP_SYMBOL_SIZE,
-            description="The size of the symbol drawn at the data points.")
-    public Integer getSymbolSize() { return chartProps.getIntegerProperty(propertyName(PROP_SYMBOL_SIZE), lineId==null); }
-    public void setSymbolSize(Integer size) { chartProps.setProperty(propertyName(PROP_SYMBOL_SIZE), size); }
-    public Integer defaultSymbolSize() { return lineId == null ? PlotDefaults.DEFAULT_SYMBOL_SIZE : null; }
-
-    @org.omnetpp.common.properties.Property(category="Lines",id=PROP_DRAW_STYLE,optional=true,
-            description="Line drawing method. One of none, linear, pins, steps, steps-post, steps-pre.")
-    public DrawStyle getDrawStyle() { return chartProps.getEnumProperty(propertyName(PROP_DRAW_STYLE), DrawStyle.class); }
-    public void setDrawStyle(DrawStyle style) { chartProps.setProperty(propertyName(PROP_DRAW_STYLE), style); }
-    public DrawStyle defaultDrawStyle() { return null; }
-
-    @org.omnetpp.common.properties.Property(category="Lines",id=PROP_LINE_COLOR,descriptorClass=ColorPropertyDescriptor.class,optional=true,
-            description="Color of the line. Color name or #RRGGBB. Press Ctrl+Space for a list of color names.")
-    public String getLineColor() { return chartProps.getStringProperty(propertyName(PROP_LINE_COLOR)); } // FIXME use RGB
-    public void setLineColor(String color) { chartProps.setProperty(propertyName(PROP_LINE_COLOR), color); }
-    public String defaultLineColor() { return null; }
-
-    @org.omnetpp.common.properties.Property(category="Lines",id=PROP_LINE_STYLE,descriptorClass=ColorPropertyDescriptor.class,optional=true,
-            description="Line style. One of none, solid, dashed, dotted, dashdot.")
-    public LineStyle getLineStyle() { return chartProps.getEnumProperty(propertyName(PROP_LINE_STYLE), LineStyle.class); }
-    public void setLineStyle(LineStyle style) { chartProps.setProperty(propertyName(PROP_LINE_STYLE), style); }
-    public LineStyle defaultLineStyle() { return PlotDefaults.DEFAULT_LINE_STYLE; }
-
-    @org.omnetpp.common.properties.Property(category="Lines",id=PROP_LINE_WIDTH,
-            description="The line width.")
-    public Float getLineWidth() { return chartProps.getFloatProperty(propertyName(PROP_LINE_WIDTH)); }
-    public void setLineWidth(Float linewidth) { chartProps.setProperty(propertyName(PROP_LINE_WIDTH), linewidth); }
-    public Float defaultLineWidth() { return PlotDefaults.DEFAULT_LINE_WIDTH; }
-
 }

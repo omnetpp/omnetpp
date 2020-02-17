@@ -7,12 +7,7 @@
 
 package org.omnetpp.scave.charting.properties;
 
-import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.commands.CommandStack;
-
-public class BarPlotVisualProperties extends PlotProperties
-{
-    // private static final String DEFAULT_BAR_PROPERTIES_ID = "default";
+public class BarPlotVisualProperties {
 
     public static final String
         // Titles
@@ -27,49 +22,4 @@ public class BarPlotVisualProperties extends PlotProperties
         InFront,
         Stacked,
     }
-
-    public BarPlotVisualProperties(Chart chart) {
-        this(chart, null);
-    }
-
-    public BarPlotVisualProperties(Chart chart, CommandStack commandStack) {
-        super(chart, commandStack);
-    }
-
-    /*======================================================================
-     *                             Titles
-     *======================================================================*/
-    @org.omnetpp.common.properties.Property(category="Titles",id=PROP_WRAP_LABELS,
-            description="If true labels are wrapped, otherwise aligned vertically.")
-    public boolean getWrapLabels() { return getBooleanProperty(PROP_WRAP_LABELS); }
-    public void setWrapLabels(boolean wrap) { setProperty(PROP_WRAP_LABELS, wrap); }
-    public boolean defaultWrapLabels() { return PlotDefaults.DEFAULT_WRAP_LABELS; }
-
-    /*======================================================================
-     *                             Bars
-     *======================================================================*/
-    @org.omnetpp.common.properties.Property(category="Plot",id=PROP_BAR_BASELINE,
-            description="Baseline of the bars.")
-    public Double getBarBaseline() { return getDoubleProperty(PROP_BAR_BASELINE); }
-    public void setBarBaseline(Double baseline) { setProperty(PROP_BAR_BASELINE, baseline); }
-    public Double defaultBarBaseline() { return PlotDefaults.DEFAULT_BAR_BASELINE; }
-
-    @org.omnetpp.common.properties.Property(category="Plot",id=PROP_BAR_PLACEMENT,
-            description="Arrangement of the bars within a group.")
-    public BarPlacement getBarPlacement() { return getEnumProperty(PROP_BAR_PLACEMENT, BarPlacement.class); }
-    public void setBarPlacement(BarPlacement placement) { setProperty(PROP_BAR_PLACEMENT, placement); }
-    public BarPlacement defaultBarPlacement() { return PlotDefaults.DEFAULT_BAR_PLACEMENT; }
-
-//    @org.omnetpp.common.properties.Property(category="Plot",id="Bars",displayName="Bars",
-//            description="Properties of individual bars. Default is applied to all properties not set individually.")
-//    public IPropertySource getBarProperties() {
-//        IPropertyDescriptor[] descriptors = new IPropertyDescriptor[0];
-//        return new BasePropertySource(descriptors) {
-//            @Override
-//            public Object getPropertyValue(Object id) {
-//                return new BarVisualProperties(BarChartVisualProperties.this,
-//                        id == DEFAULT_BAR_PROPERTIES_ID ? null : (String)id);
-//            }
-//        };
-//    }
 }

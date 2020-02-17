@@ -492,7 +492,7 @@ public class LinePlotViewer extends PlotViewerBase {
 
     @Override
     public void clear() {
-        super.doClear(new LinePlotProperties(null));
+        super.clear();
         lineProperties.clear();
         setDataset(new PythonXYDataset(null));
     }

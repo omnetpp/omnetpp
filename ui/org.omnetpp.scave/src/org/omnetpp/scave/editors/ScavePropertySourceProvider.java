@@ -43,8 +43,8 @@ public class ScavePropertySourceProvider implements IPropertySourceProvider {
     public IPropertySource getPropertySource(final Object object) {
         if (object instanceof GenericTreeNode)
             return getPropertySource(((GenericTreeNode)object).getPayload());
-        else if (object instanceof Chart)
-            return ChartVisualProperties.createPropertySource((Chart)object);
+//        else if (object instanceof Chart)
+//            return nuPlotProperties.createPropertySource((Chart)object, ScaveEditor.getActiveScaveCommandStack());
         else if (object instanceof PropertySource)
             return (PropertySource)object;
         else if (object instanceof ChartLine) {

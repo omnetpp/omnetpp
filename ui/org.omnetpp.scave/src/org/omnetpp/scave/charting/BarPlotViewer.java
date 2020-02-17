@@ -182,7 +182,7 @@ public class BarPlotViewer extends PlotViewerBase {
 
     @Override
     public void clear() {
-        super.doClear(new BarPlotVisualProperties(null));
+        super.clear();
         properties.clear();
         setDataset(new PythonScalarDataset(null));
     }
