@@ -137,7 +137,9 @@ def plot_histogram_data(df, props=dict()):  # key, label, binedges, binvalues, u
         {
             "key": row.key,
             "title": row.label,
-            "sumweights": float(np.sum(row.binvalues) + row.underflows + row.overflows),  # TODO remove?
+
+            # this could be computed in Java as well, but just to make things simpler, we do it here
+            "sumweights": float(np.sum(row.binvalues) + row.underflows + row.overflows),
 
             "edges": _list_to_bytes(row.binedges),
             "values": _list_to_bytes(row.binvalues),
@@ -145,7 +147,7 @@ def plot_histogram_data(df, props=dict()):  # key, label, binedges, binvalues, u
             "underflows": float(row.underflows),
             "overflows": float(row.overflows),
 
-            "min": (float(row.min), print("rm: " + str(row.min)))[0],
+            "min": float(row.min),
             "max": float(row.max),
         }
         for row in df.itertuples(index=False)
