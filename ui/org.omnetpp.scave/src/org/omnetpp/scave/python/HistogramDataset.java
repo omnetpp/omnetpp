@@ -22,6 +22,8 @@ public class HistogramDataset implements IHistogramDataset {
         double maxValue;
         double[] binEdges; // N+1, >= 2
         double[] binValues; // N, >= 1
+        double underflows;
+        double overflows;
     }
 
     ArrayList<HistogramData> histograms = new ArrayList<HistogramData>();
@@ -77,6 +79,9 @@ public class HistogramDataset implements IHistogramDataset {
                 histogramData.binEdges = ResultPicklingUtils.bytesToDoubles((byte[]) d.get("edges"));
                 histogramData.binValues = ResultPicklingUtils.bytesToDoubles((byte[]) d.get("values"));
 
+                histogramData.underflows = (Double) d.get("underflows");
+                histogramData.overflows = (Double) d.get("overflows");
+
                 histograms.add(histogramData);
             }
 
@@ -126,6 +131,16 @@ public class HistogramDataset implements IHistogramDataset {
     @Override
     public double getMaxValue(int series) {
         return histograms.get(series).maxValue;
+    }
+
+    @Override
+    public double getUnderflows(int series) {
+        return histograms.get(series).underflows;
+    }
+
+    @Override
+    public double getOverflows(int series) {
+        return histograms.get(series).overflows;
     }
 
     @Override

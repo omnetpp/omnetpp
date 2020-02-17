@@ -57,17 +57,16 @@ public interface IHistogramDataset extends IDataset {
      */
     double getMaxValue(int series);
 
+    double getUnderflows(int series);
+    double getOverflows(int series);
+
     /**
      * Returns the number of cells.
-     *
-     * @param series index of the histogram
-     * @return number of cells including underflow/overflow cells
      */
     int getCellsCount(int series);
 
     /**
-     * Returns the lower bound of the cell, Double.NEGATIVE_INFINITY
-     * for the underflow cell.
+     * Returns the lower bound of the cell.
      *
      * @param series index of the histogram
      * @param index index of the cell
@@ -76,8 +75,7 @@ public interface IHistogramDataset extends IDataset {
     double getCellLowerBound(int series, int index);
 
     /**
-     * Returns the upper bound of the cell, Double.POSITIVE_INFINITY
-     * for the overflow cell.
+     * Returns the upper bound of the cell.
      *
      * @param series index of the histogram
      * @param index index of the cell
@@ -130,6 +128,16 @@ public interface IHistogramDataset extends IDataset {
             throw new IndexOutOfBoundsException();
         }
 
+        @Override
+        public double getUnderflows(int series) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        @Override
+        public double getOverflows(int series) {
+            throw new IndexOutOfBoundsException();
+        }
+
         public int getCellsCount(int series) {
             throw new IndexOutOfBoundsException();
         }
@@ -145,5 +153,6 @@ public interface IHistogramDataset extends IDataset {
         public double getCellValue(int series, int index) {
             throw new IndexOutOfBoundsException();
         }
+
     };
 }

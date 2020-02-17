@@ -183,6 +183,7 @@ public class HistogramPlot extends PlotBase {
         case PROP_HIST_CUMULATIVE: setHistogramCumulative(key, Converter.stringToOptionalBoolean(value)); break;
         case PROP_HIST_DENSITY: setHistogramDensity(key, Converter.stringToOptionalBoolean(value)); break;
         case PROP_HIST_BAR: setBarType(key, Converter.stringToOptionalEnum(value, HistogramBar.class)); break;
+        case PROP_BAR_BASELINE: /* TODO? */ break;
         default: super.setProperty(prop, key, value);
         }
     }

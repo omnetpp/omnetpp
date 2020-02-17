@@ -356,7 +356,17 @@ def plot_histograms(df, props):
 
     for i, t in enumerate(df.itertuples(index=False)):
         style = _make_histline_args(props, t, df)
-        p.hist(t.binedges[:-1], t.binedges, weights=t.binvalues, label=make_legend_label(legend_cols, t), **style)
+        extra_args = dict()
+        if chart.is_native_chart():
+            extra_args["minvalue"] = t.min
+            extra_args["maxvalue"] = t.max
+            extra_args["underflows"] = t.underflows
+            extra_args["overflows"] = t.overflows
+        p.hist(t.binedges[:-1], t.binedges, weights=t.binvalues, label=make_legend_label(legend_cols, t), **extra_args, **style)
+
+    show_overflows = get_prop("show_overflows")
+    if show_overflows and chart.is_native_chart():
+        plot.set_property("Hist.ShowOverflowCell", str(_parse_optional_bool(show_overflows)).lower())
 
     title = get_prop("title") or make_chart_title(df, title_col, legend_cols)
     set_plot_title(title)

@@ -53,13 +53,15 @@ def plot(xs, ys, key=None, label=None, drawstyle=None, linestyle=None, linewidth
 
     return plot_vector(label, xs, ys, key, props)
 
-
-def hist(x, bins, density=False, weights=None, cumulative=False, bottom=None, histtype='stepfilled', color=None, label=None, linewidth=None):
+# minvalue, maxvalue, underflows and overflows are NOT accepted by mpl.pyplot.hist
+def hist(x, bins, density=False, weights=None, cumulative=False, bottom=None, histtype='stepfilled', color=None, label=None, linewidth=None,
+         underflows=0.0, overflows=0.0, minvalue=math.nan, maxvalue=math.nan):
     props = {}
 
     props["Hist.Cumulative"] = str(cumulative)
     props["Hist.Density"] = str(density)
 
+    props["Hist.Color"] = _translate_color(color)
     props["Hist.Bar"] = _translate_histtype(histtype)
 
     props["Bars.Baseline"] = str(bottom)
@@ -68,7 +70,7 @@ def hist(x, bins, density=False, weights=None, cumulative=False, bottom=None, hi
     if not np.array_equal(x, bins[:-1]):
         raise ValueError("Histogram computation is not performed.")
 
-    plot_histogram(label, bins, weights, props=props)
+    plot_histogram(label, bins, weights, underflows=underflows, overflows=overflows, minvalue=minvalue, maxvalue=maxvalue, props=props)
 
 
 def bar(x, height, width=0.8, key=None, label=None, color=None, edgecolor=None):
@@ -143,7 +145,7 @@ def plot_histogram_data(df, props=dict()):  # key, label, binedges, binvalues, u
             "underflows": float(row.underflows),
             "overflows": float(row.overflows),
 
-            "min": float(row.min),
+            "min": (float(row.min), print("rm: " + str(row.min)))[0],
             "max": float(row.max),
         }
         for row in df.itertuples(index=False)
@@ -488,8 +490,8 @@ def plot_histogram(label, binedges, binvalues, underflows=0.0, overflows=0.0, mi
         "binvalues": [np.array(binvalues)],
         "underflows": [underflows],
         "overflows": [overflows],
-        "min": [float(np.min(binedges)) if minvalue == math.nan else minvalue],
-        "max": [float(np.max(binedges)) if maxvalue == math.nan else maxvalue]
+        "min": [float(np.min(binedges)) if math.isnan(minvalue) else minvalue],
+        "max": [float(np.max(binedges)) if math.isnan(maxvalue) else maxvalue]
     }), props)
 
 
