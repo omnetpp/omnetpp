@@ -7,7 +7,7 @@
 
 package org.omnetpp.scave.charting.plotter;
 
-import org.omnetpp.scave.charting.properties.LineVisualProperties.SymbolType;
+import org.omnetpp.scave.charting.properties.PlotProperties.SymbolType;
 
 public class ChartSymbolFactory {
 

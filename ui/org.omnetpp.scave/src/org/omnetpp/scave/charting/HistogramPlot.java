@@ -27,8 +27,8 @@ import org.omnetpp.scave.charting.dataset.IHistogramDataset;
 import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 import org.omnetpp.scave.charting.plotter.SquareSymbol;
 import org.omnetpp.scave.charting.properties.PlotDefaults;
-import org.omnetpp.scave.charting.properties.HistogramPlotProperties.HistogramBar;
-import org.omnetpp.scave.charting.properties.HistogramPlotProperties.HistogramDataType;
+import org.omnetpp.scave.charting.properties.PlotProperties.HistogramBar;
+import org.omnetpp.scave.charting.properties.PlotProperties.HistogramDataType;
 
 public class HistogramPlot {
 

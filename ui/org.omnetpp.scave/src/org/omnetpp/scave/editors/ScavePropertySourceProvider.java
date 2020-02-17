@@ -11,16 +11,9 @@ import java.util.concurrent.Callable;
 
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.IPropertySourceProvider;
-import org.omnetpp.common.properties.MergedPropertySource;
 import org.omnetpp.common.properties.PropertySource;
 import org.omnetpp.common.ui.GenericTreeNode;
-import org.omnetpp.scave.charting.properties.PlotProperties;
-import org.omnetpp.scave.charting.properties.MatplotlibChartProperties;
-import org.omnetpp.scave.charting.properties.LinePlotProperties;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.Chart.ChartType;
-import org.omnetpp.scave.model.commands.CommandStack;
 import org.omnetpp.scave.model2.ChartLine;
 import org.omnetpp.scave.model2.ResultFilePayload;
 import org.omnetpp.scave.model2.ResultItemRef;

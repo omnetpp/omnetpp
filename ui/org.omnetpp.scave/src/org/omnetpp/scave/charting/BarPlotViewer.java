@@ -7,17 +7,18 @@
 
 package org.omnetpp.scave.charting;
 
-import static org.omnetpp.scave.charting.properties.BarPlotVisualProperties.PROP_BAR_BASELINE;
-import static org.omnetpp.scave.charting.properties.BarPlotVisualProperties.PROP_BAR_PLACEMENT;
-import static org.omnetpp.scave.charting.properties.BarPlotVisualProperties.PROP_WRAP_LABELS;
-import static org.omnetpp.scave.charting.properties.BarVisualProperties.PROP_BAR_COLOR;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_AXIS_TITLE_FONT;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_BAR_BASELINE;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_BAR_COLOR;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_BAR_PLACEMENT;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_LABEL_FONT;
+import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_WRAP_LABELS;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_XY_GRID;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_X_LABELS_ROTATE_BY;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.PlotProperties.PROP_Y_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.PlotProperties.BarPlacement;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -43,7 +44,7 @@ import org.omnetpp.scave.charting.dataset.IStringValueScalarDataset;
 import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 import org.omnetpp.scave.charting.plotter.SquareSymbol;
 import org.omnetpp.scave.charting.properties.PlotDefaults;
-import org.omnetpp.scave.charting.properties.BarPlotVisualProperties.BarPlacement;
+import org.omnetpp.scave.charting.properties.PlotProperties.BarPlacement;
 import org.omnetpp.scave.charting.properties.PlotProperties.ShowGrid;
 import org.omnetpp.scave.engine.Statistics;
 import org.omnetpp.scave.model2.StatUtils;
