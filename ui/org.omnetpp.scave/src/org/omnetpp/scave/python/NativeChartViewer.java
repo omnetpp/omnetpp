@@ -164,8 +164,8 @@ public class NativeChartViewer extends ChartViewerBase {
             return;
 
         // TODO: do not store these if the dataset is empty!
-        final double zx = chartPlotter.isEmpty() ? Double.NaN : plot.getZoomX();
-        final double zy = chartPlotter.isEmpty() ? Double.NaN : plot.getZoomY();
+        final double zx = chartPlotter.isEmpty() || !plot.getHorizontalBar().isVisible() ? Double.NaN : plot.getZoomX();
+        final double zy = chartPlotter.isEmpty() || !plot.getVerticalBar().isVisible()? Double.NaN : plot.getZoomY();
         final long vt = plot.getViewportTop();
         final long vl = plot.getViewportLeft();
 
@@ -220,9 +220,11 @@ public class NativeChartViewer extends ChartViewerBase {
 
                 if (Double.isFinite(zx)) {
                     plot.setZoomX(zx);
+                    plot.scrollHorizontalTo(vl);
+                }
+                if (Double.isFinite(zy)) {
                     plot.setZoomY(zy);
                     plot.scrollVerticalTo(vt);
-                    plot.scrollHorizontalTo(vl);
                 }
 
                 killPythonProcess();
