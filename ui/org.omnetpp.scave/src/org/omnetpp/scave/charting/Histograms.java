@@ -70,12 +70,12 @@ class Histograms {
             int barCount = dataset.getCellsCount(series);
             double minValue = dataset.getMinValue(series);
             double maxValue = dataset.getMaxValue(series);
-            boolean hasUnderflow = barCount > 0 && (dataset.getUnderflows(series) > 0 || minValue < dataset.getCellLowerBound(series, 0));
-            boolean hasOverflow = barCount > 0 && (dataset.getOverflows(series) > 0 || maxValue >= dataset.getCellUpperBound(series, barCount-1));
+            boolean hasUnderflow = barCount > 0 && (valueTransform.getUnderflowsValue(series) > 0 || minValue < dataset.getCellLowerBound(series, 0));
+            boolean hasOverflow = barCount > 0 && (valueTransform.getOverflowsValue(series) > 0 || maxValue >= dataset.getCellUpperBound(series, barCount-1));
 
             // underflow cell
             if (showOverflowCell && hasUnderflow) {
-                double transformedValue = transformValue(dataset.getUnderflows(series));
+                double transformedValue = transformValue(valueTransform.getUnderflowsValue(series));
                 double yTop = Math.max(transformedValue, transformedBaseline);
                 double yBottom = Math.min(transformedValue, transformedBaseline);
                 double xLeft = minValue;
@@ -113,7 +113,7 @@ class Histograms {
 
             // overflow cell
             if (showOverflowCell && hasOverflow) {
-                double transformedValue = transformValue(dataset.getOverflows(series));
+                double transformedValue = transformValue(valueTransform.getOverflowsValue(series));
                 double yTop = Math.max(transformedValue, transformedBaseline);
                 double yBottom = Math.min(transformedValue, transformedBaseline);
                 double xLeft = dataset.getCellUpperBound(series, barCount-1);
@@ -191,6 +191,28 @@ class Histograms {
         return area;
     }
 
+    // utility method for the Solid draw style
+    protected void drawRect(Graphics graphics, ICoordsMapping coordsMapping, RectangularArea area) {
+        double xl = area.minX;
+        double xr = area.maxX;
+        double yt = area.maxY;
+        double yb = area.minY;
+
+        if (!Double.isInfinite(yt) && !Double.isInfinite(yb)) {
+            long left = coordsMapping.toCanvasX(xl);
+            long right = coordsMapping.toCanvasX(xr);
+            long bottom = coordsMapping.toCanvasY(yb);
+            long top = coordsMapping.toCanvasY(yt);
+            if (top != bottom) {
+                LargeGraphics.fillRectangle(graphics, left, top, right-left, bottom-top);
+                LargeGraphics.drawRectangle(graphics, left, top, right-left, bottom-top);
+            }
+            else {
+                LargeGraphics.drawLine(graphics, left, top, right, top);
+            }
+        }
+    }
+
     void draw(Graphics graphics, ICoordsMapping coordsMapping) {
         graphics.setLineStyle(SWT.LINE_SOLID);
 
@@ -206,74 +228,19 @@ class Histograms {
                 graphics.setAlpha(128);
                 graphics.setLineStyle(SWT.LINE_DOT);
 
-                if (underflowBars[series] != null) {
-                    double xl = underflowBars[series].minX;
-                    double xr = underflowBars[series].maxX;
-                    double yt = underflowBars[series].maxY;
-                    double yb = underflowBars[series].minY;
-
-                    if (!Double.isInfinite(yt) && !Double.isInfinite(yb)) {
-                        long left = coordsMapping.toCanvasX(xl);
-                        long right = coordsMapping.toCanvasX(xr);
-                        long bottom = coordsMapping.toCanvasY(yb);
-                        long top = coordsMapping.toCanvasY(yt);
-                        if (top != bottom) {
-                            LargeGraphics.fillRectangle(graphics, left, top, right-left, bottom-top);
-                            LargeGraphics.drawRectangle(graphics, left, top, right-left, bottom-top);
-                        }
-                        else {
-                            LargeGraphics.drawLine(graphics, left, top, right, top);
-                        }
-                    }
-                }
+                if (underflowBars[series] != null)
+                    drawRect(graphics, coordsMapping, underflowBars[series]);
 
                 graphics.setAlpha(255);
-
                 graphics.setLineStyle(SWT.LINE_SOLID);
-                for (int index = 0; index < binBars[series].length; ++index) {
-                    double xl = binBars[series][index].minX;
-                    double xr = binBars[series][index].maxX;
-                    double yt = binBars[series][index].maxY;
-                    double yb = binBars[series][index].minY;
-
-                    if (!Double.isInfinite(yt) && !Double.isInfinite(yb)) {
-                        long left = coordsMapping.toCanvasX(xl);
-                        long right = coordsMapping.toCanvasX(xr);
-                        long bottom = coordsMapping.toCanvasY(yb);
-                        long top = coordsMapping.toCanvasY(yt);
-                        if (top != bottom) {
-                            LargeGraphics.fillRectangle(graphics, left, top, right-left, bottom-top);
-                            LargeGraphics.drawRectangle(graphics, left, top, right-left, bottom-top);
-                        }
-                        else {
-                            LargeGraphics.drawLine(graphics, left, top, right, top);
-                        }
-                    }
-                }
+                for (int index = 0; index < binBars[series].length; ++index)
+                    drawRect(graphics, coordsMapping, binBars[series][index]);
 
                 graphics.setAlpha(128);
                 graphics.setLineStyle(SWT.LINE_DOT);
 
-                if (overflowBars[series] != null) {
-                    double xl = overflowBars[series].minX;
-                    double xr = overflowBars[series].maxX;
-                    double yt = overflowBars[series].maxY;
-                    double yb = overflowBars[series].minY;
-
-                    if (!Double.isInfinite(yt) && !Double.isInfinite(yb)) {
-                        long left = coordsMapping.toCanvasX(xl);
-                        long right = coordsMapping.toCanvasX(xr);
-                        long bottom = coordsMapping.toCanvasY(yb);
-                        long top = coordsMapping.toCanvasY(yt);
-                        if (top != bottom) {
-                            LargeGraphics.fillRectangle(graphics, left, top, right-left, bottom-top);
-                            LargeGraphics.drawRectangle(graphics, left, top, right-left, bottom-top);
-                        }
-                        else {
-                            LargeGraphics.drawLine(graphics, left, top, right, top);
-                        }
-                    }
-                }
+                if (overflowBars[series] != null)
+                    drawRect(graphics, coordsMapping, overflowBars[series]);
 
                 break;
             case Outline:
@@ -283,6 +250,40 @@ class Histograms {
 
                 long baselineY = coordsMapping.toCanvasY(transformedBaseline);
                 long prevY = baselineY;
+
+                if (underflowBars[series] != null ) {
+                    double xl = underflowBars[series].minX;
+                    double xr = underflowBars[series].maxX;
+                    double yt = underflowBars[series].maxY;
+                    double yb = underflowBars[series].minY;
+                    double y1 = transformedBaseline;
+                    double y2 = yt > transformedBaseline ? yt : yb;
+
+                    double nextYt = binBars[series][0].maxY;
+                    double nextYb = binBars[series][0].minY;
+                    long nextY = coordsMapping.toCanvasY(nextYt > transformedBaseline ? nextYt : nextYb);
+
+                    long left = coordsMapping.toCanvasX(xl);
+                    long right = coordsMapping.toCanvasX(xr);
+                    graphics.setLineStyle(Graphics.LINE_DASH);
+
+                    long cy1 = coordsMapping.toCanvasY(y1);
+                    long cy2 = coordsMapping.toCanvasY(y2);
+
+                    prevY = cy2;
+
+                    LargeGraphics.drawPolyline(graphics, new long[] {
+                            left, cy1,
+                            left, cy2,
+                            right, cy2,
+                            right, nextY,
+                            });
+
+                }
+
+
+                graphics.setLineStyle(Graphics.LINE_SOLID);
+
                 int cellCount = binBars[series].length;
                 ArrayList<Long> points = new ArrayList<Long>(3*cellCount);
                 for (int index = 0 ; index < cellCount; ++index) {
@@ -298,8 +299,10 @@ class Histograms {
                     if (Double.isInfinite(y)) {
                         yy = baselineY;
                         if (yy != prevY) {
-                            points.add(left);
-                            points.add(prevY);
+                            if (index != 0) {
+                                points.add(left);
+                                points.add(prevY);
+                            }
                             points.add(left);
                             points.add(yy);
                         }
@@ -308,8 +311,10 @@ class Histograms {
                     }
                     else {
                         yy = coordsMapping.toCanvasY(y);
-                        points.add(left);
-                        points.add(prevY);
+                        if (index != 0) {
+                            points.add(left);
+                            points.add(prevY);
+                        }
                         points.add(left);
                         points.add(yy);
                         points.add(right);
@@ -319,6 +324,30 @@ class Histograms {
                 }
                 if (points.size() > 0)
                     LargeGraphics.drawPolyline(graphics, ArrayUtils.toPrimitive(points.toArray(new Long[0])));
+
+
+                if (overflowBars[series] != null ) {
+                    double xl = overflowBars[series].minX;
+                    double xr = overflowBars[series].maxX;
+                    double yt = overflowBars[series].maxY;
+                    double yb = overflowBars[series].minY;
+                    double y1 = yt > transformedBaseline ? yt : yb;
+                    double y2 = transformedBaseline;
+
+                    long left = coordsMapping.toCanvasX(xl);
+                    long right = coordsMapping.toCanvasX(xr);
+                    long cy1 = coordsMapping.toCanvasY(y1);
+                    long cy2 = coordsMapping.toCanvasY(y2);
+                    graphics.setLineStyle(Graphics.LINE_DASH);
+                    LargeGraphics.drawPolyline(graphics, new long[] {
+                            left, prevY,
+                            left, cy1,
+                            right, cy1,
+                            right, cy2,
+                            });
+
+                }
+
 
                 break;
             }
@@ -440,11 +469,23 @@ class Histograms {
 
     private interface ICellValueTransform {
         double getCellValue(int series, int index);
+        double getUnderflowsValue(int series);
+        double getOverflowsValue(int series);
     }
 
     private class NullTransform implements ICellValueTransform {
         public double getCellValue(int series, int index) {
             return parent.getDataset().getCellValue(series, index);
+        }
+
+        @Override
+        public double getUnderflowsValue(int series) {
+            return parent.getDataset().getUnderflows(series);
+        }
+
+        @Override
+        public double getOverflowsValue(int series) {
+            return parent.getDataset().getOverflows(series);
         }
     }
 
@@ -454,42 +495,58 @@ class Histograms {
             double value = dataset.getCellValue(series, index);
             double sumWeights = dataset.getSumWeights(series);
             double cellMin = dataset.getCellLowerBound(series, index);
-            if (Double.isInfinite(cellMin))
-                cellMin = dataset.getMinValue(series);
             double cellMax = dataset.getCellUpperBound(series, index);
-            if (Double.isInfinite(cellMax))
-                cellMax = dataset.getMaxValue(series);
             double cellWidth = cellMax > cellMin ? cellMax - cellMin : 0.0;
+            return cellWidth > 0.0 ? value / cellWidth / sumWeights : 0.0;
+        }
 
+        @Override
+        public double getUnderflowsValue(int series) {
+            IHistogramDataset dataset = parent.getDataset();
+            double value = dataset.getUnderflows(series);
+            double sumWeights = dataset.getSumWeights(series);
+            double cellMin = dataset.getMinValue(series);
+            double cellMax = dataset.getCellLowerBound(series, 0);
+            double cellWidth = cellMax > cellMin ? cellMax - cellMin : 0.0;
+            return cellWidth > 0.0 ? value / cellWidth / sumWeights : 0.0;
+        }
+
+        @Override
+        public double getOverflowsValue(int series) {
+            IHistogramDataset dataset = parent.getDataset();
+            double value = dataset.getOverflows(series);
+            double sumWeights = dataset.getSumWeights(series);
+            int cellsCount = dataset.getCellsCount(series);
+            double cellMin = dataset.getCellUpperBound(series, cellsCount-1);
+            double cellMax = dataset.getMaxValue(series);
+            double cellWidth = cellMax > cellMin ? cellMax - cellMin : 0.0;
             return cellWidth > 0.0 ? value / cellWidth / sumWeights : 0.0;
         }
     }
 
     private class CdfTransform implements ICellValueTransform {
-        int prevSeries=-1, prevIndex=-1;
+        int prevSeries=-1, prevIndex=-1; // for some caching
         double sumWeights;
         double prevValue = 0.0;
 
         public double getCellValue(int series, int index) {
             IHistogramDataset dataset = parent.getDataset();
             if (series != prevSeries) {
-                prevValue = 0.0;
+                prevValue = dataset.getUnderflows(series);
                 prevIndex = -1;
                 sumWeights = dataset.getSumWeights(series);
             }
             double value = prevValue;
-            if (index > prevIndex) {
+            if (index >= prevIndex) {
+                // optimization, to make the usual sequential querying faster
                 for (int i = prevIndex + 1; i <= index; ++i)
                     value += dataset.getCellValue(series, i);
             }
-            else if (index < prevIndex / 2) {
-                value = 0.0;
+            else {
+                // starting from the beginning for non-sequential querying
+                value = dataset.getUnderflows(series);
                 for (int i = 0; i <= index; ++i)
                     value += dataset.getCellValue(series, i);
-            }
-            else if (index < prevIndex) {
-                for (int i = prevIndex - 1; i >= index; --i)
-                    value -= dataset.getCellValue(series, i);
             }
 
             prevSeries = series;
@@ -497,39 +554,65 @@ class Histograms {
             prevValue = value;
             return sumWeights > 0 ? value / sumWeights : 0.0;
         }
+
+        @Override
+        public double getUnderflowsValue(int series) {
+            IHistogramDataset dataset = parent.getDataset();
+            double sumWeights = dataset.getSumWeights(series);
+            return sumWeights > 0 ? dataset.getUnderflows(series) / sumWeights : 0.0;
+        }
+
+        @Override
+        public double getOverflowsValue(int series) {
+            IHistogramDataset dataset = parent.getDataset();
+            double sumWeights = dataset.getSumWeights(series);
+            return sumWeights > 0 ? 1.0 : 0.0;
+        }
     }
 
     private class AccTransform implements ICellValueTransform {
-        int prevSeries=-1, prevIndex=-1;
+        int prevSeries=-1, prevIndex=-1; // for some caching
         double sumWeights;
         double prevValue = 0.0;
 
         public double getCellValue(int series, int index) {
             IHistogramDataset dataset = parent.getDataset();
             if (series != prevSeries) {
-                prevValue = 0.0;
+                prevValue = dataset.getUnderflows(series);
                 prevIndex = -1;
                 sumWeights = dataset.getSumWeights(series);
             }
             double value = prevValue;
-            if (index > prevIndex) {
+            if (index >= prevIndex) {
+                // optimization, to make the usual sequential querying faster
                 for (int i = prevIndex + 1; i <= index; ++i)
                     value += dataset.getCellValue(series, i);
             }
-            else if (index < prevIndex / 2) {
-                value = 0.0;
+            else {
+                // starting from the beginning for non-sequential querying
+                value = dataset.getUnderflows(series);
                 for (int i = 0; i <= index; ++i)
                     value += dataset.getCellValue(series, i);
-            }
-            else if (index < prevIndex) {
-                for (int i = prevIndex - 1; i >= index; --i)
-                    value -= dataset.getCellValue(series, i);
             }
 
             prevSeries = series;
             prevIndex = index;
             prevValue = value;
             return sumWeights > 0 ? value : 0.0;
+        }
+
+        @Override
+        public double getUnderflowsValue(int series) {
+            IHistogramDataset dataset = parent.getDataset();
+            double sumWeights = dataset.getSumWeights(series);
+            return sumWeights > 0 ? dataset.getUnderflows(series) : 0.0;
+        }
+
+        @Override
+        public double getOverflowsValue(int series) {
+            IHistogramDataset dataset = parent.getDataset();
+            double sumWeights = dataset.getSumWeights(series);
+            return sumWeights > 0 ? sumWeights : 0.0;
         }
     }
 }
