@@ -74,7 +74,7 @@ import org.omnetpp.scave.preferences.ScavePreferenceConstants;
 /**
  * Line chart.
  */
-public class VectorChartViewer extends ChartViewer {
+public class VectorChartViewer extends ChartViewer { //TODO LinePlot?
 
     private static final boolean debug = false;
 

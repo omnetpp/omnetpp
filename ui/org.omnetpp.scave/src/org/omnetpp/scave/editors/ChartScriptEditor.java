@@ -107,7 +107,7 @@ import org.python.pydev.shared_ui.editor_input.PydevFileEditorInput;
 
 //TODO @title not used by chart
 
-public class ChartScriptEditor extends PyEdit {
+public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
     Chart chart;
     Chart originalChart;
     ScaveEditor scaveEditor;

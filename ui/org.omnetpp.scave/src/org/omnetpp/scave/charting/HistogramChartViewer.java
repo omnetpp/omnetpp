@@ -45,7 +45,7 @@ import org.omnetpp.scave.charting.properties.ChartDefaults;
 import org.omnetpp.scave.charting.properties.HistogramChartVisualProperties.HistogramBar;
 import org.omnetpp.scave.charting.properties.HistogramChartVisualProperties.HistogramDataType;
 
-public class HistogramChartViewer extends ChartViewer {
+public class HistogramChartViewer extends ChartViewer { //TODO HistogramPlot
 
     private static final boolean debug = false;
 

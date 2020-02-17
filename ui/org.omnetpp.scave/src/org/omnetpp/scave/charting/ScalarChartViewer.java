@@ -59,7 +59,7 @@ import org.omnetpp.scave.model2.StatUtils;
  *
  * @author tomi
  */
-public class ScalarChartViewer extends ChartViewer {
+public class ScalarChartViewer extends ChartViewer {  //TODO BarPlot
     private IScalarDataset dataset;
 
     private LinearAxis valueAxis = new LinearAxis(true, DEFAULT_Y_AXIS_LOGARITHMIC, false);

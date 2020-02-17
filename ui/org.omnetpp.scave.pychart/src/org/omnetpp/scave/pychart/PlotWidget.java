@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.omnetpp.scave.engine.ScaveEngine;
 
-public class PlotWidget extends Canvas implements IPlotWidget {
+public class PlotWidget extends Canvas implements IPlotWidget {  // TODO MatplotlibCanvas?
     ByteBuffer buf;
     ImageData imageData;
     Image image;

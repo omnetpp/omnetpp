@@ -36,7 +36,7 @@ public class ChartVisualProperties extends PropertySource {
      */
     public static final String
         // Titles
-        PROP_GRAPH_TITLE        = "Graph.Title",
+        PROP_GRAPH_TITLE        = "Graph.Title",  //TODO Plot.Title
         PROP_GRAPH_TITLE_FONT   = "Graph.Title.Font",
         PROP_X_AXIS_TITLE       = "X.Axis.Title",
         PROP_Y_AXIS_TITLE       = "Y.Axis.Title",
