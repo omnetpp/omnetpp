@@ -967,6 +967,7 @@ const char *MatchableResultItem::getAsString(const char *attribute) const
         return getFileName();
     else if (strncasecmp("attr:", attribute, 5) == 0)
         return getResultItemAttribute(attribute+5);
+    // TODO: add back param: but as par: -module parameter value, not parameter assignment
     else if (strncasecmp("runattr:", attribute, 8) == 0)
         return getRunAttribute(attribute+8);
     else if (strncasecmp("itervar:", attribute, 8) == 0)
@@ -1014,7 +1015,7 @@ const char *MatchableRun::getAsString(const char *attribute) const
     else if (strncasecmp("itervar:", attribute, 8) == 0)
         return getIterationVariable(attribute+8);
     else if (strncasecmp("config:", attribute, 7) == 0)
-        return getConfigValue(attribute+7);
+        return getConfigValue(attribute+7); // TODO: add param: as well? (also update the docs, if/when done)
     else
         return getAttribute(attribute);
 }
@@ -1120,7 +1121,7 @@ const char *MatchableConfigEntry::getAsString(const char *attribute) const
         return getRunAttribute(attribute+8);
     else if (strncasecmp("itervar:", attribute, 8) == 0)
         return getIterationVariable(attribute+8);
-    else if (strncasecmp("param:", attribute, 6) == 0)
+    else if (strncasecmp("param:", attribute, 6) == 0) // or config?
         return getParamAssignment(attribute+6);
     else
         return getName();

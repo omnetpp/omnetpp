@@ -25,7 +25,7 @@ def get_data(filter):
     iv = results.get_itervars(filter)
     ra = results.get_runattrs(filter)
 
-    df = pd.concat([sc, iv, ra])
+    df = pd.concat([sc, iv, ra], sort=True)  # TODO: add this sort in other places as well (all templates, all chart "instances", etc)
     # print(df)
 
     df["value"] = pd.to_numeric(df["value"], errors="ignore")

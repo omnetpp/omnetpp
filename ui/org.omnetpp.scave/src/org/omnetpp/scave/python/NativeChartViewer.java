@@ -123,6 +123,8 @@ public class NativeChartViewer extends ChartViewerBase {
 
         chartView.setStatusText("Running Python script...");
 
+        // TODO: should clear _ALL_ properties here (some are not included in the defaults, like per-line style)
+
         // resetting properties to factory defaults
         IPropertySource2 propSource = ChartVisualProperties.createPropertySource(chart);
         for (IPropertyDescriptor desc : propSource.getPropertyDescriptors()) {

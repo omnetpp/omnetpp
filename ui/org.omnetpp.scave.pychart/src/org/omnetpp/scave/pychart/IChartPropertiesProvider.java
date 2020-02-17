@@ -10,5 +10,5 @@ public interface IChartPropertiesProvider {
 
     // void setChartProperty(String key, String value); // this was moved to INativeChartPlotter
 
-    void setMessage(String message);
+    //void setMessage(String message);
 }

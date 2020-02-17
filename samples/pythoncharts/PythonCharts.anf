@@ -818,5 +818,466 @@ fig.canvas.mpl_connect('button_release_event', onpress)
 show()]]>
             </script>
         </chart>
+        <chart icon="icons/full/obj/linechart.png" id="300" name="Line Chart" template="linechart" type="LINE">
+            <script>
+                <![CDATA[from omnetpp.scave import results, chart, plot, vectorops as ops
+import math
+
+params = chart.get_properties()
+
+# This expression selects the results (you might be able to logically simplify it)
+
+filter_expression = params["filter"]
+
+start_time = float(params["vector_start_time"] or -math.inf)
+end_time = float(params["vector_end_time"] or math.inf)
+
+# The data is returned as a Pandas DataFrame
+df = results.get_vectors(filter_expression, include_attrs=True, include_itervars=True, start_time=start_time, end_time=end_time)
+
+df = ops.perform_vector_ops(df, params["vector_operations"])
+
+# You can perform any transformations on the data here
+
+print(df)
+
+# Finally, the results are plotted
+plot.plot_vectors(df)
+
+plot.set_properties(chart.get_properties())
+]]>
+            </script>
+            <dialogPage id="Main" label="Main">
+                <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2"/>
+
+  <x:children>
+
+    <!-- page generated from the following spec:
+Names {
+	chartName,
+},
+Options {
+	Use antialias?,
+	Use caching?,
+},
+Colors {
+	backgroundColor
+}
+    -->
+
+    <!-- Names { -->
+    <group text="Names">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- chartName -->
+    <label text="Chart name:"/>
+    <text x:id="chart_name" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <!--  -->
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+    <!-- Options { -->
+    <group text="Options">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- Use antialias? -->
+    <button x:id="Plot.Antialias" text="Use antialias" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <!-- Use caching? -->
+    <button x:id="Plot.Caching" text="Use caching" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <!--  -->
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+    <!-- Colors { -->
+    <group text="Colors">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- backgroundColor -->
+    <label text="Background color:"/>
+    <ColorChooser x:id="Plot.BackgroundColor" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </ColorChooser>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+  </x:children>
+</xswt>
+]]>
+            </dialogPage>
+            <dialogPage id="Input" label="Input">
+                <![CDATA[<?xml version='1.0' encoding='UTF-8'?>
+<xswt xmlns:x='http://sweet_swt.sf.net/xswt'>
+  <import xmlns='http://sweet_swt.sf.net/xswt'>
+    <package name='java.lang'/>
+    <package name='org.eclipse.swt.widgets' />
+    <package name='org.eclipse.swt.graphics' />
+    <package name='org.eclipse.swt.layout' />
+    <package name='org.eclipse.swt.custom' />
+  </import>
+  <layout x:class='GridLayout' numColumns='1'/>
+  <x:children>
+    <label text="Filter expression:"/>
+    <text x:id="filter" x:style="BORDER|MULTI" x:id.isFilter="true">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true"/>
+    </text>
+
+    <label text="Vector operations:"/>
+    <text x:id="vector_operations" x:style="BORDER|MULTI">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true"/>
+    </text>
+
+
+    <label text="Vector start time (seconds):"/>
+    <text x:id="vector_start_time" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+    </text>
+
+    <label text="Vector end time (seconds):"/>
+    <text x:id="vector_end_time" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+    </text>
+
+  </x:children>
+</xswt>]]>
+            </dialogPage>
+            <dialogPage id="Axes" label="Axes">
+                <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2"/>
+
+  <x:children>
+
+    <!-- page generated from the following spec:
+Axis Bounds {
+	Y axis min,
+	Y axis max
+},
+Axis Options {
+	Logarithmic Y axis?
+},
+Grid {
+	Show grid:None/Major/All
+}
+    -->
+
+    <!-- Axis Bounds { -->
+    <group text="Axis bounds">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- X axis min -->
+    <label text="X axis min:"/>
+    <text x:id="X.Axis.Min" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <!-- X axis max -->
+    <label text="X axis max:"/>
+    <text x:id="X.Axis.Max" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <!-- Y axis min -->
+    <label text="Y axis min:"/>
+    <text x:id="Y.Axis.Min" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <!-- Y axis max -->
+    <label text="Y axis max:"/>
+    <text x:id="Y.Axis.Max" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+    <!-- Axis Options { -->
+    <group text="Axis options">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- Logarithmic Y axis? -->
+    <button x:id="Y.Axis.Log" text="Logarithmic y axis" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+    <!-- Grid { -->
+    <group text="Grid">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- Show grid:None/Major/All -->
+    <label text="Show grid:"/>
+    <combo x:id="Axes.Grid" x:style="BORDER|READ_ONLY">
+      <add x:p0="None"/>
+      <add x:p0="Major"/>
+      <add x:p0="All"/>
+    </combo>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+  </x:children>
+</xswt>
+]]>
+            </dialogPage>
+            <dialogPage id="Legend" label="Legend">
+                <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2"/>
+
+  <x:children>
+
+    <!-- page generated from the following spec:
+Display Legend?,
+Appearance {
+	Border?,
+	Logend font
+},
+Positioning {
+	Position:inside/above/below/left/right,
+	Anchoring:north/northeast/east/southeast/south/southwest/west/northwest
+}
+
+    -->
+
+    <!-- Display Legend? -->
+    <button x:id="Legend.Display" text="Display legend" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <!-- Appearance { -->
+    <group text="Appearance">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- Border? -->
+    <button x:id="Legend.Border" text="Border" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <!-- Legend font -->
+    <label text="Legend font:"/>
+    <FontChooser x:id="Legend.Font" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </FontChooser>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+    <!-- Positioning { -->
+    <group text="Positioning">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- Position:inside/above/below/left/right -->
+    <label text="Position:"/>
+    <combo x:id="Legend.Position" x:style="BORDER|READ_ONLY">
+      <add x:p0="inside"/>
+      <add x:p0="above"/>
+      <add x:p0="below"/>
+      <add x:p0="left"/>
+      <add x:p0="right"/>
+    </combo>
+
+    <!-- Anchoring:north/northeast/east/southeast/south/southwest/west/northwest -->
+    <label text="Anchoring:"/>
+    <combo x:id="Legend.Anchoring" x:style="BORDER|READ_ONLY">
+      <add x:p0="north"/>
+      <add x:p0="northeast"/>
+      <add x:p0="east"/>
+      <add x:p0="southeast"/>
+      <add x:p0="south"/>
+      <add x:p0="southwest"/>
+      <add x:p0="west"/>
+      <add x:p0="northwest"/>
+    </combo>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+    <!--  -->
+
+  </x:children>
+</xswt>
+]]>
+            </dialogPage>
+            <dialogPage id="Titles" label="Titles">
+                <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2"/>
+
+  <x:children>
+
+    <!-- page generated from the following spec:
+Graph Title {
+	Graph title,
+	Title font
+},
+Axis Titles {
+	X axis title,
+	Y axis title,
+	Axis title font,
+	Label font,
+	Rotate X labels by:0/30/45/60/90,
+	wrap labels?
+}
+    -->
+
+    <!-- Graph Title { -->
+    <group text="Graph title">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- Graph title -->
+    <label text="Graph title:"/>
+    <text x:id="Graph.Title" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <!-- Title font -->
+    <label text="Title font:"/>
+    <FontChooser x:id="Graph.Title.Font" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </FontChooser>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+    <!-- Axis Titles { -->
+    <group text="Axis titles">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- X axis title -->
+    <label text="X axis title:"/>
+    <text x:id="X.Axis.Title" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <!-- Y axis title -->
+    <label text="Y axis title:"/>
+    <text x:id="Y.Axis.Title" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <!-- Axis title font -->
+    <label text="Axis title font:"/>
+    <FontChooser x:id="Axis.Title.Font" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </FontChooser>
+
+    <!-- Label font -->
+    <label text="Label font:"/>
+    <FontChooser x:id="Label.Font" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </FontChooser>
+
+    <!-- Rotate X labels by:0/30/45/60/90 -->
+    <label text="Rotate x labels by:"/>
+    <combo x:id="X.Label.RotateBy" x:style="BORDER|READ_ONLY">
+      <add x:p0="0"/>
+      <add x:p0="30"/>
+      <add x:p0="45"/>
+      <add x:p0="60"/>
+      <add x:p0="90"/>
+    </combo>
+
+    <!-- TODO wrap labels for bar charts (as a different form) -->
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+  </x:children>
+</xswt>
+]]>
+            </dialogPage>
+            <property name="filter" value="runattr:experiment =~ PureAlohaExperiment AND runattr:measurement =~ &quot;$numHosts=10, $iaMean=3&quot; AND runattr:replication =~ &quot;#0&quot; AND module =~ &quot;Aloha.host[2]&quot; AND name =~ radioState:vector"/>
+        </chart>
     </charts>
 </analysis>
