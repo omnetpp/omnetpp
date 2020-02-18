@@ -39,6 +39,9 @@ import org.omnetpp.scave.export.IGraphicalExportFileFormat;
 import org.omnetpp.scave.export.NativeChartExport;
 import org.omnetpp.scave.model.Chart;
 
+/**
+ * Export Charts dialog
+ */
 public class ExportChartsDialog extends Dialog {
 
     private static final String
@@ -46,21 +49,21 @@ public class ExportChartsDialog extends Dialog {
         KEY_RENDERER = "renderer",
         KEY_FORMAT = "format";
 
-    List<Chart> charts;
-    List<Chart> initialSelection;
-    ScaveEditor editor;
+    private List<Chart> charts;
+    private List<Chart> initialSelection;
+    private ScaveEditor editor;
 
-    Tree chartsTree;
-    Text folderText;
-    List<Button> rendererRadios = new ArrayList<Button>();
-    Combo fileFormatCombo;
+    private Tree chartsTree;
+    private Text folderText;
+    private List<Button> rendererRadios = new ArrayList<Button>();
+    private Combo fileFormatCombo;
 
-    List<Chart> selectedCharts;
-    IContainer targetFolder;
-    List<IChartExport> renderers;
-    IChartExport selectedRenderer;
-    List<IGraphicalExportFileFormat> formats;
-    IGraphicalExportFileFormat selectedFormat;
+    private List<Chart> selectedCharts;
+    private IContainer targetFolder;
+    private List<IChartExport> renderers;
+    private IChartExport selectedRenderer;
+    private List<IGraphicalExportFileFormat> formats;
+    private IGraphicalExportFileFormat selectedFormat;
 
     public ExportChartsDialog(Shell parentShell, List<Chart> charts, List<Chart> initialSelection, ScaveEditor editor) {
         super(parentShell);
@@ -177,21 +180,21 @@ public class ExportChartsDialog extends Dialog {
         panel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         panel.setLayout(new GridLayout());
 
-//        label = new Label(panel, SWT.NONE);
-//        label.setText("Render using:");
-//        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-//        for (IChartExport renderer : renderers) {
-//            button = new Button(panel, SWT.RADIO);
-//            button.setText(renderer.getName());
-//            button.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-//            button.addSelectionListener(new SelectionAdapter() {
-//                @Override
-//                public void widgetSelected(SelectionEvent e) {
-//                    updateFileFormats();
-//                }
-//            });
-//            rendererRadios.add(button);
-//        }
+        label = new Label(panel, SWT.NONE);
+        label.setText("Render using:");
+        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+        for (IChartExport renderer : renderers) {
+            button = new Button(panel, SWT.RADIO);
+            button.setText(renderer.getName());
+            button.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+            button.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    updateFileFormats();
+                }
+            });
+            rendererRadios.add(button);
+        }
 
         panel = new Composite(composite, SWT.NONE);
         panel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));

@@ -31,7 +31,7 @@ import org.omnetpp.scave.engine.ResultItemFields;
  * Formatting tool for generating legend labels and
  * identifiers for result items.
  * <p>
- * Format string may contain to fields of the result item
+ * FileFormat string may contain to fields of the result item
  * by "${fieldname}" syntax. Use "\$" to quote a '$' if needed.
  * Accepted field names are defined by {@link FilterUtil.getFieldNames()}.
  * Use ${index} to refer to the index of the item in the collection.
