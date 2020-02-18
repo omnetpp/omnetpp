@@ -1,5 +1,7 @@
 package org.omnetpp.scave.editors.ui;
 
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +13,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
-import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -30,49 +31,36 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.common.util.UIUtils;
+import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelProvider;
-import org.omnetpp.scave.export.FileFormats;
-import org.omnetpp.scave.export.IChartExport;
-import org.omnetpp.scave.export.IGraphicalExportFileFormat;
-import org.omnetpp.scave.export.NativeChartExport;
+import org.omnetpp.scave.export.GraphicalExportFileFormats;
 import org.omnetpp.scave.model.Chart;
 
 /**
  * Export Charts dialog
  */
+//TODO persist selection too!
 public class ExportChartsDialog extends Dialog {
 
-    private static final String
-        KEY_TARGET_FOLDER = "folder",
-        KEY_RENDERER = "renderer",
-        KEY_FORMAT = "format";
+    private static final String KEY_TARGET_FOLDER = "folder";
+    private static final String KEY_FORMAT = "format";
 
     private List<Chart> charts;
     private List<Chart> initialSelection;
-    private ScaveEditor editor;
 
     private Tree chartsTree;
     private Text folderText;
-    private List<Button> rendererRadios = new ArrayList<Button>();
     private Combo fileFormatCombo;
 
     private List<Chart> selectedCharts;
     private IContainer targetFolder;
-    private List<IChartExport> renderers;
-    private IChartExport selectedRenderer;
-    private List<IGraphicalExportFileFormat> formats;
-    private IGraphicalExportFileFormat selectedFormat;
+    private GraphicalExportFileFormats.FileFormat[] formats;
+    private GraphicalExportFileFormats.FileFormat selectedFormat;
 
-    public ExportChartsDialog(Shell parentShell, List<Chart> charts, List<Chart> initialSelection, ScaveEditor editor) {
+    public ExportChartsDialog(Shell parentShell, List<Chart> charts, List<Chart> initialSelection) {
         super(parentShell);
         this.charts = charts;
         this.initialSelection = initialSelection;
-        this.editor = editor;
-        renderers = new ArrayList<IChartExport>();
-        renderers.add(new NativeChartExport(editor.getResultFileManager()));
-        // renderers.add(new RChartExport(editor.getResultFileManager()));
     }
 
     @Override
@@ -108,11 +96,10 @@ public class ExportChartsDialog extends Dialog {
         gridData.widthHint = 320;
         gridData.heightHint = 200;
         chartsTree.setLayoutData(gridData);
-        ILabelProvider labelProvider = new ScaveModelLabelProvider();
         for (Chart chart : charts) {
             TreeItem item = new TreeItem(chartsTree, SWT.NONE);
-            item.setText(labelProvider.getText(chart));
-            item.setImage(labelProvider.getImage(chart));
+            item.setText(defaultIfEmpty(chart.getName(), "<unnamed>"));
+            item.setImage(ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_CHART)); //TODO toolbar icon?
             if (initialSelection.contains(chart))
                 item.setChecked(true);
         }
@@ -180,22 +167,6 @@ public class ExportChartsDialog extends Dialog {
         panel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         panel.setLayout(new GridLayout());
 
-        label = new Label(panel, SWT.NONE);
-        label.setText("Render using:");
-        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-        for (IChartExport renderer : renderers) {
-            button = new Button(panel, SWT.RADIO);
-            button.setText(renderer.getName());
-            button.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-            button.addSelectionListener(new SelectionAdapter() {
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    updateFileFormats();
-                }
-            });
-            rendererRadios.add(button);
-        }
-
         panel = new Composite(composite, SWT.NONE);
         panel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         panel.setLayout(new GridLayout(2, false));
@@ -205,19 +176,6 @@ public class ExportChartsDialog extends Dialog {
         fileFormatCombo = new Combo(panel, SWT.NONE);
         fileFormatCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-        button = new Button(panel, SWT.NONE);
-        button.setText("Options...");
-        button.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
-        button.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                IGraphicalExportFileFormat format = getSelectedFileFormat();
-                if (format != null)
-                    format.openOptionsDialog(composite.getShell());
-            }
-        });
-
-        selectedRenderer = renderers.get(0);
         updateFileFormats();
 
         restoreDialogSettings();
@@ -226,22 +184,13 @@ public class ExportChartsDialog extends Dialog {
     }
 
     private void updateFileFormats() {
-        List<IGraphicalExportFileFormat> newFormats = new ArrayList<IGraphicalExportFileFormat>();
-        IChartExport renderer = getSelectedRenderer();
-        if (renderer != null) {
-            for (IGraphicalExportFileFormat format : FileFormats.getAll()) {
-                if (renderer.isSupportedFormat(format))
-                    newFormats.add(format.clone());
-            }
-        }
-        formats = newFormats;
-        String items[] = new String[formats.size()];
-        for (int i = 0; i < formats.size(); ++i)
-            items[i] = formats.get(i).getDescription();
+        formats = GraphicalExportFileFormats.getAll();
+        String items[] = new String[formats.length];
+        for (int i = 0; i < formats.length; ++i)
+            items[i] = formats[i].getDescription();
         fileFormatCombo.setItems(items);
-        if (items.length > 0) {
+        if (items.length > 0)
             fileFormatCombo.select(0);
-        }
     }
 
     protected void validateDialogContents() {
@@ -262,7 +211,6 @@ public class ExportChartsDialog extends Dialog {
     protected void okPressed() {
         selectedCharts = getSelectedChartsFromTree();
         targetFolder = getTargetFolderFromControl();
-        selectedRenderer = getSelectedRenderer();
         selectedFormat = getSelectedFileFormat();
 
         saveDialogSettings();
@@ -304,10 +252,7 @@ public class ExportChartsDialog extends Dialog {
         String folder = folderText.getText();
         settings.put(KEY_TARGET_FOLDER, folder);
 
-        IChartExport renderer = getSelectedRenderer();
-        settings.put(KEY_RENDERER, renderer != null ? renderer.getName() : null);
-
-        IGraphicalExportFileFormat format = getSelectedFileFormat();
+        GraphicalExportFileFormats.FileFormat format = getSelectedFileFormat();
         settings.put(KEY_FORMAT, format != null ? format.getName() : null);
     }
 
@@ -318,46 +263,14 @@ public class ExportChartsDialog extends Dialog {
         if (folder != null)
             folderText.setText(folder);
 
-        String rendererName = settings.get(KEY_RENDERER);
-        IChartExport renderer = getRenderer(rendererName);
-        if (renderer == null && !renderers.isEmpty())
-            renderer = renderers.get(0);
-        setSelectedRenderer(renderer);
-
         String format = settings.get(KEY_FORMAT);
-        IGraphicalExportFileFormat selectedFormat = getFileFormat(format);
-        if (selectedFormat == null && !formats.isEmpty())
-            selectedFormat = formats.get(0);
+        GraphicalExportFileFormats.FileFormat selectedFormat = getFileFormat(format);
+        if (selectedFormat == null && formats.length > 0)
+            selectedFormat = formats[0];
         setSelectedFileFormat(selectedFormat);
     }
 
-    private IChartExport getSelectedRenderer() {
-        return selectedRenderer;
-//        int index = -1;
-//        for (int i = 0; i < rendererRadios.size(); ++i)
-//            if (rendererRadios.get(i).getSelection()) {
-//                index = i;
-//                break;
-//            }
-//        return index >= 0 && index < renderers.size() ? renderers.get(index) : null;
-    }
-
-    private void setSelectedRenderer(IChartExport renderer) {
-//        for (Button radio : rendererRadios)
-//            radio.setSelection(renderer != null && radio.getText().equals(renderer.getName()));
-//        updateFileFormats();
-    }
-
-    private IChartExport getRenderer(String name) {
-        if (name != null) {
-            for (IChartExport renderer : renderers)
-                if (name.equals(renderer.getName()))
-                    return renderer;
-        }
-        return null;
-    }
-
-    private void setSelectedFileFormat(IGraphicalExportFileFormat format) {
+    private void setSelectedFileFormat(GraphicalExportFileFormats.FileFormat format) {
         int index = -1;
         for (int i = 0; i < fileFormatCombo.getItemCount(); ++i)
             if (format.getDescription().equals(fileFormatCombo.getItem(i))) {
@@ -371,25 +284,21 @@ public class ExportChartsDialog extends Dialog {
             fileFormatCombo.clearSelection();
     }
 
-    private IGraphicalExportFileFormat getFileFormat(String name) {
+    private GraphicalExportFileFormats.FileFormat getFileFormat(String name) {
         if (name != null) {
-            for (IGraphicalExportFileFormat format : formats)
+            for (GraphicalExportFileFormats.FileFormat format : formats)
                 if (name.equals(format.getName()))
                     return format;
         }
         return null;
     }
 
-    private IGraphicalExportFileFormat getSelectedFileFormat() {
+    private GraphicalExportFileFormats.FileFormat getSelectedFileFormat() {
         int index = fileFormatCombo.getSelectionIndex();
-        return index >= 0 && index < formats.size() ? formats.get(index) : null;
+        return index >= 0 && index < formats.length ? formats[index] : null;
     }
 
-    public IChartExport getChartExporter() {
-        return selectedRenderer;
-    }
-
-    public IGraphicalExportFileFormat getFileFormat() {
+    public GraphicalExportFileFormats.FileFormat getFileFormat() {
         return selectedFormat;
     }
 
