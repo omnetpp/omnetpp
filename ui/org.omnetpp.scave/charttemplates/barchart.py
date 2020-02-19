@@ -29,3 +29,6 @@ df = pd.pivot_table(df, index=groups, columns=series, values='value')
 utils.plot_bars(df, props, names=names)
 
 utils.postconfigure_plot(props)
+
+utils.export_image_if_needed(props)
+utils.export_data_if_needed(df, props)

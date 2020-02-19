@@ -20,3 +20,6 @@ print(df)
 plot.plot_vectors(df)
 
 utils.postconfigure_plot(props)
+
+utils.export_image_if_needed(props)
+utils.export_data_if_needed(df, props)

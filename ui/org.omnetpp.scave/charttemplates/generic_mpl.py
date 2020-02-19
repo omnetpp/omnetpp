@@ -1,9 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from omnetpp.scave import chart 
+from omnetpp.scave import chart
 
 # Take the input string entered in the Properties dialog.
-# It is up to the script how to interpret it. In this example, we just print it. 
+# It is up to the script how to interpret it. In this example, we just print it.
 input = chart.get_property("input")
 print("Script input: ", input)
 
@@ -20,5 +20,6 @@ ax.grid(True)
 
 ax.set_title("A line plot on a polar axis", va='bottom')
 
-# plt.show() is not needed
+utils.export_image_if_needed(props)
+#utils.export_data_if_needed(df, props)
 

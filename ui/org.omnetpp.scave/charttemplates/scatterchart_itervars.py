@@ -50,3 +50,6 @@ for i, c in enumerate(df.columns):
 utils.set_plot_title(scalar_name + " vs. " + xaxis_itervar)
 
 utils.postconfigure_plot(props)
+
+utils.export_image_if_needed(props)
+utils.export_data_if_needed(df, props)

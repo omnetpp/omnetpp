@@ -5,7 +5,7 @@ from omnetpp.scave import results, chart, utils, vectorops as ops
 props = chart.get_properties()
 utils.preconfigure_plot(props)
 
-# collect parameters for query 
+# collect parameters for query
 filter_expression = props["filter"]
 start_time = float(props["vector_start_time"] or -math.inf)
 end_time = float(props["vector_end_time"] or math.inf)
@@ -20,3 +20,6 @@ df = ops.perform_vector_ops(df, props["vector_operations"])
 utils.plot_vectors(df, props)
 
 utils.postconfigure_plot(props)
+
+utils.export_image_if_needed(props)
+utils.export_data_if_needed(df, props)

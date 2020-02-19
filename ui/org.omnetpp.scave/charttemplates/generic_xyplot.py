@@ -10,8 +10,11 @@ input = props["input"]
 
 if input:
 	df = ...
-	
+
 # plot
 utils.plot_vectors(df, props)
 
 utils.postconfigure_plot(props)
+
+utils.export_image_if_needed(props)
+#utils.export_data_if_needed(df, props)
