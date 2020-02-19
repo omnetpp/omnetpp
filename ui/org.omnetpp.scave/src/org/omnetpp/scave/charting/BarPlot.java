@@ -271,7 +271,7 @@ public class BarPlot extends PlotBase {
     }
 
     public void setXAxisLabelsRotatedBy(double angle) {
-        domainAxis.rotation = Math.max(0, Math.min(90, angle));
+        domainAxis.rotation = Math.max(-90, Math.min(90, angle));
         chartChanged();
     }
 

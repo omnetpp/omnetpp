@@ -256,7 +256,7 @@ def yscale(value):
     """
     impl.yscale(**locals())
 
-def xticks(ticks=None, labels=None):
+def xticks(ticks=None, labels=None, rotation=0):
     impl.xticks(**locals())
 
 def grid(show=True, which="major"):

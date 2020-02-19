@@ -598,8 +598,10 @@ def yscale(value):
         raise ValueError("scale='{}' is not supported, only 'linear' and 'log'".format(value))
     set_property("Y.Axis.Log", "true" if value == "log" else "false")
 
-def xticks(ticks=None, labels=None):
+def xticks(ticks=None, labels=None, rotation=0):
     Gateway.chart_plotter.setGroupTitles(labels)
+    set_property("X.Label.RotateBy", str(-int(rotation))) # matplotlib and our native widgets have different ideas about label rotation
+
 
 def grid(show=True, which="major"):
     if which not in ["major", "both"]:

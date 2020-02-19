@@ -15,30 +15,38 @@
 
   <x:children>
 
-    <!-- Baseline -->
-    <label text="Baseline:"/>
-    <text x:id="baseline" x:style="BORDER">
-      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
-    </text>
+    <group text="Bars">
+      <layoutData x:class="GridData" horizontalSpan="1" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
 
-    <!-- Bar placement:Aligned/Overlap/InFront/Stacked -->
-    <label text="Bar placement:"/>
-    <combo x:id="bar_placement" x:style="BORDER|READ_ONLY">
-      <add x:p0="Aligned"/>
-      <add x:p0="Overlap"/>
-      <add x:p0="InFront"/>
-      <add x:p0="Stacked"/>
-    </combo>
+        <!-- Baseline -->
+        <label text="Baseline:"/>
+        <text x:id="baseline" x:style="BORDER">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </text>
 
-    <!-- Rotate X labels by:0/30/45/60/90 -->
-    <label text="Rotate x labels by:"/>
-    <combo x:id="xlabel_rotation" x:style="BORDER|READ_ONLY">
-      <add x:p0="0"/>
-      <add x:p0="30"/>
-      <add x:p0="45"/>
-      <add x:p0="60"/>
-      <add x:p0="90"/>
-    </combo>
+        <!-- Bar placement:Aligned/Overlap/InFront/Stacked -->
+        <label text="Bar placement:"/>
+        <combo x:id="bar_placement" x:style="BORDER|READ_ONLY">
+          <add x:p0="Aligned"/>
+          <add x:p0="Overlap"/>
+          <add x:p0="InFront"/>
+          <add x:p0="Stacked"/>
+        </combo>
+
+        <!-- Rotate X labels by:0/30/45/60/90 -->
+        <label text="Rotate x labels by:"/>
+        <combo x:id="xlabel_rotation" x:style="BORDER|READ_ONLY">
+          <add x:p0="0"/>
+          <add x:p0="30"/>
+          <add x:p0="45"/>
+          <add x:p0="60"/>
+          <add x:p0="90"/>
+        </combo>
+
+      </x:children>
+    </group>
 
   </x:children>
 </xswt>

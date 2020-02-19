@@ -305,23 +305,69 @@ def plot_bars(df, props, names=None):
     def get_prop(k):
         return props[k] if k in props else None
 
-    ind = np.arange(len(df.index))  # the x locations for the groups
-    width = 0.8 / len(df.columns)  # the width of the bars
+    group_fill_ratio = 0.8
+    aligned_bar_fill_ratio = 0.9
+    overlap_visible_fraction = 1 / 3
+
+    # used only by the mpl charts
+    xs = np.arange(len(df.index), dtype=np.float64)  # the x locations for the groups
+    width = group_fill_ratio / len(df.columns)  # the width of the bars
+    bottoms = np.zeros_like(xs)
+    group_increment = 0.0
+
+    baseline = get_prop("baseline")
+    if baseline:
+        if chart.is_native_chart(): # is this how this should be done?
+            plot.set_property("Bars.Baseline", baseline)
+        else:
+            bottoms += float(baseline)
+
+    extra_args = dict()
+
+    placement = get_prop("bar_placement")
+    if placement:
+        if chart.is_native_chart(): # is this how this should be done?
+            plot.set_property("Bar.Placement", placement)
+        else:
+            extra_args["bottom"] = bottoms
+            if placement == "InFront":
+                width = group_fill_ratio
+            elif placement == "Stacked":
+                width = group_fill_ratio
+            elif placement == "Aligned":
+                width = group_fill_ratio / len(df.columns)
+                group_increment = width
+                xs -= width * (len(df.columns)-1)/2
+                width *= aligned_bar_fill_ratio
+            elif placement == "Overlap":
+                width = group_fill_ratio / (1 + len(df.columns) * overlap_visible_fraction)
+                group_increment = width * overlap_visible_fraction
+                extra_parts = (1.0 / overlap_visible_fraction - 1)
+                xs += width / extra_parts - (len(df.columns) + extra_parts) * width * overlap_visible_fraction / 2
 
     for i, column in enumerate(df):
         style = _make_bar_args(props, df)
-        p.bar(ind - 0.4 + width * i + width * 0.5, df[column], width, label=df.columns.name + "=" + str(column), **style)
 
-    p.xticks(list(ind), list([df.index.name + "=" + str(i) for i in df.index.values]))
+        if not chart.is_native_chart(): # FIXME: noot pretty...
+            extra_args['zorder'] = 1 - (i / len(df.columns) / 10)
+
+        p.bar(xs, df[column], width, label=df.columns.name + "=" + str(column), **extra_args, **style)
+        xs += group_increment
+        if placement == "Stacked":
+            bottoms += df[column].values
+
+    rotation = get_prop("xlabel_rotation")
+    if rotation:
+        rotation = float(rotation)
+    else:
+        rotation = 0
+    p.xticks(list(range(len(df.index))), list([df.index.name + "=" + str(i) for i in df.index.values]), rotation=rotation)
 
     # Add some text for labels, title and custom x-axis tick labels, etc.
     groups = get_prop("groups").split(",")
     series = get_prop("series").split(",")
 
-    if not chart.is_native_chart():
-        ax = plt.gca()
-        ax.set_xticks(ind)
-        ax.set_xticklabels(df.index, rotation=30, horizontalalignment="right")
+
 
     p.xlabel(df.index.names[0])
     if len(names):

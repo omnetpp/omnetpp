@@ -231,8 +231,12 @@ class DomainAxis {
 
                         if (isRectangularAngle(rotation)) // center into the cell
                             graphics.translate((int)(left + right) / 2, rect.y + gap + 1 + label.centerY);
-                        else // left at the bottom of the bar
-                            graphics.translate((int)(left + right) / 2 + rotatedSize.width / 2, rect.y + gap + 1 + label.centerY);
+                        else  {// left at the bottom of the bar
+                            int rotationOffset = rotatedSize.width / 2;
+                            if (rotation < 0)
+                                rotationOffset *= -1;
+                            graphics.translate((int)(left + right) / 2 + rotationOffset, rect.y + gap + 1 + label.centerY);
+                        }
                         try {
                             graphics.rotate((float)rotation);
                             graphics.drawTextLayout(label.textLayout, - size.width / 2, - size.height/2);
