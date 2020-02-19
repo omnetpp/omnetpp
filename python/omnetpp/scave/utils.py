@@ -1,10 +1,9 @@
 from omnetpp.scave import chart, plot
 import numpy as np
-import random
+import random, sys, os, string
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from itertools import cycle
-import sys
 
 _marker_cycle = None
 _color_cycle = None
@@ -492,3 +491,22 @@ def _legend_mpl_loc_outside_args(loc):
         raise ValueError("loc='{}' is not recognized/supported".format(loc))
     (anchorloc, relpos) = mapping[loc]
     return {"loc" : anchorloc, "bbox_to_anchor" : relpos}
+
+def export_image_if_needed(props):
+    def get_prop(k):
+        return props[k] if k in props else None
+    if _parse_optional_bool(get_prop("export_image")):
+        format = get_prop("image_export_format") or "svg"
+        folder = get_prop("image_export_folder") or os.getcwd()
+        filename = get_prop("image_export_filename") or _sanitize_filename(chart.get_name())
+        filepath = os.path.join(folder, filename) + "." + format #TODO make it better
+        print("exporting image to: '" + filepath + "' as " + format)
+        plt.savefig(filepath, format=format)
+
+def export_data_if_needed(df, props):
+    #TODO
+    pass
+
+def _sanitize_filename(filename):
+    valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
+    return ''.join(c for c in filename if c in valid_chars)
