@@ -51,7 +51,7 @@ AreaSelectorDialog::Area AreaSelectorDialog::getArea()
     if (ui->viewport->isChecked())
         return VIEWPORT;
 
-    ASSERT(false);
+    throw omnetpp::cRuntimeError("AreaSelectorDialog::getArea(): None of the 3 RadioButtons are checked, this should never happen.");
 }
 
 int AreaSelectorDialog::getMargin()
