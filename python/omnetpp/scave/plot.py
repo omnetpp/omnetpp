@@ -8,7 +8,7 @@ This module is the interface for displaying data using the built-in plot widgets
 
 import os
 
-if os.getenv("WITHIN_OMNETPP_IDE", "no") == "yes":
+if os.getenv("WITHIN_OMNETPP_IDE") == "yes":
     from omnetpp.scave.impl_ide import plot as impl
 else:
     from .impl_charttool import plot as impl

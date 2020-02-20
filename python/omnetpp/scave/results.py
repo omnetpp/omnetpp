@@ -31,7 +31,7 @@ determines whether the given item or piece of metadata is included in the return
 
 import os
 
-if os.getenv("WITHIN_OMNETPP_IDE", "no") == "yes":
+if os.getenv("WITHIN_OMNETPP_IDE") == "yes":
     from omnetpp.scave.impl_ide import results as impl
 else:
     from .impl_charttool import results as impl

@@ -8,7 +8,7 @@ This module provides functions to access the properties of the chart object.
 
 import os
 
-if os.getenv("WITHIN_OMNETPP_IDE", "no") == "yes":
+if os.getenv("WITHIN_OMNETPP_IDE") == "yes":
     from omnetpp.scave.impl_ide import chart as impl
 else:
     from .impl_charttool import chart as impl
