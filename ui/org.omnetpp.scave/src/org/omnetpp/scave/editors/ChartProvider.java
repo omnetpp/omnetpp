@@ -13,17 +13,26 @@ import org.omnetpp.scave.pychart.IChartProvider;
 public class ChartProvider implements IChartProvider {
     private Chart chart;
     private String suggestedChartName;
+    private Map<String, String> extraProperties;
 
     public ChartProvider(Chart chart) {
         this.chart = chart;
     }
 
+    public ChartProvider(Chart chart, Map<String, String> extraProperties) {
+        this.chart = chart;
+        this.extraProperties = extraProperties;
+    }
+
     @Override
     public Map<String, String> getChartProperties() {
-        Map<String, String> props = new HashMap<String, String>();
+        Map<String, String> props = new HashMap<>();
 
         for (Property prop : chart.getProperties())
             props.put(prop.getName(), prop.getValue());
+
+        if (extraProperties != null)
+            props.putAll(extraProperties);
 
         return props;
     }
