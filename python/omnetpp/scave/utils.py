@@ -418,6 +418,12 @@ def plot_histograms(df, props):
     for i, t in enumerate(df.itertuples(index=False)):
         style = _make_histline_args(props, t, df)
 
+        # We are branching here, and call the two .hist implementations
+        # differently, because the MPL API does not have support for
+        # underflows/overflows, so we have to "fake" them into the real
+        # data as additional cells. Drawing them separately wouldn't
+        # work, because that would change the histogram when the
+        # "normalized" or "cumulative" transforms are done (by MPL).
         if chart.is_native_chart():
             p.hist(t.binedges[:-1], t.binedges, weights=t.binvalues, label=make_legend_label(legend_cols, t),
                    minvalue=t.min, maxvalue=t.max, underflows=t.underflows, overflows=t.overflows, **style)
