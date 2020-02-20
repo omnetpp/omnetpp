@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
@@ -69,8 +68,6 @@ import org.omnetpp.scave.actions.ChartMouseModeAction;
 import org.omnetpp.scave.actions.ClosePageAction;
 import org.omnetpp.scave.actions.CopyImageToClipboardAction;
 import org.omnetpp.scave.actions.EditChartPropertiesAction;
-import org.omnetpp.scave.actions.SaveMatplotlibImageAction;
-import org.omnetpp.scave.actions.SaveImageAction;
 import org.omnetpp.scave.actions.ForwardAction;
 import org.omnetpp.scave.actions.GotoChartDefinitionAction;
 import org.omnetpp.scave.actions.HomeAction;
@@ -78,6 +75,7 @@ import org.omnetpp.scave.actions.InteractAction;
 import org.omnetpp.scave.actions.KillPythonProcessAction;
 import org.omnetpp.scave.actions.PanAction;
 import org.omnetpp.scave.actions.RefreshChartAction;
+import org.omnetpp.scave.actions.SaveImageAction;
 import org.omnetpp.scave.actions.SaveTempChartAction;
 import org.omnetpp.scave.actions.ToggleAutoUpdateAction;
 import org.omnetpp.scave.actions.ToggleShowSourceAction;
@@ -136,7 +134,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
     SaveTempChartAction saveTempChartAction;
     GotoChartDefinitionAction gotoChartDefinitionAction;
 
-    SaveMatplotlibImageAction saveMatplotlibImageAction = new SaveMatplotlibImageAction();
+    SaveImageAction saveMatplotlibImageAction = new SaveImageAction(); //TODO remove, we have another instance here
 
     InteractAction interactAction = new InteractAction();
     PanAction panAction = new PanAction();
@@ -898,7 +896,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         return matplotlibChartViewer;
     }
 
-    public NativeChartViewer getPlot() {
+    public NativeChartViewer getNativeChartViewer() {
         return nativeChartViewer;
     }
 

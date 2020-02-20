@@ -48,7 +48,7 @@ public interface IMatplotlibFigureCanvas {
 
     void performAction(String action);
 
-    String exportFigure(String filename);
+    String saveImage(String filename);
 
     HashMap<String, ArrayList<String>> getSupportedFiletypes();
 

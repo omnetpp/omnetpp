@@ -8,8 +8,8 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.SWT;
@@ -17,16 +17,15 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.image.ImageUtils;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.pychart.ActionDescription;
+import org.omnetpp.scave.pychart.IMatplotlibFigureCanvas;
 import org.omnetpp.scave.pychart.IMatplotlibWidget;
 import org.omnetpp.scave.pychart.IPlotWidgetProvider;
-import org.omnetpp.scave.pychart.IMatplotlibFigureCanvas;
 import org.omnetpp.scave.pychart.MatplotlibWidget;
 import org.omnetpp.scave.pychart.PythonCallerThread.ExceptionHandler;
 import org.omnetpp.scave.pychart.PythonProcessPool;
@@ -187,75 +186,25 @@ public class MatplotlibChartViewer extends ChartViewerBase {
         plotWidget.getCanvas().performAction("forward");
     }
 
-
-    protected static String askFileName(String[] names, String[] extensions, int filterIndex, String fileName, Shell shell) {
-
-        FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-        dialog.setFilterNames(names);
-        dialog.setFilterExtensions(extensions);
-        dialog.setFilterIndex(filterIndex);
-        dialog.setFileName(fileName);
-
-        String filename = dialog.open();
-
-        if (filename != null) {
-            File file = new File(filename);
-            if (file.exists()) {
-                MessageBox messageBox = new MessageBox(shell,
-                        SWT.YES | SWT.NO | SWT.APPLICATION_MODAL | SWT.ICON_WARNING);
-                messageBox.setText("File already exists");
-                messageBox.setMessage("The file " + filename
-                        + " already exists and will be overwritten. Do you want to continue the operation?");
-                if (messageBox.open() == SWT.NO)
-                    filename = null;
-            }
-        }
-
-        return filename;
+    public boolean isSaveImagePossible() {
+        return plotWidget.getCanvas() != null;
     }
 
-    public void saveImage(String name) {
+    public void saveImage(String filename) {
         IMatplotlibFigureCanvas canvas = plotWidget.getCanvas();
-
         if (canvas != null) {
-            HashMap<String, ArrayList<String>> types = canvas.getSupportedFiletypes();
-
-            String defaultType = canvas.getDefaultFiletype();
-            int filterIndex = 0;
-
-            String[] names = new String[types.keySet().size()];
-            Object[] ks = types.keySet().toArray();
-            for (int i = 0; i < ks.length; ++i)
-                names[i] = (String) ks[i];
-
-            String[] extensions = new String[names.length];
-
-            for (int i = 0; i < names.length; ++i) {
-                String filter = "";
-
-                ArrayList<String> exts = types.get(names[i]);
-                for (String e : exts) {
-                    if (e.equals(defaultType))
-                        filterIndex = i;
-                    filter += ("*." + e + ";");
-                }
-
-                extensions[i] = filter.substring(0, filter.length() - 1);
-                names[i] += " (" + extensions[i].replace(";", ", ") + ")";
-            }
-
-            String filename = askFileName(names, extensions, filterIndex, name, plotWidget.getShell());
-
-            if (filename != null) {
-                String error = canvas.exportFigure(filename);
-                if (!error.isEmpty()) {
-                    MessageBox messageBox = new MessageBox(plotWidget.getShell(), SWT.OK | SWT.APPLICATION_MODAL | SWT.ICON_ERROR);
-                    messageBox.setText("Error exporting image");
-                    messageBox.setMessage("Error: " + error);
-                    messageBox.open();
-                }
-            }
+            String err = canvas.saveImage(filename); //TODO should throw instead
+            if (!err.isEmpty())
+                throw new RuntimeException(err);
         }
+    }
+
+    public Map<String, ArrayList<String>> getSupportedFiletypes() {
+        return plotWidget.getCanvas().getSupportedFiletypes();
+    }
+
+    public String getDefaultFiletype() {
+        return plotWidget.getCanvas().getDefaultFiletype();
     }
 
     @Override
