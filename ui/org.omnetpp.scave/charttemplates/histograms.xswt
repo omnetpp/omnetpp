@@ -11,7 +11,7 @@
     <package name="org.omnetpp.ned.editor.wizards.support" />
     <package name="org.omnetpp.cdt.wizard.support" />
   </import>
-  <layout x:class="GridLayout" numColumns="2"/>
+  <layout x:class="GridLayout"/>
 
   <x:children>
 
@@ -22,6 +22,11 @@ Data type:Count/Probability density/Cumulative density,
 Show over_underflow cell?    
     -->
     
+    <group text="Histograms">
+      <layoutData x:class="GridData" horizontalSpan="1" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
     <!-- Baseline -->
     <label text="Baseline:"/>
     <text x:id="baseline" x:style="BORDER">
@@ -48,5 +53,7 @@ Show over_underflow cell?
       <layoutData x:class="GridData" horizontalSpan="2"/>
     </button>
 
+      </x:children>
+    </group>
   </x:children>
 </xswt>
