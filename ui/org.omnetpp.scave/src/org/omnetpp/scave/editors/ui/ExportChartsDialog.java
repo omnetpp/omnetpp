@@ -5,6 +5,8 @@ import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -31,9 +33,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.common.util.UIUtils;
-import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.export.GraphicalExportFileFormats;
 import org.omnetpp.scave.model.Chart;
 
 /**
@@ -54,8 +54,21 @@ public class ExportChartsDialog extends Dialog {
 
     private List<Chart> selectedCharts;
     private IContainer targetFolder;
-    private GraphicalExportFileFormats.FileFormat[] formats;
-    private GraphicalExportFileFormats.FileFormat selectedFormat;
+    private String selectedFormat;
+
+    private String[] fileFormats = new String[] { //TODO get this list from Matplotlib
+            // note: first word must be a recognized Matplotlib format name
+            "png (Portable Network Graphics)",
+            "jpg (Joint Photographic Experts Group)",
+            "tif (Tagged Image File Format)",
+            "svg (Scalable Vector Graphics)",
+            "svgz (Scalable Vector Graphics)",
+            "ps (Postscript)",
+            "eps (Encapsulated Postscript)",
+            "pdf (Portable Document Format)",
+            "pgf (PGF code for LaTeX)",
+            "raw (Raw RGBA bitmap)",
+    };
 
     public ExportChartsDialog(Shell parentShell, List<Chart> charts, List<Chart> initialSelection) {
         super(parentShell);
@@ -99,7 +112,7 @@ public class ExportChartsDialog extends Dialog {
         for (Chart chart : charts) {
             TreeItem item = new TreeItem(chartsTree, SWT.NONE);
             item.setText(defaultIfEmpty(chart.getName(), "<unnamed>"));
-            item.setImage(ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_CHART)); //TODO toolbar icon?
+            //item.setImage(ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_CHART)); -- looks ugly
             if (initialSelection.contains(chart))
                 item.setChecked(true);
         }
@@ -172,25 +185,16 @@ public class ExportChartsDialog extends Dialog {
         panel.setLayout(new GridLayout(2, false));
         label = new Label(panel, SWT.NONE);
         label.setText("File format:");
-        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
-        fileFormatCombo = new Combo(panel, SWT.NONE);
+        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 1, 1));
+        fileFormatCombo = new Combo(panel, SWT.READ_ONLY);
         fileFormatCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-        updateFileFormats();
+        fileFormatCombo.setItems(fileFormats);
+        fileFormatCombo.select(0);
 
         restoreDialogSettings();
 
         return composite;
-    }
-
-    private void updateFileFormats() {
-        formats = GraphicalExportFileFormats.getAll();
-        String items[] = new String[formats.length];
-        for (int i = 0; i < formats.length; ++i)
-            items[i] = formats[i].getDescription();
-        fileFormatCombo.setItems(items);
-        if (items.length > 0)
-            fileFormatCombo.select(0);
     }
 
     protected void validateDialogContents() {
@@ -242,6 +246,11 @@ public class ExportChartsDialog extends Dialog {
         }
     }
 
+    private String getSelectedFileFormat() {
+        int index = fileFormatCombo.getSelectionIndex();
+        return fileFormats[index == -1 ? 0 : index];
+    }
+
     private IDialogSettings getDialogSettings() {
         return UIUtils.getDialogSettings(ScavePlugin.getDefault(), getClass().getName());
     }
@@ -249,11 +258,8 @@ public class ExportChartsDialog extends Dialog {
     private void saveDialogSettings() {
         IDialogSettings settings = getDialogSettings();
 
-        String folder = folderText.getText();
-        settings.put(KEY_TARGET_FOLDER, folder);
-
-        GraphicalExportFileFormats.FileFormat format = getSelectedFileFormat();
-        settings.put(KEY_FORMAT, format != null ? format.getName() : null);
+        settings.put(KEY_TARGET_FOLDER, folderText.getText());
+        settings.put(KEY_FORMAT, getSelectedFileFormat());
     }
 
     private void restoreDialogSettings() {
@@ -264,42 +270,12 @@ public class ExportChartsDialog extends Dialog {
             folderText.setText(folder);
 
         String format = settings.get(KEY_FORMAT);
-        GraphicalExportFileFormats.FileFormat selectedFormat = getFileFormat(format);
-        if (selectedFormat == null && formats.length > 0)
-            selectedFormat = formats[0];
-        setSelectedFileFormat(selectedFormat);
+        if (ArrayUtils.contains(fileFormats, format))
+            fileFormatCombo.setText(format);
     }
 
-    private void setSelectedFileFormat(GraphicalExportFileFormats.FileFormat format) {
-        int index = -1;
-        for (int i = 0; i < fileFormatCombo.getItemCount(); ++i)
-            if (format.getDescription().equals(fileFormatCombo.getItem(i))) {
-                index = i;
-                break;
-            }
-
-        if (index >= 0)
-            fileFormatCombo.select(index);
-        else
-            fileFormatCombo.clearSelection();
-    }
-
-    private GraphicalExportFileFormats.FileFormat getFileFormat(String name) {
-        if (name != null) {
-            for (GraphicalExportFileFormats.FileFormat format : formats)
-                if (name.equals(format.getName()))
-                    return format;
-        }
-        return null;
-    }
-
-    private GraphicalExportFileFormats.FileFormat getSelectedFileFormat() {
-        int index = fileFormatCombo.getSelectionIndex();
-        return index >= 0 && index < formats.length ? formats[index] : null;
-    }
-
-    public GraphicalExportFileFormats.FileFormat getFileFormat() {
-        return selectedFormat;
+    public String getFileFormat() {
+        return StringUtils.substringBefore(selectedFormat, " ");
     }
 
     public IContainer getTargetFolder() {

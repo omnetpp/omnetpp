@@ -10,7 +10,6 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.window.Window;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ui.ExportChartsDialog;
-import org.omnetpp.scave.export.GraphicalExportFileFormats;
 import org.omnetpp.scave.jobs.ChartExport;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ModelObject;
@@ -42,10 +41,10 @@ public class ExportChartsAction extends AbstractScaveAction {
         if (result == Window.OK) {
             try {
                 List<Chart> selectedCharts = dialog.getSelectedCharts();
-                GraphicalExportFileFormats.FileFormat format = dialog.getFileFormat();
+                String fileFormat = dialog.getFileFormat();
                 IContainer targetFolder = dialog.getTargetFolder();
                 if (!selectedCharts.isEmpty())
-                    ChartExport.exportChartImages(selectedCharts, targetFolder, format.getName(), editor.getResultFileManager());
+                    ChartExport.exportChartImages(selectedCharts, targetFolder, fileFormat, editor.getResultFileManager());
             }
             catch (OperationCanceledException e) {
             }
