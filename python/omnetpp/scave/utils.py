@@ -361,7 +361,7 @@ def plot_bars(df, props, names=None):
         rotation = float(rotation)
     else:
         rotation = 0
-    p.xticks(list(range(len(df.index))), list([df.index.name + "=" + str(i) for i in df.index.values]), rotation=rotation)
+    p.xticks(list(range(len(df.index))), list([str(i) for i in df.index.values]), rotation=rotation)
 
     # Add some text for labels, title and custom x-axis tick labels, etc.
     groups = get_prop("groups").split(",")
@@ -371,8 +371,13 @@ def plot_bars(df, props, names=None):
 
     p.xlabel(df.index.names[0])
     if len(names):
-        p.ylabel(", ".join(names))  # TODO: TypeError: sequence item 5: expected str instance, float found
-        set_plot_title(", ".join(names) + " by " + ", ".join(groups+series))
+        names_str = [str(n) for n in names]
+        groups_series_str = [str(gs) for gs in groups+series]
+        p.ylabel(", ".join(names_str))
+        title = ", ".join(names_str)
+        if groups_series_str and groups_series_str[0]:
+            title += " by " + ", ".join(groups_series_str)
+        set_plot_title(title)
 
 
 def plot_vectors(df, props):
