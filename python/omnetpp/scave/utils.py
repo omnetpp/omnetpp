@@ -119,6 +119,17 @@ def make_chart_title(df, title_col, legend_cols):
     return what + by_what
 
 
+def pick_two_columns(df):
+    title_col, label_cols = extract_label_columns(df)
+    label_cols = [l[1] for l in label_cols]
+    if len(label_cols) == 0:
+        return None, None
+    if len(label_cols) == 1:
+        return title_col, label_cols[0]
+    if len(label_cols) >= 2:
+        return label_cols[0], label_cols[1]
+
+
 def parse_rcparams(rc_content):
     rc_temp = {}
     for line_no, line in enumerate(rc_content.split("\n"), 1):

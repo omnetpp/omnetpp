@@ -16,19 +16,11 @@ iso_itervar = props["iso_itervar"]
 df = results.get_scalars(filter_expression, include_attrs=True, include_itervars=True)
 
 if not xaxis_itervar and not iso_itervar:
-    print("The X Axis and Iso Line options were not set in the dialog, inferring them from the data.")
-    title_col, label_cols = utils.extract_label_columns(df)
-    label_cols = [l[1] for l in label_cols]
-    if len(label_cols) == 0:
+    print("The X Axis and Iso Line options were not set in the dialog, inferring them from the data..")
+    xaxis_itervar, iso_itervar = utils.pick_two_columns(df)
+    if not iso_itervar or not iso_itervar:
         plot.set_warning("Please set the X Axis and Iso Lines options in the dialog!")
         exit(1)
-    if len(label_cols) == 1:
-        xaxis_itervar = title_col
-        iso_itervar = label_cols[0]
-    if len(label_cols) >= 2:
-        xaxis_itervar = label_cols[0]
-        iso_itervar = label_cols[1]
-
 
 df[xaxis_itervar] = pd.to_numeric(df[xaxis_itervar], errors="ignore")
 df[iso_itervar] = pd.to_numeric(df[iso_itervar], errors="ignore")
