@@ -7,8 +7,11 @@ This module is the interface for displaying data using the built-in plot widgets
 # or not (for example, from opp_charttool), detected using the WITHIN_OMNETPP_IDE environment variable.
 
 import os
+import matplotlib as mpl
 
-if os.getenv("WITHIN_OMNETPP_IDE") == "yes":
+# Note: For chart export we use the Matplotlib impl even inside the IDE, 
+# that's why we check the Matplotlib backend instead of "WITHIN_OMNETPP_IDE".
+if "omnetpp" in mpl.get_backend():
     from omnetpp.scave.impl_ide import plot as impl
 else:
     from .impl_charttool import plot as impl
