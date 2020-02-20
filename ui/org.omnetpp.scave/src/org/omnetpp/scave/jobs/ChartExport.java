@@ -57,7 +57,7 @@ public class ChartExport {
                     public Object call() throws Exception {
                         PythonProcessPool processPool = new PythonProcessPool(1);
                         processPool.setShouldSetOmnetppMplBackend(false);
-                        runChartScript(chart, extraProperties, processPool, manager);
+                        runChartScript(chart, extraProperties, processPool, manager, monitor);
                         return null;
                     }
                 });
@@ -150,7 +150,7 @@ public class ChartExport {
         //TODO folder.refreshLocal(IResource.DEPTH_INFINITE, monitor); // because we're creating the file behind Eclipse's back
     }
 
-    private static void runChartScript(Chart chart, Map<String,String> extraProperties, PythonProcessPool processPool, ResultFileManager rfm) {
+    private static void runChartScript(Chart chart, Map<String,String> extraProperties, PythonProcessPool processPool, ResultFileManager rfm, IProgressMonitor monitor) {
 
         IOConsole console = new IOConsole("'" + chart.getName() + "' - chart script output", null);
         IConsoleManager consoleManager = ConsolePlugin.getDefault().getConsoleManager();
@@ -179,13 +179,18 @@ public class ChartExport {
         proc.getEntryPoint().setResultsProvider(new ResultsProvider(rfm, proc.getInterruptedFlag()));
         proc.getEntryPoint().setChartProvider(new ChartProvider(chart, extraProperties));
 
-
+        final boolean[] executionDone = new boolean[] { false };
         Runnable runAfterDone = () -> {
-            System.out.println("script done");
+            executionDone[0] = true;
         };
 
         ExceptionHandler runAfterError = (p, e) -> {
-            System.out.println("script error: " + e);
+            try {
+                errorStream.write(e.getMessage()); // TODO tweakStackTrace
+            } catch (IOException e1) {
+                ScavePlugin.logError(e);
+            }
+            executionDone[0] = true;
         };
 
         proc.pythonCallerThread.asyncExec(() -> {
@@ -193,6 +198,19 @@ public class ChartExport {
             //proc.getEntryPoint().execute("import site; site.addsitedir(r\"\"\"" + workingDir.getAbsolutePath() + "\"\"\"); del site;");
             proc.getEntryPoint().execute(chart.getScript());
         }, runAfterDone, runAfterError);
+
+        while (!executionDone[0]) {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e1) {
+                // ignore
+            }
+            if (monitor.isCanceled())
+                break;
+        }
+
+        proc.kill();
+        processPool.dispose();
 
     }
 
