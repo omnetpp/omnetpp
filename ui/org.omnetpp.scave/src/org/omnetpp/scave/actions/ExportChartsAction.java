@@ -1,6 +1,5 @@
 package org.omnetpp.scave.actions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IContainer;
@@ -12,7 +11,6 @@ import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ui.ExportChartsDialog;
 import org.omnetpp.scave.jobs.ChartExport;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 public class ExportChartsAction extends AbstractScaveAction {
@@ -26,15 +24,7 @@ public class ExportChartsAction extends AbstractScaveAction {
     protected void doRun(ScaveEditor editor, ISelection selection) throws CoreException {
         // we'll display the list of all charts, and check the selected one(s) and those under selected ones
         final List<Chart> allCharts = ScaveModelUtil.collectCharts(editor.getAnalysis().getCharts().getCharts());
-        List<Chart> initialSelection = new ArrayList<Chart>();
-        for (Object obj : asStructuredOrEmpty(selection).toArray()) {
-            if (obj instanceof Chart)
-                initialSelection.add((Chart)obj);
-            if (obj instanceof ModelObject)
-                initialSelection.addAll(ScaveModelUtil.collectCharts(editor.getAnalysis().getCharts().getCharts()));
-        }
-        if (initialSelection.isEmpty())
-            initialSelection = allCharts;
+        List<Chart> initialSelection = ScaveModelUtil.getChartsFromSelection(asStructuredOrEmpty(selection));
 
         ExportChartsDialog dialog = new ExportChartsDialog(editor.getSite().getShell(), allCharts, initialSelection);
         int result = dialog.open();

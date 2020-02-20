@@ -27,6 +27,7 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
+import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
@@ -170,6 +171,14 @@ public class ScaveModelUtil {
             if (item instanceof Chart)
                 charts.add((Chart)item);
         return charts;
+    }
+
+    public static List<Chart> getChartsFromSelection(IStructuredSelection selection) {
+        List<Chart> result = new ArrayList<Chart>();
+        for (Object obj : selection.toArray())
+            if (obj instanceof Chart)
+                result.add((Chart)obj);
+        return result;
     }
 
     public static Chart getChartFromSingleSelection(ISelection selection) {

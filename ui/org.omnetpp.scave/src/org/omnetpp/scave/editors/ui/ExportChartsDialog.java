@@ -3,7 +3,10 @@ package org.omnetpp.scave.editors.ui;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -42,6 +45,7 @@ import org.omnetpp.scave.model.Chart;
 //TODO persist selection too!
 public class ExportChartsDialog extends Dialog {
 
+    private static final String KEY_CHARTS = "charts";
     private static final String KEY_TARGET_FOLDER = "folder";
     private static final String KEY_FORMAT = "format";
 
@@ -113,8 +117,6 @@ public class ExportChartsDialog extends Dialog {
             TreeItem item = new TreeItem(chartsTree, SWT.NONE);
             item.setText(defaultIfEmpty(chart.getName(), "<unnamed>"));
             //item.setImage(ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_CHART)); -- looks ugly
-            if (initialSelection.contains(chart))
-                item.setChecked(true);
         }
         chartsTree.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
@@ -258,12 +260,41 @@ public class ExportChartsDialog extends Dialog {
     private void saveDialogSettings() {
         IDialogSettings settings = getDialogSettings();
 
+        String selectedChartIds = "";
+        for (Chart chart : getSelectedChartsFromTree())
+                selectedChartIds = selectedChartIds  + " " + chart.getId();
+
+        settings.put(KEY_CHARTS, selectedChartIds.trim());
         settings.put(KEY_TARGET_FOLDER, folderText.getText());
         settings.put(KEY_FORMAT, getSelectedFileFormat());
     }
 
     private void restoreDialogSettings() {
         IDialogSettings settings = getDialogSettings();
+
+        boolean checkedAny = false;
+        if (!initialSelection.isEmpty()) {
+            for (int i = 0; i < charts.size(); ++i) {
+                boolean shouldCheck = initialSelection.contains(charts.get(i));
+                chartsTree.getItem(i).setChecked(shouldCheck);
+            }
+            checkedAny = true;
+        }
+        else {
+            String selectedChartIdsSetting = settings.get(KEY_CHARTS);
+            if (selectedChartIdsSetting != null) {
+                Set<String> selectedChartIds = new HashSet<String>(Arrays.asList(selectedChartIdsSetting.split(" ")));
+                for (int i = 0; i < charts.size(); ++i) {
+                    boolean shouldCheck = selectedChartIds.contains(Integer.toString(charts.get(i).getId()));
+                    chartsTree.getItem(i).setChecked(shouldCheck);
+                    if (shouldCheck)
+                        checkedAny = true;
+                }
+            }
+        }
+        if (!checkedAny)
+            for (TreeItem item: chartsTree.getItems())
+                item.setChecked(true);
 
         String folder = settings.get(KEY_TARGET_FOLDER);
         if (folder != null)
