@@ -67,10 +67,10 @@ import org.omnetpp.scave.actions.AddVectorOperationAction;
 import org.omnetpp.scave.actions.BackAction;
 import org.omnetpp.scave.actions.ChartMouseModeAction;
 import org.omnetpp.scave.actions.ClosePageAction;
-import org.omnetpp.scave.actions.CopyChartImageToClipboardAction;
+import org.omnetpp.scave.actions.CopyImageToClipboardAction;
 import org.omnetpp.scave.actions.EditChartPropertiesAction;
-import org.omnetpp.scave.actions.ExportMplChartImageAction;
-import org.omnetpp.scave.actions.ExportToSVGAction;
+import org.omnetpp.scave.actions.SaveMatplotlibImageAction;
+import org.omnetpp.scave.actions.SaveImageAction;
 import org.omnetpp.scave.actions.ForwardAction;
 import org.omnetpp.scave.actions.GotoChartDefinitionAction;
 import org.omnetpp.scave.actions.HomeAction;
@@ -136,7 +136,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
     SaveTempChartAction saveTempChartAction;
     GotoChartDefinitionAction gotoChartDefinitionAction;
 
-    ExportMplChartImageAction exportAction = new ExportMplChartImageAction();
+    SaveMatplotlibImageAction saveMatplotlibImageAction = new SaveMatplotlibImageAction();
 
     InteractAction interactAction = new InteractAction();
     PanAction panAction = new PanAction();
@@ -528,8 +528,8 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
             manager.add(new GotoChartDefinitionAction());
         manager.add(new Separator());
 
-        manager.add(new CopyChartImageToClipboardAction());
-        manager.add(exportAction);
+        manager.add(new CopyImageToClipboardAction());
+        manager.add(saveMatplotlibImageAction);
 
         return manager;
     }
@@ -585,8 +585,8 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
             manager.add(new GotoChartDefinitionAction());
         manager.add(new Separator());
 
-        manager.add(new CopyChartImageToClipboardAction());
-        manager.add(new ExportToSVGAction());
+        manager.add(new CopyImageToClipboardAction());
+        manager.add(new SaveImageAction());
 
         return manager;
     }
@@ -639,11 +639,11 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         formEditor.addToToolbar(new RefreshChartAction());
         formEditor.addToToolbar(killAction = new KillPythonProcessAction());
         formEditor.addSeparatorToToolbar();
-        formEditor.addToToolbar(new CopyChartImageToClipboardAction());
+        formEditor.addToToolbar(new CopyImageToClipboardAction());
         if (chart.getType() == ChartType.MATPLOTLIB)
-            formEditor.addToToolbar(exportAction);
+            formEditor.addToToolbar(saveMatplotlibImageAction);
         else
-            formEditor.addToToolbar(new ExportToSVGAction());
+            formEditor.addToToolbar(new SaveImageAction());
         formEditor.addSeparatorToToolbar();
         formEditor.addToToolbar(new ClosePageAction());
     }
@@ -848,7 +848,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         backAction.update();
         forwardAction.update();
 
-        exportAction.update();
+        saveMatplotlibImageAction.update();
     }
 
     public void setShowSource(boolean show) {

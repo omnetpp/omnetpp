@@ -7,17 +7,20 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
 
-public class ExportMplChartImageAction extends AbstractScaveAction {
+/**
+ * Save current view of an open Matplotlib plot into an image.
+ */
+public class SaveMatplotlibImageAction extends AbstractScaveAction {
 
-    public ExportMplChartImageAction() {
-        setText("Export Image...");
-        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_EXPORTTOSVG));
+    public SaveMatplotlibImageAction() {
+        setText("Save Image...");
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_SAVEIMAGE));
     }
 
     @Override
     protected void doRun(ScaveEditor scaveEditor, ISelection selection) throws CoreException {
         ChartScriptEditor editor = scaveEditor.getActiveChartScriptEditor();
-        editor.getMatplotlibChartViewer().export(editor.getChart().getName());
+        editor.getMatplotlibChartViewer().saveImage(editor.getChart().getName());  //TODO move UI stuff out of chartviewer
     }
 
     @Override

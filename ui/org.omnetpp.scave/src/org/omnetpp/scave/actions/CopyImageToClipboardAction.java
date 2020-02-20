@@ -17,12 +17,11 @@ import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.python.ChartViewerBase;
 
 /**
- * Copy chart image to the clipboard.
+ * Copy plot image to the clipboard.
  */
-public class CopyChartImageToClipboardAction extends AbstractScaveAction {
-    public CopyChartImageToClipboardAction() {
+public class CopyImageToClipboardAction extends AbstractScaveAction {
+    public CopyImageToClipboardAction() {
         setText("Copy Image to Clipboard");
-        setToolTipText("Copy Chart Image to Clipboard");
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_COPY));
     }
 

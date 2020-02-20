@@ -144,7 +144,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
         cp.setContents(new ImageTransferable(ImageUtils.convertToAWT(image)), owner);
     }
 
-    public void exportToSVG(String fileName) {
+    public void saveImage(String fileName) {
         ;
         int width = getClientArea().width, height = getClientArea().height;
         GraphicsSVG graphics = GraphicsSVG.getInstance(new Rectangle(0, -1, width, height));

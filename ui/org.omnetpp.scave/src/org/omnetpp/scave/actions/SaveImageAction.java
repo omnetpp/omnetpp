@@ -25,11 +25,10 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.PlotBase;
 import org.omnetpp.scave.editors.ScaveEditor;
 
-public class ExportToSVGAction extends AbstractScaveAction { //TODO generalize (e.g. support PNG too), and merge with ExportMplChartImageAction
-    public ExportToSVGAction() {
-        setText("Export Image to SVG...");
-        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_EXPORTTOSVG));
-        setToolTipText("Export chart to SVG format");
+public class SaveImageAction extends AbstractScaveAction { //TODO generalize (e.g. support PNG too), and merge with SaveMatplotlibImageAction
+    public SaveImageAction() {
+        setText("Save Image...");
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_SAVEIMAGE));
     }
 
     @Override
@@ -40,7 +39,7 @@ public class ExportToSVGAction extends AbstractScaveAction { //TODO generalize (
                 public void run() {
                     String fileName = askFileName(editor);
                     if (fileName != null)
-                        plot.exportToSVG(fileName);
+                        plot.saveImage(fileName);
                 }
             });
         }

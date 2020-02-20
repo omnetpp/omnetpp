@@ -214,7 +214,7 @@ public class MatplotlibChartViewer extends ChartViewerBase {
         return filename;
     }
 
-    public void export(String name) {
+    public void saveImage(String name) {
         IMatplotlibFigureCanvas canvas = plotWidget.getCanvas();
 
         if (canvas != null) {

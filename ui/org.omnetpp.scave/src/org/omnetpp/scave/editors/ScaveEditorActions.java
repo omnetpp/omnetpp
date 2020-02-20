@@ -32,14 +32,15 @@ import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.ChartMouseModeAction;
 import org.omnetpp.scave.actions.CopyAction;
-import org.omnetpp.scave.actions.CopyChartImageToClipboardAction;
+import org.omnetpp.scave.actions.CopyImageToClipboardAction;
 import org.omnetpp.scave.actions.CopyDataToClipboardAction;
 import org.omnetpp.scave.actions.CutAction;
 import org.omnetpp.scave.actions.EditChartPropertiesAction;
 import org.omnetpp.scave.actions.EditInputFileAction;
 import org.omnetpp.scave.actions.ExportChartsAction;
 import org.omnetpp.scave.actions.ExportDataAction;
-import org.omnetpp.scave.actions.ExportToSVGAction;
+import org.omnetpp.scave.actions.SaveImageAction;
+import org.omnetpp.scave.actions.SaveMatplotlibImageAction;
 import org.omnetpp.scave.actions.IScaveAction;
 import org.omnetpp.scave.actions.KillPythonProcessAction;
 import org.omnetpp.scave.actions.NewChartFromSelectedTemplateAction;
@@ -93,7 +94,7 @@ public class ScaveEditorActions {
     public final ZoomChartAction zoomToFitAction = registerAction(new ZoomChartAction(true, true, 0.0));
     public final ChartMouseModeAction switchChartToPanModeAction = registerAction(new ChartMouseModeAction(ZoomableCanvasMouseSupport.PAN_MODE));
     public final ChartMouseModeAction switchChartToZoomModeAction = registerAction(new ChartMouseModeAction(ZoomableCanvasMouseSupport.ZOOM_MODE));
-    public final CopyChartImageToClipboardAction copyChartToClipboardAction = registerAction(new CopyChartImageToClipboardAction());
+    public final CopyImageToClipboardAction copyChartToClipboardAction = registerAction(new CopyImageToClipboardAction());
     public final RefreshChartAction refreshChartAction = registerAction(new RefreshChartAction());
 
     public final CutAction cutAction = registerAction(new CutAction());
@@ -106,7 +107,8 @@ public class ScaveEditorActions {
     public final OpenChartAction openAction = registerAction(new OpenChartAction());
 
     public final CopyDataToClipboardAction copyToClipboardAction = registerAction(new CopyDataToClipboardAction());
-    public final ExportToSVGAction exportToSVGAction = registerAction(new ExportToSVGAction());
+    public final SaveImageAction saveImageAction = registerAction(new SaveImageAction());
+
     public final PlotAction plotAction = registerAction(new PlotAction());
     public final SaveTempChartAction saveTempChartAction = registerAction(new SaveTempChartAction());
     public final ShowOutputVectorViewAction showOutputVectorViewAction = registerAction(new ShowOutputVectorViewAction());

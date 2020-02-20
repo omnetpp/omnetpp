@@ -1,4 +1,4 @@
-file 4601 1524473425                                            
+file 4601 1551112284                                            
 version 2
 run PureAloha2-0-20170320-11:14:54-11186
 attr configname PureAloha2
@@ -15,17 +15,17 @@ attr replication #0
 attr resultdir results
 attr runnumber 0
 attr seedset 0
-param **.animationHoldTimeOnCollision 0s
-param **.idleAnimationSpeed 1
-param **.midTransmissionAnimationSpeed 1e-1
-param **.transmissionEdgeAnimationSpeed 1e-6
-param **.x "uniform(0m, 1000m)"
-param **.y "uniform(0m, 1000m)"
-param Aloha.host[*].iaTime exponential(6s)
-param Aloha.host[*].pkLenBits 952b
-param Aloha.numHosts 20
-param Aloha.slotTime 0
-param Aloha.txRate 9.6kbps
+config **.animationHoldTimeOnCollision 0s
+config **.idleAnimationSpeed 1
+config **.midTransmissionAnimationSpeed 1e-1
+config **.transmissionEdgeAnimationSpeed 1e-6
+config **.x "uniform(0m, 1000m)"
+config **.y "uniform(0m, 1000m)"
+config Aloha.host[*].iaTime exponential(6s)
+config Aloha.host[*].pkLenBits 952b
+config Aloha.numHosts 20
+config Aloha.slotTime 0
+config Aloha.txRate 9.6kbps
 
 vector 0 Aloha.server serverChannelState:vector ETV
 attr enum IDLE=0,TRANSMISSION=1,COLLISION=2

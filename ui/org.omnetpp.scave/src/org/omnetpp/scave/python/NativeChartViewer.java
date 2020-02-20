@@ -270,7 +270,7 @@ public class NativeChartViewer extends ChartViewerBase {
 //            add(createZoomSubmenu());
 //            add(new Separator());
 //            add(editorContributor.getCopyChartToClipboardAction());
-//            add(editorContributor.getExportToSVGAction());
+//            add(editorContributor.getSaveImageAction());
 //            add(new Separator());
 //            add(editorContributor.getUndoRetargetAction());
 //            add(editorContributor.getRedoRetargetAction());
