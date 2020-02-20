@@ -98,4 +98,7 @@ public abstract class ChartViewerBase {
 
     public abstract void copyImageToClipboard();
 
+    public abstract void saveImage(String fileName);
+
+
 }

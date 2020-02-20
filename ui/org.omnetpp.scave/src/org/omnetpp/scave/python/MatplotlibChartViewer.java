@@ -190,6 +190,7 @@ public class MatplotlibChartViewer extends ChartViewerBase {
         return plotWidget.getCanvas() != null;
     }
 
+    @Override
     public void saveImage(String filename) {
         IMatplotlibFigureCanvas canvas = plotWidget.getCanvas();
         if (canvas != null) {

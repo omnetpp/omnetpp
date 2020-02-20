@@ -12,19 +12,15 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.part.FileEditorInput;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.charting.PlotBase;
 import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.python.ChartViewerBase;
@@ -41,31 +37,51 @@ public class SaveImageAction extends AbstractScaveAction {
     }
 
     @Override
-    protected void doRun(final ScaveEditor scaveEditor, ISelection selection) throws CoreException {
+    protected void doRun(ScaveEditor scaveEditor, ISelection selection) throws CoreException {
+        Shell parentShell = Display.getCurrent().getActiveShell();
         ChartScriptEditor chartEditor = scaveEditor.getActiveChartScriptEditor();
         ChartViewerBase chartViewer = chartEditor == null ? null : chartEditor.getChartViewer();
+        if (chartViewer == null)
+            return;
+
+        String defaultFileName = chartEditor.getChart().getName();
+        String defaultLocation = scaveEditor.getAnfFile().getParent().getLocation().toOSString();
+
+        String fileName = null;
 
         if (chartViewer instanceof MatplotlibChartViewer) {
             MatplotlibChartViewer matplotlibChartViewer = (MatplotlibChartViewer)chartViewer;
-            if (matplotlibChartViewer != null) {
-                if (matplotlibChartViewer.isSaveImagePossible())
-                    mplAskFilenameAndSaveImage(matplotlibChartViewer, chartEditor.getChart().getName()); //TODO make the two branches similar
-            }
+            if (!matplotlibChartViewer.isSaveImagePossible())
+                return;
+            FileTypes filter = toFileDialogFilter(matplotlibChartViewer.getSupportedFiletypes(), matplotlibChartViewer.getDefaultFiletype());
+            fileName = askFileName(parentShell, defaultLocation, defaultFileName, filter.names, filter.extensions, filter.defaultIndex);
         }
         else if (chartViewer instanceof NativeChartViewer) {
-            final PlotBase plot = ((NativeChartViewer)chartViewer).getPlot();
-            String fileName = askFileName(scaveEditor);
-            if (fileName != null)
-                BusyIndicator.showWhile(Display.getDefault(), () -> plot.saveImage(fileName));
+            // NativeChartViewer currently only supports SVG
+            fileName = askFileName(parentShell, defaultLocation, defaultFileName, new String[] {"Scalable Vector Graphics"}, new String[] {"svg"}, 0);
         }
+
+        if (fileName == null)
+            return; // cancelled
+
+        try {
+            String finalFileName = fileName;
+            BusyIndicator.showWhile(Display.getDefault(), () -> chartViewer.saveImage(finalFileName));
+        }
+        catch (Exception e) {
+            MessageDialog.openError(parentShell, "Error", "Image save failed: " + e.getMessage());
+        }
+
     }
 
-    private void mplAskFilenameAndSaveImage(MatplotlibChartViewer viewer, String defaultName) {
-        Map<String, ArrayList<String>> types = viewer.getSupportedFiletypes();
+    static class FileTypes {
+        public String[] names;
+        public String[] extensions;
+        public int defaultIndex;
+    }
 
-        String defaultType = viewer.getDefaultFiletype();
+    private static FileTypes toFileDialogFilter(Map<String, ArrayList<String>> types, String defaultType) {
         int filterIndex = 0;
-
         String[] names = new String[types.keySet().size()];
         Object[] ks = types.keySet().toArray();
         for (int i = 0; i < ks.length; ++i)
@@ -87,71 +103,30 @@ public class SaveImageAction extends AbstractScaveAction {
             names[i] += " (" + extensions[i].replace(";", ", ") + ")";
         }
 
-        String filename = mplAskFileName(names, extensions, filterIndex, defaultName, Display.getCurrent().getActiveShell());
-
-        if (filename != null) {
-            try {
-                viewer.saveImage(filename);
-            }
-            catch (Exception e) {
-                MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK | SWT.APPLICATION_MODAL | SWT.ICON_ERROR);
-                messageBox.setText("Error");
-                messageBox.setMessage("Image save failed: " + e.getMessage());
-                messageBox.open();
-            }
-        }
+        FileTypes f = new FileTypes();
+        f.extensions = extensions;
+        f.names = names;
+        f.defaultIndex = filterIndex;
+        return f;
     }
 
-    //TODO merge the two askFileName() methods
-
-    private String mplAskFileName(String[] filterNames, String[] filterExtensions, int filterIndex, String fileName, Shell shell) {
-
-        FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+    private String askFileName(Shell parent, String defaultLocation, String defaultFileName, String[] filterNames, String[] filterExtensions, int filterIndex) {
+        FileDialog dialog = new FileDialog(parent, SWT.SAVE);
+        dialog.setFileName(defaultFileName);
         dialog.setFilterNames(filterNames);
         dialog.setFilterExtensions(filterExtensions);
         dialog.setFilterIndex(filterIndex);
-        dialog.setFileName(fileName);
+        dialog.setFilterPath(defaultLocation);
 
         String filename = dialog.open();
 
         if (filename != null) {
             File file = new File(filename);
-            if (file.exists()) {
-                MessageBox messageBox = new MessageBox(shell,
-                        SWT.YES | SWT.NO | SWT.APPLICATION_MODAL | SWT.ICON_WARNING);
-                messageBox.setText("File already exists");
-                messageBox.setMessage("The file " + filename
-                        + " already exists and will be overwritten. Do you want to continue the operation?");
-                if (messageBox.open() == SWT.NO)
-                    filename = null;
-            }
+            if (file.exists() && !MessageDialog.openConfirm(parent, "File Already Exists", "The file " + filename + " already exists. Overwrite?"))
+                filename = null;
         }
 
         return filename;
-    }
-
-
-    private String askFileName(ScaveEditor editor) {
-        Shell activeShell = Display.getCurrent().getActiveShell();
-        FileDialog fileDialog = new FileDialog(activeShell, SWT.SAVE);
-        IEditorInput editorInput = editor.getEditorInput();
-        if (editorInput instanceof FileEditorInput) {
-            IPath location = ((FileEditorInput)editorInput).getFile().getLocation().makeAbsolute();
-            fileDialog.setFileName(location.removeFileExtension().addFileExtension("svg").lastSegment());
-            fileDialog.setFilterPath(location.removeLastSegments(1).toOSString());
-        }
-        String fileName = fileDialog.open();
-        if (fileName != null) {
-            File file = new File(fileName);
-            if (file.exists()) {
-                MessageBox messageBox = new MessageBox(activeShell, SWT.OK | SWT.CANCEL | SWT.APPLICATION_MODAL | SWT.ICON_WARNING);
-                messageBox.setText("File already exists");
-                messageBox.setMessage("The file " + fileName + " already exists and will be overwritten. Do you want to continue the operation?");
-                if (messageBox.open() == SWT.CANCEL)
-                    fileName = null;
-            }
-        }
-        return fileName;
     }
 
     @Override

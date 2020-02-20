@@ -53,6 +53,11 @@ public interface IMatplotlibFigureCanvas {
      */
     String exportFigure(String filename);
 
+    /**
+     * Returns a map with Matplotlib's supported graphical image format,
+     * with descriptions as keys, and the list of file extensions as values.
+     * E.g. "Tagged Image File Format" -> ["tif", "tiff"]
+     */
     HashMap<String, ArrayList<String>> getSupportedFiletypes();
 
     String getDefaultFiletype();

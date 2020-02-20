@@ -299,6 +299,12 @@ public class NativeChartViewer extends ChartViewerBase {
         plot.copyImageToClipboard();
     }
 
+    @Override
+    public void saveImage(String fileName) {
+        plot.saveImage(fileName);
+    }
+
+    @Override
     public void dispose() {
         super.dispose();
 
