@@ -12,13 +12,11 @@ import org.omnetpp.common.OmnetppDirs;
 import py4j.ClientServer;
 
 public class PythonProcessPool {
-
-    ArrayList<PythonProcess> availableProcesses = new ArrayList<PythonProcess>();
-
-    String errorMessage = null;
-
-    boolean threadExit = false;
-    Thread launcherThread;
+    private boolean shouldSetOmnetppMplBackend = true;
+    private ArrayList<PythonProcess> availableProcesses = new ArrayList<PythonProcess>();
+    private String errorMessage = null;
+    private boolean threadExit = false;
+    private Thread launcherThread;
 
     public PythonProcessPool() {
         this(1);
@@ -52,45 +50,30 @@ public class PythonProcessPool {
         launcherThread.start();
     }
 
+    public void setShouldSetOmnetppMplBackend(boolean value) {
+        this.shouldSetOmnetppMplBackend = value;
+    }
+
     private PythonProcess createProcess() throws IOException {
         if (PythonProcess.debug)
             Debug.println("connecting...");
-        ClientServer clientServer = new ClientServer.ClientServerBuilder().javaPort(0).pythonPort(0).readTimeout(1000)
-                .build();
+
+        ClientServer clientServer = new ClientServer.ClientServerBuilder().javaPort(0).pythonPort(0).readTimeout(1000).build();
 
         int javaPort = clientServer.getJavaServer().getListeningPort();
         if (PythonProcess.debug)
             Debug.println("listening port in Java: " + javaPort);
 
-        // This only worked with the internal test app, and not when used from within the IDE.
-        //String location = PythonProcessPool.class.getResource("python").getPath();
-
-        String pychartPluginLocation = null;
-        try {
-            pychartPluginLocation = new File(PythonProcessPool.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getAbsolutePath();
-        }
-        catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-
-        String locationsToPrepend = OmnetppDirs.getOmnetppPythonDir() + File.pathSeparator // the <omnetpp_root>/python dir
-                + pychartPluginLocation + File.separator + "python"; // the plugin-local python dir
-
         ProcessBuilder pb = new ProcessBuilder()
                 .command("python3", "-u", "-m", "omnetpp.internal.PythonEntryPoint", Integer.toString(javaPort))
-                // .directory(new File(location))
                 .redirectError(ProcessBuilder.Redirect.PIPE).redirectOutput(ProcessBuilder.Redirect.PIPE)
                 .redirectInput(ProcessBuilder.Redirect.PIPE);
 
         Map<String, String> env = pb.environment();
-        if (env.containsKey("PYTHONPATH"))
-            env.put("PYTHONPATH", locationsToPrepend + File.pathSeparator + env.get("PYTHONPATH"));
-        else
-            env.put("PYTHONPATH", locationsToPrepend);
-
         env.put("WITHIN_OMNETPP_IDE", "yes");
-
-        env.put("MPLBACKEND", "module://omnetpp.internal.backend_SWTAgg");
+        env.put("PYTHONPATH", extendPythonPath(env.get("PYTHONPATH")));
+        if (shouldSetOmnetppMplBackend)
+            env.put("MPLBACKEND", "module://omnetpp.internal.backend_SWTAgg");
 
         if (PythonProcess.debug)
             Debug.println("starting python process... with path " + env.get("PYTHONPATH"));
@@ -98,6 +81,14 @@ public class PythonProcessPool {
         Process process = pb.start();
 
         return new PythonProcess(process, clientServer);
+    }
+
+    private String extendPythonPath(String oldPythonPath) {
+        String pychartPluginLocation  = PyChartPlugin.getDefault().getBundle().getLocation();
+        String locationsToPrepend = OmnetppDirs.getOmnetppPythonDir() + File.pathSeparator // the <omnetpp_root>/python dir
+                + pychartPluginLocation + File.separator + "python"; // the plugin-local python dir
+
+        return oldPythonPath == null ? locationsToPrepend : locationsToPrepend + File.pathSeparator + oldPythonPath;
     }
 
     public void dispose() {
