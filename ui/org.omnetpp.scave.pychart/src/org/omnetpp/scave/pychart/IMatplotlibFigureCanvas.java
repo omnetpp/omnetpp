@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * This is an interface to the our custom FigureCanvas, implemented in Python.
- * 
+ *
  * @author attila
  */
 public interface IMatplotlibFigureCanvas {
@@ -36,19 +36,22 @@ public interface IMatplotlibFigureCanvas {
      * event.pixelDelta().x() == 0 and event.pixelDelta().y() == 0: steps =
      * event.angleDelta().y() / 120 else: steps = event.pixelDelta().y() if steps:
      * FigureCanvasBase.scroll_event(self, x, y, steps, guiEvent=event)
-     * 
+     *
      * def keyPressEvent(self, event): FigureCanvasBase.key_press_event(self, key)
-     * 
+     *
      * def keyReleaseEvent(self, event): FigureCanvasBase.key_release_event(self,
      * key)
-     * 
+     *
      */
 
     void setWidget(IMatplotlibWidget w);
 
     void performAction(String action);
 
-    String saveImage(String filename);
+    /**
+     * Save image on canvas into the the given file.
+     */
+    String exportFigure(String filename);
 
     HashMap<String, ArrayList<String>> getSupportedFiletypes();
 
