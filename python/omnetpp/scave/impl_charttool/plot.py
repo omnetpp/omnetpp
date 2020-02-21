@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import math
 from omnetpp.scave import results, plot
-
+from omnetpp.scave import utils # for small misc. methods
 
 properties = dict()
 name = ""
@@ -72,9 +72,11 @@ def plot_scalars(df_or_values, labels=None, row_label=None):
         _plot_scalars_lists(row_label, labels, df_or_values)
 
 
-def plot_vector(label, xs, ys):
+def plot_vector(label, xs, ys, key=None, props=dict()):
     plt.plot(xs, ys, label=_to_label(label))
     plt.legend()
+
+    # TODO: deal with key and props
 
 
 def _plot_vectors_tuplelist(vectors):
@@ -144,41 +146,48 @@ def plot_histograms(df):
     else:
         _plot_histograms_DF(df)
 
+def get_supported_property_keys():
+    return [] # TODO
 
 def set_warning(warning):
     # TODO this might not always work, depending on whether it's called before or after plotting?
     plt.annotate(warning, xy=(20, 40), xycoords="figure pixels", color="red")
 
+# params?
 def plot(xs, ys, key=None, label=None, drawstyle=None, linestyle=None, linewidth=None, color=None, marker=None, markersize=None):
-    return plt.plot(**locals())
+    params = {k:v for k, v in locals().items() if k is not None and k not in ["key", "xs", "ys"]}
+    return plt.plot(xs, ys, **params)
 
-def hist(x, bins, density=None, weights=None, cumulative=False, bottom=None, histtype='stepfilled', color=None, label=None, linewidth=None):
-    return plt.hist(**locals())
+# key?
+def hist(x, bins, density=False, weights=None, cumulative=False, bottom=None, histtype='stepfilled', color=None, label=None, linewidth=None,
+         underflows=0.0, overflows=0.0, minvalue=math.nan, maxvalue=math.nan):
 
-def bar(x, height, width=0.8, label=None):
-    return plt.bar(**locals())
+    params = locals()
+    params = {k:v for k, v in locals().items() if k is not None and k not in ["underflows", "overflows", "minvalue", "maxvalue", "params"]}
+    print(params)
+    return plt.hist(**params)
 
-def title(str):
-    plt.title(**locals())
+bar = plt.bar
+title = plt.title
+xlabel = plt.xlabel
+ylabel = plt.ylabel
+xlim = plt.xlim
+ylim = plt.ylim
+xscale = plt.xscale
+yscale = plt.yscale
+xticks = plt.xticks
+legend = plt.xticks
+grid = plt.grid
 
-def xlabel(str):
-    plt.xlabel(**locals())
-
-def ylabel(str):
-    plt.ylabel(**locals())
-
-def xlim(left=None, right=None):
-    plt.xlim(**locals())
-
-def ylim(left=None, right=None):
-    plt.ylim(**locals())
-
-def xscale(value):
-    plt.xscale(**locals())
-
-def yscale(value):
-    plt.yscale(**locals())
-
-def legend(show=None, frameon=None, loc=None):
-    plt.legend(**locals())
-
+def legend(*args, **kwargs):
+    if "show" in kwargs:
+        if kwargs["show"] is not None and not kwargs["show"]:
+            if plt.gca().get_legend() is not None:
+                plt.gca().get_legend().remove()
+            return
+        del kwargs["show"]
+    if "loc" in kwargs and kwargs["loc"] and kwargs["loc"].startswith("outside"):
+        kwargs2 = utils._legend_mpl_loc_outside_args(kwargs["loc"])
+        del kwargs["loc"]
+        kwargs.update(kwargs2)
+    plt.legend(*args, **kwargs)

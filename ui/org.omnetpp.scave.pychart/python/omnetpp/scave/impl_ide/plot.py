@@ -546,23 +546,23 @@ def set_warning(warning):
     if Gateway.chart_plotter:
         Gateway.chart_plotter.setWarning(warning)
 
-def title(str):
+def title(label):
     """
     Sets plot title.
     """
-    set_property("Plot.Title", str)
+    set_property("Plot.Title", label)
 
-def xlabel(str):
+def xlabel(xlabel):
     """
     Sets the label of the X axis.
     """
-    set_property("X.Axis.Title", str)
+    set_property("X.Axis.Title", xlabel)
 
-def ylabel(str):
+def ylabel(ylabel):
     """
     Sets the label of the Y axis.
     """
-    set_property("Y.Axis.Title", str)
+    set_property("Y.Axis.Title", ylabel)
 
 def xlim(left=None, right=None):
     """
@@ -603,10 +603,10 @@ def xticks(ticks=None, labels=None, rotation=0):
     set_property("X.Label.RotateBy", str(-int(rotation))) # matplotlib and our native widgets have different ideas about label rotation
 
 
-def grid(show=True, which="major"):
+def grid(b=True, which="major"):
     if which not in ["major", "both"]:
         raise ValueError("which='{}' is not supported, only 'major', and 'both'".format(which))
-    if not show:
+    if not b:
         set_property("Axes.Grid", "None")
     elif which == "major":
         set_property("Axes.Grid", "Major")

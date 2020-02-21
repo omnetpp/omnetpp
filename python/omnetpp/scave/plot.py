@@ -214,19 +214,19 @@ def set_warning(warning):
     impl.set_warning(**locals())
 
 
-def title(str):
+def title(label):
     """
     Sets plot title.
     """
     impl.title(**locals())
 
-def xlabel(str):
+def xlabel(xlabel):
     """
     Sets the label of the X axis.
     """
     impl.xlabel(**locals())
 
-def ylabel(str):
+def ylabel(ylabel):
     """
     Sets the label of the Y axis.
     """
@@ -259,7 +259,7 @@ def yscale(value):
 def xticks(ticks=None, labels=None, rotation=0):
     impl.xticks(**locals())
 
-def grid(show=True, which="major"):
+def grid(b=True, which="major"):
     impl.grid(**locals())
 
 def legend(show=None, frameon=None, loc=None):
