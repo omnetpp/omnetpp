@@ -28,6 +28,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -38,6 +39,8 @@ import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.common.Debug;
@@ -145,7 +148,31 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
     }
 
     public void saveImage(String fileName) {
-        ;
+        String ext = new Path(fileName).getFileExtension().toLowerCase();
+        int format = -1;
+        switch(ext) {
+            case "svg": format = SWT.IMAGE_SVG; break;
+            case "png": format = SWT.IMAGE_PNG; break;
+            case "jpg": format = SWT.IMAGE_JPEG; break;
+            case "bmp": format = SWT.IMAGE_BMP; break;
+            case "ico": format = SWT.IMAGE_ICO; break;
+            // Note: GIF is supposed to work too, but currently creates an empty file (Eclipse 4.14)
+            default: throw new RuntimeException("Unsupported file format '" + ext + "' (supported ones are: svg, png, jpg, bmp, ico)");
+        }
+
+        if (format == SWT.IMAGE_SVG)
+            saveSVG(fileName);
+        else {
+            int width = getClientArea().width, height = getClientArea().height;
+            Image image = getImage(width, height);
+            ImageLoader loader = new ImageLoader();
+            loader.data = new ImageData[] { image.getImageData() };
+            loader.save(fileName, format);
+            image.dispose();
+        }
+    }
+
+    protected void saveSVG(String fileName) {
         int width = getClientArea().width, height = getClientArea().height;
         GraphicsSVG graphics = GraphicsSVG.getInstance(new Rectangle(0, -1, width, height));
         try {
