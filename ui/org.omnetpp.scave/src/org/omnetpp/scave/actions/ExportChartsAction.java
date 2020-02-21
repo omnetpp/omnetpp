@@ -17,7 +17,7 @@ public class ExportChartsAction extends AbstractScaveAction {
 
     public ExportChartsAction() {
         setText("Export Charts...");
-        setToolTipText("Export charts as png/jpg/eps/svg image files.");
+        setToolTipText("Export charts to image files");
     }
 
     @Override
@@ -34,7 +34,7 @@ public class ExportChartsAction extends AbstractScaveAction {
                 String fileFormat = dialog.getFileFormat();
                 IContainer targetFolder = dialog.getTargetFolder();
                 if (!selectedCharts.isEmpty())
-                    ChartExport.exportChartImages(selectedCharts, targetFolder, fileFormat, editor.getResultFileManager());
+                    ChartExport.exportChartImages(selectedCharts, targetFolder, fileFormat, editor.getAnfFile().getParent().getLocation().toFile(), editor.getResultFileManager());
             }
             catch (OperationCanceledException e) {
             }

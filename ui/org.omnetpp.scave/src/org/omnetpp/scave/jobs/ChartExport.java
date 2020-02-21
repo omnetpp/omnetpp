@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -23,16 +24,16 @@ import org.eclipse.ui.console.IOConsole;
 import org.eclipse.ui.console.IOConsoleOutputStream;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.CollectionUtils;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ChartProvider;
 import org.omnetpp.scave.editors.ResultsProvider;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model2.ScaveModelUtil;
-import org.omnetpp.scave.pychart.PythonProcess;
-import org.omnetpp.scave.pychart.PythonProcessPool;
 import org.omnetpp.scave.pychart.PythonCallerThread.ExceptionHandler;
 import org.omnetpp.scave.pychart.PythonOutputMonitoringThread.IOutputListener;
+import org.omnetpp.scave.pychart.PythonProcess;
+import org.omnetpp.scave.pychart.PythonProcessPool;
 
 
 public class ChartExport {
@@ -40,12 +41,14 @@ public class ChartExport {
     private static class ChartExportJob extends Job {
         private Chart chart;
         private Map<String, String> extraProperties;
+        private File chartsDir;
         private ResultFileManager manager;
 
-        public ChartExportJob(Chart chart, Map<String, String> extraProperties, ResultFileManager manager) {
+        public ChartExportJob(Chart chart, Map<String, String> extraProperties, File chartsDir, ResultFileManager manager) {
             super("Exporting '" + chart.getName() + "'");
             this.chart = chart;
             this.extraProperties = extraProperties;
+            this.chartsDir = chartsDir;
             this.manager = manager;
         }
 
@@ -57,7 +60,7 @@ public class ChartExport {
                     public Object call() throws Exception {
                         PythonProcessPool processPool = new PythonProcessPool(1);
                         processPool.setShouldSetOmnetppMplBackend(false);
-                        runChartScript(chart, extraProperties, processPool, manager, monitor);
+                        runChartScript(chart, extraProperties, processPool, chartsDir, manager, monitor);
                         return null;
                     }
                 });
@@ -75,14 +78,16 @@ public class ChartExport {
     private static class BatchChartExportJob extends Job {
         private List<Chart> charts;
         private Map<String, String> extraProperties;
+        private File chartsDir;
         private ResultFileManager manager;
         private int numConcurrentProcesses = 2; //TODO as param
         private boolean stopOnError = false;
 
-        public BatchChartExportJob(List<Chart> charts, Map<String, String> extraProperties, ResultFileManager manager) {
+        public BatchChartExportJob(List<Chart> charts, Map<String, String> extraProperties, File chartsDir, ResultFileManager manager) {
             super("Exporting " + charts.size());
             this.charts = charts;
             this.extraProperties = extraProperties;
+            this.chartsDir = chartsDir;
             this.manager = manager;
         }
 
@@ -95,7 +100,7 @@ public class ChartExport {
                 }
             };
             for (Chart chart : charts) {
-                Job job1 = new ChartExportJob(chart, extraProperties, manager);
+                Job job1 = new ChartExportJob(chart, extraProperties, chartsDir, manager);
                 job1.setJobGroup(jobGroup);
                 job1.setPriority(Job.BUILD);
                 job1.setSystem(false);
@@ -114,44 +119,43 @@ public class ChartExport {
 
     };
 
-    protected static void startExportJob(Chart chart, Map<String, String> extraProperties, ResultFileManager manager) {
+    protected static void startExportJob(Chart chart, Map<String, String> extraProperties, File chartsDir, ResultFileManager manager) {
         chart = (Chart)chart.dup(); // since job runs in another thread, and we don't want locking
-        Job job = new ChartExportJob(chart, extraProperties, manager);
+        Job job = new ChartExportJob(chart, extraProperties, chartsDir, manager);
         job.setPriority(Job.BUILD);
         job.setSystem(false);
         job.setUser(true);
         job.schedule();
     }
 
-    protected static void startBatchExportJob(List<Chart> charts, Map<String, String> extraProperties, ResultFileManager manager) {
+    protected static void startBatchExportJob(List<Chart> charts, Map<String, String> extraProperties, File chartsDir, ResultFileManager manager) {
         charts = CollectionUtils.getDeepCopyOf(charts); // since job runs in another thread, and we don't want locking
-        Job job = new BatchChartExportJob(charts, extraProperties, manager);
+        Job job = new BatchChartExportJob(charts, extraProperties, chartsDir, manager);
         job.setPriority(Job.BUILD);
         job.setSystem(false);
         job.setUser(true);
         job.schedule();
     }
 
-    public static void exportChartImage(Chart chart, IContainer folder, String format, ResultFileManager manager) {
+    public static void exportChartImage(Chart chart, IContainer folder, String format, File chartsDir, ResultFileManager manager) {
         Map<String, String> extraProperties = new HashMap<>();
         extraProperties.put("export_image", "true");
         extraProperties.put("image_export_folder", folder.getLocation().toOSString());
         extraProperties.put("image_export_format", format);
-        startExportJob(chart, extraProperties, manager);
+        startExportJob(chart, extraProperties, chartsDir, manager);
         //TODO folder.refreshLocal(IResource.DEPTH_INFINITE, monitor); // because we're creating the file behind Eclipse's back
     }
 
-    public static void exportChartImages(List<Chart> charts, IContainer folder, String format, ResultFileManager manager) {
+    public static void exportChartImages(List<Chart> charts, IContainer folder, String format, File chartsDir, ResultFileManager manager) {
         Map<String, String> extraProperties = new HashMap<>();
         extraProperties.put("export_image", "true");
         extraProperties.put("image_export_folder", folder.getLocation().toOSString());
         extraProperties.put("image_export_format", format);
-        startBatchExportJob(charts, extraProperties, manager);
+        startBatchExportJob(charts, extraProperties, chartsDir, manager);
         //TODO folder.refreshLocal(IResource.DEPTH_INFINITE, monitor); // because we're creating the file behind Eclipse's back
     }
 
-    private static void runChartScript(Chart chart, Map<String,String> extraProperties, PythonProcessPool processPool, ResultFileManager rfm, IProgressMonitor monitor) {
-
+    private static void runChartScript(Chart chart, Map<String,String> extraProperties, PythonProcessPool processPool, File chartsDir, ResultFileManager rfm, IProgressMonitor monitor) {
         IOConsole console = new IOConsole("'" + chart.getName() + "' - chart script output", null);
         IConsoleManager consoleManager = ConsolePlugin.getDefault().getConsoleManager();
         consoleManager.addConsoles(new IConsole[] { console });
@@ -186,7 +190,7 @@ public class ChartExport {
 
         ExceptionHandler runAfterError = (p, e) -> {
             try {
-                errorStream.write(e.getMessage()); // TODO tweakStackTrace
+                errorStream.write(StringUtils.defaultIfEmpty(e.getMessage(), e.getClass().getSimpleName())); // TODO tweakStackTrace
             } catch (IOException e1) {
                 ScavePlugin.logError(e);
             }
@@ -194,15 +198,16 @@ public class ChartExport {
         };
 
         proc.pythonCallerThread.asyncExec(() -> {
-            //proc.getEntryPoint().execute("import os; os.chdir(r\"\"\"" + workingDir.getAbsolutePath() + "\"\"\"); del os;");
-            //proc.getEntryPoint().execute("import site; site.addsitedir(r\"\"\"" + workingDir.getAbsolutePath() + "\"\"\"); del site;");
+            // Ensure the chart script can load source files and Python modules from the anf file's directory
+            proc.getEntryPoint().execute("import os; os.chdir(r\"\"\"" + chartsDir.getAbsolutePath() + "\"\"\"); del os;");
+            proc.getEntryPoint().execute("import site; site.addsitedir(r\"\"\"" + chartsDir.getAbsolutePath() + "\"\"\"); del site;");
             proc.getEntryPoint().execute(chart.getScript());
         }, runAfterDone, runAfterError);
 
         while (!executionDone[0]) {
             try {
                 Thread.sleep(2000);
-            } catch (InterruptedException e1) {
+            } catch (InterruptedException e) {
                 // ignore
             }
             if (monitor.isCanceled())
