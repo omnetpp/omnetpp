@@ -1,5 +1,6 @@
 package org.omnetpp.scave.actions;
 
+import java.io.File;
 import java.util.List;
 
 import org.eclipse.core.resources.IContainer;
@@ -33,8 +34,12 @@ public class ExportChartsAction extends AbstractScaveAction {
                 List<Chart> selectedCharts = dialog.getSelectedCharts();
                 String fileFormat = dialog.getFileFormat();
                 IContainer targetFolder = dialog.getTargetFolder();
-                if (!selectedCharts.isEmpty())
-                    ChartExport.exportChartImages(selectedCharts, targetFolder, fileFormat, editor.getAnfFile().getParent().getLocation().toFile(), editor.getResultFileManager());
+                if (!selectedCharts.isEmpty()) {
+                    boolean stopOnError = false;
+                    int numConcurrentProcesses = 2;
+                    File chartsDir = editor.getAnfFile().getParent().getLocation().toFile();
+                    ChartExport.exportChartImages(selectedCharts, targetFolder, fileFormat, chartsDir, editor.getResultFileManager(), stopOnError, numConcurrentProcesses);
+                }
             }
             catch (OperationCanceledException e) {
             }

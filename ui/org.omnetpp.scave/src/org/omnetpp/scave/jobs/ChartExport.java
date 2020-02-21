@@ -35,17 +35,21 @@ import org.omnetpp.scave.pychart.PythonOutputMonitoringThread.IOutputListener;
 import org.omnetpp.scave.pychart.PythonProcess;
 import org.omnetpp.scave.pychart.PythonProcessPool;
 
-
+/**
+ * Runs chart scripts in background jobs, with the purpose of exporting plot graphics, data, etc.
+ *
+ * @author andras
+ */
 public class ChartExport {
 
-    private static class ChartExportJob extends Job {
+    protected static class ChartExportJob extends Job {
         private Chart chart;
         private Map<String, String> extraProperties;
         private File chartsDir;
         private ResultFileManager manager;
 
         public ChartExportJob(Chart chart, Map<String, String> extraProperties, File chartsDir, ResultFileManager manager) {
-            super("Exporting '" + chart.getName() + "'");
+            super("Exporting chart '" + chart.getName() + "'");
             this.chart = chart;
             this.extraProperties = extraProperties;
             this.chartsDir = chartsDir;
@@ -75,25 +79,27 @@ public class ChartExport {
         }
     }
 
-    private static class BatchChartExportJob extends Job {
+    protected static class BatchChartExportJob extends Job {
         private List<Chart> charts;
         private Map<String, String> extraProperties;
         private File chartsDir;
         private ResultFileManager manager;
-        private int numConcurrentProcesses = 2; //TODO as param
         private boolean stopOnError = false;
+        private int numConcurrentProcesses = 2;
 
-        public BatchChartExportJob(List<Chart> charts, Map<String, String> extraProperties, File chartsDir, ResultFileManager manager) {
-            super("Exporting " + charts.size());
+        public BatchChartExportJob(List<Chart> charts, Map<String, String> extraProperties, File chartsDir, ResultFileManager manager, boolean stopOnError, int numConcurrentProcesses) {
+            super("Exporting " + charts.size() + " charts");
             this.charts = charts;
             this.extraProperties = extraProperties;
             this.chartsDir = chartsDir;
             this.manager = manager;
+            this.stopOnError = stopOnError;
+            this.numConcurrentProcesses = numConcurrentProcesses;
         }
 
         @Override
         protected IStatus run(IProgressMonitor monitor) {
-            JobGroup jobGroup = new JobGroup("Simulation batch", numConcurrentProcesses, charts.size()) {
+            JobGroup jobGroup = new JobGroup("Exporting charts", numConcurrentProcesses, charts.size()) {
                 @Override
                 protected boolean shouldCancel(IStatus lastCompletedJobResult, int numberOfFailedJobs, int numberOfCanceledJobs) {
                     return numberOfCanceledJobs > 0 || (stopOnError && numberOfFailedJobs > 0);
@@ -128,30 +134,35 @@ public class ChartExport {
         job.schedule();
     }
 
-    protected static void startBatchExportJob(List<Chart> charts, Map<String, String> extraProperties, File chartsDir, ResultFileManager manager) {
+    protected static void startBatchExportJob(List<Chart> charts, Map<String, String> extraProperties, File chartsDir, ResultFileManager manager, boolean stopOnError, int numConcurrentProcesses) {
         charts = CollectionUtils.getDeepCopyOf(charts); // since job runs in another thread, and we don't want locking
-        Job job = new BatchChartExportJob(charts, extraProperties, chartsDir, manager);
+        Job job = new BatchChartExportJob(charts, extraProperties, chartsDir, manager, stopOnError, numConcurrentProcesses);
         job.setPriority(Job.BUILD);
         job.setSystem(false);
         job.setUser(true);
         job.schedule();
     }
 
-    public static void exportChartImage(Chart chart, IContainer folder, String format, File chartsDir, ResultFileManager manager) {
+    protected static Map<String, String> makeExtraPropsForImageExport(IContainer targetFolder, String format) {
         Map<String, String> extraProperties = new HashMap<>();
         extraProperties.put("export_image", "true");
-        extraProperties.put("image_export_folder", folder.getLocation().toOSString());
+        extraProperties.put("image_export_folder", targetFolder.getLocation().toOSString());
         extraProperties.put("image_export_format", format);
+        return extraProperties;
+    }
+
+    public static void exportChartImage(Chart chart, IContainer targetFolder, String format, File chartsDir, ResultFileManager manager) {
+        Map<String, String> extraProperties = makeExtraPropsForImageExport(targetFolder, format);
         startExportJob(chart, extraProperties, chartsDir, manager);
         //TODO folder.refreshLocal(IResource.DEPTH_INFINITE, monitor); // because we're creating the file behind Eclipse's back
     }
 
-    public static void exportChartImages(List<Chart> charts, IContainer folder, String format, File chartsDir, ResultFileManager manager) {
-        Map<String, String> extraProperties = new HashMap<>();
-        extraProperties.put("export_image", "true");
-        extraProperties.put("image_export_folder", folder.getLocation().toOSString());
-        extraProperties.put("image_export_format", format);
-        startBatchExportJob(charts, extraProperties, chartsDir, manager);
+    public static void exportChartImages(List<Chart> charts, IContainer targetFolder, String format, File chartsDir, ResultFileManager manager, boolean stopOnError, int numConcurrentProcesses) {
+        Map<String, String> extraProperties = makeExtraPropsForImageExport(targetFolder, format);
+        if (charts.size() == 1)
+            startExportJob(charts.get(0), extraProperties, chartsDir, manager);
+        else if (charts.size() >= 2)
+            startBatchExportJob(charts, extraProperties, chartsDir, manager, stopOnError, numConcurrentProcesses);
         //TODO folder.refreshLocal(IResource.DEPTH_INFINITE, monitor); // because we're creating the file behind Eclipse's back
     }
 
