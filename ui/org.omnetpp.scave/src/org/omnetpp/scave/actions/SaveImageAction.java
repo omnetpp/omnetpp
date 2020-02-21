@@ -26,7 +26,6 @@ import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.python.ChartViewerBase;
 import org.omnetpp.scave.python.MatplotlibChartViewer;
-import org.omnetpp.scave.python.NativeChartViewer;
 
 /**
  * Save the plot's image as currently visible in the active chart viewer.
@@ -44,26 +43,13 @@ public class SaveImageAction extends AbstractScaveAction {
         ChartViewerBase chartViewer = chartEditor == null ? null : chartEditor.getChartViewer();
         if (chartViewer == null)
             return;
+        if (chartViewer instanceof MatplotlibChartViewer && !((MatplotlibChartViewer)chartViewer).isSaveImagePossible())
+            return;
 
-        String defaultFileName = chartEditor.getChart().getName();
+        String defaultFileName = chartEditor.getChart().getName() + ".svg";
         IContainer defaultFolder = scaveEditor.getAnfFile().getParent();
 
-        String fileName = null;
-
-        if (chartViewer instanceof MatplotlibChartViewer) {
-            MatplotlibChartViewer matplotlibChartViewer = (MatplotlibChartViewer)chartViewer;
-            if (!matplotlibChartViewer.isSaveImagePossible())
-                return;
-            fileName = askFileName(parentShell, defaultFolder, defaultFileName+".svg", "Saves the chart's current view. Popular vector and raster formats are accepted.");
-        }
-        else if (chartViewer instanceof NativeChartViewer) {
-            fileName = askFileName(parentShell, defaultFolder, defaultFileName+".svg", "Saves the chart's current view in SVG format.");
-            if (fileName != null && !fileName.endsWith(".svg")) {
-                MessageDialog.openError(parentShell, "Error", "Unsupported file format. Please enter a file name that has the '.svg' extension.");
-                return;
-            }
-        }
-
+        String fileName = askFileName(parentShell, defaultFolder, defaultFileName);
         if (fileName == null)
             return; // cancelled
 
@@ -77,13 +63,13 @@ public class SaveImageAction extends AbstractScaveAction {
 
     }
 
-    protected String askFileName(Shell parent, IContainer defaultFolder, String defaultFileName, String message) {
+    protected String askFileName(Shell parent, IContainer defaultFolder, String defaultFileName) {
         SaveAsDialog dialog = new SaveAsDialog(parent) {
             @Override
             public void create() {
                 super.create();
                 setTitle("Save Image"); // note: these calls won't work when called before the dialog has been created...
-                setMessage(message);
+                setMessage("Saves the chart's current view. Popular vector and raster formats are accepted.");
             }
         };
         dialog.setOriginalFile(defaultFolder.getFile(new Path(defaultFileName)));
