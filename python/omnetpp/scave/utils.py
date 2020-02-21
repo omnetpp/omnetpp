@@ -430,8 +430,8 @@ def plot_histograms(df, props):
         else:
             edges = list(t.binedges)
             values = list(t.binvalues)
-            has_underflow_bin = not np.isnan(t.min) and not np.isnan(t.underflows)
-            has_overflow_bin = not np.isnan(t.max) and not np.isnan(t.overflows)
+            has_underflow_bin = not np.isnan(t.min) and not np.isnan(t.underflows) and t.min < edges[0]
+            has_overflow_bin = not np.isnan(t.max) and not np.isnan(t.overflows) and t.max >= edges[-1]
             if has_underflow_bin:
                 edges = [t.min] + edges
                 values = [t.underflows] + values
