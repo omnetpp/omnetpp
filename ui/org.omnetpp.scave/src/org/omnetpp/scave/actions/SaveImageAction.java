@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
@@ -19,6 +20,7 @@ import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ChartScriptEditor;
@@ -111,22 +113,18 @@ public class SaveImageAction extends AbstractScaveAction {
     }
 
     private String askFileName(Shell parent, String defaultLocation, String defaultFileName, String[] filterNames, String[] filterExtensions, int filterIndex) {
+        // Issue: The filter combo in the dialog does NOT change the extension of the entered file name,
+        // so it's essentially useless. Choosing e.g. PNG in it won't result in a PNG file being saved,
+        // the user manually needs to enter the file extension for that. Note: getFilterIndex() will return
+        // the file type of the filename, NOT the combo state!
         FileDialog dialog = new FileDialog(parent, SWT.SAVE);
         dialog.setFileName(defaultFileName);
         dialog.setFilterNames(filterNames);
         dialog.setFilterExtensions(filterExtensions);
         dialog.setFilterIndex(filterIndex);
         dialog.setFilterPath(defaultLocation);
-
-        String filename = dialog.open();
-
-        if (filename != null) {
-            File file = new File(filename);
-            if (file.exists() && !MessageDialog.openConfirm(parent, "File Already Exists", "The file " + filename + " already exists. Overwrite?"))
-                filename = null;
-        }
-
-        return filename;
+        dialog.setOverwrite(true); // ask for confirmation
+        return dialog.open();
     }
 
     @Override
