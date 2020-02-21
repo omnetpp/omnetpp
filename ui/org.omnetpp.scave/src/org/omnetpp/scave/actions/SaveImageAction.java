@@ -7,18 +7,17 @@
 
 package org.omnetpp.scave.actions;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Map;
-
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.omnetpp.scave.ScaveImages;
@@ -47,7 +46,7 @@ public class SaveImageAction extends AbstractScaveAction {
             return;
 
         String defaultFileName = chartEditor.getChart().getName();
-        String defaultLocation = scaveEditor.getAnfFile().getParent().getLocation().toOSString();
+        IContainer defaultFolder = scaveEditor.getAnfFile().getParent();
 
         String fileName = null;
 
@@ -55,12 +54,14 @@ public class SaveImageAction extends AbstractScaveAction {
             MatplotlibChartViewer matplotlibChartViewer = (MatplotlibChartViewer)chartViewer;
             if (!matplotlibChartViewer.isSaveImagePossible())
                 return;
-            FileTypes filter = toFileDialogFilter(matplotlibChartViewer.getSupportedFiletypes(), matplotlibChartViewer.getDefaultFiletype());
-            fileName = askFileName(parentShell, defaultLocation, defaultFileName, filter.names, filter.extensions, filter.defaultIndex);
+            fileName = askFileName(parentShell, defaultFolder, defaultFileName+".svg", "Saves the chart's current view. Popular vector and raster formats are accepted.");
         }
         else if (chartViewer instanceof NativeChartViewer) {
-            // NativeChartViewer currently only supports SVG
-            fileName = askFileName(parentShell, defaultLocation, defaultFileName, new String[] {"Scalable Vector Graphics"}, new String[] {"svg"}, 0);
+            fileName = askFileName(parentShell, defaultFolder, defaultFileName+".svg", "Saves the chart's current view in SVG format.");
+            if (fileName != null && !fileName.endsWith(".svg")) {
+                MessageDialog.openError(parentShell, "Error", "Unsupported file format. Please enter a file name that has the '.svg' extension.");
+                return;
+            }
         }
 
         if (fileName == null)
@@ -76,55 +77,21 @@ public class SaveImageAction extends AbstractScaveAction {
 
     }
 
-    static class FileTypes {
-        public String[] names;
-        public String[] extensions;
-        public int defaultIndex;
-    }
-
-    private static FileTypes toFileDialogFilter(Map<String, ArrayList<String>> types, String defaultType) {
-        int filterIndex = 0;
-        String[] names = new String[types.keySet().size()];
-        Object[] ks = types.keySet().toArray();
-        for (int i = 0; i < ks.length; ++i)
-            names[i] = (String) ks[i];
-
-        String[] extensions = new String[names.length];
-
-        for (int i = 0; i < names.length; ++i) {
-            String filter = "";
-
-            ArrayList<String> exts = types.get(names[i]);
-            for (String e : exts) {
-                if (e.equals(defaultType))
-                    filterIndex = i;
-                filter += ("*." + e + ";");
+    protected String askFileName(Shell parent, IContainer defaultFolder, String defaultFileName, String message) {
+        SaveAsDialog dialog = new SaveAsDialog(parent) {
+            @Override
+            public void create() {
+                super.create();
+                setTitle("Save Image"); // note: these calls won't work when called before the dialog has been created...
+                setMessage(message);
             }
-
-            extensions[i] = filter.substring(0, filter.length() - 1);
-            names[i] += " (" + extensions[i].replace(";", ", ") + ")";
-        }
-
-        FileTypes f = new FileTypes();
-        f.extensions = extensions;
-        f.names = names;
-        f.defaultIndex = filterIndex;
-        return f;
-    }
-
-    private String askFileName(Shell parent, String defaultLocation, String defaultFileName, String[] filterNames, String[] filterExtensions, int filterIndex) {
-        // Issue: The filter combo in the dialog does NOT change the extension of the entered file name,
-        // so it's essentially useless. Choosing e.g. PNG in it won't result in a PNG file being saved,
-        // the user manually needs to enter the file extension for that. Note: getFilterIndex() will return
-        // the file type of the filename, NOT the combo state!
-        FileDialog dialog = new FileDialog(parent, SWT.SAVE);
-        dialog.setFileName(defaultFileName);
-        dialog.setFilterNames(filterNames);
-        dialog.setFilterExtensions(filterExtensions);
-        dialog.setFilterIndex(filterIndex);
-        dialog.setFilterPath(defaultLocation);
-        dialog.setOverwrite(true); // ask for confirmation
-        return dialog.open();
+        };
+        dialog.setOriginalFile(defaultFolder.getFile(new Path(defaultFileName)));
+        if (dialog.open() != Dialog.OK)
+            return null;
+        IPath path = dialog.getResult();
+        IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
+        return file.getLocation().toOSString();
     }
 
     @Override
