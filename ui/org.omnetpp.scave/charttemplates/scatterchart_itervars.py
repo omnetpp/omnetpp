@@ -11,7 +11,6 @@ filter_expression = props["filter"]
 xaxis_itervar = props["xaxis_itervar"]
 iso_itervar = props["iso_itervar"]
 
-
 # query data into a data frame
 df = results.get_scalars(filter_expression, include_attrs=True, include_itervars=True)
 
@@ -47,9 +46,15 @@ p = plot if chart.is_native_chart() else plt
 p.xlabel(xaxis_itervar)
 p.ylabel(scalar_name)
 
+try:
+    xs = pd.to_numeric(df.index.values)
+except:
+    plot.set_warning("The X axis itervar is not purely numeric, this is not supported yet.")
+    exit(1)
+
 for i, c in enumerate(df.columns):
     style = utils._make_line_args(props, c, df)
-    p.plot(pd.to_numeric(df.index.values), df[c].values, label=iso_itervar + "=" + str(df[c].name), **style)
+    p.plot(xs, df[c].values, label=iso_itervar + "=" + str(df[c].name), **style)
 
 utils.set_plot_title(scalar_name + " vs. " + xaxis_itervar)
 
