@@ -301,6 +301,17 @@ def _make_bar_args(props, df): # ??? is df needed at all? should we also get the
     return style
 
 
+def get_names_for_title(df, props):
+    def get_prop(k):
+        return props[k] if k in props else None
+
+    if get_prop("legend_labels") == "result titles" and "title" in df:
+        series = df["title"].fillna(df["name"])
+    else:
+        series = df["name"]
+
+    return series.unique()
+
 
 def set_plot_title(title, suggested_chart_name=None):
     if chart.is_native_chart():
@@ -381,6 +392,8 @@ def plot_bars(df, props, names=None):
 
 
     p.xlabel(df.index.names[0])
+
+    title = ""
     if len(names):
         names_str = [str(n) for n in names]
         groups_series_str = [str(gs) for gs in groups+series]
@@ -388,7 +401,8 @@ def plot_bars(df, props, names=None):
         title = ", ".join(names_str)
         if groups_series_str and groups_series_str[0]:
             title += " by " + ", ".join(groups_series_str)
-        set_plot_title(title)
+
+    set_plot_title(get_prop("title") or title)
 
 
 def plot_vectors(df, props):

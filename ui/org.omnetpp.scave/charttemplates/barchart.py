@@ -27,11 +27,11 @@ for c in groups + series:
 
 df.sort_values(by=groups+series, axis='index', inplace=True)
 
-names = df["title" if "title" in df else "name"].unique()
+names = utils.get_names_for_title(df, props)
 
 df = pd.pivot_table(df, index=groups, columns=series, values='value')
 
-utils.plot_bars(df, props, names=names)
+utils.plot_bars(df, props, names)
 
 utils.postconfigure_plot(props)
 
