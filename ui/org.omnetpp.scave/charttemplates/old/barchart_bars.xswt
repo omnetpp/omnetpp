@@ -18,12 +18,12 @@
 
     <!-- page generated from the following spec:
 Baseline,
-Bar placement:Aligned/Overlap/InFront/Stacked    
+Bar placement:Aligned/Overlap/InFront/Stacked
     -->
-    
+
     <!-- Baseline -->
     <label text="Baseline:"/>
-    <text x:id="Bars.Baseline" x:style="BORDER">
+    <text x:id="Bars.Baseline" x:default="0" x:style="BORDER">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </text>
 

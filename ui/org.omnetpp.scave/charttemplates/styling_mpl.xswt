@@ -22,7 +22,7 @@
       <x:children>
 
     <label text="Style:"/>
-    <combo x:id="plt.style" x:style="BORDER">
+    <combo x:id="plt.style"  x:default="default" x:style="BORDER">
       <add x:p0="default"/>
       <add x:p0="classic"/>
       <add x:p0="ggplot"/>
@@ -50,9 +50,9 @@
       <add x:p0="seaborn-white"/>
       <add x:p0="seaborn-whitegrid"/>
     </combo>
-    
+
     <label text="Cycle seed:"/>
-    <spinner x:id="cycle_seed" selection="0" minimum="0" maximum="1000000" x:style="BORDER"/>
+    <spinner x:id="cycle_seed" x:default="0" selection="0" minimum="0" maximum="1000000" x:style="BORDER"/>
 
     <!-- } -->
       </x:children>
@@ -69,7 +69,7 @@
     <ColorChooser x:id="matplotlibrc.figure.facecolor" x:style="BORDER">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </ColorChooser>
-    
+
     <label text="Axes background color:"/>
     <ColorChooser x:id="matplotlibrc.axes.facecolor" x:style="BORDER">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
@@ -86,15 +86,15 @@
       <layout x:class="GridLayout" numColumns="2"/>
       <x:children>
 
-    <button x:id="matplotlibrc.legend.frameon" text="Frame" x:style="CHECK"  x:id.isEnabler="true">
+    <button x:id="matplotlibrc.legend.frameon" x:default="true" text="Frame" x:style="CHECK"  x:id.isEnabler="true">
       <layoutData x:class="GridData" horizontalSpan="2"/>
     </button>
 
-    <button x:id="matplotlibrc.legend.fancybox" text="Fancybox" x:style="CHECK">
+    <button x:id="matplotlibrc.legend.fancybox" x:default="false" text="Fancybox" x:style="CHECK">
       <layoutData x:class="GridData" horizontalSpan="2"/>
     </button>
 
-    <button x:id="matplotlibrc.legend.shadow" text="Shadow" x:style="CHECK">
+    <button x:id="matplotlibrc.legend.shadow" x:default="false" text="Shadow" x:style="CHECK">
       <layoutData x:class="GridData" horizontalSpan="2"/>
     </button>
 

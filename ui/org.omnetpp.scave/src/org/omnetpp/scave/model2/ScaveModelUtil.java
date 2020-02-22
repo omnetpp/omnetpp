@@ -8,7 +8,6 @@
 package org.omnetpp.scave.model2;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,7 +18,6 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -27,7 +25,6 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
-import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
@@ -36,8 +33,8 @@ import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.ChartTemplate;
 import org.omnetpp.scave.model.Chart.DialogPage;
+import org.omnetpp.scave.model.ChartTemplate;
 import org.omnetpp.scave.model.Charts;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
@@ -327,21 +324,6 @@ public class ScaveModelUtil {
         buf.append("icon = " + chart.getIconPath() + "\n");
         // omitting toolbarOrder and resultTypes
         buf.append("\n");
-
-        buf.append("propertyNames = ");
-        boolean first=true;
-        for (Property p : chart.getProperties()) {
-            if (!first)
-                buf.append(",\\\n    ");
-            buf.append(p.getName());
-            if (p.getValue() != null) {
-                String value = p.getName().equals("filter") ? "" : p.getValue();
-                buf.append(":" + value); // TODO: what if the value contains a comma? should quote...
-            }
-            first = false;
-        }
-
-        buf.append("\n\n");
 
         int i = 0;
         for (DialogPage dp : chart.getDialogPages()) {

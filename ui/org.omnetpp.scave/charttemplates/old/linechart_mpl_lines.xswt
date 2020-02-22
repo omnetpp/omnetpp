@@ -14,12 +14,12 @@
   <layout x:class="GridLayout" numColumns="2"/>
 
   <x:children>
-    
+
     <label text="Line width:"/>
-    <spinner x:id="matplotlibrc.lines.linewidth" minimum="0" digits="1" selection="15" maximum="1000" x:style="BORDER"/>
-    
+    <spinner x:id="matplotlibrc.lines.linewidth" x:default="1.5" minimum="0" digits="1" selection="15" maximum="1000" x:style="BORDER"/>
+
     <label text="Marker:"/>
-    <combo x:id="matplotlibrc.lines.marker" x:style="BORDER|READ_ONLY">
+    <combo x:id="matplotlibrc.lines.marker" x:default="auto" x:style="BORDER|READ_ONLY">
       <add x:p0="None"/>
       <add x:p0="."/>
       <add x:p0=","/>
@@ -35,11 +35,11 @@
 
     <!-- symbolSize% -->
     <label text="Marker size:"/>
-    <spinner x:id="matplotlibrc.lines.markersize" selection="6" minimum="0" maximum="100" x:style="BORDER"/>
+    <spinner x:id="matplotlibrc.lines.markersize" x:default="5" selection="6" minimum="0" maximum="100" x:style="BORDER"/>
 
-    
+
     <label text="Draw style:"/>
-    <combo x:id="drawstyle" x:style="BORDER|READ_ONLY">
+    <combo x:id="drawstyle" x:default="auto" x:style="BORDER|READ_ONLY">
       <add x:p0="auto"/>
       <add x:p0="dots"/>
       <add x:p0="points"/>
@@ -57,6 +57,6 @@
     <label x:text="These settings can be overwritten in the Python script for individual lines." x:style="WRAP">
       <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </label>
-    
+
   </x:children>
 </xswt>

@@ -28,7 +28,7 @@
     </ColorChooser>
 
     <label text="Cycle seed:"/>
-    <spinner x:id="cycle_seed" selection="0" minimum="0" maximum="1000000" x:style="BORDER"/>
+    <spinner x:id="cycle_seed" x:default="0" selection="0" minimum="0" maximum="1000000" x:style="BORDER"/>
 
     <!-- } -->
       </x:children>

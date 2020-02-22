@@ -19,12 +19,12 @@
 Baseline,
 Bar type:Solid/Outline,
 Data type:Count/Probability density/Cumulative density,
-Show over_underflow cell?    
+Show over_underflow cell?
     -->
-    
+
     <!-- Baseline -->
     <label text="Baseline:"/>
-    <text x:id="Bars.Baseline" x:style="BORDER">
+    <text x:id="Bars.Baseline" x:default="0" x:style="BORDER">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </text>
 

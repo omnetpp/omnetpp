@@ -29,6 +29,10 @@ import org.w3c.dom.NodeList;
  */
 public class XmlUtils  {
 
+    public interface IElementPredicate {
+        public boolean matches(Element node);
+    }
+
     public static ArrayList<String> collectChildTextsFromElementsWithTag(Node parent, String tag) {
         ArrayList<String> result = new ArrayList<>();
 
@@ -67,6 +71,26 @@ public class XmlUtils  {
         }
 
         return result;
+    }
+
+
+    public static ArrayList<Element> collectElements(Element root, IElementPredicate predicate) {
+        ArrayList<Element> result = new ArrayList<>();
+        doCollectElements(root, predicate, result);
+        return result;
+    }
+
+    private static void doCollectElements(Element parent, IElementPredicate predicate, ArrayList<Element> result) {
+        NodeList children = parent.getChildNodes();
+        for (int k = 0; k < children.getLength(); ++k) {
+            Node childNode = children.item(k);
+            if (childNode instanceof Element) {
+                Element childElement = (Element)childNode;
+                if (predicate.matches(childElement))
+                    result.add(childElement);
+                doCollectElements(childElement, predicate, result);
+            }
+        }
     }
 
     /**

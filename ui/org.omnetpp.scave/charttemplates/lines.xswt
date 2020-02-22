@@ -21,7 +21,7 @@
       <x:children>
 
     <label text="Draw style:"/>
-    <combo x:id="drawstyle" x:style="BORDER|READ_ONLY">
+    <combo x:id="drawstyle" x:default="auto" x:style="BORDER|READ_ONLY">
       <add x:p0="auto"/>
       <add x:p0="none"/>
       <add x:p0="linear"/>
@@ -31,32 +31,32 @@
     </combo>
 
     <label text="Line color:"/>
-    <ColorChooser x:id="linecolor" x:style="BORDER">
+    <ColorChooser x:id="linecolor" x:default="" x:style="BORDER">
       <layoutData x:class="GridData" horizontalAlignment="BEGINNING" grabExcessHorizontalSpace="false"/>
     </ColorChooser>
 
     <label text="Line style:"/>
-    <combo x:id="linestyle" x:style="BORDER|READ_ONLY">
+    <combo x:id="linestyle" x:default="solid" x:style="BORDER|READ_ONLY">
       <add x:p0="none"/>
       <add x:p0="solid"/>
       <add x:p0="dotted"/>
       <add x:p0="dashed"/>
       <add x:p0="dashdot"/>
     </combo>
-    
+
     <label text="Line width:"/>
-    <spinner x:id="linewidth" minimum="0" digits="1" selection="15" maximum="1000" x:style="BORDER"/>
+    <spinner x:id="linewidth" x:default="1.5" minimum="0" digits="1" selection="15" maximum="1000" x:style="BORDER"/>
 
       </x:children>
     </group>
-    
+
     <group text="Markers">
       <layoutData x:class="GridData" horizontalSpan="1" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
       <layout x:class="GridLayout" numColumns="2"/>
       <x:children>
-    
+
     <label text="Marker:"/>
-    <combo x:id="marker" x:style="BORDER">
+    <combo x:id="marker" x:default="auto" x:style="BORDER">
       <add x:p0="auto"/>
       <add x:p0="none"/>
       <add x:p0=". (dot)"/>
@@ -84,10 +84,10 @@
     </combo>
 
     <label text="Marker size:"/>
-    <spinner x:id="markersize" selection="6" minimum="0" maximum="100" x:style="BORDER"/>
+    <spinner x:id="markersize" x:default="5" selection="6" minimum="0" maximum="100" x:style="BORDER"/>
 
       </x:children>
     </group>
-    
+
   </x:children>
 </xswt>

@@ -24,12 +24,12 @@ drawStyle:dots/points/linear/pins/steps-pre/steps-post,
 Symbol Options {
     symbolSize%,
     showSymbols?,
-}    
+}
     -->
-    
+
     <!-- drawStyle:dots/points/linear/pins/steps-pre/steps-post -->
     <label text="Draw style:"/>
-    <combo x:id="drawstyle" x:style="BORDER|READ_ONLY">
+    <combo x:id="drawstyle" x:default="auto" x:style="BORDER|READ_ONLY">
       <add x:p0="auto"/>
       <add x:p0="linear"/>
       <add x:p0="pins"/>
@@ -56,7 +56,7 @@ Symbol Options {
         Square("Square", ScaveImages.IMG_OBJ16_SYM_SQUARE),
         Triangle("Triangle", ScaveImages.IMG_OBJ16_SYM_TRIANGLE);
 
-    
+
     <label text="Symbol type:"/>
     <combo x:id="Symbols.Type" x:style="BORDER|READ_ONLY">
       <add x:p0="None"/>
@@ -75,6 +75,6 @@ Symbol Options {
     <label x:text="These settings can be overwritten in the Python script for individual lines." x:style="WRAP">
       <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </label>
-    
+
   </x:children>
 </xswt>

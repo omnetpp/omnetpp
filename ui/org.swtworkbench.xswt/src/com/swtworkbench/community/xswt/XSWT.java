@@ -467,7 +467,7 @@ public class XSWT {
                 recognized = layoutBuilder.setProperty(parser.getAttributeName(i), obj, parser.getAttributeValue(i));
             }
             catch (XSWTException localXSWTException) {
-                Logger.log().debug(XSWT.class, "Found unsolved refernce:" + parser.getAttributeValue(i));
+                Logger.log().debug(XSWT.class, "Found unsolved reference:" + parser.getAttributeValue(i));
                 addUnresolvedIDRef(parser.getAttributeName(i), obj, parser.getAttributeValue(i), parser.getLineNumber(), parser
                         .getColumnNumber());
                 recognized = true;
@@ -480,7 +480,7 @@ public class XSWT {
                 continue;
             }
             if (!(recognized))
-                throw new XSWTException("Attribute not found: " + parser.getAttributeName(i), parser.getLineNumber(), parser
+                throw new XSWTException("Attribute not recognized: " + parser.getAttributeName(i), parser.getLineNumber(), parser
                         .getColumnNumber());
         }
     }
@@ -493,7 +493,9 @@ public class XSWT {
             if (nodeName.endsWith("id")) {
                 return true;
             }
-
+            if (nodeName.equals("default")) { // OMNeT++ specific (not used by XSWT): default value for the associated chart template variable (named by x:id)
+                return true;
+            }
             if ("p".equals(nodeName.substring(0, 1))) {
                 return true;
             }
@@ -518,7 +520,6 @@ public class XSWT {
             }
 
         }
-
         return false;
     }
 
