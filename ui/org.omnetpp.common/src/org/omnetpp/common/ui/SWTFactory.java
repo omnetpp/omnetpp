@@ -133,6 +133,19 @@ public class SWTFactory {
         return button;
     }
 
+    public static Button createPushButton(Composite parent, String label, Image image, GridData gd) {
+        Button button = new Button(parent, SWT.PUSH);
+        button.setFont(parent.getFont());
+        if (image != null)
+            button.setImage(image);
+        if (label != null)
+            button.setText(label);
+        button.setLayoutData(gd);
+        setButtonDimensionHint(button);
+        return button;
+    }
+
+
     /**
      * Creates and returns a new push button with the given
      * label and/or image.
@@ -530,6 +543,23 @@ public class SWTFactory {
         gd.horizontalSpan = hspan;
         ex.setLayoutData(gd);
         return ex;
+    }
+
+    /**
+     * Creates a composite that uses the parent's font and has a grid layout
+     * @param parent the parent to add the composite to
+     * @param layout grid layout
+     * @param gd grid data
+     * @return a new composite with a grid layout
+     *
+     * @since 3.3
+     */
+    public static Composite createComposite(Composite parent, GridLayout layout, GridData gd) {
+        Composite g = new Composite(parent, SWT.NONE);
+        g.setFont(parent.getFont());
+        g.setLayout(layout);
+        g.setLayoutData(gd);
+        return g;
     }
 
     /**

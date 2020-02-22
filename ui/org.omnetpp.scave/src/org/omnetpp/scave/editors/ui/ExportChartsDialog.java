@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.omnetpp.common.ui.SWTFactory;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.model.Chart;
@@ -102,9 +103,7 @@ public class ExportChartsDialog extends Dialog {
 
         composite.setLayout(new GridLayout());
 
-        Composite panel = new Composite(composite, SWT.NONE);
-        panel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        panel.setLayout(new GridLayout(2, false));
+        Composite panel = SWTFactory.createComposite(composite, new GridLayout(2, false), new GridData(SWT.FILL, SWT.FILL, true, true));
         Label label = new Label(panel, SWT.NONE);
         label.setText("Select charts to export:");
         label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
@@ -123,12 +122,10 @@ public class ExportChartsDialog extends Dialog {
                 validateDialogContents();
             }
         });
-        panel = new Composite(panel, SWT.NONE);
-        panel.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, false, false));
-        panel.setLayout(new GridLayout());
-        Button button = new Button(panel, SWT.NONE);
-        button.setText("Select All");
-        button.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+        panel = SWTFactory.createComposite(panel, new GridLayout(), new GridData(SWT.CENTER, SWT.TOP, false, false));
+
+        Button button = SWTFactory.createPushButton(panel, "Select All", null, new GridData(SWT.FILL, SWT.CENTER, true, false));
         button.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -136,9 +133,8 @@ public class ExportChartsDialog extends Dialog {
                     item.setChecked(true);
             }
         });
-        button = new Button(panel, SWT.NONE);
-        button.setText("Deselect All");
-        button.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+        button = SWTFactory.createPushButton(panel, "Deselect All", null, new GridData(SWT.FILL, SWT.CENTER, true, false));
         button.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -147,9 +143,7 @@ public class ExportChartsDialog extends Dialog {
             }
         });
 
-        panel = new Composite(composite, SWT.NONE);
-        panel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        panel.setLayout(new GridLayout(2, false));
+        panel = SWTFactory.createComposite(composite, new GridLayout(2,false), new GridData(SWT.FILL, SWT.CENTER, true, false));
 
         label = new Label(panel, SWT.NONE);
         label.setText("Folder to save into:");
@@ -178,13 +172,10 @@ public class ExportChartsDialog extends Dialog {
             }
         });
 
-        panel = new Composite(composite, SWT.NONE);
-        panel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        panel.setLayout(new GridLayout());
+        panel = SWTFactory.createComposite(composite, new GridLayout(), new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-        panel = new Composite(composite, SWT.NONE);
-        panel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        panel.setLayout(new GridLayout(2, false));
+        panel = SWTFactory.createComposite(composite, new GridLayout(2, false), new GridData(SWT.FILL, SWT.CENTER, true, false));
+
         label = new Label(panel, SWT.NONE);
         label.setText("File format:");
         label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 1, 1));
