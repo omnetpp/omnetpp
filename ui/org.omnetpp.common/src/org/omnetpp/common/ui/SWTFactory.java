@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
@@ -790,17 +791,11 @@ public class SWTFactory {
         return c;
     }
 
-    public static void configureEnablerCheckbox(Button checkButton, Composite group) {
-        checkButton.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                boolean enable = checkButton.getSelection();
-                setEnabled(group, enable, checkButton);
-            }
-        });
+    public static void configureEnablerCheckbox(Button checkButton, Composite group, boolean updateNow) {
+        configureEnablerCheckbox(checkButton, new Control[] {group}, updateNow);
     }
 
-    public static void configureEnablerCheckbox(Button checkButton, Control[] slaves) {
+    public static void configureEnablerCheckbox(Button checkButton, Control[] slaves, boolean updateNow) {
         checkButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -809,6 +804,8 @@ public class SWTFactory {
                     setEnabled(c, enable, checkButton);
             }
         });
+        if (updateNow)
+            checkButton.notifyListeners(SWT.Selection, new Event()); // update enablements
     }
 
     private static void setEnabled(Control control, boolean enabled, Control except) {

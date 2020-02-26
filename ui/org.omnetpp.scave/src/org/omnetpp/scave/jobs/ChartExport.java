@@ -144,23 +144,23 @@ public class ChartExport {
         job.schedule();
     }
 
-    protected static Map<String, String> makeExtraPropsForImageExport(IContainer targetFolder, String format) {
-        Map<String, String> extraProperties = new HashMap<>();
-        extraProperties.put("export_image", "true");
-        extraProperties.put("image_export_folder", targetFolder.getLocation().toOSString());
-        extraProperties.put("image_export_format", format);
-        return extraProperties;
+    public static Map<String, String> makeExtraPropertiesForImageExport(IContainer targetFolder, String format, String dpi) {
+        Map<String, String> map = new HashMap<>();
+        map.put("export_image", "true");
+        map.put("image_export_folder", targetFolder.getLocation().toOSString());
+        map.put("image_export_format", format);
+        map.put("image_export_dpi", dpi);
+        return map;
     }
 
-    public static void exportChartImage(Chart chart, IContainer targetFolder, String format, File chartsDir, ResultFileManager manager) {
-        Map<String, String> extraProperties = makeExtraPropsForImageExport(targetFolder, format);
-        Context context = new Context(extraProperties, chartsDir, manager, true, 2);
-        startExportJob(chart, context);
-        //TODO folder.refreshLocal(IResource.DEPTH_INFINITE, monitor); // because we're creating the file behind Eclipse's back
+    public static Map<String, String> makeExtraPropertiesForDataExport(IContainer targetFolder) {
+        Map<String, String> map = new HashMap<>();
+        map.put("export_data", "true");
+        map.put("data_export_folder", targetFolder.getLocation().toOSString());
+        return map;
     }
 
-    public static void exportChartImages(List<Chart> charts, IContainer targetFolder, String format, File chartsDir, ResultFileManager manager, boolean stopOnError, int numConcurrentProcesses) {
-        Map<String, String> extraProperties = makeExtraPropsForImageExport(targetFolder, format);
+    public static void exportCharts(List<Chart> charts, Map<String, String> extraProperties, File chartsDir, ResultFileManager manager, boolean stopOnError, int numConcurrentProcesses) {
         Context context = new Context(extraProperties, chartsDir, manager, stopOnError, numConcurrentProcesses);
         if (charts.size() == 1)
             startExportJob(charts.get(0), context);
@@ -231,6 +231,5 @@ public class ChartExport {
         proc.kill();
         processPool.dispose();
     }
-
 
 }

@@ -310,14 +310,14 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     /**
      * Returns the <numeral> <noun> clause.
      * Examples:
-     *   formatCounted(0, "foo") = "no foo"
+     *   formatCounted(0, "foo") = "0 foo"
      *   formatCounted(1, "foo") = "1 foo"
      *   formatCounted(2, "foo") = "2 foos"
      */
     public static String formatCounted(int count, String noun) {
         Assert.isLegal(count >= 0);
         if (count == 0)
-            return "no " + noun;
+            return "0 " + noun;
         else if (count == 1)
             return "1 " + noun;
         else

@@ -9,33 +9,39 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.common.ui.SWTFactory;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.model.Chart;
@@ -43,23 +49,49 @@ import org.omnetpp.scave.model.Chart;
 /**
  * Export Charts dialog
  */
-//TODO persist selection too!
-public class ExportChartsDialog extends Dialog {
-
+public class ExportChartsDialog extends TitleAreaDialog {
+    // dialog setting keys
     private static final String KEY_CHARTS = "charts";
-    private static final String KEY_TARGET_FOLDER = "folder";
-    private static final String KEY_FORMAT = "format";
+    private static final String KEY_EXPORT_IMAGES = "export_images";
+    private static final String KEY_EXPORT_DATA = "export_data";
+    private static final String KEY_IMAGE_TARGET_FOLDER = "image_target_folder";
+    private static final String KEY_IMAGE_FORMAT = "image_format";
+    private static final String KEY_IMAGE_DPI = "image_dpi";
+    private static final String KEY_DATA_TARGET_FOLDER = "data_target_folder";
+    private static final String KEY_STOP_ON_ERROR = "stop_on_error";
+    private static final String KEY_NUM_CONCURRENT_PROCESSES = "num_concurrent_processes";
 
+    // input
     private List<Chart> charts;
     private List<Chart> initialSelection;
+    private IFile anfFile;
 
+    // widgets
     private Tree chartsTree;
-    private Text folderText;
+    private Label numSelectedLabel;
+    private Button exportImagesCheckbox;
+    private Button exportDataCheckbox;
+    private Text imageTargetFolderText;
     private Combo fileFormatCombo;
+    private Combo dpiCombo;
+    private Text dataTargetFolderText;
+    private Spinner concurrencySpinner;
+    private Button stopOnErrorCheckbox;
 
-    private List<Chart> selectedCharts;
-    private IContainer targetFolder;
-    private String selectedFormat;
+    // result
+    public static class Result {
+        public List<Chart> selectedCharts;
+        public boolean exportImages;
+        public boolean exportData;
+        public IContainer imageTargetFolder;
+        public String imageFormat;
+        public String imageDpi;
+        public IContainer dataTargetFolder;
+        public boolean stopOnError;
+        public int numConcurrentProcesses;
+    }
+
+    private Result result = null;
 
     private String[] fileFormats = new String[] { //TODO get this list from Matplotlib
             // note: first word must be a recognized Matplotlib format name
@@ -75,10 +107,15 @@ public class ExportChartsDialog extends Dialog {
             "raw (Raw RGBA bitmap)",
     };
 
-    public ExportChartsDialog(Shell parentShell, List<Chart> charts, List<Chart> initialSelection) {
+    public ExportChartsDialog(Shell parentShell, List<Chart> charts, List<Chart> initialSelection, IFile anfFile) {
         super(parentShell);
         this.charts = charts;
         this.initialSelection = initialSelection;
+        this.anfFile = anfFile;
+    }
+
+    public Result getResult() {
+        return result;
     }
 
     @Override
@@ -94,20 +131,21 @@ public class ExportChartsDialog extends Dialog {
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-        newShell.setText("Export Chart Graphics");
+        newShell.setText("Export Charts");
     }
 
     @Override
     protected Control createDialogArea(Composite parent) {
-        final Composite composite = (Composite)super.createDialogArea(parent);
+        final Composite dialogArea = (Composite)super.createDialogArea(parent);
 
-        composite.setLayout(new GridLayout());
+        setTitle("Export Chart Graphics and/or Data");
+        setMessage("Runs chart scripts in the background in export mode.");
 
-        Composite panel = SWTFactory.createComposite(composite, new GridLayout(2, false), new GridData(SWT.FILL, SWT.FILL, true, true));
-        Label label = new Label(panel, SWT.NONE);
-        label.setText("Select charts to export:");
-        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
-        chartsTree = new Tree(panel, SWT.CHECK | SWT.BORDER);
+        dialogArea.setLayout(new GridLayout());
+
+        Composite chartsPanel = SWTFactory.createComposite(dialogArea, 2, new GridData(SWT.FILL, SWT.FILL, true, true));
+        SWTFactory.createLabel(chartsPanel, "Select charts to export:", 2);
+        chartsTree = new Tree(chartsPanel, SWT.CHECK | SWT.BORDER);
         GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
         gridData.widthHint = 320;
         gridData.heightHint = 200;
@@ -117,46 +155,93 @@ public class ExportChartsDialog extends Dialog {
             item.setText(defaultIfEmpty(chart.getName(), "<unnamed>"));
             //item.setImage(ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_CHART)); -- looks ugly
         }
-        chartsTree.addSelectionListener(new SelectionAdapter() {
+
+        SelectionListener dialogValidator = new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 validateDialogContents();
             }
-        });
+        };
 
-        panel = SWTFactory.createComposite(panel, new GridLayout(), new GridData(SWT.CENTER, SWT.TOP, false, false));
+        chartsTree.addSelectionListener(dialogValidator);
 
-        Button button = SWTFactory.createPushButton(panel, "Select All", null, new GridData(SWT.FILL, SWT.CENTER, true, false));
+        Composite chartsButtonPanel = SWTFactory.createComposite(chartsPanel, 1, new GridData(SWT.CENTER, SWT.TOP, false, false));
+
+        Button button = SWTFactory.createPushButton(chartsButtonPanel, "Select All", null, new GridData(SWT.FILL, SWT.CENTER, true, false));
         button.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 for (TreeItem item : chartsTree.getItems())
                     item.setChecked(true);
+                validateDialogContents();
             }
         });
 
-        button = SWTFactory.createPushButton(panel, "Deselect All", null, new GridData(SWT.FILL, SWT.CENTER, true, false));
+        button = SWTFactory.createPushButton(chartsButtonPanel, "Deselect All", null, new GridData(SWT.FILL, SWT.CENTER, true, false));
         button.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 for (TreeItem item : chartsTree.getItems())
                     item.setChecked(false);
+                validateDialogContents();
             }
         });
 
-        panel = SWTFactory.createComposite(composite, new GridLayout(2,false), new GridData(SWT.FILL, SWT.CENTER, true, false));
+        numSelectedLabel = SWTFactory.createLabel(chartsButtonPanel, "n/a", 1);
+        numSelectedLabel.setAlignment(SWT.RIGHT);
 
-        label = new Label(panel, SWT.NONE);
-        label.setText("Folder to save into:");
-        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
-        folderText = new Text(panel, SWT.BORDER);
-        folderText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        button = new Button(panel, SWT.PUSH);
-        button.setText("Browse...");
-        button.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
-        button.addSelectionListener(new SelectionAdapter() {
+        Group imageGroup = SWTFactory.createGroup(dialogArea, "Image Export", 1, 1, new GridData(SWT.FILL, SWT.FILL, true, false));
+
+        exportImagesCheckbox = SWTFactory.createCheckButton(imageGroup, "Export images", null, true, 1);
+        exportImagesCheckbox.addSelectionListener(dialogValidator);
+
+        Composite folderPanel = SWTFactory.createComposite(imageGroup, 3, new GridData(SWT.FILL, SWT.CENTER, true, false));
+        SWTFactory.createLabel(folderPanel, "Target folder:", 1);
+        imageTargetFolderText = createFolderInputTextAndButton(folderPanel);
+
+        Composite imageOptionsPanel = SWTFactory.createComposite(imageGroup, 4, new GridData(SWT.FILL, SWT.CENTER, true, false));
+        SWTFactory.createLabel(imageOptionsPanel, "File format:", 1);
+        fileFormatCombo = SWTFactory.createCombo(imageOptionsPanel, SWT.READ_ONLY, 1, fileFormats);
+        fileFormatCombo.addModifyListener((e) -> validateDialogContents());
+
+        SWTFactory.createLabel(imageOptionsPanel, "DPI:", 1);
+        dpiCombo = SWTFactory.createCombo(imageOptionsPanel, SWT.BORDER, 1, "72 150 300 600 720".split(" "));
+        dpiCombo.addModifyListener((e) -> validateDialogContents());
+
+        SWTFactory.configureEnablerCheckbox(exportImagesCheckbox, imageGroup, false);
+
+        Group dataGroup = SWTFactory.createGroup(dialogArea, "Data Export", 1, 1, new GridData(SWT.FILL, SWT.FILL, true, false));
+
+        exportDataCheckbox = SWTFactory.createCheckButton(dataGroup, "Export data", null, true, 1);
+        exportDataCheckbox.addSelectionListener(dialogValidator);
+
+        Composite dataFolderPanel = SWTFactory.createComposite(dataGroup, 3, new GridData(SWT.FILL, SWT.CENTER, true, false));
+        SWTFactory.createLabel(dataFolderPanel, "Target folder:", 1);
+        dataTargetFolderText = createFolderInputTextAndButton(dataFolderPanel);
+
+        SWTFactory.configureEnablerCheckbox(exportDataCheckbox, dataGroup, false);
+
+        Group jobGroup = SWTFactory.createGroup(dialogArea, "Job Control", 3, 1, new GridData(SWT.FILL, SWT.FILL, true, false));
+        SWTFactory.createLabel(jobGroup, "Concurrent processes:", 1);
+        concurrencySpinner = SWTFactory.createSpinner(jobGroup, SWT.BORDER, 1);
+        concurrencySpinner.setMinimum(1);
+        stopOnErrorCheckbox = SWTFactory.createCheckButton(jobGroup, "Stop on first error", null, false, 1);
+        SWTFactory.setIndent(stopOnErrorCheckbox, 30);
+
+        restoreDialogSettings();
+
+        Display.getCurrent().asyncExec(()-> setErrorMessage(null)); // don't open with an error message displayed
+
+        return dialogArea;
+    }
+
+    protected Text createFolderInputTextAndButton(Composite parent) {
+        Text folderText = SWTFactory.createSingleText(parent, 1);
+        Button browseButton = SWTFactory.createPushButton(parent, "Browse...", null);
+        browseButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                IResourceSelectionDialog dialog = new IResourceSelectionDialog(composite.getShell(), IResource.PROJECT | IResource.FOLDER);
+                IResourceSelectionDialog dialog = new IResourceSelectionDialog(dialogArea.getShell(), IResource.PROJECT | IResource.FOLDER, true);
                 dialog.setInitialSelection(folderText.getText().trim());
                 int result = dialog.open();
                 if (result == Window.OK) {
@@ -171,48 +256,65 @@ public class ExportChartsDialog extends Dialog {
                 validateDialogContents();
             }
         });
-
-        panel = SWTFactory.createComposite(composite, new GridLayout(), new GridData(SWT.FILL, SWT.CENTER, true, false));
-
-        panel = SWTFactory.createComposite(composite, new GridLayout(2, false), new GridData(SWT.FILL, SWT.CENTER, true, false));
-
-        label = new Label(panel, SWT.NONE);
-        label.setText("File format:");
-        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 1, 1));
-        fileFormatCombo = new Combo(panel, SWT.READ_ONLY);
-        fileFormatCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-
-        fileFormatCombo.setItems(fileFormats);
-        fileFormatCombo.select(0);
-
-        restoreDialogSettings();
-
-        return composite;
+        return folderText;
     }
 
     protected void validateDialogContents() {
-        boolean ok = true;
+        Result tmp = readControls();
+        String err = doValidate(tmp);
+        //numSelectedLabel.setText(StringUtils.formatCounted(tmp.selectedCharts.size(), "chart")); // too long
+        //numSelectedLabel.setText("Selected: " + tmp.selectedCharts.size());
+        numSelectedLabel.setText("" + tmp.selectedCharts.size() + " selected");
 
-        IContainer folder = getTargetFolderFromControl();
-        if (folder == null || !folder.isAccessible())
-            ok = false;
+        if (getButton(OK) != null) { // it is null during dialog creation
+            setErrorMessage(err);
+            getButton(OK).setEnabled(err == null);
+        }
+    }
 
-        if (getSelectedChartsFromTree().isEmpty())
-            ok = false;
+    protected String doValidate(Result result) {
+        if (result.selectedCharts.isEmpty())
+            return "Select at least one chart";
+        if (result.exportImages) {
+            if (result.imageTargetFolder == null || !result.imageTargetFolder.isAccessible())
+                return "Invalid/inaccessible target folder for image export";
+            if (result.imageFormat.isEmpty())
+                return "Image format not selected";
+            if (!result.imageDpi.trim().matches("\\d+"))
+                return "Invalid DPI entered";
+        }
 
-        if (getButton(OK) != null) // it is null during dialog creation
-            getButton(OK).setEnabled(ok);
+        if (result.exportData) {
+            if (result.dataTargetFolder == null || !result.dataTargetFolder.isAccessible())
+                return "Invalid/inaccessible target folder for data export";
+        }
+        return null;
     }
 
     @Override
     protected void okPressed() {
-        selectedCharts = getSelectedChartsFromTree();
-        targetFolder = getTargetFolderFromControl();
-        selectedFormat = getSelectedFileFormat();
-
-        saveDialogSettings();
-
+        result = readControls();
         super.okPressed();
+    }
+
+    @Override
+    public boolean close() {
+        saveDialogSettings();
+        return super.close();
+    }
+
+    protected Result readControls() {
+        Result result = new Result();
+        result.selectedCharts = getSelectedChartsFromTree();
+        result.exportImages = exportImagesCheckbox.getSelection();
+        result.exportData = exportDataCheckbox.getSelection();
+        result.imageTargetFolder = getTargetFolderFromControl(imageTargetFolderText);
+        result.dataTargetFolder = getTargetFolderFromControl(dataTargetFolderText);
+        result.imageFormat = StringUtils.substringBefore(getSelectedFileFormat(), " ");
+        result.imageDpi = dpiCombo.getText();
+        result.stopOnError = stopOnErrorCheckbox.getSelection();
+        result.numConcurrentProcesses = concurrencySpinner.getSelection();
+        return result;
     }
 
     protected List<Chart> getSelectedChartsFromTree() {
@@ -225,7 +327,7 @@ public class ExportChartsDialog extends Dialog {
         return result;
     }
 
-    protected IContainer getTargetFolderFromControl() {
+    protected IContainer getTargetFolderFromControl(Text folderText) {
         try {
             String text = folderText.getText().trim();
             Path path = new Path(text);
@@ -239,16 +341,16 @@ public class ExportChartsDialog extends Dialog {
         }
     }
 
-    private String getSelectedFileFormat() {
+    protected String getSelectedFileFormat() {
         int index = fileFormatCombo.getSelectionIndex();
         return fileFormats[index == -1 ? 0 : index];
     }
 
-    private IDialogSettings getDialogSettings() {
+    protected IDialogSettings getDialogSettings() {
         return UIUtils.getDialogSettings(ScavePlugin.getDefault(), getClass().getName());
     }
 
-    private void saveDialogSettings() {
+    protected void saveDialogSettings() {
         IDialogSettings settings = getDialogSettings();
 
         String selectedChartIds = "";
@@ -256,11 +358,21 @@ public class ExportChartsDialog extends Dialog {
                 selectedChartIds = selectedChartIds  + " " + chart.getId();
 
         settings.put(KEY_CHARTS, selectedChartIds.trim());
-        settings.put(KEY_TARGET_FOLDER, folderText.getText());
-        settings.put(KEY_FORMAT, getSelectedFileFormat());
+        settings.put(KEY_EXPORT_IMAGES, exportImagesCheckbox.getSelection());
+        settings.put(perAnf(KEY_IMAGE_TARGET_FOLDER), imageTargetFolderText.getText());
+        settings.put(KEY_IMAGE_FORMAT, getSelectedFileFormat());
+        settings.put(KEY_IMAGE_DPI, dpiCombo.getText());
+        settings.put(KEY_EXPORT_DATA, exportDataCheckbox.getSelection());
+        settings.put(perAnf(KEY_DATA_TARGET_FOLDER), dataTargetFolderText.getText());
+        settings.put(KEY_STOP_ON_ERROR, stopOnErrorCheckbox.getSelection());
+        settings.put(KEY_NUM_CONCURRENT_PROCESSES, concurrencySpinner.getSelection());
     }
 
-    private void restoreDialogSettings() {
+    private String perAnf(String key) {
+        return key + "%" + anfFile.getFullPath().toString();
+    }
+
+    protected void restoreDialogSettings() {
         IDialogSettings settings = getDialogSettings();
 
         boolean checkedAny = false;
@@ -287,24 +399,38 @@ public class ExportChartsDialog extends Dialog {
             for (TreeItem item: chartsTree.getItems())
                 item.setChecked(true);
 
-        String folder = settings.get(KEY_TARGET_FOLDER);
-        if (folder != null)
-            folderText.setText(folder);
+        String exportImages = settings.get(KEY_EXPORT_IMAGES);
+        exportImagesCheckbox.setSelection(exportImages == null || exportImages == "true");
+        exportImagesCheckbox.notifyListeners(SWT.Selection, new Event()); // update enablements
 
-        String format = settings.get(KEY_FORMAT);
+        String imageFolder = settings.get(perAnf(KEY_IMAGE_TARGET_FOLDER));
+        if (imageFolder != null)
+            imageTargetFolderText.setText(imageFolder);
+        else
+            imageTargetFolderText.setText(anfFile.getParent().getFullPath().toString());
+
+        String format = settings.get(KEY_IMAGE_FORMAT);
         if (ArrayUtils.contains(fileFormats, format))
             fileFormatCombo.setText(format);
+
+        String dpi = settings.get(KEY_IMAGE_DPI);
+        if (dpi != null)
+            dpiCombo.setText(dpi);
+
+        String exportData = settings.get(KEY_EXPORT_DATA);
+        exportDataCheckbox.setSelection(exportData == null || exportData == "true");
+        exportDataCheckbox.notifyListeners(SWT.Selection, new Event());  // update enablements
+
+        String dataFolder = settings.get(perAnf(KEY_DATA_TARGET_FOLDER));
+        if (dataFolder != null)
+            dataTargetFolderText.setText(dataFolder);
+        else
+            dataTargetFolderText.setText(anfFile.getParent().getFullPath().toString());
+
+        if (settings.get(KEY_STOP_ON_ERROR) != null)
+            stopOnErrorCheckbox.setSelection(settings.getBoolean(KEY_STOP_ON_ERROR));
+        if (settings.get(KEY_NUM_CONCURRENT_PROCESSES) != null)
+            concurrencySpinner.setSelection(settings.getInt(KEY_NUM_CONCURRENT_PROCESSES));
     }
 
-    public String getFileFormat() {
-        return StringUtils.substringBefore(selectedFormat, " ");
-    }
-
-    public IContainer getTargetFolder() {
-        return targetFolder;
-    }
-
-    public List<Chart> getSelectedCharts() {
-        return selectedCharts;
-    }
 }
