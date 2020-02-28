@@ -3819,6 +3819,35 @@ rm -f conftest_a.* conftest_m.* libconftest_a.a conftest
 
 
 #----------------------
+# Check whether LLD linker is available
+#----------------------
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether LLD linker is available" >&5
+$as_echo_n "checking whether LLD linker is available... " >&6; }
+LDFLAGS_SAVE="$LDFLAGS"
+LDFLAGS="$LDFLAGS -fuse-ld=lld"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }; LDFLAGS="$LDFLAGS_SAVE"
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+
+
+#----------------------
 # Check for rpath
 #----------------------
 # add RUNTIME_PATH option if supported, so that setting LD_LIBRARY_PATH is no longer needed when using shared libs.
@@ -3847,6 +3876,7 @@ $as_echo "no" >&6; }; RPATH_UNSUPPORTED="true"; LDFLAGS="$LDFLAGS_SAVE"
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
+
 
 #----------------------
 # Checks for programs.

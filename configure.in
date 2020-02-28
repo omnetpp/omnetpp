@@ -649,6 +649,18 @@ rm -f conftest_a.* conftest_m.* libconftest_a.a conftest
 
 
 #----------------------
+# Check whether LLD linker is available
+#----------------------
+AC_MSG_CHECKING(whether LLD linker is available)
+LDFLAGS_SAVE="$LDFLAGS"
+LDFLAGS="$LDFLAGS -fuse-ld=lld"
+AC_LINK_IFELSE(
+     [AC_LANG_PROGRAM()],
+     [AC_MSG_RESULT(yes)],
+     [AC_MSG_RESULT(no); LDFLAGS="$LDFLAGS_SAVE"])
+
+
+#----------------------
 # Check for rpath
 #----------------------
 # add RUNTIME_PATH option if supported, so that setting LD_LIBRARY_PATH is no longer needed when using shared libs.
@@ -660,6 +672,7 @@ AC_LINK_IFELSE(
      [AC_LANG_PROGRAM()],
      [AC_MSG_RESULT(yes)],
      [AC_MSG_RESULT(no); RPATH_UNSUPPORTED="true"; LDFLAGS="$LDFLAGS_SAVE"])
+
 
 #----------------------
 # Checks for programs.
