@@ -773,8 +773,8 @@ EOT
 if output=$(python3 -c "$PYTHON_PACKAGE_CHECK_CODE") ; then
     AC_MSG_RESULT(yes)
 else
-    AC_MSG_RESULT(fail)
-    AC_MSG_ERROR([Some required packages were not found. $output])
+    AC_MSG_RESULT(no)
+    AC_MSG_WARN([Some Python modules required by the IDE were not found: $output])
 fi
 
 # The following ones are optional, and are used only by some sample ANF scripts:
