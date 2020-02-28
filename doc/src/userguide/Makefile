@@ -1,7 +1,7 @@
 FOP=fop
 
 # on Fedora, change this to /usr/share/sgml/docbook/xsl-stylesheets
-DOCBOOK=/usr/share/sgml/docbook/xsl-stylesheets/
+DOCBOOK=/usr/share/sgml/docbook/stylesheet/xsl/nwalsh
 
 export XML_CATALOG_FILES=../docbook-dtd/catalog.xml
 
