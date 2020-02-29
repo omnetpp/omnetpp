@@ -14,7 +14,16 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IInputValidator;
+import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.WorkbenchContentProvider;
@@ -26,13 +35,15 @@ public class IResourceSelectionDialog extends ElementTreeSelectionDialog {
 
     private static final int PROJECT_OR_FOLDER = IResource.PROJECT | IResource.FOLDER;
 
-    int resourceType;
+    private int resourceType;
+    private boolean allowCreateFolder;
 
-    public IResourceSelectionDialog(Shell shell, int resourceType) {
+    public IResourceSelectionDialog(Shell shell, int resourceType, boolean allowCreateFolder) {
         super(shell, new WorkbenchLabelProvider(), new TreeContentProvider(resourceType));
         Assert.isLegal(resourceType == IResource.FILE || resourceType == IResource.FOLDER ||
                        resourceType == IResource.PROJECT || resourceType == PROJECT_OR_FOLDER);
         this.resourceType = resourceType;
+        this.allowCreateFolder = allowCreateFolder;
 
         String resourceTypeStr = resourceTypeAsString(resourceType);
         setTitle("Select " + resourceTypeStr);
@@ -40,6 +51,20 @@ public class IResourceSelectionDialog extends ElementTreeSelectionDialog {
         setInput(ResourcesPlugin.getWorkspace().getRoot());
         setComparator(new ResourceComparator(ResourceComparator.NAME));
         setAllowMultiple(false);
+    }
+
+    @Override
+    protected void createButtonsForButtonBar(Composite parent) {
+        if (allowCreateFolder) {
+            Button newFolderButton = createButton(parent, -1, "New Folder...", false);
+            newFolderButton.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    createFolder();
+                }
+            });
+        }
+        super.createButtonsForButtonBar(parent);
     }
 
     private static String resourceTypeAsString(int resourceType) {
@@ -113,6 +138,38 @@ public class IResourceSelectionDialog extends ElementTreeSelectionDialog {
                 children = list.toArray();
             }
             return children;
+        }
+    }
+
+    protected void createFolder() {
+        IResource res = getSelectedResource();
+        if (!(res instanceof IContainer)) {
+            MessageDialog.openError(getShell(), "Error", "Select parent folder.");
+            return;
+        }
+
+        IContainer parentFolder = (IContainer)res;
+        if (!parentFolder.isAccessible()) {
+            MessageDialog.openError(getShell(), "Error", "Selected folder is not accessible. (Project closed?)");
+            return;
+        }
+
+        InputDialog inputDialog = new InputDialog(getShell(), "New Folder", "Folder name:", "folder", new IInputValidator() {
+            @Override
+            public String isValid(String newText) {
+                if (!Path.isValidPosixSegment(newText))
+                    return "Invalid name";
+                return null;
+            }
+        });
+
+        if (inputDialog.open() == Dialog.OK) {
+            String name = inputDialog.getValue();
+            try {
+                parentFolder.getFolder(new Path(name)).create(true, true, null);
+            } catch (Exception e) {
+                MessageDialog.openError(getShell(), "Error", "Could not create folder '" + name + "' under '" + parentFolder.getFullPath() + "': " + e.getMessage());
+            }
         }
     }
 }
