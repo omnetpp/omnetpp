@@ -347,10 +347,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
     @Override
     public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
-
-        // if (true)
-        // throw new PartInitException("NOT IMPL");
-
         if (!(editorInput instanceof IFileEditorInput))
             throw new DetailedPartInitException(
                     "Invalid input, it must be a file in the workspace: " + editorInput.getName(),
@@ -544,7 +540,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
     }
 
     protected void doCreatePages() {
-        // add fixed pages: Inputs, Browse Data, Datasets
+        // add fixed pages: Inputs, Browse Data, Charts
         FillLayout layout = new FillLayout();
         getContainer().setLayout(layout);
 
@@ -558,7 +554,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
         // The chart pages are not refreshed automatically when the result files change,
         // so we have to load the files synchronously
         // Note that tracker.updaterJob.join() can not be used here, because the
-        // JobManager is suspended during initalization of the UI.
+        // JobManager is suspended during initialization of the UI.
         tracker.synchronize(true);
 
         // now we can restore chart pages (and other closable pages)
