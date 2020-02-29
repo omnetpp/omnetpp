@@ -22,9 +22,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
-import org.omnetpp.common.color.ColorFactory;
 
 /**
  * Factory class to create some SWT resources.
@@ -133,19 +133,6 @@ public class SWTFactory {
         return button;
     }
 
-    public static Button createPushButton(Composite parent, String label, Image image, GridData gd) {
-        Button button = new Button(parent, SWT.PUSH);
-        button.setFont(parent.getFont());
-        if (image != null)
-            button.setImage(image);
-        if (label != null)
-            button.setText(label);
-        button.setLayoutData(gd);
-        setButtonDimensionHint(button);
-        return button;
-    }
-
-
     /**
      * Creates and returns a new push button with the given
      * label and/or image.
@@ -184,15 +171,16 @@ public class SWTFactory {
      * @since 3.4
      */
     public static Button createPushButton(Composite parent, String label, Image image, int fill) {
+        return createPushButton(parent, label, image, new GridData(fill));
+    }
+
+    public static Button createPushButton(Composite parent, String label, Image image, GridData gd) {
         Button button = new Button(parent, SWT.PUSH);
         button.setFont(parent.getFont());
-        if (image != null) {
+        if (image != null)
             button.setImage(image);
-        }
-        if (label != null) {
+        if (label != null)
             button.setText(label);
-        }
-        GridData gd = new GridData(fill);
         button.setLayoutData(gd);
         setButtonDimensionHint(button);
         return button;
@@ -391,9 +379,12 @@ public class SWTFactory {
      * @since 3.3
      */
     public static Text createText(Composite parent, int style, int hspan, int fill) {
+        return createText(parent, style, hspan, new GridData(fill));
+    }
+
+    public static Text createText(Composite parent, int style, int hspan, GridData gd) {
         Text t = new Text(parent, style);
         t.setFont(parent.getFont());
-        GridData gd = new GridData(fill);
         gd.horizontalSpan = hspan;
         t.setLayoutData(gd);
         return t;
@@ -493,11 +484,14 @@ public class SWTFactory {
      *
      */
     public static Group createGroup(Composite parent, String text, int columns, int hspan, int fill) {
+        return createGroup(parent, text, columns, hspan, new GridData(fill));
+    }
+
+    public static Group createGroup(Composite parent, String text, int columns, int hspan, GridData gd) {
         Group g = new Group(parent, SWT.NONE);
         g.setLayout(new GridLayout(columns, false));
         g.setText(text);
         g.setFont(parent.getFont());
-        GridData gd = new GridData(fill);
         gd.horizontalSpan = hspan;
         g.setLayoutData(gd);
         return g;
@@ -515,10 +509,13 @@ public class SWTFactory {
      * @since 3.3
      */
     public static Composite createComposite(Composite parent, Font font, int columns, int hspan, int fill) {
+        return createComposite(parent, font, columns, hspan, new GridData(fill));
+    }
+
+    public static Composite createComposite(Composite parent, Font font, int columns, int hspan, GridData gd) {
         Composite g = new Composite(parent, SWT.NONE);
         g.setLayout(new GridLayout(columns, false));
         g.setFont(font);
-        GridData gd = new GridData(fill);
         gd.horizontalSpan = hspan;
         g.setLayoutData(gd);
         return g;
@@ -536,10 +533,13 @@ public class SWTFactory {
      * @since 3.6
      */
     public static ExpandableComposite createExpandibleComposite(Composite parent, int style, String label, int hspan, int fill) {
+        return createExpandibleComposite(parent, style, label, hspan, new GridData(fill));
+    }
+
+    public static ExpandableComposite createExpandibleComposite(Composite parent, int style, String label, int hspan, GridData gd) {
         ExpandableComposite ex = new ExpandableComposite(parent, SWT.NONE, style);
         ex.setText(label);
         ex.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DIALOG_FONT));
-        GridData gd = new GridData(fill);
         gd.horizontalSpan = hspan;
         ex.setLayoutData(gd);
         return ex;
@@ -554,10 +554,10 @@ public class SWTFactory {
      *
      * @since 3.3
      */
-    public static Composite createComposite(Composite parent, GridLayout layout, GridData gd) {
+    public static Composite createComposite(Composite parent, int columns, GridData gd) {
         Composite g = new Composite(parent, SWT.NONE);
         g.setFont(parent.getFont());
-        g.setLayout(layout);
+        g.setLayout(new GridLayout(columns, false));
         g.setLayoutData(gd);
         return g;
     }
@@ -706,14 +706,16 @@ public class SWTFactory {
      * @since 3.3
      */
     public static Combo createCombo(Composite parent, int style, int hspan, int fill, String[] items) {
+        return createCombo(parent, style, hspan, new GridData(fill), items);
+    }
+
+    public static Combo createCombo(Composite parent, int style, int hspan, GridData gd, String[] items) {
         Combo c = new Combo(parent, style);
         c.setFont(parent.getFont());
-        GridData gd = new GridData(fill);
         gd.horizontalSpan = hspan;
         c.setLayoutData(gd);
-        if (items != null){
+        if (items != null)
             c.setItems(items);
-        }
         // Some platforms open up combos in bad sizes without this, see bug 245569
         c.setVisibleItemCount(30);
         c.select(0);
@@ -744,6 +746,26 @@ public class SWTFactory {
         return c;
     }
 
+    public static Spinner createSpinner(Composite parent, int style, int hspan) {
+        return createSpinner(parent, style, hspan, new GridData());
+    }
+
+    public static Spinner createSpinner(Composite parent, int style, int hspan, GridData gd) {
+        Spinner c = new Spinner(parent, style);
+        c.setFont(parent.getFont());
+        gd.horizontalSpan = hspan;
+        c.setLayoutData(gd);
+        return c;
+    }
+
+    public static Spinner configureSpinner(Spinner spinner, int min, int max, int increment, int decimals) {
+        spinner.setMinimum(min);
+        spinner.setMaximum(max);
+        spinner.setIncrement(increment);
+        spinner.setDigits(decimals);
+        return spinner;
+    }
+
     public static Composite setEqualColumnWidth(Composite c, boolean value) {
         GridLayout l = (GridLayout)c.getLayout();
         l.makeColumnsEqualWidth = value;
@@ -768,4 +790,32 @@ public class SWTFactory {
         return c;
     }
 
+    public static void configureEnablerCheckbox(Button checkButton, Composite group) {
+        checkButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                boolean enable = checkButton.getSelection();
+                setEnabled(group, enable, checkButton);
+            }
+        });
+    }
+
+    public static void configureEnablerCheckbox(Button checkButton, Control[] slaves) {
+        checkButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                boolean enable = checkButton.getSelection();
+                for (Control c : slaves)
+                    setEnabled(c, enable, checkButton);
+            }
+        });
+    }
+
+    private static void setEnabled(Control control, boolean enabled, Control except) {
+        if (control != except && control != except.getParent())
+            control.setEnabled(enabled);
+        if (control instanceof Composite)
+            for (Control c : ((Composite)control).getChildren())
+                setEnabled(c, enabled, except);
+    }
 }
