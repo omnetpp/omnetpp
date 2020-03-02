@@ -21,6 +21,7 @@ import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.IOConsole;
 import org.eclipse.ui.console.IOConsoleOutputStream;
+import org.eclipse.ui.console.TextConsole;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.CollectionUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -40,6 +41,9 @@ import org.omnetpp.scave.pychart.PythonProcessPool;
  * @author andras
  */
 public class ChartExport {
+
+    private static final String CONSOLE_MARKER_ATTRIBUTE_KEY = "FOR_CHART_EXPORT";
+
     private static class Context {
         public Context(Map<String, String> extraProperties, File chartsDir, ResultFileManager manager, boolean stopOnError, int numConcurrentProcesses) {
             this.extraProperties = extraProperties;
@@ -161,6 +165,7 @@ public class ChartExport {
     }
 
     public static void exportCharts(List<Chart> charts, Map<String, String> extraProperties, File chartsDir, ResultFileManager manager, boolean stopOnError, int numConcurrentProcesses) {
+        clearPreviousConsoles();
         Context context = new Context(extraProperties, chartsDir, manager, stopOnError, numConcurrentProcesses);
         if (charts.size() == 1)
             startExportJob(charts.get(0), context);
@@ -169,8 +174,22 @@ public class ChartExport {
         //TODO folder.refreshLocal(IResource.DEPTH_INFINITE, monitor); // because we're creating the file behind Eclipse's back
     }
 
+    private static void clearPreviousConsoles() {
+        IConsoleManager consoleManager = ConsolePlugin.getDefault().getConsoleManager();
+        for (IConsole console : consoleManager.getConsoles()) {
+            if (console instanceof TextConsole) {
+                TextConsole textConsole = (TextConsole)console;
+                Object marker = textConsole.getAttribute(CONSOLE_MARKER_ATTRIBUTE_KEY);
+                if (marker != null) {
+                    consoleManager.removeConsoles(new IConsole[] { textConsole });
+                }
+            }
+        }
+    }
+
     private static void runChartScript(Chart chart, PythonProcessPool processPool, Context context, IProgressMonitor monitor) {
-        IOConsole console = new IOConsole("'" + chart.getName() + "' - chart script output", null);
+        IOConsole console = new IOConsole("'" + chart.getName() + "' - chart export", null);
+        console.setAttribute("FOR_CHART_EXPORT", "true");
         IConsoleManager consoleManager = ConsolePlugin.getDefault().getConsoleManager();
         consoleManager.addConsoles(new IConsole[] { console });
         IOConsoleOutputStream outputStream = console.newOutputStream();
