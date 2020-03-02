@@ -216,9 +216,12 @@ public class ChartExport {
         proc.getEntryPoint().setResultsProvider(new ResultsProvider(context.manager, proc.getInterruptedFlag()));
         proc.getEntryPoint().setChartProvider(new ChartProvider(chart, context.extraProperties));
 
+        final Thread waitingThread = Thread.currentThread();
+
         final boolean[] executionDone = new boolean[] { false };
         Runnable runAfterDone = () -> {
             executionDone[0] = true;
+            waitingThread.interrupt();
         };
 
         ExceptionHandler runAfterError = (p, e) -> {
@@ -228,6 +231,7 @@ public class ChartExport {
                 ScavePlugin.logError(e);
             }
             executionDone[0] = true;
+            waitingThread.interrupt();
         };
 
         proc.pythonCallerThread.asyncExec(() -> {
@@ -239,12 +243,12 @@ public class ChartExport {
 
         while (!executionDone[0]) {
             try {
-                Thread.sleep(2000);
+                if (monitor.isCanceled())
+                    break;
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
-                // ignore
+                // check again for completion on next iteration
             }
-            if (monitor.isCanceled())
-                break;
         }
 
         proc.kill();
