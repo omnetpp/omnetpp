@@ -1,5 +1,6 @@
 from omnetpp.scave import chart, plot
 import numpy as np
+import pandas as pd
 import random, sys, os, string
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -587,20 +588,50 @@ def _legend_mpl_loc_outside_args(loc):
     (anchorloc, relpos) = mapping[loc]
     return {"loc" : anchorloc, "bbox_to_anchor" : relpos}
 
+
 def export_image_if_needed(props):
     def get_prop(k):
         return props[k] if k in props else None
+
     if _parse_optional_bool(get_prop("export_image")):
         format = get_prop("image_export_format") or "svg"
         folder = get_prop("image_export_folder") or os.getcwd()
         filename = get_prop("image_export_filename") or _sanitize_filename(chart.get_name())
         filepath = os.path.join(folder, filename) + "." + format #TODO make it better
+        width = float(get_prop("image_export_width") or 6)
+        height = float(get_prop("image_export_height") or 4)
+        dpi = get_prop("image_export_dpi") or "96"
+
         print("exporting image to: '" + filepath + "' as " + format)
-        plt.savefig(filepath, format=format)
+
+        plt.gcf().set_size_inches(width, height)
+        plt.savefig(filepath, format=format, dpi=int(dpi))
+
 
 def export_data_if_needed(df, props):
-    #TODO
-    pass
+    def get_prop(k):
+        return props[k] if k in props else None
+
+    def printer(arr):
+        return np.array_str(arr)
+
+    if _parse_optional_bool(get_prop("export_data")):
+        format = "csv"
+        folder = get_prop("image_export_folder") or os.getcwd()
+        filename = get_prop("image_export_filename") or _sanitize_filename(chart.get_name())
+        filepath = os.path.join(folder, filename) + "." + format #TODO make it better
+
+        print("exporting data to: '" + filepath + "' as " + format)
+
+        old_opts = np.get_printoptions()
+        np.set_printoptions(threshold=np.inf, linewidth=np.inf)
+        np.set_string_function(printer, False)
+        pd.set_option('display.max_columns', None)
+        pd.set_option('display.max_colwidth', -1)
+        df.to_csv(filepath)
+        np.set_string_function(None, False)
+        np.set_printoptions(**old_opts)
+
 
 def _sanitize_filename(filename):
     valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
