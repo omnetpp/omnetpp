@@ -399,6 +399,13 @@ public class ExportChartsDialog extends TitleAreaDialog {
             for (TreeItem item: chartsTree.getItems())
                 item.setChecked(true);
 
+        for (TreeItem item: chartsTree.getItems())
+            if (item.getChecked()) {
+                chartsTree.setSelection(item);
+                chartsTree.showItem(item);
+                break;
+            }
+
         String exportImages = settings.get(KEY_EXPORT_IMAGES);
         exportImagesCheckbox.setSelection(exportImages == null || exportImages.equals("true"));
         exportImagesCheckbox.notifyListeners(SWT.Selection, new Event()); // update enablements
