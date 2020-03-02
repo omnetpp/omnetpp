@@ -535,7 +535,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
             return;
 
         IFile inputFile = ((IFileEditorInput) getEditorInput()).getFile();
-        tracker = new ResultFilesTracker(manager, analysis.getInputs(), inputFile.getParent().getFullPath());
+        tracker = new ResultFilesTracker(manager, analysis.getInputs(), inputFile.getParent());
         analysis.addListener(modelChangeListener);
         analysis.addListener(tracker);
 

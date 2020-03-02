@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -27,6 +28,7 @@ import org.omnetpp.scave.common.IndexFileUtils;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.ResultFileFormatException;
+import org.omnetpp.scave.engineext.ResultFileManagerEx;
 
 public class ResultFileManagerUpdaterJob extends Job {
 
@@ -108,10 +110,10 @@ public class ResultFileManagerUpdaterJob extends Job {
      * If a vector file is loaded, it checks that the index file is up-to-date.
      * When not, it generates the index first and then loads it from the index.
      */
-    public void doLoad(final IFile file) {
-        if (debug) Debug.format("  loadFile: %s ", file);
+    public void doLoad(final IResource resource) {
+        if (debug) Debug.format("  load: %s ", resource);
 
-        if (file.getLocation().toFile().exists()) {
+        if (resource.getLocation().toFile().exists()) {
             Exception exception = null;
             try {
                 ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
@@ -120,12 +122,15 @@ public class ResultFileManagerUpdaterJob extends Job {
                         // because the ResultFileManager loads it from the vector file and it takes too much time
                         // for ~100MB files.
                         // Create or update the index file first, and try again.
-                        if (isExistingVectorFile(file) && !isIndexFileUpToDate(file)) {
-                            generateIndexAndLoad(file);
+                        if (resource instanceof IFile) {
+                            IFile file = (IFile)resource;
+                            if (isExistingVectorFile(file) && !isIndexFileUpToDate(file))
+                                generateIndexAndLoad(file);
+                            else
+                                loadInternal(resource);
                         }
-                        else {
-                            loadInternal(file);
-                        }
+                        else
+                            loadInternal(resource);
                         return null;
                     }
                 });
@@ -134,7 +139,10 @@ public class ResultFileManagerUpdaterJob extends Job {
                 exception = e;
             }
 
-            updateMarkers(file, exception);
+            if (resource instanceof IFile) {
+                IFile file = (IFile)resource;
+                updateMarkers(file, exception);
+            }
         }
     }
 
@@ -178,10 +186,15 @@ public class ResultFileManagerUpdaterJob extends Job {
         indexer.schedule();
     }
 
-    private void loadInternal(IFile file) {
+    private void loadInternal(IResource file) {
         final String resourcePath = file.getFullPath().toString();
         final String osPath = file.getLocation().toOSString();
-        manager.loadFile(resourcePath, osPath, true);
+        if (file.getLocation().toFile().isDirectory())
+            ;//manager.loadDirectory(resourcePath, osPath, true); //TODO
+        else {
+            int flags = ResultFileManagerEx.RELOAD_IF_CHANGED | ResultFileManagerEx.ALLOW_INDEXING | ResultFileManagerEx.SKIP_IF_LOCKED;
+            manager.loadFile(resourcePath, osPath, flags, null);
+        }
         if (debug) Debug.println("done");
     }
 
