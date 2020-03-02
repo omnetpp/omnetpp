@@ -975,6 +975,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
 
         try {
             outputStream.close();
+            errorStream.close();
         }
         catch (IOException e) {
         }

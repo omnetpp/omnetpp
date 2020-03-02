@@ -189,7 +189,7 @@ public class ChartExport {
 
     private static void runChartScript(Chart chart, PythonProcessPool processPool, Context context, IProgressMonitor monitor) {
         IOConsole console = new IOConsole("'" + chart.getName() + "' - chart export", null);
-        console.setAttribute("FOR_CHART_EXPORT", "true");
+        console.setAttribute(CONSOLE_MARKER_ATTRIBUTE_KEY, "true");
         IConsoleManager consoleManager = ConsolePlugin.getDefault().getConsoleManager();
         consoleManager.addConsoles(new IConsole[] { console });
         IOConsoleOutputStream outputStream = console.newOutputStream();
