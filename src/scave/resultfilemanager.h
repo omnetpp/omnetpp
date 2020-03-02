@@ -362,15 +362,19 @@ class SCAVE_API ResultFileManager
     // unloaded files. The "id" field of ResultFile is the index into this vector.
     // It is not allowed to move elements, because IDs contain the file's index in them.
     ResultFileList fileList;
+    std::map<std::string, ResultFile *> fileMap;
+    std::map<std::string, RunList> runsInFileMap; // key is fileName
 
     // List of unique runs in the files. If several files contain the same runName,
     // it will generate only one Run entry here.
     RunList runList;
+    std::map<std::string, Run *> runMap;
 
     // ResultFiles and Runs have many-to-many relationship. This is where we store
     // their relations (instead of having a collection in both). ResultItems also
     // contain a FileRun pointer instead of separate ResultFile and Run pointers.
     FileRunList fileRunList;
+    std::map<std::pair<std::string, std::string>, FileRun *> fileRunMap;
 
     // module names and variable names are stringpooled to conserve space
     ScaveStringPool moduleNames;

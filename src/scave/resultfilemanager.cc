@@ -242,8 +242,12 @@ ResultFileManager::~ResultFileManager()
         delete fileList[i];
 
     fileRunList.clear();
+    fileRunMap.clear();
     runList.clear();
+    runMap.clear();
     fileList.clear();
+    fileMap.clear();
+    runsInFileMap.clear();
 
     moduleNames.clear();
     names.clear();
@@ -273,11 +277,11 @@ FileRunList ResultFileManager::getFileRunsInFile(ResultFile *file) const
 RunList ResultFileManager::getRunsInFile(ResultFile *file) const
 {
     READER_MUTEX
-    RunList out;
-    for (int i = 0; i < (int)fileRunList.size(); i++)
-        if (fileRunList[i]->fileRef == file)
-            out.push_back(fileRunList[i]->runRef);
-    return out;
+    auto it = runsInFileMap.find(file->getFilePath());
+    if (it != runsInFileMap.end())
+        return it->second;
+
+    return RunList();
 }
 
 ResultFileList ResultFileManager::getFilesForRun(Run *run) const
@@ -675,9 +679,9 @@ ResultFile *ResultFileManager::getFile(const char *fileName) const
         return nullptr;
 
     READER_MUTEX
-    for (int i = 0; i < (int)fileList.size(); i++)
-        if (fileList[i] != nullptr && fileList[i]->getFilePath() == fileName)
-            return fileList[i];
+    auto it = fileMap.find(fileName);
+    if (it != fileMap.end())
+        return it->second;
 
     return nullptr;
 }
@@ -688,9 +692,9 @@ Run *ResultFileManager::getRunByName(const char *runName) const
         return nullptr;
 
     READER_MUTEX
-    for (int i = 0; i < (int)runList.size(); i++)
-        if (runList[i]->getRunName() == runName)
-            return runList[i];
+    auto it = runMap.find(runName);
+    if (it != runMap.end())
+        return it->second;
 
     return nullptr;
 }
@@ -698,9 +702,9 @@ Run *ResultFileManager::getRunByName(const char *runName) const
 FileRun *ResultFileManager::getFileRun(ResultFile *file, Run *run) const
 {
     READER_MUTEX
-    for (int i = 0; i < (int)fileRunList.size(); i++)
-        if (fileRunList[i]->fileRef == file && fileRunList[i]->runRef == run)
-            return fileRunList[i];
+    auto it = fileRunMap.find({file->getFilePath(), run->getRunName()});
+    if (it != fileRunMap.end())
+        return it->second;
 
     return nullptr;
 }
@@ -1317,9 +1321,12 @@ ResultFile *ResultFileManager::addFile(const char *fileName, const char *fileSys
     ResultFile *file = new ResultFile();
     file->id = fileList.size();
     fileList.push_back(file);
+    auto filePath = fileNameToSlash(fileName);
+    fileMap[filePath] = file;
+    runsInFileMap[filePath] = RunList();
     file->resultFileManager = this;
     file->fileSystemFilePath = fileSystemFileName;
-    file->filePath = fileNameToSlash(fileName);
+    file->filePath = filePath;
     splitFileName(file->filePath.c_str(), file->directory, file->fileName);
     file->fileType = fileType;
     return file;
@@ -1329,6 +1336,7 @@ Run *ResultFileManager::addRun(const std::string& runName)
 {
     Run *run = new Run(runName, this);
     runList.push_back(run);
+    runMap[runName] = run;
     return run;
 }
 
@@ -1337,8 +1345,10 @@ FileRun *ResultFileManager::addFileRun(ResultFile *file, Run *run)
 {
     FileRun *fileRun = new FileRun();
     fileRunList.push_back(fileRun);
+    fileRunMap[{file->getFilePath(), run->getRunName()}] = fileRun;
     fileRun->fileRef = file;
     fileRun->runRef = run;
+    runsInFileMap[file->getFilePath()].push_back(run);
     return fileRun;
 }
 
@@ -1501,6 +1511,7 @@ void ResultFileManager::unloadFile(ResultFile *file)
             runsPotentiallyToBeDeleted.push_back(fileRunList[i]->runRef);
 
             // delete fileRun
+            fileRunMap.erase(fileRunMap.find({fileRunList[i]->fileRef->getFilePath(), fileRunList[i]->runRef->getRunName()}));
             delete fileRunList[i];
             fileRunList.erase(fileRunList.begin()+i);
             i--;
@@ -1512,6 +1523,8 @@ void ResultFileManager::unloadFile(ResultFile *file)
     // that would change its "id", and invalidate existing IDs (IDLists)
     // that use that file.
     fileList[file->id] = nullptr;
+    fileMap.erase(fileMap.find(file->getFilePath()));
+    runsInFileMap.erase(runsInFileMap.find(file->getFilePath()));
     delete file;
 
     // remove Runs that don't appear in other loaded files
@@ -1522,6 +1535,7 @@ void ResultFileManager::unloadFile(ResultFile *file)
             RunList::iterator it = std::find(runList.begin(), runList.end(), runRef);
             assert(it != runList.end());  // runs may occur only once in runsPotentiallyToBeDeleted, because runNames are not allowed to repeat in files
 
+            runMap.erase(runMap.find((*it)->getRunName()));
             delete *it;
             runList.erase(it);
         }
