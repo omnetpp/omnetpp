@@ -2,12 +2,12 @@ package org.omnetpp.scave.pychart;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Map;
 
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.OmnetppDirs;
+import org.omnetpp.common.util.StringUtils;
 
 import py4j.ClientServer;
 
@@ -85,6 +85,8 @@ public class PythonProcessPool {
 
     private String extendPythonPath(String oldPythonPath) {
         String pychartPluginLocation  = PyChartPlugin.getDefault().getBundle().getLocation();
+        pychartPluginLocation = StringUtils.removeOptionalPrefix(pychartPluginLocation, "reference:");
+        pychartPluginLocation = StringUtils.removeOptionalPrefix(pychartPluginLocation, "file:");
         String locationsToPrepend = OmnetppDirs.getOmnetppPythonDir() + File.pathSeparator // the <omnetpp_root>/python dir
                 + pychartPluginLocation + File.separator + "python"; // the plugin-local python dir
 
