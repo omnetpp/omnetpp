@@ -56,7 +56,6 @@ def _plot_scalars_DF_simple(df):
 
 
 def _plot_scalars_DF_scave(df):
-    print("patty")
     df.plot.bar(y="value")
     plt.legend()
 
@@ -164,7 +163,6 @@ def hist(x, bins, density=False, weights=None, cumulative=False, bottom=None, hi
 
     params = locals()
     params = {k:v for k, v in locals().items() if k is not None and k not in ["underflows", "overflows", "minvalue", "maxvalue", "params"]}
-    print(params)
     return plt.hist(**params)
 
 bar = plt.bar
