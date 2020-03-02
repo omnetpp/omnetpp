@@ -311,6 +311,8 @@ void OmnetppResultFileLoader::flush(ParseContext& ctx)
     ctx.scalarValue = NaN;
     ctx.paramValue.clear();
     ctx.attrs.clear();
+    ctx.itervars.clear();
+    ctx.configEntries.clear();
     resetFields(ctx);
     ctx.binEdges.clear();
     ctx.binValues.clear();
