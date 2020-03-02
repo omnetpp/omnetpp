@@ -220,7 +220,7 @@ public class BrowseDataPage extends FormEditorPage {
 
             contextMenuManager.add(setFilterSubmenu);
 
-            contextMenuManager.add(actions.createExportDataMenu());
+            contextMenuManager.add(actions.createExportDataMenu("Export Data"));
             contextMenuManager.add(actions.copyToClipboardAction);
             contextMenuManager.add(new Separator());
             contextMenuManager.add(setFilterAction);

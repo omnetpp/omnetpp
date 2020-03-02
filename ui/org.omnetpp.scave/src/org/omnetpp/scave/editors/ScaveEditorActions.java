@@ -217,7 +217,7 @@ public class ScaveEditorActions {
         menuManager.insertBefore("edit", renameChartAction);
 
         menuManager.insertAfter("additions-end", new Separator());
-        menuManager.insertAfter("additions-end", createExportDataMenu());
+        menuManager.insertAfter("additions-end", createExportDataMenu("Export Chart Input As"));
         menuManager.insertAfter("additions-end", exportChartsAction);
     }
 
@@ -236,8 +236,8 @@ public class ScaveEditorActions {
         //menuManager.insertAfter("ui-actions", showPropertiesViewAction);
     }
 
-    public IMenuManager createExportDataMenu() {
-        return createExportDataMenu(new MenuManager("Export Data"));
+    public IMenuManager createExportDataMenu(String label) {
+        return createExportDataMenu(new MenuManager(label, ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_EXPORT), null));
     }
 
     public IMenuManager createExportDataMenu(IMenuManager exportMenu) {

@@ -8,14 +8,20 @@
 package org.omnetpp.scave.actions;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.swt.widgets.Display;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.ExporterFactory;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.InterruptedFlag;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.Property;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 import org.omnetpp.scave.wizard.ScaveExportWizard;
 
 /**
@@ -37,8 +43,39 @@ public class ExportDataAction extends AbstractScaveAction {
     @Override
     protected void doRun(ScaveEditor scaveEditor, ISelection selection) throws CoreException {
         if (selection != null) {
-            ScaveExportWizard wizard = new ScaveExportWizard(format);
-            wizard.init(scaveEditor.getSite().getWorkbenchWindow().getWorkbench(), selection);
+            IDList selectedIDs = null;
+            final ResultFileManager resultFileManager = scaveEditor.getResultFileManager();
+            if (selection instanceof IDListSelection) {
+                IDListSelection idlistSelection = (IDListSelection)selection;
+                selectedIDs = idlistSelection.getIDList();
+            }
+            else if (selection instanceof IStructuredSelection && ((IStructuredSelection)selection).size() == 1 && ((IStructuredSelection)selection).getFirstElement() instanceof Chart) {
+                // get IDList from selected Chart's filter
+                Object selected = ((IStructuredSelection)selection).getFirstElement();
+                if (scaveEditor != null && selected instanceof Chart) {
+                    Chart chart = (Chart)selected;
+                    Property filterProperty = ScaveModelUtil.getChartProperty(chart,  "filter");
+                    if (filterProperty == null) {
+                        MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "Error",
+                                "Selected chart does not have a 'filter' property which would define "
+                                + "which simulation results the chart script uses as input.");
+                        return;
+                    }
+                    String filterExpression = filterProperty.getValue();
+
+                    selectedIDs = ResultFileManager.callWithReadLock(resultFileManager, () -> {
+                        IDList idList = resultFileManager.getAllItems(true, true); //TODO scalars? vectors? statistics? with fields or not?
+                        return resultFileManager.filterIDList(idList, filterExpression, new InterruptedFlag());
+                    });
+
+                }
+            }
+            else {
+                return; // no data to export
+            }
+
+
+            ScaveExportWizard wizard = new ScaveExportWizard(format, selectedIDs, resultFileManager);
             WizardDialog dialog = new WizardDialog(scaveEditor.getSite().getShell(), wizard);
             dialog.open();
         }

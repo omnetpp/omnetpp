@@ -29,7 +29,6 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
@@ -60,14 +59,11 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.common.wizard.XSWTDataBinding;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.editors.IDListSelection;
-import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.Exporter;
 import org.omnetpp.scave.engine.ExporterFactory;
 import org.omnetpp.scave.engine.ExporterType;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.model.Chart;
 
 import com.swtworkbench.community.xswt.XSWT;
 
@@ -83,49 +79,25 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
     protected Page page;
     protected String format;
     protected ExporterType exporterType;
-    protected Exporter exporter;
 
-
-    public ScaveExportWizard(String format) {
+    public ScaveExportWizard(String format, IDList selectedIDs, ResultFileManager resultFileManager) {
         this.format = format;
         setWindowTitle(format + " Export");
+
+        this.selectedIDs = selectedIDs;
+        this.selectionItemTypes = selectedIDs.getItemTypes();
+        this.resultFileManager = resultFileManager;
+
+        this.exporterType = ExporterFactory.getByFormat(format);
+        if (exporterType == null)
+            throw new RuntimeException("Unsupported export format: " + format);
+
         setDialogSettings(UIUtils.getDialogSettings(ScavePlugin.getDefault(), getClass().getName()));
     }
 
     @Override
     public void init(IWorkbench workbench, IStructuredSelection selection) {
         throw new UnsupportedOperationException();
-    }
-
-    public void init(IWorkbench workbench, ISelection selection) {
-        if (selection instanceof IDListSelection) {
-            IDListSelection idlistSelection = (IDListSelection)selection;
-            selectedIDs = idlistSelection.getIDList();
-            resultFileManager = idlistSelection.getResultFileManager();
-        }
-        else if (selection instanceof IStructuredSelection && ((IStructuredSelection)selection).size() == 1 && ((IStructuredSelection)selection).getFirstElement() instanceof Chart) {
-            // get IDList from selected Chart's filter
-            Object selected = ((IStructuredSelection)selection).getFirstElement();
-            ScaveEditor editor = ScaveEditor.getActiveScaveEditor();
-            if (editor != null && selected instanceof Chart) {
-                resultFileManager = editor.getResultFileManager();
-                selectedIDs = null; //TODO DatasetManager.getIDListFromDataset(resultFileManager, selectedDataset, selectedDatasetItem, null), MUST BE PROTECTED WITH ResultFileManager.callWithReadLock()!
-                MessageDialog.openError(getShell(), "Error", "Exporting data from charts is not implemented");
-            }
-        }
-        else {
-            // Invoking class (ExportDataAction) should ensure this does not happen
-            ScavePlugin.logError("Invalid selection, cannot export", null);
-        }
-
-        // create exporter
-        exporterType = ExporterFactory.getByFormat(format);
-        exporter = ExporterFactory.createExporter(format);
-        if (exporter == null)
-            throw new RuntimeException("Unsupported export format: " + format);
-
-        // check whether exporter supports the result types in the IDList
-        selectionItemTypes = selectedIDs.getItemTypes();
     }
 
     @Override
@@ -148,6 +120,8 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
     public boolean performFinish() {
         if (page != null && resultFileManager != null) {
             try {
+                Exporter exporter = ExporterFactory.createExporter(format);
+
                 // set exporter options from the page
                 for (String widgetName : page.widgetMap.keySet()) {
                     Control control = page.widgetMap.get(widgetName);
