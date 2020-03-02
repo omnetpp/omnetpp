@@ -400,7 +400,7 @@ public class ExportChartsDialog extends TitleAreaDialog {
                 item.setChecked(true);
 
         String exportImages = settings.get(KEY_EXPORT_IMAGES);
-        exportImagesCheckbox.setSelection(exportImages == null || exportImages == "true");
+        exportImagesCheckbox.setSelection(exportImages == null || exportImages.equals("true"));
         exportImagesCheckbox.notifyListeners(SWT.Selection, new Event()); // update enablements
 
         String imageFolder = settings.get(perAnf(KEY_IMAGE_TARGET_FOLDER));
@@ -418,7 +418,7 @@ public class ExportChartsDialog extends TitleAreaDialog {
             dpiCombo.setText(dpi);
 
         String exportData = settings.get(KEY_EXPORT_DATA);
-        exportDataCheckbox.setSelection(exportData == null || exportData == "true");
+        exportDataCheckbox.setSelection(exportData == null || exportData.equals("true"));
         exportDataCheckbox.notifyListeners(SWT.Selection, new Event());  // update enablements
 
         String dataFolder = settings.get(perAnf(KEY_DATA_TARGET_FOLDER));
