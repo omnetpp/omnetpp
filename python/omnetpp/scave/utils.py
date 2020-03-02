@@ -125,7 +125,10 @@ def pick_two_columns(df):
     if len(label_cols) == 0:
         return None, None
     if len(label_cols) == 1:
-        return title_col, label_cols[0]
+        if label_cols[0] == title_col:
+            return None, None
+        else:
+            return title_col, label_cols[0]
     if len(label_cols) >= 2:
         return label_cols[0], label_cols[1]
 
