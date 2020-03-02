@@ -841,6 +841,12 @@ public class IconGridViewer extends ContentViewer {
     protected void inputChanged(Object input, Object oldInput) {
         super.inputChanged(input, oldInput);
         refresh();
+
+        // initially, select the first element and fire selection change (action enablements etc may depend on it)
+        if (oldInput == null && elements != null) {
+            Object[] initialSelection = elements.length > 0 ? new Object[] { elements[0] } : new Object[] {};
+            setSelection(new StructuredSelection(initialSelection));
+        }
     }
 
     protected IFigure createFigure() {
