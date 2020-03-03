@@ -174,6 +174,13 @@ public class ChartExport {
         //TODO folder.refreshLocal(IResource.DEPTH_INFINITE, monitor); // because we're creating the file behind Eclipse's back
     }
 
+    public static void exportChart(Chart chart, Map<String, String> extraProperties, File chartsDir, ResultFileManager manager) {
+        clearPreviousConsoles();
+        Context context = new Context(extraProperties, chartsDir, manager, false, 1);
+        startExportJob(chart, context);
+        //TODO folder.refreshLocal(IResource.DEPTH_INFINITE, monitor); // because we're creating the file behind Eclipse's back
+    }
+
     private static void clearPreviousConsoles() {
         IConsoleManager consoleManager = ConsolePlugin.getDefault().getConsoleManager();
         for (IConsole console : consoleManager.getConsoles()) {

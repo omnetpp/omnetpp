@@ -1,6 +1,7 @@
 package org.omnetpp.scave.actions;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -14,25 +15,28 @@ import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ui.ExportChartsDialog;
 import org.omnetpp.scave.jobs.ChartExport;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model2.ScaveModelUtil;
+import org.omnetpp.scave.python.ChartViewerBase;
 
 /**
- * Batch export of chart image and/or data
+ * Export of chart image and/or data
  */
-public class ExportChartsAction extends AbstractScaveAction {
+public class ExportChartAction extends AbstractScaveAction {
 
-    public ExportChartsAction() {
-        setText("Export Charts...");
+    public ExportChartAction() {
+        setText("Export Chart...");
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_EXPORT));
     }
 
     @Override
     protected void doRun(ScaveEditor editor, ISelection selection) throws CoreException {
-        // we'll display the list of all charts, and check the selected one(s) and those under selected ones
-        final List<Chart> allCharts = ScaveModelUtil.collectCharts(editor.getAnalysis().getCharts().getCharts());
-        List<Chart> initialSelection = ScaveModelUtil.getChartsFromSelection(asStructuredOrEmpty(selection));
+        ChartViewerBase chartViewer = editor.getActiveChartViewer();
+        Chart chart = chartViewer != null ? chartViewer.getChart() : null;
+        if (chart == null)
+            return;
+        List<Chart> tmp = new ArrayList<Chart>();
+        tmp.add(chart);
 
-        ExportChartsDialog dialog = new ExportChartsDialog(editor.getSite().getShell(), allCharts, initialSelection, editor.getAnfFile());
+        ExportChartsDialog dialog = new ExportChartsDialog(editor.getSite().getShell(), chart, editor.getAnfFile());
         if (dialog.open() == Window.OK) {
             try {
                 ExportChartsDialog.Result result = dialog.getResult();
@@ -43,7 +47,7 @@ public class ExportChartsAction extends AbstractScaveAction {
                         extraProperties.putAll(ChartExport.makeExtraPropertiesForImageExport(result.imageTargetFolder, result.imageFormat, result.imageDpi));
                     if (result.exportData)
                         extraProperties.putAll(ChartExport.makeExtraPropertiesForDataExport(result.dataTargetFolder));
-                    ChartExport.exportCharts(result.selectedCharts, extraProperties, chartsDir, editor.getResultFileManager(), result.stopOnError, result.numConcurrentProcesses);
+                    ChartExport.exportChart(chart, extraProperties, chartsDir, editor.getResultFileManager());
                 }
             }
             catch (OperationCanceledException e) {
@@ -53,6 +57,6 @@ public class ExportChartsAction extends AbstractScaveAction {
 
     @Override
     protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
-        return true;
+        return editor.getActiveChartViewer() != null;
     }
 }

@@ -34,6 +34,10 @@ public abstract class ChartViewerBase {
         this.rfm = rfm;
     }
 
+    public Chart getChart() {
+        return chart;
+    }
+
     public void killPythonProcess() {
         if (proc != null && proc.isAlive())
             proc.kill();

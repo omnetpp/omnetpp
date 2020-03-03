@@ -64,6 +64,7 @@ public class ExportChartsDialog extends TitleAreaDialog {
     // input
     private List<Chart> charts;
     private List<Chart> initialSelection;
+    private boolean singleChart = false;
     private IFile anfFile;
 
     // widgets
@@ -114,6 +115,13 @@ public class ExportChartsDialog extends TitleAreaDialog {
         this.anfFile = anfFile;
     }
 
+    public ExportChartsDialog(Shell parentShell, Chart chart, IFile anfFile) {
+        super(parentShell);
+        this.charts = this.initialSelection = Arrays.asList(new Chart[] {chart});
+        this.singleChart = true;
+        this.anfFile = anfFile;
+    }
+
     public Result getResult() {
         return result;
     }
@@ -131,7 +139,7 @@ public class ExportChartsDialog extends TitleAreaDialog {
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-        newShell.setText("Export Charts");
+        newShell.setText("Export Chart(s)");
     }
 
     @Override
@@ -139,7 +147,7 @@ public class ExportChartsDialog extends TitleAreaDialog {
         final Composite dialogArea = (Composite)super.createDialogArea(parent);
 
         setTitle("Export Chart Graphics and/or Data");
-        setMessage("Runs chart scripts in the background in export mode.");
+        setMessage("Runs chart script(s) in the background for exporting.");
 
         dialogArea.setLayout(new GridLayout());
 
@@ -229,6 +237,11 @@ public class ExportChartsDialog extends TitleAreaDialog {
         SWTFactory.setIndent(stopOnErrorCheckbox, 30);
 
         restoreDialogSettings();
+
+        if (singleChart) {
+            SWTFactory.setEnabled(chartsPanel, false, null);
+            SWTFactory.setEnabled(jobGroup, false, null);
+        }
 
         Display.getCurrent().asyncExec(()-> setErrorMessage(null)); // don't open with an error message displayed
 

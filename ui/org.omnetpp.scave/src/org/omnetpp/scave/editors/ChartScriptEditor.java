@@ -68,6 +68,7 @@ import org.omnetpp.scave.actions.ChartMouseModeAction;
 import org.omnetpp.scave.actions.ClosePageAction;
 import org.omnetpp.scave.actions.CopyImageToClipboardAction;
 import org.omnetpp.scave.actions.EditChartPropertiesAction;
+import org.omnetpp.scave.actions.ExportChartAction;
 import org.omnetpp.scave.actions.ForwardAction;
 import org.omnetpp.scave.actions.GotoChartDefinitionAction;
 import org.omnetpp.scave.actions.HomeAction;
@@ -135,6 +136,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
     GotoChartDefinitionAction gotoChartDefinitionAction;
 
     SaveImageAction saveImageAction = new SaveImageAction();
+    ExportChartAction exportChartAction = new ExportChartAction();
 
     InteractAction interactAction = new InteractAction();
     PanAction panAction = new PanAction();
@@ -528,6 +530,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
 
         manager.add(new CopyImageToClipboardAction());
         manager.add(saveImageAction);
+        manager.add(exportChartAction);
 
         return manager;
     }
@@ -585,6 +588,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
 
         manager.add(new CopyImageToClipboardAction());
         manager.add(saveImageAction);
+        manager.add(exportChartAction);
 
         return manager;
     }
@@ -639,6 +643,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         formEditor.addSeparatorToToolbar();
         formEditor.addToToolbar(new CopyImageToClipboardAction());
         formEditor.addToToolbar(saveImageAction);
+        formEditor.addToToolbar(exportChartAction);
         formEditor.addSeparatorToToolbar();
         formEditor.addToToolbar(new ClosePageAction());
     }

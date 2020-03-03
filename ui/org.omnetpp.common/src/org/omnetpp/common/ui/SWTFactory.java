@@ -808,8 +808,8 @@ public class SWTFactory {
             checkButton.notifyListeners(SWT.Selection, new Event()); // update enablements
     }
 
-    private static void setEnabled(Control control, boolean enabled, Control except) {
-        if (control != except && control != except.getParent())
+    public static void setEnabled(Control control, boolean enabled, Control except) {
+        if (except == null || (control != except && control != except.getParent()))
             control.setEnabled(enabled);
         if (control instanceof Composite)
             for (Control c : ((Composite)control).getChildren())
