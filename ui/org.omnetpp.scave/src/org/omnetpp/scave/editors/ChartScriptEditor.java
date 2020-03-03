@@ -134,7 +134,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
     SaveTempChartAction saveTempChartAction;
     GotoChartDefinitionAction gotoChartDefinitionAction;
 
-    SaveImageAction saveMatplotlibImageAction = new SaveImageAction(); //TODO remove, we have another instance here
+    SaveImageAction saveImageAction = new SaveImageAction();
 
     InteractAction interactAction = new InteractAction();
     PanAction panAction = new PanAction();
@@ -471,7 +471,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         return commandStack;
     }
 
-    protected MenuManager createMatplotlibMenuManager() {
+    protected MenuManager createMatplotlibMenuManager() { //TODO merge this with createNativeMenuManager(), differences are small
         // this part is common with the Native variant...
         IMenuManager applySubmenuManager = new MenuManager("Apply...", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_APPLY), null);
         for (Triplet<String, String, String> t : vectorOpData)
@@ -527,7 +527,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         manager.add(new Separator());
 
         manager.add(new CopyImageToClipboardAction());
-        manager.add(saveMatplotlibImageAction);
+        manager.add(saveImageAction);
 
         return manager;
     }
@@ -584,7 +584,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         manager.add(new Separator());
 
         manager.add(new CopyImageToClipboardAction());
-        manager.add(new SaveImageAction());
+        manager.add(saveImageAction);
 
         return manager;
     }
@@ -638,10 +638,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         formEditor.addToToolbar(killAction = new KillPythonProcessAction());
         formEditor.addSeparatorToToolbar();
         formEditor.addToToolbar(new CopyImageToClipboardAction());
-        if (chart.getType() == ChartType.MATPLOTLIB)
-            formEditor.addToToolbar(saveMatplotlibImageAction);
-        else
-            formEditor.addToToolbar(new SaveImageAction());
+        formEditor.addToToolbar(saveImageAction);
         formEditor.addSeparatorToToolbar();
         formEditor.addToToolbar(new ClosePageAction());
     }
@@ -846,7 +843,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         backAction.update();
         forwardAction.update();
 
-        saveMatplotlibImageAction.update();
+        saveImageAction.update();
     }
 
     public void setShowSource(boolean show) {
