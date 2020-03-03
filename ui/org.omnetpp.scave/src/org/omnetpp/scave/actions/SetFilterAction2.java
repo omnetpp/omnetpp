@@ -9,9 +9,13 @@ package org.omnetpp.scave.actions;
 
 import java.util.concurrent.Callable;
 
-import org.eclipse.jface.action.Action;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.viewers.ISelection;
+import org.omnetpp.scave.editors.IDListSelection;
+import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.editors.datatable.IDataControl;
+import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ResultItemField;
@@ -24,7 +28,7 @@ import org.omnetpp.scave.model2.FilterUtil;
  *
  * @author tomi
  */
-public class SetFilterAction2 extends Action
+public class SetFilterAction2 extends AbstractScaveAction
 {
     FilteredDataPanel panel;
     String fieldName;
@@ -32,16 +36,16 @@ public class SetFilterAction2 extends Action
 
     public SetFilterAction2() {
         setDescription("Sets the filter according to the clicked cell.");
-        update(null);
     }
 
     /**
-     * This method is called when the active panel or
-     * the selected cell is changed.
+     * This method is called when the active panel or the selected cell is changed.
      * It updates the parameters of the action.
      */
     public void update(final FilteredDataPanel panel) {
         this.panel = panel;
+        setText("Set Filter");
+
         if (panel != null) {
             ResultFileManager.callWithReadLock(panel.getResultFileManager(), new Callable<Object>() {
                 public Object call() {
@@ -53,28 +57,33 @@ public class SetFilterAction2 extends Action
                         fieldValue = field.getFieldValue(item);
 
                         if (fieldValue != null) {
-                            setText(String.format("Set filter: %s=%s", field.getName(), fieldValue));
+                            setText(String.format("Set Filter: %s=%s", field.getName(), fieldValue));
                             setEnabled(true);
                             return null;
                         }
                     }
-                    setText("Set filter");
+                    setText("Set Filter");
                     setEnabled(false);
                     return null;
                 }
             });
-
         }
-        setText("Set filter");
-        setEnabled(false);
     }
 
     @Override
-    public void run() {
+    protected void doRun(ScaveEditor scaveEditor, ISelection selection) throws CoreException {
         if (panel != null && fieldName != null && fieldValue != null) {
             FilterUtil filter = new FilterUtil();
             filter.setField(fieldName, fieldValue);
             panel.setFilterParams(new Filter(filter.getFilterPattern()));
         }
+    }
+
+    @Override
+    protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
+        if (!(selection instanceof IDListSelection))
+            return false;
+        IDList idList = ((IDListSelection)selection).getIDList();
+        return idList.size() == 1;
     }
 }
