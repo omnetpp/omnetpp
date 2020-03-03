@@ -108,29 +108,29 @@ import org.python.pydev.shared_ui.editor_input.PydevFileEditorInput;
 //TODO @title not used by chart
 
 public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
-    Chart chart;
-    Chart originalChart;
-    ScaveEditor scaveEditor;
+    private Chart chart;
+    private Chart originalChart;
+    private ScaveEditor scaveEditor;
 
-    FormEditorPage formEditor;
-    SashForm sashForm;
-    Composite sourceEditorContainer;
+    private FormEditorPage formEditor;
+    private SashForm sashForm;
+    private Composite sourceEditorContainer;
 
-    NativeChartViewer nativeChartViewer;
-    MatplotlibChartViewer matplotlibChartViewer;
+    private NativeChartViewer nativeChartViewer;
+    private MatplotlibChartViewer matplotlibChartViewer;
 
-    ChangeListener changeListener;
-    ChartScriptEditorInput editorInput;
+    private ChangeListener changeListener;
+    private ChartScriptEditorInput editorInput;
 
-    IOConsole console;
-    IOConsoleOutputStream outputStream;
-    IOConsoleOutputStream errorStream;
+    private IOConsole console;
+    private IOConsoleOutputStream outputStream;
+    private IOConsoleOutputStream errorStream;
 
-    ChartScriptDocumentProvider documentProvider;
+    private ChartScriptDocumentProvider documentProvider;
     protected CommandStack commandStack = new CommandStack("ChartPage");
 
-    IMarker errorMarker;
-    MarkerAnnotation errorMarkerAnnotation;
+    private IMarker errorMarker;
+    private MarkerAnnotation errorMarkerAnnotation;
 
     SaveTempChartAction saveTempChartAction;
     GotoChartDefinitionAction gotoChartDefinitionAction;
@@ -155,17 +155,17 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
 
     KillPythonProcessAction killAction;
 
-    boolean scriptNotYetExecuted = true;
+    private boolean scriptNotYetExecuted = true;
 
     ToggleShowSourceAction toggleShowSourceAction = new ToggleShowSourceAction();
-    boolean showSource = false;
+    private boolean showSource = false;
 
     private static final int CHART_SCRIPT_EXECUTION_DELAY_MS = 2000;
     private boolean autoUpdateChart = true;
     ToggleAutoUpdateAction toggleAutoUpdateAction;
 
     // if the document has changed since last saving (independent of the Chart object in the model)
-    boolean scriptChangedFlag = false;
+    private boolean scriptChangedFlag = false;
 
     @SuppressWarnings("unchecked")
     static final Triplet<String, String, String>[] vectorOpData = new Triplet[] {

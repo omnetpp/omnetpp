@@ -1211,7 +1211,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
     }
 
     private String getPageId(ChartScriptEditor chartScriptEditor) {
-        return Integer.toString(analysis.getCharts().getCharts().indexOf(chartScriptEditor.chart));
+        return Integer.toString(analysis.getCharts().getCharts().indexOf(chartScriptEditor.getChart()));
     }
 
     // TODO merge the one below into this one?
