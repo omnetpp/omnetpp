@@ -274,7 +274,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
                 matplotlibChartViewer.addStateChangeListener(stateChangeListener);
 
                 MatplotlibWidget plotWidget = matplotlibChartViewer.getPlotWidget();
-                plotWidget.setMenu(createMatplotlibMenuManager().createContextMenu(plotWidget));
+                plotWidget.setMenu(createMenuManager().createContextMenu(plotWidget));
             }
             else {
                 nativeChartViewer = new NativeChartViewer(sashForm, chart, scaveEditor.getPythonProcessPool(), scaveEditor.getResultFileManager());
@@ -295,7 +295,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
                     }
                 });
 
-                chartViewer.setMenu(createNativeMenuManager().createContextMenu(chartViewer));
+                chartViewer.setMenu(createMenuManager().createContextMenu(chartViewer));
                 scaveEditor.getActions().registerPlot(chartViewer);
             }
 
@@ -473,8 +473,11 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         return commandStack;
     }
 
-    protected MenuManager createMatplotlibMenuManager() { //TODO merge this with createNativeMenuManager(), differences are small
-        // this part is common with the Native variant...
+    protected MenuManager createMenuManager() {
+        boolean isMatplotlib = chart.getType() == ChartType.MATPLOTLIB;
+        boolean isNative = !isMatplotlib;
+
+        // Make the Apply/Compute submenus
         IMenuManager applySubmenuManager = new MenuManager("Apply...", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_APPLY), null);
         for (Triplet<String, String, String> t : vectorOpData)
             applySubmenuManager.add(new AddVectorOperationAction(t.first, "apply:" + t.second, t.third));
@@ -484,8 +487,8 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
             computeSubmenuManager.add(new AddVectorOperationAction(t.first, "compute:" + t.second, t.third));
 
         ScaveEditorActions actions = scaveEditor.getActions();
-        // ----
 
+        // Assemble the menu
         MenuManager manager = new MenuManager();
 
         manager.add(new EditChartPropertiesAction());
@@ -495,85 +498,44 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         manager.add(actions.redoAction);
         manager.add(new Separator());
 
-        // TODO: buttons to control RLE and halfres interaction? Or maybe only in a
-        // settings dialog somewhere?
+        if (isNative) {
+            IMenuManager zoomSubmenuManager = new MenuManager("Zoom", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_ZOOM), null);
+            zoomSubmenuManager.add(zoomInHorizAction);
+            zoomSubmenuManager.add(zoomOutHorizAction);
+            zoomSubmenuManager.add(zoomInVertAction);
+            zoomSubmenuManager.add(zoomOutVertAction);
+            zoomSubmenuManager.add(new Separator());
+            zoomSubmenuManager.add(zoomToFitAction);
 
-        MenuManager navigationMenu = new MenuManager("Navigation");
-        navigationMenu.add(interactAction);
-        navigationMenu.add(panAction);
-        navigationMenu.add(zoomAction);
+            manager.add(zoomSubmenuManager);
+            manager.add(new Separator());
+        }
 
-        navigationMenu.add(new Separator());
+        if (isMatplotlib) {
+            // TODO: buttons to control RLE and halfres interaction? Or maybe only in a
+            // settings dialog somewhere?
 
-        navigationMenu.add(homeAction);
-        navigationMenu.add(backAction);
-        navigationMenu.add(forwardAction);
+            MenuManager navigationMenu = new MenuManager("Navigation");
+            navigationMenu.add(interactAction);
+            navigationMenu.add(panAction);
+            navigationMenu.add(zoomAction);
 
-        manager.add(navigationMenu);
-        manager.add(new Separator());
+            navigationMenu.add(new Separator());
 
-        manager.add(applySubmenuManager);
-        manager.add(computeSubmenuManager);
-        manager.add(new Separator());
+            navigationMenu.add(homeAction);
+            navigationMenu.add(backAction);
+            navigationMenu.add(forwardAction);
 
-        manager.add(toggleShowSourceAction);
-        manager.add(toggleAutoUpdateAction);
-        manager.add(new RefreshChartAction());
-        manager.add(killAction);
-        manager.add(new Separator());
+            manager.add(navigationMenu);
+            manager.add(new Separator());
+        }
 
-        if (chart.isTemporary())
-            manager.add(new SaveTempChartAction());
-        else
-            manager.add(new GotoChartDefinitionAction());
-        manager.add(new Separator());
-
-        manager.add(new CopyImageToClipboardAction());
-        manager.add(saveImageAction);
-        manager.add(exportChartAction);
-
-        return manager;
-    }
-
-    protected MenuManager createNativeMenuManager() {
-        // this part is common with the Matplotlib variant...
-        IMenuManager applySubmenuManager = new MenuManager("Apply...", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_APPLY), null);
-        for (Triplet<String, String, String> t : vectorOpData)
-            applySubmenuManager.add(new AddVectorOperationAction(t.first, "apply:" + t.second, t.third));
-
-        IMenuManager computeSubmenuManager = new MenuManager("Compute...", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_COMPUTE), null);
-        for (Triplet<String, String, String> t : vectorOpData)
-            computeSubmenuManager.add(new AddVectorOperationAction(t.first, "compute:" + t.second, t.third));
-
-        ScaveEditorActions actions = scaveEditor.getActions();
-        // ----
-
-        IMenuManager zoomSubmenuManager = new MenuManager("Zoom", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_ZOOM), null);
-        zoomSubmenuManager.add(zoomInHorizAction);
-        zoomSubmenuManager.add(zoomOutHorizAction);
-        zoomSubmenuManager.add(zoomInVertAction);
-        zoomSubmenuManager.add(zoomOutVertAction);
-        zoomSubmenuManager.add(new Separator());
-        zoomSubmenuManager.add(zoomToFitAction);
-
-        MenuManager manager = new MenuManager();
-
-        manager.add(new EditChartPropertiesAction());
-        manager.add(new Separator());
-
-        manager.add(actions.undoAction);
-        manager.add(actions.redoAction);
-        manager.add(new Separator());
-
-        if (chart.getType() == ChartType.LINE) {
+        if (isMatplotlib || (isNative && chart.getType() == ChartType.LINE)) {
             manager.add(applySubmenuManager);
             manager.add(computeSubmenuManager);
             manager.add(new Separator());
         }
 
-        manager.add(zoomSubmenuManager);
-
-        manager.add(new Separator());
         manager.add(toggleShowSourceAction);
         manager.add(toggleAutoUpdateAction);
         manager.add(new RefreshChartAction());
