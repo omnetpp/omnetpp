@@ -6,9 +6,11 @@ import org.eclipse.ui.IPersistableElement;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.model.Chart;
 
+/**
+ * IEditorInput for ChartScriptEditor.
+ */
 class ChartScriptEditorInput implements IEditorInput {
-
-    Chart chart;
+    private Chart chart;
 
     public ChartScriptEditorInput(Chart chart) {
         this.chart = chart;
@@ -21,13 +23,15 @@ class ChartScriptEditorInput implements IEditorInput {
 
     @Override
     public boolean exists() {
-        // TODO Auto-generated method stub
         return true;
+    }
+
+    public Chart getChart() {
+        return chart;
     }
 
     @Override
     public ImageDescriptor getImageDescriptor() {
-        // TODO Auto-generated method stub
         return ImageFactory.global().getDescriptor(ImageFactory.DEFAULT);
     }
 
@@ -38,14 +42,12 @@ class ChartScriptEditorInput implements IEditorInput {
 
     @Override
     public IPersistableElement getPersistable() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public String getToolTipText() {
-        // TODO Auto-generated method stub
-        return "tooltip";
+        return "id=" + chart.getId();
     }
 
     @Override

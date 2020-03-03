@@ -1390,7 +1390,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
         for (int i = 0; i < count; i++) {
             IEditorPart editor = getEditor(i);
             if (editor != null && editor.getEditorInput() instanceof ChartScriptEditorInput) {
-                Chart chart = ((ChartScriptEditorInput)editor.getEditorInput()).chart;
+                Chart chart = ((ChartScriptEditorInput)editor.getEditorInput()).getChart();
                 if (chart.getId() == chartId)
                     return chart;
             }

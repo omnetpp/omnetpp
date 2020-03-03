@@ -13,7 +13,7 @@ import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog;
 import org.omnetpp.scave.model.Chart;
 
 class ChartScriptDocumentProvider extends AbstractDocumentProvider {
-    IDocument doc = null;
+    private IDocument doc = null;
 
     public ProjectionAnnotationModel annotationModel = new ProjectionAnnotationModel();
 
@@ -50,7 +50,7 @@ class ChartScriptDocumentProvider extends AbstractDocumentProvider {
 
     @Override
     public IDocument getDocument(Object element) {
-        Chart chart = ((ChartScriptEditorInput) element).chart;
+        Chart chart = ((ChartScriptEditorInput) element).getChart();
 
         if (doc == null)
             doc = new Document(chart.getScript());
