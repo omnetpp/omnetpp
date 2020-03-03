@@ -25,10 +25,8 @@ import org.omnetpp.scave.model2.ResultSelectionFilterGenerator;
 public class CopyChartFilterAction extends AbstractScaveAction {
 
     public CopyChartFilterAction() {
-
-        setText("Copy filter expression");
+        setText("Copy Filter Expression");
         setToolTipText("Generate and copy result filter expression to clipboard");
-
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_COPY));
     }
 

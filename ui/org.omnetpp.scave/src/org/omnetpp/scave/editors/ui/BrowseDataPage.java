@@ -150,7 +150,7 @@ public class BrowseDataPage extends FormEditorPage {
 
         // add actions to the toolbar
         ScaveEditorActions actions = scaveEditor.getActions();
-        addToToolbar(actions.copyToClipboardAction);
+        addToToolbar(actions.copyDataToClipboardAction);
 
         DropdownAction exportDataAction = new DropdownAction("Export Data", "Export In: ", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_EXPORT), false);
         actions.createExportDataMenu(exportDataAction.getMenuManager());
@@ -212,17 +212,17 @@ public class BrowseDataPage extends FormEditorPage {
             }
 
             contextMenuManager.add(new CopyChartFilterAction());
-            MenuManager setFilterSubmenu = new MenuManager("Set filter to existing chart...");
-
+            MenuManager setFilterSubmenu = new MenuManager("Set Filter to Existing Chart");
             for (AnalysisItem i : scaveEditor.getAnalysis().getCharts().getCharts())
                 if (i instanceof Chart) // TODO: menu is not updated when charts are added to or removed from the analysis
                     setFilterSubmenu.add(new SetChartFilterAction((Chart)i));
-
             contextMenuManager.add(setFilterSubmenu);
-
-            contextMenuManager.add(actions.createExportDataMenu("Export Data"));
-            contextMenuManager.add(actions.copyToClipboardAction);
             contextMenuManager.add(new Separator());
+
+            contextMenuManager.add(actions.copyDataToClipboardAction);
+            contextMenuManager.add(actions.createExportDataMenu("Export Data"));
+            contextMenuManager.add(new Separator());
+
             contextMenuManager.add(setFilterAction);
             if (panel.getDataControl() instanceof DataTable)
                 contextMenuManager.add(new ChooseTableColumnsAction((DataTable)panel.getDataControl()));

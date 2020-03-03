@@ -29,6 +29,7 @@ public class ScaveImages {
     public static final String IMG_ETOOL16_COLLAPSE = "icons/full/etool16/collapse.png";
     public static final String IMG_ETOOL16_COMPUTE = "icons/full/etool16/compute.png";
     public static final String IMG_ETOOL16_COPY = "icons/full/etool16/copy.png";
+    public static final String IMG_ETOOL16_COPYDATA = "icons/full/etool16/copydata.png";
     public static final String IMG_ETOOL16_COPYIMAGE = "icons/full/etool16/copyimage.png";
     public static final String IMG_ETOOL16_DECIMALS_DEC = "icons/full/etool16/decimals_dec.png";
     public static final String IMG_ETOOL16_DECIMALS_INC = "icons/full/etool16/decimals_inc.png";

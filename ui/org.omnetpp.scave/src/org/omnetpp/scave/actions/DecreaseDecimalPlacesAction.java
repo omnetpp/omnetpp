@@ -14,7 +14,7 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 
 /**
- * TODO
+ * Decrease number of decimal places displayed on the Browse Data page.
  *
  * @author andras
  */

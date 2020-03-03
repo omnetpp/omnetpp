@@ -105,7 +105,7 @@ public class ScaveEditorActions {
     // generic actions
     public final OpenChartAction openAction = registerAction(new OpenChartAction());
 
-    public final CopyDataToClipboardAction copyToClipboardAction = registerAction(new CopyDataToClipboardAction());
+    public final CopyDataToClipboardAction copyDataToClipboardAction = registerAction(new CopyDataToClipboardAction());
     public final SaveImageAction saveImageAction = registerAction(new SaveImageAction());
 
     public final PlotAction plotAction = registerAction(new PlotAction());

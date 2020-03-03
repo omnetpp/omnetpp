@@ -11,7 +11,7 @@ import java.util.concurrent.Callable;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.ui.ISharedImages;
+import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
@@ -23,8 +23,8 @@ import org.omnetpp.scave.engine.ResultFileManager;
  */
 public class CopyDataToClipboardAction extends AbstractScaveAction {
     public CopyDataToClipboardAction() {
-        setText("Copy to Clipboard");
-        setImageDescriptor(ScavePlugin.getSharedImageDescriptor(ISharedImages.IMG_TOOL_COPY));
+        setText("Copy Data");
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_COPYDATA));
     }
 
     @Override
