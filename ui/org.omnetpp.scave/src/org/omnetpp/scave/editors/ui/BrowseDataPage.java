@@ -212,7 +212,8 @@ public class BrowseDataPage extends FormEditorPage {
             }
 
             contextMenuManager.add(new CopyChartFilterAction());
-            MenuManager setFilterSubmenu = new MenuManager("Set Filter to Existing Chart");
+            MenuManager setFilterSubmenu = new MenuManager("Set Filter of Chart", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_SETFILTER), null);
+
             for (AnalysisItem i : scaveEditor.getAnalysis().getCharts().getCharts())
                 if (i instanceof Chart) // TODO: menu is not updated when charts are added to or removed from the analysis
                     setFilterSubmenu.add(new SetChartFilterAction((Chart)i));
