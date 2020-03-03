@@ -1542,6 +1542,18 @@ void ResultFileManager::unloadFile(ResultFile *file)
     }
 }
 
+void ResultFileManager::loadDirectory(const char *directoryName, const char *fileSystemDirectoryName, bool reload)
+{
+    if (fileSystemDirectoryName == nullptr)
+        fileSystemDirectoryName = directoryName;
+    if (isDirectory(fileSystemDirectoryName)) {
+        for (auto fileName : collectFiles(fileSystemDirectoryName, ".sca"))
+            loadFile(fileName.c_str(), fileName.c_str(), reload);
+        for (auto fileName : collectFiles(fileSystemDirectoryName, ".vec"))
+            loadFile(fileName.c_str(), fileName.c_str(), reload);
+    }
+}
+
 /*--------------------------------------------------------------------------
  *                        compute filter hints
  *--------------------------------------------------------------------------*/

@@ -552,6 +552,8 @@ class SCAVE_API ResultFileManager
     ResultFile *loadFile(const char *fileName, const char *fileSystemFileName=nullptr, bool reload=false);
     void unloadFile(ResultFile *file);
 
+    void loadDirectory(const char *directoryName, const char *fileSystemDirectoryName=nullptr, bool reload=false);
+
 
     bool isFileLoaded(const char *fileName) const;
     ResultFile *getFile(const char *fileName) const;

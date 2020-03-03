@@ -219,7 +219,10 @@ void ScaveTool::loadFiles(ResultFileManager& manager, const vector<string>& file
 
         if (verbose)
             cout << "reading " << fileName << "... " << std::flush;
-        manager.loadFile(fileName);
+        if (isDirectory(fileName))
+            manager.loadDirectory(fileName);
+        else
+            manager.loadFile(fileName);
         if (verbose)
             cout << "done\n";
     }
