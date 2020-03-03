@@ -8,6 +8,7 @@
 
 package org.omnetpp.scave.actions;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
@@ -27,8 +28,7 @@ public class SetChartFilterAction extends AbstractScaveAction {
     public SetChartFilterAction(Chart c) {
         this.c = c;
 
-        setText(c.getName());
-        setToolTipText(c.getName());
+        setText(StringUtils.defaultIfEmpty(c.getName(), "<Unnamed>"));
 
         String iconPath = c.getIconPath();
 
