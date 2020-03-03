@@ -22,7 +22,7 @@ import org.omnetpp.scave.python.ChartViewerBase;
 public class CopyImageToClipboardAction extends AbstractScaveAction {
     public CopyImageToClipboardAction() {
         setText("Copy Image to Clipboard");
-        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_COPY));
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_COPYIMAGE));
     }
 
     @Override
