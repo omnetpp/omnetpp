@@ -1,4 +1,4 @@
-# This file will be imported by some chart scripts in the NativePlottingExamples.anf file.
+# This file will be imported by a chart scripts in the Importing.anf file.
 
 import matplotlib.pyplot as plt
 

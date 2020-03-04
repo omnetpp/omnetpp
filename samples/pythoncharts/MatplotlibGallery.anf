@@ -2,7 +2,7 @@
 <analysis version="2">
     <inputs/>
     <charts>
-        <chart icon="" id="1" name="streamplot" template="" type="MATPLOTLIB">
+        <chart icon="" id="306" name="streamplot" template="" type="MATPLOTLIB">
             <script>
                 <![CDATA[import numpy as np
 import matplotlib.pyplot as plt
@@ -25,7 +25,7 @@ ax2.streamplot(X, Y, U, V, density=0.6, color='k', linewidth=lw)
 plt.tight_layout()]]>
             </script>
         </chart>
-        <chart icon="" id="2" name="quad" template="" type="MATPLOTLIB">
+        <chart icon="" id="307" name="quad" template="" type="MATPLOTLIB">
             <script>
                 <![CDATA[
 import numpy as np
@@ -65,7 +65,69 @@ ax.set_title('With masked values')
 ]]>
             </script>
         </chart>
-        <chart icon="" id="4" name="cameras" template="" type="MATPLOTLIB">
+        <chart icon="" id="308" name="contours" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA["""
+============
+Contour Demo
+============
+
+Illustrate simple contour plotting, contours on an image with
+a colorbar for the contours, and labelled contours.
+
+See also the :doc:`contour image example
+</gallery/images_contours_and_fields/contour_image>`.
+"""
+
+import matplotlib
+import numpy as np
+import matplotlib.cm as cm
+import matplotlib.pyplot as plt
+
+
+delta = 0.025
+x = np.arange(-3.0, 3.0, delta)
+y = np.arange(-2.0, 2.0, delta)
+X, Y = np.meshgrid(x, y)
+Z1 = np.exp(-X**2 - Y**2)
+Z2 = np.exp(-(X - 1)**2 - (Y - 1)**2)
+Z = (Z1 - Z2) * 2
+
+
+fig, ax = plt.gcf(), plt.gca()
+im = ax.imshow(Z, interpolation='bilinear', origin='lower',
+                cmap=cm.gray, extent=(-3, 3, -2, 2))
+levels = np.arange(-1.2, 1.6, 0.2)
+CS = ax.contour(Z, levels, origin='lower', cmap='flag',
+                linewidths=2, extent=(-3, 3, -2, 2))
+
+# Thicken the zero contour.
+zc = CS.collections[6]
+plt.setp(zc, linewidth=4)
+
+ax.clabel(CS, levels[1::2],  # label every second level
+          inline=1, fmt='%1.1f', fontsize=14)
+
+# make a colorbar for the contour lines
+CB = fig.colorbar(CS, shrink=0.8, extend='both')
+
+ax.set_title('Lines with colorbar')
+
+# We can still add a colorbar for the image, too.
+CBI = fig.colorbar(im, orientation='horizontal', shrink=0.8)
+
+# This makes the original colorbar look a bit out of place,
+# so let's improve its position.
+
+l, b, w, h = ax.get_position().bounds
+ll, bb, ww, hh = CB.ax.get_position().bounds
+CB.ax.set_position([ll, b + 0.1*h, ww, h*0.8])
+
+plt.show()
+]]>
+            </script>
+        </chart>
+        <chart icon="" id="309" name="cameras" template="" type="MATPLOTLIB">
             <script>
                 <![CDATA[import numpy as np
 import pandas as pd
@@ -96,7 +158,7 @@ ax.set_xlabel(("In the last few years, with very little fanfare,\n"
 plt.tight_layout()]]>
             </script>
         </chart>
-        <chart icon="" id="5" name="scatter hist" template="" type="MATPLOTLIB">
+        <chart icon="" id="310" name="scatter hist" template="" type="MATPLOTLIB">
             <script>
                 <![CDATA[
 import numpy as np
@@ -150,37 +212,653 @@ axHisty.set_ylim(axScatter.get_ylim())
 plt.show()]]>
             </script>
         </chart>
-        <chart icon="" id="6" name="rotate" template="" type="MATPLOTLIB">
+        <chart icon="" id="347" name="simplecursor" template="" type="MATPLOTLIB">
             <script>
-                <![CDATA[import time
-from mpl_toolkits.mplot3d import axes3d
+                <![CDATA[from matplotlib.widgets import Cursor
+import pylab
+
+fig = pylab.figure()
+ax = fig.add_axes([0.1, 0.1, 0.8, 0.8])
+
+x,y = 4*(pylab.rand(2,100)-.5)
+ax.plot(x,y,'o')
+ax.set_xlim(-2,2)
+ax.set_ylim(-2,2)
+
+""" Setting useblit to True should improve latency! """
+cursor = Cursor(ax, useblit=False, color='red', linewidth=2 )
+
+pylab.show()
+pylab.title("Move the mouse in the chart!")]]>
+            </script>
+        </chart>
+        <chart icon="" id="348" name="trifinder" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import matplotlib.pyplot as plt
+from matplotlib.tri import Triangulation
+from matplotlib.patches import Polygon
+import numpy as np
+import math
+import time
+
+def update_polygon(tri):
+    if tri == -1:
+        points = [0, 0, 0]
+    else:
+        points = triangulation.triangles[tri]
+    xs = triangulation.x[points]
+    ys = triangulation.y[points]
+    polygon.set_xy(list(zip(xs, ys)))
+
+
+def motion_notify(event):
+    if event.inaxes is None:
+        tri = -1
+    else:
+        tri = trifinder(event.xdata, event.ydata)
+    update_polygon(tri)
+    print('In triangle %i' % tri)
+    plt.title('In triangle %i' % tri)
+    event.canvas.draw()
+
+
+# Create a Triangulation.
+n_angles = 16
+n_radii = 5
+min_radius = 0.25
+radii = np.linspace(min_radius, 0.95, n_radii)
+angles = np.linspace(0, 2*math.pi, n_angles, endpoint=False)
+angles = np.repeat(angles[..., np.newaxis], n_radii, axis=1)
+angles[:, 1::2] += math.pi / n_angles
+x = (radii*np.cos(angles)).flatten()
+y = (radii*np.sin(angles)).flatten()
+triangulation = Triangulation(x, y)
+xmid = x[triangulation.triangles].mean(axis=1)
+ymid = y[triangulation.triangles].mean(axis=1)
+mask = np.where(xmid*xmid + ymid*ymid < min_radius*min_radius, 1, 0)
+triangulation.set_mask(mask)
+
+# Use the triangulation's default TriFinder object.
+trifinder = triangulation.get_trifinder()
+
+# Setup plot and callbacks.
+plt.subplot(111, aspect='equal')
+plt.triplot(triangulation, 'bo-')
+polygon = Polygon([[0, 0], [0, 0]], facecolor='y')  # dummy data for xs,ys
+update_polygon(-1)
+plt.gca().add_patch(polygon)
+plt.gcf().canvas.mpl_connect('motion_notify_event', motion_notify)
+plt.show()
+]]>
+            </script>
+            <property name="Legend.Display" value="false"/>
+        </chart>
+        <chart icon="" id="349" name="lorenz" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+
+def lorenz(x, y, z, s=10, r=28, b=2.667):
+    x_dot = s*(y - x)
+    y_dot = r*x - y - x*z
+    z_dot = x*y - b*z
+    return x_dot, y_dot, z_dot
+
+
+dt = 0.01
+stepCnt = 10000
+
+# Need one more for the initial values
+xs = np.empty((stepCnt + 1,))
+ys = np.empty((stepCnt + 1,))
+zs = np.empty((stepCnt + 1,))
+
+# Setting initial values
+xs[0], ys[0], zs[0] = (0., 1., 1.05)
+
+# Stepping through "time".
+for i in range(stepCnt):
+    # Derivatives of the X, Y, Z state
+    x_dot, y_dot, z_dot = lorenz(xs[i], ys[i], zs[i])
+    xs[i + 1] = xs[i] + (x_dot * dt)
+    ys[i + 1] = ys[i] + (y_dot * dt)
+    zs[i + 1] = zs[i] + (z_dot * dt)
+
+fig = plt.figure()
+ax = fig.gca(projection='3d')
+
+ax.plot(xs, ys, zs, lw=0.5)
+ax.set_xlabel("X Axis")
+ax.set_ylabel("Y Axis")
+ax.set_zlabel("Z Axis")
+ax.set_title("Lorenz Attractor")
+
+plt.show()]]>
+            </script>
+        </chart>
+        <chart icon="" id="350" name="xkcd" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+with plt.xkcd():
+    # Based on "Stove Ownership" from XKCD by Randall Monroe
+    # http://xkcd.com/418/
+
+    fig = plt.figure()
+    ax = fig.add_axes((0.05, 0.2, 0.4, 0.7))
+    ax.spines['right'].set_color('none')
+    ax.spines['top'].set_color('none')
+    plt.xticks([])
+    plt.yticks([])
+    ax.set_ylim([-30, 10])
+
+    data = np.ones(100)
+    data[70:] -= np.arange(30)
+
+    plt.annotate(
+        'THE DAY I REALIZED\nI COULD COOK BACON\nWHENEVER I WANTED',
+        xy=(70, 1), arrowprops=dict(arrowstyle='->'), xytext=(15, -10))
+
+    plt.plot(data)
+
+    plt.xlabel('time')
+    plt.ylabel('my overall health')
+    fig.text(
+        0.25, 0.05,
+        '"Stove Ownership" from xkcd by Randall Monroe',
+        ha='center')
+
+    # Based on "The Data So Far" from XKCD by Randall Monroe
+    # http://xkcd.com/373/
+
+    ax = fig.add_axes((0.55, 0.2, 0.4, 0.7))
+    ax.bar([0, 1], [0, 100], 0.25)
+    ax.spines['right'].set_color('none')
+    ax.spines['top'].set_color('none')
+    ax.xaxis.set_ticks_position('bottom')
+    ax.set_xticks([0, 1])
+    ax.set_xlim([-0.5, 1.5])
+    ax.set_ylim([0, 110])
+    ax.set_xticklabels(['CONFIRMED BY\nEXPERIMENT', 'REFUTED BY\nEXPERIMENT'])
+    plt.yticks([])
+
+    plt.title("CLAIMS OF SUPERNATURAL POWERS")
+
+    fig.text(
+        0.75, 0.05,
+        '"The Data So Far" from xkcd by Randall Monroe',
+        ha='center')
+
+plt.show()]]>
+            </script>
+        </chart>
+        <chart icon="" id="351" name="annotation" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+ax = plt.subplot(111)
+
+t = np.arange(0.0, 5.0, 0.01)
+s = np.cos(2*np.pi*t)
+line, = plt.plot(t, s, lw=2)
+
+plt.annotate('local max', xy=(2, 1), xytext=(3, 1.5),
+            arrowprops=dict(facecolor='black', shrink=0.05),
+            )
+
+plt.ylim(-2,2)
+
+plt.show()]]>
+            </script>
+        </chart>
+        <chart icon="" id="352" name="polarannotation" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 
 fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
+ax = fig.add_subplot(111, polar=True)
+r = np.arange(0,1,0.001)
+theta = 2*2*np.pi*r
+line, = ax.plot(theta, r, color='#ee8d18', lw=3)
 
-# load some test data for demonstration and plot a wireframe
-X, Y, Z = axes3d.get_test_data(0.1)
-ax.plot_wireframe(X, Y, Z, rstride=5, cstride=5)
+ind = 800
+thisr, thistheta = r[ind], theta[ind]
+ax.plot([thistheta], [thisr], 'o')
+ax.annotate('a polar annotation',
+            xy=(thistheta, thisr),  # theta, radius
+            xytext=(0.05, 0.05),    # fraction, fraction
+            textcoords='figure fraction',
+            arrowprops=dict(facecolor='black', shrink=0.05),
+            horizontalalignment='left',
+            verticalalignment='bottom',
+            )
+plt.show()
+]]>
+            </script>
+            <property name="Legend.Display" value="false"/>
+        </chart>
+        <chart icon="" id="353" name="closestpoint" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+import scipy.spatial as spatial
 
-import math
+def fmt(x, y):
+    return 'x: {x:0.2f}\ny: {y:0.2f}'.format(x=x, y=y)
 
-def thr():
-  time.sleep(1)
-  # rotate the axes and update
-  for angle in range(0, 3600):
-    t1 = time.perf_counter()
-    ax.view_init(30, math.sin(angle/30)*70)
-    plt.draw()
-    t2 = time.perf_counter()
-    print('took ' + str((t2 - t1) * 1000) + " ms")
-    time.sleep(0.1)
+class FollowDotCursor(object):
+    """Display the x,y location of the nearest data point.
+    https://stackoverflow.com/a/4674445/190597 (Joe Kington)
+    https://stackoverflow.com/a/20637433/190597 (unutbu)
+    """
+    def __init__(self, ax, x, y, formatter=fmt, offsets=(-20, 20)):
+        try:
+            x = np.asarray(x, dtype='float')
+        except (TypeError, ValueError):
+            x = np.asarray(mdates.date2num(x), dtype='float')
+        y = np.asarray(y, dtype='float')
+        mask = ~(np.isnan(x) | np.isnan(y))
+        x = x[mask]
+        y = y[mask]
+        self._points = np.column_stack((x, y))
+        self.offsets = offsets
+        y = y[np.abs(y - y.mean()) <= 3 * y.std()]
+        self.scale = x.ptp()
+        self.scale = y.ptp() / self.scale if self.scale else 1
+        self.tree = spatial.cKDTree(self.scaled(self._points))
+        self.formatter = formatter
+        self.ax = ax
+        self.fig = ax.figure
+        self.ax.xaxis.set_label_position('top')
+        self.dot = ax.scatter(
+            [x.min()], [y.min()], s=130, color='green', alpha=0.7)
+        self.annotation = self.setup_annotation()
+        plt.connect('motion_notify_event', self)
+
+    def scaled(self, points):
+        points = np.asarray(points)
+        return points * (self.scale, 1)
+
+    def __call__(self, event):
+        ax = self.ax
+        # event.inaxes is always the current axis. If you use twinx, ax could be
+        # a different axis.
+        if event.inaxes == ax:
+            x, y = event.xdata, event.ydata
+        elif event.inaxes is None:
+            return
+        else:
+            inv = ax.transData.inverted()
+            x, y = inv.transform([(event.x, event.y)]).ravel()
+        annotation = self.annotation
+        x, y = self.snap(x, y)
+        annotation.xy = x, y
+        annotation.set_text(self.formatter(x, y))
+        self.dot.set_offsets((x, y))
+        event.canvas.draw()
+
+    def setup_annotation(self):
+        """Draw and hide the annotation box."""
+        annotation = self.ax.annotate(
+            '', xy=(0, 0), ha = 'right',
+            xytext = self.offsets, textcoords = 'offset points', va = 'bottom',
+            bbox = dict(
+                boxstyle='round,pad=0.5', fc='yellow', alpha=0.75),
+            arrowprops = dict(
+                arrowstyle='->', connectionstyle='arc3,rad=0'))
+        return annotation
+
+    def snap(self, x, y):
+        """Return the value in self.tree closest to x, y."""
+        dist, idx = self.tree.query(self.scaled((x, y)), k=1, p=1)
+        try:
+            return self._points[idx]
+        except IndexError:
+            # IndexError: index out of bounds
+            return self._points[0]
 
 
-import threading
+np.random.seed(6)
+numdata = 100
+t = np.linspace(0.05, 0.11, numdata)
+y1 = np.cumsum(np.random.random(numdata) - 0.5) * 40000
+y2 = np.cumsum(np.random.random(numdata) - 0.5) * 0.002
 
-t = threading.Thread(target=thr)
-t.start()]]>
+fig = plt.figure()
+ax1 = fig.add_subplot(111)
+ax2 = ax1.twinx()
+
+ax1.plot(t, y1, 'r-', label='y1')
+ax2.plot(t, y2, 'g-', label='y2')
+
+cursor1 = FollowDotCursor(ax1, t, y1)
+cursor2 = FollowDotCursor(ax2, t, y2)
+plt.show()]]>
+            </script>
+        </chart>
+        <chart icon="" id="354" name="widgets" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[from numpy import pi, sin
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.widgets import Slider, Button, RadioButtons
+
+def signal(amp, freq):
+    return amp * sin(2 * pi * freq * t)
+
+axis_color = 'lightgoldenrodyellow'
+fig = plt.figure()
+
+# Draw the plot
+ax = fig.add_subplot(111)
+fig.subplots_adjust(left=0.25, bottom=0.25)
+t = np.arange(0.0, 1.0, 0.001)
+amp_0 = 5
+freq_0 = 3
+[line] = ax.plot(t, signal(amp_0, freq_0), linewidth=2, color='red')
+ax.set_xlim([0, 1])
+ax.set_ylim([-10, 10])
+
+# Add two sliders for tweaking the parameters
+amp_slider_ax  = fig.add_axes([0.25, 0.15, 0.65, 0.03])
+amp_slider = Slider(amp_slider_ax, 'Amp', 0.1, 10.0, valinit=amp_0)
+freq_slider_ax = fig.add_axes([0.25, 0.1, 0.65, 0.03])
+freq_slider = Slider(freq_slider_ax, 'Freq', 0.1, 30.0, valinit=freq_0)
+def sliders_on_changed(val):
+    line.set_ydata(signal(amp_slider.val, freq_slider.val))
+    fig.canvas.draw_idle()
+amp_slider.on_changed(sliders_on_changed)
+freq_slider.on_changed(sliders_on_changed)
+
+# Add a button for resetting the parameters
+reset_button_ax = fig.add_axes([0.8, 0.025, 0.1, 0.04])
+reset_button = Button(reset_button_ax, 'Reset', color=axis_color, hovercolor='0.975')
+def reset_button_on_clicked(mouse_event):
+    freq_slider.reset()
+    amp_slider.reset()
+reset_button.on_clicked(reset_button_on_clicked)
+
+# Add a set of radio buttons for changing color
+color_radios_ax = fig.add_axes([0.025, 0.5, 0.15, 0.15])
+color_radios = RadioButtons(color_radios_ax, ('red', 'blue', 'green'), active=0)
+def color_radios_on_clicked(label):
+    line.set_color(label)
+    fig.canvas.draw_idle()
+color_radios.on_clicked(color_radios_on_clicked)
+
+plt.show()]]>
+            </script>
+        </chart>
+        <chart icon="" id="355" name="subplots" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+def add_subplot_axes(ax,rect,axisbg='w'):
+    fig = plt.gcf()
+    box = ax.get_position()
+    width = box.width
+    height = box.height
+    inax_position  = ax.transAxes.transform(rect[0:2])
+    transFigure = fig.transFigure.inverted()
+    infig_position = transFigure.transform(inax_position)    
+    x = infig_position[0]
+    y = infig_position[1]
+    width *= rect[2]
+    height *= rect[3]  # <= Typo was here
+    subax = fig.add_axes([x,y,width,height])
+    x_labelsize = subax.get_xticklabels()[0].get_size()
+    y_labelsize = subax.get_yticklabels()[0].get_size()
+    x_labelsize *= rect[2]**0.5
+    y_labelsize *= rect[3]**0.5
+    subax.xaxis.set_tick_params(labelsize=x_labelsize)
+    subax.yaxis.set_tick_params(labelsize=y_labelsize)
+    return subax
+
+def example1():
+    fig = plt.figure(figsize=(10,10))
+    ax = fig.add_subplot(111)
+    rect = [0.2,0.2,0.7,0.7]
+    ax1 = add_subplot_axes(ax,rect)
+    ax2 = add_subplot_axes(ax1,rect)
+    ax3 = add_subplot_axes(ax2,rect)
+    plt.show()
+
+def example2():
+    fig = plt.figure(figsize=(10,10))
+    axes = []
+    subpos = [0.2,0.6,0.3,0.3]
+    x = np.linspace(-np.pi,np.pi)
+    for i in range(4):
+        axes.append(fig.add_subplot(2,2,i+1))
+    for axis in axes:
+        axis.set_xlim(-np.pi,np.pi)
+        axis.set_ylim(-1,3)
+        axis.plot(x,np.sin(x))
+        subax1 = add_subplot_axes(axis,subpos)
+        subax2 = add_subplot_axes(subax1,subpos)
+        subax1.plot(x,np.sin(x))
+        subax2.plot(x,np.sin(x))
+
+example2()
+plt.show()
+]]>
+            </script>
+        </chart>
+        <chart icon="" id="356" name="multicursor" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.widgets import MultiCursor
+
+t = np.arange(0.0, 2.0, 0.01)
+s1 = np.sin(2*np.pi*t)
+s2 = np.sin(4*np.pi*t)
+fig = plt.figure()
+ax1 = fig.add_subplot(211)
+ax1.plot(t, s1)
+
+
+ax2 = fig.add_subplot(212, sharex=ax1)
+ax2.plot(t, s2)
+
+# setting useblit to False should not be necessary
+multi = MultiCursor(fig.canvas, (ax1, ax2), color='r', lw=1)
+plt.show()]]>
+            </script>
+        </chart>
+        <chart icon="" id="357" name="histogram" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import numpy as np
+import matplotlib.pyplot as plt
+
+mu, sigma = 120, 15
+x = mu + sigma * np.random.randn(10000)
+
+# the histogram of the data
+n, bins, patches = plt.hist(x, 50, density=1, facecolor='g', alpha=0.75)
+
+
+plt.xlabel('Smarts')
+plt.ylabel('Probability')
+plt.title('Histogram of IQ')
+plt.text(60, .025, r'$\mu=100,\ \sigma=15$')
+plt.axis([40, 160, 0, 0.03])
+plt.grid(True)
+plt.show()
+]]>
+            </script>
+            <property name="Legend.Display" value="false"/>
+        </chart>
+        <chart icon="" id="358" name="kendelltau" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+print("This chart will fail if scipy and seaborn are not installed")
+
+from scipy.stats import kendalltau
+import seaborn as sns
+sns.set(style="ticks")
+
+rs = np.random.RandomState(11)
+x = rs.gamma(2, size=1000)
+y = -.5 * x + rs.normal(size=1000)
+
+sns.jointplot(x, y, kind="hex", stat_func=kendalltau, color="#4CB391")
+]]>
+            </script>
+        </chart>
+        <chart icon="" id="365" name="hover annotation" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import matplotlib.pyplot as plt
+import numpy as np; np.random.seed(1)
+
+x = np.random.rand(15)
+y = np.random.rand(15)
+names = np.array(list("ABCDEFGHIJKLMNO"))
+c = np.random.randint(1,5,size=15)
+
+norm = plt.Normalize(1,4)
+cmap = plt.cm.RdYlGn
+
+fig,ax = plt.subplots()
+sc = plt.scatter(x,y,c=c, s=100, cmap=cmap, norm=norm)
+
+annot = ax.annotate("", xy=(0,0), xytext=(20,20),textcoords="offset points",
+                    bbox=dict(boxstyle="round", fc="w"),
+                    arrowprops=dict(arrowstyle="->"))
+annot.set_visible(False)
+
+def update_annot(ind):
+
+    pos = sc.get_offsets()[ind["ind"][0]]
+    annot.xy = pos
+    text = "{}, {}".format(" ".join(list(map(str,ind["ind"]))), 
+                           " ".join([names[n] for n in ind["ind"]]))
+    annot.set_text(text)
+    annot.get_bbox_patch().set_facecolor(cmap(norm(c[ind["ind"][0]])))
+    annot.get_bbox_patch().set_alpha(0.4)
+
+
+def hover(event):
+    vis = annot.get_visible()
+    if event.inaxes == ax:
+        cont, ind = sc.contains(event)
+        if cont:
+            update_annot(ind)
+            annot.set_visible(True)
+            fig.canvas.draw_idle()
+        else:
+            if vis:
+                annot.set_visible(False)
+                fig.canvas.draw_idle()
+
+fig.canvas.mpl_connect("motion_notify_event", hover)
+
+plt.title("Hover the mouse over the dots!")
+plt.show()
+
+# source: https://stackoverflow.com/a/47166787/635587]]>
+            </script>
+        </chart>
+        <chart icon="" id="369" name="legend toggle" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+t = np.arange(0.0, 0.2, 0.1)
+y1 = 2*np.sin(2*np.pi*t)
+y2 = 4*np.sin(2*np.pi*2*t)
+
+fig, ax = plt.subplots()
+ax.set_title('Click on legend line to toggle line on/off')
+line1, = ax.plot(t, y1, lw=2, color='red', label='1 HZ')
+line2, = ax.plot(t, y2, lw=2, color='blue', label='2 HZ')
+leg = ax.legend(loc='upper left', fancybox=True, shadow=True)
+leg.get_frame().set_alpha(0.4)
+
+
+# we will set up a dict mapping legend line to orig line, and enable
+# picking on the legend line
+lines = [line1, line2]
+lined = dict()
+for legline, origline in zip(leg.get_lines(), lines):
+    legline.set_picker(5)  # 5 pts tolerance
+    lined[legline] = origline
+
+
+def onpick(event):
+    # on the pick event, find the orig line corresponding to the
+    # legend proxy line, and toggle the visibility
+    legline = event.artist
+    origline = lined[legline]
+    vis = not origline.get_visible()
+    origline.set_visible(vis)
+    # Change the alpha on the line in the legend so we can see what lines
+    # have been toggled
+    if vis:
+        legline.set_alpha(1.0)
+    else:
+        legline.set_alpha(0.2)
+    fig.canvas.draw()
+
+fig.canvas.mpl_connect('pick_event', onpick)
+]]>
+            </script>
+        </chart>
+        <chart icon="" id="370" name="zoom" template="" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+"""
+If you click on a point in the first window, the z and y limits of the
+second will be adjusted so that the center of the zoom in the second
+window will be the x,y coordinates of the clicked point.
+
+Note the diameter of the circles in the scatter are defined in
+points**2, so their size is independent of the zoom
+"""
+from matplotlib.pyplot import figure, show
+import numpy
+fig = figure()
+
+axsrc = fig.add_subplot(211, xlim=(0, 1), ylim=(0, 1), autoscale_on=False)
+axzoom = fig.add_subplot(212, xlim=(0.45, 0.55), ylim=(0.4, .6),
+                             autoscale_on=False)
+axsrc.set_title('Click to')
+axzoom.set_title('zoom ')
+x, y, s, c = numpy.random.rand(4, 200)
+s *= 200
+
+
+axsrc.scatter(x, y, s, c)
+axzoom.scatter(x, y, s, c)
+
+
+def onpress(event):
+    if event.button != 1 or event.inaxes != axsrc:
+        return
+    x, y = event.xdata, event.ydata
+    if x and y:
+        axzoom.set_xlim(x - 0.1, x + 0.1)
+        axzoom.set_ylim(y - 0.1, y + 0.1)
+    fig.canvas.draw()
+
+fig.canvas.mpl_connect('motion_notify_event', onpress)
+fig.canvas.mpl_connect('button_press_event', onpress)
+fig.canvas.mpl_connect('button_release_event', onpress)
+show()]]>
             </script>
         </chart>
     </charts>
