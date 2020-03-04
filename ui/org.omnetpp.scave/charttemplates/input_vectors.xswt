@@ -10,9 +10,9 @@
   <layout x:class="GridLayout" numColumns="1" />
   <x:children>
     <label text="Filter expression:" />
-    <text x:id="filter" x:style="BORDER|MULTI|V_SCROLL|H_SCROLL" x:id.contentAssist="filter">
+    <styledText x:id="filter" x:style="BORDER|WRAP|V_SCROLL|H_SCROLL" x:id.contentAssist="filter">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true" />
-    </text>
+    </styledText>
     <composite>
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" />
       <layout x:class="GridLayout" numColumns="2" makeColumnsEqualWidth="true" />

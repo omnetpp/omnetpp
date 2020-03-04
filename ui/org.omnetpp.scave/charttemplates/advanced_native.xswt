@@ -12,8 +12,8 @@
     <label text="Here you can further customize the plot using properties."/>
     <label text="The syntax is one entry per line in the 'key : value' format; comments (#) are also accepted."/>
     <label text="Content Assist available (hit Ctrl+Space)."/>
-    <text x:id="plot.properties" x:style="BORDER|MULTI" x:id.contentAssist="filter">
+    <styledText x:id="plot.properties" x:style="BORDER|V_SCROLL|H_SCROLL" x:id.contentAssist="plotproperties">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true"/>
-    </text>
+    </styledText>
   </x:children>
 </xswt>

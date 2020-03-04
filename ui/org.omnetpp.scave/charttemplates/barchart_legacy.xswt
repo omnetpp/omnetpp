@@ -18,9 +18,9 @@
             <label text="Filter expression:">
             	<layoutData x:class="GridData" horizontalAlignment="BEGINNING" verticalAlignment="BEGINNING"/>
             </label>
-            <text x:id="filter" x:style="BORDER|WRAP|MULTI" x:id.contentAssist="filter">
+            <styledText x:id="filter" x:style="BORDER|WRAP|V_SCROLL|H_SCROLL" x:id.contentAssist="filter">
                 <layoutData x:class="GridData" horizontalAlignment="FILL" verticalAlignment="FILL" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true"/>
-            </text>
+            </styledText>
 
             <label text="Groups:"/>
             <combo x:id="groups" x:style="BORDER" x:id.content="$itervarnames,$runattrnames">

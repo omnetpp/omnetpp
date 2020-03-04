@@ -49,6 +49,8 @@ import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.common.wizard.XSWTDataBinding;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.assist.FilterContentProposalProvider;
+import org.omnetpp.scave.assist.MatplotlibrcContentProposalProvider;
+import org.omnetpp.scave.assist.NativePlotPropertiesContentProposalProvider;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.Run;
@@ -230,10 +232,14 @@ public class ChartEditForm {
             String contentAssist = (String)control.getData("contentAssist");
             if (contentAssist != null)  {
                 IContentProposalProvider proposalProvider = null;
-                if (contentAssist.equals("filter"))
+                if (contentAssist.equalsIgnoreCase("filter"))
                     proposalProvider = new FilterContentProposalProvider();
+                else if (contentAssist.equalsIgnoreCase("plotproperties"))
+                    proposalProvider = new NativePlotPropertiesContentProposalProvider();
+                else if (contentAssist.equalsIgnoreCase("matplotlibrc"))
+                    proposalProvider = new MatplotlibrcContentProposalProvider();
                 else
-                    ; //TODO error
+                    ScavePlugin.getDefault().getLog().warn("Invalid value for 'contentAssist' attribute in XSWT file: '" + contentAssist + "'");
 
                 if (proposalProvider != null) {
                     if (control instanceof Text)
@@ -241,7 +247,7 @@ public class ChartEditForm {
                     else if (control instanceof StyledText)
                         ContentAssistUtil.configureStyledText((StyledText)control, proposalProvider);
                     else
-                        ; //TODO error
+                        ScavePlugin.getDefault().getLog().warn("'contentAssist' attribute in XSWT file is ignored for widget of type '" + control.getClass().getSimpleName() + "', it is only valid for Text and StyledText widgets");
                 }
             }
 

@@ -13,9 +13,9 @@
         <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </label>
 
-    <text x:id="filter" x:style="BORDER|MULTI|V_SCROLL|H_SCROLL" x:id.contentAssist="filter">
+    <styledText x:id="filter" x:style="BORDER|WRAP|V_SCROLL|H_SCROLL" x:id.contentAssist="filter">
       <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true" />
-    </text>
+    </styledText>
 
     <label text="Multiple attributes can be selected in both fields below, separated by commas.">
         <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
