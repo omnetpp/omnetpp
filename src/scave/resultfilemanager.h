@@ -443,6 +443,7 @@ class SCAVE_API ResultFileManager
     const RunList& getRuns() const {return runList;}
     FileRunList getFileRunsInFile(ResultFile *file) const;
     RunList getRunsInFile(ResultFile *file) const;
+    int getNumRunsInFile(ResultFile *file) const {return getRunsInFile(file).size();} // for InputsPage, could be made constant cost
     ResultFileList getFilesForRun(Run *run) const;
 
     const ResultItem& getItem(ID id) const;
@@ -488,6 +489,13 @@ class SCAVE_API ResultFileManager
     IDList getVectorsInFileRun(FileRun *fileRun) const;
     IDList getStatisticsInFileRun(FileRun *fileRun) const;
     IDList getHistogramsInFileRun(FileRun *fileRun) const;
+
+    // these ones are called from InputsTree; would be nice to make them constant-cost
+    int getNumScalarsInFileRun(FileRun *fileRun) const {return getScalarsInFileRun(fileRun).size();}
+    int getNumParametersInFileRun(FileRun *fileRun) const {return getParametersInFileRun(fileRun).size();}
+    int getNumVectorsInFileRun(FileRun *fileRun) const {return getVectorsInFileRun(fileRun).size();}
+    int getNumStatisticsInFileRun(FileRun *fileRun) const {return getStatisticsInFileRun(fileRun).size();}
+    int getNumHistogramsInFileRun(FileRun *fileRun) const {return getHistogramsInFileRun(fileRun).size();}
 
     // These are the ones that are called from Python. They return (runID, name) pairs (the values are queried later).
     std::vector< std::pair<std::string, std::string> > getMatchingItervars(const char *pattern) const;

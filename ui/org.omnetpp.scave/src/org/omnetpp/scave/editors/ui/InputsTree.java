@@ -7,6 +7,7 @@
 
 package org.omnetpp.scave.editors.ui;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,11 +30,13 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.Debug;
+import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ResultFilesTracker;
 import org.omnetpp.scave.editors.treeproviders.Sorter;
+import org.omnetpp.scave.engine.FileRun;
 import org.omnetpp.scave.engine.OrderedKeyValueList;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -55,12 +58,19 @@ public class InputsTree extends TreeViewer {
         String fileName;
         String filePath;
         List<RunNode> runs = null;
+        int numRuns;
+        long fileSize = -1;
     }
 
     class RunNode {
         String runId;
         List<AttrGroup> attrGroups = null;
         List<AttrNode> attrs = null;
+        int numParameters;
+        int numScalars;
+        int numVectors;
+        int numStatistics;
+        int numHistograms;
     }
 
     class AttrGroup {
@@ -115,11 +125,11 @@ public class InputsTree extends TreeViewer {
                             FileNode fileNode = new FileNode();
                             fileNode.fileName = resultFile.getFileName();
                             fileNode.filePath = resultFile.getFilePath();
+                            fileNode.numRuns = manager.getNumRunsInFile(resultFile);
                             fileNodes.add(fileNode);
                         }
                     }
                 }
-                Debug.println("InputTree rebuild: " + (System.currentTimeMillis()-start) + "ms");
                 return null;
             }
         });
@@ -139,6 +149,9 @@ public class InputsTree extends TreeViewer {
         return result;
     }
 
+    /**
+     * Content provider
+     */
     private class InputsViewContentProvider implements ITreeContentProvider {
         public Object[] getChildren(Object element) {
             if (element instanceof Analysis)
@@ -157,6 +170,12 @@ public class InputsTree extends TreeViewer {
                             for (Run run : Sorter.sort(runlist)) {
                                 RunNode runNode = new RunNode();
                                 runNode.runId = run.getRunName();
+                                FileRun fileRun = manager.getFileRun(resultFile, run);
+                                runNode.numParameters = manager.getNumParametersInFileRun(fileRun);
+                                runNode.numScalars = manager.getNumScalarsInFileRun(fileRun);
+                                runNode.numVectors = manager.getNumVectorsInFileRun(fileRun);
+                                runNode.numStatistics = manager.getNumStatisticsInFileRun(fileRun);
+                                runNode.numHistograms = manager.getNumHistogramsInFileRun(fileRun);
                                 fileNode.runs.add(runNode);
                             }
                             return null;
@@ -219,21 +238,55 @@ public class InputsTree extends TreeViewer {
         }
     }
 
+    /**
+     * Label provider
+     */
     private class InputsTreeLabelProvider extends LabelProvider {
 
         @Override
         public String getText(Object element) {
             if (element instanceof InputFile)
-                return ((InputFile)element).getName() + " (matches " + StringUtils.formatCounted(matchingFiles.get(element).size(), "file") + ")";
-            else if (element instanceof FileNode)
-                return ((FileNode)element).filePath;
-            else if (element instanceof RunNode)
-                return StringUtils.defaultIfBlank(((RunNode)element).runId, "(unnamed run)");
+                return ((InputFile)element).getName() + "  (matches " + StringUtils.formatCounted(matchingFiles.get(element).size(), "file") + ")";
+            else if (element instanceof FileNode) {
+                FileNode fileNode = (FileNode)element;
+                if (fileNode.fileSize == -1)
+                    fileNode.fileSize = new File(getFileSystemFilePath(fileNode)).length();
+                return fileNode.filePath + "  (" + FileUtils.humanReadableByteCountBin(fileNode.fileSize) + ", " + StringUtils.formatCounted(fileNode.numRuns, "run") +  ")";
+            }
+            else if (element instanceof RunNode) {
+                RunNode runNode = (RunNode)element;
+                return StringUtils.defaultIfBlank(runNode.runId, "(unnamed run)") + "  (" + getContentSummary(runNode) + ")";
+            }
             else if (element instanceof AttrGroup)
                 return ((AttrGroup)element).name;
             else if (element instanceof AttrNode)
                 return ((AttrNode)element).name + " = " + ((AttrNode)element).value;
             return null;
+        }
+
+        private String getFileSystemFilePath(FileNode fileNode) {
+            String fileSystemFilePath = ResultFileManager.callWithReadLock(manager, new Callable<String>() {
+                @Override
+                public String call() {
+                     return manager.getFile(fileNode.filePath).getFileSystemFilePath();
+                }
+            });
+            return fileSystemFilePath;
+        }
+
+        private String getContentSummary(RunNode runNode) {
+            StringBuffer buffer = new StringBuffer();
+            if (runNode.numParameters > 0)
+                buffer.append(", " + StringUtils.formatCounted(runNode.numParameters, "saved parameter"));
+            if (runNode.numScalars > 0)
+                buffer.append(", " + StringUtils.formatCounted(runNode.numScalars, "scalar"));
+            if (runNode.numVectors > 0)
+                buffer.append(", " + StringUtils.formatCounted(runNode.numVectors, "vector"));
+            if (runNode.numStatistics > 0)
+                buffer.append(", " + StringUtils.formatCounted(runNode.numStatistics, "statistic"));
+            if (runNode.numHistograms > 0)
+                buffer.append(", " + StringUtils.formatCounted(runNode.numHistograms, "histogram"));
+            return buffer.toString().substring(2);
         }
 
         @Override

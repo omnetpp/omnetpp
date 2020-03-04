@@ -152,4 +152,17 @@ public class FileUtils {
         byte[] bytes = charset==null ? content.getBytes() : content.getBytes(charset);
         writeBinaryFile(target, bytes);
     }
+
+    public static String humanReadableByteCountBin(long bytes) {
+        // Source: https://stackoverflow.com/questions/3758606/how-to-convert-byte-size-into-human-readable-format-in-java (improved code)
+        // Note: We prefer this code to FileUtils.byteCountToDisplaySize(long size) from org.apache.commons.io, which displays whole numbers and SI (decimal) unit prefixes.
+        long b = bytes == Long.MIN_VALUE ? Long.MAX_VALUE : Math.abs(bytes);
+        return b < 1024L ? bytes + " B"
+                : b <= 0xfffccccccccccccL >> 40 ? String.format("%.1f KiB", bytes / 0x1p10)
+                : b <= 0xfffccccccccccccL >> 30 ? String.format("%.1f MiB", bytes / 0x1p20)
+                : b <= 0xfffccccccccccccL >> 20 ? String.format("%.1f GiB", bytes / 0x1p30)
+                : b <= 0xfffccccccccccccL >> 10 ? String.format("%.1f TiB", bytes / 0x1p40)
+                : b <= 0xfffccccccccccccL ? String.format("%.1f PiB", (bytes >> 10) / 0x1p40)
+                : String.format("%.1f EiB", (bytes >> 20) / 0x1p40);
+    }
 }
