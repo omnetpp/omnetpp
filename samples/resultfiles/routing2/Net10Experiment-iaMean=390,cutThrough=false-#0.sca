@@ -1,14 +1,14 @@
-version 2
-run Net10Experiment-44-20180509-13:43:05-16179
+version 3
+run Net10Experiment-44-20200304-18:05:54-194608
 attr configname Net10Experiment
-attr datetime 20180509-13:43:05
+attr datetime 20200304-18:05:54
 attr experiment Net10Experiment
 attr inifile omnetpp.ini
 attr iterationvars "$iaMean=390, $cutThrough=false"
 attr iterationvarsf iaMean=390,cutThrough=false-
 attr measurement "$iaMean=390, $cutThrough=false"
 attr network networks.Net10
-attr processid 16179
+attr processid 194608
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -16,13 +16,312 @@ attr runnumber 44
 attr seedset 44
 itervar cutThrough false
 itervar iaMean 390
-param **.destAddresses "\"1\""
-param **.app.sendIaTime "exponential(390 ms)"
-param **.queue[*].useCutThroughSwitching false
-param **.queue[*].frameCapacity 100
-param **.appType "\"App\""
-param **.app.packetLength "4096 bytes"
+config cmdenv-redirect-output true
+config network networks.Net10
+config **.destAddresses "\"1\""
+config **.app.sendIaTime "exponential(390 ms)"
+config **.queue[*].useCutThroughSwitching false
+config **.queue[*].frameCapacity 100
+config **.vector-recording false
+config sim-time-limit 1200s
+config **.appType "\"App\""
+config **.app.packetLength "4096 bytes"
 
+par Net10.rte[1].port$o[0].channel typename "\"networks.Net10.C\""
+par Net10.rte[1].port$o[0].channel disabled false
+par Net10.rte[1].port$o[0].channel delay 0.000851358s
+attr unit s
+par Net10.rte[1].port$o[0].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[1].port$o[0].channel ber 0
+par Net10.rte[1].port$o[0].channel per 0
+par Net10.rte[0].port$o[0].channel typename "\"networks.Net10.C\""
+par Net10.rte[0].port$o[0].channel disabled false
+par Net10.rte[0].port$o[0].channel delay 0.000489288s
+attr unit s
+par Net10.rte[0].port$o[0].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[0].port$o[0].channel ber 0
+par Net10.rte[0].port$o[0].channel per 0
+par Net10.rte[0].port$o[1].channel typename "\"networks.Net10.C\""
+par Net10.rte[0].port$o[1].channel disabled false
+par Net10.rte[0].port$o[1].channel delay 0.000194316s
+attr unit s
+par Net10.rte[0].port$o[1].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[0].port$o[1].channel ber 0
+par Net10.rte[0].port$o[1].channel per 0
+par Net10.rte[2].port$o[0].channel typename "\"networks.Net10.C\""
+par Net10.rte[2].port$o[0].channel disabled false
+par Net10.rte[2].port$o[0].channel delay 0.000128597s
+attr unit s
+par Net10.rte[2].port$o[0].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[2].port$o[0].channel ber 0
+par Net10.rte[2].port$o[0].channel per 0
+par Net10.rte[2].port$o[1].channel typename "\"networks.Net10.C\""
+par Net10.rte[2].port$o[1].channel disabled false
+par Net10.rte[2].port$o[1].channel delay 0.000770176s
+attr unit s
+par Net10.rte[2].port$o[1].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[2].port$o[1].channel ber 0
+par Net10.rte[2].port$o[1].channel per 0
+par Net10.rte[5].port$o[0].channel typename "\"networks.Net10.C\""
+par Net10.rte[5].port$o[0].channel disabled false
+par Net10.rte[5].port$o[0].channel delay 0.000665065s
+attr unit s
+par Net10.rte[5].port$o[0].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[5].port$o[0].channel ber 0
+par Net10.rte[5].port$o[0].channel per 0
+par Net10.rte[5].port$o[1].channel typename "\"networks.Net10.C\""
+par Net10.rte[5].port$o[1].channel disabled false
+par Net10.rte[5].port$o[1].channel delay 0.000424451s
+attr unit s
+par Net10.rte[5].port$o[1].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[5].port$o[1].channel ber 0
+par Net10.rte[5].port$o[1].channel per 0
+par Net10.rte[7].port$o[0].channel typename "\"networks.Net10.C\""
+par Net10.rte[7].port$o[0].channel disabled false
+par Net10.rte[7].port$o[0].channel delay 0.000265977s
+attr unit s
+par Net10.rte[7].port$o[0].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[7].port$o[0].channel ber 0
+par Net10.rte[7].port$o[0].channel per 0
+par Net10.rte[7].port$o[1].channel typename "\"networks.Net10.C\""
+par Net10.rte[7].port$o[1].channel disabled false
+par Net10.rte[7].port$o[1].channel delay 0.00042338s
+attr unit s
+par Net10.rte[7].port$o[1].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[7].port$o[1].channel ber 0
+par Net10.rte[7].port$o[1].channel per 0
+par Net10.rte[9].port$o[0].channel typename "\"networks.Net10.C\""
+par Net10.rte[9].port$o[0].channel disabled false
+par Net10.rte[9].port$o[0].channel delay 0.000366738s
+attr unit s
+par Net10.rte[9].port$o[0].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[9].port$o[0].channel ber 0
+par Net10.rte[9].port$o[0].channel per 0
+par Net10.rte[9].port$o[1].channel typename "\"networks.Net10.C\""
+par Net10.rte[9].port$o[1].channel disabled false
+par Net10.rte[9].port$o[1].channel delay 0.000648315s
+attr unit s
+par Net10.rte[9].port$o[1].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[9].port$o[1].channel ber 0
+par Net10.rte[9].port$o[1].channel per 0
+par Net10.rte[8].port$o[0].channel typename "\"networks.Net10.C\""
+par Net10.rte[8].port$o[0].channel disabled false
+par Net10.rte[8].port$o[0].channel delay 0.000331271s
+attr unit s
+par Net10.rte[8].port$o[0].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[8].port$o[0].channel ber 0
+par Net10.rte[8].port$o[0].channel per 0
+par Net10.rte[8].port$o[1].channel typename "\"networks.Net10.C\""
+par Net10.rte[8].port$o[1].channel disabled false
+par Net10.rte[8].port$o[1].channel delay 0.000454402s
+attr unit s
+par Net10.rte[8].port$o[1].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[8].port$o[1].channel ber 0
+par Net10.rte[8].port$o[1].channel per 0
+par Net10.rte[4].port$o[0].channel typename "\"networks.Net10.C\""
+par Net10.rte[4].port$o[0].channel disabled false
+par Net10.rte[4].port$o[0].channel delay 0.000711933s
+attr unit s
+par Net10.rte[4].port$o[0].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[4].port$o[0].channel ber 0
+par Net10.rte[4].port$o[0].channel per 0
+par Net10.rte[4].port$o[1].channel typename "\"networks.Net10.C\""
+par Net10.rte[4].port$o[1].channel disabled false
+par Net10.rte[4].port$o[1].channel delay 0.000468165s
+attr unit s
+par Net10.rte[4].port$o[1].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[4].port$o[1].channel ber 0
+par Net10.rte[4].port$o[1].channel per 0
+par Net10.rte[3].port$o[0].channel typename "\"networks.Net10.C\""
+par Net10.rte[3].port$o[0].channel disabled false
+par Net10.rte[3].port$o[0].channel delay 0.000354304s
+attr unit s
+par Net10.rte[3].port$o[0].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[3].port$o[0].channel ber 0
+par Net10.rte[3].port$o[0].channel per 0
+par Net10.rte[3].port$o[1].channel typename "\"networks.Net10.C\""
+par Net10.rte[3].port$o[1].channel disabled false
+par Net10.rte[3].port$o[1].channel delay 0.000558912s
+attr unit s
+par Net10.rte[3].port$o[1].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[3].port$o[1].channel ber 0
+par Net10.rte[3].port$o[1].channel per 0
+par Net10.rte[1].port$o[1].channel typename "\"networks.Net10.C\""
+par Net10.rte[1].port$o[1].channel disabled false
+par Net10.rte[1].port$o[1].channel delay 0.000925158s
+attr unit s
+par Net10.rte[1].port$o[1].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[1].port$o[1].channel ber 0
+par Net10.rte[1].port$o[1].channel per 0
+par Net10.rte[3].port$o[2].channel typename "\"networks.Net10.C\""
+par Net10.rte[3].port$o[2].channel disabled false
+par Net10.rte[3].port$o[2].channel delay 0.000739133s
+attr unit s
+par Net10.rte[3].port$o[2].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[3].port$o[2].channel ber 0
+par Net10.rte[3].port$o[2].channel per 0
+par Net10.rte[2].port$o[2].channel typename "\"networks.Net10.C\""
+par Net10.rte[2].port$o[2].channel disabled false
+par Net10.rte[2].port$o[2].channel delay 0.000287307s
+attr unit s
+par Net10.rte[2].port$o[2].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[2].port$o[2].channel ber 0
+par Net10.rte[2].port$o[2].channel per 0
+par Net10.rte[2].port$o[3].channel typename "\"networks.Net10.C\""
+par Net10.rte[2].port$o[3].channel disabled false
+par Net10.rte[2].port$o[3].channel delay 0.000964474s
+attr unit s
+par Net10.rte[2].port$o[3].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[2].port$o[3].channel ber 0
+par Net10.rte[2].port$o[3].channel per 0
+par Net10.rte[4].port$o[2].channel typename "\"networks.Net10.C\""
+par Net10.rte[4].port$o[2].channel disabled false
+par Net10.rte[4].port$o[2].channel delay 0.000668369s
+attr unit s
+par Net10.rte[4].port$o[2].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[4].port$o[2].channel ber 0
+par Net10.rte[4].port$o[2].channel per 0
+par Net10.rte[4].port$o[3].channel typename "\"networks.Net10.C\""
+par Net10.rte[4].port$o[3].channel disabled false
+par Net10.rte[4].port$o[3].channel delay 0.000510959s
+attr unit s
+par Net10.rte[4].port$o[3].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[4].port$o[3].channel ber 0
+par Net10.rte[4].port$o[3].channel per 0
+par Net10.rte[6].port$o[0].channel typename "\"networks.Net10.C\""
+par Net10.rte[6].port$o[0].channel disabled false
+par Net10.rte[6].port$o[0].channel delay 0.000818762s
+attr unit s
+par Net10.rte[6].port$o[0].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[6].port$o[0].channel ber 0
+par Net10.rte[6].port$o[0].channel per 0
+par Net10.rte[6].port$o[1].channel typename "\"networks.Net10.C\""
+par Net10.rte[6].port$o[1].channel disabled false
+par Net10.rte[6].port$o[1].channel delay 0.000484886s
+attr unit s
+par Net10.rte[6].port$o[1].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[6].port$o[1].channel ber 0
+par Net10.rte[6].port$o[1].channel per 0
+par Net10.rte[8].port$o[2].channel typename "\"networks.Net10.C\""
+par Net10.rte[8].port$o[2].channel disabled false
+par Net10.rte[8].port$o[2].channel delay 0.00057937s
+attr unit s
+par Net10.rte[8].port$o[2].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[8].port$o[2].channel ber 0
+par Net10.rte[8].port$o[2].channel per 0
+par Net10.rte[9].port$o[2].channel typename "\"networks.Net10.C\""
+par Net10.rte[9].port$o[2].channel disabled false
+par Net10.rte[9].port$o[2].channel delay 0.000202117s
+attr unit s
+par Net10.rte[9].port$o[2].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[9].port$o[2].channel ber 0
+par Net10.rte[9].port$o[2].channel per 0
+par Net10.rte[6].port$o[2].channel typename "\"networks.Net10.C\""
+par Net10.rte[6].port$o[2].channel disabled false
+par Net10.rte[6].port$o[2].channel delay 0.000257314s
+attr unit s
+par Net10.rte[6].port$o[2].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[6].port$o[2].channel ber 0
+par Net10.rte[6].port$o[2].channel per 0
+par Net10.rte[6].port$o[3].channel typename "\"networks.Net10.C\""
+par Net10.rte[6].port$o[3].channel disabled false
+par Net10.rte[6].port$o[3].channel delay 0.000296109s
+attr unit s
+par Net10.rte[6].port$o[3].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[6].port$o[3].channel ber 0
+par Net10.rte[6].port$o[3].channel per 0
+par Net10.rte[7].port$o[2].channel typename "\"networks.Net10.C\""
+par Net10.rte[7].port$o[2].channel disabled false
+par Net10.rte[7].port$o[2].channel delay 0.000259713s
+attr unit s
+par Net10.rte[7].port$o[2].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[7].port$o[2].channel ber 0
+par Net10.rte[7].port$o[2].channel per 0
+par Net10.rte[5].port$o[2].channel typename "\"networks.Net10.C\""
+par Net10.rte[5].port$o[2].channel disabled false
+par Net10.rte[5].port$o[2].channel delay 0.000961725s
+attr unit s
+par Net10.rte[5].port$o[2].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[5].port$o[2].channel ber 0
+par Net10.rte[5].port$o[2].channel per 0
+par Net10.rte[6].port$o[4].channel typename "\"networks.Net10.C\""
+par Net10.rte[6].port$o[4].channel disabled false
+par Net10.rte[6].port$o[4].channel delay 0.000760379s
+attr unit s
+par Net10.rte[6].port$o[4].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[6].port$o[4].channel ber 0
+par Net10.rte[6].port$o[4].channel per 0
+par Net10.rte[0].port$o[2].channel typename "\"networks.Net10.C\""
+par Net10.rte[0].port$o[2].channel disabled false
+par Net10.rte[0].port$o[2].channel delay 0.000949016s
+attr unit s
+par Net10.rte[0].port$o[2].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[0].port$o[2].channel ber 0
+par Net10.rte[0].port$o[2].channel per 0
+par Net10.rte[5].port$o[3].channel typename "\"networks.Net10.C\""
+par Net10.rte[5].port$o[3].channel disabled false
+par Net10.rte[5].port$o[3].channel delay 0.000459857s
+attr unit s
+par Net10.rte[5].port$o[3].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[5].port$o[3].channel ber 0
+par Net10.rte[5].port$o[3].channel per 0
+par Net10.rte[1].port$o[2].channel typename "\"networks.Net10.C\""
+par Net10.rte[1].port$o[2].channel disabled false
+par Net10.rte[1].port$o[2].channel delay 0.000893642s
+attr unit s
+par Net10.rte[1].port$o[2].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[1].port$o[2].channel ber 0
+par Net10.rte[1].port$o[2].channel per 0
+par Net10.rte[2].port$o[4].channel typename "\"networks.Net10.C\""
+par Net10.rte[2].port$o[4].channel disabled false
+par Net10.rte[2].port$o[4].channel delay 0.000560853s
+attr unit s
+par Net10.rte[2].port$o[4].channel datarate 1e+06bps
+attr unit bps
+par Net10.rte[2].port$o[4].channel ber 0
+par Net10.rte[2].port$o[4].channel per 0
+par Net10.rte[0].app typename "\"node.App\""
+par Net10.rte[0].app address 0
+par Net10.rte[0].app destAddresses "\"1\""
+par Net10.rte[0].app sendIaTime exponential(390ms)
+attr unit s
+par Net10.rte[0].app packetLength 4096byte
+attr unit byte
 scalar Net10.rte[0].app hopCount:mean -nan
 attr interpolationmode none
 attr title "hop count of arrived packets, mean"
@@ -37,6 +336,7 @@ scalar Net10.rte[0].app endToEndDelay:max -nan
 attr interpolationmode none
 attr title "end-to-end delay of arrived packets, max"
 attr unit s
+par Net10.rte[0].routing typename "\"node.Routing\""
 statistic Net10.rte[0].routing outputIf:histogram
 field count 15259
 field mean 0
@@ -107,6 +407,9 @@ scalar Net10.rte[0].routing drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[0].queue[0] typename "\"node.L2Queue\""
+par Net10.rte[0].queue[0] frameCapacity 100
+par Net10.rte[0].queue[0] useCutThroughSwitching false
 scalar Net10.rte[0].queue[0] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -169,6 +472,9 @@ scalar Net10.rte[0].queue[0] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[0].queue[1] typename "\"node.L2Queue\""
+par Net10.rte[0].queue[1] frameCapacity 100
+par Net10.rte[0].queue[1] useCutThroughSwitching false
 scalar Net10.rte[0].queue[1] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -230,6 +536,9 @@ scalar Net10.rte[0].queue[1] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[0].queue[2] typename "\"node.L2Queue\""
+par Net10.rte[0].queue[2] frameCapacity 100
+par Net10.rte[0].queue[2] useCutThroughSwitching false
 scalar Net10.rte[0].queue[2] rxBytes:count 12214
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -292,6 +601,16 @@ scalar Net10.rte[0].queue[2] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[0] typename "\"node.Node\""
+par Net10.rte[0] address 0
+par Net10.rte[0] appType "\"App\""
+par Net10.rte[1].app typename "\"node.App\""
+par Net10.rte[1].app address 1
+par Net10.rte[1].app destAddresses "\"1\""
+par Net10.rte[1].app sendIaTime exponential(390ms)
+attr unit s
+par Net10.rte[1].app packetLength 4096byte
+attr unit byte
 scalar Net10.rte[1].app hopCount:mean 1.9975523790875
 attr interpolationmode none
 attr title "hop count of arrived packets, mean"
@@ -306,6 +625,7 @@ scalar Net10.rte[1].app endToEndDelay:max 0.327547485544
 attr interpolationmode none
 attr title "end-to-end delay of arrived packets, max"
 attr unit s
+par Net10.rte[1].routing typename "\"node.Routing\""
 statistic Net10.rte[1].routing outputIf:histogram
 field count 30642
 field mean -1
@@ -328,6 +648,9 @@ scalar Net10.rte[1].routing drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[1].queue[0] typename "\"node.L2Queue\""
+par Net10.rte[1].queue[0] frameCapacity 100
+par Net10.rte[1].queue[0] useCutThroughSwitching false
 scalar Net10.rte[1].queue[0] rxBytes:count 15259
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -390,6 +713,9 @@ scalar Net10.rte[1].queue[0] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[1].queue[1] typename "\"node.L2Queue\""
+par Net10.rte[1].queue[1] frameCapacity 100
+par Net10.rte[1].queue[1] useCutThroughSwitching false
 scalar Net10.rte[1].queue[1] rxBytes:count 3048
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -452,6 +778,9 @@ scalar Net10.rte[1].queue[1] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[1].queue[2] typename "\"node.L2Queue\""
+par Net10.rte[1].queue[2] frameCapacity 100
+par Net10.rte[1].queue[2] useCutThroughSwitching false
 scalar Net10.rte[1].queue[2] rxBytes:count 9249
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -514,6 +843,16 @@ scalar Net10.rte[1].queue[2] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[1] typename "\"node.Node\""
+par Net10.rte[1] address 1
+par Net10.rte[1] appType "\"App\""
+par Net10.rte[2].app typename "\"node.App\""
+par Net10.rte[2].app address 2
+par Net10.rte[2].app destAddresses "\"1\""
+par Net10.rte[2].app sendIaTime exponential(390ms)
+attr unit s
+par Net10.rte[2].app packetLength 4096byte
+attr unit byte
 scalar Net10.rte[2].app hopCount:mean -nan
 attr interpolationmode none
 attr title "hop count of arrived packets, mean"
@@ -528,6 +867,7 @@ scalar Net10.rte[2].app endToEndDelay:max -nan
 attr interpolationmode none
 attr title "end-to-end delay of arrived packets, max"
 attr unit s
+par Net10.rte[2].routing typename "\"node.Routing\""
 statistic Net10.rte[2].routing outputIf:histogram
 field count 9249
 field mean 4
@@ -550,6 +890,9 @@ scalar Net10.rte[2].routing drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[2].queue[0] typename "\"node.L2Queue\""
+par Net10.rte[2].queue[0] frameCapacity 100
+par Net10.rte[2].queue[0] useCutThroughSwitching false
 scalar Net10.rte[2].queue[0] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -611,6 +954,9 @@ scalar Net10.rte[2].queue[0] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[2].queue[1] typename "\"node.L2Queue\""
+par Net10.rte[2].queue[1] frameCapacity 100
+par Net10.rte[2].queue[1] useCutThroughSwitching false
 scalar Net10.rte[2].queue[1] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -672,6 +1018,9 @@ scalar Net10.rte[2].queue[1] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[2].queue[2] typename "\"node.L2Queue\""
+par Net10.rte[2].queue[2] frameCapacity 100
+par Net10.rte[2].queue[2] useCutThroughSwitching false
 scalar Net10.rte[2].queue[2] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -733,6 +1082,9 @@ scalar Net10.rte[2].queue[2] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[2].queue[3] typename "\"node.L2Queue\""
+par Net10.rte[2].queue[3] frameCapacity 100
+par Net10.rte[2].queue[3] useCutThroughSwitching false
 scalar Net10.rte[2].queue[3] rxBytes:count 6202
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -795,6 +1147,9 @@ scalar Net10.rte[2].queue[3] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[2].queue[4] typename "\"node.L2Queue\""
+par Net10.rte[2].queue[4] frameCapacity 100
+par Net10.rte[2].queue[4] useCutThroughSwitching false
 scalar Net10.rte[2].queue[4] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -857,6 +1212,16 @@ scalar Net10.rte[2].queue[4] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[2] typename "\"node.Node\""
+par Net10.rte[2] address 2
+par Net10.rte[2] appType "\"App\""
+par Net10.rte[3].app typename "\"node.App\""
+par Net10.rte[3].app address 3
+par Net10.rte[3].app destAddresses "\"1\""
+par Net10.rte[3].app sendIaTime exponential(390ms)
+attr unit s
+par Net10.rte[3].app packetLength 4096byte
+attr unit byte
 scalar Net10.rte[3].app hopCount:mean -nan
 attr interpolationmode none
 attr title "hop count of arrived packets, mean"
@@ -871,6 +1236,7 @@ scalar Net10.rte[3].app endToEndDelay:max -nan
 attr interpolationmode none
 attr title "end-to-end delay of arrived packets, max"
 attr unit s
+par Net10.rte[3].routing typename "\"node.Routing\""
 statistic Net10.rte[3].routing outputIf:histogram
 field count 3048
 field mean 1
@@ -893,6 +1259,9 @@ scalar Net10.rte[3].routing drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[3].queue[0] typename "\"node.L2Queue\""
+par Net10.rte[3].queue[0] frameCapacity 100
+par Net10.rte[3].queue[0] useCutThroughSwitching false
 scalar Net10.rte[3].queue[0] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -954,6 +1323,9 @@ scalar Net10.rte[3].queue[0] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[3].queue[1] typename "\"node.L2Queue\""
+par Net10.rte[3].queue[1] frameCapacity 100
+par Net10.rte[3].queue[1] useCutThroughSwitching false
 scalar Net10.rte[3].queue[1] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -1016,6 +1388,9 @@ scalar Net10.rte[3].queue[1] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[3].queue[2] typename "\"node.L2Queue\""
+par Net10.rte[3].queue[2] frameCapacity 100
+par Net10.rte[3].queue[2] useCutThroughSwitching false
 scalar Net10.rte[3].queue[2] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -1077,6 +1452,16 @@ scalar Net10.rte[3].queue[2] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[3] typename "\"node.Node\""
+par Net10.rte[3] address 3
+par Net10.rte[3] appType "\"App\""
+par Net10.rte[4].app typename "\"node.App\""
+par Net10.rte[4].app address 4
+par Net10.rte[4].app destAddresses "\"1\""
+par Net10.rte[4].app sendIaTime exponential(390ms)
+attr unit s
+par Net10.rte[4].app packetLength 4096byte
+attr unit byte
 scalar Net10.rte[4].app hopCount:mean -nan
 attr interpolationmode none
 attr title "hop count of arrived packets, mean"
@@ -1091,6 +1476,7 @@ scalar Net10.rte[4].app endToEndDelay:max -nan
 attr interpolationmode none
 attr title "end-to-end delay of arrived packets, max"
 attr unit s
+par Net10.rte[4].routing typename "\"node.Routing\""
 statistic Net10.rte[4].routing outputIf:histogram
 field count 6202
 field mean 2
@@ -1113,6 +1499,9 @@ scalar Net10.rte[4].routing drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[4].queue[0] typename "\"node.L2Queue\""
+par Net10.rte[4].queue[0] frameCapacity 100
+par Net10.rte[4].queue[0] useCutThroughSwitching false
 scalar Net10.rte[4].queue[0] rxBytes:count 3053
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -1175,6 +1564,9 @@ scalar Net10.rte[4].queue[0] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[4].queue[1] typename "\"node.L2Queue\""
+par Net10.rte[4].queue[1] frameCapacity 100
+par Net10.rte[4].queue[1] useCutThroughSwitching false
 scalar Net10.rte[4].queue[1] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -1236,6 +1628,9 @@ scalar Net10.rte[4].queue[1] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[4].queue[2] typename "\"node.L2Queue\""
+par Net10.rte[4].queue[2] frameCapacity 100
+par Net10.rte[4].queue[2] useCutThroughSwitching false
 scalar Net10.rte[4].queue[2] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -1298,6 +1693,9 @@ scalar Net10.rte[4].queue[2] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[4].queue[3] typename "\"node.L2Queue\""
+par Net10.rte[4].queue[3] frameCapacity 100
+par Net10.rte[4].queue[3] useCutThroughSwitching false
 scalar Net10.rte[4].queue[3] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -1359,6 +1757,16 @@ scalar Net10.rte[4].queue[3] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[4] typename "\"node.Node\""
+par Net10.rte[4] address 4
+par Net10.rte[4] appType "\"App\""
+par Net10.rte[5].app typename "\"node.App\""
+par Net10.rte[5].app address 5
+par Net10.rte[5].app destAddresses "\"1\""
+par Net10.rte[5].app sendIaTime exponential(390ms)
+attr unit s
+par Net10.rte[5].app packetLength 4096byte
+attr unit byte
 scalar Net10.rte[5].app hopCount:mean -nan
 attr interpolationmode none
 attr title "hop count of arrived packets, mean"
@@ -1373,6 +1781,7 @@ scalar Net10.rte[5].app endToEndDelay:max -nan
 attr interpolationmode none
 attr title "end-to-end delay of arrived packets, max"
 attr unit s
+par Net10.rte[5].routing typename "\"node.Routing\""
 statistic Net10.rte[5].routing outputIf:histogram
 field count 12214
 field mean 3
@@ -1395,6 +1804,9 @@ scalar Net10.rte[5].routing drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[5].queue[0] typename "\"node.L2Queue\""
+par Net10.rte[5].queue[0] frameCapacity 100
+par Net10.rte[5].queue[0] useCutThroughSwitching false
 scalar Net10.rte[5].queue[0] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -1456,6 +1868,9 @@ scalar Net10.rte[5].queue[0] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[5].queue[1] typename "\"node.L2Queue\""
+par Net10.rte[5].queue[1] frameCapacity 100
+par Net10.rte[5].queue[1] useCutThroughSwitching false
 scalar Net10.rte[5].queue[1] rxBytes:count 3141
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -1518,6 +1933,9 @@ scalar Net10.rte[5].queue[1] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[5].queue[2] typename "\"node.L2Queue\""
+par Net10.rte[5].queue[2] frameCapacity 100
+par Net10.rte[5].queue[2] useCutThroughSwitching false
 scalar Net10.rte[5].queue[2] rxBytes:count 6042
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -1580,6 +1998,9 @@ scalar Net10.rte[5].queue[2] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[5].queue[3] typename "\"node.L2Queue\""
+par Net10.rte[5].queue[3] frameCapacity 100
+par Net10.rte[5].queue[3] useCutThroughSwitching false
 scalar Net10.rte[5].queue[3] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -1642,6 +2063,16 @@ scalar Net10.rte[5].queue[3] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[5] typename "\"node.Node\""
+par Net10.rte[5] address 5
+par Net10.rte[5] appType "\"App\""
+par Net10.rte[6].app typename "\"node.App\""
+par Net10.rte[6].app address 6
+par Net10.rte[6].app destAddresses "\"1\""
+par Net10.rte[6].app sendIaTime exponential(390ms)
+attr unit s
+par Net10.rte[6].app packetLength 4096byte
+attr unit byte
 scalar Net10.rte[6].app hopCount:mean -nan
 attr interpolationmode none
 attr title "hop count of arrived packets, mean"
@@ -1656,6 +2087,7 @@ scalar Net10.rte[6].app endToEndDelay:max -nan
 attr interpolationmode none
 attr title "end-to-end delay of arrived packets, max"
 attr unit s
+par Net10.rte[6].routing typename "\"node.Routing\""
 statistic Net10.rte[6].routing outputIf:histogram
 field count 6042
 field mean 4
@@ -1678,6 +2110,9 @@ scalar Net10.rte[6].routing drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[6].queue[0] typename "\"node.L2Queue\""
+par Net10.rte[6].queue[0] frameCapacity 100
+par Net10.rte[6].queue[0] useCutThroughSwitching false
 scalar Net10.rte[6].queue[0] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -1739,6 +2174,9 @@ scalar Net10.rte[6].queue[0] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[6].queue[1] typename "\"node.L2Queue\""
+par Net10.rte[6].queue[1] frameCapacity 100
+par Net10.rte[6].queue[1] useCutThroughSwitching false
 scalar Net10.rte[6].queue[1] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -1800,6 +2238,9 @@ scalar Net10.rte[6].queue[1] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[6].queue[2] typename "\"node.L2Queue\""
+par Net10.rte[6].queue[2] frameCapacity 100
+par Net10.rte[6].queue[2] useCutThroughSwitching false
 scalar Net10.rte[6].queue[2] rxBytes:count 3001
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -1862,6 +2303,9 @@ scalar Net10.rte[6].queue[2] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[6].queue[3] typename "\"node.L2Queue\""
+par Net10.rte[6].queue[3] frameCapacity 100
+par Net10.rte[6].queue[3] useCutThroughSwitching false
 scalar Net10.rte[6].queue[3] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -1923,6 +2367,9 @@ scalar Net10.rte[6].queue[3] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[6].queue[4] typename "\"node.L2Queue\""
+par Net10.rte[6].queue[4] frameCapacity 100
+par Net10.rte[6].queue[4] useCutThroughSwitching false
 scalar Net10.rte[6].queue[4] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -1985,6 +2432,16 @@ scalar Net10.rte[6].queue[4] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[6] typename "\"node.Node\""
+par Net10.rte[6] address 6
+par Net10.rte[6] appType "\"App\""
+par Net10.rte[7].app typename "\"node.App\""
+par Net10.rte[7].app address 7
+par Net10.rte[7].app destAddresses "\"1\""
+par Net10.rte[7].app sendIaTime exponential(390ms)
+attr unit s
+par Net10.rte[7].app packetLength 4096byte
+attr unit byte
 scalar Net10.rte[7].app hopCount:mean -nan
 attr interpolationmode none
 attr title "hop count of arrived packets, mean"
@@ -1999,6 +2456,7 @@ scalar Net10.rte[7].app endToEndDelay:max -nan
 attr interpolationmode none
 attr title "end-to-end delay of arrived packets, max"
 attr unit s
+par Net10.rte[7].routing typename "\"node.Routing\""
 statistic Net10.rte[7].routing outputIf:histogram
 field count 3141
 field mean 0
@@ -2069,6 +2527,9 @@ scalar Net10.rte[7].routing drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[7].queue[0] typename "\"node.L2Queue\""
+par Net10.rte[7].queue[0] frameCapacity 100
+par Net10.rte[7].queue[0] useCutThroughSwitching false
 scalar Net10.rte[7].queue[0] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -2131,6 +2592,9 @@ scalar Net10.rte[7].queue[0] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[7].queue[1] typename "\"node.L2Queue\""
+par Net10.rte[7].queue[1] frameCapacity 100
+par Net10.rte[7].queue[1] useCutThroughSwitching false
 scalar Net10.rte[7].queue[1] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -2192,6 +2656,9 @@ scalar Net10.rte[7].queue[1] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[7].queue[2] typename "\"node.L2Queue\""
+par Net10.rte[7].queue[2] frameCapacity 100
+par Net10.rte[7].queue[2] useCutThroughSwitching false
 scalar Net10.rte[7].queue[2] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -2253,6 +2720,16 @@ scalar Net10.rte[7].queue[2] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[7] typename "\"node.Node\""
+par Net10.rte[7] address 7
+par Net10.rte[7] appType "\"App\""
+par Net10.rte[8].app typename "\"node.App\""
+par Net10.rte[8].app address 8
+par Net10.rte[8].app destAddresses "\"1\""
+par Net10.rte[8].app sendIaTime exponential(390ms)
+attr unit s
+par Net10.rte[8].app packetLength 4096byte
+attr unit byte
 scalar Net10.rte[8].app hopCount:mean -nan
 attr interpolationmode none
 attr title "hop count of arrived packets, mean"
@@ -2267,6 +2744,7 @@ scalar Net10.rte[8].app endToEndDelay:max -nan
 attr interpolationmode none
 attr title "end-to-end delay of arrived packets, max"
 attr unit s
+par Net10.rte[8].routing typename "\"node.Routing\""
 statistic Net10.rte[8].routing outputIf:histogram
 field count 3053
 field mean 1
@@ -2289,6 +2767,9 @@ scalar Net10.rte[8].routing drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[8].queue[0] typename "\"node.L2Queue\""
+par Net10.rte[8].queue[0] frameCapacity 100
+par Net10.rte[8].queue[0] useCutThroughSwitching false
 scalar Net10.rte[8].queue[0] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -2350,6 +2831,9 @@ scalar Net10.rte[8].queue[0] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[8].queue[1] typename "\"node.L2Queue\""
+par Net10.rte[8].queue[1] frameCapacity 100
+par Net10.rte[8].queue[1] useCutThroughSwitching false
 scalar Net10.rte[8].queue[1] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -2412,6 +2896,9 @@ scalar Net10.rte[8].queue[1] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[8].queue[2] typename "\"node.L2Queue\""
+par Net10.rte[8].queue[2] frameCapacity 100
+par Net10.rte[8].queue[2] useCutThroughSwitching false
 scalar Net10.rte[8].queue[2] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -2473,6 +2960,16 @@ scalar Net10.rte[8].queue[2] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[8] typename "\"node.Node\""
+par Net10.rte[8] address 8
+par Net10.rte[8] appType "\"App\""
+par Net10.rte[9].app typename "\"node.App\""
+par Net10.rte[9].app address 9
+par Net10.rte[9].app destAddresses "\"1\""
+par Net10.rte[9].app sendIaTime exponential(390ms)
+attr unit s
+par Net10.rte[9].app packetLength 4096byte
+attr unit byte
 scalar Net10.rte[9].app hopCount:mean -nan
 attr interpolationmode none
 attr title "hop count of arrived packets, mean"
@@ -2487,6 +2984,7 @@ scalar Net10.rte[9].app endToEndDelay:max -nan
 attr interpolationmode none
 attr title "end-to-end delay of arrived packets, max"
 attr unit s
+par Net10.rte[9].routing typename "\"node.Routing\""
 statistic Net10.rte[9].routing outputIf:histogram
 field count 3001
 field mean 2
@@ -2509,6 +3007,9 @@ scalar Net10.rte[9].routing drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[9].queue[0] typename "\"node.L2Queue\""
+par Net10.rte[9].queue[0] frameCapacity 100
+par Net10.rte[9].queue[0] useCutThroughSwitching false
 scalar Net10.rte[9].queue[0] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -2570,6 +3071,9 @@ scalar Net10.rte[9].queue[0] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[9].queue[1] typename "\"node.L2Queue\""
+par Net10.rte[9].queue[1] frameCapacity 100
+par Net10.rte[9].queue[1] useCutThroughSwitching false
 scalar Net10.rte[9].queue[1] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -2631,6 +3135,9 @@ scalar Net10.rte[9].queue[1] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[9].queue[2] typename "\"node.L2Queue\""
+par Net10.rte[9].queue[2] frameCapacity 100
+par Net10.rte[9].queue[2] useCutThroughSwitching false
 scalar Net10.rte[9].queue[2] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -2693,4 +3200,8 @@ scalar Net10.rte[9].queue[2] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net10.rte[9] typename "\"node.Node\""
+par Net10.rte[9] address 9
+par Net10.rte[9] appType "\"App\""
+par Net10 typename "\"networks.Net10\""
 

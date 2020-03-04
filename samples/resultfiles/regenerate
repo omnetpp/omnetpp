@@ -12,5 +12,5 @@ mkdir aloha routing routing2 fifo
 (cd ../aloha; rm -f results/*; opp_runall ./aloha$DBG -u Cmdenv -c PureAlohaExperiment && cp results/*.sca results/*-numHosts=10,iaMean=3-#0.vec results/*-numHosts=10,iaMean=9-#0.vec $HERE/aloha)
 (cd ../routing; rm -f results/*; opp_runall ./routing$DBG -u Cmdenv -c Net5SaturatedQueue && cp results/* $HERE/routing)
 (cd ../routing; rm -f results/*; opp_runall ./routing$DBG -u Cmdenv -c Net10Experiment && cp results/*.sca $HERE/routing2)
-(cd ../fifo && rm -f results/* && opp_runall ./fifo$DBG -u Cmdenv -c Fifo1 && cp results/* $HERE)
+(cd ../fifo && rm -f results/* && opp_runall ./fifo$DBG -u Cmdenv -c Fifo1 --sim-time-limit=1000s && cp results/* $HERE)
 

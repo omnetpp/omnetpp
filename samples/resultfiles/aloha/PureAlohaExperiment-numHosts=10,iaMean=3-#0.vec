@@ -1,14 +1,14 @@
-version 2
-run PureAlohaExperiment-4-20180509-13:42:20-16102
+version 3
+run PureAlohaExperiment-4-20200304-18:05:49-194560
 attr configname PureAlohaExperiment
-attr datetime 20180509-13:42:20
+attr datetime 20200304-18:05:49
 attr experiment PureAlohaExperiment
 attr inifile omnetpp.ini
 attr iterationvars "$numHosts=10, $iaMean=3"
 attr iterationvarsf numHosts=10,iaMean=3-
 attr measurement "$numHosts=10, $iaMean=3"
 attr network Aloha
-attr processid 16102
+attr processid 194560
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -16,18 +16,23 @@ attr runnumber 4
 attr seedset 4
 itervar iaMean 3
 itervar numHosts 10
-param Aloha.numHosts 10
-param Aloha.host[*].iaTime exponential(3s)
-param Aloha.numHosts 20
-param Aloha.slotTime 0
-param Aloha.txRate 9.6kbps
-param Aloha.host[*].pkLenBits 952b
-param **.x "uniform(0m, 1000m)"
-param **.y "uniform(0m, 1000m)"
-param **.animationHoldTimeOnCollision 0s
-param **.idleAnimationSpeed 1
-param **.transmissionEdgeAnimationSpeed 1e-6
-param **.midTransmissionAnimationSpeed 1e-1
+config cmdenv-redirect-output true
+config description "Channel utilization in the function of packet generation frequency"
+config repeat 2
+config sim-time-limit 90min
+config Aloha.numHosts 10
+config Aloha.host[*].iaTime exponential(3s)
+config network Aloha
+config Aloha.numHosts 20
+config Aloha.slotTime 0s
+config Aloha.txRate 9.6kbps
+config Aloha.host[*].pkLenBits 952b
+config **.x "uniform(0m, 1000m)"
+config **.y "uniform(0m, 1000m)"
+config **.animationHoldTimeOnCollision 0s
+config **.idleAnimationSpeed 1
+config **.transmissionEdgeAnimationSpeed 1e-6
+config **.midTransmissionAnimationSpeed 1e-1
 
 vector 0 Aloha.server serverChannelState:vector ETV
 attr enum IDLE=0,TRANSMISSION=1,COLLISION=2

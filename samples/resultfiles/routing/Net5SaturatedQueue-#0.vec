@@ -1,25 +1,30 @@
-version 2
-run Net5SaturatedQueue-0-20180509-13:42:24-16148
+version 3
+run Net5SaturatedQueue-0-20200304-18:05:52-194586
 attr configname Net5SaturatedQueue
-attr datetime 20180509-13:42:24
+attr datetime 20200304-18:05:52
 attr experiment Net5SaturatedQueue
 attr inifile omnetpp.ini
 attr iterationvars ""
 attr iterationvarsf ""
 attr measurement ""
 attr network networks.Net5
-attr processid 16148
+attr processid 194586
 attr repetition 0
 attr replication #0
 attr resultdir results
 attr runnumber 0
 attr seedset 0
-param **.frameCapacity 10
-param **.destAddresses "\"1 4\""
-param **.sendIaTime "uniform(100ms, 500ms)"
-param **.app.packetLength "intuniform(50 bytes, 4096 bytes)"
-param **.appType "\"App\""
-param **.app.packetLength "4096 bytes"
+config cmdenv-redirect-output true
+config network networks.Net5
+config sim-time-limit 200s
+config **.frameCapacity 10
+config **.destAddresses "\"1 4\""
+config **.sendIaTime "uniform(100ms, 500ms)"
+config **.app.packetLength "intuniform(50 bytes, 4096 bytes)"
+config **.channel.*.result-recording-modes -vector
+config **.result-recording-modes all
+config **.appType "\"App\""
+config **.app.packetLength "4096 bytes"
 
 vector 0 Net5.rte[0].queue[0] qlen:vector ETV
 attr interpolationmode sample-hold

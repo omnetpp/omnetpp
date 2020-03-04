@@ -1,26 +1,150 @@
-version 2
-run Net5SaturatedQueue-0-20180509-13:42:24-16148
+version 3
+run Net5SaturatedQueue-0-20200304-18:05:52-194586
 attr configname Net5SaturatedQueue
-attr datetime 20180509-13:42:24
+attr datetime 20200304-18:05:52
 attr experiment Net5SaturatedQueue
 attr inifile omnetpp.ini
 attr iterationvars ""
 attr iterationvarsf ""
 attr measurement ""
 attr network networks.Net5
-attr processid 16148
+attr processid 194586
 attr repetition 0
 attr replication #0
 attr resultdir results
 attr runnumber 0
 attr seedset 0
-param **.frameCapacity 10
-param **.destAddresses "\"1 4\""
-param **.sendIaTime "uniform(100ms, 500ms)"
-param **.app.packetLength "intuniform(50 bytes, 4096 bytes)"
-param **.appType "\"App\""
-param **.app.packetLength "4096 bytes"
+config cmdenv-redirect-output true
+config network networks.Net5
+config sim-time-limit 200s
+config **.frameCapacity 10
+config **.destAddresses "\"1 4\""
+config **.sendIaTime "uniform(100ms, 500ms)"
+config **.app.packetLength "intuniform(50 bytes, 4096 bytes)"
+config **.channel.*.result-recording-modes -vector
+config **.result-recording-modes all
+config **.appType "\"App\""
+config **.app.packetLength "4096 bytes"
 
+par Net5.rte[1].port$o[0].channel typename "\"networks.Net5.C\""
+par Net5.rte[1].port$o[0].channel disabled false
+par Net5.rte[1].port$o[0].channel delay 0.548818s
+attr unit s
+par Net5.rte[1].port$o[0].channel datarate 59691.6bps
+attr unit bps
+par Net5.rte[1].port$o[0].channel ber 0
+par Net5.rte[1].port$o[0].channel per 0
+par Net5.rte[0].port$o[0].channel typename "\"networks.Net5.C\""
+par Net5.rte[0].port$o[0].channel disabled false
+par Net5.rte[0].port$o[0].channel delay 0.715192s
+attr unit s
+par Net5.rte[0].port$o[0].channel datarate 84582.3bps
+attr unit bps
+par Net5.rte[0].port$o[0].channel ber 0
+par Net5.rte[0].port$o[0].channel per 0
+par Net5.rte[0].port$o[1].channel typename "\"networks.Net5.C\""
+par Net5.rte[0].port$o[1].channel disabled false
+par Net5.rte[0].port$o[1].channel delay 0.602767s
+attr unit s
+par Net5.rte[0].port$o[1].channel datarate 85936.6bps
+attr unit bps
+par Net5.rte[0].port$o[1].channel ber 0
+par Net5.rte[0].port$o[1].channel per 0
+par Net5.rte[2].port$o[0].channel typename "\"networks.Net5.C\""
+par Net5.rte[2].port$o[0].channel disabled false
+par Net5.rte[2].port$o[0].channel delay 0.544888s
+attr unit s
+par Net5.rte[2].port$o[0].channel datarate 84877.9bps
+attr unit bps
+par Net5.rte[2].port$o[0].channel ber 0
+par Net5.rte[2].port$o[0].channel per 0
+par Net5.rte[4].port$o[0].channel typename "\"networks.Net5.C\""
+par Net5.rte[4].port$o[0].channel disabled false
+par Net5.rte[4].port$o[0].channel delay 0.423661s
+attr unit s
+par Net5.rte[4].port$o[0].channel datarate 62732.8bps
+attr unit bps
+par Net5.rte[4].port$o[0].channel ber 0
+par Net5.rte[4].port$o[0].channel per 0
+par Net5.rte[3].port$o[0].channel typename "\"networks.Net5.C\""
+par Net5.rte[3].port$o[0].channel disabled false
+par Net5.rte[3].port$o[0].channel delay 0.645898s
+attr unit s
+par Net5.rte[3].port$o[0].channel datarate 39053.8bps
+attr unit bps
+par Net5.rte[3].port$o[0].channel ber 0
+par Net5.rte[3].port$o[0].channel per 0
+par Net5.rte[3].port$o[1].channel typename "\"networks.Net5.C\""
+par Net5.rte[3].port$o[1].channel disabled false
+par Net5.rte[3].port$o[1].channel delay 0.437593s
+attr unit s
+par Net5.rte[3].port$o[1].channel datarate 30455.9bps
+attr unit bps
+par Net5.rte[3].port$o[1].channel ber 0
+par Net5.rte[3].port$o[1].channel per 0
+par Net5.rte[1].port$o[1].channel typename "\"networks.Net5.C\""
+par Net5.rte[1].port$o[1].channel disabled false
+par Net5.rte[1].port$o[1].channel delay 0.891774s
+attr unit s
+par Net5.rte[1].port$o[1].channel datarate 6614.58bps
+attr unit bps
+par Net5.rte[1].port$o[1].channel ber 0
+par Net5.rte[1].port$o[1].channel per 0
+par Net5.rte[3].port$o[2].channel typename "\"networks.Net5.C\""
+par Net5.rte[3].port$o[2].channel disabled false
+par Net5.rte[3].port$o[2].channel delay 0.963663s
+attr unit s
+par Net5.rte[3].port$o[2].channel datarate 27993bps
+attr unit bps
+par Net5.rte[3].port$o[2].channel ber 0
+par Net5.rte[3].port$o[2].channel per 0
+par Net5.rte[2].port$o[1].channel typename "\"networks.Net5.C\""
+par Net5.rte[2].port$o[1].channel disabled false
+par Net5.rte[2].port$o[1].channel delay 0.383448s
+attr unit s
+par Net5.rte[2].port$o[1].channel datarate 48288.8bps
+attr unit bps
+par Net5.rte[2].port$o[1].channel ber 0
+par Net5.rte[2].port$o[1].channel per 0
+par Net5.rte[2].port$o[2].channel typename "\"networks.Net5.C\""
+par Net5.rte[2].port$o[2].channel disabled false
+par Net5.rte[2].port$o[2].channel delay 0.791727s
+attr unit s
+par Net5.rte[2].port$o[2].channel datarate 81404.7bps
+attr unit bps
+par Net5.rte[2].port$o[2].channel ber 0
+par Net5.rte[2].port$o[2].channel per 0
+par Net5.rte[4].port$o[1].channel typename "\"networks.Net5.C\""
+par Net5.rte[4].port$o[1].channel disabled false
+par Net5.rte[4].port$o[1].channel delay 0.5289s
+attr unit s
+par Net5.rte[4].port$o[1].channel datarate 48517.7bps
+attr unit bps
+par Net5.rte[4].port$o[1].channel ber 0
+par Net5.rte[4].port$o[1].channel per 0
+par Net5.rte[1].port$o[2].channel typename "\"networks.Net5.C\""
+par Net5.rte[1].port$o[2].channel disabled false
+par Net5.rte[1].port$o[2].channel delay 0.568049s
+attr unit s
+par Net5.rte[1].port$o[2].channel datarate 39885.7bps
+attr unit bps
+par Net5.rte[1].port$o[2].channel ber 0
+par Net5.rte[1].port$o[2].channel per 0
+par Net5.rte[2].port$o[3].channel typename "\"networks.Net5.C\""
+par Net5.rte[2].port$o[3].channel disabled false
+par Net5.rte[2].port$o[3].channel delay 0.925597s
+attr unit s
+par Net5.rte[2].port$o[3].channel datarate 83771.8bps
+attr unit bps
+par Net5.rte[2].port$o[3].channel ber 0
+par Net5.rte[2].port$o[3].channel per 0
+par Net5.rte[0].app typename "\"node.App\""
+par Net5.rte[0].app address 0
+par Net5.rte[0].app destAddresses "\"1 4\""
+par Net5.rte[0].app sendIaTime "uniform(100ms, 500ms)"
+attr unit s
+par Net5.rte[0].app packetLength "intuniform(50bytes, 4096bytes)"
+attr unit byte
 scalar Net5.rte[0].app hopCount:mean -nan
 attr interpolationmode none
 attr title "hop count of arrived packets, mean"
@@ -35,6 +159,7 @@ scalar Net5.rte[0].app endToEndDelay:max -nan
 attr interpolationmode none
 attr title "end-to-end delay of arrived packets, max"
 attr unit s
+par Net5.rte[0].routing typename "\"node.Routing\""
 statistic Net5.rte[0].routing outputIf:histogram
 field count 666
 field mean 0.49399399399399
@@ -57,6 +182,9 @@ scalar Net5.rte[0].routing drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net5.rte[0].queue[0] typename "\"node.L2Queue\""
+par Net5.rte[0].queue[0] frameCapacity 10
+par Net5.rte[0].queue[0] useCutThroughSwitching false
 scalar Net5.rte[0].queue[0] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -168,6 +296,9 @@ scalar Net5.rte[0].queue[0] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net5.rte[0].queue[1] typename "\"node.L2Queue\""
+par Net5.rte[0].queue[1] frameCapacity 10
+par Net5.rte[0].queue[1] useCutThroughSwitching false
 scalar Net5.rte[0].queue[1] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -278,6 +409,16 @@ scalar Net5.rte[0].queue[1] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net5.rte[0] typename "\"node.Node\""
+par Net5.rte[0] address 0
+par Net5.rte[0] appType "\"App\""
+par Net5.rte[1].app typename "\"node.App\""
+par Net5.rte[1].app address 1
+par Net5.rte[1].app destAddresses "\"1 4\""
+par Net5.rte[1].app sendIaTime "uniform(100ms, 500ms)"
+attr unit s
+par Net5.rte[1].app packetLength "intuniform(50bytes, 4096bytes)"
+attr unit byte
 scalar Net5.rte[1].app hopCount:mean 1.002990430622
 attr interpolationmode none
 attr title "hop count of arrived packets, mean"
@@ -292,6 +433,7 @@ scalar Net5.rte[1].app endToEndDelay:max 5.285458552593
 attr interpolationmode none
 attr title "end-to-end delay of arrived packets, max"
 attr unit s
+par Net5.rte[1].routing typename "\"node.Routing\""
 statistic Net5.rte[1].routing outputIf:histogram
 field count 2011
 field mean -0.49428145201392
@@ -317,6 +459,9 @@ scalar Net5.rte[1].routing drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net5.rte[1].queue[0] typename "\"node.L2Queue\""
+par Net5.rte[1].queue[0] frameCapacity 10
+par Net5.rte[1].queue[0] useCutThroughSwitching false
 scalar Net5.rte[1].queue[0] rxBytes:count 337
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -428,6 +573,9 @@ scalar Net5.rte[1].queue[0] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net5.rte[1].queue[1] typename "\"node.L2Queue\""
+par Net5.rte[1].queue[1] frameCapacity 10
+par Net5.rte[1].queue[1] useCutThroughSwitching false
 scalar Net5.rte[1].queue[1] rxBytes:count 325
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -539,6 +687,9 @@ scalar Net5.rte[1].queue[1] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net5.rte[1].queue[2] typename "\"node.L2Queue\""
+par Net5.rte[1].queue[2] frameCapacity 10
+par Net5.rte[1].queue[2] useCutThroughSwitching false
 scalar Net5.rte[1].queue[2] rxBytes:count 671
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -700,6 +851,16 @@ scalar Net5.rte[1].queue[2] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net5.rte[1] typename "\"node.Node\""
+par Net5.rte[1] address 1
+par Net5.rte[1] appType "\"App\""
+par Net5.rte[2].app typename "\"node.App\""
+par Net5.rte[2].app address 2
+par Net5.rte[2].app destAddresses "\"1 4\""
+par Net5.rte[2].app sendIaTime "uniform(100ms, 500ms)"
+attr unit s
+par Net5.rte[2].app packetLength "intuniform(50bytes, 4096bytes)"
+attr unit byte
 scalar Net5.rte[2].app hopCount:mean -nan
 attr interpolationmode none
 attr title "hop count of arrived packets, mean"
@@ -714,6 +875,7 @@ scalar Net5.rte[2].app endToEndDelay:max -nan
 attr interpolationmode none
 attr title "end-to-end delay of arrived packets, max"
 attr unit s
+par Net5.rte[2].routing typename "\"node.Routing\""
 statistic Net5.rte[2].routing outputIf:histogram
 field count 1657
 field mean 2.4091732045866
@@ -737,6 +899,9 @@ scalar Net5.rte[2].routing drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net5.rte[2].queue[0] typename "\"node.L2Queue\""
+par Net5.rte[2].queue[0] frameCapacity 10
+par Net5.rte[2].queue[0] useCutThroughSwitching false
 scalar Net5.rte[2].queue[0] rxBytes:count 327
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -847,6 +1012,9 @@ scalar Net5.rte[2].queue[0] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net5.rte[2].queue[1] typename "\"node.L2Queue\""
+par Net5.rte[2].queue[1] frameCapacity 10
+par Net5.rte[2].queue[1] useCutThroughSwitching false
 scalar Net5.rte[2].queue[1] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -908,6 +1076,9 @@ scalar Net5.rte[2].queue[1] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net5.rte[2].queue[2] typename "\"node.L2Queue\""
+par Net5.rte[2].queue[2] frameCapacity 10
+par Net5.rte[2].queue[2] useCutThroughSwitching false
 scalar Net5.rte[2].queue[2] rxBytes:count 349
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -1068,6 +1239,9 @@ scalar Net5.rte[2].queue[2] drop:sum 86766
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net5.rte[2].queue[3] typename "\"node.L2Queue\""
+par Net5.rte[2].queue[3] frameCapacity 10
+par Net5.rte[2].queue[3] useCutThroughSwitching false
 scalar Net5.rte[2].queue[3] rxBytes:count 337
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -1229,6 +1403,16 @@ scalar Net5.rte[2].queue[3] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net5.rte[2] typename "\"node.Node\""
+par Net5.rte[2] address 2
+par Net5.rte[2] appType "\"App\""
+par Net5.rte[3].app typename "\"node.App\""
+par Net5.rte[3].app address 3
+par Net5.rte[3].app destAddresses "\"1 4\""
+par Net5.rte[3].app sendIaTime "uniform(100ms, 500ms)"
+attr unit s
+par Net5.rte[3].app packetLength "intuniform(50bytes, 4096bytes)"
+attr unit byte
 scalar Net5.rte[3].app hopCount:mean -nan
 attr interpolationmode none
 attr title "hop count of arrived packets, mean"
@@ -1243,6 +1427,7 @@ scalar Net5.rte[3].app endToEndDelay:max -nan
 attr interpolationmode none
 attr title "end-to-end delay of arrived packets, max"
 attr unit s
+par Net5.rte[3].routing typename "\"node.Routing\""
 statistic Net5.rte[3].routing outputIf:histogram
 field count 673
 field mean 0.49034175334324
@@ -1265,6 +1450,9 @@ scalar Net5.rte[3].routing drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net5.rte[3].queue[0] typename "\"node.L2Queue\""
+par Net5.rte[3].queue[0] frameCapacity 10
+par Net5.rte[3].queue[0] useCutThroughSwitching false
 scalar Net5.rte[3].queue[0] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -1376,6 +1564,9 @@ scalar Net5.rte[3].queue[0] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net5.rte[3].queue[1] typename "\"node.L2Queue\""
+par Net5.rte[3].queue[1] frameCapacity 10
+par Net5.rte[3].queue[1] useCutThroughSwitching false
 scalar Net5.rte[3].queue[1] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -1487,6 +1678,9 @@ scalar Net5.rte[3].queue[1] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net5.rte[3].queue[2] typename "\"node.L2Queue\""
+par Net5.rte[3].queue[2] frameCapacity 10
+par Net5.rte[3].queue[2] useCutThroughSwitching false
 scalar Net5.rte[3].queue[2] rxBytes:count 0
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -1548,6 +1742,16 @@ scalar Net5.rte[3].queue[2] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net5.rte[3] typename "\"node.Node\""
+par Net5.rte[3] address 3
+par Net5.rte[3] appType "\"App\""
+par Net5.rte[4].app typename "\"node.App\""
+par Net5.rte[4].app address 4
+par Net5.rte[4].app destAddresses "\"1 4\""
+par Net5.rte[4].app sendIaTime "uniform(100ms, 500ms)"
+attr unit s
+par Net5.rte[4].app packetLength "intuniform(50bytes, 4096bytes)"
+attr unit byte
 scalar Net5.rte[4].app hopCount:mean 1.1943396226415
 attr interpolationmode none
 attr title "hop count of arrived packets, mean"
@@ -1562,6 +1766,7 @@ scalar Net5.rte[4].app endToEndDelay:max 5.713991668091
 attr interpolationmode none
 attr title "end-to-end delay of arrived packets, max"
 attr unit s
+par Net5.rte[4].routing typename "\"node.Routing\""
 statistic Net5.rte[4].routing outputIf:histogram
 field count 1940
 field mean -0.63917525773196
@@ -1586,6 +1791,9 @@ scalar Net5.rte[4].routing drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net5.rte[4].queue[0] typename "\"node.L2Queue\""
+par Net5.rte[4].queue[0] frameCapacity 10
+par Net5.rte[4].queue[0] useCutThroughSwitching false
 scalar Net5.rte[4].queue[0] rxBytes:count 343
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -1697,6 +1905,9 @@ scalar Net5.rte[4].queue[0] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net5.rte[4].queue[1] typename "\"node.L2Queue\""
+par Net5.rte[4].queue[1] frameCapacity 10
+par Net5.rte[4].queue[1] useCutThroughSwitching false
 scalar Net5.rte[4].queue[1] rxBytes:count 928
 attr interpolationmode none
 attr title "received packet byte length, count"
@@ -1857,4 +2068,8 @@ scalar Net5.rte[4].queue[1] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+par Net5.rte[4] typename "\"node.Node\""
+par Net5.rte[4] address 4
+par Net5.rte[4] appType "\"App\""
+par Net5 typename "\"networks.Net5\""
 
