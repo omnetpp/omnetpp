@@ -351,7 +351,6 @@ def get_supported_property_keys():
 
 
 def set_warning(warning):
-    _assert_is_native_chart()
     # TODO maybe we need a common interface?
     if Gateway.widget_provider:
         Gateway.widget_provider.setWarning(warning)
