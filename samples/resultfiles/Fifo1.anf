@@ -1,9 +1,1713 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
-  <inputs>
-    <inputs name="/resultfiles/Fifo1-*.vec"/>
-    <inputs name="/resultfiles/Fifo1-*.sca"/>
-  </inputs>
-  <datasets/>
-  <chartSheets/>
-</scave:Analysis>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<analysis version="2">
+    <inputs>
+        <input pattern="/resultfiles/Fifo1-*.vec"/>
+        <input pattern="/resultfiles/Fifo1-*.sca"/>
+    </inputs>
+    <charts>
+        <chart icon="icons/full/obj/linechart.png" id="318" name="queue length, vector" template="linechart_mpl" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import math
+from omnetpp.scave import results, chart, utils, vectorops as ops
+
+# get chart properties
+props = chart.get_properties()
+utils.preconfigure_plot(props)
+
+# collect parameters for query
+filter_expression = props["filter"]
+start_time = float(props["vector_start_time"] or -math.inf)
+end_time = float(props["vector_end_time"] or math.inf)
+
+# query vector data into a data frame
+df = results.get_vectors(filter_expression, include_attrs=True, include_itervars=True, start_time=start_time, end_time=end_time)
+
+# apply vector operations
+df = ops.perform_vector_ops(df, props["vector_operations"])
+
+# plot
+utils.plot_vectors(df, props)
+
+utils.postconfigure_plot(props)
+
+utils.export_image_if_needed(props)
+utils.export_data_if_needed(df, props)
+]]>
+            </script>
+            <dialogPage id="Input" label="Input">
+                <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang" />
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+  </import>
+  <layout x:class="GridLayout" numColumns="1" />
+  <x:children>
+    <label text="Filter expression:" />
+    <styledText x:id="filter" x:style="BORDER|WRAP|V_SCROLL|H_SCROLL" x:id.contentAssist="filter">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true" />
+    </styledText>
+    <composite>
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" />
+      <layout x:class="GridLayout" numColumns="2" makeColumnsEqualWidth="true" />
+      <x:children>
+        <group text="Vector operations (one per line)">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true" />
+          <layout x:class="GridLayout" numColumns="1" />
+          <x:children>
+            <text x:id="vector_operations" x:style="BORDER|MULTI|V_SCROLL|H_SCROLL">
+              <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true" />
+            </text>
+          </x:children>
+        </group>
+        <group text="Crop interval">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true" />
+          <layout x:class="GridLayout" numColumns="2" />
+          <x:children>
+            <label text="Start time (sec):" />
+            <text x:id="vector_start_time" x:style="BORDER">
+              <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false" />
+            </text>
+            <label text="End time (sec):" />
+            <text x:id="vector_end_time" x:style="BORDER">
+              <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false" />
+            </text>
+          </x:children>
+        </group>
+      </x:children>
+    </composite>
+  </x:children>
+</xswt>
+]]>
+            </dialogPage>
+            <dialogPage id="Lines" label="Lines">
+                <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2"/>
+
+  <x:children>
+
+    <group text="Lines">
+      <layoutData x:class="GridData" horizontalSpan="1" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <label text="Draw style:"/>
+    <combo x:id="drawstyle" x:id.default="auto" x:style="BORDER|READ_ONLY">
+      <add x:p0="auto"/>
+      <add x:p0="none"/>
+      <add x:p0="linear"/>
+      <add x:p0="steps-pre"/>
+      <add x:p0="steps-mid"/>
+      <add x:p0="steps-post"/>
+    </combo>
+
+    <label text="Line color:"/>
+    <ColorChooser x:id="linecolor" x:id.default="" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="BEGINNING" grabExcessHorizontalSpace="false"/>
+    </ColorChooser>
+
+    <label text="Line style:"/>
+    <combo x:id="linestyle" x:id.default="solid" x:style="BORDER|READ_ONLY">
+      <add x:p0="none"/>
+      <add x:p0="solid"/>
+      <add x:p0="dotted"/>
+      <add x:p0="dashed"/>
+      <add x:p0="dashdot"/>
+    </combo>
+
+    <label text="Line width:"/>
+    <spinner x:id="linewidth" x:id.default="1.5" minimum="0" digits="1" selection="15" maximum="1000" x:style="BORDER"/>
+
+      </x:children>
+    </group>
+
+    <group text="Markers">
+      <layoutData x:class="GridData" horizontalSpan="1" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <label text="Marker:"/>
+    <combo x:id="marker" x:id.default="auto" x:style="BORDER">
+      <add x:p0="auto"/>
+      <add x:p0="none"/>
+      <add x:p0=". (dot)"/>
+      <add x:p0=", (point)"/>
+      <add x:p0="v (triangle down)"/>
+      <add x:p0="^ (triangle up)"/>
+      <add x:p0="&lt; (triangle left)"/>
+      <add x:p0="&gt; (triangle right)"/>
+      <add x:p0="1 (tri down)"/>
+      <add x:p0="2 (tri up)"/>
+      <add x:p0="3 (tri left)"/>
+      <add x:p0="4 (tri right)"/>
+      <add x:p0="| (vline)"/>
+      <add x:p0="_ (hline)"/>
+      <add x:p0="8 (octagon)"/>
+      <add x:p0="o (circle)"/>
+      <add x:p0="s (square)"/>
+      <add x:p0="p (pentagon)"/>
+      <add x:p0="* (star)"/>
+      <add x:p0="+ (plus)"/>
+      <add x:p0="x (cross)"/>
+      <add x:p0="D (diamond)"/>
+      <add x:p0="d (thin diamond)"/>
+      <!-- TODO the rest...  -->
+    </combo>
+
+    <label text="Marker size:"/>
+    <spinner x:id="markersize" x:id.default="5" selection="6" minimum="0" maximum="100" x:style="BORDER"/>
+
+      </x:children>
+    </group>
+
+  </x:children>
+</xswt>
+]]>
+            </dialogPage>
+            <dialogPage id="Plot" label="Plot">
+                <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2" makeColumnsEqualWidth="true"/>
+
+  <x:children>
+
+    <group text="Title">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- Plot title -->
+    <label text="Plot title:"/>
+    <text x:id="title" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+    <!-- X Axis { -->
+    <group text="X axis">
+      <layoutData x:class="GridData" horizontalSpan="1" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <label text="Label:"/>
+    <text x:id="xaxis_title" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <label text="Min:"/>
+    <text x:id="xaxis_min" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <label text="Max:"/>
+    <text x:id="xaxis_max" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <button x:id="xaxis_log" x:id.default="false" text="Logarithmic" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+    <!-- Y Axis { -->
+    <group text="Y axis">
+      <layoutData x:class="GridData" horizontalSpan="1" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <label text="Label:"/>
+    <text x:id="yaxis_title" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <label text="Min:"/>
+    <text x:id="yaxis_min" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <label text="Max:"/>
+    <text x:id="yaxis_max" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <button x:id="yaxis_log" x:id.default="false" text="Logarithmic" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+    <!-- Grid { -->
+    <group text="Grid">
+      <layoutData x:class="GridData" horizontalSpan="1" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- Display Legend? -->
+    <button x:id="grid_show" x:id.default="true" text="Show grid" x:style="CHECK" x:id.isEnabler="true">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <!-- Show grid:None/Major/All -->
+    <label text="Density:"/>
+    <combo x:id="grid_density" x:id.default="Major" x:style="BORDER|READ_ONLY">
+      <add x:p0="Major"/>
+      <add x:p0="All"/>
+    </combo>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+    <!-- Legend { -->
+    <group text="Legend">
+      <layoutData x:class="GridData" horizontalSpan="1" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- Display Legend? -->
+    <button x:id="legend_show" x:id.default="true" text="Show legend" x:style="CHECK" x:id.isEnabler="true" >
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <!-- Display titles or names? -->
+    <label text="Label source:"/>
+    <combo x:id="legend_labels" x:id.default="result titles" x:style="BORDER|READ_ONLY">
+      <add x:p0="result names"/>
+      <add x:p0="result titles"/>
+    </combo>
+
+    <!-- Placement -->
+    <label text="Placement:"/>
+    <combo x:id="legend_placement" x:id.default="upper right" x:style="BORDER|READ_ONLY">
+      <add x:p0="best"/>
+      <add x:p0="upper right"/>
+      <add x:p0="upper left"/>
+      <add x:p0="lower left"/>
+      <add x:p0="lower right"/>
+      <add x:p0="right"/>
+      <add x:p0="center left"/>
+      <add x:p0="center right"/>
+      <add x:p0="lower center"/>
+      <add x:p0="upper center"/>
+      <add x:p0="center"/>
+      <add x:p0="outside top left"/>
+      <add x:p0="outside top center"/>
+      <add x:p0="outside top right"/>
+      <add x:p0="outside bottom left"/>
+      <add x:p0="outside bottom center"/>
+      <add x:p0="outside bottom right"/>
+      <add x:p0="outside left top"/>
+      <add x:p0="outside left center"/>
+      <add x:p0="outside left bottom"/>
+      <add x:p0="outside right top"/>
+      <add x:p0="outside right center"/>
+      <add x:p0="outside right bottom"/>
+    </combo>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+  </x:children>
+</xswt>
+]]>
+            </dialogPage>
+            <dialogPage id="Styling" label="Styling">
+                <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2"/>
+
+  <x:children>
+
+    <!-- Style { -->
+    <group text="Style">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <label text="Style:"/>
+    <combo x:id="plt.style"  x:id.default="default" x:style="BORDER">
+      <add x:p0="default"/>
+      <add x:p0="classic"/>
+      <add x:p0="ggplot"/>
+      <add x:p0="grayscale"/>
+      <add x:p0="dark_background"/>
+      <add x:p0="bmh"/>
+      <add x:p0="fast"/>
+      <add x:p0="fivethirtyeight"/>
+      <add x:p0="tableau-colorblind10"/>
+      <add x:p0="Solarize_Light2"/>
+      <add x:p0="seaborn"/>
+      <add x:p0="seaborn-bright"/>
+      <add x:p0="seaborn-colorblind"/>
+      <add x:p0="seaborn-dark"/>
+      <add x:p0="seaborn-darkgrid"/>
+      <add x:p0="seaborn-dark-palette"/>
+      <add x:p0="seaborn-deep"/>
+      <add x:p0="seaborn-muted"/>
+      <add x:p0="seaborn-notebook"/>
+      <add x:p0="seaborn-paper"/>
+      <add x:p0="seaborn-pastel"/>
+      <add x:p0="seaborn-poster"/>
+      <add x:p0="seaborn-talk"/>
+      <add x:p0="seaborn-ticks"/>
+      <add x:p0="seaborn-white"/>
+      <add x:p0="seaborn-whitegrid"/>
+    </combo>
+
+    <label text="Cycle seed:"/>
+    <spinner x:id="cycle_seed" x:id.default="0" selection="0" minimum="0" maximum="1000000" x:style="BORDER"/>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+    <!-- Colors { -->
+    <group text="Colors">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- backgroundColor -->
+    <label text="Figure background color:"/>
+    <ColorChooser x:id="matplotlibrc.figure.facecolor" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </ColorChooser>
+
+    <label text="Axes background color:"/>
+    <ColorChooser x:id="matplotlibrc.axes.facecolor" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </ColorChooser>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+
+    <!-- Legend { -->
+    <group text="Legend">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <button x:id="matplotlibrc.legend.frameon" x:id.default="true" text="Frame" x:style="CHECK"  x:id.isEnabler="true">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <button x:id="matplotlibrc.legend.fancybox" x:id.default="false" text="Fancybox" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <button x:id="matplotlibrc.legend.shadow" x:id.default="false" text="Shadow" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+
+  </x:children>
+</xswt>
+]]>
+            </dialogPage>
+            <dialogPage id="Advanced" label="Advanced">
+                <![CDATA[<?xml version='1.0' encoding='UTF-8'?>
+<xswt xmlns:x='http://sweet_swt.sf.net/xswt'>
+  <import xmlns='http://sweet_swt.sf.net/xswt'>
+    <package name='java.lang'/>
+    <package name='org.eclipse.swt.widgets' />
+    <package name='org.eclipse.swt.graphics' />
+    <package name='org.eclipse.swt.layout' />
+    <package name='org.eclipse.swt.custom' />
+  </import>
+  <layout x:class='GridLayout' numColumns='1'/>
+  <x:children>
+    <label text="Here you can further customize the plot using matplotlibrc properties."/>
+    <label text="The syntax is one entry per line in the 'key : value' format; comments (#) are also accepted."/>
+    <label text="Content Assist available (hit Ctrl+Space)."/>
+    <styledText x:id="matplotlibrc" x:style="BORDER|V_SCROLL|H_SCROLL" x:id.contentAssist="matplotlibrc">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true"/>
+    </styledText>
+  </x:children>
+</xswt>
+]]>
+            </dialogPage>
+            <dialogPage id="Export" label="Export">
+                <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2"/>
+
+  <x:children>
+
+    <group text="Image export">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+        <label text="Image file name (w/o extension):"/>
+        <text x:id="image_export_filename" x:style="BORDER">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </text>
+
+        <label text="Image width (inches):"/>
+        <text x:id="image_export_width" x:id.default="6" x:style="BORDER">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </text>
+
+        <label text="Image height (inches):"/>
+        <text x:id="image_export_height" x:id.default="4" x:style="BORDER">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </text>
+
+      </x:children>
+    </group>
+
+    <group text="Data export">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+        <label text="File name (w/o extension):"/>
+        <text x:id="data_export_filename" x:style="BORDER">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </text>
+
+      </x:children>
+    </group>
+
+  </x:children>
+</xswt>
+]]>
+            </dialogPage>
+            <property name="matplotlibrc.legend.frameon" value="true"/>
+            <property name="matplotlibrc.legend.fancybox" value="false"/>
+            <property name="grid_show" value="true"/>
+            <property name="vector_end_time" value=""/>
+            <property name="linecolor" value=""/>
+            <property name="matplotlibrc.figure.facecolor" value=""/>
+            <property name="legend_labels" value="result titles"/>
+            <property name="yaxis_title" value=""/>
+            <property name="title" value=""/>
+            <property name="vector_operations" value=""/>
+            <property name="cycle_seed" value="0"/>
+            <property name="yaxis_log" value="false"/>
+            <property name="image_export_height" value="4"/>
+            <property name="xaxis_log" value="false"/>
+            <property name="legend_placement" value="upper right"/>
+            <property name="data_export_filename" value=""/>
+            <property name="xaxis_title" value=""/>
+            <property name="grid_density" value="Major"/>
+            <property name="yaxis_min" value=""/>
+            <property name="image_export_filename" value=""/>
+            <property name="xaxis_min" value=""/>
+            <property name="matplotlibrc.axes.facecolor" value=""/>
+            <property name="linewidth" value="1.5"/>
+            <property name="filter" value="name =~ qlen:vector"/>
+            <property name="vector_start_time" value=""/>
+            <property name="linestyle" value="solid"/>
+            <property name="markersize" value="5"/>
+            <property name="drawstyle" value="auto"/>
+            <property name="marker" value="auto"/>
+            <property name="plt.style" value="default"/>
+            <property name="legend_show" value="true"/>
+            <property name="matplotlibrc.legend.shadow" value="false"/>
+            <property name="yaxis_max" value=""/>
+            <property name="xaxis_max" value=""/>
+            <property name="image_export_width" value="6"/>
+            <property name="matplotlibrc" value=""/>
+        </chart>
+        <chart icon="icons/full/obj/linechart.png" id="1576" name="queueing time at dequeue, vector" template="linechart_mpl" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import math
+from omnetpp.scave import results, chart, utils, vectorops as ops
+
+# get chart properties
+props = chart.get_properties()
+utils.preconfigure_plot(props)
+
+# collect parameters for query
+filter_expression = props["filter"]
+start_time = float(props["vector_start_time"] or -math.inf)
+end_time = float(props["vector_end_time"] or math.inf)
+
+# query vector data into a data frame
+df = results.get_vectors(filter_expression, include_attrs=True, include_itervars=True, start_time=start_time, end_time=end_time)
+
+# apply vector operations
+df = ops.perform_vector_ops(df, props["vector_operations"])
+
+# plot
+utils.plot_vectors(df, props)
+
+utils.postconfigure_plot(props)
+
+utils.export_image_if_needed(props)
+utils.export_data_if_needed(df, props)
+]]>
+            </script>
+            <dialogPage id="Input" label="Input">
+                <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang" />
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+  </import>
+  <layout x:class="GridLayout" numColumns="1" />
+  <x:children>
+    <label text="Filter expression:" />
+    <styledText x:id="filter" x:style="BORDER|WRAP|V_SCROLL|H_SCROLL" x:id.contentAssist="filter">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true" />
+    </styledText>
+    <composite>
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" />
+      <layout x:class="GridLayout" numColumns="2" makeColumnsEqualWidth="true" />
+      <x:children>
+        <group text="Vector operations (one per line)">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true" />
+          <layout x:class="GridLayout" numColumns="1" />
+          <x:children>
+            <text x:id="vector_operations" x:style="BORDER|MULTI|V_SCROLL|H_SCROLL">
+              <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true" />
+            </text>
+          </x:children>
+        </group>
+        <group text="Crop interval">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true" />
+          <layout x:class="GridLayout" numColumns="2" />
+          <x:children>
+            <label text="Start time (sec):" />
+            <text x:id="vector_start_time" x:style="BORDER">
+              <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false" />
+            </text>
+            <label text="End time (sec):" />
+            <text x:id="vector_end_time" x:style="BORDER">
+              <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false" />
+            </text>
+          </x:children>
+        </group>
+      </x:children>
+    </composite>
+  </x:children>
+</xswt>
+]]>
+            </dialogPage>
+            <dialogPage id="Lines" label="Lines">
+                <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2"/>
+
+  <x:children>
+
+    <group text="Lines">
+      <layoutData x:class="GridData" horizontalSpan="1" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <label text="Draw style:"/>
+    <combo x:id="drawstyle" x:id.default="auto" x:style="BORDER|READ_ONLY">
+      <add x:p0="auto"/>
+      <add x:p0="none"/>
+      <add x:p0="linear"/>
+      <add x:p0="steps-pre"/>
+      <add x:p0="steps-mid"/>
+      <add x:p0="steps-post"/>
+    </combo>
+
+    <label text="Line color:"/>
+    <ColorChooser x:id="linecolor" x:id.default="" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="BEGINNING" grabExcessHorizontalSpace="false"/>
+    </ColorChooser>
+
+    <label text="Line style:"/>
+    <combo x:id="linestyle" x:id.default="solid" x:style="BORDER|READ_ONLY">
+      <add x:p0="none"/>
+      <add x:p0="solid"/>
+      <add x:p0="dotted"/>
+      <add x:p0="dashed"/>
+      <add x:p0="dashdot"/>
+    </combo>
+
+    <label text="Line width:"/>
+    <spinner x:id="linewidth" x:id.default="1.5" minimum="0" digits="1" selection="15" maximum="1000" x:style="BORDER"/>
+
+      </x:children>
+    </group>
+
+    <group text="Markers">
+      <layoutData x:class="GridData" horizontalSpan="1" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <label text="Marker:"/>
+    <combo x:id="marker" x:id.default="auto" x:style="BORDER">
+      <add x:p0="auto"/>
+      <add x:p0="none"/>
+      <add x:p0=". (dot)"/>
+      <add x:p0=", (point)"/>
+      <add x:p0="v (triangle down)"/>
+      <add x:p0="^ (triangle up)"/>
+      <add x:p0="&lt; (triangle left)"/>
+      <add x:p0="&gt; (triangle right)"/>
+      <add x:p0="1 (tri down)"/>
+      <add x:p0="2 (tri up)"/>
+      <add x:p0="3 (tri left)"/>
+      <add x:p0="4 (tri right)"/>
+      <add x:p0="| (vline)"/>
+      <add x:p0="_ (hline)"/>
+      <add x:p0="8 (octagon)"/>
+      <add x:p0="o (circle)"/>
+      <add x:p0="s (square)"/>
+      <add x:p0="p (pentagon)"/>
+      <add x:p0="* (star)"/>
+      <add x:p0="+ (plus)"/>
+      <add x:p0="x (cross)"/>
+      <add x:p0="D (diamond)"/>
+      <add x:p0="d (thin diamond)"/>
+      <!-- TODO the rest...  -->
+    </combo>
+
+    <label text="Marker size:"/>
+    <spinner x:id="markersize" x:id.default="5" selection="6" minimum="0" maximum="100" x:style="BORDER"/>
+
+      </x:children>
+    </group>
+
+  </x:children>
+</xswt>
+]]>
+            </dialogPage>
+            <dialogPage id="Plot" label="Plot">
+                <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2" makeColumnsEqualWidth="true"/>
+
+  <x:children>
+
+    <group text="Title">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- Plot title -->
+    <label text="Plot title:"/>
+    <text x:id="title" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+    <!-- X Axis { -->
+    <group text="X axis">
+      <layoutData x:class="GridData" horizontalSpan="1" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <label text="Label:"/>
+    <text x:id="xaxis_title" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <label text="Min:"/>
+    <text x:id="xaxis_min" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <label text="Max:"/>
+    <text x:id="xaxis_max" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <button x:id="xaxis_log" x:id.default="false" text="Logarithmic" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+    <!-- Y Axis { -->
+    <group text="Y axis">
+      <layoutData x:class="GridData" horizontalSpan="1" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <label text="Label:"/>
+    <text x:id="yaxis_title" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <label text="Min:"/>
+    <text x:id="yaxis_min" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <label text="Max:"/>
+    <text x:id="yaxis_max" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <button x:id="yaxis_log" x:id.default="false" text="Logarithmic" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+    <!-- Grid { -->
+    <group text="Grid">
+      <layoutData x:class="GridData" horizontalSpan="1" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- Display Legend? -->
+    <button x:id="grid_show" x:id.default="true" text="Show grid" x:style="CHECK" x:id.isEnabler="true">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <!-- Show grid:None/Major/All -->
+    <label text="Density:"/>
+    <combo x:id="grid_density" x:id.default="Major" x:style="BORDER|READ_ONLY">
+      <add x:p0="Major"/>
+      <add x:p0="All"/>
+    </combo>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+    <!-- Legend { -->
+    <group text="Legend">
+      <layoutData x:class="GridData" horizontalSpan="1" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- Display Legend? -->
+    <button x:id="legend_show" x:id.default="true" text="Show legend" x:style="CHECK" x:id.isEnabler="true" >
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <!-- Display titles or names? -->
+    <label text="Label source:"/>
+    <combo x:id="legend_labels" x:id.default="result titles" x:style="BORDER|READ_ONLY">
+      <add x:p0="result names"/>
+      <add x:p0="result titles"/>
+    </combo>
+
+    <!-- Placement -->
+    <label text="Placement:"/>
+    <combo x:id="legend_placement" x:id.default="upper right" x:style="BORDER|READ_ONLY">
+      <add x:p0="best"/>
+      <add x:p0="upper right"/>
+      <add x:p0="upper left"/>
+      <add x:p0="lower left"/>
+      <add x:p0="lower right"/>
+      <add x:p0="right"/>
+      <add x:p0="center left"/>
+      <add x:p0="center right"/>
+      <add x:p0="lower center"/>
+      <add x:p0="upper center"/>
+      <add x:p0="center"/>
+      <add x:p0="outside top left"/>
+      <add x:p0="outside top center"/>
+      <add x:p0="outside top right"/>
+      <add x:p0="outside bottom left"/>
+      <add x:p0="outside bottom center"/>
+      <add x:p0="outside bottom right"/>
+      <add x:p0="outside left top"/>
+      <add x:p0="outside left center"/>
+      <add x:p0="outside left bottom"/>
+      <add x:p0="outside right top"/>
+      <add x:p0="outside right center"/>
+      <add x:p0="outside right bottom"/>
+    </combo>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+  </x:children>
+</xswt>
+]]>
+            </dialogPage>
+            <dialogPage id="Styling" label="Styling">
+                <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2"/>
+
+  <x:children>
+
+    <!-- Style { -->
+    <group text="Style">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <label text="Style:"/>
+    <combo x:id="plt.style"  x:id.default="default" x:style="BORDER">
+      <add x:p0="default"/>
+      <add x:p0="classic"/>
+      <add x:p0="ggplot"/>
+      <add x:p0="grayscale"/>
+      <add x:p0="dark_background"/>
+      <add x:p0="bmh"/>
+      <add x:p0="fast"/>
+      <add x:p0="fivethirtyeight"/>
+      <add x:p0="tableau-colorblind10"/>
+      <add x:p0="Solarize_Light2"/>
+      <add x:p0="seaborn"/>
+      <add x:p0="seaborn-bright"/>
+      <add x:p0="seaborn-colorblind"/>
+      <add x:p0="seaborn-dark"/>
+      <add x:p0="seaborn-darkgrid"/>
+      <add x:p0="seaborn-dark-palette"/>
+      <add x:p0="seaborn-deep"/>
+      <add x:p0="seaborn-muted"/>
+      <add x:p0="seaborn-notebook"/>
+      <add x:p0="seaborn-paper"/>
+      <add x:p0="seaborn-pastel"/>
+      <add x:p0="seaborn-poster"/>
+      <add x:p0="seaborn-talk"/>
+      <add x:p0="seaborn-ticks"/>
+      <add x:p0="seaborn-white"/>
+      <add x:p0="seaborn-whitegrid"/>
+    </combo>
+
+    <label text="Cycle seed:"/>
+    <spinner x:id="cycle_seed" x:id.default="0" selection="0" minimum="0" maximum="1000000" x:style="BORDER"/>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+    <!-- Colors { -->
+    <group text="Colors">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- backgroundColor -->
+    <label text="Figure background color:"/>
+    <ColorChooser x:id="matplotlibrc.figure.facecolor" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </ColorChooser>
+
+    <label text="Axes background color:"/>
+    <ColorChooser x:id="matplotlibrc.axes.facecolor" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </ColorChooser>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+
+    <!-- Legend { -->
+    <group text="Legend">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <button x:id="matplotlibrc.legend.frameon" x:id.default="true" text="Frame" x:style="CHECK"  x:id.isEnabler="true">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <button x:id="matplotlibrc.legend.fancybox" x:id.default="false" text="Fancybox" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <button x:id="matplotlibrc.legend.shadow" x:id.default="false" text="Shadow" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+
+  </x:children>
+</xswt>
+]]>
+            </dialogPage>
+            <dialogPage id="Advanced" label="Advanced">
+                <![CDATA[<?xml version='1.0' encoding='UTF-8'?>
+<xswt xmlns:x='http://sweet_swt.sf.net/xswt'>
+  <import xmlns='http://sweet_swt.sf.net/xswt'>
+    <package name='java.lang'/>
+    <package name='org.eclipse.swt.widgets' />
+    <package name='org.eclipse.swt.graphics' />
+    <package name='org.eclipse.swt.layout' />
+    <package name='org.eclipse.swt.custom' />
+  </import>
+  <layout x:class='GridLayout' numColumns='1'/>
+  <x:children>
+    <label text="Here you can further customize the plot using matplotlibrc properties."/>
+    <label text="The syntax is one entry per line in the 'key : value' format; comments (#) are also accepted."/>
+    <label text="Content Assist available (hit Ctrl+Space)."/>
+    <styledText x:id="matplotlibrc" x:style="BORDER|V_SCROLL|H_SCROLL" x:id.contentAssist="matplotlibrc">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true"/>
+    </styledText>
+  </x:children>
+</xswt>
+]]>
+            </dialogPage>
+            <dialogPage id="Export" label="Export">
+                <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2"/>
+
+  <x:children>
+
+    <group text="Image export">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+        <label text="Image file name (w/o extension):"/>
+        <text x:id="image_export_filename" x:style="BORDER">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </text>
+
+        <label text="Image width (inches):"/>
+        <text x:id="image_export_width" x:id.default="6" x:style="BORDER">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </text>
+
+        <label text="Image height (inches):"/>
+        <text x:id="image_export_height" x:id.default="4" x:style="BORDER">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </text>
+
+      </x:children>
+    </group>
+
+    <group text="Data export">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+        <label text="File name (w/o extension):"/>
+        <text x:id="data_export_filename" x:style="BORDER">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </text>
+
+      </x:children>
+    </group>
+
+  </x:children>
+</xswt>
+]]>
+            </dialogPage>
+            <property name="matplotlibrc.legend.frameon" value="true"/>
+            <property name="matplotlibrc.legend.fancybox" value="false"/>
+            <property name="grid_show" value="true"/>
+            <property name="vector_end_time" value=""/>
+            <property name="linecolor" value=""/>
+            <property name="matplotlibrc.figure.facecolor" value=""/>
+            <property name="legend_labels" value="result titles"/>
+            <property name="yaxis_title" value=""/>
+            <property name="title" value=""/>
+            <property name="vector_operations" value=""/>
+            <property name="cycle_seed" value="0"/>
+            <property name="yaxis_log" value="false"/>
+            <property name="image_export_height" value="4"/>
+            <property name="xaxis_log" value="false"/>
+            <property name="legend_placement" value="upper right"/>
+            <property name="data_export_filename" value=""/>
+            <property name="xaxis_title" value=""/>
+            <property name="grid_density" value="Major"/>
+            <property name="yaxis_min" value=""/>
+            <property name="image_export_filename" value=""/>
+            <property name="xaxis_min" value=""/>
+            <property name="matplotlibrc.axes.facecolor" value=""/>
+            <property name="linewidth" value="1.5"/>
+            <property name="filter" value="name =~ queueingTime:vector"/>
+            <property name="vector_start_time" value=""/>
+            <property name="linestyle" value="solid"/>
+            <property name="markersize" value="5"/>
+            <property name="drawstyle" value="auto"/>
+            <property name="marker" value="auto"/>
+            <property name="plt.style" value="default"/>
+            <property name="legend_show" value="true"/>
+            <property name="matplotlibrc.legend.shadow" value="false"/>
+            <property name="yaxis_max" value=""/>
+            <property name="xaxis_max" value=""/>
+            <property name="image_export_width" value="6"/>
+            <property name="matplotlibrc" value=""/>
+        </chart>
+        <chart icon="icons/full/obj/linechart.png" id="1577" name="lifetime of arrived jobs, vector" template="linechart_mpl" type="MATPLOTLIB">
+            <script>
+                <![CDATA[import math
+from omnetpp.scave import results, chart, utils, vectorops as ops
+
+# get chart properties
+props = chart.get_properties()
+utils.preconfigure_plot(props)
+
+# collect parameters for query
+filter_expression = props["filter"]
+start_time = float(props["vector_start_time"] or -math.inf)
+end_time = float(props["vector_end_time"] or math.inf)
+
+# query vector data into a data frame
+df = results.get_vectors(filter_expression, include_attrs=True, include_itervars=True, start_time=start_time, end_time=end_time)
+
+# apply vector operations
+df = ops.perform_vector_ops(df, props["vector_operations"])
+
+# plot
+utils.plot_vectors(df, props)
+
+utils.postconfigure_plot(props)
+
+utils.export_image_if_needed(props)
+utils.export_data_if_needed(df, props)
+]]>
+            </script>
+            <dialogPage id="Input" label="Input">
+                <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang" />
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+  </import>
+  <layout x:class="GridLayout" numColumns="1" />
+  <x:children>
+    <label text="Filter expression:" />
+    <styledText x:id="filter" x:style="BORDER|WRAP|V_SCROLL|H_SCROLL" x:id.contentAssist="filter">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true" />
+    </styledText>
+    <composite>
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" />
+      <layout x:class="GridLayout" numColumns="2" makeColumnsEqualWidth="true" />
+      <x:children>
+        <group text="Vector operations (one per line)">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true" />
+          <layout x:class="GridLayout" numColumns="1" />
+          <x:children>
+            <text x:id="vector_operations" x:style="BORDER|MULTI|V_SCROLL|H_SCROLL">
+              <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true" />
+            </text>
+          </x:children>
+        </group>
+        <group text="Crop interval">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true" />
+          <layout x:class="GridLayout" numColumns="2" />
+          <x:children>
+            <label text="Start time (sec):" />
+            <text x:id="vector_start_time" x:style="BORDER">
+              <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false" />
+            </text>
+            <label text="End time (sec):" />
+            <text x:id="vector_end_time" x:style="BORDER">
+              <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false" />
+            </text>
+          </x:children>
+        </group>
+      </x:children>
+    </composite>
+  </x:children>
+</xswt>
+]]>
+            </dialogPage>
+            <dialogPage id="Lines" label="Lines">
+                <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2"/>
+
+  <x:children>
+
+    <group text="Lines">
+      <layoutData x:class="GridData" horizontalSpan="1" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <label text="Draw style:"/>
+    <combo x:id="drawstyle" x:id.default="auto" x:style="BORDER|READ_ONLY">
+      <add x:p0="auto"/>
+      <add x:p0="none"/>
+      <add x:p0="linear"/>
+      <add x:p0="steps-pre"/>
+      <add x:p0="steps-mid"/>
+      <add x:p0="steps-post"/>
+    </combo>
+
+    <label text="Line color:"/>
+    <ColorChooser x:id="linecolor" x:id.default="" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="BEGINNING" grabExcessHorizontalSpace="false"/>
+    </ColorChooser>
+
+    <label text="Line style:"/>
+    <combo x:id="linestyle" x:id.default="solid" x:style="BORDER|READ_ONLY">
+      <add x:p0="none"/>
+      <add x:p0="solid"/>
+      <add x:p0="dotted"/>
+      <add x:p0="dashed"/>
+      <add x:p0="dashdot"/>
+    </combo>
+
+    <label text="Line width:"/>
+    <spinner x:id="linewidth" x:id.default="1.5" minimum="0" digits="1" selection="15" maximum="1000" x:style="BORDER"/>
+
+      </x:children>
+    </group>
+
+    <group text="Markers">
+      <layoutData x:class="GridData" horizontalSpan="1" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <label text="Marker:"/>
+    <combo x:id="marker" x:id.default="auto" x:style="BORDER">
+      <add x:p0="auto"/>
+      <add x:p0="none"/>
+      <add x:p0=". (dot)"/>
+      <add x:p0=", (point)"/>
+      <add x:p0="v (triangle down)"/>
+      <add x:p0="^ (triangle up)"/>
+      <add x:p0="&lt; (triangle left)"/>
+      <add x:p0="&gt; (triangle right)"/>
+      <add x:p0="1 (tri down)"/>
+      <add x:p0="2 (tri up)"/>
+      <add x:p0="3 (tri left)"/>
+      <add x:p0="4 (tri right)"/>
+      <add x:p0="| (vline)"/>
+      <add x:p0="_ (hline)"/>
+      <add x:p0="8 (octagon)"/>
+      <add x:p0="o (circle)"/>
+      <add x:p0="s (square)"/>
+      <add x:p0="p (pentagon)"/>
+      <add x:p0="* (star)"/>
+      <add x:p0="+ (plus)"/>
+      <add x:p0="x (cross)"/>
+      <add x:p0="D (diamond)"/>
+      <add x:p0="d (thin diamond)"/>
+      <!-- TODO the rest...  -->
+    </combo>
+
+    <label text="Marker size:"/>
+    <spinner x:id="markersize" x:id.default="5" selection="6" minimum="0" maximum="100" x:style="BORDER"/>
+
+      </x:children>
+    </group>
+
+  </x:children>
+</xswt>
+]]>
+            </dialogPage>
+            <dialogPage id="Plot" label="Plot">
+                <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2" makeColumnsEqualWidth="true"/>
+
+  <x:children>
+
+    <group text="Title">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- Plot title -->
+    <label text="Plot title:"/>
+    <text x:id="title" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+    <!-- X Axis { -->
+    <group text="X axis">
+      <layoutData x:class="GridData" horizontalSpan="1" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <label text="Label:"/>
+    <text x:id="xaxis_title" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <label text="Min:"/>
+    <text x:id="xaxis_min" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <label text="Max:"/>
+    <text x:id="xaxis_max" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <button x:id="xaxis_log" x:id.default="false" text="Logarithmic" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+    <!-- Y Axis { -->
+    <group text="Y axis">
+      <layoutData x:class="GridData" horizontalSpan="1" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <label text="Label:"/>
+    <text x:id="yaxis_title" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <label text="Min:"/>
+    <text x:id="yaxis_min" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <label text="Max:"/>
+    <text x:id="yaxis_max" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <button x:id="yaxis_log" x:id.default="false" text="Logarithmic" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+    <!-- Grid { -->
+    <group text="Grid">
+      <layoutData x:class="GridData" horizontalSpan="1" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- Display Legend? -->
+    <button x:id="grid_show" x:id.default="true" text="Show grid" x:style="CHECK" x:id.isEnabler="true">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <!-- Show grid:None/Major/All -->
+    <label text="Density:"/>
+    <combo x:id="grid_density" x:id.default="Major" x:style="BORDER|READ_ONLY">
+      <add x:p0="Major"/>
+      <add x:p0="All"/>
+    </combo>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+    <!-- Legend { -->
+    <group text="Legend">
+      <layoutData x:class="GridData" horizontalSpan="1" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- Display Legend? -->
+    <button x:id="legend_show" x:id.default="true" text="Show legend" x:style="CHECK" x:id.isEnabler="true" >
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <!-- Display titles or names? -->
+    <label text="Label source:"/>
+    <combo x:id="legend_labels" x:id.default="result titles" x:style="BORDER|READ_ONLY">
+      <add x:p0="result names"/>
+      <add x:p0="result titles"/>
+    </combo>
+
+    <!-- Placement -->
+    <label text="Placement:"/>
+    <combo x:id="legend_placement" x:id.default="upper right" x:style="BORDER|READ_ONLY">
+      <add x:p0="best"/>
+      <add x:p0="upper right"/>
+      <add x:p0="upper left"/>
+      <add x:p0="lower left"/>
+      <add x:p0="lower right"/>
+      <add x:p0="right"/>
+      <add x:p0="center left"/>
+      <add x:p0="center right"/>
+      <add x:p0="lower center"/>
+      <add x:p0="upper center"/>
+      <add x:p0="center"/>
+      <add x:p0="outside top left"/>
+      <add x:p0="outside top center"/>
+      <add x:p0="outside top right"/>
+      <add x:p0="outside bottom left"/>
+      <add x:p0="outside bottom center"/>
+      <add x:p0="outside bottom right"/>
+      <add x:p0="outside left top"/>
+      <add x:p0="outside left center"/>
+      <add x:p0="outside left bottom"/>
+      <add x:p0="outside right top"/>
+      <add x:p0="outside right center"/>
+      <add x:p0="outside right bottom"/>
+    </combo>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+  </x:children>
+</xswt>
+]]>
+            </dialogPage>
+            <dialogPage id="Styling" label="Styling">
+                <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2"/>
+
+  <x:children>
+
+    <!-- Style { -->
+    <group text="Style">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <label text="Style:"/>
+    <combo x:id="plt.style"  x:id.default="default" x:style="BORDER">
+      <add x:p0="default"/>
+      <add x:p0="classic"/>
+      <add x:p0="ggplot"/>
+      <add x:p0="grayscale"/>
+      <add x:p0="dark_background"/>
+      <add x:p0="bmh"/>
+      <add x:p0="fast"/>
+      <add x:p0="fivethirtyeight"/>
+      <add x:p0="tableau-colorblind10"/>
+      <add x:p0="Solarize_Light2"/>
+      <add x:p0="seaborn"/>
+      <add x:p0="seaborn-bright"/>
+      <add x:p0="seaborn-colorblind"/>
+      <add x:p0="seaborn-dark"/>
+      <add x:p0="seaborn-darkgrid"/>
+      <add x:p0="seaborn-dark-palette"/>
+      <add x:p0="seaborn-deep"/>
+      <add x:p0="seaborn-muted"/>
+      <add x:p0="seaborn-notebook"/>
+      <add x:p0="seaborn-paper"/>
+      <add x:p0="seaborn-pastel"/>
+      <add x:p0="seaborn-poster"/>
+      <add x:p0="seaborn-talk"/>
+      <add x:p0="seaborn-ticks"/>
+      <add x:p0="seaborn-white"/>
+      <add x:p0="seaborn-whitegrid"/>
+    </combo>
+
+    <label text="Cycle seed:"/>
+    <spinner x:id="cycle_seed" x:id.default="0" selection="0" minimum="0" maximum="1000000" x:style="BORDER"/>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+    <!-- Colors { -->
+    <group text="Colors">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <!-- backgroundColor -->
+    <label text="Figure background color:"/>
+    <ColorChooser x:id="matplotlibrc.figure.facecolor" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </ColorChooser>
+
+    <label text="Axes background color:"/>
+    <ColorChooser x:id="matplotlibrc.axes.facecolor" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </ColorChooser>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+
+    <!-- Legend { -->
+    <group text="Legend">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <button x:id="matplotlibrc.legend.frameon" x:id.default="true" text="Frame" x:style="CHECK"  x:id.isEnabler="true">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <button x:id="matplotlibrc.legend.fancybox" x:id.default="false" text="Fancybox" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <button x:id="matplotlibrc.legend.shadow" x:id.default="false" text="Shadow" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+
+  </x:children>
+</xswt>
+]]>
+            </dialogPage>
+            <dialogPage id="Advanced" label="Advanced">
+                <![CDATA[<?xml version='1.0' encoding='UTF-8'?>
+<xswt xmlns:x='http://sweet_swt.sf.net/xswt'>
+  <import xmlns='http://sweet_swt.sf.net/xswt'>
+    <package name='java.lang'/>
+    <package name='org.eclipse.swt.widgets' />
+    <package name='org.eclipse.swt.graphics' />
+    <package name='org.eclipse.swt.layout' />
+    <package name='org.eclipse.swt.custom' />
+  </import>
+  <layout x:class='GridLayout' numColumns='1'/>
+  <x:children>
+    <label text="Here you can further customize the plot using matplotlibrc properties."/>
+    <label text="The syntax is one entry per line in the 'key : value' format; comments (#) are also accepted."/>
+    <label text="Content Assist available (hit Ctrl+Space)."/>
+    <styledText x:id="matplotlibrc" x:style="BORDER|V_SCROLL|H_SCROLL" x:id.contentAssist="matplotlibrc">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true"/>
+    </styledText>
+  </x:children>
+</xswt>
+]]>
+            </dialogPage>
+            <dialogPage id="Export" label="Export">
+                <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2"/>
+
+  <x:children>
+
+    <group text="Image export">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+        <label text="Image file name (w/o extension):"/>
+        <text x:id="image_export_filename" x:style="BORDER">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </text>
+
+        <label text="Image width (inches):"/>
+        <text x:id="image_export_width" x:id.default="6" x:style="BORDER">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </text>
+
+        <label text="Image height (inches):"/>
+        <text x:id="image_export_height" x:id.default="4" x:style="BORDER">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </text>
+
+      </x:children>
+    </group>
+
+    <group text="Data export">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+        <label text="File name (w/o extension):"/>
+        <text x:id="data_export_filename" x:style="BORDER">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </text>
+
+      </x:children>
+    </group>
+
+  </x:children>
+</xswt>
+]]>
+            </dialogPage>
+            <property name="matplotlibrc.legend.frameon" value="true"/>
+            <property name="matplotlibrc.legend.fancybox" value="false"/>
+            <property name="grid_show" value="true"/>
+            <property name="vector_end_time" value=""/>
+            <property name="linecolor" value=""/>
+            <property name="matplotlibrc.figure.facecolor" value=""/>
+            <property name="legend_labels" value="result titles"/>
+            <property name="yaxis_title" value=""/>
+            <property name="title" value=""/>
+            <property name="vector_operations" value=""/>
+            <property name="cycle_seed" value="0"/>
+            <property name="yaxis_log" value="false"/>
+            <property name="image_export_height" value="4"/>
+            <property name="xaxis_log" value="false"/>
+            <property name="legend_placement" value="upper right"/>
+            <property name="data_export_filename" value=""/>
+            <property name="xaxis_title" value=""/>
+            <property name="grid_density" value="Major"/>
+            <property name="yaxis_min" value=""/>
+            <property name="image_export_filename" value=""/>
+            <property name="xaxis_min" value=""/>
+            <property name="matplotlibrc.axes.facecolor" value=""/>
+            <property name="linewidth" value="1.5"/>
+            <property name="filter" value="name =~ lifetime:vector"/>
+            <property name="vector_start_time" value=""/>
+            <property name="linestyle" value="solid"/>
+            <property name="markersize" value="5"/>
+            <property name="drawstyle" value="auto"/>
+            <property name="marker" value="auto"/>
+            <property name="plt.style" value="default"/>
+            <property name="legend_show" value="true"/>
+            <property name="matplotlibrc.legend.shadow" value="false"/>
+            <property name="yaxis_max" value=""/>
+            <property name="xaxis_max" value=""/>
+            <property name="image_export_width" value="6"/>
+            <property name="matplotlibrc" value=""/>
+        </chart>
+    </charts>
+</analysis>
