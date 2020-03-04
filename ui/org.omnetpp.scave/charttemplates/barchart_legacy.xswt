@@ -18,25 +18,25 @@
             <label text="Filter expression:">
             	<layoutData x:class="GridData" horizontalAlignment="BEGINNING" verticalAlignment="BEGINNING"/>
             </label>
-            <text x:id="filter" x:style="BORDER|WRAP|MULTI" x:id.isFilter="true"> 
+            <text x:id="filter" x:style="BORDER|WRAP|MULTI" x:id.contentAssist="filter">
                 <layoutData x:class="GridData" horizontalAlignment="FILL" verticalAlignment="FILL" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true"/>
             </text>
 
             <label text="Groups:"/>
-            <combo x:id="groups" x:style="BORDER" x:id.content="$itervarnames,$runattrnames"> 
+            <combo x:id="groups" x:style="BORDER" x:id.content="$itervarnames,$runattrnames">
                 <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
             </combo>
 
             <label text="Bars:"/>
-            <combo x:id="bars" x:style="BORDER" x:id.content="$itervarnames,$runattrnames"> 
+            <combo x:id="bars" x:style="BORDER" x:id.content="$itervarnames,$runattrnames">
                 <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
             </combo>
-            
+
             <label text="Averaged:"/>
-            <combo x:id="averaged" x:style="BORDER" x:id.content="$itervarnames,$runattrnames"> 
+            <combo x:id="averaged" x:style="BORDER" x:id.content="$itervarnames,$runattrnames">
                 <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
             </combo>
-            
+
       </x:children>
     </group>
   </x:children>

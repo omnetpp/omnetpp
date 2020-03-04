@@ -12,28 +12,28 @@
     <label text="Filter expression:" >
         <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </label>
-    
-    <text x:id="filter" x:style="BORDER|MULTI|V_SCROLL|H_SCROLL" x:id.isFilter="true">
+
+    <text x:id="filter" x:style="BORDER|MULTI|V_SCROLL|H_SCROLL" x:id.contentAssist="filter">
       <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true" />
     </text>
-    
+
     <label text="Multiple attributes can be selected in both fields below, separated by commas.">
         <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </label>
-    
+
     <label text="Groups:"/>
-    <combo x:id="groups" x:style="BORDER" x:id.content="module,name,experiment,module+name,$itervarnames,$runattrnames"> 
+    <combo x:id="groups" x:style="BORDER" x:id.content="module,name,experiment,module+name,$itervarnames,$runattrnames">
         <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </combo>
 
     <label text="Series:"/>
-    <combo x:id="series" x:style="BORDER" x:id.content="module,name,experiment,module+name,$itervarnames,$runattrnames"> 
+    <combo x:id="series" x:style="BORDER" x:id.content="module,name,experiment,module+name,$itervarnames,$runattrnames">
         <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </combo>
-    
+
     <label text="Scalar values will be averaged across all attributes not selected above.">
         <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </label>
-    
+
   </x:children>
 </xswt>

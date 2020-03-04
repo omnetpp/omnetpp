@@ -11,7 +11,7 @@
   <x:children>
     <label text="Enter data you want to feed into the Python script." />
     <label text="It will be available to the script via chart.get_property('input')." />
-    <text x:id="input" x:style="BORDER|MULTI|V_SCROLL|H_SCROLL" x:id.isFilter="true">
+    <text x:id="input" x:style="BORDER|MULTI|V_SCROLL|H_SCROLL" x:id.contentAssist="filter">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true" />
     </text>
   </x:children>

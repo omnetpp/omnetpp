@@ -24,8 +24,10 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -41,6 +43,7 @@ import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.contentassist.ContentAssistUtil;
 import org.omnetpp.common.ui.SWTFactory;
+import org.omnetpp.common.ui.StyledTextUndoRedoManager;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.common.wizard.XSWTDataBinding;
@@ -219,14 +222,31 @@ public class ChartEditForm {
         // setting up content assist and "enabler" checkboxes
         for (String key : xswtWidgetMap.keySet()) {
             Control control = xswtWidgetMap.get(key);
-            String isFilter = (String)control.getData("isFilter");
-            String isEnabler = (String)control.getData("isEnabler");
 
-            if (control instanceof Text && isFilter != null && isFilter.equalsIgnoreCase("true")) {
-                FilterContentProposalProvider filterProposalProvider = new FilterContentProposalProvider();
-                ContentAssistUtil.configureText((Text)control, filterProposalProvider);
+            if (control instanceof StyledText) {
+               StyledTextUndoRedoManager.getOrCreateManagerOf((StyledText)control);
             }
-            else if (control instanceof Button && isEnabler != null && isEnabler.equalsIgnoreCase("true")) {
+
+            String contentAssist = (String)control.getData("contentAssist");
+            if (contentAssist != null)  {
+                IContentProposalProvider proposalProvider = null;
+                if (contentAssist.equals("filter"))
+                    proposalProvider = new FilterContentProposalProvider();
+                else
+                    ; //TODO error
+
+                if (proposalProvider != null) {
+                    if (control instanceof Text)
+                        ContentAssistUtil.configureText((Text)control, proposalProvider);
+                    else if (control instanceof StyledText)
+                        ContentAssistUtil.configureStyledText((StyledText)control, proposalProvider);
+                    else
+                        ; //TODO error
+                }
+            }
+
+            String isEnabler = (String)control.getData("isEnabler");
+            if (control instanceof Button && isEnabler != null && isEnabler.equalsIgnoreCase("true")) {
                 Button button = (Button)control;
 
                 button.addSelectionListener(new SelectionAdapter() {
