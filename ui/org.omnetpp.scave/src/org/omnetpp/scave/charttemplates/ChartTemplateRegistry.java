@@ -153,7 +153,7 @@ public class ChartTemplateRegistry {
 
         String propertyNamesProp = props.getProperty("propertyNames", "");
         if (!StringUtils.isBlank(propertyNamesProp))
-            Debug.println("WARNING: " + propertiesFile + " contains obsolete property 'propertyNames', please use 'x:default' attributes in XSWT pages to declare default values");
+            Debug.println("WARNING: " + propertiesFile + " contains obsolete property 'propertyNames', please use 'x:id.default' attributes in XSWT pages to declare default values");
 
         // parse result types
         int resultTypes = 0;
@@ -184,7 +184,7 @@ public class ChartTemplateRegistry {
                 String name = e.getAttribute("x:id");
                 if (properties.containsKey(name))
                     Debug.print("WARNING: Duplicate property in XSWT pages: " + name);
-                Attr valueNode = e.getAttributeNode("x:default");
+                Attr valueNode = e.getAttributeNode("x:id.default");
                 String value = "";
                 if (valueNode != null)
                     value = valueNode.getValue();

@@ -493,9 +493,6 @@ public class XSWT {
             if (nodeName.endsWith("id")) {
                 return true;
             }
-            if (nodeName.equals("default")) { // OMNeT++ specific (not used by XSWT): default value for the associated chart template variable (named by x:id)
-                return true;
-            }
             if ("p".equals(nodeName.substring(0, 1))) {
                 return true;
             }

@@ -26,12 +26,12 @@
         </text>
 
         <label text="Image width (inches):"/>
-        <text x:id="image_export_width" x:default="6" x:style="BORDER">
+        <text x:id="image_export_width" x:id.default="6" x:style="BORDER">
           <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
         </text>
 
         <label text="Image height (inches):"/>
-        <text x:id="image_export_height" x:default="4" x:style="BORDER">
+        <text x:id="image_export_height" x:id.default="4" x:style="BORDER">
           <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
         </text>
 

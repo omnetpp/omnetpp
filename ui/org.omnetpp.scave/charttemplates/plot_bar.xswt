@@ -66,7 +66,7 @@
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </text>
 
-    <button x:id="yaxis_log" x:default="false" text="Logarithmic" x:style="CHECK">
+    <button x:id="yaxis_log" x:id.default="false" text="Logarithmic" x:style="CHECK">
       <layoutData x:class="GridData" horizontalSpan="2"/>
     </button>
 
@@ -81,13 +81,13 @@
       <x:children>
 
     <!-- Display Legend? -->
-    <button x:id="grid_show" x:default="true" text="Show grid" x:style="CHECK" x:id.isEnabler="true">
+    <button x:id="grid_show" x:id.default="true" text="Show grid" x:style="CHECK" x:id.isEnabler="true">
       <layoutData x:class="GridData" horizontalSpan="2"/>
     </button>
 
     <!-- Show grid:None/Major/All -->
     <label text="Density:"/>
-    <combo x:id="grid_density" x:default="Major" x:style="BORDER|READ_ONLY">
+    <combo x:id="grid_density" x:id.default="Major" x:style="BORDER|READ_ONLY">
       <add x:p0="Major"/>
       <add x:p0="All"/>
     </combo>
@@ -103,20 +103,20 @@
       <x:children>
 
     <!-- Display Legend? -->
-    <button x:id="legend_show" x:default="true" text="Show legend" x:style="CHECK" x:id.isEnabler="true" >
+    <button x:id="legend_show" x:id.default="true" text="Show legend" x:style="CHECK" x:id.isEnabler="true" >
       <layoutData x:class="GridData" horizontalSpan="2"/>
     </button>
 
     <!-- Display titles or names? -->
     <label text="Label source:"/>
-    <combo x:id="legend_labels" x:default="result titles" x:style="BORDER|READ_ONLY">
+    <combo x:id="legend_labels" x:id.default="result titles" x:style="BORDER|READ_ONLY">
       <add x:p0="result names"/>
       <add x:p0="result titles"/>
     </combo>
 
     <!-- Placement -->
     <label text="Placement:"/>
-    <combo x:id="legend_placement" x:default="upper right" x:style="BORDER|READ_ONLY">
+    <combo x:id="legend_placement" x:id.default="upper right" x:style="BORDER|READ_ONLY">
       <add x:p0="best"/>
       <add x:p0="upper right"/>
       <add x:p0="upper left"/>

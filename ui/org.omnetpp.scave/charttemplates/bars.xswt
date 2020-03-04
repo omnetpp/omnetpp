@@ -22,13 +22,13 @@
 
         <!-- Baseline -->
         <label text="Baseline:"/>
-        <text x:id="baseline" x:default="0" x:style="BORDER">
+        <text x:id="baseline" x:id.default="0" x:style="BORDER">
           <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
         </text>
 
         <!-- Bar placement:Aligned/Overlap/InFront/Stacked -->
         <label text="Bar placement:"/>
-        <combo x:id="bar_placement" x:default="Aligned" x:style="BORDER|READ_ONLY">
+        <combo x:id="bar_placement" x:id.default="Aligned" x:style="BORDER|READ_ONLY">
           <add x:p0="Aligned"/>
           <add x:p0="Overlap"/>
           <add x:p0="InFront"/>
@@ -37,7 +37,7 @@
 
         <!-- Rotate X labels by:0/30/45/60/90 -->
         <label text="Rotate x labels by:"/>
-        <combo x:id="xlabel_rotation" x:default="0" x:style="BORDER|READ_ONLY">
+        <combo x:id="xlabel_rotation" x:id.default="0" x:style="BORDER|READ_ONLY">
           <add x:p0="0"/>
           <add x:p0="30"/>
           <add x:p0="45"/>

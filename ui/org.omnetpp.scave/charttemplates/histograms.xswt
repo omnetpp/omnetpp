@@ -29,27 +29,27 @@ Show over_underflow cell?
 
     <!-- Baseline -->
     <label text="Baseline:"/>
-    <text x:id="baseline" x:default="0" x:style="BORDER">
+    <text x:id="baseline" x:id.default="0" x:style="BORDER">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </text>
 
     <!-- Bar type:Solid/Outline -->
     <label text="Draw style:"/>
-    <combo x:id="drawstyle" x:default="Solid" x:style="BORDER|READ_ONLY">
+    <combo x:id="drawstyle" x:id.default="Solid" x:style="BORDER|READ_ONLY">
       <add x:p0="Solid"/>
       <add x:p0="Outline"/>
     </combo>
 
-    <button x:id="normalize" x:default="false" text="Normalize" x:style="CHECK">
+    <button x:id="normalize" x:id.default="false" text="Normalize" x:style="CHECK">
       <layoutData x:class="GridData" horizontalSpan="2"/>
     </button>
 
-    <button x:id="cumulative" x:default="false" text="Cumulative" x:style="CHECK">
+    <button x:id="cumulative" x:id.default="false" text="Cumulative" x:style="CHECK">
       <layoutData x:class="GridData" horizontalSpan="2"/>
     </button>
 
     <!-- Show over_underflow cell? -->
-    <button x:id="show_overflows" x:default="true" text="Show under/overflows" x:style="CHECK">
+    <button x:id="show_overflows" x:id.default="true" text="Show under/overflows" x:style="CHECK">
       <layoutData x:class="GridData" horizontalSpan="2"/>
     </button>
 

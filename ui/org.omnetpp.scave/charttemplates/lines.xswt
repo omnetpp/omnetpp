@@ -21,7 +21,7 @@
       <x:children>
 
     <label text="Draw style:"/>
-    <combo x:id="drawstyle" x:default="auto" x:style="BORDER|READ_ONLY">
+    <combo x:id="drawstyle" x:id.default="auto" x:style="BORDER|READ_ONLY">
       <add x:p0="auto"/>
       <add x:p0="none"/>
       <add x:p0="linear"/>
@@ -31,12 +31,12 @@
     </combo>
 
     <label text="Line color:"/>
-    <ColorChooser x:id="linecolor" x:default="" x:style="BORDER">
+    <ColorChooser x:id="linecolor" x:id.default="" x:style="BORDER">
       <layoutData x:class="GridData" horizontalAlignment="BEGINNING" grabExcessHorizontalSpace="false"/>
     </ColorChooser>
 
     <label text="Line style:"/>
-    <combo x:id="linestyle" x:default="solid" x:style="BORDER|READ_ONLY">
+    <combo x:id="linestyle" x:id.default="solid" x:style="BORDER|READ_ONLY">
       <add x:p0="none"/>
       <add x:p0="solid"/>
       <add x:p0="dotted"/>
@@ -45,7 +45,7 @@
     </combo>
 
     <label text="Line width:"/>
-    <spinner x:id="linewidth" x:default="1.5" minimum="0" digits="1" selection="15" maximum="1000" x:style="BORDER"/>
+    <spinner x:id="linewidth" x:id.default="1.5" minimum="0" digits="1" selection="15" maximum="1000" x:style="BORDER"/>
 
       </x:children>
     </group>
@@ -56,7 +56,7 @@
       <x:children>
 
     <label text="Marker:"/>
-    <combo x:id="marker" x:default="auto" x:style="BORDER">
+    <combo x:id="marker" x:id.default="auto" x:style="BORDER">
       <add x:p0="auto"/>
       <add x:p0="none"/>
       <add x:p0=". (dot)"/>
@@ -84,7 +84,7 @@
     </combo>
 
     <label text="Marker size:"/>
-    <spinner x:id="markersize" x:default="5" selection="6" minimum="0" maximum="100" x:style="BORDER"/>
+    <spinner x:id="markersize" x:id.default="5" selection="6" minimum="0" maximum="100" x:style="BORDER"/>
 
       </x:children>
     </group>
