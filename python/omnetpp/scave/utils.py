@@ -390,8 +390,8 @@ def plot_bars(df, props, names=None):
     p.xticks(list(range(len(df.index))), list([str(i) for i in df.index.values]), rotation=rotation)
 
     # Add some text for labels, title and custom x-axis tick labels, etc.
-    groups = get_prop("groups").split(",")
-    series = get_prop("series").split(",")
+    groups = (get_prop("groups") or "").split(",")
+    series = (get_prop("series") or "").split(",")
 
 
 
