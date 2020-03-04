@@ -1,5 +1,7 @@
+3dchart_itervars.properties
 barchart_mpl.properties
 barchart_native.properties
+boxwhiskers.properties
 generic_mpl.properties
 generic_xyplot_mpl.properties
 generic_xyplot_native.properties
