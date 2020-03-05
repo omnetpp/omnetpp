@@ -95,8 +95,8 @@ def hist(x, bins, density=False, weights=None, cumulative=False, bottom=None, hi
         "binvalues": [np.array(weights)],
         "underflows": [underflows],
         "overflows": [overflows],
-        "min": [float(np.min(binedges)) if math.isnan(minvalue) else minvalue],
-        "max": [float(np.max(binedges)) if math.isnan(maxvalue) else maxvalue]
+        "min": [float(np.min(bins)) if math.isnan(minvalue) else minvalue],
+        "max": [float(np.max(bins)) if math.isnan(maxvalue) else maxvalue]
     }), props)
 
 
