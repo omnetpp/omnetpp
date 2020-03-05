@@ -52,8 +52,9 @@ public class InputsTree extends TreeViewer {
     private Map<InputFile,List<FileNode>> matchingFiles = new HashMap<>();
 
     class FileNode {
+        String fileName;
         String filePath;
-        List<RunNode> runs = new ArrayList<>();
+        List<RunNode> runs = null;
     }
 
     class RunNode {
@@ -112,52 +113,30 @@ public class InputsTree extends TreeViewer {
                     for (ResultFile resultFile : resultFiles) {
                         if (ResultFilesTracker.matchPattern(resultFile.getFilePath(), filePattern)) {
                             FileNode fileNode = new FileNode();
+                            fileNode.fileName = resultFile.getFileName();
                             fileNode.filePath = resultFile.getFilePath();
                             fileNodes.add(fileNode);
-
-                            RunList runlist = manager.getRunsInFile(resultFile);
-                            for (Run run : Sorter.sort(runlist)) {
-                                RunNode runNode = new RunNode();
-                                runNode.runId = run.getRunName();
-                                fileNode.runs.add(runNode);
-
-                                if (groupRunFields) {
-                                    runNode.attrGroups = new ArrayList<>();
-                                    runNode.attrGroups.add(new AttrGroup("Iteration Variables", convert(run.getIterationVariables(), AttrType.ITERVAR)));
-                                    runNode.attrGroups.add(new AttrGroup("Run Attributes", convert(run.getAttributes(), AttrType.ATTR)));
-                                    runNode.attrGroups.add(new AttrGroup("Parameter Assignments", convert(run.getParamAssignments(), AttrType.PARAMASSIGNMENT)));
-                                    runNode.attrGroups.add(new AttrGroup("Configuration", convert(run.getNonParamAssignmentConfigEntries(), AttrType.CONFIGENTRY)));
-                                }
-                                else {
-                                    runNode.attrs = new ArrayList<>();
-                                    runNode.attrs.addAll(convert(run.getIterationVariables(), AttrType.ITERVAR));
-                                    runNode.attrs.addAll(convert(run.getAttributes(), AttrType.ATTR));
-                                    runNode.attrs.addAll(convert(run.getParamAssignments(), AttrType.PARAMASSIGNMENT));
-                                    runNode.attrs.addAll(convert(run.getNonParamAssignmentConfigEntries(), AttrType.CONFIGENTRY));
-                                }
-                            }
                         }
                     }
                 }
                 Debug.println("InputTree rebuild: " + (System.currentTimeMillis()-start) + "ms");
                 return null;
             }
-
-            private List<AttrNode> convert(StringMap attrs, AttrType type) {
-                List<AttrNode> result = new ArrayList<>();
-                for (String name : attrs.keys().toArray())
-                    result.add(new AttrNode(type, name, attrs.get(name)));
-                return result;
-            }
-
-            private List<AttrNode> convert(OrderedKeyValueList list, AttrType type) {
-                List<AttrNode> result = new ArrayList<>();
-                for (int i = 0; i < list.size(); i++)
-                    result.add(new AttrNode(type, list.get(i).getFirst(), list.get(i).getSecond()));
-                return result;
-            }
-
         });
+    }
+
+    private List<AttrNode> convert(StringMap attrs, AttrType type) {
+        List<AttrNode> result = new ArrayList<>();
+        for (String name : attrs.keys().toArray())
+            result.add(new AttrNode(type, name, attrs.get(name)));
+        return result;
+    }
+
+    private List<AttrNode> convert(OrderedKeyValueList list, AttrType type) {
+        List<AttrNode> result = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++)
+            result.add(new AttrNode(type, list.get(i).getFirst(), list.get(i).getSecond()));
+        return result;
     }
 
     private class InputsViewContentProvider implements ITreeContentProvider {
@@ -166,10 +145,53 @@ public class InputsTree extends TreeViewer {
                 return analysis.getInputs().getInputs().toArray();
             else if (element instanceof InputFile)
                 return matchingFiles.get(element).toArray();
-            else if (element instanceof FileNode)
-                return ((FileNode)element).runs.toArray();
-            else if (element instanceof RunNode)
+            else if (element instanceof FileNode) {
+                FileNode fileNode = (FileNode)element;
+                if (fileNode.runs == null) {
+                    ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+                        @Override
+                        public Object call() {
+                            fileNode.runs = new ArrayList<>();
+                            ResultFile resultFile = manager.getFile(fileNode.filePath);
+                            RunList runlist = manager.getRunsInFile(resultFile);
+                            for (Run run : Sorter.sort(runlist)) {
+                                RunNode runNode = new RunNode();
+                                runNode.runId = run.getRunName();
+                                fileNode.runs.add(runNode);
+                            }
+                            return null;
+                        }
+                    });
+                }
+                return fileNode.runs.toArray();
+            }
+            else if (element instanceof RunNode) {
+                RunNode runNode = (RunNode)element;
+                if (runNode.attrGroups == null && runNode.attrs == null) {
+                    ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+                        @Override
+                        public Object call() {
+                            Run run = manager.getRunByName(runNode.runId);
+                            if (groupRunFields) {
+                                runNode.attrGroups = new ArrayList<>();
+                                runNode.attrGroups.add(new AttrGroup("Iteration Variables", convert(run.getIterationVariables(), AttrType.ITERVAR)));
+                                runNode.attrGroups.add(new AttrGroup("Run Attributes", convert(run.getAttributes(), AttrType.ATTR)));
+                                runNode.attrGroups.add(new AttrGroup("Parameter Assignments", convert(run.getParamAssignments(), AttrType.PARAMASSIGNMENT)));
+                                runNode.attrGroups.add(new AttrGroup("Configuration", convert(run.getNonParamAssignmentConfigEntries(), AttrType.CONFIGENTRY)));
+                            }
+                            else {
+                                runNode.attrs = new ArrayList<>();
+                                runNode.attrs.addAll(convert(run.getIterationVariables(), AttrType.ITERVAR));
+                                runNode.attrs.addAll(convert(run.getAttributes(), AttrType.ATTR));
+                                runNode.attrs.addAll(convert(run.getParamAssignments(), AttrType.PARAMASSIGNMENT));
+                                runNode.attrs.addAll(convert(run.getNonParamAssignmentConfigEntries(), AttrType.CONFIGENTRY));
+                            }
+                            return null;
+                        }
+                    });
+                }
                 return groupRunFields ? ((RunNode) element).attrGroups.toArray() : ((RunNode) element).attrs.toArray();
+            }
             else if (element instanceof AttrGroup)
                 return ((AttrGroup) element).attrs.toArray();
             else
