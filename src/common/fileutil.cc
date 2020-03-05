@@ -307,6 +307,161 @@ std::vector<std::string> collectFiles(const char *foldername, const char *suffix
     return result;
 }
 
+void doCollectMatchingFiles(const std::vector<std::string>& segments, int index, const std::string& prefix, std::vector<std::string>& result)
+{
+    const char *segment = segments[index].c_str();
+    if (strcmp(segment, "**") == 0) {
+        if (index+1 != segments.size())
+            doCollectMatchingFiles(segments, index+1, prefix, result);
+
+        // go into all directories with this segment again
+        FileGlobber globber("*");
+        const char *name;
+        while ((name = globber.getNext()) != nullptr) {
+            if (name[0] == '.')
+                continue;  // ignore ".", "..", and dotfiles
+
+            if (isDirectory(name)) {
+                PushDir pushDir(name);
+                if (index+1 != segments.size())
+                    doCollectMatchingFiles(segments, index, prefix + name + "/", result); // note: NOT index+1!
+            }
+        }
+    }
+    else if (strchr(segment, '*') == nullptr && strchr(segment, '?') == nullptr) {
+        // no wildcard -- skip globbing
+        // note: this block is exactly like the next one, only without the globbing
+        const char *name = segment;
+        bool skip = false;
+        if (name[0] == '.') {
+            if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0 || segment[0] != '.')
+                skip = true;  // ignore "." and ".." (always), and dotfiles (unless the segment starts with ".")
+        }
+
+        if (!skip && index == segments.size()-1) {
+            result.push_back(prefix + name);
+        }
+
+        if (!skip && isDirectory(name)) {
+            PushDir pushDir(name);
+            if (index+1 != segments.size())
+                doCollectMatchingFiles(segments, index+1, prefix + name + "/", result);
+        }
+    }
+    else {
+        // glob it
+        FileGlobber globber(segment);
+        const char *name;
+        while ((name = globber.getNext()) != nullptr) {
+            if (name[0] == '.') {
+                if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0 || segment[0] != '.')
+                    continue;  // ignore "." and ".." (always), and dotfiles (unless the segment starts with ".")
+            }
+
+            if (index == segments.size()-1) {
+                result.push_back(prefix + name);
+            }
+
+            if (isDirectory(name)) {
+                PushDir pushDir(name);
+                if (index+1 != segments.size())
+                    doCollectMatchingFiles(segments, index+1, prefix + name + "/", result);
+            }
+        }
+    }
+
+
+}
+
+std::vector<std::string> collectMatchingFiles(const char *pattern)
+{
+    // split to segments:
+    //  "foo/bar/" -> ["foo", "bar"]
+    //  "foo//bar///" -> ["foo", "bar"]
+    //  "fo*/b?r" -> ["fo*", "b?r"]
+    //  "foo/**/bar" -> ["foo", "**", "bar"]
+    //  "foo**bar" -> ["foo*", "**", "*bar"]
+    //  "foo/**bar" -> ["foo", "**", "*bar"]
+    //  "foo**/bar" -> ["foo*", "**", "bar"]
+    //  "/foo/bar" -> ["/foo", "bar"]
+    //  "//foo/bar" -> ["//foo", "bar"]
+    //  "c:/foo/bar" (on Windows) -> ["c:/foo", "bar"]
+    //  "c:foo/bar" (on Windows) -> ["c:foo", "bar"]
+    //
+    std::vector<std::string> result;
+
+    std::string tidyPattern = tidyFilename(pattern, true);
+    pattern = tidyPattern.c_str();
+
+    const char *firstwildcard = pattern + strcspn(pattern, "/*?");
+
+    // if no wildcard, simply return it as a file (if exists)
+    if (!*firstwildcard) {
+        if (isFile(pattern))
+            result.push_back(pattern);
+        return result;
+    }
+
+    std::vector<std::string> segments;
+    const char *segstart = pattern;
+
+    const char *s = pattern;
+
+#ifdef _WIN32
+    // skip drive letter/device name (they'll be included in the first segment)
+    while (*s && *s != ':' && *s != '/')
+        s++;
+    if (*s != ':')
+        s = pattern; // reset
+    else
+        s++; // skip colon
+#endif
+
+    // skip leading slashes (they'll be included in the first segment)
+    while (*s == '/')
+        s++;
+
+    // parse segments
+    while (*s) {
+        if (*s == '/') {
+            segments.push_back(std::string(segstart, s-segstart));
+            while (*s == '/')
+                s++;
+            segstart = s;
+        }
+        else if (*s == '*' && *(s+1) == '*') {
+            if (segstart != s)
+                segments.push_back(std::string(segstart, s-segstart+1)); // include trailing asterisk
+            if (segments.empty() || segments.back() != "**")
+                segments.push_back("**");
+            while (*s == '*')
+                s++; // skip asterisks
+            if (*s && *s != '/')
+                segstart = s-1;  // include leading asterisk
+            else {
+                while (*s == '/')
+                    s++;
+                segstart = s;
+            }
+        }
+        else {
+            s++;
+        }
+    }
+    if (s != segstart)
+        segments.push_back(std::string(segstart, s-segstart)); // last segment
+
+    // print segments for debugging
+    //std::cout << pattern << " ==> ";
+    //for (std::string segment: segments)
+    //    std::cout << "'" << segment << "'  ";
+    //std::cout << std::endl;
+
+    // recurse
+    doCollectMatchingFiles(segments, 0, "./", result);
+    return result;
+}
+
 //----
 
 PushDir::PushDir(const char *changetodir)
