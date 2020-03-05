@@ -201,7 +201,7 @@ void SqliteResultFileLoader::loadScalars()
         SqliteScalarIdToScalarIdx::iterator it = sqliteScalarIdToScalarIdx.find(scalarId);
         if (it == sqliteScalarIdToScalarIdx.end())
             error("Invalid scalarId in scalarAttr table");
-        ScalarResult& sca = fileRunMap.at(runId)->fileRef->scalarResults.at(sqliteScalarIdToScalarIdx.at(scalarId));
+        ScalarResult& sca = fileRunMap.at(runId)->scalarResults.at(sqliteScalarIdToScalarIdx.at(scalarId));
         sca.setAttribute(attrName, attrValue);
     }
     finalizeStatement();
@@ -243,7 +243,7 @@ void SqliteResultFileLoader::loadParameters()
         SqliteParamIdToParamIdx::iterator it = sqliteParamIdToParamIdx.find(paramId);
         if (it == sqliteParamIdToParamIdx.end())
             error("Invalid paramId in paramAttr table");
-        ParameterResult& param = fileRunMap.at(runId)->fileRef->parameterResults.at(sqliteParamIdToParamIdx.at(paramId));
+        ParameterResult& param = fileRunMap.at(runId)->parameterResults.at(sqliteParamIdToParamIdx.at(paramId));
         param.setAttribute(attrName, attrValue);
     }
     finalizeStatement();
@@ -320,13 +320,13 @@ void SqliteResultFileLoader::loadHistograms()
 
         auto it = sqliteStatIdToHistogramIdx.find(statId);
         if (it != sqliteStatIdToHistogramIdx.end()) {
-            HistogramResult& hist = fileRunMap.at(runId)->fileRef->histogramResults.at(sqliteStatIdToHistogramIdx.at(statId));
+            HistogramResult& hist = fileRunMap.at(runId)->histogramResults.at(sqliteStatIdToHistogramIdx.at(statId));
             hist.setAttribute(attrName, attrValue);
             continue;
         }
         it = sqliteStatIdToStatisticsIdx.find(statId);
         if (it != sqliteStatIdToStatisticsIdx.end()) {
-            StatisticsResult& stats = fileRunMap.at(runId)->fileRef->statisticsResults.at(sqliteStatIdToStatisticsIdx.at(statId));
+            StatisticsResult& stats = fileRunMap.at(runId)->statisticsResults.at(sqliteStatIdToStatisticsIdx.at(statId));
             stats.setAttribute(attrName, attrValue);
             continue;
         }
@@ -358,7 +358,7 @@ void SqliteResultFileLoader::loadHistograms()
             currentStatId = newStatId;
             if (!containsKey(sqliteStatIdToHistogramIdx, newStatId))
                 error("Invalid statId in histogramBin table, or isHistogram field in the corresponding statistic table record is not set");
-            currentHistogram = &(fileRunMap.at(newRunId)->fileRef->histogramResults.at(sqliteStatIdToHistogramIdx.at(newStatId)));
+            currentHistogram = &(fileRunMap.at(newRunId)->histogramResults.at(sqliteStatIdToHistogramIdx.at(newStatId)));
             binEdges.clear();
             binValues.clear();
         }
@@ -404,7 +404,7 @@ void SqliteResultFileLoader::loadVectors()
         int simtimeExp = sqlite3_column_int(stmt, 13);
         int i = resultFileManager->addVector(fileRunMap.at(runId), vectorId, moduleName.c_str(), vectorName.c_str(), emptyAttrs, "ETV");
         sqliteVectorIdToVectorIdx[vectorId] = i;
-        VectorResult& vec = fileRunMap.at(runId)->fileRef->vectorResults.at(i);
+        VectorResult& vec = fileRunMap.at(runId)->vectorResults.at(i);
         vec.stat = Statistics::makeUnweighted(count, vmin, vmax, vsum, vsumsqr);
         vec.startEventNum = startEventNum;
         vec.endEventNum = endEventNum;
@@ -426,7 +426,7 @@ void SqliteResultFileLoader::loadVectors()
         auto it = sqliteVectorIdToVectorIdx.find(vectorId);
         if (it == sqliteVectorIdToVectorIdx.end())
             error("Invalid vectorId in vectorAttr table");
-        VectorResult& vec = fileRunMap.at(runId)->fileRef->vectorResults.at(sqliteVectorIdToVectorIdx.at(vectorId));
+        VectorResult& vec = fileRunMap.at(runId)->vectorResults.at(sqliteVectorIdToVectorIdx.at(vectorId));
         vec.setAttribute(attrName, attrValue);
     }
     finalizeStatement();

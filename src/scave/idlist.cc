@@ -258,10 +258,10 @@ class FileAndRunLess : public CmpBase {
             const FileRun *db = uncheckedGetItem(b).getFileRun();
             if (da==db)
                 return false;
-            else if (da->fileRef==db->fileRef)
-                return da->runRef->getRunName() < db->runRef->getRunName();
+            else if (da->getFile()==db->getFile())
+                return da->getRun()->getRunName() < db->getRun()->getRunName();
             else
-                return da->fileRef->getFilePath() < db->fileRef->getFilePath();
+                return da->getFile()->getFilePath() < db->getFile()->getFilePath();
         }
 };
 
@@ -273,10 +273,10 @@ class RunAndFileLess : public CmpBase {
             const FileRun *db = uncheckedGetItem(b).getFileRun();
             if (da==db)
                 return false;
-            else if (da->runRef==db->runRef)
-                return da->fileRef->getFilePath() < db->fileRef->getFilePath();
+            else if (da->getRun()==db->getRun())
+                return da->getFile()->getFilePath() < db->getFile()->getFilePath();
             else
-                return da->runRef->getRunName() < db->runRef->getRunName();
+                return da->getRun()->getRunName() < db->getRun()->getRunName();
         }
 };
 

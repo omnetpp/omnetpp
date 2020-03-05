@@ -473,7 +473,7 @@ void OmnetppResultFileLoader::loadVectorsFromIndex(const char *filename, ResultF
         vectorResult.startTime = vectorRef->startTime;
         vectorResult.endTime = vectorRef->endTime;
         vectorResult.stat = vectorRef->stat;
-        fileRef->vectorResults.push_back(vectorResult);
+        fileRunRef->vectorResults.push_back(vectorResult); //TODO use addVector()
     }
     delete index;
 }

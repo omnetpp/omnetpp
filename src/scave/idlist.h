@@ -68,6 +68,7 @@ class SCAVE_API IDList
         int size() const  {checkV(); return (int)v->size();}
         bool isEmpty() const  {checkV(); return v->empty();}
         void clear()  {checkV(); v->clear();}
+        void sort() {checkV(); std::sort(v->begin(), v->end());}  // sort numerically; getUniqueFileRuns() etc are faster on sorted IDLists
         bool equals(IDList& other);
         void set(const IDList& ids);
         void add(ID x); // checks for uniqueness (costly)

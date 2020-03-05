@@ -25,6 +25,7 @@
 #include <set>
 #include <map>
 #include <list>
+#include <unordered_set>
 
 #include "common/exception.h"
 #include "common/commonutil.h"
@@ -65,22 +66,6 @@ using omnetpp::common::Statistics;
 using omnetpp::common::Histogram;
 
 /**
- * Represents a run in a result file. Such item is needed because
- * result files and runs are in many-to-many relationship: a result file
- * may contain more than one runs (.sca file), and during a simulation run
- * (represented by class Run) more than one result files are written into
- * (namely, a .vec and a .sca file, or sometimes many of them).
- * And ResultItems refer to a FileRun instead of a ResultFile and a Run,
- * to conserve memory.
- */
-class SCAVE_API FileRun
-{
-public: //TODO private
-    ResultFile *fileRef;
-    Run *runRef;
-};
-
-/**
  * Item in an output scalar or output vector file. Represents common properties
  * of an output vector or output scalar.
  */
@@ -115,9 +100,9 @@ class SCAVE_API ResultItem
     const std::string& getName() const {return *nameRef;}
     const std::string& getModuleName() const {return *moduleNameRef;}
 
-    FileRun *getFileRun() const {return fileRunRef;} //TODO return const
-    ResultFile *getFile() const {return fileRunRef->fileRef;} //TODO return const
-    Run *getRun() const {return fileRunRef->runRef;}  //TODO return const
+    FileRun *getFileRun() const {return fileRunRef;}
+    ResultFile *getFile() const;
+    Run *getRun() const;
 
     const StringMap& getAttributes() const {return attributes;}
 
@@ -278,8 +263,8 @@ class SCAVE_API ResultFile
     enum FileType { FILETYPE_OMNETPP, FILETYPE_SQLITE };
 
   private:
-    int id;  // position in fileList
     ResultFileManager *resultFileManager; // backref to containing ResultFileManager
+    FileRunList fileRuns; // associated fileRuns
     std::string displayNameFolderPart; // folder (project) part of displayName
     std::string displayNameFilePart; // file name part of displayName
     std::string displayName; // practically: path in the Eclipse workspace (IFile.getFullPath())
@@ -287,11 +272,6 @@ class SCAVE_API ResultFile
     std::string inputName; // pattern by which it was loaded in the IDE, e.g. "results/**/*.vec"
     FileFingerprint fingerprint; // read-time file size and date/time
     FileType fileType;
-    ScalarResults scalarResults;
-    ParameterResults parameterResults;
-    VectorResults vectorResults;
-    StatisticsResults statisticsResults;
-    HistogramResults histogramResults;
 
   public:
     ResultFileManager *getResultFileManager() const {return resultFileManager;}
@@ -318,6 +298,7 @@ class SCAVE_API Run
 
   private:
     std::string runName; // unique identifier for the run, "runId"
+    FileRunList fileRuns; // associated fileRuns
     ResultFileManager *resultFileManager; // backref to containing ResultFileManager
     StringMap attributes;  // run attributes, such as configname, runnumber, network, datetime, processid, etc.
     StringMap itervars;  // iteration variables (${} notation in omnetpp.ini)
@@ -347,6 +328,39 @@ class SCAVE_API Run
     const OrderedKeyValueList getNonParamAssignmentConfigEntries() const;
     const std::string& getNonParamAssignmentConfigEntry(const std::string& key) const;
 };
+
+/**
+ * Represents a run in a result file. Such item is needed because
+ * result files and runs are in many-to-many relationship: a result file
+ * may contain more than one runs (.sca file), and during a simulation run
+ * (represented by class Run) more than one result files are written into
+ * (namely, a .vec and a .sca file, or sometimes many of them).
+ */
+class SCAVE_API FileRun
+{
+    friend class IDList;
+    friend class ResultItem;
+    friend class ResultFileManager;
+    friend class OmnetppResultFileLoader;
+    friend class SqliteResultFileLoader;
+
+  private:
+    int id;  // position in fileRunList
+    ResultFile *fileRef;
+    Run *runRef;
+
+    ScalarResults scalarResults;
+    ParameterResults parameterResults;
+    VectorResults vectorResults;
+    StatisticsResults statisticsResults;
+    HistogramResults histogramResults;
+  public:
+    ResultFile *getFile() const {return fileRef;}
+    Run *getRun() const {return runRef;}
+};
+
+inline ResultFile *ResultItem::getFile() const {return fileRunRef->fileRef;}
+inline Run *ResultItem::getRun() const {return fileRunRef->runRef;}
 
 
 class SCAVE_API InterruptedFlag {
@@ -404,23 +418,13 @@ class SCAVE_API ResultFileManager
     friend class OmnetppResultFileLoader;
     friend class SqliteResultFileLoader;
   private:
-    // List of files loaded. This vector can have holes (NULLs) in it due to
-    // unloaded files. The "id" field of ResultFile is the index into this vector.
-    // It is not allowed to move elements, because IDs contain the file's index in them.
-    ResultFileList fileList;
-    std::map<std::string, ResultFile *> fileMap;
-    std::map<std::string, RunList> runsInFileMap; // key is displayName
+    std::unordered_set<ResultFile*> fileList;
+    std::unordered_set<Run*> runList;
 
-    // List of unique runs in the files. If several files contain the same runName,
-    // it will generate only one Run entry here.
-    RunList runList;
-    std::map<std::string, Run *> runMap;
+    FileRunList fileRunList; // contains nullptr for unloaded entries
 
-    // ResultFiles and Runs have many-to-many relationship. This is where we store
-    // their relations (instead of having a collection in both). ResultItems also
-    // contain a FileRun pointer instead of separate ResultFile and Run pointers.
-    FileRunList fileRunList;
-    std::map<std::pair<std::string, std::string>, FileRun *> fileRunMap;
+    std::map<std::string, ResultFile *> filesByDisplayName;
+    std::map<std::string, Run *> runsByName;
 
     // module names and variable names are stringpooled to conserve space
     ScaveStringPool moduleNames;
@@ -435,9 +439,9 @@ class SCAVE_API ResultFileManager
     enum {SCALAR = 1<<0, VECTOR = 1<<1, STATISTICS = 1<<2, HISTOGRAM = 1<<3, PARAMETER = 1<<4}; // must be 1,2,4,8 etc, because of IDList::getItemTypes()
 
   private:
-    // ID: 8 bit type, 24 bit fileid, 32 bit pos
+    // ID: 8 bit type, 24 bit filerunid, 32 bit pos
     static int _type(ID id)   {return (id >> 56) & 0xffUL;}
-    static int _fileid(ID id) {return (id >> 32) & 0x00fffffful;}
+    static int _filerunid(ID id) {return (id >> 32) & 0x00fffffful;}
     static int _pos(ID id)    {return id & 0xffffffffUL;}
     static ID _mkID(int type, int fileid, int pos) {
         assert((type>>8)==0 && (fileid>>24)==0 && ((pos>>31)==0 || (pos>>31)==-1)); // can't shift by 32, and int is 32 bits
@@ -458,10 +462,10 @@ class SCAVE_API ResultFileManager
     int addHistogram(FileRun *fileRunRef, const char *moduleName, const char *histogramName, const Statistics& stat, const Histogram& bins, const StringMap& attrs);
     void addStatisticsFieldsAsScalars(FileRun *fileRunRef, const char *moduleName, const char *statisticsName, const Statistics& stat);
 
-    ResultFile *getFileForID(ID id) const; // checks for nullptr
+    FileRun *getFileRunForID(ID id) const; // checks for nullptr
 
     template <class T>
-    void collectIDs(IDList& result, std::vector<T> ResultFile::* vec, int type, bool includeFields, bool includeItervars) const;
+    void collectIDs(IDList& result, std::vector<T> FileRun::* vec, int type, bool includeFields, bool includeItervars) const;
 
     // unchecked getters are only for internal use by CmpBase in idlist.cc
     const ResultItem& uncheckedGetItem(ID id) const;
@@ -486,11 +490,12 @@ class SCAVE_API ResultFileManager
 
 
     // navigation
-    ResultFileList getFiles() const; // filters out NULLs
-    const RunList& getRuns() const {return runList;}
-    FileRunList getFileRunsInFile(ResultFile *file) const;
+    ResultFileList getFiles() const;
+    RunList getRuns() const;
+    const FileRunList& getFileRunsInFile(ResultFile *file) const {return file->fileRuns;}
+    const FileRunList& getFileRunsForRun(Run *run) const {return run->fileRuns;}
     RunList getRunsInFile(ResultFile *file) const;
-    int getNumRunsInFile(ResultFile *file) const {return getRunsInFile(file).size();} // for InputsPage, could be made constant cost
+    int getNumRunsInFile(ResultFile *file) const {return getRunsInFile(file).size();} // for InputsPage
     ResultFileList getFilesForRun(Run *run) const;
     ResultFileList getFilesForInput(const char *inputName) const;
 
@@ -507,9 +512,12 @@ class SCAVE_API ResultFileManager
 
     // the following are needed for filter combos
     // Note: their return value is allocated with new and callers should delete them
+    FileRunList getUniqueFileRuns(const IDList& ids) const;
     ResultFileList getUniqueFiles(const IDList& ids) const;
     RunList getUniqueRuns(const IDList& ids) const;
-    FileRunList getUniqueFileRuns(const IDList& ids) const;
+    ResultFileList getUniqueFiles(const FileRunList& fileRunList) const; // helper
+    RunList getUniqueRuns(const FileRunList& fileRunList) const; // helper
+
     StringSet getUniqueModuleNames(const IDList& ids) const;
     StringSet getUniqueNames(const IDList& ids) const;
     StringSet getUniqueModuleAndResultNamePairs(const IDList& ids) const;
@@ -635,51 +643,51 @@ inline const ResultItem& ResultFileManager::uncheckedGetItem(ID id) const
 {
     switch (_type(id))
     {
-        case SCALAR: return fileList[_fileid(id)]->scalarResults[_pos(id)];
-        case PARAMETER: return fileList[_fileid(id)]->parameterResults[_pos(id)];
-        case VECTOR: return fileList[_fileid(id)]->vectorResults[_pos(id)];
-        case STATISTICS: return fileList[_fileid(id)]->statisticsResults[_pos(id)];
-        case HISTOGRAM: return fileList[_fileid(id)]->histogramResults[_pos(id)];
+        case SCALAR: return fileRunList[_filerunid(id)]->scalarResults[_pos(id)];
+        case PARAMETER: return fileRunList[_filerunid(id)]->parameterResults[_pos(id)];
+        case VECTOR: return fileRunList[_filerunid(id)]->vectorResults[_pos(id)];
+        case STATISTICS: return fileRunList[_filerunid(id)]->statisticsResults[_pos(id)];
+        case HISTOGRAM: return fileRunList[_filerunid(id)]->histogramResults[_pos(id)];
         default: throw opp_runtime_error("ResultFileManager: invalid ID: wrong type");
     }
 }
 
 inline const ScalarResult& ResultFileManager::uncheckedGetScalar(ID id) const
 {
-    return fileList[_fileid(id)]->scalarResults[_pos(id)];
+    return fileRunList[_filerunid(id)]->scalarResults[_pos(id)];
 }
 
 inline const ParameterResult& ResultFileManager::uncheckedGetParameter(ID id) const
 {
-    return fileList[_fileid(id)]->parameterResults[_pos(id)];
+    return fileRunList[_filerunid(id)]->parameterResults[_pos(id)];
 }
 
 inline const VectorResult& ResultFileManager::uncheckedGetVector(ID id) const
 {
-    return fileList[_fileid(id)]->vectorResults[_pos(id)];
+    return fileRunList[_filerunid(id)]->vectorResults[_pos(id)];
 }
 
 inline const StatisticsResult& ResultFileManager::uncheckedGetStatistics(ID id) const
 {
-    return fileList[_fileid(id)]->statisticsResults[_pos(id)];
+    return fileRunList[_filerunid(id)]->statisticsResults[_pos(id)];
 }
 
 inline const HistogramResult& ResultFileManager::uncheckedGetHistogram(ID id) const
 {
-    return fileList[_fileid(id)]->histogramResults[_pos(id)];
+    return fileRunList[_filerunid(id)]->histogramResults[_pos(id)];
 }
 
-inline ResultFile *ResultFileManager::getFileForID(ID id) const
+inline FileRun *ResultFileManager::getFileRunForID(ID id) const
 {
-    ResultFile *fileRef = fileList.at(_fileid(id));
-    if (fileRef==nullptr)
+    FileRun *fileRun = fileRunList.at(_filerunid(id));
+    if (fileRun == nullptr)
         throw opp_runtime_error("ResultFileManager: stale ID: its file has already been unloaded");
-    return fileRef;
+    return fileRun;
 }
 
 inline bool ResultFileManager::isStaleID(ID id) const
 {
-    return fileList.at(_fileid(id)) == nullptr;
+    return fileRunList.at(_filerunid(id)) == nullptr;
 }
 
 class SCAVE_API IResultFileLoader
