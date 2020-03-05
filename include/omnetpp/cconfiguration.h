@@ -51,6 +51,7 @@ class cConfigOption;
 #define CFGVAR_SEEDSET          "seedset"
 #define CFGVAR_ITERATIONVARS    "iterationvars"   // without $repetition
 #define CFGVAR_ITERATIONVARSF   "iterationvarsf"  // same, sanitized for use in file names
+#define CFGVAR_ITERATIONVARSD   "iterationvarsd"  // same, but for use as hierarchical folder name (contains slashes where iterationvarsf has commas)
 //@}
 
 /**

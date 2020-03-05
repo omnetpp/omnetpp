@@ -177,6 +177,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     StringMap computeVariables(const char *configName, int runNumber, std::vector<int> sectionChain, const Scenario *scenario, const StringMap& locationToVarName) const;
     std::string internalGetConfigAsString(cConfigOption *option, const std::vector<int>& sectionChain, const StringMap& variables, const StringMap& locationToVarName) const;
     intval_t internalGetConfigAsInt(cConfigOption *option, const std::vector<int>& sectionChain, const StringMap& variables, const StringMap& locationToVarName) const;
+    bool internalGetConfigAsBool(cConfigOption *option, const std::vector<int>& sectionChain, const StringMap& variables, const StringMap& locationToVarName) const;
     static bool isIgnorableConfigKey(const char *ignoredKeyPatterns, const char *key);
     static cConfigOption *lookupConfigOption(const char *key);
     const std::string *getPooledBaseDir(const char *basedir);

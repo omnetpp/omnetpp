@@ -51,6 +51,7 @@ Register_PerRunConfigOption(CFGID_EXPERIMENT_LABEL, "experiment-label", CFG_STRI
 Register_PerRunConfigOption(CFGID_MEASUREMENT_LABEL, "measurement-label", CFG_STRING, "${iterationvars}", "Identifies the measurement within the experiment. This string gets recorded into result files, and may be referred to during result analysis.");
 Register_PerRunConfigOption(CFGID_REPLICATION_LABEL, "replication-label", CFG_STRING, "#${repetition}", "Identifies one replication of a measurement (see `repeat` and `measurement-label` options as well). This string gets recorded into result files, and may be referred to during result analysis.");
 Register_PerRunConfigOption(CFGID_RUNNUMBER_WIDTH, "runnumber-width", CFG_INT, "0", "Setting a nonzero value will cause the `$runnumber` variable to get padded with leading zeroes to the given length.");
+Register_PerRunConfigOption(CFGID_RESULTDIR_SUBDIVISION, "resultdir-subdivision", CFG_BOOL, "false", "Makes the results directory hierarchical by appending `${iterationvarsd}` to the value of the `result-dir` config option. This is useful if a parameter study produces a large number of runs (>10000), as many file managers and other tools (including the OMNeT++ IDE) struggle with directories containing that many files. An alternative to using this option is to include iteration variables directly in the value of the `result-dir` option.");
 
 extern cConfigOption *CFGID_NETWORK;
 extern cConfigOption *CFGID_RESULT_DIR;
@@ -386,19 +387,22 @@ SectionBasedConfiguration::StringMap SectionBasedConfiguration::computeVariables
     for (std::string varName : varNames)
         result[varName] = scenario->getVariable(varName.c_str());
 
-    // assemble ${iterationvars} and ${iterationvarsf}
-    std::string iterationvars, iterationvarsf;
+    // assemble ${iterationvars}, ${iterationvarsf} and ${iterationvarsd}
+    std::string iterationvars, iterationvarsf, iterationvarsd;
     for (std::string varName : varNames) {
         if (varName != CFGVAR_REPETITION) {
             std::string value = scenario->getVariable(varName.c_str());
             iterationvars += std::string(iterationvars.empty() ? "" : ", ") + "$" + varName + "=" + value;
-            iterationvarsf += std::string(iterationvarsf.empty() ? "" : ",") + (opp_isalpha(varName[0]) ? varName + "=" : "") + opp_filenameencode(unquote(value)); // without dollar and space, possible quotes removed
+            std::string segment = (opp_isalpha(varName[0]) ? varName + "=" : "") + opp_filenameencode(unquote(value)); // without dollar and space, possible quotes removed
+            iterationvarsf += std::string(iterationvarsf.empty() ? "" : ",") + segment;
+            iterationvarsd += std::string(iterationvarsd.empty() ? "" : "/") + segment;
         }
     }
     if (!iterationvarsf.empty())
         iterationvarsf += "-";  // for filenames
     result[CFGVAR_ITERATIONVARS] = iterationvars;
     result[CFGVAR_ITERATIONVARSF] = iterationvarsf;
+    result[CFGVAR_ITERATIONVARSD] = iterationvarsd;
 
     // create variables
     int runnumberWidth = internalGetConfigAsInt(CFGID_RUNNUMBER_WIDTH, sectionChain, result, locationToVarName);
@@ -412,7 +416,11 @@ SectionBasedConfiguration::StringMap SectionBasedConfiguration::computeVariables
     result[CFGVAR_RUNID] = result[CFGVAR_CONFIGNAME]+"-"+result[CFGVAR_RUNNUMBER]+"-"+result[CFGVAR_DATETIME]+"-"+result[CFGVAR_PROCESSID];
 
     // the following variables should be done last, because they may depend on the variables computed above
-    result[CFGVAR_RESULTDIR] = internalGetConfigAsString(CFGID_RESULT_DIR, sectionChain, result, locationToVarName);
+    std::string resultdir = internalGetConfigAsString(CFGID_RESULT_DIR, sectionChain, result, locationToVarName);
+    bool subdivideResultdir = internalGetConfigAsBool(CFGID_RESULTDIR_SUBDIVISION, sectionChain, result, locationToVarName);
+    if (subdivideResultdir)
+        resultdir += "/" + iterationvarsd;
+    result[CFGVAR_RESULTDIR] = resultdir;
     result[CFGVAR_SEEDSET] = std::to_string(internalGetConfigAsInt(CFGID_SEED_SET, sectionChain, result, locationToVarName));
     result[CFGVAR_EXPERIMENT] = internalGetConfigAsString(CFGID_EXPERIMENT_LABEL, sectionChain, result, locationToVarName);
     result[CFGVAR_MEASUREMENT] = internalGetConfigAsString(CFGID_MEASUREMENT_LABEL, sectionChain, result, locationToVarName);
@@ -442,6 +450,19 @@ intval_t SectionBasedConfiguration::internalGetConfigAsInt(cConfigOption *option
         const char *value = internalGetValue(sectionChain, option->getName(), option->getDefaultValue(), &sectionId, &entryId);
         std::string str = substituteVariables(value, sectionId, entryId, variables, locationToVarName);
         return Expression().parse(str.c_str()).intValue();
+    }
+    catch (std::exception& e) {
+        throw cRuntimeError("Error getting value of config option '%s': %s", option->getName(), e.what());
+    }
+}
+
+bool SectionBasedConfiguration::internalGetConfigAsBool(cConfigOption *option, const std::vector<int>& sectionChain, const StringMap& variables, const StringMap& locationToVarName) const
+{
+    try {
+        int sectionId, entryId;
+        const char *value = internalGetValue(sectionChain, option->getName(), option->getDefaultValue(), &sectionId, &entryId);
+        std::string str = substituteVariables(value, sectionId, entryId, variables, locationToVarName);
+        return Expression().parse(str.c_str()).boolValue();
     }
     catch (std::exception& e) {
         throw cRuntimeError("Error getting value of config option '%s': %s", option->getName(), e.what());
