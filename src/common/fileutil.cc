@@ -160,6 +160,16 @@ std::string removeFileExtension(const char *fileName)
     return std::string(fileName, dot - fileName);
 }
 
+bool isAbsolutePath(const char *pathname)
+{
+#ifdef _WIN32
+    return (pathname[0] && pathname[1] == ':' && (pathname[2] == '/' || pathname[2] == '\\')) ||
+        ((pathname[0] == '/' || pathname[0] == '\\') && (pathname[1] == '/' || pathname[1] == '\\'));
+#else
+    return pathname[0] == '/';
+#endif
+}
+
 std::string toAbsolutePath(const char *pathname)
 {
 #ifdef _WIN32
@@ -307,7 +317,7 @@ PushDir::PushDir(const char *changetodir)
     if (!getcwd(buf, 1024))
         throw opp_runtime_error("Cannot get the name of current directory");
     if (chdir(changetodir))
-        throw opp_runtime_error("Cannot temporarily change to directory '%s' (does it exist?)", changetodir);
+        throw opp_runtime_error("Cannot temporarily change to directory '%s'", changetodir);
     olddir = buf;
 }
 

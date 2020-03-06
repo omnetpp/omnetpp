@@ -67,6 +67,11 @@ COMMON_API std::string tidyFilename(const char *pathname, bool slashes=false);
 COMMON_API std::string removeFileExtension(const char *fileName);
 
 /**
+ * Returns true if this is an absolute path.
+ */
+COMMON_API bool isAbsolutePath(const char *pathname);
+
+/**
  * Converts the given path to absolute.
  */
 COMMON_API std::string toAbsolutePath(const char *pathname);
