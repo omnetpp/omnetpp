@@ -233,4 +233,15 @@ public class FilterUtil {
     public String toString() {
         return getFilterPattern();
     }
+
+    /// from "field(pattern)" to "field =~ pattern" syntax
+    public static String translateLegacyFilterExpression(String oldSyntax) {
+        String not = "\u00AC", or = "\u2228", and = "\u2227"; // temporary placeholders, so we don't mistake NOT(foo) as a pattern
+
+        String f = oldSyntax.replaceAll("\\bNOT\\b", not).replaceAll("\\bOR\\b", or).replaceAll("\\bAND\\b", and);
+        f = f.replaceAll("([\\w:]+)\\s*\\((\"?)([^)\"]*)\\2\\)", "$1 =~ \"$3\""); // proper quoting/escaping?
+        f = f.replaceAll(not, "NOT").replaceAll(or, "OR").replaceAll(and, "AND");
+
+        return f;
+    }
 }

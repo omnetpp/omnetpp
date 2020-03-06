@@ -394,6 +394,22 @@ def set_plot_title(title, suggested_chart_name=None):
     chart.set_suggested_chart_name(suggested_chart_name if suggested_chart_name is not None else title)
 
 
+def _to_label(x):
+    """
+    Internal. Turns various types of objects into a string, so they can be used as labels.
+    """
+    if x is None:
+        return ""
+    elif isinstance(x, str):
+        return x
+    elif isinstance(x, tuple):
+        return ", ".join(map(str, list(x)))
+    elif isinstance(x, list):
+        return ", ".join(map(str, x))
+    else:
+        return str(x)
+
+
 def plot_bars(df, props, names=None):
     p = plot if chart.is_native_chart() else plt
 
@@ -446,7 +462,8 @@ def plot_bars(df, props, names=None):
         if not chart.is_native_chart(): # FIXME: noot pretty...
             extra_args['zorder'] = 1 - (i / len(df.columns) / 10)
 
-        p.bar(xs, df[column], width, label=df.columns.name + "=" + str(column), **extra_args, **style)
+        label = df.columns.name + "=" + _to_label(column) if df.columns.name else _to_label(column)
+        p.bar(xs, df[column], width, label=label, **extra_args, **style)
         xs += group_increment
         if placement == "Stacked":
             bottoms += df[column].values
@@ -456,15 +473,13 @@ def plot_bars(df, props, names=None):
         rotation = float(rotation)
     else:
         rotation = 0
-    p.xticks(list(range(len(df.index))), list([str(i) for i in df.index.values]), rotation=rotation)
+    p.xticks(list(range(len(df.index))), list([_to_label(i) for i in df.index.values]), rotation=rotation)
 
     # Add some text for labels, title and custom x-axis tick labels, etc.
     groups = (get_prop("groups") or "").split(",")
     series = (get_prop("series") or "").split(",")
 
-
-
-    p.xlabel(df.index.names[0])
+    p.xlabel(_to_label(df.index.names[0]))
 
     title = ""
     if len(names):

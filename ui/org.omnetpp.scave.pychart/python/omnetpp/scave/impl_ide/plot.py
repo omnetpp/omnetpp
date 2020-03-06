@@ -174,22 +174,6 @@ def _list_to_bytes(l):
     return np.array(np.array(l), dtype=np.dtype('>f8')).tobytes()
 
 
-def _to_label(x):
-    """
-    Internal. Turns various types of objects into a string, so they can be used as labels.
-    """
-    if x is None:
-        return ""
-    elif isinstance(x, str):
-        return x
-    elif isinstance(x, tuple):
-        return ", ".join(map(str, list(x)))
-    elif isinstance(x, list):
-        return ", ".join(map(str, x))
-    else:
-        return str(x)
-
-
 def _put_array_in_shm(arr, shm_objs, mmap_objs):
     """
     Internal. Turns a `np.array` into a byte sequence, and writes it into

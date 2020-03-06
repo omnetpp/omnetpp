@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
+  <inputs>
+    <inputs name="/resultfiles/aloha/PureAlohaExperiment-*.sca"/>
+    <inputs name="/resultfiles/aloha/PureAlohaExperiment-*.vec"/>
+    <inputs name="/resultfiles/routing/Net5SaturatedQueue-*.sca"/>
+    <inputs name="/resultfiles/routing/Net5SaturatedQueue-*.vec"/>
+    <inputs name="/resultfiles/routing2/Net10Experiment-*.sca"/>
+    <inputs name="/resultfiles/routing2/Net10Experiment-*.vec"/>
+    <inputs name="/fifo/results/Fifo1-*.sca"/>
+    <inputs name="/fifo/results/Fifo1-*.vec"/>
+  </inputs>
+  <datasets>
+    <datasets name="radioState:vector Aloha.host[2]">
+      <items xsi:type="scave:Add" filterPattern="module(Aloha.host[2]) AND name(radioState:vector)" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="radioState:vector Aloha.host[2]"/>
+    </datasets>
+    <datasets name="Aloha.server">
+      <items xsi:type="scave:Add" filterPattern="module(Aloha.server) AND name(collisionLength:mean)"/>
+      <items xsi:type="scave:Add" filterPattern="module(Aloha.server) AND name(collisionLength:sum)"/>
+      <items xsi:type="scave:Add" filterPattern="module(Aloha.server) AND name(collisionLength:max)"/>
+      <items xsi:type="scave:BarChart" name="Aloha.server"/>
+    </datasets>
+    <datasets name="rxBytes:histogram">
+      <items xsi:type="scave:Add" filterPattern="module(Net5.rte[2].queue[2]) AND name(rxBytes:histogram)" type="HISTOGRAM"/>
+      <items xsi:type="scave:Add" filterPattern="module(Net5.rte[2].queue[3]) AND name(rxBytes:histogram)" type="HISTOGRAM"/>
+      <items xsi:type="scave:Add" filterPattern="module(Net5.rte[3].queue[0]) AND name(rxBytes:histogram)" type="HISTOGRAM"/>
+      <items xsi:type="scave:Add" filterPattern="module(Net5.rte[3].queue[1]) AND name(rxBytes:histogram)" type="HISTOGRAM"/>
+      <items xsi:type="scave:HistogramChart" name="rxBytes:histogram"/>
+    </datasets>
+    <datasets name="Utilization">
+      <items xsi:type="scave:Add" filterPattern="module(Aloha.server) AND name(&quot;channelUtilization:last&quot;)"/>
+      <items xsi:type="scave:Add" filterPattern="name(iaMean)"/>
+      <items xsi:type="scave:Add" filterPattern="name(numHosts)"/>
+      <items xsi:type="scave:ScatterChart" name="channelUtilization vs. isMean by numHosts" xDataPattern="module(_runattrs_) AND name(iaMean)">
+        <isoDataPattern>module(_runattrs_) AND name(numHosts)</isoDataPattern>
+      </items>
+    </datasets>
+  </datasets>
+  <chartSheets/>
+</scave:Analysis>

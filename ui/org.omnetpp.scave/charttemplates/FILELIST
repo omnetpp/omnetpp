@@ -12,3 +12,4 @@ linechart_mpl.properties
 linechart_native.properties
 scatterchart_itervars_mpl.properties
 scatterchart_itervars_native.properties
+scatterchart_legacy.properties

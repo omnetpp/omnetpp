@@ -12,12 +12,20 @@ import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Property;
+import org.omnetpp.scave.model2.FilterUtil;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class LegacyAnalysisLoader {
+
+    public static final String BARCHART_ID = "barchart_native";
+    public static final String LINECHART_ID = "linechart_native";
+    public static final String HISTOGRAMCHART_ID = "histogramchart_native";
+    public static final String SCATTERCHART_ID = "scatterchart_legacy";
+
+
     static class DataOp {
         String op;
         String filter;
@@ -118,13 +126,13 @@ public class LegacyAnalysisLoader {
         Chart chart = null;
 
         if ("scave:BarChart".equals(chartType))
-            chart = ScaveModelUtil.createChartFromTemplate(chartTemplateRegistry, ChartTemplateRegistry.BARCHART_ID);
+            chart = ScaveModelUtil.createChartFromTemplate(chartTemplateRegistry, BARCHART_ID);
         else if ("scave:HistogramChart".equals(chartType))
-            chart = ScaveModelUtil.createChartFromTemplate(chartTemplateRegistry, ChartTemplateRegistry.HISTOGRAMCHART_ID);
+            chart = ScaveModelUtil.createChartFromTemplate(chartTemplateRegistry, HISTOGRAMCHART_ID);
         else if ("scave:ScatterChart".equals(chartType))
-            chart = ScaveModelUtil.createChartFromTemplate(chartTemplateRegistry, ChartTemplateRegistry.SCATTERCHART_ID);
+            chart = ScaveModelUtil.createChartFromTemplate(chartTemplateRegistry, SCATTERCHART_ID);
         else if ("scave:LineChart".equals(chartType))
-            chart = ScaveModelUtil.createChartFromTemplate(chartTemplateRegistry, ChartTemplateRegistry.LINECHART_ID);
+            chart = ScaveModelUtil.createChartFromTemplate(chartTemplateRegistry, LINECHART_ID);
         else
             throw new RuntimeException("unknown chart type: " + chartType);
 
@@ -142,7 +150,9 @@ public class LegacyAnalysisLoader {
                 Property prop = new Property(name, value);
                 chart.addProperty(prop);
             } else if ("filters".equals(propNode.getNodeName())) {
-                filters.add(new DataFilter(propNode.getAttributes().getNamedItem("xsi:type").getNodeValue(), propNode.getAttributes().getNamedItem("filterPattern").getNodeValue()));
+                String filterExpression = propNode.getAttributes().getNamedItem("filterPattern").getNodeValue();
+                filterExpression = FilterUtil.translateLegacyFilterExpression(filterExpression);
+                filters.add(new DataFilter(propNode.getAttributes().getNamedItem("xsi:type").getNodeValue(), filterExpression));
             }
         }
 
@@ -152,10 +162,10 @@ public class LegacyAnalysisLoader {
             setProperty(chart, "filter", makeFilterString(ops, filters));
 
             ArrayList<String> bars = XmlUtils.collectChildTextsFromElementsWithTag(chartNode, "barFields");
-            setProperty(chart, "bars", StringUtils.join(bars, ","));
+            setProperty(chart, "series", bars.isEmpty() ? "name,measurement" : StringUtils.join(bars, ","));
 
             ArrayList<String> groups = XmlUtils.collectChildTextsFromElementsWithTag(chartNode, "groupByFields");
-            setProperty(chart, "groups", StringUtils.join(groups, ","));
+            setProperty(chart, "groups", groups.isEmpty() ? "module,experiment" : StringUtils.join(groups, ","));
 
             // NOTE: averagedFields elements are not used, because they belong "to the rest"
         }
@@ -165,9 +175,12 @@ public class LegacyAnalysisLoader {
         }
         else if ("scave:ScatterChart".equals(chartType)) {
             String xDataPattern = chartNode.getAttributes().getNamedItem("xDataPattern").getNodeValue();
+            xDataPattern = FilterUtil.translateLegacyFilterExpression(xDataPattern);
             Node avgRepls = chartNode.getAttributes().getNamedItem("averageReplications");
             String averageReplications = avgRepls != null ? avgRepls.getNodeValue() : "true";
             ArrayList<String> isoDataPatterns = XmlUtils.collectChildTextsFromElementsWithTag(chartNode, "isoDataPattern");
+            for (int i = 0; i < isoDataPatterns.size(); ++i)
+                isoDataPatterns.set(i, FilterUtil.translateLegacyFilterExpression(isoDataPatterns.get(i)));
 
             setProperty(chart, "Plot.Title", chart.getName());
             setProperty(chart, "filter", makeFilterString(ops, filters));
@@ -244,7 +257,8 @@ public class LegacyAnalysisLoader {
 
                 if ("scave:Add".equals(itemType) || "scave:Discard".equals(itemType)) {
                     Node filterNode = itemNode.getAttributes().getNamedItem("filterPattern");
-                    ops.add(new DataOp("scave:Add".equals(itemType) ? "add" : "discard", filterNode.getNodeValue(), opType));
+                    String filterExpr = FilterUtil.translateLegacyFilterExpression(filterNode.getNodeValue());
+                    ops.add(new DataOp("scave:Add".equals(itemType) ? "add" : "discard", filterExpr, opType));
                 }
                 else if ("scave:Apply".equals(itemType) || "scave:Compute".equals(itemType)) {
                     Node operationNode = itemNode.getAttributes().getNamedItem("operation");

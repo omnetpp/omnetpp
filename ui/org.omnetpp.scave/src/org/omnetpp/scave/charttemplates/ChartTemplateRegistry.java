@@ -47,11 +47,6 @@ public class ChartTemplateRegistry {
 
     private static final String CHARTTEMPLATES_FOLDER = "charttemplates";
 
-    public static final String BARCHART_ID = "barchart_legacy";
-    public static final String LINECHART_ID = "linechart_legacy";
-    public static final String HISTOGRAMCHART_ID = "histogramchart_legacy";
-    public static final String SCATTERCHART_ID = "scatterchart_legacy";
-
     private IProject project = null;
     private ArrayList<ChartTemplate> templates = null;
 
