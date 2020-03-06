@@ -1468,7 +1468,7 @@ static bool isFileReadable(const char *fileName)
         return false;
 }
 
-ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSystemFileName, bool reload)
+ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSystemFileName, bool reload) //TODO fileName -> displayFilename, filesystemFileName -> osFilename
 {
     WRITER_MUTEX
 
@@ -1542,14 +1542,20 @@ void ResultFileManager::unloadFile(ResultFile *file)
     }
 }
 
+void ResultFileManager::loadFiles(const char *fileSystemGlobstarPattern, bool reload)
+{
+    for (auto fileName : collectMatchingFiles(fileSystemGlobstarPattern))
+        loadFile(fileName.c_str(), fileName.c_str(), reload); //TODO somehow get displayFilename in the picture too!
+}
+
 void ResultFileManager::loadDirectory(const char *directoryName, const char *fileSystemDirectoryName, bool reload)
 {
     if (fileSystemDirectoryName == nullptr)
         fileSystemDirectoryName = directoryName;
     if (isDirectory(fileSystemDirectoryName)) {
-        for (auto fileName : collectFiles(fileSystemDirectoryName, ".sca"))
+        for (auto fileName : collectFilesInDirectory(fileSystemDirectoryName, true, ".sca"))
             loadFile(fileName.c_str(), fileName.c_str(), reload);
-        for (auto fileName : collectFiles(fileSystemDirectoryName, ".vec"))
+        for (auto fileName : collectFilesInDirectory(fileSystemDirectoryName, true, ".vec"))
             loadFile(fileName.c_str(), fileName.c_str(), reload);
     }
 }

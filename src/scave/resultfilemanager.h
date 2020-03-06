@@ -546,14 +546,13 @@ class SCAVE_API ResultFileManager
     static void checkPattern(const char *pattern);
 
     /**
-     * loading files. fileName is the file path in the Eclipse workspace;
-     * the file is actually read from fileSystemFileName
+     * Loading files. fileName is the file path in the Eclipse workspace;
+     * the file is actually read from fileSystemFileName.
      */
     ResultFile *loadFile(const char *fileName, const char *fileSystemFileName=nullptr, bool reload=false);
-    void unloadFile(ResultFile *file);
-
+    void loadFiles(const char *fileSystemGlobstarPattern, bool reload=false); //TODO how to derive Eclipse workspace name?
     void loadDirectory(const char *directoryName, const char *fileSystemDirectoryName=nullptr, bool reload=false);
-
+    void unloadFile(ResultFile *file);
 
     bool isFileLoaded(const char *fileName) const;
     ResultFile *getFile(const char *fileName) const;

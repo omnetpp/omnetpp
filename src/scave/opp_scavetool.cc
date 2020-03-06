@@ -205,14 +205,13 @@ void ScaveTool::loadFiles(ResultFileManager& manager, const vector<string>& file
     }
 
     // load files
-    for (int i = 0; i < (int)fileNames.size(); i++) {
-        // TODO on Windows: manual globbing of wildcards
-        const char *fileName = fileNames[i].c_str();
+    for (auto& fn : fileNames) {
+        const char *fileName = fn.c_str();
 
         if (indexingAllowed && IndexFileUtils::isExistingVectorFile(fileName) && !IndexFileUtils::isIndexFileUpToDate(fileName)) {
             if (verbose)
                 cout << "index file for " << fileName << " is missing or out of date, indexing... " << std::flush;
-            VectorFileIndexer().generateIndex(fileName, nullptr);
+            VectorFileIndexer().generateIndex(fileName, nullptr); //TODO this doesn't work if directory or wildcard pattern is given...
             if (verbose)
                 cout << "done\n";
         }
@@ -221,6 +220,8 @@ void ScaveTool::loadFiles(ResultFileManager& manager, const vector<string>& file
             cout << "reading " << fileName << "... " << std::flush;
         if (isDirectory(fileName))
             manager.loadDirectory(fileName);
+        else if (strchr(fileName, '*') != nullptr || strchr(fileName, '?') != nullptr)
+            manager.loadFiles(fileName);
         else
             manager.loadFile(fileName);
         if (verbose)
