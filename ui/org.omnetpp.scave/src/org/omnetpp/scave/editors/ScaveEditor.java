@@ -38,6 +38,8 @@ import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelection;
@@ -153,6 +155,8 @@ public class ScaveEditor extends MultiPageEditorPartExt
         implements ISelectionProvider, IGotoMarker, INavigationLocationProvider {
     public static final String ACTIVE_PAGE = "ActivePage", PAGE = "Page",
             PAGE_ID = "PageId", TEMPLATE_TIMESTAMPS = "TemplateTimestamps";
+
+    protected static final String PREF_DONT_SHOW_PYTHON_EXECUTION_WARNING_DIALOG = "dont_show_python_execution_warning_dialog";
 
     private InputsPage inputsPage;
     private BrowseDataPage browseDataPage;
@@ -477,7 +481,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
         // DropAdapter(editingDomain, viewer));
     }
 
-    public void createModel() {
+    public void loadAnalysis() {
         // Assumes that the input is a file object.
         IFileEditorInput modelFile = (IFileEditorInput) getEditorInput();
 
@@ -585,6 +589,27 @@ public class ScaveEditor extends MultiPageEditorPartExt
                 if (allowClose)
                     applyChartEdits(editor);
             }
+        });
+    }
+
+    protected void showPythonExecutionWarningDialogIfNeeded() {
+        if (analysis.getCharts().getCharts().isEmpty())
+            return; // empty analysis -- not applicable
+
+        IPreferenceStore preferences = ScavePlugin.getDefault().getPreferenceStore();
+        String pref = preferences.getString(PREF_DONT_SHOW_PYTHON_EXECUTION_WARNING_DIALOG);
+        if (MessageDialogWithToggle.ALWAYS.equals(pref))
+            return; // "always don't show" -> never show... ha!
+
+        Display.getCurrent().asyncExec(() -> {
+            MessageDialogWithToggle.openWarning(Display.getCurrent().getActiveShell(),
+                    "Security Warning",
+                    "The Analysis you've just opened contains charts which employ user-editable Python code to produce the content when they are opened. "
+                        + "These Python scripts, in addition to being extremely useful, can also be a potential hazard, since they "
+                        + "have as much access to your computer as any user program. There is no sandboxing.\n\n"
+                        + "Be sure to only open ANF files from trusted sources.",
+                    "Don't show this message again", false,
+                    preferences, PREF_DONT_SHOW_PYTHON_EXECUTION_WARNING_DIALOG);
         });
     }
 
@@ -1487,10 +1512,14 @@ public class ScaveEditor extends MultiPageEditorPartExt
      * This is the method used by the framework to install your own controls.
      */
     public void createPages() {
-        createModel();
+
+        loadAnalysis();
+
         if (analysis != null) {
             doCreatePages();
-        } else {
+            showPythonExecutionWarningDialogIfNeeded();
+        }
+        else {
             addFixedPage(new FormEditorPage(getContainer(), SWT.NONE, this) {
                 {
                     // set up UI
