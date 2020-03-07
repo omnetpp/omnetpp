@@ -1279,7 +1279,7 @@ IDList ResultFileManager::filterIDList(const IDList& idlist, const char *pattern
     int sz = idlist.size();
     for (int i = 0; i < sz; ++i) {
         if (interrupted.flag)
-            throw opp_runtime_error("Result filtering interrupted");
+            throw InterruptedException("Result filtering interrupted");
         ID id = idlist.get(i);
         const ResultItem& item = getItem(id);
         MatchableResultItem matchable(item);
@@ -1468,21 +1468,42 @@ static bool isFileReadable(const char *fileName)
         return false;
 }
 
-ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSystemFileName, bool reload) //TODO fileName -> displayFilename, filesystemFileName -> osFilename
+ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSystemFileName, int flags, InterruptedFlag *interrupted) //TODO fileName -> displayFilename, filesystemFileName -> osFilename
 {
     WRITER_MUTEX
+
+    // extract and validate flags
+    int reloadOption = flags & (RELOAD|RELOAD_IF_CHANGED|NEVER_RELOAD);
+    int indexingOption = flags & (ALLOW_INDEXING|SKIP_IF_NO_INDEX|ALLOW_LOADING_WITHOUT_INDEX);
+    int lockfileOption = flags & (SKIP_IF_LOCKED|IGNORE_LOCK_FILE);
+
+    if (reloadOption != RELOAD && reloadOption != RELOAD_IF_CHANGED && reloadOption != NEVER_RELOAD)
+        throw opp_runtime_error("invalid reload flags %d, must be one of: RELOAD, RELOAD_IF_CHANGED, NEVER_RELOAD", reloadOption);
+    if (indexingOption != ALLOW_INDEXING && indexingOption != SKIP_IF_NO_INDEX && indexingOption != ALLOW_LOADING_WITHOUT_INDEX)
+        throw opp_runtime_error("invalid indexing flags %d, must be one of: ALLOW_INDEXING, SKIP_IF_NO_INDEX, ALLOW_LOADING_WITHOUT_INDEX", indexingOption);
+    if (lockfileOption != SKIP_IF_LOCKED && lockfileOption != IGNORE_LOCK_FILE)
+        throw opp_runtime_error("invalid lockfile handling flags %d, must be one of: SKIP_IF_LOCKED, IGNORE_LOCK_FILE", lockfileOption);
+
+    if (interrupted == nullptr) {
+        static InterruptedFlag neverInterrupted;
+        interrupted = &neverInterrupted; // eliminate need for nullptr checks
+    }
 
     // tricky part: we store "fileName" which is the Eclipse pathname of the file
     // (or some other "display name" of the file), but we actually load from
     // fileSystemFileName which is the fileName suitable for fopen()
 
+    //TODO handle flags!!!!
+
     // check if loaded
     ResultFile *fileRef = getFile(fileName);
     if (fileRef) {
-        if (reload)
-            unloadFile(fileRef);
-        else
-            return fileRef;
+        bool isUpToDate = true; //TODO
+        switch (reloadOption) {
+            case RELOAD: unloadFile(fileRef); break;
+            case RELOAD_IF_CHANGED: if (isUpToDate) return fileRef; else unloadFile(fileRef);
+            case NEVER_RELOAD: return fileRef;
+        }
     }
 
     // try if file can be opened, before we add it to our database
@@ -1492,11 +1513,10 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
         throw opp_runtime_error("Cannot open '%s' for read", fileSystemFileName);
 
     ResultFile *file = SqliteResultFileUtils::isSqliteFile(fileSystemFileName) ?
-        SqliteResultFileLoader(this).loadFile(fileName, fileSystemFileName, reload) :
-        OmnetppResultFileLoader(this).loadFile(fileName, fileSystemFileName, reload);
+        SqliteResultFileLoader(this, flags, interrupted).loadFile(fileName, fileSystemFileName) :
+        OmnetppResultFileLoader(this, flags, interrupted).loadFile(fileName, fileSystemFileName);
 
-    Assert(file != nullptr);
-    return file;
+    return file; // note: may be nullptr (if file was skipped e.g. due to missing index)
 }
 
 void ResultFileManager::unloadFile(ResultFile *file)
@@ -1539,24 +1559,6 @@ void ResultFileManager::unloadFile(ResultFile *file)
             delete *it;
             runList.erase(it);
         }
-    }
-}
-
-void ResultFileManager::loadFiles(const char *fileSystemGlobstarPattern, bool reload)
-{
-    for (auto fileName : collectMatchingFiles(fileSystemGlobstarPattern))
-        loadFile(fileName.c_str(), fileName.c_str(), reload); //TODO somehow get displayFilename in the picture too!
-}
-
-void ResultFileManager::loadDirectory(const char *directoryName, const char *fileSystemDirectoryName, bool reload)
-{
-    if (fileSystemDirectoryName == nullptr)
-        fileSystemDirectoryName = directoryName;
-    if (isDirectory(fileSystemDirectoryName)) {
-        for (auto fileName : collectFilesInDirectory(fileSystemDirectoryName, true, ".sca"))
-            loadFile(fileName.c_str(), fileName.c_str(), reload);
-        for (auto fileName : collectFilesInDirectory(fileSystemDirectoryName, true, ".vec"))
-            loadFile(fileName.c_str(), fileName.c_str(), reload);
     }
 }
 

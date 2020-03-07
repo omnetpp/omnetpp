@@ -27,10 +27,12 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace scave {
 
+#define LOG !verbose ? std::cout : std::cout
 
-SqliteResultFileLoader::SqliteResultFileLoader(ResultFileManager *resultFileManagerPar) :
-    IResultFileLoader(resultFileManagerPar), db(nullptr), stmt(nullptr), fileRef(nullptr)
+SqliteResultFileLoader::SqliteResultFileLoader(ResultFileManager *resultFileManagerPar, int flags, InterruptedFlag *interrupted) :
+    IResultFileLoader(resultFileManagerPar), interrupted(interrupted)
 {
+    verbose = (flags & ResultFileManager::VERBOSE) != 0;
 }
 
 SqliteResultFileLoader::~SqliteResultFileLoader()

@@ -28,14 +28,13 @@
 #include "common/stlutil.h"
 #include "resultfilemanager.h"
 #include "indexfileutils.h"
-#include "vectorfileindexer.h"
 #include "fields.h"
 #include "scaveutils.h"
 #include "sqliteresultfileutils.h"
 #include "exporter.h"
-
 #include "opp_scavetool.h"
 #include "vectorfileindex.h"
+#include "vectorfileindexer.h"
 
 
 using namespace std;
@@ -67,6 +66,9 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.option("i, index", "Generate index files (.vci) for vector files");
         help.option("h, help", "Print help text");
         help.line();
+        help.para("The <files> argument accepts directories and glob patterns as well, in addition to file names. "
+                "Glob patterns may contain '**' which can match any number of directory levels. "
+                "Be sure to quote the pattern on the command line to prevent the shell from expanding them before invoking scavetool.");
         help.para("The default command is 'query'.");
         help.para("To get help, use opp_scavetool help <topic>. Available help topics: command names, 'filter', 'operations'.");
     }
@@ -75,7 +77,7 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.para("Print help text on the given topic.");
     }
     else if (page == "q" || page == "query") {
-        help.para("Usage: opp_scavetool query [<mode-option>] [<options>] <output-vector-and-scalar-files>");
+        help.para("Usage: opp_scavetool query [<mode-option>] [<options>] <dirs-or-output-vector-and-scalar-files>");
         help.para("Query the contents of result files.");
         help.line("Mode options (mutually exclusive):");
         help.option("-s, --print-summary", "Report the number of result items. (This is the default.)");
@@ -105,6 +107,7 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.option("-k, --no-indexing", "Disallow automatic indexing of vector files");
         help.option("-v, --verbose", "Print info about progress (verbose)");
         help.line();
+        help.para("The <files> argument accepts directories and glob/globstar patterns as well, in addition to file names. See main help page for details.");
         help.para("See also the following help topics: 'filter'");
     }
     else if (page == "x" || page == "export") {
@@ -126,6 +129,7 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.line();
         help.para("Supported export formats: " + opp_join(ExporterFactory::getSupportedFormats(), ", ", '\''));
         help.para("See the 'exporters' help topic for the list of available options for each export format.");
+        help.para("The <files> argument accepts directories and glob/globstar patterns as well, in addition to file names. See main help page for details.");
         help.para("See also the following help topics: 'filter'");
     }
     else if (page == "exporters") {
@@ -154,6 +158,7 @@ void ScaveTool::printHelpPage(const std::string& page)
                   "unless indexing is explicitly disabled.");
         help.line("Options:");
         help.option("-v, --verbose", "Print info about progress (verbose)");
+        help.para("The <files> argument accepts directories and glob/globstar patterns as well, in addition to file names. See main help page for details.");
         help.line();
     }
     else if (page == "filter") {
@@ -204,29 +209,31 @@ void ScaveTool::loadFiles(ResultFileManager& manager, const vector<string>& file
         return;
     }
 
-    // load files
-    for (auto& fn : fileNames) {
-        const char *fileName = fn.c_str();
+    typedef ResultFileManager RFM;
+    int loadFlags = RFM::NEVER_RELOAD | (indexingAllowed ? RFM::ALLOW_INDEXING : RFM::ALLOW_LOADING_WITHOUT_INDEX) | RFM::SKIP_IF_LOCKED | (verbose ? RFM::VERBOSE : 0);
 
-        if (indexingAllowed && IndexFileUtils::isExistingVectorFile(fileName) && !IndexFileUtils::isIndexFileUpToDate(fileName)) {
-            if (verbose)
-                cout << "index file for " << fileName << " is missing or out of date, indexing... " << std::flush;
-            VectorFileIndexer().generateIndex(fileName, nullptr); //TODO this doesn't work if directory or wildcard pattern is given...
-            if (verbose)
-                cout << "done\n";
+    // load files
+    for (auto& i : fileNames) {
+        const char *fileArg = i.c_str();
+        std::vector<std::string> filesToLoad;
+
+        if (isDirectory(fileArg)) {
+            filesToLoad = collectFilesInDirectory(fileArg, true, ".sca");
+            addAll(filesToLoad, collectFilesInDirectory(fileArg, true, ".vec"));
+        }
+        else if (strchr(fileArg, '*') != nullptr || strchr(fileArg, '?') != nullptr) {
+            filesToLoad = collectMatchingFiles(fileArg);
+            if (filesToLoad.empty())
+                filesToLoad.push_back(fileArg); // like "bash" does; allows reporting errors in the pattern ("**/foo*.vec: no such file")
+        }
+        else {
+            filesToLoad.push_back(fileArg);
         }
 
-        if (verbose)
-            cout << "reading " << fileName << "... " << std::flush;
-        if (isDirectory(fileName))
-            manager.loadDirectory(fileName);
-        else if (strchr(fileName, '*') != nullptr || strchr(fileName, '?') != nullptr)
-            manager.loadFiles(fileName);
-        else
-            manager.loadFile(fileName);
-        if (verbose)
-            cout << "done\n";
+        for (auto& fileName : filesToLoad)
+            manager.loadFile(fileName.c_str(), nullptr, loadFlags, nullptr);
     }
+
     if (verbose)
         cout << manager.getFiles().size() << " file(s) loaded\n";
 }

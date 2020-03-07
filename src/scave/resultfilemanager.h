@@ -339,6 +339,11 @@ class SCAVE_API InterruptedFlag {
     bool flag = false;
 };
 
+class SCAVE_API InterruptedException : public opp_runtime_error {
+  public:
+    InterruptedException(const char *msg="Interrupted") : opp_runtime_error(msg) {}
+};
+
 /**
  * Loads and efficiently stores OMNeT++ output scalar files and output
  * vector files. (Actual vector contents in vector files are not read
@@ -351,6 +356,32 @@ class SCAVE_API InterruptedFlag {
  */
 class SCAVE_API ResultFileManager
 {
+  public:
+    /**
+     * Options for loadFile().
+     */
+    enum LoadFlags {
+        // What to do if file is already loaded:
+        RELOAD = (1<<0), // reloaded if already loaded
+        RELOAD_IF_CHANGED = (1<<1), // reload only if file changed since being loaded (this is the default)
+        NEVER_RELOAD = (1<<2), // don't reload if already loaded
+
+        // What to do if index file is missing or out of date:
+        ALLOW_INDEXING = (1<<3), // create index (this is the default)
+        SKIP_IF_NO_INDEX = (1<<4), // don't load
+        ALLOW_LOADING_WITHOUT_INDEX = (1<<5), // load without creating an index (i.e. scan .vec file instead of .vci file)
+
+        // What to do if there is a lock file (indicating that the file is being written to)
+        SKIP_IF_LOCKED = (1<<6), // don't load (this is the default)
+        IGNORE_LOCK_FILE = (1<<7), // pretend lock file doesn't exist
+
+        VERBOSE = (1<<8), // print on stdout what it's doing
+
+        LOADFLAGS_DEFAULTS = RELOAD_IF_CHANGED | ALLOW_INDEXING | SKIP_IF_LOCKED
+    };
+
+
+  public:
     friend class ResultItem; // moduleNames, names
     friend class IDList;  // _type()
     friend class Run;  // _pos()
@@ -549,9 +580,7 @@ class SCAVE_API ResultFileManager
      * Loading files. fileName is the file path in the Eclipse workspace;
      * the file is actually read from fileSystemFileName.
      */
-    ResultFile *loadFile(const char *fileName, const char *fileSystemFileName=nullptr, bool reload=false);
-    void loadFiles(const char *fileSystemGlobstarPattern, bool reload=false); //TODO how to derive Eclipse workspace name?
-    void loadDirectory(const char *directoryName, const char *fileSystemDirectoryName=nullptr, bool reload=false);
+    ResultFile *loadFile(const char *fileName, const char *fileSystemFileName=nullptr, int flags=LOADFLAGS_DEFAULTS, InterruptedFlag *interrupted=nullptr);
     void unloadFile(ResultFile *file);
 
     bool isFileLoaded(const char *fileName) const;
@@ -642,7 +671,7 @@ class SCAVE_API IResultFileLoader
   public:
     IResultFileLoader(ResultFileManager *resultFileManagerPar) : resultFileManager(resultFileManagerPar) {}
     virtual ~IResultFileLoader() {}
-    virtual ResultFile *loadFile(const char *fileName, const char *fileSystemFileName=nullptr, bool reload=false) = 0;
+    virtual ResultFile *loadFile(const char *fileName, const char *fileSystemFileName) = 0;
 };
 
 } // namespace scave

@@ -91,7 +91,7 @@ vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList
             }
 
             if (interrupted.flag)
-                throw opp_runtime_error("Vector loading interrupted");
+                throw InterruptedException("Vector loading interrupted");
         };
 
         IVectorDataReader *reader;

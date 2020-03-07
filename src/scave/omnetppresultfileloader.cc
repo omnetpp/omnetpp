@@ -43,6 +43,7 @@
 #include "scaveutils.h"
 #include "scaveexception.h"
 #include "vectorfileindex.h"
+#include "vectorfileindexer.h"
 
 #ifdef THREADED
 #define READER_MUTEX    Mutex __reader_mutex_(getReadLock());
@@ -61,6 +62,14 @@ namespace scave {
 #undef CHECK
 #endif
 #define CHECK(cond,msg) if (!(cond)) throw ResultFileFormatException(msg, ctx.fileName, ctx.lineNo);
+
+OmnetppResultFileLoader::OmnetppResultFileLoader(ResultFileManager *resultFileManagerPar, int flags, InterruptedFlag *interrupted) :
+          IResultFileLoader(resultFileManagerPar), interrupted(interrupted)
+{
+    indexingOption = flags & (ResultFileManager::ALLOW_INDEXING|ResultFileManager::SKIP_IF_NO_INDEX|ResultFileManager::ALLOW_LOADING_WITHOUT_INDEX);
+    lockfileOption = flags & (ResultFileManager::SKIP_IF_LOCKED|ResultFileManager::IGNORE_LOCK_FILE);
+    verbose = flags & ResultFileManager::VERBOSE;
+}
 
 
 void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContext& ctx)
@@ -352,16 +361,34 @@ void OmnetppResultFileLoader::separateItervarsFromAttrs(StringMap& attrs, String
     }
 }
 
-ResultFile *OmnetppResultFileLoader::loadFile(const char *fileName, const char *fileSystemFileName, bool reload)
+ResultFile *OmnetppResultFileLoader::loadFile(const char *fileName, const char *fileSystemFileName)
 {
     // add to fileList
     ResultFile *fileRef = nullptr;
 
     try {
+        //TODO handle lockfileOption
+
+        bool isVecFile = IndexFileUtils::isExistingVectorFile(fileName);
+        bool hasUpToDateIndex = isVecFile && IndexFileUtils::isIndexFileUpToDate(fileName);
+        if (isVecFile && !hasUpToDateIndex) {
+            // vector file with a missing or out-of-date index
+            switch (indexingOption) {
+            case ResultFileManager::SKIP_IF_NO_INDEX: return nullptr;
+            case ResultFileManager::ALLOW_LOADING_WITHOUT_INDEX: /* will go via doLoadFile() */ break;
+            case ResultFileManager::ALLOW_INDEXING: {
+                VectorFileIndexer().generateIndex(fileName, nullptr);
+                hasUpToDateIndex = true;
+                break;
+            }
+            }
+        }
+
         fileRef = resultFileManager->addFile(fileName, fileSystemFileName, ResultFile::FILETYPE_OMNETPP);
 
-        // if vector file and has index, load vectors from the index file
-        if (IndexFileUtils::isExistingVectorFile(fileSystemFileName) && IndexFileUtils::isIndexFileUpToDate(fileSystemFileName)) {
+
+        if (isVecFile && hasUpToDateIndex) {
+            // load vectors from the index file
             std::string indexFileName = IndexFileUtils::getIndexFileName(fileSystemFileName);
             loadVectorsFromIndex(indexFileName.c_str(), fileRef);
         }

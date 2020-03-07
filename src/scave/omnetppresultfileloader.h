@@ -49,6 +49,11 @@ class SCAVE_API OmnetppResultFileLoader : public IResultFileLoader
     using VectorInfo = VectorFileIndex::VectorInfo;
 
   protected:
+    int indexingOption;
+    int lockfileOption;
+    bool verbose;
+    InterruptedFlag *interrupted;
+
     struct ParseContext {
         ResultFile *fileRef = nullptr;
         const char *fileName = nullptr;
@@ -89,8 +94,8 @@ class SCAVE_API OmnetppResultFileLoader : public IResultFileLoader
     Statistics makeStatsFromFields(ParseContext& ctx);
     void separateItervarsFromAttrs(StringMap& attrs, StringMap& itervars);
   public:
-    OmnetppResultFileLoader(ResultFileManager *resultFileManagerPar) : IResultFileLoader(resultFileManagerPar) {}
-    virtual ResultFile *loadFile(const char *fileName, const char *fileSystemFileName=nullptr, bool reload=false) override;
+    OmnetppResultFileLoader(ResultFileManager *resultFileManagerPar, int flags, InterruptedFlag *interrupted);
+    virtual ResultFile *loadFile(const char *fileName, const char *fileSystemFileName) override;
 };
 
 } // namespace scave

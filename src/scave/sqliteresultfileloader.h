@@ -50,10 +50,12 @@ using omnetpp::common::Statistics;
 class SCAVE_API SqliteResultFileLoader : public IResultFileLoader
 {
   protected:
-    sqlite3 *db;
-    sqlite3_stmt *stmt; // we only have one prepared statement active at a time
-    ResultFile *fileRef;
+    sqlite3 *db = nullptr;
+    sqlite3_stmt *stmt = nullptr; // we only have one prepared statement active at a time
+    ResultFile *fileRef = nullptr;
     std::map<sqlite3_int64, FileRun *> fileRunMap;
+    bool verbose;
+    InterruptedFlag *interrupted;
 
   protected:
     virtual void loadRuns();
@@ -74,9 +76,9 @@ class SCAVE_API SqliteResultFileLoader : public IResultFileLoader
     void setBins(HistogramResult *histogram, std::vector<double>& binEdges, std::vector<double>& binValues);
 
   public:
-    SqliteResultFileLoader(ResultFileManager* resultFileManagerPar);
+    SqliteResultFileLoader(ResultFileManager* resultFileManagerPar, int flags, InterruptedFlag *interrupted);
     virtual ~SqliteResultFileLoader();
-    virtual ResultFile *loadFile(const char *fileName, const char *fileSystemFileName=nullptr, bool reload=false) override;
+    virtual ResultFile *loadFile(const char *fileName, const char *fileSystemFileName) override;
 };
 
 } // namespace scave
