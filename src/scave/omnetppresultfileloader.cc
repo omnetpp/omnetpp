@@ -366,21 +366,7 @@ ResultFile *OmnetppResultFileLoader::loadFile(const char *fileName, const char *
             loadVectorsFromIndex(indexFileName.c_str(), fileRef);
         }
         else {
-            // process lines in file
-            FileReader freader(fileSystemFileName);
-            char *line;
-            LineTokenizer tokenizer;
-            ParseContext ctx;
-            ctx.fileRef = fileRef;
-            ctx.fileName = fileRef->getFilePath().c_str();
-            resetFields(ctx);
-            while ((line = freader.getNextLineBufferPointer()) != nullptr) {
-                int len = freader.getCurrentLineLength();
-                int numTokens = tokenizer.tokenize(line, len);
-                char **tokens = tokenizer.tokens();
-                processLine(tokens, numTokens, ctx);
-            }
-            flush(ctx); // last result item
+            doLoadFile(fileSystemFileName, fileRef);
         }
     }
     catch (std::exception&) {
@@ -393,6 +379,25 @@ ResultFile *OmnetppResultFileLoader::loadFile(const char *fileName, const char *
         throw;
     }
     return fileRef;
+}
+
+void OmnetppResultFileLoader::doLoadFile(const char *fileName, ResultFile *fileRef)
+{
+    // process lines in file
+    FileReader freader(fileName);
+    char *line;
+    LineTokenizer tokenizer;
+    ParseContext ctx;
+    ctx.fileRef = fileRef;
+    ctx.fileName = fileRef->getFilePath().c_str();
+    resetFields(ctx);
+    while ((line = freader.getNextLineBufferPointer()) != nullptr) {
+        int len = freader.getCurrentLineLength();
+        int numTokens = tokenizer.tokenize(line, len);
+        char **tokens = tokenizer.tokens();
+        processLine(tokens, numTokens, ctx);
+    }
+    flush(ctx); // last result item
 }
 
 void OmnetppResultFileLoader::loadVectorsFromIndex(const char *filename, ResultFile *fileRef)

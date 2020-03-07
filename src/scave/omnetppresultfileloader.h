@@ -81,8 +81,9 @@ class SCAVE_API OmnetppResultFileLoader : public IResultFileLoader
         std::vector<double> binValues;
     };
   protected:
-    void processLine(char **vec, int numTokens, ParseContext& ctx);
+    void doLoadFile(const char *fileName, ResultFile *fileRef);
     void loadVectorsFromIndex(const char *filename, ResultFile *fileRef);
+    void processLine(char **vec, int numTokens, ParseContext& ctx);
     void flush(ParseContext& ctx);
     void resetFields(ParseContext& ctx);
     Statistics makeStatsFromFields(ParseContext& ctx);
