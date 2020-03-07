@@ -116,10 +116,11 @@ COMMON_API void mkPath(const char *pathname);
 
 /**
  * Collect files in the specified folder with the given file suffix (normally
- * a file extension with the dot included, e.g. ".txt"). Specify nullptr for suffix
- * to collect all files. See also globRecursive().
+ * a file extension with the dot included, e.g. ".txt"). Specify suffix=nullptr
+ * to collect all files. If deep=true, subdirectories are also searched,
+ * otherwise only the given directory. See also collectMatchingFiles().
  */
-COMMON_API std::vector<std::string> collectFiles(const char *foldername, const char *suffix=nullptr);
+COMMON_API std::vector<std::string> collectFilesInDirectory(const char *foldername, bool deep, const char *suffix=nullptr);
 
 /**
  * Glob a path that may contain '?', '*' and '**' wildcards. '**' can match

@@ -59,7 +59,7 @@ using std::ios;
 std::vector<std::string> NedTool::expandNedFolder(const char *filename)
 {
     if (isDirectory(filename))
-        return collectFiles(filename, ".ned");
+        return collectFilesInDirectory(filename, true, ".ned");
     else
         return std::vector<std::string> { filename };
 }

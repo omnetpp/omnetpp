@@ -283,7 +283,7 @@ void mkPath(const char *pathname)
     }
 }
 
-static void doCollectFiles(std::vector<std::string>& result, const std::string& prefix, const char *suffix)
+static void doCollectFilesInDirectory(std::vector<std::string>& result, const std::string& prefix, bool deep, const char *suffix)
 {
     FileGlobber globber("*");
     const char *filename;
@@ -291,19 +291,21 @@ static void doCollectFiles(std::vector<std::string>& result, const std::string& 
         if (filename[0] == '.')
             continue;  // ignore ".", "..", and dotfiles
         else if (isDirectory(filename)) {
-            PushDir pushDir(filename);
-            doCollectFiles(result, prefix + filename + "/", suffix);
+            if (deep) {
+                PushDir pushDir(filename);
+                doCollectFilesInDirectory(result, prefix + filename + "/", deep, suffix);
+            }
         }
         else if (suffix == nullptr || opp_stringendswith(filename, suffix))
             result.push_back(prefix + filename);
     }
 }
 
-std::vector<std::string> collectFiles(const char *foldername, const char *suffix)
+std::vector<std::string> collectFilesInDirectory(const char *foldername, bool deep, const char *suffix)
 {
     std::vector<std::string> result;
     PushDir pushDir(foldername);
-    doCollectFiles(result, std::string(foldername) == "." ? "" : std::string(foldername) + "/", suffix);
+    doCollectFilesInDirectory(result, std::string(foldername) == "." ? "" : std::string(foldername) + "/", deep, suffix);
     return result;
 }
 
