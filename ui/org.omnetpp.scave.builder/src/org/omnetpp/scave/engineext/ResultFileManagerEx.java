@@ -34,9 +34,21 @@ import org.omnetpp.scave.engineext.ResultFileManagerChangeEvent.ChangeType;
  * @author andras
  */
 public class ResultFileManagerEx extends ResultFileManager {
+    // What to do if file is already loaded:
+    public static int RELOAD = ResultFileManager.LoadFlags.RELOAD.swigValue(); // reloaded if already loaded
+    public static int RELOAD_IF_CHANGED = ResultFileManager.LoadFlags.RELOAD_IF_CHANGED.swigValue(); // reload only if file changed since being loaded (this is the default)
+    public static int NEVER_RELOAD = ResultFileManager.LoadFlags.NEVER_RELOAD.swigValue(); // don't reload if already loaded
+    // What to do if index file is missing or out of date:
+    public static int ALLOW_INDEXING = ResultFileManager.LoadFlags.ALLOW_INDEXING.swigValue(); // create index (this is the default)
+    public static int SKIP_IF_NO_INDEX = ResultFileManager.LoadFlags.SKIP_IF_NO_INDEX.swigValue(); // don't load
+    public static int ALLOW_LOADING_WITHOUT_INDEX = ResultFileManager.LoadFlags.ALLOW_LOADING_WITHOUT_INDEX.swigValue(); // load without creating an index (i.e. scan .vec file instead of .vci file)
+    // What to do if there is a lock file (indicating that the file is being written to)
+    public static int SKIP_IF_LOCKED = ResultFileManager.LoadFlags.SKIP_IF_LOCKED.swigValue(); // don't load (this is the default)
+    public static int IGNORE_LOCK_FILE = ResultFileManager.LoadFlags.IGNORE_LOCK_FILE.swigValue(); // pretend lock file doesn't exist
+    public static int VERBOSE = ResultFileManager.LoadFlags.VERBOSE.swigValue(); // print on stdout what it's doing
 
-    private ListenerList changeListeners = new ListenerList();
-    private ListenerList disposeListeners = new ListenerList();
+    private ListenerList<IResultFilesChangeListener> changeListeners = new ListenerList<>();
+    private ListenerList<IResultFileManagerDisposeListener> disposeListeners = new ListenerList<>();
 
     public void addChangeListener(IResultFilesChangeListener listener) {
         changeListeners.add(listener);
@@ -47,8 +59,8 @@ public class ResultFileManagerEx extends ResultFileManager {
     }
 
     protected void notifyChangeListeners(ResultFileManagerChangeEvent event) {
-        for (Object listener : changeListeners.getListeners())
-            ((IResultFilesChangeListener)listener).resultFileManagerChanged(event);
+        for (IResultFilesChangeListener listener : changeListeners)
+            listener.resultFileManagerChanged(event);
     }
 
     public void addDisposeListener(IResultFileManagerDisposeListener listener) {
@@ -60,8 +72,8 @@ public class ResultFileManagerEx extends ResultFileManager {
     }
 
     protected void notifyDisposeListeners() {
-        for (Object listener : disposeListeners.getListeners())
-            ((IResultFileManagerDisposeListener)listener).resultFileManagerDisposed(this);
+        for (IResultFileManagerDisposeListener listener : disposeListeners)
+            listener.resultFileManagerDisposed(this);
     }
 
     /*-------------------------------------------
@@ -73,40 +85,13 @@ public class ResultFileManagerEx extends ResultFileManager {
     }
 
     @Override
-    public ResultFile loadFile(String filename) {
+    public ResultFile loadFile(String filename, String osFileName, int flags, InterruptedFlag interrupted) {
         getWriteLock().lock();
         try {
             checkNotDeleted();
-            ResultFile file = super.loadFile(filename);
-            notifyChangeListeners(new ResultFileManagerChangeEvent(this, ChangeType.LOAD, filename));
-            return file;
-        }
-        finally {
-            getWriteLock().unlock();
-        }
-    }
-
-    @Override
-    public ResultFile loadFile(String filename, String osFileName) {
-        getWriteLock().lock();
-        try {
-            checkNotDeleted();
-            ResultFile file = super.loadFile(filename, osFileName);
-            notifyChangeListeners(new ResultFileManagerChangeEvent(this, ChangeType.LOAD, filename));
-            return file;
-        }
-        finally {
-            getWriteLock().unlock();
-        }
-    }
-
-    @Override
-    public ResultFile loadFile(String filename, String osFileName, boolean reload) {
-        getWriteLock().lock();
-        try {
-            checkNotDeleted();
-            ResultFile file = super.loadFile(filename, osFileName, reload);
-            notifyChangeListeners(new ResultFileManagerChangeEvent(this, ChangeType.LOAD, filename));
+            ResultFile file = super.loadFile(filename, osFileName, flags, interrupted);
+            if (file != null)
+                notifyChangeListeners(new ResultFileManagerChangeEvent(this, ChangeType.LOAD, filename));
             return file;
         }
         finally {
