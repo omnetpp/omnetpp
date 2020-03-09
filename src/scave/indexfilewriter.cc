@@ -71,7 +71,7 @@ void IndexFileWriter::writeAll(const VectorFileIndex& index)
 
 void IndexFileWriter::writeFingerprint(std::string vectorFileName)
 {
-    VectorFileIndex::FingerPrint fingerprint = IndexFileUtils::getFingerPrint(vectorFileName.c_str());
+    FileFingerprint fingerprint = readFileFingerprint(vectorFileName.c_str());
 
     if (file == nullptr)
         openFile();

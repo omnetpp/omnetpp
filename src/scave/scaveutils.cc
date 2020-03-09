@@ -122,6 +122,19 @@ std::string unquoteString(const char *str)
     return result;
 }
 
+FileFingerprint readFileFingerprint(const char *fileName)
+{
+    struct opp_stat_t s;
+    if (opp_stat(fileName, &s) != 0)
+        throw opp_runtime_error("File '%s' does not exist", fileName);
+
+    FileFingerprint fingerprint;
+    fingerprint.lastModified = (int64_t)s.st_mtime;
+    fingerprint.fileSize = (int64_t)s.st_size;
+
+    return fingerprint;
+}
+
 const std::string *ScaveStringPool::insert(const std::string& str)
 {
     if (!lastInsertedPtr || *lastInsertedPtr != str) {

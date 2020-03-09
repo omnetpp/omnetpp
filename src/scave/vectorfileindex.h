@@ -24,6 +24,7 @@
 #include "common/statistics.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "scavedefs.h"
+#include "scaveutils.h"
 
 namespace omnetpp {
 namespace scave {
@@ -175,19 +176,8 @@ struct VectorFileIndex {
         std::vector<Block>::size_type getBlocksInEventnumInterval(eventnumber_t startEventNum, eventnumber_t endEventNum, std::vector<Block>::size_type& startIndex, std::vector<Block>::size_type& endIndex) const;
     };
 
-    /**
-     * Attributes of the vector files that are stored in the index file to
-     * check if it is up-to-date.
-     */
-    struct FingerPrint {
-        int64_t lastModified = 0;
-        int64_t fileSize = 0;
-        bool isEmpty() { return lastModified == 0 && fileSize == 0; }
-        bool operator==(const FingerPrint& other) { return other.lastModified == lastModified && other.fileSize == fileSize; }
-    };
-
     std::string vectorFileName;
-    FingerPrint fingerprint;
+    FileFingerprint fingerprint;
     RunData run;
 private:
     std::vector<VectorInfo> vectors;

@@ -34,6 +34,18 @@ SCAVE_API bool parseDouble(const char *str, double& dest);
 SCAVE_API bool parseSimtime(const char *str, simultime_t& dest);
 SCAVE_API std::string unquoteString(const char *str);
 
+/**
+ * Stores a file's size and last modification date, for checking if it's up to date.
+ */
+struct FileFingerprint {
+    int64_t lastModified = 0;
+    int64_t fileSize = 0;
+    bool isEmpty() { return lastModified == 0 && fileSize == 0; }
+    bool operator==(const FileFingerprint& other) { return other.lastModified == lastModified && other.fileSize == fileSize; }
+};
+
+SCAVE_API FileFingerprint readFileFingerprint(const char *fileName);
+
 template <class Operation>
 class FlipArgs
     : public std::binary_function<typename Operation::second_argument_type,

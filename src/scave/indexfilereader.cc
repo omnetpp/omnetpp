@@ -68,14 +68,14 @@ VectorFileIndex *IndexFileReader::readAll()
     return index;
 }
 
-VectorFileIndex::FingerPrint IndexFileReader::readFingerprint()
+FileFingerprint IndexFileReader::readRecordedFingerprint()
 {
     FileReader reader(filename.c_str());
     LineTokenizer tokenizer(1024);
     int numTokens;
     char *line, **tokens;
 
-    VectorFileIndex::FingerPrint result;
+    FileFingerprint result;
 
     reader.setCheckFileForChanges(false);
     while ((line = reader.getNextLineBufferPointer()) != nullptr) {

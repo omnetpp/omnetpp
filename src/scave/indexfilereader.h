@@ -53,7 +53,7 @@ class SCAVE_API IndexFileReader  //TODO this class should share the reader/parse
         /**
          * Reads the fingerprint of the vector file this index file belongs to.
          */
-        VectorFileIndex::FingerPrint readFingerprint();
+        FileFingerprint readRecordedFingerprint();
     protected:
         /**
          * Parse one line of the index file.

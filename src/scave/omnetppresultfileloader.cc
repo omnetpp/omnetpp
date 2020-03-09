@@ -375,15 +375,16 @@ ResultFile *OmnetppResultFileLoader::loadFile(const char *fileName, const char *
     try {
         //TODO handle lockfileOption
 
-        bool isVecFile = IndexFileUtils::isExistingVectorFile(fileName);
-        bool hasUpToDateIndex = isVecFile && IndexFileUtils::isIndexFileUpToDate(fileName);
+        bool isVecFile = IndexFileUtils::isExistingVectorFile(fileSystemFileName);
+        bool hasUpToDateIndex = isVecFile && IndexFileUtils::isIndexFileUpToDate(fileSystemFileName);
         if (isVecFile && !hasUpToDateIndex) {
             // vector file with a missing or out-of-date index
+            LOG << "file " << fileName << " has no valid index, ";
             switch (indexingOption) {
-            case ResultFileManager::SKIP_IF_NO_INDEX: return nullptr;
-            case ResultFileManager::ALLOW_LOADING_WITHOUT_INDEX: /* will go via doLoadFile() */ break;
+            case ResultFileManager::SKIP_IF_NO_INDEX: LOG << "skipping\n"; return nullptr;
+            case ResultFileManager::ALLOW_LOADING_WITHOUT_INDEX: LOG << "scanning vec file instead of vci\n"; break;
             case ResultFileManager::ALLOW_INDEXING: {
-                LOG << "index file for " << fileName << " is missing or out of date, indexing... " << std::flush;
+                LOG << "reindexing..." << std::flush;
                 VectorFileIndexer().generateIndex(fileName, nullptr);
                 hasUpToDateIndex = true;
                 LOG << "done\n";

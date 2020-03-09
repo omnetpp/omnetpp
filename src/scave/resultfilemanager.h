@@ -274,6 +274,7 @@ class SCAVE_API ResultFile
     std::string fileName; // file name
     std::string filePath; // workspace directory + fileName
     std::string fileSystemFilePath; // directory+fileName of underlying file (for fopen())
+    FileFingerprint fingerprint; // read-time file size and date/time
     FileType fileType;
     ScalarResults scalarResults;
     ParameterResults parameterResults;
@@ -362,7 +363,7 @@ class SCAVE_API ResultFileManager
      */
     enum LoadFlags {
         // What to do if file is already loaded:
-        RELOAD = (1<<0), // reloaded if already loaded
+        RELOAD = (1<<0), // reload if already loaded
         RELOAD_IF_CHANGED = (1<<1), // reload only if file changed since being loaded (this is the default)
         NEVER_RELOAD = (1<<2), // don't reload if already loaded
 
@@ -580,7 +581,7 @@ class SCAVE_API ResultFileManager
      * Loading files. fileName is the file path in the Eclipse workspace;
      * the file is actually read from fileSystemFileName.
      */
-    ResultFile *loadFile(const char *fileName, const char *fileSystemFileName=nullptr, int flags=LOADFLAGS_DEFAULTS, InterruptedFlag *interrupted=nullptr);
+    ResultFile *loadFile(const char *fileName, const char *fileSystemFileName, int flags, InterruptedFlag *interrupted);
     void unloadFile(ResultFile *file);
 
     bool isFileLoaded(const char *fileName) const;

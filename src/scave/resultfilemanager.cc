@@ -1328,6 +1328,7 @@ ResultFile *ResultFileManager::addFile(const char *fileName, const char *fileSys
     file->fileSystemFilePath = fileSystemFileName;
     file->filePath = filePath;
     splitFileName(file->filePath.c_str(), file->directory, file->fileName);
+    file->fingerprint = readFileFingerprint(fileSystemFileName);
     file->fileType = fileType;
     return file;
 }
@@ -1476,6 +1477,7 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
     int reloadOption = flags & (RELOAD|RELOAD_IF_CHANGED|NEVER_RELOAD);
     int indexingOption = flags & (ALLOW_INDEXING|SKIP_IF_NO_INDEX|ALLOW_LOADING_WITHOUT_INDEX);
     int lockfileOption = flags & (SKIP_IF_LOCKED|IGNORE_LOCK_FILE);
+    bool verbose = (flags & VERBOSE) != 0;
 
     if (reloadOption != RELOAD && reloadOption != RELOAD_IF_CHANGED && reloadOption != NEVER_RELOAD)
         throw opp_runtime_error("invalid reload flags %d, must be one of: RELOAD, RELOAD_IF_CHANGED, NEVER_RELOAD", reloadOption);
@@ -1493,18 +1495,35 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
     // (or some other "display name" of the file), but we actually load from
     // fileSystemFileName which is the fileName suitable for fopen()
 
-    //TODO handle flags!!!!
-
     // check if loaded
     ResultFile *fileRef = getFile(fileName);
+#define LOG !verbose ? std::cout : std::cout
     if (fileRef) {
-        bool isUpToDate = true; //TODO
+        FileFingerprint fingerprint = readFileFingerprint(fileSystemFileName);
         switch (reloadOption) {
-            case RELOAD: unloadFile(fileRef); break;
-            case RELOAD_IF_CHANGED: if (isUpToDate) return fileRef; else unloadFile(fileRef);
-            case NEVER_RELOAD: return fileRef;
+            case RELOAD: {
+                LOG << "already loaded, unloading previous content: " << fileName << std::endl;
+                unloadFile(fileRef);
+                break;
+            }
+            case RELOAD_IF_CHANGED: {
+                bool isUpToDate = (fingerprint == fileRef->fingerprint);
+                if (isUpToDate) {
+                    LOG << "already loaded and unchanged since, skipping: " << fileName << std::endl;
+                    return fileRef;
+                }
+                else {
+                    LOG << "already loaded but changed since, unloading previous content: " << fileName << std::endl;
+                    unloadFile(fileRef);
+                }
+            }
+            case NEVER_RELOAD: {
+                LOG << "already loaded, skipping: " << fileName << std::endl;
+                return fileRef;
+            }
         }
     }
+#undef LOG
 
     // try if file can be opened, before we add it to our database
     if (fileSystemFileName == nullptr)

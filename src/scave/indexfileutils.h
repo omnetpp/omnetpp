@@ -46,8 +46,6 @@ class SCAVE_API IndexFileUtils
          * is equal to the size and date of the vector file.
          */
         static bool isIndexFileUpToDate(const char *fileName);
-
-        static VectorFileIndex::FingerPrint getFingerPrint(const char *vectorFileName);
 };
 
 

@@ -101,28 +101,14 @@ bool IndexFileUtils::isIndexFileUpToDate(const char *filename)
         return false;
 
     IndexFileReader reader(indexFileName.c_str());
-    VectorFileIndex::FingerPrint fingerprint = reader.readFingerprint();
+    FileFingerprint fingerprint = reader.readRecordedFingerprint();
 
     // when the fingerprint not found assume the index file is being written therefore it is up to date
     if (fingerprint.isEmpty())
         return true;
 
-    return fingerprint == getFingerPrint(vectorFileName.c_str());
+    return fingerprint == readFileFingerprint(vectorFileName.c_str());
 }
-
-VectorFileIndex::FingerPrint IndexFileUtils::getFingerPrint(const char *vectorFileName)
-{
-    struct opp_stat_t s;
-    if (opp_stat(vectorFileName, &s) != 0)
-        throw opp_runtime_error("Vector file '%s' does not exist", vectorFileName);
-
-    VectorFileIndex::FingerPrint fingerprint;
-    fingerprint.lastModified = (int64_t)s.st_mtime;
-    fingerprint.fileSize = (int64_t)s.st_size;
-
-    return fingerprint;
-}
-
 
 }  // namespace scave
 }  // namespace omnetpp
