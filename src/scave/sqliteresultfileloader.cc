@@ -73,6 +73,7 @@ void SqliteResultFileLoader::finalizeStatement()
 
 void SqliteResultFileLoader::loadRuns()
 {
+    LOG << "runs " << std::flush;
     prepareStatement("SELECT runId, runName FROM run;");
 
     for (int row=1; ; row++) {
@@ -93,6 +94,7 @@ void SqliteResultFileLoader::loadRuns()
 
 void SqliteResultFileLoader::loadRunAttrs()
 {
+    LOG << "runattrs " << std::flush;
     prepareStatement("SELECT runId, attrName, attrValue FROM runAttr;");
 
     for (int row=1; ; row++) {
@@ -116,6 +118,7 @@ void SqliteResultFileLoader::loadRunAttrs()
 
 void SqliteResultFileLoader::loadRunItervars()
 {
+    LOG << "itervars " << std::flush;
     prepareStatement("SELECT runId, itervarName, itervarValue FROM runItervar;");
 
     for (int row=1; ; row++) {
@@ -139,6 +142,7 @@ void SqliteResultFileLoader::loadRunItervars()
 
 void SqliteResultFileLoader::loadRunConfigEntries()
 {
+    LOG << "config " << std::flush;
     prepareStatement("SELECT runId, configKey, configValue FROM runConfig ORDER BY configOrder ASC;");
 
     for (int row=1; ; row++) {
@@ -167,6 +171,7 @@ void SqliteResultFileLoader::loadScalars()
     SqliteScalarIdToScalarIdx sqliteScalarIdToScalarIdx;
     const StringMap emptyAttrs;
 
+    LOG << "scalars " << std::flush;
     prepareStatement("SELECT scalarId, runId, moduleName, scalarName, scalarValue FROM scalar;");
     for (int row=1; ; row++) {
         int resultCode = sqlite3_step(stmt);
@@ -208,6 +213,7 @@ void SqliteResultFileLoader::loadParameters()
     SqliteParamIdToParamIdx sqliteParamIdToParamIdx;
     const StringMap emptyAttrs;
 
+    LOG << "params " << std::flush;
     prepareStatement("SELECT paramId, runId, moduleName, paramName, paramValue FROM parameter;");
     for (int row=1; ; row++) {
         int resultCode = sqlite3_step(stmt);
@@ -260,6 +266,7 @@ void SqliteResultFileLoader::loadHistograms()
     std::map<sqlite3_int64,int> sqliteStatIdToHistogramIdx;
     const StringMap emptyAttrs;
 
+    LOG << "histograms " << std::flush;
     prepareStatement("SELECT statId, runId, moduleName, statName, isHistogram, isWeighted, "
             "statCount, statMean, statStddev, statSum, statSqrsum, statMin, statMax, "
             "statWeights, statWeightedSum, statSqrSumWeights, statWeightedSqrSum "
@@ -368,6 +375,7 @@ void SqliteResultFileLoader::loadVectors()
 {
     std::map<sqlite3_int64,int> sqliteVectorIdToVectorIdx;
 
+    LOG << "vectors " << std::flush;
     prepareStatement(
             "SELECT vectorId, runId, moduleName, vectorName, "
             "    vectorCount, vectorMin, vectorMax, vectorSum, vectorSumSqr, "
@@ -434,10 +442,13 @@ void SqliteResultFileLoader::cleanupDb()
     }
 }
 
-ResultFile *SqliteResultFileLoader::loadFile(const char *fileName, const char *fileSystemFileName, bool reload)
+ResultFile *SqliteResultFileLoader::loadFile(const char *fileName, const char *fileSystemFileName)
 {
     try {
         fileRef = resultFileManager->addFile(fileName, fileSystemFileName, ResultFile::FILETYPE_SQLITE);
+
+        LOG << "reading " << fileSystemFileName << "... " << std::flush;
+
         checkOK(sqlite3_open_v2(fileSystemFileName, &db, SQLITE_OPEN_READONLY, 0));
         loadRuns();
         loadRunAttrs();
@@ -447,6 +458,8 @@ ResultFile *SqliteResultFileLoader::loadFile(const char *fileName, const char *f
         loadParameters();
         loadVectors();
         loadHistograms();
+
+        LOG << "done\n";
     }
     catch (std::exception&) {
         cleanupDb();

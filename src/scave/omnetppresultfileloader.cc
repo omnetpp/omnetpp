@@ -63,6 +63,8 @@ namespace scave {
 #endif
 #define CHECK(cond,msg) if (!(cond)) throw ResultFileFormatException(msg, ctx.fileName, ctx.lineNo);
 
+#define LOG !verbose ? std::cout : std::cout
+
 OmnetppResultFileLoader::OmnetppResultFileLoader(ResultFileManager *resultFileManagerPar, int flags, InterruptedFlag *interrupted) :
           IResultFileLoader(resultFileManagerPar), interrupted(interrupted)
 {
@@ -100,6 +102,7 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
 
         ctx.currentItemType = ParseContext::RUN;
         ctx.runName = unquoteString(vec[1]);
+        LOG << ctx.runName << " " << std::flush;
         return;
     }
 
@@ -380,8 +383,10 @@ ResultFile *OmnetppResultFileLoader::loadFile(const char *fileName, const char *
             case ResultFileManager::SKIP_IF_NO_INDEX: return nullptr;
             case ResultFileManager::ALLOW_LOADING_WITHOUT_INDEX: /* will go via doLoadFile() */ break;
             case ResultFileManager::ALLOW_INDEXING: {
+                LOG << "index file for " << fileName << " is missing or out of date, indexing... " << std::flush;
                 VectorFileIndexer().generateIndex(fileName, nullptr);
                 hasUpToDateIndex = true;
+                LOG << "done\n";
                 break;
             }
             }
@@ -393,10 +398,14 @@ ResultFile *OmnetppResultFileLoader::loadFile(const char *fileName, const char *
         if (isVecFile && hasUpToDateIndex) {
             // load vectors from the index file
             std::string indexFileName = IndexFileUtils::getIndexFileName(fileSystemFileName);
+            LOG << "reading " << indexFileName << "... " << std::flush;
             loadVectorsFromIndex(indexFileName.c_str(), fileRef);
+            LOG << "done\n";
         }
         else {
+            LOG << "reading " << fileName << "... " << std::flush;
             doLoadFile(fileSystemFileName, fileRef);
+            LOG << "done\n";
         }
     }
     catch (std::exception&) {
