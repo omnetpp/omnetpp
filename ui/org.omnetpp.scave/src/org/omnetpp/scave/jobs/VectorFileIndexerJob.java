@@ -20,7 +20,7 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.MultiRule;
-import org.omnetpp.scave.engineext.IndexFileUtils;
+import org.omnetpp.scave.common.IndexFileUtils;
 
 /**
  * This job generates index files for vector files in the workspace.

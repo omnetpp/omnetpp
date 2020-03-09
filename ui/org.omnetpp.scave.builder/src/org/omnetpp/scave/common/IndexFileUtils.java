@@ -5,7 +5,7 @@
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-package org.omnetpp.scave.engineext;
+package org.omnetpp.scave.common;
 
 import static org.omnetpp.scave.common.ScaveMarkers.MARKERTYPE_SCAVEPROBLEM;
 import static org.omnetpp.scave.common.ScaveMarkers.addMarker;
@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.Path;
 import org.omnetpp.common.Debug;
 import org.omnetpp.scave.builder.Activator;
 import org.omnetpp.scave.engine.VectorFileIndexer;
+import org.omnetpp.scave.engineext.ResultFileFormatException;
 
 /**
  * Augments org.omnetpp.scave.engine.IndexFile with methods

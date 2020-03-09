@@ -7,11 +7,11 @@
 
 package org.omnetpp.scave.builder;
 
-import static org.omnetpp.scave.engineext.IndexFileUtils.getVectorFileFor;
-import static org.omnetpp.scave.engineext.IndexFileUtils.isIndexFile;
-import static org.omnetpp.scave.engineext.IndexFileUtils.isIndexFileUpToDate;
-import static org.omnetpp.scave.engineext.IndexFileUtils.isExistingVectorFile;
-import static org.omnetpp.scave.engineext.IndexFileUtils.performIndexing;
+import static org.omnetpp.scave.common.IndexFileUtils.getVectorFileFor;
+import static org.omnetpp.scave.common.IndexFileUtils.isExistingVectorFile;
+import static org.omnetpp.scave.common.IndexFileUtils.isIndexFile;
+import static org.omnetpp.scave.common.IndexFileUtils.isIndexFileUpToDate;
+import static org.omnetpp.scave.common.IndexFileUtils.performIndexing;
 
 import java.io.File;
 import java.util.Map;

@@ -1,10 +1,10 @@
 package org.omnetpp.scave.jobs;
 
+import static org.omnetpp.scave.common.IndexFileUtils.isExistingVectorFile;
+import static org.omnetpp.scave.common.IndexFileUtils.isIndexFileUpToDate;
 import static org.omnetpp.scave.common.ScaveMarkers.MARKERTYPE_SCAVEPROBLEM;
 import static org.omnetpp.scave.common.ScaveMarkers.deleteMarkers;
 import static org.omnetpp.scave.common.ScaveMarkers.setMarker;
-import static org.omnetpp.scave.engineext.IndexFileUtils.isIndexFileUpToDate;
-import static org.omnetpp.scave.engineext.IndexFileUtils.isExistingVectorFile;
 
 import java.util.Queue;
 import java.util.concurrent.Callable;
@@ -23,9 +23,9 @@ import org.eclipse.core.runtime.jobs.MultiRule;
 import org.omnetpp.common.Debug;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.builder.Activator;
+import org.omnetpp.scave.common.IndexFileUtils;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.engineext.IndexFileUtils;
 import org.omnetpp.scave.engineext.ResultFileFormatException;
 
 public class ResultFileManagerUpdaterJob extends Job {

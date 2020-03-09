@@ -12,5 +12,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.omnetpp.ide.nativelibs,
  org.omnetpp.common
 Export-Package: org.omnetpp.scave.builder,
- org.omnetpp.scave.common,
- org.omnetpp.scave.engineext
+ org.omnetpp.scave.common
