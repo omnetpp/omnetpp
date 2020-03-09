@@ -49,6 +49,8 @@ inline void SqliteResultFileLoader::checkRow(int sqlite3_result)
 {
     if (sqlite3_result != SQLITE_ROW)
         error(sqlite3_errmsg(db));
+    if (interrupted->flag)
+        throw InterruptedException("SQLite result file loading interrupted");
 }
 
 void SqliteResultFileLoader::error(const char *errmsg)

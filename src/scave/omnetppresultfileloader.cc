@@ -76,6 +76,9 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
 {
     ++ctx.lineNo;
 
+    if (interrupted->flag)
+        throw InterruptedException("Result file loading interrupted");
+
     // ignore empty lines
     if (numTokens == 0 || vec[0][0] == '#')
         return;
