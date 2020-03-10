@@ -94,7 +94,6 @@ public class PythonProcessPool {
         // This is ugly as all heck, but at least seems to work fine everywhere, everytime
         String pychartPluginLocation = null;
         try {
-            // TODO test on all platforms
             pychartPluginLocation = new File(PythonProcessPool.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getAbsolutePath();
         }
         catch (URISyntaxException e) {

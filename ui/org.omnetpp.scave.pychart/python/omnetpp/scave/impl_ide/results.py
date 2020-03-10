@@ -14,7 +14,41 @@ from omnetpp.internal import Gateway
 import functools
 print = functools.partial(print, flush=True)
 
-def _get_array_from_shm(name_and_size):
+def _load_pickle_from_shm(name_and_size : str):
+    """
+    Internal. Opens a shared memory object (region, file, content) in a platform-specific
+    way, unpickles its whole content, and returns the loaded object.
+    `name_and_size` should be a space-separated pair of an object name and an integer,
+    which is the size of the named SHM object in bytes.
+    """
+    if not name_and_size:
+        return None
+
+    name, size = name_and_size.split(" ")
+    size = int(size)
+
+    if name == "<EMPTY>" and size == 0:
+        return None
+
+    system = platform.system()
+    if system in ['Linux', 'Darwin']:
+        mem = posix_ipc.SharedMemory(name)
+
+        with mmap.mmap(mem.fd, mem.size) as mf:
+            arr = pickle.load(mf)
+
+        mem.unlink()
+    elif system == 'Windows':
+        # on Windows, the mmap module in itself provides shared memory functionality
+        with mmap.mmap(-1, size, tagname=name) as mf:
+            arr = pickle.load(mf)
+    else:
+        raise RuntimeError("unsupported platform")
+
+    return arr
+
+
+def _get_array_from_shm(name_and_size : str):
     """
     Internal. Opens a shared memory object (region, file, content) in a platform-specific
     way, and returns the whole contents of it as a np.array of doubles.
@@ -38,18 +72,18 @@ def _get_array_from_shm(name_and_size):
             # for some reason we can't directly np.memmap the shm file, because it is "unseekable"
             # but the mmap module works with it, so we just copy the data into np, and release the shared memory
             with mmap.mmap(mem.fd, length=mem.size) as mf:
-                arr = np.frombuffer(mf.read(), dtype=np.dtype('>f8'))
+                arr = np.frombuffer(mf.read(), dtype=np.double)
         else:
             # on Linux, we can just continue to use the existing shm memory without copying
             with open(mem.fd, 'wb') as mf:
-                arr = np.memmap(mf, dtype=np.dtype('>f8'))
+                arr = np.memmap(mf, dtype=np.double)
 
         # on Mac we are done with shm (data is copied), on Linux we can delete the name even though the mapping is still in use
         mem.unlink()
     elif system == 'Windows':
         # on Windows, the mmap module in itself provides shared memory functionality. and we copy the data here as well.
         with mmap.mmap(-1, size, tagname=name) as mf:
-            arr = np.frombuffer(mf.read(), dtype=np.dtype('>f8'))
+            arr = np.frombuffer(mf.read(), dtype=np.double)
     else:
         raise RuntimeError("unsupported platform")
 
@@ -57,15 +91,16 @@ def _get_array_from_shm(name_and_size):
 
 
 def get_results(filter_expression="", row_types=['runattr', 'itervar', 'config', 'scalar', 'vector', 'statistic', 'histogram', 'param', 'attr'], omit_unused_columns=True, start_time=-inf, end_time=inf):
-    pk = Gateway.results_provider.getResultsPickle(filter_expression, list(row_types), bool(omit_unused_columns), float(start_time), float(end_time))
+    shmname = Gateway.results_provider.getResultsPickle(filter_expression, list(row_types), bool(omit_unused_columns), float(start_time), float(end_time))
+    results = _load_pickle_from_shm(shmname)
 
-    df = pd.DataFrame(pickle.loads(pk), columns=[
+    df = pd.DataFrame(results, columns=[
         "runID", "type", "module", "name", "attrname", "attrvalue",
         "value", "count", "sumweights", "mean", "stddev", "min", "max",
         "underflows", "overflows", "binedges", "binvalues", "vectime", "vecvalue"])
 
-    df["binedges"] = df["binedges"].map(lambda v: np.frombuffer(v, dtype=np.dtype('>f8')), na_action='ignore')
-    df["binvalues"] = df["binvalues"].map(lambda v: np.frombuffer(v, dtype=np.dtype('>f8')), na_action='ignore')
+    df["binedges"] = df["binedges"].map(lambda v: np.frombuffer(v, dtype=np.double), na_action='ignore')
+    df["binvalues"] = df["binvalues"].map(lambda v: np.frombuffer(v, dtype=np.double), na_action='ignore')
 
     df["vectime"] = df["vectime"].map(_get_array_from_shm)
     df["vecvalue"] = df["vecvalue"].map(_get_array_from_shm)
@@ -76,11 +111,11 @@ def get_results(filter_expression="", row_types=['runattr', 'itervar', 'config',
     return df
 
 
-def _append_metadata_columns(df, metadata_pickle, suffix):
+def _append_metadata_columns(df, metadata, suffix):
     """
     Internal. Helper for _append_additional_data().
     """
-    metadata_df = pd.DataFrame(pickle.loads(metadata_pickle), columns=["runID", "name", "value"])
+    metadata_df = pd.DataFrame(metadata, columns=["runID", "name", "value"])
     metadata_df = pd.pivot_table(metadata_df, columns="name", aggfunc='first', index="runID", values="value")
     if metadata_df.empty:
         return df
@@ -102,47 +137,63 @@ def _append_additional_data(df, attrs, include_runattrs, include_itervars, inclu
     runs = list(df["runID"].unique())
 
     if include_itervars:
-        itervars = Gateway.results_provider.getItervarsForRunsPickle(runs)
+        shmname = Gateway.results_provider.getItervarsForRunsPickle(runs) # TODO
+        itervars = _load_pickle_from_shm(shmname)
         df = _append_metadata_columns(df, itervars, "_itervar")
-
     if include_runattrs:
-        runattrs = Gateway.results_provider.getRunAttrsForRunsPickle(runs)
+        shmname = Gateway.results_provider.getRunAttrsForRunsPickle(runs)
+        runattrs = _load_pickle_from_shm(shmname)
         df = _append_metadata_columns(df, runattrs, "_runattr")
-
     if include_config_entries:
-        entries = Gateway.results_provider.getConfigEntriesForRunsPickle(runs)
+        shmname = Gateway.results_provider.getConfigEntriesForRunsPickle(runs)  # TODO
+        entries = _load_pickle_from_shm(shmname)
         df = _append_metadata_columns(df, entries, "_config")
     elif include_param_assignments:  # param_assignments are a subset of config_entries
-        params = Gateway.results_provider.getParamAssignmentsForRunsPickle(runs)
+        shmname = Gateway.results_provider.getParamAssignmentsForRunsPickle(runs)  # TODO
+        params = _load_pickle_from_shm(shmname)
         df = _append_metadata_columns(df, params, "_param")
 
     return df
 
 
 def get_runs(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
-    pk = Gateway.results_provider.getRunsPickle(filter_expression)
-    df = pd.DataFrame({"runID": pickle.loads(pk)})
+    shmname = Gateway.results_provider.getRunsPickle(filter_expression)
+    runs = _load_pickle_from_shm(shmname)
+
+    df = pd.DataFrame({"runID": runs})
     return _append_additional_data(df, None, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
 
 def get_runattrs(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
-    pk = Gateway.results_provider.getRunAttrsPickle(filter_expression)
-    df = pd.DataFrame(pickle.loads(pk), columns=["runID", "name", "value"])
+    shmname = Gateway.results_provider.getRunAttrsPickle(filter_expression)
+    runattrs = _load_pickle_from_shm(shmname)
+
+    df = pd.DataFrame(runattrs, columns=["runID", "name", "value"])
     return _append_additional_data(df, None, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
 
 def get_itervars(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, as_numeric=False):
-    pk = Gateway.results_provider.getItervarsPickle(filter_expression)
-    df = pd.DataFrame(pickle.loads(pk), columns=["runID", "name", "value"])
+    shmname = Gateway.results_provider.getItervarsPickle(filter_expression)
+    itervars = _load_pickle_from_shm(shmname)
+
+    df = pd.DataFrame(itervars, columns=["runID", "name", "value"])
+
     if as_numeric:
         df["value"] = pd.to_numeric(df["value"], errors="coerce")
     return _append_additional_data(df, None, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
 
-def get_scalars(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
-    pk = Gateway.results_provider.getScalarsPickle(filter_expression, include_attrs)
+def get_config_entries(filter_expression, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
+    shmname = Gateway.results_provider.getConfigEntriesPickle(filter_expression)
+    configentries = _load_pickle_from_shm(shmname)
+    df = pd.DataFrame(configentries, columns=["runID", "name", "value"])
 
-    scalars, attrs = pickle.loads(pk)
+    return _append_additional_data(df, None, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
+
+
+def get_scalars(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
+    shmname = Gateway.results_provider.getScalarsPickle(filter_expression, include_attrs)
+    scalars, attrs = _load_pickle_from_shm(shmname)
     df = pd.DataFrame(scalars, columns=["runID", "module", "name", "value"])
 
     df =_append_additional_data(df, attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
@@ -152,10 +203,9 @@ def get_scalars(filter_expression="", include_attrs=False, include_runattrs=Fals
 
 
 def get_parameters(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False, as_numeric=False):
-    pk = Gateway.results_provider.getParamValuesPickle(filter_expression, include_attrs)
-
-    params, attrs = pickle.loads(pk)
-    df = pd.DataFrame(params, columns=["runID", "module", "name", "value"])
+    shmname = Gateway.results_provider.getParamValuesPickle(filter_expression, include_attrs)
+    parameters, attrs = _load_pickle_from_shm(shmname)
+    df = pd.DataFrame(parameters, columns=["runID", "module", "name", "value"])
 
     if as_numeric:
         df["value"] = pd.to_numeric(df["value"], errors="coerce")
@@ -167,10 +217,9 @@ def get_parameters(filter_expression="", include_attrs=False, include_runattrs=F
 
 
 def get_vectors(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False, start_time=-inf, end_time=inf):
-    pk = Gateway.results_provider.getVectorsPickle(filter_expression, include_attrs, float(start_time), float(end_time))
-
-    scalars, attrs = pickle.loads(pk)
-    df = pd.DataFrame(scalars, columns=["runID", "module", "name", "vectime", "vecvalue"])
+    shmname = Gateway.results_provider.getVectorsPickle(filter_expression, include_attrs, start_time, end_time)
+    vectors, attrs = _load_pickle_from_shm(shmname)
+    df = pd.DataFrame(vectors, columns=["runID", "module", "name", "vectime", "vecvalue"])
 
     df["vectime"] = df["vectime"].map(_get_array_from_shm)
     df["vecvalue"] = df["vecvalue"].map(_get_array_from_shm)
@@ -182,29 +231,25 @@ def get_vectors(filter_expression="", include_attrs=False, include_runattrs=Fals
 
 
 def get_statistics(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False):
-    pk = Gateway.results_provider.getStatisticsPickle(filter_expression, include_attrs)
+    shmname = Gateway.results_provider.getStatisticsPickle(filter_expression, include_attrs)
+    statistics, attrs = _load_pickle_from_shm(shmname)
+    df = pd.DataFrame(statistics, columns=["runID", "module", "name", "count", "sumweights", "mean", "stddev", "min", "max"])
 
-    scalars, attrs = pickle.loads(pk)
-    df = pd.DataFrame(scalars, columns=["runID", "module", "name", "count", "sumweights", "mean", "stddev", "min", "max"])
-
-    return _append_additional_data(df, attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
+    df = _append_additional_data(df, attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
+    if merge_module_and_name:
+        df.name = df.module + "." + df.name
+    return df
 
 
 def get_histograms(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False, include_statistics_fields=False):
-    pk = Gateway.results_provider.getHistogramsPickle(filter_expression, include_attrs)
+    shmname = Gateway.results_provider.getHistogramsPickle(filter_expression, include_attrs)
+    histograms, attrs = _load_pickle_from_shm(shmname)
+    df = pd.DataFrame(histograms, columns=["runID", "module", "name", "count", "sumweights", "mean", "stddev", "min", "max", "underflows", "overflows", "binedges", "binvalues"])
 
-    scalars, attrs = pickle.loads(pk)
-    df = pd.DataFrame(scalars, columns=["runID", "module", "name", "count", "sumweights", "mean", "stddev", "min", "max", "underflows", "overflows", "binedges", "binvalues"])
+    df["binedges"] = df["binedges"].map(lambda v: np.frombuffer(v, dtype=np.double), na_action='ignore')
+    df["binvalues"] = df["binvalues"].map(lambda v: np.frombuffer(v, dtype=np.double), na_action='ignore')
 
-    df["binedges"] = df["binedges"].map(lambda v: np.frombuffer(v, dtype=np.dtype('>f8')), na_action='ignore')
-    df["binvalues"] = df["binvalues"].map(lambda v: np.frombuffer(v, dtype=np.dtype('>f8')), na_action='ignore')
-
-    return _append_additional_data(df, attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
-
-
-def get_config_entries(filter_expression, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
-    pk = Gateway.results_provider.getConfigEntriesPickle(filter_expression)
-    df = pd.DataFrame(pickle.loads(pk), columns=["runID", "name", "value"])
-
-    return _append_additional_data(df, None, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
-
+    df = _append_additional_data(df, attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
+    if merge_module_and_name:
+        df.name = df.module + "." + df.name
+    return df

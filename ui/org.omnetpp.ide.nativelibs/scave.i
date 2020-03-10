@@ -30,6 +30,8 @@
 #include "scave/sqliteresultfileutils.h"
 #include "scave/xyarray.h"
 
+#include "resultspickler.h"
+
 using namespace omnetpp::scave;
 %}
 
@@ -639,6 +641,9 @@ namespace omnetpp { namespace scave {
 
 /* ------------------ memoryutils.h ----------------------- */
 %include "scave/memoryutils.h"
+
+/* ------------------ resultspickler.h ----------------------- */
+%include "resultspickler.h"
 
 /* ------------------ sharedmemory.cc ----------------------- */
 

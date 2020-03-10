@@ -12,8 +12,12 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <iostream>
+#include "sharedmemory.h"
 
+#include <stdexcept>
+#include <string>
+
+extern "C" {
 #if defined(__linux__)
   #include <malloc.h>
   #include <sys/sysinfo.h>
@@ -35,88 +39,68 @@
   #include <fcntl.h>           /* For O_* constants */
 #endif
 
-#include <jni.h>
-
-extern "C" {
-
-#include <string.h>
-
-// utility function, not called from Java
-jint throwRuntimeException(JNIEnv *env, const std::string& message)
-{
-    jclass exClass = env->FindClass("java/lang/RuntimeException");
-    return env->ThrowNew(exClass, message.c_str());
+#include "string.h"
 }
 
-JNIEXPORT void JNICALL Java_org_omnetpp_scave_engine_ScaveEngineJNI_createSharedMemory(JNIEnv* env, jobject clazz, jstring name, jlong size)
+namespace omnetpp {
+
+void createSharedMemory(const char *name, int64_t size, bool commit)
 {
-    const char *nameChars = env->GetStringUTFChars(name, nullptr);
-    char nameStr[2048];
-    strncpy(nameStr, nameChars, 2048);
-    env->ReleaseStringUTFChars(name, nameChars);
+    #if defined(_WIN32)
 
-#if defined(_WIN32)
+        HANDLE hMapFile = CreateFileMapping(
+            INVALID_HANDLE_VALUE,      // use paging file
+            NULL,                      // default security
+            PAGE_READWRITE | (commit ? SEC_COMMIT : SEC_RESERVE),
+            (size >> 32) & 0xFFFFFFFF, // maximum object size (high-order DWORD)
+            size & 0xFFFFFFFF,         // maximum object size (low-order DWORD)
+            name);                     // name of mapping object
 
-    HANDLE hMapFile = CreateFileMapping(
-      INVALID_HANDLE_VALUE,    // use paging file
-      NULL,                    // default security
-      PAGE_READWRITE,          // read/write access
-      0,                       // maximum object size (high-order DWORD)
-      size,                    // maximum object size (low-order DWORD)
-      nameStr);                // name of mapping object
+        if (hMapFile == NULL) {
+            char err[2048];
+            FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), err, 2048, NULL);
+            throw std::runtime_error(std::string("Error creating shared memory file mapping '") + name + "': " + err);
+        }
 
-#else // POSIX (linux, mac)
+    #else // POSIX (linux, mac)
 
-    int fd = shm_open(nameStr, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
-    if (fd == -1) {
-        throwRuntimeException(env, std::string("Error opening SHM file descriptor for '") + nameStr + "': " + strerror(errno));
-        return;
-    }
+        int fd = shm_open(name, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
+        if (fd == -1)
+            throw std::runtime_error(std::string("Error opening SHM file descriptor for '") + name + "': " + strerror(errno));
 
-    if (ftruncate(fd, size) == -1) {
-        throwRuntimeException(env, std::string("Error setting SHM file descriptor to size ") + std::to_string(size) + " for '" + nameStr + "': " + strerror(errno));
-        return;
-    }
+        if (ftruncate(fd, size) == -1)
+            throw std::runtime_error(std::string("Error setting SHM file descriptor to size ") + std::to_string(size) + " for '" + name + "': " + strerror(errno));
 
-    if (close(fd) == -1) {
-        throwRuntimeException(env, std::string("Error closing SHM file descriptor for '") + nameStr + "': " + strerror(errno));
-        return;
-    }
+        if (close(fd) == -1)
+            throw std::runtime_error(std::string("Error closing SHM file descriptor for '") + name + "': " + strerror(errno));
 
-#endif
+    #endif
 }
 
-JNIEXPORT jobject JNICALL Java_org_omnetpp_scave_engine_ScaveEngineJNI_mapSharedMemory(JNIEnv* env, jobject clazz, jstring name, jlong size)
+void *mapSharedMemory(const char *name, int64_t size)
 {
-    const char *nameChars = env->GetStringUTFChars(name, nullptr);
-    char nameStr[2048];
-    strncpy(nameStr, nameChars, 2048);
-    env->ReleaseStringUTFChars(name, nameChars);
-
     // must be set by the platform specific fragments
     void *buffer = nullptr;
 
 #if defined(_WIN32)
 
-    // this did NOT work: HANDLE opened = OpenFileMapping(PAGE_READWRITE, FALSE, nameStr);
+    // this did NOT work: HANDLE opened = OpenFileMapping(PAGE_READWRITE, FALSE, name);
 
     HANDLE hMapFile = CreateFileMapping(
       INVALID_HANDLE_VALUE,    // use paging file
       NULL,                    // default security
       PAGE_READWRITE,          // read/write access
       0,                       // maximum object size (high-order DWORD)
-      size,                       // maximum object size (low-order DWORD) - ignored, but must not be 0
-      nameStr);                // name of mapping object
+      size,                    // maximum object size (low-order DWORD) - ignored, but must not be 0
+      name);                   // name of mapping object
 
-    if (GetLastError() != ERROR_ALREADY_EXISTS) {
-        throwRuntimeException(env, std::string("Trying to map a nonexistent shared memory mapping ('") + nameStr + "'), so it was created instead... Expect zeroes!");
-        return 0;
-    }
+    if (GetLastError() != ERROR_ALREADY_EXISTS)
+        throw std::runtime_error(std::string("Trying to map a nonexistent shared memory mapping '") + name + "'");
 
     if (hMapFile == NULL) {
         char err[2048];
         FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), err, 2048, NULL);
-        throwRuntimeException(env, std::string("Error opening shared memory file mapping '") + nameStr + "': " + err);
+        throw std::runtime_error(std::string("Error opening shared memory file mapping '") + name + "': " + err);
     }
 
     buffer = MapViewOfFile(
@@ -129,85 +113,86 @@ JNIEXPORT jobject JNICALL Java_org_omnetpp_scave_engine_ScaveEngineJNI_mapShared
     if (buffer == NULL) {
         char err[2048];
         FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), err, 2048, NULL);
-        throwRuntimeException(env, std::string("Error mapping view of file '") + nameStr + "': " + err);
+        throw std::runtime_error(std::string("Error mapping view of file '") + name + "': " + err);
     }
 
 #else // POSIX (linux, mac)
 
-    int fd = shm_open(nameStr, O_RDWR, S_IRUSR | S_IWUSR);
-    if (fd == -1) {
-        throwRuntimeException(env, std::string("Error opening SHM file descriptor '") + nameStr + "': " + strerror(errno));
-        return 0;
-    }
+    int fd = shm_open(name, O_RDWR, S_IRUSR | S_IWUSR);
+    if (fd == -1)
+        throw std::runtime_error(std::string("Error opening SHM file descriptor '") + name + "': " + strerror(errno));
 
     buffer = mmap(0, size, PROT_WRITE, MAP_SHARED, fd, 0);
-    if (buffer == MAP_FAILED) {
-        throwRuntimeException(env, std::string("Error mmap-ing SHM file descriptor '") + nameStr + "': " + strerror(errno));
-        return 0;
-    }
+    if (buffer == MAP_FAILED)
+        throw std::runtime_error(std::string("Error mmap-ing SHM file descriptor '") + name + "': " + strerror(errno));
 
-    if (close(fd) == -1) {
-        throwRuntimeException(env, std::string("Error closing SHM file descriptor '") + nameStr + "': " + strerror(errno));
-        return 0;
-    }
+    if (close(fd) == -1)
+        throw std::runtime_error(std::string("Error closing SHM file descriptor '") + name + "': " + strerror(errno));
 
 #endif
 
-    jobject directBuffer = env->NewDirectByteBuffer(buffer, size);
-    return directBuffer;
+    return buffer;
 }
 
-JNIEXPORT void JNICALL Java_org_omnetpp_scave_engine_ScaveEngineJNI_unmapSharedMemory(JNIEnv* env, jobject clazz, jobject directBuffer)
+
+void commitSharedMemory(void *start, int64_t size)
 {
-    void *buffer = env->GetDirectBufferAddress(directBuffer);
-    jlong capacity = env->GetDirectBufferCapacity(directBuffer);
-
-#if defined(_WIN32)
-    if (UnmapViewOfFile(buffer) == 0) {
-        char err[2048];
-        FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), err, 2048, NULL);
-        throwRuntimeException(env, std::string("Error unmapping file view of size ") + std::to_string(capacity) + ": " + err);
-    }
-#else // POSIX (linux, mac)
-    if (munmap(buffer, capacity) == -1)
-        throwRuntimeException(env, std::string("Error unmapping SHM buffer of size ") + std::to_string(capacity) + ": " + strerror(errno));
-#endif
+    #if defined(_WIN32)
+        VirtualAlloc(
+            start,
+            size,
+            MEM_COMMIT,
+            PAGE_READWRITE
+        );
+    #else // POSIX (linux, mac)
+    // no-op, we are always overcommitting anyways
+    #endif
 }
 
-JNIEXPORT void JNICALL Java_org_omnetpp_scave_engine_ScaveEngineJNI_removeSharedMemory(JNIEnv* env, jobject clazz, jstring name)
+
+void unmapSharedMemory(void *buffer, int64_t size)
 {
-    const char *nameChars = env->GetStringUTFChars(name, nullptr);
-    char nameStr[2048];
-    strncpy(nameStr, nameChars, 2048);
-    env->ReleaseStringUTFChars(name, nameChars);
-
-#if defined(_WIN32)
-
-    HANDLE hMapFile = CreateFileMapping(
-      INVALID_HANDLE_VALUE,    // use paging file
-      NULL,                    // default security
-      PAGE_READWRITE,          // read/write access
-      0,                       // maximum object size (high-order DWORD)
-      1,                       // maximum object size (low-order DWORD) - ignored, but must not be 0
-      nameStr);                // name of mapping object
-
-    if (GetLastError() != ERROR_ALREADY_EXISTS) {
-        char err[2048];
-        FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), err, 2048, NULL);
-        throwRuntimeException(env, std::string("Trying to remove a nonexistent mapping '") + nameStr + "': " + err);
-        return;
-    }
-
-    if (CloseHandle(hMapFile) == 0) {
-        char err[2048];
-        FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), err, 2048, NULL);
-        throwRuntimeException(env, std::string("Error closing file mapping handle '") + nameStr + "': " + err);
-    }
-
-#else // POSIX (linux, mac)
-    if (shm_unlink(nameStr) == -1)
-        throwRuntimeException(env, std::string("Error unlinking SHM object '") + nameStr + "': " + strerror(errno));
-#endif
+    #if defined(_WIN32)
+        if (UnmapViewOfFile(buffer) == 0) {
+            char err[2048];
+            FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), err, 2048, NULL);
+            throw std::runtime_error(std::string("Error unmapping file view of size ") + std::to_string(size) + ": " + err);
+        }
+    #else // POSIX (linux, mac)
+        if (munmap(buffer, size) == -1)
+            throw std::runtime_error(std::string("Error unmapping SHM buffer of size ") + std::to_string(size) + ": " + strerror(errno));
+    #endif
 }
 
-} // extern "C"
+
+void removeSharedMemory(const char *name)
+{
+    #if defined(_WIN32)
+
+        HANDLE hMapFile = CreateFileMapping(
+        INVALID_HANDLE_VALUE,    // use paging file
+        NULL,                    // default security
+        PAGE_READWRITE,          // read/write access
+        0,                       // maximum object size (high-order DWORD)
+        1,                       // maximum object size (low-order DWORD) - ignored, but must not be 0
+        name);                   // name of mapping object
+
+        if (GetLastError() != ERROR_ALREADY_EXISTS) {
+            char err[2048];
+            FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), err, 2048, NULL);
+            throw std::runtime_error(std::string("Trying to remove a nonexistent mapping '") + name + "': " + err);
+        }
+
+        if (CloseHandle(hMapFile) == 0) {
+            char err[2048];
+            FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), err, 2048, NULL);
+            throw std::runtime_error(std::string("Error closing file mapping handle '") + name + "': " + err);
+        }
+
+    #else // POSIX (linux, mac)
+        if (shm_unlink(name) == -1)
+            throw std::runtime_error(std::string("Error unlinking SHM object '") + name + "': " + strerror(errno));
+    #endif
+}
+
+} // namespace omnetpp
