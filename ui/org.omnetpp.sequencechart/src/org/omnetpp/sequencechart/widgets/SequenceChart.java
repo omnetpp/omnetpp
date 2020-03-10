@@ -86,6 +86,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.TimeUtils;
 import org.omnetpp.common.util.VectorFileUtil;
 import org.omnetpp.common.virtualtable.IVirtualContentWidget;
+import org.omnetpp.eventlog.engine.ComponentMethodBeginEntry;
 import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.EventLogMessageEntry;
 import org.omnetpp.eventlog.engine.FilteredEventLog;
@@ -97,14 +98,13 @@ import org.omnetpp.eventlog.engine.IMessageDependencyList;
 import org.omnetpp.eventlog.engine.MessageEntry;
 import org.omnetpp.eventlog.engine.MessageReuseDependency;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
-import org.omnetpp.eventlog.engine.ComponentMethodBeginEntry;
 import org.omnetpp.eventlog.engine.PtrVector;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
 import org.omnetpp.scave.engine.FileRun;
 import org.omnetpp.scave.engine.ResultFile;
-import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.XYArray;
+import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.sequencechart.SequenceChartPlugin;
 import org.omnetpp.sequencechart.editors.SequenceChartContributor;
 import org.omnetpp.sequencechart.widgets.axisorder.AxisOrderByModuleId;
@@ -1310,13 +1310,15 @@ public class SequenceChart
 
                     // restore attached vectors
                     if (sequenceChartState.axisStates != null) {
-                        ResultFileManager resultFileManager = new ResultFileManager();
+                        ResultFileManagerEx resultFileManager = new ResultFileManagerEx();
 
                         for (int i = 0; i < sequenceChartState.axisStates.length; i++) {
                             AxisState axisState = sequenceChartState.axisStates[i];
 
                             if (axisState.vectorFileName != null) {
-                                ResultFile resultFile = resultFileManager.loadFile(axisState.vectorFileName);
+                                int loadFlags = ResultFileManagerEx.RELOAD_IF_CHANGED | ResultFileManagerEx.IGNORE_LOCK_FILE | ResultFileManagerEx.ALLOW_LOADING_WITHOUT_INDEX;
+                                ResultFile resultFile = resultFileManager.loadFile(axisState.vectorFileName, axisState.vectorFileName, loadFlags, null); //TODO would be better to do it from a job that's interruptible
+                                Assert.isNotNull(resultFile); // could only happen if loadFlags contain some "SKIP" flag, but it doesn't
                                 FileRun fileRun = resultFileManager.getFileRun(resultFile, resultFileManager.getRunByName(axisState.vectorRunName));
                                 long id = resultFileManager.getItemByName(fileRun, axisState.vectorModuleFullPath, axisState.vectorName);
                                 // TODO: compare vector's run against log file's run

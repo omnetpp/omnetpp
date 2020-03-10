@@ -125,11 +125,11 @@ import org.omnetpp.eventlog.engine.MessageEntry;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFile;
-import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.engine.XYArray;
+import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.sequencechart.SequenceChartPlugin;
 import org.omnetpp.sequencechart.widgets.SequenceChart;
 import org.omnetpp.sequencechart.widgets.SequenceChart.AxisSpacingMode;
@@ -1260,9 +1260,11 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
                 // load vector file
                 ResultFile resultFile = null;
-                final ResultFileManager resultFileManager = new ResultFileManager();
+                final ResultFileManagerEx resultFileManager = new ResultFileManagerEx();
                 try {
-                    resultFile = resultFileManager.loadFile(vectorFileName);
+                    int loadFlags = ResultFileManagerEx.RELOAD_IF_CHANGED | ResultFileManagerEx.IGNORE_LOCK_FILE | ResultFileManagerEx.ALLOW_LOADING_WITHOUT_INDEX;
+                    resultFile = resultFileManager.loadFile(vectorFileName, vectorFileName, loadFlags, null); //TODO would be better to do this from a job that's interruptible
+                    Assert.isNotNull(resultFile); // could only happen if loadFlags contain some "SKIP" flag, but it doesn't
                 }
                 catch (Throwable te) {
                     MessageDialog.openError(null, "Error", "Could not load vector file " + vectorFileName);
