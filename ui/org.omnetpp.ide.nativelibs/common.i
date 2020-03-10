@@ -11,6 +11,7 @@
 #include "common/rwlock.h"
 #include "common/expression.h"
 #include "common/stringtokenizer2.h"
+#include "common/fileutil.h"
 
 using namespace omnetpp::common;
 %}
@@ -224,4 +225,13 @@ CHECK_STRINGTOKENIZER_EXCEPTION(StringTokenizer2::nextToken)
 
 %include "common/stringtokenizer2.h"
 
+/* -------------------- fileutil.h -------------------------- */
+
+namespace omnetpp { namespace common {
+
+// only wrap the following ones, for other functions we have java.io.File
+std::vector<std::string> collectFilesInDirectory(const char *foldername, bool deep, const char *suffix=nullptr);
+std::vector<std::string> collectMatchingFiles(const char *globstarPattern);
+
+} } // namespaces
 

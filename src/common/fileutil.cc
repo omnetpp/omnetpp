@@ -334,17 +334,11 @@ void doCollectMatchingFiles(const std::vector<std::string>& segments, int index,
         // no wildcard -- skip globbing
         // note: this block is exactly like the next one, only without the globbing
         const char *name = segment;
-        bool skip = false;
-        if (name[0] == '.') {
-            if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0 || segment[0] != '.')
-                skip = true;  // ignore "." and ".." (always), and dotfiles (unless the segment starts with ".")
-        }
-
-        if (!skip && index == segments.size()-1) {
+        if (index == segments.size()-1) {
             result.push_back(prefix + name);
         }
 
-        if (!skip && isDirectory(name)) {
+        if (isDirectory(name)) {
             PushDir pushDir(name);
             if (index+1 != segments.size())
                 doCollectMatchingFiles(segments, index+1, prefix + name + "/", result);
@@ -460,7 +454,7 @@ std::vector<std::string> collectMatchingFiles(const char *pattern)
     //std::cout << std::endl;
 
     // recurse
-    doCollectMatchingFiles(segments, 0, "./", result);
+    doCollectMatchingFiles(segments, 0, "", result);
     return result;
 }
 
