@@ -6,8 +6,9 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
-OMNeT++ 6.0pre6 (December 2019)
+OMNeT++ 6.0pre7 (March 2020)
 -------------------------------
+
 
 This is a preview release demonstrating our completely revamped charting
 solution in the IDE. It is now completely based on Python3, with support
@@ -17,7 +18,7 @@ charts from Python. Analysis files (.anf) created by older versions of the
 IDE (and vice versa) cannot be opened by this release, because the internal
 model changed substantially.
 
-Changes compared to OMNeT++ 5.5.1:
+Changes compared to OMNeT++ 5.6:
 
 Core:
 
