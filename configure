@@ -3821,11 +3821,12 @@ rm -f conftest_a.* conftest_m.* libconftest_a.a conftest
 #----------------------
 # Check whether LLD linker is available
 #----------------------
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether LLD linker is available" >&5
+if test "$PLATFORM" = "linux.x86_64"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether LLD linker is available" >&5
 $as_echo_n "checking whether LLD linker is available... " >&6; }
-LDFLAGS_SAVE="$LDFLAGS"
-LDFLAGS="$LDFLAGS -fuse-ld=lld"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+  LDFLAGS_SAVE="$LDFLAGS"
+  LDFLAGS="$LDFLAGS -fuse-ld=lld"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
 int
@@ -3845,7 +3846,7 @@ $as_echo "no" >&6; }; LDFLAGS="$LDFLAGS_SAVE"
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
-
+fi
 
 #----------------------
 # Check for rpath

@@ -651,14 +651,15 @@ rm -f conftest_a.* conftest_m.* libconftest_a.a conftest
 #----------------------
 # Check whether LLD linker is available
 #----------------------
-AC_MSG_CHECKING(whether LLD linker is available)
-LDFLAGS_SAVE="$LDFLAGS"
-LDFLAGS="$LDFLAGS -fuse-ld=lld"
-AC_LINK_IFELSE(
+if test "$PLATFORM" = "linux.x86_64"; then
+  AC_MSG_CHECKING(whether LLD linker is available)
+  LDFLAGS_SAVE="$LDFLAGS"
+  LDFLAGS="$LDFLAGS -fuse-ld=lld"
+  AC_LINK_IFELSE(
      [AC_LANG_PROGRAM()],
      [AC_MSG_RESULT(yes)],
      [AC_MSG_RESULT(no); LDFLAGS="$LDFLAGS_SAVE"])
-
+fi
 
 #----------------------
 # Check for rpath
