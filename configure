@@ -5445,8 +5445,8 @@ fi
 
 
             if test "$MPICXX" != "not found"; then
-                MPI_CFLAGS=`mpicxx -c -compile-info | sed 's/^^ *//'`
-                MPI_LIBS=`mpicxx -link-info | sed 's/^^ *//'`
+                MPI_CFLAGS=`mpicxx -showme:compile | sed 's/^^ *//'`
+                MPI_LIBS=`mpicxx -showme:link | sed 's/^^ *//'`
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS

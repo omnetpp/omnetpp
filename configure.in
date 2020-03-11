@@ -991,8 +991,8 @@ if test "$WITH_PARSIM" = "yes"; then
             # (both print the same string, which includes the compiler name too)
             AC_CHECK_PROG(MPICXX, mpicxx, mpicxx, not found)
             if test "$MPICXX" != "not found"; then
-                MPI_CFLAGS=`mpicxx -c -compile-info | sed 's/^[^ ]*//'`
-                MPI_LIBS=`mpicxx -link-info | sed 's/^[^ ]*//'`
+                MPI_CFLAGS=`mpicxx -showme:compile | sed 's/^[^ ]*//'`
+                MPI_LIBS=`mpicxx -showme:link | sed 's/^[^ ]*//'`
                 OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS $MPI_CFLAGS, $LDFLAGS $MPI_LIBS, mpi_ok)
             fi
       fi
