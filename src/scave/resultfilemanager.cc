@@ -668,18 +668,18 @@ IDList ResultFileManager::getHistogramsInFileRun(FileRun *fileRun) const
     return out;
 }
 
-bool ResultFileManager::isFileLoaded(const char *fileName) const
+bool ResultFileManager::isFileLoaded(const char *displayName) const
 {
-    return getFile(fileName) != nullptr;
+    return getFile(displayName) != nullptr;
 }
 
-ResultFile *ResultFileManager::getFile(const char *fileName) const
+ResultFile *ResultFileManager::getFile(const char *displayName) const
 {
-    if (!fileName)
+    if (!displayName)
         return nullptr;
 
     READER_MUTEX
-    auto it = fileMap.find(fileName);
+    auto it = fileMap.find(displayName);
     if (it != fileMap.end())
         return it->second;
 
@@ -1316,18 +1316,18 @@ void ResultFileManager::checkPattern(const char *pattern)
     MatchExpression matchExpr(pattern, false  /*dottedpath*/, true  /*fullstring*/, true  /*casesensitive*/);
 }
 
-ResultFile *ResultFileManager::addFile(const char *fileName, const char *fileSystemFileName, ResultFile::FileType fileType)
+ResultFile *ResultFileManager::addFile(const char *displayName, const char *fileSystemFileName, ResultFile::FileType fileType)
 {
     ResultFile *file = new ResultFile();
     file->id = fileList.size();
     fileList.push_back(file);
-    auto filePath = fileNameToSlash(fileName);
-    fileMap[filePath] = file;
-    runsInFileMap[filePath] = RunList();
+    auto displayNameSlash = fileNameToSlash(displayName);
+    fileMap[displayNameSlash] = file;
+    runsInFileMap[displayNameSlash] = RunList();
     file->resultFileManager = this;
     file->fileSystemFilePath = fileSystemFileName;
-    file->filePath = filePath;
-    splitFileName(file->filePath.c_str(), file->directory, file->fileName);
+    file->displayName = displayNameSlash;
+    splitFileName(file->displayName.c_str(), file->displayNameFolderPart, file->displayNameFilePart);
     file->fingerprint = readFileFingerprint(fileSystemFileName);
     file->fileType = fileType;
     return file;
@@ -1469,7 +1469,7 @@ static bool isFileReadable(const char *fileName)
         return false;
 }
 
-ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSystemFileName, int flags, InterruptedFlag *interrupted) //TODO fileName -> displayFilename, filesystemFileName -> osFilename
+ResultFile *ResultFileManager::loadFile(const char *displayName, const char *fileSystemFileName, int flags, InterruptedFlag *interrupted)
 {
     WRITER_MUTEX
 
@@ -1491,34 +1491,30 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
         interrupted = &neverInterrupted; // eliminate need for nullptr checks
     }
 
-    // tricky part: we store "fileName" which is the Eclipse pathname of the file
-    // (or some other "display name" of the file), but we actually load from
-    // fileSystemFileName which is the fileName suitable for fopen()
-
     // check if loaded
-    ResultFile *fileRef = getFile(fileName);
+    ResultFile *fileRef = getFile(displayName);
 #define LOG !verbose ? std::cout : std::cout
     if (fileRef) {
         FileFingerprint fingerprint = readFileFingerprint(fileSystemFileName);
         switch (reloadOption) {
             case RELOAD: {
-                LOG << "already loaded, unloading previous content: " << fileName << std::endl;
+                LOG << "already loaded, unloading previous content: " << displayName << std::endl;
                 unloadFile(fileRef);
                 break;
             }
             case RELOAD_IF_CHANGED: {
                 bool isUpToDate = (fingerprint == fileRef->fingerprint);
                 if (isUpToDate) {
-                    LOG << "already loaded and unchanged since, skipping: " << fileName << std::endl;
+                    LOG << "already loaded and unchanged since, skipping: " << displayName << std::endl;
                     return fileRef;
                 }
                 else {
-                    LOG << "already loaded but changed since, unloading previous content: " << fileName << std::endl;
+                    LOG << "already loaded but changed since, unloading previous content: " << displayName << std::endl;
                     unloadFile(fileRef);
                 }
             }
             case NEVER_RELOAD: {
-                LOG << "already loaded, skipping: " << fileName << std::endl;
+                LOG << "already loaded, skipping: " << displayName << std::endl;
                 return fileRef;
             }
         }
@@ -1527,13 +1523,13 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
 
     // try if file can be opened, before we add it to our database
     if (fileSystemFileName == nullptr)
-        fileSystemFileName = fileName;
+        fileSystemFileName = displayName;
     if (!isFileReadable(fileSystemFileName))
         throw opp_runtime_error("Cannot open '%s' for read", fileSystemFileName);
 
     ResultFile *file = SqliteResultFileUtils::isSqliteFile(fileSystemFileName) ?
-        SqliteResultFileLoader(this, flags, interrupted).loadFile(fileName, fileSystemFileName) :
-        OmnetppResultFileLoader(this, flags, interrupted).loadFile(fileName, fileSystemFileName);
+        SqliteResultFileLoader(this, flags, interrupted).loadFile(displayName, fileSystemFileName) :
+        OmnetppResultFileLoader(this, flags, interrupted).loadFile(displayName, fileSystemFileName);
 
     return file; // note: may be nullptr (if file was skipped e.g. due to missing index)
 }

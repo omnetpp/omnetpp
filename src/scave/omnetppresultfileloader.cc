@@ -367,7 +367,7 @@ void OmnetppResultFileLoader::separateItervarsFromAttrs(StringMap& attrs, String
     }
 }
 
-ResultFile *OmnetppResultFileLoader::loadFile(const char *fileName, const char *fileSystemFileName)
+ResultFile *OmnetppResultFileLoader::loadFile(const char *displayName, const char *fileSystemFileName)
 {
     // add to fileList
     ResultFile *fileRef = nullptr;
@@ -379,13 +379,13 @@ ResultFile *OmnetppResultFileLoader::loadFile(const char *fileName, const char *
         bool hasUpToDateIndex = isVecFile && IndexFileUtils::isIndexFileUpToDate(fileSystemFileName);
         if (isVecFile && !hasUpToDateIndex) {
             // vector file with a missing or out-of-date index
-            LOG << "file " << fileName << " has no valid index, ";
+            LOG << "file " << fileSystemFileName << " has no valid index, ";
             switch (indexingOption) {
             case ResultFileManager::SKIP_IF_NO_INDEX: LOG << "skipping\n"; return nullptr;
             case ResultFileManager::ALLOW_LOADING_WITHOUT_INDEX: LOG << "scanning vec file instead of vci\n"; break;
             case ResultFileManager::ALLOW_INDEXING: {
                 LOG << "reindexing..." << std::flush;
-                VectorFileIndexer().generateIndex(fileName, nullptr);
+                VectorFileIndexer().generateIndex(fileSystemFileName, nullptr);
                 hasUpToDateIndex = true;
                 LOG << "done\n";
                 break;
@@ -393,7 +393,7 @@ ResultFile *OmnetppResultFileLoader::loadFile(const char *fileName, const char *
             }
         }
 
-        fileRef = resultFileManager->addFile(fileName, fileSystemFileName, ResultFile::FILETYPE_OMNETPP);
+        fileRef = resultFileManager->addFile(displayName, fileSystemFileName, ResultFile::FILETYPE_OMNETPP);
 
 
         if (isVecFile && hasUpToDateIndex) {
@@ -404,7 +404,7 @@ ResultFile *OmnetppResultFileLoader::loadFile(const char *fileName, const char *
             LOG << "done\n";
         }
         else {
-            LOG << "reading " << fileName << "... " << std::flush;
+            LOG << "reading " << fileSystemFileName << "... " << std::flush;
             doLoadFile(fileSystemFileName, fileRef);
             LOG << "done\n";
         }

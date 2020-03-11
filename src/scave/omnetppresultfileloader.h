@@ -95,7 +95,7 @@ class SCAVE_API OmnetppResultFileLoader : public IResultFileLoader
     void separateItervarsFromAttrs(StringMap& attrs, StringMap& itervars);
   public:
     OmnetppResultFileLoader(ResultFileManager *resultFileManagerPar, int flags, InterruptedFlag *interrupted);
-    virtual ResultFile *loadFile(const char *fileName, const char *fileSystemFileName) override;
+    virtual ResultFile *loadFile(const char *displayName, const char *fileSystemFileName) override;
 };
 
 } // namespace scave

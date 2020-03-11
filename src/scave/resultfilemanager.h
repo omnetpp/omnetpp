@@ -270,10 +270,10 @@ class SCAVE_API ResultFile
   private:
     int id;  // position in fileList
     ResultFileManager *resultFileManager; // backref to containing ResultFileManager
-    std::string directory; // directory's location in the Eclipse workspace
-    std::string fileName; // file name
-    std::string filePath; // workspace directory + fileName
-    std::string fileSystemFilePath; // directory+fileName of underlying file (for fopen())
+    std::string displayNameFolderPart; // folder (project) part of displayName
+    std::string displayNameFilePart; // file name part of displayName
+    std::string displayName; // practically: path in the Eclipse workspace (IFile.getFullPath())
+    std::string fileSystemFilePath; // path to underlying file (for fopen())
     FileFingerprint fingerprint; // read-time file size and date/time
     FileType fileType;
     ScalarResults scalarResults;
@@ -284,9 +284,9 @@ class SCAVE_API ResultFile
 
   public:
     ResultFileManager *getResultFileManager() const {return resultFileManager;}
-    const std::string& getDirectory() const {return directory;}
-    const std::string& getFileName() const {return fileName;}
-    const std::string& getFilePath() const {return filePath;}
+    const std::string& getDirectory() const {return displayNameFolderPart;}
+    const std::string& getFileName() const {return displayNameFilePart;}
+    const std::string& getFilePath() const {return displayName;}
     const std::string& getFileSystemFilePath() const {return fileSystemFilePath;}
     FileType getFileType() const {return fileType;}
 };
@@ -395,7 +395,7 @@ class SCAVE_API ResultFileManager
     // It is not allowed to move elements, because IDs contain the file's index in them.
     ResultFileList fileList;
     std::map<std::string, ResultFile *> fileMap;
-    std::map<std::string, RunList> runsInFileMap; // key is fileName
+    std::map<std::string, RunList> runsInFileMap; // key is displayName
 
     // List of unique runs in the files. If several files contain the same runName,
     // it will generate only one Run entry here.
@@ -431,7 +431,7 @@ class SCAVE_API ResultFileManager
     }
 
     // utility functions called while loading a result file
-    ResultFile *addFile(const char *fileName, const char *fileSystemFileName, ResultFile::FileType fileType);
+    ResultFile *addFile(const char *displayName, const char *fileSystemFileName, ResultFile::FileType fileType);
     Run *addRun(const std::string& runName);
     FileRun *addFileRun(ResultFile *file, Run *run);
     Run *getOrAddRun(const std::string& runName);
@@ -578,14 +578,14 @@ class SCAVE_API ResultFileManager
     static void checkPattern(const char *pattern);
 
     /**
-     * Loading files. fileName is the file path in the Eclipse workspace;
+     * Loading files. displayName is the file path in the Eclipse workspace;
      * the file is actually read from fileSystemFileName.
      */
-    ResultFile *loadFile(const char *fileName, const char *fileSystemFileName, int flags, InterruptedFlag *interrupted);
+    ResultFile *loadFile(const char *displayName, const char *fileSystemFileName, int flags, InterruptedFlag *interrupted);
     void unloadFile(ResultFile *file);
 
-    bool isFileLoaded(const char *fileName) const;
-    ResultFile *getFile(const char *fileName) const;
+    bool isFileLoaded(const char *displayName) const;
+    ResultFile *getFile(const char *displayName) const;
     Run *getRunByName(const char *runName) const;
     FileRun *getFileRun(ResultFile *file, Run *run) const;
     ID getItemByName(FileRun *fileRun, const char *module, const char *name) const;
@@ -672,7 +672,7 @@ class SCAVE_API IResultFileLoader
   public:
     IResultFileLoader(ResultFileManager *resultFileManagerPar) : resultFileManager(resultFileManagerPar) {}
     virtual ~IResultFileLoader() {}
-    virtual ResultFile *loadFile(const char *fileName, const char *fileSystemFileName) = 0;
+    virtual ResultFile *loadFile(const char *displayName, const char *fileSystemFileName) = 0;
 };
 
 } // namespace scave

@@ -442,10 +442,10 @@ void SqliteResultFileLoader::cleanupDb()
     }
 }
 
-ResultFile *SqliteResultFileLoader::loadFile(const char *fileName, const char *fileSystemFileName)
+ResultFile *SqliteResultFileLoader::loadFile(const char *displayName, const char *fileSystemFileName)
 {
     try {
-        fileRef = resultFileManager->addFile(fileName, fileSystemFileName, ResultFile::FILETYPE_SQLITE);
+        fileRef = resultFileManager->addFile(displayName, fileSystemFileName, ResultFile::FILETYPE_SQLITE);
 
         LOG << "reading " << fileSystemFileName << "... " << std::flush;
 
