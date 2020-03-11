@@ -80,13 +80,10 @@ public class DataTree extends Tree implements IDataControl {
 
         addListener(SWT.SetData, new Listener() {
             public void handleEvent(final Event e) {
-                ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
-                    public Object call() {
-                        TreeItem item = (TreeItem)e.item;
-                        int index = item.getParentItem() == null ? indexOf(item) : item.getParentItem().indexOf(item);
-                        fillTreeItem(item, index);
-                        return null;
-                    }
+                ResultFileManager.runWithReadLock(manager, () -> {
+                    TreeItem item = (TreeItem)e.item;
+                    int index = item.getParentItem() == null ? indexOf(item) : item.getParentItem().indexOf(item);
+                    fillTreeItem(item, index);
                 });
             }
         });
@@ -179,18 +176,16 @@ public class DataTree extends Tree implements IDataControl {
     }
 
     public IDList getSelectedIDs() {
-        return ResultFileManager.callWithReadLock(manager, new Callable<IDList>() {
-            public IDList call() throws Exception {
-                IDList resultIdList = new IDList();
-                TreeItem[] treeItems = getSelection();
-                for (TreeItem treeItem : treeItems) {
-                    Node node = (Node)treeItem.getData();
-                    if (node != null && node.ids != null)
-                        for (long id : node.ids)
-                            resultIdList.add(id);
-                }
-                return resultIdList;
+        return ResultFileManager.callWithReadLock(manager, () -> {
+            IDList resultIdList = new IDList();
+            TreeItem[] treeItems = getSelection();
+            for (TreeItem treeItem : treeItems) {
+                Node node = (Node)treeItem.getData();
+                if (node != null && node.ids != null)
+                    for (long id : node.ids)
+                        resultIdList.add(id);
             }
+            return resultIdList;
         });
     }
 

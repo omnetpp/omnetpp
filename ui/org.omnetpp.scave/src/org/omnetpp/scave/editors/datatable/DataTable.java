@@ -203,14 +203,11 @@ public class DataTable extends Table implements IDataControl {
 
         addListener(SWT.SetData, new Listener() {
             public void handleEvent(final Event e) {
-                ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
-                    public Object call() {
-                        TableItem item = (TableItem)e.item;
-                        int lineNumber = indexOf(item);
-                        if (lineNumber >= 0)
-                            fillTableLine(item, lineNumber);
-                        return null;
-                    }
+                ResultFileManager.runWithReadLock(manager, () -> {
+                    TableItem item = (TableItem)e.item;
+                    int lineNumber = indexOf(item);
+                    if (lineNumber >= 0)
+                        fillTableLine(item, lineNumber);
                 });
             }
         });

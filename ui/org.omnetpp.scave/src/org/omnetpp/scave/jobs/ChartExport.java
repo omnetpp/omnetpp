@@ -72,14 +72,10 @@ public class ChartExport {
         @Override
         protected IStatus run(final IProgressMonitor monitor) {
             try {
-                ResultFileManager.callWithReadLock(context.manager, new Callable<Object>() {
-                    @Override
-                    public Object call() throws Exception {
-                        PythonProcessPool processPool = new PythonProcessPool(1);
-                        processPool.setShouldSetOmnetppMplBackend(false);
-                        runChartScript(chart, processPool, context, monitor);
-                        return null;
-                    }
+                ResultFileManager.runWithReadLock(context.manager, () -> {
+                    PythonProcessPool processPool = new PythonProcessPool(1);
+                    processPool.setShouldSetOmnetppMplBackend(false);
+                    runChartScript(chart, processPool, context, monitor);
                 });
                 return Status.OK_STATUS;
             }

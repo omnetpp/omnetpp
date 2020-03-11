@@ -272,19 +272,15 @@ public class ScaveModelUtil {
             Debug.println("Empty");
         else {
             Debug.println();
-            ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
-                @Override
-                public Object call() {
-                    for (int i = 0; i < idlist.size(); ++i) {
-                        ResultItem r = manager.getItem(idlist.get(i));
-                        Debug.println(
+            ResultFileManager.runWithReadLock(manager, () -> {
+                for (int i = 0; i < idlist.size(); ++i) {
+                    ResultItem r = manager.getItem(idlist.get(i));
+                    Debug.println(
                             String.format("File: %s Run: %s Module: %s Name: %s",
-                                r.getFileRun().getFile().getFilePath(),
-                                r.getFileRun().getRun().getRunName(),
-                                r.getModuleName(),
-                                r.getName()));
-                    }
-                    return null;
+                                    r.getFileRun().getFile().getFilePath(),
+                                    r.getFileRun().getRun().getRunName(),
+                                    r.getModuleName(),
+                                    r.getName()));
                 }
             });
         }

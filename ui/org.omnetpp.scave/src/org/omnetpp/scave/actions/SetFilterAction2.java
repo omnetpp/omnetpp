@@ -47,25 +47,22 @@ public class SetFilterAction2 extends AbstractScaveAction
         setText("Set Filter");
 
         if (panel != null) {
-            ResultFileManager.callWithReadLock(panel.getResultFileManager(), new Callable<Object>() {
-                public Object call() {
-                    IDataControl control = panel.getDataControl();
-                    ResultItem item = control.getSelectedItem();
-                    if (item != null && control.getSelectedField() != null) {
-                        ResultItemField field = new ResultItemField(control.getSelectedField());
-                        fieldName = field.getName();
-                        fieldValue = field.getFieldValue(item);
+            ResultFileManager.runWithReadLock(panel.getResultFileManager(), () -> {
+                IDataControl control = panel.getDataControl();
+                ResultItem item = control.getSelectedItem();
+                if (item != null && control.getSelectedField() != null) {
+                    ResultItemField field = new ResultItemField(control.getSelectedField());
+                    fieldName = field.getName();
+                    fieldValue = field.getFieldValue(item);
 
-                        if (fieldValue != null) {
-                            setText(String.format("Set Filter: %s=%s", field.getName(), fieldValue));
-                            setEnabled(true);
-                            return null;
-                        }
+                    if (fieldValue != null) {
+                        setText(String.format("Set Filter: %s=%s", field.getName(), fieldValue));
+                        setEnabled(true);
+                        return;
                     }
-                    setText("Set Filter");
-                    setEnabled(false);
-                    return null;
                 }
+                setText("Set Filter");
+                setEnabled(false);
             });
         }
     }

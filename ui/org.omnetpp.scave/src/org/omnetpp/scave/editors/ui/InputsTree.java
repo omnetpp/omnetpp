@@ -105,9 +105,7 @@ public class InputsTree extends TreeViewer {
     }
 
     private void rebuildCache() {
-        ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
-            @Override
-            public Object call() {
+        ResultFileManager.runWithReadLock(manager, () -> {
                 long start = System.currentTimeMillis();
                 matchingFiles.clear();
                 IPath baseDir = baseFolder.getFullPath();
@@ -120,7 +118,7 @@ public class InputsTree extends TreeViewer {
 
                     List<FileNode> fileNodes = new ArrayList<>();
                     matchingFiles.put(inputFile, fileNodes);
-                    for (ResultFile resultFile : resultFiles) {
+                    for (ResultFile resultFile : resultFiles) { //TODO eliminate linear search: store an Input->filelist mapping somewhere
                         if (ResultFilesTracker.matchPattern(resultFile.getFilePath(), filePattern)) {
                             FileNode fileNode = new FileNode();
                             fileNode.fileName = resultFile.getFileName();
@@ -130,8 +128,8 @@ public class InputsTree extends TreeViewer {
                         }
                     }
                 }
-                return null;
-            }
+                long end = System.currentTimeMillis();
+                Debug.println("InputsTree: build of 2nd tree level (file lists) took: " + (end-start) + "ms");
         });
     }
 

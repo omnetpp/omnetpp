@@ -161,13 +161,9 @@ public class VectorBrowserView extends ViewWithMessagePart {
         selectionChangedListener = new INullSelectionListener() {
             @Override
             public void selectionChanged(final IWorkbenchPart part, final ISelection selection) {
-                ResultFileManager.callWithReadLock(getResultFileManager(selection), new Callable<Object>() {
-                    @Override
-                    public Object call() throws Exception {
-                        if (part == activePart)
-                            setViewerInput(selection);
-                        return null;
-                    }
+                ResultFileManager.runWithReadLock(getResultFileManager(selection), () -> {
+                    if (part == activePart)
+                        setViewerInput(selection);
                 });
             }
         };
@@ -274,11 +270,8 @@ public class VectorBrowserView extends ViewWithMessagePart {
 
         runInUIThread(new Runnable() {
             public void run() {
-                ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
-                    public Object call() {
-                        setViewerInputOrMessage(finalSelectedVector, finalDataPointIndex, new Status(IStatus.OK, ScavePlugin.PLUGIN_ID, ""));
-                        return null;
-                    }
+                ResultFileManager.runWithReadLock(manager, () -> {
+                    setViewerInputOrMessage(finalSelectedVector, finalDataPointIndex, new Status(IStatus.OK, ScavePlugin.PLUGIN_ID, ""));
                 });
             }
         });

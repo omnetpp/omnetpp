@@ -273,12 +273,8 @@ public class BrowseDataPage extends FormEditorPage {
                                 public void run() {
                                     scheduledUpdate = null;
                                     if (!isDisposed()) {
-                                        ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
-                                            @Override
-                                            public Object call() {
-                                                refreshPage(manager);
-                                                return null;
-                                            }
+                                        ResultFileManager.runWithReadLock(manager, () -> {
+                                            refreshPage(manager);
                                         });
                                     }
                                 }
@@ -299,12 +295,8 @@ public class BrowseDataPage extends FormEditorPage {
                 if (panel != null) {
                     Object source = e.getSource();
                     if (source == panel.getDataControl() || source == tabFolder) {
-                        ResultFileManager.callWithReadLock(panel.getResultFileManager(), new Callable<Object>() {
-                            @Override
-                            public Object call() throws Exception {
-                                updateSelection();
-                                return null;
-                            }
+                        ResultFileManager.runWithReadLock(panel.getResultFileManager(), () -> {
+                            updateSelection();
                         });
                     }
                 }

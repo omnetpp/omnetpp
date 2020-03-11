@@ -386,31 +386,56 @@ namespace omnetpp { namespace scave {
   }
 
   public static <T> T callWithReadLock(ResultFileManager manager, java.util.concurrent.Callable<T> callable) {
-    return callWithLock(manager != null ? manager.getReadLock() : null, callable);
+      return callWithLock(manager != null ? manager.getReadLock() : null, callable);
   }
 
   public static <T> T callWithWriteLock(ResultFileManager manager, java.util.concurrent.Callable<T> callable) {
-    return callWithLock(manager != null ? manager.getWriteLock() : null, callable);
+      return callWithLock(manager != null ? manager.getWriteLock() : null, callable);
   }
 
   private static <T> T callWithLock(org.omnetpp.common.engine.ILock lock, java.util.concurrent.Callable<T> callable) {
-    if (lock != null)
-      lock.lock();
-    try {
-      return callable.call();
-    }
-    catch (RuntimeException e) {
-      throw e;
-    }
-    catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-    finally {
       if (lock != null)
-        lock.unlock();
-    }
+          lock.lock();
+      try {
+          return callable.call();
+      }
+      catch (RuntimeException e) {
+          throw e;
+      }
+      catch (Exception e) {
+          throw new RuntimeException(e);
+      }
+      finally {
+        if (lock != null)
+            lock.unlock();
+      }
   }
 
+  public static void runWithReadLock(ResultFileManager manager, java.lang.Runnable runnable) {
+      runWithLock(manager != null ? manager.getReadLock() : null, runnable);
+  }
+
+  public static void runWithWriteLock(ResultFileManager manager, java.lang.Runnable runnable) {
+      runWithLock(manager != null ? manager.getWriteLock() : null, runnable);
+  }
+
+  private static void runWithLock(org.omnetpp.common.engine.ILock lock, java.lang.Runnable runnable) {
+      if (lock != null)
+          lock.lock();
+      try {
+          runnable.run();
+      }
+      catch (RuntimeException e) {
+          throw e;
+      }
+      catch (Exception e) {
+          throw new RuntimeException(e);
+      }
+      finally {
+          if (lock != null)
+              lock.unlock();
+      }
+  }
 
   public void checkReadLock() {
     org.eclipse.core.runtime.Assert.isTrue(getReadLock().hasLock(), "Missing read lock.");

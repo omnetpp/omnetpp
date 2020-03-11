@@ -149,7 +149,7 @@ public class ChartEditForm {
     List<String> getComboContents(String contentString) {
         List<String> result = new ArrayList<String>();
 
-        ResultFileManager.callWithReadLock(manager, () -> {
+        ResultFileManager.runWithReadLock(manager, () -> {
 
             for (String part : contentString.split(",")) {
                 if (part.startsWith("$")) {
@@ -197,7 +197,6 @@ public class ChartEditForm {
                     result.add(part);
                 }
             }
-            return null; // unused
         });
 
         return result;

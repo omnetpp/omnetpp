@@ -104,33 +104,31 @@ public class ResultItemPropertySource implements IPropertySource {
     }
 
     public IPropertyDescriptor[] getPropertyDescriptors() {
-        return ResultFileManager.callWithReadLock(manager, new Callable<IPropertyDescriptor[]>() {
-            public IPropertyDescriptor[] call() throws Exception {
-                ResultItem item = manager.getItem(id);
+        return ResultFileManager.callWithReadLock(manager, () -> {
+            ResultItem item = manager.getItem(id);
 
-                IPropertyDescriptor[] fields =
+            IPropertyDescriptor[] fields =
                     (item instanceof VectorResult) ? VECTOR_PROPERTY_DESCS :
                         (item instanceof ScalarResult) ? SCALAR_PROPERTY_DESCS :
                             (item instanceof HistogramResult) ? HISTOGRAM_PROPERTY_DESCS :
                                 (item instanceof StatisticsResult) ? STATISTICS_PROPERTY_DESCS :
                                     new IPropertyDescriptor[0];
 
-                IPropertyDescriptor[] attrs = makeDescriptors(item.getAttributes().keys().toArray(), "@", "Attributes");
+            IPropertyDescriptor[] attrs = makeDescriptors(item.getAttributes().keys().toArray(), "@", "Attributes");
 
-                IPropertyDescriptor[] bins = null;
-                if (item instanceof HistogramResult) {
-                    HistogramResult histogram = (HistogramResult)item;
-                    DoubleVector binEdges = histogram.getHistogram().getBinEdges();
-                    int numBins = histogram.getHistogram().getNumBins();
-                    bins = new IPropertyDescriptor[numBins];
-                    for (int i = 0; i < numBins; i++) {
-                        double bin1 = binEdges.get(i);
-                        double bin2 = binEdges.get(i+1);
-                        bins[i] = new ReadonlyPropertyDescriptor("%"+i, "[" + String.valueOf(bin1) + ", " + String.valueOf(bin2) + ")", "Bins");
-                    }
+            IPropertyDescriptor[] bins = null;
+            if (item instanceof HistogramResult) {
+                HistogramResult histogram = (HistogramResult)item;
+                DoubleVector binEdges = histogram.getHistogram().getBinEdges();
+                int numBins = histogram.getHistogram().getNumBins();
+                bins = new IPropertyDescriptor[numBins];
+                for (int i = 0; i < numBins; i++) {
+                    double bin1 = binEdges.get(i);
+                    double bin2 = binEdges.get(i+1);
+                    bins[i] = new ReadonlyPropertyDescriptor("%"+i, "[" + String.valueOf(bin1) + ", " + String.valueOf(bin2) + ")", "Bins");
                 }
-                return concat(BASE_PROPERTY_DESCS, CONTAINER_PROPERTY_DESCS, fields, attrs, bins);
             }
+            return concat(BASE_PROPERTY_DESCS, CONTAINER_PROPERTY_DESCS, fields, attrs, bins);
         });
     }
 
@@ -139,71 +137,69 @@ public class ResultItemPropertySource implements IPropertySource {
     }
 
     public Object getPropertyValue(final Object propertyId) {
-        return ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
-            public Object call() throws Exception {
-                ResultItem resultItem = manager.getItem(id);
+        return ResultFileManager.callWithReadLock(manager, () -> {
+            ResultItem resultItem = manager.getItem(id);
 
-                // result attribute
-                if (propertyId instanceof String && propertyId.toString().charAt(0)=='@')
-                    return resultItem.getAttribute(propertyId.toString().substring(1));
+            // result attribute
+            if (propertyId instanceof String && propertyId.toString().charAt(0)=='@')
+                return resultItem.getAttribute(propertyId.toString().substring(1));
 
-                // histogram bin
-                if (resultItem instanceof HistogramResult && propertyId instanceof String && propertyId.toString().charAt(0)=='%') {
-                    int i = Integer.parseInt(propertyId.toString().substring(1));
-                    double value = ((HistogramResult)resultItem).getHistogram().getBinValues().get(i);
-                    double valueFloor = Math.floor(value);
-                    return value == valueFloor ? String.valueOf((long)valueFloor) : String.valueOf(value);
-                }
-
-                if (propertyId.equals(PROP_DIRECTORY)) return resultItem.getFileRun().getFile().getDirectory();
-                if (propertyId.equals(PROP_FILE)) return resultItem.getFileRun().getFile().getFileName();
-                if (propertyId.equals(PROP_CONFIG)) return StringUtils.nullToEmpty(resultItem.getFileRun().getRun().getAttribute(CONFIGNAME));
-                if (propertyId.equals(PROP_RUNNUMBER)) return StringUtils.nullToEmpty(resultItem.getFileRun().getRun().getAttribute(RUNNUMBER));
-                if (propertyId.equals(PROP_RUN_ID)) return resultItem.getFileRun().getRun().getRunName();
-                if (propertyId.equals(PROP_EXPERIMENT)) return StringUtils.nullToEmpty(resultItem.getFileRun().getRun().getAttribute(EXPERIMENT));
-                if (propertyId.equals(PROP_MEASUREMENT)) return StringUtils.nullToEmpty(resultItem.getFileRun().getRun().getAttribute(MEASUREMENT));
-                if (propertyId.equals(PROP_REPLICATION)) return StringUtils.nullToEmpty(resultItem.getFileRun().getRun().getAttribute(REPLICATION));
-
-                if (propertyId.equals(PROP_MODULE)) return resultItem.getModuleName();
-                if (propertyId.equals(PROP_NAME)) return resultItem.getName();
-                if (propertyId.equals(PROP_TYPE)) return resultItem.getDataType().toString().replaceAll("TYPE_", "").toLowerCase();
-
-                if (resultItem instanceof ScalarResult) {
-                    ScalarResult scalar = (ScalarResult)resultItem;
-                    if (propertyId.equals(PROP_KIND)) return "scalar";
-                    if (propertyId.equals(PROP_VALUE)) return scalar.getValue();
-                }
-                else if (resultItem instanceof VectorResult) {
-                    VectorResult vector = (VectorResult)resultItem;
-                    if (propertyId.equals(PROP_KIND)) return "vector";
-                    if (propertyId.equals(PROP_COUNT)) return vector.getStatistics().getCount();
-                    if (propertyId.equals(PROP_MIN)) return vector.getStatistics().getMin();
-                    if (propertyId.equals(PROP_MAX)) return vector.getStatistics().getMax();
-                    if (propertyId.equals(PROP_MEAN)) return vector.getStatistics().getMean();
-                    if (propertyId.equals(PROP_STDDEV)) return vector.getStatistics().getStddev();
-                    if (propertyId.equals(PROP_START_EVENT_NUM)) return vector.getStartEventNum();
-                    if (propertyId.equals(PROP_END_EVENT_NUM)) return vector.getEndEventNum();
-                    if (propertyId.equals(PROP_START_TIME)) return vector.getStartTime();
-                    if (propertyId.equals(PROP_END_TIME)) return vector.getEndTime();
-                    if (propertyId.equals(PROP_VECTOR_ID)) return vector.getVectorId();
-                }
-                else if (resultItem instanceof StatisticsResult) {
-                    StatisticsResult statistics = (StatisticsResult)resultItem;
-                    if (propertyId.equals(PROP_KIND)) return (statistics instanceof HistogramResult ? "histogram" : "statistics") + ", "
-                            + (statistics.getStatistics().isWeighted() ? "weighted" : "unweighted");
-                    if (propertyId.equals(PROP_COUNT)) return statistics.getStatistics().getCount();
-                    if (propertyId.equals(PROP_SUMWEIGHTS)) return statistics.getStatistics().isWeighted() ? statistics.getStatistics().getSumWeights() : "n/a";
-                    if (propertyId.equals(PROP_MIN)) return statistics.getStatistics().getMin();
-                    if (propertyId.equals(PROP_MAX)) return statistics.getStatistics().getMax();
-                    if (propertyId.equals(PROP_MEAN)) return statistics.getStatistics().getMean();
-                    if (propertyId.equals(PROP_STDDEV)) return statistics.getStatistics().getStddev();
-                    if (propertyId.equals(PROP_NUMBINS)) return statistics instanceof HistogramResult ? ((HistogramResult)resultItem).getHistogram().getNumBins() : "n/a";
-                }
-                else {
-                    if (propertyId.equals(PROP_KIND)) return "other";
-                }
-                throw new IllegalArgumentException("no such property: "+ propertyId);
+            // histogram bin
+            if (resultItem instanceof HistogramResult && propertyId instanceof String && propertyId.toString().charAt(0)=='%') {
+                int i = Integer.parseInt(propertyId.toString().substring(1));
+                double value = ((HistogramResult)resultItem).getHistogram().getBinValues().get(i);
+                double valueFloor = Math.floor(value);
+                return value == valueFloor ? String.valueOf((long)valueFloor) : String.valueOf(value);
             }
+
+            if (propertyId.equals(PROP_DIRECTORY)) return resultItem.getFileRun().getFile().getDirectory();
+            if (propertyId.equals(PROP_FILE)) return resultItem.getFileRun().getFile().getFileName();
+            if (propertyId.equals(PROP_CONFIG)) return StringUtils.nullToEmpty(resultItem.getFileRun().getRun().getAttribute(CONFIGNAME));
+            if (propertyId.equals(PROP_RUNNUMBER)) return StringUtils.nullToEmpty(resultItem.getFileRun().getRun().getAttribute(RUNNUMBER));
+            if (propertyId.equals(PROP_RUN_ID)) return resultItem.getFileRun().getRun().getRunName();
+            if (propertyId.equals(PROP_EXPERIMENT)) return StringUtils.nullToEmpty(resultItem.getFileRun().getRun().getAttribute(EXPERIMENT));
+            if (propertyId.equals(PROP_MEASUREMENT)) return StringUtils.nullToEmpty(resultItem.getFileRun().getRun().getAttribute(MEASUREMENT));
+            if (propertyId.equals(PROP_REPLICATION)) return StringUtils.nullToEmpty(resultItem.getFileRun().getRun().getAttribute(REPLICATION));
+
+            if (propertyId.equals(PROP_MODULE)) return resultItem.getModuleName();
+            if (propertyId.equals(PROP_NAME)) return resultItem.getName();
+            if (propertyId.equals(PROP_TYPE)) return resultItem.getDataType().toString().replaceAll("TYPE_", "").toLowerCase();
+
+            if (resultItem instanceof ScalarResult) {
+                ScalarResult scalar = (ScalarResult)resultItem;
+                if (propertyId.equals(PROP_KIND)) return "scalar";
+                if (propertyId.equals(PROP_VALUE)) return scalar.getValue();
+            }
+            else if (resultItem instanceof VectorResult) {
+                VectorResult vector = (VectorResult)resultItem;
+                if (propertyId.equals(PROP_KIND)) return "vector";
+                if (propertyId.equals(PROP_COUNT)) return vector.getStatistics().getCount();
+                if (propertyId.equals(PROP_MIN)) return vector.getStatistics().getMin();
+                if (propertyId.equals(PROP_MAX)) return vector.getStatistics().getMax();
+                if (propertyId.equals(PROP_MEAN)) return vector.getStatistics().getMean();
+                if (propertyId.equals(PROP_STDDEV)) return vector.getStatistics().getStddev();
+                if (propertyId.equals(PROP_START_EVENT_NUM)) return vector.getStartEventNum();
+                if (propertyId.equals(PROP_END_EVENT_NUM)) return vector.getEndEventNum();
+                if (propertyId.equals(PROP_START_TIME)) return vector.getStartTime();
+                if (propertyId.equals(PROP_END_TIME)) return vector.getEndTime();
+                if (propertyId.equals(PROP_VECTOR_ID)) return vector.getVectorId();
+            }
+            else if (resultItem instanceof StatisticsResult) {
+                StatisticsResult statistics = (StatisticsResult)resultItem;
+                if (propertyId.equals(PROP_KIND)) return (statistics instanceof HistogramResult ? "histogram" : "statistics") + ", "
+                + (statistics.getStatistics().isWeighted() ? "weighted" : "unweighted");
+                if (propertyId.equals(PROP_COUNT)) return statistics.getStatistics().getCount();
+                if (propertyId.equals(PROP_SUMWEIGHTS)) return statistics.getStatistics().isWeighted() ? statistics.getStatistics().getSumWeights() : "n/a";
+                if (propertyId.equals(PROP_MIN)) return statistics.getStatistics().getMin();
+                if (propertyId.equals(PROP_MAX)) return statistics.getStatistics().getMax();
+                if (propertyId.equals(PROP_MEAN)) return statistics.getStatistics().getMean();
+                if (propertyId.equals(PROP_STDDEV)) return statistics.getStatistics().getStddev();
+                if (propertyId.equals(PROP_NUMBINS)) return statistics instanceof HistogramResult ? ((HistogramResult)resultItem).getHistogram().getNumBins() : "n/a";
+            }
+            else {
+                if (propertyId.equals(PROP_KIND)) return "other";
+            }
+            throw new IllegalArgumentException("no such property: "+ propertyId);
         });
     }
 

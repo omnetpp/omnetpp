@@ -52,11 +52,8 @@ public class ScavePropertySourceProvider implements IPropertySourceProvider {
         else if (object instanceof ResultFilePayload)
             return new ResultFilePropertySource(manager.getFile(((ResultFilePayload)object).getFilePath()));
         else if (object instanceof RunPayload)
-            return ResultFileManager.callWithReadLock(manager, new Callable<RunPropertySource>() {
-                @Override
-                public RunPropertySource call() throws Exception {
-                    return new RunPropertySource(manager.getRunByName(((RunPayload)object).getRunName()));
-                }
+            return ResultFileManager.callWithReadLock(manager, () -> {
+                return new RunPropertySource(manager.getRunByName(((RunPayload)object).getRunName()));
             });
 
         return null; // TODO ?

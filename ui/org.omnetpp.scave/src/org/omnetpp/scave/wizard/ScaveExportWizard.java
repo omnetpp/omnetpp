@@ -400,11 +400,8 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
         protected String getDefaultExportDirectory() {
             if (selectedIDs.isEmpty())
                 return "";
-            String firstResultFile = ResultFileManager.callWithReadLock(resultFileManager, new Callable<String>() {
-                @Override
-                public String call() throws Exception {
-                    return resultFileManager.getItem(selectedIDs.get(0)).getFileRun().getFile().getFileSystemFilePath();
-                }
+            String firstResultFile = ResultFileManager.callWithReadLock(resultFileManager, () -> {
+                return resultFileManager.getItem(selectedIDs.get(0)).getFileRun().getFile().getFileSystemFilePath();
             });
             return new Path(firstResultFile).removeLastSegments(1).toOSString(); // remove file name
         }

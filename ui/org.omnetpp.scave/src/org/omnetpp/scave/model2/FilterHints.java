@@ -41,33 +41,21 @@ public class FilterHints {
     }
 
     public FilterHints(final ResultFileManager manager, final ResultType type) {
-        ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                fillAllFields(manager, ScaveModelUtil.getAllIDs(manager, type));
-                return null;
-            }
+        ResultFileManager.runWithReadLock(manager, () -> {
+            fillAllFields(manager, ScaveModelUtil.getAllIDs(manager, type));
         });
     }
 
     public FilterHints(final ResultFileManager manager, final IDList idlist) {
-        ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                fillAllFields(manager, idlist);
-                return null;
-            }
+        ResultFileManager.runWithReadLock(manager, () -> {
+            fillAllFields(manager, idlist);
         });
     }
 
     public void addHints(final FilterField field, final ResultFileManager manager, final IDList idlist)
     {
-        ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                fillOneField(manager, idlist, field);
-                return null;
-            }
+        ResultFileManager.runWithReadLock(manager, () -> {
+            fillOneField(manager, idlist, field);
         });
     }
 

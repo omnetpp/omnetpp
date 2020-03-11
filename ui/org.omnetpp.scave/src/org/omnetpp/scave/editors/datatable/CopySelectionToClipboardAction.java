@@ -32,11 +32,8 @@ public class CopySelectionToClipboardAction extends Action {
             final FilteredDataPanel activePanel = tabfolder.getActivePanel();
             if (activePanel != null && activePanel.getResultFileManager() != null)
             {
-                ResultFileManager.callWithReadLock(activePanel.getResultFileManager(), new Callable<Object>() {
-                    public Object call() throws Exception {
-                        activePanel.getDataControl().copySelectionToClipboard();
-                        return null;
-                    }
+                ResultFileManager.runWithReadLock(activePanel.getResultFileManager(), () -> {
+                    activePanel.getDataControl().copySelectionToClipboard();
                 });
             }
         }

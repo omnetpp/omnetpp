@@ -562,12 +562,8 @@ public class ScaveEditor extends MultiPageEditorPartExt
         tracker.synchronize(true);
 
         // now we can restore chart pages (and other closable pages)
-        ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                restoreState();
-                return null;
-            }
+        ResultFileManager.runWithReadLock(manager, () -> {
+            restoreState();
         });
 
         final CTabFolder tabfolder = getTabFolder();

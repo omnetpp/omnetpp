@@ -31,11 +31,8 @@ public class CopyDataToClipboardAction extends AbstractScaveAction {
     protected void doRun(ScaveEditor editor, ISelection selection) throws CoreException {
         final FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
         if (activePanel != null) {
-            ResultFileManager.callWithReadLock(activePanel.getResultFileManager(), new Callable<Object>() {
-                public Object call() throws Exception {
-                    activePanel.getDataControl().copySelectionToClipboard();
-                    return null;
-                }
+            ResultFileManager.runWithReadLock(activePanel.getResultFileManager(), () -> {
+                activePanel.getDataControl().copySelectionToClipboard();
             });
         }
     }
