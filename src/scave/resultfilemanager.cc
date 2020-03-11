@@ -299,6 +299,19 @@ ResultFileList ResultFileManager::getFilesForRun(Run *run) const
     return out;
 }
 
+ResultFileList ResultFileManager::getFilesForInput(const char *inputName) const
+{
+    READER_MUTEX
+    ResultFileList out;
+    if (inputName == nullptr)
+        return out;
+    std::string inputNameStr = inputName; // avoid conversion per loop iteration
+    for (ResultFile *file : fileList)
+        if (file && file->getInputName() == inputNameStr)
+            out.push_back(file);
+    return out;
+}
+
 const ResultItem& ResultFileManager::getItem(ID id) const
 {
     READER_MUTEX
@@ -1321,7 +1334,7 @@ void ResultFileManager::checkPattern(const char *pattern)
     MatchExpression matchExpr(pattern, false  /*dottedpath*/, true  /*fullstring*/, true  /*casesensitive*/);
 }
 
-ResultFile *ResultFileManager::addFile(const char *displayName, const char *fileSystemFileName, ResultFile::FileType fileType)
+ResultFile *ResultFileManager::addFile(const char *displayName, const char *fileSystemFileName, const char *inputName, ResultFile::FileType fileType)
 {
     ResultFile *file = new ResultFile();
     file->id = fileList.size();
@@ -1333,6 +1346,7 @@ ResultFile *ResultFileManager::addFile(const char *displayName, const char *file
     file->fileSystemFilePath = fileSystemFileName;
     file->displayName = displayNameSlash;
     splitFileName(file->displayName.c_str(), file->displayNameFolderPart, file->displayNameFilePart);
+    file->inputName = opp_nulltoempty(inputName);
     file->fingerprint = readFileFingerprint(fileSystemFileName);
     file->fileType = fileType;
     return file;
@@ -1474,7 +1488,7 @@ static bool isFileReadable(const char *fileName)
         return false;
 }
 
-ResultFile *ResultFileManager::loadFile(const char *displayName, const char *fileSystemFileName, int flags, InterruptedFlag *interrupted)
+ResultFile *ResultFileManager::loadFile(const char *displayName, const char *fileSystemFileName, const char *inputName, int flags, InterruptedFlag *interrupted)
 {
     WRITER_MUTEX
 
@@ -1533,8 +1547,8 @@ ResultFile *ResultFileManager::loadFile(const char *displayName, const char *fil
         throw opp_runtime_error("Cannot open '%s' for read", fileSystemFileName);
 
     ResultFile *file = SqliteResultFileUtils::isSqliteFile(fileSystemFileName) ?
-        SqliteResultFileLoader(this, flags, interrupted).loadFile(displayName, fileSystemFileName) :
-        OmnetppResultFileLoader(this, flags, interrupted).loadFile(displayName, fileSystemFileName);
+        SqliteResultFileLoader(this, flags, interrupted).loadFile(displayName, fileSystemFileName, inputName) :
+        OmnetppResultFileLoader(this, flags, interrupted).loadFile(displayName, fileSystemFileName, inputName);
 
     return file; // note: may be nullptr (if file was skipped e.g. due to missing index)
 }

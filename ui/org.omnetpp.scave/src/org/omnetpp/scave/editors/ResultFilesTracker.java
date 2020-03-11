@@ -138,21 +138,26 @@ public class ResultFilesTracker implements IResourceChangeListener, IModelChange
         if (manager == null)
             return;
 
+        //TODO run this in a job if sync=false
+
         long start = System.currentTimeMillis();
-        Map<String, String> files = new LinkedHashMap<>();
+        Map<String, Map<String, String>> files = new LinkedHashMap<>();
         for (InputFile input : inputs.getInputs())
-            files.putAll(collectResultFiles(input.getName(), anfFolder));
+            files.put(input.getName(), collectResultFiles(input.getName(), anfFolder));
         long end = System.currentTimeMillis();
         Debug.println("collecting files took: " + (end - start) + "ms");
 
-        //TODO run this in a job if sync=false
+        //TOO unloadFile() (invoked from RELOAD) is still very slow!
+
         ResultFileManager.runWithWriteLock(manager, () -> {
             long start2 = System.currentTimeMillis();
             int loadFlags = ResultFileManagerEx.RELOAD | ResultFileManagerEx.ALLOW_INDEXING | ResultFileManagerEx.SKIP_IF_LOCKED;
-            for (Entry<String,String> entry : files.entrySet()) {
-                String filePath = entry.getKey();
-                String fileLocation = entry.getValue();
-                manager.loadFile(filePath, fileLocation, loadFlags, null);
+            for (String inputName : files.keySet()) {
+                for (Entry<String,String> entry : files.get(inputName).entrySet()) {
+                    String filePath = entry.getKey();
+                    String fileLocation = entry.getValue();
+                    manager.loadFile(filePath, fileLocation, inputName, loadFlags, null);
+                }
             }
             long end2 = System.currentTimeMillis();
             System.out.println("(re)loading took: " + (end2-start2) + "ms");
@@ -431,56 +436,54 @@ protected String findInWorkspace(String fileLocation, IContainer containingFolde
 //        return matchPattern(filePath, filePattern);
 //    }
 //
-
-//TODO still used from InputsTree:
-
-    /**
-     * Matches <code>str</code> against the given <code>pattern</code>.
-     * The pattern may contain '?' (any char) and '*' (any char sequence) wildcards.
-     */
-    public static boolean matchPattern(String str, String pattern) {
-        return matchPattern(str, 0, str.length(), pattern, 0, pattern.length());
-    }
-
-    /**
-     * Matches the given string segment with the given pattern segment.
-     */
-    private static boolean matchPattern(String str, int strStart, int strEnd, String pattern, int patternStart, int patternEnd) {
-        while (strStart < strEnd && patternStart < patternEnd) {
-            char strChar = str.charAt(strStart);
-            char patternChar = pattern.charAt(patternStart);
-
-            switch (patternChar) {
-            case '?':
-                if (strChar == '/')
-                    return false;
-                ++strStart;
-                ++patternStart;
-                break;
-            case '*':
-                if (patternStart + 1 == patternEnd) // last char is '*'
-                    return true;
-                if (pattern.charAt(patternStart + 1) == strChar) { // try to match '*' with empty string
-                    boolean matches = matchPattern(str, strStart, strEnd, pattern, patternStart + 1, patternEnd);
-                    if (matches)
-                        return true;
-                }
-                // match '*' with strChar
-                if (strChar == '/')
-                    return false;
-                ++strStart;
-                break;
-            default:
-                if (strChar == patternChar) {
-                    ++strStart;
-                    ++patternStart;
-                }
-                else
-                    return false;
-                break;
-            }
-        }
-
-        return strStart == strEnd && patternStart == patternEnd;
-    }
+//
+//    /**
+//     * Matches <code>str</code> against the given <code>pattern</code>.
+//     * The pattern may contain '?' (any char) and '*' (any char sequence) wildcards.
+//     */
+//    public static boolean matchPattern(String str, String pattern) {
+//        return matchPattern(str, 0, str.length(), pattern, 0, pattern.length());
+//    }
+//
+//    /**
+//     * Matches the given string segment with the given pattern segment.
+//     */
+//    private static boolean matchPattern(String str, int strStart, int strEnd, String pattern, int patternStart, int patternEnd) {
+//        while (strStart < strEnd && patternStart < patternEnd) {
+//            char strChar = str.charAt(strStart);
+//            char patternChar = pattern.charAt(patternStart);
+//
+//            switch (patternChar) {
+//            case '?':
+//                if (strChar == '/')
+//                    return false;
+//                ++strStart;
+//                ++patternStart;
+//                break;
+//            case '*':
+//                if (patternStart + 1 == patternEnd) // last char is '*'
+//                    return true;
+//                if (pattern.charAt(patternStart + 1) == strChar) { // try to match '*' with empty string
+//                    boolean matches = matchPattern(str, strStart, strEnd, pattern, patternStart + 1, patternEnd);
+//                    if (matches)
+//                        return true;
+//                }
+//                // match '*' with strChar
+//                if (strChar == '/')
+//                    return false;
+//                ++strStart;
+//                break;
+//            default:
+//                if (strChar == patternChar) {
+//                    ++strStart;
+//                    ++patternStart;
+//                }
+//                else
+//                    return false;
+//                break;
+//            }
+//        }
+//
+//        return strStart == strEnd && patternStart == patternEnd;
+//    }
 }

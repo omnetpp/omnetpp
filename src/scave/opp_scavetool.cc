@@ -231,7 +231,7 @@ void ScaveTool::loadFiles(ResultFileManager& manager, const vector<string>& file
         }
 
         for (auto& fileName : filesToLoad)
-            manager.loadFile(fileName.c_str(), nullptr, loadFlags, nullptr);
+            manager.loadFile(fileName.c_str(), fileName.c_str(), nullptr, loadFlags, nullptr);
     }
 
     if (verbose)

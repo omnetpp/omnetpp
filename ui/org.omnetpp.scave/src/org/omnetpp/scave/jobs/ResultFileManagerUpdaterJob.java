@@ -193,7 +193,7 @@ public class ResultFileManagerUpdaterJob extends Job {
             ;//manager.loadDirectory(resourcePath, osPath, true); //TODO
         else {
             int flags = ResultFileManagerEx.RELOAD_IF_CHANGED | ResultFileManagerEx.ALLOW_INDEXING | ResultFileManagerEx.SKIP_IF_LOCKED;
-            manager.loadFile(resourcePath, osPath, flags, null);
+            manager.loadFile(resourcePath, osPath, "TODO", flags, null); //TODO
         }
         if (debug) Debug.println("done");
     }

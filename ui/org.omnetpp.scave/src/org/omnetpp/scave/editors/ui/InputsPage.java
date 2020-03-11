@@ -80,8 +80,7 @@ public class InputsPage extends FormEditorPage {
         label.setBackground(this.getBackground());
         label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
 
-        IContainer baseFolder = ((FileEditorInput)scaveEditor.getEditorInput()).getFile().getParent();
-        treeViewer = new InputsTree(getContent(), scaveEditor.getAnalysis(), scaveEditor.getResultFileManager(), baseFolder, true);
+        treeViewer = new InputsTree(getContent(), scaveEditor.getAnalysis(), scaveEditor.getResultFileManager(), true);
         treeViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         // toolbar

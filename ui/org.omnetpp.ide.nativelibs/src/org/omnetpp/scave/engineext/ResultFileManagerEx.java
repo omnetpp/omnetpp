@@ -85,13 +85,13 @@ public class ResultFileManagerEx extends ResultFileManager {
     }
 
     @Override
-    public ResultFile loadFile(String filename, String osFileName, int flags, InterruptedFlag interrupted) {
+    public ResultFile loadFile(String displayName, String osFileName, String inputName, int flags, InterruptedFlag interrupted) {
         getWriteLock().lock();
         try {
             checkNotDeleted();
-            ResultFile file = super.loadFile(filename, osFileName, flags, interrupted);
+            ResultFile file = super.loadFile(displayName, osFileName, inputName, flags, interrupted);
             if (file != null)
-                notifyChangeListeners(new ResultFileManagerChangeEvent(this, ChangeType.LOAD, filename));
+                notifyChangeListeners(new ResultFileManagerChangeEvent(this, ChangeType.LOAD, displayName));
             return file;
         }
         finally {

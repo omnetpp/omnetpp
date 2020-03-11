@@ -367,7 +367,7 @@ void OmnetppResultFileLoader::separateItervarsFromAttrs(StringMap& attrs, String
     }
 }
 
-ResultFile *OmnetppResultFileLoader::loadFile(const char *displayName, const char *fileSystemFileName)
+ResultFile *OmnetppResultFileLoader::loadFile(const char *displayName, const char *fileSystemFileName, const char *inputName)
 {
     // add to fileList
     ResultFile *fileRef = nullptr;
@@ -393,7 +393,7 @@ ResultFile *OmnetppResultFileLoader::loadFile(const char *displayName, const cha
             }
         }
 
-        fileRef = resultFileManager->addFile(displayName, fileSystemFileName, ResultFile::FILETYPE_OMNETPP);
+        fileRef = resultFileManager->addFile(displayName, fileSystemFileName, inputName, ResultFile::FILETYPE_OMNETPP);
 
 
         if (isVecFile && hasUpToDateIndex) {
