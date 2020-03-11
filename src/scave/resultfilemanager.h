@@ -460,6 +460,7 @@ class SCAVE_API ResultFileManager
   public:
     ResultFileManager();
     ~ResultFileManager();
+    void clear();
 
 #ifdef THREADED
     typedef omnetpp::common::ILock ILock;

@@ -232,6 +232,11 @@ ResultFileManager::ResultFileManager()
 
 ResultFileManager::~ResultFileManager()
 {
+    clear();
+}
+
+void ResultFileManager::clear()
+{
     for (int i = 0; i < (int)fileRunList.size(); i++)
         delete fileRunList[i];
 
