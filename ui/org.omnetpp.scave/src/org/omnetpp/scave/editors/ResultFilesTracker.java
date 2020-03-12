@@ -7,9 +7,13 @@
 
 package org.omnetpp.scave.editors;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IContainer;
@@ -29,6 +33,8 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.engine.StringVector;
 import org.omnetpp.scave.ContentTypes;
+import org.omnetpp.scave.engine.ResultFile;
+import org.omnetpp.scave.engine.ResultFileList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.jobs.ResultFileManagerUpdaterJob;
@@ -141,7 +147,7 @@ public class ResultFilesTracker implements IResourceChangeListener, IModelChange
         //TODO run this in a job if sync=false
 
         long start = System.currentTimeMillis();
-        Map<String, Map<String, String>> files = new LinkedHashMap<>();
+        Map<String, Map<String, String>> files = new LinkedHashMap<>(); //TODO we could use a flat list of structs -- would be easier to understand
         for (InputFile input : inputs.getInputs())
             files.put(input.getName(), collectResultFiles(input.getName(), anfFolder));
         long end = System.currentTimeMillis();
@@ -160,19 +166,32 @@ public class ResultFilesTracker implements IResourceChangeListener, IModelChange
                 }
             }
             long end2 = System.currentTimeMillis();
-            System.out.println("(re)loading took: " + (end2-start2) + "ms");
+            Debug.println("loading took: " + (end2-start2) + "ms");
         });
 
-//TODO unload
-//        Set<String> filesToBeUnloaded = new HashSet<String>(loadedFiles);
-//        filesToBeUnloaded.removeAll(filesToBeLoaded);
-//        filesToBeLoaded.removeAll(loadedFiles);
-//
-//        for (String file : filesToBeUnloaded)
-//            unloadFile(file, sync);
-//
-//        for (String file : filesToBeLoaded)
-//            loadFile(file, sync);
+        long startUnload = System.currentTimeMillis();
+
+        // collect set of file names from 'files'
+        Set<String> fileSet = new HashSet<>();
+        for (Map<String,String> pathToLocation : files.values())
+            fileSet.addAll(pathToLocation.keySet());
+
+        // determine list of files to be unloaded
+        ResultFileList loadFiles = ResultFileManager.callWithReadLock(manager, () -> { return manager.getFiles(); });
+        List<ResultFile> filesToBeUnloaded = new ArrayList<>();
+        for (int i = 0; i < loadFiles.size(); i++)
+            if (!fileSet.contains(loadFiles.get(i).getFilePath()))
+                filesToBeUnloaded.add(loadFiles.get(i));
+
+        // unload
+        if (!filesToBeUnloaded.isEmpty()) {
+            ResultFileManager.runWithWriteLock(manager, () -> {
+                for (ResultFile file : filesToBeUnloaded)
+                    manager.unloadFile(file);
+            });
+        }
+        long endUnload = System.currentTimeMillis();
+        Debug.println("unloading " + filesToBeUnloaded.size() + " files took: " + (endUnload-startUnload) + "ms");
     }
 
 
