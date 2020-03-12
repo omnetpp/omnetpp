@@ -48,7 +48,13 @@ public class InputsTree extends TreeViewer {
     private ResultFileManager manager;
     private boolean groupRunFields;
 
-    private Map<InputFile,List<FileNode>> matchingFiles = new HashMap<>();
+    private Map<InputFile,Integer> numFilesPerInput = new HashMap<>();
+    private Map<InputFile,List<Object>> inputChildren = new HashMap<>();
+
+    class FileGroupNode {
+        String label;
+        List<FileNode> files = new ArrayList<>();
+    }
 
     class FileNode {
         String fileName;
@@ -101,24 +107,41 @@ public class InputsTree extends TreeViewer {
 
     private void rebuildCache() {
         ResultFileManager.runWithReadLock(manager, () -> {
-                long start = System.currentTimeMillis();
-                matchingFiles.clear();
-                for (InputFile inputFile : analysis.getInputs().getInputs()) {
-                    ResultFileList resultFiles = manager.getFilesForInput(inputFile.getName());
-                    List<FileNode> fileNodes = new ArrayList<>();
-                    matchingFiles.put(inputFile, fileNodes);
-                    long numFiles = resultFiles.size();
-                    for (int i = 0; i < numFiles; i++) {
-                        ResultFile resultFile = resultFiles.get(i);
-                        FileNode fileNode = new FileNode();
-                        fileNode.fileName = resultFile.getFileName();
-                        fileNode.filePath = resultFile.getFilePath();
-                        fileNode.numRuns = manager.getNumRunsInFile(resultFile);
-                        fileNodes.add(fileNode);
-                    }
+            long start = System.currentTimeMillis();
+            inputChildren.clear();
+            numFilesPerInput.clear();
+            for (InputFile inputFile : analysis.getInputs().getInputs()) {
+                ResultFileList resultFiles = manager.getFilesForInput(inputFile.getName());
+                List<Object> fileNodes = new ArrayList<>();
+                long numFiles = resultFiles.size();
+                for (int i = 0; i < numFiles; i++) {
+                    ResultFile resultFile = resultFiles.get(i);
+                    FileNode fileNode = new FileNode();
+                    fileNode.fileName = resultFile.getFileName();
+                    fileNode.filePath = resultFile.getFilePath();
+                    fileNode.numRuns = manager.getNumRunsInFile(resultFile);
+                    fileNodes.add(fileNode);
                 }
-                long end = System.currentTimeMillis();
-                Debug.println("InputsTree: build of 2nd tree level (file lists) took: " + (end-start) + "ms");
+                numFilesPerInput.put(inputFile, fileNodes.size());
+                int N = 1000; // group size
+                if (fileNodes.size() <= 2*N) {
+                    inputChildren.put(inputFile, fileNodes);
+                }
+                else {
+                    List<Object> fileGroupNodes = new ArrayList<>();
+                    for (int pos = 0; pos < fileNodes.size(); pos += N) {
+                        int end = Math.min(pos+N, fileNodes.size());
+                        FileGroupNode fileGroup = new FileGroupNode();
+                        fileGroup.label = "[" + pos + ".." + (end-1) + "]";
+                        for (int i = pos; i < end; i++)
+                            fileGroup.files.add((FileNode)fileNodes.get(i));
+                        fileGroupNodes.add(fileGroup);
+                    }
+                    inputChildren.put(inputFile, fileGroupNodes);
+                }
+            }
+            long end = System.currentTimeMillis();
+            Debug.println("InputsTree: build of 2nd tree level (file lists) took: " + (end-start) + "ms");
         });
     }
 
@@ -144,7 +167,9 @@ public class InputsTree extends TreeViewer {
             if (element instanceof Analysis)
                 return analysis.getInputs().getInputs().toArray();
             else if (element instanceof InputFile)
-                return matchingFiles.get(element).toArray();
+                return inputChildren.get(element).toArray();
+            else if (element instanceof FileGroupNode)
+                return ((FileGroupNode) element).files.toArray();
             else if (element instanceof FileNode) {
                 FileNode fileNode = (FileNode)element;
                 if (fileNode.runs == null) {
@@ -233,7 +258,9 @@ public class InputsTree extends TreeViewer {
         @Override
         public String getText(Object element) {
             if (element instanceof InputFile)
-                return ((InputFile)element).getName() + "  (matches " + StringUtils.formatCounted(matchingFiles.get(element).size(), "file") + ")";
+                return ((InputFile)element).getName() + "  (matches " + StringUtils.formatCounted(numFilesPerInput.get(element), "file") + ")";
+            else if (element instanceof FileGroupNode)
+                return ((FileGroupNode) element).label;
             else if (element instanceof FileNode) {
                 FileNode fileNode = (FileNode)element;
                 if (fileNode.fileSize == -1)
@@ -279,7 +306,7 @@ public class InputsTree extends TreeViewer {
         @Override
         public Image getImage(Object element) {
             if (element instanceof InputFile) {
-                boolean empty = matchingFiles.get(element).size() == 0;
+                boolean empty = inputChildren.get(element).size() == 0;
                 return ScavePlugin.getCachedImage(empty ? ScaveImages.IMG_OBJ16_INPUTFILE_INACTIVE : ScaveImages.IMG_OBJ16_INPUTFILE);
             }
             else if (element instanceof FileNode) {
