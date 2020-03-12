@@ -24,7 +24,6 @@ import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.StringSet;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.VectorResult;
-import org.omnetpp.scave.engineext.ResultFileManagerChangeEvent.ChangeType;
 
 /**
  * ResultFileManager with notification capability. Also re-wraps
@@ -50,19 +49,6 @@ public class ResultFileManagerEx extends ResultFileManager {
     private ListenerList<IResultFilesChangeListener> changeListeners = new ListenerList<>();
     private ListenerList<IResultFileManagerDisposeListener> disposeListeners = new ListenerList<>();
 
-    public void addChangeListener(IResultFilesChangeListener listener) {
-        changeListeners.add(listener);
-    }
-
-    public void removeChangeListener(IResultFilesChangeListener listener) {
-        changeListeners.remove(listener);
-    }
-
-    protected void notifyChangeListeners(ResultFileManagerChangeEvent event) {
-        for (IResultFilesChangeListener listener : changeListeners)
-            listener.resultFileManagerChanged(event);
-    }
-
     public void addDisposeListener(IResultFileManagerDisposeListener listener) {
         disposeListeners.add(listener);
     }
@@ -86,32 +72,25 @@ public class ResultFileManagerEx extends ResultFileManager {
 
     @Override
     public ResultFile loadFile(String displayName, String osFileName, String inputName, int flags, InterruptedFlag interrupted) {
-        getWriteLock().lock();
-        try {
-            checkNotDeleted();
-            ResultFile file = super.loadFile(displayName, osFileName, inputName, flags, interrupted);
-            if (file != null)
-                notifyChangeListeners(new ResultFileManagerChangeEvent(this, ChangeType.LOAD, displayName));
-            return file;
-        }
-        finally {
-            getWriteLock().unlock();
-        }
+        checkNotDeleted();
+        checkWriteLock();
+        return super.loadFile(displayName, osFileName, inputName, flags, interrupted);
     }
 
     @Override
     public void unloadFile(ResultFile file) {
-        getWriteLock().lock();
-        try {
-            checkNotDeleted();
-            String filename = file.getFilePath();
-            super.unloadFile(file);
-            notifyChangeListeners(new ResultFileManagerChangeEvent(this, ChangeType.UNLOAD, filename));
-        }
-        finally {
-            getWriteLock().unlock();
-        }
+        checkNotDeleted();
+        checkWriteLock();
+        super.unloadFile(file);
     }
+
+    @Override
+    public void unloadFile(String fileName) {
+        checkNotDeleted();
+        checkWriteLock();
+        super.unloadFile(fileName);
+    }
+
 
     /*-------------------------------------------
      *               Reader methods

@@ -7,6 +7,7 @@
 
 package org.omnetpp.scave.editors;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -14,24 +15,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.engine.StringVector;
+import org.omnetpp.common.util.DisplayUtils;
+import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.engine.InterruptedFlag;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileList;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engineext.IResultFilesChangeListener;
+import org.omnetpp.scave.engineext.ResultFileManagerChangeEvent;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
-import org.omnetpp.scave.jobs.ResultFileManagerUpdaterJob;
 import org.omnetpp.scave.model.IModelChangeListener;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
@@ -46,26 +55,37 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  *
  * @author andras, tomi
  */
-public class ResultFilesTracker implements IResourceChangeListener, IModelChangeListener {
+public class ResultFilesTracker implements IModelChangeListener {
 
     private static final boolean debug = true;
 
     private ResultFileManager manager; // backreference to the manager it operates on, the manager is owned by the editor
     private Inputs inputs; // backreference to the Inputs element we watch
     private IContainer anfFolder; // the project or folder to resolve relative paths as a base
-    private ResultFileManagerUpdaterJob updaterJob;
+    private ListenerList<IResultFilesChangeListener> listeners = new ListenerList<>();
 
     public ResultFilesTracker(ResultFileManager manager, Inputs inputs, IContainer anfFolder) {
         this.manager = manager;
         this.inputs = inputs;
         this.anfFolder = anfFolder;
-        this.updaterJob = new ResultFileManagerUpdaterJob(manager);
     }
 
-    public boolean deactivate()
-    {
+    public boolean deactivate() {
         manager = null;
-        return updaterJob.cancel();
+        return false;
+    }
+
+    public void addChangeListener(IResultFilesChangeListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeChangeListener(IResultFilesChangeListener listener) {
+        listeners.remove(listener);
+    }
+
+    protected void notifyListeners(ResultFileManagerChangeEvent event) {
+        for (IResultFilesChangeListener listener : listeners)
+            listener.resultFileManagerChanged(event);
     }
 
     /**
@@ -73,124 +93,107 @@ public class ResultFilesTracker implements IResourceChangeListener, IModelChange
      */
     public void modelChanged(ModelChangeEvent event) {
         if (ScaveModelUtil.isInputsChange(event))
-            synchronize(false);
+            synchronize();
     }
-
-    /**
-     * Listen to workspace changes. We want to keep our result files in
-     * sync with the workspace. In addition to changes in file contents,
-     * Inputs can have wildcard filters which may match different files
-     * as files get created/deleted in the workspace.
-     */
-    public void resourceChanged(IResourceChangeEvent event) {
-        if (manager == null)
-            return;
-
-        synchronize(false); //TODO only if input folders are affected in the change
-
-//        try {
-//            IResourceDelta delta = event.getDelta();
-//            if (delta != null)
-//                delta.accept(new ResourceDeltaVisitor());
-//        } catch (CoreException e) {
-//            ScavePlugin.logError("Could not refresh the result files", e);
-//        }
-    }
-
-//    class ResourceDeltaVisitor implements IResourceDeltaVisitor {
-//        public boolean visit(IResourceDelta delta) throws CoreException {
-//            IResource resource = delta.getResource();
-//            if (!(resource instanceof IFile))
-//                return true;
-//
-//            IFile file = (IFile)resource;
-//            IFile resultFile = IndexFileUtils.isIndexFile(file) ? IndexFileUtils.getVectorFileFor(file) :
-//                                isResultFile(file) ? file : null;
-//
-//            if (resultFile == null || isDerived(resultFile) || !inputsMatches(resultFile))
-//                return false;
-//
-//            switch (delta.getKind()) {
-//            case IResourceDelta.ADDED:
-//                    if (debug) Debug.format("File added: %s%n", file);
-//                    loadFile(resultFile, false);
-//                    break;
-//            case IResourceDelta.REMOVED:
-//                    if (debug) Debug.format("File removed: %s%n", file);
-//                    if (isResultFile(file) && !isDerived(file))
-//                        unloadFile(file, false);
-//                    break;
-//            case IResourceDelta.CHANGED:
-//                    if (debug) Debug.format("File changed: %s%n", file);
-//                    if ((delta.getFlags() & ~IResourceDelta.MARKERS) != 0)
-//                        loadFile(resultFile, false);
-//                    break;
-//            }
-//            return false;
-//        }
-//    }
 
     public void reloadResultFiles() {
         ResultFileManager.runWithWriteLock(manager, () -> manager.clear()); //TODO async
-        synchronize(true);
+        synchronize();
     }
 
     /**
      * Ensure that exactly the result files specified in the Inputs node are loaded.
      * Missing files get loaded, and extra files get unloaded.
      */
-    public void synchronize(boolean sync) {
+    public void synchronize() {
         if (manager == null)
             return;
 
-        //TODO run this in a job if sync=false
+        DisplayUtils.runNowOrAsyncInUIThread(() -> {
+            try {
+                InterruptedFlag interruptedFlag = new InterruptedFlag();
+                ProgressMonitorDialog dialog = new ProgressMonitorDialog(Display.getCurrent().getActiveShell()) {
+                    @Override
+                    protected void cancelPressed() {
+                        super.cancelPressed();
+                        interruptedFlag.setFlag(true);
+                    }
+                };
+                dialog.run(true, true, (monitor)-> ResultFileManager.runWithWriteLock(manager, () -> doSynchronize(monitor, interruptedFlag)));
+            }
+            catch (InvocationTargetException e) {
+                ScavePlugin.logError(e);
+            }
+            catch (InterruptedException e) {}
 
-        long start = System.currentTimeMillis();
+        });
+    }
+
+    public void doSynchronize(IProgressMonitor monitor, InterruptedFlag interruptedFlag) {
+        manager.checkWriteLock(); // must run with write lock
+
+        SubMonitor subMonitor = SubMonitor.convert(monitor, 100);
+
         Map<String, Map<String, String>> files = new LinkedHashMap<>(); //TODO we could use a flat list of structs -- would be easier to understand
-        for (InputFile input : inputs.getInputs())
-            files.put(input.getName(), collectResultFiles(input.getName(), anfFolder));
-        long end = System.currentTimeMillis();
-        Debug.println("collecting files took: " + (end - start) + "ms");
 
-        //TOO unloadFile() (invoked from RELOAD) is still very slow!
+        Debug.time("Collecting files", 1, () -> {
+            subMonitor.setTaskName("Collecting files");
+            subMonitor.split(10); // 10%
+            for (InputFile input : inputs.getInputs())
+                files.put(input.getName(), collectResultFiles(input.getName(), anfFolder));
+        });
 
-        ResultFileManager.runWithWriteLock(manager, () -> {
-            long start2 = System.currentTimeMillis();
-            int loadFlags = ResultFileManagerEx.RELOAD | ResultFileManagerEx.ALLOW_INDEXING | ResultFileManagerEx.SKIP_IF_LOCKED;
-            for (String inputName : files.keySet()) {
+        //TODO unloadFile() (invoked from RELOAD) is still very slow!
+        //TODO handle java.lang.RuntimeException: Result file loading interrupted
+
+        Debug.time("Loading files", 1, () -> {
+            subMonitor.setTaskName("Loading files");
+
+            int numFiles = files.values().stream().collect(Collectors.summingInt((map) -> map.size()));
+            subMonitor.setWorkRemaining(numFiles);
+
+            int loadFlags = ResultFileManagerEx.RELOAD_IF_CHANGED | ResultFileManagerEx.ALLOW_INDEXING | ResultFileManagerEx.SKIP_IF_LOCKED;
+            outer: for (String inputName : files.keySet()) {
                 for (Entry<String,String> entry : files.get(inputName).entrySet()) {
                     String filePath = entry.getKey();
                     String fileLocation = entry.getValue();
-                    manager.loadFile(filePath, fileLocation, inputName, loadFlags, null);
+                    manager.loadFile(filePath, fileLocation, inputName, loadFlags, interruptedFlag);
+                    if (interruptedFlag.getFlag())
+                        break outer;
+                    subMonitor.worked(1); //TODO if there are many files, report less frequently but more work (e.g. worked(10) every 10 files)
+                    //TODO:
+                    //ScavePlugin.logError("Could not load file: " + file.getLocation().toOSString(), e);
+                    //ScaveMarkers.setMarker(file, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_ERROR, "Could not load file. Reason: "+e.getMessage(), -1);
+
                 }
             }
-            long end2 = System.currentTimeMillis();
-            Debug.println("loading took: " + (end2-start2) + "ms");
         });
 
-        long startUnload = System.currentTimeMillis();
+        Debug.time("Unloading extra files", 1, () -> {
+            subMonitor.setTaskName("Unloading extra files");
+            subMonitor.setWorkRemaining(10);
+            // collect set of file names from 'files'
+            Set<String> fileSet = new HashSet<>();
+            for (Map<String,String> pathToLocation : files.values())
+                fileSet.addAll(pathToLocation.keySet());
 
-        // collect set of file names from 'files'
-        Set<String> fileSet = new HashSet<>();
-        for (Map<String,String> pathToLocation : files.values())
-            fileSet.addAll(pathToLocation.keySet());
+            // determine list of files to be unloaded
+            ResultFileList loadFiles = ResultFileManagerEx.callWithReadLock(manager, () -> manager.getFiles());
+            List<ResultFile> filesToBeUnloaded = new ArrayList<>();
+            for (int i = 0; i < loadFiles.size(); i++)
+                if (!fileSet.contains(loadFiles.get(i).getFilePath()))
+                    filesToBeUnloaded.add(loadFiles.get(i));
 
-        // determine list of files to be unloaded
-        ResultFileList loadFiles = ResultFileManager.callWithReadLock(manager, () -> { return manager.getFiles(); });
-        List<ResultFile> filesToBeUnloaded = new ArrayList<>();
-        for (int i = 0; i < loadFiles.size(); i++)
-            if (!fileSet.contains(loadFiles.get(i).getFilePath()))
-                filesToBeUnloaded.add(loadFiles.get(i));
-
-        // unload
-        if (!filesToBeUnloaded.isEmpty()) {
-            ResultFileManager.runWithWriteLock(manager, () -> {
+            // unload
+            if (!filesToBeUnloaded.isEmpty())
                 for (ResultFile file : filesToBeUnloaded)
                     manager.unloadFile(file);
-            });
-        }
-        long endUnload = System.currentTimeMillis();
-        Debug.println("unloading " + filesToBeUnloaded.size() + " files took: " + (endUnload-startUnload) + "ms");
+        });
+
+        // notify listeners (TODO only if there was actually any change)
+        notifyListeners(new ResultFileManagerChangeEvent(manager));
+
+        monitor.done();
     }
 
 

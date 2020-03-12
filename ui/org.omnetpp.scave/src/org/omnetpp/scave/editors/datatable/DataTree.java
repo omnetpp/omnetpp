@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.CsvWriter;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.CustomTreeLevelsAction;
@@ -262,9 +263,11 @@ public class DataTree extends Tree implements IDataControl {
     }
 
     public void refresh() {
-        removeAll();
-        clearAll(true);
-        setItemCount(contentProvider.getChildNodes(new ArrayList<Node>()).length);
+        Debug.time("DataTree.refresh()", 100, () -> {
+            removeAll();
+            clearAll(true);
+            setItemCount(contentProvider.getChildNodes(new ArrayList<Node>()).length);
+        });
     }
 
     public void contributeToContextMenu(IMenuManager menuManager) {

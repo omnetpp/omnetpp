@@ -270,28 +270,24 @@ public class BrowseDataPage extends FormEditorPage {
             fileChangeListener = new IResultFilesChangeListener() {
                 @Override
                 public void resultFileManagerChanged(ResultFileManagerChangeEvent event) {
-                    switch (event.getChangeType()) {
-                    case LOAD:
-                    case UNLOAD:
-                        final ResultFileManager manager = event.getResultFileManager();
-                        if (scheduledUpdate == null) {
-                            scheduledUpdate = new Runnable() {
-                                @Override
-                                public void run() {
-                                    scheduledUpdate = null;
-                                    if (!isDisposed()) {
-                                        ResultFileManager.runWithReadLock(manager, () -> {
-                                            refreshPage(manager);
-                                        });
-                                    }
+                    final ResultFileManager manager = event.getResultFileManager();
+                    if (scheduledUpdate == null) {
+                        scheduledUpdate = new Runnable() {
+                            @Override
+                            public void run() {
+                                scheduledUpdate = null;
+                                if (!isDisposed()) {
+                                    ResultFileManager.runWithReadLock(manager, () -> {
+                                        refreshPage(manager);
+                                    });
                                 }
-                            };
-                            getDisplay().asyncExec(scheduledUpdate);
-                        }
+                            }
+                        };
+                        getDisplay().asyncExec(scheduledUpdate);
                     }
                 }
             };
-            scaveEditor.getResultFileManager().addChangeListener(fileChangeListener);
+            scaveEditor.getResultFilesTracker().addChangeListener(fileChangeListener);
         }
 
         // when they double-click in the vectors panel, open chart
@@ -325,8 +321,7 @@ public class BrowseDataPage extends FormEditorPage {
 
     private void unhookListeners() {
         if (fileChangeListener != null) {
-            ResultFileManagerEx manager = scaveEditor.getResultFileManager();
-            manager.removeChangeListener(fileChangeListener);
+            scaveEditor.getResultFilesTracker().removeChangeListener(fileChangeListener);
             fileChangeListener = null;
         }
     }

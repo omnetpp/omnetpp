@@ -337,6 +337,10 @@ public class ScaveEditor extends MultiPageEditorPartExt
         return manager;
     }
 
+    public ResultFilesTracker getResultFilesTracker() {
+        return tracker;
+    }
+
     public InputsPage getInputsPage() {
         return inputsPage;
     }
@@ -377,7 +381,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
         processPool.dispose();
 
         if (tracker != null) {
-            ResourcesPlugin.getWorkspace().removeResourceChangeListener(tracker);
             analysis.removeListener(tracker);
         }
 
@@ -538,9 +541,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
         tracker = new ResultFilesTracker(manager, analysis.getInputs(), inputFile.getParent());
         analysis.addListener(modelChangeListener);
         analysis.addListener(tracker);
-
-        // listen to resource changes: create, delete, modify
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(tracker);
     }
 
     protected void doCreatePages() {
@@ -553,18 +553,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
         createInputsPage();
         createBrowseDataPage();
         createChartsPage();
-
-        // We can load the result files now.
-        // The chart pages are not refreshed automatically when the result files change,
-        // so we have to load the files synchronously
-        // Note that tracker.updaterJob.join() can not be used here, because the
-        // JobManager is suspended during initialization of the UI.
-        tracker.synchronize(true);
-
-        // now we can restore chart pages (and other closable pages)
-        ResultFileManager.runWithReadLock(manager, () -> {
-            restoreState();
-        });
 
         final CTabFolder tabfolder = getTabFolder();
         tabfolder.addSelectionListener(new SelectionAdapter() {
@@ -586,6 +574,20 @@ public class ScaveEditor extends MultiPageEditorPartExt
                     applyChartEdits(editor);
             }
         });
+
+        // We use asyncExec here so that if there's an ANF file open at startup,
+        // the workbench window appears before the "Loading result files" progress
+        // dialog does
+        Display.getCurrent().asyncExec(() -> {
+            // We can load the result files now. The chart pages are not refreshed
+            // automatically when the result files change, so we load them here
+            // synchronously.
+            tracker.synchronize();
+
+            // now we can restore chart pages (and other closable pages)
+            ResultFileManager.runWithReadLock(manager, () -> restoreState());
+        });
+
     }
 
     protected void showPythonExecutionWarningDialogIfNeeded() {

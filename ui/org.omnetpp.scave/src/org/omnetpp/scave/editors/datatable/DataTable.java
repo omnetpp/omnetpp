@@ -45,9 +45,11 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.util.CsvWriter;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.editors.datatable.DataTreeContentProvider.Node;
 import org.omnetpp.scave.editors.ui.ScaveUtil;
 import org.omnetpp.scave.engine.Histogram;
 import org.omnetpp.scave.engine.HistogramResult;
@@ -348,8 +350,10 @@ public class DataTable extends Table implements IDataControl {
     }
 
     public void refresh() {
-        setItemCount(idList.size());
-        clearAll();
+        Debug.time("DataTable.refresh()", 100, () -> {
+            setItemCount(idList.size());
+            clearAll();
+        });
     }
 
     protected void initColumns() {

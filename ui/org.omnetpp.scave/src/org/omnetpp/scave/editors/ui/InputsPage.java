@@ -169,32 +169,27 @@ public class InputsPage extends FormEditorPage {
         setFocusManager(new FocusManager(this));
 
         // refresh on workspace changes
-        scaveEditor.getResultFileManager().addChangeListener(new IResultFilesChangeListener() {
+        scaveEditor.getResultFilesTracker().addChangeListener(new IResultFilesChangeListener() {
             @Override
             public void resultFileManagerChanged(ResultFileManagerChangeEvent event) {
-                switch (event.getChangeType()) {
-                case LOAD:
-                case UNLOAD:
-                    final ResultFileManager manager = event.getResultFileManager();
-                    if (scheduledUpdate == null) {
-                        scheduledUpdate = new Runnable() {
-                            @Override
-                            public void run() {
-                                scheduledUpdate = null;
-                                if (!isDisposed()) {
-                                    ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
-                                        @Override
-                                        public Object call()  {
-                                            getTreeViewer().refresh();
-                                            return null;
-                                        }
-                                    });
-                                }
+                final ResultFileManager manager = event.getResultFileManager();
+                if (scheduledUpdate == null) {
+                    scheduledUpdate = new Runnable() {
+                        @Override
+                        public void run() {
+                            scheduledUpdate = null;
+                            if (!isDisposed()) {
+                                ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+                                    @Override
+                                    public Object call()  {
+                                        getTreeViewer().refresh();
+                                        return null;
+                                    }
+                                });
                             }
-                        };
-                        getDisplay().asyncExec(scheduledUpdate);
-                    }
-                default: // nothing
+                        }
+                    };
+                    getDisplay().asyncExec(scheduledUpdate); //TODO remove??
                 }
             }
         });
