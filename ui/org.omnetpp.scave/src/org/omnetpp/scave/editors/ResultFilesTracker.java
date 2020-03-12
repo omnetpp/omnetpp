@@ -130,6 +130,11 @@ public class ResultFilesTracker implements IResourceChangeListener, IModelChange
 //        }
 //    }
 
+    public void reloadResultFiles() {
+        ResultFileManager.runWithWriteLock(manager, () -> manager.clear()); //TODO async
+        synchronize(true);
+    }
+
     /**
      * Ensure that exactly the result files specified in the Inputs node are loaded.
      * Missing files get loaded, and extra files get unloaded.

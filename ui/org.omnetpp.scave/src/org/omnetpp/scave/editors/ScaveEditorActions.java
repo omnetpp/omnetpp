@@ -48,6 +48,7 @@ import org.omnetpp.scave.actions.PasteAction;
 import org.omnetpp.scave.actions.PlotAction;
 import org.omnetpp.scave.actions.RedoAction;
 import org.omnetpp.scave.actions.RefreshChartAction;
+import org.omnetpp.scave.actions.ReloadResultFilesAction;
 import org.omnetpp.scave.actions.RemoveAction;
 import org.omnetpp.scave.actions.RenameChartAction;
 import org.omnetpp.scave.actions.ResetChartToTemplateAction;
@@ -79,6 +80,7 @@ public class ScaveEditorActions {
     public final ResetChartToTemplateAction resetToTemplateAction = registerAction(new ResetChartToTemplateAction());
     public final SaveChartAsTemplateAction saveChartAsTemplateAction = registerAction(new SaveChartAsTemplateAction());
     public final RemoveAction removeAction = registerAction(new RemoveAction());
+    public final ReloadResultFilesAction reloadResultFilesAction = registerAction(new ReloadResultFilesAction());
 
     public final ViewModeAction viewIconsAction = registerAction(new ViewModeAction(IconGridViewer.ViewMode.ICONS, "Icons", ScaveImages.IMG_ETOOL16_VIEW_ICONS));
     public final ViewModeAction viewListAction = registerAction(new ViewModeAction(IconGridViewer.ViewMode.LIST, "List", ScaveImages.IMG_ETOOL16_VIEW_LIST));

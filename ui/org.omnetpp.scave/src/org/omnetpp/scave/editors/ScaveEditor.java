@@ -1800,4 +1800,8 @@ public class ScaveEditor extends MultiPageEditorPartExt
 			return ((ChartPage)activeEditorPage).getChartScriptEditor().getCommandStack();
 		return null;
 	}
+
+    public void reloadResultFiles() {
+        tracker.reloadResultFiles();
+    }
 }

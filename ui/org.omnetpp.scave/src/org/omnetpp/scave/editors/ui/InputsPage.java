@@ -56,8 +56,6 @@ import org.omnetpp.scave.model.commands.CommandStack;
 import org.omnetpp.scave.model.commands.SetInputFileCommand;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
-//TODO remove page description; display "empty-table message" instead (stacklayout?)
-//TODO under each Run, display: "12 vectors", "35 scalars", etc.
 public class InputsPage extends FormEditorPage {
     private InputsTree treeViewer;
     protected CommandStack commandStack = new CommandStack("InputsPage");
@@ -88,6 +86,7 @@ public class InputsPage extends FormEditorPage {
         addToToolbar(new NewInputFileAction());
         addToToolbar(actions.editInputFileAction);
         addToToolbar(actions.removeAction);
+        addToToolbar(actions.reloadResultFilesAction);
         addSeparatorToToolbar();
         addToToolbar(new CollapseTreeAction(treeViewer));
 
