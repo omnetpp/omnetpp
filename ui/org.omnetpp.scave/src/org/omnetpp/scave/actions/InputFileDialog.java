@@ -53,13 +53,6 @@ public class InputFileDialog extends Dialog {
                 return "Input cannot be empty";
             if (!allowMultiple && text.contains(";"))
                 return "Specify one item only (no semicolon)";
-            for (String item : text.split(";")) {
-                item = item.trim();
-                if (!item.matches(".*\\.[^/]+$"))
-                    return "Please specify file extension (.sca or .vec)";
-                if (!item.endsWith(".vec") && !item.endsWith(".sca"))
-                    return "Invalid file extension, .vec or .sca expected";
-            }
             return null;
         }
     }
@@ -70,14 +63,13 @@ public class InputFileDialog extends Dialog {
             setComparator(new ResourceComparator(ResourceComparator.NAME));
             setTitle(title);
             setMessage(message);
-            //setAllowMultiple(false);
         }
     }
 
     public InputFileDialog(Shell parentShell, String title, String initialValue, boolean allowMultiple, IContainer baseDir) {
         super(parentShell);
         this.title = title;
-        this.message = "Enter result file name" + (allowMultiple ? "(s)" : "") + ". Text may contain wildcards (*,?).";
+        this.message = "Enter result file name" + (allowMultiple ? "(s)" : "") + " or directory. Wildcards (**,*,?) are accepted.";
         this.value = initialValue;
         this.allowMultiple = allowMultiple;
         this.baseDir = baseDir;
@@ -176,22 +168,12 @@ public class InputFileDialog extends Dialog {
         dialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
         if (dialog.open() == Dialog.OK) {
             List<String> list = new ArrayList<>();
-            for (Object resource : dialog.getResult()) {
-                if (resource instanceof IAdaptable)
-                    resource = ((IAdaptable) resource).getAdapter(IResource.class);
-                if (resource instanceof IFile) {
-                    IFile file = (IFile)resource;
-                    list.add(makeRelative(file.getFullPath()).toString());
-                }
-                else if (resource instanceof IContainer) {
-                    IContainer folder = (IContainer)resource;
-                    if (allowMultiple) {
-                        list.add(makeRelative(folder.getFullPath().append("*.vec")).toString());
-                        list.add(makeRelative(folder.getFullPath().append("*.sca")).toString());
-                    } else {
-                        String ext = StringUtils.defaultIfBlank(new Path(text.getText()).getFileExtension(), "sca");
-                        list.add(makeRelative(folder.getFullPath().append("*." + ext)).toString());
-                    }
+            for (Object object : dialog.getResult()) {
+                if (object instanceof IAdaptable)
+                    object = ((IAdaptable) object).getAdapter(IResource.class);
+                if (object instanceof IResource) {
+                    IResource resource = (IResource)object;
+                    list.add(makeRelative(resource.getFullPath()).toString());
                 }
             }
 
@@ -201,7 +183,12 @@ public class InputFileDialog extends Dialog {
 
     protected IPath makeRelative(IPath path) {
         IPath basePath = baseDir.getFullPath();
-        return basePath.isPrefixOf(path) ? path.removeFirstSegments(basePath.segmentCount()) : path;
+        if (path.equals(basePath))
+            return new Path(".");
+        else if (basePath.isPrefixOf(path))
+            return path.removeFirstSegments(basePath.segmentCount());
+        else
+            return path;
     }
 
     public void setErrorMessage(String errorMessage) {
