@@ -1553,6 +1553,15 @@ ResultFile *ResultFileManager::loadFile(const char *displayName, const char *fil
     return file; // note: may be nullptr (if file was skipped e.g. due to missing index)
 }
 
+void ResultFileManager::unloadFile(const char *displayName)
+{
+    WRITER_MUTEX
+
+    ResultFile *file = getFile(displayName);
+    if (file)
+        unloadFile(file);
+}
+
 void ResultFileManager::unloadFile(ResultFile *file)
 {
     WRITER_MUTEX

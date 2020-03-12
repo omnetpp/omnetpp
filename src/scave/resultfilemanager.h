@@ -589,6 +589,7 @@ class SCAVE_API ResultFileManager
      */
     ResultFile *loadFile(const char *displayName, const char *fileSystemFileName, const char *inputName, int flags, InterruptedFlag *interrupted);
     void unloadFile(ResultFile *file);
+    void unloadFile(const char *displayName);
 
     bool isFileLoaded(const char *displayName) const;
     ResultFile *getFile(const char *displayName) const;
