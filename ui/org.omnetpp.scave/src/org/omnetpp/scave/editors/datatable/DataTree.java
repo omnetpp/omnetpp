@@ -3,12 +3,10 @@ package org.omnetpp.scave.editors.datatable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.ListenerList;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuListener;
@@ -50,14 +48,15 @@ import org.omnetpp.scave.engineext.ResultFileManagerEx;
 public class DataTree extends Tree implements IDataControl {
     protected static final String DATA_TREE_LEVELS = "DataTree.Levels";
     protected MenuManager contextMenuManager = new MenuManager("#PopupMenu");
-    protected ListenerList listeners;
+    protected ListenerList<IDataListener> listeners;
     protected ResultFileManagerEx manager;
     protected IDList idList;
     protected DataTreeContentProvider contentProvider;
     protected IPreferenceStore preferenceStore = ScavePlugin.getDefault().getPreferenceStore();
     protected DelayedJob refreshJob = new DelayedJob(200) {
         public void run() {
-            refresh();
+            if (!isDisposed())
+                refresh();
         }
     };
     protected IResultFilesChangeListener resultFilesChangeListener = new IResultFilesChangeListener() {
@@ -279,7 +278,7 @@ public class DataTree extends Tree implements IDataControl {
 
     public void addDataListener(IDataListener listener) {
         if (listeners == null)
-            listeners = new ListenerList();
+            listeners = new ListenerList<>();
         listeners.add(listener);
     }
 
