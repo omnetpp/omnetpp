@@ -7,12 +7,15 @@
 
 package org.omnetpp.scave.editors.ui;
 
-import java.util.List;
-import java.util.concurrent.Callable;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -20,6 +23,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.ui.DropdownAction;
 import org.omnetpp.common.ui.FocusManager;
@@ -60,7 +64,9 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 //TODO remove page description; display "empty-table message" instead (stacklayout?)
 //TODO save filter bar sash positions
 //TODO focus issue (currently a toolbar icon gets the focus by default?)
+//TODO showStatisticsFieldsAsScalars: make configurable
 public class BrowseDataPage extends FormEditorPage {
+    private boolean showStatisticsFieldsAsScalars = false;
 
     // UI elements
     private Label label;
@@ -332,22 +338,16 @@ public class BrowseDataPage extends FormEditorPage {
      */
     protected void refreshPage(ResultFileManager manager) {
         if (isActivePage()) {
-            boolean showFields = false; // on the scalars page --TODO make configurable!!!
-            IDList items = manager.getAllItems(false, true); // exclude computed and fields
-            IDList vectors = manager.getAllVectors();
-            IDList scalars = manager.getAllScalars(showFields, true);
-            IDList parameters = manager.getAllParameters();
-            IDList histograms = manager.getAllStatistics();
-            histograms.merge(manager.getAllHistograms());
+            try {
+                ProgressMonitorDialog dialog = new ProgressMonitorDialog(Display.getCurrent().getActiveShell());
+                dialog.run(false, true, (monitor) -> doRefreshPage(manager, monitor));
+                isContentValid = true;
+            }
+            catch (InvocationTargetException e) {
+                ScavePlugin.logError(e);
+            }
+            catch (InterruptedException e) {}
 
-            tabFolder.getAllPanel().setIDList(items);
-            tabFolder.getScalarsPanel().setIDList(scalars);
-            tabFolder.getParametersPanel().setIDList(parameters);
-            tabFolder.getVectorsPanel().setIDList(vectors);
-            tabFolder.getHistogramsPanel().setIDList(histograms);
-            tabFolder.refreshPanelTitles();
-
-            isContentValid = true;
         }
         else {
             isContentValid = false;
@@ -360,6 +360,47 @@ public class BrowseDataPage extends FormEditorPage {
             refreshPage(scaveEditor.getResultFileManager());
         updateSelection();
     }
+
+    protected void doRefreshPage(ResultFileManager manager, IProgressMonitor monitor) {
+        monitor.setTaskName("Refreshing Browse Data Page");
+        monitor.beginTask("Refreshing content", 7);
+
+        monitor.subTask("Collecting data");
+        while (Display.getCurrent().readAndDispatch());
+        IDList items = manager.getAllItems(false, true);
+        IDList vectors = manager.getAllVectors();
+        IDList scalars = manager.getAllScalars(showStatisticsFieldsAsScalars, true);
+        IDList parameters = manager.getAllParameters();
+        IDList histograms = manager.getAllStatistics();
+        histograms.merge(manager.getAllHistograms());
+
+        monitor.subTask("Refreshing All panel");
+        while (Display.getCurrent().readAndDispatch());
+        tabFolder.getAllPanel().setIDList(items);
+
+        monitor.subTask("Refreshing Scalars panel");
+        while (Display.getCurrent().readAndDispatch());
+        tabFolder.getScalarsPanel().setIDList(scalars);
+
+        monitor.subTask("Refreshing Parameters panel");
+        while (Display.getCurrent().readAndDispatch());
+        tabFolder.getParametersPanel().setIDList(parameters);
+
+        monitor.subTask("Refreshing Vectors panel");
+        while (Display.getCurrent().readAndDispatch());
+        tabFolder.getVectorsPanel().setIDList(vectors);
+
+        monitor.subTask("Refreshing Histograms panel");
+        tabFolder.getHistogramsPanel().setIDList(histograms);
+        while (Display.getCurrent().readAndDispatch());
+
+        monitor.subTask("Refreshing tab titles");
+        tabFolder.refreshPanelTitles();
+        while (Display.getCurrent().readAndDispatch());
+
+        monitor.done();
+    }
+
 
     /**
      * Sets the editor selection to the selection of control of the active panel.
