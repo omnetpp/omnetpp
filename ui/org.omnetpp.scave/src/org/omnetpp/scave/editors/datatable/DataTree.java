@@ -25,7 +25,6 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.common.util.CsvWriter;
-import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.CustomTreeLevelsAction;
 import org.omnetpp.scave.actions.FlatModuleTreeAction;
@@ -34,8 +33,6 @@ import org.omnetpp.scave.editors.datatable.DataTreeContentProvider.Node;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
-import org.omnetpp.scave.engineext.IResultFilesChangeListener;
-import org.omnetpp.scave.engineext.ResultFileManagerChangeEvent;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 
 /**
@@ -53,17 +50,6 @@ public class DataTree extends Tree implements IDataControl {
     protected IDList idList;
     protected DataTreeContentProvider contentProvider;
     protected IPreferenceStore preferenceStore = ScavePlugin.getDefault().getPreferenceStore();
-    protected DelayedJob refreshJob = new DelayedJob(200) {
-        public void run() {
-            if (!isDisposed())
-                refresh();
-        }
-    };
-    protected IResultFilesChangeListener resultFilesChangeListener = new IResultFilesChangeListener() {
-        public void resultFileManagerChanged(ResultFileManagerChangeEvent event) {
-            refreshJob.restartTimer();
-        }
-    };
     private FlatModuleTreeAction flatModuleTreeAction;
 
     public DataTree(Composite parent, int style) {
@@ -88,19 +74,11 @@ public class DataTree extends Tree implements IDataControl {
         });
     }
 
-    @Override
-    public void dispose() {
-        refreshJob.cancel();
-        super.dispose();
-        if (!manager.isDisposed())
-            manager.removeChangeListener(resultFilesChangeListener);
-    }
-
     public DataTreeContentProvider getContentProvider() {
         return contentProvider;
     }
 
-    public void setLevels(Class[] levels) {
+    public void setLevels(Class<? extends Node>[] levels) {
         IDList idList = getSelectedIDs();
         contentProvider.setLevels(levels);
         savePreferences();
@@ -117,12 +95,8 @@ public class DataTree extends Tree implements IDataControl {
     }
 
     public void setResultFileManager(ResultFileManagerEx newManager) {
-        if (manager != null && !manager.isDisposed())
-            manager.removeChangeListener(resultFilesChangeListener);
         manager = newManager;
         contentProvider.setResultFileManager(newManager);
-        if (newManager != null)
-            newManager.addChangeListener(resultFilesChangeListener);
     }
 
     public void setNumericPrecision(int prec) {
@@ -143,7 +117,7 @@ public class DataTree extends Tree implements IDataControl {
     public void setIDList(IDList idList) {
         this.idList = idList;
         contentProvider.setIDList(idList);
-        refreshJob.restartTimer();
+        refresh();
         fireContentChangedEvent();
     }
 
@@ -288,7 +262,6 @@ public class DataTree extends Tree implements IDataControl {
     }
 
     public void refresh() {
-        refreshJob.cancel();
         removeAll();
         clearAll(true);
         setItemCount(contentProvider.getChildNodes(new ArrayList<Node>()).length);

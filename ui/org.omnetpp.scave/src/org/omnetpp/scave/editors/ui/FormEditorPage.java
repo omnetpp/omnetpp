@@ -219,6 +219,10 @@ public class FormEditorPage extends Composite {
     public void pageActivated() {
     }
 
+    public boolean isActivePage() {
+        return scaveEditor.getActiveEditorPage() == this;
+    }
+
     /**
      * Returns the active chart viewer on this page.
      */

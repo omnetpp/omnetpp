@@ -68,6 +68,7 @@ public class BrowseDataPage extends FormEditorPage {
 
     private IResultFilesChangeListener fileChangeListener;
     private Runnable scheduledUpdate;
+    private boolean isContentValid = false;
 
     private SetFilterAction2 setFilterAction = new SetFilterAction2();
     private int numericPrecision = 6;
@@ -330,24 +331,33 @@ public class BrowseDataPage extends FormEditorPage {
      * the tab labels as well.
      */
     protected void refreshPage(ResultFileManager manager) {
-        boolean showFields = false; // on the scalars page --TODO make configurable!!!
-        IDList items = manager.getAllItems(false, true); // exclude computed and fields
-        IDList vectors = manager.getAllVectors();
-        IDList scalars = manager.getAllScalars(showFields, true);
-        IDList parameters = manager.getAllParameters();
-        IDList histograms = manager.getAllStatistics();
-        histograms.merge(manager.getAllHistograms());
+        if (isActivePage()) {
+            boolean showFields = false; // on the scalars page --TODO make configurable!!!
+            IDList items = manager.getAllItems(false, true); // exclude computed and fields
+            IDList vectors = manager.getAllVectors();
+            IDList scalars = manager.getAllScalars(showFields, true);
+            IDList parameters = manager.getAllParameters();
+            IDList histograms = manager.getAllStatistics();
+            histograms.merge(manager.getAllHistograms());
 
-        tabFolder.getAllPanel().setIDList(items);
-        tabFolder.getScalarsPanel().setIDList(scalars);
-        tabFolder.getParametersPanel().setIDList(parameters);
-        tabFolder.getVectorsPanel().setIDList(vectors);
-        tabFolder.getHistogramsPanel().setIDList(histograms);
-        tabFolder.refreshPanelTitles();
+            tabFolder.getAllPanel().setIDList(items);
+            tabFolder.getScalarsPanel().setIDList(scalars);
+            tabFolder.getParametersPanel().setIDList(parameters);
+            tabFolder.getVectorsPanel().setIDList(vectors);
+            tabFolder.getHistogramsPanel().setIDList(histograms);
+            tabFolder.refreshPanelTitles();
+
+            isContentValid = true;
+        }
+        else {
+            isContentValid = false;
+        }
     }
 
     @Override
     public void pageActivated() {
+        if (!isContentValid)
+            refreshPage(scaveEditor.getResultFileManager());
         updateSelection();
     }
 
