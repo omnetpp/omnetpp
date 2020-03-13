@@ -8,6 +8,11 @@ import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 
+
+/**
+ * Common interface for DataTree and DataTable, the controls that display
+ * simulation results, using a ResultFileManager and an IDList as input.
+ */
 public interface IDataControl {
     /* content */
 
