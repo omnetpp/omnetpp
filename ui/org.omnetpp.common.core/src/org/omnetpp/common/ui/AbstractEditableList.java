@@ -54,7 +54,7 @@ public abstract class AbstractEditableList extends Composite implements ISelecti
     protected Button addButton;
     protected Button editButton;
     protected Button removeButton;
-    protected ListenerList selectionChangedListeners = new ListenerList();
+    protected ListenerList<ISelectionChangedListener> selectionChangedListeners = new ListenerList<>();
 
     /**
      * Creates the compound control. Style refers to the composite that contains all controls of the widget.
@@ -283,12 +283,10 @@ public abstract class AbstractEditableList extends Composite implements ISelecti
 
     protected void fireSelectionChanged() {
         final SelectionChangedEvent event = new SelectionChangedEvent(this, getSelection());
-        Object[] listeners = selectionChangedListeners.getListeners();
-        for (int i = 0; i < listeners.length; ++i) {
-            final ISelectionChangedListener l = (ISelectionChangedListener) listeners[i];
+        for (ISelectionChangedListener listener :  selectionChangedListeners) {
             SafeRunnable.run(new SafeRunnable() {
                 public void run() {
-                    l.selectionChanged(event);
+                    listener.selectionChanged(event);
                 }
             });
         }

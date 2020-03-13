@@ -20,7 +20,6 @@ import static org.omnetpp.scave.engine.RunAttribute.RUNNUMBER;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
@@ -179,7 +178,7 @@ public class DataTable extends Table implements IDataControl {
     private ResultFileManagerEx manager;
     private IDList idList;
     private int numericPrecision = 6;
-    private ListenerList listeners;
+    private ListenerList<IDataListener> listeners;
     private int minColumnWidth = 5; // for usability
     private List<Column> visibleColumns; // list of visible columns, this list will be saved and restored
     private IPreferenceStore preferences = ScavePlugin.getDefault().getPreferenceStore();
@@ -739,7 +738,7 @@ public class DataTable extends Table implements IDataControl {
 
     public void addDataListener(IDataListener listener) {
         if (listeners == null)
-            listeners = new ListenerList();
+            listeners = new ListenerList<>();
         listeners.add(listener);
     }
 
@@ -749,10 +748,9 @@ public class DataTable extends Table implements IDataControl {
     }
 
     protected void fireContentChangedEvent() {
-        if (listeners != null) {
-            for (Object listener : new ArrayList<>(Arrays.asList(this.listeners.getListeners())))
-                ((IDataListener)listener).contentChanged(this);
-        }
+        if (listeners != null)
+            for (IDataListener listener : listeners)
+                listener.contentChanged(this);
     }
 
     /*

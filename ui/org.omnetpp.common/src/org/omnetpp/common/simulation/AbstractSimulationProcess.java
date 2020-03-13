@@ -9,7 +9,7 @@ import org.eclipse.core.runtime.ListenerList;
  * @author Andras
  */
 public abstract class AbstractSimulationProcess implements ISimulationProcess {
-    private ListenerList listeners = new ListenerList();
+    private ListenerList<ISimulationProcessListener> listeners = new ListenerList<>();
 
     @Override
     public void addListener(ISimulationProcessListener listener) {
@@ -22,17 +22,17 @@ public abstract class AbstractSimulationProcess implements ISimulationProcess {
     }
 
     protected void fireSimulationProcessSuspended() {
-        for (Object o : listeners.getListeners())
-            ((ISimulationProcessListener) o).simulationProcessSuspended();
+        for (ISimulationProcessListener listener : listeners)
+            listener.simulationProcessSuspended();
     }
 
     protected void fireSimulationProcessResumed() {
-        for (Object o : listeners.getListeners())
-            ((ISimulationProcessListener) o).simulationProcessResumed();
+        for (ISimulationProcessListener listener : listeners)
+            listener.simulationProcessResumed();
     }
 
     protected void fireSimulationProcessTerminated() {
-        for (Object o : listeners.getListeners())
-            ((ISimulationProcessListener) o).simulationProcessTerminated();
+        for (ISimulationProcessListener listener : listeners)
+            listener.simulationProcessTerminated();
     }
 }

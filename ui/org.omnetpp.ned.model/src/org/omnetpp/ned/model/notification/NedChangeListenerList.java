@@ -17,7 +17,7 @@ import org.eclipse.core.runtime.SafeRunner;
  *
  * @author rhornig
  */
-public class NedChangeListenerList extends ListenerList {
+public class NedChangeListenerList extends ListenerList<INedChangeListener> {
     protected boolean enabled = true;
 
     /**
@@ -43,13 +43,13 @@ public class NedChangeListenerList extends ListenerList {
      */
     public void fireModelChanged(final NedModelEvent event) {
         if (enabled) {
-            for (final Object listener : getListeners()) {
+            for (INedChangeListener listener : this) {
                 SafeRunner.run(new ISafeRunnable() {
                     public void handleException(Throwable e) {
                         // exception logged in SafeRunner#run
                     }
                     public void run() throws Exception {
-                        ((INedChangeListener)listener).modelChanged(event);
+                        listener.modelChanged(event);
                     }
                 });
             }

@@ -283,8 +283,8 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
     }
 
     protected void fireChartSelectionChange(IPlotSelection selection) {
-        for (Object listener : listeners.getListeners())
-            ((IChartSelectionListener)listener).selectionChanged(selection);
+        for (IChartSelectionListener listener : listeners)
+            listener.selectionChanged(selection);
     }
 
     /**

@@ -53,7 +53,7 @@ public class CustomScale extends Canvas {
     private int maximum = 99;
     private int pageIncrement = 10;
     private int selection = 0;
-    private ListenerList listeners = new ListenerList();
+    private ListenerList<SelectionListener> listeners = new ListenerList<>();
 
     protected class MyMouseListener implements MouseMoveListener, MouseListener {
         public void mouseMove(MouseEvent e) { setSelection(e); }
@@ -159,8 +159,8 @@ public class CustomScale extends Canvas {
         e.data = this;
         SelectionEvent event = new SelectionEvent(e);
         event.display = Display.getCurrent();
-        for (Object o : listeners.getListeners())
-            ((SelectionListener)o).widgetSelected(event);
+        for (SelectionListener listener : listeners)
+            listener.widgetSelected(event);
     }
 
     @Override

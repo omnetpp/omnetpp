@@ -336,10 +336,9 @@ public class DataTree extends Tree implements IDataControl {
     }
 
     protected void fireContentChangedEvent() {
-        if (listeners != null) {
-            for (Object listener : new ArrayList<Object>(Arrays.asList(this.listeners.getListeners())))
-                ((IDataListener)listener).contentChanged(this);
-        }
+        if (listeners != null)
+            for (IDataListener listener : listeners)
+                listener.contentChanged(this);
     }
 
     protected TreeColumn addColumn(String text, int width) {

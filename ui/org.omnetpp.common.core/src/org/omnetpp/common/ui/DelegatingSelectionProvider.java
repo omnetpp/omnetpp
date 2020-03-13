@@ -20,7 +20,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
  * @author andras
  */
 public class DelegatingSelectionProvider implements ISelectionProvider {
-    private ListenerList listeners = new ListenerList();
+    private ListenerList<ISelectionChangedListener> listeners = new ListenerList<>();
     private ISelectionProvider currentSelectionProvider = null;
 
     private ISelectionChangedListener listener = new ISelectionChangedListener() {
@@ -43,8 +43,8 @@ public class DelegatingSelectionProvider implements ISelectionProvider {
     }
 
     private void fireSelectionChanged(SelectionChangedEvent event) {
-        for (Object listener : listeners.getListeners())
-            ((ISelectionChangedListener)listener).selectionChanged(event); //TODO SafeRunner, etc
+        for (ISelectionChangedListener listener : listeners)
+            listener.selectionChanged(event); //TODO SafeRunner, etc
     }
 
     public void setSelection(ISelection selection) {

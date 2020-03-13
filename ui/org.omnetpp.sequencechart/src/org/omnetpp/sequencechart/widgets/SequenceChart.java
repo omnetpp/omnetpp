@@ -275,7 +275,7 @@ public class SequenceChart
      */
 
     private ArrayList<SelectionListener> selectionListeners = new ArrayList<SelectionListener>(); // SWT selection listeners
-    private ListenerList selectionChangedListeners = new ListenerList(); // list of selection change listeners (type ISelectionChangedListener).
+    private ListenerList<ISelectionChangedListener> selectionChangedListeners = new ListenerList<>(); // list of selection change listeners (type ISelectionChangedListener).
     private EventNumberRangeSet selectedEventNumbers = new EventNumberRangeSet();
     private Double selectedTimelineCoordinate;
     private boolean isSelectionChangeInProgress;
@@ -4662,10 +4662,8 @@ public class SequenceChart
     }
 
     private void fireSelectionChanged(ISelection selection) {
-        Object[] listeners = selectionChangedListeners.getListeners();
         final SelectionChangedEvent event = new SelectionChangedEvent(this, selection);
-        for (int i = 0; i < listeners.length; ++i) {
-            final ISelectionChangedListener l = (ISelectionChangedListener) listeners[i];
+        for (ISelectionChangedListener l : selectionChangedListeners) {
             SafeRunnable.run(new SafeRunnable() {
                 public void run() {
                     l.selectionChanged(event);

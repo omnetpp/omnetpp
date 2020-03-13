@@ -327,8 +327,8 @@ public class LiveTable extends Composite  implements ISelectionProvider {
      */
     protected void fireSelectionChanged() {
         SelectionChangedEvent event = new SelectionChangedEvent(this, getSelection());
-        for (Object listener : selectionChangedListeners.getListeners())
-            ((ISelectionChangedListener)listener).selectionChanged(event);
+        for (ISelectionChangedListener listener : selectionChangedListeners)
+            listener.selectionChanged(event);
     }
 
     public void addChildOrderChangedListener(IChildOrderChangedListener listener) {
@@ -340,8 +340,8 @@ public class LiveTable extends Composite  implements ISelectionProvider {
     }
 
     protected void fireChildOrderChanged() {
-        for (Object listener : childOrderChangedListeners.getListeners())
-            ((IChildOrderChangedListener)listener).childOrderChanged(this);
+        for (IChildOrderChangedListener listener : childOrderChangedListeners)
+            listener.childOrderChanged(this);
     }
 
     public static interface IChildOrderChangedListener {

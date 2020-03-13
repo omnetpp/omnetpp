@@ -33,7 +33,7 @@ import org.omnetpp.common.image.ImageFactory;
  */
 public class ProblemDecorator implements ILightweightLabelDecorator, IResourceChangeListener {
 
-    private ListenerList fListeners;
+    private ListenerList<ILabelProviderListener> fListeners;
     private final static int quadrant = IDecoration.BOTTOM_LEFT;
     private final static int checkDepth = IResource.DEPTH_INFINITE;
 
@@ -93,9 +93,8 @@ public class ProblemDecorator implements ILightweightLabelDecorator, IResourceCh
     }
 
     public void addListener(ILabelProviderListener listener) {
-        if (fListeners == null) {
-            fListeners= new ListenerList();
-        }
+        if (fListeners == null)
+            fListeners= new ListenerList<>();
         fListeners.add(listener);
     }
 
@@ -103,9 +102,8 @@ public class ProblemDecorator implements ILightweightLabelDecorator, IResourceCh
      * @see IBaseLabelProvider#removeListener(ILabelProviderListener)
      */
     public void removeListener(ILabelProviderListener listener) {
-        if (fListeners != null) {
+        if (fListeners != null)
             fListeners.remove(listener);
-        }
     }
 
     /* (non-Javadoc)
@@ -141,10 +139,8 @@ public class ProblemDecorator implements ILightweightLabelDecorator, IResourceCh
 
             // notify the listeners about the change in the decorator
             LabelProviderChangedEvent lpevent= new LabelProviderChangedEvent(this, resourceList.toArray());
-            Object[] listeners= fListeners.getListeners();
-            for (int i= 0; i < listeners.length; i++) {
-                ((ILabelProviderListener) listeners[i]).labelProviderChanged(lpevent);
-            }
+            for (ILabelProviderListener listener : fListeners)
+                listener.labelProviderChanged(lpevent);
         }
     }
 }

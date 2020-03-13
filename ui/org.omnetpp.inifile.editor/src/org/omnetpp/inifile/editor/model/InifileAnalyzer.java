@@ -14,9 +14,8 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SIMTIME_SCAL
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING_INTERVALS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.OBSOLETE_OPTIONS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
-
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.OBSOLETE_OPTIONS;
 import static org.omnetpp.ned.model.NedElementConstants.NED_PARTYPE_BOOL;
 import static org.omnetpp.ned.model.NedElementConstants.NED_PARTYPE_DOUBLE;
 import static org.omnetpp.ned.model.NedElementConstants.NED_PARTYPE_INT;
@@ -126,8 +125,8 @@ public final class InifileAnalyzer {
 
     // infrastructure
     private InifileProblemMarkerSynchronizer markers; // only used during analyze()
-    private ListenerList propertyChangeListeners = new ListenerList();
-    private ListenerList analysisListeners = new ListenerList();
+    private ListenerList<IPropertyChangeListener> propertyChangeListeners = new ListenerList<>();
+    private ListenerList<IAnalysisListener> analysisListeners = new ListenerList<>();
     // InifileDocument, InifileAnalyzer, and NedResources are all accessed from
     // background threads (must be synchronized), and the analyze procedure needs
     // NedResources -- so use NedResources as lock to prevent deadlocks

@@ -36,7 +36,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
     private int hShift, vShift; // used for scrollbar mapping
     private Rectangle viewportRect; // the scrolled area within the canvas
 
-    private ListenerList listeners = new ListenerList();
+    private ListenerList<IPropertyChangeListener> listeners = new ListenerList<>();
 
     public LargeScrollableCanvas(Composite parent, int style) {
         super(parent, style | SWT.H_SCROLL | SWT.V_SCROLL);
@@ -331,8 +331,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 
     protected void firePropertyChangeEvent(String property, Object oldValue, Object newValue) {
         PropertyChangeEvent event = new PropertyChangeEvent(this, property, oldValue, newValue);
-        for (Object listener : listeners.getListeners()) {
-            ((IPropertyChangeListener)listener).propertyChange(event);
-        }
+        for (IPropertyChangeListener listener : listeners)
+            listener.propertyChange(event);
     }
 }

@@ -97,7 +97,7 @@ public class VirtualTable<T>
      *
      * @see #fireSelectionChanged
      */
-    protected ListenerList selectionChangedListeners = new ListenerList();
+    protected ListenerList<ISelectionChangedListener> selectionChangedListeners = new ListenerList<>();
 
     /**
      * True means a selection change operation is in progress and subsequent ones will be ignored.
@@ -493,12 +493,10 @@ public class VirtualTable<T>
      * @see ISelectionChangedListener#selectionChanged
      */
     protected void fireSelectionChanged(final SelectionChangedEvent event) {
-        Object[] listeners = selectionChangedListeners.getListeners();
-        for (int i = 0; i < listeners.length; ++i) {
-            final ISelectionChangedListener l = (ISelectionChangedListener) listeners[i];
+        for (ISelectionChangedListener listener : selectionChangedListeners) {
             SafeRunnable.run(new SafeRunnable() {
                 public void run() {
-                    l.selectionChanged(event);
+                    listener.selectionChanged(event);
                 }
             });
         }

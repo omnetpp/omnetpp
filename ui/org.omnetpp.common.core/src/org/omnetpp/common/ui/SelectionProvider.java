@@ -36,8 +36,8 @@ public class SelectionProvider implements ISelectionProvider
     }
 
     private void fireSelectionChanged(SelectionChangedEvent event) {
-        for (Object listener : listeners.getListeners())
-            ((ISelectionChangedListener)listener).selectionChanged(event);
+        for (ISelectionChangedListener listener : listeners)
+            listener.selectionChanged(event);
     }
 
     public ISelection getSelection() {
