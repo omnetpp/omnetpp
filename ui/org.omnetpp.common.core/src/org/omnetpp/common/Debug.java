@@ -9,6 +9,7 @@ package org.omnetpp.common;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -71,6 +72,78 @@ public class Debug {
     public static void format(String format, Object... args) {
         if (isDebugging())
             System.out.format(format, args);
+    }
+
+    /**
+     * Measure the runtime of a code fragment, and print the result if it's
+     * over a given threshold.
+     */
+    public static void time(String what, long thresholdMillis, Runnable runnable) {
+        time(what, true, thresholdMillis, runnable);
+    }
+
+    /**
+     * Measure the runtime of a code fragment, and print the result if it's
+     * over a given threshold. Measurement is conditional on the 'debug' argument.
+     */
+    public static void time(String what, boolean debug, long thresholdMillis, Runnable runnable) {
+        if (!debug) {
+            runnable.run();
+            return;
+        }
+
+        long start = System.currentTimeMillis();
+        try {
+            runnable.run();
+        }
+        finally {
+            long duration = System.currentTimeMillis() - start;
+            if (thresholdMillis <= 0 || duration > thresholdMillis)
+                Debug.println(what + ": took " + duration + "ms");
+        }
+    }
+
+    /**
+     * Measure the runtime of a code fragment  that returns a value, and
+     * print the result if it's over a given threshold.
+     */
+    public static <T> T timed(String what, long thresholdMillis, Callable<T> callable) {
+        return timed(what, true, thresholdMillis, callable);
+    }
+
+    /**
+     * Measure the runtime of a code fragment that returns a value, and print
+     * the result if it's over a given threshold. Measurement is conditional
+     * on the 'debug' argument.
+     */
+    public static <T> T timed(String what, boolean debug, long thresholdMillis, Callable<T> callable) {
+        if (!debug) {
+            try {
+                return callable.call();
+            }
+            catch (RuntimeException e) {
+                throw e;
+            }
+            catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        long start = System.currentTimeMillis();
+        try {
+            return callable.call();
+        }
+        catch (RuntimeException e) {
+            throw e;
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            long duration = System.currentTimeMillis() - start;
+            if (thresholdMillis <= 0 || duration > thresholdMillis)
+                Debug.println(what + ": took " + duration + "ms");
+        }
     }
 
 }
