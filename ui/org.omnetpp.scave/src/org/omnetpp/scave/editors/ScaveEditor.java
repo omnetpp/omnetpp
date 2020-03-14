@@ -17,7 +17,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -579,10 +578,8 @@ public class ScaveEditor extends MultiPageEditorPartExt
         // the workbench window appears before the "Loading result files" progress
         // dialog does
         Display.getCurrent().asyncExec(() -> {
-            // We can load the result files now. The chart pages are not refreshed
-            // automatically when the result files change, so we load them here
-            // synchronously.
-            tracker.synchronize();
+            // We can load the result files now.
+            refreshResultFiles();
 
             // now we can restore chart pages (and other closable pages)
             ResultFileManager.runWithReadLock(manager, () -> restoreState());
@@ -1806,4 +1803,9 @@ public class ScaveEditor extends MultiPageEditorPartExt
     public void reloadResultFiles() {
         tracker.reloadResultFiles();
     }
+
+    public void refreshResultFiles() {
+        tracker.refreshResultFiles();
+    }
+
 }

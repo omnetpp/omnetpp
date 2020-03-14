@@ -14,21 +14,22 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 
 /**
- * Reload all result files.
+ * Refreshes the result files (only reloads already loaded files if
+ * they have changed on the disk).
  *
  * @author andras
  */
-public class ReloadResultFilesAction extends AbstractScaveAction {
+public class RefreshResultFilesAction extends AbstractScaveAction {
 
-    public ReloadResultFilesAction() {
-        setText("Reload");
-        setDescription("Reload results files");
-        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_RELOADFILES));
+    public RefreshResultFilesAction() {
+        setText("Refresh");
+        setDescription("Refresh results files");
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_REFRESHFILES));
     }
 
     @Override
     protected void doRun(ScaveEditor scaveEditor, ISelection selection) throws CoreException {
-        scaveEditor.reloadResultFiles();
+        scaveEditor.refreshResultFiles();
     }
 
     @Override

@@ -56,6 +56,9 @@ import org.omnetpp.scave.model.commands.CommandStack;
 import org.omnetpp.scave.model.commands.SetInputFileCommand;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
+/**
+ * Represents the "Inputs" page of the Analysis editor.
+ */
 public class InputsPage extends FormEditorPage {
     private InputsTree treeViewer;
     protected CommandStack commandStack = new CommandStack("InputsPage");
@@ -86,13 +89,12 @@ public class InputsPage extends FormEditorPage {
         addToToolbar(new NewInputFileAction());
         addToToolbar(actions.editInputFileAction);
         addToToolbar(actions.removeAction);
+        addToToolbar(actions.refreshResultFilesAction);
         addToToolbar(actions.reloadResultFilesAction);
         addSeparatorToToolbar();
         addToToolbar(new CollapseTreeAction(treeViewer));
 
         treeViewer.getTree().setFocus();
-
-        //TODO treeViewer.addSelectionChangedListener(selectionChangedListener);
 
         // context menu
         UIUtils.createContextMenuFor(treeViewer.getTree(), true, new IMenuListener() {
@@ -107,7 +109,9 @@ public class InputsPage extends FormEditorPage {
                 menuManager.add(new Separator());
                 menuManager.add(new ExpandSubtreeAction(treeViewer));
                 menuManager.add(new CollapseSubtreeAction(treeViewer));
-                // TODO needed? scaveEditor.menuAboutToShow(menuManager);
+                menuManager.add(new Separator());
+                menuManager.add(actions.refreshResultFilesAction);
+                menuManager.add(actions.reloadResultFilesAction);
             }
         });
 

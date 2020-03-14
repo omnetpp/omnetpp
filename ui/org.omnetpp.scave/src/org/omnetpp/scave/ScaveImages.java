@@ -53,7 +53,8 @@ public class ScaveImages {
     public static final String IMG_ETOOL16_PLOT = "icons/full/etool16/plot.png";
     public static final String IMG_ETOOL16_PROPERTIES = "icons/full/etool16/properties.png";
     public static final String IMG_ETOOL16_EDITPYTHON = "icons/full/etool16/editpython.png";
-    public static final String IMG_ETOOL16_REFRESH2 = "icons/full/etool16/refresh2.png";
+    public static final String IMG_ETOOL16_RELOADFILES = "icons/full/etool16/reloadfiles.png";
+    public static final String IMG_ETOOL16_REFRESHFILES = "icons/full/etool16/refreshfiles.png";
     public static final String IMG_ETOOL16_REFRESHPLOT = "icons/full/etool16/refreshplot.png";
     public static final String IMG_ETOOL16_SETWIDTH = "icons/full/etool16/setwidth.png";
     public static final String IMG_ETOOL16_SETFILTER = "icons/full/etool16/setfilter.png";

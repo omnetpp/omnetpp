@@ -24,7 +24,7 @@ public class RefreshChartAction extends AbstractScaveAction {
     public RefreshChartAction() {
         setText("Refresh");
         setDescription("Refresh the content of the current chart");
-        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_REFRESH2));
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_REFRESHFILES));
     }
 
     @Override

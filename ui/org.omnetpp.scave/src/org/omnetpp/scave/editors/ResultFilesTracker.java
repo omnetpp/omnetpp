@@ -97,19 +97,22 @@ public class ResultFilesTracker implements IModelChangeListener {
      */
     public void modelChanged(ModelChangeEvent event) {
         if (ScaveModelUtil.isInputsChange(event))
-            synchronize();
+            synchronize(false);
     }
 
     public void reloadResultFiles() {
-        ResultFileManager.runWithWriteLock(manager, () -> manager.clear());
-        synchronize();
+        synchronize(true);
+    }
+
+    public void refreshResultFiles() {
+        synchronize(false);
     }
 
     /**
      * Ensure that exactly the result files specified in the Inputs node are loaded.
      * Missing files get loaded, and extra files get unloaded.
      */
-    public void synchronize() {
+    protected void synchronize(boolean reload) {
         if (manager == null)
             return;
 
@@ -123,7 +126,7 @@ public class ResultFilesTracker implements IModelChangeListener {
                         interruptedFlag.setFlag(true);
                     }
                 };
-                dialog.run(true, true, (monitor)-> ResultFileManager.runWithWriteLock(manager, () -> doSynchronize(monitor, interruptedFlag)));
+                dialog.run(true, true, (monitor)-> ResultFileManager.runWithWriteLock(manager, () -> doSynchronize(reload, monitor, interruptedFlag)));
             }
             catch (InvocationTargetException e) {
                 ScavePlugin.logError(e);
@@ -133,8 +136,11 @@ public class ResultFilesTracker implements IModelChangeListener {
         });
     }
 
-    public void doSynchronize(IProgressMonitor monitor, InterruptedFlag interruptedFlag) {
+    public void doSynchronize(boolean reload, IProgressMonitor monitor, InterruptedFlag interruptedFlag) {
         manager.checkWriteLock(); // must run with write lock
+
+        if (reload)
+            manager.clear();
 
         SubMonitor subMonitor = SubMonitor.convert(monitor, 100);
 
