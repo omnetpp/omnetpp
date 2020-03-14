@@ -106,42 +106,41 @@ public class InputsTree extends TreeViewer {
     }
 
     private void rebuildCache() {
-        ResultFileManager.runWithReadLock(manager, () -> {
-            long start = System.currentTimeMillis();
-            inputChildren.clear();
-            numFilesPerInput.clear();
-            for (InputFile inputFile : analysis.getInputs().getInputs()) {
-                ResultFileList resultFiles = manager.getFilesForInput(inputFile.getName());
-                List<Object> fileNodes = new ArrayList<>();
-                long numFiles = resultFiles.size();
-                for (int i = 0; i < numFiles; i++) {
-                    ResultFile resultFile = resultFiles.get(i);
-                    FileNode fileNode = new FileNode();
-                    fileNode.fileName = resultFile.getFileName();
-                    fileNode.filePath = resultFile.getFilePath();
-                    fileNode.numRuns = manager.getNumRunsInFile(resultFile);
-                    fileNodes.add(fileNode);
-                }
-                numFilesPerInput.put(inputFile, fileNodes.size());
-                int N = 1000; // group size
-                if (fileNodes.size() <= 2*N) {
-                    inputChildren.put(inputFile, fileNodes);
-                }
-                else {
-                    List<Object> fileGroupNodes = new ArrayList<>();
-                    for (int pos = 0; pos < fileNodes.size(); pos += N) {
-                        int end = Math.min(pos+N, fileNodes.size());
-                        FileGroupNode fileGroup = new FileGroupNode();
-                        fileGroup.label = "[" + pos + ".." + (end-1) + "]";
-                        for (int i = pos; i < end; i++)
-                            fileGroup.files.add((FileNode)fileNodes.get(i));
-                        fileGroupNodes.add(fileGroup);
+        Debug.time("Inputs.rebuildCache", 5, () -> {
+            ResultFileManager.runWithReadLock(manager, () -> {
+                inputChildren.clear();
+                numFilesPerInput.clear();
+                for (InputFile inputFile : analysis.getInputs().getInputs()) {
+                    ResultFileList resultFiles = manager.getFilesForInput(inputFile.getName());
+                    List<Object> fileNodes = new ArrayList<>();
+                    long numFiles = resultFiles.size();
+                    for (int i = 0; i < numFiles; i++) {
+                        ResultFile resultFile = resultFiles.get(i);
+                        FileNode fileNode = new FileNode();
+                        fileNode.fileName = resultFile.getFileName();
+                        fileNode.filePath = resultFile.getFilePath();
+                        fileNode.numRuns = manager.getNumRunsInFile(resultFile);
+                        fileNodes.add(fileNode);
                     }
-                    inputChildren.put(inputFile, fileGroupNodes);
+                    numFilesPerInput.put(inputFile, fileNodes.size());
+                    int N = 1000; // group size
+                    if (fileNodes.size() <= 2*N) {
+                        inputChildren.put(inputFile, fileNodes);
+                    }
+                    else {
+                        List<Object> fileGroupNodes = new ArrayList<>();
+                        for (int pos = 0; pos < fileNodes.size(); pos += N) {
+                            int end = Math.min(pos+N, fileNodes.size());
+                            FileGroupNode fileGroup = new FileGroupNode();
+                            fileGroup.label = "[" + pos + ".." + (end-1) + "]";
+                            for (int i = pos; i < end; i++)
+                                fileGroup.files.add((FileNode)fileNodes.get(i));
+                            fileGroupNodes.add(fileGroup);
+                        }
+                        inputChildren.put(inputFile, fileGroupNodes);
+                    }
                 }
-            }
-            long end = System.currentTimeMillis();
-            Debug.println("InputsTree: build of 2nd tree level (file lists) took: " + (end-start) + "ms");
+            });
         });
     }
 
@@ -164,69 +163,71 @@ public class InputsTree extends TreeViewer {
      */
     private class InputsViewContentProvider implements ITreeContentProvider {
         public Object[] getChildren(Object element) {
-            if (element instanceof Analysis)
-                return analysis.getInputs().getInputs().toArray();
-            else if (element instanceof InputFile)
-                return inputChildren.get(element).toArray();
-            else if (element instanceof FileGroupNode)
-                return ((FileGroupNode) element).files.toArray();
-            else if (element instanceof FileNode) {
-                FileNode fileNode = (FileNode)element;
-                if (fileNode.runs == null) {
-                    ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
-                        @Override
-                        public Object call() {
-                            fileNode.runs = new ArrayList<>();
-                            ResultFile resultFile = manager.getFile(fileNode.filePath);
-                            RunList runlist = manager.getRunsInFile(resultFile);
-                            for (Run run : Sorter.sort(runlist)) {
-                                RunNode runNode = new RunNode();
-                                runNode.runId = run.getRunName();
-                                FileRun fileRun = manager.getFileRun(resultFile, run);
-                                runNode.numParameters = manager.getNumParametersInFileRun(fileRun);
-                                runNode.numScalars = manager.getNumScalarsInFileRun(fileRun);
-                                runNode.numVectors = manager.getNumVectorsInFileRun(fileRun);
-                                runNode.numStatistics = manager.getNumStatisticsInFileRun(fileRun);
-                                runNode.numHistograms = manager.getNumHistogramsInFileRun(fileRun);
-                                fileNode.runs.add(runNode);
+            return Debug.timed("Inputs.getChildren of "+element, 5, () -> {
+                if (element instanceof Analysis)
+                    return analysis.getInputs().getInputs().toArray();
+                else if (element instanceof InputFile)
+                    return inputChildren.get(element).toArray();
+                else if (element instanceof FileGroupNode)
+                    return ((FileGroupNode) element).files.toArray();
+                else if (element instanceof FileNode) {
+                    FileNode fileNode = (FileNode)element;
+                    if (fileNode.runs == null) {
+                        ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+                            @Override
+                            public Object call() {
+                                fileNode.runs = new ArrayList<>();
+                                ResultFile resultFile = manager.getFile(fileNode.filePath);
+                                RunList runlist = manager.getRunsInFile(resultFile);
+                                for (Run run : Sorter.sort(runlist)) {
+                                    RunNode runNode = new RunNode();
+                                    runNode.runId = run.getRunName();
+                                    FileRun fileRun = manager.getFileRun(resultFile, run);
+                                    runNode.numParameters = manager.getNumParametersInFileRun(fileRun);
+                                    runNode.numScalars = manager.getNumScalarsInFileRun(fileRun);
+                                    runNode.numVectors = manager.getNumVectorsInFileRun(fileRun);
+                                    runNode.numStatistics = manager.getNumStatisticsInFileRun(fileRun);
+                                    runNode.numHistograms = manager.getNumHistogramsInFileRun(fileRun);
+                                    fileNode.runs.add(runNode);
+                                }
+                                return null;
                             }
-                            return null;
-                        }
-                    });
+                        });
+                    }
+                    return fileNode.runs.toArray();
                 }
-                return fileNode.runs.toArray();
-            }
-            else if (element instanceof RunNode) {
-                RunNode runNode = (RunNode)element;
-                if (runNode.attrGroups == null && runNode.attrs == null) {
-                    ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
-                        @Override
-                        public Object call() {
-                            Run run = manager.getRunByName(runNode.runId);
-                            if (groupRunFields) {
-                                runNode.attrGroups = new ArrayList<>();
-                                runNode.attrGroups.add(new AttrGroup("Iteration Variables", convert(run.getIterationVariables(), AttrType.ITERVAR)));
-                                runNode.attrGroups.add(new AttrGroup("Run Attributes", convert(run.getAttributes(), AttrType.ATTR)));
-                                runNode.attrGroups.add(new AttrGroup("Parameter Assignments", convert(run.getParamAssignments(), AttrType.PARAMASSIGNMENT)));
-                                runNode.attrGroups.add(new AttrGroup("Configuration", convert(run.getNonParamAssignmentConfigEntries(), AttrType.CONFIGENTRY)));
+                else if (element instanceof RunNode) {
+                    RunNode runNode = (RunNode)element;
+                    if (runNode.attrGroups == null && runNode.attrs == null) {
+                        ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+                            @Override
+                            public Object call() {
+                                Run run = manager.getRunByName(runNode.runId);
+                                if (groupRunFields) {
+                                    runNode.attrGroups = new ArrayList<>();
+                                    runNode.attrGroups.add(new AttrGroup("Iteration Variables", convert(run.getIterationVariables(), AttrType.ITERVAR)));
+                                    runNode.attrGroups.add(new AttrGroup("Run Attributes", convert(run.getAttributes(), AttrType.ATTR)));
+                                    runNode.attrGroups.add(new AttrGroup("Parameter Assignments", convert(run.getParamAssignments(), AttrType.PARAMASSIGNMENT)));
+                                    runNode.attrGroups.add(new AttrGroup("Configuration", convert(run.getNonParamAssignmentConfigEntries(), AttrType.CONFIGENTRY)));
+                                }
+                                else {
+                                    runNode.attrs = new ArrayList<>();
+                                    runNode.attrs.addAll(convert(run.getIterationVariables(), AttrType.ITERVAR));
+                                    runNode.attrs.addAll(convert(run.getAttributes(), AttrType.ATTR));
+                                    runNode.attrs.addAll(convert(run.getParamAssignments(), AttrType.PARAMASSIGNMENT));
+                                    runNode.attrs.addAll(convert(run.getNonParamAssignmentConfigEntries(), AttrType.CONFIGENTRY));
+                                }
+                                return null;
                             }
-                            else {
-                                runNode.attrs = new ArrayList<>();
-                                runNode.attrs.addAll(convert(run.getIterationVariables(), AttrType.ITERVAR));
-                                runNode.attrs.addAll(convert(run.getAttributes(), AttrType.ATTR));
-                                runNode.attrs.addAll(convert(run.getParamAssignments(), AttrType.PARAMASSIGNMENT));
-                                runNode.attrs.addAll(convert(run.getNonParamAssignmentConfigEntries(), AttrType.CONFIGENTRY));
-                            }
-                            return null;
-                        }
-                    });
+                        });
+                    }
+                    return groupRunFields ? ((RunNode) element).attrGroups.toArray() : ((RunNode) element).attrs.toArray();
                 }
-                return groupRunFields ? ((RunNode) element).attrGroups.toArray() : ((RunNode) element).attrs.toArray();
-            }
-            else if (element instanceof AttrGroup)
-                return ((AttrGroup) element).attrs.toArray();
-            else
-                return new Object[0];
+                else if (element instanceof AttrGroup)
+                    return ((AttrGroup) element).attrs.toArray();
+                else
+                    return new Object[0];
+            });
         }
 
         public Object getParent(Object element) {
@@ -257,25 +258,27 @@ public class InputsTree extends TreeViewer {
 
         @Override
         public String getText(Object element) {
-            if (element instanceof InputFile)
-                return ((InputFile)element).getName() + "  (matches " + StringUtils.formatCounted(numFilesPerInput.get(element), "file") + ")";
-            else if (element instanceof FileGroupNode)
-                return ((FileGroupNode) element).label;
-            else if (element instanceof FileNode) {
-                FileNode fileNode = (FileNode)element;
-                if (fileNode.fileSize == -1)
-                    fileNode.fileSize = new File(getFileSystemFilePath(fileNode)).length();
-                return fileNode.filePath + "  (" + FileUtils.humanReadableByteCountBin(fileNode.fileSize) + ", " + StringUtils.formatCounted(fileNode.numRuns, "run") +  ")";
-            }
-            else if (element instanceof RunNode) {
-                RunNode runNode = (RunNode)element;
-                return StringUtils.defaultIfBlank(runNode.runId, "(unnamed run)") + "  (" + getContentSummary(runNode) + ")";
-            }
-            else if (element instanceof AttrGroup)
-                return ((AttrGroup)element).name;
-            else if (element instanceof AttrNode)
-                return ((AttrNode)element).name + " = " + ((AttrNode)element).value;
-            return null;
+            return Debug.timed("Inputs.getText of "+element, 5, () -> {
+                if (element instanceof InputFile)
+                    return ((InputFile)element).getName() + "  (matches " + StringUtils.formatCounted(numFilesPerInput.get(element), "file") + ")";
+                else if (element instanceof FileGroupNode)
+                    return ((FileGroupNode) element).label;
+                else if (element instanceof FileNode) {
+                    FileNode fileNode = (FileNode)element;
+                    if (fileNode.fileSize == -1)
+                        fileNode.fileSize = new File(getFileSystemFilePath(fileNode)).length();
+                    return fileNode.filePath + "  (" + FileUtils.humanReadableByteCountBin(fileNode.fileSize) + ", " + StringUtils.formatCounted(fileNode.numRuns, "run") +  ")";
+                }
+                else if (element instanceof RunNode) {
+                    RunNode runNode = (RunNode)element;
+                    return StringUtils.defaultIfBlank(runNode.runId, "(unnamed run)") + "  (" + getContentSummary(runNode) + ")";
+                }
+                else if (element instanceof AttrGroup)
+                    return ((AttrGroup)element).name;
+                else if (element instanceof AttrNode)
+                    return ((AttrNode)element).name + " = " + ((AttrNode)element).value;
+                return null;
+            });
         }
 
         private String getFileSystemFilePath(FileNode fileNode) {
