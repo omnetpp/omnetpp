@@ -1487,6 +1487,8 @@ static bool isFileReadable(const char *fileName)
         return false;
 }
 
+#define LOG !verbose ? std::cout : std::cout
+
 ResultFile *ResultFileManager::loadFile(const char *displayName, const char *fileSystemFileName, int flags, InterruptedFlag *interrupted)
 {
     WRITER_MUTEX
@@ -1511,7 +1513,6 @@ ResultFile *ResultFileManager::loadFile(const char *displayName, const char *fil
 
     // check if loaded
     ResultFile *fileRef = getFile(displayName);
-#define LOG !verbose ? std::cout : std::cout
     if (fileRef) {
         FileFingerprint fingerprint = readFileFingerprint(fileSystemFileName);
         switch (reloadOption) {
@@ -1537,7 +1538,6 @@ ResultFile *ResultFileManager::loadFile(const char *displayName, const char *fil
             }
         }
     }
-#undef LOG
 
     // try if file can be opened, before we add it to our database
     if (fileSystemFileName == nullptr)
@@ -1545,12 +1545,18 @@ ResultFile *ResultFileManager::loadFile(const char *displayName, const char *fil
     if (!isFileReadable(fileSystemFileName))
         throw opp_runtime_error("Cannot open '%s' for read", fileSystemFileName);
 
-    ResultFile *file = SqliteResultFileUtils::isSqliteFile(fileSystemFileName) ?
-        SqliteResultFileLoader(this, flags, interrupted).loadFile(displayName, fileSystemFileName) :
-        OmnetppResultFileLoader(this, flags, interrupted).loadFile(displayName, fileSystemFileName);
-
-    return file; // note: may be nullptr (if file was skipped e.g. due to missing index)
+    try {
+        ResultFile *file = SqliteResultFileUtils::isSqliteFile(fileSystemFileName) ?
+                SqliteResultFileLoader(this, flags, interrupted).loadFile(displayName, fileSystemFileName) :
+                OmnetppResultFileLoader(this, flags, interrupted).loadFile(displayName, fileSystemFileName);
+        return file; // note: nullptr if file was skipped (e.g. due to missing index)
+    }
+    catch (InterruptedException& e) {
+        return nullptr;
+    }
 }
+
+#undef LOG
 
 void ResultFileManager::setFileInput(ResultFile *file, const char *inputName)
 {
