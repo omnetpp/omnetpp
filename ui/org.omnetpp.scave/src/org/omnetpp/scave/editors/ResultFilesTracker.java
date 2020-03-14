@@ -17,9 +17,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -35,7 +35,9 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.engine.StringVector;
 import org.omnetpp.common.util.DisplayUtils;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.common.ScaveMarkers;
 import org.omnetpp.scave.engine.InterruptedFlag;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileList;
@@ -99,7 +101,7 @@ public class ResultFilesTracker implements IModelChangeListener {
     }
 
     public void reloadResultFiles() {
-        ResultFileManager.runWithWriteLock(manager, () -> manager.clear()); //TODO async
+        ResultFileManager.runWithWriteLock(manager, () -> manager.clear());
         synchronize();
     }
 
@@ -138,7 +140,7 @@ public class ResultFilesTracker implements IModelChangeListener {
 
         Map<String, Map<String, String>> files = new LinkedHashMap<>(); //TODO we could use a flat list of structs -- would be easier to understand
 
-        Debug.time("Collecting files", 1, () -> {
+        Debug.time("Collecting files", debug, 1, () -> {
             subMonitor.setTaskName("Collecting files");
             subMonitor.split(10); // 10%
             for (InputFile input : inputs.getInputs())
@@ -147,10 +149,10 @@ public class ResultFilesTracker implements IModelChangeListener {
 
         //TODO unloadFile() (invoked from RELOAD) is still very slow!
 
-        Debug.time("Loading files", 1, () -> {
-            subMonitor.setTaskName("Loading files");
-
+        Debug.time("Loading files", debug, 1, () -> {
             int numFiles = files.values().stream().collect(Collectors.summingInt((map) -> map.size()));
+            subMonitor.setTaskName("Loading " + StringUtils.formatCounted(numFiles, "file"));
+
             subMonitor.setWorkRemaining(numFiles);
 
             int progressBatchSize = 1+numFiles/1000; // if there are many files, report them in batches (performance)
@@ -160,9 +162,18 @@ public class ResultFilesTracker implements IModelChangeListener {
                 for (Entry<String,String> entry : files.get(inputName).entrySet()) {
                     String filePath = entry.getKey();
                     String fileLocation = entry.getValue();
-                    ResultFile file = manager.loadFile(filePath, fileLocation, loadFlags, interruptedFlag);
-                    if (file != null)
-                        manager.setFileInput(file, inputName);
+                    try {
+                        ResultFile file = manager.loadFile(filePath, fileLocation, loadFlags, interruptedFlag);
+                        if (file != null)
+                            manager.setFileInput(file, inputName);
+                    }
+                    catch (Exception e) {
+                        ScavePlugin.logError("Could not load result file: " + fileLocation, e);
+                        IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(filePath);
+                        if (resource instanceof IFile) // better be
+                            ScaveMarkers.setMarker((IFile)resource, ScaveMarkers.MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_ERROR, "Could not load result file. Reason: "+e.getMessage(), -1);
+                    }
+
                     if (interruptedFlag.getFlag())
                         break outer;
 
@@ -170,15 +181,12 @@ public class ResultFilesTracker implements IModelChangeListener {
                         subMonitor.worked(filesUnreported);
                         filesUnreported = 0;
                     }
-                    //TODO:
-                    //ScavePlugin.logError("Could not load file: " + file.getLocation().toOSString(), e);
-                    //ScaveMarkers.setMarker(file, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_ERROR, "Could not load file. Reason: "+e.getMessage(), -1);
                 }
             }
             subMonitor.worked(filesUnreported);
         });
 
-        Debug.time("Unloading extra files", 1, () -> {
+        Debug.time("Unloading extra files", debug, 1, () -> {
             subMonitor.setTaskName("Unloading extra files");
             subMonitor.setWorkRemaining(10);
             // collect set of file names from 'files'
@@ -199,7 +207,7 @@ public class ResultFilesTracker implements IModelChangeListener {
                     manager.unloadFile(file);
         });
 
-        // notify listeners (TODO only if there was actually any change)
+        // notify listeners (maybe if there was actually any change?)
         notifyListeners(new ResultFileManagerChangeEvent(manager));
 
         monitor.done();
@@ -251,10 +259,11 @@ public class ResultFilesTracker implements IModelChangeListener {
             // relative, and non-wildcard folder part (e.g. "*.vec" or "**/*.vec")
             folder = anfFolder;
             pattern = input;
-        } else {
+        }
+        else {
             if (lastGoodSlashPos == 0) {
                 // absolute path where already the project name contains wildcards
-                folder = workspaceRoot;  // TODO this assumes that all projects are under the workspace directory, which is not always true
+                folder = workspaceRoot;  // note: this assumes that all projects are under the workspace directory, which is not always true
                 pattern = input.substring(1);
             }
             else {
