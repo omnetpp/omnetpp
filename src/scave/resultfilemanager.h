@@ -435,7 +435,7 @@ class SCAVE_API ResultFileManager
     }
 
     // utility functions called while loading a result file
-    ResultFile *addFile(const char *displayName, const char *fileSystemFileName, const char *inputName, ResultFile::FileType fileType);
+    ResultFile *addFile(const char *displayName, const char *fileSystemFileName, ResultFile::FileType fileType);
     Run *addRun(const std::string& runName);
     FileRun *addFileRun(ResultFile *file, Run *run);
     Run *getOrAddRun(const std::string& runName);
@@ -587,7 +587,8 @@ class SCAVE_API ResultFileManager
      * Loading files. displayName is the file path in the Eclipse workspace;
      * the file is actually read from fileSystemFileName.
      */
-    ResultFile *loadFile(const char *displayName, const char *fileSystemFileName, const char *inputName, int flags, InterruptedFlag *interrupted);
+    ResultFile *loadFile(const char *displayName, const char *fileSystemFileName, int flags, InterruptedFlag *interrupted);
+    void setFileInput(ResultFile *file, const char *inputName); // for the "Inputs" page in the IDE
     void unloadFile(ResultFile *file);
     void unloadFile(const char *displayName);
 
@@ -679,7 +680,7 @@ class SCAVE_API IResultFileLoader
   public:
     IResultFileLoader(ResultFileManager *resultFileManagerPar) : resultFileManager(resultFileManagerPar) {}
     virtual ~IResultFileLoader() {}
-    virtual ResultFile *loadFile(const char *displayName, const char *fileSystemFileName, const char *inputName) = 0;
+    virtual ResultFile *loadFile(const char *displayName, const char *fileSystemFileName) = 0;
 };
 
 } // namespace scave

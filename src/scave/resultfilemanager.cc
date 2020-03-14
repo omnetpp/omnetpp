@@ -1334,7 +1334,7 @@ void ResultFileManager::checkPattern(const char *pattern)
     MatchExpression matchExpr(pattern, false  /*dottedpath*/, true  /*fullstring*/, true  /*casesensitive*/);
 }
 
-ResultFile *ResultFileManager::addFile(const char *displayName, const char *fileSystemFileName, const char *inputName, ResultFile::FileType fileType)
+ResultFile *ResultFileManager::addFile(const char *displayName, const char *fileSystemFileName, ResultFile::FileType fileType)
 {
     ResultFile *file = new ResultFile();
     file->id = fileList.size();
@@ -1346,7 +1346,6 @@ ResultFile *ResultFileManager::addFile(const char *displayName, const char *file
     file->fileSystemFilePath = fileSystemFileName;
     file->displayName = displayNameSlash;
     splitFileName(file->displayName.c_str(), file->displayNameFolderPart, file->displayNameFilePart);
-    file->inputName = opp_nulltoempty(inputName);
     file->fingerprint = readFileFingerprint(fileSystemFileName);
     file->fileType = fileType;
     return file;
@@ -1488,7 +1487,7 @@ static bool isFileReadable(const char *fileName)
         return false;
 }
 
-ResultFile *ResultFileManager::loadFile(const char *displayName, const char *fileSystemFileName, const char *inputName, int flags, InterruptedFlag *interrupted)
+ResultFile *ResultFileManager::loadFile(const char *displayName, const char *fileSystemFileName, int flags, InterruptedFlag *interrupted)
 {
     WRITER_MUTEX
 
@@ -1547,10 +1546,19 @@ ResultFile *ResultFileManager::loadFile(const char *displayName, const char *fil
         throw opp_runtime_error("Cannot open '%s' for read", fileSystemFileName);
 
     ResultFile *file = SqliteResultFileUtils::isSqliteFile(fileSystemFileName) ?
-        SqliteResultFileLoader(this, flags, interrupted).loadFile(displayName, fileSystemFileName, inputName) :
-        OmnetppResultFileLoader(this, flags, interrupted).loadFile(displayName, fileSystemFileName, inputName);
+        SqliteResultFileLoader(this, flags, interrupted).loadFile(displayName, fileSystemFileName) :
+        OmnetppResultFileLoader(this, flags, interrupted).loadFile(displayName, fileSystemFileName);
 
     return file; // note: may be nullptr (if file was skipped e.g. due to missing index)
+}
+
+void ResultFileManager::setFileInput(ResultFile *file, const char *inputName)
+{
+    WRITER_MUTEX
+
+    // Note: DO NOT MERGE this method into loadFile(), because it doesn't/shouldn't know
+    // whether already loaded files will need their inputName to be updated or not
+    file->inputName = inputName;
 }
 
 void ResultFileManager::unloadFile(const char *displayName)

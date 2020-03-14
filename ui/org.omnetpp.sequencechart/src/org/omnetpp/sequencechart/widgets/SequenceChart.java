@@ -1317,7 +1317,7 @@ public class SequenceChart
 
                             if (axisState.vectorFileName != null) {
                                 int loadFlags = ResultFileManagerEx.RELOAD_IF_CHANGED | ResultFileManagerEx.IGNORE_LOCK_FILE | ResultFileManagerEx.ALLOW_LOADING_WITHOUT_INDEX;
-                                ResultFile resultFile = resultFileManager.loadFile(axisState.vectorFileName, axisState.vectorFileName, null, loadFlags, null); //TODO would be better to do it from a job that's interruptible
+                                ResultFile resultFile = resultFileManager.loadFile(axisState.vectorFileName, axisState.vectorFileName, loadFlags, null); //TODO would be better to do it from a job that's interruptible
                                 Assert.isNotNull(resultFile); // could only happen if loadFlags contain some "SKIP" flag, but it doesn't
                                 FileRun fileRun = resultFileManager.getFileRun(resultFile, resultFileManager.getRunByName(axisState.vectorRunName));
                                 long id = resultFileManager.getItemByName(fileRun, axisState.vectorModuleFullPath, axisState.vectorName);

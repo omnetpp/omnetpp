@@ -1263,7 +1263,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 final ResultFileManagerEx resultFileManager = new ResultFileManagerEx();
                 try {
                     int loadFlags = ResultFileManagerEx.RELOAD_IF_CHANGED | ResultFileManagerEx.IGNORE_LOCK_FILE | ResultFileManagerEx.ALLOW_LOADING_WITHOUT_INDEX;
-                    resultFile = resultFileManager.loadFile(vectorFileName, vectorFileName, null, loadFlags, null); //TODO would be better to do this from a job that's interruptible
+                    resultFile = resultFileManager.loadFile(vectorFileName, vectorFileName, loadFlags, null); //TODO would be better to do this from a job that's interruptible
                     Assert.isNotNull(resultFile); // could only happen if loadFlags contain some "SKIP" flag, but it doesn't
                 }
                 catch (Throwable te) {

@@ -159,7 +159,9 @@ public class ResultFilesTracker implements IModelChangeListener {
                 for (Entry<String,String> entry : files.get(inputName).entrySet()) {
                     String filePath = entry.getKey();
                     String fileLocation = entry.getValue();
-                    manager.loadFile(filePath, fileLocation, inputName, loadFlags, interruptedFlag);
+                    ResultFile file = manager.loadFile(filePath, fileLocation, loadFlags, interruptedFlag);
+                    if (file != null)
+                        manager.setFileInput(file, inputName);
                     if (interruptedFlag.getFlag())
                         break outer;
                     subMonitor.worked(1); //TODO if there are many files, report less frequently but more work (e.g. worked(10) every 10 files)

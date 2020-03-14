@@ -71,10 +71,10 @@ public class ResultFileManagerEx extends ResultFileManager {
     }
 
     @Override
-    public ResultFile loadFile(String displayName, String osFileName, String inputName, int flags, InterruptedFlag interrupted) {
+    public ResultFile loadFile(String displayName, String osFileName, int flags, InterruptedFlag interrupted) {
         checkNotDeleted();
         checkWriteLock();
-        return super.loadFile(displayName, osFileName, inputName, flags, interrupted);
+        return super.loadFile(displayName, osFileName, flags, interrupted);
     }
 
     @Override
