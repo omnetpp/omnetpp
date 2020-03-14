@@ -146,7 +146,6 @@ public class ResultFilesTracker implements IModelChangeListener {
         });
 
         //TODO unloadFile() (invoked from RELOAD) is still very slow!
-        //TODO handle java.lang.RuntimeException: Result file loading interrupted
 
         Debug.time("Loading files", 1, () -> {
             subMonitor.setTaskName("Loading files");
@@ -154,6 +153,8 @@ public class ResultFilesTracker implements IModelChangeListener {
             int numFiles = files.values().stream().collect(Collectors.summingInt((map) -> map.size()));
             subMonitor.setWorkRemaining(numFiles);
 
+            int progressBatchSize = 1+numFiles/1000; // if there are many files, report them in batches (performance)
+            int filesUnreported = 0;
             int loadFlags = ResultFileManagerEx.RELOAD_IF_CHANGED | ResultFileManagerEx.ALLOW_INDEXING | ResultFileManagerEx.SKIP_IF_LOCKED;
             outer: for (String inputName : files.keySet()) {
                 for (Entry<String,String> entry : files.get(inputName).entrySet()) {
@@ -164,13 +165,17 @@ public class ResultFilesTracker implements IModelChangeListener {
                         manager.setFileInput(file, inputName);
                     if (interruptedFlag.getFlag())
                         break outer;
-                    subMonitor.worked(1); //TODO if there are many files, report less frequently but more work (e.g. worked(10) every 10 files)
+
+                    if (++filesUnreported == progressBatchSize) {
+                        subMonitor.worked(filesUnreported);
+                        filesUnreported = 0;
+                    }
                     //TODO:
                     //ScavePlugin.logError("Could not load file: " + file.getLocation().toOSString(), e);
                     //ScaveMarkers.setMarker(file, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_ERROR, "Could not load file. Reason: "+e.getMessage(), -1);
-
                 }
             }
+            subMonitor.worked(filesUnreported);
         });
 
         Debug.time("Unloading extra files", 1, () -> {
