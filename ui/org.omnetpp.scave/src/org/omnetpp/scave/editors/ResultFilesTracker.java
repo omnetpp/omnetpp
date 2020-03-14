@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
@@ -198,9 +200,31 @@ public class ResultFilesTracker implements IModelChangeListener {
 
 
     protected Map<String, String> collectResultFiles(String input, IContainer anfFolder) {
-        input = new Path(input).toString(); // canonicalize
+        Map<String,String> filesToLoad = new LinkedHashMap<>();  // workspacePath -> filesystemPath
 
-        //TODO if no pattern: it can be either folder or file, must check!
+        if (input.trim().isEmpty())
+            return filesToLoad;
+
+        IPath inputAsPath = new Path(input.trim());
+        input = inputAsPath.toString(); // canonicalize
+
+        IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+        boolean isAbsolute = input.charAt(0) == '/';
+
+        // if no wildcard: it can be a folder or file, expand it and return
+        if (!input.contains("*") && !input.contains("?")) {
+            IResource resource = isAbsolute ? workspaceRoot.findMember(inputAsPath) : anfFolder.findMember(inputAsPath); // null if not found
+            if (resource instanceof IContainer) {
+                IContainer folder = (IContainer)resource;
+                String folderLocation = folder.getLocation().toString();
+                collectResultFilesInFolder(filesToLoad, folder, folderLocation);
+            }
+            else if (resource instanceof IFile) {
+                IFile file = (IFile)resource;
+                filesToLoad.put(file.getFullPath().toString(), file.getLocation().toString());
+            }
+            return filesToLoad;
+        }
 
         // find longest folder prefix that doesn't contain wildcards
         int lastGoodSlashPos = -1;
@@ -220,45 +244,29 @@ public class ResultFilesTracker implements IModelChangeListener {
             // relative, and non-wildcard folder part (e.g. "*.vec" or "**/*.vec")
             folder = anfFolder;
             pattern = input;
-        }
-        else if (lastGoodSlashPos == 0) {
-            // absolute path where already the project name contains wildcards
-            folder = ResourcesPlugin.getWorkspace().getRoot();  // TODO this assumes that all projects are under the workspace directory, which is not always true
-            pattern = input.substring(1);
-        }
-        else {
-            IPath folderPath = new Path(input.substring(0, lastGoodSlashPos));
-            boolean isAbsolute = input.charAt(0) == '/';
-            if (isAbsolute) {
-                IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-                folder = folderPath.segmentCount() == 1 ? root.getProject(folderPath.lastSegment()) : root.getFolder(folderPath);
+        } else {
+            if (lastGoodSlashPos == 0) {
+                // absolute path where already the project name contains wildcards
+                folder = workspaceRoot;  // TODO this assumes that all projects are under the workspace directory, which is not always true
+                pattern = input.substring(1);
             }
-            else
-                folder = anfFolder.getFolder(folderPath);
-            pattern = input.substring(lastGoodSlashPos+1);
+            else {
+                IPath folderPath = new Path(input.substring(0, lastGoodSlashPos));
+                if (isAbsolute) {
+                    IWorkspaceRoot root = workspaceRoot;
+                    folder = folderPath.segmentCount() == 1 ? root.getProject(folderPath.lastSegment()) : root.getFolder(folderPath);
+                }
+                else
+                    folder = anfFolder.getFolder(folderPath);
+                pattern = input.substring(lastGoodSlashPos+1);
+            }
         }
 
         String folderLocation = folder.getLocation().toString();
 
         // collect files
-        Map<String,String> filesToLoad = new LinkedHashMap<>();  // workspacePath -> filesystemPath
-
         if (pattern.isEmpty()) {
-            StringVector scaFiles = Common.collectFilesInDirectory(folderLocation, true, ".sca");
-            long n = scaFiles.size();
-            for (int i = 0; i < n; i++) {
-                String fileLocation = scaFiles.get(i);
-                String filePath = findInWorkspace(fileLocation, folder, folderLocation);
-                filesToLoad.put(filePath, fileLocation);
-            }
-
-            StringVector vecFiles = Common.collectFilesInDirectory(folderLocation, true, ".vec");
-            n = vecFiles.size();
-            for (int i = 0; i < n; i++) {
-                String fileLocation = vecFiles.get(i);
-                String filePath = findInWorkspace(fileLocation, folder, folderLocation);
-                filesToLoad.put(filePath, fileLocation);
-            }
+            collectResultFilesInFolder(filesToLoad, folder, folderLocation);
         }
         else {
             // we require wildcard patterns to match *files* (TODO we could fix that with some effort)
@@ -272,8 +280,25 @@ public class ResultFilesTracker implements IModelChangeListener {
 
         }
 
-        //TODO remove files that are already loaded but not present in the above list
         return filesToLoad;
+    }
+
+    protected void collectResultFilesInFolder(Map<String, String> filesToLoad, IContainer folder, String folderLocation) {
+        StringVector scaFiles = Common.collectFilesInDirectory(folderLocation, true, ".sca");
+        long n = scaFiles.size();
+        for (int i = 0; i < n; i++) {
+            String fileLocation = scaFiles.get(i);
+            String filePath = findInWorkspace(fileLocation, folder, folderLocation);
+            filesToLoad.put(filePath, fileLocation);
+        }
+
+        StringVector vecFiles = Common.collectFilesInDirectory(folderLocation, true, ".vec");
+        n = vecFiles.size();
+        for (int i = 0; i < n; i++) {
+            String fileLocation = vecFiles.get(i);
+            String filePath = findInWorkspace(fileLocation, folder, folderLocation);
+            filesToLoad.put(filePath, fileLocation);
+        }
     }
 
     protected String findInWorkspace(String fileLocation, IContainer containingFolder, String containingFolderLocation) {
