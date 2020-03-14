@@ -17,6 +17,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.common.ui.IHasFocusManager;
 import org.omnetpp.scave.engine.IDList;
@@ -146,8 +147,10 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
     }
 
     protected void updateFilterCombos() {
-        if (!filterPanel.isDisposed())
-            filterPanel.setFilterHints(getFilterHints());
+        Debug.time("updateFilterCombos()", 10, () -> {
+            if (!filterPanel.isDisposed())
+                filterPanel.setFilterHints(getFilterHints());
+        });
     }
 
     protected void updateFilterCombosExcept(Combo except)
@@ -181,11 +184,13 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
     protected void runFilter() {
         Assert.isTrue(idlist!=null);
 
-        IDList filteredIDList = computeFilteredIDList(filterPanel.getFilterIfValid());
-        data.setIDList(filteredIDList);
+        Debug.time("runFilter()", 10, () -> {
+            IDList filteredIDList = computeFilteredIDList(filterPanel.getFilterIfValid());
+            data.setIDList(filteredIDList);
 
-        if (getParent() instanceof FilteredDataTabFolder)
-            ((FilteredDataTabFolder)getParent()).refreshPanelTitles();
+            if (getParent() instanceof FilteredDataTabFolder)
+                ((FilteredDataTabFolder)getParent()).refreshPanelTitles();
+        });
     }
 
     protected IDList computeFilteredIDList(Filter filter) {

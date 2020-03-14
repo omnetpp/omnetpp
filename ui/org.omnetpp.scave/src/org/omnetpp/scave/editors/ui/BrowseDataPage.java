@@ -25,6 +25,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.ui.DropdownAction;
 import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.scave.ScaveImages;
@@ -298,8 +299,10 @@ public class BrowseDataPage extends FormEditorPage {
                 if (panel != null) {
                     Object source = e.getSource();
                     if (source == panel.getDataControl() || source == tabFolder) {
-                        ResultFileManager.runWithReadLock(panel.getResultFileManager(), () -> {
-                            updateSelection();
+                        Debug.time("Browse Data page selection change handling", 1, () -> {
+                            ResultFileManager.runWithReadLock(panel.getResultFileManager(), () -> {
+                                updateSelection();
+                            });
                         });
                     }
                 }
@@ -404,20 +407,23 @@ public class BrowseDataPage extends FormEditorPage {
         FilteredDataPanel panel = tabFolder.getActivePanel();
         if (panel != null) {
             IDataControl control = panel.getDataControl();
-            IDList idList = control.getSelectedIDs();
+            IDList idList = Debug.timed("Getting selected IDs", 1, () -> control.getSelectedIDs());
             if (idList == null)
                 idList = IDList.EMPTY;
             scaveEditor.setSelection(new IDListSelection(idList, control.getResultFileManager()));
-            setFilterAction.update(panel);
 
-            // TODO FIXME HACK this is just to make the "available templates" actually update when the selection changes,
-            // but actually, we do not need to be this eager, we would be fine if we did this every time
-            // the user requests a context menu
-            configureContextMenu(tabFolder.getAllPanel());
-            configureContextMenu(tabFolder.getScalarsPanel());
-            configureContextMenu(tabFolder.getParametersPanel());
-            configureContextMenu(tabFolder.getVectorsPanel());
-            configureContextMenu(tabFolder.getHistogramsPanel());
+            Debug.time("Updating filter", 1, () -> setFilterAction.update(panel));
+
+            Debug.time("Browse Data page configureContextMenus", 1, () -> {
+                // TODO FIXME HACK this is just to make the "available templates" actually update when the selection changes,
+                // but actually, we do not need to be this eager, we would be fine if we did this every time
+                // the user requests a context menu
+                configureContextMenu(tabFolder.getAllPanel());
+                configureContextMenu(tabFolder.getScalarsPanel());
+                configureContextMenu(tabFolder.getParametersPanel());
+                configureContextMenu(tabFolder.getVectorsPanel());
+                configureContextMenu(tabFolder.getHistogramsPanel());
+            });
         }
     }
 

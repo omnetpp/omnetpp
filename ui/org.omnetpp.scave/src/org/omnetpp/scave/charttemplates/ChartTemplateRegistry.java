@@ -63,27 +63,29 @@ public class ChartTemplateRegistry {
     }
 
     public void reloadTemplates() {
-        templates = new ArrayList<>();
+        Debug.time("Reloading templates", 1, () -> {
+            templates = new ArrayList<>();
 
-        try {
-            // load from the plugin
-            String pluginTemplatesFolder = getTemplatesFolder(null);
-            for (String propertiesFile : readFile(pluginTemplatesFolder, "FILELIST").split("\n"))
-                registerChartTemplate(pluginTemplatesFolder, propertiesFile);
+            try {
+                // load from the plugin
+                String pluginTemplatesFolder = getTemplatesFolder(null);
+                for (String propertiesFile : readFile(pluginTemplatesFolder, "FILELIST").split("\n"))
+                    registerChartTemplate(pluginTemplatesFolder, propertiesFile);
 
-            // load from projects
-            IProject[] projectsToScan = ProjectUtils.getAllReferencedProjects(project, true, true);
-            for (IProject project : projectsToScan)
-                if (project.getFolder(CHARTTEMPLATES_FOLDER).exists())
-                    for (IResource member : project.getFolder(CHARTTEMPLATES_FOLDER).members())
-                        if (member instanceof IFile && member.getName().endsWith(".properties"))
-                            registerChartTemplate(getTemplatesFolder(project), member.getName());
-        }
-        catch (IOException|CoreException e ) {
-            ScavePlugin.logError("Error loading chart templates", e);
-        }
+                // load from projects
+                IProject[] projectsToScan = ProjectUtils.getAllReferencedProjects(project, true, true);
+                for (IProject project : projectsToScan)
+                    if (project.getFolder(CHARTTEMPLATES_FOLDER).exists())
+                        for (IResource member : project.getFolder(CHARTTEMPLATES_FOLDER).members())
+                            if (member instanceof IFile && member.getName().endsWith(".properties"))
+                                registerChartTemplate(getTemplatesFolder(project), member.getName());
+            }
+            catch (IOException|CoreException e ) {
+                ScavePlugin.logError("Error loading chart templates", e);
+            }
 
-        lastTimeLoaded = System.currentTimeMillis();
+            lastTimeLoaded = System.currentTimeMillis();
+        });
     }
 
     private void registerChartTemplate(String templatesFolder, String propertiesFile) {

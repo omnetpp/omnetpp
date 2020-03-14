@@ -256,9 +256,10 @@ public class ScaveEditorActions {
     }
 
     public void updateActions() {
-        Debug.println("ScaveEditorActions::updateActions");
-        for (IScaveAction action : actions)
-            action.update();
-        editor.getEditorSite().getActionBars().updateActionBars();
+        Debug.time("Updating actions", 10, () -> {
+            for (IScaveAction action : actions)
+                action.update();
+            editor.getEditorSite().getActionBars().updateActionBars();
+        });
     }
 }

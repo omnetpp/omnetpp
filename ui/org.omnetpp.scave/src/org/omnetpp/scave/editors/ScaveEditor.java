@@ -1478,8 +1478,10 @@ public class ScaveEditor extends MultiPageEditorPartExt
      * about a selection change.
      */
     protected void fireSelectionChangedEvent(ISelection selection) {
-        for (ISelectionChangedListener listener : selectionChangedListeners)
-            listener.selectionChanged(new SelectionChangedEvent(this, selection));
+        Debug.time("Notifying selection change listeners", 10, () -> {
+            for (ISelectionChangedListener listener : selectionChangedListeners)
+                listener.selectionChanged(new SelectionChangedEvent(this, selection));
+        });
     }
 
     // /**
