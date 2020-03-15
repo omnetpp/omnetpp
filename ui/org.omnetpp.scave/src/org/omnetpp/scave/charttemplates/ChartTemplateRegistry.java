@@ -44,8 +44,9 @@ import org.w3c.dom.Element;
  * Loads and maintains the list of available chart templates.
  */
 public class ChartTemplateRegistry {
-
     private static final String CHARTTEMPLATES_FOLDER = "charttemplates";
+
+    private static boolean debug = false;
 
     private IProject project = null;
     private ArrayList<ChartTemplate> templates = null;
@@ -94,7 +95,8 @@ public class ChartTemplateRegistry {
             if (doFindTemplateByID(templates, chartTemplate.getId()) != null)
                 throw new RuntimeException("template ID is not unique");
             templates.add(chartTemplate);
-            Debug.println("Loaded chart template " + chartTemplate);
+            if (debug)
+                Debug.println("Loaded chart template " + chartTemplate);
         }
         catch (Exception e) {
             ScavePlugin.logError("Cannot load chart template " + propertiesFile + " from " + templatesFolder, e);
