@@ -181,6 +181,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     static bool isIgnorableConfigKey(const char *ignoredKeyPatterns, const char *key);
     static cConfigOption *lookupConfigOption(const char *key);
     const std::string *getPooledBaseDir(const char *basedir);
+    virtual bool isEssentialOption(const char *key) const;
 
   public:
     SectionBasedConfiguration();
@@ -227,8 +228,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     virtual std::vector<const char *> getMatchingConfigKeys(const char *pattern) const override;
     virtual const char *getParameterValue(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const override;
     virtual const KeyValue& getParameterEntry(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const override;
-    virtual std::vector<const char *> getKeyValuePairs() const override;
-    virtual std::vector<const char *> getParameterKeyValuePairs() const override;
+    virtual std::vector<const char *> getKeyValuePairs(int flags) const override;
     virtual const char *getPerObjectConfigValue(const char *objectFullPath, const char *keySuffix) const override;
     virtual const KeyValue& getPerObjectConfigEntry(const char *objectFullPath, const char *keySuffix) const override;
     virtual std::vector<const char *> getMatchingPerObjectConfigKeys(const char *objectFullPath, const char *keySuffixPattern) const override;

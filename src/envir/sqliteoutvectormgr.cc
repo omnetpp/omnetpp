@@ -114,7 +114,7 @@ void SqliteOutputVectorManager::openFileForRun()
         writer.createVectorIndex();
 
     // write run data
-    writer.beginRecordingForRun(ResultFileUtils::getRunId().c_str(), SimTime::getScaleExp(), ResultFileUtils::getRunAttributes(), ResultFileUtils::getIterationVariables(), ResultFileUtils::getConfigEntries());
+    writer.beginRecordingForRun(ResultFileUtils::getRunId().c_str(), SimTime::getScaleExp(), ResultFileUtils::getRunAttributes(), ResultFileUtils::getIterationVariables(), ResultFileUtils::getSelectedConfigEntries());
 }
 
 void SqliteOutputVectorManager::closeFile()

@@ -95,7 +95,7 @@ void OmnetppOutputVectorManager::openFileForRun()
     writer.open(fname.c_str());
 
     // write run data
-    writer.beginRecordingForRun(ResultFileUtils::getRunId().c_str(), ResultFileUtils::getRunAttributes(), ResultFileUtils::getIterationVariables(), ResultFileUtils::getConfigEntries());
+    writer.beginRecordingForRun(ResultFileUtils::getRunId().c_str(), ResultFileUtils::getRunAttributes(), ResultFileUtils::getIterationVariables(), ResultFileUtils::getSelectedConfigEntries());
 }
 
 void OmnetppOutputVectorManager::closeFile()

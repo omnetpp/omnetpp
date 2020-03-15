@@ -56,6 +56,7 @@ Register_PerRunConfigOption(CFGID_RESULTDIR_SUBDIVISION, "resultdir-subdivision"
 extern cConfigOption *CFGID_NETWORK;
 extern cConfigOption *CFGID_RESULT_DIR;
 extern cConfigOption *CFGID_SEED_SET;
+extern cConfigOption *CFGID_SIM_TIME_LIMIT;
 
 Register_Class(SectionBasedConfiguration);
 
@@ -1273,28 +1274,49 @@ bool SectionBasedConfiguration::entryMatches(const MatchableEntry& entry, const 
     }
 }
 
-std::vector<const char *> SectionBasedConfiguration::getKeyValuePairs() const
-{
-    std::vector<const char *> result;
-    for (const auto & entry : entries) {
-        result.push_back(entry.getKey());
-        result.push_back(entry.getValue());
-    }
-    return result;
-}
+inline bool isSet(int value, int bits) {return (value & bits) == bits;}
 
-std::vector<const char *> SectionBasedConfiguration::getParameterKeyValuePairs() const
+std::vector<const char *> SectionBasedConfiguration::getKeyValuePairs(int flags) const
 {
     std::vector<const char *> result;
     for (const auto & entry : entries) {
-        const char *lastDotPos = strrchr(entry.getKey(), '.');
-        bool containsHyphen = lastDotPos && strchr(lastDotPos, '-') != nullptr;
-        if (lastDotPos && !containsHyphen) {
+        bool add = false;
+        if (isSet(flags, FILT_ALL))
+            add = true;
+        else {
+            const char *lastDotPos = strrchr(entry.getKey(), '.');
+            if (!lastDotPos) {
+                if (isSet(flags, FILT_GLOBAL_CONFIG))
+                    add = true;
+                else if (isSet(flags, FILT_ESSENTIAL_CONFIG) && isEssentialOption(entry.getKey()))
+                    add = true;
+            }
+            else {
+                bool lastSegmentContainsHyphen = lastDotPos && strchr(lastDotPos, '-') != nullptr;
+                bool isParam = !lastSegmentContainsHyphen;
+                if (isParam) {
+                    if (isSet(flags, FILT_PARAM))
+                        add = true;
+                }
+                else {
+                    if (isSet(flags, FILT_PER_OBJECT_CONFIG))
+                        add = true;
+                }
+            }
+        }
+
+        if (add) {
             result.push_back(entry.getKey());
             result.push_back(entry.getValue());
         }
     }
     return result;
+}
+
+bool SectionBasedConfiguration::isEssentialOption(const char *key) const
+{
+    std::string str = key;
+    return str == CFGID_NETWORK->getName() || str == CFGID_REPEAT->getName() || str == CFGID_SIM_TIME_LIMIT->getName();
 }
 
 const char *SectionBasedConfiguration::getPerObjectConfigValue(const char *objectFullPath, const char *keySuffix) const

@@ -95,7 +95,7 @@ void OmnetppOutputScalarManager::openFileForRun()
 
     // write run data
     writer.beginRecordingForRun(ResultFileUtils::getRunId().c_str(), ResultFileUtils::getRunAttributes(),
-            ResultFileUtils::getIterationVariables(), ResultFileUtils::getConfigEntries());
+            ResultFileUtils::getIterationVariables(), ResultFileUtils::getSelectedConfigEntries());
 }
 
 void OmnetppOutputScalarManager::closeFile()

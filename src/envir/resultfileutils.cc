@@ -21,6 +21,7 @@
 
 #include <cstring>
 #include "common/stringutil.h"
+#include "common/stringtokenizer.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cproperties.h"
@@ -33,6 +34,8 @@ using namespace omnetpp::common;
 
 namespace omnetpp {
 namespace envir {
+
+Register_PerRunConfigOption(CFGID_CONFIG_RECORDING, "config-recording", CFG_CUSTOM, "all", "Selects the set of config options to save into result files. This option can help reduce the size of result files, which is especially useful in the case of large simulation campaigns. Possible values: all, none, config, params, essentials, globalconfig");
 
 std::string ResultFileUtils::getRunId()
 {
@@ -82,11 +85,30 @@ static std::string removeOptionalQuotes(const char *key, const char *value)
     return unquotedValue;
 }
 
-OrderedKeyValueList ResultFileUtils::getConfigEntries()
+OrderedKeyValueList ResultFileUtils::getSelectedConfigEntries()
 {
     cConfigurationEx *cfg = getEnvir()->getConfigEx();
+    const char *option = cfg->getAsCustom(CFGID_CONFIG_RECORDING);
+    int flags = 0;
+    for (std::string e : StringTokenizer(option).asVector()) {
+        if (e == "none")
+            flags |= 0;
+        else if (e == "all")
+            flags |= cConfigurationEx::FILT_ALL;
+        else if (e == "config")
+            flags |= cConfigurationEx::FILT_CONFIG;
+        else if (e == "params")
+            flags |= cConfigurationEx::FILT_PARAM;
+        else if (e == "essentials")
+            flags |= cConfigurationEx::FILT_ESSENTIAL_CONFIG;
+        else if (e == "globalconfig")
+            flags |= cConfigurationEx::FILT_GLOBAL_CONFIG;
+        else
+            throw cRuntimeError("Unrecognized value '%s' for option '%s'", e.c_str(), CFGID_CONFIG_RECORDING->getName());
+    }
+
     OrderedKeyValueList result;
-    std::vector<const char *> keysValues = cfg->getKeyValuePairs();
+    std::vector<const char *> keysValues = cfg->getKeyValuePairs(flags);
     for (int i = 0; i < (int)keysValues.size(); i += 2) {
         const char *key = keysValues[i];
         const char *value = keysValues[i+1];

@@ -39,7 +39,7 @@ class ResultFileUtils {
     static std::string getRunId();
     static StringMap getRunAttributes();
     static StringMap getIterationVariables();
-    static OrderedKeyValueList getConfigEntries();
+    static OrderedKeyValueList getSelectedConfigEntries();
     static StringMap convertProperties(const cProperties *properties);
     static StringMap convertMap(const opp_string_map *m);
 };

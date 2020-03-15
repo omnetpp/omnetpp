@@ -145,7 +145,6 @@ class SIM_API cConfiguration : public cObject
 
     /** @name Getters for configuration options */
     //@{
-//FIXME why aren't these methods all const???
     /**
      * Returns a config value without any conversion.
      * fallbackValue is returned if the value is not specified in the configuration, and there is no default value.
@@ -282,6 +281,19 @@ class SIM_API cConfiguration : public cObject
  */
 class SIM_API cConfigurationEx : public cConfiguration
 {
+  public:
+    /**
+     * Flags for the 'flags' argument of the getKeyValuePairs() method.
+     */
+    enum FilterFlags {
+        FILT_ESSENTIAL_CONFIG = 1 << 0,
+        FILT_GLOBAL_CONFIG = 1 << 1 | FILT_ESSENTIAL_CONFIG, // both per-run and not per-run
+        FILT_PER_OBJECT_CONFIG = 1 << 2,
+        FILT_CONFIG = FILT_GLOBAL_CONFIG | FILT_PER_OBJECT_CONFIG,
+        FILT_PARAM = 1 << 3,
+        FILT_ALL = FILT_CONFIG | FILT_PARAM
+    };
+
   public:
     /**
      * Initializes configuration object from "boot-time" configuration
@@ -447,15 +459,7 @@ class SIM_API cConfigurationEx : public cConfiguration
      * key2, value2,...), where keys and values correspond to entries in the
      * active configuration.
      */
-    virtual std::vector<const char *> getKeyValuePairs() const = 0;
-
-    /**
-     * This method returns an array of the following form: (key1, value1,
-     * key2, value2,...), where keys and values correspond to parameter
-     * assignments in the active configuration. This method could be
-     * useful for writing the header of result files.
-     */
-    virtual std::vector<const char *> getParameterKeyValuePairs() const = 0;
+    virtual std::vector<const char *> getKeyValuePairs(int flags) const = 0;
 
     /**
      * Returns the list of config keys that match the wildcard pattern

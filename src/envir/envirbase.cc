@@ -477,7 +477,7 @@ void EnvirBase::printRunInfo(const char *configName, const char *runFilter, cons
                 const cConfiguration::RunInfo& runInfo = runInfos[runNumber];
                 out << "Run " << runNumber << ": " << runInfo.info << endl;
                 cfg->activateConfig(configName, runNumber);
-                std::vector<const char *> keysValues = cfg->getKeyValuePairs();
+                std::vector<const char *> keysValues = cfg->getKeyValuePairs(cConfigurationEx::FILT_ALL);
                 for (int i = 0; i < (int)keysValues.size(); i += 2) {
                     const char *key = keysValues[i];
                     const char *value = keysValues[i+1];
