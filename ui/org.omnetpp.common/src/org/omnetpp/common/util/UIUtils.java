@@ -7,18 +7,23 @@
 
 package org.omnetpp.common.util;
 
+import java.util.Arrays;
+
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.fieldassist.ControlDecoration;
-import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.common.CommonPlugin;
+import org.omnetpp.common.Debug;
 
 public class UIUtils {
     // normal size error/warning/info icons
@@ -67,7 +72,7 @@ public class UIUtils {
         control.setMenu(menu);
         // Note: don't register the context menu with the editor site, or "Run As", "Debug As", "Team", and other irrelevant menu items appear...
     }
-    
+
     public static void dumpWidgetHierarchy(Control control) {
         dumpWidgetHierarchy(control, 0);
     }
@@ -81,7 +86,33 @@ public class UIUtils {
                 dumpWidgetHierarchy(child, level+1);
     }
 
+    /**
+     * Wraps existing listeners of the widget (control) with code that measures
+     * and prints their execution time.
+     */
+    public static void timeExistingListeners(Widget widget) {
+        Object eventTable = ReflectionUtils.getFieldValue(widget, "eventTable");
+        Listener[] listeners = (Listener[]) ReflectionUtils.getFieldValue(eventTable, "listeners");
+        for (int i=0; i<listeners.length; i++) {
+            final Listener origListener = listeners[i];
+            listeners[i] = new Listener() {
+                @Override
+                public void handleEvent(Event event) {
+                    Debug.time(event.toString(), 0, () -> origListener.handleEvent(event));
+                }
+            };
+        }
+    }
 
-
+    public static void removeAllListeners(Widget widget) {
+        Object eventTable = ReflectionUtils.getFieldValue(widget, "eventTable");
+        Listener[] listeners = (Listener[]) ReflectionUtils.getFieldValue(eventTable, "listeners");
+        listeners = Arrays.copyOf(listeners, listeners.length);
+        int[] types = (int[]) ReflectionUtils.getFieldValue(eventTable, "types");
+        types = Arrays.copyOf(types, types.length);
+        for (int i=0; i<listeners.length; i++)
+            if (listeners[i] != null)
+                widget.removeListener(types[i], listeners[i]);
+    }
 
 }
