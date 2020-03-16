@@ -897,7 +897,7 @@ std::string opp_makedatetimestring()
     time_t t = time(nullptr);
     struct tm tm = *localtime(&t);
     char timestr[32];
-    sprintf(timestr, "%04d%02d%02d-%02d:%02d:%02d",
+    sprintf(timestr, "%04d%02d%02d-%02d%02d%02d",
             1900+tm.tm_year, tm.tm_mon+1, tm.tm_mday,
             tm.tm_hour, tm.tm_min, tm.tm_sec);
     return timestr;

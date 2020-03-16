@@ -434,7 +434,7 @@ COMMON_API double opp_atof(const char *s);
 COMMON_API std::string opp_formatdouble(double value, int numSignificantDigits);
 
 /**
- * Returns the current date/time as a string in the "yyyymmdd-hh:mm:ss" format.
+ * Returns the current date/time as a string in the "yyyymmdd-hhmmss" format.
  */
 COMMON_API std::string opp_makedatetimestring();
 
