@@ -27,8 +27,10 @@ def module_name_runattr_from_pattern(pattern):
     module = get_field_from_pattern("module")
     name = get_field_from_pattern("name")
 
-    if pattern.endswith(" =~ \*"):
+    if pattern.endswith(" =~ *"):
         runattr = pattern[:-5]
+    if pattern.endswith(" =~ \"*\""):
+        runattr = pattern[:-7]
 
     # ??? is this always reasonable? When the runattrs are recorded in the file as scalars?
     if module == '_runattrs_' or module == '.':
