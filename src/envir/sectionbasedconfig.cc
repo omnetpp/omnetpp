@@ -72,11 +72,12 @@ static struct ConfigVarDescription { const char *name, *description; } configVar
     { CFGVAR_REPLICATION,      "Value of the `replication-label` configuration option" },
     { CFGVAR_PROCESSID,        "PID of the simulation process" },
     { CFGVAR_DATETIME,         "Date and time the simulation run was started" },
+    { CFGVAR_DATETIMEF,        "Like ${datetime}, but sanitized for use as part of a file name" },
     { CFGVAR_RESULTDIR,        "Value of the `result-dir` configuration option" },
     { CFGVAR_REPETITION,       "The iteration number in `0..N-1`, where `N` is the value of the `repeat` configuration option" },
     { CFGVAR_SEEDSET,          "Value of the `seed-set` configuration option" },
     { CFGVAR_ITERATIONVARS,    "Concatenation of all user-defined iteration variables in `name=value` form" },
-    { CFGVAR_ITERATIONVARSF,   "Like ${iterationvars}, but sanitized for use as part of file names" },
+    { CFGVAR_ITERATIONVARSF,   "Like ${iterationvars}, but sanitized for use as part of a file name" },
     { nullptr,                 nullptr }
 };
 
@@ -408,12 +409,14 @@ SectionBasedConfiguration::StringMap SectionBasedConfiguration::computeVariables
     // create variables
     int runnumberWidth = internalGetConfigAsInt(CFGID_RUNNUMBER_WIDTH, sectionChain, result, locationToVarName);
     runnumberWidth = std::max(0, std::min(6, runnumberWidth));
+    std::string datetime = opp_makedatetimestring();
     result[CFGVAR_INIFILE] = opp_nulltoempty(getFileName());
     result[CFGVAR_CONFIGNAME] = configName;
     result[CFGVAR_RUNNUMBER] = opp_stringf("%0*d", runnumberWidth, runNumber);
     result[CFGVAR_NETWORK] = internalGetConfigAsString(CFGID_NETWORK, sectionChain, result, locationToVarName);
     result[CFGVAR_PROCESSID] = opp_stringf("%d", (int)getpid());
-    result[CFGVAR_DATETIME] = opp_makedatetimestring();
+    result[CFGVAR_DATETIME] = datetime;
+    result[CFGVAR_DATETIMEF] = opp_replacesubstring(datetime, ":", "", true);
     result[CFGVAR_RUNID] = result[CFGVAR_CONFIGNAME]+"-"+result[CFGVAR_RUNNUMBER]+"-"+result[CFGVAR_DATETIME]+"-"+result[CFGVAR_PROCESSID];
 
     // the following variables should be done last, because they may depend on the variables computed above

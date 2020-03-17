@@ -46,6 +46,7 @@ class cConfigOption;
 #define CFGVAR_REPLICATION      "replication"
 #define CFGVAR_PROCESSID        "processid"
 #define CFGVAR_DATETIME         "datetime"
+#define CFGVAR_DATETIMEF        "datetimef"
 #define CFGVAR_RESULTDIR        "resultdir"
 #define CFGVAR_REPETITION       "repetition"
 #define CFGVAR_SEEDSET          "seedset"
