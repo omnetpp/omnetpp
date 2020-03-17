@@ -92,14 +92,14 @@ public class Debug {
             return;
         }
 
-        long start = System.currentTimeMillis();
+        long start = System.nanoTime();
         try {
             runnable.run();
         }
         finally {
-            long duration = System.currentTimeMillis() - start;
-            if (thresholdMillis <= 0 || duration > thresholdMillis)
-                Debug.println(what + ": took " + duration + "ms");
+            long durationNanos = System.nanoTime() - start;
+            if (durationNanos > 1000000*thresholdMillis)
+                Debug.println(what + ": took " + formatNanos(durationNanos));
         }
     }
 
@@ -129,7 +129,7 @@ public class Debug {
             }
         }
 
-        long start = System.currentTimeMillis();
+        long start = System.nanoTime();
         try {
             return callable.call();
         }
@@ -140,10 +140,18 @@ public class Debug {
             throw new RuntimeException(e);
         }
         finally {
-            long duration = System.currentTimeMillis() - start;
-            if (thresholdMillis <= 0 || duration > thresholdMillis)
-                Debug.println(what + ": took " + duration + "ms");
+            long durationNanos = System.nanoTime() - start;
+            if (durationNanos > 1000000*thresholdMillis)
+                Debug.println(what + ": took " + formatNanos(durationNanos));
         }
     }
+
+    private static String formatNanos(long durationNanos) {
+        if (durationNanos < 10000000) // 10ms
+            return (durationNanos/1000000f+"00000").substring(0,5) + "ms";
+        else
+            return (durationNanos+500000)/1000000 + "ms";
+    }
+
 
 }
