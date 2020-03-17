@@ -153,17 +153,13 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
         });
     }
 
-    protected void updateFilterCombosExcept(Combo except)
-    {
-        if (data.getResultFileManager() != null && !filterPanel.isDisposed() && !filterPanel.isShowingAdvancedFilter())
-        {
+    protected void updateFilterCombosExcept(Combo except) {
+        if (data.getResultFileManager() != null && !filterPanel.isDisposed() && !filterPanel.isShowingAdvancedFilter()) {
             FilterHints hints = new FilterHints();
 
-            for (FilterField field : filterPanel.getSimpleFilterFields())
-            {
+            for (FilterField field : filterPanel.getSimpleFilterFields()) {
                 Combo combo = filterPanel.getFilterCombo(field);
-                if (combo != except)
-                {
+                if (combo != except) {
                     Filter filter = filterPanel.getSimpleFilterExcluding(field);
                     IDList filteredIDList = computeFilteredIDList(filter);
                     hints.addHints(field, data.getResultFileManager(), filteredIDList);
@@ -194,14 +190,14 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
     }
 
     protected IDList computeFilteredIDList(Filter filter) {
-        if (data.getResultFileManager() == null) {
+        ResultFileManagerEx manager = data.getResultFileManager();
+        if (manager == null) {
             // no result file manager, return empty list
             return new IDList();
         }
         else if (filter != null) {
-            // run the filter on the unfiltered IDList, and return the result
-            IDList filteredIDList = ScaveModelUtil.filterIDList(idlist, filter, data.getResultFileManager());
-            return filteredIDList;
+            Assert.isTrue(filter.getFilterPattern()!=null);
+            return manager.filterIDList(idlist, filter.getFilterPattern());
         }
         else {
             // fallback: if filter is not valid, just show an unfiltered list. This should be

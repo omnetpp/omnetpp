@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
@@ -209,6 +208,7 @@ public class ScaveModelUtil {
             return manager.getAllItems(true, true);
 
         switch (type) {
+        case PARAMETER: return manager.getAllParameters();
         case SCALAR: return manager.getAllScalars(true, true);
         case VECTOR: return manager.getAllVectors();
         case STATISTICS: return manager.getAllStatistics();
@@ -224,11 +224,6 @@ public class ScaveModelUtil {
         for (int i = 0; i < size; ++i)
             items[i] = manager.getItem(idlist.get(i));
         return items;
-    }
-
-    public static IDList filterIDList(IDList idlist, Filter filter, ResultFileManager manager) {
-        Assert.isTrue(filter.getFilterPattern()!=null);
-        return manager.filterIDList(idlist, filter.getFilterPattern());
     }
 
     /**

@@ -237,33 +237,27 @@ public class FilteringPanel extends Composite {
         return filter.isValid() ? filter : null;
     }
 
-    public Filter getSimpleFilter(FilterField... includedFields)
-    {
+    public Filter getSimpleFilter(FilterField... includedFields) {
         return getSimpleFilter(Arrays.asList(includedFields));
     }
 
-    public Filter getSimpleFilter(List<FilterField> includedFields)
-    {
+    public Filter getSimpleFilter(List<FilterField> includedFields) {
         return new Filter(assembleFilterPattern(includedFields));
     }
 
-    public Filter getSimpleFilterExcluding(FilterField... excludedFields)
-    {
+    public Filter getSimpleFilterExcluding(FilterField... excludedFields) {
         return getSimpleFilterExcluding(Arrays.asList(excludedFields));
     }
 
-    public Filter getSimpleFilterExcluding(List<FilterField> excludedFields)
-    {
+    public Filter getSimpleFilterExcluding(List<FilterField> excludedFields) {
         return new Filter(assembleFilterPatternExcluding(excludedFields));
     }
 
     private String assembleFilterPattern(List<FilterField> includedFields) {
         FilterUtil filter = new FilterUtil();
         for (FilterField field : simpleFilterFields)
-        {
             if (includedFields.contains(field))
                 filter.setField(field.getName(), getFilterCombo(field).getText());
-        }
         String filterPattern = filter.getFilterPattern();
         return filterPattern.equals("*") ? "" : filterPattern;  // replace "*": "" also works, and lets the filter field show the hint text
     }
@@ -271,10 +265,8 @@ public class FilteringPanel extends Composite {
     private String assembleFilterPatternExcluding(List<FilterField> excludedFields) {
         FilterUtil filter = new FilterUtil();
         for (FilterField field : simpleFilterFields)
-        {
             if (!excludedFields.contains(field))
                 filter.setField(field.getName(), getFilterCombo(field).getText());
-        }
         String filterPattern = filter.getFilterPattern();
         return filterPattern.equals("*") ? "" : filterPattern;  // replace "*": "" also works, and lets the filter field show the hint text
     }
