@@ -32,7 +32,7 @@ import org.omnetpp.common.ui.FilterCombo;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.assist.FilterContentProposalProvider;
-import org.omnetpp.scave.model2.Filter;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model2.FilterField;
 import org.omnetpp.scave.model2.FilterHints;
 import org.omnetpp.scave.model2.FilterUtil;
@@ -220,37 +220,41 @@ public class FilteringPanel extends Composite {
     }
 
     public boolean isFilterPatternValid() {
-        return getFilter().isValid();
+        return isValidFilter(getFilter());
     }
 
-    public Filter getFilter() {
-        String filterPattern;
-        if (isShowingAdvancedFilter())
-            filterPattern = getAdvancedFilterText().getText();
-        else
-            filterPattern = assembleFilterPattern(getSimpleFilterFields());
-        return new Filter(filterPattern);
+    public String getFilter() {
+        return isShowingAdvancedFilter() ? getAdvancedFilterText().getText() : assembleFilterPattern(getSimpleFilterFields());
     }
 
-    public Filter getFilterIfValid() {
-        Filter filter = getFilter();
-        return filter.isValid() ? filter : null;
+    public String getFilterIfValid() {
+        String filter = getFilter();
+        return isValidFilter(filter) ? filter : null;
     }
 
-    public Filter getSimpleFilter(FilterField... includedFields) {
+    public static boolean isValidFilter(String filter) {
+        try {
+            ResultFileManager.checkPattern(filter);
+        } catch (Exception e) {
+            return false; // apparently not valid
+        }
+        return true;
+    }
+
+    public String getSimpleFilter(FilterField... includedFields) {
         return getSimpleFilter(Arrays.asList(includedFields));
     }
 
-    public Filter getSimpleFilter(List<FilterField> includedFields) {
-        return new Filter(assembleFilterPattern(includedFields));
+    public String getSimpleFilter(List<FilterField> includedFields) {
+        return assembleFilterPattern(includedFields);
     }
 
-    public Filter getSimpleFilterExcluding(FilterField... excludedFields) {
+    public String getSimpleFilterExcluding(FilterField... excludedFields) {
         return getSimpleFilterExcluding(Arrays.asList(excludedFields));
     }
 
-    public Filter getSimpleFilterExcluding(List<FilterField> excludedFields) {
-        return new Filter(assembleFilterPatternExcluding(excludedFields));
+    public String getSimpleFilterExcluding(List<FilterField> excludedFields) {
+        return assembleFilterPatternExcluding(excludedFields);
     }
 
     private String assembleFilterPattern(List<FilterField> includedFields) {

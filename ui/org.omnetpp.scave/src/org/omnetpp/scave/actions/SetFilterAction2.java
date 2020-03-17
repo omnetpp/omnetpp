@@ -7,8 +7,6 @@
 
 package org.omnetpp.scave.actions;
 
-import java.util.concurrent.Callable;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.scave.editors.IDListSelection;
@@ -19,7 +17,6 @@ import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ResultItemField;
-import org.omnetpp.scave.model2.Filter;
 import org.omnetpp.scave.model2.FilterUtil;
 
 /**
@@ -72,7 +69,7 @@ public class SetFilterAction2 extends AbstractScaveAction
         if (panel != null && fieldName != null && fieldValue != null) {
             FilterUtil filter = new FilterUtil();
             filter.setField(fieldName, fieldValue);
-            panel.setFilterParams(new Filter(filter.getFilterPattern()));
+            panel.setFilterParams(filter.getFilterPattern());
         }
     }
 

@@ -16,7 +16,7 @@ import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
 import org.omnetpp.scave.model.InputFile;
-import org.omnetpp.scave.model2.Filter;
+
 import org.omnetpp.scave.model2.FilterUtil;
 import org.omnetpp.scave.model2.ResultFilePayload;
 import org.omnetpp.scave.model2.RunAttributePayload;
@@ -40,7 +40,7 @@ public class SetFilterAction extends AbstractScaveAction {
         Object selected = asStructuredOrEmpty(selection).getFirstElement();
         FilterUtil filterUtil = getFilterParams(selected);
         if (filterUtil != null) {
-            Filter filter = new Filter(filterUtil.getFilterPattern());
+            String filter = filterUtil.getFilterPattern();
             BrowseDataPage page = scaveEditor.getBrowseDataPage();
             page.getAllPanel().setFilterParams(filter);
             page.getScalarsPanel().setFilterParams(filter);

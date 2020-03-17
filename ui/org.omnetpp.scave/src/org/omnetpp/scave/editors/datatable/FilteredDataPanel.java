@@ -24,7 +24,7 @@ import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.ResultType;
-import org.omnetpp.scave.model2.Filter;
+
 import org.omnetpp.scave.model2.FilterField;
 import org.omnetpp.scave.model2.FilterHints;
 import org.omnetpp.scave.model2.ScaveModelUtil;
@@ -160,7 +160,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
             for (FilterField field : filterPanel.getSimpleFilterFields()) {
                 Combo combo = filterPanel.getFilterCombo(field);
                 if (combo != except) {
-                    Filter filter = filterPanel.getSimpleFilterExcluding(field);
+                    String filter = filterPanel.getSimpleFilterExcluding(field);
                     IDList filteredIDList = computeFilteredIDList(filter);
                     hints.addHints(field, data.getResultFileManager(), filteredIDList);
                 }
@@ -189,15 +189,14 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
         });
     }
 
-    protected IDList computeFilteredIDList(Filter filter) {
+    protected IDList computeFilteredIDList(String filter) {
         ResultFileManagerEx manager = data.getResultFileManager();
         if (manager == null) {
             // no result file manager, return empty list
             return new IDList();
         }
         else if (filter != null) {
-            Assert.isTrue(filter.getFilterPattern()!=null);
-            return manager.filterIDList(idlist, filter.getFilterPattern());
+            return manager.filterIDList(idlist, filter);
         }
         else {
             // fallback: if filter is not valid, just show an unfiltered list. This should be
@@ -208,17 +207,15 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
         }
     }
 
-    public Filter getFilter() {
+    public String getFilter() {
         return filterPanel.getFilter();
     }
 
-    public void setFilterParams(Filter filter) {
-        String filterPattern = filter.getFilterPattern();
-
+    public void setFilterParams(String filter) {
         // an arbitrary pattern can only be shown in advanced view -- switch there
         if (!filterPanel.isShowingAdvancedFilter())
             filterPanel.showAdvancedFilter();
-        filterPanel.getAdvancedFilterText().setText(filterPattern);
+        filterPanel.getAdvancedFilterText().setText(filter);
         runFilter();
     }
 
