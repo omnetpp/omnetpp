@@ -26,9 +26,7 @@ import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.VectorResult;
 
 /**
- * ResultFileManager with notification capability. Also re-wraps
- * all returned IDLists into IDListEx (IDList with notification
- * capability.)
+ * ResultFileManager with added checks and minimal extra functionality.
  *
  * @author andras
  */
@@ -46,7 +44,6 @@ public class ResultFileManagerEx extends ResultFileManager {
     public static int IGNORE_LOCK_FILE = ResultFileManager.LoadFlags.IGNORE_LOCK_FILE.swigValue(); // pretend lock file doesn't exist
     public static int VERBOSE = ResultFileManager.LoadFlags.VERBOSE.swigValue(); // print on stdout what it's doing
 
-    private ListenerList<IResultFilesChangeListener> changeListeners = new ListenerList<>();
     private ListenerList<IResultFileManagerDisposeListener> disposeListeners = new ListenerList<>();
 
     public void addDisposeListener(IResultFileManagerDisposeListener listener) {
@@ -68,6 +65,12 @@ public class ResultFileManagerEx extends ResultFileManager {
     public void dispose() {
         delete();
         notifyDisposeListeners();
+    }
+
+    @Override
+    public void clear() {
+        checkNotDeleted();
+        super.clear();
     }
 
     @Override
@@ -116,43 +119,37 @@ public class ResultFileManagerEx extends ResultFileManager {
     @Override
     public IDList getAllScalars() {
         checkNotDeleted();
-        IDList idlist = super.getAllScalars();
-        return wrap(idlist);
+        return super.getAllScalars();
     }
 
     @Override
     public IDList getAllVectors() {
         checkNotDeleted();
-        IDList idlist = super.getAllVectors();
-        return wrap(idlist);
+        return super.getAllVectors();
     }
 
     @Override
     public IDList getAllHistograms() {
         checkNotDeleted();
-        IDList idlist = super.getAllHistograms();
-        return wrap(idlist);
+        return super.getAllHistograms();
     }
 
     @Override
     public IDList getAllItems() {
         checkNotDeleted();
-        IDList idlist = super.getAllItems();
-        return wrap(idlist);
+        return super.getAllItems();
     }
 
     @Override
     public IDList getVectorsInFileRun(FileRun fileRun) {
-        checkReadLock();
-        IDList idlist = super.getVectorsInFileRun(fileRun);
-        return wrap(idlist);
+        checkNotDeleted();
+        return super.getVectorsInFileRun(fileRun);
     }
 
     @Override
     public IDList filterIDList(IDList idlist, FileRunList fileAndRunFilter, String moduleFilter, String nameFilter) {
-        checkReadLock();
-        IDList result = super.filterIDList(idlist, fileAndRunFilter, moduleFilter, nameFilter);
-        return wrap(result);
+        checkNotDeleted();
+        return super.filterIDList(idlist, fileAndRunFilter, moduleFilter, nameFilter);
     }
 
     /*
@@ -162,37 +159,36 @@ public class ResultFileManagerEx extends ResultFileManager {
     @Override
     public IDList filterIDList(IDList idlist, String pattern, InterruptedFlag interrupted) {
         checkNotDeleted();
-        IDList result = super.filterIDList(idlist, pattern, interrupted);
-        return wrap(result);
+        return super.filterIDList(idlist, pattern, interrupted);
     }
 
     @Override
     public ResultFile getFile(String fileName) {
-        // checkReadLock();
+        checkNotDeleted();
         return super.getFile(fileName);
     }
 
     @Override
     public FileRun getFileRun(ResultFile file, Run run) {
-        checkReadLock();
+        checkNotDeleted();
         return super.getFileRun(file, run);
     }
 
     @Override
     public ResultFileList getFiles() {
-        checkReadLock();
+        checkNotDeleted();
         return super.getFiles();
     }
 
     @Override
     public ResultFileList getFilesForRun(Run run) {
-        checkReadLock();
+        checkNotDeleted();
         return super.getFilesForRun(run);
     }
 
     @Override
     public long getItemByName(FileRun fileRun, String module, String name) {
-        checkReadLock();
+        checkNotDeleted();
         return super.getItemByName(fileRun, module, name);
     }
 
@@ -202,17 +198,15 @@ public class ResultFileManagerEx extends ResultFileManager {
         return super.getModuleFilterHints(idlist);
     }
 
-
-
     @Override
     public StringVector getFilePathFilterHints(ResultFileList fileList) {
-        checkReadLock();
+        checkNotDeleted();
         return super.getFilePathFilterHints(fileList);
     }
 
     @Override
     public StringVector getRunNameFilterHints(RunList runList) {
-        checkReadLock();
+        checkNotDeleted();
         return super.getRunNameFilterHints(runList);
     }
 
@@ -224,69 +218,67 @@ public class ResultFileManagerEx extends ResultFileManager {
 
     @Override
     public StringVector getParamAssignmentFilterHints(RunList runList, String key) {
-        checkReadLock();
+        checkNotDeleted();
         return super.getParamAssignmentFilterHints(runList, key);
     }
 
     @Override
-    public StringVector getResultItemAttributeFilterHints(IDList idlist,
-            String attrName) {
+    public StringVector getResultItemAttributeFilterHints(IDList idlist, String attrName) {
         checkNotDeleted();
         return super.getResultItemAttributeFilterHints(idlist, attrName);
     }
 
     @Override
-    public StringVector getRunAttributeFilterHints(RunList runList,
-            String attrName) {
-        checkReadLock();
+    public StringVector getRunAttributeFilterHints(RunList runList, String attrName) {
+        checkNotDeleted();
         return super.getRunAttributeFilterHints(runList, attrName);
     }
 
     @Override
     public Run getRunByName(String runName) {
-        checkReadLock();
+        checkNotDeleted();
         return super.getRunByName(runName);
     }
 
     @Override
     public RunList getRuns() {
-        checkReadLock();
+        checkNotDeleted();
         return super.getRuns();
     }
 
     @Override
     public RunList getRunsInFile(ResultFile file) {
-        checkReadLock();
+        checkNotDeleted();
         return super.getRunsInFile(file);
     }
 
     @Override
     public ResultItem getItem(long id) {
-        checkReadLock();
+        checkNotDeleted();
         return super.getItem(id);
     }
 
     @Override
     public ScalarResult getScalar(long id) {
-        checkReadLock();
+        checkNotDeleted();
         return super.getScalar(id);
     }
 
     @Override
     public VectorResult getVector(long id) {
-        checkReadLock();
+        checkNotDeleted();
         return super.getVector(id);
     }
 
     @Override
     public HistogramResult getHistogram(long id) {
-        checkReadLock();
+        checkNotDeleted();
         return super.getHistogram(id);
     }
 
     @Override
     public ResultFileList getUniqueFiles(IDList ids) {
-        checkReadLock();
+        checkNotDeleted();
         return super.getUniqueFiles(ids);
     }
 
@@ -304,7 +296,7 @@ public class ResultFileManagerEx extends ResultFileManager {
 
     @Override
     public RunList getUniqueRuns(IDList ids) {
-        checkReadLock();
+        checkNotDeleted();
         return super.getUniqueRuns(ids);
     }
 
@@ -322,13 +314,13 @@ public class ResultFileManagerEx extends ResultFileManager {
 
     @Override
     public StringSet getUniqueParamAssignmentKeys(RunList runList) {
-        checkReadLock();
+        checkNotDeleted();
         return super.getUniqueParamAssignmentKeys(runList);
     }
 
     @Override
     public StringSet getUniqueRunAttributeNames(RunList runList) {
-        checkReadLock();
+        checkNotDeleted();
         return super.getUniqueRunAttributeNames(runList);
     }
 
@@ -349,7 +341,6 @@ public class ResultFileManagerEx extends ResultFileManager {
         checkNotDeleted();
         return super.isStaleID(id);
     }
-
 
     @Override
     protected Object clone() throws CloneNotSupportedException {
@@ -378,13 +369,24 @@ public class ResultFileManagerEx extends ResultFileManager {
     /*-------------------------------------
      *            Helpers
      *-------------------------------------*/
+
+    // Note: It's not necessary to call this method from other methods, because
+    // the underlying C++ functions all contain READER_MUTEX.
+    public void checkReadLock() {
+        checkNotDeleted();
+        super.checkReadLock();
+    }
+
+    // Note: It's usually not necessary to call this method from other methods, because
+    // the underlying C++ functions all contain WRITER_MUTEX.
+    public void checkWriteLock() {
+        checkNotDeleted();
+        super.checkWriteLock();
+    }
+
     private void checkNotDeleted() {
         if (getCPtr(this) == 0)
             throw new IllegalStateException("Tried to access a deleted ResultFileManagerEx.");
-    }
-
-    private IDList wrap(IDList obj) {
-        return obj; // TODO eliminate wrap() calls
     }
 
     public static int getRunNumber(Run run) {

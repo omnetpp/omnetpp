@@ -237,6 +237,8 @@ ResultFileManager::~ResultFileManager()
 
 void ResultFileManager::clear()
 {
+    WRITER_MUTEX
+
     for (int i = 0; i < (int)fileRunList.size(); i++)
         delete fileRunList[i];
 
@@ -556,6 +558,7 @@ const HistogramResult& ResultFileManager::getHistogram(ID id) const
 template<class T>
 void ResultFileManager::collectIDs(IDList& out, std::vector<T> ResultFile::*vec, int type, bool includeFields, bool includeItervars) const
 {
+    // internal method, READER_MUTEX not needed
     for (int k = 0; k < (int)fileList.size(); k++) {
         if (fileList[k] != nullptr) {
             std::vector<T>& v = fileList[k]->*vec;
