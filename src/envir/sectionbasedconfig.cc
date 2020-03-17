@@ -420,7 +420,7 @@ SectionBasedConfiguration::StringMap SectionBasedConfiguration::computeVariables
     std::string resultdir = internalGetConfigAsString(CFGID_RESULT_DIR, sectionChain, result, locationToVarName);
     bool subdivideResultdir = internalGetConfigAsBool(CFGID_RESULTDIR_SUBDIVISION, sectionChain, result, locationToVarName);
     if (subdivideResultdir)
-        resultdir += "/" + iterationvarsd;
+        resultdir += std::string("/") + configName + "/" + iterationvarsd;
     result[CFGVAR_RESULTDIR] = resultdir;
     result[CFGVAR_SEEDSET] = std::to_string(internalGetConfigAsInt(CFGID_SEED_SET, sectionChain, result, locationToVarName));
     result[CFGVAR_EXPERIMENT] = internalGetConfigAsString(CFGID_EXPERIMENT_LABEL, sectionChain, result, locationToVarName);
