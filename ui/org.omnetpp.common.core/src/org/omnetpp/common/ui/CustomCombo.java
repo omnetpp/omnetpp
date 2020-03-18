@@ -143,12 +143,14 @@ public class CustomCombo extends Composite {
  * @see Widget#getStyle()
  */
 public CustomCombo (Composite parent, int style) {
-    super (parent, style = checkStyle (style));
-
+    super (parent, checkStyle(style) & ~SWT.H_SCROLL); //NOTE: ICON_CANCEL has the same value as H_SCROLL --Andras
     int textStyle = SWT.SINGLE;
     if(gtk) textStyle |= SWT.BORDER;
-    if ((style & SWT.READ_ONLY) != 0) textStyle |= SWT.READ_ONLY;
-    if ((style & SWT.FLAT) != 0) textStyle |= SWT.FLAT;
+    //BC Andras
+    // Accept the SEARCH, ICON_CANCEL and ICON_SEARCH style bits too.
+    int textStyleMask = SWT.READ_ONLY | SWT.FLAT | SWT.SEARCH | SWT.ICON_CANCEL | SWT.ICON_SEARCH | SWT.BORDER;
+    textStyle |= (style & textStyleMask);
+    //EC Andras
     text = new Text (this, textStyle);
     //BC Andras
     // Issue: in readonly mode, text background becomes gray which is not consistent with the native Windows widget
@@ -209,8 +211,9 @@ public CustomCombo (Composite parent, int style) {
     initAccessible();
 }
 static int checkStyle (int style) {
-    int mask = gtk ? SWT.READ_ONLY | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT :
-                        SWT.BORDER | SWT.READ_ONLY | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+    int mask = SWT.BORDER | SWT.READ_ONLY | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT |
+            SWT.SEARCH | SWT.ICON_CANCEL | SWT.ICON_SEARCH;
+
     return style & mask;
 }
 /**
@@ -407,7 +410,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
     Point listSize = table.computeSize (wHint, SWT.DEFAULT, changed);
     int borderWidth = getBorderWidth ();
 
-    height = Math.max (hHint, Math.max (textSize.y, arrowSize.y) + 2*borderWidth);
+    height = Math.max (hHint, textSize.y + 2*borderWidth); // Deliberately ignore arrowSize.y, as we want the combo's height to match Text items --Andras
     width = Math.max (wHint, Math.max (textWidth + 2*spacer + arrowSize.x + 2*borderWidth, listSize.x));
     return new Point (width, height);
 }
@@ -420,9 +423,9 @@ void createPopup(int selectionIndex) {
         if ((style & SWT.RIGHT_TO_LEFT) != 0) listStyle |= SWT.RIGHT_TO_LEFT;
         if ((style & SWT.LEFT_TO_RIGHT) != 0) listStyle |= SWT.LEFT_TO_RIGHT;
         // create a table instead of a list.
-        table = new Table (popup, listStyle);
-
         //BC Andras
+        //table = new Table (popup, listStyle);
+        table = createTable (popup, listStyle);
         // Issue: selection bar is not full length.
         // Workaround: create table with FULL_SELECTION, and add a table column
         new TableColumn(table, SWT.LEFT);
@@ -450,6 +453,11 @@ void createPopup(int selectionIndex) {
 
         if (selectionIndex != -1) table.setSelection (selectionIndex);
 }
+//BC Andras
+protected Table createTable(Composite parent, int style) {
+    return new Table (parent, style);
+}
+//EC Andras
 /**
  * Deselects the item at the given zero-relative index in the receiver's
  * list.  If the item at the index was already deselected, it remains
@@ -487,6 +495,9 @@ public void deselectAll () {
 void dropDown (boolean drop) {
     if (drop == isDropped ()) return;
     if (!drop) {
+        //BC Andras
+        onClose();
+        //EC Andras
         popup.setVisible (false);
         if (!isDisposed ()&& arrow.isFocusControl()) {
             text.setFocus();
@@ -502,7 +513,9 @@ void dropDown (boolean drop) {
         table = null;
         createPopup (selectionIndex);
     }
-
+    //BC Andras
+    onOpen();
+    //EC Andras
     Point size = getSize ();
     int itemCount = table.getItemCount ();
     itemCount = (itemCount == 0) ? visibleItemCount : Math.min(visibleItemCount, itemCount);
@@ -534,6 +547,12 @@ void dropDown (boolean drop) {
     //EC Andras
     table.setFocus ();
 }
+//BC Andras
+protected void onOpen() {
+}
+protected void onClose() {
+}
+//EC Andras
 /*
  * Return the Label immediately preceding the receiver in the z-order,
  * or null if none.
@@ -569,6 +588,14 @@ public boolean getEditable () {
     checkWidget ();
     return text.getEditable();
 }
+//BC Andras
+public Text getTextControl() {
+    return text;
+}
+public Table getTableControl() {
+    return table;
+}
+//EC Andras
 /**
  * Returns the item at the given, zero-relative index in the
  * receiver's list. Throws an exception if the index is out
@@ -743,6 +770,11 @@ public int getTextLimit () {
     checkWidget ();
     return text.getTextLimit ();
 }
+//BC Andras
+public String getMessage() {
+    return text.getMessage();
+}
+//EC Andras
 /**
  * Gets the number of items that are visible in the drop
  * down portion of the receiver's list.
@@ -1410,7 +1442,11 @@ public void setTextLimit (int limit) {
     checkWidget();
     text.setTextLimit (limit);
 }
-
+//BC Andras
+public void setMessage(String message) {
+    text.setMessage(message);
+}
+//EC Andras
 public void setToolTipText (String string) {
     checkWidget();
     super.setToolTipText(string);
