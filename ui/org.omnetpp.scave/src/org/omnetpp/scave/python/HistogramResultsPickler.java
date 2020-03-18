@@ -66,7 +66,7 @@ public class HistogramResultsPickler implements IObjectPickler {
             out.write(Opcodes.MARK);
             if (filterExpression != null && !filterExpression.trim().isEmpty()) {
                 histograms = resultManager.getAllHistograms();
-                histograms = resultManager.filterIDList(histograms, filterExpression, interruptedFlag);
+                histograms = resultManager.filterIDList(histograms, filterExpression, -1, interruptedFlag);
 
                 if (ResultPicklingUtils.debug)
                     Debug.println("pickling " + histograms.size() + " histograms");

@@ -58,7 +58,7 @@ public class StatisticsResultsPickler implements IObjectPickler {
             out.write(Opcodes.MARK);
             if (filterExpression != null && !filterExpression.trim().isEmpty()) {
                 statistics = resultManager.getAllStatistics();
-                statistics = resultManager.filterIDList(statistics, filterExpression, interruptedFlag);
+                statistics = resultManager.filterIDList(statistics, filterExpression, -1, interruptedFlag);
 
                 if (ResultPicklingUtils.debug)
                     Debug.println("pickling " + statistics.size() + " statistics");

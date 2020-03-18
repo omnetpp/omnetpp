@@ -350,10 +350,9 @@ public class DataTable extends Table implements IDataControl {
     }
 
     public void refresh() {
-        Debug.time("DataTable.refresh()", 100, () -> {
-            setItemCount(idList.size());
-            clearAll();
-        });
+        int n = idList.size();
+        Debug.time("DataTable: setItemCount(" + n + ")", 100, () -> setItemCount(n));
+        Debug.time("DataTable: clearAll()", 100, () -> clearAll());
     }
 
     protected void initColumns() {

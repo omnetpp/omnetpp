@@ -24,10 +24,8 @@ import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.ResultType;
-
 import org.omnetpp.scave.model2.FilterField;
 import org.omnetpp.scave.model2.FilterHints;
-import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * Displays a data control of vectors/scalars/histograms with filter
@@ -51,6 +49,8 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
     private IDList idlist; // the unfiltered data list
     private ResultType type;
     private FocusManager focusManager;
+    private int itemLimit = 100000; // max number of rows where a virtual Table does not yet have performance issues
+    private boolean truncated = false; // whether table/tree content has been truncated (to itemLimit items)
 
     public FilteredDataPanel(Composite parent, int style, ResultType type) {
         super(parent, style);
@@ -75,6 +75,18 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
 
     public IDList getIDList() {
         return idlist;
+    }
+
+    public int getItemLimit() {
+        return itemLimit;
+    }
+
+    public void setItemLimit(int itemLimit) {
+        this.itemLimit = itemLimit;
+    }
+
+    public boolean isTruncated() {
+        return truncated;
     }
 
     public void setResultFileManager(ResultFileManagerEx manager) {
@@ -161,7 +173,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
                 Combo combo = filterPanel.getFilterCombo(field);
                 if (combo != except) {
                     String filter = filterPanel.getSimpleFilterExcluding(field);
-                    IDList filteredIDList = computeFilteredIDList(filter);
+                    IDList filteredIDList = computeFilteredIDList(filter, itemLimit);
                     hints.addHints(field, data.getResultFileManager(), filteredIDList);
                 }
             }
@@ -180,8 +192,8 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
     protected void runFilter() {
         Assert.isTrue(idlist!=null);
 
-        Debug.time("runFilter()", 10, () -> {
-            IDList filteredIDList = computeFilteredIDList(filterPanel.getFilterIfValid());
+        Debug.time("runFilter() including setItemCount()", 10, () -> {
+            IDList filteredIDList = computeFilteredIDList(filterPanel.getFilterIfValid(), itemLimit);
             data.setIDList(filteredIDList);
 
             if (getParent() instanceof FilteredDataTabFolder)
@@ -189,21 +201,28 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
         });
     }
 
-    protected IDList computeFilteredIDList(String filter) {
+    // Side effect: sets the 'truncated' flag
+    protected IDList computeFilteredIDList(String filter, int itemLimit) {
         ResultFileManagerEx manager = data.getResultFileManager();
+        truncated = false;
         if (manager == null) {
-            // no result file manager, return empty list
             return new IDList();
         }
         else if (filter != null) {
-            return manager.filterIDList(idlist, filter);
+            IDList filtered = manager.filterIDList(idlist, filter, itemLimit+1);
+            if (filtered.size() == itemLimit+1) {
+                filtered.erase(itemLimit); // remove last one
+                truncated = true;
+            }
+            return filtered;
         }
-        else {
-            // fallback: if filter is not valid, just show an unfiltered list. This should be
-            // done because we get invoked indirectly as well, like when files get added/removed
-            // on the Inputs page. For the same reason, this function should not bring up an
-            // error dialog (but the Filter button itself may do so).
-            return idlist;
+        else { // no or invalid filter
+            if (idlist.size() <= itemLimit)
+                return idlist;
+            else {
+                truncated = true;
+                return idlist.getRange(0, itemLimit);
+            }
         }
     }
 

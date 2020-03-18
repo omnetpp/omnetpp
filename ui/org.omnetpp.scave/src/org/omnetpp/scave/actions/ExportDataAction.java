@@ -65,7 +65,7 @@ public class ExportDataAction extends AbstractScaveAction {
 
                     selectedIDs = ResultFileManager.callWithReadLock(resultFileManager, () -> {
                         IDList idList = resultFileManager.getAllItems(true, true); //TODO scalars? vectors? statistics? with fields or not?
-                        return resultFileManager.filterIDList(idList, filterExpression, new InterruptedFlag());
+                        return resultFileManager.filterIDList(idList, filterExpression);
                     });
 
                 }

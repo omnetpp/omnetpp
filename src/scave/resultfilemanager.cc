@@ -1288,7 +1288,7 @@ std::vector<std::pair<std::string, std::string>> ResultFileManager::getMatchingN
     return out;
 }
 
-IDList ResultFileManager::filterIDList(const IDList& idlist, const char *pattern, const InterruptedFlag& interrupted) const
+IDList ResultFileManager::filterIDList(const IDList& idlist, const char *pattern, int limit, const InterruptedFlag& interrupted) const
 {
     if (opp_isblank(pattern))  // no filter
         throw opp_runtime_error("Empty filter expression is not allowed");
@@ -1298,14 +1298,19 @@ IDList ResultFileManager::filterIDList(const IDList& idlist, const char *pattern
     READER_MUTEX
     IDList out;
     int sz = idlist.size();
+    int count = 0;
     for (int i = 0; i < sz; ++i) {
         if (interrupted.flag)
             throw InterruptedException("Result filtering interrupted");
         ID id = idlist.get(i);
         const ResultItem& item = getItem(id);
         MatchableResultItem matchable(item);
-        if (matchExpr.matches(&matchable))
+        if (matchExpr.matches(&matchable)) {
             out.uncheckedAdd(id);
+            count++;
+            if (limit > 0 && count == limit)
+                break;
+        }
     }
     return out;
 }

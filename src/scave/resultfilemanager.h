@@ -558,7 +558,7 @@ class SCAVE_API ResultFileManager
                         const char *moduleFilter,
                         const char *nameFilter) const;
 
-    IDList filterIDList(const IDList& idlist, const char *pattern, const InterruptedFlag& interrupted = InterruptedFlag()) const;
+    IDList filterIDList(const IDList& idlist, const char *pattern, int limit=-1, const InterruptedFlag& interrupted=InterruptedFlag()) const;
 
     /**
      * Get a filtered subset of the input set.

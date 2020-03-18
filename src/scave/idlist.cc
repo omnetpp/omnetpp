@@ -168,6 +168,17 @@ void IDList::intersect(IDList& ids)
     v = v2;
 }
 
+IDList IDList::getRange(int startIndex, int endIndex) const
+{
+    checkV();
+    if (startIndex < 0 || endIndex > v->size() || startIndex > endIndex)
+        throw opp_runtime_error("Bad start or end index");
+    IDList newList(endIndex-startIndex);
+    for (int i = startIndex; i < endIndex; i++)
+        (*(newList.v))[i-startIndex] = (*v)[i];
+    return newList;
+}
+
 IDList IDList::getSubsetByIndices(int *indices, int n) const
 {
     checkV();

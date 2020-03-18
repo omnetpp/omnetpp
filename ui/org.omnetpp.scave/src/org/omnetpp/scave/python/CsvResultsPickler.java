@@ -330,7 +330,7 @@ public class CsvResultsPickler implements IObjectPickler {
         out.write(Opcodes.MARK);
         if (filterExpression != null && !filterExpression.trim().isEmpty()) {
             IDList results = resultManager.getAllItems(false, false);
-            results = resultManager.filterIDList(results, filterExpression, interruptedFlag);
+            results = resultManager.filterIDList(results, filterExpression, -1, interruptedFlag);
 
             if (ResultPicklingUtils.debug)
                 Debug.println("pickling " + results.size() + " items");

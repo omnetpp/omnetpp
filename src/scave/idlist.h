@@ -83,6 +83,7 @@ class SCAVE_API IDList
         void subtract(const IDList& ids);  // this -= ids
         IDList getDifference(const IDList& ids) const;  // return this - ids
         void intersect(IDList& ids);  // this = intersection(this,ids)
+        IDList getRange(int startIndex, int endIndex) const;
         IDList getSubsetByIndices(int *array, int n) const;
         IDList dup() const;
         int getItemTypes() const;  // SCALAR, VECTOR or their binary OR

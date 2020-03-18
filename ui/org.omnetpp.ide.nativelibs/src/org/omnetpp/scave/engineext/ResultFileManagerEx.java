@@ -157,9 +157,21 @@ public class ResultFileManagerEx extends ResultFileManager {
      */
 
     @Override
-    public IDList filterIDList(IDList idlist, String pattern, InterruptedFlag interrupted) {
+    public IDList filterIDList(IDList idlist, String pattern, int limit, InterruptedFlag interrupted) {
         checkNotDeleted();
-        return super.filterIDList(idlist, pattern, interrupted);
+        return super.filterIDList(idlist, pattern, limit, interrupted);
+    }
+
+    @Override
+    public IDList filterIDList(IDList idlist, String pattern, int limit) {
+        checkNotDeleted();
+        return super.filterIDList(idlist, pattern, limit);
+    }
+
+    @Override
+    public IDList filterIDList(IDList idlist, String pattern) {
+        checkNotDeleted();
+        return super.filterIDList(idlist, pattern);
     }
 
     @Override

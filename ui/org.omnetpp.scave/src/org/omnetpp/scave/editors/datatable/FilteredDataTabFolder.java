@@ -222,12 +222,13 @@ public class FilteredDataTabFolder extends TabFolder {
 
     private void setPanelTitle(TabItem tab, String title) {
         FilteredDataPanel panel = (FilteredDataPanel)tab.getControl();
-        IDList filter = panel.getDataControl().getIDList();
+        IDList filtered = panel.getDataControl().getIDList();
         IDList total = panel.getIDList();
+        boolean truncated = panel.isTruncated();
 
         if (total == null)
             tab.setText(title);
         else
-            tab.setText(title + " (" + (filter == null ? "?" : filter.size()) + " / " + total.size() + ")");
+            tab.setText(title + " (" + (filtered == null ? "?" : filtered.size() + (truncated ? "+" : "")) + " / " + total.size() + ")");
     }
 }

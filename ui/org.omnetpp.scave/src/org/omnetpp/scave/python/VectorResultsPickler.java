@@ -64,7 +64,7 @@ public class VectorResultsPickler implements IObjectPickler {
                     Debug.println("vector pickling start");
 
                 vectors = resultManager.getAllVectors();
-                vectors = resultManager.filterIDList(vectors, filterExpression, interruptedFlag);
+                vectors = resultManager.filterIDList(vectors, filterExpression, -1, interruptedFlag);
 
                 if (ResultPicklingUtils.debug)
                     Debug.println("pickling " + vectors.size() + " vectors");
