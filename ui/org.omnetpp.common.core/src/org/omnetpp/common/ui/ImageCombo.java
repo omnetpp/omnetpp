@@ -17,11 +17,6 @@
  *     Tom Seidel      - enhancements for image-handling
  *******************************************************************************/
 
-/*
- * Source: http://www.richclient2.eu/2006_03_03/enhancing-the-combo-widget-with-images
- * With minor modifications (Andras)
- */
-
 package org.omnetpp.common.ui;
 
 
@@ -68,6 +63,15 @@ import org.eclipse.swt.widgets.Widget;
  * The ImageCombo class represents a selectable user interface object
  * that combines a text field and a table and issues notification
  * when an item is selected from the table.
+ * <p>
+ * The original source code comes from
+ * http://www.richclient2.eu/2006_03_03/enhancing-the-combo-widget-with-images.
+ * However, as of March 2020, the above URL is no longer accessible. Copies of
+ * the ImageCombo class can be found in multiple projects, for example inside
+ * CDT, see org.eclipse.cdt.internal.ui.ImageCombo.
+ * <p>
+ * Changes done by Andras Varga as part of the OMNeT++ project are enclosed
+ * between "//BC Andras" and "//EC Andras" markers for easier identification.
  * <p>
  * <b>GTK Corrections:</b>
  * <dl>
