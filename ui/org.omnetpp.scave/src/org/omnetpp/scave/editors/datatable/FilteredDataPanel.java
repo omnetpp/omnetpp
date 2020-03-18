@@ -44,8 +44,8 @@ import org.omnetpp.scave.model2.FilterHints;
  */
 public class FilteredDataPanel extends Composite implements IHasFocusManager {
 
-    private FilteringPanel filterPanel;
-    private IDataControl data;
+    private FilterBar filterBar;
+    private IDataControl dataControl;
     private IDList idlist; // the unfiltered data list
     private ResultType type;
     private FocusManager focusManager;
@@ -56,15 +56,15 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
         super(parent, style);
         this.type = type;
         initialize(type);
-        configureFilterPanel();
+        configureFilterBar();
     }
 
-    public FilteringPanel getFilterPanel() {
-        return filterPanel;
+    public FilterBar getFilterPanel() {
+        return filterBar;
     }
 
     public IDataControl getDataControl() {
-        return data;
+        return dataControl;
     }
 
     public void setIDList(IDList idlist) {
@@ -90,11 +90,11 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
     }
 
     public void setResultFileManager(ResultFileManagerEx manager) {
-        data.setResultFileManager(manager);
+        dataControl.setResultFileManager(manager);
     }
 
     public ResultFileManager getResultFileManager() {
-        return data.getResultFileManager();
+        return dataControl.getResultFileManager();
     }
 
     public ResultType getType() {
@@ -106,20 +106,20 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
         gridLayout.marginHeight = 0;
         gridLayout.marginWidth = 0;
         setLayout(gridLayout);
-        filterPanel = new FilteringPanel(this, SWT.NONE);
-        filterPanel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+        filterBar = new FilterBar(this, SWT.NONE);
+        filterBar.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 
         if (type == null)
-            data = new DataTree(this, SWT.MULTI);
+            dataControl = new DataTree(this, SWT.MULTI);
         else
-            data = new DataTable(this, SWT.MULTI, type);
+            dataControl = new DataTable(this, SWT.MULTI, type);
 
-        data.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        dataControl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-        filterPanel.getToggleFilterTypeButton().addSelectionListener(new SelectionAdapter() {
+        filterBar.getToggleFilterTypeButton().addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (filterPanel.isShowingAdvancedFilter())
+                if (filterBar.isShowingAdvancedFilter())
                     trySwitchToSimpleFilter();
                 else
                     switchToAdvancedFilter();
@@ -129,12 +129,12 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
         focusManager = new FocusManager(this);
     }
 
-    protected void configureFilterPanel() {
+    protected void configureFilterBar() {
         SelectionListener selectionListener = new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 // check the filter string
-                if (!filterPanel.isFilterPatternValid()) {
+                if (!filterBar.isFilterPatternValid()) {
                     MessageDialog.openWarning(getShell(), "Error in Filter Expression", "Syntax error in filter expression, panel contents unchanged.");
                     return;
                 }
@@ -150,41 +150,41 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
         };
 
         // when the filter button gets pressed, update the content
-        filterPanel.getAdvancedFilterText().addSelectionListener(selectionListener);
-        filterPanel.getExperimentCombo().addSelectionListener(selectionListener);
-        filterPanel.getMeasurementCombo().addSelectionListener(selectionListener);
-        filterPanel.getReplicationCombo().addSelectionListener(selectionListener);
-        filterPanel.getModuleNameCombo().addSelectionListener(selectionListener);
-        filterPanel.getNameCombo().addSelectionListener(selectionListener);
+        filterBar.getAdvancedFilterText().addSelectionListener(selectionListener);
+        filterBar.getExperimentCombo().addSelectionListener(selectionListener);
+        filterBar.getMeasurementCombo().addSelectionListener(selectionListener);
+        filterBar.getReplicationCombo().addSelectionListener(selectionListener);
+        filterBar.getModuleNameCombo().addSelectionListener(selectionListener);
+        filterBar.getNameCombo().addSelectionListener(selectionListener);
     }
 
     protected void updateFilterCombos() {
         Debug.time("updateFilterCombos()", 10, () -> {
-            if (!filterPanel.isDisposed())
-                filterPanel.setFilterHints(getFilterHints());
+            if (!filterBar.isDisposed())
+                filterBar.setFilterHints(getFilterHints());
         });
     }
 
     protected void updateFilterCombosExcept(Combo except) {
-        if (data.getResultFileManager() != null && !filterPanel.isDisposed() && !filterPanel.isShowingAdvancedFilter()) {
+        if (dataControl.getResultFileManager() != null && !filterBar.isDisposed() && !filterBar.isShowingAdvancedFilter()) {
             FilterHints hints = new FilterHints();
 
-            for (FilterField field : filterPanel.getSimpleFilterFields()) {
-                Combo combo = filterPanel.getFilterCombo(field);
+            for (FilterField field : filterBar.getSimpleFilterFields()) {
+                Combo combo = filterBar.getFilterCombo(field);
                 if (combo != except) {
-                    String filter = filterPanel.getSimpleFilterExcluding(field);
+                    String filter = filterBar.getSimpleFilterExcluding(field);
                     IDList filteredIDList = computeFilteredIDList(filter, itemLimit);
-                    hints.addHints(field, data.getResultFileManager(), filteredIDList);
+                    hints.addHints(field, dataControl.getResultFileManager(), filteredIDList);
                 }
             }
 
-            filterPanel.setFilterHintsOfCombos(hints);
+            filterBar.setFilterHintsOfCombos(hints);
         }
     }
 
     public FilterHints getFilterHints() {
-        if (data.getResultFileManager() != null)
-            return new FilterHints(data.getResultFileManager(), idlist);
+        if (dataControl.getResultFileManager() != null)
+            return new FilterHints(dataControl.getResultFileManager(), idlist);
         else
             return new FilterHints();
     }
@@ -193,8 +193,8 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
         Assert.isTrue(idlist!=null);
 
         Debug.time("runFilter() including setItemCount()", 10, () -> {
-            IDList filteredIDList = computeFilteredIDList(filterPanel.getFilterIfValid(), itemLimit);
-            data.setIDList(filteredIDList);
+            IDList filteredIDList = computeFilteredIDList(filterBar.getFilterIfValid(), itemLimit);
+            dataControl.setIDList(filteredIDList);
 
             if (getParent() instanceof FilteredDataTabFolder)
                 ((FilteredDataTabFolder)getParent()).refreshPanelTitles();
@@ -203,7 +203,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
 
     // Side effect: sets the 'truncated' flag
     protected IDList computeFilteredIDList(String filter, int itemLimit) {
-        ResultFileManagerEx manager = data.getResultFileManager();
+        ResultFileManagerEx manager = dataControl.getResultFileManager();
         truncated = false;
         if (manager == null) {
             return new IDList();
@@ -227,14 +227,14 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
     }
 
     public String getFilter() {
-        return filterPanel.getFilter();
+        return filterBar.getFilter();
     }
 
     public void setFilterParams(String filter) {
         // an arbitrary pattern can only be shown in advanced view -- switch there
-        if (!filterPanel.isShowingAdvancedFilter())
-            filterPanel.showAdvancedFilter();
-        filterPanel.getAdvancedFilterText().setText(filter);
+        if (!filterBar.isShowingAdvancedFilter())
+            filterBar.showAdvancedFilter();
+        filterBar.getAdvancedFilterText().setText(filter);
         runFilter();
     }
 
@@ -245,7 +245,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
      * @return true if switching was actually done.
      */
     public boolean trySwitchToSimpleFilter() {
-        boolean success = filterPanel.trySwitchToSimpleFilter();
+        boolean success = filterBar.trySwitchToSimpleFilter();
         if (success)
             runFilter();
         return success;
@@ -255,7 +255,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
      * Switches the filter from "Basic" to "Advanced" mode. This is always successful (unlike the opposite way).
      */
     public void switchToAdvancedFilter() {
-        filterPanel.switchToAdvancedFilter();
+        filterBar.switchToAdvancedFilter();
         runFilter();
     }
 
@@ -264,8 +264,8 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
      */
     public void showFilterPanel(boolean show) {
         if (show != isFilterPanelVisible()) {
-            filterPanel.setVisible(show);
-            GridData data = (GridData)filterPanel.getLayoutData();
+            filterBar.setVisible(show);
+            GridData data = (GridData)filterBar.getLayoutData();
             data.exclude = !show;
             layout(true, true);
         }
@@ -275,7 +275,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
      * Returns {@code true} iff the filter panel is visible.
      */
     public boolean isFilterPanelVisible() {
-        GridData data = (GridData)filterPanel.getLayoutData();
+        GridData data = (GridData)filterBar.getLayoutData();
         return !data.exclude;
     }
 

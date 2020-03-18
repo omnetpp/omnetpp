@@ -44,7 +44,7 @@ import org.omnetpp.scave.model2.FilterUtil;
  * to do anything useful.
  * @author andras
  */
-public class FilteringPanel extends Composite {
+public class FilterBar extends Composite {
 
     private final List<FilterField> simpleFilterFields = Collections.unmodifiableList(Arrays.asList(new FilterField[] {EXPERIMENT, MEASUREMENT, REPLICATION, MODULE, NAME}));
 
@@ -66,7 +66,7 @@ public class FilteringPanel extends Composite {
     private Combo moduleCombo;
     private Combo nameCombo;
 
-    public FilteringPanel(Composite parent, int style) {
+    public FilterBar(Composite parent, int style) {
         super(parent, style);
         initialize();
     }
