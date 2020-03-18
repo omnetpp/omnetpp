@@ -1,5 +1,7 @@
 package org.omnetpp.scave.editors.datatable;
 
+import java.text.NumberFormat;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -30,9 +32,12 @@ public class FilteredDataTabFolder extends TabFolder {
     protected FilteredDataPanel scalarsPanel;
     protected FilteredDataPanel parametersPanel;
     protected FilteredDataPanel histogramsPanel;
+    protected NumberFormat numFormat; // for item counts in the tabs
 
     public FilteredDataTabFolder(Composite parent, int style) {
         super(parent, style);
+        numFormat = NumberFormat.getIntegerInstance();
+        numFormat.setGroupingUsed(true);
         initialize();
     }
 
@@ -229,6 +234,6 @@ public class FilteredDataTabFolder extends TabFolder {
         if (total == null)
             tab.setText(title);
         else
-            tab.setText(title + " (" + (filtered == null ? "?" : filtered.size() + (truncated ? "+" : "")) + " / " + total.size() + ")");
+            tab.setText(title + " (" + (filtered == null ? "?" : numFormat.format(filtered.size()) + (truncated ? "+" : "")) + " / " + numFormat.format(total.size()) + ")");
     }
 }
