@@ -34,7 +34,6 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.assist.FilterContentProposalProvider;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model2.FilterField;
-import org.omnetpp.scave.model2.FilterHints;
 import org.omnetpp.scave.model2.FilterUtil;
 
 /**
@@ -115,40 +114,6 @@ public class FilterBar extends Composite {
 
     public Button getToggleFilterTypeButton() {
         return toggleFilterTypeButton;
-    }
-
-    public void setFilterHints(FilterHints hints) {
-        setFilterHints(experimentCombo, hints.getHints(EXPERIMENT));
-        setFilterHints(measurementCombo, hints.getHints(MEASUREMENT));
-        setFilterHints(replicationCombo, hints.getHints(REPLICATION));
-        setFilterHints(moduleCombo, hints.getHints(MODULE));
-        setFilterHints(nameCombo, hints.getHints(NAME));
-        filterProposalProvider.setFilterHints(hints);
-    }
-
-    public void setFilterHintsOfCombos(FilterHints hints) {
-        for (FilterField field : hints.getFields()) {
-            FilterCombo combo = getFilterCombo(field);
-            if (combo != null)
-                setFilterHints(combo, hints.getHints(field));
-        }
-    }
-
-    private void setFilterHints(FilterCombo filterCombo, String[] hints) {
-        String text = filterCombo.getText();
-
-        String[] items = hints;
-        // prevent gtk halting when the item count ~10000
-        int maxCount = 1000;
-        if (hints.length > maxCount) {
-            items = new String[maxCount];
-            System.arraycopy(hints, 0, items, 0, maxCount - 1);
-            items[maxCount - 1] = String.format("<%d skipped>", hints.length - (maxCount - 1));
-        }
-        filterCombo.setItems(items);
-        int index = filterCombo.indexOf(text);
-        if (index >= 0)
-            filterCombo.select(index);
     }
 
     public void showSimpleFilter() {

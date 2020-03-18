@@ -292,7 +292,7 @@ public class BrowseDataPage extends FormEditorPage {
         }
 
         // when they double-click in the vectors panel, open chart
-        SelectionListener selectionChangeListener = new SelectionAdapter() {
+        SelectionListener selectionListener = new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 FilteredDataPanel panel = tabFolder.getActivePanel();
@@ -314,12 +314,12 @@ public class BrowseDataPage extends FormEditorPage {
             }
         };
 
-        tabFolder.getAllPanel().getDataControl().addSelectionListener(selectionChangeListener);
-        tabFolder.getVectorsPanel().getDataControl().addSelectionListener(selectionChangeListener);
-        tabFolder.getScalarsPanel().getDataControl().addSelectionListener(selectionChangeListener);
-        tabFolder.getParametersPanel().getDataControl().addSelectionListener(selectionChangeListener);
-        tabFolder.getHistogramsPanel().getDataControl().addSelectionListener(selectionChangeListener);
-        tabFolder.addSelectionListener(selectionChangeListener);
+        tabFolder.getAllPanel().getDataControl().addSelectionListener(selectionListener);
+        tabFolder.getVectorsPanel().getDataControl().addSelectionListener(selectionListener);
+        tabFolder.getScalarsPanel().getDataControl().addSelectionListener(selectionListener);
+        tabFolder.getParametersPanel().getDataControl().addSelectionListener(selectionListener);
+        tabFolder.getHistogramsPanel().getDataControl().addSelectionListener(selectionListener);
+        tabFolder.addSelectionListener(selectionListener);
     }
 
     private void unhookListeners() {

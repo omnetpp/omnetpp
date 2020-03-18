@@ -9,10 +9,12 @@ package org.omnetpp.scave.editors.datatable;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.fieldassist.ContentProposal;
+import org.eclipse.jface.fieldassist.IContentProposal;
+import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -69,7 +71,6 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
 
     public void setIDList(IDList idlist) {
         this.idlist = idlist;
-        updateFilterCombos();
         runFilter();
     }
 
@@ -130,7 +131,16 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
     }
 
     protected void configureFilterBar() {
-        SelectionListener selectionListener = new SelectionAdapter() {
+        //TODO configure filterBar.getAdvancedFilterText()
+        configureFilterCombo(filterBar.getExperimentCombo(), FilterField.EXPERIMENT);
+        configureFilterCombo(filterBar.getMeasurementCombo(), FilterField.MEASUREMENT);
+        configureFilterCombo(filterBar.getReplicationCombo(), FilterField.REPLICATION);
+        configureFilterCombo(filterBar.getModuleNameCombo(), FilterField.MODULE);
+        configureFilterCombo(filterBar.getNameCombo(), FilterField.NAME);
+    }
+
+    protected void configureFilterCombo(FilterCombo filterCombo, FilterField filterField) {
+        filterCombo.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 // check the filter string
@@ -139,54 +149,33 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
                     return;
                 }
                 runFilter();
-
-                if (e.widget instanceof FilterCombo)
-                    updateFilterCombosExcept((FilterCombo)e.widget);
             }
             @Override
             public void widgetDefaultSelected(SelectionEvent e) {
                 widgetSelected(e);  //delegate
             }
-        };
+        });
 
-        // when the filter button gets pressed, update the content
-        filterBar.getAdvancedFilterText().addSelectionListener(selectionListener);
-        filterBar.getExperimentCombo().addSelectionListener(selectionListener);
-        filterBar.getMeasurementCombo().addSelectionListener(selectionListener);
-        filterBar.getReplicationCombo().addSelectionListener(selectionListener);
-        filterBar.getModuleNameCombo().addSelectionListener(selectionListener);
-        filterBar.getNameCombo().addSelectionListener(selectionListener);
-    }
-
-    protected void updateFilterCombos() {
-        Debug.time("updateFilterCombos()", 10, () -> {
-            if (!filterBar.isDisposed())
-                filterBar.setFilterHints(getFilterHints());
+        filterCombo.setContentproposalProvider(new IContentProposalProvider() {
+            @Override
+            public IContentProposal[] getProposals(String contents, int position) {
+                String prefix = contents.substring(0, position);
+                return wrapIntoProposals(computeHintsFor(filterCombo, filterField, prefix));
+            }
         });
     }
 
-    protected void updateFilterCombosExcept(FilterCombo except) {
-        if (dataControl.getResultFileManager() != null && !filterBar.isDisposed() && !filterBar.isShowingAdvancedFilter()) {
-            FilterHints hints = new FilterHints();
-
-            for (FilterField field : filterBar.getSimpleFilterFields()) {
-                FilterCombo combo = filterBar.getFilterCombo(field);
-                if (combo != except) {
-                    String filter = filterBar.getSimpleFilterExcluding(field);
-                    IDList filteredIDList = computeFilteredIDList(filter, itemLimit);
-                    hints.addHints(field, dataControl.getResultFileManager(), filteredIDList);
-                }
-            }
-
-            filterBar.setFilterHintsOfCombos(hints);
-        }
+    protected String[] computeHintsFor(FilterCombo filterCombo, FilterField filterField, String prefix) {
+        String filter = filterBar.getSimpleFilterExcluding(filterField);
+        IDList filteredIDList = computeFilteredIDList(filter, Math.max(itemLimit, 1_000_000));
+        return FilterHints.computeHints(dataControl.getResultFileManager(), filteredIDList, filterField, prefix); //TODO hintsLimit!
     }
 
-    public FilterHints getFilterHints() {
-        if (dataControl.getResultFileManager() != null)
-            return new FilterHints(dataControl.getResultFileManager(), idlist);
-        else
-            return new FilterHints();
+    protected IContentProposal[] wrapIntoProposals(String[] hints) {
+        IContentProposal[] proposals = new IContentProposal[hints.length];
+        for (int i=0; i<hints.length; i++)
+            proposals[i] = new ContentProposal(hints[i]);
+        return proposals;
     }
 
     protected void runFilter() {
@@ -286,4 +275,5 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
             return true;
         return super.setFocus();
     }
+
 }
