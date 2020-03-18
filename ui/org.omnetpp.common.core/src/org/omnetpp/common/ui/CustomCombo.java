@@ -60,9 +60,10 @@ import org.eclipse.swt.widgets.TypedListener;
 import org.eclipse.swt.widgets.Widget;
 
 /**
- * The ImageCombo class represents a selectable user interface object
- * that combines a text field and a table and issues notification
- * when an item is selected from the table.
+ * Represents a selectable user interface object that combines a text field and
+ * a table and issues notification when an item is selected from the table.
+ * <p>
+ * Class (before enhancements) was called ImageCombo.
  * <p>
  * The original source code comes from
  * http://www.richclient2.eu/2006_03_03/enhancing-the-combo-widget-with-images.
@@ -98,7 +99,7 @@ import org.eclipse.swt.widgets.Widget;
  * <dd>Selection</dd>
  * </dl>
  */
-public final class ImageCombo extends Composite {
+public class CustomCombo extends Composite {
 
     private static final boolean gtk = "gtk".equals(SWT.getPlatform());
     private boolean dontDrop = false;
@@ -141,7 +142,7 @@ public final class ImageCombo extends Composite {
  * @see SWT#FLAT
  * @see Widget#getStyle()
  */
-public ImageCombo (Composite parent, int style) {
+public CustomCombo (Composite parent, int style) {
     super (parent, style = checkStyle (style));
 
     int textStyle = SWT.SINGLE;
@@ -177,7 +178,7 @@ public ImageCombo (Composite parent, int style) {
                 arrowEvent (event);
                 return;
             }
-            if (ImageCombo.this == event.widget) {
+            if (CustomCombo.this == event.widget) {
                 comboEvent (event);
                 return;
             }
@@ -189,7 +190,7 @@ public ImageCombo (Composite parent, int style) {
     filter = new Listener() {
         public void handleEvent(Event event) {
             Shell shell = ((Control)event.widget).getShell ();
-            if (shell == ImageCombo.this.getShell ()) {
+            if (shell == CustomCombo.this.getShell ()) {
                 handleFocus (SWT.FocusOut);
             }
         }
@@ -540,7 +541,7 @@ void dropDown (boolean drop) {
 Label getAssociatedLabel () {
     Control[] siblings = getParent ().getChildren ();
     for (int i = 0; i < siblings.length; i++) {
-        if (siblings [i] == ImageCombo.this) {
+        if (siblings [i] == CustomCombo.this) {
             if (i > 0 && siblings [i-1] instanceof Label) {
                 return (Label) siblings [i-1];
             }
