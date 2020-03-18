@@ -24,7 +24,6 @@ import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.contentassist.ContentAssistUtil;
@@ -60,11 +59,11 @@ public class FilterBar extends Composite {
 
     // Combo boxes for the "Simple" mode
     private Composite simpleFilterPanel;
-    private Combo experimentCombo;
-    private Combo measurementCombo;
-    private Combo replicationCombo;
-    private Combo moduleCombo;
-    private Combo nameCombo;
+    private FilterCombo experimentCombo;
+    private FilterCombo measurementCombo;
+    private FilterCombo replicationCombo;
+    private FilterCombo moduleCombo;
+    private FilterCombo nameCombo;
 
     public FilterBar(Composite parent, int style) {
         super(parent, style);
@@ -79,27 +78,27 @@ public class FilterBar extends Composite {
         return simpleFilterFields;
     }
 
-    public Combo getExperimentCombo() {
+    public FilterCombo getExperimentCombo() {
         return experimentCombo;
     }
 
-    public Combo getMeasurementCombo() {
+    public FilterCombo getMeasurementCombo() {
         return measurementCombo;
     }
 
-    public Combo getReplicationCombo() {
+    public FilterCombo getReplicationCombo() {
         return replicationCombo;
     }
 
-    public Combo getModuleNameCombo() {
+    public FilterCombo getModuleNameCombo() {
         return moduleCombo;
     }
 
-    public Combo getNameCombo() {
+    public FilterCombo getNameCombo() {
         return nameCombo;
     }
 
-    public Combo getFilterCombo(FilterField field) {
+    public FilterCombo getFilterCombo(FilterField field) {
         if (field.equals(EXPERIMENT))
             return experimentCombo;
         else if (field.equals(MEASUREMENT))
@@ -129,13 +128,13 @@ public class FilterBar extends Composite {
 
     public void setFilterHintsOfCombos(FilterHints hints) {
         for (FilterField field : hints.getFields()) {
-            Combo combo = getFilterCombo(field);
+            FilterCombo combo = getFilterCombo(field);
             if (combo != null)
                 setFilterHints(combo, hints.getHints(field));
         }
     }
 
-    private void setFilterHints(Combo filterCombo, String[] hints) {
+    private void setFilterHints(FilterCombo filterCombo, String[] hints) {
         String text = filterCombo.getText();
 
         String[] items = hints;
@@ -332,7 +331,7 @@ public class FilterBar extends Composite {
         showSimpleFilter();
     }
 
-    private Combo createFilterCombo(Composite parent, String filterMessage, String tooltipText) {
+    private FilterCombo createFilterCombo(Composite parent, String filterMessage, String tooltipText) {
         FilterCombo combo = new FilterCombo(parent, SWT.BORDER);
         combo.setMessage(filterMessage);
         combo.setToolTipText(tooltipText);

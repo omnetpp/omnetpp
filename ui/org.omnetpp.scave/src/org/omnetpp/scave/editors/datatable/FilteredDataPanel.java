@@ -15,9 +15,9 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.common.Debug;
+import org.omnetpp.common.ui.FilterCombo;
 import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.common.ui.IHasFocusManager;
 import org.omnetpp.scave.engine.IDList;
@@ -140,8 +140,8 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
                 }
                 runFilter();
 
-                if (e.widget instanceof Combo)
-                    updateFilterCombosExcept((Combo)e.widget);
+                if (e.widget instanceof FilterCombo)
+                    updateFilterCombosExcept((FilterCombo)e.widget);
             }
             @Override
             public void widgetDefaultSelected(SelectionEvent e) {
@@ -165,12 +165,12 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
         });
     }
 
-    protected void updateFilterCombosExcept(Combo except) {
+    protected void updateFilterCombosExcept(FilterCombo except) {
         if (dataControl.getResultFileManager() != null && !filterBar.isDisposed() && !filterBar.isShowingAdvancedFilter()) {
             FilterHints hints = new FilterHints();
 
             for (FilterField field : filterBar.getSimpleFilterFields()) {
-                Combo combo = filterBar.getFilterCombo(field);
+                FilterCombo combo = filterBar.getFilterCombo(field);
                 if (combo != except) {
                     String filter = filterBar.getSimpleFilterExcluding(field);
                     IDList filteredIDList = computeFilteredIDList(filter, itemLimit);
