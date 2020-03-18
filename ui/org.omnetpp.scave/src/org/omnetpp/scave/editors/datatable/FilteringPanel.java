@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.contentassist.ContentAssistUtil;
 import org.omnetpp.common.ui.FilterCombo;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.assist.FilterContentProposalProvider;
@@ -224,7 +225,10 @@ public class FilteringPanel extends Composite {
     }
 
     public String getFilter() {
-        return isShowingAdvancedFilter() ? getAdvancedFilterText().getText() : assembleFilterPattern(getSimpleFilterFields());
+        if (isShowingAdvancedFilter())
+            return StringUtils.defaultIfBlank(getAdvancedFilterText().getText(), "*");
+        else
+            return assembleFilterPattern(getSimpleFilterFields());
     }
 
     public String getFilterIfValid() {
@@ -262,8 +266,7 @@ public class FilteringPanel extends Composite {
         for (FilterField field : simpleFilterFields)
             if (includedFields.contains(field))
                 filter.setField(field.getName(), getFilterCombo(field).getText());
-        String filterPattern = filter.getFilterPattern();
-        return filterPattern.equals("*") ? "" : filterPattern;  // replace "*": "" also works, and lets the filter field show the hint text
+        return filter.getFilterPattern();
     }
 
     private String assembleFilterPatternExcluding(List<FilterField> excludedFields) {
@@ -271,8 +274,7 @@ public class FilteringPanel extends Composite {
         for (FilterField field : simpleFilterFields)
             if (!excludedFields.contains(field))
                 filter.setField(field.getName(), getFilterCombo(field).getText());
-        String filterPattern = filter.getFilterPattern();
-        return filterPattern.equals("*") ? "" : filterPattern;  // replace "*": "" also works, and lets the filter field show the hint text
+        return filter.getFilterPattern();
     }
 
     private void initialize() {
