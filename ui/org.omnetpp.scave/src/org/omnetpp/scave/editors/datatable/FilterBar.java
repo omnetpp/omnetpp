@@ -288,11 +288,15 @@ public class FilterBar extends Composite {
         gridLayout = new GridLayout(3, false); // filter panel, [ExecuteFilter], [Basic/Advanced]
         gridLayout.marginHeight = 0;
         gridLayout.marginWidth = 0;
+        gridLayout.marginTop = 3; // appears to make even gaps above and below filter bar (Linux GTK)
         filterContainer.setLayout(gridLayout);
 
         // Toggle button
         toggleFilterTypeButton = new Button(filterContainer, SWT.PUSH);
-        toggleFilterTypeButton.setLayoutData(new GridData(SWT.BEGINNING, SWT.FILL, false, true));
+        GridData layoutData = new GridData(SWT.BEGINNING, SWT.CENTER, false, false);
+        layoutData.heightHint = 24;
+        layoutData.widthHint = 24;
+        toggleFilterTypeButton.setLayoutData(layoutData);
 
         Composite filterFieldsContainer = new Composite(filterContainer, SWT.NONE);
         filterFieldsContainer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -316,11 +320,11 @@ public class FilterBar extends Composite {
         simpleFilterPanel = new Composite(filterFieldsContainer, SWT.NONE);
         simpleFilterPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         simpleFilterPanel.setLayout(new GridLayout(1, false));
-        ((GridLayout)simpleFilterPanel.getLayout()).marginHeight = 0;
+        ((GridLayout)simpleFilterPanel.getLayout()).marginHeight = 1;
         ((GridLayout)simpleFilterPanel.getLayout()).marginWidth = 0;
 
         SashForm sashForm = new SashForm(simpleFilterPanel, SWT.SMOOTH);
-        sashForm.setLayoutData(new GridData(SWT.FILL, SWT.END, true, true));
+        sashForm.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
         experimentCombo = createFilterCombo(sashForm, "experiment filter", "Experiment Filter");
         measurementCombo = createFilterCombo(sashForm, "measurement filter", "Measurement Filter");
         replicationCombo = createFilterCombo(sashForm, "replication filter", "Replication Filter");
@@ -332,7 +336,7 @@ public class FilterBar extends Composite {
     }
 
     private FilterCombo createFilterCombo(Composite parent, String filterMessage, String tooltipText) {
-        FilterCombo combo = new FilterCombo(parent, SWT.BORDER);
+        FilterCombo combo = new FilterCombo(parent, SWT.NONE);
         combo.setMessage(filterMessage);
         combo.setToolTipText(tooltipText);
         combo.setVisibleItemCount(20);
