@@ -115,9 +115,9 @@ import org.omnetpp.scave.engine.FileRun;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultItem;
-import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.engine.ScaveEngine;
 import org.omnetpp.scave.engine.XYArrayVector;
+import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.sequencechart.SequenceChartPlugin;
 import org.omnetpp.sequencechart.editors.SequenceChartContributor;
 import org.omnetpp.sequencechart.widgets.axisorder.AxisOrderByModuleId;
@@ -2475,7 +2475,7 @@ public class SequenceChart
     }
 
     private void calculateModuleIdToAxisRendererMap() {
-        ResultFileManager resultFileManager = new ResultFileManager();
+        ResultFileManagerEx resultFileManager = new ResultFileManagerEx();
         for (ModuleTreeItem axisModule : getVisibleAxisModules()) {
             IAxisRenderer axisRenderer = moduleIdToAxisRendererMap.get(axisModule.getModuleId());
             if (axisRenderer == null) {
@@ -2490,7 +2490,7 @@ public class SequenceChart
                         String inputFileName = inputFile.getName();
                         IFile vectorFile = inputFile.getParent().getFile(new Path(inputFileName.substring(0, inputFileName.indexOf(".")) + ".vec"));
                         if (vectorFile.exists()) {
-                            ResultFile resultFile = resultFileManager.loadFile(vectorFile.getLocation().toOSString());
+                            ResultFile resultFile = resultFileManager.loadFile(vectorFile.getName(), vectorFile.getLocation().toOSString(), 0, null);
                             String eventlogRunName = getEventLog().getSimulationBeginEntry().getRunId();
                             FileRun fileRun = resultFileManager.getFileRun(resultFile, resultFileManager.getRunByName(eventlogRunName));
                             long id = resultFileManager.getItemByName(fileRun, axisModule.getModuleFullPath(), vectorName);
