@@ -165,6 +165,12 @@ void FilteredEventLog::setPatternMatchers(std::vector<PatternMatcher>& patternMa
     }
 }
 
+void FilteredEventLog::setExcludedEventNumbers(const std::vector<eventnumber_t>& excludedEventNumbers)
+{
+    for (auto eventNumber : excludedEventNumbers)
+        this->excludedEventNumbers.insert(eventNumber);
+}
+
 eventnumber_t FilteredEventLog::getApproximateNumberOfEvents()
 {
     if (approximateNumberOfEvents == -1) {
@@ -283,6 +289,8 @@ bool FilteredEventLog::matchesEvent(IEvent *event)
     if ((firstConsideredEventNumber != -1 && event->getEventNumber() < firstConsideredEventNumber) ||
         (lastConsideredEventNumber != -1 && event->getEventNumber() > lastConsideredEventNumber))
         return false;
+
+    if (excludedEventNumbers.find(event->getEventNumber()) != excludedEventNumbers.end())
         return false;
 
     // event's module

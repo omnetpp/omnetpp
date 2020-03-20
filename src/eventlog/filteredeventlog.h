@@ -48,6 +48,7 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         // event parameters
         eventnumber_t firstConsideredEventNumber; // the first event to be considered by the filter or -1
         eventnumber_t lastConsideredEventNumber; // the last event to be considered by the filter or -1
+        std::set<eventnumber_t> excludedEventNumbers;
 
         // module filter
         bool enableModuleFilter;
@@ -105,6 +106,8 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         void setFirstConsideredEventNumber(eventnumber_t firstConsideredEventNumber) { this->firstConsideredEventNumber = firstConsideredEventNumber; }
         eventnumber_t getLastConsideredEventNumber() { return lastConsideredEventNumber; }
         void setLastConsideredEventNumber(eventnumber_t lastConsideredEventNumber) { this->lastConsideredEventNumber = lastConsideredEventNumber; }
+
+        void setExcludedEventNumbers(const std::vector<eventnumber_t>& excludedEventNumbers);
 
         bool getCollectMessageReuses() { return collectMessageReuses; }
         void setCollectMessageReuses(bool collectMessageReuses) { this->collectMessageReuses = collectMessageReuses; }
