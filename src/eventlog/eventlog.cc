@@ -31,6 +31,11 @@ EventLog::EventLog(FileReader *reader) : EventLogIndex(reader)
     reader->setIgnoreAppendChanges(false);
     clearInternalState();
     parseKeyframes();
+    if (reader->getFileSize() < 10E+6) {
+        IEvent *event = getFirstEvent();
+        while (event)
+            event = event->getNextEvent();
+    }
 }
 
 EventLog::~EventLog()
