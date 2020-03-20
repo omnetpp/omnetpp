@@ -51,7 +51,7 @@ void SequenceChartFacade::synchronize(FileReader::FileChangedState change)
                 undefineTimelineCoordinateSystem();
                 break;
             case FileReader::APPENDED:
-                IEvent *event = eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber, EXACT, true);
+                IEvent *event = eventLog->getEventForEventNumber(timelineCoordinateSystemOriginEventNumber, EXACT, true);
                 if (event)
                     relocateTimelineCoordinateSystem(event);
                 else
@@ -102,16 +102,16 @@ double SequenceChartFacade::getNonLinearFocus()
 void SequenceChartFacade::undefineTimelineCoordinateSystem()
 {
     timelineCoordinateSystemVersion++;
-    timelineCoordinateOriginEventNumber = timelineCoordinateRangeStartEventNumber = timelineCoordinateRangeEndEventNumber = -1;
-    timelineCoordinateOriginSimulationTime = simtime_nil;
+    timelineCoordinateSystemOriginEventNumber = timelineCoordinateRangeStartEventNumber = timelineCoordinateRangeEndEventNumber = -1;
+    timelineCoordinateSystemOriginSimulationTime = simtime_nil;
 }
 
 void SequenceChartFacade::relocateTimelineCoordinateSystem(IEvent *event)
 {
     Assert(event);
     timelineCoordinateSystemVersion++;
-    timelineCoordinateOriginEventNumber = timelineCoordinateRangeStartEventNumber = timelineCoordinateRangeEndEventNumber = event->getEventNumber();
-    timelineCoordinateOriginSimulationTime = event->getSimulationTime();
+    timelineCoordinateSystemOriginEventNumber = timelineCoordinateRangeStartEventNumber = timelineCoordinateRangeEndEventNumber = event->getEventNumber();
+    timelineCoordinateSystemOriginSimulationTime = event->getSimulationTime();
     event->cachedTimelineCoordinateBegin = 0;
     event->cachedTimelineCoordinateEnd = getTimelineCoordinateDelta(event);
     event->cachedTimelineCoordinateSystemVersion = timelineCoordinateSystemVersion;
@@ -121,8 +121,8 @@ void SequenceChartFacade::setTimelineMode(TimelineMode timelineMode)
 {
     this->timelineMode = timelineMode;
 
-    if (timelineCoordinateOriginEventNumber != -1)
-        relocateTimelineCoordinateSystem(eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber));
+    if (timelineCoordinateSystemOriginEventNumber != -1)
+        relocateTimelineCoordinateSystem(eventLog->getEventForEventNumber(timelineCoordinateSystemOriginEventNumber));
 }
 
 double SequenceChartFacade::IEvent_getTimelineCoordinateBegin(ptr_t ptr)
@@ -214,18 +214,18 @@ double SequenceChartFacade::getTimelineCoordinateBegin(IEvent *event, double low
     Assert(event);
     Assert(event->getEventLog() == eventLog);
     Assert(timelineCoordinateSystemVersion != -1);
-    Assert(timelineCoordinateOriginEventNumber != -1);
+    Assert(timelineCoordinateSystemOriginEventNumber != -1);
 
     if (this->timelineCoordinateSystemVersion > event->cachedTimelineCoordinateSystemVersion) {
         double timelineCoordinateBegin;
 
         switch (timelineMode) {
             case SIMULATION_TIME:
-                timelineCoordinateBegin = (event->getSimulationTime() - timelineCoordinateOriginSimulationTime).dbl();
+                timelineCoordinateBegin = (event->getSimulationTime() - timelineCoordinateSystemOriginSimulationTime).dbl();
                 break;
 
             case EVENT_NUMBER:
-                timelineCoordinateBegin = event->getEventNumber() - timelineCoordinateOriginEventNumber;
+                timelineCoordinateBegin = event->getEventNumber() - timelineCoordinateSystemOriginEventNumber;
                 break;
             case STEP:
             case NONLINEAR: {
@@ -297,7 +297,7 @@ double SequenceChartFacade::getCachedTimelineCoordinateBegin(IEvent *event)
 {
     Assert(event);
     Assert(timelineCoordinateSystemVersion != -1);
-    Assert(timelineCoordinateOriginEventNumber != -1);
+    Assert(timelineCoordinateSystemOriginEventNumber != -1);
 
     if (this->timelineCoordinateSystemVersion > event->cachedTimelineCoordinateSystemVersion)
         return -1;
@@ -309,7 +309,7 @@ double SequenceChartFacade::getCachedTimelineCoordinateEnd(IEvent *event)
 {
     Assert(event);
     Assert(timelineCoordinateSystemVersion != -1);
-    Assert(timelineCoordinateOriginEventNumber != -1);
+    Assert(timelineCoordinateSystemOriginEventNumber != -1);
 
     if (this->timelineCoordinateSystemVersion > event->cachedTimelineCoordinateSystemVersion)
         return -1;
@@ -319,7 +319,7 @@ double SequenceChartFacade::getCachedTimelineCoordinateEnd(IEvent *event)
 
 IEvent *SequenceChartFacade::getEventForNonLinearTimelineCoordinate(double timelineCoordinate, bool& forward)
 {
-    Assert(timelineCoordinateOriginEventNumber != -1);
+    Assert(timelineCoordinateSystemOriginEventNumber != -1);
     IEvent *timelineCoordinateRangeStartEvent = eventLog->getEventForEventNumber(timelineCoordinateRangeStartEventNumber);
     IEvent *timelineCoordinateRangeEndEvent = eventLog->getEventForEventNumber(timelineCoordinateRangeEndEventNumber);
     IEvent *currentEvent;
@@ -361,7 +361,7 @@ IEvent *SequenceChartFacade::getLastEventNotAfterTimelineCoordinate(double timel
             return eventLog->getLastEventNotAfterSimulationTime(getSimulationTimeForTimelineCoordinate(timelineCoordinate));
 
         case EVENT_NUMBER: {
-            eventnumber_t eventNumber = (eventnumber_t)floor(timelineCoordinate) + timelineCoordinateOriginEventNumber;
+            eventnumber_t eventNumber = (eventnumber_t)floor(timelineCoordinate) + timelineCoordinateSystemOriginEventNumber;
             if (eventNumber < 0)
                 return nullptr;
             else
@@ -392,7 +392,7 @@ IEvent *SequenceChartFacade::getFirstEventNotBeforeTimelineCoordinate(double tim
             return eventLog->getFirstEventNotBeforeSimulationTime(getSimulationTimeForTimelineCoordinate(timelineCoordinate));
 
         case EVENT_NUMBER: {
-            eventnumber_t eventNumber = (eventnumber_t)floor(timelineCoordinate) + timelineCoordinateOriginEventNumber;
+            eventnumber_t eventNumber = (eventnumber_t)floor(timelineCoordinate) + timelineCoordinateSystemOriginEventNumber;
             if (eventNumber < 0)
                 return eventLog->getFirstEvent();
             else
@@ -460,7 +460,7 @@ simtime_t SequenceChartFacade::getSimulationTimeForTimelineCoordinate(double tim
     switch (timelineMode) {
         case SIMULATION_TIME: {
             simtime_t lastEventSimulationTime = eventLog->getLastEvent()->getSimulationTime();
-            simulationTime = max(BigDecimal::Zero, min(lastEventSimulationTime, timelineCoordinate + timelineCoordinateOriginSimulationTime));
+            simulationTime = max(BigDecimal::Zero, min(lastEventSimulationTime, timelineCoordinate + timelineCoordinateSystemOriginSimulationTime));
         }
         break;
 
@@ -519,7 +519,7 @@ double SequenceChartFacade::getTimelineCoordinateForSimulationTime(simtime_t sim
 
     switch (timelineMode) {
         case SIMULATION_TIME:
-            timelineCoordinate = (simulationTime - timelineCoordinateOriginSimulationTime).dbl();
+            timelineCoordinate = (simulationTime - timelineCoordinateSystemOriginSimulationTime).dbl();
             break;
 
         case EVENT_NUMBER:

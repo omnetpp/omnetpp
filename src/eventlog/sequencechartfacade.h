@@ -38,8 +38,8 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
 {
     protected:
         long timelineCoordinateSystemVersion; // a counter incremented each time the timeline coordinate system is relocated
-        eventnumber_t timelineCoordinateOriginEventNumber; // -1 means undefined, otherwise the event number of the timeline coordinate system origin
-        simtime_t timelineCoordinateOriginSimulationTime; // simtime_nil means undefined
+        eventnumber_t timelineCoordinateSystemOriginEventNumber; // -1 means undefined, otherwise the event number of the timeline coordinate system origin
+        simtime_t timelineCoordinateSystemOriginSimulationTime; // simtime_nil means undefined
         eventnumber_t timelineCoordinateRangeStartEventNumber; // -1 means undefined, the beginning of the continuous event range which has timeline coordinates assigned
         eventnumber_t timelineCoordinateRangeEndEventNumber; // -1 means undefined, the end of the continuous event range which has timeline coordinates assigned
         TimelineMode timelineMode;
@@ -61,8 +61,8 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
         double getNonLinearFocus();
         void setNonLinearFocus(double nonLinearFocus);
 
-        IEvent *getTimelineCoordinateSystemOriginEvent() { return eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber); }
-        eventnumber_t getTimelineCoordinateSystemOriginEventNumber() { return timelineCoordinateOriginEventNumber; }
+        IEvent *getTimelineCoordinateSystemOriginEvent() { return eventLog->getEventForEventNumber(timelineCoordinateSystemOriginEventNumber); }
+        eventnumber_t getTimelineCoordinateSystemOriginEventNumber() { return timelineCoordinateSystemOriginEventNumber; }
         void undefineTimelineCoordinateSystem();
         void relocateTimelineCoordinateSystem(IEvent *event);
 
