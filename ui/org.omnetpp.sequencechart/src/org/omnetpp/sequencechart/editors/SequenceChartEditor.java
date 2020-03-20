@@ -37,8 +37,16 @@ import org.eclipse.ui.part.IShowInSource;
 import org.eclipse.ui.part.IShowInTargetList;
 import org.eclipse.ui.part.ShowInContext;
 import org.omnetpp.common.IConstants;
+import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogEditor;
 import org.omnetpp.common.eventlog.IEventLogSelection;
+import org.omnetpp.common.eventlog.ModuleTreeItem;
+import org.omnetpp.eventlog.engine.ComponentMethodBeginEntry;
+import org.omnetpp.eventlog.engine.EventLogEntry;
+import org.omnetpp.eventlog.engine.IEvent;
+import org.omnetpp.eventlog.engine.IEventLog;
+import org.omnetpp.eventlog.engine.IMessageDependency;
+import org.omnetpp.eventlog.engine.SequenceChartFacade;
 import org.omnetpp.sequencechart.SequenceChartPlugin;
 import org.omnetpp.sequencechart.widgets.SequenceChart;
 
@@ -233,7 +241,7 @@ public class SequenceChartEditor
 
     @Override
     protected boolean canCreateNavigationLocation() {
-        return !eventLogInput.isCanceled() && super.canCreateNavigationLocation();
+        return !eventLogInput.isCanceled() && eventLogInput.getSequenceChartFacade().getTimelineCoordinateSystemOriginEventNumber() != -1 && super.canCreateNavigationLocation();
     }
 
     public INavigationLocation createNavigationLocation() {
@@ -245,8 +253,48 @@ public class SequenceChartEditor
 
     public void gotoMarker(IMarker marker)
     {
-        long eventNumber = Long.parseLong(marker.getAttribute("EventNumber", "-1"));
-        sequenceChart.gotoElement(eventLogInput.getEventLog().getEventForEventNumber(eventNumber));
+        IEventLog eventLog = eventLogInput.getEventLog();
+        String kind = marker.getAttribute("Kind", null);
+        String eventNumberString = marker.getAttribute("EventNumber", null);
+        if (kind.equals("Event")) {
+            IEvent event = eventLog.getEventForEventNumber(Long.parseLong(eventNumberString));
+            if (event != null)
+                sequenceChart.scrollToEvent(event);
+        }
+        else if (kind.equals("Axis")) {
+            String modulePath = marker.getAttribute("ModulePath", null);
+            ModuleTreeItem moduleTreeItem = eventLogInput.getModuleTreeRoot().findDescendantModule(modulePath);
+            if (moduleTreeItem != null)
+                sequenceChart.scrollToAxisModule(moduleTreeItem);
+        }
+        else if (kind.equals("MessageDependency")) {
+            IEvent event = eventLog.getEventForEventNumber(Long.parseLong(eventNumberString));
+            if (event != null) {
+                String messageDependencyIndexString = marker.getAttribute("MessageDependencyIndex", null);
+                IMessageDependency messageDependency = event.getConsequences().get(Integer.parseInt(messageDependencyIndexString));
+                String messageIdString = marker.getAttribute("MessageId", null);
+                if (messageDependency.getMessageEntry().getMessageId() == Integer.parseInt(messageIdString))
+                    sequenceChart.scrollToMessageDependency(messageDependency);
+            }
+        }
+        else if (kind.equals("ComponentMethodCall")) {
+            IEvent event = eventLog.getEventForEventNumber(Long.parseLong(eventNumberString));
+            if (event != null) {
+                String eventLogEntryIndexString = marker.getAttribute("EventLogEntryIndex", null);
+                EventLogEntry eventLogEntry = event.getEventLogEntry(Integer.parseInt(eventLogEntryIndexString));
+                if (eventLogEntry instanceof ComponentMethodBeginEntry) {
+                    ComponentMethodBeginEntry componentMethodBeginEntry = (ComponentMethodBeginEntry)eventLogEntry;
+                    String methodNameString = marker.getAttribute("MethodName", null);
+                    if (componentMethodBeginEntry.getMethod().equals(methodNameString))
+                        sequenceChart.scrollToComponentMethodCall(componentMethodBeginEntry);
+                }
+            }
+        }
+        else if (kind.equals("Position")) {
+            String simulationTimeString = marker.getAttribute("SimulationTime", null);
+            BigDecimal simulationTime = BigDecimal.parse(simulationTimeString);
+            sequenceChart.scrollToSimulationTime(simulationTime);
+        }
     }
 
     private class ResourceChangeListener implements IResourceChangeListener, IResourceDeltaVisitor {

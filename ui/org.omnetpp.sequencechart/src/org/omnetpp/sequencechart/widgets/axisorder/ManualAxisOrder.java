@@ -55,12 +55,10 @@ public class ManualAxisOrder {
 
     private void updateLastAxisModuleOrder(ArrayList<ModuleTreeItem> currentAxisModuleOrder, ArrayList<ModuleTreeItem> updatedCurrentAxisModuleOrder) {
         ArrayList<ModuleTreeItem> updatedLastAxisModuleOrder = new ArrayList<ModuleTreeItem>(lastAxisModuleOrder);
-
         for (ModuleTreeItem axisModule : currentAxisModuleOrder) {
             ModuleTreeItem targetAxisModule = currentAxisModuleOrder.get(updatedCurrentAxisModuleOrder.indexOf(axisModule));
             updatedLastAxisModuleOrder.set(lastAxisModuleOrder.indexOf(targetAxisModule), axisModule);
         }
-
         lastAxisModuleOrder = updatedLastAxisModuleOrder;
     }
 

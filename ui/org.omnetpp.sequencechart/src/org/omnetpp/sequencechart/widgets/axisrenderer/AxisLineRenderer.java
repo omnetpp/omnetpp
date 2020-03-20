@@ -34,6 +34,7 @@ public class AxisLineRenderer implements IAxisRenderer {
     public void drawAxis(Graphics graphics, long startEventPtr, long endEventPtr)
     {
         Rectangle rect = graphics.getClip(Rectangle.SINGLETON);
+        graphics.setLineCap(SWT.CAP_SQUARE);
         graphics.setLineStyle(SWT.LINE_SOLID);
 
         graphics.setForegroundColor(module.isCompoundModule() ? ColorFactory.DIM_GREY : ColorFactory.BLACK);

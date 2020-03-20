@@ -18,6 +18,7 @@ import org.omnetpp.eventlog.engine.SequenceChartFacade;
 import org.omnetpp.scave.engine.EnumType;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.XYArray;
+import org.omnetpp.scave.engine.XYArrayVector;
 import org.omnetpp.sequencechart.widgets.SequenceChart;
 
 /**
@@ -43,19 +44,24 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 
     private String vectorName;
 
+    // NOTE: this must be kept here to avoid the garbage collector delete the underlying C++ object, because it would also delete the XYArray
+    @SuppressWarnings("unused")
+    private XYArrayVector dataVector;
+
     private XYArray data;
 
     private ResultItem.DataType type;
 
     private EnumType enumType;
 
-    public AxisVectorBarRenderer(SequenceChart sequenceChart, String vectorFileName, String vectorRunName, String vectorModuleFullPath, String vectorName, ResultItem resultItem, XYArray data) {
+    public AxisVectorBarRenderer(SequenceChart sequenceChart, String vectorFileName, String vectorRunName, String vectorModuleFullPath, String vectorName, ResultItem resultItem, XYArrayVector dataVector, int index) {
         this.sequenceChart = sequenceChart;
         this.vectorFileName = vectorFileName;
         this.vectorRunName = vectorRunName;
         this.vectorModuleFullPath = vectorModuleFullPath;
         this.vectorName = vectorName;
-        this.data = data;
+        this.dataVector = dataVector;
+        this.data = dataVector.get(index);
         this.type = resultItem.getDataType();
         if (type == ResultItem.DataType.TYPE_ENUM)
             enumType = resultItem.getEnum();
@@ -78,7 +84,7 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
     }
 
     public int getHeight() {
-        return 13;
+        return 12;
     }
 
     /**
@@ -98,6 +104,7 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
             endIndex = size;
 
         // draw default color where no value is available
+        graphics.setLineCap(SWT.CAP_SQUARE);
         graphics.setLineStyle(SWT.LINE_SOLID);
         graphics.setBackgroundColor(NO_VALUE_COLOR);
         graphics.fillRectangle(rect.x, 0, rect.right() - rect.x, getHeight());
@@ -159,16 +166,18 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
                 // draw labels starting at each value change and repeat labels based on canvas width
                 if (phase == 1) {
                     String name = getValueText(i);
-                    int labelWidth = graphics.getFontMetrics().getAverageCharWidth() * name.length();
+                    if (name != null) {
+                        int labelWidth = (int)(graphics.getFontMetrics().getAverageCharacterWidth() * name.length());
 
-                    if (x2 - x1 > labelWidth + 6) {
-                        graphics.setForegroundColor(VALUE_NAME_COLOR);
-                        graphics.setFont(VALUE_NAME_FONT);
+                        if (x2 - x1 > labelWidth + 6) {
+                            graphics.setForegroundColor(VALUE_NAME_COLOR);
+                            graphics.setFont(VALUE_NAME_FONT);
 
-                        int x = x1 + 5;
-                        while (x < rect.right() && x < x2 - labelWidth) {
-                            graphics.drawText(name, x, 0);
-                            x += sequenceChart.getClientArea().width;
+                            int x = x1 + 5;
+                            while (x < rect.right() && x < x2 - labelWidth) {
+                                graphics.drawText(name, x, -1);
+                                x += sequenceChart.getClientArea().width;
+                            }
                         }
                     }
                 }
@@ -205,6 +214,8 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
                 index = mid;
                 break;
             }
+            else if (left == right)
+                break;
             else if (eventNumber < getEventNumber(mid))
                 right = mid - 1;
             else
@@ -295,6 +306,10 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 
     public long getEventNumber(int index)
     {
+        Assert.isTrue(0 <= index && index < data.length());
+        data.getX(index);
+        data.getY(index);
+        data.getPreciseX(index);
         return data.getEventNumber(index);
     }
 
@@ -308,7 +323,7 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
         if (type == ResultItem.DataType.TYPE_ENUM || type == ResultItem.DataType.TYPE_INT)
             return (int)Math.floor(getValue(index));
         else
-            return index % 2;
+            return index;
     }
 
     private String getValueText(int index)

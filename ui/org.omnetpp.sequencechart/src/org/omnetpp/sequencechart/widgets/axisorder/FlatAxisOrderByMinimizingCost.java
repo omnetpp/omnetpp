@@ -14,6 +14,7 @@ import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.eventlog.engine.IntIntMap;
 import org.omnetpp.eventlog.engine.IntVector;
+import org.omnetpp.eventlog.engine.SequenceChartFacade;
 
 /**
  * This class implements a sort method that tries to minimize the total number of axes that arrows are crossing.
@@ -23,16 +24,25 @@ import org.omnetpp.eventlog.engine.IntVector;
  */
 public class FlatAxisOrderByMinimizingCost {
     private EventLogInput eventLogInput;
+    private long startEventPtr;
+    private long endEventPtr;
 
     private static int TIME_LIMIT = 1000; // in milliseconds
 
-    public FlatAxisOrderByMinimizingCost(EventLogInput eventLogInput) {
+    public FlatAxisOrderByMinimizingCost(EventLogInput eventLogInput, long startEventPtr, long endEventPtr) {
         this.eventLogInput = eventLogInput;
+        this.startEventPtr = startEventPtr;
+        this.endEventPtr = endEventPtr;
     }
 
     public int[] calculateOrdering(ModuleTreeItem[] axisModules, Map<Integer, Integer> moduleIdToAxisModuleIndexMap) {
+        int eventCount = 1000;
+        SequenceChartFacade sequenceChartFacade = eventLogInput.getSequenceChartFacade();
         IntIntMap cppModuleIdToAxisModuleIndexMap = getCppModuleIdToAxisModuleIndexMap(moduleIdToAxisModuleIndexMap);
-        IntVector cppAxisMessageDependecyWeightMatrix = eventLogInput.getSequenceChartFacade().getApproximateMessageDependencyCountAdjacencyMatrix(cppModuleIdToAxisModuleIndexMap, 100, 1, 0);
+        boolean isSmallEventRange = sequenceChartFacade.IEvent_getEventNumber(endEventPtr) - sequenceChartFacade.IEvent_getEventNumber(startEventPtr) < eventCount;
+        IntVector cppAxisMessageDependecyWeightMatrix = isSmallEventRange ? 
+                eventLogInput.getSequenceChartFacade().getMessageDependencyCountAdjacencyMatrix(cppModuleIdToAxisModuleIndexMap, startEventPtr, endEventPtr, 1, 0) :
+                eventLogInput.getSequenceChartFacade().getApproximateMessageDependencyCountAdjacencyMatrix(cppModuleIdToAxisModuleIndexMap, eventCount, 1, 0);
         int[][] axisMessageDependecyWeightMatrix = getAxisMessageDependecyWeightMatrix(cppAxisMessageDependecyWeightMatrix, axisModules.length);
 
         ModuleTreeItem[] orderedAxisModules = (ModuleTreeItem[])ArrayUtils.clone(axisModules);
