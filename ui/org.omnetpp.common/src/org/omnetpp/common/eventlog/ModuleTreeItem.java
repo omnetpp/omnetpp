@@ -89,17 +89,17 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
         return module;
     }
 
-    public void visitLeaves(IModuleTreeItemVisitor visitor)
+    public void visitItems(IModuleTreeItemVisitor visitor)
     {
-        visitLeaves(visitor, this);
+        visitItems(visitor, this);
     }
 
-    private void visitLeaves(IModuleTreeItemVisitor visitor, ModuleTreeItem treeItem)
+    private void visitItems(IModuleTreeItemVisitor visitor, ModuleTreeItem treeItem)
     {
         visitor.visit(treeItem);
 
         for (ModuleTreeItem childTreeItem : treeItem.getSubmodules())
-            visitLeaves(visitor, childTreeItem);
+            visitItems(visitor, childTreeItem);
     }
 
     /**
@@ -226,7 +226,7 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
         // TODO: put a hash table in the root to make this search fast
         final ModuleTreeItem[] descendant = new ModuleTreeItem[1];
 
-        visitLeaves(new IModuleTreeItemVisitor() {
+        visitItems(new IModuleTreeItemVisitor() {
             public void visit(ModuleTreeItem treeItem) {
                 if (treeItem.getModuleFullPath().equals(fullPath))
                     descendant[0] = treeItem;
@@ -234,6 +234,16 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
         });
 
         return descendant[0];
+    }
+
+    public int getModuleCount() {
+        int[] count = new int[1];
+        visitItems(new IModuleTreeItemVisitor() {
+            public void visit(ModuleTreeItem treeItem) {
+                count[0]++;
+            }
+        });
+        return count[0];
     }
 
     @Override

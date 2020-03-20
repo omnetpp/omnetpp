@@ -11,9 +11,14 @@ import java.util.Arrays;
 
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
+import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.ITreeViewerListener;
+import org.eclipse.jface.viewers.TreeExpansionEvent;
+import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -21,8 +26,10 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.TreeColumn;
 
 public class ModuleTreeViewer extends CheckboxTreeViewer {
 
@@ -38,20 +45,72 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
         initialize(parent);
     }
 
+    public void expandChecked() {
+        ITreeContentProvider treeContentProvider = (ITreeContentProvider)getContentProvider();
+        for (Object element : getCheckedElements()) {
+            element = treeContentProvider.getParent(element);
+            while (element != null) {
+                expandToLevel(element, 1);
+                element = treeContentProvider.getParent(element);
+            }
+        }
+    }
+
+    @Override
+    public void setLabelProvider(IBaseLabelProvider labelProvider) {
+        if (labelProvider instanceof ITableLabelProvider) {
+            TreeViewerColumn c1 = new TreeViewerColumn(this, SWT.NONE);
+            TreeViewerColumn c2 = new TreeViewerColumn(this, SWT.NONE);
+            TreeViewerColumn c3 = new TreeViewerColumn(this, SWT.NONE);
+            TreeViewerColumn c4 = new TreeViewerColumn(this, SWT.NONE);
+            c1.getColumn().setText("Name");
+            c2.getColumn().setText("ID");
+            c3.getColumn().setText("Type");
+            c4.getColumn().setText("Path");
+            getTree().setHeaderVisible(true);
+            getTree().setLinesVisible(true);
+        }
+        super.setLabelProvider(labelProvider);
+        packColumns();
+    }
+
     private void initialize(Composite parent) {
+        addTreeListener(new ITreeViewerListener() {
+            @Override
+            public void treeCollapsed(TreeExpansionEvent event) {
+                packColumns();
+            }
+
+            @Override
+            public void treeExpanded(TreeExpansionEvent event) {
+                packColumns();
+            }
+        });
         setContentProvider(new ITreeContentProvider() {
             public void dispose() { }
             public void inputChanged(Viewer viewer, Object oldInput, Object newInput) { }
             public Object[] getChildren(Object parentElement) {
-                ModuleTreeItem[] submods = ((ModuleTreeItem)parentElement).getSubmodules();
-                Arrays.sort(submods, 0, submods.length);
-                return submods;
+                if (parentElement instanceof String)
+                    return new Object[] {root};
+                else {
+                    ModuleTreeItem[] submods = ((ModuleTreeItem)parentElement).getSubmodules();
+                    Arrays.sort(submods, 0, submods.length);
+                    return submods;
+                }
             }
             public Object getParent(Object element) {
-                return ((ModuleTreeItem)element).getParentModule();
+                if (element instanceof String)
+                    return null;
+                else if (element == root)
+                    return "root";
+                else
+                    return ((ModuleTreeItem)element).getParentModule();
             }
             public boolean hasChildren(Object element) {
-                return ((ModuleTreeItem)element).getSubmodules().length>0;
+                if (element instanceof String)
+                    return true;
+                else
+                    return ((ModuleTreeItem)element).getSubmodules().length > 0;
             }
             public Object[] getElements(Object inputElement) {
                 return getChildren(inputElement);
@@ -82,15 +141,61 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
 
         });
 
-        setInput(root);
+        setInput("root");
         expandAll();
 
-        if (root != null && (root).getSubmodules().length > 0)
-            reveal((root).getSubmodules()[0]); // scroll to top
+        if (root != null)
+            reveal(root); // scroll to top
 
         Control control = getControl();
         Menu menu = new Menu(control);
         MenuItem menuItem;
+
+        menuItem = new MenuItem(menu, SWT.NONE);
+        menuItem.setText("Expand Subtree");
+        menuItem.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                for (Object element : getSelectionFromWidget())
+                    expandToLevel(element, ALL_LEVELS);
+            }
+        });
+
+        menuItem = new MenuItem(menu, SWT.NONE);
+        menuItem.setText("Expand Children");
+        menuItem.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                for (Object element : getSelectionFromWidget())
+                    for (ModuleTreeItem moduleTreeItem : ((ModuleTreeItem)element).getSubmodules())
+                        expandToLevel(moduleTreeItem, ALL_LEVELS);
+            }
+        });
+
+        menuItem = new MenuItem(menu, SWT.SEPARATOR);
+
+        menuItem = new MenuItem(menu, SWT.NONE);
+        menuItem.setText("Collapse Subtree");
+        menuItem.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                for (Object element : getSelectionFromWidget())
+                    collapseToLevel(element, ALL_LEVELS);
+            }
+        });
+
+        menuItem = new MenuItem(menu, SWT.NONE);
+        menuItem.setText("Collapse Children");
+        menuItem.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                for (Object element : getSelectionFromWidget())
+                    for (ModuleTreeItem moduleTreeItem : ((ModuleTreeItem)element).getSubmodules())
+                        collapseToLevel(moduleTreeItem, ALL_LEVELS);
+            }
+        });
+
+        menuItem = new MenuItem(menu, SWT.SEPARATOR);
 
         menuItem = new MenuItem(menu, SWT.NONE);
         menuItem.setText("Check Children");
@@ -166,28 +271,6 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
             }
         });
 
-        menuItem = new MenuItem(menu, SWT.SEPARATOR);
-
-        menuItem = new MenuItem(menu, SWT.NONE);
-        menuItem.setText("Collapse Subtree");
-        menuItem.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                for (Object element : getSelectionFromWidget())
-                    collapseToLevel(element, ALL_LEVELS);
-            }
-        });
-
-        menuItem = new MenuItem(menu, SWT.NONE);
-        menuItem.setText("Expand Subtree");
-        menuItem.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                for (Object element : getSelectionFromWidget())
-                    expandToLevel(element, ALL_LEVELS);
-            }
-        });
-
         control.setMenu(menu);
     }
 
@@ -208,5 +291,15 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
 
     private void fireCheckStateChanged(Object element) {
         fireCheckStateChanged(new CheckStateChangedEvent(this, element, getChecked(element)));
+    }
+
+    private void packColumns() {
+        Display.getCurrent().asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                for (TreeColumn column : getTree().getColumns())
+                    column.pack();
+            }
+        });
     }
 }
