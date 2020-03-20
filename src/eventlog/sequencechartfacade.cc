@@ -152,9 +152,9 @@ double SequenceChartFacade::EventLogEntry_getTimelineCoordinate(ptr_t ptr)
             // TODO: factor with getTimelineCoordinateDelta
             if (eventLogEntry == currentEventLogEntry)
                 return getTimelineCoordinateBegin(event) + timelineCoordinateDelta;
-            else if (dynamic_cast<ModuleMethodBeginEntry *>(currentEventLogEntry))
+            else if (dynamic_cast<ComponentMethodBeginEntry *>(currentEventLogEntry))
                 timelineCoordinateDelta += timelineMode == STEP ? 1 : nonLinearMinimumTimelineCoordinateDelta;
-            else if (dynamic_cast<ModuleMethodEndEntry *>(currentEventLogEntry))
+            else if (dynamic_cast<ComponentMethodEndEntry *>(currentEventLogEntry))
                 timelineCoordinateDelta += timelineMode == STEP ? 1 : nonLinearMinimumTimelineCoordinateDelta;
             else if (dynamic_cast<BeginSendEntry *>(currentEventLogEntry))
                 timelineCoordinateDelta += timelineMode == STEP ? 1 : nonLinearMinimumTimelineCoordinateDelta;
@@ -184,9 +184,9 @@ double SequenceChartFacade::getTimelineCoordinateDelta(IEvent *event)
         for (int i = 0; i < event->getNumEventLogEntries(); i++) {
             EventLogEntry *eventLogEntry = event->getEventLogEntry(i);
             // TODO: do we need different deltas for different entry kinds?
-            if (dynamic_cast<ModuleMethodBeginEntry *>(eventLogEntry))
+            if (dynamic_cast<ComponentMethodBeginEntry *>(eventLogEntry))
                 timelineCoordinateDelta += timelineMode == STEP ? 1 : nonLinearMinimumTimelineCoordinateDelta;
-            else if (dynamic_cast<ModuleMethodEndEntry *>(eventLogEntry))
+            else if (dynamic_cast<ComponentMethodEndEntry *>(eventLogEntry))
                 timelineCoordinateDelta += timelineMode == STEP ? 1 : nonLinearMinimumTimelineCoordinateDelta;
             else if (dynamic_cast<BeginSendEntry *>(eventLogEntry))
                 timelineCoordinateDelta += timelineMode == STEP ? 1 : nonLinearMinimumTimelineCoordinateDelta;

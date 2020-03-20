@@ -249,18 +249,18 @@ EndSendEntry *Event::getEndSendEntry(BeginSendEntry *beginSendEntry)
     throw opp_runtime_error("Neither EndSendEntry nor DeleteMessageEntry found");
 }
 
-ModuleMethodEndEntry *Event::getModuleMethodEndEntry(ModuleMethodBeginEntry *moduleMethodBeginEntry)
+ComponentMethodEndEntry *Event::getComponentMethodEndEntry(ComponentMethodBeginEntry *componentMethodBeginEntry)
 {
-    Assert(moduleMethodBeginEntry && this == moduleMethodBeginEntry->getEvent());
+    Assert(componentMethodBeginEntry && this == componentMethodBeginEntry->getEvent());
     int level = 0;
-    for (int i = moduleMethodBeginEntry->getEntryIndex() + 1; i < (int)eventLogEntries.size(); i++) {
+    for (int i = componentMethodBeginEntry->getEntryIndex() + 1; i < (int)eventLogEntries.size(); i++) {
         EventLogEntry *eventLogEntry = eventLogEntries[i];
-        if (dynamic_cast<ModuleMethodBeginEntry *>(eventLogEntry))
+        if (dynamic_cast<ComponentMethodBeginEntry *>(eventLogEntry))
             level++;
-        ModuleMethodEndEntry *moduleMethodEndEntry = dynamic_cast<ModuleMethodEndEntry *>(eventLogEntry);
-        if (moduleMethodEndEntry) {
+        ComponentMethodEndEntry *componentMethodEndEntry = dynamic_cast<ComponentMethodEndEntry *>(eventLogEntry);
+        if (componentMethodEndEntry) {
             if (!level)
-                return moduleMethodEndEntry;
+                return componentMethodEndEntry;
             else
                 level--;
         }

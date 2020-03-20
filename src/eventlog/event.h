@@ -93,7 +93,7 @@ class EVENTLOG_API Event : public IEvent
         virtual bool isSelfMessage(BeginSendEntry *beginSendEntry) override;
         virtual bool isSelfMessageProcessingEvent() override;
         virtual EndSendEntry *getEndSendEntry(BeginSendEntry *beginSendEntry) override;
-        virtual ModuleMethodEndEntry *getModuleMethodEndEntry(ModuleMethodBeginEntry *moduleMethodBeginEntry);
+        virtual ComponentMethodEndEntry *getComponentMethodEndEntry(ComponentMethodBeginEntry *componentMethodBeginEntry);
         simtime_t getTransmissionDelay(BeginSendEntry *beginSendEntry);
         virtual Event *getPreviousEvent() override;
         virtual Event *getNextEvent() override;
