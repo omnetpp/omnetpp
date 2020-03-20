@@ -24,7 +24,9 @@ Require-Bundle: org.eclipse.core.resources,
  org.eclipse.gmf.runtime.draw2d.ui;resolution:=optional,
  org.eclipse.gmf.runtime.draw2d.ui.render;resolution:=optional,
  org.eclipse.gmf.runtime.draw2d.ui.render.awt;resolution:=optional,
- org.eclipse.e4.ui.workbench
+ org.eclipse.e4.ui.workbench,
+ org.omnetpp.ned.core,
+ org.omnetpp.ned.model
 Export-Package: org.omnetpp.sequencechart,
  org.omnetpp.sequencechart.editors,
  org.omnetpp.sequencechart.widgets
