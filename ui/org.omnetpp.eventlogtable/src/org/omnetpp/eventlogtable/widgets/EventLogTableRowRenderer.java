@@ -36,6 +36,8 @@ import org.omnetpp.eventlog.engine.BeginSendEntry;
 import org.omnetpp.eventlog.engine.BubbleEntry;
 import org.omnetpp.eventlog.engine.CancelEventEntry;
 import org.omnetpp.eventlog.engine.CloneMessageEntry;
+import org.omnetpp.eventlog.engine.ComponentMethodBeginEntry;
+import org.omnetpp.eventlog.engine.ComponentMethodEndEntry;
 import org.omnetpp.eventlog.engine.ConnectionCreatedEntry;
 import org.omnetpp.eventlog.engine.ConnectionDeletedEntry;
 import org.omnetpp.eventlog.engine.ConnectionDisplayStringChangedEntry;
@@ -55,8 +57,6 @@ import org.omnetpp.eventlog.engine.MessageEntry;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.ModuleDeletedEntry;
 import org.omnetpp.eventlog.engine.ModuleDisplayStringChangedEntry;
-import org.omnetpp.eventlog.engine.ComponentMethodBeginEntry;
-import org.omnetpp.eventlog.engine.ComponentMethodEndEntry;
 import org.omnetpp.eventlog.engine.PStringVector;
 import org.omnetpp.eventlog.engine.SendDirectEntry;
 import org.omnetpp.eventlog.engine.SendHopEntry;
@@ -271,7 +271,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
                      .getStyledString();
         case 1:
             return new Builder(isSelected)
-                     .append(simulationTime + "s", isEventLogEntry ? EVENT_ENTRY_SIMULATION_TIME_STYLE : EVENT_LOG_ENTRY_SIMULATION_TIME_STYLE)
+                     .append(getSimulationTimeText(simulationTime), isEventLogEntry ? EVENT_ENTRY_SIMULATION_TIME_STYLE : EVENT_LOG_ENTRY_SIMULATION_TIME_STYLE)
                      .getStyledString();
         case 2:
             switch (eventLogTable.getDisplayMode()) {
@@ -470,11 +470,11 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
                        .constant(" ").gate(sendHopEntry.getSenderModuleId(), sendHopEntry.getSenderGateId());
 
                 if (sendHopEntry.getTransmissionDelay().doubleValue() != 0) {
-                    builder.constant(" transmission delay = ").data(sendHopEntry.getTransmissionDelay() + "s");
+                    builder.constant(" transmission delay = ").data(getSimulationTimeText(sendHopEntry.getTransmissionDelay()));
                 }
 
                 if (sendHopEntry.getPropagationDelay().doubleValue() != 0) {
-                    builder.constant(" propagation delay = ").data(sendHopEntry.getPropagationDelay() + "s");
+                    builder.constant(" propagation delay = ").data(getSimulationTimeText(sendHopEntry.getPropagationDelay()));
                 }
             }
             else if (eventLogEntry instanceof SendDirectEntry) {
@@ -487,8 +487,8 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 
                 builder.constant(" to ").module(sendDirectEntry.getDestModuleId())
                        .constant(" ").gate(sendDirectEntry.getDestModuleId(), sendDirectEntry.getDestGateId())
-                       .constant(" with transmission delay ").data(sendDirectEntry.getTransmissionDelay() + "s")
-                       .constant(" and propagation delay ").data(sendDirectEntry.getPropagationDelay() + "s");
+                       .constant(" with transmission delay ").data(getSimulationTimeText(sendDirectEntry.getTransmissionDelay()))
+                       .constant(" and propagation delay ").data(getSimulationTimeText(sendDirectEntry.getPropagationDelay()));
             }
             else if (eventLogEntry instanceof CreateMessageEntry) {
                 CreateMessageEntry createMessageEntry = (CreateMessageEntry)eventLogEntry;
@@ -527,6 +527,14 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
         }
 
         return builder.getStyledString();
+    }
+
+    private String getSimulationTimeText(BigDecimal simulationTime) {
+        // TODO: make this a parameter
+        if (true)
+            return TimeUtils.secondsToTimeString(simulationTime.toBigDecimal());
+        else
+            return simulationTime.toString();
     }
 
     private class Builder {
@@ -695,7 +703,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
         Builder messageArrivalTime(EndSendEntry endSendEntry) {
             BigDecimal arrivalTime = endSendEntry.getArrivalTime();
             BigDecimal simulationTime = endSendEntry.getEvent().getSimulationTime();
-            append(arrivalTime + "s", DATA_STYLE);
+            append(getSimulationTimeText(arrivalTime), DATA_STYLE);
             append(", now + ", CONSTANT_TEXT_STYLE);
             append(TimeUtils.secondsToTimeString(arrivalTime.toBigDecimal().subtract(simulationTime.toBigDecimal())), DATA_STYLE);
             return this;
