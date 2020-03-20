@@ -232,8 +232,8 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
             paintWithoutCaching(graphics);
         else {
             Rectangle viewportRect = new Rectangle(getViewportRectangle());
-            Rectangle clip = GraphicsUtils.getClip(graphics);
-            clip = clip.intersect(viewportRect);
+            Rectangle oldClip = GraphicsUtils.getClip(graphics);
+            Rectangle clip = oldClip.getIntersection(viewportRect);
             graphics.setClip(clip);
             LargeRect lclip = canvasToVirtualRect(clip);
 
@@ -281,7 +281,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
             }
 
             // paint items that we don't want to cache
-            graphics.setClip(new Rectangle(getClientArea()));
+            graphics.setClip(oldClip);
             paintNoncachableLayer(graphics);
         }
     }
