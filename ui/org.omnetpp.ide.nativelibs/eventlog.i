@@ -182,6 +182,7 @@ namespace std {
 
    %template(IntVector) vector<int>;
    %template(LongVector) vector<long>;
+   %template(Int64Vector) vector<int64_t>;
    %template(PtrVector) vector<omnetpp::eventlog::ptr_t>;
 };
 
