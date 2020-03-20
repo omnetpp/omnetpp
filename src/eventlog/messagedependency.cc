@@ -89,6 +89,8 @@ eventnumber_t MessageSendDependency::getConsequenceEventNumber()
 
         if (consequenceTime == simtime_nil)
             consequenceEventNumber = NO_SUCH_EVENT;
+        else if (consequenceTime > eventLog->getLastEvent()->getSimulationTime())
+            consequenceEventNumber = EVENT_NOT_YET_REACHED;
         else {
             IEvent *event = eventLog->getEventForSimulationTime(consequenceTime, FIRST_OR_PREVIOUS);
             MessageEntry *messageEntry = getMessageEntry();
