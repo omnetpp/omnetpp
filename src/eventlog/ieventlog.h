@@ -68,7 +68,7 @@ class EVENTLOG_API IEventLog
         virtual void progress() = 0;
 
         /**
-         * Synchorizes state when the underlying log file has been changed.
+         * Synchronizes state when the underlying log file has been changed.
          * Either new events were appended or the whole file has been overwritten.
          */
         virtual void synchronize(FileReader::FileChangedState change);
