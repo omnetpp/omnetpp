@@ -1,0 +1,49 @@
+Sequence chart
+--------------
+
+Errors:
+
+-Some elog files are taking too long to load, the IDE freezes (e.g. fragmentation showcase/DCFfrag.elog)
+-Some files are taking even longer to load (or didn't wait for it to finish loading)(e.g. fragmentation/HCFfrag.elog)
+-When a sequence chart loads, it's zoomed out all the way
+-When axis vector data is shown, the numbers are too big (seems to be a UI scaling issue; when scaling is off, they fit in the rectangle)
+-Export to svg: when exporting the whole event log, the timeline doesn't reach the end of the event log
+-Sometimes the - icon next to a small module rectangle doesn't fit in the rectangle; when the mouse pointer is over it, the - icon is outside the rectangle;
+ when trying to move the mouse over the - icon, it disappears; nevertheless, when clicked in its place, it does its job, so minimizes the module rectangle
+ seems to be a very minor issue though
+-Error when setting timeline to linear/sometimes just crash
+-90MB elog file (wireless07), everything very slow
+-very slow/unresponsive when timeline is on nonlinear; works ok when on linear (txop showcase, 14MB elog file)
+
+Feature ideas:
+
+-Undo/Redo of changes in the sequence chart view (e.g. clicked close on the module label in the axis header; want to get it back with ctrl-z)
+ should work for changes in the view, like filtering, zooming, shown modules, selection of arrows/others in the top row of buttons, maybe bookmarks (?)
+ but not for scroll position, selection of modules
+-Legend-like help for keyboard shortcuts/the described stuff in the __TEST file
+-Some keyboard shortcut to select multiple events, e.g. Shift+Ctrl left/right arrow -> would select all events or just the ones in the current module
+-The cogwheel icon (Preset Configuration) doesn't do anything, just the dropdown menu
+-File size in MB or kB in eventlog info
+
+
+ - make sure axis header label is always visible (min/max scroll into visible area)
+ - remove /message dependencies/method calls/etc.
+ - non-overlapping labels
+ - module axis order, switch between manual/minimized crossings
+ - fix duplicate entries in manual axis order KLUDGE in the code
+ - eventlog table row width/canvas width is fixed, content may be outside of viewport
+ - deleted file causes rendering error
+ - use color gradient for integer vector data?
+
+ + remove individual axes/events
+ + automatic module state vector annotation
+ + bookmark timeline coordinates/axes/message sends/method calls
+ + show how many axes are not visible but open
+ + show if the event is actually in that module or only inherited from descendant
+ + bookmark events/simulation times
+ + image and coloring in ModuleTreeViewer
+ + configure -> preset
+ + horizontal event stretch
+ + module axis navigation, drill down, etc.
+ + draw arrows when both ends are available
+ + preload small files

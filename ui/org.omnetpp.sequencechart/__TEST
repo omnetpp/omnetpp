@@ -1,0 +1,287 @@
+                         Sequence Chart State and Behavior
+
+1 State
+=======
+
+Variables that determine the sequence chart.
+
+ - input: the eventlog file
+ - open modules: any subset of all simple and compound modules ever seen in the eventlog file
+ - events: all events or a subset defined by an event filter
+ - axis ordering: one of the automatic setting or manual
+ - timeline mode: linear and various non-linear mappings between simulation time and pixels
+ - timeline position and zoom factor
+ - selection: one or more events/axes/message sends/method calls/simulation times
+ - bookmarks: one or more events/axes/message sends/method calls/simulation times
+ - show/hide flags for various parts of the chart
+ - permanent error message in case of an internal error
+
+2 Legend
+========
+ + gutter
+   - background
+   - base timestamp
+   - relative timestamps
+ + position and range
+   - start position in events and simulation time
+   - range in events and simulation time
+ + hairlines
+ + axis header
+   - module label
+   - action marks
+ + axis
+   - simple or compound module axis
+   - axis label
+   - vector data label
+   - vector data background
+   - action marks
+ + event
+   - initialization mark
+   - self message mark
+   - handle message mark
+   - event number
+ + method call
+   - forward arrow
+   - backward arrow
+   - method name label
+   - execution mark
+ + message send
+   - straight arrow
+   - message name label
+ + message reuse
+   - arc arrow
+   - message name label
+ - transmission duration
+ - zero simulation area
+ - axis info
+ - eventlog info
+
+3 Behavior
+==========
+
+User inputs that change the sequence chart state.
+
+Keyboard
+--------
+ - f5
+   clears the permanent error message and refreshes the chart
+ - tab
+   shows/hides time differences between selected events and simulation times
+ - delete
+   removes the selected events by adding them the eventlog filter and enables filtering
+ - left arrow
+   moves the selection to the previous event
+ - control left arrow
+   moves the selection to the cause event
+ - shift left arrow
+   moves the selection to the previous event in the same module
+ - right arrow
+   moves the selection to the next event
+ - control right arrow
+   moves the selection to the first consequence event
+ - shift right arrow
+   moves the selection to the next event in the same module
+ - up arrow
+   scrolls up with axis spacing
+ - down arrow
+   scrolls down with axis spacing
+ - page up
+   scrolls up with viewport height
+ - page down
+   scrolls down with viewport height
+ - home
+   goes to the first event if visible or to the first simulation time
+ - end
+   goes to the last event if visible or to the last simulation time
+ - keypad plus
+   zooms in
+ - keypad minus
+   zooms out
+ - keypad multiply
+   default zoom
+ - control f
+   opens find text dialog
+ - control k
+   finds next match starting from the current selection
+ - control g
+   opens go to event number dialog
+ - control shift g
+   opens go to simulation time dialog
+ - control t
+   toggles bookmarks for the current selection
+
+Mouse
+-----
+ - left click
+   - on event/message send/method call/axis/simulation time
+     selects/deselects
+   - on axis expand/collapse/close icons
+     expands/collapses/closes the axis
+ - control Left click
+   adds/removes to selection event/message send/method call/axis/simulation time
+ - right click
+   opens context menu
+ - left double click
+   - on message dependency
+     zooms on message dependency
+   - on axis header or axis header module label
+     opens module
+   - on axis module or axis label
+     opens module
+ - control left double click
+   - on axis header or axis header module label
+     opens module recursively
+   - on axis module or axis label
+     opens module recursively
+ - mouse wheel
+   scrolls vertically
+ - shift mouse wheel
+   scrolls horizontally
+ - control mouse wheel
+   zoom in/out
+ - hover
+   highlight and describe what's under the mouse: events/message sends/method calls/axes/simulation time
+ - drag
+   scroll horizontally and vertically
+ - resize
+   automatically change axis spacing if axes are balanced
+
+Context menu
+------------
+ - select modules
+   changes the set of displayed modules
+ - preset configurations
+   changes the show/hide flags for various use cases
+ - timeline mode
+   - linear
+   - event number
+   - step
+   - non-linear
+   - custom
+ - ordering mode
+   - module id
+   - module path
+   - minimize crossings
+   - manual
+ - filter
+   opens the eventlog filter dialog which can be used to specify the filter parameters
+ - pin
+   when not pinned, follows the selection of other workbench parts for the same eventlog
+ - release memory
+   frees all memory allocated for the eventlog file and reloads the necessary parts, the chart is unchanged
+ - copy to clipboard
+   copies the currently visible area as an image to the clipboard
+ - export to SVG
+   opens the export SVG dialog
+
+Event context menu
+------------------
+
+ - TODO
+
+Message send context menu
+-------------------------
+
+ - TODO
+
+Method call context menu
+------------------------
+
+ - TODO
+
+Axis context menu
+-----------------
+
+ - remove module
+ - expand compound module
+   - one level
+   - all levels recursively
+ - collapse compound module
+   - to one level
+   - to itself
+ - open module
+   - submodule one level deep
+   - parent module one level deep
+   - specific module one level deep
+
+Toolbar
+-------
+
+ - similar to context menu
+
+Vertical scroll bar
+-------------------
+
+ - standard behavior
+
+Horizontal scroll bar
+---------------------
+
+ - dragging
+   jumps to approximate event at the relative position
+
+Navigation history
+------------------
+
+ - forward
+   navigates to next location by restoring simulation time and range
+ - backward
+   navigates to previous location by restoring simulation time and range
+
+Configuration
+-------------
+
+ - stores configuration automatically on close
+ - restores configuration automatically on open
+ - stored configuration is persistent between sessions
+ - presets
+   - network configuration
+   - full detail
+   - default
+   - empty
+
+Bookmarks
+---------
+
+ - event/message send/method call/axis/simulation time
+ - persistent between sessions
+ - can be navigated to by double clicking
+
+Tooltip
+-------
+
+ - TODO
+
+Linked eventlog table
+---------------------
+
+ - follows selection
+
+Laziness
+--------
+
+ - supports large files several GBs
+ - opens file begin and opens file end in constant time and space
+ - allows any potential long running operation to be cancelled
+   the chart displays a permanent message stating that it was cancelled
+   parameters can be changed and chart must be refreshed
+
+Eventlog file
+-------------
+
+ - if file is appended
+   reflects the new content, if the current position is at the end, the chart scrolls with the new content
+ - if file is overwritten
+   reloads the file and jumps to the beginning
+ - if file is deleted
+   becomes empty
+
+Filtering
+---------
+
+ - TODO
+
+Viewer vs Editor
+----------------
+
+ - TODO
