@@ -22,6 +22,7 @@ import org.omnetpp.eventlog.engine.EventLogTableFacade;
 import org.omnetpp.eventlog.engine.FileReader;
 import org.omnetpp.eventlog.engine.FilteredEventLog;
 import org.omnetpp.eventlog.engine.IEventLog;
+import org.omnetpp.eventlog.engine.Int64Vector;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntryList;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
@@ -304,8 +305,9 @@ public class EventLogInput extends FileEditorInput
         }
 
         // enable is handled in filter parameters
-        filteredEventLog.setFirstEventNumber(eventLogFilterParameters.getFirstEventNumber());
-        filteredEventLog.setLastEventNumber(eventLogFilterParameters.getLastEventNumber());
+        filteredEventLog.setFirstConsideredEventNumber(eventLogFilterParameters.getFirstEventNumber());
+        filteredEventLog.setLastConsideredEventNumber(eventLogFilterParameters.getLastEventNumber());
+        filteredEventLog.setExcludedEventNumbers(eventLogFilterParameters.getExcludedEventNumbers());
 
         filteredEventLog.setEnableModuleFilter(eventLogFilterParameters.enableModuleFilter);
         if (eventLogFilterParameters.enableModuleFilter) {

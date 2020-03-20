@@ -17,6 +17,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
+import org.omnetpp.eventlog.engine.Int64Vector;
 import org.omnetpp.eventlog.engine.IntVector;
 import org.omnetpp.eventlog.engine.LongVector;
 import org.omnetpp.eventlog.engine.StringVector;
@@ -30,9 +31,13 @@ public class EventLogFilterParameters implements Serializable {
 
     public boolean enableRangeFilter;
 
-    public boolean enableEventNumberFilter;
+    public boolean enableEventNumberRangeFilter;
 
-    public boolean enableSimulationTimeFilter;
+    public boolean enableSimulationTimeRangeFilter;
+
+    public boolean enableEventFilter;
+
+    public boolean enableExcludedEventNumberFilter;
 
     public boolean enableModuleFilter;
 
@@ -65,6 +70,8 @@ public class EventLogFilterParameters implements Serializable {
     public long lowerEventNumberLimit = -1;
 
     public long upperEventNumberLimit = -1;
+
+    public EnabledLong[] excludedEventNumbers;
 
     public BigDecimal lowerSimulationTimeLimit;
 
@@ -131,6 +138,19 @@ public class EventLogFilterParameters implements Serializable {
         public int value;
     }
 
+    public static class EnabledLong implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        public EnabledLong(boolean enabled, long value) {
+            this.enabled = enabled;
+            this.value = value;
+        }
+
+        public boolean enabled;
+
+        public long value;
+    }
+
     public EventLogFilterParameters(EventLogInput eventLogInput) {
         this.eventLogInput = eventLogInput;
     }
@@ -140,7 +160,7 @@ public class EventLogFilterParameters implements Serializable {
     }
 
     public boolean isAnyEventFilterEnabled() {
-        return enableEventNumberFilter || enableSimulationTimeFilter;
+        return enableEventNumberRangeFilter || enableSimulationTimeRangeFilter;
     }
 
     public boolean isAnyMessageFilterEnabled() {
@@ -179,7 +199,7 @@ public class EventLogFilterParameters implements Serializable {
         }
 
         long lowerEventNumberForSimulationTimeLimit = -1;
-        if (enableSimulationTimeFilter && lowerSimulationTimeLimit != null) {
+        if (enableSimulationTimeRangeFilter && lowerSimulationTimeLimit != null) {
             IEvent event = eventLog.getLastEventNotAfterSimulationTime(org.omnetpp.common.engine.BigDecimal.parse(lowerSimulationTimeLimit.toPlainString()));
 
             if (event != null)
@@ -187,7 +207,7 @@ public class EventLogFilterParameters implements Serializable {
         }
 
         long lowerEventNumberLimit = -1;
-        if (enableEventNumberFilter && this.lowerEventNumberLimit != -1)
+        if (enableEventNumberRangeFilter && this.lowerEventNumberLimit != -1)
             lowerEventNumberLimit = this.lowerEventNumberLimit;
 
         return Math.max(Math.max(lowerEventNumberLimit, lowerEventNumberForSimulationTimeLimit),
@@ -211,7 +231,7 @@ public class EventLogFilterParameters implements Serializable {
         }
 
         long upperEventNumberForSimulationTimeLimit = Long.MAX_VALUE;
-        if (enableSimulationTimeFilter && upperSimulationTimeLimit != null) {
+        if (enableSimulationTimeRangeFilter && upperSimulationTimeLimit != null) {
             IEvent event = eventLog.getFirstEventNotBeforeSimulationTime(org.omnetpp.common.engine.BigDecimal.parse(upperSimulationTimeLimit.toPlainString()));
 
             if (event != null)
@@ -219,7 +239,7 @@ public class EventLogFilterParameters implements Serializable {
         }
 
         long upperEventNumberLimit = Long.MAX_VALUE;
-        if (enableEventNumberFilter && this.upperEventNumberLimit != -1)
+        if (enableEventNumberRangeFilter && this.upperEventNumberLimit != -1)
             upperEventNumberLimit = this.upperEventNumberLimit;
 
         long limit = Math.min(Math.min(upperEventNumberLimit, upperEventNumberForSimulationTimeLimit),
@@ -229,6 +249,13 @@ public class EventLogFilterParameters implements Serializable {
             return -1;
         else
             return limit;
+    }
+
+    public Int64Vector getExcludedEventNumbers() {
+        if (enableExcludedEventNumberFilter)
+            return createInt64Vector(excludedEventNumbers);
+        else
+            return new Int64Vector();
     }
 
     public IntVector getModuleIds() {
@@ -304,6 +331,16 @@ public class EventLogFilterParameters implements Serializable {
         return vector;
     }
 
+    public Int64Vector createInt64Vector(EnabledLong[] ids) {
+        Int64Vector vector = new Int64Vector();
+
+        for (EnabledLong id : ids)
+            if (id.enabled)
+                vector.add(id.value);
+
+        return vector;
+    }
+
     public StringVector createStringVector(String[] names) {
         StringVector vector = new StringVector();
 
@@ -320,7 +357,7 @@ public class EventLogFilterParameters implements Serializable {
         if (enableRangeFilter) {
             ArrayList<String> rangeFilters = new ArrayList<String>();
 
-            if (enableEventNumberFilter) {
+            if (enableEventNumberRangeFilter) {
                 if (lowerEventNumberLimit != -1 && upperEventNumberLimit != -1)
                     rangeFilters.add(lowerEventNumberLimit + " <= event number <= " + upperEventNumberLimit);
                 else if (lowerEventNumberLimit != -1)
@@ -329,7 +366,7 @@ public class EventLogFilterParameters implements Serializable {
                     rangeFilters.add("event number <= " + upperEventNumberLimit);
             }
 
-            if (enableSimulationTimeFilter) {
+            if (enableSimulationTimeRangeFilter) {
                 if (lowerSimulationTimeLimit != null && upperSimulationTimeLimit != null)
                     rangeFilters.add(lowerSimulationTimeLimit + " <= simulation time of event <= " + upperSimulationTimeLimit);
                 else if (lowerSimulationTimeLimit != null)
@@ -339,6 +376,14 @@ public class EventLogFilterParameters implements Serializable {
             }
 
             filters.add(combineDesriptions("OR", rangeFilters));
+        }
+
+        if (enableEventFilter) {
+            if (enableExcludedEventNumberFilter) {
+                ArrayList<String> excludedEventNumberFilters = new ArrayList<String>();
+                addMemberDescription(excludedEventNumberFilters, "event number", excludedEventNumbers);
+                filters.add("NOT " + combineDesriptions("OR", excludedEventNumberFilters));
+            }
         }
 
         if (enableModuleFilter) {
@@ -453,6 +498,18 @@ public class EventLogFilterParameters implements Serializable {
             ArrayList<Integer> enabledElements = new ArrayList<Integer>();
 
             for (EnabledInt element : elements)
+                if (element.enabled)
+                    enabledElements.add(element.value);
+
+            addMemberDescription(descriptions, prefix, enabledElements);
+        }
+    }
+
+    private void addMemberDescription(ArrayList<String> descriptions, String prefix, EnabledLong[] elements) {
+        if (elements != null) {
+            ArrayList<Long> enabledElements = new ArrayList<Long>();
+
+            for (EnabledLong element : elements)
                 if (element.enabled)
                     enabledElements.add(element.value);
 
