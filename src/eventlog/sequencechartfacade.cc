@@ -142,13 +142,17 @@ double SequenceChartFacade::EventLogEntry_getTimelineCoordinate(ptr_t ptr)
     EVENT_LOG_ENTRY_PTR(ptr);
     EventLogEntry *eventLogEntry = (EventLogEntry *)ptr;
     IEvent *event = eventLogEntry->getEvent();
+    if (event->getEventLog() != eventLog) {
+        // TODO: this may be slow
+        event = eventLog->getEventForEventNumber(event->getEventNumber());
+        Assert(event != nullptr);
+    }
     if (!separateEventLogEntries || timelineMode == SIMULATION_TIME || timelineMode == EVENT_NUMBER)
         return getTimelineCoordinateBegin(event);
     else if (timelineMode == STEP || timelineMode == NONLINEAR) {
         double timelineCoordinateDelta = timelineMode == STEP ? 1 : nonLinearMinimumTimelineCoordinateDelta;
         for (int i = 0; i < event->getNumEventLogEntries(); i++) {
             EventLogEntry *currentEventLogEntry = event->getEventLogEntry(i);
-            // TODO: do we need different deltas for different entry kinds?
             // TODO: factor with getTimelineCoordinateDelta
             if (eventLogEntry == currentEventLogEntry)
                 return getTimelineCoordinateBegin(event) + timelineCoordinateDelta;
@@ -183,7 +187,6 @@ double SequenceChartFacade::getTimelineCoordinateDelta(IEvent *event)
         double timelineCoordinateDelta = timelineMode == STEP ? 1 : nonLinearMinimumTimelineCoordinateDelta;
         for (int i = 0; i < event->getNumEventLogEntries(); i++) {
             EventLogEntry *eventLogEntry = event->getEventLogEntry(i);
-            // TODO: do we need different deltas for different entry kinds?
             if (dynamic_cast<ComponentMethodBeginEntry *>(eventLogEntry))
                 timelineCoordinateDelta += timelineMode == STEP ? 1 : nonLinearMinimumTimelineCoordinateDelta;
             else if (dynamic_cast<ComponentMethodEndEntry *>(eventLogEntry))
@@ -416,24 +419,31 @@ IEvent *SequenceChartFacade::getFirstEventNotBeforeTimelineCoordinate(double tim
 // TODO: extract both begin and end timeline coordinates of events
 void SequenceChartFacade::extractSimulationTimesAndTimelineCoordinates(
     IEvent *event, IEvent *&nextEvent,
-    simtime_t &eventSimulationTime, double &eventTimelineCoordinateBegin,
-    simtime_t &nextEventSimulationTime, double &nextEventTimelineCoordinateBegin,
+    simtime_t &eventSimulationTime, double &eventTimelineCoordinateBegin, double &eventTimelineCoordinateEnd,
+    simtime_t &nextEventSimulationTime, double &nextEventTimelineCoordinateBegin, double &nextEventTimelineCoordinateEnd,
     simtime_t &simulationTimeDelta, double &timelineCoordinateDelta)
 {
     // if before the first event
     if (event) {
         eventSimulationTime = event->getSimulationTime();
         eventTimelineCoordinateBegin = getTimelineCoordinateBegin(event);
+        eventTimelineCoordinateEnd = getTimelineCoordinateEnd(event);
     }
     else {
         eventSimulationTime = BigDecimal::Zero;
         IEvent *firstEvent = eventLog->getFirstEvent();
         eventTimelineCoordinateBegin = getTimelineCoordinateBegin(firstEvent);
+        eventTimelineCoordinateEnd = getTimelineCoordinateEnd(firstEvent);
 
-        if (timelineMode == EVENT_NUMBER)
+        if (timelineMode == EVENT_NUMBER) {
             eventTimelineCoordinateBegin -= 1;
-        else
-            eventTimelineCoordinateBegin -= getTimelineCoordinateDelta(firstEvent->getSimulationTime().dbl());
+            eventTimelineCoordinateEnd -= 1;
+        }
+        else {
+            double delta = getTimelineCoordinateDelta(firstEvent->getSimulationTime().dbl());
+            eventTimelineCoordinateBegin -= delta;
+            eventTimelineCoordinateEnd -= delta;
+        }
     }
 
     // linear approximation between two enclosing events
@@ -442,9 +452,10 @@ void SequenceChartFacade::extractSimulationTimesAndTimelineCoordinates(
     if (nextEvent) {
         nextEventSimulationTime = nextEvent->getSimulationTime();
         nextEventTimelineCoordinateBegin = getTimelineCoordinateBegin(nextEvent);
+        nextEventTimelineCoordinateEnd = getTimelineCoordinateEnd(nextEvent);
 
         simulationTimeDelta = nextEventSimulationTime - eventSimulationTime;
-        timelineCoordinateDelta = nextEventTimelineCoordinateBegin - eventTimelineCoordinateBegin;
+        timelineCoordinateDelta = nextEventTimelineCoordinateBegin - eventTimelineCoordinateEnd;
     }
 }
 
@@ -469,12 +480,14 @@ simtime_t SequenceChartFacade::getSimulationTimeForTimelineCoordinate(double tim
         case NONLINEAR: {
             IEvent *nextEvent;
             simtime_t eventSimulationTime, nextEventSimulationTime, simulationTimeDelta;
-            double eventTimelineCoordinateBegin, nextEventTimelineCoordinateBegin, timelineCoordinateDelta;
+            double eventTimelineCoordinateBegin, eventTimelineCoordinateEnd;
+            double nextEventTimelineCoordinateBegin, nextEventTimelineCoordinateEnd;
+            double timelineCoordinateDelta;
 
             IEvent *event = getLastEventNotAfterTimelineCoordinate(timelineCoordinate);
             extractSimulationTimesAndTimelineCoordinates(event, nextEvent,
-                                                         eventSimulationTime, eventTimelineCoordinateBegin,
-                                                         nextEventSimulationTime, nextEventTimelineCoordinateBegin,
+                                                         eventSimulationTime, eventTimelineCoordinateBegin, eventTimelineCoordinateEnd,
+                                                         nextEventSimulationTime, nextEventTimelineCoordinateBegin, nextEventTimelineCoordinateEnd,
                                                          simulationTimeDelta, timelineCoordinateDelta);
 
             if (nextEvent) {
@@ -486,11 +499,13 @@ simtime_t SequenceChartFacade::getSimulationTimeForTimelineCoordinate(double tim
                         simulationTime = eventSimulationTime;
                 }
                 else {
-                    timelineCoordinate = std::max(eventTimelineCoordinateBegin, std::min(nextEventTimelineCoordinateBegin, timelineCoordinate));
-                    simulationTime = eventSimulationTime + simulationTimeDelta * (timelineCoordinate - eventTimelineCoordinateBegin) / timelineCoordinateDelta;
+                    timelineCoordinate = std::max(eventTimelineCoordinateEnd, std::min(nextEventTimelineCoordinateBegin, timelineCoordinate));
+                    simulationTime = eventSimulationTime + simulationTimeDelta * (timelineCoordinate - eventTimelineCoordinateEnd) / timelineCoordinateDelta;
                     simulationTime = max(eventSimulationTime, min(nextEventSimulationTime, simulationTime));
                 }
             }
+            else
+                simulationTime = eventSimulationTime;
             break;
         }
 
@@ -498,6 +513,7 @@ simtime_t SequenceChartFacade::getSimulationTimeForTimelineCoordinate(double tim
             throw opp_runtime_error("Unknown timeline mode");
     }
 
+    Assert(!simulationTime.isNil());
     Assert(!simulationTime.isNaN());
     Assert(simulationTime >= BigDecimal::Zero);
     Assert(simulationTime <= eventLog->getLastEvent()->getSimulationTime());
@@ -527,12 +543,14 @@ double SequenceChartFacade::getTimelineCoordinateForSimulationTime(simtime_t sim
         case NONLINEAR: {
             IEvent *nextEvent;
             simtime_t eventSimulationTime, nextEventSimulationTime, simulationTimeDelta;
-            double eventTimelineCoordinateBegin, nextEventTimelineCoordinateBegin, timelineCoordinateDelta;
+            double eventTimelineCoordinateBegin, eventTimelineCoordinateEnd;
+            double nextEventTimelineCoordinateBegin, nextEventTimelineCoordinateEnd;
+            double timelineCoordinateDelta;
 
             IEvent *event = eventLog->getLastEventNotAfterSimulationTime(simulationTime);
             extractSimulationTimesAndTimelineCoordinates(event, nextEvent,
-                                                         eventSimulationTime, eventTimelineCoordinateBegin,
-                                                         nextEventSimulationTime, nextEventTimelineCoordinateBegin,
+                                                         eventSimulationTime, eventTimelineCoordinateBegin, eventTimelineCoordinateEnd,
+                                                         nextEventSimulationTime, nextEventTimelineCoordinateBegin, nextEventTimelineCoordinateEnd,
                                                          simulationTimeDelta, timelineCoordinateDelta);
 
             if (nextEvent) {
@@ -541,12 +559,12 @@ double SequenceChartFacade::getTimelineCoordinateForSimulationTime(simtime_t sim
                     if (upperLimit)
                         timelineCoordinate = nextEventTimelineCoordinateBegin;
                     else
-                        timelineCoordinate = eventTimelineCoordinateBegin;
+                        timelineCoordinate = eventTimelineCoordinateEnd;
                 }
                 else {
                     simulationTime = max(eventSimulationTime, min(nextEventSimulationTime, simulationTime));
-                    timelineCoordinate = eventTimelineCoordinateBegin + timelineCoordinateDelta * (simulationTime - eventSimulationTime).dbl() / simulationTimeDelta.dbl();
-                    timelineCoordinate = std::max(eventTimelineCoordinateBegin, std::min(nextEventTimelineCoordinateBegin, timelineCoordinate));
+                    timelineCoordinate = eventTimelineCoordinateEnd + timelineCoordinateDelta * (simulationTime - eventSimulationTime).dbl() / simulationTimeDelta.dbl();
+                    timelineCoordinate = std::max(eventTimelineCoordinateEnd, std::min(nextEventTimelineCoordinateBegin, timelineCoordinate));
                 }
             }
             else

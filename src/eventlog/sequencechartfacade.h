@@ -113,8 +113,8 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
     protected:
         void extractSimulationTimesAndTimelineCoordinates(
             IEvent *event, IEvent *&nextEvent,
-            simtime_t &eventSimulationTime, double &eventTimelineCoordinate,
-            simtime_t &nextEventSimulationTime, double &nextEventTimelineCoordinate,
+            simtime_t &eventSimulationTime, double &eventTimelineCoordinateBegin, double &eventTimelineCoordinateEnd,
+            simtime_t &nextEventSimulationTime, double &nextEventTimelineCoordinateBegin, double &nextEventTimelineCoordinateEnd,
             simtime_t &simulationTimeDelta, double &timelineCoordinateDelta);
 };
 
