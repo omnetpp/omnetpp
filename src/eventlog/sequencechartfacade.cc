@@ -639,39 +639,16 @@ std::vector<ptr_t> *SequenceChartFacade::getIntersectingMessageDependencies(ptr_
     return result;
 }
 
-std::vector<int> SequenceChartFacade::getApproximateMessageDependencyCountAdjacencyMatrix(std::map<int, int> *moduleIdToAxisIndexMap, int numberOfSamples, int messageSendWeight, int messageReuseWeight)
+std::vector<int> SequenceChartFacade::getMessageDependencyCountAdjacencyMatrix(std::map<int, int> *moduleIdToAxisIndexMap, std::map<eventnumber_t, IEvent *>& eventNumberToEventMap, int messageSendWeight, int messageReuseWeight)
 {
-    LCGRandom lcgRandom;
     std::vector<int> adjacencyMatrix;
     std::set<int> axisIndexSet;
-    std::map<eventnumber_t, IEvent *> eventNumberToEventMap;
 
     for (auto & it : *moduleIdToAxisIndexMap)
         axisIndexSet.insert(it.second);
 
     int numberOfAxes = axisIndexSet.size();
     adjacencyMatrix.resize(numberOfAxes * numberOfAxes);
-
-    for (int i = 0; i < numberOfSamples; i++) {
-        // draw random
-        double percentage = lcgRandom.next01();
-        IEvent *event = eventLog->getApproximateEventAt(percentage);
-        eventNumberToEventMap[event->getEventNumber()] = event;
-
-        // look before origin
-        if (timelineCoordinateOriginEventNumber != -1) {
-            if (timelineCoordinateOriginEventNumber - i >= 0) {
-                event = eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber - i);
-                if (event)
-                    eventNumberToEventMap[event->getEventNumber()] = event;
-            }
-
-            // look after origin
-            event = eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber + i);
-            if (event)
-                eventNumberToEventMap[event->getEventNumber()] = event;
-        }
-    }
 
     for (auto & it : eventNumberToEventMap) {
         IEvent *event = it.second;
@@ -700,6 +677,54 @@ std::vector<int> SequenceChartFacade::getApproximateMessageDependencyCountAdjace
     }
 
     return adjacencyMatrix;
+}
+
+
+std::vector<int> SequenceChartFacade::getMessageDependencyCountAdjacencyMatrix(std::map<int, int> *moduleIdToAxisIndexMap, ptr_t startEventPtr, ptr_t endEventPtr, int messageSendWeight, int messageReuseWeight)
+{
+    IEvent *startEvent = (IEvent *)startEventPtr;
+    IEvent *endEvent = (IEvent *)endEventPtr;
+    Assert(startEvent);
+    Assert(endEvent);
+    std::map<eventnumber_t, IEvent *> eventNumberToEventMap;
+
+    for (IEvent *event = startEvent; ; event = event->getNextEvent()) {
+        eventLog->progress();
+        eventNumberToEventMap[event->getEventNumber()] = event;
+        if (event == endEvent)
+            break;
+    }
+
+    return getMessageDependencyCountAdjacencyMatrix(moduleIdToAxisIndexMap, eventNumberToEventMap, messageSendWeight, messageReuseWeight);
+}
+
+std::vector<int> SequenceChartFacade::getApproximateMessageDependencyCountAdjacencyMatrix(std::map<int, int> *moduleIdToAxisIndexMap, int numberOfSamples, int messageSendWeight, int messageReuseWeight)
+{
+    LCGRandom lcgRandom;
+    std::map<eventnumber_t, IEvent *> eventNumberToEventMap;
+
+    for (int i = 0; i < numberOfSamples; i++) {
+        eventLog->progress();
+        // draw random
+        double percentage = lcgRandom.next01();
+        IEvent *event = eventLog->getApproximateEventAt(percentage);
+        eventNumberToEventMap[event->getEventNumber()] = event;
+        // look before origin
+        if (timelineCoordinateSystemOriginEventNumber != -1) {
+            if (timelineCoordinateSystemOriginEventNumber - i >= 0) {
+                event = eventLog->getEventForEventNumber(timelineCoordinateSystemOriginEventNumber - i);
+                if (event)
+                    eventNumberToEventMap[event->getEventNumber()] = event;
+            }
+
+            // look after origin
+            event = eventLog->getEventForEventNumber(timelineCoordinateSystemOriginEventNumber + i);
+            if (event)
+                eventNumberToEventMap[event->getEventNumber()] = event;
+        }
+    }
+
+    return getMessageDependencyCountAdjacencyMatrix(moduleIdToAxisIndexMap, eventNumberToEventMap, messageSendWeight, messageReuseWeight);
 }
 
 } // namespace eventlog
