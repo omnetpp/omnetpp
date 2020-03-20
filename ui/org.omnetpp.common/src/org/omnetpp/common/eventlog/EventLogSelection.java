@@ -8,6 +8,7 @@
 package org.omnetpp.common.eventlog;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.engine.BigDecimal;
@@ -71,6 +72,11 @@ public class EventLogSelection implements IEventLogSelection, Cloneable {
     @Override
     public EventLogInput getEventLogInput() {
         return eventLogInput;
+    }
+
+    @Override
+    public ArrayList<Object> getElements() {
+        return elements;
     }
 
     @Override

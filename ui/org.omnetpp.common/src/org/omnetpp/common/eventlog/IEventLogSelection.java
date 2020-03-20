@@ -32,6 +32,12 @@ public interface IEventLogSelection extends ISelection {
     public IEventLog getEventLog();
 
     /**
+     * The list of selected elements. The returned list MUST NOT be modified
+     * by clients. Never returns null.
+     */
+    public List<Object> getElements();
+
+    /**
      * The list of selected event numbers. The returned list MUST NOT be modified
      * by clients. Never returns null.
      */
