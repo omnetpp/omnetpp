@@ -142,7 +142,7 @@ double SequenceChartFacade::EventLogEntry_getTimelineCoordinate(ptr_t ptr)
     EVENT_LOG_ENTRY_PTR(ptr);
     EventLogEntry *eventLogEntry = (EventLogEntry *)ptr;
     IEvent *event = eventLogEntry->getEvent();
-    if (timelineMode == SIMULATION_TIME || timelineMode == EVENT_NUMBER)
+    if (!separateEventLogEntries || timelineMode == SIMULATION_TIME || timelineMode == EVENT_NUMBER)
         return getTimelineCoordinateBegin(event);
     else if (timelineMode == STEP || timelineMode == NONLINEAR) {
         double timelineCoordinateDelta = timelineMode == STEP ? 1 : nonLinearMinimumTimelineCoordinateDelta;
@@ -177,7 +177,7 @@ double SequenceChartFacade::getTimelineCoordinateDelta(double simulationTimeDelt
 
 double SequenceChartFacade::getTimelineCoordinateDelta(IEvent *event)
 {
-    if (timelineMode == SIMULATION_TIME || timelineMode == EVENT_NUMBER)
+    if (!separateEventLogEntries || timelineMode == SIMULATION_TIME || timelineMode == EVENT_NUMBER)
         return 0;
     else if (timelineMode == STEP || timelineMode == NONLINEAR) {
         double timelineCoordinateDelta = timelineMode == STEP ? 1 : nonLinearMinimumTimelineCoordinateDelta;

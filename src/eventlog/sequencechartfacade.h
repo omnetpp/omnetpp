@@ -37,6 +37,7 @@ namespace eventlog {
 class EVENTLOG_API SequenceChartFacade : public EventLogFacade
 {
     protected:
+        bool separateEventLogEntries; // separate entries within events
         long timelineCoordinateSystemVersion; // a counter incremented each time the timeline coordinate system is relocated
         eventnumber_t timelineCoordinateSystemOriginEventNumber; // -1 means undefined, otherwise the event number of the timeline coordinate system origin
         simtime_t timelineCoordinateSystemOriginSimulationTime; // simtime_nil means undefined
@@ -55,6 +56,9 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
 
         TimelineMode getTimelineMode() { return timelineMode; }
         void setTimelineMode(TimelineMode timelineMode);
+
+        bool getSeparateEventLogEntries() { return separateEventLogEntries; }
+        void setSeparateEventLogEntries(bool separateEventLogEntries) { this->separateEventLogEntries = separateEventLogEntries; }
 
         double getNonLinearMinimumTimelineCoordinateDelta() { return nonLinearMinimumTimelineCoordinateDelta; }
         void setNonLinearMinimumTimelineCoordinateDelta(double value);
