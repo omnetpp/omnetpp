@@ -307,9 +307,8 @@ template<typename T> file_offset_t EventLogIndex::searchForOffset(std::map<T, Ca
 
             foundOffset = linearSearchForOffset(key, searchOffset, forward, exactMatchFound);
         }
+        Assert(foundOffset == -1 || isEventBeginOffset(foundOffset));
     }
-
-    Assert(foundOffset == -1 || isEventBeginOffset(foundOffset));
 
     return foundOffset;
 }
@@ -340,7 +339,7 @@ template<typename T> bool EventLogIndex::cacheSearchForOffset(std::map<T, CacheE
             else
                 itLower = map.end();
 
-            bool completeBegin = itLower != map.end() && itLower->second.endOffset == cacheEntry.beginOffset;
+            bool completeBegin = itLower == map.end() || itLower->second.endOffset == cacheEntry.beginOffset;
             bool completeEnd = itUpper != map.end() && itUpper->second.beginOffset == cacheEntry.endOffset;
 
             // dispatching on match kind is required
