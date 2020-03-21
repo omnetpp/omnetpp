@@ -8,7 +8,6 @@
 package org.omnetpp.common.virtualtable;
 
 import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
@@ -22,7 +21,7 @@ import org.omnetpp.common.color.ColorFactory;
 /**
  * This class serves debugging purposes.
  */
-public class LongVirtualTableRowRenderer extends LabelProvider implements IVirtualTableRowRenderer<Long> {
+public class LongVirtualTableRowRenderer implements IVirtualTableRowRenderer<Long> {
     protected Font font = JFaceResources.getDefaultFont();
 
     protected int fontHeight;

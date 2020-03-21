@@ -9,7 +9,6 @@ package org.omnetpp.scave.editors.datatable;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
@@ -23,9 +22,9 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.virtualtable.IVirtualTableRowRenderer;
 import org.omnetpp.scave.engine.EnumType;
-import org.omnetpp.scave.engine.VectorDatum;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ResultItem.DataType;
+import org.omnetpp.scave.engine.VectorDatum;
 import org.omnetpp.scave.model2.ResultItemRef;
 import org.omnetpp.scave.model2.ResultItemValueFormatter;
 
@@ -35,7 +34,7 @@ import org.omnetpp.scave.model2.ResultItemValueFormatter;
  *
  * @author tomi
  */
-public class VectorResultRowRenderer extends LabelProvider implements IVirtualTableRowRenderer<VectorDatum> {
+public class VectorResultRowRenderer implements IVirtualTableRowRenderer<VectorDatum> {
 
     private static final int HORIZONTAL_SPACING = 4;
 
