@@ -8,19 +8,15 @@
 package org.omnetpp.scave.editors.datatable;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
-import org.omnetpp.common.virtualtable.IVirtualTableRowRenderer;
+import org.omnetpp.common.virtualtable.AbstractRowRenderer;
 import org.omnetpp.scave.engine.EnumType;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ResultItem.DataType;
@@ -34,13 +30,8 @@ import org.omnetpp.scave.model2.ResultItemValueFormatter;
  *
  * @author tomi
  */
-public class VectorResultRowRenderer implements IVirtualTableRowRenderer<VectorDatum> {
-
+public class VectorResultRowRenderer extends AbstractRowRenderer<VectorDatum> {
     private static final int HORIZONTAL_SPACING = 4;
-
-    private static final Color DATA_COLOR = ColorFactory.BLACK;
-
-    protected Font font = JFaceResources.getDefaultFont();
 
     protected DataType type;
     protected EnumType enumType;
@@ -48,46 +39,10 @@ public class VectorResultRowRenderer implements IVirtualTableRowRenderer<VectorD
     protected int fontHeight;
 
     public void setInput(Object input) {
-        if (input instanceof ResultItemRef) {
+        if (input instanceof ResultItemRef)
             valueLabelProvider.setResultItem((ResultItemRef)input);
-        }
-        else {
-            valueLabelProvider.setResultItem((ResultItem)null);
-        }
-    }
-
-    public int getRowHeight(GC gc) {
-        if (fontHeight == 0) {
-            Font oldFont = gc.getFont();
-            gc.setFont(font);
-            fontHeight = gc.getFontMetrics().getHeight();
-            gc.setFont(oldFont);
-        }
-
-        return fontHeight + 3;
-    }
-
-    public void drawCell(GC gc, VectorDatum entry, int index, boolean isSelected) {
-        if (isSelected) {
-            gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
-            gc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION));
-        }
         else
-            gc.setForeground(DATA_COLOR);
-
-        StyledString styledString = getStyledText(entry, index, isSelected);
-        int indent = getIndentation(entry, index);
-        drawStyledString(gc, styledString, indent, 0);
-    }
-
-    protected void drawStyledString(GC gc, StyledString styledString, int x, int y) {
-        TextLayout textLayout = new TextLayout(gc.getDevice());
-        textLayout.setText(styledString.getString());
-        for (StyleRange styleRange : styledString.getStyleRanges()) {
-            textLayout.setStyle(styleRange, styleRange.start, styleRange.start + styleRange.length);
-        }
-        textLayout.draw(gc, x, y);
-        textLayout.dispose();
+            valueLabelProvider.setResultItem((ResultItem)null);
     }
 
     public String getTooltipText(VectorDatum element) {
