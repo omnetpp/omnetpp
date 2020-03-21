@@ -160,6 +160,7 @@ Export-Package: au.com.bytecode.opencsv,
  org.omnetpp.common.image;uses:="org.eclipse.jface.resource,org.eclipse.swt.graphics",
  org.omnetpp.common.importexportwizards,
  org.omnetpp.common.json,
+ org.omnetpp.common.largetable,
  org.omnetpp.common.markers,
  org.omnetpp.common.project,
  org.omnetpp.common.properties;
