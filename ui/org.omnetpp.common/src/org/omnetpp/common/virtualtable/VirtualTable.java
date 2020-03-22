@@ -477,6 +477,8 @@ public class VirtualTable<T>
 
     @Override
     public boolean setFocus() {
+        if (canvas.isDisposed()) // we can be called indirectly from Control.releaseWidget()
+            return false;
         return canvas.setFocus();
     }
 
