@@ -65,7 +65,23 @@ import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.util.CsvWriter;
 
 /**
- * The virtual table is a virtually infinite table.
+ * VirtualTable is a widget that displays a list of (potentially huge
+ * or unknown number of) elements in a multi-column format.
+ *
+ * Model data are not stored or cached inside the widget. Instead,
+ * a content provider provides lists elements on demand (only the elements
+ * that are necessary for display are retrieved), and a row renderer
+ * does the actual rendering. A cell is primarily rendered as an
+ * (optional) image plus a styled string, but completely owner-drawn
+ * cells are also possible.
+ *
+ * Scrolling, and table positions in general, are expressed as a fix-point
+ * element plus a delta. (Plain integers cannot be used, as the total
+ * number of elements in the list may be unknown!) Content provider
+ * is expected to tell the next/previous element related to an element,
+ * and to provide an element at a percentage of the total elements
+ * (this latter is used in scrollbar handling).
+ *
  *
  * Size invariants kept:
  * - the width of the table is always greater or equal than the sum of its columns' width (so that the internal scroll bar never appears)

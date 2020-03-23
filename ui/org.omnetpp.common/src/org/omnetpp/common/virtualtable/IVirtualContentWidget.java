@@ -9,7 +9,8 @@ package org.omnetpp.common.virtualtable;
 
 
 /**
- * Defines navigation on a widget that displays a list of elements.
+ * Defines navigation on a widget that displays a list of (potentially huge
+ * or unknown number of) elements.
  */
 public interface IVirtualContentWidget<T> {
     /**
