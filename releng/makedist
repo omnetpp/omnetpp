@@ -176,28 +176,31 @@ git reset
 
 ###############################
 # copy the generated documentation
-echo Copying generated documentation
+if test -z "$BUILD_DOC"; then
 
-checkfile doc/SimulationManual.pdf               'SimulationManual.pdf must exist in doc/'
-checkfile doc/UserGuide.pdf            'UserGuide.pdf must exist in doc/'
-checkfile doc/IDE-CustomizationGuide.pdf      'IDE-CustomizationGuide.pdf must exist in doc/'
-checkfile doc/IDE-DevelopersGuide.pdf      'IDE-DevelopersGuide.pdf must exist in doc/'
-checkfile doc/InstallGuide.pdf    'InstallGuide.pdf must exist in doc/'
+  echo Copying generated documentation
 
-cp -r doc/api $DISTDIR/$what-$VERSION/doc/api
-cp -r doc/parsim-api $DISTDIR/$what-$VERSION/doc/parsim-api
-cp -r doc/nedxml-api $DISTDIR/$what-$VERSION/doc/nedxml-api
-cp -r doc/manual $DISTDIR/$what-$VERSION/doc/manual
-# cp -r doc/ide-customization-guide $DISTDIR/$what-$VERSION/doc/ide-customization-guide
-# cp -r doc/ide-developersguide $DISTDIR/$what-$VERSION/doc/ide-developersguide
-# cp -r doc/userguide $DISTDIR/$what-$VERSION/doc/userguide
-cp doc/SimulationManual.pdf $DISTDIR/$what-$VERSION/doc
-cp doc/InstallGuide.pdf $DISTDIR/$what-$VERSION/doc
-cp doc/UserGuide.pdf $DISTDIR/$what-$VERSION/doc
-cp doc/IDE-CustomizationGuide.pdf $DISTDIR/$what-$VERSION/doc
-cp doc/IDE-DevelopersGuide.pdf $DISTDIR/$what-$VERSION/doc
-cp doc/IDE-Overview.pdf $DISTDIR/$what-$VERSION/doc
-cp ui/ChangeLog $DISTDIR/$what-$VERSION/doc/IDE-Changes
+  checkfile doc/SimulationManual.pdf               'SimulationManual.pdf must exist in doc/'
+  checkfile doc/UserGuide.pdf            'UserGuide.pdf must exist in doc/'
+  checkfile doc/IDE-CustomizationGuide.pdf      'IDE-CustomizationGuide.pdf must exist in doc/'
+  checkfile doc/IDE-DevelopersGuide.pdf      'IDE-DevelopersGuide.pdf must exist in doc/'
+  checkfile doc/InstallGuide.pdf    'InstallGuide.pdf must exist in doc/'
+
+  cp -r doc/api $DISTDIR/$what-$VERSION/doc/api
+  cp -r doc/parsim-api $DISTDIR/$what-$VERSION/doc/parsim-api
+  cp -r doc/nedxml-api $DISTDIR/$what-$VERSION/doc/nedxml-api
+  cp -r doc/manual $DISTDIR/$what-$VERSION/doc/manual
+  # cp -r doc/ide-customization-guide $DISTDIR/$what-$VERSION/doc/ide-customization-guide
+  # cp -r doc/ide-developersguide $DISTDIR/$what-$VERSION/doc/ide-developersguide
+  # cp -r doc/userguide $DISTDIR/$what-$VERSION/doc/userguide
+  cp doc/SimulationManual.pdf $DISTDIR/$what-$VERSION/doc
+  cp doc/InstallGuide.pdf $DISTDIR/$what-$VERSION/doc
+  cp doc/UserGuide.pdf $DISTDIR/$what-$VERSION/doc
+  cp doc/IDE-CustomizationGuide.pdf $DISTDIR/$what-$VERSION/doc
+  cp doc/IDE-DevelopersGuide.pdf $DISTDIR/$what-$VERSION/doc
+  cp doc/IDE-Overview.pdf $DISTDIR/$what-$VERSION/doc
+  cp ui/ChangeLog $DISTDIR/$what-$VERSION/doc/IDE-Changes
+fi
 
 ###############################
 # copy the "ide" directory

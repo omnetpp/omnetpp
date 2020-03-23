@@ -6,6 +6,7 @@ export BUILD_CORE_DISTRO=true
 export BUILD_LINUX_DISTRO=true
 export BUILD_WIN64_DISTRO=true
 export BUILD_MACOSX_DISTRO=true
+export BUILD_DOC=true
 export GIT_VERSION=master
 
 . $(dirname $0)/docker-build.sh
