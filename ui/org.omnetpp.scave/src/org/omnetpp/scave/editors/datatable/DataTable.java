@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
@@ -37,16 +38,12 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
-import org.omnetpp.common.Debug;
 import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.largetable.AbstractLargeTableRowRenderer;
+import org.omnetpp.common.largetable.LargeTable;
 import org.omnetpp.common.util.CsvWriter;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.datatable.DataTreeContentProvider.Node;
@@ -55,7 +52,6 @@ import org.omnetpp.scave.engine.Histogram;
 import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ParameterResult;
-import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.StatisticsResult;
@@ -78,7 +74,7 @@ import org.omnetpp.scave.model.ResultType;
  * @author andras
  */
 //TODO use s/histogram/statistics/ in the whole file
-public class DataTable extends Table implements IDataControl {
+public class DataTable extends LargeTable implements IDataControl {
 
     /**
      * Keys used in getData(),setData()
@@ -190,26 +186,34 @@ public class DataTable extends Table implements IDataControl {
 
     private static final ResultItem[] NULL_SELECTION = new ResultItem[0];
 
-    private TableItem selectedItem;
-    private TableColumn selectedColumn;
+    private TableColumn selectedColumn; // the last column selected by a mouse click
 
     public DataTable(Composite parent, int style, ResultType type) {
         super(parent, style | SWT.VIRTUAL | SWT.FULL_SELECTION);
         Assert.isTrue(type==ResultType.SCALAR || type==ResultType.PARAMETER || type==ResultType.VECTOR || type==ResultType.HISTOGRAM);
         this.type = type;
-        setHeaderVisible(true);
         setLinesVisible(true);
         initDefaultState();
         initColumns();
+        setRowRenderer(new AbstractLargeTableRowRenderer() {
+            @Override
+            public StyledString getStyledText(int rowIndex, int columnIndex, boolean isSelected) {
+                return new StyledString(getCellValue(rowIndex, columnIndex));
+            }
 
-        addListener(SWT.SetData, new Listener() {
-            public void handleEvent(final Event e) {
-                ResultFileManager.runWithReadLock(manager, () -> {
-                    TableItem item = (TableItem)e.item;
-                    int lineNumber = indexOf(item);
-                    if (lineNumber >= 0)
-                        fillTableLine(item, lineNumber);
-                });
+            @Override
+            public String getTooltipText(int rowIndex, int columnIndex) {
+                return null;
+            }
+
+            @Override
+            public int getIndentation(int rowIndex, int columnIndex) {
+                return 0;
+            }
+
+            @Override
+            public Image getImage(int rowIndex, int columnIndex) {
+                return null;
             }
         });
 
@@ -329,7 +333,7 @@ public class DataTable extends Table implements IDataControl {
     }
 
     public IDList getSelectedIDs() {
-        int[] selectionIndices = getSelectionIndices();
+        int[] selectionIndices = getSelectionIndices().toArray();
         if (idList != null)
             return idList.getSubsetByIndices(selectionIndices);
         else
@@ -340,7 +344,7 @@ public class DataTable extends Table implements IDataControl {
         if (manager == null)
             return NULL_SELECTION;
 
-        int[] selectionIndices = getSelectionIndices();
+        int[] selectionIndices = getSelectionIndices().toArray();
         ResultItem[] items = new ResultItem[selectionIndices.length];
 
         for (int i = 0; i < items.length; ++i)
@@ -351,13 +355,13 @@ public class DataTable extends Table implements IDataControl {
 
     public void refresh() {
         int n = idList.size();
-        Debug.time("DataTable: setItemCount(" + n + ")", 100, () -> setItemCount(n));
-        Debug.time("DataTable: clearAll()", 100, () -> clearAll());
+        setItemCount(n);
+        super.refresh();
     }
 
     protected void initColumns() {
         // add a last, blank column, otherwise the right edge of the last column sticks to the table's right border which is often inconvenient
-        TableColumn blankColumn = new TableColumn(this, SWT.NONE);
+        TableColumn blankColumn = createColumn(SWT.NONE);
         blankColumn.setWidth(minColumnWidth);
 
         visibleColumns = new ArrayList<>();
@@ -389,7 +393,7 @@ public class DataTable extends Table implements IDataControl {
 
     protected TableColumn addColumn(Column newColumn) {
         visibleColumns.add(newColumn);
-        TableColumn tableColumn = new TableColumn(this, newColumn.rightAligned ? SWT.RIGHT : SWT.NONE, getColumnsExceptLastBlank().length);
+        TableColumn tableColumn = createColumn(newColumn.rightAligned ? SWT.RIGHT : SWT.NONE, getColumnsExceptLastBlank().length);
         tableColumn.setText(newColumn.text);
         tableColumn.setWidth(newColumn.defaultWidth);
         tableColumn.setData(COLUMN_KEY, newColumn);
@@ -523,30 +527,21 @@ public class DataTable extends Table implements IDataControl {
             idList.sortVectorsByEndTime(manager, ascending);
     }
 
-    protected void fillTableLine(TableItem item, int lineNumber) {
-        if (manager == null)
-            return;
-
-        long id = idList.get(lineNumber);
-        item.setData(ITEM_KEY, id);
-
-        for (int i = 0; i < visibleColumns.size(); ++i) {
-            Column column = visibleColumns.get(i);
-            String value = getCellValue(lineNumber, column);
-            item.setText(i, value);
-        }
-    }
-
     protected void toCSV(CsvWriter writer, int lineNumber) {
         if (manager == null)
             return;
 
-        for (int i = 0; i < visibleColumns.size(); ++i) {
-            Column column = visibleColumns.get(i);
+        for (Column column : visibleColumns)
             writer.addField(getCellValue(lineNumber, column));
-        }
 
         writer.endRecord();
+    }
+
+    protected String getCellValue(int rowIndex, int columnIndex) {
+        if (columnIndex >= visibleColumns.size())
+            return "";
+        Column column = visibleColumns.get(columnIndex);
+        return getCellValue(rowIndex, column);
     }
 
     protected String getCellValue(int row, Column column) {
@@ -729,7 +724,7 @@ public class DataTable extends Table implements IDataControl {
             writer.addField(column.text);
         writer.endRecord();
         // add selected lines
-        int[] selection = getSelectionIndices();
+        int[] selection = getSelectionIndices().toArray();
         for (int i = 0; i < selection.length; ++i)
             toCSV(writer, selection[i]);
 
@@ -798,54 +793,11 @@ public class DataTable extends Table implements IDataControl {
         }
     }
 
-    /*
-     * Select cells.
-     */
-    void handleMouseDown(MouseEvent event) {
-        if (isDisposed() || !isVisible()) return;
-        Point pt = new Point(event.x, event.y);
-        int lineWidth = getLinesVisible() ? getGridLineWidth() : 0;
-        TableItem item = getItem(pt);
-        if ((getStyle() & SWT.FULL_SELECTION) != 0) {
-            if (item == null) return;
-        }
-        else {
-            int start = item != null ? indexOf(item) : getTopIndex();
-            int end = getItemCount();
-            Rectangle clientRect = getClientArea();
-            for (int i = start; i < end; i++) {
-                TableItem nextItem = getItem(i);
-                Rectangle rect = nextItem.getBounds(0);
-                if (pt.y >= rect.y && pt.y < rect.y + rect.height + lineWidth) {
-                    item = nextItem;
-                    break;
-                }
-                if (rect.y > clientRect.y + clientRect.height)  return;
-            }
-            if (item == null) return;
-        }
-        TableColumn newColumn = null;
-        int columnCount = getColumnCount();
-        if (columnCount > 0) {
-            for (int i = 0; i < columnCount; i++) {
-                Rectangle rect = item.getBounds(i);
-                rect.width += lineWidth;
-                rect.height += lineWidth;
-                if (rect.contains(pt)) {
-                    newColumn = getColumn(i);
-                    break;
-                }
-            }
-            if (newColumn == null) {
-                newColumn = getColumn(0);
-            }
-        }
-        setSelectedCell(item, newColumn);
-    }
-
-    private void setSelectedCell(TableItem item, TableColumn column) {
-        selectedItem = item;
-        selectedColumn = column;
+    private void handleMouseDown(MouseEvent event) {
+        if (isDisposed() || !isVisible())
+            return;
+        int columnIndex = getColumnIndexAt(event.x);
+        selectedColumn = columnIndex < 0 ? null : getColumn(columnIndex);
     }
 
     public String getSelectedField() {
@@ -858,18 +810,16 @@ public class DataTable extends Table implements IDataControl {
     }
 
     public ResultItem getSelectedItem() {
-        if (selectedItem != null && !selectedItem.isDisposed()) {
-            long id = (Long)selectedItem.getData(ITEM_KEY);
-            if (!manager.isStaleID(id))
-                return manager.getItem(id);
-        }
-        return null;
+        if (selectionIndices.size() != 1)
+            return null;
+        int index = selectionIndices.toArray()[0];
+        return manager.getItem(idList.get(index));
     }
 
     public void setSelectedID(long id) {
         int index = idList.indexOf(id);
         if (index != -1)
-            setSelection(index);
+            setSelectionIndex(index);
     }
 
     public void setSelectedIDs(IDList selectedIDList) {
@@ -882,6 +832,6 @@ public class DataTable extends Table implements IDataControl {
         int[] indices = new int[indicesList.size()];
         for (int i = 0; i < indices.length; i++)
             indices[i] = indicesList.get(i);
-        setSelection(indices);
+        setSelectionIndices(indices);
     }
 }

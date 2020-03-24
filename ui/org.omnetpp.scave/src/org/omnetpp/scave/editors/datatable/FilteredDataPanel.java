@@ -51,7 +51,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
     private IDList idlist; // the unfiltered data list
     private ResultType type;
     private FocusManager focusManager;
-    private int itemLimit = 100000; // max number of rows where a virtual Table does not yet have performance issues
+    private int itemLimit = 100_000_000; // some sensible(?) limit to the number of data items displayed
     private boolean truncated = false; // whether table/tree content has been truncated (to itemLimit items)
 
     public FilteredDataPanel(Composite parent, int style, ResultType type) {

@@ -131,12 +131,10 @@ public class DataTree extends Tree implements IDataControl {
     }
 
     public ResultItem getSelectedItem() {
-        ResultItem[] resultItems = getSelectedItems();
-
-        if (resultItems.length == 1)
-            return resultItems[0];
-        else
+        IDList idList = getSelectedIDs();
+        if (idList.size() != 1)
             return null;
+        return manager.getItem(idList.get(0));
     }
 
     public ResultItem[] getSelectedItems() {
