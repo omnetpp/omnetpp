@@ -23,6 +23,7 @@
 jre/lib/jli/libjli.dylib
       </programArgsMac>
       <vmArgs>--add-modules=ALL-SYSTEM
+-Xmx1024m
       </vmArgs>
    </launcherArgs>
 
