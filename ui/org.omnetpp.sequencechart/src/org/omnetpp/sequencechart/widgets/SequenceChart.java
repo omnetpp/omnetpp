@@ -4263,7 +4263,7 @@ public class SequenceChart
         long consequenceEventNumber = sequenceChartFacade.IEvent_getEventNumber(consequenceEventPtr);
         boolean isFilteredMessageDependency = sequenceChartFacade.IMessageDependency_isFilteredMessageDependency(messageDependencyPtr);
         int filteredMessageDependencyKind = isFilteredMessageDependency ? sequenceChartFacade.FilteredMessageDependency_getKind(messageDependencyPtr) : FilteredMessageDependency.Kind.UNDEFINED;
-        boolean isTransmissionStart = endSendEntryPtr == 0 ? false : sequenceChartFacade.EndSendEntry_isTransmissionStart(endSendEntryPtr);
+        boolean isTransmissionStart = true; // TODO: KLUDGE: revive this when topic/packetprogress is merged into master: endSendEntryPtr == 0 ? false : sequenceChartFacade.EndSendEntry_isTransmissionStart(endSendEntryPtr);
         boolean isReceptionStart = endSendEntryPtr == 0 ? false : sequenceChartFacade.EndSendEntry_isReceptionStart(endSendEntryPtr);
 
         org.omnetpp.common.engine.BigDecimal transmissionDelay = null;
