@@ -400,7 +400,8 @@ public class Legend implements ILegend {
         try {
             // draw background and border
             graphics.setBackgroundColor(ColorFactory.WHITE);
-            graphics.setClip(new Rectangle(bounds.x, bounds.y, bounds.width + 1, bounds.height + 1));
+            Rectangle clip = graphics.getClip(new Rectangle());
+            graphics.setClip(new Rectangle(bounds.x, bounds.y, bounds.width + 1, bounds.height + 1).intersect(clip));
             graphics.fillRectangle(bounds);
             if (drawBorder) {
                 graphics.setForegroundColor(ColorFactory.BLACK);

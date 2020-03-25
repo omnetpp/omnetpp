@@ -822,7 +822,7 @@ public class LargeTable extends Composite
                 TableColumn column = table.getColumn(columnOrder[j]);
                 // clipping has to be set explicitly without using the graphics transformation
                 // to work correctly on Mac OS X
-                gc.setClipping(new Rectangle(x+LINE_WIDTH, y, column.getWidth(), getRowHeight()));
+                gc.setClipping(new Rectangle(x+LINE_WIDTH, y, column.getWidth(), getRowHeight()).intersection(clipping));
                 // do the transformation afterwards
                 rowTransform.setElements(1, 0, 0, 1, 0, 0);
                 rowTransform.translate(x+LINE_WIDTH, y);
@@ -834,7 +834,7 @@ public class LargeTable extends Composite
                 rowRenderer.drawCell(gc, rowIndex, columnOrder[j], isSelectedElement);
 
                 gc.setTransform(transform);
-                gc.setClipping((Rectangle)null);
+                gc.setClipping(clipping);
 
                 if (drawLines) {
                     gc.setForeground(LINE_COLOR);
