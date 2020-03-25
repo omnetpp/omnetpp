@@ -945,7 +945,6 @@ public class VirtualTable<T>
             updateVerticalBarPosition();
 
             for (int i = 0; i < getVisibleElementCount(); i++) {
-                int x = 0;
                 Transform rowTransform = new Transform(null);
                 T element = getElementAtDistanceFromFixPoint(i - fixPointDistance);
                 IRangeSet<T> selectionElements = getSelectionElements();
@@ -961,35 +960,39 @@ public class VirtualTable<T>
                     else
                         gc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
 
+                    int y = i * getRowHeight();
+
                     if (drawLines) {
                         gc.setForeground(LINE_COLOR);
-                        gc.drawLine(0, i * getRowHeight() - 1, clipping.x + clipping.width, i * getRowHeight() - 1);
+                        gc.drawLine(0, y - 1, clipping.x + clipping.width, y - 1);
                     }
 
+                    int x = 0;
+                    final int LINE_WIDTH = 1;
                     for (int j = 0; j < table.getColumnCount(); j++) {
-                        int y = i * getRowHeight();
                         TableColumn column = table.getColumn(columnOrder[j]);
                         // clipping has to be set explicitly without using the graphics transformation
                         // to work correctly on Mac OS X
-                        gc.setClipping(new Rectangle(x, y, column.getWidth(), getRowHeight()));
+                        gc.setClipping(new Rectangle(x+LINE_WIDTH, y, column.getWidth(), getRowHeight()));
                         // do the transformation afterwards
                         rowTransform.setElements(1, 0, 0, 1, 0, 0);
-                        rowTransform.translate(x, y);
+                        rowTransform.translate(x+LINE_WIDTH, y);
                         gc.setTransform(rowTransform);
 
                         if (isSelectedElement && canvas.isFocusControl())
                             gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
 
                         rowRenderer.drawCell(gc, element, columnOrder[j], isSelectedElement);
-                        x += column.getWidth();
-
-                        if (drawLines) {
-                            gc.setForeground(LINE_COLOR);
-                            gc.drawLine(0, 0, 0, getRowHeight());
-                        }
 
                         gc.setTransform(transform);
                         gc.setClipping((Rectangle)null);
+
+                        if (drawLines) {
+                            gc.setForeground(LINE_COLOR);
+                            gc.drawLine(x, y, x, y + getRowHeight());
+                        }
+
+                        x += column.getWidth() + LINE_WIDTH;
                     }
 
                     if (element.equals(focusElement)) {
