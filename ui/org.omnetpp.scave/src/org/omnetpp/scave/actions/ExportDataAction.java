@@ -17,7 +17,6 @@ import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.ExporterFactory;
 import org.omnetpp.scave.engine.IDList;
-import org.omnetpp.scave.engine.InterruptedFlag;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
@@ -64,7 +63,7 @@ public class ExportDataAction extends AbstractScaveAction {
                     String filterExpression = filterProperty.getValue();
 
                     selectedIDs = ResultFileManager.callWithReadLock(resultFileManager, () -> {
-                        IDList idList = resultFileManager.getAllItems(true, true); //TODO scalars? vectors? statistics? with fields or not?
+                        IDList idList = resultFileManager.getAllItems(false, false);
                         return resultFileManager.filterIDList(idList, filterExpression);
                     });
 

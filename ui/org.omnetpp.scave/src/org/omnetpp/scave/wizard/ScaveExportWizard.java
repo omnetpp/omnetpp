@@ -9,26 +9,23 @@ package org.omnetpp.scave.wizard;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.resources.WorkspaceJob;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
@@ -149,30 +146,40 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
                 final String filename = page.getFilePath().toOSString();
                 boolean openAfterwards = page.openAfterwardsCheckbox.getSelection();
 
-                // perform the export
-                Job exportJob = new WorkspaceJob(format + " Export") {
-                    @Override
-                    public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
-                        ResultFileManager.callWithReadLock(resultFileManager, () -> {
-                            exporter.saveResults(filename, resultFileManager, selectedIDs, monitor); return null;
-                        });
-
-                        if (openAfterwards)
-                            Display.getDefault().asyncExec(() -> openResult(filename));
-                        return Status.OK_STATUS;
-                    }
-                };
-                exportJob.schedule();
-
                 // save the control values before the dialog gets closed
                 saveDialogSettings();
+
+                performExport(exporter, filename, openAfterwards);
+
+                if (openAfterwards)
+                    openFile(filename);
+
                 return true;
+
             }
             catch (Exception e) {
-                MessageDialog.openError(getShell(), "Error", "Error occured during export: " + e.toString());
+                MessageDialog.openError(getShell(), "Error", "Error: " + e.toString());
             }
         }
         return false;
+    }
+
+    protected void performExport(Exporter exporter, final String filename, boolean openAfterwards) {
+        try {
+            ProgressMonitorDialog dialog = new ProgressMonitorDialog(getShell());
+            dialog.run(true, true, (monitor) -> {
+                monitor.beginTask("Exporting", 100);
+                ResultFileManager.runWithReadLock(resultFileManager, () -> exporter.saveResults(filename, resultFileManager, selectedIDs, monitor));
+            });
+        }
+        catch (InterruptedException e) {
+            // void
+        }
+        catch (InvocationTargetException e) {
+            Throwable ee = e.getCause();
+            MessageDialog.openError(getShell(), "Error", "Error during export: " + ee.getMessage());
+            ScavePlugin.logError("Error during exporting results:", ee);
+        }
     }
 
     protected void saveDialogSettings() {
@@ -180,7 +187,7 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
             page.saveDialogSettings();
     }
 
-    protected void openResult(String filename) {
+    protected void openFile(String filename) {
         IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
         IWorkbenchPage workbenchPage = workbenchWindow == null ? null : workbenchWindow.getActivePage();
         if (workbenchPage == null)
@@ -289,7 +296,7 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
         }
 
         protected void addCommonBottomFields(Composite parent) {
-            if ((exporterType.getSupportedResultTypes() & resultFileManager.VECTOR) > 0) {
+            if ((exporterType.getSupportedResultTypes() & ResultFileManager.VECTOR) > 0) {
                 Group vectorLimit = SWTFactory.createGroup(parent, "Vector time limits", 2, 1, SWTFactory.GRAB_AND_FILL_HORIZONTAL);
                 SWTFactory.createLabel(vectorLimit, "Start time:", 1);
                 startTimeText = SWTFactory.createText(vectorLimit, SWT.BORDER, 1, SWTFactory.GRAB_AND_FILL_HORIZONTAL);
