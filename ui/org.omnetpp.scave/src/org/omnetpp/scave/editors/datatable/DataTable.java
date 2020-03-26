@@ -17,15 +17,19 @@ import static org.omnetpp.scave.engine.RunAttribute.MEASUREMENT;
 import static org.omnetpp.scave.engine.RunAttribute.REPLICATION;
 import static org.omnetpp.scave.engine.RunAttribute.RUNNUMBER;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.SWT;
@@ -40,11 +44,14 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.largetable.AbstractLargeTableRowRenderer;
 import org.omnetpp.common.largetable.LargeTable;
+import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog;
 import org.omnetpp.common.util.CsvWriter;
+import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.datatable.DataTreeContentProvider.Node;
 import org.omnetpp.scave.editors.ui.ScaveUtil;
@@ -527,16 +534,6 @@ public class DataTable extends LargeTable implements IDataControl {
             idList.sortVectorsByEndTime(manager, ascending);
     }
 
-    protected void toCSV(CsvWriter writer, int lineNumber) {
-        if (manager == null)
-            return;
-
-        for (Column column : visibleColumns)
-            writer.addField(getCellValue(lineNumber, column));
-
-        writer.endRecord();
-    }
-
     protected String getCellValue(int rowIndex, int columnIndex) {
         if (columnIndex >= visibleColumns.size())
             return "";
@@ -718,20 +715,57 @@ public class DataTable extends LargeTable implements IDataControl {
     }
 
     public void copySelectionToClipboard() {
+        if (manager == null)
+            return;
+
+        try {
+            TimeTriggeredProgressMonitorDialog dialog = new TimeTriggeredProgressMonitorDialog(getShell(), 1000);
+            dialog.run(false, true, (monitor) -> doCopySelectionToClipboard(monitor));
+        }
+        catch (InterruptedException e) {
+            // void
+        }
+        catch (InvocationTargetException e) {
+            Throwable ee = e.getCause();
+            MessageDialog.openError(getShell(), "Error", "Copying failed: " + ee.getMessage());
+            ScavePlugin.logError("Copy to clipboard failed", ee);
+        }
+    }
+
+    protected void doCopySelectionToClipboard(IProgressMonitor monitor) throws InterruptedException {
         CsvWriter writer = new CsvWriter('\t');
+
         // add header
         for (Column column : visibleColumns)
             writer.addField(column.text);
         writer.endRecord();
-        // add selected lines
-        int[] selection = getSelectionIndices().toArray();
-        for (int i = 0; i < selection.length; ++i)
-            toCSV(writer, selection[i]);
 
+        if (manager != null) {
+            // add selected lines
+            int[] selection = getSelectionIndices().toArray();
+            int batchSize = 100_000;
+            monitor.beginTask("Copying", (selection.length + batchSize - 1) / batchSize);
+
+            int count = 0;
+            for (int rowIndex : selection) {
+                for (Column column : visibleColumns)
+                    writer.addField(getCellValue(rowIndex, column));
+                writer.endRecord();
+
+                if (++count % batchSize == 0) {
+                    // update UI
+                    monitor.worked(1);
+                    while (Display.getCurrent().readAndDispatch());
+                    if (monitor.isCanceled())
+                        throw new InterruptedException();
+                }
+            }
+        }
+
+        // copy to clipboard
         Clipboard clipboard = new Clipboard(getDisplay());
         clipboard.setContents(new Object[] {writer.toString()}, new Transfer[] {TextTransfer.getInstance()});
         clipboard.dispose();
-
     }
 
     public void addDataListener(IDataListener listener) {

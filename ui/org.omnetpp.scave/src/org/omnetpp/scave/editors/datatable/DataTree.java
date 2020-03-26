@@ -1,11 +1,13 @@
 package org.omnetpp.scave.editors.datatable;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IContributionItem;
@@ -13,18 +15,21 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.common.Debug;
+import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog;
 import org.omnetpp.common.util.CsvWriter;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.CustomTreeLevelsAction;
@@ -162,16 +167,49 @@ public class DataTree extends Tree implements IDataControl {
     }
 
     public void copySelectionToClipboard() {
+        if (manager == null)
+            return;
+
+        try {
+            TimeTriggeredProgressMonitorDialog dialog = new TimeTriggeredProgressMonitorDialog(getShell(), 1000);
+            dialog.run(false, true, (monitor) -> doCopySelectionToClipboard(monitor));
+        }
+        catch (InterruptedException e) {
+            // void
+        }
+        catch (InvocationTargetException e) {
+            Throwable ee = e.getCause();
+            MessageDialog.openError(getShell(), "Error", "Copying failed: " + ee.getMessage());
+            ScavePlugin.logError("Copy to clipboard failed", ee);
+        }
+    }
+
+    public void doCopySelectionToClipboard(IProgressMonitor monitor) throws InterruptedException {
         CsvWriter writer = new CsvWriter('\t');
         writer.addField("Name");
         writer.addField("Value");
         writer.endRecord();
 
-        for (TreeItem treeItem : getSelection()) {
+        TreeItem[] selection = getSelection();
+        int batchSize = 100_000;
+        monitor.beginTask("Copying", (selection.length + batchSize - 1) / batchSize);
+
+        int count = 0;
+        for (TreeItem treeItem : selection) {
             Node node = (Node)treeItem.getData();
+            if (node == null)
+                continue;
             writer.addField(node.getColumnText(0));
             writer.addField(node.getColumnText(1));
             writer.endRecord();
+
+            if (++count % batchSize == 0) {
+                // update UI
+                monitor.worked(1);
+                while (Display.getCurrent().readAndDispatch());
+                if (monitor.isCanceled())
+                    throw new InterruptedException();
+            }
         }
 
         Clipboard clipboard = new Clipboard(getDisplay());
