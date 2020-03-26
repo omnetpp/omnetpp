@@ -522,11 +522,7 @@ public class DataTreeContentProvider {
 
         @Override
         public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((name == null) ? 0 : name.hashCode());
-            result = prime * result + ((value == null) ? 0 : value.hashCode());
-            return result;
+            return 31*name.hashCode() + value.hashCode();
         }
 
         @Override
@@ -538,19 +534,7 @@ public class DataTreeContentProvider {
             if (getClass() != obj.getClass())
                 return false;
             NameValueNode other = (NameValueNode) obj;
-            if (name == null) {
-                if (other.name != null)
-                    return false;
-            }
-            else if (!name.equals(other.name))
-                return false;
-            if (value == null) {
-                if (other.value != null)
-                    return false;
-            }
-            else if (!value.equals(other.value))
-                return false;
-            return true;
+            return name.equals(other.name) && value.equals(other.value);
         }
     }
 
@@ -582,10 +566,7 @@ public class DataTreeContentProvider {
 
         @Override
         public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((name == null) ? 0 : name.hashCode());
-            return result;
+            return name.hashCode();
         }
 
         @Override
@@ -597,13 +578,7 @@ public class DataTreeContentProvider {
             if (getClass() != obj.getClass())
                 return false;
             ExperimentNode other = (ExperimentNode) obj;
-            if (name == null) {
-                if (other.name != null)
-                    return false;
-            }
-            else if (!name.equals(other.name))
-                return false;
-            return true;
+            return name.equals(other.name);
         }
     }
 
@@ -635,10 +610,7 @@ public class DataTreeContentProvider {
 
         @Override
         public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((name == null) ? 0 : name.hashCode());
-            return result;
+            return name.hashCode();
         }
 
         @Override
@@ -650,13 +622,7 @@ public class DataTreeContentProvider {
             if (getClass() != obj.getClass())
                 return false;
             MeasurementNode other = (MeasurementNode) obj;
-            if (name == null) {
-                if (other.name != null)
-                    return false;
-            }
-            else if (!name.equals(other.name))
-                return false;
-            return true;
+            return name.equals(other.name);
         }
     }
 
@@ -683,10 +649,7 @@ public class DataTreeContentProvider {
 
         @Override
         public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((name == null) ? 0 : name.hashCode());
-            return result;
+            return name.hashCode();
         }
 
         @Override
@@ -698,13 +661,7 @@ public class DataTreeContentProvider {
             if (getClass() != obj.getClass())
                 return false;
             ReplicationNode other = (ReplicationNode) obj;
-            if (name == null) {
-                if (other.name != null)
-                    return false;
-            }
-            else if (!name.equals(other.name))
-                return false;
-            return true;
+            return name.equals(other.name);
         }
     }
 
@@ -804,10 +761,7 @@ public class DataTreeContentProvider {
 
         @Override
         public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((name == null) ? 0 : name.hashCode());
-            return result;
+            return name.hashCode();
         }
 
         @Override
@@ -819,13 +773,7 @@ public class DataTreeContentProvider {
             if (getClass() != obj.getClass())
                 return false;
             ConfigNode other = (ConfigNode) obj;
-            if (name == null) {
-                if (other.name != null)
-                    return false;
-            }
-            else if (!name.equals(other.name))
-                return false;
-            return true;
+            return name.equals(other.name);
         }
     }
 
@@ -852,10 +800,7 @@ public class DataTreeContentProvider {
 
         @Override
         public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((runNumber == null) ? 0 : runNumber.hashCode());
-            return result;
+            return runNumber.hashCode();
         }
 
         @Override
@@ -867,12 +812,7 @@ public class DataTreeContentProvider {
             if (getClass() != obj.getClass())
                 return false;
             RunNumberNode other = (RunNumberNode) obj;
-            if (runNumber == null) {
-                if (other.runNumber != null)
-                    return false;
-            } else if (!runNumber.equals(other.runNumber))
-                return false;
-            return true;
+            return runNumber.equals(other.runNumber);
         }
 
     }
@@ -902,11 +842,7 @@ public class DataTreeContentProvider {
 
         @Override
         public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((config == null) ? 0 : config.hashCode());
-            result = prime * result + ((runNumber == null) ? 0 : runNumber.hashCode());
-            return result;
+            return 31*config.hashCode() + runNumber.hashCode();
         }
 
         @Override
@@ -960,10 +896,7 @@ public class DataTreeContentProvider {
 
         @Override
         public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((fileName == null) ? 0 : fileName.hashCode());
-            return result;
+            return fileName.hashCode();
         }
 
         @Override
@@ -975,13 +908,7 @@ public class DataTreeContentProvider {
             if (getClass() != obj.getClass())
                 return false;
             FileNameNode other = (FileNameNode) obj;
-            if (fileName == null) {
-                if (other.fileName != null)
-                    return false;
-            }
-            else if (!fileName.equals(other.fileName))
-                return false;
-            return true;
+            return fileName.equals(other.fileName);
         }
     }
 
@@ -1008,10 +935,7 @@ public class DataTreeContentProvider {
 
         @Override
         public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((runId == null) ? 0 : runId.hashCode());
-            return result;
+            return runId.hashCode();
         }
 
         @Override
@@ -1023,13 +947,7 @@ public class DataTreeContentProvider {
             if (getClass() != obj.getClass())
                 return false;
             RunIdNode other = (RunIdNode) obj;
-            if (runId == null) {
-                if (other.runId != null)
-                    return false;
-            }
-            else if (!runId.equals(other.runId))
-                return false;
-            return true;
+            return runId.equals(other.runId);
         }
     }
 
@@ -1115,10 +1033,7 @@ public class DataTreeContentProvider {
 
         @Override
         public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((path == null) ? 0 : path.hashCode());
-            return result;
+            return path.hashCode();
         }
 
         @Override
@@ -1130,13 +1045,7 @@ public class DataTreeContentProvider {
             if (getClass() != obj.getClass())
                 return false;
             ModulePathNode other = (ModulePathNode) obj;
-            if (path == null) {
-                if (other.path != null)
-                    return false;
-            }
-            else if (!path.equals(other.path))
-                return false;
-            return true;
+            return path.equals(other.path);
         }
     }
 
@@ -1169,10 +1078,7 @@ public class DataTreeContentProvider {
 
         @Override
         public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((name == null) ? 0 : name.hashCode());
-            return result;
+            return name.hashCode();
         }
 
         @Override
@@ -1184,13 +1090,7 @@ public class DataTreeContentProvider {
             if (getClass() != obj.getClass())
                 return false;
             ModuleNameNode other = (ModuleNameNode) obj;
-            if (name == null) {
-                if (other.name != null)
-                    return false;
-            }
-            else if (!name.equals(other.name))
-                return false;
-            return true;
+            return name.equals(other.name);
         }
     }
 
