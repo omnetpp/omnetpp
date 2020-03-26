@@ -372,7 +372,7 @@ public class DataTree extends Tree implements IDataControl {
             treeItem = treeItem.getParentItem();
         }
 
-        return path;
+        return path; // actually, reverse path (root comes last)
     }
 
     protected void loadPreferences() {

@@ -61,6 +61,8 @@ public class DataTreeContentProvider {
     public final static Class[] LEVELS5 = new Class[] { FileNameNode.class, RunIdNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
     public final static Class[] LEVELS6 = new Class[] { RunIdNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
 
+    public final static int GROUPSIZE = 1000;
+
     private static boolean debug = false;
 
     protected ResultFileManagerEx manager;
@@ -110,41 +112,52 @@ public class DataTreeContentProvider {
         return numericPrecision;
     }
 
-    public Node[] getChildNodes(final List<Node> path) {
-        return doGetChildNodes(path);
-    }
-
-    public Node[] doGetChildNodes(final List<Node> path) {
+    public Node[] getChildNodes(List<Node> path) {
         if (manager == null || inputIdList == null)
             return new Node[0];
 
-        // note: path is actually reverse path, i.e. root comes last, and firstNode is the most specific (deepest) node
-        final Node firstNode = path.size() == 0 ? null : path.get(0);
+        // note: path is actually reverse path, i.e. root comes last
+        Node parentNode = path.size() == 0 ? null : path.get(0);
 
         // cache
-        if (firstNode == null) {
-            if (rootNodes != null)
-                return rootNodes;
-        }
-        else {
-            if (firstNode.children != null)
-                return firstNode.children;
-        }
+        Node[] cachedChildren = parentNode == null ? rootNodes : parentNode.children;
+        if (cachedChildren != null)
+            return cachedChildren;
 
         // not cached, compute
-        Node[] nodes = ResultFileManager.callWithReadLock(manager, () -> computeChildren(path));
+        Node[] children = ResultFileManager.callWithReadLock(manager, () -> computeChildren(path));
+        if (children.length > GROUPSIZE)
+            children = makeGroups(children);
 
         // update cache
-        if (firstNode == null)
-            rootNodes = nodes;
+        if (parentNode == null)
+            rootNodes = children;
         else
-            firstNode.children = nodes;
+            parentNode.children = children;
 
-        return nodes;
+        return children;
     }
 
-    public Node[] computeChildren(List<Node> path) throws Exception {
-        Node firstNode = path.size() == 0 ? null : path.get(0);
+    public Node[] makeGroups(Node[] children) {
+        List<Node> groups = new ArrayList<>();
+        Debug.time("Making groups", 10, () -> {
+            for (int pos = 0; pos < children.length; pos += GROUPSIZE) {
+                int end = Math.min(pos+GROUPSIZE, children.length);
+                String label = "[" + pos + ".." + (end-1) + "]";
+                GroupNode group = new GroupNode(label, children[pos].getImage());
+                group.children = Arrays.copyOfRange(children, pos, end);
+                IDList groupIds = new IDList();
+                for (Node child : group.children)
+                    groupIds.append(child.ids);
+                group.ids = groupIds;
+                groups.add(group);
+            }
+        });
+        return groups.toArray(new Node[0]);
+    }
+
+    protected Node[] computeChildren(List<Node> path) throws Exception {
+        Node firstNode = path.size() == 0 ? null : path.get(0); // actually, the parent node whose children we are computing
 
         // determine currentLevelIndex
         int currentLevelIndex;
@@ -521,6 +534,7 @@ public class DataTreeContentProvider {
     }
 
     private static final Map<Class,String> LEVELNAMES = new HashMap<>();
+
     static {
         LEVELNAMES.put(ExperimentNode.class, "Experiment");
         LEVELNAMES.put(MeasurementNode.class, "Measurement");
@@ -545,7 +559,6 @@ public class DataTreeContentProvider {
     protected static abstract class Node {
         public IDList ids;
         public Node[] children;
-
         public String value = "";
 
         public boolean isExpandedByDefault() {
@@ -557,6 +570,47 @@ public class DataTreeContentProvider {
         public abstract String getColumnText(int index);
 
         public abstract boolean matches(List<Node> path, long id, MatchContext matchContext);
+    }
+
+    public static class GroupNode extends Node {
+        public Image image;
+        public String label; // index range, actually
+
+        public GroupNode(String label, Image image) {
+            this.label = label;
+            this.image = image;
+        }
+
+        @Override
+        public String getColumnText(int index) {
+            return index == 0 ? label : "";
+        }
+
+        public Image getImage() {
+            return image;
+        }
+
+        @Override
+        public boolean matches(List<Node> path, long id, MatchContext matchContext) {
+            return false; //TODO
+        }
+
+        @Override
+        public int hashCode() {
+            return label.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            GroupNode other = (GroupNode) obj;
+            return label.equals(other.label);
+        }
     }
 
     public static class NameValueNode extends Node {
@@ -622,11 +676,6 @@ public class DataTreeContentProvider {
         }
 
         @Override
-        public boolean isExpandedByDefault() {
-            return true;
-        }
-
-        @Override
         public int hashCode() {
             return name.hashCode();
         }
@@ -663,11 +712,6 @@ public class DataTreeContentProvider {
         @Override
         public boolean matches(List<Node> path, long id, MatchContext matchContext) {
             return name.equals(matchContext.getRunAttribute(RunAttribute.MEASUREMENT));
-        }
-
-        @Override
-        public boolean isExpandedByDefault() {
-            return true;
         }
 
         @Override
@@ -817,11 +861,6 @@ public class DataTreeContentProvider {
         }
 
         @Override
-        public boolean isExpandedByDefault() {
-            return true;
-        }
-
-        @Override
         public int hashCode() {
             return name.hashCode();
         }
@@ -945,10 +984,6 @@ public class DataTreeContentProvider {
 
         public Image getImage() {
             return ScavePlugin.getCachedImage(fileName.endsWith(".vec") ? ScaveImages.IMG_VECFILE : ScaveImages.IMG_SCAFILE);
-        }
-
-        public boolean isExpandedByDefault() {
-            return true;
         }
 
         @Override
