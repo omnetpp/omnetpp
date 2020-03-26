@@ -299,11 +299,10 @@ public class DataTree extends Tree implements IDataControl {
     }
 
     public void refresh() {
-        Debug.time("DataTree.refresh()", 100, () -> {
-            removeAll();
-            clearAll(true);
-            setItemCount(contentProvider.getChildNodes(new ArrayList<Node>()).length);
-        });
+            Debug.time("DataTree.refresh()/removeAll", 100, () ->removeAll());
+            Debug.time("DataTree.refresh()/clearAll", 100, () ->clearAll(true));
+            int length = Debug.timed("DataTree.refresh()/getChildNodes", 100, () -> contentProvider.getChildNodes(new ArrayList<Node>()).length);
+            Debug.time("DataTree.refresh()/setItemCount", 100, ()->setItemCount(length));
     }
 
     public void contributeToContextMenu(IMenuManager menuManager) {
