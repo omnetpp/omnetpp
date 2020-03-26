@@ -170,18 +170,19 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
     // preparation
     int itemTypes = idlist.getItemTypes();
     bool haveScalars = (itemTypes & ResultFileManager::SCALAR) != 0;
+    bool haveParameters = (itemTypes & ResultFileManager::PARAMETER) != 0;
     bool haveStatistics = (itemTypes & (ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM)) != 0;
     bool haveHistograms = (itemTypes & ResultFileManager::HISTOGRAM) != 0;
     bool haveVectors = (itemTypes & ResultFileManager::VECTOR) != 0;
 
-    bool haveScalarColumns = haveScalars || !omitBlankColumns;
+    bool haveScalarColumns = (haveScalars || haveParameters) || !omitBlankColumns; // scalars and parameters share the same columns
     bool haveStatisticColumns = haveStatistics || !omitBlankColumns;
     bool haveHistogramColumns = haveHistograms || !omitBlankColumns;
     bool haveVectorColumns = haveVectors || !omitBlankColumns;
 
     std::vector<std::string> commonColumnNames = {"run", "type", "module", "name", "attrname", "attrvalue"};
     std::vector<std::string> scalarColumnNames, statisticColumnNames, histogramColumnNames, vectorColumnNames;
-    if (haveScalarColumns)
+    if (haveScalarColumns) // scalars and parameters share the same columns
         scalarColumnNames = {"value"};
     if (haveStatisticColumns)
         statisticColumnNames = {"count", "sumweights", "mean", "stddev", "min", "max"};
@@ -230,7 +231,7 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
     }
 
     // record parameters
-    if (haveScalars) {
+    if (haveParameters) {
         IDList paramIDs = idlist.filterByTypes(ResultFileManager::PARAMETER);
         for (int i = 0; i < (int)paramIDs.size(); ++i) {
             const ParameterResult& param = manager->getParameter(paramIDs.get(i));
