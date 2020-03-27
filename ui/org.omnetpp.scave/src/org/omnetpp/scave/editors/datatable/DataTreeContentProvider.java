@@ -207,8 +207,12 @@ public class DataTreeContentProvider {
         for (int i = 0; i < idCount; i++) {
             long id = idList.get(i);
             MatchContext matchContext = new MatchContext(manager, id);
-            if (!matchesPath(path, id, matchContext))
-                continue;
+//TODO remove:
+//            if (!matchesPath(path, id, matchContext)) {
+//              String resultName = matchContext.getResultItem().getModuleName() + "/" + matchContext.getResultItem().getName();
+//              System.out.println("WARNING: RESULT " + resultName + " DOESNT MATCH PATH " + StringUtils.join(path.toArray(), ":"));
+//                continue;
+//            }
             if (nextLevelClass.equals(ExperimentNode.class))
                 add(nodeIdsMap, new ExperimentNode(matchContext.getRunAttribute(RunAttribute.EXPERIMENT)), id);
             else if (nextLevelClass.equals(MeasurementNode.class))
