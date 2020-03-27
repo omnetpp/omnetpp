@@ -174,10 +174,38 @@ public class DataTreeContentProvider {
 
         // sort the IDs into different child nodes, according to nextLevelClass
         IDList currentLevelIdList = firstNode == null ? idList : firstNode.ids;
-        int idCount = currentLevelIdList.size();
+        Map<Node, IDList> nodeIdsMap = sortIdListToChildNodes(path, currentLevelIdList, nextLevelClass, collector);
+
+        // get nodes[] from keyset, sort if necessary
+        Node[] nodes = nodeIdsMap.keySet().toArray(new Node[0]);
+        boolean shouldSort = !nextLevelClass.equals(ResultItemAttributeNode.class);
+        if (shouldSort) {
+            Arrays.sort(nodes, new Comparator<Node>() {
+                public int compare(Node o1, Node o2) {
+                    return StringUtils.dictionaryCompare((o1).getColumnText(0), (o2).getColumnText(0));
+                }
+            });
+        }
+
+        // fill in ids[], value
+        for (Node node : nodes) {
+            node.ids = nodeIdsMap.get(node);
+            // add quick value if applicable
+            if (node.ids.size() == 1 && !collector && StringUtils.isEmpty(node.value) &&
+                (!(node instanceof ModuleNameNode) || ((ModuleNameNode)node).leaf))
+            {
+                ResultItem resultItem = manager.getItem(node.ids.get(0));
+                node.value = getResultItemShortDescription(resultItem);
+            }
+        }
+        return nodes;
+    }
+
+    protected Map<Node, IDList> sortIdListToChildNodes(List<Node> path, IDList idList, Class<? extends Node> nextLevelClass, boolean collector) {
+        int idCount = idList.size();
         Map<Node,IDList> nodeIdsMap = new LinkedHashMap<>(); // preserve insertion order of children
         for (int i = 0; i < idCount; i++) {
-            long id = currentLevelIdList.get(i);
+            long id = idList.get(i);
             MatchContext matchContext = new MatchContext(manager, id);
             if (matchesPath(path, id, matchContext)) {
                 if (nextLevelClass.equals(ExperimentNode.class))
@@ -299,30 +327,7 @@ public class DataTreeContentProvider {
                     throw new IllegalArgumentException();
             }
         }
-
-        // get nodes[] from keyset, sort if necessary
-        Node[] nodes = nodeIdsMap.keySet().toArray(new Node[0]);
-        boolean shouldSort = !nextLevelClass.equals(ResultItemAttributeNode.class);
-        if (shouldSort) {
-            Arrays.sort(nodes, new Comparator<Node>() {
-                public int compare(Node o1, Node o2) {
-                    return StringUtils.dictionaryCompare((o1).getColumnText(0), (o2).getColumnText(0));
-                }
-            });
-        }
-
-        // fill in ids[], value
-        for (Node node : nodes) {
-            node.ids = nodeIdsMap.get(node);
-            // add quick value if applicable
-            if (node.ids.size() == 1 && !collector && StringUtils.isEmpty(node.value) &&
-                (!(node instanceof ModuleNameNode) || ((ModuleNameNode)node).leaf))
-            {
-                ResultItem resultItem = manager.getItem(node.ids.get(0));
-                node.value = getResultItemShortDescription(resultItem);
-            }
-        }
-        return nodes;
+        return nodeIdsMap;
     }
 
     private static void add(Map<Node,IDList> map, Node key, long value) {
