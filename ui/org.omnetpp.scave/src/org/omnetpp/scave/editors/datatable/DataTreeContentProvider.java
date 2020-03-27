@@ -173,10 +173,9 @@ public class DataTreeContentProvider {
             return new Node[0];
 
         // sort the IDs into different child nodes, according to nextLevelClass
-        Map<Node,IDList> nodeIdsMap = new LinkedHashMap<>(); // preserve insertion order of children
-        boolean shouldSort = true;
         IDList currentLevelIdList = firstNode == null ? idList : firstNode.ids;
         int idCount = currentLevelIdList.size();
+        Map<Node,IDList> nodeIdsMap = new LinkedHashMap<>(); // preserve insertion order of children
         for (int i = 0; i < idCount; i++) {
             long id = currentLevelIdList.get(i);
             MatchContext matchContext = new MatchContext(manager, id);
@@ -219,7 +218,6 @@ public class DataTreeContentProvider {
                         add(nodeIdsMap, new ResultItemNode(manager, id, null), id);
                 }
                 else if (nextLevelClass.equals(ResultItemAttributeNode.class)) {
-                    shouldSort = false;  // retain insertion order
                     ResultItem resultItem = matchContext.getResultItem();
                     ResultItem.DataType type = resultItem.getDataType();
                     boolean isIntegerType = type == ResultItem.DataType.TYPE_INT;
@@ -304,6 +302,7 @@ public class DataTreeContentProvider {
 
         // get nodes[] from keyset, sort if necessary
         Node[] nodes = nodeIdsMap.keySet().toArray(new Node[0]);
+        boolean shouldSort = !nextLevelClass.equals(ResultItemAttributeNode.class);
         if (shouldSort) {
             Arrays.sort(nodes, new Comparator<Node>() {
                 public int compare(Node o1, Node o2) {
