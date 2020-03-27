@@ -334,7 +334,7 @@ public class DataTreeContentProvider {
         IDList ids = map.get(key);
         if (ids == null)
             map.put(key, ids = new IDList());
-        ids.add(value);  //TODO this is costly, as it checks for uniqueness!!! eliminate that...
+        ids.append(value);
     }
 
     protected String toIntegerAwareString(double value, boolean isIntegerType) {
