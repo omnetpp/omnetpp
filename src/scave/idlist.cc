@@ -69,6 +69,11 @@ void IDList::bulkAdd(ID *array, int length)
     discardDuplicates();
 }
 
+void IDList::append(const IDList& other)
+{
+    v->insert(v->end(), other.v->begin(), other.v->end());
+}
+
 void IDList::discardDuplicates()
 {
     std::sort(v->begin(), v->end());

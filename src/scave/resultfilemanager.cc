@@ -566,7 +566,7 @@ void ResultFileManager::collectIDs(IDList& out, std::vector<T> ResultFile::*vec,
                 bool isField = type == SCALAR ? ((ScalarResult&)v[i]).isField() : false;
 
                 if (!isField || includeFields)
-                    out.uncheckedAdd(_mkID(type, k, i));
+                    out.append(_mkID(type, k, i));
             }
         }
     }
@@ -632,7 +632,7 @@ IDList ResultFileManager::getScalarsInFileRun(FileRun *fileRun) const
     ScalarResults& v = fileRun->fileRef->scalarResults;
     for (int i = 0; i < (int)v.size(); i++)
         if (v[i].getFileRun() == fileRun)
-            out.uncheckedAdd(_mkID(SCALAR, fileId, i));
+            out.append(_mkID(SCALAR, fileId, i));
 
     return out;
 }
@@ -645,7 +645,7 @@ IDList ResultFileManager::getParametersInFileRun(FileRun *fileRun) const
     ParameterResults& v = fileRun->fileRef->parameterResults;
     for (int i = 0; i < (int)v.size(); i++)
         if (v[i].getFileRun() == fileRun)
-            out.uncheckedAdd(_mkID(PARAMETER, fileId, i));
+            out.append(_mkID(PARAMETER, fileId, i));
 
     return out;
 }
@@ -658,7 +658,7 @@ IDList ResultFileManager::getVectorsInFileRun(FileRun *fileRun) const
     VectorResults& v = fileRun->fileRef->vectorResults;
     for (int i = 0; i < (int)v.size(); i++)
         if (v[i].getFileRun() == fileRun)
-            out.uncheckedAdd(_mkID(VECTOR, fileId, i));
+            out.append(_mkID(VECTOR, fileId, i));
 
     return out;
 }
@@ -671,7 +671,7 @@ IDList ResultFileManager::getStatisticsInFileRun(FileRun *fileRun) const
     StatisticsResults& v = fileRun->fileRef->statisticsResults;
     for (int i = 0; i < (int)v.size(); i++)
         if (v[i].getFileRun() == fileRun)
-            out.uncheckedAdd(_mkID(STATISTICS, fileId, i));
+            out.append(_mkID(STATISTICS, fileId, i));
 
     return out;
 }
@@ -684,7 +684,7 @@ IDList ResultFileManager::getHistogramsInFileRun(FileRun *fileRun) const
     HistogramResults& v = fileRun->fileRef->histogramResults;
     for (int i = 0; i < (int)v.size(); i++)
         if (v[i].getFileRun() == fileRun)
-            out.uncheckedAdd(_mkID(HISTOGRAM, fileId, i));
+            out.append(_mkID(HISTOGRAM, fileId, i));
 
     return out;
 }
@@ -917,9 +917,9 @@ IDList ResultFileManager::filterIDList(const IDList& idlist,
             continue;  // no match
 
         // everything matched, insert it.
-        // (note: uncheckedAdd() is fine: if input IDList didn't contain duplicates,
+        // (note: append() is fine: if input IDList didn't contain duplicates,
         // the result won't either)
-        out.uncheckedAdd(id);
+        out.append(id);
     }
     return out;
 }
@@ -951,9 +951,9 @@ IDList ResultFileManager::filterIDList(const IDList& idlist, const Run *run, con
             continue;
 
         // everything matched, insert it.
-        // (note: uncheckedAdd() is fine: if input IDList didn't contain duplicates,
+        // (note: append() is fine: if input IDList didn't contain duplicates,
         // the result won't either)
-        result.uncheckedAdd(id);
+        result.append(id);
     }
     return result;
 }
@@ -1306,7 +1306,7 @@ IDList ResultFileManager::filterIDList(const IDList& idlist, const char *pattern
         const ResultItem& item = getItem(id);
         MatchableResultItem matchable(item);
         if (matchExpr.matches(&matchable)) {
-            out.uncheckedAdd(id);
+            out.append(id);
             count++;
             if (limit > 0 && count == limit)
                 break;

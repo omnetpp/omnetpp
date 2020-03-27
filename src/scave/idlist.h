@@ -48,8 +48,6 @@ class SCAVE_API IDList
 
         void operator=(const IDList&); // undefined, to prevent calling it
         void checkV() const {if (!v) throw std::runtime_error("this is a zombie IDList");}
-        void uncheckedAdd(ID id) {v->push_back(id);} // doesn't check if already in there
-        void discardDuplicates();
         void checkIntegrity(ResultFileManager *mgr) const;
         void checkIntegrityAllScalars(ResultFileManager *mgr) const;
         void checkIntegrityAllParameters(ResultFileManager *mgr) const;
@@ -73,9 +71,11 @@ class SCAVE_API IDList
         bool equals(IDList& other);
         void set(const IDList& ids);
         void add(ID x); // checks for uniqueness (costly)
-        void bulkAdd(ID *array, int n);
+        void bulkAdd(ID *array, int n); // checks for uniqueness (costly)
+        void append(ID id) {v->push_back(id);} // no uniqueness check, use of discardDuplicates() recommended
+        void append(const IDList& ids); // no uniqueness check, use of discardDuplicates() recommended
+        void discardDuplicates();
         ID get(int i) const {checkV(); return v->at(i);} // at() includes bounds check
-        // void set(int i, ID x);
         void erase(int i);
         void subtract(ID x); // this -= {x}
         int indexOf(ID x) const;
