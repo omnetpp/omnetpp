@@ -61,7 +61,7 @@ public class DataTreeContentProvider {
 
     protected ResultFileManagerEx manager;
 
-    protected IDList idList;
+    protected IDList inputIdList;
 
     protected Class<? extends Node>[] levels;
 
@@ -79,7 +79,7 @@ public class DataTreeContentProvider {
     }
 
     public void setIDList(IDList idList) {
-        this.idList = idList;
+        this.inputIdList = idList;
         rootNodes = null;
     }
 
@@ -111,7 +111,7 @@ public class DataTreeContentProvider {
     }
 
     public Node[] doGetChildNodes(final List<Node> path) {
-        if (manager == null || idList == null)
+        if (manager == null || inputIdList == null)
             return new Node[0];
 
         // note: path is actually reverse path, i.e. root comes last, and firstNode is the most specific (deepest) node
@@ -173,7 +173,7 @@ public class DataTreeContentProvider {
             return new Node[0];
 
         // sort the IDs into different child nodes, according to nextLevelClass
-        IDList currentLevelIdList = firstNode == null ? idList : firstNode.ids;
+        IDList currentLevelIdList = firstNode == null ? inputIdList : firstNode.ids;
         Map<Node, IDList> nodeIdsMap = sortIdListToChildNodes(path, currentLevelIdList, nextLevelClass, collector);
 
         // get nodes[] from keyset, sort if necessary
