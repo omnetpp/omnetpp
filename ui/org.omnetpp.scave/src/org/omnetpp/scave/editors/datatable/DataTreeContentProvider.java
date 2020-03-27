@@ -111,10 +111,16 @@ public class DataTreeContentProvider {
     }
 
     public Node[] getChildNodes(final List<Node> path) {
-        long startMillis = System.currentTimeMillis();
+        return doGetChildNodes(path);
+    }
+
+    public Node[] doGetChildNodes(final List<Node> path) {
         if (manager == null || idList == null)
             return new Node[0];
+
+        // note: path is actually reverse path, i.e. root comes last, and firstNode is the most specific (deepest) node
         final Node firstNode = path.size() == 0 ? null : path.get(0);
+
         // cache
         if (firstNode == null) {
             if (rootNodes != null)
@@ -124,206 +130,204 @@ public class DataTreeContentProvider {
             if (firstNode.children != null)
                 return firstNode.children;
         }
-        Node[] nodes = ResultFileManager.callWithReadLock(manager, new Callable<Node[]>() {
-            public Node[] call() throws Exception {
-                MultiValueMap nodeIdsMap = MultiValueMap.decorate(new LinkedHashMap<>()); // preserve insertion order of children
-                int currentLevelIndex;
-                if (firstNode == null)
-                    currentLevelIndex = -1;
-                else {
-                    currentLevelIndex = ArrayUtils.indexOf(levels, firstNode.getClass());
-                    if (currentLevelIndex == -1)
-                        return new Node[0];
-                }
-                int nextLevelIndex;
-                if (firstNode instanceof ModuleNameNode) {
-                    ModuleNameNode moduleNameNode = (ModuleNameNode)firstNode;
-                    nextLevelIndex = currentLevelIndex + (moduleNameNode.leaf ? 1 : 0);
-                }
-                else
-                    nextLevelIndex = currentLevelIndex + 1;
-                boolean collector = false;
-                for (int j = nextLevelIndex + 1; j < levels.length; j++)
-                    if (!levels[j].equals(ResultItemAttributeNode.class))
-                        collector = true;
-                Class<? extends Node> nextLevelClass = nextLevelIndex < levels.length ? levels[nextLevelIndex] : null;
-                boolean shouldSort = true;
-                if (nextLevelClass != null) {
-                    int idCount = firstNode == null ? idList.size() : firstNode.ids.length;
-                    for (int i = 0; i < idCount; i++) {
-                        long id = firstNode == null ? idList.get(i) : firstNode.ids[i];
-                        MatchContext matchContext = new MatchContext(manager, id);
-                        if (matchesPath(path, id, matchContext)) {
-                            if (nextLevelClass.equals(ExperimentNode.class))
-                                nodeIdsMap.put(new ExperimentNode(matchContext.getRunAttribute(RunAttribute.EXPERIMENT)), id);
-                            else if (nextLevelClass.equals(MeasurementNode.class))
-                                nodeIdsMap.put(new MeasurementNode(matchContext.getRunAttribute(RunAttribute.MEASUREMENT)), id);
-                            else if (nextLevelClass.equals(ReplicationNode.class))
-                                nodeIdsMap.put(new ReplicationNode(matchContext.getRunAttribute(RunAttribute.REPLICATION)), id);
-                            else if (nextLevelClass.equals(ExperimentMeasurementReplicationNode.class))
-                                nodeIdsMap.put(new ExperimentMeasurementReplicationNode(matchContext.getRunAttribute(RunAttribute.EXPERIMENT), matchContext.getRunAttribute(RunAttribute.MEASUREMENT), matchContext.getRunAttribute(RunAttribute.REPLICATION)), id);
-                            else if (nextLevelClass.equals(ConfigNode.class))
-                                nodeIdsMap.put(new ConfigNode(matchContext.getRunAttribute(RunAttribute.CONFIGNAME)), id);
-                            else if (nextLevelClass.equals(RunNumberNode.class))
-                                nodeIdsMap.put(new RunNumberNode(matchContext.getRun().getAttribute(RunAttribute.RUNNUMBER)), id);
-                            else if (nextLevelClass.equals(ConfigRunNumberNode.class))
-                                nodeIdsMap.put(new ConfigRunNumberNode(matchContext.getRunAttribute(RunAttribute.CONFIGNAME), matchContext.getRun().getAttribute(RunAttribute.RUNNUMBER)), id);
-                            else if (nextLevelClass.equals(FileNameNode.class))
-                                nodeIdsMap.put(new FileNameNode(matchContext.getResultFile().getFileName()), id);
-                            else if (nextLevelClass.equals(RunIdNode.class))
-                                nodeIdsMap.put(new RunIdNode(matchContext.getRun().getRunName()), id);
-                            else if (nextLevelClass.equals(FileNameRunIdNode.class))
-                                nodeIdsMap.put(new FileNameRunIdNode(matchContext.getResultFile().getFileName(), matchContext.getRun().getRunName()), id);
-                            else if (nextLevelClass.equals(ModuleNameNode.class)) {
-                                String moduleName = matchContext.getResultItem().getModuleName();
-                                String modulePrefix = getModulePrefix(path, null);
-                                if (moduleName.startsWith(modulePrefix)) {
-                                    String remainingName = StringUtils.removeStart(StringUtils.removeStart(moduleName, modulePrefix), ".");
-                                    String name = StringUtils.substringBefore(remainingName, ".");
-                                    nodeIdsMap.put(new ModuleNameNode(StringUtils.isEmpty(name) ? "." : name, !remainingName.contains(".")), id);
-                                }
-                            }
-                            else if (nextLevelClass.equals(ModulePathNode.class))
-                                nodeIdsMap.put(new ModulePathNode(matchContext.getResultItem().getModuleName()), id);
-                            else if (nextLevelClass.equals(ResultItemNode.class)) {
-                                if (collector)
-                                    nodeIdsMap.put(new ResultItemNode(manager, -1, matchContext.getResultItem().getName()), id);
-                                else
-                                    nodeIdsMap.put(new ResultItemNode(manager, id, null), id);
-                            }
-                            else if (nextLevelClass.equals(ResultItemAttributeNode.class)) {
-                                shouldSort = false;  // retain insertion order
-                                ResultItem resultItem = matchContext.getResultItem();
-                                ResultItem.DataType type = resultItem.getDataType();
-                                boolean isIntegerType = type == ResultItem.DataType.TYPE_INT;
-                                nodeIdsMap.put(new ResultItemAttributeNode("Module name", resultItem.getModuleName()), id);
-                                nodeIdsMap.put(new ResultItemAttributeNode("Type", type.toString().replaceAll("TYPE_", "").toLowerCase()), id);
-                                if (resultItem instanceof ScalarResult) {
-                                    ScalarResult scalar = (ScalarResult)resultItem;
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Value", toIntegerAwareString(scalar.getValue(), isIntegerType)), id);
-                                }
-                                else if (resultItem instanceof VectorResult) {
-                                    VectorResult vector = (VectorResult)resultItem;
-                                    Statistics stat = vector.getStatistics();
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Count", String.valueOf(stat.getCount())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Mean", formatNumber(stat.getMean())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("StdDev", formatNumber(stat.getStddev())), id);
-                                    //nodeIdsMap.put(new ResultItemAttributeNode("Variance", formatNumber(stat.getVariance())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Min", toIntegerAwareString(stat.getMin(), isIntegerType)), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Max", toIntegerAwareString(stat.getMax(), isIntegerType)), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Start event number", String.valueOf(vector.getStartEventNum())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("End event number", String.valueOf(vector.getEndEventNum())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Start time", formatNumber(vector.getStartTime())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("End time", formatNumber(vector.getEndTime())), id);
-                                }
-                                else if (resultItem instanceof StatisticsResult) {
-                                    StatisticsResult statistics = (StatisticsResult)resultItem;
-                                    Statistics stat = statistics.getStatistics();
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Kind", (stat.isWeighted() ? "weighted" : "unweighted")), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Count", String.valueOf(stat.getCount())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Sum of weights", formatNumber(stat.getSumWeights())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Mean", formatNumber(stat.getMean())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("StdDev", formatNumber(stat.getStddev())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Min", toIntegerAwareString(stat.getMin(), isIntegerType)), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Max", toIntegerAwareString(stat.getMax(), isIntegerType)), id);
 
-                                    if (resultItem instanceof HistogramResult) {
-                                        HistogramResult histogram = (HistogramResult)resultItem;
-                                        Histogram hist = histogram.getHistogram();
+        // not cached, compute
+        Node[] nodes = ResultFileManager.callWithReadLock(manager, () -> computeChildren(path));
 
-                                        nodeIdsMap.put(new ResultItemAttributeNode("Underflows", toIntegerAwareString(hist.getUnderflows(), isIntegerType)), id);
-                                        nodeIdsMap.put(new ResultItemAttributeNode("Overflows", toIntegerAwareString(hist.getOverflows(), isIntegerType)), id);
-
-                                        DoubleVector binEdges = hist.getBinEdges();
-                                        DoubleVector binValues = hist.getBinValues();
-                                        if (binEdges.size() > 0 && binValues.size() > 0) {
-                                            int numBins = hist.getNumBins();
-                                            ResultItemAttributeNode binsNode = new ResultItemAttributeNode("Bins", String.valueOf(numBins));
-                                            List<Node> list = new ArrayList<Node>();
-                                            for (int j = 0; j < numBins; j++) {
-                                                double lowerBound = binEdges.get(j);
-                                                double upperBound = binEdges.get(j+1);
-                                                double value = binValues.get(j);
-                                                String name = "[" + toIntegerAwareString(lowerBound, isIntegerType) + ", ";
-                                                if (isIntegerType)
-                                                    name += toIntegerAwareString(upperBound-1, isIntegerType) + "]";
-                                                else
-                                                    name += formatNumber(upperBound) + ")";
-                                                list.add(new NameValueNode(name, toIntegerAwareString(value, true)));
-                                            }
-                                            binsNode.children = list.toArray(new Node[0]);
-                                            nodeIdsMap.put(binsNode, id);
-                                        }
-                                    }
-                                }
-                                else if (resultItem instanceof ParameterResult) {
-                                    ParameterResult parameter = (ParameterResult)resultItem;
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Value", parameter.getValue()), id);
-                                }
-                                else {
-                                    throw new IllegalArgumentException();
-                                }
-                                StringMap attributes = resultItem.getAttributes();
-                                StringVector keys = attributes.keys();
-                                for (int j = 0; j < keys.size(); j++) {
-                                    String key = keys.get(j);
-                                    nodeIdsMap.put(new ResultItemAttributeNode(StringUtils.capitalize(key), attributes.get(key)), id);
-                                }
-                            }
-                            else
-                                throw new IllegalArgumentException();
-                        }
-                    }
-                }
-                Node[] nodes = (Node[])nodeIdsMap.keySet().toArray(new Node[0]);
-                if (shouldSort) {
-                    Arrays.sort(nodes, new Comparator<Node>() {
-                        public int compare(Node o1, Node o2) {
-                            return StringUtils.dictionaryCompare((o1).getColumnText(0), (o2).getColumnText(0));
-                        }
-                    });
-                }
-                for (Node node : nodes) {
-                    node.ids = toLongArray((Collection<Long>)nodeIdsMap.getCollection(node));
-                    // add quick value if applicable
-                    if (node.ids.length == 1 && !collector && StringUtils.isEmpty(node.value) &&
-                        (!(node instanceof ModuleNameNode) || ((ModuleNameNode)node).leaf))
-                    {
-                        ResultItem resultItem = manager.getItem(node.ids[0]);
-                        node.value = getResultItemShortDescription(resultItem);
-                    }
-                }
-                // update cache
-                if (firstNode == null)
-                    rootNodes = nodes;
-                else
-                    firstNode.children = nodes;
-                return nodes;
-            }
-
-            private long[] toLongArray(Collection<Long> c) {
-                long[] a = new long[c.size()];
-                Iterator<Long> it = c.iterator();
-                for (int i = 0; i < c.size(); i++)
-                    a[i] = (Long)it.next();
-                return a;
-            }
-
-            protected String toIntegerAwareString(double value, boolean isIntegerType) {
-                if (!isIntegerType || Double.isInfinite(value) || Double.isNaN(value) || Math.floor(value) != value)
-                    return formatNumber(value);
-                else
-                    return String.valueOf((long)value);
-            }
-
-
-        });
-
-        long totalMillis = System.currentTimeMillis() - startMillis;
-        if (debug)
-            Debug.println("getChildNodes() for path = " + path + ": " + totalMillis + "ms");
+        // update cache
+        if (firstNode == null)
+            rootNodes = nodes;
+        else
+            firstNode.children = nodes;
 
         return nodes;
+    }
+
+    public Node[] computeChildren(List<Node> path) throws Exception {
+        Node firstNode = path.size() == 0 ? null : path.get(0);
+        MultiValueMap nodeIdsMap = MultiValueMap.decorate(new LinkedHashMap<>()); // preserve insertion order of children
+        int currentLevelIndex;
+        if (firstNode == null)
+            currentLevelIndex = -1;
+        else {
+            currentLevelIndex = ArrayUtils.indexOf(levels, firstNode.getClass());
+            if (currentLevelIndex == -1)
+                return new Node[0];
+        }
+        int nextLevelIndex;
+        if (firstNode instanceof ModuleNameNode) {
+            ModuleNameNode moduleNameNode = (ModuleNameNode)firstNode;
+            nextLevelIndex = currentLevelIndex + (moduleNameNode.leaf ? 1 : 0);
+        }
+        else
+            nextLevelIndex = currentLevelIndex + 1;
+        boolean collector = false;
+        for (int j = nextLevelIndex + 1; j < levels.length; j++)
+            if (!levels[j].equals(ResultItemAttributeNode.class))
+                collector = true;
+        Class<? extends Node> nextLevelClass = nextLevelIndex < levels.length ? levels[nextLevelIndex] : null;
+        boolean shouldSort = true;
+        if (nextLevelClass != null) {
+            int idCount = firstNode == null ? idList.size() : firstNode.ids.length;
+            for (int i = 0; i < idCount; i++) {
+                long id = firstNode == null ? idList.get(i) : firstNode.ids[i];
+                MatchContext matchContext = new MatchContext(manager, id);
+                if (matchesPath(path, id, matchContext)) {
+                    if (nextLevelClass.equals(ExperimentNode.class))
+                        nodeIdsMap.put(new ExperimentNode(matchContext.getRunAttribute(RunAttribute.EXPERIMENT)), id);
+                    else if (nextLevelClass.equals(MeasurementNode.class))
+                        nodeIdsMap.put(new MeasurementNode(matchContext.getRunAttribute(RunAttribute.MEASUREMENT)), id);
+                    else if (nextLevelClass.equals(ReplicationNode.class))
+                        nodeIdsMap.put(new ReplicationNode(matchContext.getRunAttribute(RunAttribute.REPLICATION)), id);
+                    else if (nextLevelClass.equals(ExperimentMeasurementReplicationNode.class))
+                        nodeIdsMap.put(new ExperimentMeasurementReplicationNode(matchContext.getRunAttribute(RunAttribute.EXPERIMENT), matchContext.getRunAttribute(RunAttribute.MEASUREMENT), matchContext.getRunAttribute(RunAttribute.REPLICATION)), id);
+                    else if (nextLevelClass.equals(ConfigNode.class))
+                        nodeIdsMap.put(new ConfigNode(matchContext.getRunAttribute(RunAttribute.CONFIGNAME)), id);
+                    else if (nextLevelClass.equals(RunNumberNode.class))
+                        nodeIdsMap.put(new RunNumberNode(matchContext.getRun().getAttribute(RunAttribute.RUNNUMBER)), id);
+                    else if (nextLevelClass.equals(ConfigRunNumberNode.class))
+                        nodeIdsMap.put(new ConfigRunNumberNode(matchContext.getRunAttribute(RunAttribute.CONFIGNAME), matchContext.getRun().getAttribute(RunAttribute.RUNNUMBER)), id);
+                    else if (nextLevelClass.equals(FileNameNode.class))
+                        nodeIdsMap.put(new FileNameNode(matchContext.getResultFile().getFileName()), id);
+                    else if (nextLevelClass.equals(RunIdNode.class))
+                        nodeIdsMap.put(new RunIdNode(matchContext.getRun().getRunName()), id);
+                    else if (nextLevelClass.equals(FileNameRunIdNode.class))
+                        nodeIdsMap.put(new FileNameRunIdNode(matchContext.getResultFile().getFileName(), matchContext.getRun().getRunName()), id);
+                    else if (nextLevelClass.equals(ModuleNameNode.class)) {
+                        String moduleName = matchContext.getResultItem().getModuleName();
+                        String modulePrefix = getModulePrefix(path, null);
+                        if (moduleName.startsWith(modulePrefix)) {
+                            String remainingName = StringUtils.removeStart(StringUtils.removeStart(moduleName, modulePrefix), ".");
+                            String name = StringUtils.substringBefore(remainingName, ".");
+                            nodeIdsMap.put(new ModuleNameNode(StringUtils.isEmpty(name) ? "." : name, !remainingName.contains(".")), id);
+                        }
+                    }
+                    else if (nextLevelClass.equals(ModulePathNode.class))
+                        nodeIdsMap.put(new ModulePathNode(matchContext.getResultItem().getModuleName()), id);
+                    else if (nextLevelClass.equals(ResultItemNode.class)) {
+                        if (collector)
+                            nodeIdsMap.put(new ResultItemNode(manager, -1, matchContext.getResultItem().getName()), id);
+                        else
+                            nodeIdsMap.put(new ResultItemNode(manager, id, null), id);
+                    }
+                    else if (nextLevelClass.equals(ResultItemAttributeNode.class)) {
+                        shouldSort = false;  // retain insertion order
+                        ResultItem resultItem = matchContext.getResultItem();
+                        ResultItem.DataType type = resultItem.getDataType();
+                        boolean isIntegerType = type == ResultItem.DataType.TYPE_INT;
+                        nodeIdsMap.put(new ResultItemAttributeNode("Module name", resultItem.getModuleName()), id);
+                        nodeIdsMap.put(new ResultItemAttributeNode("Type", type.toString().replaceAll("TYPE_", "").toLowerCase()), id);
+                        if (resultItem instanceof ScalarResult) {
+                            ScalarResult scalar = (ScalarResult)resultItem;
+                            nodeIdsMap.put(new ResultItemAttributeNode("Value", toIntegerAwareString(scalar.getValue(), isIntegerType)), id);
+                        }
+                        else if (resultItem instanceof VectorResult) {
+                            VectorResult vector = (VectorResult)resultItem;
+                            Statistics stat = vector.getStatistics();
+                            nodeIdsMap.put(new ResultItemAttributeNode("Count", String.valueOf(stat.getCount())), id);
+                            nodeIdsMap.put(new ResultItemAttributeNode("Mean", formatNumber(stat.getMean())), id);
+                            nodeIdsMap.put(new ResultItemAttributeNode("StdDev", formatNumber(stat.getStddev())), id);
+                            //nodeIdsMap.put(new ResultItemAttributeNode("Variance", formatNumber(stat.getVariance())), id);
+                            nodeIdsMap.put(new ResultItemAttributeNode("Min", toIntegerAwareString(stat.getMin(), isIntegerType)), id);
+                            nodeIdsMap.put(new ResultItemAttributeNode("Max", toIntegerAwareString(stat.getMax(), isIntegerType)), id);
+                            nodeIdsMap.put(new ResultItemAttributeNode("Start event number", String.valueOf(vector.getStartEventNum())), id);
+                            nodeIdsMap.put(new ResultItemAttributeNode("End event number", String.valueOf(vector.getEndEventNum())), id);
+                            nodeIdsMap.put(new ResultItemAttributeNode("Start time", formatNumber(vector.getStartTime())), id);
+                            nodeIdsMap.put(new ResultItemAttributeNode("End time", formatNumber(vector.getEndTime())), id);
+                        }
+                        else if (resultItem instanceof StatisticsResult) {
+                            StatisticsResult statistics = (StatisticsResult)resultItem;
+                            Statistics stat = statistics.getStatistics();
+                            nodeIdsMap.put(new ResultItemAttributeNode("Kind", (stat.isWeighted() ? "weighted" : "unweighted")), id);
+                            nodeIdsMap.put(new ResultItemAttributeNode("Count", String.valueOf(stat.getCount())), id);
+                            nodeIdsMap.put(new ResultItemAttributeNode("Sum of weights", formatNumber(stat.getSumWeights())), id);
+                            nodeIdsMap.put(new ResultItemAttributeNode("Mean", formatNumber(stat.getMean())), id);
+                            nodeIdsMap.put(new ResultItemAttributeNode("StdDev", formatNumber(stat.getStddev())), id);
+                            nodeIdsMap.put(new ResultItemAttributeNode("Min", toIntegerAwareString(stat.getMin(), isIntegerType)), id);
+                            nodeIdsMap.put(new ResultItemAttributeNode("Max", toIntegerAwareString(stat.getMax(), isIntegerType)), id);
+
+                            if (resultItem instanceof HistogramResult) {
+                                HistogramResult histogram = (HistogramResult)resultItem;
+                                Histogram hist = histogram.getHistogram();
+
+                                nodeIdsMap.put(new ResultItemAttributeNode("Underflows", toIntegerAwareString(hist.getUnderflows(), isIntegerType)), id);
+                                nodeIdsMap.put(new ResultItemAttributeNode("Overflows", toIntegerAwareString(hist.getOverflows(), isIntegerType)), id);
+
+                                DoubleVector binEdges = hist.getBinEdges();
+                                DoubleVector binValues = hist.getBinValues();
+                                if (binEdges.size() > 0 && binValues.size() > 0) {
+                                    int numBins = hist.getNumBins();
+                                    ResultItemAttributeNode binsNode = new ResultItemAttributeNode("Bins", String.valueOf(numBins));
+                                    List<Node> list = new ArrayList<Node>();
+                                    for (int j = 0; j < numBins; j++) {
+                                        double lowerBound = binEdges.get(j);
+                                        double upperBound = binEdges.get(j+1);
+                                        double value = binValues.get(j);
+                                        String name = "[" + toIntegerAwareString(lowerBound, isIntegerType) + ", ";
+                                        if (isIntegerType)
+                                            name += toIntegerAwareString(upperBound-1, isIntegerType) + "]";
+                                        else
+                                            name += formatNumber(upperBound) + ")";
+                                        list.add(new NameValueNode(name, toIntegerAwareString(value, true)));
+                                    }
+                                    binsNode.children = list.toArray(new Node[0]);
+                                    nodeIdsMap.put(binsNode, id);
+                                }
+                            }
+                        }
+                        else if (resultItem instanceof ParameterResult) {
+                            ParameterResult parameter = (ParameterResult)resultItem;
+                            nodeIdsMap.put(new ResultItemAttributeNode("Value", parameter.getValue()), id);
+                        }
+                        else {
+                            throw new IllegalArgumentException();
+                        }
+                        StringMap attributes = resultItem.getAttributes();
+                        StringVector keys = attributes.keys();
+                        for (int j = 0; j < keys.size(); j++) {
+                            String key = keys.get(j);
+                            nodeIdsMap.put(new ResultItemAttributeNode(StringUtils.capitalize(key), attributes.get(key)), id);
+                        }
+                    }
+                    else
+                        throw new IllegalArgumentException();
+                }
+            }
+        }
+        Node[] nodes = (Node[])nodeIdsMap.keySet().toArray(new Node[0]);
+        if (shouldSort) {
+            Arrays.sort(nodes, new Comparator<Node>() {
+                public int compare(Node o1, Node o2) {
+                    return StringUtils.dictionaryCompare((o1).getColumnText(0), (o2).getColumnText(0));
+                }
+            });
+        }
+        for (Node node : nodes) {
+            node.ids = toLongArray((Collection<Long>)nodeIdsMap.getCollection(node));
+            // add quick value if applicable
+            if (node.ids.length == 1 && !collector && StringUtils.isEmpty(node.value) &&
+                (!(node instanceof ModuleNameNode) || ((ModuleNameNode)node).leaf))
+            {
+                ResultItem resultItem = manager.getItem(node.ids[0]);
+                node.value = getResultItemShortDescription(resultItem);
+            }
+        }
+        return nodes;
+    }
+
+    protected static long[] toLongArray(Collection<Long> c) {
+        long[] a = new long[c.size()];
+        Iterator<Long> it = c.iterator();
+        for (int i = 0; i < c.size(); i++)
+            a[i] = (Long)it.next();
+        return a;
+    }
+
+    protected String toIntegerAwareString(double value, boolean isIntegerType) {
+        if (!isIntegerType || Double.isInfinite(value) || Double.isNaN(value) || Math.floor(value) != value)
+            return formatNumber(value);
+        else
+            return String.valueOf((long)value);
     }
 
     protected String formatNumber(double d) {
