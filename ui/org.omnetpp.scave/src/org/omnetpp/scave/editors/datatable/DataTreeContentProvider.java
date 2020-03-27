@@ -139,9 +139,10 @@ public class DataTreeContentProvider {
         return nodes;
     }
 
-    public Node[] computeChildren(List<Node> path) throws Exception {
-        Map<Node,IDList> nodeIdsMap = new LinkedHashMap<>(); // preserve insertion order of children
+    public Node[] computeChildren(List<Node> pathx) throws Exception {
         Node firstNode = path.size() == 0 ? null : path.get(0);
+
+        // determine currentLevelIndex
         int currentLevelIndex;
         if (firstNode == null)
             currentLevelIndex = -1;
@@ -150,6 +151,8 @@ public class DataTreeContentProvider {
             if (currentLevelIndex == -1)
                 return new Node[0];
         }
+
+        // determine nextLevelIndex
         int nextLevelIndex;
         if (firstNode instanceof ModuleNameNode) {
             ModuleNameNode moduleNameNode = (ModuleNameNode)firstNode;
@@ -157,11 +160,18 @@ public class DataTreeContentProvider {
         }
         else
             nextLevelIndex = currentLevelIndex + 1;
+
+        // determine collector, whatever TF it is
         boolean collector = false;
         for (int j = nextLevelIndex + 1; j < levels.length; j++)
             if (!levels[j].equals(ResultItemAttributeNode.class))
                 collector = true;
+
+        // this is how we want the IDList to split up
         Class<? extends Node> nextLevelClass = nextLevelIndex < levels.length ? levels[nextLevelIndex] : null;
+
+        // sort the IDs into different child nodes, according to nextLevelClass
+        Map<Node,IDList> nodeIdsMap = new LinkedHashMap<>(); // preserve insertion order of children
         boolean shouldSort = true;
         if (nextLevelClass != null) {
             IDList currentLevelIdList = firstNode == null ? idList : firstNode.ids;
@@ -394,6 +404,9 @@ public class DataTreeContentProvider {
         return resultItem.getClass().getSimpleName().replaceAll("Result", "").toLowerCase();
     }
 
+    /**
+     * This class apparently doesn't do much, it just caches the results of various getters.
+     */
     protected static class MatchContext {
         private ResultFileManager manager;
         private long id;
