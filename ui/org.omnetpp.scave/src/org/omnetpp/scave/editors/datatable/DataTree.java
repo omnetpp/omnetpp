@@ -39,7 +39,7 @@ import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 
 /**
- * This is a class that Levy didn't have time to document :)
+ * Tree control for the Browse Data page.
  *
  * @author Levy
  */
@@ -82,11 +82,10 @@ public class DataTree extends Tree implements IDataControl {
     }
 
     public void setLevels(Class<? extends Node>[] levels) {
-        IDList idList = getSelectedIDs();
+        // note: selection will be lost, because restoring it using setSelectedIDs(idList) would be very slow
         contentProvider.setLevels(levels);
         savePreferences();
         refresh();
-        setSelectedIDs(idList);
     }
 
     public FlatModuleTreeAction getFlatModuleTreeAction() {
@@ -156,7 +155,7 @@ public class DataTree extends Tree implements IDataControl {
             for (TreeItem treeItem : treeItems) {
                 Node node = (Node)treeItem.getData();
                 if (node != null && node.ids != null)
-                    resultIdList.merge(node.ids); //TODO that's not cheap! make C++ method that just blindly appends!!!
+                    resultIdList.append(node.ids);
             }
             return resultIdList;
         });
@@ -226,6 +225,10 @@ public class DataTree extends Tree implements IDataControl {
     }
 
     public void setSelectedIDs(IDList ids) {
+        //
+        // NOTE: THIS FUNCTION HAS VERY POOR RUNTIME PERFORMANCE -- DO *NOT* USE IT IF POSSIBLE!
+        //
+        int timeLimitMillis = 1000;
         ArrayList<TreeItem> treeItems = new ArrayList<TreeItem>();
         long begin = System.currentTimeMillis();
         // find the topmost tree items that cover the whole idList set, but not more
@@ -241,7 +244,7 @@ public class DataTree extends Tree implements IDataControl {
                     ids.subtract(node.ids);
             }
             // don't spend to much time on it, because the gui becomes unresponsive and it's not worth it
-            if (System.currentTimeMillis() - begin > 5000)
+            if (System.currentTimeMillis() - begin > timeLimitMillis)
                 break;
         }
         setSelection(treeItems.toArray(new TreeItem[0]));
