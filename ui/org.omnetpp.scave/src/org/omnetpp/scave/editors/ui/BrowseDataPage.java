@@ -409,7 +409,7 @@ public class BrowseDataPage extends FormEditorPage {
             IDataControl control = panel.getDataControl();
             IDList idList = Debug.timed("Getting selected IDs", 1, () -> control.getSelectedIDs());
             if (idList == null)
-                idList = IDList.EMPTY;
+                idList = new IDList();
             scaveEditor.setSelection(new IDListSelection(idList, control.getResultFileManager()));
 
             Debug.time("Updating filter", 1, () -> setFilterAction.update(panel));

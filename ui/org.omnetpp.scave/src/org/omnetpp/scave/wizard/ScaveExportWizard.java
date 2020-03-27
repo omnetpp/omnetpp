@@ -70,7 +70,7 @@ import com.swtworkbench.community.xswt.XSWT;
  * @author andras
  */
 public class ScaveExportWizard extends Wizard implements IExportWizard {
-    protected IDList selectedIDs = IDList.EMPTY;
+    protected IDList selectedIDs;
     protected int selectionItemTypes;
     protected ResultFileManager resultFileManager;
     protected Page page;
