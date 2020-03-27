@@ -2,12 +2,12 @@ package org.omnetpp.scave.pychart;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Map;
 
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.OmnetppDirs;
-import org.omnetpp.common.util.StringUtils;
 
 import py4j.ClientServer;
 
@@ -84,9 +84,25 @@ public class PythonProcessPool {
     }
 
     private String extendPythonPath(String oldPythonPath) {
-        String pychartPluginLocation  = PyChartPlugin.getDefault().getBundle().getLocation();
-        pychartPluginLocation = StringUtils.removeOptionalPrefix(pychartPluginLocation, "reference:");
-        pychartPluginLocation = StringUtils.removeOptionalPrefix(pychartPluginLocation, "file:");
+        // This only worked with the internal test app, and not when used from within the IDE.
+        //String pychartPluginLocation = PythonProcessPool.class.getResource("python").getPath();
+
+        // This had a "file:" and/or "resource:" prefix, was not absolute in a built release (on Windows?),
+        // and would have had to be fixed differently on macOS (because of the opp_ide.app/Contents/Eclipse directory)
+        //String pychartPluginLocation = PyChartPlugin.getDefault().getBundle().getLocation();
+
+        // This is ugly as all heck, but at least seems to work fine everywhere, everytime
+        String pychartPluginLocation = null;
+        try {
+            // TODO test on all platforms
+            pychartPluginLocation = new File(PythonProcessPool.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getAbsolutePath();
+        }
+        catch (URISyntaxException e) {
+            // I don't think this can happen, but just in case:
+            throw new RuntimeException(e);
+        }
+
+
         String locationsToPrepend = OmnetppDirs.getOmnetppPythonDir() + File.pathSeparator // the <omnetpp_root>/python dir
                 + pychartPluginLocation + File.separator + "python"; // the plugin-local python dir
 
