@@ -174,7 +174,7 @@ void CsvForSpreadsheetExporter::saveResults(const std::string& fileName, ResultF
 
     if (mixedContent && !allowMixedContent)
         throw opp_runtime_error("CSV exporter: homogeneous results expected (all scalars, all vectors, "
-                "all statistics or all histograms); set allowMixed=true to allow mixed content");
+                "all statistics, all histograms or all parameters); set allowMixed=true to allow mixed content");
 
     if (fileName == "-")
         csv.setOut(std::cout);
