@@ -207,125 +207,125 @@ public class DataTreeContentProvider {
         for (int i = 0; i < idCount; i++) {
             long id = idList.get(i);
             MatchContext matchContext = new MatchContext(manager, id);
-            if (matchesPath(path, id, matchContext)) {
-                if (nextLevelClass.equals(ExperimentNode.class))
-                    add(nodeIdsMap, new ExperimentNode(matchContext.getRunAttribute(RunAttribute.EXPERIMENT)), id);
-                else if (nextLevelClass.equals(MeasurementNode.class))
-                    add(nodeIdsMap, new MeasurementNode(matchContext.getRunAttribute(RunAttribute.MEASUREMENT)), id);
-                else if (nextLevelClass.equals(ReplicationNode.class))
-                    add(nodeIdsMap, new ReplicationNode(matchContext.getRunAttribute(RunAttribute.REPLICATION)), id);
-                else if (nextLevelClass.equals(ExperimentMeasurementReplicationNode.class))
-                    add(nodeIdsMap, new ExperimentMeasurementReplicationNode(matchContext.getRunAttribute(RunAttribute.EXPERIMENT), matchContext.getRunAttribute(RunAttribute.MEASUREMENT), matchContext.getRunAttribute(RunAttribute.REPLICATION)), id);
-                else if (nextLevelClass.equals(ConfigNode.class))
-                    add(nodeIdsMap, new ConfigNode(matchContext.getRunAttribute(RunAttribute.CONFIGNAME)), id);
-                else if (nextLevelClass.equals(RunNumberNode.class))
-                    add(nodeIdsMap, new RunNumberNode(matchContext.getRun().getAttribute(RunAttribute.RUNNUMBER)), id);
-                else if (nextLevelClass.equals(ConfigRunNumberNode.class))
-                    add(nodeIdsMap, new ConfigRunNumberNode(matchContext.getRunAttribute(RunAttribute.CONFIGNAME), matchContext.getRun().getAttribute(RunAttribute.RUNNUMBER)), id);
-                else if (nextLevelClass.equals(FileNameNode.class))
-                    add(nodeIdsMap, new FileNameNode(matchContext.getResultFile().getFileName()), id);
-                else if (nextLevelClass.equals(RunIdNode.class))
-                    add(nodeIdsMap, new RunIdNode(matchContext.getRun().getRunName()), id);
-                else if (nextLevelClass.equals(FileNameRunIdNode.class))
-                    add(nodeIdsMap, new FileNameRunIdNode(matchContext.getResultFile().getFileName(), matchContext.getRun().getRunName()), id);
-                else if (nextLevelClass.equals(ModuleNameNode.class)) {
-                    String moduleName = matchContext.getResultItem().getModuleName();
-                    String modulePrefix = getModulePrefix(path, null);
-                    if (moduleName.startsWith(modulePrefix)) {
-                        String remainingName = StringUtils.removeStart(StringUtils.removeStart(moduleName, modulePrefix), ".");
-                        String name = StringUtils.substringBefore(remainingName, ".");
-                        add(nodeIdsMap, new ModuleNameNode(StringUtils.isEmpty(name) ? "." : name, !remainingName.contains(".")), id);
-                    }
+            if (!matchesPath(path, id, matchContext))
+                continue;
+            if (nextLevelClass.equals(ExperimentNode.class))
+                add(nodeIdsMap, new ExperimentNode(matchContext.getRunAttribute(RunAttribute.EXPERIMENT)), id);
+            else if (nextLevelClass.equals(MeasurementNode.class))
+                add(nodeIdsMap, new MeasurementNode(matchContext.getRunAttribute(RunAttribute.MEASUREMENT)), id);
+            else if (nextLevelClass.equals(ReplicationNode.class))
+                add(nodeIdsMap, new ReplicationNode(matchContext.getRunAttribute(RunAttribute.REPLICATION)), id);
+            else if (nextLevelClass.equals(ExperimentMeasurementReplicationNode.class))
+                add(nodeIdsMap, new ExperimentMeasurementReplicationNode(matchContext.getRunAttribute(RunAttribute.EXPERIMENT), matchContext.getRunAttribute(RunAttribute.MEASUREMENT), matchContext.getRunAttribute(RunAttribute.REPLICATION)), id);
+            else if (nextLevelClass.equals(ConfigNode.class))
+                add(nodeIdsMap, new ConfigNode(matchContext.getRunAttribute(RunAttribute.CONFIGNAME)), id);
+            else if (nextLevelClass.equals(RunNumberNode.class))
+                add(nodeIdsMap, new RunNumberNode(matchContext.getRun().getAttribute(RunAttribute.RUNNUMBER)), id);
+            else if (nextLevelClass.equals(ConfigRunNumberNode.class))
+                add(nodeIdsMap, new ConfigRunNumberNode(matchContext.getRunAttribute(RunAttribute.CONFIGNAME), matchContext.getRun().getAttribute(RunAttribute.RUNNUMBER)), id);
+            else if (nextLevelClass.equals(FileNameNode.class))
+                add(nodeIdsMap, new FileNameNode(matchContext.getResultFile().getFileName()), id);
+            else if (nextLevelClass.equals(RunIdNode.class))
+                add(nodeIdsMap, new RunIdNode(matchContext.getRun().getRunName()), id);
+            else if (nextLevelClass.equals(FileNameRunIdNode.class))
+                add(nodeIdsMap, new FileNameRunIdNode(matchContext.getResultFile().getFileName(), matchContext.getRun().getRunName()), id);
+            else if (nextLevelClass.equals(ModuleNameNode.class)) {
+                String moduleName = matchContext.getResultItem().getModuleName();
+                String modulePrefix = getModulePrefix(path, null);
+                if (moduleName.startsWith(modulePrefix)) {
+                    String remainingName = StringUtils.removeStart(StringUtils.removeStart(moduleName, modulePrefix), ".");
+                    String name = StringUtils.substringBefore(remainingName, ".");
+                    add(nodeIdsMap, new ModuleNameNode(StringUtils.isEmpty(name) ? "." : name, !remainingName.contains(".")), id);
                 }
-                else if (nextLevelClass.equals(ModulePathNode.class))
-                    add(nodeIdsMap, new ModulePathNode(matchContext.getResultItem().getModuleName()), id);
-                else if (nextLevelClass.equals(ResultItemNode.class)) {
-                    if (collector)
-                        add(nodeIdsMap, new ResultItemNode(manager, -1, matchContext.getResultItem().getName()), id);
-                    else
-                        add(nodeIdsMap, new ResultItemNode(manager, id, null), id);
+            }
+            else if (nextLevelClass.equals(ModulePathNode.class))
+                add(nodeIdsMap, new ModulePathNode(matchContext.getResultItem().getModuleName()), id);
+            else if (nextLevelClass.equals(ResultItemNode.class)) {
+                if (collector)
+                    add(nodeIdsMap, new ResultItemNode(manager, -1, matchContext.getResultItem().getName()), id);
+                else
+                    add(nodeIdsMap, new ResultItemNode(manager, id, null), id);
+            }
+            else if (nextLevelClass.equals(ResultItemAttributeNode.class)) {
+                ResultItem resultItem = matchContext.getResultItem();
+                ResultItem.DataType type = resultItem.getDataType();
+                boolean isIntegerType = type == ResultItem.DataType.TYPE_INT;
+                add(nodeIdsMap, new ResultItemAttributeNode("Module name", resultItem.getModuleName()), id);
+                add(nodeIdsMap, new ResultItemAttributeNode("Type", type.toString().replaceAll("TYPE_", "").toLowerCase()), id);
+                if (resultItem instanceof ScalarResult) {
+                    ScalarResult scalar = (ScalarResult)resultItem;
+                    add(nodeIdsMap, new ResultItemAttributeNode("Value", toIntegerAwareString(scalar.getValue(), isIntegerType)), id);
                 }
-                else if (nextLevelClass.equals(ResultItemAttributeNode.class)) {
-                    ResultItem resultItem = matchContext.getResultItem();
-                    ResultItem.DataType type = resultItem.getDataType();
-                    boolean isIntegerType = type == ResultItem.DataType.TYPE_INT;
-                    add(nodeIdsMap, new ResultItemAttributeNode("Module name", resultItem.getModuleName()), id);
-                    add(nodeIdsMap, new ResultItemAttributeNode("Type", type.toString().replaceAll("TYPE_", "").toLowerCase()), id);
-                    if (resultItem instanceof ScalarResult) {
-                        ScalarResult scalar = (ScalarResult)resultItem;
-                        add(nodeIdsMap, new ResultItemAttributeNode("Value", toIntegerAwareString(scalar.getValue(), isIntegerType)), id);
-                    }
-                    else if (resultItem instanceof VectorResult) {
-                        VectorResult vector = (VectorResult)resultItem;
-                        Statistics stat = vector.getStatistics();
-                        add(nodeIdsMap, new ResultItemAttributeNode("Count", String.valueOf(stat.getCount())), id);
-                        add(nodeIdsMap, new ResultItemAttributeNode("Mean", formatNumber(stat.getMean())), id);
-                        add(nodeIdsMap, new ResultItemAttributeNode("StdDev", formatNumber(stat.getStddev())), id);
-                        //add(nodeIdsMap, new ResultItemAttributeNode("Variance", formatNumber(stat.getVariance())), id);
-                        add(nodeIdsMap, new ResultItemAttributeNode("Min", toIntegerAwareString(stat.getMin(), isIntegerType)), id);
-                        add(nodeIdsMap, new ResultItemAttributeNode("Max", toIntegerAwareString(stat.getMax(), isIntegerType)), id);
-                        add(nodeIdsMap, new ResultItemAttributeNode("Start event number", String.valueOf(vector.getStartEventNum())), id);
-                        add(nodeIdsMap, new ResultItemAttributeNode("End event number", String.valueOf(vector.getEndEventNum())), id);
-                        add(nodeIdsMap, new ResultItemAttributeNode("Start time", formatNumber(vector.getStartTime())), id);
-                        add(nodeIdsMap, new ResultItemAttributeNode("End time", formatNumber(vector.getEndTime())), id);
-                    }
-                    else if (resultItem instanceof StatisticsResult) {
-                        StatisticsResult statistics = (StatisticsResult)resultItem;
-                        Statistics stat = statistics.getStatistics();
-                        add(nodeIdsMap, new ResultItemAttributeNode("Kind", (stat.isWeighted() ? "weighted" : "unweighted")), id);
-                        add(nodeIdsMap, new ResultItemAttributeNode("Count", String.valueOf(stat.getCount())), id);
-                        add(nodeIdsMap, new ResultItemAttributeNode("Sum of weights", formatNumber(stat.getSumWeights())), id);
-                        add(nodeIdsMap, new ResultItemAttributeNode("Mean", formatNumber(stat.getMean())), id);
-                        add(nodeIdsMap, new ResultItemAttributeNode("StdDev", formatNumber(stat.getStddev())), id);
-                        add(nodeIdsMap, new ResultItemAttributeNode("Min", toIntegerAwareString(stat.getMin(), isIntegerType)), id);
-                        add(nodeIdsMap, new ResultItemAttributeNode("Max", toIntegerAwareString(stat.getMax(), isIntegerType)), id);
+                else if (resultItem instanceof VectorResult) {
+                    VectorResult vector = (VectorResult)resultItem;
+                    Statistics stat = vector.getStatistics();
+                    add(nodeIdsMap, new ResultItemAttributeNode("Count", String.valueOf(stat.getCount())), id);
+                    add(nodeIdsMap, new ResultItemAttributeNode("Mean", formatNumber(stat.getMean())), id);
+                    add(nodeIdsMap, new ResultItemAttributeNode("StdDev", formatNumber(stat.getStddev())), id);
+                    //add(nodeIdsMap, new ResultItemAttributeNode("Variance", formatNumber(stat.getVariance())), id);
+                    add(nodeIdsMap, new ResultItemAttributeNode("Min", toIntegerAwareString(stat.getMin(), isIntegerType)), id);
+                    add(nodeIdsMap, new ResultItemAttributeNode("Max", toIntegerAwareString(stat.getMax(), isIntegerType)), id);
+                    add(nodeIdsMap, new ResultItemAttributeNode("Start event number", String.valueOf(vector.getStartEventNum())), id);
+                    add(nodeIdsMap, new ResultItemAttributeNode("End event number", String.valueOf(vector.getEndEventNum())), id);
+                    add(nodeIdsMap, new ResultItemAttributeNode("Start time", formatNumber(vector.getStartTime())), id);
+                    add(nodeIdsMap, new ResultItemAttributeNode("End time", formatNumber(vector.getEndTime())), id);
+                }
+                else if (resultItem instanceof StatisticsResult) {
+                    StatisticsResult statistics = (StatisticsResult)resultItem;
+                    Statistics stat = statistics.getStatistics();
+                    add(nodeIdsMap, new ResultItemAttributeNode("Kind", (stat.isWeighted() ? "weighted" : "unweighted")), id);
+                    add(nodeIdsMap, new ResultItemAttributeNode("Count", String.valueOf(stat.getCount())), id);
+                    add(nodeIdsMap, new ResultItemAttributeNode("Sum of weights", formatNumber(stat.getSumWeights())), id);
+                    add(nodeIdsMap, new ResultItemAttributeNode("Mean", formatNumber(stat.getMean())), id);
+                    add(nodeIdsMap, new ResultItemAttributeNode("StdDev", formatNumber(stat.getStddev())), id);
+                    add(nodeIdsMap, new ResultItemAttributeNode("Min", toIntegerAwareString(stat.getMin(), isIntegerType)), id);
+                    add(nodeIdsMap, new ResultItemAttributeNode("Max", toIntegerAwareString(stat.getMax(), isIntegerType)), id);
 
-                        if (resultItem instanceof HistogramResult) {
-                            HistogramResult histogram = (HistogramResult)resultItem;
-                            Histogram hist = histogram.getHistogram();
+                    if (resultItem instanceof HistogramResult) {
+                        HistogramResult histogram = (HistogramResult)resultItem;
+                        Histogram hist = histogram.getHistogram();
 
-                            add(nodeIdsMap, new ResultItemAttributeNode("Underflows", toIntegerAwareString(hist.getUnderflows(), isIntegerType)), id);
-                            add(nodeIdsMap, new ResultItemAttributeNode("Overflows", toIntegerAwareString(hist.getOverflows(), isIntegerType)), id);
+                        add(nodeIdsMap, new ResultItemAttributeNode("Underflows", toIntegerAwareString(hist.getUnderflows(), isIntegerType)), id);
+                        add(nodeIdsMap, new ResultItemAttributeNode("Overflows", toIntegerAwareString(hist.getOverflows(), isIntegerType)), id);
 
-                            DoubleVector binEdges = hist.getBinEdges();
-                            DoubleVector binValues = hist.getBinValues();
-                            if (binEdges.size() > 0 && binValues.size() > 0) {
-                                int numBins = hist.getNumBins();
-                                ResultItemAttributeNode binsNode = new ResultItemAttributeNode("Bins", String.valueOf(numBins));
-                                List<Node> list = new ArrayList<Node>();
-                                for (int j = 0; j < numBins; j++) {
-                                    double lowerBound = binEdges.get(j);
-                                    double upperBound = binEdges.get(j+1);
-                                    double value = binValues.get(j);
-                                    String name = "[" + toIntegerAwareString(lowerBound, isIntegerType) + ", ";
-                                    if (isIntegerType)
-                                        name += toIntegerAwareString(upperBound-1, isIntegerType) + "]";
-                                    else
-                                        name += formatNumber(upperBound) + ")";
-                                    list.add(new NameValueNode(name, toIntegerAwareString(value, true)));
-                                }
-                                binsNode.children = list.toArray(new Node[0]);
-                                add(nodeIdsMap, binsNode, id);
+                        DoubleVector binEdges = hist.getBinEdges();
+                        DoubleVector binValues = hist.getBinValues();
+                        if (binEdges.size() > 0 && binValues.size() > 0) {
+                            int numBins = hist.getNumBins();
+                            ResultItemAttributeNode binsNode = new ResultItemAttributeNode("Bins", String.valueOf(numBins));
+                            List<Node> list = new ArrayList<Node>();
+                            for (int j = 0; j < numBins; j++) {
+                                double lowerBound = binEdges.get(j);
+                                double upperBound = binEdges.get(j+1);
+                                double value = binValues.get(j);
+                                String name = "[" + toIntegerAwareString(lowerBound, isIntegerType) + ", ";
+                                if (isIntegerType)
+                                    name += toIntegerAwareString(upperBound-1, isIntegerType) + "]";
+                                else
+                                    name += formatNumber(upperBound) + ")";
+                                list.add(new NameValueNode(name, toIntegerAwareString(value, true)));
                             }
+                            binsNode.children = list.toArray(new Node[0]);
+                            add(nodeIdsMap, binsNode, id);
                         }
                     }
-                    else if (resultItem instanceof ParameterResult) {
-                        ParameterResult parameter = (ParameterResult)resultItem;
-                        add(nodeIdsMap, new ResultItemAttributeNode("Value", parameter.getValue()), id);
-                    }
-                    else {
-                        throw new IllegalArgumentException();
-                    }
-                    StringMap attributes = resultItem.getAttributes();
-                    StringVector keys = attributes.keys();
-                    for (int j = 0; j < keys.size(); j++) {
-                        String key = keys.get(j);
-                        add(nodeIdsMap, new ResultItemAttributeNode(StringUtils.capitalize(key), attributes.get(key)), id);
-                    }
                 }
-                else
+                else if (resultItem instanceof ParameterResult) {
+                    ParameterResult parameter = (ParameterResult)resultItem;
+                    add(nodeIdsMap, new ResultItemAttributeNode("Value", parameter.getValue()), id);
+                }
+                else {
                     throw new IllegalArgumentException();
+                }
+                StringMap attributes = resultItem.getAttributes();
+                StringVector keys = attributes.keys();
+                for (int j = 0; j < keys.size(); j++) {
+                    String key = keys.get(j);
+                    add(nodeIdsMap, new ResultItemAttributeNode(StringUtils.capitalize(key), attributes.get(key)), id);
+                }
             }
+            else
+                throw new IllegalArgumentException();
         }
         return nodeIdsMap;
     }
