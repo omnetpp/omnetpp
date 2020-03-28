@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <utility>
 #include <functional>
+#include <unordered_set>
 #include "common/opp_ctype.h"
 #include "common/matchexpression.h"
 #include "common/patternmatcher.h"
@@ -336,22 +337,44 @@ const ResultItem& ResultFileManager::getItem(ID id) const
 ResultFileList *ResultFileManager::getUniqueFiles(const IDList& ids) const
 {
     READER_MUTEX
-    // collect unique runs in this dataset
-    std::set<ResultFile *> set;
-    for (int i = 0; i < ids.size(); i++)
-        set.insert(getItem(ids.get(i)).getFile());
 
-    // convert to list for easier handling at recipient
-    return new ResultFileList(set.begin(), set.end());
+    // collect just unique fileIds first, to avoid dereferences at each ID
+    std::set<int> fileIds;
+    int lastFileId = -1;
+    for (ID id : ids) {
+        int fileId = _fileid(id);
+        if (fileId != lastFileId) {
+            fileIds.insert(fileId);
+            lastFileId = fileId;
+        }
+    }
+
+    // convert set to ResultFileList
+    ResultFileList *result = new ResultFileList();
+    result->reserve(fileIds.size());
+    for (int fileId : fileIds) {
+        ResultFile *file = fileList.at(fileId);
+        if (!file)
+            throw opp_runtime_error("ResultFileManager::getUniqueFiles(): stale ID in input IDList");
+        result->push_back(file);
+    }
+    return result;
 }
 
 RunList *ResultFileManager::getUniqueRuns(const IDList& ids) const
 {
     READER_MUTEX
+
     // collect unique runs in this dataset
     std::set<Run *> set;
-    for (int i = 0; i < ids.size(); i++)
-        set.insert(getItem(ids.get(i)).getRun());
+    Run *lastRun = nullptr;
+    for (int i = 0; i < ids.size(); i++) {
+        Run *run = getItem(ids.get(i)).getRun();
+        if (run != lastRun) {
+            set.insert(run);
+            lastRun = run;
+        }
+    }
 
     // convert to list for easier handling at recipient
     return new RunList(set.begin(), set.end());
@@ -360,10 +383,19 @@ RunList *ResultFileManager::getUniqueRuns(const IDList& ids) const
 FileRunList *ResultFileManager::getUniqueFileRuns(const IDList& ids) const
 {
     READER_MUTEX
+
+    //TODO for further performance boost of getUniqueXXX() methods, let IDs contain FileRun indices, and collect unique fileRun indices from IDList first, as getUniqueFiles() does now
+
     // collect unique FileRuns in this dataset
     std::set<FileRun *> set;
-    for (int i = 0; i < ids.size(); i++)
-        set.insert(getItem(ids.get(i)).getFileRun());
+    FileRun *lastFileRun = nullptr;
+    for (int i = 0; i < ids.size(); i++) {
+        FileRun *fileRun = getItem(ids.get(i)).getFileRun();
+        if (fileRun != lastFileRun) {
+            set.insert(fileRun);
+            lastFileRun = fileRun;
+        }
+    }
 
     // convert to list for easier handling at recipient
     return new FileRunList(set.begin(), set.end());
