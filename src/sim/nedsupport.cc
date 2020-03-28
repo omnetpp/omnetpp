@@ -198,7 +198,7 @@ ExprValue ParameterRef::evaluate(Context *context_) const
 
 void ParameterRef::print(std::ostream& out, int spaciousness) const
 {
-    out << (ofThis ? "this." : "") << paramName << ")";
+    out << (ofThis ? "this." : "") << paramName;
 }
 
 //----
