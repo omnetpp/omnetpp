@@ -25,8 +25,11 @@ import org.omnetpp.scave.engine.FileRun;
 import org.omnetpp.scave.engine.Histogram;
 import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.IDListsByFile;
+import org.omnetpp.scave.engine.IDListsByRun;
 import org.omnetpp.scave.engine.ParameterResult;
 import org.omnetpp.scave.engine.ResultFile;
+import org.omnetpp.scave.engine.ResultFileList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.Run;
@@ -208,62 +211,59 @@ public class DataTreeContentProvider {
 
         Class[] runFilterClasses = {
                 ExperimentNode.class, MeasurementNode.class, ReplicationNode.class, ExperimentMeasurementReplicationNode.class,
-                ConfigNode.class, RunNumberNode.class, ConfigRunNumberNode.class, FileNameNode.class, RunIdNode.class, FileNameRunIdNode.class
+                ConfigNode.class, RunNumberNode.class, ConfigRunNumberNode.class, RunIdNode.class
         };
 
         if (ArrayUtils.contains(runFilterClasses, nextLevelClass)) {
-            RunList runList = Debug.timed("getUniqueRuns", 1, () -> manager.getUniqueRuns(idList));
+            // filter only refers to run attributes, so it makes sense to filter the runs instead of individual IDs
+            IDListsByRun idListsByRun = Debug.timed("getPartitionByRun", 1, () -> manager.getPartitionByRun(idList));
+            RunList runList = idListsByRun.getRuns();
             int numRuns = (int)runList.size();
             Debug.time("Classifying runs", 1, () -> {
-            for (int i =0 ; i < numRuns; i++) {
-                Run run = runList.get(i);
-                IDList idsInRun = manager.filterIDList(idList, run, null,  null); //TODO this is terribly slow if we do it for each run!
-                if (nextLevelClass.equals(ExperimentNode.class))
-                    add(nodeIdsMap, new ExperimentNode(run.getAttribute(RunAttribute.EXPERIMENT)), idsInRun);
-                else if (nextLevelClass.equals(MeasurementNode.class))
-                    add(nodeIdsMap, new MeasurementNode(run.getAttribute(RunAttribute.MEASUREMENT)), idsInRun);
-                else if (nextLevelClass.equals(ReplicationNode.class))
-                    add(nodeIdsMap, new ReplicationNode(run.getAttribute(RunAttribute.REPLICATION)), idsInRun);
-                else if (nextLevelClass.equals(ExperimentMeasurementReplicationNode.class))
-                    add(nodeIdsMap, new ExperimentMeasurementReplicationNode(run.getAttribute(RunAttribute.EXPERIMENT), run.getAttribute(RunAttribute.MEASUREMENT), run.getAttribute(RunAttribute.REPLICATION)), idsInRun);
-                else if (nextLevelClass.equals(ConfigNode.class))
-                    add(nodeIdsMap, new ConfigNode(run.getAttribute(RunAttribute.CONFIGNAME)), idsInRun);
-                else if (nextLevelClass.equals(RunNumberNode.class))
-                    add(nodeIdsMap, new RunNumberNode(run.getAttribute(RunAttribute.RUNNUMBER)), idsInRun);
-                else if (nextLevelClass.equals(ConfigRunNumberNode.class))
-                    add(nodeIdsMap, new ConfigRunNumberNode(run.getAttribute(RunAttribute.CONFIGNAME), run.getAttribute(RunAttribute.RUNNUMBER)), idsInRun);
-                else if (nextLevelClass.equals(RunIdNode.class))
-                    add(nodeIdsMap, new RunIdNode(run.getRunName()), idsInRun);
-
-            }
-            });
-
-            Debug.time("Looping over IDList", 1, () -> {
-            for (int i = 0; i < idCount; i++) {
-                long id = idList.get(i);
-                Run run = manager.getItem(id).getRun();
-            }
+                for (int i = 0 ; i < numRuns; i++) {
+                    Run run = runList.get(i);
+                    IDList idsInRun = idListsByRun.getIDList(run);
+                    if (nextLevelClass.equals(ExperimentNode.class))
+                        add(nodeIdsMap, new ExperimentNode(run.getAttribute(RunAttribute.EXPERIMENT)), idsInRun);
+                    else if (nextLevelClass.equals(MeasurementNode.class))
+                        add(nodeIdsMap, new MeasurementNode(run.getAttribute(RunAttribute.MEASUREMENT)), idsInRun);
+                    else if (nextLevelClass.equals(ReplicationNode.class))
+                        add(nodeIdsMap, new ReplicationNode(run.getAttribute(RunAttribute.REPLICATION)), idsInRun);
+                    else if (nextLevelClass.equals(ExperimentMeasurementReplicationNode.class))
+                        add(nodeIdsMap, new ExperimentMeasurementReplicationNode(run.getAttribute(RunAttribute.EXPERIMENT), run.getAttribute(RunAttribute.MEASUREMENT), run.getAttribute(RunAttribute.REPLICATION)), idsInRun);
+                    else if (nextLevelClass.equals(ConfigNode.class))
+                        add(nodeIdsMap, new ConfigNode(run.getAttribute(RunAttribute.CONFIGNAME)), idsInRun);
+                    else if (nextLevelClass.equals(RunNumberNode.class))
+                        add(nodeIdsMap, new RunNumberNode(run.getAttribute(RunAttribute.RUNNUMBER)), idsInRun);
+                    else if (nextLevelClass.equals(ConfigRunNumberNode.class))
+                        add(nodeIdsMap, new ConfigRunNumberNode(run.getAttribute(RunAttribute.CONFIGNAME), run.getAttribute(RunAttribute.RUNNUMBER)), idsInRun);
+                    else if (nextLevelClass.equals(RunIdNode.class))
+                        add(nodeIdsMap, new RunIdNode(run.getRunName()), idsInRun);
+                }
             });
 
         }
+        else if (nextLevelClass.equals(FileNameNode.class)) {
+            // partition by file
+            IDListsByFile idListsByFile = Debug.timed("getPartitionByFile", 1, () -> manager.getPartitionByFile(idList));
+            ResultFileList fileList = idListsByFile.getFiles();
+            int numFiles = (int)fileList.size();
+            Debug.time("Classifying files", 1, () -> {
+                for (int i = 0 ; i < numFiles; i++) {
+                    ResultFile file = fileList.get(i);
+                    IDList idsInFile = idListsByFile.getIDList(file);
+                    add(nodeIdsMap, new FileNameNode(file.getFileName()), idsInFile);
+                }
+            });
+        }
         else {
-
-//TODO: by file name!!!
-//      else if (nextLevelClass.equals(FileNameNode.class))
-//      add(nodeIdsMap, new FileNameNode(run.getResultFile().getFileName()), id);
-//  else if (nextLevelClass.equals(FileNameRunIdNode.class))
-//      add(nodeIdsMap, new FileNameRunIdNode(matchContext.getResultFile().getFileName(), matchContext.getRun().getRunName()), id);
-
+            // filter individual IDs
             for (int i = 0; i < idCount; i++) {
                 long id = idList.get(i);
                 MatchContext matchContext = new MatchContext(manager, id);
-                //TODO remove:
-                //            if (!matchesPath(path, id, matchContext)) {
-                //              String resultName = matchContext.getResultItem().getModuleName() + "/" + matchContext.getResultItem().getName();
-                //              System.out.println("WARNING: RESULT " + resultName + " DOESNT MATCH PATH " + StringUtils.join(path.toArray(), ":"));
-                //                continue;
-                //            }
-                if (nextLevelClass.equals(ModuleNameNode.class)) {
+                if (nextLevelClass.equals(FileNameRunIdNode.class)) // this one should be done by partitioning by FileRuns, but we don't care, this isn't a very useful classification
+                    add(nodeIdsMap, new FileNameRunIdNode(matchContext.getResultFile().getFileName(), matchContext.getRun().getRunName()), id);
+                else if (nextLevelClass.equals(ModuleNameNode.class)) {
                     String moduleName = matchContext.getResultItem().getModuleName();
                     String modulePrefix = getModulePrefix(path, null);
                     if (moduleName.startsWith(modulePrefix)) {
