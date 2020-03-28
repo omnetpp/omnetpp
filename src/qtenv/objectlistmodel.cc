@@ -15,9 +15,12 @@
 *--------------------------------------------------------------*/
 
 #include "objectlistmodel.h"
-#include "qtenv.h"
+
+#include <algorithm>
 
 #include <QDebug>
+
+#include "qtenv.h"
 
 namespace omnetpp {
 namespace qtenv {
@@ -43,7 +46,7 @@ void ObjectListModel::sort(int i, Qt::SortOrder order)
     lastSortOrder = order;
 
     beginResetModel();
-    qSort(objects.begin(), objects.end(),
+    std::sort(objects.begin(), objects.end(),
           [i, order](cObject *arg1, cObject *arg2) -> bool {
               QString first, second;
               switch(i) {
