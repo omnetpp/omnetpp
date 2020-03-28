@@ -30,6 +30,7 @@
 #include "common/commonutil.h"
 #include "common/statistics.h"
 #include "common/histogram.h"
+#include "common/stlutil.h" // keys() etc
 #include "idlist.h"
 #include "enumtype.h"
 #include "scaveutils.h"
@@ -253,6 +254,16 @@ typedef std::vector<HistogramResult> HistogramResults;
 typedef std::vector<Run*> RunList;
 typedef std::vector<ResultFile*> ResultFileList;
 typedef std::vector<FileRun *> FileRunList;
+
+class SCAVE_API IDListsByRun {
+  private:
+    std::map<Run*,IDList> map;
+  public:
+    IDListsByRun() {} // required by swig
+    IDListsByRun(std::map<Run*,IDList>& map) {this->map = std::move(map);}
+    RunList getRuns() {return omnetpp::common::keys(map);}
+    IDList& getIDList(Run *run) {return map.at(run);}
+};
 
 /**
  * Represents a loaded scalar or vector file.
@@ -514,6 +525,7 @@ class SCAVE_API ResultFileManager
     StringSet *getUniqueConfigKeys(const RunList *runList) const;
     StringSet *getUniqueConfigValues(const RunList& runList, const char *key) const;
     StringSet *getUniqueParamAssignmentKeys(const RunList *runList) const;
+    IDListsByRun getPartitionByRun(const IDList& ids) const;
 
     // getting lists of data items
     IDList getAllScalars(bool includeFields = true, bool includeItervars = true) const;

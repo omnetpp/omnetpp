@@ -23,7 +23,6 @@
 #include <algorithm>
 #include <utility>
 #include <functional>
-#include <unordered_set>
 #include "common/opp_ctype.h"
 #include "common/matchexpression.h"
 #include "common/patternmatcher.h"
@@ -379,6 +378,26 @@ RunList *ResultFileManager::getUniqueRuns(const IDList& ids) const
     // convert to list for easier handling at recipient
     return new RunList(set.begin(), set.end());
 }
+
+IDListsByRun ResultFileManager::getPartitionByRun(const IDList& ids) const
+{
+    READER_MUTEX
+
+    std::map<Run*,IDList> map;
+    Run *lastRun = nullptr;
+    IDList *lastRunIDList = nullptr;
+    for (int i = 0; i < ids.size(); i++) {
+        ID id = ids.get(i);
+        Run *run = getItem(id).getRun();
+        if (run != lastRun) {
+            lastRun = run;
+            lastRunIDList = &map[run];
+        }
+        lastRunIDList->append(id);
+    }
+    return IDListsByRun(map);
+}
+
 
 FileRunList *ResultFileManager::getUniqueFileRuns(const IDList& ids) const
 {

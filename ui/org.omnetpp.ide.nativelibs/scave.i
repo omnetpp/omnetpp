@@ -75,6 +75,9 @@ USE_COMMON_ENGINE_ILOCK();
 
 %include "map_oldapi.i" // needed for SWIG >=4.0 so we still have the 3.x functions
 
+// If there're wrappers (SwigValueWrapper) in the generated code, the following will help: 
+//%feature("novaluewrapper") omnetpp::scave::IDListsByRun;
+
 namespace std {
    %typemap(javacode) vector<string> %{
        public String[] toArray() {
@@ -168,6 +171,8 @@ namespace std {
    %template(StringVector) vector<string>;
    //specialize_std_map_on_both(string,,,,string,,,);
    %template(StringMap) map<string,string>;
+
+   //TODO take the following stuff out of namepace std{}!!!
 
    %template(IDVector) vector<omnetpp::scave::ID>;
    %template(IDVectorVector) vector<vector<omnetpp::scave::ID> >;
@@ -488,6 +493,7 @@ CHECK_RESULTFILE_FORMAT_EXCEPTION(ResultFileManager::loadFile)
 %newobject ResultFileManager::getUniqueAttributeValues(const IDList &, const char *) const;
 %newobject ResultFileManager::getUniqueRunAttributeValues(const RunList&, const char *) const;
 %newobject ResultFileManager::getUniqueModuleParamValues(const RunList&, const char *) const;
+//TODO!!!
 
 %newobject ResultFileManager::getFileAndRunNumberFilterHints(const IDList&) const;
 %newobject ResultFileManager::getFilePathFilterHints(const ResultFileList&) const;
