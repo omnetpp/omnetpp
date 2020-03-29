@@ -273,7 +273,6 @@ class SCAVE_API ResultFile
     friend class OmnetppResultFileLoader;
     friend class SqliteResultFileLoader;
     friend class ResultFileManager;
-    friend class DataSorter; // due to ScalarResults[] etc
 
   public:
     enum FileType { FILETYPE_OMNETPP, FILETYPE_SQLITE };
@@ -508,23 +507,21 @@ class SCAVE_API ResultFileManager
 
     // the following are needed for filter combos
     // Note: their return value is allocated with new and callers should delete them
-    //FIXME why these functions return bloody pointers???
-    //TODO move these group down, next to the getXXXFilterHints() methods
-    ResultFileList *getUniqueFiles(const IDList& ids) const;
-    RunList *getUniqueRuns(const IDList& ids) const;
-    FileRunList *getUniqueFileRuns(const IDList& ids) const;
-    StringSet *getUniqueModuleNames(const IDList& ids) const;
-    StringSet *getUniqueNames(const IDList& ids) const;
-    StringSet *getUniqueModuleAndResultNamePairs(const IDList& ids) const;
-    StringSet *getUniqueAttributeNames(const IDList& ids) const;
-    StringSet *getUniqueAttributeValues(const IDList& ids, const char *attrName) const;
-    StringSet *getUniqueRunAttributeNames(const RunList *runList) const;
-    StringSet *getUniqueRunAttributeValues(const RunList& runList, const char *attrName) const;
-    StringSet *getUniqueIterationVariableNames(const RunList *runList) const;
-    StringSet *getUniqueIterationVariableValues(const RunList& runList, const char *itervarName) const;
-    StringSet *getUniqueConfigKeys(const RunList *runList) const;
-    StringSet *getUniqueConfigValues(const RunList& runList, const char *key) const;
-    StringSet *getUniqueParamAssignmentKeys(const RunList *runList) const;
+    ResultFileList getUniqueFiles(const IDList& ids) const;
+    RunList getUniqueRuns(const IDList& ids) const;
+    FileRunList getUniqueFileRuns(const IDList& ids) const;
+    StringSet getUniqueModuleNames(const IDList& ids) const;
+    StringSet getUniqueNames(const IDList& ids) const;
+    StringSet getUniqueModuleAndResultNamePairs(const IDList& ids) const;
+    StringSet getUniqueAttributeNames(const IDList& ids) const;
+    StringSet getUniqueAttributeValues(const IDList& ids, const char *attrName) const;
+    StringSet getUniqueRunAttributeNames(const RunList& runList) const;
+    StringSet getUniqueRunAttributeValues(const RunList& runList, const char *attrName) const;
+    StringSet getUniqueIterationVariableNames(const RunList& runList) const;
+    StringSet getUniqueIterationVariableValues(const RunList& runList, const char *itervarName) const;
+    StringSet getUniqueConfigKeys(const RunList& runList) const;
+    StringSet getUniqueConfigValues(const RunList& runList, const char *key) const;
+    StringSet getUniqueParamAssignmentKeys(const RunList& runList) const;
     IDListsByRun getPartitionByRun(const IDList& ids) const;
 
     // getting lists of data items
@@ -621,15 +618,15 @@ class SCAVE_API ResultFileManager
     // utility
     //void dump(ResultFile *fileRef, std::ostream& out) const;
 
-    StringVector *getFilePathFilterHints(const ResultFileList& fileList) const;
-    StringVector *getRunNameFilterHints(const RunList& runList) const;
-    StringVector *getModuleFilterHints(const IDList& idlist) const;
-    StringVector *getNameFilterHints(const IDList& idlist)const;
-    StringVector *getResultItemAttributeFilterHints(const IDList& idlist, const char *attrName) const;
-    StringVector *getRunAttributeFilterHints(const RunList& runList, const char *attrName) const;
-    StringVector *getIterationVariableFilterHints(const RunList& runList, const char *itervarName) const;
-    StringVector *getConfigEntryFilterHints(const RunList& runList, const char *key) const;
-    StringVector *getParamAssignmentFilterHints(const RunList& runList, const char *key) const;
+    StringVector getFilePathFilterHints(const ResultFileList& fileList) const;
+    StringVector getRunNameFilterHints(const RunList& runList) const;
+    StringVector getModuleFilterHints(const IDList& idlist) const;
+    StringVector getNameFilterHints(const IDList& idlist)const;
+    StringVector getResultItemAttributeFilterHints(const IDList& idlist, const char *attrName) const;
+    StringVector getRunAttributeFilterHints(const RunList& runList, const char *attrName) const;
+    StringVector getIterationVariableFilterHints(const RunList& runList, const char *itervarName) const;
+    StringVector getConfigEntryFilterHints(const RunList& runList, const char *key) const;
+    StringVector getParamAssignmentFilterHints(const RunList& runList, const char *key) const;
 
     const char *getRunAttribute(ID id, const char *attribute) const;
 };

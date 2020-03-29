@@ -285,13 +285,10 @@ string ScaveTool::rebuildCommandLine(int argc, char **argv)
     return result;
 }
 
-static void printAndDelete(std::ostream& out, StringSet *strings, const string& prefix = "")
+static void print(std::ostream& out, const StringSet& strings, const string& prefix = "")
 {
-    if (strings != nullptr) {
-        for (auto str : *strings)
-            out << prefix << str << "\n";
-        delete strings;
-    }
+    for (auto str : strings)
+        out << prefix << str << "\n";
 }
 
 enum RunDisplayMode {
@@ -456,8 +453,8 @@ void ScaveTool::queryCommand(int argc, char **argv)
         results.set(resultFileManager.filterIDList(results, opt_filterExpression.c_str()));
     }
 
-    RunList *runs = resultFileManager.getUniqueRuns(results);
-    std::sort(runs->begin(), runs->end(), [](Run *a, Run *b)  {return a->getRunName() < b->getRunName();}); // sort runs by runId, for consistent output
+    RunList runs = resultFileManager.getUniqueRuns(results);
+    std::sort(runs.begin(), runs.end(), [](Run *a, Run *b)  {return a->getRunName() < b->getRunName();}); // sort runs by runId, for consistent output
     IDList scalars = results.filterByTypes(ResultFileManager::SCALAR);
     IDList parameters = results.filterByTypes(ResultFileManager::PARAMETER);
     IDList vectors = results.filterByTypes(ResultFileManager::VECTOR);
@@ -471,7 +468,7 @@ void ScaveTool::queryCommand(int argc, char **argv)
     case PRINT_SUMMARY: {
 #define L(label) (opt_bare ? "\t" : label)
         if (!opt_perRun) {
-            out << L("runs: ") << runs->size() << " ";
+            out << L("runs: ") << runs.size() << " ";
             if ((opt_resultTypeFilter & ResultFileManager::SCALAR) != 0)
                 out << L("\tscalars: ") << scalars.size();
             if ((opt_resultTypeFilter & ResultFileManager::PARAMETER) != 0)
@@ -485,7 +482,7 @@ void ScaveTool::queryCommand(int argc, char **argv)
             out << endl;
         }
         else {
-            for (Run *run : *runs) {
+            for (Run *run : runs) {
                 out << runStr(run, opt_runDisplayMode);
                 if ((opt_resultTypeFilter & ResultFileManager::SCALAR) != 0) {
                     IDList runScalars = resultFileManager.filterIDList(scalars, run, nullptr, nullptr);
@@ -515,7 +512,7 @@ void ScaveTool::queryCommand(int argc, char **argv)
 #undef L
     case LIST_RESULTS: {
         // note: we ignore opt_perRun, as it makes no sense here
-        for (Run *run : *runs) {
+        for (Run *run : runs) {
             string runName = runStr(run, opt_runDisplayMode);
             string maybeRunColumnWithTab = opt_grepFriendly ? runName + "\t" : "";
             if (!opt_grepFriendly)
@@ -579,14 +576,14 @@ void ScaveTool::queryCommand(int argc, char **argv)
     }
     case LIST_NAMES: {
         if (!opt_perRun)
-            printAndDelete(out, resultFileManager.getUniqueNames(results));
+            print(out, resultFileManager.getUniqueNames(results));
         else {
-            for (Run *run : *runs) {
+            for (Run *run : runs) {
                 string runName = runStr(run, opt_runDisplayMode);
                 if (!opt_grepFriendly)
                     out << runName << ":" << endl << endl;
                 IDList runResults = resultFileManager.filterIDList(results, run, nullptr, nullptr);
-                printAndDelete(out, resultFileManager.getUniqueNames(runResults), opt_grepFriendly ? runName + "\t" : "");
+                print(out, resultFileManager.getUniqueNames(runResults), opt_grepFriendly ? runName + "\t" : "");
                 out << endl;
             }
         }
@@ -594,14 +591,14 @@ void ScaveTool::queryCommand(int argc, char **argv)
     }
     case LIST_MODULES: {
         if (!opt_perRun)
-            printAndDelete(out, resultFileManager.getUniqueModuleNames(results));
+            print(out, resultFileManager.getUniqueModuleNames(results));
         else {
-            for (Run *run : *runs) {
+            for (Run *run : runs) {
                 string runName = runStr(run, opt_runDisplayMode);
                 if (!opt_grepFriendly)
                     out << runName << ":" << endl << endl;
                 IDList runResults = resultFileManager.filterIDList(results, run, nullptr, nullptr);
-                printAndDelete(out, resultFileManager.getUniqueModuleNames(runResults), opt_grepFriendly ? runName + "\t" : "");
+                print(out, resultFileManager.getUniqueModuleNames(runResults), opt_grepFriendly ? runName + "\t" : "");
                 out << endl;
             }
         }
@@ -609,21 +606,21 @@ void ScaveTool::queryCommand(int argc, char **argv)
     }
     case LIST_MODULE_AND_NAME_PAIRS: {
         if (!opt_perRun)
-            printAndDelete(out, resultFileManager.getUniqueModuleAndResultNamePairs(results));
+            print(out, resultFileManager.getUniqueModuleAndResultNamePairs(results));
         else {
-            for (Run *run : *runs) {
+            for (Run *run : runs) {
                 string runName = runStr(run, opt_runDisplayMode);
                 if (!opt_grepFriendly)
                     out << runName << ":" << endl << endl;
                 IDList runResults = resultFileManager.filterIDList(results, run, nullptr, nullptr);
-                printAndDelete(out, resultFileManager.getUniqueModuleAndResultNamePairs(runResults), opt_grepFriendly ? runName + "\t" : "");
+                print(out, resultFileManager.getUniqueModuleAndResultNamePairs(runResults), opt_grepFriendly ? runName + "\t" : "");
                 out << endl;
             }
         }
         break;
     }
     case LIST_RUNS: {
-        RunList filteredRuns = resultFileManager.filterRunList(*runs, opt_filterExpression.c_str());
+        RunList filteredRuns = resultFileManager.filterRunList(runs, opt_filterExpression.c_str());
         // note: we ignore opt_perRun, as it makes no sense here
         for (Run *run : filteredRuns)
             out << runStr(run, opt_runDisplayMode) << endl;
@@ -631,8 +628,8 @@ void ScaveTool::queryCommand(int argc, char **argv)
     }
     case LIST_CONFIGS: {
         // note: we ignore opt_perRun, as it makes no sense here
-        StringSet *uniqueConfigNames = resultFileManager.getUniqueRunAttributeValues(*runs, RunAttribute::CONFIGNAME);
-        printAndDelete(out, uniqueConfigNames);
+        StringSet uniqueConfigNames = resultFileManager.getUniqueRunAttributeValues(runs, RunAttribute::CONFIGNAME);
+        print(out, uniqueConfigNames);
         break;
     }
     default: {
@@ -642,8 +639,6 @@ void ScaveTool::queryCommand(int argc, char **argv)
 
     if (&out == &buffer)
         cout << opp_formatTable(buffer.str());
-
-    delete runs;
 }
 
 inline void pushCountIfPositive(vector<string>& v, int count, const string& noun, const string& pluralSuffix="s")

@@ -48,12 +48,10 @@ vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList
 
     size_t memoryUsedBytes = 0;
 
-    ResultFileList *filteredVectorFileList = manager->getUniqueFiles(idlist);
+    ResultFileList filteredVectorFileList = manager->getUniqueFiles(idlist);
 
     StringMap attrs;
-    for (int i = 0; i < (int)filteredVectorFileList->size(); i++) {
-        ResultFile *resultFile = filteredVectorFileList->at(i);
-
+    for (ResultFile *resultFile : filteredVectorFileList) {
         std::vector<int> vectorIds; // local to each file
         RunList runs = manager->getRunsInFile(resultFile);
 

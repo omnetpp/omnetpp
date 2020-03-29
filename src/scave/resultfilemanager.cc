@@ -333,7 +333,7 @@ const ResultItem& ResultFileManager::getItem(ID id) const
     }
 }
 
-ResultFileList *ResultFileManager::getUniqueFiles(const IDList& ids) const
+ResultFileList ResultFileManager::getUniqueFiles(const IDList& ids) const
 {
     READER_MUTEX
 
@@ -349,18 +349,18 @@ ResultFileList *ResultFileManager::getUniqueFiles(const IDList& ids) const
     }
 
     // convert set to ResultFileList
-    ResultFileList *result = new ResultFileList();
-    result->reserve(fileIds.size());
+    ResultFileList result;
+    result.reserve(fileIds.size());
     for (int fileId : fileIds) {
         ResultFile *file = fileList.at(fileId);
         if (!file)
             throw opp_runtime_error("ResultFileManager::getUniqueFiles(): stale ID in input IDList");
-        result->push_back(file);
+        result.push_back(file);
     }
     return result;
 }
 
-RunList *ResultFileManager::getUniqueRuns(const IDList& ids) const
+RunList ResultFileManager::getUniqueRuns(const IDList& ids) const
 {
     READER_MUTEX
 
@@ -376,7 +376,7 @@ RunList *ResultFileManager::getUniqueRuns(const IDList& ids) const
     }
 
     // convert to list for easier handling at recipient
-    return new RunList(set.begin(), set.end());
+    return RunList(set.begin(), set.end());
 }
 
 IDListsByRun ResultFileManager::getPartitionByRun(const IDList& ids) const
@@ -399,7 +399,7 @@ IDListsByRun ResultFileManager::getPartitionByRun(const IDList& ids) const
 }
 
 
-FileRunList *ResultFileManager::getUniqueFileRuns(const IDList& ids) const
+FileRunList ResultFileManager::getUniqueFileRuns(const IDList& ids) const
 {
     READER_MUTEX
 
@@ -417,148 +417,148 @@ FileRunList *ResultFileManager::getUniqueFileRuns(const IDList& ids) const
     }
 
     // convert to list for easier handling at recipient
-    return new FileRunList(set.begin(), set.end());
+    return FileRunList(set.begin(), set.end());
 }
 
-StringSet *ResultFileManager::getUniqueModuleNames(const IDList& ids) const
+StringSet ResultFileManager::getUniqueModuleNames(const IDList& ids) const
 {
     READER_MUTEX
     // collect unique module names in this dataset
-    StringSet *set = new StringSet();
+    StringSet set;
     for (int i = 0; i < ids.size(); i++)
-        set->insert(getItem(ids.get(i)).getModuleName());
+        set.insert(getItem(ids.get(i)).getModuleName());  //TODO may make sense to use the "lastModuleName" trick
     return set;
 }
 
-StringSet *ResultFileManager::getUniqueNames(const IDList& ids) const
+StringSet ResultFileManager::getUniqueNames(const IDList& ids) const
 {
     READER_MUTEX
     // collect unique scalar/vector names in this dataset
-    StringSet *set = new StringSet();
+    StringSet set;
     for (int i = 0; i < ids.size(); i++)
-        set->insert(getItem(ids.get(i)).getName());
+        set.insert(getItem(ids.get(i)).getName());
     return set;
 }
 
-StringSet *ResultFileManager::getUniqueModuleAndResultNamePairs(const IDList& ids) const
+StringSet ResultFileManager::getUniqueModuleAndResultNamePairs(const IDList& ids) const
 {
     READER_MUTEX
     // collect unique scalar/vector names in this dataset
-    StringSet *set = new StringSet();
+    StringSet set;
     for (int i = 0; i < ids.size(); i++) {
         const ResultItem& result = getItem(ids.get(i));
-        set->insert(result.getModuleName() + "." + result.getName());
+        set.insert(result.getModuleName() + "." + result.getName());
     }
     return set;
 }
 
-StringSet *ResultFileManager::getUniqueAttributeNames(const IDList& ids) const
+StringSet ResultFileManager::getUniqueAttributeNames(const IDList& ids) const
 {
     READER_MUTEX
-    StringSet *set = new StringSet;
+    StringSet set;
     for (int i = 0; i < ids.size(); i++) {
         const StringMap& attributes = getItem(ids.get(i)).getAttributes();
         for (StringMap::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
-            set->insert(it->first);
+            set.insert(it->first);
     }
     return set;
 }
 
-StringSet *ResultFileManager::getUniqueAttributeValues(const IDList& ids, const char *attrName) const
+StringSet ResultFileManager::getUniqueAttributeValues(const IDList& ids, const char *attrName) const
 {
     READER_MUTEX
-    StringSet *values = new StringSet;
+    StringSet values;
     for (int i = 0; i < ids.size(); ++i) {
         const string& value = getItem(ids.get(i)).getAttribute(attrName);
         if (&value != &NULLSTRING)
-            values->insert(value);
+            values.insert(value);
     }
     return values;
 }
 
-StringSet *ResultFileManager::getUniqueRunAttributeNames(const RunList *runList) const
+StringSet ResultFileManager::getUniqueRunAttributeNames(const RunList& runList) const
 {
     READER_MUTEX
-    StringSet *set = new StringSet;
-    for (RunList::const_iterator runRef = runList->begin(); runRef != runList->end(); ++runRef) {
-        const StringMap& attributes = (*runRef)->getAttributes();
+    StringSet set;
+    for (const Run *run : runList) {
+        const StringMap& attributes = run->getAttributes();
         for (StringMap::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
-            set->insert(it->first);
+            set.insert(it->first);
     }
     return set;
 }
 
-StringSet *ResultFileManager::getUniqueRunAttributeValues(const RunList& runList, const char *attrName) const
+StringSet ResultFileManager::getUniqueRunAttributeValues(const RunList& runList, const char *attrName) const
 {
     READER_MUTEX
-    StringSet *values = new StringSet;
-    for (RunList::const_iterator runRef = runList.begin(); runRef != runList.end(); ++runRef) {
-        const string& value = (*runRef)->getAttribute(attrName);
+    StringSet values;
+    for (const Run *run : runList) {
+        const string& value = run->getAttribute(attrName);
         if (&value != &NULLSTRING)
-            values->insert(value);
+            values.insert(value);
     }
 
     return values;
 }
 
-StringSet *ResultFileManager::getUniqueIterationVariableNames(const RunList *runList) const
+StringSet ResultFileManager::getUniqueIterationVariableNames(const RunList& runList) const
 {
     READER_MUTEX
-    StringSet *set = new StringSet;
-    for (RunList::const_iterator runRef = runList->begin(); runRef != runList->end(); ++runRef) {
-        const StringMap& itervars = (*runRef)->getIterationVariables();
+    StringSet set;
+    for (const Run *run : runList) {
+        const StringMap& itervars = run->getIterationVariables();
         for (StringMap::const_iterator it = itervars.begin(); it != itervars.end(); ++it)
-            set->insert(it->first);
+            set.insert(it->first);
     }
     return set;
 }
 
-StringSet *ResultFileManager::getUniqueIterationVariableValues(const RunList& runList, const char *itervarName) const
+StringSet ResultFileManager::getUniqueIterationVariableValues(const RunList& runList, const char *itervarName) const
 {
     READER_MUTEX
-    StringSet *values = new StringSet;
-    for (RunList::const_iterator runRef = runList.begin(); runRef != runList.end(); ++runRef) {
-        const string& value = (*runRef)->getIterationVariable(itervarName);
+    StringSet values;
+    for (const Run *run : runList) {
+        const string& value = run->getIterationVariable(itervarName);
         if (&value != &NULLSTRING)
-            values->insert(value);
+            values.insert(value);
     }
 
     return values;
 }
 
 
-StringSet *ResultFileManager::getUniqueConfigKeys(const RunList *runList) const
+StringSet ResultFileManager::getUniqueConfigKeys(const RunList& runList) const
 {
     READER_MUTEX
-    StringSet *set = new StringSet;
-    for (auto runRef : *runList)
-        for (auto& p : runRef->getConfigEntries())
-            set->insert(p.first);
+    StringSet set;
+    for (const Run *run : runList)
+        for (auto& p : run->getConfigEntries())
+            set.insert(p.first);
     return set;
 }
 
 
-StringSet *ResultFileManager::getUniqueConfigValues(const RunList& runList, const char *key) const
+StringSet ResultFileManager::getUniqueConfigValues(const RunList& runList, const char *key) const
 {
     READER_MUTEX
-    StringSet *values = new StringSet;
-    for (auto runRef : runList) {
-        const string& value = runRef->getConfigValue(key);
+    StringSet values;
+    for (const Run *run : runList) {
+        const string& value = run->getConfigValue(key);
         if (&value != &NULLSTRING)
-            values->insert(value);
+            values.insert(value);
     }
 
     return values;
 }
 
-StringSet *ResultFileManager::getUniqueParamAssignmentKeys(const RunList *runList) const
+StringSet ResultFileManager::getUniqueParamAssignmentKeys(const RunList& runList) const
 {
     READER_MUTEX
-    StringSet *set = new StringSet;
-    for (auto runRef : *runList)
-        for (auto& p : runRef->getConfigEntries())
+    StringSet set;
+    for (const Run *run : runList)
+        for (auto& p : run->getConfigEntries())
             if (isKeyParamAssignment(p.first))
-                set->insert(p.first);
+                set.insert(p.first);
     return set;
 }
 
@@ -1747,42 +1747,41 @@ static bool replaceIndexWithWildcard(std::string& str)
     return changed;
 }
 
-StringVector *ResultFileManager::getFilePathFilterHints(const ResultFileList& fileList) const
+StringVector ResultFileManager::getFilePathFilterHints(const ResultFileList& fileList) const
 {
     READER_MUTEX
-    StringVector *filterHints = new StringVector;
-    for (ResultFileList::const_iterator it = fileList.begin(); it != fileList.end(); ++it)
-        filterHints->push_back((*it)->getFilePath());
-    std::sort(filterHints->begin(), filterHints->end(), strdictLess);
-    filterHints->insert(filterHints->begin(), "*");
+    StringVector filterHints;
+    for (const ResultFile *file : fileList)
+        filterHints.push_back(file->getFilePath());
+    std::sort(filterHints.begin(), filterHints.end(), strdictLess);
+    filterHints.insert(filterHints.begin(), "*");
     return filterHints;
 }
 
-StringVector *ResultFileManager::getRunNameFilterHints(const RunList& runList) const
+StringVector ResultFileManager::getRunNameFilterHints(const RunList& runList) const
 {
     READER_MUTEX
-    StringVector *filterHints = new StringVector;
-    for (RunList::const_iterator it = runList.begin(); it != runList.end(); ++it)
-        if ((*it)->getRunName().size() > 0)
-            filterHints->push_back((*it)->getRunName());
+    StringVector filterHints;
+    for (const Run *run : runList)
+        if (run->getRunName().size() > 0)
+            filterHints.push_back(run->getRunName());
 
-    std::sort(filterHints->begin(), filterHints->end(), strdictLess);
-    filterHints->insert(filterHints->begin(), "*");
+    std::sort(filterHints.begin(), filterHints.end(), strdictLess);
+    filterHints.insert(filterHints.begin(), "*");
     return filterHints;
 }
 
-StringVector *ResultFileManager::getModuleFilterHints(const IDList& idlist) const
+StringVector ResultFileManager::getModuleFilterHints(const IDList& idlist) const
 {
     READER_MUTEX
-    StringSet& names = *getUniqueModuleNames(idlist);
+    StringSet names = getUniqueModuleNames(idlist);
 
     SortedStringSet nameHints;
     DuplicateStringCollector coll;
 
-    for (StringSet::iterator i = names.begin(); i != names.end(); i++) {
-        std::string a = (*i);
-
+    for (const std::string& a0 : names) {
         // replace embedded numbers with "*"
+        std::string a = a0;
         if (names.size() > 100)
             replaceDigitsWithWildcard(a);
         nameHints.insert(a);
@@ -1801,26 +1800,24 @@ StringVector *ResultFileManager::getModuleFilterHints(const IDList& idlist) cons
             prefix = "*.";
         }
     }
-    delete &names;
 
     // sort and concatenate them, and return the result
-    StringVector *wildvec = new StringVector(coll.get());
-    wildvec->push_back(std::string("*"));
-    std::sort(wildvec->begin(), wildvec->end(), strdictLess);
-    wildvec->insert(wildvec->end(), nameHints.begin(), nameHints.end());
+    StringVector wildvec(coll.get());
+    wildvec.push_back(std::string("*"));
+    std::sort(wildvec.begin(), wildvec.end(), strdictLess);
+    wildvec.insert(wildvec.end(), nameHints.begin(), nameHints.end());
     return wildvec;
 }
 
-StringVector *ResultFileManager::getNameFilterHints(const IDList& idlist) const
+StringVector ResultFileManager::getNameFilterHints(const IDList& idlist) const
 {
     READER_MUTEX
-    StringSet& names = *getUniqueNames(idlist);
+    StringSet names = getUniqueNames(idlist);
 
     StringVector vec;
     DuplicateStringCollector coll;
 
-    for (StringSet::iterator i = names.begin(); i != names.end(); i++) {
-        std::string a = (*i);
+    for (const std::string& a : names) {
         vec.push_back(a);
 
         // break it up along spaces, and...
@@ -1835,65 +1832,60 @@ StringVector *ResultFileManager::getNameFilterHints(const IDList& idlist) const
             prefix = "* ";
         }
     }
-    delete &names;
 
     // sort and concatenate them, and return the result
-    StringVector *wildvec = new StringVector(coll.get());
-    wildvec->push_back(std::string("*"));
+    StringVector wildvec(coll.get());
+    wildvec.push_back(std::string("*"));
     std::sort(vec.begin(), vec.end(), strdictLess);
-    std::sort(wildvec->begin(), wildvec->end(), strdictLess);
-    wildvec->insert(wildvec->end(), vec.begin(), vec.end());
+    std::sort(wildvec.begin(), wildvec.end(), strdictLess);
+    wildvec.insert(wildvec.end(), vec.begin(), vec.end());
     return wildvec;
 }
 
-StringVector *ResultFileManager::getResultItemAttributeFilterHints(const IDList& idlist, const char *attrName) const
+StringVector ResultFileManager::getResultItemAttributeFilterHints(const IDList& idlist, const char *attrName) const
 {
     READER_MUTEX
-    StringSet *attrValues = getUniqueAttributeValues(idlist, attrName);
-    StringVector *filterHints = new StringVector(attrValues->begin(), attrValues->end());
-    std::sort(filterHints->begin(), filterHints->end(), strdictLess);
-    filterHints->insert(filterHints->begin(), "*");
-    delete attrValues;
+    StringSet attrValues = getUniqueAttributeValues(idlist, attrName);
+    StringVector filterHints(attrValues.begin(), attrValues.end());
+    std::sort(filterHints.begin(), filterHints.end(), strdictLess);
+    filterHints.insert(filterHints.begin(), "*");
     return filterHints;
 }
 
-StringVector *ResultFileManager::getRunAttributeFilterHints(const RunList& runList, const char *attrName) const
+StringVector ResultFileManager::getRunAttributeFilterHints(const RunList& runList, const char *attrName) const
 {
     READER_MUTEX
-    StringSet *attrValues = getUniqueRunAttributeValues(runList, attrName);
-    StringVector *filterHints = new StringVector(attrValues->begin(), attrValues->end());
-    std::sort(filterHints->begin(), filterHints->end(), strdictLess);
-    filterHints->insert(filterHints->begin(), "*");
-    delete attrValues;
+    StringSet attrValues = getUniqueRunAttributeValues(runList, attrName);
+    StringVector filterHints(attrValues.begin(), attrValues.end());
+    std::sort(filterHints.begin(), filterHints.end(), strdictLess);
+    filterHints.insert(filterHints.begin(), "*");
     return filterHints;
 }
 
-StringVector *ResultFileManager::getIterationVariableFilterHints(const RunList& runList, const char *itervarName) const
+StringVector ResultFileManager::getIterationVariableFilterHints(const RunList& runList, const char *itervarName) const
 {
     READER_MUTEX
-    StringSet *values = getUniqueIterationVariableValues(runList, itervarName);
-    StringVector *filterHints = new StringVector(values->begin(), values->end());
-    std::sort(filterHints->begin(), filterHints->end(), strdictLess);
-    filterHints->insert(filterHints->begin(), "*");
-    delete values;
+    StringSet values = getUniqueIterationVariableValues(runList, itervarName);
+    StringVector filterHints(values.begin(), values.end());
+    std::sort(filterHints.begin(), filterHints.end(), strdictLess);
+    filterHints.insert(filterHints.begin(), "*");
     return filterHints;
 }
 
-StringVector *ResultFileManager::getConfigEntryFilterHints(const RunList& runList, const char *key) const
+StringVector ResultFileManager::getConfigEntryFilterHints(const RunList& runList, const char *key) const
 {
     READER_MUTEX
-    StringSet *paramValues = getUniqueConfigValues(runList, key);
-    StringVector *filterHints = new StringVector(paramValues->begin(), paramValues->end());
-    std::sort(filterHints->begin(), filterHints->end(), strdictLess);
-    filterHints->insert(filterHints->begin(), "*");
-    delete paramValues;
+    StringSet paramValues = getUniqueConfigValues(runList, key);
+    StringVector filterHints(paramValues.begin(), paramValues.end());
+    std::sort(filterHints.begin(), filterHints.end(), strdictLess);
+    filterHints.insert(filterHints.begin(), "*");
     return filterHints;
 }
 
-StringVector *ResultFileManager::getParamAssignmentFilterHints(const RunList& runList, const char *key) const
+StringVector ResultFileManager::getParamAssignmentFilterHints(const RunList& runList, const char *key) const
 {
     if (!isKeyParamAssignment(key))
-        return new StringVector();
+        return StringVector();
     return getConfigEntryFilterHints(runList, key);
 }
 

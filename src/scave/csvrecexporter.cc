@@ -207,8 +207,8 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
     }
 
     // record runs
-    RunList *runList = manager->getUniqueRuns(idlist);
-    for (Run *run : *runList) {
+    RunList runList = manager->getUniqueRuns(idlist);
+    for (Run *run : runList) {
         for (auto pair : run->getAttributes())
             writeRunAttrRecord(run->getRunName(), "runattr", pair.first, pair.second, numColumns);
         for (auto pair : run->getIterationVariables())
@@ -216,7 +216,6 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
         for (auto pair : run->getConfigEntries())
             writeRunAttrRecord(run->getRunName(), "config", pair.first, pair.second, numColumns);
     }
-    delete runList;
 
     // record scalars
     if (haveScalars) {

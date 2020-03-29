@@ -209,12 +209,10 @@ void CsvForSpreadsheetExporter::saveResults(const std::string& fileName, ResultF
 void CsvForSpreadsheetExporter::collectItervars(ResultFileManager *manager, const IDList& idlist)
 {
     itervarNames.clear();
-    RunList *runs = manager->getUniqueRuns(idlist);
-    StringSet *names = manager->getUniqueIterationVariableNames(runs);
-    for (std::string name : *names)
+    RunList runs = manager->getUniqueRuns(idlist);
+    StringSet names = manager->getUniqueIterationVariableNames(runs);
+    for (std::string name : names)
         itervarNames.push_back(name);
-    delete names;
-    delete runs;
 }
 
 void CsvForSpreadsheetExporter::writeRunColumnNames()

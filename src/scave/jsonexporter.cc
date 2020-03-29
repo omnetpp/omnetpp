@@ -287,10 +287,9 @@ void JsonExporter::saveResults(const std::string& fileName, ResultFileManager *m
 
     writer.openObject();
 
-    RunList *runList = manager->getUniqueRuns(idlist);
-    std::unique_ptr<RunList> tmp(runList);
+    RunList runList = manager->getUniqueRuns(idlist);
 
-    for (Run *run : *runList) {
+    for (Run *run : runList) {
         writer.openObject(run->getRunName());
 
         // run metadata

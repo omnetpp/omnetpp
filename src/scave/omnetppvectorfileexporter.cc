@@ -121,16 +121,15 @@ void OmnetppVectorFileExporter::saveResults(const std::string& fileName, ResultF
     //TODO progress reporting
     checkItemTypes(idlist, ResultFileManager::VECTOR);
 
-    RunList *runList = manager->getUniqueRuns(idlist);
-    std::unique_ptr<RunList> tmp(runList);
+    RunList runList = manager->getUniqueRuns(idlist);
 
-    if (runList->size() > 1)
+    if (runList.size() > 1)
         throw opp_runtime_error("Exporter: OMNeT++ vec files currently do not support multiple runs per file"); //TODO revise later
 
     removeFile(fileName.c_str(), "existing file"); // remove existing file, just in case
     writer.open(fileName.c_str());
 
-    for (Run *run : *runList) {
+    for (Run *run : runList) {
         writer.beginRecordingForRun(run->getRunName(), run->getAttributes(), run->getIterationVariables(), run->getConfigEntries());
         IDList filteredList = manager->filterIDList(idlist, run, nullptr, nullptr);
 

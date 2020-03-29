@@ -107,10 +107,9 @@ void OmnetppScalarFileExporter::saveResults(const std::string& fileName, ResultF
     removeFile(fileName.c_str(), "existing file"); // remove existing file, as open() appends
     writer.open(fileName.c_str());
 
-    RunList *runList = manager->getUniqueRuns(idlist);
-    std::unique_ptr<RunList> tmp(runList);
+    RunList runList = manager->getUniqueRuns(idlist);
 
-    for (Run *run : *runList) {
+    for (Run *run : runList) {
         writer.beginRecordingForRun(run->getRunName(), run->getAttributes(), run->getIterationVariables(), run->getConfigEntries());
         IDList filteredList = manager->filterIDList(idlist, run, nullptr, nullptr);
         for (int i=0; i<filteredList.size(); i++) {
