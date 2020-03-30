@@ -27,7 +27,7 @@ Sections page
 - should work when General doesn't exist
 - renaming the General section
 - renaming a nonexistent General section
-- test flipping a Config into a Scenario, and vica versa (also for General!!!)
+- test flipping a Config into a Scenario, and vice versa (also for General!!!)
 
 Parameters page
 - should work when General doesn't exist

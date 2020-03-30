@@ -1371,7 +1371,7 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigK
             // find all matching entries from this suffix bin.
             // We'll have a little problem where key ends in wildcard (i.e. entry.suffixPattern!=nullptr);
             // there we'd have to determine whether two *patterns* match. We resolve this
-            // by checking whether one pattern matches the other one as string, and vica versa.
+            // by checking whether one pattern matches the other one as string, and vice versa.
             const SuffixBin& bin = suffixBin.second;
             for (const auto & entry : bin.entries) {
                 if ((anyObject || entry.ownerPattern->matches(objectFullPathPattern))

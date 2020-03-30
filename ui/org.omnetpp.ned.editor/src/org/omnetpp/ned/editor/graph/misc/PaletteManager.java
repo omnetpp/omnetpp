@@ -725,7 +725,7 @@ public class PaletteManager {
         // honor if it has a gate that can be connected to an existing submodule or
         // to the parent compound module
         for (GateElementEx gate : typeToScore.getNedTypeInfo().getGateDeclarations().values())
-            for (String label : getGateLabels(gate, true))  // negate==true: among 2 submods, an input can be connected to an output, and vica versa
+            for (String label : getGateLabels(gate, true))  // negate==true: among 2 submods, an input can be connected to an output, and vice versa
                 if (gateLabels.contains(label))
                     score += 1; // matching gate @labels
 

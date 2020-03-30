@@ -254,7 +254,7 @@ class SIM_API cGate : public cObject, noncopyable
     /**
      * If this gate is one half of an "inout gate" (see isGateHalf()), this method
      * returns the other half. For example, for a gate named "eth$o[5]" it returns
-     * the gate "eth$i[5]" and vica versa; otherwise it returns nullptr.
+     * the gate "eth$i[5]" and vice versa; otherwise it returns nullptr.
      */
     cGate *getOtherHalf() const;
 
