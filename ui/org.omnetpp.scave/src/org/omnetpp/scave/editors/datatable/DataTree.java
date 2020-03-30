@@ -2,11 +2,8 @@ package org.omnetpp.scave.editors.datatable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.action.ActionContributionItem;
@@ -159,8 +156,7 @@ public class DataTree extends Tree implements IDataControl {
             for (TreeItem treeItem : treeItems) {
                 Node node = (Node)treeItem.getData();
                 if (node != null && node.ids != null)
-                    for (long id : node.ids)
-                        resultIdList.add(id);
+                    resultIdList.merge(node.ids); //TODO that's not cheap! make C++ method that just blindly appends!!!
             }
             return resultIdList;
         });
@@ -219,7 +215,9 @@ public class DataTree extends Tree implements IDataControl {
 
     public void setSelectedID(long id) {
         if (idList.indexOf(id) != -1) {
-            TreeItem treeItem = getTreeItem(new long[] {id});
+            IDList tmp = new IDList();
+            tmp.add(id);
+            TreeItem treeItem = getTreeItem(tmp);
             if (treeItem != null)
                 setSelection(treeItem);
         }
@@ -227,16 +225,12 @@ public class DataTree extends Tree implements IDataControl {
             setSelection(new TreeItem[0]);
     }
 
-    public void setSelectedIDs(IDList idList) {
-        List<Long> ids = new ArrayList<Long>(idList.size());
-        for (int i = 0; i < idList.size(); i++)
-            ids.add(idList.get(i));
-
+    public void setSelectedIDs(IDList ids) {
         ArrayList<TreeItem> treeItems = new ArrayList<TreeItem>();
         long begin = System.currentTimeMillis();
         // find the topmost tree items that cover the whole idList set, but not more
         while (ids.size() > 0) {
-            TreeItem treeItem = getTreeItem(ArrayUtils.toPrimitive(ids.toArray(new Long[0])));
+            TreeItem treeItem = getTreeItem(ids);
             if (treeItem == null)
                 break;
             else {
@@ -244,7 +238,7 @@ public class DataTree extends Tree implements IDataControl {
                 showItem(treeItem);
                 Node node = (Node)treeItem.getData();
                 if (node != null)
-                    ids = (ArrayList<Long>)CollectionUtils.subtract(ids, Arrays.asList(ArrayUtils.toObject(node.ids)));
+                    ids.subtract(node.ids);
             }
             // don't spend to much time on it, because the gui becomes unresponsive and it's not worth it
             if (System.currentTimeMillis() - begin > 5000)
@@ -253,7 +247,7 @@ public class DataTree extends Tree implements IDataControl {
         setSelection(treeItems.toArray(new TreeItem[0]));
     }
 
-    protected TreeItem getTreeItem(long[] ids) {
+    protected TreeItem getTreeItem(IDList ids) {
         for (TreeItem treeItem : getItems()) {
             TreeItem foundTreeItem = getTreeItem(treeItem, ids);
             if (foundTreeItem != null)
@@ -262,21 +256,14 @@ public class DataTree extends Tree implements IDataControl {
         return null;
     }
 
-    protected TreeItem getTreeItem(TreeItem treeItem, long[] ids) {
+    protected TreeItem getTreeItem(TreeItem treeItem, IDList ids) {
         // items must be queried first, because getData does not fill up the item
         TreeItem[] childTreeItems = treeItem.getItems();
         Node node = (Node)treeItem.getData();
         if (node != null && node.ids == null)
             return null;
         else if (node != null && node.ids != null) {
-            boolean subset = true;
-            for (long id : node.ids) {
-                if (ArrayUtils.indexOf(ids, id) == -1) {
-                    subset = false;
-                    break;
-                }
-            }
-            if (subset)
+            if (node.ids.getDifference(ids).isEmpty())  //TODO if (node.ids.isSubsetOf(ids))
                 return treeItem;
         }
         for (TreeItem childTreeItem : childTreeItems) {
