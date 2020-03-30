@@ -250,6 +250,16 @@ class SCAVE_API IDListsByRun {
     IDList& getIDList(Run *run) {return map.at(run);}
 };
 
+class SCAVE_API IDListsByFile {
+  private:
+    std::map<ResultFile*,IDList> map;
+  public:
+    IDListsByFile() {} // required by swig
+    IDListsByFile(std::map<ResultFile*,IDList>& map) {this->map = std::move(map);}
+    ResultFileList getFiles() {return omnetpp::common::keys(map);}
+    IDList& getIDList(ResultFile *file) {return map.at(file);}
+};
+
 /**
  * Represents a loaded scalar or vector file.
  */
@@ -531,6 +541,7 @@ class SCAVE_API ResultFileManager
     StringSet getUniqueConfigValues(const RunList& runList, const char *key) const;
     StringSet getUniqueParamAssignmentKeys(const RunList& runList) const;
     IDListsByRun getPartitionByRun(const IDList& ids) const;
+    IDListsByFile getPartitionByFile(const IDList& ids) const;
 
     // getting lists of data items
     IDList getAllScalars(bool includeFields = true, bool includeItervars = true) const;

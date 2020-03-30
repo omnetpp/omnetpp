@@ -539,6 +539,25 @@ IDListsByRun ResultFileManager::getPartitionByRun(const IDList& ids) const
     return IDListsByRun(map);
 }
 
+IDListsByFile ResultFileManager::getPartitionByFile(const IDList& ids) const
+{
+    READER_MUTEX
+
+    std::map<ResultFile*,IDList> map;
+    ResultFile *lastFile = nullptr;
+    IDList *lastFileIDList = nullptr;
+    for (int i = 0; i < ids.size(); i++) {
+        ID id = ids.get(i);
+        ResultFile *file = getItem(id).getFile();
+        if (file != lastFile) {
+            lastFile = file;
+            lastFileIDList = &map[file];
+        }
+        lastFileIDList->append(id);
+    }
+    return IDListsByFile(map);
+}
+
 const ScalarResult& ResultFileManager::getScalar(ID id) const
 {
     READER_MUTEX
