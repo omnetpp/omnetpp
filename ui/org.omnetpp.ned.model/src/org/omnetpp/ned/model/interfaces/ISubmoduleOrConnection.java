@@ -30,7 +30,7 @@ public interface ISubmoduleOrConnection extends IHasName, IHasResolver, IHasDisp
      * tree.
      *
      * Note that it cannot be assumed that for a submodule the actualType is a module type
-     * (and not a channel) and vica versa, because the NED source or inifile values may be
+     * (and not a channel) and vice versa, because the NED source or inifile values may be
      * bogus.
      */
     public DisplayString getDisplayString(INedTypeElement actualType);
