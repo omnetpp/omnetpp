@@ -15,7 +15,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -28,6 +27,8 @@ import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.ui.DropdownAction;
 import org.omnetpp.common.ui.FocusManager;
+import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog;
+import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.CopyChartFilterAction;
@@ -67,6 +68,8 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 //TODO focus issue (currently a toolbar icon gets the focus by default?)
 //TODO showStatisticsFieldsAsScalars: make configurable
 public class BrowseDataPage extends FormEditorPage {
+    public static final int PROGRESSDIALOG_DELAY_MILLIS = 1000;
+
     private boolean showStatisticsFieldsAsScalars = false;
 
     // UI elements
@@ -337,7 +340,7 @@ public class BrowseDataPage extends FormEditorPage {
     protected void refreshPage(ResultFileManager manager) {
         if (isActivePage()) {
             try {
-                ProgressMonitorDialog dialog = new ProgressMonitorDialog(Display.getCurrent().getActiveShell());
+                TimeTriggeredProgressMonitorDialog dialog = new TimeTriggeredProgressMonitorDialog(Display.getCurrent().getActiveShell(), PROGRESSDIALOG_DELAY_MILLIS);
                 dialog.run(false, true, (monitor) -> doRefreshPage(manager, monitor));
                 isContentValid = true;
             }
