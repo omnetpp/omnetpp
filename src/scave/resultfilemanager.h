@@ -446,7 +446,7 @@ class SCAVE_API ResultFileManager
 #endif
 
   public:
-    enum {SCALAR = 1<<0, VECTOR = 1<<1, STATISTICS = 1<<2, HISTOGRAM = 1<<3, PARAMETER = 1<<4}; // must be 1,2,4,8 etc, because of IDList::getItemTypes()
+    enum {PARAMETER = 1<<0, SCALAR = 1<<1, STATISTICS = 1<<2, HISTOGRAM = 1<<3, VECTOR = 1<<4}; // must be 1,2,4,8 etc, because of IDList::getItemTypes()
 
   private:
     // ID: 8 bit type, 24 bit filerunid, 32 bit pos
@@ -475,7 +475,7 @@ class SCAVE_API ResultFileManager
     FileRun *getFileRunForID(ID id) const; // checks for nullptr
 
     template <class T>
-    void collectIDs(IDList& result, std::vector<T> FileRun::* vec, int type, bool includeFields, bool includeItervars) const;
+    void collectIDs(IDList& result, FileRun *fileRun, std::vector<T> FileRun::* vec, int type, bool includeFields, bool includeItervars) const;
 
     // unchecked getters are only for internal use by CmpBase in idlist.cc
     const ResultItem& uncheckedGetItem(ID id) const;
