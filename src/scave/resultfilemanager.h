@@ -529,7 +529,7 @@ class SCAVE_API ResultFileManager
     RunList getUniqueRuns(const FileRunList& fileRunList) const; // helper
 
     StringSet getUniqueModuleNames(const IDList& ids) const;
-    StringSet getUniqueNames(const IDList& ids) const;
+    StringSet getUniqueResultNames(const IDList& ids) const;
     StringSet getUniqueModuleAndResultNamePairs(const IDList& ids) const;
     StringSet getUniqueAttributeNames(const IDList& ids) const;
     StringSet getUniqueAttributeValues(const IDList& ids, const char *attrName) const;
@@ -640,7 +640,7 @@ class SCAVE_API ResultFileManager
     StringVector getFilePathFilterHints(const ResultFileList& fileList) const;
     StringVector getRunNameFilterHints(const RunList& runList) const;
     StringVector getModuleFilterHints(const IDList& idlist) const;
-    StringVector getNameFilterHints(const IDList& idlist)const;
+    StringVector getResultNameFilterHints(const IDList& idlist)const;
     StringVector getResultItemAttributeFilterHints(const IDList& idlist, const char *attrName) const;
     StringVector getRunAttributeFilterHints(const RunList& runList, const char *attrName) const;
     StringVector getIterationVariableFilterHints(const RunList& runList, const char *itervarName) const;

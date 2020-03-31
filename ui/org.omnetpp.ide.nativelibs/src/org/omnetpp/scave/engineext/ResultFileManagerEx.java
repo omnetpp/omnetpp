@@ -223,9 +223,9 @@ public class ResultFileManagerEx extends ResultFileManager {
     }
 
     @Override
-    public StringVector getNameFilterHints(IDList idlist) {
+    public StringVector getResultNameFilterHints(IDList idlist) {
         checkNotDeleted();
-        return super.getNameFilterHints(idlist);
+        return super.getResultNameFilterHints(idlist);
     }
 
     @Override
@@ -301,9 +301,9 @@ public class ResultFileManagerEx extends ResultFileManager {
     }
 
     @Override
-    public StringSet getUniqueNames(IDList ids) {
+    public StringSet getUniqueResultNames(IDList ids) {
         checkNotDeleted();
-        return super.getUniqueNames(ids);
+        return super.getUniqueResultNames(ids);
     }
 
     @Override

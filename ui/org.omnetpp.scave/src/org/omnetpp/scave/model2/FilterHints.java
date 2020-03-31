@@ -71,7 +71,7 @@ public class FilterHints {
         setHints(FILE, manager.getFilePathFilterHints(fileList).toArray());
         setHints(RUN, manager.getRunNameFilterHints(runList).toArray());
         setHints(MODULE, manager.getModuleFilterHints(idlist).toArray());
-        setHints(NAME, manager.getNameFilterHints(idlist).toArray());
+        setHints(NAME, manager.getResultNameFilterHints(idlist).toArray());
         for (String attrName : manager.getUniqueAttributeNames(idlist).keys().toArray())
             setHints(Kind.ItemField, attrName, manager.getResultItemAttributeFilterHints(idlist, attrName).toArray());
         for (String attrName : manager.getUniqueRunAttributeNames(runList).keys().toArray())
@@ -95,7 +95,7 @@ public class FilterHints {
             return filterAndConvert(manager.getModuleFilterHints(idlist), prefix);
         }
         else if (field.equals(NAME)) {
-            return filterAndConvert(manager.getNameFilterHints(idlist), prefix);
+            return filterAndConvert(manager.getResultNameFilterHints(idlist), prefix);
         }
         else if (field.getKind() == Kind.ItemField) {
             return filterAndConvert(manager.getResultItemAttributeFilterHints(idlist, field.getName()), prefix);

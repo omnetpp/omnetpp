@@ -155,19 +155,19 @@ public class ChartEditForm {
                 if (part.startsWith("$")) {
                     switch (part) {
                     case "$scalarnames":
-                        for (String name : manager.getUniqueNames(manager.getAllScalars(false, false)).keys().toArray())
+                        for (String name : manager.getUniqueResultNames(manager.getAllScalars(false, false)).keys().toArray())
                             result.add(name);
                         break;
                     case "$vectornames":
-                        for (String name : manager.getUniqueNames(manager.getAllVectors()).keys().toArray())
+                        for (String name : manager.getUniqueResultNames(manager.getAllVectors()).keys().toArray())
                             result.add(name);
                         break;
                     case "$histogramnames":
-                        for (String name : manager.getUniqueNames(manager.getAllHistograms()).keys().toArray())
+                        for (String name : manager.getUniqueResultNames(manager.getAllHistograms()).keys().toArray())
                             result.add(name);
                         break;
                     case "$statisticnames":
-                        for (String name : manager.getUniqueNames(manager.getAllStatistics()).keys().toArray())
+                        for (String name : manager.getUniqueResultNames(manager.getAllStatistics()).keys().toArray())
                             result.add(name);
                         break;
                     case "$itervarnames":

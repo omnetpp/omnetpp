@@ -398,7 +398,7 @@ StringSet ResultFileManager::getUniqueModuleNames(const IDList& ids) const
     return result;
 }
 
-StringSet ResultFileManager::getUniqueNames(const IDList& ids) const
+StringSet ResultFileManager::getUniqueResultNames(const IDList& ids) const
 {
     READER_MUTEX
     std::set<const std::string*> set;  // all strings are stringpooled, so we can collect unique *pointers* instead of unique strings
@@ -1774,10 +1774,10 @@ StringVector ResultFileManager::getModuleFilterHints(const IDList& idlist) const
     return wildvec;
 }
 
-StringVector ResultFileManager::getNameFilterHints(const IDList& idlist) const
+StringVector ResultFileManager::getResultNameFilterHints(const IDList& idlist) const
 {
     READER_MUTEX
-    StringSet names = getUniqueNames(idlist);
+    StringSet names = getUniqueResultNames(idlist);
 
     StringVector vec;
     DuplicateStringCollector coll;

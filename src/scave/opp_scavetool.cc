@@ -576,14 +576,14 @@ void ScaveTool::queryCommand(int argc, char **argv)
     }
     case LIST_NAMES: {
         if (!opt_perRun)
-            print(out, resultFileManager.getUniqueNames(results));
+            print(out, resultFileManager.getUniqueResultNames(results));
         else {
             for (Run *run : runs) {
                 string runName = runStr(run, opt_runDisplayMode);
                 if (!opt_grepFriendly)
                     out << runName << ":" << endl << endl;
                 IDList runResults = resultFileManager.filterIDList(results, run, nullptr, nullptr);
-                print(out, resultFileManager.getUniqueNames(runResults), opt_grepFriendly ? runName + "\t" : "");
+                print(out, resultFileManager.getUniqueResultNames(runResults), opt_grepFriendly ? runName + "\t" : "");
                 out << endl;
             }
         }
