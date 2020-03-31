@@ -54,14 +54,6 @@
 #  endif
 #endif
 
-#if defined __GNUC__ && __GNUC__>=4
-#  define _OPPDEPRECATED __attribute((__deprecated__))
-#elif defined _MSC_VER
-#  define _OPPDEPRECATED __declspec(deprecated)
-#else
-#  define _OPPDEPRECATED
-#endif
-
 // make the code compile with pre-C++11 compilers
 #if __cplusplus < 201103L
 #  if !defined nullptr

@@ -308,12 +308,12 @@ class SIM_API cQueue : public cOwnedObject
     /**
      * DEPRECATED. Use getLength() instead.
      */
-    _OPPDEPRECATED int length() const {return getLength();}
+    [[deprecated("use getLength() instead")]] int length() const {return getLength();}
 
     /**
      * DEPRECATED. Use isEmpty() instead.
      */
-    _OPPDEPRECATED bool empty() const {return isEmpty();}
+    [[deprecated("use isEmpty() instead")]] bool empty() const {return isEmpty();}
 
     /**
      * Returns the ith element in the queue, or nullptr if i is out of range.
