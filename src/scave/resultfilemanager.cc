@@ -386,7 +386,7 @@ StringSet ResultFileManager::getUniqueModuleNames(const IDList& ids) const
     // collect unique module names in this dataset
     StringSet set;
     for (ID id : ids)
-        set.insert(getItem(id)).getModuleName());  //TODO may make sense to use the "lastModuleName" trick
+        set.insert(getItem(id).getModuleName());  //TODO may make sense to use the "lastModuleName" trick
     return set;
 }
 
@@ -525,15 +525,16 @@ IDListsByRun ResultFileManager::getPartitionByRun(const IDList& ids) const
     READER_MUTEX
 
     std::map<Run*,IDList> map;
-    Run *lastRun = nullptr;
-    IDList *lastRunIDList = nullptr;
+    int lastFileRunId = -1;
+    IDList *currentRunIDList = nullptr;
     for (ID id : ids) {
-        Run *run = getItem(id).getRun();
-        if (run != lastRun) {
-            lastRun = run;
-            lastRunIDList = &map[run];
+        int fileRunId = _filerunid(id);
+        if (fileRunId != lastFileRunId) {
+            Run *run = getItem(id).getRun();
+            currentRunIDList = &map[run];
+            lastFileRunId = fileRunId;
         }
-        lastRunIDList->append(id);
+        currentRunIDList->append(id);
     }
     return IDListsByRun(map);
 }
@@ -543,15 +544,16 @@ IDListsByFile ResultFileManager::getPartitionByFile(const IDList& ids) const
     READER_MUTEX
 
     std::map<ResultFile*,IDList> map;
-    ResultFile *lastFile = nullptr;
-    IDList *lastFileIDList = nullptr;
+    int lastFileRunId = -1;
+    IDList *currentFileIDList = nullptr;
     for (ID id : ids) {
-        ResultFile *file = getItem(id).getFile();
-        if (file != lastFile) {
-            lastFile = file;
-            lastFileIDList = &map[file];
+        int fileRunId = _filerunid(id);
+        if (fileRunId != lastFileRunId) {
+            ResultFile *file = getItem(id).getFile();
+            currentFileIDList = &map[file];
+            lastFileRunId = fileRunId;
         }
-        lastFileIDList->append(id);
+        currentFileIDList->append(id);
     }
     return IDListsByFile(map);
 }
@@ -613,7 +615,7 @@ void ResultFileManager::collectIDs(IDList& out, FileRun *fileRun, std::vector<T>
     }
 }
 
-IDList ResultFileManager::getAllItems(bool includeFields, bool includeItervars) const
+IDList ResultFileManager::getAllItems(bool includeFields, bool includeItervars) const  //TODO includeItervars does not seem to work!!!
 {
     READER_MUTEX
 
