@@ -76,6 +76,13 @@
 #  define _OPP_GNU_ATTRIBUTE(x)
 #endif
 
+// attributes on enumerators were added in C++17, but some compilers (GCC >= 6 for example) accept them in c++14 mode as well
+#if defined(__cpp_enumerator_attributes) && (__cpp_enumerator_attributes >= 201411)
+#  define OPP_DEPRECATED_ENUMERATOR(message) [[deprecated(messsage)]]
+#else
+#  define OPP_DEPRECATED_ENUMERATOR(message)
+#endif
+
 // choose coroutine library if unspecified
 #if !defined(USE_WIN32_FIBERS) && !defined(USE_POSIX_COROUTINES) && !defined(USE_PORTABLE_COROUTINES)
 #  if defined _WIN32

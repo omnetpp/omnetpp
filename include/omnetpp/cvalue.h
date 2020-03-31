@@ -62,9 +62,9 @@ class SIM_API cValue
         DOUBLE = 'D',
         STRING = 'S',
         OBJECT = 'O',
-        XML [[deprecated]] = OBJECT, // and use check_and_cast<cXmlElement*>() on value
-        DBL [[deprecated]] = DOUBLE, // rename
-        STR [[deprecated]] = STRING // rename
+        XML OPP_DEPRECATED_ENUMERATOR("and use check_and_cast<cXmlElement*>() on value") = OBJECT,
+        DBL OPP_DEPRECATED_ENUMERATOR("renamed to DOUBLE") = DOUBLE,
+        STR OPP_DEPRECATED_ENUMERATOR("renamed to STRING") = STRING
     };
     Type type;
 
