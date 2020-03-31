@@ -383,27 +383,37 @@ RunList ResultFileManager::getUniqueRuns(const FileRunList& fileRunList) const
 StringSet ResultFileManager::getUniqueModuleNames(const IDList& ids) const
 {
     READER_MUTEX
-    // collect unique module names in this dataset
-    StringSet set;
-    for (ID id : ids)
-        set.insert(getItem(id).getModuleName());  //TODO may make sense to use the "lastModuleName" trick
-    return set;
+    std::set<const std::string*> set;  // all strings are stringpooled, so we can collect unique *pointers* instead of unique strings
+    const std::string *lastModuleName = nullptr;
+    for (ID id : ids) {
+        const std::string *moduleName = &getItem(id).getModuleName();
+        if (moduleName != lastModuleName) {
+            set.insert(moduleName);
+            lastModuleName = moduleName;
+        }
+    }
+    StringSet result;
+    for (const std::string *e : set)
+        result.insert(*e);
+    return result;
 }
 
 StringSet ResultFileManager::getUniqueNames(const IDList& ids) const
 {
     READER_MUTEX
-    // collect unique scalar/vector names in this dataset
-    StringSet set;
+    std::set<const std::string*> set;  // all strings are stringpooled, so we can collect unique *pointers* instead of unique strings
     for (ID id : ids)
-        set.insert(getItem(id).getName());
-    return set;
+        set.insert(&getItem(id).getName());
+
+    StringSet result;
+    for (const std::string *e : set)
+        result.insert(*e);
+    return result;
 }
 
 StringSet ResultFileManager::getUniqueModuleAndResultNamePairs(const IDList& ids) const
 {
     READER_MUTEX
-    // collect unique scalar/vector names in this dataset
     StringSet set;
     for (ID id : ids) {
         const ResultItem& result = getItem(id);
