@@ -41,112 +41,95 @@ namespace scave {
 
 IDList::IDList(const IDList& ids)
 {
-    ids.checkV();
-    v = ids.v;
-    const_cast<IDList&>(ids).v = nullptr;
+    v = std::move(const_cast<V&>(ids.v));
 }
 
 void IDList::set(const IDList& ids)
 {
-    ids.checkV();
-    delete v;
-    v = new V(ids.v->size());
-    *v = *ids.v;  // copy contents
+    v = ids.v;
 }
 
 void IDList::add(ID x)
 {
-    checkV();
-    if (std::find(v->begin(), v->end(), x) == v->end())
-        v->push_back(x);
+    if (std::find(v.begin(), v.end(), x) == v.end())
+        v.push_back(x);
 }
 
 void IDList::bulkAdd(ID *array, int length)
 {
-    v->reserve(v->size() + length);
+    v.reserve(v.size() + length);
     for (int i = 0; i < length; i++)
-        v->push_back(array[i]);
+        v.push_back(array[i]);
     discardDuplicates();
 }
 
 void IDList::append(const IDList& other)
 {
-    v->insert(v->end(), other.v->begin(), other.v->end());
+    v.insert(v.end(), other.v.begin(), other.v.end());
 }
 
 void IDList::discardDuplicates()
 {
-    std::sort(v->begin(), v->end());
-    auto last = std::unique(v->begin(), v->end());
-    v->erase(last, v->end());
+    std::sort(v.begin(), v.end());
+    auto last = std::unique(v.begin(), v.end());
+    v.erase(last, v.end());
 }
 
 void IDList::erase(int i)
 {
-    checkV();
-    v->at(i);  // bounds check
-    v->erase(v->begin()+i);
+    v.at(i);  // bounds check
+    v.erase(v.begin()+i);
 }
 
 int IDList::indexOf(ID x) const
 {
-    checkV();
-    V::iterator it = std::find(v->begin(), v->end(), x);
-    if (it != v->end())
-        return (int)(it - v->begin());
+    auto it = std::find(v.begin(), v.end(), x);
+    if (it != v.end())
+        return (int)(it - v.begin());
     else
         return -1;
 }
 
 void IDList::subtract(ID x)
 {
-    checkV();
-    V::iterator it = std::find(v->begin(), v->end(), x);
-    if (it != v->end())
-        v->erase(it);
+    auto it = std::find(v.begin(), v.end(), x);
+    if (it != v.end())
+        v.erase(it);
 }
 
 void IDList::merge(IDList& ids)
 {
-    checkV();
-    ids.checkV();
-
     // sort both vectors so that we can apply set_union
-    std::sort(v->begin(), v->end());
-    std::sort(ids.v->begin(), ids.v->end());
+    std::sort(v.begin(), v.end());
+    std::sort(ids.v.begin(), ids.v.end());
 
     // allocate a new vector, and merge the two vectors into it
-    V *v2 = new V;
-    v2->resize(v->size() + ids.v->size());
-    V::iterator v2end = std::set_union(v->begin(), v->end(), ids.v->begin(), ids.v->end(), v2->begin());
-    v2->resize(v2end - v2->begin());
+    V v2;
+    v2.resize(v.size() + ids.v.size());
+    auto v2end = std::set_union(v.begin(), v.end(), ids.v.begin(), ids.v.end(), v2.begin());
+    v2.resize(v2end - v2.begin());
 
     // replace the vector with the result
-    delete v;
     v = v2;
 }
 
-void IDList::subtract(const IDList& ids)
+void IDList::subtract(IDList& ids)
 {
-    checkV();
-    ids.checkV();
-
     // sort both vectors so that we can apply set_difference
-    std::sort(v->begin(), v->end());
-    std::sort(ids.v->begin(), ids.v->end());
+    std::sort(v.begin(), v.end());
+    std::sort(ids.v.begin(), ids.v.end());
 
     // allocate a new vector, and compute difference into it
-    V *v2 = new V;
-    v2->resize(v->size());
-    V::iterator v2end = std::set_difference(v->begin(), v->end(), ids.v->begin(), ids.v->end(), v2->begin());
-    v2->resize(v2end - v2->begin());
+    V v2;
+    v2.resize(v.size());
+    auto v2end = std::set_difference(v.begin(), v.end(), ids.v.begin(), ids.v.end(), v2.begin());
+    v2.resize(v2end - v2.begin());
 
     // replace the vector with the result
-    delete v;
     v = v2;
 }
 
-IDList IDList::getDifference(const IDList& ids) const
+IDList IDList::getDifference(IDList& ids) const
 {
     IDList result = dup();
     result.subtract(ids);
@@ -155,41 +138,36 @@ IDList IDList::getDifference(const IDList& ids) const
 
 void IDList::intersect(IDList& ids)
 {
-    checkV();
-    ids.checkV();
-
     // sort both vectors so that we can apply set_intersect
-    std::sort(v->begin(), v->end());
-    std::sort(ids.v->begin(), ids.v->end());
+    std::sort(v.begin(), v.end());
+    std::sort(ids.v.begin(), ids.v.end());
 
     // allocate a new vector, and compute intersection into it
-    V *v2 = new V;
-    v2->resize(v->size());
-    V::iterator v2end = std::set_intersection(v->begin(), v->end(), ids.v->begin(), ids.v->end(), v2->begin());
-    v2->resize(v2end - v2->begin());
+    V v2;
+    v2.resize(v.size());
+    auto v2end = std::set_intersection(v.begin(), v.end(), ids.v.begin(), ids.v.end(), v2.begin());
+    v2.resize(v2end - v2.begin());
 
     // replace the vector with the result
-    delete v;
     v = v2;
 }
 
 IDList IDList::getRange(int startIndex, int endIndex) const
 {
-    checkV();
-    if (startIndex < 0 || endIndex > v->size() || startIndex > endIndex)
+    if (startIndex < 0 || endIndex > v.size() || startIndex > endIndex)
         throw opp_runtime_error("Bad start or end index");
-    IDList newList(endIndex-startIndex);
+    IDList newList;
+    newList.v.resize(endIndex-startIndex);
     for (int i = startIndex; i < endIndex; i++)
-        (*(newList.v))[i-startIndex] = (*v)[i];
+        newList.v[i-startIndex] = v[i];
     return newList;
 }
 
 IDList IDList::getSubsetByIndices(int *indices, int n) const
 {
-    checkV();
     IDList newList;
     for (int i = 0; i < n; i++)
-        newList.v->push_back(v->at(indices[i]));
+        newList.v.push_back(v.at(indices[i]));
     return newList;
 }
 
@@ -202,9 +180,8 @@ IDList IDList::dup() const
 
 void IDList::checkIntegrity(ResultFileManager *mgr) const
 {
-    checkV();
-    for (V::const_iterator i = v->begin(); i != v->end(); ++i)
-        mgr->getItem(*i);  // this will throw exception if id is not valid
+    for (ID id : v)
+        mgr->getItem(id);  // this will throw exception if id is not valid
 }
 
 void IDList::checkIntegrityAllScalars(ResultFileManager *mgr) const
@@ -337,12 +314,12 @@ void IDList::sortBy(ResultFileManager *mgr, bool ascending, T& comparator)
     READER_MUTEX
         checkIntegrity(mgr);
     // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
-    if (v->size() >= 2 && comparator(v->at(0), v->at(v->size()-1)) != ascending)
+    if (v.size() >= 2 && comparator(v.at(0), v.at(v.size()-1)) != ascending)
         reverse();
     if (ascending)
-        std::sort(v->begin(), v->end(), comparator);
+        std::sort(v.begin(), v.end(), comparator);
     else
-        std::sort(v->begin(), v->end(), flipArgs(comparator));
+        std::sort(v.begin(), v.end(), flipArgs(comparator));
 }
 
 template<class T>
@@ -351,12 +328,12 @@ void IDList::sortScalarsBy(ResultFileManager *mgr, bool ascending, T& comparator
     READER_MUTEX
         checkIntegrityAllScalars(mgr);
     // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
-    if (v->size() >= 2 && comparator(v->at(0), v->at(v->size()-1)) != ascending)
+    if (v.size() >= 2 && comparator(v.at(0), v.at(v.size()-1)) != ascending)
         reverse();
     if (ascending)
-        std::sort(v->begin(), v->end(), comparator);
+        std::sort(v.begin(), v.end(), comparator);
     else
-        std::sort(v->begin(), v->end(), flipArgs(comparator));
+        std::sort(v.begin(), v.end(), flipArgs(comparator));
 }
 
 template<class T>
@@ -365,12 +342,12 @@ void IDList::sortParametersBy(ResultFileManager *mgr, bool ascending, T& compara
     READER_MUTEX
         checkIntegrityAllParameters(mgr);
     // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
-    if (v->size() >= 2 && comparator(v->at(0), v->at(v->size()-1)) != ascending)
+    if (v.size() >= 2 && comparator(v.at(0), v.at(v.size()-1)) != ascending)
         reverse();
     if (ascending)
-        std::sort(v->begin(), v->end(), comparator);
+        std::sort(v.begin(), v.end(), comparator);
     else
-        std::sort(v->begin(), v->end(), flipArgs(comparator));
+        std::sort(v.begin(), v.end(), flipArgs(comparator));
 }
 
 template<class T>
@@ -379,12 +356,12 @@ void IDList::sortVectorsBy(ResultFileManager *mgr, bool ascending, T& comparator
     READER_MUTEX
         checkIntegrityAllVectors(mgr);
     // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
-    if (v->size() >= 2 && comparator(v->at(0), v->at(v->size()-1)) != ascending)
+    if (v.size() >= 2 && comparator(v.at(0), v.at(v.size()-1)) != ascending)
         reverse();
     if (ascending)
-        std::sort(v->begin(), v->end(), comparator);
+        std::sort(v.begin(), v.end(), comparator);
     else
-        std::sort(v->begin(), v->end(), flipArgs(comparator));
+        std::sort(v.begin(), v.end(), flipArgs(comparator));
 }
 
 template<class T>
@@ -393,12 +370,12 @@ void IDList::sortHistogramsBy(ResultFileManager *mgr, bool ascending, T& compara
     READER_MUTEX
         checkIntegrityAllHistograms(mgr);
     // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
-    if (v->size() >= 2 && comparator(v->at(0), v->at(v->size()-1)) != ascending)
+    if (v.size() >= 2 && comparator(v.at(0), v.at(v.size()-1)) != ascending)
         reverse();
     if (ascending)
-        std::sort(v->begin(), v->end(), comparator);
+        std::sort(v.begin(), v.end(), comparator);
     else
-        std::sort(v->begin(), v->end(), flipArgs(comparator));
+        std::sort(v.begin(), v.end(), flipArgs(comparator));
 }
 
 void IDList::sortByFileAndRun(ResultFileManager *mgr, bool ascending)
@@ -553,16 +530,14 @@ void IDList::sortByRunAttribute(ResultFileManager *mgr, const char *runAttribute
 
 void IDList::reverse()
 {
-    checkV();
-    std::reverse(v->begin(), v->end());
+    std::reverse(v.begin(), v.end());
 }
 
 int IDList::getItemTypes() const
 {
-    checkV();
     int types = 0;
-    for (V::const_iterator i = v->begin(); i != v->end(); ++i)
-        types |= ResultFileManager::_type(*i);
+    for (ID id : v)
+        types |= ResultFileManager::_type(id);
     return types;
 }
 
@@ -599,9 +574,9 @@ bool IDList::areAllHistograms() const
 IDList IDList::filterByTypes(int typeMask) const
 {
     IDList result;
-    for (V::const_iterator i = v->begin(); i != v->end(); ++i)
-        if ((ResultFileManager::_type(*i) & typeMask) != 0)
-            result.v->push_back(*i);
+    for (ID id : v)
+        if ((ResultFileManager::_type(id) & typeMask) != 0)
+            result.v.push_back(id);
 
     return result;
 }
@@ -609,41 +584,37 @@ IDList IDList::filterByTypes(int typeMask) const
 int IDList::countByTypes(int typeMask) const
 {
     int count = 0;
-    for (V::const_iterator i = v->begin(); i != v->end(); ++i)
-        if ((ResultFileManager::_type(*i) & typeMask) != 0)
+    for (ID id : v)
+        if ((ResultFileManager::_type(id) & typeMask) != 0)
             count++;
     return count;
 }
 
 void IDList::toByteArray(char *array, int n) const
 {
-    checkV();
-    if (n != (int)v->size()*8)
+    if (n != (int)v.size()*8)
         throw opp_runtime_error("byteArray is of wrong size -- must be 8*numIDs");
-    std::copy(v->begin(), v->end(), (ID *)array);  // XXX VC8.0: warning C4996: 'std::_Copy_opt' was declared deprecated
+    std::copy(v.begin(), v.end(), (ID *)array);  // XXX VC8.0: warning C4996: 'std::_Copy_opt' was declared deprecated
 }
 
 void IDList::fromByteArray(char *array, int n)
 {
-    checkV();
     if (n%8 != 0)
         throw opp_runtime_error("byteArray size must be multiple of 8");
-    v->resize(n/8);
+    v.resize(n/8);
     ID *a = (ID *)array;
-    std::copy(a, a+n/8, v->begin());
+    std::copy(a, a+n/8, v.begin());
 }
 
 bool IDList::equals(IDList& other)
 {
-    checkV();
-    other.checkV();
-    if (v->size() != other.v->size())
+    if (v.size() != other.v.size())
         return false;
-    if (*v == *other.v)
+    if (v == other.v)
         return true;
-    std::sort(v->begin(), v->end());
-    std::sort(other.v->begin(), other.v->end());
-    return *v == *other.v;
+    std::sort(v.begin(), v.end());
+    std::sort(other.v.begin(), other.v.end());
+    return v == other.v;
 }
 
 }  // namespace scave

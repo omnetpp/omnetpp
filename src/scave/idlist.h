@@ -44,10 +44,9 @@ class SCAVE_API IDList
     private:
         friend class ResultFileManager;
         typedef std::vector<ID> V;
-        V *v;
+        V v;
 
         void operator=(const IDList&); // undefined, to prevent calling it
-        void checkV() const {if (!v) throw std::runtime_error("this is a zombie IDList");}
         void checkIntegrity(ResultFileManager *mgr) const;
         void checkIntegrityAllScalars(ResultFileManager *mgr) const;
         void checkIntegrityAllParameters(ResultFileManager *mgr) const;
@@ -61,28 +60,26 @@ class SCAVE_API IDList
         template <class T> void sortHistogramsBy(ResultFileManager *mgr, bool ascending, T& comparator);
 
     public:
-        IDList()  {v = new V;}
-        IDList(unsigned int sz)  {v = new V(sz);}
+        IDList() {}
         IDList(const IDList& ids); // transfer of ownership semantics! this is really a move constructor, but SWIG cannot use actual move constructors.
-        ~IDList()  {delete v;}
-        int size() const  {checkV(); return (int)v->size();}
-        bool isEmpty() const  {checkV(); return v->empty();}
-        void clear()  {checkV(); v->clear();}
-        void sort() {checkV(); std::sort(v->begin(), v->end());}  // sort numerically; getUniqueFileRuns() etc are faster on sorted IDLists
+        int size() const  {return (int)v.size();}
+        bool isEmpty() const  {return v.empty();}
+        void clear()  {v.clear();}
+        void sort() {std::sort(v.begin(), v.end());}  // sort numerically; getUniqueFileRuns() etc are faster on sorted IDLists
         bool equals(IDList& other);
         void set(const IDList& ids);
         void add(ID x); // checks for uniqueness (costly)
         void bulkAdd(ID *array, int n); // checks for uniqueness (costly)
-        void append(ID id) {v->push_back(id);} // no uniqueness check, use of discardDuplicates() recommended
+        void append(ID id) {v.push_back(id);} // no uniqueness check, use of discardDuplicates() recommended
         void append(const IDList& ids); // no uniqueness check, use of discardDuplicates() recommended
         void discardDuplicates();
-        ID get(int i) const {checkV(); return v->at(i);} // at() includes bounds check
+        ID get(int i) const {return v.at(i);} // at() includes bounds check
         void erase(int i);
         void subtract(ID x); // this -= {x}
         int indexOf(ID x) const;
         void merge(IDList& ids);  // this += ids
-        void subtract(const IDList& ids);  // this -= ids
-        IDList getDifference(const IDList& ids) const;  // return this - ids
+        void subtract(IDList& ids);  // this -= ids
+        IDList getDifference(IDList& ids) const;  // return this - ids
         void intersect(IDList& ids);  // this = intersection(this,ids)
         IDList getRange(int startIndex, int endIndex) const;
         IDList getSubsetByIndices(int *array, int n) const;
@@ -95,8 +92,8 @@ class SCAVE_API IDList
         bool areAllHistograms() const;
 
         // support for range-based for loops
-        V::const_iterator begin() const {return v->begin();}
-        V::const_iterator end() const {return v->end();}
+        V::const_iterator begin() const {return v.begin();}
+        V::const_iterator end() const {return v.end();}
 
         // filtering
         int countByTypes(int typeMask) const;
