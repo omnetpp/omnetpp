@@ -385,8 +385,8 @@ StringSet ResultFileManager::getUniqueModuleNames(const IDList& ids) const
     READER_MUTEX
     // collect unique module names in this dataset
     StringSet set;
-    for (int i = 0; i < ids.size(); i++)
-        set.insert(getItem(ids.get(i)).getModuleName());  //TODO may make sense to use the "lastModuleName" trick
+    for (ID id : ids)
+        set.insert(getItem(id)).getModuleName());  //TODO may make sense to use the "lastModuleName" trick
     return set;
 }
 
@@ -395,8 +395,8 @@ StringSet ResultFileManager::getUniqueNames(const IDList& ids) const
     READER_MUTEX
     // collect unique scalar/vector names in this dataset
     StringSet set;
-    for (int i = 0; i < ids.size(); i++)
-        set.insert(getItem(ids.get(i)).getName());
+    for (ID id : ids)
+        set.insert(getItem(id).getName());
     return set;
 }
 
@@ -405,8 +405,8 @@ StringSet ResultFileManager::getUniqueModuleAndResultNamePairs(const IDList& ids
     READER_MUTEX
     // collect unique scalar/vector names in this dataset
     StringSet set;
-    for (int i = 0; i < ids.size(); i++) {
-        const ResultItem& result = getItem(ids.get(i));
+    for (ID id : ids) {
+        const ResultItem& result = getItem(id);
         set.insert(result.getModuleName() + "." + result.getName());
     }
     return set;
@@ -416,8 +416,8 @@ StringSet ResultFileManager::getUniqueAttributeNames(const IDList& ids) const
 {
     READER_MUTEX
     StringSet set;
-    for (int i = 0; i < ids.size(); i++) {
-        const StringMap& attributes = getItem(ids.get(i)).getAttributes();
+    for (ID id : ids) {
+        const StringMap& attributes = getItem(id).getAttributes();
         for (StringMap::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
             set.insert(it->first);
     }
@@ -527,8 +527,7 @@ IDListsByRun ResultFileManager::getPartitionByRun(const IDList& ids) const
     std::map<Run*,IDList> map;
     Run *lastRun = nullptr;
     IDList *lastRunIDList = nullptr;
-    for (int i = 0; i < ids.size(); i++) {
-        ID id = ids.get(i);
+    for (ID id : ids) {
         Run *run = getItem(id).getRun();
         if (run != lastRun) {
             lastRun = run;
@@ -546,8 +545,7 @@ IDListsByFile ResultFileManager::getPartitionByFile(const IDList& ids) const
     std::map<ResultFile*,IDList> map;
     ResultFile *lastFile = nullptr;
     IDList *lastFileIDList = nullptr;
-    for (int i = 0; i < ids.size(); i++) {
-        ID id = ids.get(i);
+    for (ID id : ids) {
         ResultFile *file = getItem(id).getFile();
         if (file != lastFile) {
             lastFile = file;
