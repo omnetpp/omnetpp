@@ -36,30 +36,8 @@
 #  define OPP_DLLEXPORT
 #endif
 
-// check VC++ version (9.0 is no longer accepted)
-#ifdef _MSC_VER
-#if _MSC_VER<1600
-#error "OMNEST/OMNeT++ cannot be compiled with Visual C++ 2008 or earlier, at least version 2010 required"
-#endif
-#endif
-
 #ifdef _MSC_VER
 #pragma warning(disable:4800)  // disable "forcing int to bool"
-#endif
-
-// gcc 2.9x.x had broken exception handling
-#ifdef __GNUC__
-#  if  __GNUC__<3
-#    error gcc 3.x or later required -- please upgrade
-#  endif
-#endif
-
-// make the code compile with pre-C++11 compilers
-#if __cplusplus < 201103L
-#  if !defined nullptr
-#    define nullptr  0
-#  endif
-#  define override
 #endif
 
 #if defined __GNUC__
