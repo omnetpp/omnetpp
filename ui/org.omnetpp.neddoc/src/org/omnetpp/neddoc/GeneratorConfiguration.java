@@ -25,6 +25,7 @@ public class GeneratorConfiguration {
     private static final String GENERATE_DOXY = "GenerateDoxy";
     private static final String DOXY_SOURCE_BROWSER = "DoxySourceBrowser";
     private static final String OUTPUT_DIRECTORY_PATH = "OutputDirectoryPath";
+    private static final String EXTENSION_FILE_PATH = "ExtensionFilePath";
 
     public IProject[] projects;
 
@@ -43,6 +44,7 @@ public class GeneratorConfiguration {
     public boolean cppSourceListings = false;
 
     public String outputDirectoryPath;
+    public String extensionFilePath;
 
     public void store(IDialogSettings settings) {
         settings.put(GENERATE_NED_TYPE_FIGURES, generateNedTypeFigures);
@@ -55,6 +57,7 @@ public class GeneratorConfiguration {
         settings.put(GENERATE_MSG_DEFINITIONS, generateMsgDefinitions);
         settings.put(AUTOMATIC_HYPERLINKING, automaticHyperlinking);
         settings.put(GENERATE_EXCLUDED_DIRS, excludedDirs);
+        settings.put(EXTENSION_FILE_PATH, extensionFilePath);
 
         settings.put(GENERATE_DOXY, generateDoxy);
         settings.put(DOXY_SOURCE_BROWSER, cppSourceListings);
@@ -90,6 +93,10 @@ public class GeneratorConfiguration {
         excludedDirs = settings.get(GENERATE_EXCLUDED_DIRS);
         if (StringUtils.isEmpty(excludedDirs))
             excludedDirs = null;
+
+        extensionFilePath = settings.get(EXTENSION_FILE_PATH);
+        if (StringUtils.isEmpty(extensionFilePath))
+            extensionFilePath = null; 
 
         outputDirectoryPath = settings.get(OUTPUT_DIRECTORY_PATH);
         if (StringUtils.isEmpty(outputDirectoryPath))

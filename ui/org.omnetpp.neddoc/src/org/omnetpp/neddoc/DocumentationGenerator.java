@@ -121,6 +121,7 @@ import org.omnetpp.ned.model.interfaces.ITypeElement;
 import org.omnetpp.ned.model.pojo.FieldElement;
 import org.omnetpp.ned.model.pojo.LiteralElement;
 import org.omnetpp.ned.model.pojo.PropertyKeyElement;
+import org.omnetpp.neddoc.NeddocExtensions.ExtType;
 import org.omnetpp.neddoc.properties.DocumentationGeneratorPropertyPage;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -191,6 +192,7 @@ public class DocumentationGenerator {
     protected IPath absoluteDoxyConfigFilePath; //FIXME should be IFile! because error message about missing doxyfile should show workspace path not filesystem path!
     protected IPath rootRelativeNeddocPath;
     protected IPath neddocRelativeRootPath;
+    protected IPath extensionFilePath;
     protected IPath customCssPath;
     protected IProject project;
     protected INedResources nedResources;
@@ -217,6 +219,7 @@ public class DocumentationGenerator {
     protected TreeMap<String, ArrayList> navigationItemIndex;
 
     protected IRenderer renderer;
+    protected NeddocExtensions neddocExtensions;
 
     static Image createImage(String base64Data) {
         return new Image(Display.getDefault(), new ImageData(new ByteArrayInputStream(Base64.decode(base64Data.getBytes()))));
@@ -231,6 +234,11 @@ public class DocumentationGenerator {
         IPreferenceStore store = CommonPlugin.getConfigurationPreferenceStore();
         dotExecutablePath = ProcessUtils.lookupExecutable(store.getString(IConstants.PREF_GRAPHVIZ_DOT_EXECUTABLE));
         doxyExecutablePath = ProcessUtils.lookupExecutable(store.getString(IConstants.PREF_DOXYGEN_EXECUTABLE));
+    }
+
+    // specify an extension file using a full file system path to the XML doc-extension fragment file
+    public void setExtensionFilePath(IPath extensionFilePath) {
+        this.extensionFilePath = extensionFilePath;
     }
 
     public void setHeadless(boolean headless) {
@@ -434,6 +442,7 @@ public class DocumentationGenerator {
             collectSubtypesMap();
             collectImplementorsMap();
             collectUsersMap();
+            collectExtensions();
         }
         finally {
             monitor.done();
@@ -484,6 +493,16 @@ public class DocumentationGenerator {
             return packageName;
         else
             return "default";
+    }
+    
+    // return the fully qualified name for the type (except for default package)
+    protected String getFullyQalifiedName(ITypeElement typeElement) {
+        if (typeElement instanceof INedTypeElement) {
+            return ((INedTypeElement)typeElement).getNedTypeInfo().getFullyQualifiedName();
+        } else if (typeElement instanceof IMsgTypeElement) {
+//            return ((IMsgTypeElement)typeElement).getMsgTypeInfo().getFullyQualifiedName(); // TODO not yet exist
+        }
+        return typeElement.getName();  // return unqualified name by default         
     }
 
     protected void collectPackageNames() {
@@ -617,6 +636,11 @@ public class DocumentationGenerator {
             }
         }
     }
+    
+    protected void collectExtensions() {
+        if (extensionFilePath != null) 
+            neddocExtensions = new NeddocExtensions(extensionFilePath.toOSString());         
+    }
 
     private boolean isCppProject(IProject project) throws CoreException {
         return project.getNature("org.eclipse.cdt.core.ccnature") != null;
@@ -706,7 +730,6 @@ public class DocumentationGenerator {
 
         if (APPLY_CC)
             out(renderer.ccFooterString());
-
 
         out(splitPage[1]);
 
@@ -1189,7 +1212,8 @@ public class DocumentationGenerator {
             for (final String packageName : packageNames) {
                         out(renderer.anchorTag(packageName.replace('.', '_')));
                         out(renderer.sectionTag(packageName, "subtitle"));
-
+                        generateExtensionFragment(ExtType.NED, packageName, "top");
+                        
                         out(renderer.tableHeaderTag("typestable"));
                         generateTypesTableHead();
 
@@ -1199,6 +1223,7 @@ public class DocumentationGenerator {
                                     generateTypeReferenceLine(typeElement);
 
                         out(renderer.tableTrailerTag());
+                        generateExtensionFragment(ExtType.NED, packageName, "bottom");
                     }
             }
         );
@@ -1214,6 +1239,7 @@ public class DocumentationGenerator {
                         String fileType = nedResources.isNedFile(file) ? "NED" : msgResources.isMsgFile(file) ? "Msg" : "";
 
                         out(renderer.sectionTag(fileType + " File " + file.getProjectRelativePath(), "comptitle"));
+                        generateExtensionFragment(ExtType.FILE, file.getProjectRelativePath().toString(), "top");
 
                         INedFileElement fileElement = msgResources.isMsgFile(file) ?
                                 msgResources.getMsgFileElement(file) : nedResources.getNedFileElement(file);
@@ -1228,8 +1254,10 @@ public class DocumentationGenerator {
 
                             out(renderer.tableTrailerTag());
                         }
+                        generateExtensionFragment(ExtType.FILE, file.getProjectRelativePath().toString(), "after-types");
 
                         generateSourceContent(file);
+                        generateExtensionFragment(ExtType.FILE, file.getProjectRelativePath().toString(), "bottom");
                         monitor.worked(1);
                     }
                 );
@@ -1257,9 +1285,14 @@ public class DocumentationGenerator {
 
     protected void generateTypePage(ITypeElement typeElement) throws Exception {
         generatePage(getOutputBaseFileName(typeElement), typeElement.getName(), () -> {
+                String qName = getFullyQalifiedName(typeElement);
+                
                 boolean isNedTypeElement = typeElement instanceof INedTypeElement;
                 boolean isMsgTypeElement = typeElement instanceof IMsgTypeElement;
 
+                if (isNedTypeElement) generateExtensionFragment(ExtType.NED, qName, "top");
+                if (isMsgTypeElement) generateExtensionFragment(ExtType.MSG, qName, "top");
+                
                 if (isNedTypeElement)
                     out(renderer.pTag(packageReferenceString(getPackageName((INedTypeElement)typeElement))));
 
@@ -1273,27 +1306,48 @@ public class DocumentationGenerator {
                     out(renderer.pTag("(no description)"));
                 else
                     out(processHTMLContent("comment", comment));
+                if (isNedTypeElement) generateExtensionFragment(ExtType.NED, qName, "after-description");
+                if (isMsgTypeElement) generateExtensionFragment(ExtType.MSG, qName, "after-description");
 
                 if (isNedTypeElement) {
                     INedTypeElement nedTypeElement = (INedTypeElement)typeElement;
                     monitor.subTask(nedTypeElement.getReadableTagName() + ": " + nedTypeElement.getNedTypeInfo().getFullyQualifiedName());
 
                     generateTypeDiagram(nedTypeElement);
+                    generateExtensionFragment(ExtType.NED, qName, "after-image");
+
                     generateUsageDiagram(nedTypeElement);
                     generateInheritanceDiagram(nedTypeElement);
+                    generateExtensionFragment(ExtType.NED, qName, "dafter-iagrams");
+
                     if (typeElement instanceof IInterfaceTypeElement)
                         generateImplementorsTable(nedTypeElement);
                     generateUsedInTables(nedTypeElement);
+                    generateExtensionFragment(ExtType.NED, qName, "after-usage");
+
                     generateKnownSubtypesTable(nedTypeElement);
                     generateExtendsTable(nedTypeElement);
+                    generateExtensionFragment(ExtType.NED, qName, "after-inheritance");
+                                        
                     generateParametersTable(nedTypeElement);
+                    generateExtensionFragment(ExtType.NED, qName, "after-parameters");
+
                     generatePropertiesTable(nedTypeElement);
+                    generateExtensionFragment(ExtType.NED, qName, "after-properties");
+
                     if (typeElement instanceof IModuleTypeElement)
                         generateGatesTable(nedTypeElement);
+                    generateExtensionFragment(ExtType.NED, qName, "after-gates");
+
                     generateSignalsTable(nedTypeElement);
+                    generateExtensionFragment(ExtType.NED, qName, "after-signals");
+                    
                     generateStatisticsTable(nedTypeElement);
+                    generateExtensionFragment(ExtType.NED, qName, "after-statistics");
+
                     if (typeElement instanceof CompoundModuleElementEx)
                         generateUnassignedParametersTable(nedTypeElement);
+                    generateExtensionFragment(ExtType.NED, qName, "after-unassigned-parameters");
                 }
                 else if (isMsgTypeElement) {
                     IMsgTypeElement msgTypeElement = (IMsgTypeElement)typeElement;
@@ -1301,10 +1355,17 @@ public class DocumentationGenerator {
 
                     generateUsageDiagram(msgTypeElement);
                     generateInheritanceDiagram(msgTypeElement);
+                    generateExtensionFragment(ExtType.MSG, qName, "after-diagrams");
+                    
                     generateExtendsTable(msgTypeElement);
                     generateKnownSubtypesTable(msgTypeElement);
+                    generateExtensionFragment(ExtType.MSG, qName, "after-inheritance");
+
                     generateFieldsTable(msgTypeElement);
+                    generateExtensionFragment(ExtType.MSG, qName, "after-fields");
+
                     generatePropertiesTable(msgTypeElement);
+                    generateExtensionFragment(ExtType.MSG, qName, "after-properties");
                 }
 
                 if (generateSourceListings) {
@@ -1315,11 +1376,20 @@ public class DocumentationGenerator {
                     else
                         generateFileReference(getNedOrMsgFile(typeElement));
                 }
-
+                if (isNedTypeElement) generateExtensionFragment(ExtType.NED, qName, "bottom");
+                if (isMsgTypeElement) generateExtensionFragment(ExtType.MSG, qName, "bottom");
 
                 monitor.worked(1);
             }
         );
+    }
+
+    protected void generateExtensionFragment(ExtType extensionType, String qualifiedName, String anchor) throws IOException {
+        if (neddocExtensions != null) { 
+            var fragment = neddocExtensions.getFragment(extensionType, qualifiedName, anchor);
+            if (fragment != null)
+                out(processHTMLContent("fragment", fragment));            
+        }        
     }
 
     protected void generateFieldsTable(IMsgTypeElement msgTypeElement) throws IOException {

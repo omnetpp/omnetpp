@@ -165,12 +165,24 @@ public class NeddocApplication implements IApplication {
         printOption("-o <output_directory>",
                 "The output directory for the generated documentation. "
                 + "The documentation is created under the 'doc' folder in each project by default.");
+        printOption("-f <fragment_file>",
+                "Specify a file containing document fragments to be injected into the"
+                + "generated documentation.");
     }
 
     private static void configureGenerator(IProject project, DocumentationGenerator generator, Set<String> switchOptions, Map<String,String> valueOptions) {
         String outputDir = valueOptions.get("-o");
         IPath destinationDirPath = outputDir == null ? project.getLocation() : new Path(outputDir).append(project.getName());
         generator.setDocumentationRootPath(destinationDirPath);
+        
+        String extensionFilePath = valueOptions.get("-f");
+        if (StringUtils.isNotBlank(extensionFilePath)) {
+            IPath exFP = new Path(extensionFilePath);
+            if (!exFP.isAbsolute())  // if the path is relative, assume it relative to the project and make it absolute
+                exFP = project.getLocation().append(exFP);
+            generator.setExtensionFilePath(exFP);
+        }
+                
         generator.setExcludedDirs(valueOptions.getOrDefault("-x", ""));
         generator.setRootRelativeDoxyPath(new Path(DocumentationGeneratorPropertyPage.DEFAULT_DOXY_PATH));
         generator.setRootRelativeNeddocPath(new Path(DocumentationGeneratorPropertyPage.DEFAULT_NEDDOC_PATH));

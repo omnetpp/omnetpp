@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
@@ -80,6 +81,7 @@ public class GeneratorConfigurationDialog
     private Button doxySourceBrowser;
 
     private Text excludedDirs;
+    private Text extensionFilePath;
     private Text outputDirectoryPath;
 
     private Button browseButton;
@@ -270,6 +272,12 @@ public class GeneratorConfigurationDialog
 
         label = new Label(group, SWT.NONE);
         label.setText("   Note: other Doxygen options can be configured in the Doxygen configuration file");
+        Label extLabel = new Label(group, SWT.NONE);
+        extLabel.setText("Path to the XML file defining documentation extension fragments:");
+        extensionFilePath = new Text(group, SWT.BORDER);
+        extensionFilePath.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        if (configuration.extensionFilePath != null)
+            extensionFilePath.setText(configuration.extensionFilePath);
     }
 
     private Button createCheckbox(Composite parent, String text, boolean initialSelection) {
@@ -359,6 +367,7 @@ public class GeneratorConfigurationDialog
         configuration.generateMsgDefinitions = generateMsgDefinitions.getSelection();
         configuration.automaticHyperlinking = enableAutomaticHyperlinking.getSelection();
         configuration.excludedDirs = excludedDirs.getText();
+        configuration.extensionFilePath = extensionFilePath.getText();
 
         configuration.generateDoxy = generateDoxy.getSelection();
         configuration.cppSourceListings = doxySourceBrowser.getSelection();
@@ -403,6 +412,14 @@ public class GeneratorConfigurationDialog
             generator.setGenerateDoxy(configuration.generateDoxy);
             generator.setGenerateCppSourceListings(configuration.cppSourceListings);
             generator.setExcludedDirs(configuration.excludedDirs);
+            
+            if (StringUtils.isNotBlank(configuration.extensionFilePath)) {
+                IPath exFP = new Path(configuration.extensionFilePath);
+                if (!exFP.isAbsolute())
+                    exFP = project.getLocation().append(exFP);
+                generator.setExtensionFilePath(exFP);
+            }
+            
             generators.add(generator);
         }
 
