@@ -266,12 +266,12 @@ public class ResultSelectionFilterGenerator {
 
     // filtering for the given result type will not be part of the returned expression!!!
     public static String getIDListAsFilterExpression(IDList ids, String[] runidFields, ResultType resultType, String viewFilter, ResultFileManager manager) {
-        IDList allIDs = manager.getAllItems(false, false).filterByTypes(resultType.getValue());
+        IDList allIDs = manager.getAllItems(false).filterByTypes(resultType.getValue());
         return getIDListAsFilterExpression(allIDs, ids, runidFields, viewFilter, manager);
     }
 
     public static String getIDListAsFilterExpression(IDList ids, String[] runidFields, String viewFilter, ResultFileManager manager) {
-        IDList allIDs = manager.getAllItems(false, false);
+        IDList allIDs = manager.getAllItems(false);
         return getIDListAsFilterExpression(allIDs, ids, runidFields, viewFilter, manager);
     }
 

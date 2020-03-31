@@ -368,9 +368,9 @@ public class BrowseDataPage extends FormEditorPage {
 
         monitor.subTask("Collecting data");
         while (Display.getCurrent().readAndDispatch());
-        IDList items = manager.getAllItems(false, true);
+        IDList items = manager.getAllItems(false);
         IDList vectors = manager.getAllVectors();
-        IDList scalars = manager.getAllScalars(showStatisticsFieldsAsScalars, true);
+        IDList scalars = manager.getAllScalars(showStatisticsFieldsAsScalars);
         IDList parameters = manager.getAllParameters();
         IDList histograms = manager.getAllStatistics();
         histograms.merge(manager.getAllHistograms());

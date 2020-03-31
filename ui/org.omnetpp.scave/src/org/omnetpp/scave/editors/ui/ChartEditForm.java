@@ -155,7 +155,7 @@ public class ChartEditForm {
                 if (part.startsWith("$")) {
                     switch (part) {
                     case "$scalarnames":
-                        for (String name : manager.getUniqueResultNames(manager.getAllScalars(false, false)).keys().toArray())
+                        for (String name : manager.getUniqueResultNames(manager.getAllScalars(false)).keys().toArray())
                             result.add(name);
                         break;
                     case "$vectornames":

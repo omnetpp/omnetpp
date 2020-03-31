@@ -475,7 +475,7 @@ class SCAVE_API ResultFileManager
     FileRun *getFileRunForID(ID id) const; // checks for nullptr
 
     template <class T>
-    void collectIDs(IDList& result, FileRun *fileRun, std::vector<T> FileRun::* vec, int type, bool includeFields, bool includeItervars) const;
+    void collectIDs(IDList& result, FileRun *fileRun, std::vector<T> FileRun::* vec, int type, bool includeFields) const;
 
     // unchecked getters are only for internal use by CmpBase in idlist.cc
     const ResultItem& uncheckedGetItem(ID id) const;
@@ -544,12 +544,12 @@ class SCAVE_API ResultFileManager
     IDListsByFile getPartitionByFile(const IDList& ids) const;
 
     // getting lists of data items
-    IDList getAllScalars(bool includeFields = true, bool includeItervars = true) const;
+    IDList getAllScalars(bool includeFields = true) const;
     IDList getAllParameters() const;
     IDList getAllVectors() const;
     IDList getAllStatistics() const;
     IDList getAllHistograms() const;
-    IDList getAllItems(bool includeFields = true, bool includeItervars = true) const;
+    IDList getAllItems(bool includeFields = true) const;
     IDList getScalarsInFileRun(FileRun *fileRun) const;
     IDList getParametersInFileRun(FileRun *fileRun) const;
     IDList getVectorsInFileRun(FileRun *fileRun) const;

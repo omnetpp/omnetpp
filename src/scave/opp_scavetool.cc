@@ -98,7 +98,6 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.option("-g, --grep-friendly", "Grep-friendly: with -p, put run names at the start of each line, not above groups as headings.");
         help.option("    --tabs", "Use tabs in tables instead of padding with spaces.");
         help.option("-w, --add-fields-as-scalars", "Add statistics fields (count, sum, mean, stddev, min, max, etc) as scalars");
-        help.option("-y, --add-itervars-as-scalars", "Add iteration variables as scalars");
         help.option("-D, --rundisplay <format>", "Display format for run; <format> can be any of:\n"
                     "  'runid'       Displays ${runid} (this is the default)\n"
                     "  'runnumber'   Displays ${configname} ${runnumber}\n"
@@ -117,7 +116,6 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.option("-T, --type <types>", "Limit item types; <types> is concatenation of type characters (v=vector, s=scalar, t=statistic, h=histogram, p=parameter).");
         help.option("-f, --filter <filter>", "Filter for result items (vectors, scalars, statistics, histograms, parameters) matched by filter expression (try 'help filter')");
         help.option("-w, --add-fields-as-scalars", "Add statistics fields (count, sum, mean, stddev, min, max, etc) as scalars");
-        help.option("-y, --add-itervars-as-scalars", "Add iteration variables as scalars");
         help.option("--start-time", "Limit vector data to after the given simulation time (inclusive)");
         help.option("--end-time", "Limit vector data to before the given simulation time (exclusive)");
         help.option("-o <filename>", "Output file name, or '-' for the standard output. This option is mandatory.");
@@ -356,7 +354,6 @@ void ScaveTool::queryCommand(int argc, char **argv)
     int opt_resultTypeFilter = ResultFileManager::SCALAR | ResultFileManager::VECTOR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM | ResultFileManager::PARAMETER;
     RunDisplayMode opt_runDisplayMode = RUNDISPLAY_RUNID;
     bool opt_includeFields = false;
-    bool opt_includeItervars = false;
     bool opt_bare = false;
     bool opt_perRun = false;
     bool opt_grepFriendly = false;
@@ -404,8 +401,6 @@ void ScaveTool::queryCommand(int argc, char **argv)
             opt_runDisplayModeStr = opt.substr(2);
         else if (opt == "-w" || opt == "--add-fields-as-scalars")
             opt_includeFields = true;
-        else if (opt == "-y" || opt == "--add-itervars-as-scalars")
-            opt_includeItervars = true;
         else if (opt == "-p" || opt == "--per-run")
             opt_perRun = true;
         else if (opt == "-b" || opt == "--bare")
@@ -447,7 +442,7 @@ void ScaveTool::queryCommand(int argc, char **argv)
     loadFiles(resultFileManager, opt_fileNames, opt_indexingAllowed, opt_verbose);
 
     // filter statistics
-    IDList results = resultFileManager.getAllItems(opt_includeFields, opt_includeItervars);
+    IDList results = resultFileManager.getAllItems(opt_includeFields);
     if (opt_mode != LIST_RUNS && opt_mode != LIST_RUNATTRS && opt_mode != LIST_ITERVARS && opt_mode != LIST_CONFIGENTRIES) {
         results.set(results.filterByTypes(opt_resultTypeFilter));
         results.set(resultFileManager.filterIDList(results, opt_filterExpression.c_str()));
@@ -669,7 +664,6 @@ void ScaveTool::exportCommand(int argc, char **argv)
     bool opt_verbose = false;
     bool opt_indexingAllowed = true;
     bool opt_includeFields = false;
-    bool opt_includeItervars = false;
     double opt_vectorStartTime = -INFINITY;
     double opt_vectorEndTime = INFINITY;
     string opt_fileName;
@@ -692,8 +686,6 @@ void ScaveTool::exportCommand(int argc, char **argv)
             opt_filterExpression = unquoteString(argv[++i]);
         else if (opt == "-w" || opt == "--add-fields-as-scalars")
             opt_includeFields = true;
-        else if (opt == "-y" || opt == "--add-itervars-as-scalars")
-            opt_includeItervars = true;
         else if (opt == "--start-time" && i != argc-1)
             opt_vectorStartTime = parseTime(argv[++i]);
         else if (opt == "--end-time" && i != argc-1)
@@ -752,7 +744,7 @@ void ScaveTool::exportCommand(int argc, char **argv)
     loadFiles(resultFileManager, opt_fileNames, opt_indexingAllowed, opt_verbose);
 
     // filter results
-    IDList results = resultFileManager.getAllItems(opt_includeFields, opt_includeItervars);
+    IDList results = resultFileManager.getAllItems(opt_includeFields);
     results.set(results.filterByTypes(opt_resultTypeFilter));
     results.set(resultFileManager.filterIDList(results, opt_filterExpression.c_str()));
 

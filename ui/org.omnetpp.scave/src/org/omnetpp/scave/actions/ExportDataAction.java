@@ -63,7 +63,7 @@ public class ExportDataAction extends AbstractScaveAction {
                     String filterExpression = filterProperty.getValue();
 
                     selectedIDs = ResultFileManager.callWithReadLock(resultFileManager, () -> {
-                        IDList idList = resultFileManager.getAllItems(false, false);
+                        IDList idList = resultFileManager.getAllItems(false);
                         return resultFileManager.filterIDList(idList, filterExpression);
                     });
 

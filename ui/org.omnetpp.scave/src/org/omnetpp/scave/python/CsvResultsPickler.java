@@ -329,7 +329,7 @@ public class CsvResultsPickler implements IObjectPickler {
         // TODO: omitUnusedColumns is currently ignored here, dropping them is done in Python.
         out.write(Opcodes.MARK);
         if (filterExpression != null && !filterExpression.trim().isEmpty()) {
-            IDList results = resultManager.getAllItems(false, false);
+            IDList results = resultManager.getAllItems(false);
             results = resultManager.filterIDList(results, filterExpression, -1, interruptedFlag);
 
             if (ResultPicklingUtils.debug)
