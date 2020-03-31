@@ -39,16 +39,6 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace scave {
 
-IDList::IDList(const IDList& ids)
-{
-    v = std::move(const_cast<V&>(ids.v));
-}
-
-void IDList::set(const IDList& ids)
-{
-    v = ids.v;
-}
-
 void IDList::add(ID x)
 {
     if (std::find(v.begin(), v.end(), x) == v.end())
@@ -150,6 +140,15 @@ void IDList::intersect(IDList& ids)
 
     // replace the vector with the result
     v = v2;
+}
+
+bool IDList::isSubsetOf(IDList& ids)
+{
+    // sort both vectors so that we can apply std::includes()
+    std::sort(v.begin(), v.end());
+    std::sort(ids.v.begin(), ids.v.end());
+
+    return std::includes(ids.v.begin(), ids.v.end(), v.begin(), v.end()); // "ids includes this"
 }
 
 IDList IDList::getRange(int startIndex, int endIndex) const

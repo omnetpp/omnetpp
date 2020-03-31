@@ -12,6 +12,14 @@ namespace omnetpp { namespace scave {
 %ignore IDList::begin;
 %ignore IDList::end;
 
+%feature("novaluewrapper") IDList;
+
+// when returning an IDList by value, ensure that in the generated C++ code (scave.cxx), the result is moved instead of copied (performance) 
+%typemap(out) IDList {
+    *(omnetpp::scave::IDList **)&jresult = new omnetpp::scave::IDList(std::move(result)); // custom code -- move instead of copy 
+  }
+
+
 %typemap(javacode) IDList %{
   @Override
   public int hashCode() {

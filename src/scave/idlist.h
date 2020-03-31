@@ -46,7 +46,6 @@ class SCAVE_API IDList
         typedef std::vector<ID> V;
         V v;
 
-        void operator=(const IDList&); // undefined, to prevent calling it
         void checkIntegrity(ResultFileManager *mgr) const;
         void checkIntegrityAllScalars(ResultFileManager *mgr) const;
         void checkIntegrityAllParameters(ResultFileManager *mgr) const;
@@ -61,13 +60,16 @@ class SCAVE_API IDList
 
     public:
         IDList() {}
-        IDList(const IDList& ids); // transfer of ownership semantics! this is really a move constructor, but SWIG cannot use actual move constructors.
+        IDList(const IDList& ids) {v = ids.v;}
+        IDList(IDList&& ids) {v = std::move(ids.v);}
+        IDList& operator=(const IDList& ids) {v = ids.v; return *this;}
+        IDList& operator=(IDList&& ids) {v = std::move(ids.v); return *this;}
+        void set(const IDList& ids) {v = ids.v;}
         int size() const  {return (int)v.size();}
         bool isEmpty() const  {return v.empty();}
         void clear()  {v.clear();}
         void sort() {std::sort(v.begin(), v.end());}  // sort numerically; getUniqueFileRuns() etc are faster on sorted IDLists
         bool equals(IDList& other);
-        void set(const IDList& ids);
         void add(ID x); // checks for uniqueness (costly)
         void bulkAdd(ID *array, int n); // checks for uniqueness (costly)
         void append(ID id) {v.push_back(id);} // no uniqueness check, use of discardDuplicates() recommended
@@ -81,6 +83,7 @@ class SCAVE_API IDList
         void subtract(IDList& ids);  // this -= ids
         IDList getDifference(IDList& ids) const;  // return this - ids
         void intersect(IDList& ids);  // this = intersection(this,ids)
+        bool isSubsetOf(IDList& ids);
         IDList getRange(int startIndex, int endIndex) const;
         IDList getSubsetByIndices(int *array, int n) const;
         IDList dup() const;
