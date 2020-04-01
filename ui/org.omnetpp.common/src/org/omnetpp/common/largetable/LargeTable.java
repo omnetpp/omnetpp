@@ -350,7 +350,7 @@ public class LargeTable extends Composite
 
         canvas.addListener(SWT.MouseWheel, new Listener() {
             public void handleEvent(Event event) {
-                scroll(event.count);
+                scroll(-event.count);
             }
         });
     }
