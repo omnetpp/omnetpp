@@ -817,15 +817,14 @@ public class LargeTable extends Composite
             }
 
             int x = 0;
-            final int LINE_WIDTH = 1;
             for (int j = 0; j < table.getColumnCount(); j++) {
                 TableColumn column = table.getColumn(columnOrder[j]);
                 // clipping has to be set explicitly without using the graphics transformation
                 // to work correctly on Mac OS X
-                gc.setClipping(new Rectangle(x+LINE_WIDTH, y, column.getWidth(), getRowHeight()).intersection(clipping));
+                gc.setClipping(new Rectangle(x, y, column.getWidth(), getRowHeight()).intersection(clipping));
                 // do the transformation afterwards
                 rowTransform.setElements(1, 0, 0, 1, 0, 0);
-                rowTransform.translate(x+LINE_WIDTH, y);
+                rowTransform.translate(x, y);
                 gc.setTransform(rowTransform);
 
                 if (isSelectedElement && canvas.isFocusControl())
@@ -838,10 +837,10 @@ public class LargeTable extends Composite
 
                 if (drawLines) {
                     gc.setForeground(LINE_COLOR);
-                    gc.drawLine(x, y, x, y + getRowHeight());
+                    gc.drawLine(x-1, y, x-1, y + getRowHeight());
                 }
 
-                x += column.getWidth() + LINE_WIDTH;
+                x += column.getWidth();
             }
 
             if (rowIndex == focusIndex) {
