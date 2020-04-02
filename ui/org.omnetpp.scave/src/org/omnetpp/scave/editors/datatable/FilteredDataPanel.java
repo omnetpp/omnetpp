@@ -7,6 +7,9 @@
 
 package org.omnetpp.scave.editors.datatable;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.fieldassist.ContentProposal;
@@ -51,8 +54,8 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
     private IDList idlist; // the unfiltered data list
     private ResultType type;
     private FocusManager focusManager;
-    private int itemLimit = 100_000_000; // some sensible(?) limit to the number of data items displayed
-    private boolean truncated = false; // whether table/tree content has been truncated (to itemLimit items)
+    private int itemLimit = 100_000_000; // some sensible limit to the number of data items displayed, may be important with DataTree which isn't O(1)
+    private Map<String,IDList> filterCache = new LinkedHashMap<>(); // keep order so we can discard oldest entries
 
     public FilteredDataPanel(Composite parent, int style, ResultType type) {
         super(parent, style);
@@ -71,6 +74,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
 
     public void setIDList(IDList idlist) {
         this.idlist = idlist;
+        filterCache.clear();
         runFilter();
     }
 
@@ -87,7 +91,8 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
     }
 
     public boolean isTruncated() {
-        return truncated;
+        IDList controlIDList = dataControl.getIDList();
+        return controlIDList != null && controlIDList.size() == itemLimit; // well, either truncated or exactly itemLimit, distinction isn't worth the effort
     }
 
     public void setResultFileManager(ResultFileManagerEx manager) {
@@ -159,16 +164,18 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
         filterCombo.setContentproposalProvider(new IContentProposalProvider() {
             @Override
             public IContentProposal[] getProposals(String contents, int position) {
-                String prefix = contents.substring(0, position);
-                return wrapIntoProposals(computeHintsFor(filterCombo, filterField, prefix));
+                return Debug.timed("ProposalProvider.getProposals()", 1, () -> {
+                    String prefix = contents.substring(0, position);
+                    return wrapIntoProposals(computeHintsFor(filterCombo, filterField, prefix)); // should we limit the number of hints...?
+                });
             }
         });
     }
 
     protected String[] computeHintsFor(FilterCombo filterCombo, FilterField filterField, String prefix) {
-        String filter = filterBar.getSimpleFilterExcluding(filterField);
-        IDList filteredIDList = computeFilteredIDList(filter, Math.max(itemLimit, 1_000_000));
-        return FilterHints.computeHints(dataControl.getResultFileManager(), filteredIDList, filterField, prefix); //TODO hintsLimit!
+        String filterString = filterBar.getSimpleFilterExcluding(filterField);
+        IDList filteredIDList = getFilteredIDList(filterString);
+        return FilterHints.computeHints(dataControl.getResultFileManager(), filteredIDList, filterField, prefix);
     }
 
     protected IContentProposal[] wrapIntoProposals(String[] hints) {
@@ -182,7 +189,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
         Assert.isTrue(idlist!=null);
 
         Debug.time("runFilter() including setItemCount()", 10, () -> {
-            IDList filteredIDList = computeFilteredIDList(filterBar.getFilterIfValid(), itemLimit);
+            IDList filteredIDList = getFilteredIDList(filterBar.getFilterIfValid());
             dataControl.setIDList(filteredIDList);
 
             if (getParent() instanceof FilteredDataTabFolder)
@@ -190,28 +197,25 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
         });
     }
 
-    // Side effect: sets the 'truncated' flag
-    protected IDList computeFilteredIDList(String filter, int itemLimit) {
+    protected IDList getFilteredIDList(String filterString) {
         ResultFileManagerEx manager = dataControl.getResultFileManager();
-        truncated = false;
         if (manager == null) {
             return new IDList();
         }
-        else if (filter != null) {
-            IDList filtered = manager.filterIDList(idlist, filter, itemLimit+1);
-            if (filtered.size() == itemLimit+1) {
-                filtered.erase(itemLimit); // remove last one
-                truncated = true;
-            }
+        else if (filterString != null) {
+            if (filterCache.containsKey(filterString))
+                return filterCache.get(filterString);
+            IDList filtered = Debug.timed("ResultFileManager.filterIDList", 1, () -> manager.filterIDList(idlist, filterString, itemLimit));
+            filterCache.put(filterString, filtered);
+            if (filterCache.size() > 10)
+                filterCache.remove(filterCache.keySet().iterator().next()); // drop first element
             return filtered;
         }
         else { // no or invalid filter
             if (idlist.size() <= itemLimit)
                 return idlist;
-            else {
-                truncated = true;
+            else
                 return idlist.getRange(0, itemLimit);
-            }
         }
     }
 
