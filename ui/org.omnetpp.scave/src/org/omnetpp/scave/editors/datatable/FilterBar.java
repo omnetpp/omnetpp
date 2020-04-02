@@ -304,7 +304,7 @@ public class FilterBar extends Composite {
         FilterCombo combo = new FilterCombo(parent, SWT.NONE);
         combo.setMessage(filterMessage);
         combo.setToolTipText(tooltipText);
-        combo.setVisibleItemCount(20);
+        //combo.setVisibleItemCount(20);
 
         return combo;
     }
