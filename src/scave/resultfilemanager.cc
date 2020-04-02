@@ -1692,7 +1692,7 @@ static void replaceDigitsWithWildcard(std::string& str)
 {
     std::string::iterator start;
     while ((start = std::find_if(str.begin(), str.end(), opp_isdigit)) != str.end()) {
-        std::string::iterator end = std::find_if(start, str.end(), std::not1(std::ptr_fun(opp_isdigit)));
+        std::string::iterator end = std::find_if(start, str.end(), std::not1(std::ref(opp_isdigit)));
         str.replace(start, end, 1, '*');
     }
 }
@@ -1702,7 +1702,7 @@ static bool replaceIndexWithWildcard(std::string& str)
     bool changed = false;
     std::string::iterator start = str.begin();
     while ((start = std::find_if(start, str.end(), opp_isdigit)) != str.end()) {
-        std::string::iterator end = std::find_if(start, str.end(), std::not1(std::ptr_fun(opp_isdigit)));
+        std::string::iterator end = std::find_if(start, str.end(), std::not1(std::ref(opp_isdigit)));
         if (start != str.begin() && end != str.end() && *(start-1) == '[' && *end == ']') {
             str.replace(start, end, 1, '*');
             changed = true;
