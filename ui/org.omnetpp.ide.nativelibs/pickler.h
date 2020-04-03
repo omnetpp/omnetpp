@@ -28,6 +28,7 @@
 #include <cstdlib>
 #include <memory>
 #include <cstring>
+#include <limits>
 
 #include "sharedmemory.h"
 
