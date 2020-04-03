@@ -271,11 +271,11 @@ public class FilterBar extends Composite {
         advancedFilterPanel = new Composite(filterFieldsContainer, SWT.NONE);
         advancedFilterPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         advancedFilterPanel.setLayout(new GridLayout(1, false));
-        ((GridLayout)advancedFilterPanel.getLayout()).marginHeight = 1;
-        ((GridLayout)advancedFilterPanel.getLayout()).marginWidth = 0;
+        ((GridLayout)advancedFilterPanel.getLayout()).marginHeight = 0;
+        ((GridLayout)advancedFilterPanel.getLayout()).marginWidth = 5;
 
         advancedFilterText = new Text(advancedFilterPanel, SWT.SINGLE | SWT.BORDER | SWT.SEARCH);
-        advancedFilterText.setLayoutData(new GridData(SWT.FILL, SWT.END, true, true));
+        advancedFilterText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
         advancedFilterText.setMessage("type filter expression");
         advancedFilterText.setToolTipText("Filter Expression (Ctrl+Space for Content Assist)");
         filterProposalProvider = new FilterContentProposalProvider();
@@ -285,7 +285,7 @@ public class FilterBar extends Composite {
         simpleFilterPanel = new Composite(filterFieldsContainer, SWT.NONE);
         simpleFilterPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         simpleFilterPanel.setLayout(new GridLayout(1, false));
-        ((GridLayout)simpleFilterPanel.getLayout()).marginHeight = 1;
+        ((GridLayout)simpleFilterPanel.getLayout()).marginHeight = 0;
         ((GridLayout)simpleFilterPanel.getLayout()).marginWidth = 0;
 
         SashForm sashForm = new SashForm(simpleFilterPanel, SWT.SMOOTH);
