@@ -6,6 +6,7 @@ import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.fieldassist.IControlContentAdapter;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
@@ -79,6 +80,13 @@ public class FilterCombo extends Composite {
             text.setFocus();
             if (!popupWasOpenWhenButtonWasClicked)
                 adapter.openProposalPopup();
+        }));
+
+        // let the Down arrow key and Ctrl+Space open the proposal popup
+        text.addKeyListener(KeyListener.keyPressedAdapter(e -> {
+            if (e.keyCode == SWT.ARROW_DOWN || (e.keyCode == SWT.SPACE && (e.stateMask & (SWT.CONTROL | SWT.COMMAND)) != 0))
+                if (!adapter.isProposalPopupOpen())
+                    adapter.openProposalPopup();
         }));
     }
 

@@ -153,8 +153,6 @@ public class ResultFilesTracker implements IModelChangeListener {
                 files.put(input.getName(), collectResultFiles(input.getName(), anfFolder));
         });
 
-        //TODO unloadFile() (invoked from RELOAD) is still very slow!
-
         Debug.time("Loading files", debug, 1, () -> {
             int numFiles = files.values().stream().collect(Collectors.summingInt((map) -> map.size()));
             subMonitor.setTaskName("Loading " + StringUtils.formatCounted(numFiles, "file"));
