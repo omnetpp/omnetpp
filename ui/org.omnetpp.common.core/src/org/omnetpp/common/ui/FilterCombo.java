@@ -16,7 +16,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
+import org.omnetpp.common.util.ReflectionUtils;
 
 /**
  * Custom combo-like compound widget built from a Text with content assist
@@ -37,6 +39,7 @@ public class FilterCombo extends Composite {
         }
         public void openProposalPopup() {
             super.openProposalPopup();
+            addPopupMouseListener();
         }
         public void closeProposalPopup() {
             super.closeProposalPopup();
@@ -87,6 +90,18 @@ public class FilterCombo extends Composite {
             if (e.keyCode == SWT.ARROW_DOWN || (e.keyCode == SWT.SPACE && (e.stateMask & (SWT.CONTROL | SWT.COMMAND)) != 0))
                 if (!adapter.isProposalPopupOpen())
                     adapter.openProposalPopup();
+        }));
+    }
+
+    protected void addPopupMouseListener() {
+        // Set up for a single mouse click to accept a proposal. Hook on the mouse up event
+        // to give the user a chance to cancel (by releasing the button outside the widget).
+        // Unfortunately, the fields we need are private --> ReflectionUtils :(
+        Object /*ContentProposalPopup*/ popup = ReflectionUtils.getFieldValue(adapter, "popup");
+        Table proposalTable = (Table)ReflectionUtils.getFieldValue(popup, "proposalTable");
+        proposalTable.addMouseListener(MouseListener.mouseUpAdapter(e -> {
+            if (e.button == 1 && proposalTable.getBounds().contains(e.x, e.y))
+                ReflectionUtils.invokeMethod(popup, "acceptCurrentProposal");
         }));
     }
 
