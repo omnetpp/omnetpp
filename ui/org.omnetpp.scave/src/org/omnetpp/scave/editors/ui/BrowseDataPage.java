@@ -152,8 +152,7 @@ public class BrowseDataPage extends FormEditorPage {
         configureContextMenu(tabFolder.getHistogramsPanel());
 
         // set up contents
-        ResultFileManagerEx manager = scaveEditor.getResultFileManager();
-        tabFolder.setResultFileManager(manager);
+        tabFolder.setResultFileManager(scaveEditor.getResultFileManager());
 
         setNumericPrecision(getNumericPrecision()); // make sure it takes effect
 

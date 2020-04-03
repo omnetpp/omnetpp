@@ -48,7 +48,7 @@ import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.common.wizard.XSWTDataBinding;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.assist.FilterContentProposalProvider;
+import org.omnetpp.scave.assist.FilterExpressionProposalProvider;
 import org.omnetpp.scave.assist.MatplotlibrcContentProposalProvider;
 import org.omnetpp.scave.assist.NativePlotPropertiesContentProposalProvider;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
@@ -232,7 +232,7 @@ public class ChartEditForm {
             if (contentAssist != null)  {
                 IContentProposalProvider proposalProvider = null;
                 if (contentAssist.equalsIgnoreCase("filter"))
-                    proposalProvider = new FilterContentProposalProvider();
+                    proposalProvider = new FilterExpressionProposalProvider();
                 else if (contentAssist.equalsIgnoreCase("plotproperties"))
                     proposalProvider = new NativePlotPropertiesContentProposalProvider();
                 else if (contentAssist.equalsIgnoreCase("matplotlibrc"))

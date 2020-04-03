@@ -10,7 +10,6 @@ package org.omnetpp.scave.editors.datatable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.fieldassist.ContentProposal;
@@ -33,7 +32,7 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model2.FilterField;
-import org.omnetpp.scave.model2.FilterHints;
+import org.omnetpp.scave.model2.FilterHintsCache;
 
 /**
  * Displays a data control of vectors/scalars/histograms with filter
@@ -59,6 +58,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
     private FocusManager focusManager;
     private int itemLimit = 100_000_000; // some sensible limit to the number of data items displayed, may be important with DataTree which isn't O(1)
     private Map<String,IDList> filterCache = new LinkedHashMap<>(); // keep order so we can discard oldest entries
+    private FilterHintsCache filterHintsCache = new FilterHintsCache();
 
     public FilteredDataPanel(Composite parent, int style, ResultType type) {
         super(parent, style);
@@ -106,6 +106,10 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
         return dataControl.getResultFileManager();
     }
 
+    public FilterHintsCache getFilterHintsCache() {
+        return filterHintsCache;
+    }
+
     public ResultType getType() {
         return type;
     }
@@ -128,7 +132,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
         filterBar.getToggleFilterTypeButton().addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (filterBar.isShowingAdvancedFilter())
+                if (filterBar.isFilterExpression())
                     trySwitchToSimpleFilter();
                 else
                     switchToAdvancedFilter();
@@ -139,6 +143,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
     }
 
     protected void configureFilterBar() {
+        filterBar.setFilterHintsCache(filterHintsCache);
         configureFilterExpressionText(filterBar.getFilterExpressionText());
         configureFilterCombo(filterBar.getExperimentCombo(), FilterField.EXPERIMENT);
         configureFilterCombo(filterBar.getMeasurementCombo(), FilterField.MEASUREMENT);
@@ -185,7 +190,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
     protected String[] computeHintsFor(FilterCombo filterCombo, FilterField filterField, String prefix) {
         String filterString = filterBar.getSimpleFilterExcluding(filterField);
         IDList filteredIDList = getFilteredIDList(filterString);
-        return FilterHints.computeHints(dataControl.getResultFileManager(), filteredIDList, filterField, prefix);
+        return filterHintsCache.getHints(dataControl.getResultFileManager(), filteredIDList, filterField, prefix);
     }
 
     protected IContentProposal[] wrapIntoProposals(String hint0, String[] moreHints) {
@@ -239,9 +244,9 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
 
     public void setFilterParams(String filter) {
         // an arbitrary pattern can only be shown in advanced view -- switch there
-        if (!filterBar.isShowingAdvancedFilter())
-            filterBar.showAdvancedFilter();
-        filterBar.getAdvancedFilterText().setText(filter);
+        if (!filterBar.isFilterExpression())
+            filterBar.showFilterExpression();
+        filterBar.getFilterExpressionText().setText(filter);
         runFilter();
     }
 
@@ -262,7 +267,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
      * Switches the filter from "Basic" to "Advanced" mode. This is always successful (unlike the opposite way).
      */
     public void switchToAdvancedFilter() {
-        filterBar.switchToAdvancedFilter();
+        filterBar.switchToFilterExpression();
         runFilter();
     }
 

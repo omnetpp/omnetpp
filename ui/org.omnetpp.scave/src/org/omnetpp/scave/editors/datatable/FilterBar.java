@@ -32,30 +32,31 @@ import org.omnetpp.common.ui.FilterCombo;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.assist.FilterContentProposalProvider;
+import org.omnetpp.scave.assist.FilterExpressionProposalProvider;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model2.FilterField;
+import org.omnetpp.scave.model2.FilterHintsCache;
 import org.omnetpp.scave.model2.FilterUtil;
 
 /**
  * A composite with UI elements to filter a data table.
  * This is a passive component, needs to be configured
  * to do anything useful.
+ *
  * @author andras
  */
 public class FilterBar extends Composite {
 
     private final List<FilterField> simpleFilterFields = Collections.unmodifiableList(Arrays.asList(new FilterField[] {EXPERIMENT, MEASUREMENT, REPLICATION, MODULE, NAME}));
 
-    // Switch between "Simple" and "Advanced"
+    // Switch between "Simple" and "Expression"
     private Button toggleFilterTypeButton;
-    private boolean showingAdvancedFilter;
-    private StackLayout stackLayout;  // to set topControl to either advancedFilterPanel or simpleFilterPanel
+    private boolean showingFilterExpression;
+    private StackLayout stackLayout;  // to switch between the two modes
 
-    // Edit field for the "Advanced" mode
-    private Composite advancedFilterPanel;
-    private Text advancedFilterText;
-    private FilterContentProposalProvider filterProposalProvider;
+    // Edit field for the "Expression" mode
+    private Composite filterExpressionPanel;
+    private Text filterExpressionText;
 
     // Combo boxes for the "Simple" mode
     private Composite simpleFilterPanel;
@@ -65,13 +66,19 @@ public class FilterBar extends Composite {
     private FilterCombo moduleCombo;
     private FilterCombo nameCombo;
 
+    private FilterExpressionProposalProvider filterExpressionProposalProvider;
+
     public FilterBar(Composite parent, int style) {
         super(parent, style);
         initialize();
     }
 
-    public Text getAdvancedFilterText() {
-        return advancedFilterText;
+    public Text getFilterExpressionText() {
+        return filterExpressionText;
+    }
+
+    public void setFilterHintsCache(FilterHintsCache filterHintsCache) {
+        filterExpressionProposalProvider.setFilterHintsCache(filterHintsCache);
     }
 
     public List<FilterField> getSimpleFilterFields() {
@@ -119,20 +126,20 @@ public class FilterBar extends Composite {
 
     public void showSimpleFilter() {
         stackLayout.topControl = simpleFilterPanel;
-        showingAdvancedFilter = false;
+        showingFilterExpression = false;
         toggleFilterTypeButton.setImage(ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_ADVANCEDFILTER));
-        toggleFilterTypeButton.setToolTipText("Switch to Advanced Filter");
+        toggleFilterTypeButton.setToolTipText("Filter Expression");
         getParent().layout(true, true);
         nameCombo.setFocus();
     }
 
-    public void showAdvancedFilter() {
-        stackLayout.topControl = advancedFilterPanel;
-        showingAdvancedFilter = true;
+    public void showFilterExpression() {
+        stackLayout.topControl = filterExpressionPanel;
+        showingFilterExpression = true;
         toggleFilterTypeButton.setImage(ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_BASICFILTER));
-        toggleFilterTypeButton.setToolTipText("Switch to Basic Filter");
+        toggleFilterTypeButton.setToolTipText("Filter by Fields");
         getParent().layout(true, true);
-        advancedFilterText.setFocus();
+        filterExpressionText.setFocus();
     }
 
     private String asteriskToEmpty(String filter) {
@@ -140,7 +147,7 @@ public class FilterBar extends Composite {
     }
 
     /**
-     * Switches the filter from "Advanced" to "Basic" mode. If this cannot be done
+     * Switches the filter from "Expression" to "Basic" mode. If this cannot be done
      * (filter string invalid or too complex), the user is prompted with a dialog,
      * and switching may or may not actually take place depending on the answer.
      * @return true if switching was actually done.
@@ -151,7 +158,7 @@ public class FilterBar extends Composite {
             return false;
         }
 
-        String filterPattern = getAdvancedFilterText().getText();
+        String filterPattern = getFilterExpressionText().getText();
         FilterUtil filterUtil = new FilterUtil(filterPattern, true);
         if (filterUtil.isLossy()) {
             boolean ok = MessageDialog.openConfirm(getShell(), "Filter Too Complex", "The current filter cannot be represented in Basic view without losing some of its details.");
@@ -176,13 +183,13 @@ public class FilterBar extends Composite {
         return true;
     }
 
-    public void switchToAdvancedFilter() {
-        getAdvancedFilterText().setText(assembleFilterPattern(getSimpleFilterFields()));
-        showAdvancedFilter();
+    public void switchToFilterExpression() {
+        getFilterExpressionText().setText(assembleFilterPattern(getSimpleFilterFields()));
+        showFilterExpression();
     }
 
-    public boolean isShowingAdvancedFilter() {
-        return showingAdvancedFilter;
+    public boolean isFilterExpression() {
+        return showingFilterExpression;
     }
 
     public boolean isFilterPatternValid() {
@@ -190,8 +197,8 @@ public class FilterBar extends Composite {
     }
 
     public String getFilter() {
-        if (isShowingAdvancedFilter())
-            return StringUtils.defaultIfBlank(getAdvancedFilterText().getText(), "*");
+        if (isFilterExpression())
+            return StringUtils.defaultIfBlank(getFilterExpressionText().getText(), "*");
         else
             return assembleFilterPattern(getSimpleFilterFields());
     }
@@ -252,7 +259,7 @@ public class FilterBar extends Composite {
 
         Composite filterContainer = new Composite(this, SWT.NONE);
         filterContainer.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-        gridLayout = new GridLayout(3, false); // filter panel, [ExecuteFilter], [Basic/Advanced]
+        gridLayout = new GridLayout(2, false); // filter panel, switcher button
         gridLayout.marginHeight = 0;
         gridLayout.marginWidth = 0;
         gridLayout.marginTop = 3; // appears to make even gaps above and below filter bar (Linux GTK)
@@ -269,19 +276,19 @@ public class FilterBar extends Composite {
         filterFieldsContainer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         filterFieldsContainer.setLayout(stackLayout = new StackLayout());
 
-        // the "Advanced" view with the content-assisted input field
-        advancedFilterPanel = new Composite(filterFieldsContainer, SWT.NONE);
-        advancedFilterPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        advancedFilterPanel.setLayout(new GridLayout(1, false));
-        ((GridLayout)advancedFilterPanel.getLayout()).marginHeight = 0;
-        ((GridLayout)advancedFilterPanel.getLayout()).marginWidth = 5;
+        // the "Filter Expression" view with the content-assisted input field
+        filterExpressionPanel = new Composite(filterFieldsContainer, SWT.NONE);
+        filterExpressionPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        filterExpressionPanel.setLayout(new GridLayout(1, false));
+        ((GridLayout)filterExpressionPanel.getLayout()).marginHeight = 0;
+        ((GridLayout)filterExpressionPanel.getLayout()).marginWidth = 5;
 
-        advancedFilterText = new Text(advancedFilterPanel, SWT.SINGLE | SWT.BORDER | SWT.SEARCH);
-        advancedFilterText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
-        advancedFilterText.setMessage("type filter expression");
-        advancedFilterText.setToolTipText("Filter Expression (Ctrl+Space for Content Assist)");
-        filterProposalProvider = new FilterContentProposalProvider();
-        ContentAssistUtil.configureText(advancedFilterText, filterProposalProvider);
+        filterExpressionText = new Text(filterExpressionPanel, SWT.SINGLE | SWT.BORDER | SWT.SEARCH | SWT.CANCEL);
+        filterExpressionText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
+        filterExpressionText.setMessage("type filter expression");
+        filterExpressionText.setToolTipText("Filter Expression (Ctrl+Space for Content Assist)");
+        filterExpressionProposalProvider = new FilterExpressionProposalProvider();
+        ContentAssistUtil.configureText(filterExpressionText, filterExpressionProposalProvider);
 
         // the "Basic" view with a series of combo boxes
         simpleFilterPanel = new Composite(filterFieldsContainer, SWT.NONE);
