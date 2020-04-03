@@ -91,6 +91,13 @@ public class FilterCombo extends Composite {
                 if (!adapter.isProposalPopupOpen())
                     adapter.openProposalPopup();
         }));
+
+        // when the Erase icon is clicked, close the proposal popup if it was open, otherwise it'll continue to show outdated proposals
+        text.addListener(SWT.DefaultSelection, (e) -> {
+            if (e.detail == SWT.ICON_CANCEL)
+                adapter.closeProposalPopup();
+        });
+
     }
 
     protected void addPopupMouseListener() {
