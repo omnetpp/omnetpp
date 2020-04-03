@@ -20,12 +20,42 @@
 #include "scave/xyarray.h"
 #include "scave/vectorutils.h"
 #include "scave/memoryutils.h"
+#include "omnetpp/platdep/platmisc.h" // getpid()
 
 namespace omnetpp {
 
 using namespace common;
 using namespace scave;
 
+// This is a little utility class we're using to keep track of the names of
+// the "extra" SHM objects (on top of the pickle SHM itself, i.e. the ones
+// for passing vector data), so we can be sure that they are all cleaned
+// up whenever an exception happens during pickling.
+class ShmCleaner {
+    std::vector<std::string> shmNames;
+
+  public:
+    void addNameAndSize(const std::string& nameAndSize) {
+        shmNames.push_back(opp_substringbefore(nameAndSize, " "));
+    }
+
+    // convenience method
+    void addNameAndSizePair(const std::pair<std::string, std::string>& nameAndSizePair) {
+        addNameAndSize(nameAndSizePair.first);
+        addNameAndSize(nameAndSizePair.second);
+    }
+
+    // This should be called if everything went right, and we are actually
+    // passing all the SHM objects to the Python side, leaving the cleanup to that.
+    void releaseAll() {
+        shmNames.clear();
+    }
+
+    ~ShmCleaner() {
+        for (auto& n : shmNames)
+            removeSharedMemory(n.c_str());
+    }
+};
 
 std::pair<std::string, std::string> ResultsPickler::readVectorIntoShm(const ID& id, double simTimeStart, double simTimeEnd, const InterruptedFlag& interrupted)
 {
@@ -40,7 +70,7 @@ std::pair<std::string, std::string> ResultsPickler::readVectorIntoShm(const ID& 
     // ASSERT(vectorData.size() == 1);
     auto array = std::unique_ptr<XYArray>(vectorData[0]);
 
-    std::string nameBase = "/vectordata_" + std::to_string(counter);
+    std::string nameBase = "/vectordata_" + std::to_string(getpid() % 1000) + "_" + std::to_string(counter % 1000000);
     std::string nameX = nameBase + "_x";
     std::string nameY = nameBase + "_y";
     size_t size = array->length() * 8;
@@ -119,7 +149,9 @@ std::string ResultsPickler::getCsvResultsPickle(std::string filterExpression, st
         (addHistograms ? ResultFileManager::HISTOGRAM  : 0) |
         (addParams     ? ResultFileManager::PARAMETER  : 0);
 
-    ShmPickler p("results", 1024*1024*1000);
+
+    ShmPickler p("results", getSizeLimit());
+    ShmCleaner additionalShmNames;
 
     p.protocol();
 
@@ -246,6 +278,8 @@ std::string ResultsPickler::getCsvResultsPickle(std::string filterExpression, st
 
                         auto shmNames = readVectorIntoShm(id, simTimeStart, simTimeEnd, interrupted);
 
+                        additionalShmNames.addNameAndSizePair(shmNames);
+
                         p.pushString(shmNames.first); // vectime
                         p.pushString(shmNames.second); // vecvalue
 
@@ -320,7 +354,10 @@ std::string ResultsPickler::getCsvResultsPickle(std::string filterExpression, st
 
     p.stop();
 
-    return p.getShmNameAndSize();
+    std::string nameAndSize = p.getShmNameAndSize();
+    p.release();
+    additionalShmNames.releaseAll();
+    return nameAndSize;
 }
 
 
@@ -366,7 +403,9 @@ std::string ResultsPickler::getScalarsPickle(const char *filterExpression, bool 
 
     p.stop();
 
-    return p.getShmNameAndSize();
+    std::string nameAndSize = p.getShmNameAndSize();
+    p.release();
+    return nameAndSize;
 }
 
 
@@ -374,6 +413,8 @@ std::string ResultsPickler::getVectorsPickle(const char *filterExpression, bool 
 {
     size_t sizeLimit = getSizeLimit();
     ShmPickler p("vectors", sizeLimit);
+
+    ShmCleaner additionalShmNames;
 
     p.protocol();
 
@@ -393,6 +434,8 @@ std::string ResultsPickler::getVectorsPickle(const char *filterExpression, bool 
             p.pushString(result.getName());
 
             auto shmNames = readVectorIntoShm(vectors.get(i), simTimeStart, simTimeEnd, interrupted);
+
+            additionalShmNames.addNameAndSizePair(shmNames);
 
             p.pushString(shmNames.first); // vectime
             p.pushString(shmNames.second); // vecvalue
@@ -416,7 +459,10 @@ std::string ResultsPickler::getVectorsPickle(const char *filterExpression, bool 
 
     p.stop();
 
-    return p.getShmNameAndSize();
+    std::string nameAndSize = p.getShmNameAndSize();
+    p.release();
+    additionalShmNames.releaseAll();
+    return nameAndSize;
 }
 
 
@@ -462,7 +508,9 @@ std::string ResultsPickler::getParamValuesPickle(const char *filterExpression, b
 
     p.stop();
 
-    return p.getShmNameAndSize();
+    std::string nameAndSize = p.getShmNameAndSize();
+    p.release();
+    return nameAndSize;
 }
 
 
@@ -518,7 +566,9 @@ std::string ResultsPickler::getStatisticsPickle(const char *filterExpression, bo
 
     p.stop();
 
-    return p.getShmNameAndSize();
+    std::string nameAndSize = p.getShmNameAndSize();
+    p.release();
+    return nameAndSize;
 }
 
 
@@ -580,7 +630,9 @@ std::string ResultsPickler::getHistogramsPickle(const char *filterExpression, bo
 
     p.stop();
 
-    return p.getShmNameAndSize();
+    std::string nameAndSize = p.getShmNameAndSize();
+    p.release();
+    return nameAndSize;
 }
 
 
@@ -605,7 +657,9 @@ std::string ResultsPickler::getRunsPickle(const char *filterExpression, const In
 
     p.stop();
 
-    return p.getShmNameAndSize();
+    std::string nameAndSize = p.getShmNameAndSize();
+    p.release();
+    return nameAndSize;
 }
 
 
@@ -639,7 +693,9 @@ std::string ResultsPickler::getRunattrsPickle(const char *filterExpression, cons
 
     p.stop();
 
-    return p.getShmNameAndSize();
+    std::string nameAndSize = p.getShmNameAndSize();
+    p.release();
+    return nameAndSize;
 }
 
 
@@ -673,7 +729,9 @@ std::string ResultsPickler::getItervarsPickle(const char *filterExpression, cons
 
     p.stop();
 
-    return p.getShmNameAndSize();
+    std::string nameAndSize = p.getShmNameAndSize();
+    p.release();
+    return nameAndSize;
 }
 
 
@@ -707,7 +765,9 @@ std::string ResultsPickler::getConfigEntriesPickle(const char *filterExpression,
 
     p.stop();
 
-    return p.getShmNameAndSize();
+    std::string nameAndSize = p.getShmNameAndSize();
+    p.release();
+    return nameAndSize;
 }
 
 
@@ -741,14 +801,16 @@ std::string ResultsPickler::getParamAssignmentsPickle(const char *filterExpressi
 
     p.stop();
 
-    return p.getShmNameAndSize();
+    std::string nameAndSize = p.getShmNameAndSize();
+    p.release();
+    return nameAndSize;
 }
 
 
 std::string ResultsPickler::getRunattrsForRunsPickle(const std::vector<std::string>& runIds, const InterruptedFlag& interrupted)
 {
     size_t sizeLimit = getSizeLimit();
-    ShmPickler p("runattrs_for_runs", sizeLimit);
+    ShmPickler p("runattrs4r", sizeLimit);
 
     p.protocol();
 
@@ -773,14 +835,16 @@ std::string ResultsPickler::getRunattrsForRunsPickle(const std::vector<std::stri
 
     p.stop();
 
-    return p.getShmNameAndSize();
+    std::string nameAndSize = p.getShmNameAndSize();
+    p.release();
+    return nameAndSize;
 }
 
 
 std::string ResultsPickler::getItervarsForRunsPickle(const std::vector<std::string>& runIds, const InterruptedFlag& interrupted)
 {
     size_t sizeLimit = getSizeLimit();
-    ShmPickler p("runattrs_for_runs", sizeLimit);
+    ShmPickler p("itervars4r", sizeLimit);
 
     p.protocol();
 
@@ -805,14 +869,16 @@ std::string ResultsPickler::getItervarsForRunsPickle(const std::vector<std::stri
 
     p.stop();
 
-    return p.getShmNameAndSize();
+    std::string nameAndSize = p.getShmNameAndSize();
+    p.release();
+    return nameAndSize;
 }
 
 
 std::string ResultsPickler::getConfigEntriesForRunsPickle(const std::vector<std::string>& runIds, const InterruptedFlag& interrupted)
 {
     size_t sizeLimit = getSizeLimit();
-    ShmPickler p("configentries_for_runs", sizeLimit);
+    ShmPickler p("configentries4r", sizeLimit);
 
     p.protocol();
 
@@ -837,14 +903,16 @@ std::string ResultsPickler::getConfigEntriesForRunsPickle(const std::vector<std:
 
     p.stop();
 
-    return p.getShmNameAndSize();
+    std::string nameAndSize = p.getShmNameAndSize();
+    p.release();
+    return nameAndSize;
 }
 
 
 std::string ResultsPickler::getParamAssignmentsForRunsPickle(const std::vector<std::string>& runIds, const InterruptedFlag& interrupted)
 {
     size_t sizeLimit = getSizeLimit();
-    ShmPickler p("paramassignments_for_runs", sizeLimit);
+    ShmPickler p("paramassignments4r", sizeLimit);
 
     p.protocol();
 
@@ -869,7 +937,9 @@ std::string ResultsPickler::getParamAssignmentsForRunsPickle(const std::vector<s
 
     p.stop();
 
-    return p.getShmNameAndSize();
+    std::string nameAndSize = p.getShmNameAndSize();
+    p.release();
+    return nameAndSize;
 }
 
 

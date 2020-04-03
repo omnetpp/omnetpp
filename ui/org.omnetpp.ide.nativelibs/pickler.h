@@ -200,8 +200,8 @@ class Pickler {
  */
 class ShmPickler : public Pickler
 {
-    std::string shmName;
-    unsigned char *shm = nullptr;
+    std::string shmName; // empty if the shm object was removed (due to an error)
+    unsigned char *shm = nullptr; // nullptr if the shm object was unmapped (when done writing, or on error)
     size_t writtenBytes = 0;
     size_t sizeLimit;
 
@@ -218,10 +218,13 @@ class ShmPickler : public Pickler
 
     ShmPickler(const std::string shmNameFragment = "pickle", size_t sizeLimit = -1);
 
-    std::string getShmNameAndSize();
+    bool exists() const { return !shmName.empty(); }
+    bool isMapped() const { return shm != nullptr; }
 
-    // THIS DOES NOT REMOVE THE SHM OBJECT
-    virtual ~ShmPickler() { unmap(); }
+    std::string getShmNameAndSize();
+    void release(); // will unmap, but NOT REMOVE - not even in the dtor
+
+    virtual ~ShmPickler();
 };
 
 } // namespace omnetpp

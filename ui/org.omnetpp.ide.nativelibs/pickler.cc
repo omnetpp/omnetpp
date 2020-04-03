@@ -20,7 +20,8 @@
 #include "pickler.h"
 
 #include <string>
-#include "scave/memoryutils.h"
+#include "scave/memoryutils.h" // getAvailableMemoryBytes()
+#include "omnetpp/platdep/platmisc.h" // getpid()
 
 namespace omnetpp {
 
@@ -213,19 +214,28 @@ void Pickler::flush()
         flushNonEmpty();
 }
 
+
+// ---------------- ShmPickler ----------------
+
+
 void ShmPickler::writeIntoShm(const char *bytes, size_t count)
 {
-    if (shm == nullptr)
-        throw std::runtime_error("The pickle SHM was already cleaned up (because it exceeded the size limit)");
+    if (!isMapped())
+        throw std::runtime_error("The SHM for pickling is not mapped");
 
     if (sizeLimit >= 0 && (writtenBytes + count) > sizeLimit) {
         cleanup();
         throw std::runtime_error("Pickle size limit exceeded");
     }
 
+    if ((writtenBytes + count) > reserveSize) {
+        cleanup();
+        throw std::runtime_error("Reserved shared memory exceeded during pickling");
+    }
+
     if (scave::getAvailableMemoryBytes() < count) {
         cleanup();
-        throw std::runtime_error("ran out of memory");
+        throw std::runtime_error("Ran out of memory during pickling");
     }
 
     void *shmEnd = (void *)(shm + writtenBytes);
@@ -237,21 +247,43 @@ void ShmPickler::writeIntoShm(const char *bytes, size_t count)
 
 void ShmPickler::unmap()
 {
-    if (shm != nullptr)
-        unmapSharedMemory(shm, reserveSize);
+    if (!isMapped())
+        throw std::runtime_error("Cannot unmap SHM: not mapped");
+
+    flush();
+    unmapSharedMemory(shm, reserveSize);
+    shm = nullptr;
 }
 
 void ShmPickler::cleanup()
 {
-    unmapSharedMemory(shm, reserveSize);
-    removeSharedMemory(shmName.c_str());
-    shm = nullptr;
+    if (isMapped())
+        unmap();
+
+    if (exists()) {
+        removeSharedMemory(shmName.c_str());
+        shmName.clear();
+    }
 }
 
 std::string ShmPickler::getShmNameAndSize()
 {
-    flush();
+    if (!exists())
+        throw std::runtime_error("Pickler SHM is not available (maybe it was already released?)");
+
+    if (isMapped())
+        flush();
+
     return shmName + " " + std::to_string(writtenBytes);
+}
+
+void ShmPickler::release()
+{
+    if (isMapped())
+        unmap();
+
+    // without removing the SHM objects
+    shmName.clear();
 }
 
 ShmPickler::ShmPickler(const std::string shmNameFragment, size_t sizeLimit)
@@ -259,13 +291,23 @@ ShmPickler::ShmPickler(const std::string shmNameFragment, size_t sizeLimit)
         writeIntoShm(bytes, count);
     }), sizeLimit(sizeLimit)
 {
+    // shmNameFragment must be shorter than ~20 characters!
     static int counter = 0;
-    shmName = "/" + shmNameFragment + "_" + std::to_string(counter++);
-    if (shmName.size() >= OPP_SHM_NAME_MAX)
-        throw std::runtime_error("SHM name is too long: '" + shmName + "'");
+    shmName = "/" + shmNameFragment + "_" + std::to_string(getpid() % 1000) + "_" + std::to_string(counter++ % 1000000);
+
+    if (shmName.size() >= OPP_SHM_NAME_MAX) {
+        std::string error = "SHM name is too long: '" + shmName + "'";
+        shmName.clear();
+        throw std::runtime_error(error);
+    }
 
     createSharedMemory(shmName.c_str(), reserveSize, false);
     shm = (unsigned char *)mapSharedMemory(shmName.c_str(), reserveSize);
+}
+
+ShmPickler::~ShmPickler()
+{
+    cleanup();
 }
 
 } // namespace omnetpp
