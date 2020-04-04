@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
+import org.omnetpp.common.Debug;
 
 /**
  * Parser for filter texts with error recovery.
@@ -23,7 +24,7 @@ import org.eclipse.core.runtime.Assert;
  * E.g: name("n") AND replication("r10") AND module(sink).
  *
  * The purpose of this parser is to build a parse tree even if the input
- * is incomplete, erronous. The parse tree can be used to split a simple filter
+ * is incomplete, erroneous. The parse tree can be used to split a simple filter
  * expression into separate field matchers or to offer completions at a given position.
  *
  * Therefore the language it accepts is an extension of the language that can be used
@@ -32,6 +33,7 @@ import org.eclipse.core.runtime.Assert;
  * @author tomi
  */
 public class MatchExpressionSyntax {
+    private static boolean debug = false;
 
     /**
      * Parse the <code>filter</code> string and returns the parse tree.
@@ -39,7 +41,10 @@ public class MatchExpressionSyntax {
     public static Node parseFilter(String filter) {
         Lexer lexer = new Lexer(filter);
         Parser parser = new Parser(lexer);
-        return parser.parse();
+        Node tree = parser.parse();
+        if (debug)
+            Debug.println("MatchExpressionSyntax.parseFilter():\n  " + filter + "\nparsed as:\n" + tree.toString());
+        return tree;
     }
 
     public enum TokenType
@@ -47,6 +52,7 @@ public class MatchExpressionSyntax {
         AND,
         OR,
         NOT,
+        MATCHES,
         STRING_LITERAL,
         OP,
         CP,
@@ -125,7 +131,7 @@ public class MatchExpressionSyntax {
     public static class Node
     {
         public static final int ROOT = 0;
-        public static final int FIELDPATTERN = 1; // fieldName ( pattern )
+        public static final int FIELDPATTERN = 1; // fieldName =~ pattern
         public static final int PATTERN = 2;      // pattern
         public static final int UNARY_OPERATOR_EXPR = 3;          // <operator> <node>
         public static final int BINARY_OPERATOR_EXPR = 4;          // <node> <operator> <node>
@@ -142,13 +148,12 @@ public class MatchExpressionSyntax {
             addChild(1, end);
         }
 
-        public Node(Token fieldName, Token open, Token pattern, Token close) {
+        public Node(Token fieldName, Token matches, Token pattern) {
             type = FIELDPATTERN;
-            content = new Object[4];
+            content = new Object[3];
             addChild(0, fieldName);
-            addChild(1, open);
+            addChild(1, matches);
             addChild(2, pattern);
-            addChild(3, close);
         }
 
         public Node(Token pattern) {
@@ -243,13 +248,13 @@ public class MatchExpressionSyntax {
         }
 
         public Token getOpeningParen() {
-            Assert.isTrue(type == FIELDPATTERN || type == PARENTHESISED_EXPR);
-            return type == FIELDPATTERN ? (Token)content[1] : (Token)content[0];
+            Assert.isTrue(type == PARENTHESISED_EXPR);
+            return (Token)content[0];
         }
 
         public Token getClosingParen() {
-            Assert.isTrue(type == FIELDPATTERN || type == PARENTHESISED_EXPR);
-            return type == FIELDPATTERN ? (Token)content[3] : (Token)content[2];
+            Assert.isTrue(type == PARENTHESISED_EXPR);
+            return (Token)content[2];
         }
 
         public Token getPattern() {
@@ -292,7 +297,7 @@ public class MatchExpressionSyntax {
                 getExpr().format(sb, level);
                 break;
             case FIELDPATTERN:
-                sb.append(getFieldName()).append("(").append(getPatternString()).append(")\n");
+                sb.append(getFieldName()).append(" =~ ").append(getPatternString()).append("\n");
                 break;
             case PATTERN:
                 sb.append(getPatternString()).append("\n");
@@ -336,6 +341,7 @@ public class MatchExpressionSyntax {
             keywords.put("and", TokenType.AND);
             keywords.put("NOT", TokenType.NOT);
             keywords.put("not", TokenType.NOT);
+            keywords.put("=~", TokenType.MATCHES);
         }
 
         PushbackReader input;
@@ -466,7 +472,7 @@ public class MatchExpressionSyntax {
          *                  |   primaryExpr
          *
          * primaryExpr:         ( expr )
-         *                  |   LITERAL ( LITERAL )
+         *                  |   LITERAL =~ LITERAL
          *                  |   LITERAL
          */
         public Node parse() {
@@ -538,12 +544,11 @@ public class MatchExpressionSyntax {
                 Token close = match(TokenType.CP, true);
                 return new Node(open, expr, close);
             }
-            else if (lookAhead1.type == TokenType.STRING_LITERAL && lookAhead2.type == TokenType.OP) {
+            else if (lookAhead1.type == TokenType.STRING_LITERAL && lookAhead2.type == TokenType.MATCHES) {
                 Token fieldName = match(TokenType.STRING_LITERAL);
-                Token open = match(TokenType.OP);
+                Token matches = match(TokenType.MATCHES);
                 Token pattern = match(TokenType.STRING_LITERAL, true);
-                Token close = match(TokenType.CP, true);
-                return new Node(fieldName, open, pattern, close);
+                return new Node(fieldName, matches, pattern);
             }
             else if (lookAhead1.type == TokenType.STRING_LITERAL) {
                 Token pattern = match(TokenType.STRING_LITERAL);
