@@ -10,6 +10,7 @@ package org.omnetpp.scave.editors.datatable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.fieldassist.ContentProposal;
@@ -166,7 +167,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
             public IContentProposal[] getProposals(String contents, int position) {
                 return Debug.timed("ProposalProvider.getProposals()", 1, () -> {
                     String prefix = contents.substring(0, position);
-                    return wrapIntoProposals(computeHintsFor(filterCombo, filterField, prefix)); // should we limit the number of hints...?
+                    return wrapIntoProposals(contents, computeHintsFor(filterCombo, filterField, prefix)); // should we limit the number of hints...?
                 });
             }
         });
@@ -178,10 +179,14 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
         return FilterHints.computeHints(dataControl.getResultFileManager(), filteredIDList, filterField, prefix);
     }
 
-    protected IContentProposal[] wrapIntoProposals(String[] hints) {
-        IContentProposal[] proposals = new IContentProposal[hints.length];
-        for (int i=0; i<hints.length; i++)
-            proposals[i] = new ContentProposal(hints[i]);
+    protected IContentProposal[] wrapIntoProposals(String hint0, String[] moreHints) {
+        boolean needHint0 = !hint0.isEmpty() && moreHints.length>0 && !moreHints[0].equals(hint0); // don't add blank hint, as the only hint, and don't duplicate first hint
+        int oneIfHint0 = needHint0 ? 1 : 0;
+        IContentProposal[] proposals = new IContentProposal[oneIfHint0 + moreHints.length];
+        if (needHint0)
+            proposals[0] = new ContentProposal(hint0);
+        for (int i=0; i<moreHints.length; i++)
+            proposals[oneIfHint0 + i] = new ContentProposal(moreHints[i]);
         return proposals;
     }
 
