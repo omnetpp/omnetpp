@@ -200,8 +200,7 @@ public class ResultSelectionFilterGenerator {
         if (debug)
             Debug.println("approx matching count: " + approxMatching.size());
 
-        IDList approxNotMatching = all.dup();
-        approxNotMatching.subtract(approxMatching);
+        IDList approxNotMatching = all.getDifference(approxMatching);
 
         IDList toBeExcluded = approxMatching.getDifference(target);
         IDList toBeIncluded = target.getDifference(approxMatching);

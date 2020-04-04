@@ -35,9 +35,7 @@ typedef int64_t ID;
 
 /**
  * Stores a set of unique IDs. Order is not important, and may occasionally
- * change (after merge(), subtract() or intersect()).
- *
- * Beware: Copy ctor implements transfer-of-ownership semantics!
+ * change (after merge(), subtract(), intersect(), or even equals()).
  */
 class SCAVE_API IDList
 {
@@ -70,6 +68,7 @@ class SCAVE_API IDList
         void clear()  {v.clear();}
         void sort() {std::sort(v.begin(), v.end());}  // sort numerically; getUniqueFileRuns() etc are faster on sorted IDLists
         bool equals(IDList& other);
+        int64_t hashCode64() const;
         void add(ID x); // checks for uniqueness (costly)
         void bulkAdd(ID *array, int n); // checks for uniqueness (costly)
         void append(ID id) {v.push_back(id);} // no uniqueness check, use of discardDuplicates() recommended
@@ -86,7 +85,6 @@ class SCAVE_API IDList
         bool isSubsetOf(IDList& ids);
         IDList getRange(int startIndex, int endIndex) const;
         IDList getSubsetByIndices(int *array, int n) const;
-        IDList dup() const;
         int getItemTypes() const;  // SCALAR, VECTOR or their binary OR
         bool areAllScalars() const;
         bool areAllParameters() const;

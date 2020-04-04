@@ -121,7 +121,7 @@ void IDList::subtract(IDList& ids)
 
 IDList IDList::getDifference(IDList& ids) const
 {
-    IDList result = dup();
+    IDList result(*this);
     result.subtract(ids);
     return result;
 }
@@ -167,13 +167,6 @@ IDList IDList::getSubsetByIndices(int *indices, int n) const
     IDList newList;
     for (int i = 0; i < n; i++)
         newList.v.push_back(v.at(indices[i]));
-    return newList;
-}
-
-IDList IDList::dup() const
-{
-    IDList newList;
-    newList.set(*this);
     return newList;
 }
 
@@ -593,7 +586,7 @@ void IDList::toByteArray(char *array, int n) const
 {
     if (n != (int)v.size()*8)
         throw opp_runtime_error("byteArray is of wrong size -- must be 8*numIDs");
-    std::copy(v.begin(), v.end(), (ID *)array);  // XXX VC8.0: warning C4996: 'std::_Copy_opt' was declared deprecated
+    std::copy(v.begin(), v.end(), (ID *)array);
 }
 
 void IDList::fromByteArray(char *array, int n)
@@ -614,6 +607,14 @@ bool IDList::equals(IDList& other)
     std::sort(v.begin(), v.end());
     std::sort(other.v.begin(), other.v.end());
     return v == other.v;
+}
+
+int64_t IDList::hashCode64() const
+{
+    int64_t x = size();
+    for (ID id : v)
+        x = x*31 + id;
+    return x;
 }
 
 }  // namespace scave

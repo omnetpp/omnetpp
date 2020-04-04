@@ -23,7 +23,8 @@ namespace omnetpp { namespace scave {
 %typemap(javacode) IDList %{
   @Override
   public int hashCode() {
-    return size(); // results in poor hashing, but IDLists are not supposed to be used as keys
+    long h = hashCode64();
+    return (int)(h ^ (h>>>32));
   }
 
   @Override
