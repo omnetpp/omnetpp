@@ -19,9 +19,11 @@ import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.ui.FilterCombo;
 import org.omnetpp.common.ui.FocusManager;
@@ -137,7 +139,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
     }
 
     protected void configureFilterBar() {
-        //TODO configure filterBar.getAdvancedFilterText()
+        configureFilterExpressionText(filterBar.getFilterExpressionText());
         configureFilterCombo(filterBar.getExperimentCombo(), FilterField.EXPERIMENT);
         configureFilterCombo(filterBar.getMeasurementCombo(), FilterField.MEASUREMENT);
         configureFilterCombo(filterBar.getReplicationCombo(), FilterField.REPLICATION);
@@ -145,15 +147,22 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
         configureFilterCombo(filterBar.getNameCombo(), FilterField.NAME);
     }
 
+    protected void configureFilterExpressionText(Text text) {
+        text.addSelectionListener(SelectionListener.widgetDefaultSelectedAdapter(e -> {
+            // check the filter string
+            if (!filterBar.isFilterPatternValid()) {
+                MessageDialog.openWarning(getShell(), "Error in Filter Expression", "Syntax error in filter expression, panel contents unchanged.");
+                return;
+            }
+            runFilter();
+        }));
+    }
+
     protected void configureFilterCombo(FilterCombo filterCombo, FilterField filterField) {
         filterCombo.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                // check the filter string
-                if (!filterBar.isFilterPatternValid()) {
-                    MessageDialog.openWarning(getShell(), "Error in Filter Expression", "Syntax error in filter expression, panel contents unchanged.");
-                    return;
-                }
+                Assert.isTrue(filterBar.isFilterPatternValid());
                 runFilter();
             }
             @Override

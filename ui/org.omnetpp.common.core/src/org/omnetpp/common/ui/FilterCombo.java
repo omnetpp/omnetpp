@@ -105,6 +105,8 @@ public class FilterCombo extends Composite {
         // to give the user a chance to cancel (by releasing the button outside the widget).
         // Unfortunately, the fields we need are private --> ReflectionUtils :(
         Object /*ContentProposalPopup*/ popup = ReflectionUtils.getFieldValue(adapter, "popup");
+        if (popup == null) // e.g. due to no available proposal
+            return;
         Table proposalTable = (Table)ReflectionUtils.getFieldValue(popup, "proposalTable");
         proposalTable.addMouseListener(MouseListener.mouseUpAdapter(e -> {
             if (e.button == 1 && proposalTable.getBounds().contains(e.x, e.y))

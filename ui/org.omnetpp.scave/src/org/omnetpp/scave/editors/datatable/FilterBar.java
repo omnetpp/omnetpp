@@ -26,6 +26,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.contentassist.ContentAssistUtil;
 import org.omnetpp.common.ui.FilterCombo;
 import org.omnetpp.common.util.StringUtils;
@@ -204,6 +205,7 @@ public class FilterBar extends Composite {
         try {
             ResultFileManager.checkPattern(filter);
         } catch (Exception e) {
+            Debug.println("FilterBar.isValidFilter: invalid filter >>>" + filter + "<<<");
             return false; // apparently not valid
         }
         return true;

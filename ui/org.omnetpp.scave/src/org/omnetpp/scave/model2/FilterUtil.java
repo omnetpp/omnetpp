@@ -151,7 +151,8 @@ public class FilterUtil {
     }
 
     public static boolean needsQuotes(String pattern) {
-        return Common.needsQuotes(pattern) || StringUtils.indexOfAny(pattern, " \t\n()$#[]-") >= 0;
+        // whitespace, parens, $, #, [], -, = and whatnot are forbidden -- stay safe and only allow alnum plus a few safe chars.
+        return !pattern.matches("[a-zA-Z0-9:_]+");
     }
 
     public static String quoteStringIfNeeded(String str) {
