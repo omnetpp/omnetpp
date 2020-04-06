@@ -114,9 +114,9 @@
           </compilerArgs>
           <useProjectSettings>false</useProjectSettings>
 
-          <!-- Java 8  -->
-          <source>1.8</source>
-          <target>1.8</target>
+          <!-- Java 11  -->
+          <source>1.11</source>
+          <target>1.11</target>
         </configuration>
       </plugin>
     </plugins>
