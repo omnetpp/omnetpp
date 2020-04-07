@@ -323,6 +323,8 @@ public class LargeTable extends Composite
                     moveFocusTo(0, withShift, withCtrl, false);
                 else if (e.keyCode == SWT.END)
                     moveFocusTo(itemCount-1, withShift, withCtrl, false);
+                else if (e.keyCode == SWT.CR)
+                    fireDefaultSelection();
                 else if (e.keyCode == SWT.SPACE && withCtrl)
                     moveFocusBy(0, false, true, true);
                 else if (e.keyCode == 'a' && withCtrl)
@@ -340,11 +342,15 @@ public class LargeTable extends Composite
             public void mouseDown(MouseEvent e) {
                 int rowIndex = topIndex + e.y / getRowHeight();
 
-                    if (e.button == 1 && rowIndex < itemCount) {
-                        boolean withCtrl = (e.stateMask & SWT.MOD1) != 0;
-                        boolean withShift = (e.stateMask & SWT.MOD2) != 0;
-                        moveFocusTo(rowIndex, withShift, withCtrl, true);
-                    }
+                if (e.button == 1 && rowIndex < itemCount) {
+                    boolean withCtrl = (e.stateMask & SWT.MOD1) != 0;
+                    boolean withShift = (e.stateMask & SWT.MOD2) != 0;
+                    moveFocusTo(rowIndex, withShift, withCtrl, true);
+                }
+            }
+            @Override
+            public void mouseDoubleClick(MouseEvent e) {
+                fireDefaultSelection();
             }
         });
 
@@ -448,25 +454,23 @@ public class LargeTable extends Composite
         selectionListeners.remove(listener);
     }
 
-    protected void fireSelectionChanged() {
+    protected Event newEvent() {
         Event event = new Event();
         event.display = getDisplay();
         event.widget = this;
-        SelectionEvent se = new SelectionEvent(event);
-        fireSelectionChanged(se);
+        return event;
     }
 
-    /**
-     * Notifies any selection changed listeners that the viewer's selection has changed.
-     */
-    protected void fireSelectionChanged(final SelectionEvent event) {
-        for (final SelectionListener listener : selectionListeners) {
-            SafeRunnable.run(new SafeRunnable() {
-                public void run() {
-                    listener.widgetSelected(event);
-                }
-            });
-        }
+    protected void fireSelectionChanged() {
+        final SelectionEvent event = new SelectionEvent(newEvent());
+        for (final SelectionListener listener : selectionListeners)
+            SafeRunnable.run(() -> listener.widgetSelected(event));
+    }
+
+    protected void fireDefaultSelection() {
+        final SelectionEvent event = new SelectionEvent(newEvent());
+        for (final SelectionListener listener : selectionListeners)
+            SafeRunnable.run(() -> listener.widgetDefaultSelected(event));
     }
 
     /**
