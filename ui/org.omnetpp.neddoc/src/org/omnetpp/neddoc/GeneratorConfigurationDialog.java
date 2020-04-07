@@ -17,7 +17,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.dialogs.TitleAreaDialog;
+import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
@@ -58,7 +58,7 @@ import org.omnetpp.neddoc.properties.DocumentationGeneratorPropertyPage;
  * @author levy
  */
 public class GeneratorConfigurationDialog
-    extends TitleAreaDialog
+    extends TrayDialog
 {
     private List<IProject> allProjects = new ArrayList<IProject>();
     private List<DocumentationGenerator> generators;
@@ -98,8 +98,6 @@ public class GeneratorConfigurationDialog
     @Override
     protected Control createDialogArea(Composite parent) {
         setHelpAvailable(false);
-        setTitle("Generate HTML documentation from NED, MSG, and C++ files");
-        setMessage("Please select projects and documentation options below");
 
         Composite container = new Composite((Composite)super.createDialogArea(parent), SWT.NONE);
         container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -229,53 +227,59 @@ public class GeneratorConfigurationDialog
 
     private void createContentOptions(Composite container) {
         Group group = new Group(container, SWT.NONE);
-        group.setLayout(new GridLayout(1, false));
+        group.setLayout(new GridLayout(2, false));
         group.setText("Generate");
         group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1));
 
         boolean dotAvailable = OmnetppPreferencePage.isGraphvizDotAvailable();
+        
         generateNedTypeFigures = createCheckbox(group, "Network diagrams", configuration.generateNedTypeFigures && dotAvailable);
         generatePerTypeInheritanceDiagrams = createCheckbox(group, "Per-type inheritance diagrams (requires Graphviz)", configuration.generatePerTypeInheritanceDiagrams && dotAvailable);
-        generatePerTypeUsageDiagrams = createCheckbox(group, "Per-type usage diagrams (requires Graphviz)", configuration.generatePerTypeUsageDiagrams && dotAvailable);
-        generateFullInheritanceDiagrams = createCheckbox(group, "Full inheritance diagrams (requires Graphviz)", configuration.generateFullInheritanceDiagrams && dotAvailable);
-        generateFullUsageDiagrams = createCheckbox(group, "Full usage diagrams (requires Graphviz)", configuration.generateFullUsageDiagrams && dotAvailable);
-
         generatePerTypeInheritanceDiagrams.setEnabled(dotAvailable);
+        generateMsgDefinitions = createCheckbox(group, "Message Definitions", configuration.generateMsgDefinitions);
+        generatePerTypeUsageDiagrams = createCheckbox(group, "Per-type usage diagrams (requires Graphviz)", configuration.generatePerTypeUsageDiagrams && dotAvailable);
         generatePerTypeUsageDiagrams.setEnabled(dotAvailable);
+        generateSourceContent = createCheckbox(group, "Source on NED and MSG type pages", configuration.generateSourceListings);
+        generateFullInheritanceDiagrams = createCheckbox(group, "Full inheritance diagrams (requires Graphviz)", configuration.generateFullInheritanceDiagrams && dotAvailable);
         generateFullInheritanceDiagrams.setEnabled(dotAvailable);
+        generateFileListings = createCheckbox(group, "NED and MSG source file listings", configuration.generateFileListings);
+        generateFullUsageDiagrams = createCheckbox(group, "Full usage diagrams (requires Graphviz)", configuration.generateFullUsageDiagrams && dotAvailable);
         generateFullUsageDiagrams.setEnabled(dotAvailable);
 
-        generateMsgDefinitions = createCheckbox(group, "Message Definitions", configuration.generateMsgDefinitions);
-        generateSourceContent = createCheckbox(group, "Source on NED and MSG type pages", configuration.generateSourceListings);
-        generateFileListings = createCheckbox(group, "NED and MSG source file listings", configuration.generateFileListings);
-
         enableAutomaticHyperlinking = createCheckbox(group, "Automatic hyperlinking of NED and message type names", configuration.automaticHyperlinking);
+        enableAutomaticHyperlinking.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         Label label = new Label(group, SWT.NONE);
+        label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         label.setText("   Note: when turned off, use the tilde notation for names to be hyperlinked: ~Sink, ~TCP.");
 
         Label excLabel = new Label(group, SWT.NONE);
         excLabel.setText("Excluded directories (e.g. '**/examples,/samples,/project/*/test' etc.):");
+        excLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         excludedDirs = new Text(group, SWT.BORDER);
-        excludedDirs.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        excludedDirs.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         if (configuration.excludedDirs != null)
             excludedDirs.setText(configuration.excludedDirs);
 
         boolean doxygenAvailable = OmnetppPreferencePage.isDoxygenAvailable();
         generateDoxy = createCheckbox(group, "C++ documentation (requires Doxygen)", configuration.generateDoxy && doxygenAvailable);
+        generateDoxy.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         generateDoxy.setEnabled(doxygenAvailable);
-
         label = new Label(group, SWT.NONE);
+        label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         label.setText("   Note: Doxygen configuration file locations can be configured in the Project Properties dialog");
 
         doxySourceBrowser = createCheckbox(group, "C++ source file listings", configuration.cppSourceListings);
+        doxySourceBrowser.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         doxySourceBrowser.setEnabled(doxygenAvailable);
-
         label = new Label(group, SWT.NONE);
+        label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         label.setText("   Note: other Doxygen options can be configured in the Doxygen configuration file");
-        Label extLabel = new Label(group, SWT.NONE);
-        extLabel.setText("Path to the XML file defining documentation extension fragments:");
+        
+        label = new Label(group, SWT.NONE);
+        label.setText("Project relative path to the XML file defining documentation extension fragments:");
+        label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         extensionFilePath = new Text(group, SWT.BORDER);
-        extensionFilePath.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        extensionFilePath.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         if (configuration.extensionFilePath != null)
             extensionFilePath.setText(configuration.extensionFilePath);
     }
@@ -346,7 +350,7 @@ public class GeneratorConfigurationDialog
 
     @Override
     protected void configureShell(Shell newShell) {
-        newShell.setText("Documentation Generation");
+        newShell.setText("NED/C++ Documentation Generation");
         super.configureShell(newShell);
     }
 
