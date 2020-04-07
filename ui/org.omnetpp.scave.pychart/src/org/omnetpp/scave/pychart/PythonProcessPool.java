@@ -7,10 +7,15 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import org.omnetpp.common.Debug;
-import org.omnetpp.common.OmnetppDirs;
 
 import py4j.ClientServer;
 
+/**
+ * This class keeps a (configurable) number of PythonProcess instances in a pool,
+ * ready to use. Each of them is a running python3 interpreter process, with a
+ * Py4J connection to it. This was added to reduce the latency of repeated chart
+ * script executions.
+ */
 public class PythonProcessPool {
     private boolean shouldSetOmnetppMplBackend = true;
     private ArrayList<PythonProcess> availableProcesses = new ArrayList<PythonProcess>();
@@ -84,28 +89,43 @@ public class PythonProcessPool {
     }
 
     private String extendPythonPath(String oldPythonPath) {
-        // This only worked with the internal test app, and not when used from within the IDE.
-        //String pychartPluginLocation = PythonProcessPool.class.getResource("python").getPath();
+        String locationsToPrepend = null;
 
-        // This had a "file:" and/or "resource:" prefix, was not absolute in a built release (on Windows?),
-        // and would have had to be fixed differently on macOS (because of the opp_ide.app/Contents/Eclipse directory)
-        //String pychartPluginLocation = PyChartPlugin.getDefault().getBundle().getLocation();
-
-        // This is ugly as all heck, but at least seems to work fine everywhere, everytime
-        String pychartPluginLocation = null;
         try {
-            pychartPluginLocation = new File(PythonProcessPool.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getAbsolutePath();
+            // This only worked with the internal test app, and not when used from within the IDE.
+            //String pychartPluginLocation = PythonProcessPool.class.getResource("python").getPath();
+
+            // This had a "file:" and/or "resource:" prefix, was not absolute in a built release (on Windows?),
+            // and would have had to be fixed differently on macOS (because of the opp_ide.app/Contents/Eclipse directory)
+            //String pychartPluginLocation = PyChartPlugin.getDefault().getBundle().getLocation();
+
+            // This is ugly as all heck, but at least seems to work fine everywhere, everytime
+            String codeSourcePath = getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+            String pychartPluginLocation = new File(codeSourcePath).getAbsolutePath();
+
+            locationsToPrepend = pychartPluginLocation + File.separator + "python"; // the plugin-local python dir
+            locationsToPrepend = new File(locationsToPrepend).getCanonicalPath();
+
+            // Part of the Python library is in <omnetpp>/python. While developing, we add this
+            // directory to PYTHONPATH. In a release, the content of this directory is copied
+            // into the plugin, so we don't need to add an extra PYTHONPATH entry for it.
+            // In fact, adding that would be undesirable, since then the IDE would not be entirely
+            // self-sufficient - it would fundamentally rely on files outside of the <root>/ide folder.
+            if (Debug.inDevelopment()) {
+                // OmnetppDirs.getOmnetppPythonDir() cannot be used, because the user can change it to
+                // whatever they like, and that may not be compatible with the internal Python parts
+
+                // the python directory in the source root
+                String rootPythonDir = new File(pychartPluginLocation + "/../../python").getCanonicalPath();
+                locationsToPrepend += File.pathSeparator + rootPythonDir;
+            }
         }
-        catch (URISyntaxException e) {
+        catch (URISyntaxException | IOException e) {
             // I don't think this can happen, but just in case:
             throw new RuntimeException(e);
         }
 
-
-        String locationsToPrepend = OmnetppDirs.getOmnetppPythonDir() + File.pathSeparator // the <omnetpp_root>/python dir
-                + pychartPluginLocation + File.separator + "python"; // the plugin-local python dir
-
-        return oldPythonPath == null ? locationsToPrepend : locationsToPrepend + File.pathSeparator + oldPythonPath;
+        return (oldPythonPath == null || oldPythonPath.isEmpty()) ? locationsToPrepend : locationsToPrepend + File.pathSeparator + oldPythonPath;
     }
 
     public void dispose() {
