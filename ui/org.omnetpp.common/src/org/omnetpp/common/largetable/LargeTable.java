@@ -188,12 +188,20 @@ public class LargeTable extends Composite
      */
     protected IRunnableContext runnableContext;
 
+    // Colors. Default colors (focused table, unselected row) are taken from the widget fg/bg colors
+    protected Color unfocusedForeground = null; // null = same as for focused table
+    protected Color unfocusedBackground = null; // null = same as for focused table
+    protected Color selectionForeground;
+    protected Color selectionBackground;
+    protected Color unfocusedSelectionForeground; // selection in an unfocused table
+    protected Color unfocusedSelectionBackground;
+
     public LargeTable(Composite parent, int style) {
         super(parent, style | SWT.V_SCROLL);
 
         drawLines = true;
         setLayout(new FillLayout());
-        setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+        initColors();
 
         createComposite(this);
         createCanvas(composite);
@@ -248,6 +256,22 @@ public class LargeTable extends Composite
             }
         });
     }
+
+    protected void initColors() {
+        Display display = Display.getCurrent();
+        setBackground(display.getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+        setForeground(display.getSystemColor(SWT.COLOR_LIST_FOREGROUND));
+        selectionBackground = display.getSystemColor(SWT.COLOR_LIST_SELECTION);
+        selectionForeground = display.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
+        unfocusedSelectionBackground = display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND); // ?
+        unfocusedSelectionForeground = getContrastingForegroundColor(unfocusedSelectionBackground);
+    }
+
+    protected static Color getContrastingForegroundColor(Color bg) {
+        boolean isDark = (bg.getRed() + bg.getGreen() + bg.getBlue()) / 3 < 128; // completely unscientific
+        return isDark ? ColorFactory.WHITE : ColorFactory.BLACK;
+    }
+
 
     /**
      * Sets the runnable context (e.g. progress dialog) for long running operations.
@@ -793,6 +817,7 @@ public class LargeTable extends Composite
         gc.fillRectangle(clipping);
 
         updateVerticalBarPosition();
+        boolean haveFocus = canvas.isFocusControl();
 
         int visibleElementCount = getVisibleElementCount();
         for (int i = 0; i < visibleElementCount; i++) {
@@ -804,12 +829,19 @@ public class LargeTable extends Composite
 
             boolean isSelectedElement = selectionIndices != null && selectionIndices.contains(rowIndex);
 
-            if (isSelectedElement) {
-                gc.setBackground(Display.getCurrent().getSystemColor(canvas.isFocusControl() ? SWT.COLOR_LIST_SELECTION : SWT.COLOR_WIDGET_BACKGROUND));
+            Color fg = isSelectedElement ?
+                    (haveFocus ? selectionForeground : unfocusedSelectionForeground) :
+                    (haveFocus || unfocusedForeground == null ? getForeground() : unfocusedForeground);
+
+            Color bg = isSelectedElement ?
+                    (haveFocus ? selectionBackground : unfocusedSelectionBackground) :
+                    (haveFocus || unfocusedBackground == null ? getBackground() : unfocusedBackground);
+
+            gc.setForeground(fg);
+            gc.setBackground(bg);
+
+            if (isSelectedElement)
                 gc.fillRectangle(new Rectangle(0, i * getRowHeight(), clipping.x + clipping.width, getRowHeight()));
-            }
-            else
-                gc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
 
             int y = i * getRowHeight();
 
@@ -829,8 +861,8 @@ public class LargeTable extends Composite
                 rowTransform.translate(x, y);
                 gc.setTransform(rowTransform);
 
-                if (isSelectedElement && canvas.isFocusControl())
-                    gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
+                gc.setForeground(fg);
+                gc.setBackground(bg);
 
                 rowRenderer.drawCell(gc, rowIndex, columnOrder[j], column.getWidth(), column.getAlignment());
 
@@ -840,6 +872,7 @@ public class LargeTable extends Composite
                 if (drawLines) {
                     gc.setForeground(LINE_COLOR);
                     gc.drawLine(x-1, y, x-1, y + getRowHeight());
+                    gc.setForeground(fg);
                 }
 
                 x += column.getWidth();
