@@ -7,12 +7,14 @@
 
 package org.omnetpp.common.largetable;
 
-import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
 
 /**
- * LargeTable's cells are rendered by using this interface.
+ * LargeTable's cells are rendered by using this interface. For practical purposes,
+ * you'll probably want to subclass AbstractLargeTableRowRenderer instead of
+ * this interface.
+ *
+ * @andras
  */
 public interface ILargeTableRowRenderer {
     /**
@@ -21,29 +23,23 @@ public interface ILargeTableRowRenderer {
     public int getRowHeight(GC gc);
 
     /**
-     * Draws the given cell using gc starting at 0, 0 coordinates. Only one text
+     * Draws the given cell using gc starting at the (0, 0) coordinates. Only one text
      * row may be drawn. Coordinate transformation and clipping will be set on
-     * GC to enforce drawing be made only in the available area.
+     * GC to enforce drawing be made only in the available area. The font, and
+     * the correct background and foreground colors for the current selection and
+     * the table's focused state will be also set on the GC. The alignment
+     * is the table column's alignment, one of SWT.LEFT, SWT.CENTERED and SWT.RIGHT.
      */
-    public void drawCell(GC gc, int rowIndex, int columnIndex, boolean isSelected);
+    public void drawCell(GC gc, int rowIndex, int columnIndex, int alignment);
 
     /**
-     * Returns the indentation (in pixels) of the icon/text of the given cell.
+     * Returns the text of the given cell. This will be used by the table for the
+     * "Copy" function.
      */
-    public int getIndentation(int rowIndex, int columnIndex);
+    public String getText(int rowIndex, int columnIndex);
 
     /**
-     * Returns the icon of the given cell.
-     */
-    public Image getImage(int rowIndex, int columnIndex);
-
-    /**
-     * Returns the text of the given cell.
-     */
-    public StyledString getStyledText(int rowIndex, int columnIndex, boolean isSelected);
-
-    /**
-     * A tooltip text for the given element or null.
+     * A tooltip text for the given element, or null if none.
      */
     public String getTooltipText(int rowIndex, int columnIndex);
 }

@@ -596,11 +596,9 @@ public class LargeTable extends Composite
         }
     }
 
-    protected void toCSV(CsvWriter writer, int rowIndex, int[] columns) {
-        for (int i = 0; i < columns.length; i++) {
-            String text = rowRenderer.getStyledText(rowIndex, columns[i], false).getString();
-            writer.addField(text);
-        }
+    protected void toCSV(CsvWriter writer, int rowIndex, int[] columnIndices) {
+        for (int column : columnIndices)
+            writer.addField(rowRenderer.getText(rowIndex, column));
         writer.endRecord();
     }
 
@@ -834,7 +832,7 @@ public class LargeTable extends Composite
                 if (isSelectedElement && canvas.isFocusControl())
                     gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
 
-                rowRenderer.drawCell(gc, rowIndex, columnOrder[j], isSelectedElement);
+                rowRenderer.drawCell(gc, rowIndex, columnOrder[j], column.getAlignment());
 
                 gc.setTransform(transform);
                 gc.setClipping(clipping);

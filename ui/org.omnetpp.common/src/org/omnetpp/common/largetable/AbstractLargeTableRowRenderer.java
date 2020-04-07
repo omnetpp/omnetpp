@@ -1,14 +1,10 @@
 package org.omnetpp.common.largetable;
 
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.StyledString;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.TextLayout;
-import org.eclipse.swt.widgets.Display;
 
 /**
  * Base class for LargeTable row renderers.
@@ -17,70 +13,38 @@ import org.eclipse.swt.widgets.Display;
  */
 public abstract class AbstractLargeTableRowRenderer implements ILargeTableRowRenderer {
     protected static final int CELL_LEFT_MARGIN = 4;
-    protected Font font = JFaceResources.getDefaultFont();
-    protected int fontHeight = 0;
-    protected Color foregroundColor = Display.getCurrent().getSystemColor(SWT.COLOR_LIST_FOREGROUND);
-    protected Color selectionForegroundColor = Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
-    protected Color selectionBackgroundColor = Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION);
 
-    public AbstractLargeTableRowRenderer() {
-        super();
+    /**
+     * Returns the styled string to be used by drawCell() to paint the contents of the given cell.
+     * GC and alignment are those of the drawCell() call, passed here for extracting color,
+     * font, or size information if necessary.
+     */
+    public StyledString getStyledText(int rowIndex, int columnIndex, GC gc, int alignment) {
+        String text = getText(rowIndex, columnIndex);
+        return new StyledString(text);
     }
 
-    public Font getFont() {
-        return font;
-    }
+    /**
+     * Returns the indentation (in pixels) of the icon/text of the given cell.
+     */
+    public abstract int getIndentation(int rowIndex, int columnIndex);
 
-    public void setFont(Font font) {
-        this.font = font;
-    }
-
-    public Color getForegroundColor() {
-        return foregroundColor;
-    }
-
-    public void setForegroundColor(Color foregroundColor) {
-        this.foregroundColor = foregroundColor;
-    }
-
-    public Color getSelectionForegroundColor() {
-        return selectionForegroundColor;
-    }
-
-    public void setSelectionForegroundColor(Color selectionForegroundColor) {
-        this.selectionForegroundColor = selectionForegroundColor;
-    }
-
-    public Color getSelectionBackgroundColor() {
-        return selectionBackgroundColor;
-    }
-
-    public void setSelectionBackgroundColor(Color selectionBackgroundColor) {
-        this.selectionBackgroundColor = selectionBackgroundColor;
-    }
+    /**
+     * Returns the icon of the given cell, or null. The icon is drawn to the left of the cell.
+     */
+    public abstract Image getImage(int rowIndex, int columnIndex);
 
     public int getRowHeight(GC gc) {
-        if (fontHeight == 0) {
-            Font oldFont = gc.getFont();
-            gc.setFont(font);
-            fontHeight = gc.getFontMetrics().getHeight();
-            gc.setFont(oldFont);
-        }
-
+        int fontHeight = gc.getFontMetrics().getHeight();
         return fontHeight + 3;
     }
 
     @Override
-    public void drawCell(GC gc, int rowIndex, int columnIndex, boolean isSelected) {
-        if (isSelected) {
-            gc.setForeground(selectionForegroundColor);
-            gc.setBackground(selectionBackgroundColor);
-        }
-        else
-            gc.setForeground(foregroundColor);
-
-        StyledString styledString = getStyledText(rowIndex, columnIndex, isSelected);
+    public void drawCell(GC gc, int rowIndex, int columnIndex, int alignment) {
+        //TODO draw icon
+        StyledString styledString = getStyledText(rowIndex, columnIndex, gc, alignment);
         int indent = getIndentation(rowIndex, columnIndex);
+        //TODO observe alignment
         drawStyledString(gc, styledString, CELL_LEFT_MARGIN + indent, 0);
     }
 

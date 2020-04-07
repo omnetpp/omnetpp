@@ -29,9 +29,7 @@ import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
@@ -51,7 +49,6 @@ import org.omnetpp.common.largetable.AbstractLargeTableRowRenderer;
 import org.omnetpp.common.largetable.LargeTable;
 import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog;
 import org.omnetpp.common.util.CsvWriter;
-import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.datatable.DataTreeContentProvider.Node;
 import org.omnetpp.scave.editors.ui.ScaveUtil;
@@ -204,8 +201,8 @@ public class DataTable extends LargeTable implements IDataControl {
         initColumns();
         setRowRenderer(new AbstractLargeTableRowRenderer() {
             @Override
-            public StyledString getStyledText(int rowIndex, int columnIndex, boolean isSelected) {
-                return new StyledString(getCellValue(rowIndex, columnIndex));
+            public String getText(int rowIndex, int columnIndex) {
+                return getCellValue(rowIndex, columnIndex);
             }
 
             @Override
