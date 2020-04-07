@@ -832,7 +832,7 @@ public class LargeTable extends Composite
                 if (isSelectedElement && canvas.isFocusControl())
                     gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
 
-                rowRenderer.drawCell(gc, rowIndex, columnOrder[j], column.getAlignment());
+                rowRenderer.drawCell(gc, rowIndex, columnOrder[j], column.getWidth(), column.getAlignment());
 
                 gc.setTransform(transform);
                 gc.setClipping(clipping);

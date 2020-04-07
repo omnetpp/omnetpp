@@ -29,8 +29,10 @@ public interface ILargeTableRowRenderer {
      * the correct background and foreground colors for the current selection and
      * the table's focused state will be also set on the GC. The alignment
      * is the table column's alignment, one of SWT.LEFT, SWT.CENTERED and SWT.RIGHT.
+     * columnWidth is passed explicitly because "gc.getClipping().width" is surprisingly
+     * costly on some platforms (GTK3).
      */
-    public void drawCell(GC gc, int rowIndex, int columnIndex, int alignment);
+    public void drawCell(GC gc, int rowIndex, int columnIndex, int columnWidth, int alignment);
 
     /**
      * Returns the text of the given cell. This will be used by the table for the
