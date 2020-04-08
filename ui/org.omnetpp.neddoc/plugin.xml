@@ -8,7 +8,7 @@
             categoryId="org.eclipse.ui.category.project"
             defaultHandler="org.omnetpp.neddoc.GenerateNeddocHandler"
             id="org.omnetpp.neddoc.commands.neddocCommand"
-            name="Generate NED Documentation...">
+            name="Generate NED &amp;Documentation...">
       </command>
    </extension>
    <extension

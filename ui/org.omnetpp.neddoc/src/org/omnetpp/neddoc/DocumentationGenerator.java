@@ -290,13 +290,16 @@ public class DocumentationGenerator {
     }
 
     public void setExcludedDirs(String excludedDirs) {
+        // accept both space and comma as separtor.
         // create a regex from the * and ** globs,
         // escape single . chars
         // use ¤ char as a temporary char instead of *
         // , is treated as a path separator
-        this.excludedDirsRegexPattern = excludedDirs.replace(".", "\\.")
+        this.excludedDirsRegexPattern =
+                excludedDirs.replace(",", " ").replaceAll("\\s+", " ").trim()
+                .replace(".", "\\.")
                 .replace("**", ".¤?").replace("*", "[^/]*").replace(".¤?", ".*?")
-                .replaceAll("\\s*,\\s*", ".*?|");
+                .replaceAll(" ", ".*?|");
         if (StringUtils.isNotBlank(excludedDirs))
             this.excludedDirsRegexPattern += ".*?";
     }
@@ -455,8 +458,8 @@ public class DocumentationGenerator {
         files.addAll(nedResources.getNedFiles(project));
         files.addAll(msgResources.getMsgFiles(project));
         files = files.stream().filter(f -> {
-            String relPath = "/"+f.getProjectRelativePath().removeLastSegments(1).addTrailingSeparator().toString();
-            return !relPath.matches(excludedDirsRegexPattern);
+            String path = f.getFullPath().removeLastSegments(1).addTrailingSeparator().toString();
+            return !path.matches(excludedDirsRegexPattern);
 
         }).collect(Collectors.toList());
         Collections.sort(files, new Comparator<IFile>() {
@@ -494,7 +497,7 @@ public class DocumentationGenerator {
         else
             return "default";
     }
-    
+
     // return the fully qualified name for the type (except for default package)
     protected String getFullyQalifiedName(ITypeElement typeElement) {
         if (typeElement instanceof INedTypeElement) {
@@ -502,7 +505,7 @@ public class DocumentationGenerator {
         } else if (typeElement instanceof IMsgTypeElement) {
 //            return ((IMsgTypeElement)typeElement).getMsgTypeInfo().getFullyQualifiedName(); // TODO not yet exist
         }
-        return typeElement.getName();  // return unqualified name by default         
+        return typeElement.getName();  // return unqualified name by default
     }
 
     protected void collectPackageNames() {
@@ -636,10 +639,10 @@ public class DocumentationGenerator {
             }
         }
     }
-    
+
     protected void collectExtensions() {
-        if (extensionFilePath != null) 
-            neddocExtensions = new NeddocExtensions(extensionFilePath.toOSString());         
+        if (extensionFilePath != null)
+            neddocExtensions = new NeddocExtensions(extensionFilePath.toOSString());
     }
 
     private boolean isCppProject(IProject project) throws CoreException {
@@ -1213,7 +1216,7 @@ public class DocumentationGenerator {
                         out(renderer.anchorTag(packageName.replace('.', '_')));
                         out(renderer.sectionTag(packageName, "subtitle"));
                         generateExtensionFragment(ExtType.NED, packageName, "top");
-                        
+
                         out(renderer.tableHeaderTag("typestable"));
                         generateTypesTableHead();
 
@@ -1286,13 +1289,13 @@ public class DocumentationGenerator {
     protected void generateTypePage(ITypeElement typeElement) throws Exception {
         generatePage(getOutputBaseFileName(typeElement), typeElement.getName(), () -> {
                 String qName = getFullyQalifiedName(typeElement);
-                
+
                 boolean isNedTypeElement = typeElement instanceof INedTypeElement;
                 boolean isMsgTypeElement = typeElement instanceof IMsgTypeElement;
 
                 if (isNedTypeElement) generateExtensionFragment(ExtType.NED, qName, "top");
                 if (isMsgTypeElement) generateExtensionFragment(ExtType.MSG, qName, "top");
-                
+
                 if (isNedTypeElement)
                     out(renderer.pTag(packageReferenceString(getPackageName((INedTypeElement)typeElement))));
 
@@ -1328,7 +1331,7 @@ public class DocumentationGenerator {
                     generateKnownSubtypesTable(nedTypeElement);
                     generateExtendsTable(nedTypeElement);
                     generateExtensionFragment(ExtType.NED, qName, "after-inheritance");
-                                        
+
                     generateParametersTable(nedTypeElement);
                     generateExtensionFragment(ExtType.NED, qName, "after-parameters");
 
@@ -1341,7 +1344,7 @@ public class DocumentationGenerator {
 
                     generateSignalsTable(nedTypeElement);
                     generateExtensionFragment(ExtType.NED, qName, "after-signals");
-                    
+
                     generateStatisticsTable(nedTypeElement);
                     generateExtensionFragment(ExtType.NED, qName, "after-statistics");
 
@@ -1356,7 +1359,7 @@ public class DocumentationGenerator {
                     generateUsageDiagram(msgTypeElement);
                     generateInheritanceDiagram(msgTypeElement);
                     generateExtensionFragment(ExtType.MSG, qName, "after-diagrams");
-                    
+
                     generateExtendsTable(msgTypeElement);
                     generateKnownSubtypesTable(msgTypeElement);
                     generateExtensionFragment(ExtType.MSG, qName, "after-inheritance");
@@ -1385,11 +1388,11 @@ public class DocumentationGenerator {
     }
 
     protected void generateExtensionFragment(ExtType extensionType, String qualifiedName, String anchor) throws IOException {
-        if (neddocExtensions != null) { 
-            var fragment = neddocExtensions.getFragment(extensionType, qualifiedName, anchor);
+        if (neddocExtensions != null) {
+            String fragment = neddocExtensions.getFragment(extensionType, qualifiedName, anchor);
             if (fragment != null)
-                out(processHTMLContent("fragment", fragment));            
-        }        
+                out(processHTMLContent("fragment", fragment));
+        }
     }
 
     protected void generateFieldsTable(IMsgTypeElement msgTypeElement) throws IOException {

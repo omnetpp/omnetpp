@@ -16,8 +16,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.project.ProjectUtils;
+import org.omnetpp.common.ui.SWTFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.preferences.OmnetppPreferencePage;
 import org.omnetpp.neddoc.properties.DocumentationGeneratorPropertyPage;
@@ -58,7 +59,7 @@ import org.omnetpp.neddoc.properties.DocumentationGeneratorPropertyPage;
  * @author levy
  */
 public class GeneratorConfigurationDialog
-    extends TrayDialog
+    extends Dialog
 {
     private List<IProject> allProjects = new ArrayList<IProject>();
     private List<DocumentationGenerator> generators;
@@ -97,8 +98,6 @@ public class GeneratorConfigurationDialog
 
     @Override
     protected Control createDialogArea(Composite parent) {
-        setHelpAvailable(false);
-
         Composite container = new Composite((Composite)super.createDialogArea(parent), SWT.NONE);
         container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         container.setLayout(new GridLayout(2, false));
@@ -111,11 +110,9 @@ public class GeneratorConfigurationDialog
     }
 
     private void createProjectList(Composite container) {
-        Label label = new Label(container, SWT.NONE);
-        label.setText("Select projects:");
-        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
+        Group group = SWTFactory.createGroup(container, "Inputs", 2, 2, SWTFactory.GRAB_AND_FILL_HORIZONTAL);
 
-        selectedProjects = CheckboxTableViewer.newCheckList(container, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
+        selectedProjects = CheckboxTableViewer.newCheckList(group, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
         selectedProjects.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         selectedProjects.setLabelProvider(new LabelProvider() {
             public String getText(Object element) {
@@ -142,7 +139,22 @@ public class GeneratorConfigurationDialog
             setOkButtonEnabled();
         }
 
-        createProjectListButtons(container);
+        createProjectListButtons(group);
+
+        Composite files = SWTFactory.createComposite(group, 2, 2, SWTFactory.GRAB_AND_FILL_HORIZONTAL);
+
+        SWTFactory.createLabel(files, "Exclude directories:", 1);
+        excludedDirs = SWTFactory.createText(files, SWT.BORDER, 1);
+        excludedDirs.setMessage("example: /inet/samples, /*/examples, **/test");
+        if (configuration.excludedDirs != null)
+            excludedDirs.setText(configuration.excludedDirs);
+
+        SWTFactory.createLabel(files, "Doc fragments file:", 1);
+        extensionFilePath = SWTFactory.createText(files, SWT.BORDER, 1);
+        extensionFilePath.setMessage("example: neddoc-fragments.xml (in each project)");
+        if (configuration.extensionFilePath != null)
+            extensionFilePath.setText(configuration.extensionFilePath);
+
     }
 
     @Override
@@ -227,38 +239,36 @@ public class GeneratorConfigurationDialog
 
     private void createContentOptions(Composite container) {
         Group group = new Group(container, SWT.NONE);
-        group.setLayout(new GridLayout(2, false));
+        group.setLayout(new GridLayout(2, true));
         group.setText("Generate");
         group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1));
 
         boolean dotAvailable = OmnetppPreferencePage.isGraphvizDotAvailable();
-        
+
         generateNedTypeFigures = createCheckbox(group, "Network diagrams", configuration.generateNedTypeFigures && dotAvailable);
-        generatePerTypeInheritanceDiagrams = createCheckbox(group, "Per-type inheritance diagrams (requires Graphviz)", configuration.generatePerTypeInheritanceDiagrams && dotAvailable);
+        generatePerTypeInheritanceDiagrams = createCheckbox(group, "Per-type inheritance diagrams*", configuration.generatePerTypeInheritanceDiagrams && dotAvailable);
         generatePerTypeInheritanceDiagrams.setEnabled(dotAvailable);
         generateMsgDefinitions = createCheckbox(group, "Message Definitions", configuration.generateMsgDefinitions);
-        generatePerTypeUsageDiagrams = createCheckbox(group, "Per-type usage diagrams (requires Graphviz)", configuration.generatePerTypeUsageDiagrams && dotAvailable);
+        generatePerTypeUsageDiagrams = createCheckbox(group, "Per-type usage diagrams*", configuration.generatePerTypeUsageDiagrams && dotAvailable);
         generatePerTypeUsageDiagrams.setEnabled(dotAvailable);
         generateSourceContent = createCheckbox(group, "Source on NED and MSG type pages", configuration.generateSourceListings);
-        generateFullInheritanceDiagrams = createCheckbox(group, "Full inheritance diagrams (requires Graphviz)", configuration.generateFullInheritanceDiagrams && dotAvailable);
+        generateFullInheritanceDiagrams = createCheckbox(group, "Full inheritance diagrams*", configuration.generateFullInheritanceDiagrams && dotAvailable);
         generateFullInheritanceDiagrams.setEnabled(dotAvailable);
         generateFileListings = createCheckbox(group, "NED and MSG source file listings", configuration.generateFileListings);
-        generateFullUsageDiagrams = createCheckbox(group, "Full usage diagrams (requires Graphviz)", configuration.generateFullUsageDiagrams && dotAvailable);
+        generateFullUsageDiagrams = createCheckbox(group, "Full usage diagrams*", configuration.generateFullUsageDiagrams && dotAvailable);
         generateFullUsageDiagrams.setEnabled(dotAvailable);
+
+        SWTFactory.createLabel(group, "", 1);
+        Label label1 = new Label(group, SWT.NONE);
+        label1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        label1.setText("   Note: Options marked * require Graphviz");
+
 
         enableAutomaticHyperlinking = createCheckbox(group, "Automatic hyperlinking of NED and message type names", configuration.automaticHyperlinking);
         enableAutomaticHyperlinking.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         Label label = new Label(group, SWT.NONE);
         label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         label.setText("   Note: when turned off, use the tilde notation for names to be hyperlinked: ~Sink, ~TCP.");
-
-        Label excLabel = new Label(group, SWT.NONE);
-        excLabel.setText("Excluded directories (e.g. '**/examples,/samples,/project/*/test' etc.):");
-        excLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        excludedDirs = new Text(group, SWT.BORDER);
-        excludedDirs.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        if (configuration.excludedDirs != null)
-            excludedDirs.setText(configuration.excludedDirs);
 
         boolean doxygenAvailable = OmnetppPreferencePage.isDoxygenAvailable();
         generateDoxy = createCheckbox(group, "C++ documentation (requires Doxygen)", configuration.generateDoxy && doxygenAvailable);
@@ -274,21 +284,10 @@ public class GeneratorConfigurationDialog
         label = new Label(group, SWT.NONE);
         label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         label.setText("   Note: other Doxygen options can be configured in the Doxygen configuration file");
-        
-        label = new Label(group, SWT.NONE);
-        label.setText("Project relative path to the XML file defining documentation extension fragments:");
-        label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        extensionFilePath = new Text(group, SWT.BORDER);
-        extensionFilePath.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        if (configuration.extensionFilePath != null)
-            extensionFilePath.setText(configuration.extensionFilePath);
     }
 
-    private Button createCheckbox(Composite parent, String text, boolean initialSelection) {
-        Button checbox = new Button(parent, SWT.CHECK);
-        checbox.setSelection(initialSelection);
-        checbox.setText(text);
-        return checbox;
+    private Button createCheckbox(Composite parent, String label, boolean initialSelection) {
+        return SWTFactory.createCheckButton(parent, label, null, initialSelection, 1);
     }
 
     private void createOutputOptions(Composite container) {
@@ -416,14 +415,14 @@ public class GeneratorConfigurationDialog
             generator.setGenerateDoxy(configuration.generateDoxy);
             generator.setGenerateCppSourceListings(configuration.cppSourceListings);
             generator.setExcludedDirs(configuration.excludedDirs);
-            
+
             if (StringUtils.isNotBlank(configuration.extensionFilePath)) {
                 IPath exFP = new Path(configuration.extensionFilePath);
                 if (!exFP.isAbsolute())
                     exFP = project.getLocation().append(exFP);
                 generator.setExtensionFilePath(exFP);
             }
-            
+
             generators.add(generator);
         }
 
