@@ -77,7 +77,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
 
     public void setIDList(IDList idlist) {
         this.idlist = idlist;
-        filterCache.clear();
+        filterBar.getFilterExpressionProposalProvider().setIDList(dataControl.getResultFileManager(), idlist);
         runFilter();
     }
 
@@ -143,7 +143,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
     }
 
     protected void configureFilterBar() {
-        filterBar.setFilterHintsCache(filterHintsCache);
+        filterBar.getFilterExpressionProposalProvider().setFilterHintsCache(filterHintsCache);
         configureFilterExpressionText(filterBar.getFilterExpressionText());
         configureFilterCombo(filterBar.getExperimentCombo(), FilterField.EXPERIMENT);
         configureFilterCombo(filterBar.getMeasurementCombo(), FilterField.MEASUREMENT);
@@ -190,7 +190,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
     protected String[] computeHintsFor(FilterCombo filterCombo, FilterField filterField, String prefix) {
         String filterString = filterBar.getSimpleFilterExcluding(filterField);
         IDList filteredIDList = getFilteredIDList(filterString);
-        return filterHintsCache.getHints(dataControl.getResultFileManager(), filteredIDList, filterField, prefix);
+        return filterHintsCache.getValueHints(dataControl.getResultFileManager(), filteredIDList, filterField, prefix);
     }
 
     protected IContentProposal[] wrapIntoProposals(String hint0, String[] moreHints) {

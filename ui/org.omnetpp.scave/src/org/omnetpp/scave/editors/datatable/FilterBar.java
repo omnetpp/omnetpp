@@ -35,7 +35,6 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.assist.FilterExpressionProposalProvider;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model2.FilterField;
-import org.omnetpp.scave.model2.FilterHintsCache;
 import org.omnetpp.scave.model2.FilterUtil;
 
 /**
@@ -77,8 +76,8 @@ public class FilterBar extends Composite {
         return filterExpressionText;
     }
 
-    public void setFilterHintsCache(FilterHintsCache filterHintsCache) {
-        filterExpressionProposalProvider.setFilterHintsCache(filterHintsCache);
+    public FilterExpressionProposalProvider getFilterExpressionProposalProvider() {
+        return filterExpressionProposalProvider;
     }
 
     public List<FilterField> getSimpleFilterFields() {

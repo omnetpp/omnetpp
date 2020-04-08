@@ -313,15 +313,15 @@ public class ResultFileManagerEx extends ResultFileManager {
     }
 
     @Override
-    public StringSet getUniqueAttributeNames(IDList ids) {
+    public StringSet getUniqueResultAttributeNames(IDList ids) {
         checkNotDeleted();
-        return super.getUniqueAttributeNames(ids);
+        return super.getUniqueResultAttributeNames(ids);
     }
 
     @Override
-    public StringSet getUniqueAttributeValues(IDList ids, String attrName) {
+    public StringSet getUniqueResultAttributeValues(IDList ids, String attrName) {
         checkNotDeleted();
-        return super.getUniqueAttributeValues(ids, attrName);
+        return super.getUniqueResultAttributeValues(ids, attrName);
     }
 
     @Override

@@ -531,8 +531,8 @@ class SCAVE_API ResultFileManager
     StringSet getUniqueModuleNames(const IDList& ids) const;
     StringSet getUniqueResultNames(const IDList& ids) const;
     StringSet getUniqueModuleAndResultNamePairs(const IDList& ids) const;
-    StringSet getUniqueAttributeNames(const IDList& ids) const;
-    StringSet getUniqueAttributeValues(const IDList& ids, const char *attrName) const;
+    StringSet getUniqueResultAttributeNames(const IDList& ids) const;
+    StringSet getUniqueResultAttributeValues(const IDList& ids, const char *attrName) const;
     StringSet getUniqueRunAttributeNames(const RunList& runList) const;
     StringSet getUniqueRunAttributeValues(const RunList& runList, const char *attrName) const;
     StringSet getUniqueIterationVariableNames(const RunList& runList) const;

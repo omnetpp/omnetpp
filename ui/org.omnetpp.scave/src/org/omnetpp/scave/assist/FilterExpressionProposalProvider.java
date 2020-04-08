@@ -7,9 +7,7 @@
 
 package org.omnetpp.scave.assist;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.contentassist.ContentProposalEx;
@@ -18,73 +16,46 @@ import org.omnetpp.common.util.MatchExpressionContentProposalProvider;
 import org.omnetpp.common.util.MatchExpressionSyntax;
 import org.omnetpp.common.util.MatchExpressionSyntax.Node;
 import org.omnetpp.common.util.MatchExpressionSyntax.Token;
+import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItemFields;
+import org.omnetpp.scave.model2.FilterField;
 import org.omnetpp.scave.model2.FilterHintsCache;
 import org.omnetpp.scave.model2.FilterUtil;
 
 /**
  * Content proposal provider for the filter text fields.
  */
-public class FilterExpressionProposalProvider extends MatchExpressionContentProposalProvider { //TODO content assist currently does not work
+public class FilterExpressionProposalProvider extends MatchExpressionContentProposalProvider {
     private static ContentProposalEx[] fieldPrefixProposals = new ContentProposalEx[] {
+        new ContentProposalEx("runattr:"),
         new ContentProposalEx("attr:"),
         new ContentProposalEx("itervar:"),
-        new ContentProposalEx("param:")
+        new ContentProposalEx("param:"),
+        new ContentProposalEx("config:")
     };
 
-    // Proposals for field names
-    private ContentProposalEx[] fieldProposals;
-    // Proposals for prefixed field names
-    private ContentProposalEx[] prefixedFieldProposals;
-    // Maps fields names to patterns
-    private Map<String,ContentProposalEx[]> patternProposals = new HashMap<String,ContentProposalEx[]>();
+    private static ContentProposalEx[] fieldNameProposals;
+
     // Provides field value hints
+    private ResultFileManager manager;
+    private IDList idlist;
     private FilterHintsCache filterHintsCache;
 
     public FilterExpressionProposalProvider() {
-        String[] filterFields = ResultItemFields.getFieldNames().toArray();
-        prefixedFieldProposals = new ContentProposalEx[0];
-        fieldProposals = new ContentProposalEx[filterFields.length];
-        for (int i = 0; i < filterFields.length; ++i) {
-            fieldProposals[i] = new ContentProposalEx(filterFields[i], filterFields[i]+" =~ ");
-        }
+        String[] resultFieldNames = ResultItemFields.getFieldNames().toArray();
+        fieldNameProposals = toProposals("", resultFieldNames, " =~ ");
     }
 
     public void setFilterHintsCache(FilterHintsCache filterHintsCache) {
         this.filterHintsCache = filterHintsCache;
     }
 
-//    /**
-//     * The proposals for pattern fields depends on the content of the analysis file,
-//     * and this method is used to pass the offered proposals for each field as a
-//     * FilterHints object.
-//     * @param hints the hints for field patterns
-//     */
-//    public void setFilterHints(FilterHintsCache hints) {
-//        // add pattern proposals for the filter hints
-//        FilterField[] fields = hints.getFields();
-//        List<ContentProposalEx> fieldProposals = new ArrayList<ContentProposalEx>();
-//        List<ContentProposalEx> prefixedFieldProposals = new ArrayList<ContentProposalEx>();
-//        for (FilterField field : fields) {
-//            String fieldName = field.getFullName();
-//            if (field.getKind() == Kind.ItemField)
-//                fieldProposals.add(new ContentProposalEx(fieldName, fieldName+"()"));
-//            else
-//                prefixedFieldProposals.add(new ContentProposalEx(fieldName, fieldName+"()"));
-//        }
-//        this.fieldProposals = fieldProposals.toArray(new ContentProposalEx[fieldProposals.size()]);
-//        this.prefixedFieldProposals = prefixedFieldProposals.toArray(new ContentProposalEx[fieldProposals.size()]);
-//        patternProposals.clear();
-//        for (FilterField field : fields) {
-//            String[] patterns = hints.getHints(field);
-//            if (patterns != null) {
-//                ContentProposalEx[] proposals = new ContentProposalEx[patterns.length];
-//                for (int i = 0; i < patterns.length; ++i)
-//                    proposals[i] = new ContentProposalEx(patterns[i]);
-//                patternProposals.put(field.getFullName(), proposals);
-//            }
-//        }
-//    }
+    public void setIDList(ResultFileManager manager, IDList idlist) {
+        this.manager = manager;
+        this.idlist = idlist;
+    }
 
     /**
      * If the cursor is at the right end of a token then completions offered,
@@ -105,82 +76,122 @@ public class FilterExpressionProposalProvider extends MatchExpressionContentProp
             int startIndex, endIndex, decorators;
             boolean atEnd = token.getEndPos() <= position;
 
+            Debug.println("PARENT: " + parent + " TYPE=" + type + " atEnd=" + atEnd);
+
             // inside field name: replace field name
             if (type == Node.FIELDPATTERN && token == parent.getField() && !atEnd) {
+                Debug.println("addProposalsForToken(): case 1");
                 startIndex = token.getStartPos();
                 endIndex = token.getEndPos();
-                decorators = ContentProposalEx.DEC_QUOTE; //TODO =~?
-                             // |
-                             // (parent.getOpeningParen().isEmpty() ? ContentProposalEx.DEC_OP : ContentProposalEx.DEC_NONE) |
-                             // (parent.getPattern().isEmpty() && parent.getClosingParen().isEmpty() ? ContentProposalEx.DEC_CP : ContentProposalEx.DEC_NONE);
-                collectFilteredProposals(proposals, fieldProposals, "", startIndex, endIndex, decorators);
+                decorators = ContentProposalEx.DEC_QUOTE | ContentProposalEx.DEC_MATCHES;
+                collectFilteredProposals(proposals, fieldNameProposals, "", startIndex, endIndex, decorators);
                 collectFilteredProposals(proposals, fieldPrefixProposals, "", startIndex, endIndex, ContentProposalEx.DEC_NONE);
             }
             // after field name: complete field name
             else if (type == Node.FIELDPATTERN && token == parent.getField() && atEnd) {
+                Debug.println("addProposalsForToken(): case 2");
                 prefix = parent.getFieldName();
                 startIndex = token.getStartPos();
                 endIndex = token.getEndPos();
-                collectFilteredProposals(proposals, fieldProposals, prefix, startIndex, endIndex,   ContentProposalEx.DEC_QUOTE);
-                collectFilteredProposals(proposals, prefixedFieldProposals, prefix, startIndex, endIndex, ContentProposalEx.DEC_QUOTE);
+                collectFilteredProposals(proposals, fieldNameProposals, prefix, startIndex, endIndex,   ContentProposalEx.DEC_QUOTE);
+                collectFilteredProposals(proposals, getNameProposals(prefix), prefix, startIndex, endIndex, ContentProposalEx.DEC_QUOTE);
             }
             // inside the pattern of a field pattern: replace pattern with filter hints of the field
             else if (type == Node.FIELDPATTERN && token == parent.getPattern() && !atEnd) {
+                Debug.println("addProposalsForToken(): case 3");
                 startIndex = parent.getPattern().getStartPos();
                 endIndex = parent.getPattern().getEndPos();
                 decorators = ContentProposalEx.DEC_QUOTE;
-                collectFilteredProposals(proposals, patternProposals.get(parent.getFieldName()), "", startIndex, endIndex, decorators);
+                collectFilteredProposals(proposals, getValueProposals(parent.getFieldName()), "", startIndex, endIndex, decorators);
             }
             // after the '(' of a field pattern: complete the pattern with hints of the field
-            else if (type == Node.FIELDPATTERN && (token == parent.getPattern() || token == parent.getOpeningParen()) && atEnd) {
+            else if (type == Node.FIELDPATTERN && (token == parent.getPattern() || token == parent.getMatchesOp()) && atEnd) {
+                Debug.println("addProposalsForToken(): case 4");
                 prefix = parent.getPatternString();
                 startIndex = parent.getPattern().getStartPos();
                 endIndex = parent.getPattern().getEndPos();
                 decorators = ContentProposalEx.DEC_QUOTE;
-                collectFilteredProposals(proposals, patternProposals.get(parent.getFieldName()), prefix, startIndex, endIndex, decorators);
+                collectFilteredProposals(proposals, getValueProposals(parent.getFieldName()), prefix, startIndex, endIndex, decorators);
             }
             // after a ')' of a field pattern or parenthesized expression: insert binary operator
             else if ((type == Node.FIELDPATTERN || type == Node.PARENTHESISED_EXPR)&& token == parent.getClosingParen()) {
+                Debug.println("addProposalsForToken(): case 5");
                 int spaceBefore = (token.getEndPos() == position ? ContentProposalEx.DEC_SP_BEFORE : ContentProposalEx.DEC_NONE);
                 collectFilteredProposals(proposals, binaryOperatorProposals, "", position, position, spaceBefore);
             }
             // after pattern (may be a field name without '('): complete to field name, pattern, unary operator
             else if (type == Node.PATTERN && token == parent.getPattern()) {
+                Debug.println("addProposalsForToken(): case 6");
                 prefix = parent.getPatternString();
                 startIndex = parent.getPattern().getStartPos();
                 endIndex = parent.getPattern().getEndPos();
                 String field = FilterUtil.getDefaultField();
                 collectFilteredProposals(proposals, unaryOperatorProposals, prefix, startIndex, endIndex, ContentProposalEx.DEC_NONE);
-                collectFilteredProposals(proposals, fieldProposals, prefix, startIndex, endIndex, ContentProposalEx.DEC_QUOTE | ContentProposalEx.DEC_OP | ContentProposalEx.DEC_CP);
+                collectFilteredProposals(proposals, fieldNameProposals, prefix, startIndex, endIndex, ContentProposalEx.DEC_QUOTE | ContentProposalEx.DEC_MATCHES);
                 collectFilteredProposals(proposals, fieldPrefixProposals, prefix, startIndex, endIndex, ContentProposalEx.DEC_NONE);
-                if (endIndex > startIndex)
-                    collectFilteredProposals(proposals, prefixedFieldProposals, prefix, startIndex, endIndex, ContentProposalEx.DEC_QUOTE | ContentProposalEx.DEC_OP | ContentProposalEx.DEC_CP);
-                collectFilteredProposals(proposals, patternProposals.get(field), prefix, startIndex, endIndex, ContentProposalEx.DEC_QUOTE);
+                collectFilteredProposals(proposals, getNameProposals(prefix), prefix, startIndex, endIndex, ContentProposalEx.DEC_QUOTE);
+                collectFilteredProposals(proposals, getValueProposals(field), prefix, startIndex, endIndex, ContentProposalEx.DEC_QUOTE);
             }
             // inside unary operator: replace unary operator
             else if (type == Node.UNARY_OPERATOR_EXPR && !atEnd) {
+                Debug.println("addProposalsForToken(): case 7");
                 collectFilteredProposals(proposals, unaryOperatorProposals, "", token.getStartPos(), token.getEndPos(),
                         ContentProposalEx.DEC_NONE);
             }
             // inside binary operator: replace the binary operator
             else if (type == Node.BINARY_OPERATOR_EXPR && !atEnd) {
+                Debug.println("addProposalsForToken(): case 8");
                 collectFilteredProposals(proposals, binaryOperatorProposals, "", token.getStartPos(), token.getEndPos(),
                         ContentProposalEx.DEC_NONE);
             }
             // incomplete binary operator
             else if ((type == Node.BINARY_OPERATOR_EXPR && token.isIncomplete())) {
+                Debug.println("addProposalsForToken(): case 9");
                 collectFilteredProposals(proposals, binaryOperatorProposals, token.getValue(), token.getStartPos(), token.getEndPos(), ContentProposalEx.DEC_NONE);
             }
             // after unary or binary operator or empty input: insert unary operator, field name or default pattern
             else if (((type == Node.BINARY_OPERATOR_EXPR  || type == Node.UNARY_OPERATOR_EXPR) && atEnd) ||
                      (type == Node.ROOT && token.getType() == MatchExpressionSyntax.TokenType.END)) {
+                Debug.println("addProposalsForToken(): case 10");
                 int spaceBefore = (token.getEndPos() == position ? ContentProposalEx.DEC_SP_BEFORE : ContentProposalEx.DEC_NONE);
                 collectFilteredProposals(proposals, unaryOperatorProposals, "", position, position, spaceBefore);
-                collectFilteredProposals(proposals, fieldProposals, "", position, position, spaceBefore | ContentProposalEx.DEC_QUOTE | ContentProposalEx.DEC_OP | ContentProposalEx.DEC_CP);
+                collectFilteredProposals(proposals, fieldNameProposals, "", position, position, spaceBefore | ContentProposalEx.DEC_QUOTE | ContentProposalEx.DEC_MATCHES);
                 collectFilteredProposals(proposals, fieldPrefixProposals, "", position, position, spaceBefore);
-                collectFilteredProposals(proposals, patternProposals.get(FilterUtil.getDefaultField()), "", position, position, spaceBefore | ContentProposalEx.DEC_QUOTE);
+                collectFilteredProposals(proposals, getValueProposals(FilterUtil.getDefaultField()), "", position, position, spaceBefore | ContentProposalEx.DEC_QUOTE);
             }
         }
-        Debug.println(proposals.toString());
     }
+
+    protected ContentProposalEx[] getNameProposals(String input) {
+        try {
+            String prefix = StringUtils.substringBefore(input, ":") + ":";
+            FilterField.Kind kind = FilterField.getKind(prefix);
+            String[] hints = filterHintsCache.getNameHints(manager, idlist, kind);
+            return toProposals(prefix, hints, " =~ ");
+        }
+        catch (IllegalArgumentException e) { // invalid prefix
+            return new ContentProposalEx[0];
+        }
+    }
+
+    protected ContentProposalEx[] getValueProposals(String fieldName) {
+        FilterField field = new FilterField(fieldName);
+        String[] hints = filterHintsCache.getValueHints(manager, idlist, field);
+        return toProposals(hints);
+    }
+
+    protected ContentProposalEx[] toProposals(String[] hints) {
+        ContentProposalEx[] proposals = new ContentProposalEx[hints.length];
+        for (int i=0; i<hints.length; i++)
+            proposals[i] = new ContentProposalEx(hints[i]);
+        return proposals;
+    }
+
+    protected ContentProposalEx[] toProposals(String prefix, String[] hints, String suffix) {
+        ContentProposalEx[] proposals = new ContentProposalEx[hints.length];
+        for (int i=0; i<hints.length; i++)
+            proposals[i] = new ContentProposalEx(prefix + hints[i] + suffix);
+        return proposals;
+    }
+
 }

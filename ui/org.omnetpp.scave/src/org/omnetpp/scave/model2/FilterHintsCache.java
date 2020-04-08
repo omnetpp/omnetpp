@@ -22,41 +22,63 @@ import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.RunList;
+import org.omnetpp.scave.engine.StringSet;
 import org.omnetpp.scave.model2.FilterField.Kind;
 
 /**
  * Given an IDList, produces hints for different filter fields such as
  * module name, statistic name, run attributes etc.
  *
- * @author tomi
+ * @author tomi, andras
  */
 public class FilterHintsCache {
     //TODO cache hints for more than one IDList
     private ResultFileManager lastManager = null;
     private IDList lastIdList = null;
-    private Map<FilterField,String[]> cachedHints = new HashMap<FilterField, String[]>();
+    private RunList cachedRunList = null;
+    private Map<FilterField.Kind,String[]> cachedNameHints = new HashMap<>();
+    private Map<FilterField,String[]> cachedValueHints = new HashMap<>();
 
     public FilterHintsCache() {
     }
 
-    public String[] getHints(ResultFileManager manager, IDList idlist, FilterField field, String prefix) {
-        return filter(getHints(manager, idlist, field), prefix);
+    public String[] getValueHints(ResultFileManager manager, IDList idlist, FilterField field, String prefix) {
+        return filter(getValueHints(manager, idlist, field), prefix);
     }
 
-    public String[] getHints(ResultFileManager manager, IDList idlist, FilterField field) {
+    public String[] getValueHints(ResultFileManager manager, IDList idlist, FilterField field) {
+        setCachedIDList(manager, idlist);
+
+        if (!cachedValueHints.containsKey(field))
+            cachedValueHints.put(field,  computeValueHints(manager, idlist, field));
+
+        return cachedValueHints.get(field);
+    }
+
+    public String[] getNameHints(ResultFileManager manager, IDList idlist, FilterField.Kind kind, String prefix) {
+        return filter(getNameHints(manager, idlist, kind), prefix);
+    }
+
+    public String[] getNameHints(ResultFileManager manager, IDList idlist, FilterField.Kind kind) {
+        setCachedIDList(manager, idlist);
+
+        if (!cachedNameHints.containsKey(kind))
+            cachedNameHints.put(kind,  computeNameHints(manager, idlist, kind));
+
+        return cachedNameHints.get(kind);
+    }
+
+    protected void setCachedIDList(ResultFileManager manager, IDList idlist) {
         if (manager != lastManager || !idlist.equals(lastIdList)) {
-            cachedHints.clear();
+            cachedNameHints.clear();
+            cachedValueHints.clear();
+            cachedRunList = null;
             lastManager = manager;
             lastIdList = idlist;
         }
-
-        if (!cachedHints.containsKey(field))
-            cachedHints.put(field,  computeHints(manager, idlist, field));
-
-        return cachedHints.get(field);
     }
 
-    public static String[] computeHints(ResultFileManager manager, IDList idlist, FilterField field) {
+    public static String[] computeValueHints(ResultFileManager manager, IDList idlist, FilterField field) {
         if (field.equals(RUN)) {
             RunList runList = manager.getUniqueRuns(idlist);
             return manager.getRunNameFilterHints(runList).toArray();
@@ -86,8 +108,28 @@ public class FilterHintsCache {
             RunList runList = manager.getUniqueRuns(idlist);
             return manager.getParamAssignmentFilterHints(runList, field.getName()).toArray();
         }
+        else if (field.getKind() == Kind.Config) {
+            RunList runList = manager.getUniqueRuns(idlist);
+            return manager.getConfigEntryFilterHints(runList, field.getName()).toArray();
+        }
+        else if (field.getKind() == Kind.ResultAttribute) {
+            return manager.getResultItemAttributeFilterHints(idlist, field.getName()).toArray();
+        }
         else {
             throw new IllegalArgumentException();
+        }
+    }
+
+    public static String[] computeNameHints(ResultFileManager manager, IDList idlist, FilterField.Kind kind) {
+        RunList runList = manager.getUniqueRuns(idlist);
+        switch (kind) {
+        case ItemField: return manager.getUniqueResultFieldNames(idlist).keys().toArray();
+        case RunAttribute: return manager.getUniqueRunAttributeNames(runList).keys().toArray();
+        case IterationVariable: return manager.getUniqueIterationVariableNames(runList).keys().toArray();
+        case ParamAssignment: return manager.getUniqueParamAssignmentKeys(runList).keys().toArray();
+        case ResultAttribute: return manager.getUniqueResultAttributeNames(idlist).keys().toArray();
+        case Config: return manager.getUniqueConfigKeys(runList).keys().toArray();
+        default: throw new IllegalArgumentException();
         }
     }
 
@@ -101,5 +143,9 @@ public class FilterHintsCache {
             if (prefixAsPattern.matches(s))
                 tmp.add(s);
         return tmp.toArray(new String[]{});
+    }
+
+    public RunList getRunList() {
+        return cachedRunList;
     }
 }

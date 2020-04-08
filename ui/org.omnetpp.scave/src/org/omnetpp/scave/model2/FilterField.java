@@ -19,10 +19,12 @@ import org.omnetpp.scave.engine.RunAttribute;
 public class FilterField implements Comparable<FilterField> {
 
     public enum Kind {
-        ItemField,
         RunAttribute,
         IterationVariable,
+        Config,
         ParamAssignment,
+        ItemField,
+        ResultAttribute,
     }
 
     public static final FilterField
@@ -36,6 +38,13 @@ public class FilterField implements Comparable<FilterField> {
 
     private Kind kind;
     private String name;
+
+    public FilterField(String fullName) {
+        int colonPos = fullName.indexOf(':');
+        String prefix = colonPos == -1 ? null : fullName.substring(0, colonPos+1);
+        this.kind = getKind(prefix);
+        this.name = fullName.substring(colonPos+1);
+    }
 
     public FilterField(Kind kind, String name) {
         Assert.isNotNull(kind);
@@ -53,14 +62,33 @@ public class FilterField implements Comparable<FilterField> {
     }
 
     public String getFullName() {
+        String prefix = getPrefix(kind);
+        return prefix == null ? name : prefix + name;
+    }
+
+    public static String getPrefix(Kind kind) {
         switch (kind) {
-        case ItemField:     return name;
-        case RunAttribute:  return "attr:" + name;
-        case IterationVariable:  return "itervar:" + name;
-        case ParamAssignment:   return "param:" + name;
+        case ItemField:     return null;
+        case RunAttribute:  return "runattr:" ;
+        case IterationVariable:  return "itervar:";
+        case Config:  return "config:";
+        case ParamAssignment:   return "param:";
+        case ResultAttribute:  return "attr:";
+        default: throw new IllegalArgumentException();
         }
-        Assert.isTrue(false, "Never happens.");
-        return name;
+    }
+
+    public static Kind getKind(String prefix) {
+        if (prefix == null || prefix.isEmpty())
+            return Kind.ItemField;
+        switch (prefix) {
+        case "runattr:": return Kind.RunAttribute;
+        case "itervar:": return Kind.IterationVariable;
+        case "config:": return Kind.Config;
+        case "param:": return Kind.ParamAssignment;
+        case "attr:": return Kind.ResultAttribute;
+        default: throw new IllegalArgumentException();
+        }
     }
 
     @Override

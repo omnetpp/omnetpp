@@ -422,7 +422,7 @@ StringSet ResultFileManager::getUniqueModuleAndResultNamePairs(const IDList& ids
     return set;
 }
 
-StringSet ResultFileManager::getUniqueAttributeNames(const IDList& ids) const
+StringSet ResultFileManager::getUniqueResultAttributeNames(const IDList& ids) const
 {
     READER_MUTEX
     StringSet set;
@@ -434,12 +434,12 @@ StringSet ResultFileManager::getUniqueAttributeNames(const IDList& ids) const
     return set;
 }
 
-StringSet ResultFileManager::getUniqueAttributeValues(const IDList& ids, const char *attrName) const
+StringSet ResultFileManager::getUniqueResultAttributeValues(const IDList& ids, const char *attrName) const
 {
     READER_MUTEX
     StringSet values;
-    for (int i = 0; i < ids.size(); ++i) {
-        const string& value = getItem(ids.get(i)).getAttribute(attrName);
+    for (ID id : ids) {
+        const string& value = getItem(id).getAttribute(attrName);
         if (&value != &NULLSTRING)
             values.insert(value);
     }
@@ -1810,7 +1810,7 @@ StringVector ResultFileManager::getResultNameFilterHints(const IDList& idlist) c
 StringVector ResultFileManager::getResultItemAttributeFilterHints(const IDList& idlist, const char *attrName) const
 {
     READER_MUTEX
-    StringSet attrValues = getUniqueAttributeValues(idlist, attrName);
+    StringSet attrValues = getUniqueResultAttributeValues(idlist, attrName);
     StringVector filterHints(attrValues.begin(), attrValues.end());
     std::sort(filterHints.begin(), filterHints.end(), strdictLess);
     filterHints.insert(filterHints.begin(), "*");

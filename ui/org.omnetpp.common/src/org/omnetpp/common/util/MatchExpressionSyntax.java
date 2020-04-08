@@ -247,6 +247,11 @@ public class MatchExpressionSyntax {
             return getField().getValue();
         }
 
+        public Token getMatchesOp() {
+            Assert.isTrue(type == FIELDPATTERN);
+            return (Token)content[1];
+        }
+
         public Token getOpeningParen() {
             Assert.isTrue(type == PARENTHESISED_EXPR);
             return (Token)content[0];
@@ -376,8 +381,16 @@ public class MatchExpressionSyntax {
                 ch = getChar();
                 switch (ch) {
                 case EOF: return new Token(TokenType.END, startPos, pos);
-                case '(':       return new Token(TokenType.OP, startPos, pos);
-                case ')':       return new Token(TokenType.CP, startPos, pos);
+                case '(': return new Token(TokenType.OP, startPos, pos);
+                case ')': return new Token(TokenType.CP, startPos, pos);
+                case '=':
+                    ch = getChar();
+                    if (ch == '~')
+                        return new Token(TokenType.MATCHES, "=~", startPos, pos);
+                    else {
+                        ungetChar(ch);
+                        break;
+                    }
                 case '"':
                     value = new StringBuffer(30);
                     while (true) {
@@ -403,7 +416,7 @@ public class MatchExpressionSyntax {
                     while (true) {
                         switch (ch = getChar()) {
                         case EOF: break LOOP;
-                        case ' ': case '\t': case '\n': case '(': case ')': ungetChar(ch); break LOOP;
+                        case ' ': case '\t': case '\n': case '(': case ')': case '=': ungetChar(ch); break LOOP;
                         default: value.append((char)ch); break;
                         }
                     };

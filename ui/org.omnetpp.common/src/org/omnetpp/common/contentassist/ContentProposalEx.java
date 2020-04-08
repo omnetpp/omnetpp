@@ -29,6 +29,7 @@ public class ContentProposalEx implements IContentProposalEx, Comparable<Object>
     public static final int DEC_QUOTE      = 0x04;
     public static final int DEC_SP_BEFORE  = 0x08;
     public static final int DEC_SP_AFTER   = 0x10;
+    public static final int DEC_MATCHES    = 0x20;
 
     private String content;
 
@@ -77,6 +78,7 @@ public class ContentProposalEx implements IContentProposalEx, Comparable<Object>
         if ((decorators & DEC_OP) != 0) result.append('(');
         if ((decorators & DEC_CP) != 0) result.append(") ");
         if ((decorators & DEC_SP_AFTER) != 0) result.append(' ');
+        if ((decorators & DEC_MATCHES) != 0) result.append(" =~ ");
         return result.toString();
     }
 
@@ -95,6 +97,7 @@ public class ContentProposalEx implements IContentProposalEx, Comparable<Object>
         if ((decorators & DEC_OP) != 0) position++; // put cursor after the '('
         else if ((decorators & DEC_CP) != 0) position += 2; // put cursor after the ')' if no opening inserted
         if ((decorators & DEC_SP_AFTER) != 0) position++;
+        if ((decorators & DEC_MATCHES) != 0) position += 4;
         return position;
     }
 
@@ -131,7 +134,7 @@ public class ContentProposalEx implements IContentProposalEx, Comparable<Object>
     }
 
     private static boolean needsQuotes(String pattern) {
-        return Common.needsQuotes(pattern) || StringUtils.indexOfAny(pattern, " \t\n()") >= 0;
+        return !pattern.matches("[a-zA-Z0-9:_]+"); // a conservative approach
     }
 
     private static String quoteStringIfNeeded(String str) {
