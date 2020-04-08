@@ -184,7 +184,6 @@ public class NativeChartViewer extends ChartViewerBase {
         if (plot.isDisposed())
             return;
 
-        // TODO: do not store these if the dataset is empty!
         final double zx = chartPlotter.isEmpty() || !plot.getHorizontalBar().isVisible() ? Double.NaN : plot.getZoomX();
         final double zy = chartPlotter.isEmpty() || !plot.getVerticalBar().isVisible()? Double.NaN : plot.getZoomY();
         final long vt = plot.getViewportTop();
