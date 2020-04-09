@@ -58,6 +58,7 @@ import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Chart.DialogPage;
 import org.omnetpp.scave.model.ChartTemplate;
 import org.omnetpp.scave.model.Property;
+import org.omnetpp.scave.model2.FilterHintsCache;
 import org.xml.sax.SAXException;
 
 import com.swtworkbench.community.xswt.XSWT;
@@ -70,6 +71,7 @@ public class ChartEditForm {
     protected ChartTemplateRegistry chartTemplateRegistry;
     protected ResultFileManager manager;
     protected Map<String,Control> xswtWidgetMap = new HashMap<>();
+    protected FilterHintsCache filterHintsCache = new FilterHintsCache();
 
     protected static final String USER_DATA_KEY = "ChartEditForm";
 
@@ -231,8 +233,13 @@ public class ChartEditForm {
             String contentAssist = (String)control.getData("contentAssist");
             if (contentAssist != null)  {
                 IContentProposalProvider proposalProvider = null;
-                if (contentAssist.equalsIgnoreCase("filter"))
-                    proposalProvider = new FilterExpressionProposalProvider();
+                if (contentAssist.equalsIgnoreCase("filter")) {
+                    FilterExpressionProposalProvider expressionProposalProvider = new FilterExpressionProposalProvider();
+                    expressionProposalProvider.setFilterHintsCache(filterHintsCache);
+                    expressionProposalProvider.setIDList(manager, manager.getAllItems());
+
+                    proposalProvider = expressionProposalProvider;
+                }
                 else if (contentAssist.equalsIgnoreCase("plotproperties"))
                     proposalProvider = new NativePlotPropertiesContentProposalProvider();
                 else if (contentAssist.equalsIgnoreCase("matplotlibrc"))
