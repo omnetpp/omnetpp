@@ -21,6 +21,7 @@ import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileList;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engine.ResultItemFields;
 import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.engine.StringSet;
 import org.omnetpp.scave.model2.FilterField.Kind;
@@ -123,7 +124,7 @@ public class FilterHintsCache {
     public static String[] computeNameHints(ResultFileManager manager, IDList idlist, FilterField.Kind kind) {
         RunList runList = manager.getUniqueRuns(idlist);
         switch (kind) {
-        case ItemField: return manager.getUniqueResultFieldNames(idlist).keys().toArray();
+        case ItemField: return ResultItemFields.getFieldNames().toArray();
         case RunAttribute: return manager.getUniqueRunAttributeNames(runList).keys().toArray();
         case IterationVariable: return manager.getUniqueIterationVariableNames(runList).keys().toArray();
         case ParamAssignment: return manager.getUniqueParamAssignmentKeys(runList).keys().toArray();
