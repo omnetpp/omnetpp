@@ -22,6 +22,10 @@
 #include "pickler.h"
 
 namespace omnetpp {
+namespace scave {
+
+class ShmSendBuffer;
+class ShmSendBufferManager;
 
 /**
  * This class can be used to pickle filtered simulation results in various formats from the given ResultFileManager.
@@ -31,38 +35,42 @@ namespace omnetpp {
 class ResultsPickler
 {
 protected:
-    scave::ResultFileManager *rfm;
+    ResultFileManager *rfm;
+    ShmSendBufferManager *shmManager;
+    InterruptedFlag *interrupted;
+    InterruptedFlag dummy;
+    size_t reserveSize = (1ull<<31)-1-8;
 
-    size_t getSizeLimit();
+    size_t getSizeLimit(); // available space, based on free physical memory
 
-    std::pair<std::string, std::string> readVectorIntoShm(const scave::ID& id, double simTimeStart = -INFINITY, double simTimeEnd = INFINITY, const scave::InterruptedFlag& interrupted = scave::InterruptedFlag());
+    std::pair<ShmSendBuffer*, ShmSendBuffer*> readVectorIntoShm(const ID& id, double simTimeStart = -INFINITY, double simTimeEnd = INFINITY);
 
-    void pickleResultAttrs(Pickler& p, const scave::IDList& resultIDs, const scave::InterruptedFlag& interrupted = scave::InterruptedFlag());
+    void pickleResultAttrs(Pickler& p, const IDList& resultIDs);
 
 public:
+    ResultsPickler(ResultFileManager *rfm, ShmSendBufferManager *shmManager, InterruptedFlag *interrupted=nullptr) : rfm(rfm), shmManager(shmManager), interrupted(interrupted?interrupted:&dummy) {}
 
-    ResultsPickler(scave::ResultFileManager *rfm) : rfm(rfm) { }
+    ShmSendBuffer *getCsvResultsPickle(std::string filterExpression, std::vector<std::string> rowTypes, bool omitUnusedColumns, double simTimeStart, double simTimeEnd);
 
-    std::string getCsvResultsPickle(std::string filterExpression, std::vector<std::string> rowTypes, bool omitUnusedColumns, double simTimeStart, double simTimeEnd, const scave::InterruptedFlag& interrupted = scave::InterruptedFlag());
+    ShmSendBuffer *getScalarsPickle(const char *filterExpression, bool includeAttrs);
+    ShmSendBuffer *getVectorsPickle(const char *filterExpression, bool includeAttrs, double simTimeStart, double simTimeEnd);
+    ShmSendBuffer *getStatisticsPickle(const char *filterExpression, bool includeAttrs);
+    ShmSendBuffer *getHistogramsPickle(const char *filterExpression, bool includeAttrs);
+    ShmSendBuffer *getParamValuesPickle(const char *filterExpression, bool includeAttrs);
 
-    std::string getScalarsPickle(const char *filterExpression, bool includeAttrs, const scave::InterruptedFlag& interrupted = scave::InterruptedFlag());
-    std::string getVectorsPickle(const char *filterExpression, bool includeAttrs, double simTimeStart, double simTimeEnd, const scave::InterruptedFlag& interrupted = scave::InterruptedFlag());
-    std::string getStatisticsPickle(const char *filterExpression, bool includeAttrs, const scave::InterruptedFlag& interrupted = scave::InterruptedFlag());
-    std::string getHistogramsPickle(const char *filterExpression, bool includeAttrs, const scave::InterruptedFlag& interrupted = scave::InterruptedFlag());
-    std::string getParamValuesPickle(const char *filterExpression, bool includeAttrs, const scave::InterruptedFlag& interrupted = scave::InterruptedFlag());
+    ShmSendBuffer *getRunsPickle(const char *filterExpression);
+    ShmSendBuffer *getRunattrsPickle(const char *filterExpression);
+    ShmSendBuffer *getItervarsPickle(const char *filterExpression);
+    ShmSendBuffer *getConfigEntriesPickle(const char *filterExpression);
+    ShmSendBuffer *getParamAssignmentsPickle(const char *filterExpression);
 
-    std::string getRunsPickle(const char *filterExpression, const scave::InterruptedFlag& interrupted = scave::InterruptedFlag());
-    std::string getRunattrsPickle(const char *filterExpression, const scave::InterruptedFlag& interrupted = scave::InterruptedFlag());
-    std::string getItervarsPickle(const char *filterExpression, const scave::InterruptedFlag& interrupted = scave::InterruptedFlag());
-    std::string getConfigEntriesPickle(const char *filterExpression, const scave::InterruptedFlag& interrupted = scave::InterruptedFlag());
-    std::string getParamAssignmentsPickle(const char *filterExpression, const scave::InterruptedFlag& interrupted = scave::InterruptedFlag());
-
-    std::string getRunattrsForRunsPickle(const std::vector<std::string>& runIds, const scave::InterruptedFlag& interrupted = scave::InterruptedFlag());
-    std::string getItervarsForRunsPickle(const std::vector<std::string>& runIds, const scave::InterruptedFlag& interrupted = scave::InterruptedFlag());
-    std::string getConfigEntriesForRunsPickle(const std::vector<std::string>& runIds, const scave::InterruptedFlag& interrupted = scave::InterruptedFlag());
-    std::string getParamAssignmentsForRunsPickle(const std::vector<std::string>& runIds, const scave::InterruptedFlag& interrupted = scave::InterruptedFlag());
+    ShmSendBuffer *getRunattrsForRunsPickle(const std::vector<std::string>& runIds);
+    ShmSendBuffer *getItervarsForRunsPickle(const std::vector<std::string>& runIds);
+    ShmSendBuffer *getConfigEntriesForRunsPickle(const std::vector<std::string>& runIds);
+    ShmSendBuffer *getParamAssignmentsForRunsPickle(const std::vector<std::string>& runIds);
 };
 
+} // namespace scave
 } // namespace omnetpp
 
 #endif

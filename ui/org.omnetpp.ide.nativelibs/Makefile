@@ -22,7 +22,8 @@ SCAVE_JAVADIR = src/$(subst .,/,$(SCAVE_JAVAPKG))
 LAYOUT_JAVADIR = src/$(subst .,/,$(LAYOUT_JAVAPKG))
 EVENTLOG_JAVADIR = src/$(subst .,/,$(EVENTLOG_JAVAPKG))
 
-OBJS = $O/nedxml.o $O/scave.o $O/layout.o $O/eventlog.o $O/common.o $O/jprogressmonitor.o $O/pickler.o  $O/resultspickler.o $O/sharedmemory.o $O/sharedmemory_jni.o
+OBJS = $O/nedxml.o $O/scave.o $O/layout.o $O/eventlog.o $O/common.o $O/jprogressmonitor.o \
+  $O/pickler.o $O/resultspickler.o $O/sharedmemory.o $O/sharedmemory_jni.o $O/shmmanager.o
 LIBS= -loppnedxml$D -loppscave$D -lopplayout$D -loppeventlog$D -loppcommon$D
 
 ifeq ("$(JNI_LIB_SUFFIX)",".dll")

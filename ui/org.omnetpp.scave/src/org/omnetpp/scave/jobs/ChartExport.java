@@ -215,7 +215,7 @@ public class ChartExport {
         proc.outputMonitoringThread.addOutputListener(outputListener);
         proc.errorMonitoringThread.addOutputListener(outputListener);
 
-        proc.getEntryPoint().setResultsProvider(new ResultsProvider(context.manager, proc.getInterruptedFlag()));
+        proc.getEntryPoint().setResultsProvider(new ResultsProvider(context.manager, proc));
         proc.getEntryPoint().setChartProvider(new ChartProvider(chart, context.extraProperties));
 
         final Thread waitingThread = Thread.currentThread();

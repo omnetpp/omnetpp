@@ -65,18 +65,19 @@ public abstract class ChartViewerBase {
         for (MatplotlibChartViewer.IStateChangeListener l : stateChangeListeners)
             l.pythonProcessLivenessChanged(proc);
 
-        proc.getProcess().onExit().thenRun(() -> {
-            for (MatplotlibChartViewer.IStateChangeListener l : stateChangeListeners)
-                l.pythonProcessLivenessChanged(proc);
-        });
-
         for (IOutputListener l : outputListeners) {
             proc.outputMonitoringThread.addOutputListener(l);
             proc.errorMonitoringThread.addOutputListener(l);
         }
 
-        proc.getEntryPoint().setResultsProvider(new ResultsProvider(rfm, proc.getInterruptedFlag()));
+        proc.getEntryPoint().setResultsProvider(new ResultsProvider(rfm, proc));
         proc.getEntryPoint().setChartProvider(chartProvider = new ChartProvider(chart));
+
+        proc.getProcess().onExit().thenRun(() -> {
+            for (MatplotlibChartViewer.IStateChangeListener l : stateChangeListeners)
+                l.pythonProcessLivenessChanged(proc);
+        });
+
     }
 
     protected void changePythonIntoDirectory(File workingDir) {

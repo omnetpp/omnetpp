@@ -30,9 +30,12 @@
 #include <cstring>
 #include <limits>
 
-#include "sharedmemory.h"
+#include "scave/scavedefs.h"
 
 namespace omnetpp {
+namespace scave {
+
+class ShmSendBuffer;
 
 // See Python's pickletools.py for a detailed description of each of these codes
 enum class PickleOpCode : char {
@@ -111,11 +114,11 @@ enum class PickleOpCode : char {
 };
 
 /**
- * This is a generic pickler class, supporting string memoization, which delegates the
- * storing of the pickled data to the instantiator via a writer function.
+ * Provides serialization in Python's Pickle format, see https://docs.python.org/3/library/pickle.html.
+ * String memoization is supported. Buffer allocation and management is left to subclasses.
  */
-class Pickler {
-    Pickler() = delete;
+class Pickler
+{
     Pickler(const Pickler &) = delete;
     Pickler(Pickler &&) = delete;
 
@@ -123,21 +126,33 @@ class Pickler {
     Pickler &operator=(Pickler &&) = delete;
 
   protected:
-
-    // Stream to write binary data to
-    // Code shouldn't call writerFunc directly without first flush()ing.
-    std::function<void(const char*, size_t)> writerFunc;
-
-    static constexpr size_t bufferSize = 64 * 1024;
-    // Buffer to avoid calling a writerFunc on a per-byte basis.
-    std::array<char, bufferSize> buffer;
+    void *buffer;
+    size_t bufferSize;
     size_t bufferPos = 0;
 
     uint32_t nextMemoId = 0;
     std::unordered_map<std::string, uint32_t> memoizedStrings;
 
+    // convert values to bytes and add them to the stack
+    template <typename T>
+    void push(T value) {
+        const char *begin = reinterpret_cast<const char*>(&value);
+        if (bufferPos + sizeof(T) > bufferSize) {
+            makeRoom(sizeof(T));
+            Assert(bufferPos + sizeof(T) <= bufferSize);
+        }
+
+        memcpy((char *)buffer + bufferPos, begin, sizeof(T));
+        bufferPos += sizeof(T);
+    }
+
+    virtual void flush() { }  // called on stop()
+
+    virtual void makeRoom(size_t bytesNeeded);  // throws exception; override to flush or extend buffer
+
   public:
-    Pickler(std::function<void(const char*, size_t)> writer) : writerFunc(writer) { }
+    Pickler(void *buffer, size_t bufferSize) : buffer(buffer), bufferSize(bufferSize) {}
+    virtual ~Pickler() { }
 
     // Push protocol onto the stack
     void protocol();
@@ -148,29 +163,19 @@ class Pickler {
     void startTuple();
     void endTuple();
 
+    void tuple2();
+    void tuple3();
+
     void startList();
     void endList();
-
-    // These convert values to bytes and add them to the stack (NB: since T is to
-    // the left of a '::', its type cannot be deduced by the compiler so one must
-    // explicitly instantiate the template, i.e. push<int>(int) works, push(int)
-    // does not)
-    template <typename T>
-    void push(typename std::common_type<T>::type value) {
-        const char *begin = reinterpret_cast<const char*>(&value);
-        if (bufferPos + sizeof(T) > buffer.size())
-            flushNonEmpty();
-
-        static_assert(sizeof(T) <= bufferSize, "Buffer size assumption");
-        memcpy(buffer.data() + bufferPos, begin, sizeof(T));
-        bufferPos += sizeof(T);
-    }
 
     void pushEmptyDict();
 
     void pushBool(bool value);
     void pushInt(int64_t value);
     void pushDouble(double value);
+
+    void pushRawBytes(void *p, size_t size);
 
     void pushDoublesAsRawBytes(const std::vector<double>& values); // little-endian (doesn't swap)
 
@@ -187,46 +192,27 @@ class Pickler {
 
     // Add a BINPUT op and return the memoization id used
     size_t pushNextBinPut();
-
-    // Caller checks that bufferPos > 0
-    void flushNonEmpty();
-    void flush();
-
-    virtual ~Pickler() { flush(); };
 };
 
 /**
- * A specialized pickler that stores the pickled data into a SHM object it creates for itself.
+ * A specialized pickler that stores the pickled data into an ShmSendBuffer.
  */
 class ShmPickler : public Pickler
 {
-    std::string shmName; // empty if the shm object was removed (due to an error)
-    unsigned char *shm = nullptr; // nullptr if the shm object was unmapped (when done writing, or on error)
-    size_t writtenBytes = 0;
+  private:
+    ShmSendBuffer *sendBuffer;
     size_t sizeLimit;
 
-    // should be (one byte under) 2 GiB. this is the most we can pass into ftruncate -
-    // - macOS has no ftruncate64 and off_t is signed, and most likely 32 bit
-    static const size_t reserveSize = std::numeric_limits<int32_t>::max();
-
-    void writeIntoShm(const char *bytes, size_t count);
-
-    void unmap();
-    void cleanup();
+  protected:
+    virtual void makeRoom(size_t bytesNeeded);
 
   public:
-
-    ShmPickler(const std::string shmNameFragment = "pickle", size_t sizeLimit = -1);
-
-    bool exists() const { return !shmName.empty(); }
-    bool isMapped() const { return shm != nullptr; }
-
-    std::string getShmNameAndSize();
-    void release(); // will unmap, but NOT REMOVE - not even in the dtor
-
-    virtual ~ShmPickler();
+    ShmPickler(ShmSendBuffer *sendBuffer, size_t sizeLimit);
+    ~ShmPickler();
+    ShmSendBuffer *get() {ShmSendBuffer *ret = sendBuffer; sendBuffer = nullptr; return ret;}
 };
 
+} // namespace scave
 } // namespace omnetpp
 
 #endif

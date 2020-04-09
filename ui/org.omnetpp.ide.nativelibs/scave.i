@@ -32,6 +32,7 @@
 #include "scave/xyarray.h"
 
 #include "resultspickler.h"
+#include "shmmanager.h"
 
 using namespace omnetpp::scave;
 %}
@@ -79,7 +80,7 @@ USE_COMMON_ENGINE_ILOCK();
 
 %include "map_oldapi.i" // needed for SWIG >=4.0 so we still have the 3.x functions
 
-// If there're wrappers (SwigValueWrapper) in the generated code, the following will help: 
+// If there're wrappers (SwigValueWrapper) in the generated code, the following will help:
 //%feature("novaluewrapper") omnetpp::scave::IDListsByRun;
 
 namespace std {
@@ -512,7 +513,7 @@ namespace omnetpp { namespace scave {
 /* ------------------ resultspickler.h ----------------------- */
 %include "resultspickler.h"
 
-/* ------------------ sharedmemory.cc ----------------------- */
+/* ------------------ sharedmemory_jni.h ----------------------- */
 
 %native(createSharedMemory) void createSharedMemory(jstring name, jlong size);
 
@@ -525,3 +526,6 @@ namespace omnetpp { namespace scave {
 %native(unmapSharedMemory) void unmapSharedMemory(jobject buf);
 
 %native(removeSharedMemory) void removeSharedMemory(jstring name);
+
+/* ------------------ shmmanager.h ----------------------- */
+%include "shmmanager.h"

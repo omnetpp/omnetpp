@@ -23,13 +23,18 @@
 namespace omnetpp {
 
 // macOS limitation
-#define OPP_SHM_NAME_MAX 32
+#define OPP_SHM_NAME_MAX 31
+
+// fd's are int on POSIX, HANDLE's are void* on WIN32
+// but intptr_t is not fixed size, so it might not be long in Java
+typedef int64_t shmhandle_t;
 
 // commit is ignored on POSIX systems (Linux, Darwin) because they can overcommit just fine
-void createSharedMemory(const char *name, int64_t size, bool commit = true);
+shmhandle_t createSharedMemory(const char *name, int64_t size, bool commit = true);
 void *mapSharedMemory(const char *name, int64_t size);
-void commitSharedMemory(void *start, int64_t size); // does not do anything on POSIX systems
+void commitSharedMemory(void *start, int64_t size); // does not do anything on POSIX systems --TODO needCommit()?
 void unmapSharedMemory(void *buffer, int64_t size);
+void closeSharedMemory(shmhandle_t handle);
 void removeSharedMemory(const char *name);
 
 } // namespace omnetpp

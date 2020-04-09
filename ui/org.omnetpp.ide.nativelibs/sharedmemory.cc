@@ -16,6 +16,7 @@
 
 #include <stdexcept>
 #include <string>
+#include "common/stlutil.h"
 
 extern "C" {
 #if defined(__linux__)
@@ -42,60 +43,67 @@ extern "C" {
 #include "string.h"
 }
 
+
+//#define SHM_DEBUG 1
+
+#ifdef SHM_DEBUG
+#define DEBUG(args)  (std::cout << args << std::endl)
+#else
+#define DEBUG(args)
+#endif
+
+
 namespace omnetpp {
 
-void createSharedMemory(const char *name, int64_t size, bool commit)
+shmhandle_t createSharedMemory(const char *name, int64_t size, bool commit)
 {
-    #if defined(_WIN32)
+    DEBUG("C++: createSharedMemory start, " << name << " size=" << size << " commit=" << commit);
 
-        HANDLE hMapFile = CreateFileMapping(
-            INVALID_HANDLE_VALUE,      // use paging file
-            NULL,                      // default security
-            PAGE_READWRITE | (commit ? SEC_COMMIT : SEC_RESERVE),
-            (size >> 32) & 0xFFFFFFFF, // maximum object size (high-order DWORD)
-            size & 0xFFFFFFFF,         // maximum object size (low-order DWORD)
-            name);                     // name of mapping object
+#if defined(_WIN32)
 
-        if (hMapFile == NULL) {
-            char err[2048];
-            FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), err, 2048, NULL);
-            throw std::runtime_error(std::string("Error creating shared memory file mapping '") + name + "': " + err);
-        }
+    HANDLE hMapFile = CreateFileMapping(
+        INVALID_HANDLE_VALUE,      // use paging file
+        NULL,                      // default security
+        PAGE_READWRITE | (commit ? SEC_COMMIT : SEC_RESERVE),
+        (size >> 32) & 0xFFFFFFFF, // maximum object size (high-order DWORD)
+        size & 0xFFFFFFFF,         // maximum object size (low-order DWORD)
+        name);                     // name of mapping object
 
-    #else // POSIX (linux, mac)
+    if (hMapFile == NULL) {
+        char err[2048];
+        FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), err, 2048, NULL);
+        throw std::runtime_error(std::string("Error creating shared memory file mapping '") + name + "': " + err);
+    }
 
-        int fd = shm_open(name, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
-        if (fd == -1)
-            throw std::runtime_error(std::string("Error opening SHM file descriptor for '") + name + "': " + strerror(errno));
+    DEBUG("C++: createSharedMemory end, handle=" << (shmhandle_t)hMapFile);
 
-        if (ftruncate(fd, size) == -1)
-            throw std::runtime_error(std::string("Error setting SHM file descriptor to size ") + std::to_string(size) + " for '" + name + "': " + strerror(errno));
+    return (shmhandle_t)hMapFile;
 
-        if (close(fd) == -1)
-            throw std::runtime_error(std::string("Error closing SHM file descriptor for '") + name + "': " + strerror(errno));
+#else // POSIX (linux, mac)
 
-    #endif
+    int fd = shm_open(name, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
+    if (fd == -1)
+        throw std::runtime_error(std::string("Error opening SHM file descriptor for '") + name + "': " + strerror(errno));
+
+    if (ftruncate(fd, size) == -1)
+        throw std::runtime_error(std::string("Error setting SHM file descriptor to size ") + std::to_string(size) + " for '" + name + "': " + strerror(errno));
+
+    DEBUG("C++: createSharedMemory end, fd=" << fd);
+
+    return fd;
+#endif
 }
 
 void *mapSharedMemory(const char *name, int64_t size)
 {
+    DEBUG("C++: mapSharedMemory start, " << name << " size=" << size);
+
     // must be set by the platform specific fragments
     void *buffer = nullptr;
 
 #if defined(_WIN32)
 
-    // this did NOT work: HANDLE opened = OpenFileMapping(PAGE_READWRITE, FALSE, name);
-
-    HANDLE hMapFile = CreateFileMapping(
-      INVALID_HANDLE_VALUE,    // use paging file
-      NULL,                    // default security
-      PAGE_READWRITE,          // read/write access
-      0,                       // maximum object size (high-order DWORD)
-      size,                    // maximum object size (low-order DWORD) - ignored, but must not be 0
-      name);                   // name of mapping object
-
-    if (GetLastError() != ERROR_ALREADY_EXISTS)
-        throw std::runtime_error(std::string("Trying to map a nonexistent shared memory mapping '") + name + "'");
+    HANDLE hMapFile = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, name);
 
     if (hMapFile == NULL) {
         char err[2048];
@@ -104,16 +112,24 @@ void *mapSharedMemory(const char *name, int64_t size)
     }
 
     buffer = MapViewOfFile(
-      hMapFile,   // handle to map object
-      FILE_MAP_ALL_ACCESS, // read/write permission
-      0, // no offset (high)
-      0, // no offset (low)
-      0); // no size, map the whole object
+        hMapFile,   // handle to map object
+        FILE_MAP_ALL_ACCESS, // read/write permission
+        0, // no offset (high)
+        0, // no offset (low)
+        0
+    ); // no size, map the whole object
 
     if (buffer == NULL) {
         char err[2048];
         FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), err, 2048, NULL);
         throw std::runtime_error(std::string("Error mapping view of file '") + name + "': " + err);
+    }
+
+    bool success = CloseHandle(hMapFile);
+    if (!success) {
+        char err[2048];
+        FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), err, 2048, NULL);
+        throw std::runtime_error(std::string("Error closing shm handle: ") + err);
     }
 
 #else // POSIX (linux, mac)
@@ -131,68 +147,80 @@ void *mapSharedMemory(const char *name, int64_t size)
 
 #endif
 
+    DEBUG("C++: mapSharedMemory end " << buffer);
+
     return buffer;
 }
 
 
 void commitSharedMemory(void *start, int64_t size)
 {
-    #if defined(_WIN32)
-        VirtualAlloc(
-            start,
-            size,
-            MEM_COMMIT,
-            PAGE_READWRITE
-        );
-    #else // POSIX (linux, mac)
+    DEBUG("C++: commitSharedMemory start, " << start << " size=" << size);
+
+#if defined(_WIN32)
+        VirtualAlloc(start, size, MEM_COMMIT, PAGE_READWRITE);
+#else // POSIX (linux, mac)
     // no-op, we are always overcommitting anyways
-    #endif
+#endif
+
+    DEBUG("C++: commitSharedMemory end");
 }
 
 
 void unmapSharedMemory(void *buffer, int64_t size)
 {
-    #if defined(_WIN32)
+    DEBUG("C++: unmapSharedMemory start, " << buffer << " size=" << size);
+
+#if defined(_WIN32)
         if (UnmapViewOfFile(buffer) == 0) {
             char err[2048];
             FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), err, 2048, NULL);
             throw std::runtime_error(std::string("Error unmapping file view of size ") + std::to_string(size) + ": " + err);
         }
-    #else // POSIX (linux, mac)
+#else // POSIX (linux, mac)
         if (munmap(buffer, size) == -1)
             throw std::runtime_error(std::string("Error unmapping SHM buffer of size ") + std::to_string(size) + ": " + strerror(errno));
-    #endif
+#endif
+
+    DEBUG("C++: unmapSharedMemory end");
 }
 
+void closeSharedMemory(shmhandle_t handle)
+{
+    DEBUG("C++: closeSharedMemory start, handle=" << handle);
+
+#if defined(_WIN32)
+    bool success = CloseHandle((HANDLE)handle);
+    if (!success) {
+        char err[2048];
+        FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), err, 2048, NULL);
+        throw std::runtime_error(std::string("Error closing shm handle: ") + err);
+    }
+
+#else // POSIX (linux, mac)
+    if (close(handle) == -1)
+        throw std::runtime_error(std::string("Error closing SHM file descriptor: ") + strerror(errno));
+#endif
+
+    DEBUG("C++: closeSharedMemory end");
+}
 
 void removeSharedMemory(const char *name)
 {
-    #if defined(_WIN32)
+    DEBUG("C++: removeSharedMemory start, " << name);
 
-        HANDLE hMapFile = CreateFileMapping(
-        INVALID_HANDLE_VALUE,    // use paging file
-        NULL,                    // default security
-        PAGE_READWRITE,          // read/write access
-        0,                       // maximum object size (high-order DWORD)
-        1,                       // maximum object size (low-order DWORD) - ignored, but must not be 0
-        name);                   // name of mapping object
+#if defined(_WIN32)
 
-        if (GetLastError() != ERROR_ALREADY_EXISTS) {
-            char err[2048];
-            FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), err, 2048, NULL);
-            throw std::runtime_error(std::string("Trying to remove a nonexistent mapping '") + name + "': " + err);
-        }
+    // On Windows, there is no persistent shared memory object; shmem is deallocated when
+    // all handles to it are closed.
 
-        if (CloseHandle(hMapFile) == 0) {
-            char err[2048];
-            FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), err, 2048, NULL);
-            throw std::runtime_error(std::string("Error closing file mapping handle '") + name + "': " + err);
-        }
+#else // POSIX (linux, mac)
 
-    #else // POSIX (linux, mac)
-        if (shm_unlink(name) == -1)
-            throw std::runtime_error(std::string("Error unlinking SHM object '") + name + "': " + strerror(errno));
-    #endif
+    if (shm_unlink(name) == -1)
+        throw std::runtime_error(std::string("Error unlinking SHM object '") + name + "': " + strerror(errno));
+#endif
+
+    DEBUG("C++: removeSharedMemory end");
 }
 
 } // namespace omnetpp

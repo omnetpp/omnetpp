@@ -35,17 +35,20 @@ def _load_pickle_from_shm(name_and_size : str):
         mem = posix_ipc.SharedMemory(name)
 
         with mmap.mmap(mem.fd, mem.size) as mf:
-            arr = pickle.load(mf)
+            mf.write_byte(1)
+            mf.seek(8)
+            p = pickle.load(mf)
 
-        mem.unlink()
     elif system == 'Windows':
         # on Windows, the mmap module in itself provides shared memory functionality
         with mmap.mmap(-1, size, tagname=name) as mf:
-            arr = pickle.load(mf)
+            mf.write_byte(1)
+            mf.seek(8)
+            p = pickle.load(mf)
     else:
         raise RuntimeError("unsupported platform")
 
-    return arr
+    return p
 
 
 def _get_array_from_shm(name_and_size : str):
@@ -72,18 +75,23 @@ def _get_array_from_shm(name_and_size : str):
             # for some reason we can't directly np.memmap the shm file, because it is "unseekable"
             # but the mmap module works with it, so we just copy the data into np, and release the shared memory
             with mmap.mmap(mem.fd, length=mem.size) as mf:
-                arr = np.frombuffer(mf.read(), dtype=np.double)
+                mf.write_byte(1)
+                mf.seek(0)
+                arr = np.frombuffer(mf.read(), dtype=np.double, offset=8)
         else:
             # on Linux, we can just continue to use the existing shm memory without copying
             with open(mem.fd, 'wb') as mf:
-                arr = np.memmap(mf, dtype=np.double)
+                mf.write(b"\1")
+                mf.seek(0)
+                arr = np.memmap(mf, dtype=np.double, offset=8)
 
         # on Mac we are done with shm (data is copied), on Linux we can delete the name even though the mapping is still in use
-        mem.unlink()
     elif system == 'Windows':
         # on Windows, the mmap module in itself provides shared memory functionality. and we copy the data here as well.
         with mmap.mmap(-1, size, tagname=name) as mf:
-            arr = np.frombuffer(mf.read(), dtype=np.double)
+            mf.write_byte(1)
+            mf.seek(0)
+            arr = np.frombuffer(mf.read(), dtype=np.double, offset=8)
     else:
         raise RuntimeError("unsupported platform")
 

@@ -2,6 +2,7 @@ package org.omnetpp.scave.pychart;
 
 import org.omnetpp.common.Debug;
 import org.omnetpp.scave.engine.InterruptedFlag;
+import org.omnetpp.scave.engine.ShmSendBufferManager;
 
 import py4j.ClientServer;
 
@@ -10,7 +11,7 @@ public class PythonProcess {
 
     private Process process;
     private ClientServer clientServer = null;
-    boolean killedByUs = false;
+    private boolean killedByUs = false;
 
     protected InterruptedFlag interruptedFlag = new InterruptedFlag();
 
@@ -18,7 +19,8 @@ public class PythonProcess {
     public PythonOutputMonitoringThread errorMonitoringThread;
     public PythonCallerThread pythonCallerThread;
 
-    IPythonEntryPoint entryPoint = null;
+    protected IPythonEntryPoint entryPoint = null;
+    protected ShmSendBufferManager shmSendBufferManager;
 
     public PythonProcess(Process process, ClientServer clientServer) {
         this.process = process;
@@ -29,10 +31,22 @@ public class PythonProcess {
         errorMonitoringThread = new PythonOutputMonitoringThread(this, true);
         errorMonitoringThread.start();
 
+        shmSendBufferManager = new ShmSendBufferManager((int)process.pid());
+        process.onExit().thenRun(() -> shmSendBufferManager.clear());
+
         // this does not have any references to anything, the Runnable
         // instances passed to it later do
         pythonCallerThread = new PythonCallerThread(this);
         pythonCallerThread.start();
+
+        Thread collectorThread = new Thread(() -> {
+            while (isAlive()) {
+                try { Thread.sleep(1000); } catch (InterruptedException e) {}
+                shmSendBufferManager.garbageCollect();
+            }
+        }, "ShmSendBufferManager garbage collector");
+        collectorThread.setDaemon(true);
+        collectorThread.start();
     }
 
     public Process getProcess() {
@@ -109,4 +123,7 @@ public class PythonProcess {
         return interruptedFlag;
     }
 
+    public ShmSendBufferManager getShmSendBufferManager() {
+        return shmSendBufferManager;
+    }
 }

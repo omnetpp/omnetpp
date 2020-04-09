@@ -3,98 +3,106 @@ package org.omnetpp.scave.editors;
 import java.io.IOException;
 import java.util.List;
 
-import org.omnetpp.common.Debug;
-import org.omnetpp.scave.engine.InterruptedFlag;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultsPickler;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.pychart.IScaveResultsPickleProvider;
+import org.omnetpp.scave.pychart.PythonProcess;
 
 import net.razorvine.pickle.PickleException;
 
+/**
+ * Implements the internal parts needed for the functionality of the
+ * omnetpp.scave.results Python module provided to chart scripts.
+ *
+ * But really, this is just a proxy for the _actual_ implementation
+ * in C++, in the nativelibs package, through SWIG.
+ *
+ * It also takes care of storing the SHM object names (and sizes)
+ * created by the C++ part into the associated PythonProcess.
+ *
+ * @author attila
+ */
 public class ResultsProvider implements IScaveResultsPickleProvider {
-    ResultFileManager rfm;
-    ResultsPickler rp;
-    InterruptedFlag interruptedFlag;
+    private ResultsPickler rp;
 
-    public ResultsProvider(ResultFileManager rfm, InterruptedFlag interruptedFlag) {
-        this.rfm = rfm;
-        this.rp = new ResultsPickler(rfm);
-        this.interruptedFlag = interruptedFlag;
+    public ResultsProvider(ResultFileManager rfm, PythonProcess proc) {
+        this.rp = new ResultsPickler(rfm, proc.getShmSendBufferManager(), proc.getInterruptedFlag());
     }
 
     public String getRunsPickle(String filterExpression) throws PickleException, IOException {
-        return Debug.timed("getRunsPickle", 0, () -> rp.getRunsPickle(filterExpression, interruptedFlag));
+        return rp.getRunsPickle(filterExpression).getNameAndSize();
     }
 
     public String getRunAttrsPickle(String filterExpression) throws PickleException, IOException {
-        return Debug.timed("getRunAttrsPickle", 0, () -> rp.getRunattrsPickle(filterExpression, interruptedFlag));
+        return rp.getRunattrsPickle(filterExpression).getNameAndSize();
     }
 
     @Override
     public String getRunAttrsForRunsPickle(List<String> runIDs) throws PickleException, IOException {
-        return Debug.timed("getRunAttrsForRunsPickle", 0, () -> rp.getRunattrsForRunsPickle(StringVector.fromArray(runIDs.toArray(new String[] {})), interruptedFlag));
+        return rp.getRunattrsForRunsPickle(toStringVector(runIDs)).getNameAndSize();
     }
 
     @Override
     public String getItervarsPickle(String filterExpression) throws PickleException, IOException {
-        return Debug.timed("getItervarsPickle", 0, () -> rp.getItervarsPickle(filterExpression, interruptedFlag));
+        return rp.getItervarsPickle(filterExpression).getNameAndSize();
     }
 
     @Override
     public String getItervarsForRunsPickle(List<String> runIDs) throws PickleException, IOException {
-        return Debug.timed("getItervarsForRunsPickle", 0, () -> rp.getItervarsForRunsPickle(StringVector.fromArray(runIDs.toArray(new String[] {})), interruptedFlag));
+        return rp.getItervarsForRunsPickle(toStringVector(runIDs)).getNameAndSize();
     }
 
     @Override
     public String getParamAssignmentsPickle(String filterExpression) throws PickleException, IOException {
-        return Debug.timed("getParamAssignmentsPickle", 0, () -> rp.getParamAssignmentsPickle(filterExpression, interruptedFlag));
+        return rp.getParamAssignmentsPickle(filterExpression).getNameAndSize();
     }
+
     @Override
     public String getParamAssignmentsForRunsPickle(List<String> runIDs) throws PickleException, IOException {
-        return Debug.timed("getParamAssignmentsForRunsPickle", 0, () -> rp.getParamAssignmentsForRunsPickle(StringVector.fromArray(runIDs.toArray(new String[] {})), interruptedFlag));
+        return rp.getParamAssignmentsForRunsPickle(toStringVector(runIDs)).getNameAndSize();
     }
 
     @Override
     public String getConfigEntriesPickle(String filterExpression) throws PickleException, IOException {
-        return Debug.timed("getConfigEntriesPickle", 0, () -> rp.getConfigEntriesPickle(filterExpression, interruptedFlag));
+        return rp.getConfigEntriesPickle(filterExpression).getNameAndSize();
     }
 
     @Override
     public String getConfigEntriesForRunsPickle(List<String> runIDs) throws PickleException, IOException {
-        return Debug.timed("getConfigEntriesForRunsPickle", 0, () -> rp.getConfigEntriesForRunsPickle(StringVector.fromArray(runIDs.toArray(new String[] {})), interruptedFlag));
+        return rp.getConfigEntriesForRunsPickle(toStringVector(runIDs)).getNameAndSize();
     }
 
     public String getResultsPickle(String filterExpression, List<String> rowTypes, boolean omitUnusedColumns, double simTimeStart, double simTimeEnd) throws PickleException, IOException {
-        StringVector sv = new StringVector();
-        for (String s : rowTypes)
-            sv.add(s);
-        return Debug.timed("getResultsPickle", 0, () -> rp.getCsvResultsPickle(filterExpression, sv, omitUnusedColumns, simTimeStart, simTimeEnd, interruptedFlag));
+        return rp.getCsvResultsPickle(filterExpression, toStringVector(rowTypes), omitUnusedColumns, simTimeStart, simTimeEnd).getNameAndSize();
     }
 
     @Override
     public String getParamValuesPickle(String filterExpression, boolean includeAttrs) throws PickleException, IOException {
-        return Debug.timed("getParamValuesPickle", 0, () -> rp.getParamValuesPickle(filterExpression, includeAttrs, interruptedFlag));
+        return rp.getParamValuesPickle(filterExpression, includeAttrs).getNameAndSize();
     }
 
     @Override
     public String getScalarsPickle(String filterExpression, boolean includeAttrs) throws PickleException, IOException {
-        return Debug.timed("getScalarsPickle", 0, () -> rp.getScalarsPickle(filterExpression, includeAttrs, interruptedFlag));
+        return rp.getScalarsPickle(filterExpression, includeAttrs).getNameAndSize();
     }
 
     @Override
     public String getVectorsPickle(String filterExpression, boolean includeAttrs, double simTimeStart, double simTimeEnd) throws PickleException, IOException {
-        return Debug.timed("getVectorsPickle", 0, () -> rp.getVectorsPickle(filterExpression, includeAttrs, simTimeStart, simTimeEnd, interruptedFlag));
+        return rp.getVectorsPickle(filterExpression, includeAttrs, simTimeStart, simTimeEnd).getNameAndSize();
     }
 
     @Override
     public String getStatisticsPickle(String filterExpression, boolean includeAttrs) throws PickleException, IOException {
-        return Debug.timed("getStatisticsPickle", 0, () -> rp.getStatisticsPickle(filterExpression, includeAttrs, interruptedFlag));
+        return rp.getStatisticsPickle(filterExpression, includeAttrs).getNameAndSize();
     }
 
     @Override
     public String getHistogramsPickle(String filterExpression, boolean includeAttrs) throws PickleException, IOException {
-        return Debug.timed("getHistogramsPickle", 0, () -> rp.getHistogramsPickle(filterExpression, includeAttrs, interruptedFlag));
+        return rp.getHistogramsPickle(filterExpression, includeAttrs).getNameAndSize();
     }
 
+    protected static StringVector toStringVector(List<String> runIDs) {
+        return StringVector.fromArray(runIDs.toArray(new String[] {}));
+    }
 }

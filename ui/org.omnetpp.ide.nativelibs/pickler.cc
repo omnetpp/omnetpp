@@ -18,12 +18,13 @@
 // This file was "inspired by" torch/csrc/jit/serialization/pickler.cpp in PyTorch
 
 #include "pickler.h"
+#include "shmmanager.h"
 
 #include <string>
 #include "scave/memoryutils.h" // getAvailableMemoryBytes()
-#include "omnetpp/platdep/platmisc.h" // getpid()
 
 namespace omnetpp {
+namespace scave {
 
 // Protocol 2 is the highest that can be decoded by Python 2
 // See https://docs.python.org/3/library/pickle.html#data-stream-format
@@ -40,6 +41,16 @@ void Pickler::startTuple()
     // All attributes get pushed into a tuple and their indices saved in the
     // module def
     push<PickleOpCode>(PickleOpCode::MARK);
+}
+
+void Pickler::tuple2()
+{
+    push<PickleOpCode>(PickleOpCode::TUPLE2);
+}
+
+void Pickler::tuple3()
+{
+    push<PickleOpCode>(PickleOpCode::TUPLE3);
 }
 
 void Pickler::endTuple()
@@ -136,20 +147,20 @@ void Pickler::pushNone()
     push<PickleOpCode>(PickleOpCode::NONE);
 }
 
+void Pickler::pushRawBytes(void *p, size_t size)
+{
+    if (bufferPos + size > bufferSize) {
+        makeRoom(size);
+        Assert(bufferPos + size <= bufferSize);
+    }
+
+    memcpy((char*)buffer + bufferPos, p, size);
+    bufferPos += size;
+}
+
 void Pickler::pushBytes(const std::string& string)
 {
-    static const size_t kSmallStr = 32;
-    if (string.size() <= kSmallStr &&
-        bufferPos + string.size() <= buffer.size()) {
-        // Small string that fits: buffer the data.
-        memcpy(buffer.data() + bufferPos, string.data(), string.size());
-        bufferPos += string.size();
-    }
-    else {
-        // Otherwise, first flush, then write directly.
-        flush();
-        writerFunc(string.data(), string.size());
-    }
+    pushRawBytes((void *)string.data(), string.size());
 }
 
 static inline double swapDouble(double value)
@@ -172,14 +183,12 @@ void Pickler::pushDouble(double value)
 
 void Pickler::pushDoublesAsRawBytes(const std::vector<double>& values)
 {
-    // number of bytes
-    int s = values.size() * 8;
+    size_t size = values.size() * 8;
 
     push<PickleOpCode>(PickleOpCode::BINBYTES);
-    push<int32_t>(s);
+    push<int32_t>(size);
 
-    flush();
-    writerFunc((char*)values.data(), s);
+    pushRawBytes((void *)values.data(), size);
 }
 
 void Pickler::pushEmptyDict()
@@ -198,116 +207,41 @@ size_t Pickler::pushNextBinPut()
         push<PickleOpCode>(PickleOpCode::LONG_BINPUT);
         push<uint32_t>(nextMemoId);
     }
-    //AT_ASSERT(memo_id_ <= std::numeric_limits<uint32_t>::max());
-    return nextMemoId++;
+    return nextMemoId++; // should check overflow ;)
 }
 
-void Pickler::flushNonEmpty()
+void Pickler::makeRoom(size_t bytesNeeded)
 {
-    writerFunc(buffer.data(), bufferPos);
-    bufferPos = 0;
+    throw std::runtime_error("Pickle buffer full"); // override to support flushing or extending the buffer
 }
-
-void Pickler::flush()
-{
-    if (bufferPos != 0)
-        flushNonEmpty();
-}
-
 
 // ---------------- ShmPickler ----------------
 
-
-void ShmPickler::writeIntoShm(const char *bytes, size_t count)
+ShmPickler::ShmPickler(ShmSendBuffer *sendBuffer, size_t sizeLimit) :
+        Pickler(sendBuffer->getAddress(), sendBuffer->getSize()),
+        sendBuffer(sendBuffer), sizeLimit(sizeLimit)
 {
-    if (!isMapped())
-        throw std::runtime_error("The SHM for pickling is not mapped");
-
-    if (sizeLimit >= 0 && (writtenBytes + count) > sizeLimit) {
-        cleanup();
-        throw std::runtime_error("Pickle size limit exceeded");
-    }
-
-    if ((writtenBytes + count) > reserveSize) {
-        cleanup();
-        throw std::runtime_error("Reserved shared memory exceeded during pickling");
-    }
-
-    if (scave::getAvailableMemoryBytes() < count) {
-        cleanup();
-        throw std::runtime_error("Ran out of memory during pickling");
-    }
-
-    void *shmEnd = (void *)(shm + writtenBytes);
-
-    commitSharedMemory(shmEnd, count);
-    memcpy(shmEnd, bytes, count);
-    writtenBytes += count;
-}
-
-void ShmPickler::unmap()
-{
-    if (!isMapped())
-        throw std::runtime_error("Cannot unmap SHM: not mapped");
-
-    flush();
-    unmapSharedMemory(shm, reserveSize);
-    shm = nullptr;
-}
-
-void ShmPickler::cleanup()
-{
-    if (isMapped())
-        unmap();
-
-    if (exists()) {
-        removeSharedMemory(shmName.c_str());
-        shmName.clear();
-    }
-}
-
-std::string ShmPickler::getShmNameAndSize()
-{
-    if (!exists())
-        throw std::runtime_error("Pickler SHM is not available (maybe it was already released?)");
-
-    if (isMapped())
-        flush();
-
-    return shmName + " " + std::to_string(writtenBytes);
-}
-
-void ShmPickler::release()
-{
-    if (isMapped())
-        unmap();
-
-    // without removing the SHM objects
-    shmName.clear();
-}
-
-ShmPickler::ShmPickler(const std::string shmNameFragment, size_t sizeLimit)
-    : Pickler([this](const char* bytes, size_t count) {
-        writeIntoShm(bytes, count);
-    }), sizeLimit(sizeLimit)
-{
-    // shmNameFragment must be shorter than ~20 characters!
-    static int counter = 0;
-    shmName = "/" + shmNameFragment + "_" + std::to_string(getpid() % 1000) + "_" + std::to_string(counter++ % 1000000);
-
-    if (shmName.size() >= OPP_SHM_NAME_MAX) {
-        std::string error = "SHM name is too long: '" + shmName + "'";
-        shmName.clear();
-        throw std::runtime_error(error);
-    }
-
-    createSharedMemory(shmName.c_str(), reserveSize, false);
-    shm = (unsigned char *)mapSharedMemory(shmName.c_str(), reserveSize);
 }
 
 ShmPickler::~ShmPickler()
 {
-    cleanup();
+    delete sendBuffer;
 }
 
+void ShmPickler::makeRoom(size_t bytesNeeded)
+{
+    // extend buffer (increase bufferSize)
+    size_t increment = std::max(bytesNeeded, std::max((size_t)4096, (bufferSize*125)/100)); // 25% but min 4K, and min bytesNeeded
+
+    if (sizeLimit >= 0 && (bufferSize + increment) > sizeLimit)
+        throw std::runtime_error("Pickle size limit exceeded");
+
+    if (getAvailableMemoryBytes() < increment)
+        throw std::runtime_error("Ran out of memory during pickling");
+
+    bufferSize += increment;
+    sendBuffer->extendTo(bufferSize);
+}
+
+} // namespace scave
 } // namespace omnetpp
