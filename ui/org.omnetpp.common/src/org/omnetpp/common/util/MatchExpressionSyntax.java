@@ -416,7 +416,8 @@ public class MatchExpressionSyntax {
                     while (true) {
                         switch (ch = getChar()) {
                         case EOF: break LOOP;
-                        case ' ': case '\t': case '\n': case '(': case ')': case '=': ungetChar(ch); break LOOP;
+                        case ' ': case '\t': case '\n': case '(': case ')': ungetChar(ch); break LOOP;
+                        case '=': int lah = getChar(); if (lah != EOF) ungetChar(lah); if (lah == '~') {ungetChar(ch); break LOOP;} else value.append((char)ch);
                         default: value.append((char)ch); break;
                         }
                     };
