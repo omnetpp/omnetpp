@@ -213,7 +213,6 @@ public class LargeTable extends Composite
             @Override
             public void widgetSelected(SelectionEvent e) {
                 ScrollBar scrollBar = (ScrollBar)e.widget;
-                double percentage = (double)scrollBar.getSelection() / (scrollBar.getMaximum() - scrollBar.getThumb());
 
                 if (e.detail == SWT.ARROW_UP)
                     scroll(1);
@@ -223,14 +222,9 @@ public class LargeTable extends Composite
                     scroll(getPageJumpCount());
                 else if (e.detail == SWT.PAGE_DOWN)
                     scroll(-getPageJumpCount());
-                else if (percentage == 0)
-                    scrollToBegin();
-                else if (percentage == 1)
-                    scrollToEnd();
                 else {
                     // avoid hysteresis (no change for a while in the position when turning to the opposite direction during scrolling)
-                    percentage = (double)scrollBar.getSelection() / scrollBar.getMaximum();
-                    topIndex = clamp((int)(itemCount * percentage));
+                    topIndex = clampTopRowIndex(scrollBar.getSelection());
                     redraw();
                 }
             }
@@ -281,14 +275,13 @@ public class LargeTable extends Composite
     }
 
     private void createComposite(Composite parent) {
-        scrolledComposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
+        scrolledComposite = new ScrolledComposite(parent, SWT.H_SCROLL);
         scrolledComposite.getHorizontalBar().setIncrement(10);
         scrolledComposite.addControlListener(new ControlAdapter() {
             @Override
             public void controlResized(ControlEvent e) {
                 composite.layout();
                 composite.setSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-                scrolledComposite.getVerticalBar().setVisible(false);
                 scrolledComposite.getHorizontalBar().setPageIncrement(scrolledComposite.getSize().x);
             }
         });
@@ -321,6 +314,7 @@ public class LargeTable extends Composite
             @Override
             public void controlResized(ControlEvent e) {
                 configureVerticalScrollBar();
+                topIndex = clampTopRowIndex(topIndex);
                 redraw();
             }
         });
@@ -676,8 +670,8 @@ public class LargeTable extends Composite
         ScrollBar verticalBar = getVerticalBar();
         verticalBar.setMinimum(0);
 
-        verticalBar.setMaximum((int)Math.min(itemCount, 1E+6));
-        verticalBar.setThumb((int)((double)verticalBar.getMaximum() * getVisibleElementCount() / itemCount));
+        verticalBar.setMaximum(itemCount);
+        verticalBar.setThumb(getFullyVisibleElementCount());
         verticalBar.setIncrement(1);
         verticalBar.setPageIncrement(getPageJumpCount());
     }
@@ -686,23 +680,8 @@ public class LargeTable extends Composite
      * Updates the vertical bar position to reflect the currently displayed elements.
      */
     protected void updateVerticalBarPosition() {
-        int topVisibleIndex = getTopIndex();
-        int bottomFullyVisibleIndex = getBottomIndex();
-        double topPercentage = topVisibleIndex / (double)itemCount;
-        double bottomPercentage = bottomFullyVisibleIndex / (double)itemCount;
-        double topWeight = 1 / topPercentage;
-        double bottomWeight = 1 / (1 - bottomPercentage);
-        double percentage;
-
-        if (Double.isInfinite(topWeight))
-            percentage = topPercentage;
-        else if (Double.isInfinite(bottomWeight))
-            percentage = bottomPercentage;
-        else
-            percentage = (topPercentage * topWeight + bottomPercentage * bottomWeight) / (topWeight + bottomWeight);
-
-        ScrollBar verticalBar = getVerticalBar();
-        verticalBar.setSelection((int)((verticalBar.getMaximum() - verticalBar.getThumb()) * percentage));
+        if (getTopIndex() != getVerticalBar().getSelection())
+            getVerticalBar().setSelection(getTopIndex());
     }
 
     public void moveFocus(int numberOfElements) {
@@ -711,6 +690,11 @@ public class LargeTable extends Composite
 
     private int clamp(int rowIndex) {
         return rowIndex < 0 ? 0 : rowIndex < itemCount ? rowIndex : itemCount == 0 ? 0 : itemCount-1;
+    }
+
+    private int clampTopRowIndex(int rowIndex) {
+        int maxTopRowIndex = clamp(itemCount - getVisibleElementCount() + 1);
+        return rowIndex < 0 ? 0 : rowIndex < maxTopRowIndex ? rowIndex : maxTopRowIndex;
     }
 
     protected void moveFocusBy(int delta, boolean withShift, boolean withCtrl, boolean click) {
@@ -771,18 +755,16 @@ public class LargeTable extends Composite
     }
 
     public void scroll(int delta) {
-        topIndex = clamp(topIndex + delta);
+        topIndex = clampTopRowIndex(topIndex + delta);
         redraw();
     }
 
     public void reveal(int rowIndex) {
         int visibleItemCount = getFullyVisibleElementCount();
         if (rowIndex < topIndex)
-            topIndex = clamp(rowIndex);
+            topIndex = clampTopRowIndex(rowIndex);
         else if (rowIndex >= topIndex + visibleItemCount)
-            topIndex = clamp(rowIndex);
-        if (topIndex >= itemCount - visibleItemCount)
-            topIndex = clamp(itemCount - visibleItemCount);
+            topIndex = clampTopRowIndex(rowIndex - visibleItemCount+1);
         redraw();
     }
 
@@ -796,7 +778,7 @@ public class LargeTable extends Composite
     }
 
     public void scrollToEnd() {
-        topIndex = clamp(itemCount - getFullyVisibleElementCount() + 1);
+        topIndex = clampTopRowIndex(itemCount - getVisibleElementCount() + 1);
         redraw();
     }
 
