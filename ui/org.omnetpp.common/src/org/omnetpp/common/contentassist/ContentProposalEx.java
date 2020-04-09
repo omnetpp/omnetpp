@@ -10,7 +10,6 @@ package org.omnetpp.common.contentassist;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.engine.Common;
-import org.omnetpp.common.util.StringUtils;
 
 /**
  * A "standard" implementation of IContentProposal as an immutable value class.
