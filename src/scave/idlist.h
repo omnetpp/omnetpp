@@ -32,10 +32,17 @@ class ResultFileManager;
  */
 typedef int64_t ID;
 
-
 /**
- * Stores a set of unique IDs. Order is not important, and may occasionally
- * change (after merge(), subtract(), intersect(), or even equals()).
+ * Stores an immutable set of unique IDs. An ID identifies a result item
+ * inside ResultFileManager. The primary reason that IDs and IDLists exist
+ * is to make it more efficient to work with sets of results in Java.
+ *
+ * Immutability only refers to the set of contained IDs, the order may
+ * change during the lifetime of the object (due to the fact that ordering
+ * makes a number of operations more efficient).
+ *
+ * Contained IDs are supposed to be unique, but this is not enforced
+ * for efficiency reasons.
  */
 class SCAVE_API IDList
 {
@@ -50,58 +57,65 @@ class SCAVE_API IDList
         void checkIntegrityAllVectors(ResultFileManager *mgr) const;
         void checkIntegrityAllHistograms(ResultFileManager *mgr) const;
 
+        static void sort(/*non-*/const V& cv) {V& v = const_cast<V&>(cv); std::sort(v.begin(), v.end());}
+
         template <class T> void sortBy(ResultFileManager *mgr, bool ascending, T& comparator);
         template <class T> void sortScalarsBy(ResultFileManager *mgr, bool ascending, T& comparator);
         template <class T> void sortParametersBy(ResultFileManager *mgr, bool ascending, T& comparator);
         template <class T> void sortVectorsBy(ResultFileManager *mgr, bool ascending, T& comparator);
         template <class T> void sortHistogramsBy(ResultFileManager *mgr, bool ascending, T& comparator);
 
+        void append(ID id) {v.push_back(id);} // no uniqueness check, use of discardDuplicates() recommended
+        void discardDuplicates();
+
     public:
         IDList() {}
+        IDList(ID id) {v.push_back(id);}
         IDList(const IDList& ids) {v = ids.v;}
         IDList(IDList&& ids) {v = std::move(ids.v);}
+        IDList(std::vector<ID>&& ids) {v = std::move(ids);}
+
+        // these are the only mutator methods (deliberately not accessible from Java)
         IDList& operator=(const IDList& ids) {v = ids.v; return *this;}
         IDList& operator=(IDList&& ids) {v = std::move(ids.v); return *this;}
-        void set(const IDList& ids) {v = ids.v;}
-        int size() const  {return (int)v.size();}
-        bool isEmpty() const  {return v.empty();}
-        void clear()  {v.clear();}
-        void sort() {std::sort(v.begin(), v.end());}  // sort numerically; getUniqueFileRuns() etc are faster on sorted IDLists
+        const std::vector<ID>& asVector() const {return v;}
+
         bool equals(IDList& other);
         int64_t hashCode64() const;
-        void add(ID x); // checks for uniqueness (costly)
-        void bulkAdd(ID *array, int n); // checks for uniqueness (costly)
-        void append(ID id) {v.push_back(id);} // no uniqueness check, use of discardDuplicates() recommended
-        void append(const IDList& ids); // no uniqueness check, use of discardDuplicates() recommended
-        void discardDuplicates();
+
+        // element access
+        bool isEmpty() const  {return v.empty();}
+        int size() const  {return (int)v.size();}
         ID get(int i) const {return v.at(i);} // at() includes bounds check
-        void erase(int i);
-        void subtract(ID x); // this -= {x}
         int indexOf(ID x) const;
-        void merge(IDList& ids);  // this += ids
-        void subtract(IDList& ids);  // this -= ids
-        IDList getDifference(IDList& ids) const;  // return this - ids
-        void intersect(IDList& ids);  // this = intersection(this,ids)
+
+        // set operations
+        IDList unionWith(IDList& ids) const;
+        IDList subtract(IDList& ids) const;
+        IDList intersect(IDList& ids) const;
         bool isSubsetOf(IDList& ids);
+
+        // filtering
         IDList getRange(int startIndex, int endIndex) const;
         IDList getSubsetByIndices(int *array, int n) const;
+
+        // query by item types
         int getItemTypes() const;  // SCALAR, VECTOR or their binary OR
         bool areAllScalars() const;
         bool areAllParameters() const;
         bool areAllVectors() const;
         bool areAllStatistics() const;
         bool areAllHistograms() const;
+        IDList filterByTypes(int typeMask) const;
+        int countByTypes(int typeMask) const;
 
         // support for range-based for loops
         V::const_iterator begin() const {return v.begin();}
         V::const_iterator end() const {return v.end();}
 
-        // filtering
-        int countByTypes(int typeMask) const;
-        IDList filterByTypes(int typeMask) const;
-
         // sorting
         // TODO: there's a duplication between vector and histogram sorting due to not having a proper superclass with the statistics inside
+        void sort() {std::sort(v.begin(), v.end());}  // sort numerically; getUniqueFileRuns() etc are faster on sorted IDLists
         void sortByFileAndRun(ResultFileManager *mgr, bool ascending);
         void sortByRunAndFile(ResultFileManager *mgr, bool ascending);
         void sortByDirectory(ResultFileManager *mgr, bool ascending);

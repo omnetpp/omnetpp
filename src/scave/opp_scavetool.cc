@@ -444,8 +444,8 @@ void ScaveTool::queryCommand(int argc, char **argv)
     // filter statistics
     IDList results = resultFileManager.getAllItems(opt_includeFields);
     if (opt_mode != LIST_RUNS && opt_mode != LIST_RUNATTRS && opt_mode != LIST_ITERVARS && opt_mode != LIST_CONFIGENTRIES) {
-        results.set(results.filterByTypes(opt_resultTypeFilter));
-        results.set(resultFileManager.filterIDList(results, opt_filterExpression.c_str()));
+        results = results.filterByTypes(opt_resultTypeFilter);
+        results = resultFileManager.filterIDList(results, opt_filterExpression.c_str());
     }
 
     RunList runs = resultFileManager.getUniqueRuns(results);
@@ -745,8 +745,8 @@ void ScaveTool::exportCommand(int argc, char **argv)
 
     // filter results
     IDList results = resultFileManager.getAllItems(opt_includeFields);
-    results.set(results.filterByTypes(opt_resultTypeFilter));
-    results.set(resultFileManager.filterIDList(results, opt_filterExpression.c_str()));
+    results = results.filterByTypes(opt_resultTypeFilter);
+    results = resultFileManager.filterIDList(results, opt_filterExpression.c_str());
 
     // check items are supported by the format
     int itemTypes = results.getItemTypes();

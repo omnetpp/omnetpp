@@ -55,7 +55,7 @@ public class ResultSelectionFilterGenerator {
     // TODO reasonable name
     protected static ColumnValueCounts computeColumnData(IDList target, IDList all, String attrName, ResultFileManager manager) {
 
-        IDList nonTarget = all.getDifference(target);
+        IDList nonTarget = all.subtract(target);
 
         Map<String, AttributeValueCounts> valueCounts = new HashMap<String, AttributeValueCounts>();
 
@@ -199,10 +199,10 @@ public class ResultSelectionFilterGenerator {
         if (debug)
             Debug.println("approx matching count: " + approxMatching.size());
 
-        IDList approxNotMatching = all.getDifference(approxMatching);
+        IDList approxNotMatching = all.subtract(approxMatching);
 
-        IDList toBeExcluded = approxMatching.getDifference(target);
-        IDList toBeIncluded = target.getDifference(approxMatching);
+        IDList toBeExcluded = approxMatching.subtract(target);
+        IDList toBeIncluded = target.subtract(approxMatching);
 
         String includeFilter = null;
         if (!toBeIncluded.isEmpty()) {

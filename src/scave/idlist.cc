@@ -39,36 +39,11 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace scave {
 
-void IDList::add(ID x)
-{
-    if (std::find(v.begin(), v.end(), x) == v.end())
-        v.push_back(x);
-}
-
-void IDList::bulkAdd(ID *array, int length)
-{
-    v.reserve(v.size() + length);
-    for (int i = 0; i < length; i++)
-        v.push_back(array[i]);
-    discardDuplicates();
-}
-
-void IDList::append(const IDList& other)
-{
-    v.insert(v.end(), other.v.begin(), other.v.end());
-}
-
 void IDList::discardDuplicates()
 {
-    std::sort(v.begin(), v.end());
+    sort(v);
     auto last = std::unique(v.begin(), v.end());
     v.erase(last, v.end());
-}
-
-void IDList::erase(int i)
-{
-    v.at(i);  // bounds check
-    v.erase(v.begin()+i);
 }
 
 int IDList::indexOf(ID x) const
@@ -80,73 +55,56 @@ int IDList::indexOf(ID x) const
         return -1;
 }
 
-void IDList::subtract(ID x)
-{
-    auto it = std::find(v.begin(), v.end(), x);
-    if (it != v.end())
-        v.erase(it);
-}
-
-void IDList::merge(IDList& ids)
+IDList IDList::unionWith(IDList& ids) const
 {
     // sort both vectors so that we can apply set_union
-    std::sort(v.begin(), v.end());
-    std::sort(ids.v.begin(), ids.v.end());
+    sort(v);
+    sort(ids.v);
 
     // allocate a new vector, and merge the two vectors into it
-    V v2;
+    IDList result;
+    V& v2 = result.v;
     v2.resize(v.size() + ids.v.size());
     auto v2end = std::set_union(v.begin(), v.end(), ids.v.begin(), ids.v.end(), v2.begin());
     v2.resize(v2end - v2.begin());
-
-    // replace the vector with the result
-    v = v2;
-}
-
-void IDList::subtract(IDList& ids)
-{
-    // sort both vectors so that we can apply set_difference
-    std::sort(v.begin(), v.end());
-    std::sort(ids.v.begin(), ids.v.end());
-
-    // allocate a new vector, and compute difference into it
-    V v2;
-    v2.resize(v.size());
-    auto v2end = std::set_difference(v.begin(), v.end(), ids.v.begin(), ids.v.end(), v2.begin());
-    v2.resize(v2end - v2.begin());
-
-    // replace the vector with the result
-    v = v2;
-}
-
-IDList IDList::getDifference(IDList& ids) const
-{
-    IDList result(*this);
-    result.subtract(ids);
     return result;
 }
 
-void IDList::intersect(IDList& ids)
+IDList IDList::subtract(IDList& ids) const
+{
+    // sort both vectors so that we can apply set_difference
+    sort(v);
+    sort(ids.v);
+
+    // allocate a new vector, and compute difference into it
+    IDList result;
+    V& v2 = result.v;
+    v2.resize(v.size());
+    auto v2end = std::set_difference(v.begin(), v.end(), ids.v.begin(), ids.v.end(), v2.begin());
+    v2.resize(v2end - v2.begin());
+    return result;
+}
+
+IDList IDList::intersect(IDList& ids) const
 {
     // sort both vectors so that we can apply set_intersect
-    std::sort(v.begin(), v.end());
-    std::sort(ids.v.begin(), ids.v.end());
+    sort(v);
+    sort(ids.v);
 
     // allocate a new vector, and compute intersection into it
-    V v2;
+    IDList result;
+    V& v2 = result.v;
     v2.resize(v.size());
     auto v2end = std::set_intersection(v.begin(), v.end(), ids.v.begin(), ids.v.end(), v2.begin());
     v2.resize(v2end - v2.begin());
-
-    // replace the vector with the result
-    v = v2;
+    return result;
 }
 
 bool IDList::isSubsetOf(IDList& ids)
 {
     // sort both vectors so that we can apply std::includes()
-    std::sort(v.begin(), v.end());
-    std::sort(ids.v.begin(), ids.v.end());
+    sort(v);
+    sort(ids.v);
 
     return std::includes(ids.v.begin(), ids.v.end(), v.begin(), v.end()); // "ids includes this"
 }

@@ -371,8 +371,7 @@ public class BrowseDataPage extends FormEditorPage {
         IDList vectors = manager.getAllVectors();
         IDList scalars = manager.getAllScalars(showStatisticsFieldsAsScalars);
         IDList parameters = manager.getAllParameters();
-        IDList histograms = manager.getAllStatistics();
-        histograms.merge(manager.getAllHistograms());
+        IDList statisticsAndHistograms = manager.getAllStatistics().unionWith(manager.getAllHistograms());
 
         monitor.subTask("Refreshing All panel");
         while (Display.getCurrent().readAndDispatch());
@@ -391,7 +390,7 @@ public class BrowseDataPage extends FormEditorPage {
         tabFolder.getVectorsPanel().setIDList(vectors);
 
         monitor.subTask("Refreshing Histograms panel");
-        tabFolder.getHistogramsPanel().setIDList(histograms);
+        tabFolder.getHistogramsPanel().setIDList(statisticsAndHistograms);
         while (Display.getCurrent().readAndDispatch());
 
         monitor.subTask("Refreshing tab titles");

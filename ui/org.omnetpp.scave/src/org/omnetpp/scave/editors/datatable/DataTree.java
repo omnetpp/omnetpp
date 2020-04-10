@@ -34,6 +34,7 @@ import org.omnetpp.scave.actions.FlatModuleTreeAction;
 import org.omnetpp.scave.actions.PredefinedLevelsAction;
 import org.omnetpp.scave.editors.datatable.DataTreeContentProvider.Node;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.IDListBuffer;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
@@ -150,14 +151,14 @@ public class DataTree extends Tree implements IDataControl {
 
     public IDList getSelectedIDs() {
         return ResultFileManager.callWithReadLock(manager, () -> {
-            IDList resultIdList = new IDList();
+            IDListBuffer ids = new IDListBuffer();
             TreeItem[] treeItems = getSelection();
             for (TreeItem treeItem : treeItems) {
                 Node node = (Node)treeItem.getData();
                 if (node != null && node.ids != null)
-                    resultIdList.append(node.ids);
+                    ids.append(node.ids);
             }
-            return resultIdList;
+            return ids.toIDList();
         });
     }
 
@@ -214,9 +215,7 @@ public class DataTree extends Tree implements IDataControl {
 
     public void setSelectedID(long id) {
         if (idList.indexOf(id) != -1) {
-            IDList tmp = new IDList();
-            tmp.add(id);
-            TreeItem treeItem = getTreeItem(tmp);
+            TreeItem treeItem = getTreeItem(new IDList(id));
             if (treeItem != null)
                 setSelection(treeItem);
         }
@@ -241,7 +240,7 @@ public class DataTree extends Tree implements IDataControl {
                 showItem(treeItem);
                 Node node = (Node)treeItem.getData();
                 if (node != null)
-                    ids.subtract(node.ids);
+                    ids = ids.subtract(node.ids);
             }
             // don't spend to much time on it, because the gui becomes unresponsive and it's not worth it
             if (System.currentTimeMillis() - begin > timeLimitMillis)
@@ -266,7 +265,7 @@ public class DataTree extends Tree implements IDataControl {
         if (node != null && node.ids == null)
             return null;
         else if (node != null && node.ids != null) {
-            if (node.ids.getDifference(ids).isEmpty())  //TODO if (node.ids.isSubsetOf(ids))
+            if (node.ids.isSubsetOf(ids))
                 return treeItem;
         }
         for (TreeItem childTreeItem : childTreeItems) {

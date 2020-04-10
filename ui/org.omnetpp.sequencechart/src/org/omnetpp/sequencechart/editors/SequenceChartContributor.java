@@ -1845,8 +1845,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
                 // attach vector data
                 ResultItem resultItem = resultFileManager.getItem(id);
-                IDList selectedIdList = new IDList();
-                selectedIdList.add(id);
+                IDList selectedIdList = new IDList(id);
                 XYArrayVector dataVector = ScaveEngine.readVectorsIntoArrays2(resultFileManager, selectedIdList, true, true);
                 IAxisRenderer axisRenderer = new AxisVectorBarRenderer(sequenceChart, vectorFileName, vectorRunName, resultItem.getModuleName(), resultItem.getName(), resultItem, dataVector, 0);
                 sequenceChart.setAxisRenderer(axisModule, axisRenderer);
@@ -1904,7 +1903,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                             else if (kind.equals("MessageDependency")) {
                                 long eventNumber = Long.valueOf(marker.getAttribute("EventNumber", null));
                                 IEvent event = sequenceChart.getEventLog().getEventForEventNumber(eventNumber);
-                                if (event != null) { 
+                                if (event != null) {
                                     String messageDependencyIndexString = marker.getAttribute("MessageId", null);
                                     IMessageDependency markedMessageDependency = event.getConsequences().get(Integer.parseInt(messageDependencyIndexString));
                                     for (Object object : selectedObjects) {

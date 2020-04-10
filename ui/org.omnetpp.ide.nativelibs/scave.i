@@ -59,6 +59,7 @@ typedef int64_t eventnumber_t;
 %include "bigdecimal.i"
 
 namespace omnetpp { namespace scave {
+class IDList;
 class ResultItemField;
 class ResultItemFields;
 class DataflowManager;
@@ -169,6 +170,18 @@ namespace std {
        }
    }
 
+   %extend vector<omnetpp::scave::ID> {
+       void append(const vector<omnetpp::scave::ID>& v) {
+           self->insert(self->end(), v.begin(), v.end());
+       }
+       void append(const omnetpp::scave::IDList& ids) {
+           self->insert(self->end(), ids.begin(), ids.end());
+       }
+       omnetpp::scave::IDList toIDList() {
+           return IDList(std::move(*self));
+       }
+   }
+
    %template(StringSet) set<string>;
    %template(StringVector) vector<string>;
    //specialize_std_map_on_both(string,,,,string,,,);
@@ -176,8 +189,7 @@ namespace std {
 
    //TODO take the following stuff out of namepace std{}!!!
 
-   %template(IDVector) vector<omnetpp::scave::ID>;
-   %template(IDVectorVector) vector<vector<omnetpp::scave::ID> >;
+   %template(IDListBuffer) vector<omnetpp::scave::ID>;
    %template(RunList) vector<omnetpp::scave::Run*>;
    %template(ResultFileList) vector<omnetpp::scave::ResultFile*>;
    %template(FileRunList) vector<omnetpp::scave::FileRun*>;

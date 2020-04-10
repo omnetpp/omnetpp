@@ -931,7 +931,7 @@ IDList ResultFileManager::filterIDList(const IDList& idlist,
     // iterate over all values and add matching ones to "out".
     // we can exploit the fact that ResultFileManager contains the data in the order
     // they were read from file, i.e. grouped by runs
-    IDList out;
+    std::vector<ID> out;
     FileRun *lastFileRunRef = nullptr;
     bool lastFileRunMatched = false;
     int sz = idlist.size();
@@ -963,9 +963,9 @@ IDList ResultFileManager::filterIDList(const IDList& idlist,
         // everything matched, insert it.
         // (note: append() is fine: if input IDList didn't contain duplicates,
         // the result won't either)
-        out.append(id);
+        out.push_back(id);
     }
-    return out;
+    return IDList(std::move(out));
 }
 
 IDList ResultFileManager::filterIDList(const IDList& idlist, const char *runName, const char *moduleName, const char *name) const
@@ -979,7 +979,7 @@ IDList ResultFileManager::filterIDList(const IDList& idlist, const Run *run, con
 {
     READER_MUTEX
 
-    IDList result;
+    std::vector<ID> result;
     int sz = idlist.size();
     for (int i = 0; i < sz; i++) {
         ID id = idlist.get(i);
@@ -995,11 +995,9 @@ IDList ResultFileManager::filterIDList(const IDList& idlist, const Run *run, con
             continue;
 
         // everything matched, insert it.
-        // (note: append() is fine: if input IDList didn't contain duplicates,
-        // the result won't either)
-        result.append(id);
+        result.push_back(id);
     }
-    return result;
+    return IDList(std::move(result));
 }
 
 class MatchableResultItem : public MatchExpression::Matchable
@@ -1325,7 +1323,7 @@ IDList ResultFileManager::filterIDList(const IDList& idlist, const char *pattern
     MatchExpression matchExpr(pattern, false  /*dottedpath*/, true  /*fullstring*/, true  /*casesensitive*/);
 
     READER_MUTEX
-    IDList out;
+    std::vector<ID> out;
     int sz = idlist.size();
     int count = 0;
     for (int i = 0; i < sz; ++i) {
@@ -1335,13 +1333,13 @@ IDList ResultFileManager::filterIDList(const IDList& idlist, const char *pattern
         const ResultItem& item = getItem(id);
         MatchableResultItem matchable(item);
         if (matchExpr.matches(&matchable)) {
-            out.append(id);
+            out.push_back(id);
             count++;
             if (limit > 0 && count == limit)
                 break;
         }
     }
-    return out;
+    return IDList(std::move(out));
 }
 
 RunList ResultFileManager::filterRunList(const RunList& runlist, const char *pattern) const

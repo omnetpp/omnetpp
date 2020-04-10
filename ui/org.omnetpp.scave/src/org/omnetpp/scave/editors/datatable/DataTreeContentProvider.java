@@ -27,6 +27,7 @@ import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.IDListsByFile;
 import org.omnetpp.scave.engine.IDListsByRun;
+import org.omnetpp.scave.engine.IDListBuffer;
 import org.omnetpp.scave.engine.ParameterResult;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileList;
@@ -146,10 +147,10 @@ public class DataTreeContentProvider {
                 String label = "[" + pos + ".." + (end-1) + "]";
                 GroupNode group = new GroupNode(label, children[pos].getImage());
                 group.children = Arrays.copyOfRange(children, pos, end);
-                IDList groupIds = new IDList();
+                IDListBuffer groupIds = new IDListBuffer();
                 for (Node child : group.children)
                     groupIds.append(child.ids);
-                group.ids = groupIds;
+                group.ids = groupIds.toIDList();
                 groups.add(group);
             }
         });
@@ -191,7 +192,7 @@ public class DataTreeContentProvider {
 
         // sort the IDs into different child nodes, according to nextLevelClass
         IDList currentLevelIdList = firstNode == null ? inputIdList : firstNode.ids;
-        Map<Node, IDList> nodeIdsMap = sortIdListToChildNodes(path, currentLevelIdList, nextLevelClass, collector);
+        Map<Node, IDListBuffer> nodeIdsMap = sortIdListToChildNodes(path, currentLevelIdList, nextLevelClass, collector);
 
         // get nodes[] from keyset, sort if necessary
         Node[] nodes = nodeIdsMap.keySet().toArray(new Node[0]);
@@ -206,7 +207,7 @@ public class DataTreeContentProvider {
 
         // fill in ids[], value
         for (Node node : nodes) {
-            node.ids = nodeIdsMap.get(node);
+            node.ids = nodeIdsMap.get(node).toIDList();
             // add quick value if applicable
             if (node.ids.size() == 1 && !collector && StringUtils.isEmpty(node.value) &&
                 (!(node instanceof ModuleNameNode) || ((ModuleNameNode)node).leaf))
@@ -218,9 +219,9 @@ public class DataTreeContentProvider {
         return nodes;
     }
 
-    protected Map<Node, IDList> sortIdListToChildNodes(List<Node> path, IDList idList, Class<? extends Node> nextLevelClass, boolean collector) {
+    protected Map<Node, IDListBuffer> sortIdListToChildNodes(List<Node> path, IDList idList, Class<? extends Node> nextLevelClass, boolean collector) {
         int idCount = idList.size();
-        Map<Node,IDList> nodeIdsMap = new LinkedHashMap<>(); // preserve insertion order of children
+        Map<Node,IDListBuffer> nodeIdsMap = new LinkedHashMap<>(); // preserve insertion order of children
 
         Class[] runFilterClasses = {
                 ExperimentNode.class, MeasurementNode.class, ReplicationNode.class, ExperimentMeasurementReplicationNode.class,
@@ -378,17 +379,17 @@ public class DataTreeContentProvider {
         return nodeIdsMap;
     }
 
-    private static void add(Map<Node,IDList> map, Node key, long value) {
-        IDList ids = map.get(key);
+    private static void add(Map<Node,IDListBuffer> map, Node key, long value) {
+        IDListBuffer ids = map.get(key);
         if (ids == null)
-            map.put(key, ids = new IDList());
-        ids.append(value);
+            map.put(key, ids = new IDListBuffer());
+        ids.add(value);
     }
 
-    private static void add(Map<Node,IDList> map, Node key, IDList values) {
-        IDList ids = map.get(key);
+    private static void add(Map<Node,IDListBuffer> map, Node key, IDList values) {
+        IDListBuffer ids = map.get(key);
         if (ids == null)
-            map.put(key, ids = new IDList());
+            map.put(key, ids = new IDListBuffer());
         ids.append(values);
     }
 

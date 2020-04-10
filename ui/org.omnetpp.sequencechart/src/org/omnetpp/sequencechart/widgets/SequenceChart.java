@@ -1609,8 +1609,7 @@ public class SequenceChart
                                 long id = resultFileManager.getItemByName(fileRun, axisState.vectorModuleFullPath, axisState.vectorName);
                                 // TODO: compare vector's run against log file's run
                                 ResultItem resultItem = resultFileManager.getItem(id);
-                                IDList selectedIdList = new IDList();
-                                selectedIdList.add(id);
+                                IDList selectedIdList = new IDList(id);
                                 XYArrayVector dataVector = ScaveEngine.readVectorsIntoArrays2(resultFileManager, selectedIdList, true, true);
                                 IAxisRenderer axisRenderer = new AxisVectorBarRenderer(this, axisState.vectorFileName, axisState.vectorRunName, axisState.vectorModuleFullPath, axisState.vectorName, resultItem, dataVector, 0);
                                 axisRenderer = new AxisMultiRenderer(new IAxisRenderer[] {new AxisLineRenderer(this, moduleTreeItem), axisRenderer}, 1);
@@ -2497,8 +2496,7 @@ public class SequenceChart
                             // TODO: compare vector's run against log file's run
                             if (id != 0) {
                                 ResultItem resultItem = resultFileManager.getItem(id);
-                                IDList selectedIdList = new IDList();
-                                selectedIdList.add(id);
+                                IDList selectedIdList = new IDList(id);
                                 XYArrayVector dataVector = ScaveEngine.readVectorsIntoArrays2(resultFileManager, selectedIdList, true, true);
                                 axisRenderer = new AxisVectorBarRenderer(this, vectorFile.getLocation().toOSString(), eventlogRunName, axisModule.getModuleFullPath(), vectorName, resultItem, dataVector, 0);
                             }

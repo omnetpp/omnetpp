@@ -47,9 +47,8 @@ public class IDListSelection implements ISelection {
     public IDListSelection(long id, ResultFileManager manager) {
         Assert.isNotNull(manager);
 
-        this.idlist = new IDList();
+        this.idlist = new IDList(id);
         this.manager = manager;
-        idlist.add(id);
 
         int internalType = ResultFileManager.getTypeOf(id);
         if (internalType == ResultFileManager.SCALAR)
