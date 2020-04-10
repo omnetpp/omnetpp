@@ -1,7 +1,6 @@
 package org.omnetpp.neddoc;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.SequenceInputStream;
@@ -14,6 +13,8 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -29,7 +30,7 @@ import org.xml.sax.SAXException;
  *   location - The name of the FILE or NED, MSG type to be extended
  *   anchor - Internal anchor name where extension must be inserted in the document.
  *            Possible anchor values:
- *            - FILE: top, types, bottom
+ *            - FILE: top, after-types, bottom
  *            - NED:  top, after-types, after-description, after-image, after-diagrams, after-usage, 
  *                    after-inheritance, after-parameters, after-properties, after-gates, after-signals,
  *                    after-statistics, after-unassigned-parameters, bottom 
@@ -49,12 +50,12 @@ public class NeddocExtensions {
 
     public enum ExtType { NED, MSG, FILE };
     
-    public NeddocExtensions(String neddocExtensionsFilePath) {
+    public NeddocExtensions(IFile neddocExtensionsFile) {
         try {
             // just wrap a root element around the multiple fragments so it's a valid XML document.            
             List<InputStream> streams = Arrays.asList(
                     new ByteArrayInputStream("<root>".getBytes()),
-                    new FileInputStream(neddocExtensionsFilePath),
+                    neddocExtensionsFile.getContents(),
                     new ByteArrayInputStream("</root>".getBytes())
                     );
             SequenceInputStream is = new SequenceInputStream(Collections.enumeration(streams));
@@ -79,7 +80,7 @@ public class NeddocExtensions {
                 }
             }                       
         }
-        catch (SAXException | IOException | ParserConfigurationException | RuntimeException e) {
+        catch (SAXException | IOException | ParserConfigurationException | CoreException e) {
             throw new RuntimeException(e);
         }
     }

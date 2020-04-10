@@ -416,12 +416,8 @@ public class GeneratorConfigurationDialog
             generator.setGenerateCppSourceListings(configuration.cppSourceListings);
             generator.setExcludedDirs(configuration.excludedDirs);
 
-            if (StringUtils.isNotBlank(configuration.extensionFilePath)) {
-                IPath exFP = new Path(configuration.extensionFilePath);
-                if (!exFP.isAbsolute())
-                    exFP = project.getLocation().append(exFP);
-                generator.setExtensionFilePath(exFP);
-            }
+            if (StringUtils.isNotBlank(configuration.extensionFilePath))
+                generator.setExtensionFilePath(new Path(configuration.extensionFilePath));            
 
             generators.add(generator);
         }

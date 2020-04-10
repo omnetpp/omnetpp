@@ -642,7 +642,7 @@ public class DocumentationGenerator {
 
     protected void collectExtensions() {
         if (extensionFilePath != null)
-            neddocExtensions = new NeddocExtensions(extensionFilePath.toOSString());
+            neddocExtensions = new NeddocExtensions(project.getFile(extensionFilePath));
     }
 
     private boolean isCppProject(IProject project) throws CoreException {
