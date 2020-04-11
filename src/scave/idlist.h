@@ -78,7 +78,6 @@ class SCAVE_API IDList
         // these are the only mutator methods (deliberately not accessible from Java)
         IDList& operator=(const IDList& ids) {v = ids.v; return *this;}
         IDList& operator=(IDList&& ids) {v = std::move(ids.v); return *this;}
-        const std::vector<ID>& asVector() const {return v;}
 
         bool equals(IDList& other);
         int64_t hashCode64() const;
@@ -88,6 +87,11 @@ class SCAVE_API IDList
         int size() const  {return (int)v.size();}
         ID get(int i) const {return v.at(i);} // at() includes bounds check
         int indexOf(ID x) const;
+        const std::vector<ID>& asVector() const {return v;}
+
+        // support for range-based for loops
+        V::const_iterator begin() const {return v.begin();}
+        V::const_iterator end() const {return v.end();}
 
         // set operations
         IDList unionWith(IDList& ids) const;
@@ -108,10 +112,6 @@ class SCAVE_API IDList
         bool areAllHistograms() const;
         IDList filterByTypes(int typeMask) const;
         int countByTypes(int typeMask) const;
-
-        // support for range-based for loops
-        V::const_iterator begin() const {return v.begin();}
-        V::const_iterator end() const {return v.end();}
 
         // sorting
         // TODO: there's a duplication between vector and histogram sorting due to not having a proper superclass with the statistics inside
@@ -142,8 +142,6 @@ class SCAVE_API IDList
         void sortHistogramsByVariance(ResultFileManager *mgr, bool ascending);
         void sortByRunAttribute(ResultFileManager *mgr, const char* runAttr, bool ascending);
         void reverse();
-        void toByteArray(char *array, int n) const;
-        void fromByteArray(char *array, int n);
 };
 
 } // namespace scave

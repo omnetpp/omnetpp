@@ -540,22 +540,6 @@ int IDList::countByTypes(int typeMask) const
     return count;
 }
 
-void IDList::toByteArray(char *array, int n) const
-{
-    if (n != (int)v.size()*8)
-        throw opp_runtime_error("byteArray is of wrong size -- must be 8*numIDs");
-    std::copy(v.begin(), v.end(), (ID *)array);
-}
-
-void IDList::fromByteArray(char *array, int n)
-{
-    if (n%8 != 0)
-        throw opp_runtime_error("byteArray size must be multiple of 8");
-    v.resize(n/8);
-    ID *a = (ID *)array;
-    std::copy(a, a+n/8, v.begin());
-}
-
 bool IDList::equals(IDList& other)
 {
     if (v.size() != other.v.size())

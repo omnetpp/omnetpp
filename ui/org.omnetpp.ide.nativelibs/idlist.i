@@ -7,8 +7,6 @@ namespace omnetpp { namespace scave {
 %ignore IDList::IDList(unsigned int);
 %ignore IDList::IDList(const IDList&);
 
-%ignore IDList::toByteArray;
-%ignore IDList::fromByteArray;
 %ignore IDList::begin;
 %ignore IDList::end;
 

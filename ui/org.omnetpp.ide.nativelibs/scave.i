@@ -239,44 +239,6 @@ namespace omnetpp { namespace scave {
 %typemap(jstype) (int *array, int n) "int[]"
 %typemap(javain) (int *array, int n) "$javainput"
 
-//
-// The following code is for IDList::bulkAdd(): -- TODO it does not work
-//
-typedef int64_t ID;
-%typemap(in) (ID *array, int n) {
-    $2 = jenv->GetArrayLength($input);
-    jlong *a = jenv->GetLongArrayElements($input, 0);
-    $1 = new ID[$2];
-    for (int i=0; i<$2; i++)  $1[i] = a[i];
-    jenv->ReleaseIntArrayElements($input, a, 0);
-}
-
-%typemap(freearg) (ID *array, int n) {
-    delete [] $1;
-}
-
-%typemap(jni)    (ID *array, int n) "jlongArray"
-%typemap(jtype)  (ID *array, int n) "long[]"
-%typemap(jstype) (ID *array, int n) "long[]"
-%typemap(javain) (ID *array, int n) "$javainput"
-
-//
-// The following code is for IDList::toByteArray()/fromByteArray()
-//
-%typemap(in) (char *array, int n) {
-    $2 = jenv->GetArrayLength($input);
-    $1 = (char *) jenv->GetByteArrayElements($input, 0);
-}
-
-%typemap(freearg) (char *array, int n) {
-    jenv->ReleaseByteArrayElements($input, (jbyte *)$1, 0);
-}
-
-%typemap(jni)    (char *array, int n) "jbyteArray"
-%typemap(jtype)  (char *array, int n) "byte[]"
-%typemap(jstype) (char *array, int n) "byte[]"
-%typemap(javain) (char *array, int n) "$javainput"
-
 
 // FIXME add %newobject where needed!
 
