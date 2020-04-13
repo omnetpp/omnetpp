@@ -241,29 +241,6 @@ namespace omnetpp { namespace scave {
 %typemap(javain) (int *array, int n) "$javainput"
 
 
-// FIXME add %newobject where needed!
-
-//
-// By default, string members get wrapped with get/set using *pointers* to strings.
-// This is not too nice, so override it by defining proper getter/setter methods,
-// and hiding (ignoring) the class member
-//
-%define FIX_STRING_MEMBER(STRUCT,MEMBER,CAPITALIZEDMEMBER)
-%ignore STRUCT::MEMBER;
-%extend STRUCT {
-   std::string get ## CAPITALIZEDMEMBER() {return self->MEMBER;}
-   void set ## CAPITALIZEDMEMBER(std::string __a) {self->MEMBER = __a;}
-}
-%enddef
-
-%define FIX_CHARPTR_MEMBER(STRUCT,MEMBER,CAPITALIZEDMEMBER)
-%ignore STRUCT::MEMBER;
-%extend STRUCT {
-   const char * get ## CAPITALIZEDMEMBER() {return self->MEMBER;}
-}
-%enddef
-
-
 /*--------------------------------------------------------------------------
  *                     check ResultFileFormatException
  *--------------------------------------------------------------------------*/
@@ -309,40 +286,8 @@ namespace omnetpp { namespace common {
 
 /* ------------- resultfilemanager.h  ----------------- */
 namespace omnetpp { namespace scave {
-%ignore ResultFileManager::dump;
-%ignore Run::runName;
-%ignore VectorResult::columns;
-%ignore VectorResult::stat;
-%ignore HistogramResult::stat;
-%ignore HistogramResult::getBins; //TODO temporary
-%ignore ResultFile::id;
-%ignore ResultFile::filePath;
-%ignore ResultFile::directory;
-%ignore ResultFile::fileName;
-%ignore ResultFile::fileSystemFilePath;
-%ignore ResultFile::scalarResults;
-%ignore ResultFile::parameterResults;
-%ignore ResultFile::vectorResults;
-%ignore ResultFile::statisticsResults;
-%ignore ResultFile::histogramResults;
-
-%rename FileRun::fileRef file;
-%rename FileRun::runRef run;
-%rename ResultItem::fileRunRef fileRun;
-
-%ignore ResultItem::moduleNameRef;
-%ignore ResultItem::nameRef;
-
-// do not allow direct access to unwrapped ResultFileManager
-%ignore ResultFile::resultFileManager;
-%ignore Run::resultFileManager;
 
 %newobject ResultItem::getEnum() const;
-
-%extend ResultItem {
-   std::string getModuleName() {return *self->moduleNameRef;}
-   std::string getName() {return *self->nameRef;}
-}
 
 //
 // Add polymorphic return type to ResultFileManager::getItem(),
@@ -440,46 +385,12 @@ namespace omnetpp { namespace scave {
   }
 %}
 
-//FIX_STRING_MEMBER(ResultFile, filePath, FilePath);
-//FIX_STRING_MEMBER(ResultFile, directory, Directory);
-//FIX_STRING_MEMBER(ResultFile, fileName, FileName);
-//FIX_STRING_MEMBER(ResultFile, fileSystemFilePath, FileSystemFilePath);
-//FIX_STRING_MEMBER(Run, networkName, NetworkName);
-//FIX_STRING_MEMBER(Run, date, Date);
-//FIX_STRING_MEMBER(Run, runName, RunName);
-//FIX_STRING_MEMBER(Run, fileAndRunName, FileAndRunName);
-//FIX_STRING_MEMBER(Run, experimentName, ExperimentName);
-//FIX_STRING_MEMBER(Run, measurementName, MeasurementName);
-//FIX_STRING_MEMBER(Run, replicationName, ReplicationName);
-//FIX_STRING_MEMBER(VectorResult, columns, Columns);
-
 ADD_CPTR_EQUALS_AND_HASHCODE(ResultFile);
 ADD_CPTR_EQUALS_AND_HASHCODE(Run);
 ADD_CPTR_EQUALS_AND_HASHCODE(FileRun);
 ADD_CPTR_EQUALS_AND_HASHCODE(ResultItem);
 CHECK_RESULTFILE_FORMAT_EXCEPTION(ResultFileManager::loadFile)
 
-%newobject ResultFileManager::getUniqueFiles(const IDList&) const;
-%newobject ResultFileManager::getUniqueRuns(const IDList&) const;
-%newobject ResultFileManager::getUniqueFileRuns(const IDList&) const;
-%newobject ResultFileManager::getUniqueModuleNames(const IDList&) const;
-%newobject ResultFileManager::getUniqueNames(const IDList&) const;
-%newobject ResultFileManager::getUniqueAttributeNames(const IDList&) const;
-%newobject ResultFileManager::getUniqueRunAttributeNames(const RunList *) const;
-%newobject ResultFileManager::getUniqueModuleParamNames(const RunList *) const;
-%newobject ResultFileManager::getUniqueAttributeValues(const IDList &, const char *) const;
-%newobject ResultFileManager::getUniqueRunAttributeValues(const RunList&, const char *) const;
-%newobject ResultFileManager::getUniqueModuleParamValues(const RunList&, const char *) const;
-//TODO!!!
-
-%newobject ResultFileManager::getFileAndRunNumberFilterHints(const IDList&) const;
-%newobject ResultFileManager::getFilePathFilterHints(const ResultFileList&) const;
-%newobject ResultFileManager::getRunNameFilterHints(const RunList&) const;
-%newobject ResultFileManager::getModuleFilterHints(const IDList&) const;
-%newobject ResultFileManager::getNameFilterHints(const IDList&) const;
-%newobject ResultFileManager::getResultItemAttributeFilterHints(const IDList&, const char*) const;
-%newobject ResultFileManager::getRunAttributeFilterHints(const RunList&, const char*) const;
-%newobject ResultFileManager::getModuleParamFilterHints(const RunList&, const char*) const;
 } } // namespaces
 
 %include "scave/resultitems.h"
