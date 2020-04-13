@@ -37,7 +37,7 @@ endif
 
 OBJS= $O/idlist.o \
       $O/omnetppresultfileloader.o $O/sqliteresultfileloader.o \
-      $O/resultfilemanager.o $O/indexedvectorfilereader.o \
+      $O/resultfilemanager.o $O/resultitems.o $O/indexedvectorfilereader.o \
       $O/vectorfileindexer.o $O/vectorfileindex.o $O/indexfileutils.o \
       $O/indexfilereader.o  $O/indexfilewriter.o \
       $O/scaveutils.o $O/scaveexception.o $O/enumtype.o \

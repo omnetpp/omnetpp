@@ -14,6 +14,7 @@
 #include "scave/scavedefs.h"
 #include "scave/enumtype.h"
 #include "scave/idlist.h"
+#include "scave/resultitems.h"
 #include "scave/resultfilemanager.h"
 #include "scave/fields.h"
 #include "scave/exportutils.h"
@@ -481,6 +482,7 @@ CHECK_RESULTFILE_FORMAT_EXCEPTION(ResultFileManager::loadFile)
 %newobject ResultFileManager::getModuleParamFilterHints(const RunList&, const char*) const;
 } } // namespaces
 
+%include "scave/resultitems.h"
 %include "scave/resultfilemanager.h"
 
 /* ------------- indexfileutils.h  ----------------- */
