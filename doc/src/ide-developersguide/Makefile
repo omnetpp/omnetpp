@@ -18,7 +18,7 @@ endif
 ifneq ($(VERSION),)
   VERSION_REPL = $(VERSION)
 else
-  VERSION_REPL = 4.X
+  VERSION_REPL = 6.X
 endif
 
 all: pdf html eclipse

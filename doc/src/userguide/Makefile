@@ -40,7 +40,7 @@ eclipse:
 	cp pictures/*.png eclipse/pictures
 	cd eclipse && xsltproc --nonet $(DOCBOOK)/eclipse/eclipse.xsl ../tmp.xml
 	xmllint --noout eclipse/toc.xml
-	rm tmp.xml
+	rm -f tmp.xml tmp1.xml
 
 pdf:  chart-properties.xml processing-operations.xml cover
 	xsltproc --nonet --xinclude --stringparam output pdf --output tmp1.xml trans.xsl userguide.xml
@@ -49,7 +49,7 @@ pdf:  chart-properties.xml processing-operations.xml cover
 	xsltproc --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
 	$(FOP) -fo tmp.fo -c fop.xconf -pdf userguide.pdf
 	qpdf userguide.pdf --pages cover.pdf ../cover/copyright.pdf userguide.pdf 3-z -- ../../UserGuide.pdf
-	rm tmp.fo tmp.xml custom-fo-docbook-tmp.xsl
+	rm -f tmp.fo tmp.xml tmp1.xml custom-fo-docbook-tmp.xsl
 
 clean:
 	rm -f userguide.pdf userguide.html tmp1.xml tmp.xml cover.svg cover.pdf

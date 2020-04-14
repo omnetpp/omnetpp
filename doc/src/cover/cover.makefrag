@@ -9,7 +9,7 @@ endif
 ifneq ($(VERSION),)
   VERSION_TEXT = Version $(VERSION)
 else
-  VERSION_TEXT = Version 5.x
+  VERSION_TEXT = Version 6.x
 endif
 
 cover:

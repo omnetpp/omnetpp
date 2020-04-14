@@ -18,7 +18,7 @@ endif
 ifneq ($(VERSION),)
   VERSION_REPL = $(VERSION)
 else
-  VERSION_REPL = 5.X
+  VERSION_REPL = 6.X
 endif
 
 all: pdf html
@@ -35,7 +35,7 @@ html: docbook
 	xsltproc --nonet --xinclude --output tmp1.xml trans.xsl installguide.xml
 	perl trans.pl <tmp1.xml >tmp.xml
 	xsltproc --nonet --output installguide.html  $(DOCBOOK)/html/docbook.xsl tmp.xml
-	rm tmp.xml
+	rm -f tmp.xml tmp1.xml
 	rm -rf ../../installguide
 	mkdir ../../installguide
 	mkdir ../../installguide/icons
@@ -60,7 +60,7 @@ eclipse: docbook
 	-cp pictures/*.png eclipse/pictures
 	cd eclipse && xsltproc --nonet $(DOCBOOK)/eclipse/eclipse.xsl ../tmp.xml
 	xmllint --noout eclipse/toc.xml
-	rm tmp.xml
+	rm -f tmp.xml tmp1.xml
 
 pdf: docbook cover
 	xsltproc --nonet --xinclude --stringparam output pdf --output tmp1.xml trans.xsl installguide.xml
@@ -68,7 +68,7 @@ pdf: docbook cover
 	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(DOCBOOK)/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
 	xsltproc --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
 	$(FOP) -fo tmp.fo -c fop.xconf -pdf installguide.pdf
-	rm tmp.fo tmp.xml custom-fo-docbook-tmp.xsl
+	rm -f tmp.fo tmp.xml tmp1.xml custom-fo-docbook-tmp.xsl
 	qpdf installguide.pdf --pages cover.pdf ../cover/copyright.pdf installguide.pdf 3-z -- ../../InstallGuide.pdf
 
 clean:

@@ -7,7 +7,7 @@
 
 # *** check settings below -- also ltoh.specs for \opp definition! ***
 $product = "OMNeT++"; # or "OMNEST";
-$productversion = "5.x";
+$productversion = "6.x";
 $templatefile = "omnetpp.thtml"; # or "omnest.thtml";
 $doctitle = "OMNeT++ Simulation Manual";
 

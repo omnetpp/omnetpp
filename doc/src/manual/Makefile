@@ -2,7 +2,7 @@ PERL=perl
 INKSCAPE=inkscape
 DOT=dot
 TEMPLATE=omnetpp
-VERSION=5.x
+VERSION=6.x
 
 ALLTEX = $(wildcard *.tex)
 DOTPICS = $(wildcard figures/*.dot)
