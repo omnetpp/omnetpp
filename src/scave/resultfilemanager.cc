@@ -1091,7 +1091,7 @@ const char *MatchableRun::getAsString(const char *attribute) const
 class MatchableItervar : public MatchExpression::Matchable
 {
     const Run *run;
-    std::string itervar;
+    const std::string& itervar;
 
     public:
         MatchableItervar(const Run *run, const std::string &itervar) : run(run), itervar(itervar) {}
@@ -1126,7 +1126,7 @@ const char *MatchableItervar::getAsString(const char *attribute) const
 class MatchableRunattr : public MatchExpression::Matchable
 {
     const Run *run;
-    std::string runattr;
+    const std::string& runattr;
 
     public:
         MatchableRunattr(const Run *run, const std::string &runattr) : run(run), runattr(runattr) {}
@@ -1161,7 +1161,7 @@ const char *MatchableRunattr::getAsString(const char *attribute) const
 class MatchableConfigEntry : public MatchExpression::Matchable
 {
     const Run *run;
-    std::string key;
+    const std::string& key;
 
     public:
         MatchableConfigEntry(const Run *run, const std::string &key) : run(run), key(key) {}
