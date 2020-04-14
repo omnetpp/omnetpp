@@ -220,7 +220,7 @@ void CsvForSpreadsheetExporter::writeRunColumnNames()
     csv.writeString("run");
     for (std::string name : itervarNames)
         csv.writeString(name);
-    csv.writeString(RunAttribute::REPETITION);
+    csv.writeString(Scave::REPETITION);
 }
 
 void CsvForSpreadsheetExporter::writeRunColumns(Run *run)
@@ -228,7 +228,7 @@ void CsvForSpreadsheetExporter::writeRunColumns(Run *run)
     csv.writeString(run->getRunName());
     for (std::string name : itervarNames)
         csv.writeString(run->getIterationVariable(name));
-    csv.writeString(run->getAttribute(RunAttribute::REPETITION));
+    csv.writeString(run->getAttribute(Scave::REPETITION));
 }
 
 void CsvForSpreadsheetExporter::saveScalars(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor)
@@ -416,11 +416,11 @@ void CsvForSpreadsheetExporter::saveStatistics(ResultFileManager *manager, const
 std::string CsvForSpreadsheetExporter::makeRunTag(Run *run)
 {
     //TODO use experiment - measurement - replication instead?
-    const std::string& iterationvars = run->getAttribute(RunAttribute::ITERATIONVARS);
+    const std::string& iterationvars = run->getAttribute(Scave::ITERATIONVARS);
     if (iterationvars.empty())
-        return std::string("#") + run->getAttribute(RunAttribute::REPETITION) + " - " + run->getRunName();
+        return std::string("#") + run->getAttribute(Scave::REPETITION) + " - " + run->getRunName();
     else
-        return iterationvars + ", #" + run->getAttribute(RunAttribute::REPETITION) + " - " + run->getRunName();
+        return iterationvars + ", #" + run->getAttribute(Scave::REPETITION) + " - " + run->getRunName();
 }
 
 void CsvForSpreadsheetExporter::saveHistograms(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor)

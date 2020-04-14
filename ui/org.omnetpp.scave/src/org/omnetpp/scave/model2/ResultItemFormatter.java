@@ -7,11 +7,6 @@
 
 package org.omnetpp.scave.model2;
 
-import static org.omnetpp.scave.engine.ResultItemField.FILE;
-import static org.omnetpp.scave.engine.ResultItemField.MODULE;
-import static org.omnetpp.scave.engine.ResultItemField.NAME;
-import static org.omnetpp.scave.engine.ResultItemField.RUN;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,6 +21,7 @@ import org.apache.commons.collections.set.ListOrderedSet;
 import org.apache.commons.lang3.text.StrBuilder;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ResultItemFields;
+import org.omnetpp.scave.engine.Scave;
 
 /**
  * Formatting tool for generating legend labels and
@@ -50,13 +46,13 @@ public class ResultItemFormatter {
         formatters.put("title_or_name", new TitleOrNameFormatter());
         for (String field : ResultItemFields.getFieldNames().toArray()) {
             IResultItemFormatter formatter = null;
-            if (field.equals(FILE))
+            if (field.equals(Scave.FILE))
                 formatter = new FileNameFormatter();
-            else if (field.equals(RUN))
+            else if (field.equals(Scave.RUN))
                 formatter = new RunNameFormatter();
-            else if (field.equals(MODULE))
+            else if (field.equals(Scave.MODULE))
                 formatter = new ModuleNameFormatter();
-            else if (field.equals(NAME))
+            else if (field.equals(Scave.NAME))
                 formatter = new DataNameFormatter();
             else
                 formatter = new RunAttributeFormatter(field);

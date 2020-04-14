@@ -7,14 +7,12 @@
 
 package org.omnetpp.scave.actions;
 
-import static org.omnetpp.scave.engine.ResultItemField.FILE;
-import static org.omnetpp.scave.engine.ResultItemField.RUN;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
+import org.omnetpp.scave.engine.Scave;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model2.FilterUtil;
 import org.omnetpp.scave.model2.ResultFilePayload;
@@ -63,7 +61,7 @@ public class SetFilterAction extends AbstractScaveAction {
         if (object instanceof InputFile) {
             FilterUtil filterUtil = new FilterUtil();
             InputFile inputFile = (InputFile)object;
-            filterUtil.setField(FILE, inputFile.getName());
+            filterUtil.setField(Scave.FILE, inputFile.getName());
             return filterUtil;
         }
         else if (object instanceof GenericTreeNode) {
@@ -78,11 +76,11 @@ public class SetFilterAction extends AbstractScaveAction {
 
             if (payload instanceof ResultFilePayload) {
                 ResultFilePayload resultFile = (ResultFilePayload)payload;
-                filterUtil.setField(FILE, resultFile.getFilePath());
+                filterUtil.setField(Scave.FILE, resultFile.getFilePath());
             }
             else if (payload instanceof RunPayload) {
                 RunPayload run = (RunPayload)payload;
-                filterUtil.setField(RUN, run.getRunName());
+                filterUtil.setField(Scave.RUN, run.getRunName());
             }
             else if (payload instanceof RunAttributePayload) {
                 RunAttributePayload attr = (RunAttributePayload)payload;

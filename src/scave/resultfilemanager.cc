@@ -35,6 +35,7 @@
 #include "common/stringutil.h"
 #include "common/unitconversion.h"
 #include "omnetpp/platdep/platmisc.h"
+#include "fields.h" // for name constants
 #include "scaveutils.h"
 #include "scaveexception.h"
 #include "sqliteresultfileutils.h"
@@ -855,24 +856,24 @@ class MatchableResultItem : public MatchExpression::Matchable
 
 const char *MatchableResultItem::getAsString(const char *attribute) const
 {
-    if (strcasecmp("name", attribute) == 0)
+    if (strcasecmp(Scave::NAME, attribute) == 0)
         return getName();
-    else if (strcasecmp("module", attribute) == 0)
+    else if (strcasecmp(Scave::MODULE, attribute) == 0)
         return getModuleName();
-    else if (strcasecmp("type", attribute) == 0)
+    else if (strcasecmp(Scave::TYPE, attribute) == 0)
         return getItemType();
-    else if (strcasecmp("run", attribute) == 0)
+    else if (strcasecmp(Scave::RUN, attribute) == 0)
         return getRunName();
-    else if (strcasecmp("file", attribute) == 0)
+    else if (strcasecmp(Scave::FILE, attribute) == 0)
         return getFileName();
-    else if (strncasecmp("attr:", attribute, 5) == 0)
+    else if (strncasecmp(Scave::ATTR_PREFIX, attribute, 5) == 0)
         return getResultItemAttribute(attribute+5);
     // TODO: add back param: but as par: -module parameter value, not parameter assignment
-    else if (strncasecmp("runattr:", attribute, 8) == 0)
+    else if (strncasecmp(Scave::RUNATTR_PREFIX, attribute, 8) == 0)
         return getRunAttribute(attribute+8);
-    else if (strncasecmp("itervar:", attribute, 8) == 0)
+    else if (strncasecmp(Scave::ITERVAR_PREFIX, attribute, 8) == 0)
         return getIterationVariable(attribute+8);
-    else if (strncasecmp("config:", attribute, 7) == 0)
+    else if (strncasecmp(Scave::CONFIG_PREFIX, attribute, 7) == 0)
         return getConfigValue(attribute+7);
     else
         return getResultItemAttribute(attribute);
@@ -901,23 +902,25 @@ class MatchableRun : public MatchExpression::Matchable
         virtual const char *getAsString(const char *attribute) const override;
     private:
         const char *getName() const { return run->getRunName().c_str(); }
-        const char *getAttribute(const char *attrName) const { return run->getAttribute(attrName).c_str(); }
+        const char *getRunAttribute(const char *attrName) const { return run->getAttribute(attrName).c_str(); }
         const char *getIterationVariable(const char *name) const { return run->getIterationVariable(name).c_str(); }
         const char *getConfigValue(const char *key) const { return run->getConfigValue(key).c_str(); }
 };
 
 const char *MatchableRun::getAsString(const char *attribute) const
 {
-    if (strcasecmp("name", attribute) == 0)
+    if (strcasecmp(Scave::NAME, attribute) == 0)
         return getName();
-    else if (strncasecmp("attr:", attribute, 5) == 0) // TODO: also add with runattr: prefix?
-        return getAttribute(attribute+5);
-    else if (strncasecmp("itervar:", attribute, 8) == 0)
+    else if (strncasecmp(Scave::ATTR_PREFIX, attribute, 5) == 0)
+        return getRunAttribute(attribute+5);
+    else if (strncasecmp(Scave::RUNATTR_PREFIX, attribute, 8) == 0)
+        return getRunAttribute(attribute+8);
+    else if (strncasecmp(Scave::ITERVAR_PREFIX, attribute, 8) == 0)
         return getIterationVariable(attribute+8);
-    else if (strncasecmp("config:", attribute, 7) == 0)
+    else if (strncasecmp(Scave::CONFIG_PREFIX, attribute, 7) == 0)
         return getConfigValue(attribute+7); // TODO: add param: as well? (also update the docs, if/when done)
     else
-        return getAttribute(attribute);
+        return getRunAttribute(attribute);
 }
 
 
@@ -940,21 +943,19 @@ class MatchableItervar : public MatchExpression::Matchable
 
 const char *MatchableItervar::getAsString(const char *attribute) const
 {
-    if (strcasecmp("name", attribute) == 0)
+    if (strcasecmp(Scave::NAME, attribute) == 0)
         return getName();
-    else if (strcasecmp("run", attribute) == 0)
+    else if (strcasecmp(Scave::RUN, attribute) == 0)
         return getRunName();
-    else if (strncasecmp("runattr:", attribute, 8) == 0)
+    else if (strncasecmp(Scave::RUNATTR_PREFIX, attribute, 8) == 0)
         return getRunAttribute(attribute+8);
-    else if (strncasecmp("itervar:", attribute, 8) == 0)
+    else if (strncasecmp(Scave::ITERVAR_PREFIX, attribute, 8) == 0)
         return getIterationVariable(attribute+8);
-    else if (strncasecmp("config:", attribute, 7) == 0)
+    else if (strncasecmp(Scave::CONFIG_PREFIX, attribute, 7) == 0)
         return getConfigValue(attribute+7);
     else
         return getName();
 }
-
-
 
 class MatchableRunattr : public MatchExpression::Matchable
 {
@@ -975,15 +976,15 @@ class MatchableRunattr : public MatchExpression::Matchable
 
 const char *MatchableRunattr::getAsString(const char *attribute) const
 {
-    if (strcasecmp("name", attribute) == 0)
+    if (strcasecmp(Scave::NAME, attribute) == 0)
         return getName();
-    else if (strcasecmp("run", attribute) == 0)
+    else if (strcasecmp(Scave::RUN, attribute) == 0)
         return getRunName();
-    else if (strncasecmp("runattr:", attribute, 8) == 0)
+    else if (strncasecmp(Scave::RUNATTR_PREFIX, attribute, 8) == 0)
         return getRunAttribute(attribute+8);
-    else if (strncasecmp("itervar:", attribute, 8) == 0)
+    else if (strncasecmp(Scave::ITERVAR_PREFIX, attribute, 8) == 0)
         return getIterationVariable(attribute+8);
-    else if (strncasecmp("config:", attribute, 7) == 0)
+    else if (strncasecmp(Scave::CONFIG_PREFIX, attribute, 7) == 0)
         return getConfigValue(attribute+7);
     else
         return getName();
@@ -1010,18 +1011,18 @@ class MatchableConfigEntry : public MatchExpression::Matchable
 
 const char *MatchableConfigEntry::getAsString(const char *attribute) const
 {
-    if (strcasecmp("name", attribute) == 0)
+    if (strcasecmp(Scave::NAME, attribute) == 0)
         return getName();
-    else if (strcasecmp("run", attribute) == 0)
+    else if (strcasecmp(Scave::RUN, attribute) == 0)
         return getRunName();
-    else if (strcasecmp("type", attribute) == 0)
+    else if (strcasecmp(Scave::TYPE, attribute) == 0)
         return Run::isKeyParamAssignment(key) ? "param-assignment"
             : Run::isKeyGlobalConfigOption(key) ? "global-config" : "per-object-config";
-    else if (strncasecmp("runattr:", attribute, 8) == 0)
+    else if (strncasecmp(Scave::RUNATTR_PREFIX, attribute, 8) == 0)
         return getRunAttribute(attribute+8);
-    else if (strncasecmp("itervar:", attribute, 8) == 0)
+    else if (strncasecmp(Scave::ITERVAR_PREFIX, attribute, 8) == 0)
         return getIterationVariable(attribute+8);
-    else if (strncasecmp("param:", attribute, 6) == 0) // or config?
+    else if (strncasecmp(Scave::PARAM_PREFIX, attribute, 6) == 0) // TODO or config?
         return getParamAssignment(attribute+6);
     else
         return getName();

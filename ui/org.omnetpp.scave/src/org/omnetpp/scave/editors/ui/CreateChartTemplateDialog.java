@@ -7,13 +7,6 @@
 
 package org.omnetpp.scave.editors.ui;
 
-import static org.omnetpp.scave.engine.ResultItemField.FILE;
-import static org.omnetpp.scave.engine.ResultItemField.MODULE;
-import static org.omnetpp.scave.engine.ResultItemField.NAME;
-import static org.omnetpp.scave.engine.ResultItemField.RUN;
-import static org.omnetpp.scave.engine.RunAttribute.CONFIGNAME;
-import static org.omnetpp.scave.engine.RunAttribute.RUNNUMBER;
-
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
@@ -29,6 +22,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.engine.Scave;
 
 /**
  * This dialog is called from CreateChartTemplateAction.
@@ -117,12 +111,12 @@ public class CreateChartTemplateDialog extends TitleAreaDialog {
 
         filterFieldsTable = new Table(group, SWT.CHECK | SWT.BORDER | SWT.HIDE_SELECTION);
         filterFieldsTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        createFilterFieldItem(group, "By Run Id", RUN);
-        createFilterFieldItem(group, "By File Name", FILE);
-        createFilterFieldItem(group, "Config name", CONFIGNAME);
-        createFilterFieldItem(group, "Run number", RUNNUMBER);
-        TableItem moduleNameItem = createFilterFieldItem(group, "Module name", MODULE);
-        TableItem dataNameItem = createFilterFieldItem(group, "Data name", NAME);
+        createFilterFieldItem(group, "By Run Id", Scave.RUN);
+        createFilterFieldItem(group, "By File Name", Scave.FILE);
+        createFilterFieldItem(group, "Config name", Scave.CONFIGNAME);
+        createFilterFieldItem(group, "Run number", Scave.RUNNUMBER);
+        TableItem moduleNameItem = createFilterFieldItem(group, "Module name", Scave.MODULE);
+        TableItem dataNameItem = createFilterFieldItem(group, "Data name", Scave.NAME);
         moduleNameItem.setChecked(true);
         dataNameItem.setChecked(true);
 

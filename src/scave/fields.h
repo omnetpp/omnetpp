@@ -31,6 +31,64 @@
 namespace omnetpp {
 namespace scave {
 
+/**
+ * String constants for all sorts of names: run and result item fields,
+ * attribute names, field prefixes, etc.
+ */
+class SCAVE_API Scave
+{
+  public:
+    // basic fields of result items
+    static constexpr const char *FILE   = "file";
+    static constexpr const char *RUN    = "run";
+    static constexpr const char *MODULE = "module";
+    static constexpr const char *NAME   = "name";
+
+    // name prefixes in filter expressions
+    static constexpr const char *RUNATTR_PREFIX = "runattr:";
+    static constexpr const char *ATTR_PREFIX = "attr:";
+    static constexpr const char *ITERVAR_PREFIX = "itervar:";
+    static constexpr const char *CONFIG_PREFIX = "config:";
+    static constexpr const char *PARAM_PREFIX = "param:";
+
+    // run attributes
+    static constexpr const char *INIFILE     = "inifile";
+    static constexpr const char *CONFIGNAME  = "configname";
+    static constexpr const char *RUNNUMBER   = "runnumber";
+    static constexpr const char *NETWORK     = "network";
+    static constexpr const char *EXPERIMENT  = "experiment";
+    static constexpr const char *MEASUREMENT = "measurement";
+    static constexpr const char *REPLICATION = "replication";
+    static constexpr const char *DATETIME    = "datetime";
+    static constexpr const char *PROCESSID   = "processid";
+    static constexpr const char *RESULTDIR   = "resultdir";
+    static constexpr const char *REPETITION  = "repetition";
+    static constexpr const char *SEEDSET     = "seedset";
+    static constexpr const char *ITERATIONVARS = "iterationvars";
+    static constexpr const char *ITERATIONVARSF = "iterationvarsf";
+
+    // frequently used result attributes
+    static constexpr const char *TYPE = "type";
+    static constexpr const char *ENUM = "enum";
+    static constexpr const char *UNIT = "unit";
+    static constexpr const char *INTERPOLATIONMODE = "interpolationmode";
+
+    // derived scalar suffixes
+    static constexpr const char *COUNT = "count";
+    static constexpr const char *SUM = "sum";
+    static constexpr const char *SUMWEIGHTS = "sumweights";
+    static constexpr const char *MEAN = "mean";
+    static constexpr const char *STDDEV = "stddev";
+    static constexpr const char *VARIANCE = "var";
+    static constexpr const char *MIN = "min";
+    static constexpr const char *MAX = "max";
+    static constexpr const char *NUMBINS = "numbins";
+    static constexpr const char *RANGEMIN = "rangemin";
+    static constexpr const char *RANGEMAX = "rangemax";
+    static constexpr const char *MINTIME = "mintime";
+    static constexpr const char *MAXTIME = "maxtime";
+};
+
 
 class SCAVE_API ResultItemField
 {

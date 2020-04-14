@@ -7,16 +7,6 @@
 
 package org.omnetpp.scave.editors.datatable;
 
-import static org.omnetpp.scave.engine.ResultItemField.FILE;
-import static org.omnetpp.scave.engine.ResultItemField.MODULE;
-import static org.omnetpp.scave.engine.ResultItemField.NAME;
-import static org.omnetpp.scave.engine.ResultItemField.RUN;
-import static org.omnetpp.scave.engine.RunAttribute.CONFIGNAME;
-import static org.omnetpp.scave.engine.RunAttribute.EXPERIMENT;
-import static org.omnetpp.scave.engine.RunAttribute.MEASUREMENT;
-import static org.omnetpp.scave.engine.RunAttribute.REPLICATION;
-import static org.omnetpp.scave.engine.RunAttribute.RUNNUMBER;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,6 +47,7 @@ import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ParameterResult;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ScalarResult;
+import org.omnetpp.scave.engine.Scave;
 import org.omnetpp.scave.engine.StatisticsResult;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
@@ -121,15 +112,15 @@ public class DataTable extends LargeTable implements IDataControl {
 
     private static final Column
         COL_DIRECTORY = new Column("Folder", null, 60, false, false),
-        COL_FILE = new Column("File", FILE, 120, false, false),
-        COL_CONFIG = new Column("Config", CONFIGNAME, 120, false, false),
-        COL_RUNNUMBER = new Column("Run number", RUNNUMBER, 60, false, false),
-        COL_RUN_ID = new Column("RunId", RUN, 100, false, false),
-        COL_EXPERIMENT = new Column("Experiment", EXPERIMENT, 120, true, false),
-        COL_MEASUREMENT = new Column("Measurement", MEASUREMENT, 160, true, false),
-        COL_REPLICATION = new Column("Replication", REPLICATION, 60, true, false),
-        COL_MODULE = new Column("Module", MODULE, 160, true, false),
-        COL_NAME = new Column("Name", NAME, 120, true, false),
+        COL_FILE = new Column("File", Scave.FILE, 120, false, false),
+        COL_CONFIG = new Column("Config", Scave.CONFIGNAME, 120, false, false),
+        COL_RUNNUMBER = new Column("Run number", Scave.RUNNUMBER, 60, false, false),
+        COL_RUN_ID = new Column("RunId", Scave.RUN, 100, false, false),
+        COL_EXPERIMENT = new Column("Experiment", Scave.EXPERIMENT, 120, true, false),
+        COL_MEASUREMENT = new Column("Measurement", Scave.MEASUREMENT, 160, true, false),
+        COL_REPLICATION = new Column("Replication", Scave.REPLICATION, 60, true, false),
+        COL_MODULE = new Column("Module", Scave.MODULE, 160, true, false),
+        COL_NAME = new Column("Name", Scave.NAME, 120, true, false),
         COL_VALUE = new Column("Value", null, 120, true, true),
         COL_KIND = new Column("Kind", null, 40, true, false),
         COL_COUNT = new Column("Count", null, 80, true, true),
@@ -457,9 +448,9 @@ public class DataTable extends LargeTable implements IDataControl {
         else if (COL_FILE.equals(column))
             idList.sortByFileName(manager, ascending);
         else if (COL_CONFIG.equals(column))
-            idList.sortByRunAttribute(manager, CONFIGNAME, ascending);
+            idList.sortByRunAttribute(manager, Scave.CONFIGNAME, ascending);
         else if (COL_RUNNUMBER.equals(column))
-            idList.sortByRunAttribute(manager, RUNNUMBER, ascending);
+            idList.sortByRunAttribute(manager, Scave.RUNNUMBER, ascending);
         else if (COL_RUN_ID.equals(column))
             idList.sortByRun(manager, ascending);
         else if (COL_MODULE.equals(column))
@@ -519,11 +510,11 @@ public class DataTable extends LargeTable implements IDataControl {
         else if (COL_HISTOGRAMRANGE.equals(column))
             ; //TODO
         else if (COL_EXPERIMENT.equals(column))
-            idList.sortByRunAttribute(manager, EXPERIMENT, ascending);
+            idList.sortByRunAttribute(manager, Scave.EXPERIMENT, ascending);
         else if (COL_MEASUREMENT.equals(column))
-            idList.sortByRunAttribute(manager, MEASUREMENT, ascending);
+            idList.sortByRunAttribute(manager, Scave.MEASUREMENT, ascending);
         else if (COL_REPLICATION.equals(column))
-            idList.sortByRunAttribute(manager, REPLICATION, ascending);
+            idList.sortByRunAttribute(manager, Scave.REPLICATION, ascending);
         else if (COL_MIN_TIME.equals(column))
             idList.sortVectorsByStartTime(manager, ascending);
         else if (COL_MAX_TIME.equals(column))
@@ -555,11 +546,11 @@ public class DataTable extends LargeTable implements IDataControl {
                 return fileName;
             }
             else if (COL_CONFIG.equals(column)) {
-                String config = result.getFileRun().getRun().getAttribute(CONFIGNAME);
+                String config = result.getFileRun().getRun().getAttribute(Scave.CONFIGNAME);
                 return config != null ? config : NA;
             }
             else if (COL_RUNNUMBER.equals(column)) {
-                String runNumber = result.getFileRun().getRun().getAttribute(RUNNUMBER);
+                String runNumber = result.getFileRun().getRun().getAttribute(Scave.RUNNUMBER);
                 return runNumber != null ? runNumber : NA;
             }
             else if (COL_RUN_ID.equals(column))
@@ -569,15 +560,15 @@ public class DataTable extends LargeTable implements IDataControl {
             else if (COL_NAME.equals(column))
                 return result.getName();
             else if (COL_EXPERIMENT.equals(column)) {
-                String experiment = result.getFileRun().getRun().getAttribute(EXPERIMENT);
+                String experiment = result.getFileRun().getRun().getAttribute(Scave.EXPERIMENT);
                 return experiment != null ? experiment : NA;
             }
             else if (COL_MEASUREMENT.equals(column)) {
-                String measurement = result.getFileRun().getRun().getAttribute(MEASUREMENT);
+                String measurement = result.getFileRun().getRun().getAttribute(Scave.MEASUREMENT);
                 return measurement != null ? measurement : NA;
             }
             else if (COL_REPLICATION.equals(column)) {
-                String replication = result.getFileRun().getRun().getAttribute(REPLICATION);
+                String replication = result.getFileRun().getRun().getAttribute(Scave.REPLICATION);
                 return replication != null ? replication : NA;
             }
             else if (type == ResultType.SCALAR) {

@@ -1,11 +1,5 @@
 package org.omnetpp.scave.editors;
 
-import static org.omnetpp.scave.engine.RunAttribute.CONFIGNAME;
-import static org.omnetpp.scave.engine.RunAttribute.EXPERIMENT;
-import static org.omnetpp.scave.engine.RunAttribute.MEASUREMENT;
-import static org.omnetpp.scave.engine.RunAttribute.REPLICATION;
-import static org.omnetpp.scave.engine.RunAttribute.RUNNUMBER;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
@@ -15,6 +9,7 @@ import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ScalarResult;
+import org.omnetpp.scave.engine.Scave;
 import org.omnetpp.scave.engine.StatisticsResult;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.model2.ResultItemRef;
@@ -152,12 +147,12 @@ public class ResultItemPropertySource implements IPropertySource {
 
             if (propertyId.equals(PROP_DIRECTORY)) return resultItem.getFileRun().getFile().getDirectory();
             if (propertyId.equals(PROP_FILE)) return resultItem.getFileRun().getFile().getFileName();
-            if (propertyId.equals(PROP_CONFIG)) return StringUtils.nullToEmpty(resultItem.getFileRun().getRun().getAttribute(CONFIGNAME));
-            if (propertyId.equals(PROP_RUNNUMBER)) return StringUtils.nullToEmpty(resultItem.getFileRun().getRun().getAttribute(RUNNUMBER));
+            if (propertyId.equals(PROP_CONFIG)) return StringUtils.nullToEmpty(resultItem.getFileRun().getRun().getAttribute(Scave.CONFIGNAME));
+            if (propertyId.equals(PROP_RUNNUMBER)) return StringUtils.nullToEmpty(resultItem.getFileRun().getRun().getAttribute(Scave.RUNNUMBER));
             if (propertyId.equals(PROP_RUN_ID)) return resultItem.getFileRun().getRun().getRunName();
-            if (propertyId.equals(PROP_EXPERIMENT)) return StringUtils.nullToEmpty(resultItem.getFileRun().getRun().getAttribute(EXPERIMENT));
-            if (propertyId.equals(PROP_MEASUREMENT)) return StringUtils.nullToEmpty(resultItem.getFileRun().getRun().getAttribute(MEASUREMENT));
-            if (propertyId.equals(PROP_REPLICATION)) return StringUtils.nullToEmpty(resultItem.getFileRun().getRun().getAttribute(REPLICATION));
+            if (propertyId.equals(PROP_EXPERIMENT)) return StringUtils.nullToEmpty(resultItem.getFileRun().getRun().getAttribute(Scave.EXPERIMENT));
+            if (propertyId.equals(PROP_MEASUREMENT)) return StringUtils.nullToEmpty(resultItem.getFileRun().getRun().getAttribute(Scave.MEASUREMENT));
+            if (propertyId.equals(PROP_REPLICATION)) return StringUtils.nullToEmpty(resultItem.getFileRun().getRun().getAttribute(Scave.REPLICATION));
 
             if (propertyId.equals(PROP_MODULE)) return resultItem.getModuleName();
             if (propertyId.equals(PROP_NAME)) return resultItem.getName();

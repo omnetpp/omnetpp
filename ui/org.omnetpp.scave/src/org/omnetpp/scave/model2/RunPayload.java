@@ -2,7 +2,7 @@ package org.omnetpp.scave.model2;
 
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.scave.engine.Run;
-import org.omnetpp.scave.engine.RunAttribute;
+import org.omnetpp.scave.engine.Scave;
 
 public class RunPayload {
     private String runName;
@@ -11,7 +11,7 @@ public class RunPayload {
     public RunPayload(Run run) {
         Assert.isNotNull(run.getRunName());
         this.runName = run.getRunName();
-        this.runNumber = run.getAttribute(RunAttribute.RUNNUMBER);
+        this.runNumber = run.getAttribute(Scave.RUNNUMBER);
     }
 
     public String getRunName() {

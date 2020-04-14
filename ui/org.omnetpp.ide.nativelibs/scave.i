@@ -450,12 +450,6 @@ namespace omnetpp { namespace scave {
 %ignore ResultItemFields::end;
 
 %typemap(javacode) ResultItemField %{
-
-  public static final String FILE   = getFILE();
-  public static final String RUN    = getRUN();
-  public static final String MODULE = getMODULE();
-  public static final String NAME   = getNAME();
-
   public boolean equals(Object other) {
     if (this == other)
       return true;
@@ -468,25 +462,6 @@ namespace omnetpp { namespace scave {
   public int hashCode() {
     return 37 * getID() + getName().hashCode();
   }
-%}
-
-%typemap(javacode) RunAttribute %{
-
-  public static final String INIFILE           = getINIFILE();
-  public static final String CONFIGNAME        = getCONFIGNAME();
-  public static final String RUNNUMBER         = getRUNNUMBER();
-  public static final String NETWORK           = getNETWORK();
-  public static final String EXPERIMENT        = getEXPERIMENT();
-  public static final String MEASUREMENT       = getMEASUREMENT();
-  public static final String REPLICATION       = getREPLICATION();
-  public static final String PROCESSID         = getPROCESSID();
-  public static final String DATETIME          = getDATETIME();
-  public static final String RESULTDIR         = getRESULTDIR();
-  public static final String REPETITION        = getREPETITION();
-  public static final String SEEDSET           = getSEEDSET();
-  public static final String ITERATIONVARS     = getITERATIONVARS();
-  public static final String ITERATIONVARS2    = getITERATIONVARS2();
-
 %}
 
 %typemap(javacode) ResultItemFields %{

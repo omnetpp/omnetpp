@@ -7,11 +7,6 @@
 
 package org.omnetpp.scave.model2;
 
-import static org.omnetpp.scave.engine.ResultItemField.FILE;
-import static org.omnetpp.scave.engine.ResultItemField.MODULE;
-import static org.omnetpp.scave.engine.ResultItemField.NAME;
-import static org.omnetpp.scave.engine.ResultItemField.RUN;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,6 +26,7 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunAttribute;
+import org.omnetpp.scave.engine.Scave;
 
 /**
  * Parsing and assembling filter patterns. Filter patterns containing OR, NOT or
@@ -80,21 +76,21 @@ public class FilterUtil {
         ResultFile file = item.getFileRun().getFile();
         Run run = item.getFileRun().getRun();
         for (String field : filterFields) {
-            if (field.equals(FILE))
+            if (field.equals(Scave.FILE))
                 setField(field, file.getFilePath());
-            else if (field.equals(RUN))
+            else if (field.equals(Scave.RUN))
                 setField(field, run.getRunName());
-            else if (field.equals(MODULE))
-                setField(MODULE, item.getModuleName());
-            else if (field.equals(NAME))
-                setField(NAME, item.getName());
+            else if (field.equals(Scave.MODULE))
+                setField(Scave.MODULE, item.getModuleName());
+            else if (field.equals(Scave.NAME))
+                setField(Scave.NAME, item.getName());
             else if (RunAttribute.isAttributeName(field))
                 setField(field, run.getAttribute(field));
         }
     }
 
     public static String getDefaultField() {
-        return NAME;
+        return Scave.NAME;
     }
 
     public String getFilterPattern() {

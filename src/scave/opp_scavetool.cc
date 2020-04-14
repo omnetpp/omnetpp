@@ -623,7 +623,7 @@ void ScaveTool::queryCommand(int argc, char **argv)
     }
     case LIST_CONFIGS: {
         // note: we ignore opt_perRun, as it makes no sense here
-        StringSet uniqueConfigNames = resultFileManager.getUniqueRunAttributeValues(runs, RunAttribute::CONFIGNAME);
+        StringSet uniqueConfigNames = resultFileManager.getUniqueRunAttributeValues(runs, Scave::CONFIGNAME);
         print(out, uniqueConfigNames);
         break;
     }

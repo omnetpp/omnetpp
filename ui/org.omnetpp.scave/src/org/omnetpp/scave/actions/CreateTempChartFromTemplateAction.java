@@ -16,8 +16,7 @@ import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.engine.ResultItemField;
-import org.omnetpp.scave.engine.RunAttribute;
+import org.omnetpp.scave.engine.Scave;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartTemplate;
 import org.omnetpp.scave.model.Property;
@@ -57,8 +56,8 @@ public class CreateTempChartFromTemplateAction extends AbstractScaveAction {
         IDList idList = idListSelection.getIDList();
 
         Chart chart = ScaveModelUtil.createChartFromTemplate(template);
-        String[] filterFields = new String[] { RunAttribute.EXPERIMENT, RunAttribute.MEASUREMENT, RunAttribute.REPLICATION,
-                ResultItemField.MODULE, ResultItemField.NAME };
+        String[] filterFields = new String[] { Scave.EXPERIMENT, Scave.MEASUREMENT, Scave.REPLICATION,
+                Scave.MODULE, Scave.NAME };
         String viewFilter = editor.getBrowseDataPage().getActivePanel().getFilter();
         String filter = ResultFileManager.callWithReadLock(manager, () -> { return ResultSelectionFilterGenerator.getIDListAsFilterExpression(idList, filterFields, viewFilter, manager, null); });
 

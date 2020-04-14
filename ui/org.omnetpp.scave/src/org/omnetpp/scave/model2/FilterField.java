@@ -8,8 +8,7 @@
 package org.omnetpp.scave.model2;
 
 import org.eclipse.core.runtime.Assert;
-import org.omnetpp.scave.engine.ResultItemField;
-import org.omnetpp.scave.engine.RunAttribute;
+import org.omnetpp.scave.engine.Scave;
 
 /**
  * Fields can be used in filter strings (e.g. "file", "run", "attr:...").
@@ -28,13 +27,13 @@ public class FilterField implements Comparable<FilterField> {
     }
 
     public static final FilterField
-        FILE = new FilterField(Kind.ItemField, ResultItemField.FILE),
-        RUN = new FilterField(Kind.ItemField, ResultItemField.RUN),
-        EXPERIMENT = new FilterField(Kind.RunAttribute, RunAttribute.EXPERIMENT),
-        MEASUREMENT = new FilterField(Kind.RunAttribute, RunAttribute.MEASUREMENT),
-        REPLICATION = new FilterField(Kind.RunAttribute, RunAttribute.REPLICATION),
-        MODULE = new FilterField(Kind.ItemField, ResultItemField.MODULE),
-        NAME = new FilterField(Kind.ItemField, ResultItemField.NAME);
+        FILE = new FilterField(Kind.ItemField, Scave.FILE),
+        RUN = new FilterField(Kind.ItemField, Scave.RUN),
+        EXPERIMENT = new FilterField(Kind.RunAttribute, Scave.EXPERIMENT),
+        MEASUREMENT = new FilterField(Kind.RunAttribute, Scave.MEASUREMENT),
+        REPLICATION = new FilterField(Kind.RunAttribute, Scave.REPLICATION),
+        MODULE = new FilterField(Kind.ItemField, Scave.MODULE),
+        NAME = new FilterField(Kind.ItemField, Scave.NAME);
 
     private Kind kind;
     private String name;

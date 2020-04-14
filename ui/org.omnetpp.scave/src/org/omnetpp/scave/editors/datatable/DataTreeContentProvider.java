@@ -25,18 +25,18 @@ import org.omnetpp.scave.engine.FileRun;
 import org.omnetpp.scave.engine.Histogram;
 import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.IDListBuffer;
 import org.omnetpp.scave.engine.IDListsByFile;
 import org.omnetpp.scave.engine.IDListsByRun;
-import org.omnetpp.scave.engine.IDListBuffer;
 import org.omnetpp.scave.engine.ParameterResult;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.Run;
-import org.omnetpp.scave.engine.RunAttribute;
 import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.engine.ScalarResult;
+import org.omnetpp.scave.engine.Scave;
 import org.omnetpp.scave.engine.Statistics;
 import org.omnetpp.scave.engine.StatisticsResult;
 import org.omnetpp.scave.engine.StringMap;
@@ -238,19 +238,19 @@ public class DataTreeContentProvider {
                     Run run = runList.get(i);
                     IDList idsInRun = idListsByRun.getIDList(run);
                     if (nextLevelClass.equals(ExperimentNode.class))
-                        add(nodeIdsMap, new ExperimentNode(run.getAttribute(RunAttribute.EXPERIMENT)), idsInRun);
+                        add(nodeIdsMap, new ExperimentNode(run.getAttribute(Scave.EXPERIMENT)), idsInRun);
                     else if (nextLevelClass.equals(MeasurementNode.class))
-                        add(nodeIdsMap, new MeasurementNode(run.getAttribute(RunAttribute.MEASUREMENT)), idsInRun);
+                        add(nodeIdsMap, new MeasurementNode(run.getAttribute(Scave.MEASUREMENT)), idsInRun);
                     else if (nextLevelClass.equals(ReplicationNode.class))
-                        add(nodeIdsMap, new ReplicationNode(run.getAttribute(RunAttribute.REPLICATION)), idsInRun);
+                        add(nodeIdsMap, new ReplicationNode(run.getAttribute(Scave.REPLICATION)), idsInRun);
                     else if (nextLevelClass.equals(ExperimentMeasurementReplicationNode.class))
-                        add(nodeIdsMap, new ExperimentMeasurementReplicationNode(run.getAttribute(RunAttribute.EXPERIMENT), run.getAttribute(RunAttribute.MEASUREMENT), run.getAttribute(RunAttribute.REPLICATION)), idsInRun);
+                        add(nodeIdsMap, new ExperimentMeasurementReplicationNode(run.getAttribute(Scave.EXPERIMENT), run.getAttribute(Scave.MEASUREMENT), run.getAttribute(Scave.REPLICATION)), idsInRun);
                     else if (nextLevelClass.equals(ConfigNode.class))
-                        add(nodeIdsMap, new ConfigNode(run.getAttribute(RunAttribute.CONFIGNAME)), idsInRun);
+                        add(nodeIdsMap, new ConfigNode(run.getAttribute(Scave.CONFIGNAME)), idsInRun);
                     else if (nextLevelClass.equals(RunNumberNode.class))
-                        add(nodeIdsMap, new RunNumberNode(run.getAttribute(RunAttribute.RUNNUMBER)), idsInRun);
+                        add(nodeIdsMap, new RunNumberNode(run.getAttribute(Scave.RUNNUMBER)), idsInRun);
                     else if (nextLevelClass.equals(ConfigRunNumberNode.class))
-                        add(nodeIdsMap, new ConfigRunNumberNode(run.getAttribute(RunAttribute.CONFIGNAME), run.getAttribute(RunAttribute.RUNNUMBER)), idsInRun);
+                        add(nodeIdsMap, new ConfigRunNumberNode(run.getAttribute(Scave.CONFIGNAME), run.getAttribute(Scave.RUNNUMBER)), idsInRun);
                     else if (nextLevelClass.equals(RunIdNode.class))
                         add(nodeIdsMap, new RunIdNode(run.getRunName()), idsInRun);
                 }
@@ -673,7 +673,7 @@ public class DataTreeContentProvider {
 
         @Override
         public boolean matches(List<Node> path, long id, MatchContext matchContext) {
-            return name.equals(matchContext.getRun().getAttribute(RunAttribute.EXPERIMENT));
+            return name.equals(matchContext.getRun().getAttribute(Scave.EXPERIMENT));
         }
 
         @Override
@@ -712,7 +712,7 @@ public class DataTreeContentProvider {
 
         @Override
         public boolean matches(List<Node> path, long id, MatchContext matchContext) {
-            return name.equals(matchContext.getRunAttribute(RunAttribute.MEASUREMENT));
+            return name.equals(matchContext.getRunAttribute(Scave.MEASUREMENT));
         }
 
         @Override
@@ -751,7 +751,7 @@ public class DataTreeContentProvider {
 
         @Override
         public boolean matches(List<Node> path, long id, MatchContext matchContext) {
-            return name.equals(matchContext.getRunAttribute(RunAttribute.REPLICATION));
+            return name.equals(matchContext.getRunAttribute(Scave.REPLICATION));
         }
 
         @Override
@@ -796,7 +796,7 @@ public class DataTreeContentProvider {
 
         @Override
         public boolean matches(List<Node> path, long id, MatchContext matchContext) {
-            return experiment.equals(matchContext.getRunAttribute(RunAttribute.EXPERIMENT)) && measurement.equals(matchContext.getRunAttribute(RunAttribute.MEASUREMENT)) && replication.equals(matchContext.getRunAttribute(RunAttribute.REPLICATION));
+            return experiment.equals(matchContext.getRunAttribute(Scave.EXPERIMENT)) && measurement.equals(matchContext.getRunAttribute(Scave.MEASUREMENT)) && replication.equals(matchContext.getRunAttribute(Scave.REPLICATION));
         }
 
         @Override
@@ -858,7 +858,7 @@ public class DataTreeContentProvider {
 
         @Override
         public boolean matches(List<Node> path, long id, MatchContext matchContext) {
-            return matchContext.getRunAttribute(RunAttribute.CONFIGNAME).equals(name);
+            return matchContext.getRunAttribute(Scave.CONFIGNAME).equals(name);
         }
 
         @Override
@@ -897,7 +897,7 @@ public class DataTreeContentProvider {
 
         @Override
         public boolean matches(List<Node> path, long id, MatchContext matchContext) {
-            return matchContext.getRunAttribute(RunAttribute.RUNNUMBER).equals(runNumber);
+            return matchContext.getRunAttribute(Scave.RUNNUMBER).equals(runNumber);
         }
 
         @Override
@@ -939,7 +939,7 @@ public class DataTreeContentProvider {
 
         @Override
         public boolean matches(List<Node> path, long id, MatchContext matchContext) {
-            return matchContext.getRunAttribute(RunAttribute.CONFIGNAME).equals(config) && matchContext.getRunAttribute(RunAttribute.RUNNUMBER).equals(runNumber);
+            return matchContext.getRunAttribute(Scave.CONFIGNAME).equals(config) && matchContext.getRunAttribute(Scave.RUNNUMBER).equals(runNumber);
         }
 
         @Override

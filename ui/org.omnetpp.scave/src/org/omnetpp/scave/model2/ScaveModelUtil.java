@@ -28,6 +28,7 @@ import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ResultItemField;
+import org.omnetpp.scave.engine.Scave;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.AnalysisItem;
@@ -247,10 +248,10 @@ public class ScaveModelUtil {
 
     public static List<String> getResultItemFields(IDList idlist, ResultFileManager manager) {
         List<String> fields = new ArrayList<>();
-        fields.add(ResultItemField.FILE);
-        fields.add(ResultItemField.RUN);
-        fields.add(ResultItemField.MODULE);
-        fields.add(ResultItemField.NAME);
+        fields.add(Scave.FILE);
+        fields.add(Scave.RUN);
+        fields.add(Scave.MODULE);
+        fields.add(Scave.NAME);
         fields.addAll(getRunAttributeNames(idlist, manager));
         return fields;
     }
