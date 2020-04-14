@@ -37,7 +37,7 @@ import org.omnetpp.scave.actions.DecreaseDecimalPlacesAction;
 import org.omnetpp.scave.actions.FlatModuleTreeAction;
 import org.omnetpp.scave.actions.IncreaseDecimalPlacesAction;
 import org.omnetpp.scave.actions.SetChartFilterAction;
-import org.omnetpp.scave.actions.SetFilterAction2;
+import org.omnetpp.scave.actions.SetFilterBySelectedCellAction;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ScaveEditorActions;
@@ -80,7 +80,7 @@ public class BrowseDataPage extends FormEditorPage {
     private Runnable scheduledUpdate;
     private boolean isContentValid = false;
 
-    private SetFilterAction2 setFilterAction = new SetFilterAction2();
+    private SetFilterBySelectedCellAction setFilterAction = new SetFilterBySelectedCellAction();
     private int numericPrecision = 6;
 
     private DropdownAction treeLevelsAction;

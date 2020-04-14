@@ -25,13 +25,13 @@ import org.omnetpp.scave.model2.FilterUtil;
  *
  * @author tomi
  */
-public class SetFilterAction2 extends AbstractScaveAction
+public class SetFilterBySelectedCellAction extends AbstractScaveAction
 {
     FilteredDataPanel panel;
     String fieldName;
     String fieldValue;
 
-    public SetFilterAction2() {
+    public SetFilterBySelectedCellAction() {
         setDescription("Sets the filter according to the clicked cell.");
     }
 
