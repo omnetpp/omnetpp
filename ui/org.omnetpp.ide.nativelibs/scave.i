@@ -464,13 +464,6 @@ namespace omnetpp { namespace scave {
   }
 %}
 
-%typemap(javacode) ResultItemFields %{
-
-  public ResultItemFields(String... fieldNames) {
-    this(StringVector.fromArray(fieldNames));
-  }
-%}
-
 } } // namespaces
 
 %include "scave/fields.h"

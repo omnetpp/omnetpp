@@ -20,7 +20,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.collections.set.ListOrderedSet;
 import org.apache.commons.lang3.text.StrBuilder;
 import org.omnetpp.scave.engine.ResultItem;
-import org.omnetpp.scave.engine.ResultItemFields;
 import org.omnetpp.scave.engine.Scave;
 
 /**
@@ -44,7 +43,7 @@ public class ResultItemFormatter {
     static {
         formatters = new HashMap<String,IResultItemFormatter>();
         formatters.put("title_or_name", new TitleOrNameFormatter());
-        for (String field : ResultItemFields.getFieldNames().toArray()) {
+        for (String field : Scave.getResultItemFieldNames().toArray()) {
             IResultItemFormatter formatter = null;
             if (field.equals(Scave.FILE))
                 formatter = new FileNameFormatter();

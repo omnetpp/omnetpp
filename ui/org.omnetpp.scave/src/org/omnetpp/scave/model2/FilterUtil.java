@@ -25,7 +25,6 @@ import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.Run;
-import org.omnetpp.scave.engine.RunAttribute;
 import org.omnetpp.scave.engine.Scave;
 
 /**
@@ -84,7 +83,7 @@ public class FilterUtil {
                 setField(Scave.MODULE, item.getModuleName());
             else if (field.equals(Scave.NAME))
                 setField(Scave.NAME, item.getName());
-            else if (RunAttribute.isAttributeName(field))
+            else if (Scave.isRunAttributeName(field))
                 setField(field, run.getAttribute(field));
         }
     }
@@ -136,7 +135,7 @@ public class FilterUtil {
     }
 
     private void appendField(StringBuffer sb, String attrName, String attrPattern) {
-        if (RunAttribute.isAttributeName(attrName))
+        if (Scave.isRunAttributeName(attrName))
             attrName = "runattr:" + attrName;
         if (attrPattern != null && attrPattern.length() > 0) {
             if (sb.length() > 0)

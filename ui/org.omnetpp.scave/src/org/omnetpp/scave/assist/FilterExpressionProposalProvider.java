@@ -19,7 +19,7 @@ import org.omnetpp.common.util.MatchExpressionSyntax.Token;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.engine.ResultItemFields;
+import org.omnetpp.scave.engine.Scave;
 import org.omnetpp.scave.model2.FilterField;
 import org.omnetpp.scave.model2.FilterHintsCache;
 import org.omnetpp.scave.model2.FilterUtil;
@@ -44,7 +44,7 @@ public class FilterExpressionProposalProvider extends MatchExpressionContentProp
     private FilterHintsCache filterHintsCache;
 
     public FilterExpressionProposalProvider() {
-        String[] resultFieldNames = ResultItemFields.getFieldNames().toArray();
+        String[] resultFieldNames = Scave.getResultItemFieldNames().toArray();
         fieldNameProposals = toProposals(resultFieldNames);
     }
 
