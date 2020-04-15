@@ -117,7 +117,7 @@ CFLAGS_DEBUG = -g -Wall
 # modification compared to the ./configre generated makefile: make sure that -march=native -mtune=native is NOT in cflags.
 CFLAGS_RELEASE = -O3 -DNDEBUG=1
 CFLAGS += -MMD -MP $(PTHREAD_CFLAGS) $(DEFINES)
-CXXFLAGS = -std=c++11
+CXXFLAGS =
 LDFLAG_LIBPATH = -L
 LDFLAG_INCLUDE = -Wl,-u,
 LDFLAG_LIB = -l
