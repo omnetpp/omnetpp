@@ -20,6 +20,7 @@ import org.eclipse.swt.internal.SWTEventListener;
  * @see LineStyleEvent
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
+@SuppressWarnings("restriction")
 public interface LineStyleListener extends SWTEventListener {
 
 /**

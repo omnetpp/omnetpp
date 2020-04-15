@@ -291,7 +291,7 @@ public class PasteAction extends SelectionAction {
         return sectionElement;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     protected CompoundModuleElementEx getTargetCompoundModule() {
         // return the selected compound module or the compound module of the first selected submodule
         GraphicalViewer graphicalViewer = getGraphicalViewer();

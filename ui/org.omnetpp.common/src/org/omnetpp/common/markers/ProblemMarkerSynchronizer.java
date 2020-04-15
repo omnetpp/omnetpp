@@ -255,7 +255,6 @@ public class ProblemMarkerSynchronizer {
         return true;  // by default, this is decided solely by marker type, which is already observed by the IResource.findMarkers() method
     }
 
-    @SuppressWarnings("unchecked")
     protected MarkerData makeMarkerData(IMarker marker) throws CoreException {
         MarkerData markerData = new MarkerData(marker.getType(), new HashMap<String, Object>(marker.getAttributes()));
         return markerData;

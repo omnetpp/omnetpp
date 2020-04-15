@@ -35,7 +35,7 @@ public class NedSelectAllAction extends SelectAllAction {
 
     // TODO handle select all connections in the current compound module too
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public void run() {
         GraphicalViewer viewer = (GraphicalViewer)wbp.getAdapter(GraphicalViewer.class);
         if (viewer != null) {

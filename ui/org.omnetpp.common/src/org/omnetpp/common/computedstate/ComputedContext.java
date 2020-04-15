@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Stack;
 
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings("rawtypes")
 public class ComputedContext {
     // TODO: for performance reason this should not be a synchronized stack
     private static Stack<ComputedContext> computedContextStack = new Stack<ComputedContext>();

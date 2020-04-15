@@ -13,7 +13,7 @@ import java.util.List;
 import org.omnetpp.common.Debug;
 
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class ComputedState<T> {
     private static long currentPulse = 0;
 
@@ -69,7 +69,6 @@ public class ComputedState<T> {
         return getValue0();
     }
 
-    @SuppressWarnings("unchecked")
     public void recompute() {
         if (ComputedContext.hasOwnerOnStack(this))
             throw new RuntimeException("Circularity detected!");

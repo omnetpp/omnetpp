@@ -65,6 +65,7 @@ import org.xml.sax.SAXException;
 import com.swtworkbench.community.xswt.dataparser.parsers.color.CSSColors;
 import com.swtworkbench.community.xswt.dataparser.parsers.color.IColorManager;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class XSWT_bobfoster {
     private IColorManager colorManager;
     private static Map mapColors;

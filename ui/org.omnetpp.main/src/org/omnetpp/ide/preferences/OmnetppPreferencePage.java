@@ -52,7 +52,7 @@ public class OmnetppPreferencePage
         setPreferenceStore(CommonPlugin.getConfigurationPreferenceStore());
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     @Override
     public String getErrorMessage() {
         for (Object object : (List)ReflectionUtils.getFieldValue(this, "fields")) {

@@ -6,6 +6,7 @@ import java.util.Map;
 import com.swtworkbench.community.xswt.XSWTException;
 import com.swtworkbench.community.xswt.dataparser.NonDisposableDataParser;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class WidgetDataParser extends NonDisposableDataParser {
     private Map map = new HashMap();
 

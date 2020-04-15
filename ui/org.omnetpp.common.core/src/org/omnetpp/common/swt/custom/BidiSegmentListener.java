@@ -17,6 +17,7 @@ import org.eclipse.swt.internal.SWTEventListener;
  * BidiSegmentEvents.
  * @see BidiSegmentEvent
  */
+@SuppressWarnings("restriction")
 public interface BidiSegmentListener extends SWTEventListener {
 
 /**

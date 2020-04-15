@@ -267,7 +267,7 @@ import java.lang.reflect.Constructor;
 
 %typemap(javacode) EventLogEntry %{
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings("rawtypes")
    private static Constructor[] eventLogEntryConstructors = new Constructor[100];
 
    public long getCPtr() {
@@ -282,7 +282,7 @@ import java.lang.reflect.Constructor;
       return (int)getCPtr(this);
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings("rawtypes")
    public static EventLogEntry newEventLogEntry(long cPtr, boolean isOwner) {
       try {
          if (cPtr == 0)
@@ -317,7 +317,7 @@ import java.lang.reflect.Constructor;
 
 %typemap(javacode) IMessageDependency %{
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings("rawtypes")
    private static Constructor[] messageDependencyConstructors = new Constructor[100];
 
    public long getCPtr() {
@@ -332,7 +332,7 @@ import java.lang.reflect.Constructor;
       return (int)getCPtr(this);
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings("rawtypes")
    public static IMessageDependency newIMessageDependency(long cPtr, boolean isOwner) {
       try {
          if (cPtr == 0)

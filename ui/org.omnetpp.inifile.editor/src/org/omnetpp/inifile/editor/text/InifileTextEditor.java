@@ -120,6 +120,7 @@ public class InifileTextEditor extends TextEditor {
     /**
      * Return projection support for the editor.
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public Object getAdapter(Class required) {
         if (projectionSupport != null) {

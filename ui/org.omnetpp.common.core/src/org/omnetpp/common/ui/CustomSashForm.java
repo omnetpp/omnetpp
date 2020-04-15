@@ -924,7 +924,7 @@ public class CustomSashForm extends SashForm {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     protected void fireDividerMoved(){
         if(customSashFormListeners!=null && customSashFormListeners.size()>0){
             int[] weights = getWeights();

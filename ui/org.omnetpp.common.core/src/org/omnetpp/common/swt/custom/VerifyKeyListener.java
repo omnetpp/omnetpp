@@ -21,6 +21,7 @@ import org.eclipse.swt.internal.SWTEventListener;
  * @see VerifyEvent
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
+@SuppressWarnings("restriction")
 public interface VerifyKeyListener extends SWTEventListener {
 /**
  * The following event fields are used:<ul>

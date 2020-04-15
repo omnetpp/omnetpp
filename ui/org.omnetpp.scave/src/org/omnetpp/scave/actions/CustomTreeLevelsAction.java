@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.scave.editors.datatable.DataTree;
 import org.omnetpp.scave.editors.datatable.DataTreeContentProvider;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class CustomTreeLevelsAction extends Action {
     private DataTree dataTree;
 

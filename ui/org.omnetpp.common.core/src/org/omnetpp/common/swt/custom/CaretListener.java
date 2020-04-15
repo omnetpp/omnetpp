@@ -20,6 +20,7 @@ import org.eclipse.swt.internal.SWTEventListener;
  *
  * @since 3.5
  */
+@SuppressWarnings("restriction")
 public interface CaretListener extends SWTEventListener {
 
 /**

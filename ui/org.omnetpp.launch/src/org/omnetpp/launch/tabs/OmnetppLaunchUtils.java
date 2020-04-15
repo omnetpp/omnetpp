@@ -75,9 +75,6 @@ public class OmnetppLaunchUtils {
     private static final String CDT_CC_NATURE_ID = "org.eclipse.cdt.core.ccnature";
     public static final String DEBUG_EXE_SUFFIX = "_dbg";
 
-    private static final int HTTP_PORT_START = 9000;
-    private static final int HTTP_PORT_END = 9999;
-
     /**
      * Reads the ini file and enumerates all config sections. resolves include directives recursively
      */
@@ -339,7 +336,6 @@ public class OmnetppLaunchUtils {
      * It adds ATTR_PROJECT_NAME, ATTR_PROGRAM_NAME and ATTR_PROGRAM_ARGUMENTS. They are
      * required to start a program correctly with a debugger launch delegate.
      */
-    @SuppressWarnings("unchecked")
     public static ILaunchConfigurationWorkingCopy createUpdatedLaunchConfig(ILaunchConfiguration config, String mode, boolean mergeStderr) throws CoreException {
         ILaunchConfigurationWorkingCopy newCfg = config.copy(config.getName());
         newCfg.setAttributes(CollectionUtils.getDeepCopyOf(newCfg.getAttributes())); // otherwise attrs that are Collections themselves are not copied

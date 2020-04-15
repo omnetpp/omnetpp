@@ -11,6 +11,7 @@ public class ImportCollectionNode {
     private Object[] children = {};
     private static final String TEXT = "import declarations";
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public ImportCollectionNode(Template t) {
         List imports = t.getImports();
         children = new Object[imports.size()];

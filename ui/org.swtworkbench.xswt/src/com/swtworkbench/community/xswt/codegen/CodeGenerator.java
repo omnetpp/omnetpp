@@ -2,6 +2,7 @@ package com.swtworkbench.community.xswt.codegen;
 
 import java.util.HashMap;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class CodeGenerator implements ICodeGenerator {
     private static CodeGenerator generator = null;
 

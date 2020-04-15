@@ -35,7 +35,7 @@ public class FolderSelectionTree extends Composite implements IWidgetAdapter {
 
         treeViewer.setLabelProvider(new WorkbenchLabelProvider());
         treeViewer.setContentProvider(new WorkbenchContentProvider() {
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings({"rawtypes", "unchecked"})
             @Override
             public Object[] getChildren(Object element) {
                 Object[] children = super.getChildren(element);

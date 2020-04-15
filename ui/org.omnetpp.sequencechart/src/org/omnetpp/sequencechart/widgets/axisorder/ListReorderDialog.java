@@ -41,7 +41,7 @@ import org.eclipse.ui.dialogs.SelectionDialog;
  *
  * @author Andras
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class ListReorderDialog extends SelectionDialog {
     private static final int BUTTON_TOP         = IDialogConstants.CLIENT_ID;
     private static final int BUTTON_UP          = IDialogConstants.CLIENT_ID + 1;

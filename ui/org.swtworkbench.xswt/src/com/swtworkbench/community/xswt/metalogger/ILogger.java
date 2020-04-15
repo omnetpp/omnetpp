@@ -1,5 +1,6 @@
 package com.swtworkbench.community.xswt.metalogger;
 
+@SuppressWarnings("rawtypes")
 public abstract interface ILogger {
     public abstract void error(Throwable paramThrowable, String paramString);
 

@@ -23,9 +23,9 @@ import freemarker.template.Template;
  * @version $Id: OutlineContentProvider.java,v 1.3 2003/08/15 19:49:08 stephanmueller Exp $
  * @author <a href="mailto:stephan@chaquotay.net">Stephan Mueller</a>
  */
+@SuppressWarnings("rawtypes")
 public class OutlineContentProvider implements ITreeContentProvider {
 
-    @SuppressWarnings("unchecked")
     public static final Comparator COMPARATOR = new Comparator() {
         public int compare(Object arg0, Object arg1) {
             return (arg0.toString().compareTo(

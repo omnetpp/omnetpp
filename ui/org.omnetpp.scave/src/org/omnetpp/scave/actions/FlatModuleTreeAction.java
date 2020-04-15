@@ -30,8 +30,8 @@ public class FlatModuleTreeAction extends Action {
         return super.isChecked();
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    @SuppressWarnings("rawtypes")
     public void run() {
         boolean flat = isChecked();
         DataTreeContentProvider contentProvider = dataTree.getContentProvider();

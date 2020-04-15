@@ -153,7 +153,7 @@ public class CompoundModuleShortestPathConnectionRouter extends AbstractRouter
         ((Connection)staleConnections.iterator().next()).revalidate();
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     private void processStaleConnections() {
         Iterator<Connection> iter = staleConnections.iterator();
         if (iter.hasNext() && connectionToPaths == null) {
@@ -256,7 +256,7 @@ public class CompoundModuleShortestPathConnectionRouter extends AbstractRouter
     /**
      * @see ConnectionRouter#route(Connection)
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public void route(Connection conn) {
         if (isDirty) {
             ignoreInvalidate = true;

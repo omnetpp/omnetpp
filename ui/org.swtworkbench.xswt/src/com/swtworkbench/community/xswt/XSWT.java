@@ -63,6 +63,7 @@ import com.swtworkbench.community.xswt.layoutbuilder.ObjectStub;
 import com.swtworkbench.community.xswt.layoutbuilder.SWTLayoutBuilder;
 import com.swtworkbench.community.xswt.metalogger.Logger;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class XSWT {
     public static final String XSWT_NS = "http://sweet_swt.sf.net/xswt";
     private static Map customNSRegistry = new HashMap();

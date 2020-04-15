@@ -12,6 +12,7 @@ import com.swtworkbench.community.xswt.StyleParser;
 import com.swtworkbench.community.xswt.XSWTException;
 import com.swtworkbench.community.xswt.dataparser.DataParser;
 
+@SuppressWarnings("rawtypes")
 public class SWTLayoutBuilder extends LayoutBuilder implements ILayoutBuilder {
     public boolean setProperty(String propertyName, Object receiver, String valueSource) throws XSWTException {
         Method setMethod = resolveAttributeSetMethod(receiver, propertyName, null);

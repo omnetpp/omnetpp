@@ -23,7 +23,6 @@ import org.omnetpp.common.editor.text.SyntaxHighlightHelper;
 public class NedPrivateDocCompletionProcessor extends NedTemplateCompletionProcessor {
 
     @Override
-    @SuppressWarnings("unchecked")
     public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
         List<ICompletionProposal> result =
             createProposals(viewer, documentOffset, new SyntaxHighlightHelper.NedWordDetector(),

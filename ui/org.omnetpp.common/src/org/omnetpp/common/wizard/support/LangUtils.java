@@ -69,7 +69,7 @@ public class LangUtils {
      * Produces a user-friendly representation of the object. In case of
      * collections (lists, maps, etc), the representation is JSON-like.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public static String toString(Object object) {
         try {
             if (object == null)

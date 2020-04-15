@@ -35,14 +35,13 @@ public class MsgFileElementEx extends MsgFileElement implements INedFileElement 
         return result;
     }
 
-    @SuppressWarnings("unchecked")
     public Map<String, PropertyElementEx> getProperties() {
         Map<String, PropertyElementEx> map = new HashMap<String, PropertyElementEx>();
 
         INedElement node = getFirstChildWithTag(NED_PROPERTY);
         while (node != null) {
             if (node instanceof IHasName && node.getTagCode() == NED_PROPERTY)
-                ((Map)map).put(((IHasName)node).getName(), (PropertyElementEx)node);
+                map.put(((IHasName)node).getName(), (PropertyElementEx)node);
 
             node = node.getNextSibling();
         }

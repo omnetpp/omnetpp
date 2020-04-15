@@ -2,6 +2,7 @@ package com.swtworkbench.community.xswt.layoutbuilder;
 
 import java.util.HashMap;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class ObjectStub {
     protected static HashMap typeUsageCount = new HashMap();
     public final String className;

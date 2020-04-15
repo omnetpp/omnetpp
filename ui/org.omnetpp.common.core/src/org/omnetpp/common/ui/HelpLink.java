@@ -31,7 +31,6 @@ import org.eclipse.swt.widgets.Shell;
  *
  * @author AnRdras
  */
-@SuppressWarnings("restriction")
 public class HelpLink {
     private Link link;
     private String hoverText;

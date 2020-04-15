@@ -26,6 +26,7 @@ import org.eclipse.swt.internal.SWTEventListener;
  * below. If the entire text is replaced the textSet method
  * should be called instead.
  */
+@SuppressWarnings("restriction")
 public interface TextChangeListener extends SWTEventListener {
 
 /**

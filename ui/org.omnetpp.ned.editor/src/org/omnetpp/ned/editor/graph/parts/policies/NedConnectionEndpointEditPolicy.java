@@ -44,7 +44,7 @@ public class NedConnectionEndpointEditPolicy extends ConnectionEndpointEditPolic
      * @see org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy#createSelectionHandles()
      * Redefine to create special connection handles that return NedConnectionEndpointTracker
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     protected List createSelectionHandles() {
         List list = new ArrayList();

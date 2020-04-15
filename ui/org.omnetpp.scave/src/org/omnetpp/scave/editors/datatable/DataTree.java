@@ -45,7 +45,7 @@ import org.omnetpp.scave.engineext.ResultFileManagerEx;
  * @author Levy
  */
 //TODO setting numeric precision collapses open tree branches!
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class DataTree extends Tree implements IDataControl {
     protected static final String DATA_TREE_LEVELS = "DataTree.Levels";
     protected MenuManager contextMenuManager = new MenuManager("#PopupMenu");

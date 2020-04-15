@@ -115,12 +115,11 @@ public class ReconcilingStrategy implements IReconcilingStrategy {
         return fTemplate;
     }
 
-    @SuppressWarnings("unchecked")
-    private Object[] enum2array(Enumeration e) {
+    private Object[] enum2array(Enumeration<TemplateElement> e) {
         Vector<TemplateElement> temp = new Vector<TemplateElement>();
         TemplateElement t;
         while(e.hasMoreElements()) {
-            t = (TemplateElement)e.nextElement();
+            t = e.nextElement();
             //if(!"whitespace".equalsIgnoreCase(t.getDescription())) {
                 temp.add(t);
             //}

@@ -20,6 +20,7 @@ import org.eclipse.swt.internal.SWTEventListener;
  * @see LineBackgroundEvent
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
+@SuppressWarnings("restriction")
 public interface LineBackgroundListener extends SWTEventListener {
 
 /**

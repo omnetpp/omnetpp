@@ -18,7 +18,7 @@ public class EclipseLogger extends AbstractLogger {
         this.plugin.getLog().log(new Status(2, this.plugin.getBundle().getSymbolicName(), 2, message, null));
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public void debug(Class subject, String message) {
         if (isDebug(subject))
             this.plugin.getLog().log(

@@ -14,6 +14,7 @@ import com.swtworkbench.community.xswt.XSWTException;
 import com.swtworkbench.community.xswt.dataparser.DataParser;
 import com.swtworkbench.community.xswt.dataparser.NonDisposableDataParser;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class ColorDataParser extends NonDisposableDataParser {
     private static Map mapColors = new HashMap();
 

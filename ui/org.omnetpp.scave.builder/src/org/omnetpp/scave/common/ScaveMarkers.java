@@ -75,9 +75,8 @@ public class ScaveMarkers {
         });
     }
 
-    @SuppressWarnings("unchecked")
-    public static HashMap createMarkerAttributes(int severity, String message, int line) {
-        final HashMap map = new HashMap();
+    public static HashMap<String,?> createMarkerAttributes(int severity, String message, int line) {
+        final HashMap<String,Object> map = new HashMap<>();
         map.put(IMarker.MESSAGE, message);
         map.put(IMarker.SEVERITY, severity);
         if (line > 0)

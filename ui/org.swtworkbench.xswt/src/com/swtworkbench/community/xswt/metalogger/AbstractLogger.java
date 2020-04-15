@@ -2,6 +2,7 @@ package com.swtworkbench.community.xswt.metalogger;
 
 import java.util.HashMap;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class AbstractLogger implements ILogger {
     private boolean debug = false;
 

@@ -11,6 +11,7 @@ import com.swtworkbench.community.xswt.XSWTException;
 import com.swtworkbench.community.xswt.dataparser.DisposableDataParser;
 import com.swtworkbench.community.xswt.metalogger.Logger;
 
+@SuppressWarnings("rawtypes")
 public class ImageDataParser extends DisposableDataParser {
     public Object parse(String source) throws XSWTException {
         StringTokenizer stringTokenizer = new StringTokenizer(source, " \t\r\n");

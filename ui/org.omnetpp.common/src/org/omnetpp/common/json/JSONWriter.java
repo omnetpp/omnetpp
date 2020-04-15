@@ -54,7 +54,7 @@ public class JSONWriter {
         return String.valueOf(b);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     private void value(Object object) {
         if (object == null || cyclic(object)) {
             add("null");
@@ -74,7 +74,7 @@ public class JSONWriter {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     private boolean cyclic(Object object) {
         Iterator it = calls.iterator();
         while (it.hasNext()) {
@@ -128,7 +128,7 @@ public class JSONWriter {
         value(value);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     private void map(Map map) {
         add("{");
         Iterator it = map.entrySet().iterator();
@@ -142,7 +142,7 @@ public class JSONWriter {
         add("}");
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     private void array(Iterator it) {
         add("[");
         while (it.hasNext()) {

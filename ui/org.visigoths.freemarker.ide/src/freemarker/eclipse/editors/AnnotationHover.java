@@ -29,7 +29,7 @@ public class AnnotationHover implements IAnnotationHover {
         return info;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     protected IMarker getMarkerForLine(ISourceViewer aViewer, int aLine) {
         IMarker marker = null;
         IAnnotationModel model = aViewer.getAnnotationModel();

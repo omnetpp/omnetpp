@@ -74,6 +74,7 @@ import org.eclipse.jface.text.rules.WhitespaceRule;
  * @author <a href="mailto:stephan@chaquotay.net">Stephan Mueller</a>
  * @author <a href="mailto:per&#64;percederberg.net">Per Cederberg</a>
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class XmlScanner extends RuleBasedScanner {
 
     /**

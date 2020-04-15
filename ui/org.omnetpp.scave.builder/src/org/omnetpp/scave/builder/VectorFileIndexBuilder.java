@@ -34,7 +34,6 @@ public class VectorFileIndexBuilder extends IncrementalProjectBuilder {
 
     private Queue<IFile> filesToBeIndexed = new ConcurrentLinkedQueue<IFile>();
 
-    @Override @SuppressWarnings("unchecked")
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
             throws CoreException {
         if (kind == IncrementalProjectBuilder.FULL_BUILD) {

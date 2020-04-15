@@ -141,7 +141,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard {
             return (Text)ReflectionUtils.getFieldValue(this, "projectNameField");
         }
 
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings("rawtypes")
         @Override
         public List<EntryDescriptor> filterItems(List items) {
             ArrayList<EntryDescriptor> newItems = new ArrayList<EntryDescriptor>();

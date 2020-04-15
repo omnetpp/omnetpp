@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Decorations;
 import org.eclipse.swt.widgets.Widget;
 
+@SuppressWarnings("rawtypes")
 public class ClassBuilder {
     public static final String CLASSLOADER_EXTENSION_ID = "org.swtworkbench.xswt.classloaders";
     public static final String ERROR_NOT_CONTROL = "parent is not Control";
@@ -66,7 +67,6 @@ public class ClassBuilder {
         return classLoaders;
     }
 
-    @SuppressWarnings("unchecked")
     public Class getClass(String className) throws XSWTException {
         Class result = (Class) this.resolvedClasses.get(className);
         if (result != null)

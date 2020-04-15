@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.Control;
 import com.swtworkbench.community.xswt.XSWTException;
 import com.swtworkbench.community.xswt.dataparser.NonDisposableDataParser;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class ControlDataParser extends NonDisposableDataParser {
     private Map map = new HashMap();
 

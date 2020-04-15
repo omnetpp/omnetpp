@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Widget;
 
 import com.swtworkbench.community.xswt.XSWTException;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public final class DataParser {
     private static HashMap dataParsers = new HashMap();
 

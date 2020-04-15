@@ -128,6 +128,7 @@ import org.eclipse.swt.widgets.TypedListener;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
+@SuppressWarnings({"restriction", "rawtypes", "unchecked"})
 public class StyledText extends Canvas {
     static final char TAB = '\t';
     static final String PlatformLineDelimiter = System.getProperty("line.separator");

@@ -338,6 +338,7 @@ public class GraphicalNedEditor
         // those editParts from the returned selection.
         //
         viewer.setSelectionManager(new SelectionManager() {
+            @SuppressWarnings("rawtypes")
             @Override
             public ISelection getSelection() {
                 List sel = ((IStructuredSelection)super.getSelection()).toList();
@@ -437,7 +438,7 @@ public class GraphicalNedEditor
      * @see org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette#getAdapter(java.lang.Class)
      * Adds content outline
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     @Override
     public Object getAdapter(Class type) {
         if (type == IPropertySheetPage.class) {

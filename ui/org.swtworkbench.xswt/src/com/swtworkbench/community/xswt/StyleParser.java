@@ -8,6 +8,7 @@ import java.util.TreeMap;
 
 import org.eclipse.swt.SWT;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class StyleParser {
     private static final Map mapStyles = new TreeMap();
 

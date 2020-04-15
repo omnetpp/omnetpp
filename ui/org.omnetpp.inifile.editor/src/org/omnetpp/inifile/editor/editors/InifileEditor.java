@@ -352,6 +352,7 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
         return getActivePage()==FORMEDITOR_PAGEINDEX;
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public Object getAdapter(Class required) {
         if (IContentOutlinePage.class.equals(required)) {

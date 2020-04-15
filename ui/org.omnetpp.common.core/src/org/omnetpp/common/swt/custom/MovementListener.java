@@ -24,6 +24,7 @@ import org.eclipse.swt.internal.SWTEventListener;
  *
  * @since 3.3
  */
+@SuppressWarnings("restriction")
 public interface MovementListener extends SWTEventListener {
 /**
  * This method is called when a new offset is required based on the current

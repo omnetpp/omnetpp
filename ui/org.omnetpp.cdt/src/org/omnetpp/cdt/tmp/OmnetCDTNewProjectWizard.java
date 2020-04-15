@@ -38,6 +38,7 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.wizards.NewOmnetppProjectWizard.NewOmnetppProjectCreationPage;
 
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class OmnetCDTNewProjectWizard extends TemplatesChoiceWizard {
 
     class NewProjectPage extends NewOmnetppProjectCreationPage implements IWizardDataPage {

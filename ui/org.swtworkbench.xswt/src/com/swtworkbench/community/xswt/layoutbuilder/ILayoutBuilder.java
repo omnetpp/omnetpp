@@ -6,6 +6,7 @@ import java.util.LinkedList;
 
 import com.swtworkbench.community.xswt.XSWTException;
 
+@SuppressWarnings("rawtypes")
 public abstract interface ILayoutBuilder {
     public abstract Object construct(String paramString1, Object paramObject, String paramString2, String paramString3)
             throws XSWTException;

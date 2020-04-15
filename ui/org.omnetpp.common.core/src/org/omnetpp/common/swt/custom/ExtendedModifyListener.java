@@ -20,6 +20,7 @@ import org.eclipse.swt.internal.SWTEventListener;
  * @see ExtendedModifyEvent
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
+@SuppressWarnings("restriction")
 public interface ExtendedModifyListener extends SWTEventListener {
 
 /**

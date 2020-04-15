@@ -52,8 +52,7 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
     /**
      * Helper comparator class to compare CompletionProposals using relevance and the the display name
      */
-    @SuppressWarnings("unchecked")
-    protected static class CompletionProposalComparator implements Comparator {
+    protected static class CompletionProposalComparator implements Comparator<ICompletionProposal> {
         private static CompletionProposalComparator instance = null;
 
         public static CompletionProposalComparator getInstance() {
@@ -62,18 +61,16 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
             return instance;
         }
 
-        public int compare(Object arg0, Object arg1) {
-
-            // first order according to the relevance
+        public int compare(ICompletionProposal arg0, ICompletionProposal arg1) {
+            // first, order according to the relevance
             if (arg0 instanceof TemplateProposal && arg1 instanceof TemplateProposal) {
                 int compRes = ((TemplateProposal) arg1).getRelevance() - ((TemplateProposal) arg0).getRelevance();
                 if (compRes != 0) return compRes;
                 return ((TemplateProposal)arg0).getDisplayString().compareToIgnoreCase(
                         ((TemplateProposal)arg1).getDisplayString());
             }
-            // if relevance is the same compare using display names
-            return ((ICompletionProposal)arg0).getDisplayString().compareToIgnoreCase(
-                        ((ICompletionProposal)arg1).getDisplayString());
+            // if relevance is the same, compare using display names
+            return arg0.getDisplayString().compareToIgnoreCase(arg1.getDisplayString());
         }
     }
 
@@ -140,7 +137,6 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
      * @author andras
      * @see org.eclipse.jface.text.contentassist.IContentAssistProcessor#computeCompletionProposals(org.eclipse.jface.text.ITextViewer, int)
      */
-    @SuppressWarnings("unchecked")
     public ICompletionProposal[] createTemplateProposals(ITextViewer viewer, int offset, IWordDetector wordDetector, Template[] templates) {
 
         ITextSelection selection= (ITextSelection) viewer.getSelectionProvider().getSelection();

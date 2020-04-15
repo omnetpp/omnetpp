@@ -212,7 +212,7 @@ public class DocumentationGenerator {
     protected Pattern possibleTypeReferencesPattern;
 
     protected ArrayList<String> packageNames;
-    protected int levelIndex[] = {0, 0, 0, 0};  // navigation level indexes for generating bredcrumbs (note that the 0th element is not used)
+    protected int levelIndex[] = {0, 0, 0, 0};  // navigation level indexes for generating breadcrumbs (note that the 0th element is not used)
     protected int previousLevel = 0;
     protected TreeMap<String, ArrayList> navigationItemIndex;
 

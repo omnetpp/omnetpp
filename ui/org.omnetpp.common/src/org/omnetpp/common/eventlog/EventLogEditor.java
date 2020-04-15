@@ -48,6 +48,7 @@ import org.omnetpp.eventlog.engine.SimulationBeginEntry;
 /**
  * Serves as a base class for editors which show an event log file.
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class EventLogEditor extends EditorPart implements IEventLogProvider, INavigationLocationProvider, IFollowSelectionSupport {
     protected boolean followSelection;
 
@@ -122,7 +123,7 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
     }
 
     @Override
-    public Object getAdapter(@SuppressWarnings("rawtypes") Class key) {
+    public Object getAdapter(Class key) {
         if (key.equals(IPropertySheetPage.class)) {
             if (propertySheetPage == null) {
                 propertySheetPage = new PropertySheetPage();

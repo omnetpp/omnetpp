@@ -45,7 +45,7 @@ public class FreemarkerEditor extends TextEditor {
         super.dispose();
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public Object getAdapter(Class aClass) {
         Object adapter;
         if (aClass.equals(IContentOutlinePage.class)) {

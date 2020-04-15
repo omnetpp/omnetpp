@@ -17,6 +17,7 @@ import org.eclipse.swt.SWTException;
 import org.eclipse.swt.internal.Compatibility;
 import org.eclipse.swt.widgets.TypedListener;
 
+@SuppressWarnings({"restriction", "rawtypes", "unchecked"})
 class DefaultContent implements StyledTextContent {
     private final static String LineDelimiter = System.getProperty("line.separator");
 

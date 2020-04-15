@@ -1083,6 +1083,7 @@ void setContent(StyledTextContent content) {
     lineHeight = new int[lineCount];
     reset(0, lineCount);
 }
+@SuppressWarnings("deprecation")
 void setFont(Font font, int tabs) {
     TextLayout layout = new TextLayout(device);
     layout.setFont(regularFont);

@@ -12,11 +12,13 @@ package org.omnetpp.common.swt.custom;
 
 
 import org.eclipse.swt.internal.SWTEventListener;
+
 /**
  * This listener is invoked when an object needs to be drawn.
  *
  * @since 3.2
  */
+@SuppressWarnings("restriction")
 public interface PaintObjectListener extends SWTEventListener {
 /**
  * This method is called when an object needs to be drawn.
