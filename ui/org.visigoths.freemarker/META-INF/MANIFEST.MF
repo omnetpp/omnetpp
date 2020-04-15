@@ -23,3 +23,4 @@ Export-Package: freemarker.cache,
  freemarker.log,
  freemarker.template,
  freemarker.template.utility
+Automatic-Module-Name: org.visigoths.freemarker

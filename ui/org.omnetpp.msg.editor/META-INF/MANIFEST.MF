@@ -20,3 +20,4 @@ Require-Bundle: org.eclipse.ui,
  org.omnetpp.ned.core,
  org.omnetpp.ned.model
 Export-Package: org.omnetpp.msg.editor.highlight
+Automatic-Module-Name: org.omnetpp.msg.editor

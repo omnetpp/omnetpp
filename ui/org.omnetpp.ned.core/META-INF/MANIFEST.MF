@@ -19,3 +19,4 @@ Export-Package: org.omnetpp.ned.core,
  org.omnetpp.ned.core.refactoring,
  org.omnetpp.ned.core.ui.actions,
  org.omnetpp.ned.core.ui.misc
+Automatic-Module-Name: org.omnetpp.ned.core

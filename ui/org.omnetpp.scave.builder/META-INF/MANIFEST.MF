@@ -13,3 +13,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.omnetpp.common
 Export-Package: org.omnetpp.scave.builder,
  org.omnetpp.scave.common
+Automatic-Module-Name: org.omnetpp.scave.builder

@@ -45,3 +45,4 @@ Export-Package: org.omnetpp.scave,
  org.omnetpp.scave.model2,
  org.omnetpp.scave.wizard
 Eclipse-BuddyPolicy: global
+Automatic-Module-Name: org.omnetpp.scave

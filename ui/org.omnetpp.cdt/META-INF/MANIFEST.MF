@@ -45,3 +45,4 @@ Export-Package: org.omnetpp.cdt,
  org.omnetpp.cdt.ui,
  org.omnetpp.cdt.wizard,
  org.omnetpp.cdt.wizard.support
+Automatic-Module-Name: org.omnetpp.cdt

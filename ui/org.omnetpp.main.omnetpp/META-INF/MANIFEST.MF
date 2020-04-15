@@ -9,3 +9,4 @@ Bundle-Vendor: OpenSim Ltd.
 Fragment-Host: org.omnetpp.main;bundle-version="5.1.0"
 Require-Bundle: org.eclipse.cdt.managedbuilder.core;resolution:=optional
 Eclipse-BundleShape: dir
+Automatic-Module-Name: org.omnetpp.main.omnetpp

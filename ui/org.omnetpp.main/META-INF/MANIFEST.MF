@@ -39,3 +39,4 @@ Export-Package: org.omnetpp.ide;
  org.omnetpp.ide.properties;uses:="org.eclipse.ui.dialogs,org.eclipse.swt.widgets",
  org.omnetpp.ide.variables;uses:="org.eclipse.core.variables",
  org.omnetpp.ide.views;uses:="org.eclipse.ui.part,org.eclipse.swt.widgets,org.eclipse.swt.browser"
+Automatic-Module-Name: org.omnetpp.main

@@ -17,3 +17,4 @@ Export-Package: org.omnetpp.figures,
  org.omnetpp.figures.anchors,
  org.omnetpp.figures.layout,
  org.omnetpp.figures.misc
+Automatic-Module-Name: org.omnetpp.figures

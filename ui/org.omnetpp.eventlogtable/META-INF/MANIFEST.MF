@@ -22,3 +22,4 @@ Require-Bundle: org.eclipse.core.resources,
 Export-Package: org.omnetpp.eventlogtable,
  org.omnetpp.eventlogtable.editors,
  org.omnetpp.eventlogtable.widgets
+Automatic-Module-Name: org.omnetpp.eventlogtable

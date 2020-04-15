@@ -25,3 +25,4 @@ Export-Package: org.omnetpp.inifile.editor.editors,
  org.omnetpp.inifile.editor.form,
  org.omnetpp.inifile.editor.model,
  org.omnetpp.inifile.editor.text
+Automatic-Module-Name: org.omnetpp.inifile.editor

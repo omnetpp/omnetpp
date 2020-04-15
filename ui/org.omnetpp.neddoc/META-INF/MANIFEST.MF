@@ -23,3 +23,4 @@ Require-Bundle: org.eclipse.ui,
  org.omnetpp.ide.nativelibs,
  org.eclipse.draw2d,
  org.eclipse.gef
+Automatic-Module-Name: org.omnetpp.neddoc

@@ -30,3 +30,4 @@ Require-Bundle: org.eclipse.core.resources,
 Export-Package: org.omnetpp.sequencechart,
  org.omnetpp.sequencechart.editors,
  org.omnetpp.sequencechart.widgets
+Automatic-Module-Name: org.omnetpp.sequencechart

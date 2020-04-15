@@ -12,3 +12,4 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.intro.universal,
  org.eclipse.help,
  org.omnetpp.common
+Automatic-Module-Name: org.omnetpp.doc

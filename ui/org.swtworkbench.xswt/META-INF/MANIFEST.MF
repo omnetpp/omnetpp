@@ -32,3 +32,4 @@ Export-Package: com.swtworkbench.community.xswt,
  com.swtworkbench.community.xswt.layoutbuilder,
  com.swtworkbench.community.xswt.metalogger,
  com.swtworkbench.community.xswt.test
+Automatic-Module-Name: org.swtworkbench.xswt

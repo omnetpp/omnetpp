@@ -74,3 +74,4 @@ Export-Package: org.apache.commons.lang3;uses:="org.apache.commons.lang3.text.tr
    org.omnetpp.common.swt.custom"
 Bundle-ClassPath: lib/commons-lang3-3.1.jar,
  .
+Automatic-Module-Name: org.omnetpp.common.core

@@ -17,3 +17,4 @@ Export-Package: org.omnetpp.common.engine,
  org.omnetpp.ned.engine,
  org.omnetpp.scave.engine,
  org.omnetpp.scave.engineext
+Automatic-Module-Name: org.omnetpp.ide.nativelibs

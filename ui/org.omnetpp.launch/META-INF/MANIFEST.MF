@@ -26,3 +26,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.cdt.ui
 Export-Package: org.omnetpp.launch,
  org.omnetpp.launch.tabs
+Automatic-Module-Name: org.omnetpp.launch

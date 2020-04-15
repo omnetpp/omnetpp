@@ -20,3 +20,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.workbench,
  org.eclipse.ui.workbench.texteditor,
  org.visigoths.freemarker
+Automatic-Module-Name: org.visigoths.freemarker.ide
