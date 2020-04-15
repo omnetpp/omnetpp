@@ -48,7 +48,7 @@ public class SetChartFilterAction extends AbstractScaveAction {
         IDList target = ((IDListSelection)selection).getIDList();
         ResultFileManager rfm = editor.getResultFileManager();
         String filter = ResultFileManager.callWithReadLock(rfm, () -> {
-            return ResultSelectionFilterGenerator.getFilter(target, all, rfm);
+            return ResultSelectionFilterGenerator.getFilter(target, all, rfm, null);
         });
 
         SetChartPropertyCommand command = new SetChartPropertyCommand(c, "filter", filter);

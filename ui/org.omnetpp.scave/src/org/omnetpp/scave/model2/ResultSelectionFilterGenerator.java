@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.engine.IDList;
@@ -20,33 +21,17 @@ import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.model.ResultType;
 
+/**
+ * Given a set of selected results (an IDList of selected items, out of an IDList
+ * of "all" items), generates a filter expression that results in the first IDList,
+ * when used to filter the second one. Tries to keep the expression short and reasonable.
+ */
 public class ResultSelectionFilterGenerator {
 
-    public static boolean debug = false; // TODO initialize from OMNETPP_DEBUG envvar, like elsewhere
+    protected static boolean debug = false; // TODO initialize from OMNETPP_DEBUG envvar, like elsewhere
 
-    public static List<String> getIDListAsFilters(IDList ids, String[] runidFields, ResultFileManager manager) {
-        Assert.isNotNull(runidFields);
-        String[] filterFields = getFilterFieldsFor(runidFields);
-        List<String> filters = new ArrayList<String>(ids.size());
-        for (int i = 0; i < ids.size(); ++i) {
-            long id = ids.get(i);
-            String filter = new FilterUtil(manager.getItem(id), filterFields).getFilterPattern(); //TODO include: getTypeOf(item)
-            filters.add(filter);
-        }
-        return filters;
-    }
-
-    public static String[] getFilterFieldsFor(String[] runidFields) {
-        Assert.isNotNull(runidFields);
-        int runidFieldCount = runidFields.length;
-        String[] filterFields = new String[runidFieldCount+2];
-        System.arraycopy(runidFields, 0, filterFields, 0, runidFieldCount);
-        filterFields[runidFieldCount] = MODULE;
-        filterFields[runidFieldCount + 1] = NAME;
-        return filterFields;
-    }
     // TODO better fitting name
-    public static String getResultItemAttribute(ResultItem item, String attrName) {
+    protected static String getResultItemAttribute(ResultItem item, String attrName) {
         if (attrName.startsWith("runattr:"))
             return item.getRun().getAttribute(attrName.substring("runattr:".length()));
 
@@ -68,7 +53,7 @@ public class ResultSelectionFilterGenerator {
     }
 
     // TODO reasonable name
-    public static ColumnValueCounts computeColumnData(IDList target, IDList all, String attrName, ResultFileManager manager) {
+    protected static ColumnValueCounts computeColumnData(IDList target, IDList all, String attrName, ResultFileManager manager) {
 
         IDList nonTarget = all.getDifference(target);
 
@@ -103,7 +88,7 @@ public class ResultSelectionFilterGenerator {
         return result;
     }
 
-    public static String getApproximateFilter(IDList target, IDList all, ResultFileManager manager) {
+    protected static String getApproximateFilter(IDList target, IDList all, ResultFileManager manager, IProgressMonitor monitor) throws InterruptedException {
 
         if (target.size() >= all.size() * 0.9)
             return "*";
@@ -112,8 +97,10 @@ public class ResultSelectionFilterGenerator {
 
         Map<String, ColumnValueCounts> columnData = new HashMap<String, ColumnValueCounts>();
 
-        for (String f : fields)
+        for (String f : fields) {
             columnData.put(f, computeColumnData(target, all, f, manager));
+            checkMonitor(monitor);
+        }
 
         String bestAttr = null;
         float bestScore = 0;
@@ -186,16 +173,28 @@ public class ResultSelectionFilterGenerator {
         return getIDListAsDumbFilter(target, manager, dumbFields);
     }
 
-    public static String getFilter(IDList target, IDList all, ResultFileManager manager) {
+    public static String getFilter(IDList target, IDList all, ResultFileManager manager, IProgressMonitor monitor) throws InterruptedException {
+        monitor.beginTask("generating filter", 1);
+        return doGetFilter(target, all, manager, monitor);
+    }
 
-        String approxFilter = getApproximateFilter(target, all, manager);
+    protected static String doGetFilter(IDList target, IDList all, ResultFileManager manager, IProgressMonitor monitor) throws InterruptedException {
+
+        checkMonitor(monitor);
+
+        String approxFilter = getApproximateFilter(target, all, manager, monitor);
+
+        checkMonitor(monitor);
 
         if (debug) {
             Debug.println("getFilter, trying to reduce " + all.size() + " IDs to " + target.size());
             Debug.println("approx filter is: " + approxFilter);
         }
 
-        IDList approxMatching = manager.filterIDList(all, approxFilter);
+
+        IDList approxMatching = Debug.timed("approxfilter", 1, () -> manager.filterIDList(all, approxFilter));
+
+        checkMonitor(monitor);
 
         if (debug)
             Debug.println("approx matching count: " + approxMatching.size());
@@ -209,7 +208,7 @@ public class ResultSelectionFilterGenerator {
         if (!toBeIncluded.isEmpty()) {
             if (debug)
                 Debug.println("computing include filter...");
-            includeFilter = getFilter(toBeIncluded, approxNotMatching,  manager);
+            includeFilter = doGetFilter(toBeIncluded, approxNotMatching,  manager, monitor);
             if (debug)
                 Debug.println("include filter: " + includeFilter);
         }
@@ -218,7 +217,7 @@ public class ResultSelectionFilterGenerator {
         if (!toBeExcluded.isEmpty()) {
             if (debug)
                 Debug.println("computing exclude filter...");
-            excludeFilter = getFilter(toBeExcluded, approxMatching, manager);
+            excludeFilter = doGetFilter(toBeExcluded, approxMatching, manager, monitor);
             if (debug)
                 Debug.println("exclude filter: " + excludeFilter);
         }
@@ -264,17 +263,17 @@ public class ResultSelectionFilterGenerator {
 
 
     // filtering for the given result type will not be part of the returned expression!!!
-    public static String getIDListAsFilterExpression(IDList ids, String[] runidFields, ResultType resultType, String viewFilter, ResultFileManager manager) {
+    public static String getIDListAsFilterExpression(IDList ids, String[] runidFields, ResultType resultType, String viewFilter, ResultFileManager manager, IProgressMonitor monitor) throws InterruptedException {
         IDList allIDs = manager.getAllItems(false).filterByTypes(resultType.getValue());
-        return getIDListAsFilterExpression(allIDs, ids, runidFields, viewFilter, manager);
+        return getIDListAsFilterExpression(allIDs, ids, runidFields, viewFilter, manager, monitor);
     }
 
-    public static String getIDListAsFilterExpression(IDList ids, String[] runidFields, String viewFilter, ResultFileManager manager) {
+    public static String getIDListAsFilterExpression(IDList ids, String[] runidFields, String viewFilter, ResultFileManager manager, IProgressMonitor monitor) throws InterruptedException {
         IDList allIDs = manager.getAllItems(false);
-        return getIDListAsFilterExpression(allIDs, ids, runidFields, viewFilter, manager);
+        return getIDListAsFilterExpression(allIDs, ids, runidFields, viewFilter, manager, monitor);
     }
 
-    public static String getIDListAsFilterExpression(IDList allIDs, IDList ids, String[] runidFields, String viewFilter, ResultFileManager manager) {
+    public static String getIDListAsFilterExpression(IDList allIDs, IDList ids, String[] runidFields, String viewFilter, ResultFileManager manager, IProgressMonitor monitor) throws InterruptedException {
         IDList allItemsOfType = allIDs;
         IDList itemsMatchingViewFilter = manager.filterIDList(allItemsOfType, viewFilter);
 
@@ -295,12 +294,11 @@ public class ResultSelectionFilterGenerator {
 
 
         if (viewFilter.equals("*"))
-            return getFilter(ids, itemsMatchingViewFilter, manager);
+            return getFilter(ids, itemsMatchingViewFilter, manager, monitor);
         else
-            return viewFilter + " AND (" + getFilter(ids, itemsMatchingViewFilter, manager) + ")";
+            return viewFilter + " AND (" + getFilter(ids, itemsMatchingViewFilter, manager, monitor) + ")";
 
-
-//
+//TODO integrate or delete:
 //
 //        String refinedFilter = refineFilterForSelection(itemsMatchingViewFilter, ids, manager);
 //        if (debug
@@ -343,7 +341,7 @@ public class ResultSelectionFilterGenerator {
 //        return result;
     }
 
-    private static String getIDListAsRunGroupedFilter(IDList ids, ResultFileManager manager, String[] filterFields) {
+    private static String getIDListAsRunGroupedFilter(IDList ids, ResultFileManager manager, String[] filterFields) { //TODO this method is never used.
 
         RunList runs = manager.getUniqueRuns(ids);
         StringBuilder sb = new StringBuilder();
@@ -381,5 +379,14 @@ public class ResultSelectionFilterGenerator {
         }
         return sb.toString();
     }
+
+    private static void checkMonitor(IProgressMonitor monitor) throws InterruptedException {
+        if (monitor != null) {
+            monitor.worked(1);
+            if (monitor.isCanceled())
+                throw new InterruptedException();
+        }
+    }
+
 
 }
