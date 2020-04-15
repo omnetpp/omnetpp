@@ -11,10 +11,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
-import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
+import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;
-import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.wizard.IWidgetAdapter;
 
 /**

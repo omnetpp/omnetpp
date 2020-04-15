@@ -10,7 +10,6 @@ package org.omnetpp.ned.editor;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.MultiPageEditorActionBarContributor;
-
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.graph.actions.GNedActionBarContributor;
 import org.omnetpp.ned.editor.text.TextualNedEditor;

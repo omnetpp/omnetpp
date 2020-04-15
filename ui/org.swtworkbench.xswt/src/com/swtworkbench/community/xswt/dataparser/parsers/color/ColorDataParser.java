@@ -1,16 +1,18 @@
 package com.swtworkbench.community.xswt.dataparser.parsers.color;
 
-import com.swtworkbench.community.xswt.StyleParser;
-import com.swtworkbench.community.xswt.XSWTException;
-import com.swtworkbench.community.xswt.dataparser.DataParser;
-import com.swtworkbench.community.xswt.dataparser.NonDisposableDataParser;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
+
+import com.swtworkbench.community.xswt.StyleParser;
+import com.swtworkbench.community.xswt.XSWTException;
+import com.swtworkbench.community.xswt.dataparser.DataParser;
+import com.swtworkbench.community.xswt.dataparser.NonDisposableDataParser;
 
 public class ColorDataParser extends NonDisposableDataParser {
     private static Map mapColors = new HashMap();

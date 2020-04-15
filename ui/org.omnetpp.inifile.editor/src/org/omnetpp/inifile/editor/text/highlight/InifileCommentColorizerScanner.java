@@ -11,7 +11,8 @@ package org.omnetpp.inifile.editor.text.highlight;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jface.text.rules.*;
+import org.eclipse.jface.text.rules.IRule;
+import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.omnetpp.inifile.editor.text.InifileTextEditorHelper;
 
 /**

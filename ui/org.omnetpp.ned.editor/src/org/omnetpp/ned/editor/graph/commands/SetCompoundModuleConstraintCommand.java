@@ -7,7 +7,6 @@
 
 package org.omnetpp.ned.editor.graph.commands;
 
-import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.common.displaymodel.DimensionF;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;

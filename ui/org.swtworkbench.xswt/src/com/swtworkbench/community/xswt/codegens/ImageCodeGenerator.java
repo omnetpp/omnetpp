@@ -1,7 +1,8 @@
 package com.swtworkbench.community.xswt.codegens;
 
-import com.swtworkbench.community.xswt.codegen.ICodeGenerator;
 import java.util.StringTokenizer;
+
+import com.swtworkbench.community.xswt.codegen.ICodeGenerator;
 
 public class ImageCodeGenerator implements ICodeGenerator {
     private String dequalify(String className) {

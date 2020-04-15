@@ -10,7 +10,6 @@ package org.omnetpp.ned.editor.graph.parts.policies;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editpolicies.DirectEditPolicy;
 import org.eclipse.gef.requests.DirectEditRequest;
-
 import org.omnetpp.ned.editor.graph.commands.RenameCommand;
 import org.omnetpp.ned.model.interfaces.IHasName;
 

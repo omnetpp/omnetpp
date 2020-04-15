@@ -20,7 +20,6 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.ned.editor.graph.commands.SetConstraintCommand;
 import org.omnetpp.ned.editor.graph.parts.EditPartUtil;
-import org.omnetpp.ned.editor.graph.parts.ModuleEditPart;
 import org.omnetpp.ned.editor.graph.parts.SubmoduleEditPart;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;

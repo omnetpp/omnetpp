@@ -1,23 +1,21 @@
 package com.swtworkbench.community.xswt.contrib;
 
-import com.swtworkbench.community.xswt.dataparser.parsers.color.CSSColors;
-import com.swtworkbench.community.xswt.dataparser.parsers.color.IColorManager;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.text.MessageFormat;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -63,6 +61,9 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
+
+import com.swtworkbench.community.xswt.dataparser.parsers.color.CSSColors;
+import com.swtworkbench.community.xswt.dataparser.parsers.color.IColorManager;
 
 public class XSWT_bobfoster {
     private IColorManager colorManager;

@@ -8,7 +8,6 @@
 package org.omnetpp.ned.editor.graph.commands;
 
 import org.eclipse.gef.commands.Command;
-
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.interfaces.IHasName;
 

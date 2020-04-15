@@ -1,7 +1,8 @@
 package com.swtworkbench.community.xswt.dataparser.parsers;
 
-import com.swtworkbench.community.xswt.dataparser.NonDisposableDataParser;
 import java.util.StringTokenizer;
+
+import com.swtworkbench.community.xswt.dataparser.NonDisposableDataParser;
 
 public class StringArrayDataParser extends NonDisposableDataParser {
     public Object parse(String source) {

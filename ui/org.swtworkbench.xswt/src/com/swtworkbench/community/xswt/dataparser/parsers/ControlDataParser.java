@@ -1,10 +1,12 @@
 package com.swtworkbench.community.xswt.dataparser.parsers;
 
-import com.swtworkbench.community.xswt.XSWTException;
-import com.swtworkbench.community.xswt.dataparser.NonDisposableDataParser;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.eclipse.swt.widgets.Control;
+
+import com.swtworkbench.community.xswt.XSWTException;
+import com.swtworkbench.community.xswt.dataparser.NonDisposableDataParser;
 
 public class ControlDataParser extends NonDisposableDataParser {
     private Map map = new HashMap();

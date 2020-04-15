@@ -1,10 +1,9 @@
 package org.omnetpp.ned.editor.graph.misc;
 
+import org.eclipse.draw2d.Cursors;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Cursor;
 import org.omnetpp.ned.editor.NedEditorPlugin;
-import org.eclipse.jface.resource.ImageDescriptor;
-
-import org.eclipse.draw2d.Cursors;
 
 /**
  * A shared collection of Cursors.

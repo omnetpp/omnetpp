@@ -1,6 +1,7 @@
 package com.swtworkbench.community.xswt.test;
 
 import java.io.IOException;
+
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;

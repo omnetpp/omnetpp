@@ -15,7 +15,6 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.editors.text.TextEditorActionContributor;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.RetargetTextEditorAction;
-
 import org.omnetpp.msg.editor.actions.CorrectIndentationAction;
 import org.omnetpp.msg.editor.actions.MsgTextEditorAction;
 import org.omnetpp.msg.editor.actions.ToggleCommentAction;

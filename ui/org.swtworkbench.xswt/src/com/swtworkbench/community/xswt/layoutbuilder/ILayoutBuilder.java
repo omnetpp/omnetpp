@@ -1,9 +1,10 @@
 package com.swtworkbench.community.xswt.layoutbuilder;
 
-import com.swtworkbench.community.xswt.XSWTException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
+
+import com.swtworkbench.community.xswt.XSWTException;
 
 public abstract interface ILayoutBuilder {
     public abstract Object construct(String paramString1, Object paramObject, String paramString2, String paramString3)

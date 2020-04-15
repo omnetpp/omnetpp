@@ -8,7 +8,6 @@
 package org.omnetpp.common.eventlog;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.engine.BigDecimal;

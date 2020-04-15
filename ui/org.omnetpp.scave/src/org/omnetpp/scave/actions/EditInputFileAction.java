@@ -16,10 +16,8 @@ import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.InputFile;
-import org.omnetpp.scave.model.commands.CommandStack;
 import org.omnetpp.scave.model.commands.ICommand;
 import org.omnetpp.scave.model.commands.SetInputFileCommand;
-import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * Edits an InputFile item.

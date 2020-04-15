@@ -8,7 +8,6 @@
 package org.omnetpp.scave.views;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.concurrent.Callable;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.core.runtime.IStatus;
@@ -46,9 +45,9 @@ import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.VectorResultContentProvider;
 import org.omnetpp.scave.editors.datatable.VectorResultRowRenderer;
-import org.omnetpp.scave.engine.VectorDatum;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.SqliteResultFileUtils;
+import org.omnetpp.scave.engine.VectorDatum;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.model2.ChartDataPoint;
 import org.omnetpp.scave.model2.ChartLine;

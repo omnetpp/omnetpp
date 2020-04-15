@@ -1,11 +1,11 @@
 package com.swtworkbench.community.xswt.test;
 
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+
 import com.swtworkbench.community.xswt.XSWT;
 import com.swtworkbench.community.xswt.XSWTException;
 import com.swtworkbench.community.xswt.layoutbuilder.SWTSourceBuilder;
-import java.io.PrintStream;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 
 public class HelloWorld {
     public static void main(String[] args) {

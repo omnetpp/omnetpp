@@ -9,7 +9,6 @@ package org.omnetpp.ned.editor.graph.commands;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.gef.commands.Command;
-
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 
 /**

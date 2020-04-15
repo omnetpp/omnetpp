@@ -1,15 +1,16 @@
 package com.swtworkbench.community.xswt.layoutbuilder;
 
-import com.swtworkbench.community.xswt.ClassBuilder;
-import com.swtworkbench.community.xswt.StyleParser;
-import com.swtworkbench.community.xswt.XSWTException;
-import com.swtworkbench.community.xswt.dataparser.DataParser;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
+
 import org.eclipse.swt.widgets.Widget;
+
+import com.swtworkbench.community.xswt.ClassBuilder;
+import com.swtworkbench.community.xswt.StyleParser;
+import com.swtworkbench.community.xswt.XSWTException;
+import com.swtworkbench.community.xswt.dataparser.DataParser;
 
 public class GUIEditorLayoutBuilder extends LayoutBuilder implements ILayoutBuilder {
     public boolean setProperty(String propertyName, Object receiver, String valueSource) throws XSWTException {

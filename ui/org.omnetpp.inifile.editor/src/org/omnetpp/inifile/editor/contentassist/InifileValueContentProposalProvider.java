@@ -7,7 +7,18 @@
 
 package org.omnetpp.inifile.editor.contentassist;
 
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.*;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_CONFIG_NAME;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CONSTRAINT;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_QTENV_DEFAULT_CONFIG;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SIMTIME_RESOLUTION;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SIMTIME_SCALE;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_USER_INTERFACE;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING_INTERVALS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.SIMTIME_RESOLUTION_CHOICES;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.SIMTIME_SCALE_CHOICES;
 
 import java.util.ArrayList;
 import java.util.Arrays;

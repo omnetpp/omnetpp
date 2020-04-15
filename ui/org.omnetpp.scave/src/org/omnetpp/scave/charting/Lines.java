@@ -18,8 +18,8 @@ import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.scave.charting.LinePlot.LineProperties;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
-import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 import org.omnetpp.scave.charting.plotter.ILinePlotter;
+import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 
 /**
  * The content area of a line plot.

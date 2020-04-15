@@ -46,7 +46,6 @@ import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.IMessageDependency;
-import org.omnetpp.eventlog.engine.SequenceChartFacade;
 import org.omnetpp.sequencechart.SequenceChartPlugin;
 import org.omnetpp.sequencechart.widgets.SequenceChart;
 

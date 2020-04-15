@@ -22,7 +22,6 @@ import org.omnetpp.eventlog.engine.EventLogTableFacade;
 import org.omnetpp.eventlog.engine.FileReader;
 import org.omnetpp.eventlog.engine.FilteredEventLog;
 import org.omnetpp.eventlog.engine.IEventLog;
-import org.omnetpp.eventlog.engine.Int64Vector;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntryList;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;

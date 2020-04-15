@@ -21,7 +21,6 @@ import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 import org.eclipse.gef.tools.DirectEditManager;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.swt.widgets.Tree;
-
 import org.omnetpp.ned.editor.graph.parts.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.parts.policies.NedTreeContainerEditPolicy;
 import org.omnetpp.ned.editor.graph.parts.policies.NedTreeEditPolicy;

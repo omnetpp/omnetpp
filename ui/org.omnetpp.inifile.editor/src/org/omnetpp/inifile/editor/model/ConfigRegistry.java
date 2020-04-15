@@ -15,7 +15,14 @@ import static org.omnetpp.inifile.editor.model.ConfigOption.DataType.CFG_FILENAM
 import static org.omnetpp.inifile.editor.model.ConfigOption.DataType.CFG_INT;
 import static org.omnetpp.inifile.editor.model.ConfigOption.DataType.CFG_PATH;
 import static org.omnetpp.inifile.editor.model.ConfigOption.DataType.CFG_STRING;
-import static org.omnetpp.inifile.editor.model.ConfigOption.ObjectKind.*;
+import static org.omnetpp.inifile.editor.model.ConfigOption.ObjectKind.KIND_COMPONENT;
+import static org.omnetpp.inifile.editor.model.ConfigOption.ObjectKind.KIND_MODULE;
+import static org.omnetpp.inifile.editor.model.ConfigOption.ObjectKind.KIND_PARAMETER;
+import static org.omnetpp.inifile.editor.model.ConfigOption.ObjectKind.KIND_SCALAR;
+import static org.omnetpp.inifile.editor.model.ConfigOption.ObjectKind.KIND_SIMPLE_MODULE;
+import static org.omnetpp.inifile.editor.model.ConfigOption.ObjectKind.KIND_STATISTIC;
+import static org.omnetpp.inifile.editor.model.ConfigOption.ObjectKind.KIND_UNSPECIFIED_TYPE;
+import static org.omnetpp.inifile.editor.model.ConfigOption.ObjectKind.KIND_VECTOR;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;

@@ -11,7 +11,11 @@ package org.omnetpp.inifile.editor.text.highlight;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jface.text.rules.*;
+import org.eclipse.jface.text.rules.IRule;
+import org.eclipse.jface.text.rules.NumberRule;
+import org.eclipse.jface.text.rules.RuleBasedScanner;
+import org.eclipse.jface.text.rules.SingleLineRule;
+import org.eclipse.jface.text.rules.WordRule;
 import org.omnetpp.common.editor.text.SyntaxHighlightHelper;
 import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;

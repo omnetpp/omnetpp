@@ -7,9 +7,6 @@
 
 package org.omnetpp.scave.actions;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;

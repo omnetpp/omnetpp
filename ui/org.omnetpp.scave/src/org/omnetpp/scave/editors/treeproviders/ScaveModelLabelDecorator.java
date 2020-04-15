@@ -28,9 +28,9 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.Markers;
-import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.InputFile;
+import org.omnetpp.scave.model.ModelObject;
 
 /**
  * Decorates icons according to the markers on the associated resource.

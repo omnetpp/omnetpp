@@ -12,7 +12,6 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentExtension3;
 import org.eclipse.jface.text.IDocumentPartitioner;
 import org.eclipse.jface.text.rules.FastPartitioner;
-
 import org.omnetpp.msg.editor.highlight.MsgSyntaxHighlightPartitionScanner;
 
 /**

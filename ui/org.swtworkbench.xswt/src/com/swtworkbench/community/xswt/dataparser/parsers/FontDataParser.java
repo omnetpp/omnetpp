@@ -1,10 +1,12 @@
 package com.swtworkbench.community.xswt.dataparser.parsers;
 
-import com.swtworkbench.community.xswt.StyleParser;
-import com.swtworkbench.community.xswt.dataparser.DisposableDataParser;
 import java.util.StringTokenizer;
+
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Display;
+
+import com.swtworkbench.community.xswt.StyleParser;
+import com.swtworkbench.community.xswt.dataparser.DisposableDataParser;
 
 public class FontDataParser extends DisposableDataParser {
     private Display display = null;

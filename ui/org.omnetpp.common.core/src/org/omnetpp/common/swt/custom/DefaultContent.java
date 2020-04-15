@@ -10,10 +10,12 @@
  *******************************************************************************/
 package org.omnetpp.common.swt.custom;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.internal.Compatibility;
-import org.eclipse.swt.widgets.*;
 import java.util.Vector;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.internal.Compatibility;
+import org.eclipse.swt.widgets.TypedListener;
 
 class DefaultContent implements StyledTextContent {
     private final static String LineDelimiter = System.getProperty("line.separator");

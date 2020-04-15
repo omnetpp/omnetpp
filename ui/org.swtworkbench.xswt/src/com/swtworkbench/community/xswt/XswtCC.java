@@ -1,11 +1,10 @@
 package com.swtworkbench.community.xswt;
 
-import com.swtworkbench.community.xswt.layoutbuilder.SWTSourceBuilder;
-import com.swtworkbench.community.xswt.metalogger.ILogger;
-import com.swtworkbench.community.xswt.metalogger.Logger;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.PrintStream;
+
+import com.swtworkbench.community.xswt.layoutbuilder.SWTSourceBuilder;
+import com.swtworkbench.community.xswt.metalogger.Logger;
 
 public class XswtCC {
     public static void main(String[] args) throws IOException {

@@ -1,13 +1,14 @@
 package com.swtworkbench.community.xswt.dataparser;
 
-import com.swtworkbench.community.xswt.XSWTException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Widget;
+
+import com.swtworkbench.community.xswt.XSWTException;
 
 public final class DataParser {
     private static HashMap dataParsers = new HashMap();

@@ -1,9 +1,10 @@
 package com.swtworkbench.community.xswt.dataparser.parsers;
 
+import org.eclipse.swt.graphics.RGB;
+
 import com.swtworkbench.community.xswt.XSWTException;
 import com.swtworkbench.community.xswt.dataparser.DataParser;
 import com.swtworkbench.community.xswt.dataparser.NonDisposableDataParser;
-import org.eclipse.swt.graphics.RGB;
 
 public class RGBDataParser extends NonDisposableDataParser {
     public Object parse(String source) throws XSWTException {

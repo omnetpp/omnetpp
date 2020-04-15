@@ -9,12 +9,7 @@ package org.omnetpp.scave.editors.datatable;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.StyledString;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Display;
-import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.virtualtable.AbstractRowRenderer;
 import org.omnetpp.scave.engine.EnumType;

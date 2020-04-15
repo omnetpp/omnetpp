@@ -23,7 +23,6 @@ import org.omnetpp.scave.engine.ResultFileList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItemFields;
 import org.omnetpp.scave.engine.RunList;
-import org.omnetpp.scave.engine.StringSet;
 import org.omnetpp.scave.model2.FilterField.Kind;
 
 /**

@@ -1,13 +1,13 @@
 package com.swtworkbench.community.xswt.layoutbuilder;
 
-import com.swtworkbench.community.xswt.XSWTException;
-import com.swtworkbench.community.xswt.dataparser.DataParser;
-import com.swtworkbench.community.xswt.metalogger.ILogger;
-import com.swtworkbench.community.xswt.metalogger.Logger;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.LinkedList;
+
+import com.swtworkbench.community.xswt.XSWTException;
+import com.swtworkbench.community.xswt.dataparser.DataParser;
+import com.swtworkbench.community.xswt.metalogger.Logger;
 
 public abstract class LayoutBuilder {
     protected ConstructorInfo getConstructorInfo(Class valueType, LinkedList argList) throws XSWTException {

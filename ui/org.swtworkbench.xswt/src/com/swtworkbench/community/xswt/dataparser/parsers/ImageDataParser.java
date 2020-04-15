@@ -1,14 +1,15 @@
 package com.swtworkbench.community.xswt.dataparser.parsers;
 
+import java.net.URL;
+import java.util.StringTokenizer;
+
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
+
 import com.swtworkbench.community.xswt.ClassBuilder;
 import com.swtworkbench.community.xswt.XSWTException;
 import com.swtworkbench.community.xswt.dataparser.DisposableDataParser;
-import com.swtworkbench.community.xswt.metalogger.ILogger;
 import com.swtworkbench.community.xswt.metalogger.Logger;
-import java.net.URL;
-import java.util.StringTokenizer;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Display;
 
 public class ImageDataParser extends DisposableDataParser {
     public Object parse(String source) throws XSWTException {

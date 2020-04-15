@@ -8,6 +8,7 @@
 package org.omnetpp.cdt;
 
 import java.util.LinkedHashMap;
+
 import org.eclipse.cdt.make.core.scannerconfig.IDiscoveredPathManager.IDiscoveredPathInfo;
 import org.eclipse.cdt.make.core.scannerconfig.IDiscoveredPathManager.IPerProjectDiscoveredPathInfo;
 import org.eclipse.cdt.make.internal.core.scannerconfig2.PerProjectSICollector;

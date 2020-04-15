@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.omnetpp.scave.model.AnalysisItem;
-import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Charts;
+import org.omnetpp.scave.model.ModelObject;
 
 public class RemoveChartCommand implements ICommand {
 

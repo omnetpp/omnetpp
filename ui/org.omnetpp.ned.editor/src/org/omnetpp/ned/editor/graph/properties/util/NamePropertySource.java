@@ -11,7 +11,6 @@ import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
-
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.interfaces.IHasName;
 

@@ -94,7 +94,6 @@ import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.common.Debug;
-import org.omnetpp.common.IConstants;
 import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.HoverSupport;

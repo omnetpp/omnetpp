@@ -1,16 +1,16 @@
 package com.swtworkbench.community.xswt.test;
 
-import com.swtworkbench.community.xswt.XSWT;
-import com.swtworkbench.community.xswt.XSWTException;
-import com.swtworkbench.community.xswt.metalogger.ILogger;
-import com.swtworkbench.community.xswt.metalogger.Logger;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Map;
+
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
+
+import com.swtworkbench.community.xswt.XSWT;
+import com.swtworkbench.community.xswt.XSWTException;
+import com.swtworkbench.community.xswt.metalogger.Logger;
 
 public class XSWTTest {
     public static void main(String[] args) throws IOException {

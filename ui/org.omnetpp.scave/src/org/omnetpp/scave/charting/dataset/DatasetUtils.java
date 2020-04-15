@@ -7,8 +7,6 @@
 
 package org.omnetpp.scave.charting.dataset;
 
-import org.omnetpp.scave.charting.dataset.IXYDataset;
-
 public class DatasetUtils {
     /**
      * Returns the index of the X value in the dataset series which is:

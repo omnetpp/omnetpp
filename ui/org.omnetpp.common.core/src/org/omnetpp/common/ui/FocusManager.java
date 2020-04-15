@@ -7,7 +7,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.omnetpp.common.Debug;
 
 /**
  * Keeps track of the last focused control inside a Composite (or among an arbitrary

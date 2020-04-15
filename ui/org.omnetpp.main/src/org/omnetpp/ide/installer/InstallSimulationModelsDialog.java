@@ -43,10 +43,10 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.CommonPlugin;
+import org.omnetpp.common.OmnetppDirs;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.common.OmnetppDirs;
 import org.omnetpp.ide.OmnetppMainPlugin;
 
 public class InstallSimulationModelsDialog extends TitleAreaDialog {

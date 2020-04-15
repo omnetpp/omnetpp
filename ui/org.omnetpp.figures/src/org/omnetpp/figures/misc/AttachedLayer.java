@@ -7,8 +7,14 @@
 
 package org.omnetpp.figures.misc;
 
-import org.eclipse.draw2d.*;
-import org.eclipse.draw2d.geometry.*;
+import org.eclipse.draw2d.AncestorListener;
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.Layer;
+import org.eclipse.draw2d.PositionConstants;
+import org.eclipse.draw2d.StackLayout;
+import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.PrecisionPoint;
+import org.eclipse.draw2d.geometry.Rectangle;
 
 /**
  * Container layer that hooks itself to its reference figure and relatively locates itself

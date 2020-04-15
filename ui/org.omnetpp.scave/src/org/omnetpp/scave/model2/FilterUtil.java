@@ -26,7 +26,6 @@ import org.omnetpp.common.util.MatchExpressionSyntax.INodeVisitor;
 import org.omnetpp.common.util.MatchExpressionSyntax.Node;
 import org.omnetpp.common.util.MatchExpressionSyntax.Token;
 import org.omnetpp.common.util.MatchExpressionSyntax.TokenType;
-import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;

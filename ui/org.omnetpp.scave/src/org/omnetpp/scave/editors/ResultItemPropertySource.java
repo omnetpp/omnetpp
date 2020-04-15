@@ -6,8 +6,6 @@ import static org.omnetpp.scave.engine.RunAttribute.MEASUREMENT;
 import static org.omnetpp.scave.engine.RunAttribute.REPLICATION;
 import static org.omnetpp.scave.engine.RunAttribute.RUNNUMBER;
 
-import java.util.concurrent.Callable;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;

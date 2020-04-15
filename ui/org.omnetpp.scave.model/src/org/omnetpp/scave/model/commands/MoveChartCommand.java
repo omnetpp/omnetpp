@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.scave.model.AnalysisItem;
-import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Charts;
+import org.omnetpp.scave.model.ModelObject;
 
 public class MoveChartCommand implements ICommand { // TODO AnalysisItem ?
 

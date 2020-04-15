@@ -7,8 +7,6 @@
 
 package org.omnetpp.scave.editors.datatable;
 
-import java.util.concurrent.Callable;
-
 import org.eclipse.jface.action.Action;
 import org.omnetpp.scave.engine.ResultFileManager;
 

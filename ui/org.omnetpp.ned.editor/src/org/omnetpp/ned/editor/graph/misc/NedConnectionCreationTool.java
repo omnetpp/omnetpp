@@ -12,7 +12,6 @@ import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.tools.ConnectionCreationTool;
-
 import org.omnetpp.ned.editor.graph.commands.CreateConnectionCommand;
 import org.omnetpp.ned.editor.graph.commands.ReconnectCommand;
 import org.omnetpp.ned.editor.graph.parts.CompoundModuleEditPart;

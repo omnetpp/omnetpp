@@ -7,8 +7,6 @@
 
 package org.omnetpp.scave.editors;
 
-import java.util.concurrent.Callable;
-
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.IPropertySourceProvider;
 import org.omnetpp.common.properties.PropertySource;

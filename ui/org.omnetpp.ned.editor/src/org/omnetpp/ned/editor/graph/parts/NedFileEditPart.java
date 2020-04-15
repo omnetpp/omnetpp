@@ -15,10 +15,8 @@ import org.eclipse.gef.CompoundSnapToHelper;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.SnapToGeometry;
 import org.eclipse.gef.SnapToHelper;
-
 import org.omnetpp.ned.editor.graph.figures.NedFileFigure;
 import org.omnetpp.ned.editor.graph.parts.policies.NedTypeContainerLayoutEditPolicy;
-import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 

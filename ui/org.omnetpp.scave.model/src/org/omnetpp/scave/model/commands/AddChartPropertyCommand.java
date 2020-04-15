@@ -3,8 +3,8 @@ package org.omnetpp.scave.model.commands;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Property;
 
 public class AddChartPropertyCommand implements ICommand {

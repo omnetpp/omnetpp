@@ -16,7 +16,6 @@ import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.figures.misc.ISelectionHandleBounds;

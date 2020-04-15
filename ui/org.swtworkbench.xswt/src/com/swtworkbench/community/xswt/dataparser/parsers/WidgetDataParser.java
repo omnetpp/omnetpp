@@ -1,9 +1,10 @@
 package com.swtworkbench.community.xswt.dataparser.parsers;
 
-import com.swtworkbench.community.xswt.XSWTException;
-import com.swtworkbench.community.xswt.dataparser.NonDisposableDataParser;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.swtworkbench.community.xswt.XSWTException;
+import com.swtworkbench.community.xswt.dataparser.NonDisposableDataParser;
 
 public class WidgetDataParser extends NonDisposableDataParser {
     private Map map = new HashMap();

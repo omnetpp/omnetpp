@@ -25,8 +25,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
-import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.OmnetppDirs;
+import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
 
 

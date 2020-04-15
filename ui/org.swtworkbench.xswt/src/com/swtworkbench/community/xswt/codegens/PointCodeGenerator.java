@@ -1,7 +1,8 @@
 package com.swtworkbench.community.xswt.codegens;
 
-import com.swtworkbench.community.xswt.codegen.ICodeGenerator;
 import org.eclipse.swt.graphics.Point;
+
+import com.swtworkbench.community.xswt.codegen.ICodeGenerator;
 
 public class PointCodeGenerator implements ICodeGenerator {
     public String getCode(Object o, String source) {

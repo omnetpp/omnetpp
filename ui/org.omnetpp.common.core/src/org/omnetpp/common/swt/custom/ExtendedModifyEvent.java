@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.omnetpp.common.swt.custom;
 
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.events.TypedEvent;
 
 /**
  * This event is sent after a text change occurs.

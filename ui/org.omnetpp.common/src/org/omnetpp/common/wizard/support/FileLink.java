@@ -16,7 +16,6 @@ import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.CommonPlugin;
-import org.omnetpp.common.IConstants;
 import org.omnetpp.common.wizard.IWidgetAdapter;
 
 /**

@@ -59,7 +59,6 @@ import org.omnetpp.cdt.build.BuildSpecification;
 import org.omnetpp.cdt.build.MakemakeOptions;
 import org.omnetpp.cdt.build.MakemakeOptions.Type;
 import org.omnetpp.cdt.build.MetaMakemake;
-import org.omnetpp.common.IConstants;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;

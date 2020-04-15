@@ -17,7 +17,6 @@ import org.eclipse.ui.editors.text.TextEditorActionContributor;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.texteditor.RetargetTextEditorAction;
-
 import org.omnetpp.ned.editor.text.actions.CorrectIndentationAction;
 import org.omnetpp.ned.editor.text.actions.FindTextInNedFilesActionDelegate;
 import org.omnetpp.ned.editor.text.actions.FormatSourceAction;

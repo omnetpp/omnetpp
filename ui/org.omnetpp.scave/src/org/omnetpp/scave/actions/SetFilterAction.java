@@ -16,7 +16,6 @@ import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
 import org.omnetpp.scave.model.InputFile;
-
 import org.omnetpp.scave.model2.FilterUtil;
 import org.omnetpp.scave.model2.ResultFilePayload;
 import org.omnetpp.scave.model2.RunAttributePayload;

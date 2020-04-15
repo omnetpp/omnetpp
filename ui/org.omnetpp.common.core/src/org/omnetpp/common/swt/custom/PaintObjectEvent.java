@@ -10,8 +10,8 @@
  *******************************************************************************/
 package org.omnetpp.common.swt.custom;
 
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.events.TypedEvent;
+import org.eclipse.swt.graphics.GC;
 
 /**
  * This event is sent when an object needs to be drawn.

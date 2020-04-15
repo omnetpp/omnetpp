@@ -28,7 +28,6 @@ import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.draw2d.graph.Path;
 import org.eclipse.draw2d.graph.ShortestPathRouter;
-
 import org.omnetpp.figures.anchors.CompoundModuleGateAnchor;
 
 

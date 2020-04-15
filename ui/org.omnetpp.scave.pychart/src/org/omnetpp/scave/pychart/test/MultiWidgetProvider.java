@@ -14,9 +14,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.scave.pychart.ActionDescription;
+import org.omnetpp.scave.pychart.IMatplotlibFigureCanvas;
 import org.omnetpp.scave.pychart.IMatplotlibWidget;
 import org.omnetpp.scave.pychart.IPlotWidgetProvider;
-import org.omnetpp.scave.pychart.IMatplotlibFigureCanvas;
 import org.omnetpp.scave.pychart.MatplotlibWidget;
 import org.omnetpp.scave.pychart.PythonProcess;
 

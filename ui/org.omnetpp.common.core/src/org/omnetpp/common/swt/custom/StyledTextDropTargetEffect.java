@@ -10,10 +10,17 @@
  *******************************************************************************/
 package org.omnetpp.common.swt.custom;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.dnd.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTargetAdapter;
+import org.eclipse.swt.dnd.DropTargetEffect;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.graphics.FontMetrics;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 
 /**
  * This adapter class provides a default drag under effect (eg. select and scroll)

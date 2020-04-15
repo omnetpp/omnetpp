@@ -1,7 +1,9 @@
 package org.omnetpp.scave.pychart;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
+
 import org.omnetpp.common.Debug;
+
 import py4j.Py4JException;
 
 public class PythonCallerThread extends Thread {

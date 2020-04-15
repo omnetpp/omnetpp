@@ -3,8 +3,8 @@ package org.omnetpp.scave.model.commands;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.InputFile;
+import org.omnetpp.scave.model.ModelObject;
 
 public class SetInputFileCommand implements ICommand {
 

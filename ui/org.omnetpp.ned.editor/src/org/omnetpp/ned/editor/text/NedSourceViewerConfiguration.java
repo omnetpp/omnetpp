@@ -35,9 +35,9 @@ import org.omnetpp.ned.editor.text.highlight.NedCodeColorizerScanner;
 import org.omnetpp.ned.editor.text.highlight.NedDocColorizerScanner;
 import org.omnetpp.ned.editor.text.highlight.NedPrivateDocColorizerScanner;
 import org.omnetpp.ned.editor.text.highlight.NedSyntaxHighlightPartitionScanner;
-import org.omnetpp.ned.editor.text.util.NedHyperlinkDetector;
 import org.omnetpp.ned.editor.text.util.NedAutoIndentStrategy;
 import org.omnetpp.ned.editor.text.util.NedDoubleClickSelector;
+import org.omnetpp.ned.editor.text.util.NedHyperlinkDetector;
 import org.omnetpp.ned.editor.text.util.NedTextHover;
 
 /**

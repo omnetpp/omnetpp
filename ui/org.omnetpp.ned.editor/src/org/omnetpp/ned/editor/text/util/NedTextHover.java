@@ -22,8 +22,8 @@ import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.editor.text.util.NedTextUtils.Info;
-import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 
 /**
  * NED text hover. Currently it displays fully qualified name and the documentation

@@ -27,9 +27,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ToolItem;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.inifile.editor.model.ConfigOption;
+import org.omnetpp.inifile.editor.model.ConfigOption.DataType;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
-import org.omnetpp.inifile.editor.model.ConfigOption.DataType;
 
 /**
  * Combobox-based editor for inifile entries.

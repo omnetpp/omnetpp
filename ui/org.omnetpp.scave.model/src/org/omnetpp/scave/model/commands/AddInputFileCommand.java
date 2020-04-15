@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.omnetpp.scave.model.Analysis;
-import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.InputFile;
+import org.omnetpp.scave.model.ModelObject;
 
 public class AddInputFileCommand implements ICommand {
 

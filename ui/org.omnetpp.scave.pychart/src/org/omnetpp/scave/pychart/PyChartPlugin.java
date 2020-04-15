@@ -15,7 +15,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.omnetpp.scave.pychart.PyChartPlugin;
 import org.osgi.framework.BundleContext;
 
 /**

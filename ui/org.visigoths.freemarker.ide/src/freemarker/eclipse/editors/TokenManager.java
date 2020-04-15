@@ -1,8 +1,8 @@
 package freemarker.eclipse.editors;
 
 import org.eclipse.jface.text.TextAttribute;
-
-import org.eclipse.jface.text.rules.*;
+import org.eclipse.jface.text.rules.IToken;
+import org.eclipse.jface.text.rules.Token;
 import org.eclipse.swt.graphics.Color;
 
 import freemarker.eclipse.preferences.IPreferenceConstants;

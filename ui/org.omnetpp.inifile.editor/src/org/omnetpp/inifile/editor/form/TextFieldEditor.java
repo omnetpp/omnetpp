@@ -33,9 +33,9 @@ import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
 import org.omnetpp.inifile.editor.model.ConfigOption;
+import org.omnetpp.inifile.editor.model.ConfigOption.DataType;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
-import org.omnetpp.inifile.editor.model.ConfigOption.DataType;
 
 /**
  * Text-based editor for inifile entries.

@@ -8,8 +8,8 @@
 package org.omnetpp.scave.charting;
 
 import org.eclipse.swt.widgets.Control;
-import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
+import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;
 
 /**

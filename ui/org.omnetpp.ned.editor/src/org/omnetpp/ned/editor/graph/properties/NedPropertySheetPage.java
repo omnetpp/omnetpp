@@ -14,7 +14,6 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.CellEditorActionHandler;
 import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.views.properties.PropertySheetPage;
-
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.graph.properties.util.BasePreferrerPropertySheetSorter;

@@ -5,8 +5,6 @@ import java.io.File;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.omnetpp.cdt.build.ProjectFeaturesManager;
-import org.omnetpp.common.Debug;
 
 /**
  * This class provides the default project installer behavior as follows:

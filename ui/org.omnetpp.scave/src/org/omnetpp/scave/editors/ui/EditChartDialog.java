@@ -22,7 +22,6 @@ import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.commands.CompoundCommand;
-import org.omnetpp.scave.model.commands.SetChartNameCommand;
 import org.omnetpp.scave.model.commands.SetChartPropertyCommand;
 
 /**

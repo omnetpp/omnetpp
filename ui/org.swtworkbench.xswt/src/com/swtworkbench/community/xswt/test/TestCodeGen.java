@@ -1,13 +1,11 @@
 package com.swtworkbench.community.xswt.test;
 
+import java.io.IOException;
+
 import com.swtworkbench.community.xswt.XSWT;
 import com.swtworkbench.community.xswt.XSWTException;
 import com.swtworkbench.community.xswt.layoutbuilder.SWTSourceBuilder;
-import com.swtworkbench.community.xswt.metalogger.ILogger;
 import com.swtworkbench.community.xswt.metalogger.Logger;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.net.URL;
 
 public class TestCodeGen {
     public static void main(String[] args) throws IOException {

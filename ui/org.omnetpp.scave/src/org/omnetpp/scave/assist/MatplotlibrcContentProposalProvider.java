@@ -2,7 +2,6 @@ package org.omnetpp.scave.assist;
 
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
-import org.omnetpp.common.contentassist.ContentProposalEx;
 
 public class MatplotlibrcContentProposalProvider implements IContentProposalProvider {
 

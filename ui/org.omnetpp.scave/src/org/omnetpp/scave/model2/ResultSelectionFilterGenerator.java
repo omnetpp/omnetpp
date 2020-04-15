@@ -1,16 +1,10 @@
 package org.omnetpp.scave.model2;
 
-import static org.omnetpp.scave.engine.ResultItemField.MODULE;
-import static org.omnetpp.scave.engine.ResultItemField.NAME;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;

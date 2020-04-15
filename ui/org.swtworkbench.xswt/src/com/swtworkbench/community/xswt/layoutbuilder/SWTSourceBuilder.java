@@ -1,14 +1,15 @@
 package com.swtworkbench.community.xswt.layoutbuilder;
 
-import com.swtworkbench.community.xswt.ClassBuilder;
-import com.swtworkbench.community.xswt.XSWTException;
-import com.swtworkbench.community.xswt.codegen.CodeGenerator;
-import com.swtworkbench.community.xswt.dataparser.DataParser;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
+
+import com.swtworkbench.community.xswt.ClassBuilder;
+import com.swtworkbench.community.xswt.XSWTException;
+import com.swtworkbench.community.xswt.codegen.CodeGenerator;
+import com.swtworkbench.community.xswt.dataparser.DataParser;
 
 public class SWTSourceBuilder extends LayoutBuilder implements ILayoutBuilder {
     private StringBuffer source = new StringBuffer();

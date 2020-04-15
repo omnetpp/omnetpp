@@ -16,7 +16,6 @@ import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
-
 import org.omnetpp.msg.editor.highlight.MsgCodeColorizerScanner;
 import org.omnetpp.msg.editor.highlight.MsgDocColorizerScanner;
 import org.omnetpp.msg.editor.highlight.MsgPrivateDocColorizerScanner;

@@ -50,7 +50,6 @@ import org.omnetpp.common.largetable.LargeTable;
 import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog;
 import org.omnetpp.common.util.CsvWriter;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.editors.datatable.DataTreeContentProvider.Node;
 import org.omnetpp.scave.editors.ui.ScaveUtil;
 import org.omnetpp.scave.engine.Histogram;
 import org.omnetpp.scave.engine.HistogramResult;

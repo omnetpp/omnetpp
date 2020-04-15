@@ -11,7 +11,6 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.editpolicies.ConnectionEditPolicy;
 import org.eclipse.gef.requests.GroupRequest;
-
 import org.omnetpp.ned.editor.graph.commands.DeleteCommand;
 import org.omnetpp.ned.editor.graph.parts.EditPartUtil;
 import org.omnetpp.ned.model.INedElement;

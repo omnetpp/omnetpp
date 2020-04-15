@@ -8,7 +8,6 @@
 package org.omnetpp.ned.core;
 
 import org.eclipse.core.resources.IFile;
-import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.notification.INedChangeListener;
 

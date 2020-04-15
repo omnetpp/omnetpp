@@ -7,8 +7,6 @@
 
 package org.omnetpp.scave.actions;
 
-import java.util.concurrent.Callable;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.dnd.Clipboard;

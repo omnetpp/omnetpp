@@ -10,7 +10,6 @@ package org.omnetpp.neddoc.properties;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.concurrent.CancellationException;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;

@@ -11,7 +11,6 @@ import java.util.Map;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
-
 import org.omnetpp.ned.model.ex.GateElementEx;
 import org.omnetpp.ned.model.interfaces.IHasGates;
 

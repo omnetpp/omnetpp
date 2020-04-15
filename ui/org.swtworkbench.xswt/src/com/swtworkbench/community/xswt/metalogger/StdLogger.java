@@ -1,7 +1,5 @@
 package com.swtworkbench.community.xswt.metalogger;
 
-import java.io.PrintStream;
-
 public class StdLogger extends AbstractLogger {
     public void error(Throwable t, String message) {
         System.err.println(message);

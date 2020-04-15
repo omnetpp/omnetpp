@@ -11,9 +11,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.omnetpp.scave.pychart.ActionDescription;
+import org.omnetpp.scave.pychart.IMatplotlibFigureCanvas;
 import org.omnetpp.scave.pychart.IMatplotlibWidget;
 import org.omnetpp.scave.pychart.IPlotWidgetProvider;
-import org.omnetpp.scave.pychart.IMatplotlibFigureCanvas;
 import org.omnetpp.scave.pychart.MatplotlibWidget;
 
 public class SingleWidgetProvider implements IPlotWidgetProvider {
