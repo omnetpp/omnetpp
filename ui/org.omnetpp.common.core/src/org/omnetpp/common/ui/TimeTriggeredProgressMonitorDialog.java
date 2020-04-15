@@ -3,12 +3,15 @@ package org.omnetpp.common.ui;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
+import org.omnetpp.common.CommonCorePlugin;
 
 /**
  * The TimeTriggeredProgressMonitorDialog is a progress monitor dialog that only
@@ -210,4 +213,27 @@ public class TimeTriggeredProgressMonitorDialog extends ProgressMonitorDialog {
             throw interrupt[0];
         }
      }
+
+    public static boolean runWithDialog(String what, int thresholdMillis, IRunnableWithProgress runnable) {
+        Shell shell = Display.getCurrent().getActiveShell();
+
+        try {
+            TimeTriggeredProgressMonitorDialog dialog = new TimeTriggeredProgressMonitorDialog(shell, thresholdMillis);
+            dialog.run(true, true, (monitor) -> {
+                runnable.run(monitor);
+            });
+            return true;
+        }
+        catch (InterruptedException e) {
+            return false;
+        }
+        catch (InvocationTargetException e) {
+            Throwable ee = e.getCause();
+            if (ee.getCause() instanceof InterruptedException)
+                return false;
+            CommonCorePlugin.logError(ee);
+            MessageDialog.openError(shell, "Error", what + " failed: " + ee.getMessage());
+            return false;
+        }
+    }
 }
