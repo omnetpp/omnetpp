@@ -24,10 +24,16 @@ import org.omnetpp.common.util.StringUtils;
  * @author Andras
  */
 public class Debug {
+    // these are different from Platform.inDevelopmentMode() and Platform.inDebugMode()
+    public static boolean development;
     public static boolean debug;
     public static final String DEBUG_ENVVAR = "OMNETPP_DEBUG";
 
     private static Set<String> queriedChannels = new HashSet<String>();
+
+    public static boolean inDevelopment() {
+        return development;
+    }
 
     public static boolean isDebugging() {
         return debug;
@@ -46,7 +52,8 @@ public class Debug {
     static {
         // test property: eclipse.launcher=C:\eclipse\eclipse.exe
         String launcher = System.getProperty("eclipse.launcher");
-        debug = StringUtils.isNotEmpty(System.getenv(DEBUG_ENVVAR)) || (launcher!=null && (launcher.endsWith("eclipse") || launcher.endsWith("eclipse.exe")));
+        development = launcher!=null && (launcher.endsWith("eclipse") || launcher.endsWith("eclipse.exe"));
+        debug = StringUtils.isNotEmpty(System.getenv(DEBUG_ENVVAR)) || development;
     }
 
     public static void print(String text) {
