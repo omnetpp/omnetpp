@@ -112,8 +112,8 @@ public class CommandlineUtils {
                 nonexistentFileArgs.add(args[i]);
         if (!nonexistentFileArgs.isEmpty()) {
             MessageDialog.openWarning(getParentShell(), "Warning",
-            		(nonexistentFileArgs.size() == 1 ? "File does not exist, ignoring: " : "File(s) do not exist, ignoring:\n  ")
-            		+ StringUtils.join(nonexistentFileArgs, "\n  "));
+                    (nonexistentFileArgs.size() == 1 ? "File does not exist, ignoring: " : "File(s) do not exist, ignoring:\n  ")
+                    + StringUtils.join(nonexistentFileArgs, "\n  "));
             for (String arg : nonexistentFileArgs)
                 args = (String[]) ArrayUtils.removeElement(args, arg);
         }
@@ -138,12 +138,12 @@ public class CommandlineUtils {
                 failures++;
             }
             else {
-            	try {
-					file.refreshLocal(IResource.DEPTH_ZERO, null);
-				} catch (CoreException e) {
+                try {
+                    file.refreshLocal(IResource.DEPTH_ZERO, null);
+                } catch (CoreException e) {
                     showErrorDialog("Cannot refresh '" + arg + "'", e);
                     failures++;
-				}
+                }
                 try {
                     IDE.openEditor(workbenchPage, file, true);
                 }

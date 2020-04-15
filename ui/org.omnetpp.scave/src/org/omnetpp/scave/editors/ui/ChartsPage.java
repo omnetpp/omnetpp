@@ -60,7 +60,7 @@ public class ChartsPage extends FormEditorPage {
     protected CommandStack commandStack = new CommandStack("ChartsPage");
 
 
-	/**
+    /**
      * Constructor
      */
     public ChartsPage(Composite parent, ScaveEditor scaveEditor) {
@@ -136,8 +136,8 @@ public class ChartsPage extends FormEditorPage {
     }
 
     public CommandStack getCommandStack() {
-		return commandStack;
-	}
+        return commandStack;
+    }
 
     @Override
     public boolean gotoObject(Object object) {

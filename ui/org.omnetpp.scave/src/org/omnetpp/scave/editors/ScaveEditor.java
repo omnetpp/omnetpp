@@ -1579,10 +1579,10 @@ public class ScaveEditor extends MultiPageEditorPartExt
                 if (chartScriptEditor.isDirty())
                     return true;
 
-				Chart chart = chartScriptEditor.getChart();
+                Chart chart = chartScriptEditor.getChart();
 
                 CommandStack commandStack = chartScriptEditor.getCommandStack();
-				if ((commandStack.isSaveNeeded()) || (chart.isTemporary() && commandStack.wasObjectAffected(chart)))
+                if ((commandStack.isSaveNeeded()) || (chart.isTemporary() && commandStack.wasObjectAffected(chart)))
                     return true;
             }
         }
@@ -1791,16 +1791,16 @@ public class ScaveEditor extends MultiPageEditorPartExt
         return index;
     }
 
-	public CommandStack getActiveCommandStack() {
-		FormEditorPage activeEditorPage = getActiveEditorPage();
-		if (activeEditorPage == inputsPage)
-			return inputsPage.getCommandStack();
-		else if (activeEditorPage == chartsPage)
-			return chartsPage.getCommandStack();
-		else if (activeEditorPage instanceof ChartPage)
-			return ((ChartPage)activeEditorPage).getChartScriptEditor().getCommandStack();
-		return null;
-	}
+    public CommandStack getActiveCommandStack() {
+        FormEditorPage activeEditorPage = getActiveEditorPage();
+        if (activeEditorPage == inputsPage)
+            return inputsPage.getCommandStack();
+        else if (activeEditorPage == chartsPage)
+            return chartsPage.getCommandStack();
+        else if (activeEditorPage instanceof ChartPage)
+            return ((ChartPage)activeEditorPage).getChartScriptEditor().getCommandStack();
+        return null;
+    }
 
     public void reloadResultFiles() {
         tracker.reloadResultFiles();

@@ -45,6 +45,6 @@ public class RedoAction extends AbstractScaveAction {
     @Override
     protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
         CommandStack activeCommandStack = editor.getActiveCommandStack();
-		return activeCommandStack != null && activeCommandStack.canRedo();
+        return activeCommandStack != null && activeCommandStack.canRedo();
     }
 }

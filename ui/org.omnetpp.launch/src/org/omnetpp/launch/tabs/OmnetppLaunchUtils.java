@@ -70,7 +70,7 @@ import org.omnetpp.launch.LaunchPlugin;
  * Various utility methods for the launcher.
  */
 public class OmnetppLaunchUtils {
-	// copied from JavaCore.NATURE_ID (we don't want dependency on the JDT plugins)
+    // copied from JavaCore.NATURE_ID (we don't want dependency on the JDT plugins)
     private static final String JAVA_NATURE_ID = "org.eclipse.jdt.core.javanature";
     private static final String CDT_CC_NATURE_ID = "org.eclipse.cdt.core.ccnature";
     public static final String DEBUG_EXE_SUFFIX = "_dbg";

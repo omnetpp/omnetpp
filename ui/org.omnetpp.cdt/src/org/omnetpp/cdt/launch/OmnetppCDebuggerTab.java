@@ -18,6 +18,6 @@ import org.eclipse.cdt.dsf.gdb.internal.ui.launching.LocalApplicationCDebuggerTa
 public class OmnetppCDebuggerTab extends LocalApplicationCDebuggerTab {
 
     public OmnetppCDebuggerTab() {
-		super();
+        super();
     }
 }

@@ -47,6 +47,6 @@ public class UndoAction extends AbstractScaveAction {
     @Override
     protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
         CommandStack activeCommandStack = editor.getActiveCommandStack();
-		return activeCommandStack != null && activeCommandStack.canUndo();
+        return activeCommandStack != null && activeCommandStack.canUndo();
     }
 }

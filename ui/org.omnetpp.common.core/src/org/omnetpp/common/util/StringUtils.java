@@ -836,9 +836,9 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     }
     
     public static String removeOptionalPrefix(String str, String prefix) {
-    	if (str.startsWith(prefix))
-        	str = str.substring(prefix.length());
-    	return str;
+        if (str.startsWith(prefix))
+            str = str.substring(prefix.length());
+        return str;
     }
     
 }

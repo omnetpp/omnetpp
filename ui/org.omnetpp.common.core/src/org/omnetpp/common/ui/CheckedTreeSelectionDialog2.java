@@ -127,13 +127,13 @@ public class CheckedTreeSelectionDialog2 extends SelectionStatusDialog {
     }
 
     /**
-	 * Sets the sorter used by the tree viewer.
-	 * 
-	 * @param sorter
-	 * @deprecated since 3.3, use
-	 *             {@link CheckedTreeSelectionDialog2#setComparator(ViewerComparator)}
-	 *             instead
-	 */
+     * Sets the sorter used by the tree viewer.
+     * 
+     * @param sorter
+     * @deprecated since 3.3, use
+     *             {@link CheckedTreeSelectionDialog2#setComparator(ViewerComparator)}
+     *             instead
+     */
     public void setSorter(ViewerSorter sorter) {
         fComparator = sorter;
     }
@@ -145,7 +145,7 @@ public class CheckedTreeSelectionDialog2 extends SelectionStatusDialog {
      * @since 3.3
      */
     public void setComparator(ViewerComparator comparator){
-    	fComparator = comparator;
+        fComparator = comparator;
     }
 
     /**
@@ -156,8 +156,8 @@ public class CheckedTreeSelectionDialog2 extends SelectionStatusDialog {
      */
     public void addFilter(ViewerFilter filter) {
         if (fFilters == null) {
-			fFilters = new ArrayList(4);
-		}
+            fFilters = new ArrayList(4);
+        }
         fFilters.add(filter);
     }
 
@@ -319,8 +319,8 @@ public class CheckedTreeSelectionDialog2 extends SelectionStatusDialog {
         fViewer.setComparator(fComparator);
         if (fFilters != null) {
             for (int i = 0; i != fFilters.size(); i++) {
-				fViewer.addFilter((ViewerFilter) fFilters.get(i));
-			}
+                fViewer.addFilter((ViewerFilter) fFilters.get(i));
+            }
         }
         fViewer.setInput(fInput);
         return fViewer;
@@ -346,9 +346,9 @@ public class CheckedTreeSelectionDialog2 extends SelectionStatusDialog {
         Composite buttonComposite = new Composite(composite, SWT.RIGHT);
         GridLayout layout = new GridLayout();
         layout.numColumns = 0;
-		layout.marginWidth = 0;
-		layout.horizontalSpacing = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_SPACING);
-		buttonComposite.setLayout(layout);
+        layout.marginWidth = 0;
+        layout.horizontalSpacing = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_SPACING);
+        buttonComposite.setLayout(layout);
         buttonComposite.setFont(composite.getFont());
         GridData data = new GridData(GridData.HORIZONTAL_ALIGN_END
                 | GridData.GRAB_HORIZONTAL);
@@ -361,11 +361,11 @@ public class CheckedTreeSelectionDialog2 extends SelectionStatusDialog {
             public void widgetSelected(SelectionEvent e) {
                 Object[] viewerElements = fContentProvider.getElements(fInput);
                 if (fContainerMode) {
-					fViewer.setCheckedElements(viewerElements);
-				} else {
+                    fViewer.setCheckedElements(viewerElements);
+                } else {
                     for (int i = 0; i < viewerElements.length; i++) {
-						fViewer.setSubtreeChecked(viewerElements[i], true);
-					}
+                        fViewer.setSubtreeChecked(viewerElements[i], true);
+                    }
                 }
                 updateOKStatus();
             }

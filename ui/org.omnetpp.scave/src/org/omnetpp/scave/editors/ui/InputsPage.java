@@ -206,8 +206,8 @@ public class InputsPage extends FormEditorPage {
     }
 
     public CommandStack getCommandStack() {
-		return commandStack;
-	}
+        return commandStack;
+    }
 
     @Override
     public boolean gotoObject(Object object) {
