@@ -15,8 +15,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jface,
  org.omnetpp.common.core,
  org.omnetpp.common
-Export-Package:
- net.razorvine.examples,
+Export-Package: net.razorvine.examples,
  net.razorvine.pickle,
  net.razorvine.pickle.objects,
  net.razorvine.pickle.test,
