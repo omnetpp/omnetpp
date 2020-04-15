@@ -4,7 +4,7 @@ Bundle-Name: OMNeT++ INI File Editor
 Bundle-SymbolicName: org.omnetpp.inifile.editor; singleton:=true
 Bundle-Version: 6.0.0.qualifier
 Bundle-Activator: org.omnetpp.inifile.editor.InifileEditorPlugin
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: OpenSim Ltd.
 Require-Bundle: org.eclipse.core.runtime,

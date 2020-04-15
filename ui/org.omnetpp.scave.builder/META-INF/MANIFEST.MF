@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ Scalar / Vector File Index Builder
 Bundle-SymbolicName: org.omnetpp.scave.builder;singleton:=true
 Bundle-Version: 6.0.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.omnetpp.scave.builder.Activator
 Bundle-Vendor: OpenSim Ltd.

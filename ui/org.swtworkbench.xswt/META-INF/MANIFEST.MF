@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: XSWT - XML/SWT Page Description Language Plug-in
 Bundle-SymbolicName: org.swtworkbench.xswt;singleton:=true
 Bundle-Version: 1.1.2
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: com.swtworkbench.community.xswt.XswtPlugin
 Bundle-Vendor: Coconut Palm Software, Inc.

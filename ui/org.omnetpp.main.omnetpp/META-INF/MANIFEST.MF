@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ Product definition
 Bundle-SymbolicName: org.omnetpp.main.omnetpp;singleton:=true
 Bundle-Version: 6.0.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: OpenSim Ltd.
 Fragment-Host: org.omnetpp.main;bundle-version="5.1.0"

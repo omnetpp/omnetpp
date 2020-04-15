@@ -4,7 +4,7 @@ Bundle-Name: OMNeT++ Multipage NED File Editor
 Bundle-SymbolicName: org.omnetpp.ned.editor;singleton:=true
 Bundle-Activator: org.omnetpp.ned.editor.NedEditorPlugin
 Bundle-Version: 6.0.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: OpenSim Ltd.
 Bundle-Localization: plugin

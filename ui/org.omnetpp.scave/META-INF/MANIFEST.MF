@@ -6,7 +6,7 @@ Bundle-Version: 6.0.0.qualifier
 Bundle-ClassPath: .,
  lib/py4j0.10.6.jar,
  lib/pickle4.20.jar
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.omnetpp.scave.ScavePlugin
 Bundle-Vendor: OpenSim Ltd.

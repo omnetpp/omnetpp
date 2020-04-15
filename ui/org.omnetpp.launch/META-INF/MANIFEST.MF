@@ -4,7 +4,7 @@ Bundle-Name: OMNeT++ Launch Plug-in
 Bundle-SymbolicName: org.omnetpp.launch;singleton:=true
 Bundle-Version: 6.0.0.qualifier
 Bundle-Activator: org.omnetpp.launch.LaunchPlugin
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: OpenSim Ltd.
 Require-Bundle: org.eclipse.core.runtime,

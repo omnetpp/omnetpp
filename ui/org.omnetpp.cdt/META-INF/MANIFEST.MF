@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.omnetpp.cdt;singleton:=true
 Bundle-Version: 6.0.0.qualifier
 Bundle-Activator: org.omnetpp.cdt.Activator
 Bundle-Vendor: OpenSim Ltd.
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.variables,

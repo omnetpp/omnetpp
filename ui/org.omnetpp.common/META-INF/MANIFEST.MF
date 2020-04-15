@@ -200,5 +200,5 @@ Bundle-ClassPath: .,
  lib/opencsv-2.0.jar
 Bundle-Vendor: OpenSim Ltd.
 Bundle-Activator: org.omnetpp.common.CommonPlugin
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy

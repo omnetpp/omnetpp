@@ -4,7 +4,7 @@ Bundle-Name: OMNeT++ Help
 Bundle-SymbolicName: org.omnetpp.doc;singleton:=true
 Bundle-Version: 6.0.0.qualifier
 Bundle-Vendor: OpenSim Ltd.
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir
 Require-Bundle: org.eclipse.ui,

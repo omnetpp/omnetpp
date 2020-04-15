@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ Linux.x86 64bit native library fragment
 Bundle-SymbolicName: org.omnetpp.ide.nativelibs.linux.x86_64
 Bundle-Version: 6.0.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: OpenSim Ltd.
 Fragment-Host: org.omnetpp.ide.nativelibs;bundle-version="[6.0.0,7.0.0)"
