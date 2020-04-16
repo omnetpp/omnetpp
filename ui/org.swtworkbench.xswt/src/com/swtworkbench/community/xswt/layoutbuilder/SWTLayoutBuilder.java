@@ -12,7 +12,6 @@ import com.swtworkbench.community.xswt.StyleParser;
 import com.swtworkbench.community.xswt.XSWTException;
 import com.swtworkbench.community.xswt.dataparser.DataParser;
 
-@SuppressWarnings("rawtypes")
 public class SWTLayoutBuilder extends LayoutBuilder implements ILayoutBuilder {
     public boolean setProperty(String propertyName, Object receiver, String valueSource) throws XSWTException {
         Method setMethod = resolveAttributeSetMethod(receiver, propertyName, null);
@@ -86,7 +85,7 @@ public class SWTLayoutBuilder extends LayoutBuilder implements ILayoutBuilder {
         return result;
     }
 
-    public Object construct(Class valueType, LinkedList argList) throws XSWTException {
+    public Object construct(Class<?> valueType, LinkedList<String> argList) throws XSWTException {
         if (argList.size() < 1) {
             try {
                 return valueType.newInstance();
@@ -119,7 +118,7 @@ public class SWTLayoutBuilder extends LayoutBuilder implements ILayoutBuilder {
         }
     }
 
-    public Class getClass(Object obj) throws XSWTException {
+    public Class<?> getClass(Object obj) throws XSWTException {
         return obj.getClass();
     }
 

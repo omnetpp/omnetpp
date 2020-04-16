@@ -10,7 +10,7 @@ public class StdLogger extends AbstractLogger {
         System.out.println(message);
     }
 
-    public void debug(Class subject, String message) {
+    public void debug(Class<?> subject, String message) {
         if (!(isDebug(subject)))
             return;
         System.out.println(message);

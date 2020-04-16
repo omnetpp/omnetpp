@@ -28,11 +28,11 @@ public class GeomUtils {
     }
 
     public static Rectangle add(Rectangle rect, Insets insets) {
-        return rect.getCopy().expand(insets);
+        return rect.getExpanded(insets);
     }
 
     public static Rectangle subtract(Rectangle rect, Insets insets) {
-        return rect.getCopy().crop(insets);
+        return rect.getShrinked(insets);
     }
 
     /**

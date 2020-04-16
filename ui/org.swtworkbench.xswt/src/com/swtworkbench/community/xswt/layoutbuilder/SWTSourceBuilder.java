@@ -32,7 +32,7 @@ public class SWTSourceBuilder extends LayoutBuilder implements ILayoutBuilder {
         return this.source.toString();
     }
 
-    public Object construct(Class valueType, LinkedList argList) throws XSWTException {
+    public Object construct(Class<?> valueType, LinkedList<String> argList) throws XSWTException {
         ObjectStub stub = new ObjectStub(valueType.getName());
         indent();
         emit(stub.className);
@@ -117,7 +117,7 @@ public class SWTSourceBuilder extends LayoutBuilder implements ILayoutBuilder {
 
     public boolean setField(String fieldName, Object receiver, String valueSource) throws XSWTException {
         try {
-            Class receiverClass = getClass(receiver);
+            Class<?> receiverClass = getClass(receiver);
             Field field = receiverClass.getField(fieldName);
             Object value = DataParser.parse(valueSource, field.getType());
 
@@ -174,7 +174,7 @@ public class SWTSourceBuilder extends LayoutBuilder implements ILayoutBuilder {
         }
     }
 
-    public Class getClass(Object obj) throws XSWTException {
+    public Class<?> getClass(Object obj) throws XSWTException {
         ObjectStub stub = (ObjectStub) obj;
 
         return ClassBuilder.getDefault().getClass(stub.className);

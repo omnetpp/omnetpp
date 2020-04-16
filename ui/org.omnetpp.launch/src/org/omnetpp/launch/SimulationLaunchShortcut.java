@@ -493,7 +493,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         try {
             folder.accept(new IResourceVisitor() {
                 public boolean visit(IResource resource) {
-                    if (resource instanceof IFile && "ini".equals(resource.getFileExtension()) && 
+                    if (resource instanceof IFile && "ini".equals(resource.getFileExtension()) &&
                             !resource.isHidden() && !resource.getName().startsWith(".")) // exclude e.g. ".qtenv.ini"
                         iniFiles.add((IFile)resource);
                     return true;

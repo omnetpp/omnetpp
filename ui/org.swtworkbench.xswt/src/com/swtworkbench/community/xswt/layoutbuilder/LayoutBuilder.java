@@ -10,10 +10,10 @@ import com.swtworkbench.community.xswt.dataparser.DataParser;
 import com.swtworkbench.community.xswt.metalogger.Logger;
 
 public abstract class LayoutBuilder {
-    protected ConstructorInfo getConstructorInfo(Class valueType, LinkedList argList) throws XSWTException {
+    protected ConstructorInfo getConstructorInfo(Class<?> valueType, LinkedList<String> argList) throws XSWTException {
         ConstructorInfo result = new ConstructorInfo();
 
-        Constructor[] constructors = valueType.getConstructors();
+        Constructor<?>[] constructors = valueType.getConstructors();
 
         // This special case is here because for some reason when we tried to convert strings like
         // "30" or "90" into strings (yeah...), we found the String(byte[]) ctor first, and DataParser was
@@ -35,7 +35,7 @@ public abstract class LayoutBuilder {
 
             result.args = new Object[argList.size()];
             try {
-                Iterator argIter = argList.iterator();
+                Iterator<String> argIter = argList.iterator();
                 for (int arg = 0; arg < result.args.length; ++arg) {
                     String argStr = (String) argIter.next();
                     result.args[arg] = DataParser.parse(argStr, result.paramTypes[arg]);
@@ -70,7 +70,7 @@ public abstract class LayoutBuilder {
         return result;
     }
 
-    protected Method resolvePropertySetter(Object obj, String name, Class propertyType) {
+    protected Method resolvePropertySetter(Object obj, String name, Class<?> propertyType) {
         try {
             Method result = null;
             Method[] methods = getClass(obj).getMethods();
@@ -96,7 +96,7 @@ public abstract class LayoutBuilder {
         return null;
     }
 
-    public Method resolveAttributeSetMethod(Object obj, String methodName, Class propertyType) {
+    public Method resolveAttributeSetMethod(Object obj, String methodName, Class<?> propertyType) {
         Method setMethod = null;
 
         String[] setters = getSetMethodNames(methodName);
@@ -126,11 +126,11 @@ public abstract class LayoutBuilder {
         return null;
     }
 
-    public abstract Class getClass(Object paramObject) throws XSWTException;
+    public abstract Class<?> getClass(Object paramObject) throws XSWTException;
 
     protected class ConstructorInfo {
-        public Constructor constructor = null;
-        public Class[] paramTypes = null;
+        public Constructor<?> constructor = null;
+        public Class<?>[] paramTypes = null;
         public Object[] args = null;
     }
 }

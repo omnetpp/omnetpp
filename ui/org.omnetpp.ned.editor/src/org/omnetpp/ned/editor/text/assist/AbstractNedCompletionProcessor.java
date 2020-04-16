@@ -132,7 +132,7 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
         for (String qname : qnames) {
             INedTypeInfo topLevelTypeInfo = res.getToplevelNedType(qname, project);
             names[i] = topLevelTypeInfo.getName();
-            String packageName = StringUtils.chomp(topLevelTypeInfo.getNamePrefix(), ".");
+            String packageName = StringUtils.removeEnd(topLevelTypeInfo.getNamePrefix(), ".");
             packageName = StringUtils.isBlank(packageName) ? "" : packageName+" - ";
             descriptions[i] =  packageName + topLevelTypeInfo.getNedElement().getReadableTagName()+" type";
             i++;

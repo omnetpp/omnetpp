@@ -431,6 +431,7 @@ public class RangeSet<E> implements IRangeSet<E> {
     final Comparator<Range<E>> createRangeComparator() {
         if (enumerator == null) {
             return new Comparator<Range<E>>() {
+                @SuppressWarnings("unchecked")
                 @Override public int compare(Range<E> o1, Range<E> o2) {
                     return ((Comparable<E>)o1.getFirst()).compareTo(o2.getFirst());
                 }

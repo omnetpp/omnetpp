@@ -101,7 +101,7 @@ public class NedFigureProvider
 
                 for (INedTypeElement typeElement : typeElements) {
                     NedEditPart editPart = (NedEditPart)viewer.getEditPartRegistry().get(typeElement);
-                    String filebasename = StringUtils.chomp(diagramFile.getName(), "."+diagramFile.getFileExtension());
+                    String filebasename = StringUtils.removeEnd(diagramFile.getName(), "."+diagramFile.getFileExtension());
                     String imageName = getFigureName(typeElements, typeElement, filebasename);
                     result.put(editPart.getFigure(),  imageName);
                 }

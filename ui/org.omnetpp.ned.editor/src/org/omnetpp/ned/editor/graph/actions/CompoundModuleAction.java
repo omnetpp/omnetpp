@@ -29,7 +29,7 @@ public class CompoundModuleAction extends org.eclipse.gef.ui.actions.SelectionAc
      * This command can be executed when a single compound module or a submodule is selected
      */
     protected CompoundModuleEditPart getSelectionCompoundModule() {
-        List selectedObjects = getSelectedObjects();
+        List<?> selectedObjects = getSelectedObjects();
         if (selectedObjects.size() > 0) {
             Object selected = selectedObjects.get(0);
             if (selected instanceof CompoundModuleEditPart)

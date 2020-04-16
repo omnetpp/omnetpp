@@ -27,16 +27,16 @@ public class RangeFigure extends Ellipse {
         r.setBounds(getBounds());
         r.width--;
         r.height--;
-    if (lineWidth % 2 == 0) {
+    if (getLineWidth() % 2 == 0) {
         r.width--;
         r.height--;
     }
-    float t = lineWidth / 2.0f;
+    float t = getLineWidth() / 2.0f;
     r.translate((int)t, (int)t);
-    float s = (lineWidth - 1) / 2.0f;
+    float s = (getLineWidth() - 1) / 2.0f;
     r.resize((int)(-t - s), (int)(-t -s));
     graphics.setClip(getBounds().getExpanded(1, 1));
-    graphics.setLineWidthFloat(lineWidth*(float)graphics.getAbsoluteScale());
+    graphics.setLineWidthFloat(getLineWidth()*(float)graphics.getAbsoluteScale());
         graphics.setAlpha(ALPHA);
         graphics.drawOval(r);
     }

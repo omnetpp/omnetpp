@@ -39,7 +39,7 @@ public class GraphicsUtils {
         }
         else {
             FontMetrics fontMetrics = graphics.getFontMetrics();
-            return new Point(fontMetrics.getAverageCharWidth() * string.length(), fontMetrics.getHeight());
+            return new Point((int)fontMetrics.getAverageCharacterWidth() * string.length(), fontMetrics.getHeight());
         }
     }
 

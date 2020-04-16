@@ -207,7 +207,7 @@ public class ConnectionChooser {
         final Map<ChannelElementEx, Collection<String>> channelTypeLabelsMap = new HashMap<ChannelElementEx, Collection<String>>();
         for (ChannelElementEx channel : channels) {
             ArrayList<String> channelLabels = getLabels(channel);
-            Collection labels = CollectionUtils.intersection(channelLabels, commonGateLabels);
+            Collection<String> labels = CollectionUtils.intersection(channelLabels, commonGateLabels);
             channelTypeLabelsMap.put(channel, labels);
             if (!labels.isEmpty() && (labels.size() != 1 || !StringUtils.isEmpty((String)labels.iterator().next())))
                 matchingLabelsFound = true;

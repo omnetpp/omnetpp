@@ -14,7 +14,6 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -417,7 +416,7 @@ public class GeneratorConfigurationDialog
             generator.setExcludedDirs(configuration.excludedDirs);
 
             if (StringUtils.isNotBlank(configuration.extensionFilePath))
-                generator.setExtensionFilePath(new Path(configuration.extensionFilePath));            
+                generator.setExtensionFilePath(new Path(configuration.extensionFilePath));
 
             generators.add(generator);
         }

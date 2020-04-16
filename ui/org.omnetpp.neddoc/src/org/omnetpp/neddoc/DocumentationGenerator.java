@@ -216,7 +216,7 @@ public class DocumentationGenerator {
     protected ArrayList<String> packageNames;
     protected int levelIndex[] = {0, 0, 0, 0};  // navigation level indexes for generating breadcrumbs (note that the 0th element is not used)
     protected int previousLevel = 0;
-    protected TreeMap<String, ArrayList> navigationItemIndex;
+    protected TreeMap<String, ArrayList<Integer>> navigationItemIndex;
 
     protected IRenderer renderer;
     protected NeddocExtensions neddocExtensions;
@@ -435,7 +435,7 @@ public class DocumentationGenerator {
             monitor.beginTask("Collecting data...", 6);
             NedResources.getInstance().readMissingNedFiles(); // ensure that all ned files are loaded already
 
-            navigationItemIndex = new TreeMap<String, ArrayList>();
+            navigationItemIndex = new TreeMap<String, ArrayList<Integer>>();
             for (int i = 0; i<levelIndex.length; i++)
                 levelIndex[i] = 0;
             collectFiles();
@@ -904,7 +904,7 @@ public class DocumentationGenerator {
         currentOutputStream = new FileOutputStream(file);
 
         out("var NAVTREEINDEX0 = {\n");
-        for (Map.Entry<String,ArrayList> entry : navigationItemIndex.entrySet()) {
+        for (Map.Entry<String,ArrayList<Integer>> entry : navigationItemIndex.entrySet()) {
             out("'"+entry.getKey()+"':"+entry.getValue()+",\n");
         }
         out("};");

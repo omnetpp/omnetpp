@@ -37,7 +37,7 @@ public class GenericTreeNode {
     private static class PayloadComparator implements Comparator<GenericTreeNode> {
         private Comparator comparator;
 
-        public PayloadComparator(Comparator<? extends Object> comparator) {
+        public PayloadComparator(Comparator<?> comparator) {
             this.comparator = comparator;
         }
 

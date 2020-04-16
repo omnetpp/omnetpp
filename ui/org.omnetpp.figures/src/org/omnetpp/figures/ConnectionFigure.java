@@ -123,8 +123,8 @@ public class ConnectionFigure extends PolylineConnection
         setForegroundColor(localLineColor = color);
         // arrow scaling proportional with the line width
         if (getTargetDecoration() != null) {
-            ((PolygonDecoration)getTargetDecoration()).setScale(5+lineWidth, 2+lineWidth);
-            ((PolygonDecoration)getTargetDecoration()).setLineWidth(lineWidth);
+            ((PolygonDecoration)getTargetDecoration()).setScale(5+getLineWidth(), 2+getLineWidth());
+            ((PolygonDecoration)getTargetDecoration()).setLineWidth(getLineWidth());
         }
     }
 

@@ -35,7 +35,7 @@ public class NewInputFileAction extends AbstractScaveAction {
         InputFileDialog dialog = new InputFileDialog(editor.getSite().getShell(), "Create Input", "", true, baseDir);
         if (dialog.open() == Window.OK) {
             String value = dialog.getValue();
-            List list = Arrays.asList(value.split(" *; *"));
+            List<String> list = Arrays.asList(value.split(" *; *"));
             ScaveModelUtil.addInputFiles(editor.getInputsPage().getCommandStack(), editor.getAnalysis(), list);
         }
     }

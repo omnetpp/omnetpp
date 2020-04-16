@@ -16,7 +16,7 @@ public abstract class AbstractLogger implements ILogger {
         this.debug = debugMode;
     }
 
-    public boolean isDebug(Class subject) {
+    public boolean isDebug(Class<?> subject) {
         if (subject == null) {
             throw new IllegalArgumentException("MetaLogger: Subject of debug message can't be null!");
         }
@@ -25,7 +25,7 @@ public abstract class AbstractLogger implements ILogger {
         return this.subjects.containsKey(subject);
     }
 
-    public void setDebug(Class subject, boolean enabled) {
+    public void setDebug(Class<?> subject, boolean enabled) {
         if (subject == null) {
             throw new IllegalArgumentException("MetaLogger: Subject of debug message can't be null!");
         }

@@ -97,24 +97,24 @@ public class AttachedLayer extends Layer implements AncestorListener {
         PrecisionPoint p = new PrecisionPoint();
         switch (location & PositionConstants.NORTH_SOUTH) {
         case PositionConstants.NORTH:
-            p.preciseY = 0;
+            p.setPreciseY(0);
             break;
         case PositionConstants.SOUTH:
-            p.preciseY = 1.0;
+            p.setPreciseY(1.0);
             break;
         default:
-            p.preciseY = 0.5;
+            p.setPreciseY(0.5);
         }
 
         switch (location & PositionConstants.EAST_WEST) {
         case PositionConstants.WEST:
-            p.preciseX = 0;
+            p.setPreciseX(0);
             break;
         case PositionConstants.EAST:
-            p.preciseX = 1.0;
+            p.setPreciseX(1.0);
             break;
         default:
-            p.preciseX = 0.5;
+            p.setPreciseX(0.5);
         }
         return p;
     }
@@ -155,8 +155,8 @@ public class AttachedLayer extends Layer implements AncestorListener {
      */
     protected Point getRefPoint(IFigure figure, PrecisionPoint relRefPoint) {
         Rectangle bounds = figure.getBounds();
-        return new Point((bounds.width -1 )* relRefPoint.preciseX,
-                         (bounds.height -1 ) * relRefPoint.preciseY);
+        return new PrecisionPoint((bounds.width - 1) * relRefPoint.preciseX(),
+                         (bounds.height - 1) * relRefPoint.preciseY());
     }
 
     // set the bounds of this figure based on the relative data and the place of the reference figure

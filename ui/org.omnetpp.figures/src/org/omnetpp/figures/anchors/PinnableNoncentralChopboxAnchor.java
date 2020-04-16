@@ -65,7 +65,7 @@ public class PinnableNoncentralChopboxAnchor extends NoncentralChopboxAnchor {
         getOwner().translateToAbsolute(r);
         double oX = r.x + pinnedLocationX * r.width;
         double oY = r.y + pinnedLocationY * r.height;
-        return new Point(Math.round(oX), Math.round(oY));
+        return new Point((int)Math.round(oX), (int)Math.round(oY));
     }
 
     public boolean isPinnedDown() {

@@ -99,7 +99,7 @@ public class NoncentralChopboxAnchor extends GateAnchor {
         double scale = Math.min( Math.abs((dx > 0) ? (1.0f - relRefPointX)*r.width/dx : relRefPointX*r.width/dx),
                       Math.abs((dy > 0) ? (1.0f - relRefPointY)*r.height/dy : relRefPointY*r.height/dy));
 
-        return new Point(Math.round(o.x + dx * scale), Math.round(o.y + dy * scale));
+        return new Point((int)Math.round(o.x + dx * scale), (int)Math.round(o.y + dy * scale));
     }
 
     /**
@@ -114,7 +114,7 @@ public class NoncentralChopboxAnchor extends GateAnchor {
         getOwner().translateToAbsolute(r);
         double oX = r.x + relRefPointX * r.width;
         double oY = r.y + relRefPointY * r.height;
-        return new Point(Math.round(oX), Math.round(oY));
+        return new Point((int)Math.round(oX), (int)Math.round(oY));
     }
 
     public double getRelRefPointX() {

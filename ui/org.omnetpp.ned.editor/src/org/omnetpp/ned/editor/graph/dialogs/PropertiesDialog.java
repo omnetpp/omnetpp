@@ -601,7 +601,7 @@ public class PropertiesDialog extends TrayDialog {
         GC gc = new GC(window);
         Font f = JFaceResources.getFontRegistry().get(JFaceResources.DIALOG_FONT);
         gc.setFont(f);
-        int averageWidth = gc.getFontMetrics().getAverageCharWidth();
+        int averageWidth = (int)gc.getFontMetrics().getAverageCharacterWidth();
         gc.dispose();
         return averageWidth;
     }
