@@ -7,18 +7,50 @@ about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
 OMNeT++ 6.0pre8 (April 2020)
--------------------------------
+----------------------------
+
+The main focus of improvements since pre7 was to improve the scalability of
+the new Analysis Tool. Indeed, the UI is now easily capable of dealing with
+at least several tens of thousands of result files, and a million result items
+(this was the input routinely used during the development). If you are unfamilar
+with how and why the Analysis Tool was rewritten almost from scratch from
+the 4.x and 5.x version, read the previous (pre7) announcement.
+
+In the Sequence Chart Tool, support for horizontally finite sized events was
+added. This allows message sends and method calls in the same event to be
+separated along the y axis.
+
+Additional, relatively minor improvements in the core:
+
+ - Added the "resultdir-subdivision" config option that causes result files to
+   be distributed into a hierarchical subdirectory tree inside results/, using
+   iteration variables as directory names. This is useful for simulation
+   campaigns, because most file managers tend to struggle with directories
+   containing more than a few thousand files.
+
+ - opp_scavetool now accepts directory names as well ("load all result files
+   recursively from there"), and also the "**" wildcard that can match several
+   directory levels.
+
+ - Added the "config-recording" config option, to control the of amount of
+   config options to save in result files.
+
+ - Added the "${datetimef}" config variable that is a better choice to be used
+   as part of result file names than "${datetime}"
+
+Stay tuned.
 
 
-This is a preview release demonstrating our completely revamped charting
-solution in the IDE. It is now completely based on Python3, with support
-for displaying Matplotlib charts right inside the IDE, accessing simulation
-results in the form of Pandas DataFrames, and using the built-in (older)
-charts from Python. Analysis files (.anf) created by older versions of the
-IDE (and vice versa) cannot be opened by this release, because the internal
-model changed substantially.
+OMNeT++ 6.0pre7 (March 2020)
+----------------------------
 
-Changes compared to OMNeT++ 5.6:
+This is a preview of the upcoming OMNeT++ 6.0 release. Work is still ongoing in
+several areas, especially on the new Analysis Tool, the Sequence Chart Tool,
+and Qtenv.
+
+The following list is a small subset of the changes since OMNeT++ 5.6. Until we
+get our change logs up to date, we suggest that you browse the public OMNeT++
+repository on GitHub for more information.
 
 Core:
 
@@ -26,7 +58,43 @@ Core:
 
 IDE:
 
-  - A completely rewritten Charts interface in the Analysis Tool.
+  - The Analysis Tool in the IDE has been rewritten, using a new approach.
+    The number one goals were to allow ARBITRARY computations to be performed
+    on the data, VISUALIZE the result in the most appropriate form choosen from
+    a multitude of chart/plot types, and produce PUBLICATION QUALITY output.
+    Additional goals were an intuitive user interface that makes straightforward
+    tasks easy and convenient, scalability that allows the processing of
+    a large amoount of simulation results inside the IDE, and facilities
+    to make (most of) the UI's functionality available on the command line
+    as well.
+
+    The key technologies the new Analysis Tool employs are Python, NumPy,
+    Pandas, and Matplotlib. The use of Python and Pandas gives you access to
+    advanced data manipulation and analysis capabilities, while Matplotlib
+    offers dozens of plot types out of the box, endless customizations, and
+    proven high-quality output. A large effort was made to properly integrate
+    these technologies into the IDE, so that using the Analysis Tool provides
+    a superior user experience, and brings the power of Python close to users
+    without necessarily requiring them to actually write code in Python.
+
+    Common charting tasks are accessible with a few mouse clicks, via
+    predefined Chart Templates that can be configured using dialogs.
+    The heart of all Chart Templates is Python code that performs all of the
+    computation and plotting. The Python code behind a chart can be viewed
+    and freely edited using an integrated language-aware editor. Matplotlib
+    plots appear inside the Analysis Tool's UI, and they are live (i.e. not just
+    images): zooming, panning, and interacting with possible embedded controls
+    in the plot all work seemlessly. IDE-native plots can also be chosen
+    as an alternative to Matplotlib, as they provide increased scalability at
+    the cost of being less flexible and featureful.
+
+    The OMNeT++ Python API for querying (and to a lesser extent, transforming
+    and plotting) simulation results is available as a Python package for use
+    in Python scripts outside the IDE. There is also a command-line tool
+    (opp_charttool) that can "run" Analysis (anf) files e.g. for image export.
+    opp_charttool can be integrated e.g. into the build process of a paper
+    written in LaTeX.
+
   - Updated NED documentation generator with command line support (opp_neddoc).
 
 Samples:
