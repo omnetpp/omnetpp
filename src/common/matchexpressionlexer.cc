@@ -27,6 +27,13 @@ MatchExpressionLexer::MatchExpressionLexer(const char *input)
 {
 }
 
+static char *dup(const std::string& str) // note: opp_strdup() is not good as it returns nullptr for ""
+{
+    char *p = new char[str.size()+1];
+    strcpy(p, str.c_str());
+    return p;
+}
+
 int MatchExpressionLexer::getNextToken(char **valuep)
 {
     const char *start;
@@ -46,7 +53,7 @@ int MatchExpressionLexer::getNextToken(char **valuep)
 
             case '"': {
                 std::string str = opp_parsequotedstr(start, ptr);
-                *valuep = opp_strdup(str.c_str());
+                *valuep = dup(str);
                 return STRINGLITERAL;
             }
 
@@ -86,7 +93,7 @@ int MatchExpressionLexer::getNextToken(char **valuep)
                 if (len == 3 && strncasecmp(start, "not", 3) == 0)
                     return NOT_;
                 std::string str(start, len);
-                *valuep = opp_strdup(str.c_str());
+                *valuep = dup(str);
                 return STRINGLITERAL;
             }
         }
