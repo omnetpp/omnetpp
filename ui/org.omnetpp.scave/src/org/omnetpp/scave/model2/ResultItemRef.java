@@ -42,6 +42,6 @@ public class ResultItemRef {
     }
 
     public int hashCode() {
-        return new Long(id).hashCode() * 31 + manager.hashCode();
+        return Long.valueOf(id).hashCode() * 31 + manager.hashCode();
     }
 }

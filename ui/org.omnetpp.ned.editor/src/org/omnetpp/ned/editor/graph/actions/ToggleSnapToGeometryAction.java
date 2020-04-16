@@ -56,7 +56,7 @@ public class ToggleSnapToGeometryAction extends Action {
 
     private void setSnapEnabled(boolean enabled) {
         NedEditorPlugin.getDefault().getPreferenceStore().setValue(NedEditorPreferenceInitializer.SNAP_TO_GEOMETRY, enabled);
-        diagramViewer.setProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED, new Boolean(enabled));
+        diagramViewer.setProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED, Boolean.valueOf(enabled));
     }
 
     @Override

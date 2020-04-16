@@ -6,9 +6,9 @@ import com.swtworkbench.community.xswt.dataparser.NonDisposableDataParser;
 public class BooleanDataParser extends NonDisposableDataParser {
     public Object parse(String source) throws XSWTException {
         if ("true".equals(source))
-            return new Boolean(true);
+            return Boolean.TRUE;
         if ("false".equals(source)) {
-            return new Boolean(false);
+            return Boolean.FALSE;
         }
         throw new XSWTException(source + " is not a valid boolean value");
     }

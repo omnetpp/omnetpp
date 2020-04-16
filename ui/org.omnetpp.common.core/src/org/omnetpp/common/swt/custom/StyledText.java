@@ -3873,7 +3873,7 @@ public boolean getJustify() {
  */
 public int getKeyBinding(int key) {
     checkWidget();
-    Integer action = (Integer) keyActionMap.get(new Integer(key));
+    Integer action = (Integer) keyActionMap.get(Integer.valueOf(key));
     return action == null ? SWT.NULL : action.intValue();
 }
 /**
@@ -8831,22 +8831,22 @@ public void setKeyBinding(int key, int action) {
         char ch = Character.toUpperCase(keyChar);
         int newKey = ch | modifierValue;
         if (action == SWT.NULL) {
-            keyActionMap.remove(new Integer(newKey));
+            keyActionMap.remove(Integer.valueOf(newKey));
         } else {
-            keyActionMap.put(new Integer(newKey), new Integer(action));
+            keyActionMap.put(Integer.valueOf(newKey), Integer.valueOf(action));
         }
         ch = Character.toLowerCase(keyChar);
         newKey = ch | modifierValue;
         if (action == SWT.NULL) {
-            keyActionMap.remove(new Integer(newKey));
+            keyActionMap.remove(Integer.valueOf(newKey));
         } else {
-            keyActionMap.put(new Integer(newKey), new Integer(action));
+            keyActionMap.put(Integer.valueOf(newKey), Integer.valueOf(action));
         }
     } else {
         if (action == SWT.NULL) {
-            keyActionMap.remove(new Integer(key));
+            keyActionMap.remove(Integer.valueOf(key));
         } else {
-            keyActionMap.put(new Integer(key), new Integer(action));
+            keyActionMap.put(Integer.valueOf(key), Integer.valueOf(action));
         }
     }
 }

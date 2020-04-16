@@ -19,13 +19,13 @@ public class ObjectStub {
         String sourceName;
         Integer nameCount = (Integer) typeUsageCount.get(className);
         if (nameCount == null) {
-            nameCount = new Integer(2);
+            nameCount = Integer.valueOf(2);
             typeUsageCount.put(className, nameCount);
             sourceName = lowerCaseFirstLetter(className) + "1";
         }
         else {
             sourceName = lowerCaseFirstLetter(className) + nameCount;
-            nameCount = new Integer(nameCount.intValue() + 1);
+            nameCount = Integer.valueOf(nameCount.intValue() + 1);
             typeUsageCount.put(className, nameCount);
         }
         return sourceName;

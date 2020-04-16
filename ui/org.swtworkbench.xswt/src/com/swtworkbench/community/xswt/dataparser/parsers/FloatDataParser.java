@@ -8,7 +8,7 @@ public class FloatDataParser extends NonDisposableDataParser {
         Float result = null;
         try {
             float intermediate = Float.parseFloat(source);
-            result = new Float(intermediate);
+            result = Float.valueOf(intermediate);
         }
         catch (Exception e) {
             throw new XSWTException(e);

@@ -124,10 +124,9 @@ public class DistributeAllGateLabelsAction extends NedTextEditorAction {
             dialog.setInitialSelections(runnables.toArray());
             dialog.setComparator(new ViewerComparator() {
                 @Override
-                @SuppressWarnings("unchecked")
-                protected Comparator getComparator() {
-                    return new Comparator() {
-                        public int compare(Object o1, Object o2) {
+                protected Comparator<String> getComparator() {
+                    return new Comparator<String>() {
+                        public int compare(String o1, String o2) {
                             return ((String)o1).compareTo((String)o2);
                         }
                     };

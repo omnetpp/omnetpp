@@ -16,6 +16,6 @@ public class IntDataParser extends NonDisposableDataParser {
             return result;
 
         int intermediate = StyleParser.parse(source);
-        return new Integer(intermediate);
+        return Integer.valueOf(intermediate);
     }
 }

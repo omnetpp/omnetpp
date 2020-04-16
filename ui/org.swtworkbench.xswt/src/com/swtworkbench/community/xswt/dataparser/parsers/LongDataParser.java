@@ -8,7 +8,7 @@ public class LongDataParser extends NonDisposableDataParser {
         Long result = null;
         try {
             long intermediate = Long.parseLong(source);
-            result = new Long(intermediate);
+            result = Long.valueOf(intermediate);
         }
         catch (Exception e) {
             throw new XSWTException(e);

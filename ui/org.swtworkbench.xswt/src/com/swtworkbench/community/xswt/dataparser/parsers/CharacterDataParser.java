@@ -10,7 +10,7 @@ public class CharacterDataParser extends NonDisposableDataParser {
             if (source.length() > 1)
                 throw new XSWTException("Length of a char cannot exceed 1: " + source);
             char intermediate = source.charAt(0);
-            result = new Character(intermediate);
+            result = Character.valueOf(intermediate);
         }
         catch (Exception e) {
             throw new XSWTException(e);

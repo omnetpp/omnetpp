@@ -168,7 +168,7 @@ public class ClassBuilder {
             }
 
             if (constructor.getParameterTypes().length == 2) {
-                return constructor.newInstance(new Object[] { parent, new Integer(style) });
+                return constructor.newInstance(new Object[] { parent, Integer.valueOf(style) });
             }
             return constructor.newInstance(new Object[] { parent });
         }

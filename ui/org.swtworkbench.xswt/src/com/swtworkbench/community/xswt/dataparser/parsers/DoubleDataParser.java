@@ -8,7 +8,7 @@ public class DoubleDataParser extends NonDisposableDataParser {
         Double result = null;
         try {
             double intermediate = Double.parseDouble(source);
-            result = new Double(intermediate);
+            result = Double.valueOf(intermediate);
         }
         catch (Exception e) {
             throw new XSWTException(e);
