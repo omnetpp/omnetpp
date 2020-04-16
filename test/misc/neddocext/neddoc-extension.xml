@@ -1,0 +1,37 @@
+<nedfragment location="Host" anchor="after-parameters"><![CDATA[
+    Extra Host docs after parameters. Aloha reference.
+    <b>This is bold</b>
+    This is not bold.
+]]></nedfragment>
+
+<nedfragment location="Host" anchor="bottom"><![CDATA[
+    Extra Host docs at the end.
+]]></nedfragment>
+
+<nedfragment location="Aloha" anchor="top"><![CDATA[
+    Extra Aloha at the beginning.
+]]></nedfragment>
+
+<nedfragment location="Server" anchor="after-properties"><![CDATA[
+    Extra Server docs after properties.
+]]></nedfragment>
+
+<nedfragment location="Host" anchor="after-description"><![CDATA[
+    Additional fragment for Extra Host docs after description.
+]]></nedfragment>
+
+<nedfragment location="ned" anchor="bottom"><![CDATA[
+    Insertion into the package list.
+]]></nedfragment>
+
+<nedfragment location="default" anchor="top"><![CDATA[
+    Default nsertion into the package list.
+]]></nedfragment>
+
+<nedfragment location="ned.DatarateChannel" anchor="after-parameters"><![CDATA[
+    DatarateChannel extra comment.
+]]></nedfragment>
+
+<filefragment location="Aloha.ned" anchor="top"><![CDATA[
+Internal inclusion.
+]]></filefragment>
