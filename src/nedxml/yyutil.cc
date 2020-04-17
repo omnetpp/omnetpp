@@ -74,7 +74,7 @@ std::string removeSpaces(ParseContext *np, YYLoc pos)
 
 const char *currentLocation(ParseContext *np)
 {
-    static char buf[200];
+    static char buf[2048];
     sprintf(buf, "%s:%d", np->getFileName(), pos.li);
     return buf;
 }
