@@ -48,7 +48,7 @@
 
 // attributes on enumerators were added in C++17, but some compilers (GCC >= 6 for example) accept them in c++14 mode as well
 #if defined(__cpp_enumerator_attributes) && (__cpp_enumerator_attributes >= 201411)
-#  define OPP_DEPRECATED_ENUMERATOR(message) [[deprecated(messsage)]]
+#  define OPP_DEPRECATED_ENUMERATOR(message) [[deprecated(message)]]
 #else
 #  define OPP_DEPRECATED_ENUMERATOR(message)
 #endif

@@ -35,9 +35,8 @@ PREFER_CLANG=yes
 #CFLAGS_DEBUG='-g -Wall'
 #CFLAGS_RELEASE='-O3 -DNDEBUG=1'
 
-# C++ specific compiler flags. OMNeT++ requires at least -std=c++11 (default), but
-# -std=c++14 should work, too.
-#CXXFLAGS=-std=c++11
+# C++ specific compiler flags. OMNeT++ requires at least -std=c++14, but -std=c++17 should work, too.
+#CXXFLAGS=-std=c++14
 
 #
 # Linker switches used for linking.
