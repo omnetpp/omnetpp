@@ -247,11 +247,11 @@ void CsvForSpreadsheetExporter::saveScalars(ResultFileManager *manager, const ID
 
     // write data
     for (int i = 0; i < (int)idlist.size(); ++i) {
-        const ScalarResult& param = manager->getScalar(idlist.get(i));
-        writeRunColumns(param.getRun());
-        csv.writeString(param.getModuleName());
-        csv.writeString(param.getName());
-        csv.writeDouble(param.getValue());
+        const ScalarResult *param = manager->getScalar(idlist.get(i));
+        writeRunColumns(param->getRun());
+        csv.writeString(param->getModuleName());
+        csv.writeString(param->getName());
+        csv.writeDouble(param->getValue());
         csv.writeNewLine();
     }
 }
@@ -272,11 +272,11 @@ void CsvForSpreadsheetExporter::saveParameters(ResultFileManager *manager, const
 
     // write data
     for (int i = 0; i < (int)idlist.size(); ++i) {
-        const ParameterResult& param = manager->getParameter(idlist.get(i));
-        writeRunColumns(param.getRun());
-        csv.writeString(param.getModuleName());
-        csv.writeString(param.getName());
-        csv.writeString(param.getValue());
+        const ParameterResult *param = manager->getParameter(idlist.get(i));
+        writeRunColumns(param->getRun());
+        csv.writeString(param->getModuleName());
+        csv.writeString(param->getName());
+        csv.writeString(param->getValue());
         csv.writeNewLine();
     }
 }
@@ -303,13 +303,13 @@ void CsvForSpreadsheetExporter::saveVectors(ResultFileManager *manager, const ID
 
         // write vectors
         for (int i = 0; i < numVectors; ++i) {
-            const VectorResult& vector = manager->getVector(idlist.get(i));
+            const VectorResult *vector = manager->getVector(idlist.get(i));
             XYArray *data = xyArrays[i];
 
             // time row
-            writeRunColumns(vector.getRun());
-            csv.writeString(vector.getModuleName());
-            csv.writeString(vector.getName());
+            writeRunColumns(vector->getRun());
+            csv.writeString(vector->getModuleName());
+            csv.writeString(vector->getName());
             csv.writeString("TIME");
             for (int j = 0; j < data->length(); j++) {
                 if (data->hasPreciseX())
@@ -320,9 +320,9 @@ void CsvForSpreadsheetExporter::saveVectors(ResultFileManager *manager, const ID
             csv.writeNewLine();
 
             // value row
-            writeRunColumns(vector.getRun());
-            csv.writeString(vector.getModuleName());
-            csv.writeString(vector.getName());
+            writeRunColumns(vector->getRun());
+            csv.writeString(vector->getModuleName());
+            csv.writeString(vector->getName());
             csv.writeString("VALUE");
             for (int j = 0; j < data->length(); j++)
                 csv.writeBigDecimal(data->getY(j));
@@ -333,8 +333,8 @@ void CsvForSpreadsheetExporter::saveVectors(ResultFileManager *manager, const ID
         // write header row
         if (columnNames) {
             for (int i = 0; i < numVectors; ++i) {
-                const VectorResult& vector = manager->getVector(idlist.get(i));
-                std::string columnTitle = vector.getName() + " " + vector.getModuleName() + " (" + makeRunTag(vector.getRun()) + ")";
+                const VectorResult *vector = manager->getVector(idlist.get(i));
+                std::string columnTitle = vector->getName() + " " + vector->getModuleName() + " (" + makeRunTag(vector->getRun()) + ")";
                 csv.writeString(columnTitle); // time column
                 csv.writeBlank(); // value column
             }
@@ -395,11 +395,11 @@ void CsvForSpreadsheetExporter::saveStatistics(ResultFileManager *manager, const
 
     // write statistics
     for (int i = 0; i < (int)idlist.size(); ++i) {
-        const StatisticsResult& statistics = manager->getStatistics(idlist.get(i));
-        writeRunColumns(statistics.getRun());
-        csv.writeString(statistics.getModuleName());
-        csv.writeString(statistics.getName());
-        const Statistics& stat = statistics.getStatistics();
+        const StatisticsResult *statistics = manager->getStatistics(idlist.get(i));
+        writeRunColumns(statistics->getRun());
+        csv.writeString(statistics->getModuleName());
+        csv.writeString(statistics->getName());
+        const Statistics& stat = statistics->getStatistics();
         csv.writeInt(stat.getCount());
         if (stat.isWeighted())
             csv.writeDouble(stat.getSumWeights());
@@ -451,12 +451,12 @@ void CsvForSpreadsheetExporter::saveHistograms(ResultFileManager *manager, const
 
     // write histograms, two lines each ("binedges" and "binvalues" lines)
     for (int i = 0; i < (int)idlist.size(); ++i) {
-        const HistogramResult& histogram = manager->getHistogram(idlist.get(i));
-        writeRunColumns(histogram.getRun());
-        csv.writeString(histogram.getModuleName());
-        csv.writeString(histogram.getName());
+        const HistogramResult *histogram = manager->getHistogram(idlist.get(i));
+        writeRunColumns(histogram->getRun());
+        csv.writeString(histogram->getModuleName());
+        csv.writeString(histogram->getName());
         if (includeHistogramStatistics) {
-            const Statistics& stat = histogram.getStatistics();
+            const Statistics& stat = histogram->getStatistics();
             csv.writeInt(stat.getCount());
             if (stat.isWeighted())
                 csv.writeDouble(stat.getSumWeights());
@@ -467,7 +467,7 @@ void CsvForSpreadsheetExporter::saveHistograms(ResultFileManager *manager, const
             csv.writeDouble(stat.getMin());
             csv.writeDouble(stat.getMax());
         }
-        const Histogram& bins = histogram.getHistogram();
+        const Histogram& bins = histogram->getHistogram();
         csv.writeDouble(bins.getUnderflows());
         csv.writeDouble(bins.getOverflows());
         csv.writeString("binedges");
@@ -475,9 +475,9 @@ void CsvForSpreadsheetExporter::saveHistograms(ResultFileManager *manager, const
             csv.writeDouble(d);
         csv.writeNewLine();
 
-        writeRunColumns(histogram.getRun());
-        csv.writeString(histogram.getModuleName());
-        csv.writeString(histogram.getName());
+        writeRunColumns(histogram->getRun());
+        csv.writeString(histogram->getModuleName());
+        csv.writeString(histogram->getName());
         if (includeHistogramStatistics)
             for (int i = 0; i < 8; i++)
                 csv.writeBlank();

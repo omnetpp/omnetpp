@@ -115,20 +115,20 @@ void SqliteScalarFileExporter::saveResults(const std::string& fileName, ResultFi
         for (int i=0; i<filteredList.size(); i++) {
             ID id = filteredList.get(i);
             if (ResultFileManager::getTypeOf(id) == ResultFileManager::SCALAR) {
-                const ScalarResult& scalar = manager->getScalar(id);
-                writer.recordScalar(scalar.getModuleName(), scalar.getName(), scalar.getValue(), scalar.getAttributes());
+                const ScalarResult * scalar = manager->getScalar(id);
+                writer.recordScalar(scalar->getModuleName(), scalar->getName(), scalar->getValue(), scalar->getAttributes());
             }
             else if (ResultFileManager::getTypeOf(id) == ResultFileManager::PARAMETER) {
-                const ParameterResult& parameter = manager->getParameter(id);
-                writer.recordParameter(parameter.getModuleName(), parameter.getName(), parameter.getValue(), parameter.getAttributes());
+                const ParameterResult *parameter = manager->getParameter(id);
+                writer.recordParameter(parameter->getModuleName(), parameter->getName(), parameter->getValue(), parameter->getAttributes());
             }
             else if (ResultFileManager::getTypeOf(id) == ResultFileManager::STATISTICS) {
-                const StatisticsResult& statistics = manager->getStatistics(id);
-                writer.recordStatistic(statistics.getModuleName(), statistics.getName(), statistics.getStatistics(), statistics.getAttributes());
+                const StatisticsResult *statistics = manager->getStatistics(id);
+                writer.recordStatistic(statistics->getModuleName(), statistics->getName(), statistics->getStatistics(), statistics->getAttributes());
             }
             else if (ResultFileManager::getTypeOf(id) == ResultFileManager::HISTOGRAM) {
-                const HistogramResult& histogram = manager->getHistogram(id);
-                writer.recordHistogram(histogram.getModuleName(), histogram.getName(), histogram.getStatistics(), histogram.getHistogram(), histogram.getAttributes());
+                const HistogramResult *histogram = manager->getHistogram(id);
+                writer.recordHistogram(histogram->getModuleName(), histogram->getName(), histogram->getStatistics(), histogram->getHistogram(), histogram->getAttributes());
             }
         }
         writer.endRecordingForRun();

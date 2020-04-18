@@ -66,7 +66,7 @@ vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList
         std::map<int, int> vectorIdToIndex;
 
         for (ID id : idsInFile) {
-            int vectorID = manager->getVector(id).getVectorId();
+            int vectorID = manager->getVector(id)->getVectorId();
             vectorIdsInFile.insert(vectorID);
             vectorIdToIndex[vectorID] = idlist.indexOf(id);
         }

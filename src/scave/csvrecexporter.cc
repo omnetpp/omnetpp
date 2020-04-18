@@ -221,9 +221,9 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
     if (haveScalars) {
         IDList scalarIDs = idlist.filterByTypes(ResultFileManager::SCALAR);
         for (int i = 0; i < (int)scalarIDs.size(); ++i) {
-            const ScalarResult& scalar = manager->getScalar(scalarIDs.get(i));
+            const ScalarResult *scalar = manager->getScalar(scalarIDs.get(i));
             writeResultItemBase(scalar, "scalar", numColumns);
-            csv.writeDouble(scalar.getValue());
+            csv.writeDouble(scalar->getValue());
             finishRecord(numColumns);
             writeResultAttrRecords(scalar, numColumns);
         }
@@ -233,9 +233,9 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
     if (haveParameters) {
         IDList paramIDs = idlist.filterByTypes(ResultFileManager::PARAMETER);
         for (int i = 0; i < (int)paramIDs.size(); ++i) {
-            const ParameterResult& param = manager->getParameter(paramIDs.get(i));
+            const ParameterResult *param = manager->getParameter(paramIDs.get(i));
             writeResultItemBase(param, "param", numColumns);
-            csv.writeString(param.getValue());
+            csv.writeString(param->getValue());
             finishRecord(numColumns);
             writeResultAttrRecords(param, numColumns);
         }
@@ -247,11 +247,11 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
         for (int i = 0; i < (int)statisticsIDs.size(); ++i) {
             ID id = statisticsIDs.get(i);
             bool isHistogram = ResultFileManager::getTypeOf(id) == ResultFileManager::HISTOGRAM;
-            const StatisticsResult& statistic = manager->getStatistics(id);
+            const StatisticsResult *statistic = manager->getStatistics(id);
             writeResultItemBase(statistic, isHistogram ? "histogram" : "statistic", numColumns);
             for (size_t i = 0; i < scalarColumnNames.size(); i++)
                 csv.writeBlank(); // skip intermediate columns ("value")
-            const Statistics& stat = statistic.getStatistics();
+            const Statistics& stat = statistic->getStatistics();
             csv.writeInt(stat.getCount());
             if (stat.isWeighted())
                 csv.writeDouble(stat.getSumWeights());
@@ -262,7 +262,7 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
             csv.writeDouble(stat.getMin());
             csv.writeDouble(stat.getMax());
             if (isHistogram) {
-                const Histogram& histogram = dynamic_cast<const HistogramResult*>(&statistic)->getHistogram();
+                const Histogram& histogram = dynamic_cast<const HistogramResult*>(statistic)->getHistogram();
                 csv.writeDouble(histogram.getUnderflows());
                 csv.writeDouble(histogram.getOverflows());
 
@@ -287,7 +287,7 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
         // write vectors
         int numVectors = (int)vectorIDs.size();
         for (int i = 0; i < numVectors; ++i) {
-            const VectorResult& vector = manager->getVector(vectorIDs.get(i));
+            const VectorResult *vector = manager->getVector(vectorIDs.get(i));
             writeResultItemBase(vector, "vector", numColumns);
             for (size_t i = 0; i < scalarColumnNames.size() + statisticColumnNames.size() + histogramColumnNames.size(); i++)
                 csv.writeBlank(); // skip intermediate columns
@@ -314,25 +314,25 @@ void CsvRecordsExporter::writeRunAttrRecord(const std::string& runId, const char
     finishRecord(numColumns);
 }
 
-void CsvRecordsExporter::writeResultAttrRecords(const ResultItem& result, int numColumns)
+void CsvRecordsExporter::writeResultAttrRecords(const ResultItem *result, int numColumns)
 {
-    for (auto pair : result.getAttributes()) {
-        csv.writeString(result.getRun()->getRunName());
+    for (auto pair : result->getAttributes()) {
+        csv.writeString(result->getRun()->getRunName());
         csv.writeString("attr");
-        csv.writeString(result.getModuleName());
-        csv.writeString(result.getName());
+        csv.writeString(result->getModuleName());
+        csv.writeString(result->getName());
         csv.writeString(pair.first); // attrName
         csv.writeString(pair.second); // attrValue
         finishRecord(numColumns);
     }
 }
 
-void CsvRecordsExporter::writeResultItemBase(const ResultItem& result, const char *type, int numColumns)
+void CsvRecordsExporter::writeResultItemBase(const ResultItem *result, const char *type, int numColumns)
 {
-    csv.writeString(result.getRun()->getRunName());
+    csv.writeString(result->getRun()->getRunName());
     csv.writeString(type);
-    csv.writeString(result.getModuleName());
-    csv.writeString(result.getName());
+    csv.writeString(result->getModuleName());
+    csv.writeString(result->getName());
     csv.writeBlank();  // skip 'attrName'
     csv.writeBlank();  // skip 'attrValue'
 }

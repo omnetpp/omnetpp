@@ -302,13 +302,13 @@ void JsonExporter::saveResults(const std::string& fileName, ResultFileManager *m
         if (!scalars.isEmpty()) {
             writer.openArray("scalars");
             for (ID id : scalars) {
-                const ScalarResult& scalar = manager->getScalar(id);
+                const ScalarResult *scalar = manager->getScalar(id);
                 writer.openObject();
-                writer.writeString("module", scalar.getModuleName());
-                writer.writeString("name", scalar.getName());
-                writer.writeDouble("value", scalar.getValue());
-                if (!skipResultAttributes && !scalar.getAttributes().empty())
-                    writeStringMap("attributes", scalar.getAttributes());
+                writer.writeString("module", scalar->getModuleName());
+                writer.writeString("name", scalar->getName());
+                writer.writeDouble("value", scalar->getValue());
+                if (!skipResultAttributes && !scalar->getAttributes().empty())
+                    writeStringMap("attributes", scalar->getAttributes());
                 writer.closeObject();
             }
             writer.closeArray();
@@ -319,13 +319,13 @@ void JsonExporter::saveResults(const std::string& fileName, ResultFileManager *m
         if (!parameters.isEmpty()) {
             writer.openArray("parameters");
             for (ID id : parameters) {
-                const ParameterResult& scalar = manager->getParameter(id);
+                const ParameterResult *scalar = manager->getParameter(id);
                 writer.openObject();
-                writer.writeString("module", scalar.getModuleName());
-                writer.writeString("name", scalar.getName());
-                writer.writeString("value", scalar.getValue());
-                if (!skipResultAttributes && !scalar.getAttributes().empty())
-                    writeStringMap("attributes", scalar.getAttributes());
+                writer.writeString("module", scalar->getModuleName());
+                writer.writeString("name", scalar->getName());
+                writer.writeString("value", scalar->getValue());
+                if (!skipResultAttributes && !scalar->getAttributes().empty())
+                    writeStringMap("attributes", scalar->getAttributes());
                 writer.closeObject();
             }
             writer.closeArray();
@@ -336,13 +336,13 @@ void JsonExporter::saveResults(const std::string& fileName, ResultFileManager *m
         if (!statistics.isEmpty()) {
             writer.openArray("statistics");
             for (ID id : statistics) {
-                const StatisticsResult& stats = manager->getStatistics(id);
+                const StatisticsResult *stats = manager->getStatistics(id);
                 writer.openObject();
-                writer.writeString("module", stats.getModuleName());
-                writer.writeString("name", stats.getName());
-                if (!skipResultAttributes && !stats.getAttributes().empty())
-                    writeStringMap("attributes", stats.getAttributes());
-                writeStatisticsFields(stats.getStatistics());
+                writer.writeString("module", stats->getModuleName());
+                writer.writeString("name", stats->getName());
+                if (!skipResultAttributes && !stats->getAttributes().empty())
+                    writeStringMap("attributes", stats->getAttributes());
+                writeStatisticsFields(stats->getStatistics());
                 writer.closeObject();
             }
             writer.closeArray();
@@ -353,15 +353,15 @@ void JsonExporter::saveResults(const std::string& fileName, ResultFileManager *m
         if (!histograms.isEmpty()) {
             writer.openArray("histograms");
             for (ID id : histograms) {
-                const HistogramResult& histogram = manager->getHistogram(id);
+                const HistogramResult *histogram = manager->getHistogram(id);
                 writer.openObject();
-                writer.writeString("module", histogram.getModuleName());
-                writer.writeString("name", histogram.getName());
-                if (!skipResultAttributes && !histogram.getAttributes().empty())
-                    writeStringMap("attributes", histogram.getAttributes());
-                writeStatisticsFields(histogram.getStatistics());
+                writer.writeString("module", histogram->getModuleName());
+                writer.writeString("name", histogram->getName());
+                if (!skipResultAttributes && !histogram->getAttributes().empty())
+                    writeStringMap("attributes", histogram->getAttributes());
+                writeStatisticsFields(histogram->getStatistics());
 
-                const Histogram& bins = histogram.getHistogram();
+                const Histogram& bins = histogram->getHistogram();
                 writer.writeDouble("underflows", bins.getUnderflows());
                 writer.writeDouble("overflows", bins.getOverflows());
                 writer.startRawValue("binedges"); writeVector(bins.getBinEdges());
@@ -382,12 +382,12 @@ void JsonExporter::saveResults(const std::string& fileName, ResultFileManager *m
             writer.openArray("vectors");
             for (int i = 0; i < vectors.size(); i++) {
                 ID id = vectors.get(i);
-                const VectorResult& vector = manager->getVector(id);
+                const VectorResult *vector = manager->getVector(id);
                 writer.openObject();
-                writer.writeString("module", vector.getModuleName());
-                writer.writeString("name", vector.getName());
-                if (!skipResultAttributes && !vector.getAttributes().empty())
-                    writeStringMap("attributes", vector.getAttributes());
+                writer.writeString("module", vector->getModuleName());
+                writer.writeString("name", vector->getName());
+                if (!skipResultAttributes && !vector->getAttributes().empty())
+                    writeStringMap("attributes", vector->getAttributes());
 
                 XYArray *array = xyArrays[i];
                 writer.startRawValue("time"); writeX(array);

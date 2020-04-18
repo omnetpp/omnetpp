@@ -136,17 +136,17 @@ ResultFileList ResultFileManager::getFilesForInput(const char *inputName) const
     return out;
 }
 
-const ResultItem& ResultFileManager::getItem(ID id) const
+const ResultItem *ResultFileManager::getItem(ID id) const
 {
     READER_MUTEX
     try
     {
         switch (_type(id)) {
-            case SCALAR: return getFileRunForID(id)->scalarResults.at(_pos(id));
-            case PARAMETER: return getFileRunForID(id)->parameterResults.at(_pos(id));
-            case VECTOR: return getFileRunForID(id)->vectorResults.at(_pos(id));
-            case STATISTICS: return getFileRunForID(id)->statisticsResults.at(_pos(id));
-            case HISTOGRAM: return getFileRunForID(id)->histogramResults.at(_pos(id));
+            case SCALAR: return &getFileRunForID(id)->scalarResults.at(_pos(id));
+            case PARAMETER: return &getFileRunForID(id)->parameterResults.at(_pos(id));
+            case VECTOR: return &getFileRunForID(id)->vectorResults.at(_pos(id));
+            case STATISTICS: return &getFileRunForID(id)->statisticsResults.at(_pos(id));
+            case HISTOGRAM: return &getFileRunForID(id)->histogramResults.at(_pos(id));
             default: throw opp_runtime_error("ResultFileManager: Invalid ID: Wrong type");
         }
     }
@@ -220,7 +220,7 @@ StringSet ResultFileManager::getUniqueModuleNames(const IDList& ids) const
     std::set<const std::string*> set;  // all strings are stringpooled, so we can collect unique *pointers* instead of unique strings
     const std::string *lastModuleName = nullptr;
     for (ID id : ids) {
-        const std::string *moduleName = &getItem(id).getModuleName();
+        const std::string *moduleName = &getItem(id)->getModuleName();
         if (moduleName != lastModuleName) {
             set.insert(moduleName);
             lastModuleName = moduleName;
@@ -237,7 +237,7 @@ StringSet ResultFileManager::getUniqueResultNames(const IDList& ids) const
     READER_MUTEX
     std::set<const std::string*> set;  // all strings are stringpooled, so we can collect unique *pointers* instead of unique strings
     for (ID id : ids)
-        set.insert(&getItem(id).getName());
+        set.insert(&getItem(id)->getName());
 
     StringSet result;
     for (const std::string *e : set)
@@ -250,8 +250,8 @@ StringSet ResultFileManager::getUniqueModuleAndResultNamePairs(const IDList& ids
     READER_MUTEX
     StringSet set;
     for (ID id : ids) {
-        const ResultItem& result = getItem(id);
-        set.insert(result.getModuleName() + "." + result.getName());
+        const ResultItem *result = getItem(id);
+        set.insert(result->getModuleName() + "." + result->getName());
     }
     return set;
 }
@@ -261,7 +261,7 @@ StringSet ResultFileManager::getUniqueResultAttributeNames(const IDList& ids) co
     READER_MUTEX
     StringSet set;
     for (ID id : ids) {
-        const StringMap& attributes = getItem(id).getAttributes();
+        const StringMap& attributes = getItem(id)->getAttributes();
         for (StringMap::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
             set.insert(it->first);
     }
@@ -273,7 +273,7 @@ StringSet ResultFileManager::getUniqueResultAttributeValues(const IDList& ids, c
     READER_MUTEX
     StringSet values;
     for (ID id : ids) {
-        const string& value = getItem(id).getAttribute(attrName);
+        const string& value = getItem(id)->getAttribute(attrName);
         if (&value != &NULLSTRING)
             values.insert(value);
     }
@@ -374,7 +374,7 @@ IDListsByRun ResultFileManager::getPartitionByRun(const IDList& ids) const
     for (ID id : ids) {
         int fileRunId = _filerunid(id);
         if (fileRunId != lastFileRunId) {
-            Run *run = getItem(id).getRun();
+            Run *run = getItem(id)->getRun();
             currentRunIDList = &map[run];
             lastFileRunId = fileRunId;
         }
@@ -393,7 +393,7 @@ IDListsByFile ResultFileManager::getPartitionByFile(const IDList& ids) const
     for (ID id : ids) {
         int fileRunId = _filerunid(id);
         if (fileRunId != lastFileRunId) {
-            ResultFile *file = getItem(id).getFile();
+            ResultFile *file = getItem(id)->getFile();
             currentFileIDList = &map[file];
             lastFileRunId = fileRunId;
         }
@@ -402,47 +402,47 @@ IDListsByFile ResultFileManager::getPartitionByFile(const IDList& ids) const
     return IDListsByFile(map);
 }
 
-const ScalarResult& ResultFileManager::getScalar(ID id) const
+const ScalarResult *ResultFileManager::getScalar(ID id) const
 {
     READER_MUTEX
     if (_type(id) != SCALAR)
         throw opp_runtime_error("ResultFileManager::getScalar(id): This item is not a scalar");
-    return getFileRunForID(id)->scalarResults.at(_pos(id));
+    return &getFileRunForID(id)->scalarResults.at(_pos(id));
 }
 
-const ParameterResult& ResultFileManager::getParameter(ID id) const
+const ParameterResult *ResultFileManager::getParameter(ID id) const
 {
     READER_MUTEX
     if (_type(id) != PARAMETER)
         throw opp_runtime_error("ResultFileManager::getParameter(id): This item is not a parameter");
-    return getFileRunForID(id)->parameterResults.at(_pos(id));
+    return &getFileRunForID(id)->parameterResults.at(_pos(id));
 }
 
-const VectorResult& ResultFileManager::getVector(ID id) const
+const VectorResult *ResultFileManager::getVector(ID id) const
 {
     READER_MUTEX
     if (_type(id) != VECTOR)
         throw opp_runtime_error("ResultFileManager::getVector(id): This item is not a vector");
-    return getFileRunForID(id)->vectorResults.at(_pos(id));
+    return &getFileRunForID(id)->vectorResults.at(_pos(id));
 }
 
-const StatisticsResult& ResultFileManager::getStatistics(ID id) const
+const StatisticsResult *ResultFileManager::getStatistics(ID id) const
 {
     READER_MUTEX
     if (_type(id) == STATISTICS)
-        return getFileRunForID(id)->statisticsResults.at(_pos(id));
+        return &getFileRunForID(id)->statisticsResults.at(_pos(id));
     else if (_type(id) == HISTOGRAM)
-        return getFileRunForID(id)->histogramResults.at(_pos(id));
+        return &getFileRunForID(id)->histogramResults.at(_pos(id));
     else
         throw opp_runtime_error("ResultFileManager::getStatistics(id): This item is not a summary statistics or a histogram");
 }
 
-const HistogramResult& ResultFileManager::getHistogram(ID id) const
+const HistogramResult *ResultFileManager::getHistogram(ID id) const
 {
     READER_MUTEX
     if (_type(id) != HISTOGRAM)
         throw opp_runtime_error("ResultFileManager::getHistogram(id): This item is not a histogram");
-    return getFileRunForID(id)->histogramResults.at(_pos(id));
+    return &getFileRunForID(id)->histogramResults.at(_pos(id));
 }
 
 template<class T>
@@ -771,26 +771,26 @@ IDList ResultFileManager::filterIDList(const IDList& idlist,
     int sz = idlist.size();
     for (int i = 0; i < sz; i++) {
         ID id = idlist.get(i);
-        const ResultItem& d = getItem(id);
+        const ResultItem *item = getItem(id);
 
         if (fileRunFilter) {
-            if (lastFileRunRef != d.getFileRun()) {
-                lastFileRunRef = d.getFileRun();
-                lastFileRunMatched = std::find(fileRunFilter->begin(), fileRunFilter->end(), d.getFileRun()) != fileRunFilter->end();
+            if (lastFileRunRef != item->getFileRun()) {
+                lastFileRunRef = item->getFileRun();
+                lastFileRunMatched = std::find(fileRunFilter->begin(), fileRunFilter->end(), item->getFileRun()) != fileRunFilter->end();
             }
             if (!lastFileRunMatched)
                 continue;
         }
 
         if (moduleFilter && moduleFilter[0] &&
-            (patMatchModule ? !modulePattern->matches(d.getModuleName().c_str())
-             : strcmp(d.getModuleName().c_str(), moduleFilter))
+            (patMatchModule ? !modulePattern->matches(item->getModuleName().c_str())
+             : strcmp(item->getModuleName().c_str(), moduleFilter))
             )
             continue;  // no match
 
         if (nameFilter && nameFilter[0] &&
-            (patMatchName ? !namePattern->matches(d.getName().c_str())
-             : strcmp(d.getName().c_str(), nameFilter))
+            (patMatchName ? !namePattern->matches(item->getName().c_str())
+             : strcmp(item->getName().c_str(), nameFilter))
             )
             continue;  // no match
 
@@ -817,15 +817,15 @@ IDList ResultFileManager::filterIDList(const IDList& idlist, const Run *run, con
     int sz = idlist.size();
     for (int i = 0; i < sz; i++) {
         ID id = idlist.get(i);
-        const ResultItem& d = getItem(id);
+        const ResultItem *item = getItem(id);
 
-        if (run && d.getRun() != run)
+        if (run && item->getRun() != run)
             continue;
 
-        if (moduleName && d.getModuleName() != moduleName)
+        if (moduleName && item->getModuleName() != moduleName)
             continue;
 
-        if (name && d.getName() != name)
+        if (name && item->getName() != name)
             continue;
 
         // everything matched, insert it.
@@ -836,22 +836,22 @@ IDList ResultFileManager::filterIDList(const IDList& idlist, const Run *run, con
 
 class MatchableResultItem : public MatchExpression::Matchable
 {
-    const ResultItem& item;
+    const ResultItem *item;
 
     public:
-        MatchableResultItem(const ResultItem& item) : item(item) {}
+        MatchableResultItem(const ResultItem *item) : item(item) {}
         virtual const char *getAsString() const override { return getName(); }
         virtual const char *getAsString(const char *attribute) const override;
     private:
         const char *getItemType() const;
-        const char *getName() const { return item.getName().c_str(); }
-        const char *getModuleName() const { return item.getModuleName().c_str(); }
-        const char *getFileName() const { return item.getFile()->getFilePath().c_str(); }
-        const char *getRunName() const { return item.getRun()->getRunName().c_str(); }
-        const char *getResultItemAttribute(const char *attrName) const { return item.getAttribute(attrName).c_str(); }
-        const char *getRunAttribute(const char *attrName) const { return item.getRun()->getAttribute(attrName).c_str(); }
-        const char *getIterationVariable(const char *name) const { return item.getRun()->getIterationVariable(name).c_str(); }
-        const char *getConfigValue(const char *key) const { return item.getRun()->getConfigValue(key).c_str(); }
+        const char *getName() const { return item->getName().c_str(); }
+        const char *getModuleName() const { return item->getModuleName().c_str(); }
+        const char *getFileName() const { return item->getFile()->getFilePath().c_str(); }
+        const char *getRunName() const { return item->getRun()->getRunName().c_str(); }
+        const char *getResultItemAttribute(const char *attrName) const { return item->getAttribute(attrName).c_str(); }
+        const char *getRunAttribute(const char *attrName) const { return item->getRun()->getAttribute(attrName).c_str(); }
+        const char *getIterationVariable(const char *name) const { return item->getRun()->getIterationVariable(name).c_str(); }
+        const char *getConfigValue(const char *key) const { return item->getRun()->getConfigValue(key).c_str(); }
 };
 
 const char *MatchableResultItem::getAsString(const char *attribute) const
@@ -881,7 +881,7 @@ const char *MatchableResultItem::getAsString(const char *attribute) const
 
 const char *MatchableResultItem::getItemType() const
 {
-    switch (item.getItemType()) {
+    switch (item->getItemType()) {
         case ResultFileManager::PARAMETER: return "parameter";
         case ResultFileManager::SCALAR: return "scalar";
         case ResultFileManager::VECTOR: return "vector";
@@ -1138,7 +1138,7 @@ IDList ResultFileManager::filterIDList(const IDList& idlist, const char *pattern
         if (interrupted.flag)
             throw InterruptedException("Result filtering interrupted");
         ID id = idlist.get(i);
-        const ResultItem& item = getItem(id);
+        const ResultItem *item = getItem(id);
         MatchableResultItem matchable(item);
         if (matchExpr.matches(&matchable)) {
             out.push_back(id);
@@ -1674,7 +1674,7 @@ bool ResultFileManager::hasStaleID(const IDList& ids) const
 
 const char *ResultFileManager::getRunAttribute(ID id, const char *attribute) const
 {
-    return getItem(id).getRun()->getAttribute(attribute).c_str();
+    return getItem(id)->getRun()->getAttribute(attribute).c_str();
 }
 
 }  // namespace scave

@@ -132,8 +132,8 @@ void SqliteVectorFileExporter::saveResults(const std::string& fileName, ResultFi
         std::vector<void*> vectorHandles(filteredList.size());
         for (int i=0; i<filteredList.size(); i++) {
             ID id = filteredList.get(i);
-            const VectorResult& vector = manager->getVector(id);
-            vectorHandles[i] = writer.registerVector(vector.getModuleName(), vector.getName(), vector.getAttributes(), perVectorMemoryLimit);
+            const VectorResult *vector = manager->getVector(id);
+            vectorHandles[i] = writer.registerVector(vector->getModuleName(), vector->getName(), vector->getAttributes(), perVectorMemoryLimit);
         }
 
         // write data for all vectors
@@ -153,8 +153,8 @@ void SqliteVectorFileExporter::saveResults(const std::string& fileName, ResultFi
                     writer.recordInVector(vectorHandle, array->getEventNumber(j), time.getMantissaForScale(simtimeScaleExp), array->getY(j));
                 else if (!skipSpecialValues) {
                     ID id = filteredList.get(i);
-                    const VectorResult& vector = manager->getVector(id);
-                    std::string vectorName = vector.getModuleName() + "." + vector.getName();
+                    const VectorResult *vector = manager->getVector(id);
+                    std::string vectorName = vector->getModuleName() + "." + vector->getName();
                     throw opp_runtime_error("Illegal value (NaN of Inf) encountered as time while exporting vector %s; "
                             "use skipSpecialValues=true to turn off this error message", vectorName.c_str());
                 }

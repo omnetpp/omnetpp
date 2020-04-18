@@ -104,14 +104,14 @@ void ResultsPickler::pickleResultAttrs(Pickler& p, const IDList& resultIDs, cons
     p.startList();
 
     for (int i = 0; i < resultIDs.size(); ++i) {
-        const ResultItem &result = rfm->getItem(resultIDs.get(i));
-        const StringMap &attrs = result.getAttributes();
+        const ResultItem *result = rfm->getItem(resultIDs.get(i));
+        const StringMap& attrs = result->getAttributes();
         for (const auto & a : attrs) {
             p.startTuple();
 
-            p.pushString(result.getRun()->getRunName());
-            p.pushString(result.getModuleName());
-            p.pushString(result.getName());
+            p.pushString(result->getRun()->getRunName());
+            p.pushString(result->getModuleName());
+            p.pushString(result->getName());
             p.pushString(a.first); // attrname
             p.pushString(a.second); // attrvalue
 
@@ -239,14 +239,14 @@ std::string ResultsPickler::getCsvResultsPickle(std::string filterExpression, st
         // end of run data pickling
 
         for (const ID& id : results) {
-            const ResultItem &result = rfm->getItem(id);
-            auto type = result.getItemType();
+            const ResultItem *result = rfm->getItem(id);
+            auto type = result->getItemType();
 
             if (resultTypesToAdd & type) {
 
                 p.startTuple();
 
-                p.pushString(result.getRun()->getRunName());
+                p.pushString(result->getRun()->getRunName());
                 switch (type) {
                     case ResultFileManager::PARAMETER:  p.pushString("param");     break; // parameter?
                     case ResultFileManager::SCALAR:     p.pushString("scalar");    break;
@@ -255,20 +255,20 @@ std::string ResultsPickler::getCsvResultsPickle(std::string filterExpression, st
                     case ResultFileManager::HISTOGRAM:  p.pushString("histogram"); break;
                 }
 
-                p.pushString(result.getModuleName());
-                p.pushString(result.getName());
+                p.pushString(result->getModuleName());
+                p.pushString(result->getName());
                 p.pushNone(); // attrname
                 p.pushNone(); // attrvalue
 
                 switch (type) {
                     case ResultFileManager::PARAMETER: {
-                        const ParameterResult& parameter = rfm->getParameter(id);
-                        p.pushString(parameter.getValue());
+                        const ParameterResult *parameter = rfm->getParameter(id);
+                        p.pushString(parameter->getValue());
                         break;
                     }
                     case ResultFileManager::SCALAR: {
-                        const ScalarResult& scalar = rfm->getScalar(id);
-                        p.pushDouble(scalar.getValue());
+                        const ScalarResult *scalar = rfm->getScalar(id);
+                        p.pushDouble(scalar->getValue());
                         break;
                     }
                     case ResultFileManager::VECTOR: {
@@ -286,7 +286,7 @@ std::string ResultsPickler::getCsvResultsPickle(std::string filterExpression, st
                         break;
                     }
                     case ResultFileManager::STATISTICS: {
-                        const Statistics& statistics = rfm->getStatistics(id).getStatistics();
+                        const Statistics& statistics = rfm->getStatistics(id)->getStatistics();
 
                         p.pushNone(); // value column (for scalars/parameters)
 
@@ -300,10 +300,10 @@ std::string ResultsPickler::getCsvResultsPickle(std::string filterExpression, st
                         break;
                     }
                     case ResultFileManager::HISTOGRAM: {
-                        const HistogramResult& histogramResult = rfm->getHistogram(id);
+                        const HistogramResult *histogramResult = rfm->getHistogram(id);
 
-                        const Statistics& statistics = histogramResult.getStatistics();
-                        const Histogram& histogram = histogramResult.getHistogram();
+                        const Statistics& statistics = histogramResult->getStatistics();
+                        const Histogram& histogram = histogramResult->getHistogram();
 
                         p.pushNone(); // value column (for scalars/parameters)
 
@@ -329,15 +329,15 @@ std::string ResultsPickler::getCsvResultsPickle(std::string filterExpression, st
 
 
             if (addAttrs) {
-                const StringMap &attrs = result.getAttributes();
+                const StringMap &attrs = result->getAttributes();
 
                 for (const auto& a : attrs) {
                     p.startTuple();
 
-                    p.pushString(result.getRun()->getRunName());
+                    p.pushString(result->getRun()->getRunName());
                     p.pushString("attr");
-                    p.pushString(result.getModuleName());
-                    p.pushString(result.getName());
+                    p.pushString(result->getModuleName());
+                    p.pushString(result->getName());
                     p.pushString(a.first); // attrname
                     p.pushString(a.second); // attrvalue
 
@@ -376,13 +376,13 @@ std::string ResultsPickler::getScalarsPickle(const char *filterExpression, bool 
         scalars = rfm->filterIDList(allScalars, filterExpression, -1, interrupted);
 
         for (int i = 0; i < scalars.size(); ++i) {
-            const ScalarResult &result = rfm->getScalar(scalars.get(i));
+            const ScalarResult *result = rfm->getScalar(scalars.get(i));
             p.startTuple();
 
-            p.pushString(result.getRun()->getRunName());
-            p.pushString(result.getModuleName());
-            p.pushString(result.getName());
-            p.pushDouble(result.getValue());
+            p.pushString(result->getRun()->getRunName());
+            p.pushString(result->getModuleName());
+            p.pushString(result->getName());
+            p.pushDouble(result->getValue());
 
             p.endTuple();
 
@@ -426,12 +426,12 @@ std::string ResultsPickler::getVectorsPickle(const char *filterExpression, bool 
         vectors = rfm->filterIDList(allVectors, filterExpression, -1, interrupted);
 
         for (int i = 0; i < vectors.size(); ++i) {
-            const VectorResult &result = rfm->getVector(vectors.get(i));
+            const VectorResult *result = rfm->getVector(vectors.get(i));
             p.startTuple();
 
-            p.pushString(result.getRun()->getRunName());
-            p.pushString(result.getModuleName());
-            p.pushString(result.getName());
+            p.pushString(result->getRun()->getRunName());
+            p.pushString(result->getModuleName());
+            p.pushString(result->getName());
 
             auto shmNames = readVectorIntoShm(vectors.get(i), simTimeStart, simTimeEnd, interrupted);
 
@@ -481,13 +481,13 @@ std::string ResultsPickler::getParamValuesPickle(const char *filterExpression, b
         params = rfm->filterIDList(allParams, filterExpression, -1, interrupted);
 
         for (int i = 0; i < params.size(); ++i) {
-            const ParameterResult &result = rfm->getParameter(params.get(i));
+            const ParameterResult *result = rfm->getParameter(params.get(i));
             p.startTuple();
 
-            p.pushString(result.getRun()->getRunName());
-            p.pushString(result.getModuleName());
-            p.pushString(result.getName());
-            p.pushString(result.getValue());
+            p.pushString(result->getRun()->getRunName());
+            p.pushString(result->getModuleName());
+            p.pushString(result->getName());
+            p.pushString(result->getValue());
 
             p.endTuple();
 
@@ -530,15 +530,15 @@ std::string ResultsPickler::getStatisticsPickle(const char *filterExpression, bo
         statistics = rfm->filterIDList(allStatistics, filterExpression, -1, interrupted);
 
         for (int i = 0; i < statistics.size(); ++i) {
-            const StatisticsResult &result = rfm->getStatistics(statistics.get(i));
+            const StatisticsResult *result = rfm->getStatistics(statistics.get(i));
 
-            const Statistics& statistics = result.getStatistics();
+            const Statistics& statistics = result->getStatistics();
 
             p.startTuple();
 
-            p.pushString(result.getRun()->getRunName());
-            p.pushString(result.getModuleName());
-            p.pushString(result.getName());
+            p.pushString(result->getRun()->getRunName());
+            p.pushString(result->getModuleName());
+            p.pushString(result->getName());
 
             p.pushDouble(statistics.getCount());
             p.pushDouble(statistics.getSumWeights());
@@ -587,16 +587,16 @@ std::string ResultsPickler::getHistogramsPickle(const char *filterExpression, bo
         histograms = rfm->filterIDList(allHistograms, filterExpression, -1, interrupted);
 
         for (int i = 0; i < histograms.size(); ++i) {
-            const HistogramResult &result = rfm->getHistogram(histograms.get(i));
+            const HistogramResult *result = rfm->getHistogram(histograms.get(i));
 
-            const Statistics& statistics = result.getStatistics();
-            const Histogram& histogram = result.getHistogram();
+            const Statistics& statistics = result->getStatistics();
+            const Histogram& histogram = result->getHistogram();
 
             p.startTuple();
 
-            p.pushString(result.getRun()->getRunName());
-            p.pushString(result.getModuleName());
-            p.pushString(result.getName());
+            p.pushString(result->getRun()->getRunName());
+            p.pushString(result->getModuleName());
+            p.pushString(result->getName());
 
             p.pushDouble(statistics.getCount());
             p.pushDouble(statistics.getSumWeights());

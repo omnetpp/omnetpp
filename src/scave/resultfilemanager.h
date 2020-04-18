@@ -188,12 +188,12 @@ class SCAVE_API ResultFileManager
     void collectIDs(IDList& result, FileRun *fileRun, std::vector<T> FileRun::* vec, int type, bool includeFields) const;
 
     // unchecked getters are only for internal use by CmpBase in idlist.cc
-    const ResultItem& uncheckedGetItem(ID id) const;
-    const ScalarResult& uncheckedGetScalar(ID id) const;
-    const ParameterResult& uncheckedGetParameter(ID id) const;
-    const VectorResult& uncheckedGetVector(ID id) const;
-    const StatisticsResult& uncheckedGetStatistics(ID id) const;
-    const HistogramResult& uncheckedGetHistogram(ID id) const;
+    const ResultItem *uncheckedGetItem(ID id) const;
+    const ScalarResult *uncheckedGetScalar(ID id) const;
+    const ParameterResult *uncheckedGetParameter(ID id) const;
+    const VectorResult *uncheckedGetVector(ID id) const;
+    const StatisticsResult *uncheckedGetStatistics(ID id) const;
+    const HistogramResult *uncheckedGetHistogram(ID id) const;
 
   public:
     ResultFileManager();
@@ -219,12 +219,12 @@ class SCAVE_API ResultFileManager
     ResultFileList getFilesForRun(Run *run) const;
     ResultFileList getFilesForInput(const char *inputName) const;
 
-    const ResultItem& getItem(ID id) const;
-    const ScalarResult& getScalar(ID id) const;
-    const ParameterResult& getParameter(ID id) const;
-    const VectorResult& getVector(ID id) const;
-    const StatisticsResult& getStatistics(ID id) const;
-    const HistogramResult& getHistogram(ID id) const;
+    const ResultItem *getItem(ID id) const;
+    const ScalarResult *getScalar(ID id) const;
+    const ParameterResult *getParameter(ID id) const;
+    const VectorResult *getVector(ID id) const;
+    const StatisticsResult *getStatistics(ID id) const;
+    const HistogramResult *getHistogram(ID id) const;
     static int getTypeOf(ID id) {return _type(id);} // SCALAR/VECTOR/STATISTICS/HISTOGRAM
 
     bool isStaleID(ID id) const;
@@ -357,42 +357,42 @@ class SCAVE_API ResultFileManager
     const char *getRunAttribute(ID id, const char *attribute) const;
 };
 
-inline const ResultItem& ResultFileManager::uncheckedGetItem(ID id) const
+inline const ResultItem *ResultFileManager::uncheckedGetItem(ID id) const
 {
     switch (_type(id))
     {
-        case SCALAR: return fileRunList[_filerunid(id)]->scalarResults[_pos(id)];
-        case PARAMETER: return fileRunList[_filerunid(id)]->parameterResults[_pos(id)];
-        case VECTOR: return fileRunList[_filerunid(id)]->vectorResults[_pos(id)];
-        case STATISTICS: return fileRunList[_filerunid(id)]->statisticsResults[_pos(id)];
-        case HISTOGRAM: return fileRunList[_filerunid(id)]->histogramResults[_pos(id)];
+        case SCALAR: return &fileRunList[_filerunid(id)]->scalarResults[_pos(id)];
+        case PARAMETER: return &fileRunList[_filerunid(id)]->parameterResults[_pos(id)];
+        case VECTOR: return &fileRunList[_filerunid(id)]->vectorResults[_pos(id)];
+        case STATISTICS: return &fileRunList[_filerunid(id)]->statisticsResults[_pos(id)];
+        case HISTOGRAM: return &fileRunList[_filerunid(id)]->histogramResults[_pos(id)];
         default: throw opp_runtime_error("ResultFileManager: invalid ID: wrong type");
     }
 }
 
-inline const ScalarResult& ResultFileManager::uncheckedGetScalar(ID id) const
+inline const ScalarResult *ResultFileManager::uncheckedGetScalar(ID id) const
 {
-    return fileRunList[_filerunid(id)]->scalarResults[_pos(id)];
+    return &fileRunList[_filerunid(id)]->scalarResults[_pos(id)];
 }
 
-inline const ParameterResult& ResultFileManager::uncheckedGetParameter(ID id) const
+inline const ParameterResult *ResultFileManager::uncheckedGetParameter(ID id) const
 {
-    return fileRunList[_filerunid(id)]->parameterResults[_pos(id)];
+    return &fileRunList[_filerunid(id)]->parameterResults[_pos(id)];
 }
 
-inline const VectorResult& ResultFileManager::uncheckedGetVector(ID id) const
+inline const VectorResult *ResultFileManager::uncheckedGetVector(ID id) const
 {
-    return fileRunList[_filerunid(id)]->vectorResults[_pos(id)];
+    return &fileRunList[_filerunid(id)]->vectorResults[_pos(id)];
 }
 
-inline const StatisticsResult& ResultFileManager::uncheckedGetStatistics(ID id) const
+inline const StatisticsResult *ResultFileManager::uncheckedGetStatistics(ID id) const
 {
-    return fileRunList[_filerunid(id)]->statisticsResults[_pos(id)];
+    return &fileRunList[_filerunid(id)]->statisticsResults[_pos(id)];
 }
 
-inline const HistogramResult& ResultFileManager::uncheckedGetHistogram(ID id) const
+inline const HistogramResult *ResultFileManager::uncheckedGetHistogram(ID id) const
 {
-    return fileRunList[_filerunid(id)]->histogramResults[_pos(id)];
+    return &fileRunList[_filerunid(id)]->histogramResults[_pos(id)];
 }
 
 inline FileRun *ResultFileManager::getFileRunForID(ID id) const
