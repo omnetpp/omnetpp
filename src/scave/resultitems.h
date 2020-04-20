@@ -55,6 +55,7 @@ typedef std::vector<std::string> StringVector;
 typedef std::set<std::string> StringSet;
 typedef std::map<std::string, std::string> StringMap;
 typedef std::vector< std::pair<std::string, std::string> > OrderedKeyValueList;
+typedef std::vector< std::pair<Run *, std::string> > RunAndValueList;
 
 using omnetpp::common::Statistics;
 using omnetpp::common::Histogram;

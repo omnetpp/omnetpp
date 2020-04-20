@@ -673,7 +673,7 @@ std::string ResultsPickler::getRunattrsPickle(const char *filterExpression, cons
     p.startList();
 
     if (!opp_isempty(filterExpression)) {
-        auto runattrs = rfm->getMatchingRunattrsPtr(rfm->getRuns(), filterExpression);
+        auto runattrs = rfm->getMatchingRunattrs(rfm->getRuns(), filterExpression);
 
         for (const auto &ra : runattrs) {
             Run *run = ra.first;
@@ -709,7 +709,7 @@ std::string ResultsPickler::getItervarsPickle(const char *filterExpression, cons
     p.startList();
 
     if (!opp_isempty(filterExpression)) {
-        auto itervars = rfm->getMatchingItervarsPtr(rfm->getRuns(), filterExpression);
+        auto itervars = rfm->getMatchingItervars(rfm->getRuns(), filterExpression);
 
         for (const auto &iv : itervars) {
             Run *run = iv.first;
@@ -745,7 +745,7 @@ std::string ResultsPickler::getConfigEntriesPickle(const char *filterExpression,
     p.startList();
 
     if (!opp_isempty(filterExpression)) {
-        auto configentries = rfm->getMatchingConfigEntriesPtr(rfm->getRuns(), filterExpression);
+        auto configentries = rfm->getMatchingConfigEntries(rfm->getRuns(), filterExpression);
 
         for (const auto &ce : configentries) {
             Run *run = ce.first;
@@ -781,7 +781,7 @@ std::string ResultsPickler::getParamAssignmentsPickle(const char *filterExpressi
     p.startList();
 
     if (!opp_isempty(filterExpression)) {
-        auto paramassignments = rfm->getMatchingParamAssignmentsPtr(rfm->getRuns(), filterExpression);
+        auto paramassignments = rfm->getMatchingParamAssignments(rfm->getRuns(), filterExpression);
 
         for (const auto &pa : paramassignments) {
             Run *run = pa.first;

@@ -276,11 +276,11 @@ class SCAVE_API ResultFileManager
     // These are the ones that are called from Python. They return (runID, name) pairs (the values are queried later).
 
     // these are the ones that are called from opp_scavetool
-    std::vector< std::pair<Run *, std::string> > getMatchingItervarsPtr(const RunList& runs, const char *pattern) const;
-    std::vector< std::pair<Run *, std::string> > getMatchingRunattrsPtr(const RunList& runs, const char *pattern) const;
-    std::vector< std::pair<Run *, std::string> > getMatchingConfigEntriesPtr(const RunList& runs, const char *pattern) const;
-    std::vector< std::pair<Run *, std::string> > getMatchingParamAssignmentsPtr(const RunList& runs, const char *pattern) const;
-    std::vector< std::pair<Run *, std::string> > getMatchingNonParamAssignmentConfigEntriesPtr(const RunList& runs, const char *pattern) const;
+    RunAndValueList getMatchingItervars(const RunList& runs, const char *pattern) const;
+    RunAndValueList getMatchingRunattrs(const RunList& runs, const char *pattern) const;
+    RunAndValueList getMatchingConfigEntries(const RunList& runs, const char *pattern) const;
+    RunAndValueList getMatchingParamAssignments(const RunList& runs, const char *pattern) const;
+    RunAndValueList getMatchingNonParamAssignmentConfigEntries(const RunList& runs, const char *pattern) const;
 
     /**
      * Get a filtered subset of the input set (of scalars or vectors).

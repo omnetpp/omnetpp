@@ -317,7 +317,7 @@ static string runStr(const Run *run, RunDisplayMode mode)
 
 typedef std::string get_value_t(Run * run, const std::string &name);
 
-static void listRunMetadata(std::ostream &out, const std::vector< std::pair<Run *, std::string> > &metadata, get_value_t getValue, RunDisplayMode runDisplayMode, bool grepFriendly)
+static void listRunMetadata(std::ostream &out, const RunAndValueList& metadata, get_value_t getValue, RunDisplayMode runDisplayMode, bool grepFriendly)
 {
     Run *prevRun = nullptr;
 
@@ -555,18 +555,18 @@ void ScaveTool::queryCommand(int argc, char **argv)
     }
 #undef L
     case LIST_RUNATTRS: {
-        std::vector< std::pair<Run *, std::string> > filteredRunattrs = resultFileManager.getMatchingRunattrsPtr(runs, opt_filterExpression.c_str());
-        listRunMetadata(out, filteredRunattrs, [](Run *run, const std::string &name) { return run->getAttribute(name); }, opt_runDisplayMode, opt_grepFriendly);
+        RunAndValueList filteredRunattrs = resultFileManager.getMatchingRunattrs(runs, opt_filterExpression.c_str());
+        listRunMetadata(out, filteredRunattrs, [](Run *run, const std::string& name) { return run->getAttribute(name); }, opt_runDisplayMode, opt_grepFriendly);
         break;
     }
     case LIST_ITERVARS: {
-        std::vector< std::pair<Run *, std::string> >  filteredItervars = resultFileManager.getMatchingItervarsPtr(runs, opt_filterExpression.c_str());
-        listRunMetadata(out, filteredItervars, [](Run *run, const std::string &name) { return run->getIterationVariable(name); }, opt_runDisplayMode, opt_grepFriendly);
+        RunAndValueList filteredItervars = resultFileManager.getMatchingItervars(runs, opt_filterExpression.c_str());
+        listRunMetadata(out, filteredItervars, [](Run *run, const std::string& name) { return run->getIterationVariable(name); }, opt_runDisplayMode, opt_grepFriendly);
         break;
     }
     case LIST_CONFIGENTRIES: {
-        std::vector< std::pair<Run *, std::string> > filteredConfigEntries = resultFileManager.getMatchingConfigEntriesPtr(runs, opt_filterExpression.c_str());
-        listRunMetadata(out, filteredConfigEntries, [](Run *run, const std::string &name) { return run->getConfigValue(name); }, opt_runDisplayMode, opt_grepFriendly);
+        RunAndValueList filteredConfigEntries = resultFileManager.getMatchingConfigEntries(runs, opt_filterExpression.c_str());
+        listRunMetadata(out, filteredConfigEntries, [](Run *run, const std::string& name) { return run->getConfigValue(name); }, opt_runDisplayMode, opt_grepFriendly);
         break;
     }
     case LIST_NAMES: {

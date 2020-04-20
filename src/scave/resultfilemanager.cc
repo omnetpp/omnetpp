@@ -1027,7 +1027,7 @@ const char *MatchableConfigEntry::getAsString(const char *attribute) const
         return getName();
 }
 
-std::vector< std::pair<Run *, std::string> > ResultFileManager::getMatchingItervarsPtr(const RunList& runs, const char *pattern) const
+RunAndValueList ResultFileManager::getMatchingItervars(const RunList& runs, const char *pattern) const
 {
     if (opp_isblank(pattern))  // no filter
         throw opp_runtime_error("Empty filter expression is not allowed");
@@ -1035,7 +1035,7 @@ std::vector< std::pair<Run *, std::string> > ResultFileManager::getMatchingIterv
     MatchExpression matchExpr(pattern, false  /*dottedpath*/, true  /*fullstring*/, true  /*casesensitive*/);
 
     READER_MUTEX
-    std::vector< std::pair<Run *, std::string> > out;
+    RunAndValueList out;
     for (Run *run : runs) {
         for (auto &iv : run->getIterationVariables()) {
             MatchableItervar matchable(run, iv.first);
@@ -1046,7 +1046,7 @@ std::vector< std::pair<Run *, std::string> > ResultFileManager::getMatchingIterv
     return out;
 }
 
-std::vector< std::pair<Run *, std::string> > ResultFileManager::getMatchingRunattrsPtr(const RunList& runs, const char *pattern) const
+RunAndValueList ResultFileManager::getMatchingRunattrs(const RunList& runs, const char *pattern) const
 {
     if (opp_isblank(pattern))  // no filter
         throw opp_runtime_error("Empty filter expression is not allowed");
@@ -1054,7 +1054,7 @@ std::vector< std::pair<Run *, std::string> > ResultFileManager::getMatchingRunat
     MatchExpression matchExpr(pattern, false  /*dottedpath*/, true  /*fullstring*/, true  /*casesensitive*/);
 
     READER_MUTEX
-    std::vector< std::pair<Run *, std::string> > out;
+    RunAndValueList out;
     for (Run *run : runs) {
         for (auto &ra : run->getAttributes()) {
             MatchableRunattr matchable(run, ra.first);
@@ -1065,7 +1065,7 @@ std::vector< std::pair<Run *, std::string> > ResultFileManager::getMatchingRunat
     return out;
 }
 
-std::vector< std::pair<Run *, std::string> > ResultFileManager::getMatchingConfigEntriesPtr(const RunList& runs, const char *pattern) const
+RunAndValueList ResultFileManager::getMatchingConfigEntries(const RunList& runs, const char *pattern) const
 {
     if (opp_isblank(pattern))  // no filter
         throw opp_runtime_error("Empty filter expression is not allowed");
@@ -1073,7 +1073,7 @@ std::vector< std::pair<Run *, std::string> > ResultFileManager::getMatchingConfi
     MatchExpression matchExpr(pattern, false  /*dottedpath*/, true  /*fullstring*/, true  /*casesensitive*/);
 
     READER_MUTEX
-    std::vector< std::pair<Run *, std::string> > out;
+    RunAndValueList out;
     for (Run *run : runs) {
         for (auto &entry : run->getConfigEntries()) {
             MatchableConfigEntry matchable(run, entry.first);
@@ -1084,7 +1084,7 @@ std::vector< std::pair<Run *, std::string> > ResultFileManager::getMatchingConfi
     return out;
 }
 
-std::vector<std::pair<Run *, std::string>> ResultFileManager::getMatchingParamAssignmentsPtr(const RunList& runs, const char *pattern) const
+RunAndValueList ResultFileManager::getMatchingParamAssignments(const RunList& runs, const char *pattern) const
 {
     if (opp_isblank(pattern))  // no filter
         throw opp_runtime_error("Empty filter expression is not allowed");
@@ -1092,7 +1092,7 @@ std::vector<std::pair<Run *, std::string>> ResultFileManager::getMatchingParamAs
     MatchExpression matchExpr(pattern, false  /*dottedpath*/, true  /*fullstring*/, true  /*casesensitive*/);
 
     READER_MUTEX
-    std::vector<std::pair<Run *, std::string>> out;
+    RunAndValueList out;
     for (Run *run : runs) {
         for (auto &param : run->getParamAssignments()) {
             MatchableConfigEntry matchable(run, param.first);
@@ -1103,7 +1103,7 @@ std::vector<std::pair<Run *, std::string>> ResultFileManager::getMatchingParamAs
     return out;
 }
 
-std::vector<std::pair<Run *, std::string>> ResultFileManager::getMatchingNonParamAssignmentConfigEntriesPtr(const RunList& runs, const char *pattern) const
+RunAndValueList ResultFileManager::getMatchingNonParamAssignmentConfigEntries(const RunList& runs, const char *pattern) const
 {
     if (opp_isblank(pattern))  // no filter
         throw opp_runtime_error("Empty filter expression is not allowed");
@@ -1111,7 +1111,7 @@ std::vector<std::pair<Run *, std::string>> ResultFileManager::getMatchingNonPara
     MatchExpression matchExpr(pattern, false  /*dottedpath*/, true  /*fullstring*/, true  /*casesensitive*/);
 
     READER_MUTEX
-    std::vector<std::pair<Run *, std::string>> out;
+    RunAndValueList out;
     for (Run *run : runs) {
         for (auto &entry : run->getNonParamAssignmentConfigEntries()) {
             MatchableConfigEntry matchable(run, entry.first);
