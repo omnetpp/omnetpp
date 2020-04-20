@@ -1027,15 +1027,7 @@ const char *MatchableConfigEntry::getAsString(const char *attribute) const
         return getName();
 }
 
-std::vector<std::pair<std::string, std::string>> ResultFileManager::getMatchingItervars(const char *pattern) const
-{
-    std::vector<std::pair<std::string, std::string>> out;
-    for (auto i : getMatchingItervarsPtr(pattern))
-        out.push_back({i.first->getRunName(), i.second});
-    return out;
-}
-
-std::vector< std::pair<Run *, std::string> > ResultFileManager::getMatchingItervarsPtr(const char *pattern) const
+std::vector< std::pair<Run *, std::string> > ResultFileManager::getMatchingItervarsPtr(const RunList& runs, const char *pattern) const
 {
     if (opp_isblank(pattern))  // no filter
         throw opp_runtime_error("Empty filter expression is not allowed");
@@ -1044,7 +1036,7 @@ std::vector< std::pair<Run *, std::string> > ResultFileManager::getMatchingIterv
 
     READER_MUTEX
     std::vector< std::pair<Run *, std::string> > out;
-    for (Run *run : runList) {
+    for (Run *run : runs) {
         for (auto &iv : run->getIterationVariables()) {
             MatchableItervar matchable(run, iv.first);
             if (matchExpr.matches(&matchable))
@@ -1054,15 +1046,7 @@ std::vector< std::pair<Run *, std::string> > ResultFileManager::getMatchingIterv
     return out;
 }
 
-std::vector<std::pair<std::string, std::string>> ResultFileManager::getMatchingRunattrs(const char *pattern) const
-{
-    std::vector<std::pair<std::string, std::string>> out;
-    for (auto i : getMatchingRunattrsPtr(pattern))
-        out.push_back({i.first->getRunName(), i.second});
-    return out;
-}
-
-std::vector< std::pair<Run *, std::string> > ResultFileManager::getMatchingRunattrsPtr(const char *pattern) const
+std::vector< std::pair<Run *, std::string> > ResultFileManager::getMatchingRunattrsPtr(const RunList& runs, const char *pattern) const
 {
     if (opp_isblank(pattern))  // no filter
         throw opp_runtime_error("Empty filter expression is not allowed");
@@ -1071,7 +1055,7 @@ std::vector< std::pair<Run *, std::string> > ResultFileManager::getMatchingRunat
 
     READER_MUTEX
     std::vector< std::pair<Run *, std::string> > out;
-    for (Run *run : runList) {
+    for (Run *run : runs) {
         for (auto &ra : run->getAttributes()) {
             MatchableRunattr matchable(run, ra.first);
             if (matchExpr.matches(&matchable))
@@ -1081,15 +1065,7 @@ std::vector< std::pair<Run *, std::string> > ResultFileManager::getMatchingRunat
     return out;
 }
 
-std::vector< std::pair<std::string, std::string>> ResultFileManager::getMatchingConfigEntries(const char *pattern) const
-{
-    std::vector<std::pair<std::string, std::string>> out;
-    for (auto i : getMatchingConfigEntriesPtr(pattern))
-        out.push_back({i.first->getRunName(), i.second});
-    return out;
-}
-
-std::vector< std::pair<Run *, std::string> > ResultFileManager::getMatchingConfigEntriesPtr(const char *pattern) const
+std::vector< std::pair<Run *, std::string> > ResultFileManager::getMatchingConfigEntriesPtr(const RunList& runs, const char *pattern) const
 {
     if (opp_isblank(pattern))  // no filter
         throw opp_runtime_error("Empty filter expression is not allowed");
@@ -1098,7 +1074,7 @@ std::vector< std::pair<Run *, std::string> > ResultFileManager::getMatchingConfi
 
     READER_MUTEX
     std::vector< std::pair<Run *, std::string> > out;
-    for (Run *run : runList) {
+    for (Run *run : runs) {
         for (auto &entry : run->getConfigEntries()) {
             MatchableConfigEntry matchable(run, entry.first);
             if (matchExpr.matches(&matchable))
@@ -1108,8 +1084,7 @@ std::vector< std::pair<Run *, std::string> > ResultFileManager::getMatchingConfi
     return out;
 }
 
-// TODO use getMatchingConfigEntriesPtr then filter
-std::vector<std::pair<std::string, std::string>> ResultFileManager::getMatchingParamAssignments(const char *pattern) const
+std::vector<std::pair<Run *, std::string>> ResultFileManager::getMatchingParamAssignmentsPtr(const RunList& runs, const char *pattern) const
 {
     if (opp_isblank(pattern))  // no filter
         throw opp_runtime_error("Empty filter expression is not allowed");
@@ -1117,19 +1092,18 @@ std::vector<std::pair<std::string, std::string>> ResultFileManager::getMatchingP
     MatchExpression matchExpr(pattern, false  /*dottedpath*/, true  /*fullstring*/, true  /*casesensitive*/);
 
     READER_MUTEX
-    std::vector<std::pair<std::string, std::string>> out;
-    for (Run *run : runList) {
+    std::vector<std::pair<Run *, std::string>> out;
+    for (Run *run : runs) {
         for (auto &param : run->getParamAssignments()) {
             MatchableConfigEntry matchable(run, param.first);
             if (matchExpr.matches(&matchable))
-                out.push_back({run->getRunName(), param.first});
+                out.push_back({run, param.first});
         }
     }
     return out;
 }
 
-// TODO use getMatchingConfigEntriesPtr then filter
-std::vector<std::pair<std::string, std::string>> ResultFileManager::getMatchingNonParamAssignmentConfigEntries(const char *pattern) const
+std::vector<std::pair<Run *, std::string>> ResultFileManager::getMatchingNonParamAssignmentConfigEntriesPtr(const RunList& runs, const char *pattern) const
 {
     if (opp_isblank(pattern))  // no filter
         throw opp_runtime_error("Empty filter expression is not allowed");
@@ -1137,12 +1111,12 @@ std::vector<std::pair<std::string, std::string>> ResultFileManager::getMatchingN
     MatchExpression matchExpr(pattern, false  /*dottedpath*/, true  /*fullstring*/, true  /*casesensitive*/);
 
     READER_MUTEX
-    std::vector<std::pair<std::string, std::string>> out;
-    for (Run *run : runList) {
+    std::vector<std::pair<Run *, std::string>> out;
+    for (Run *run : runs) {
         for (auto &entry : run->getNonParamAssignmentConfigEntries()) {
             MatchableConfigEntry matchable(run, entry.first);
             if (matchExpr.matches(&matchable))
-                out.push_back({run->getRunName(), entry.first});
+                out.push_back({run, entry.first});
         }
     }
     return out;

@@ -266,7 +266,7 @@ class SCAVE_API ResultFileManager
     IDList getStatisticsInFileRun(FileRun *fileRun) const;
     IDList getHistogramsInFileRun(FileRun *fileRun) const;
 
-    // these ones are called from InputsTree; would be nice to make them constant-cost
+    // these ones are called from InputsTree; TODO would be nice to make them constant-cost
     int getNumScalarsInFileRun(FileRun *fileRun) const {return getScalarsInFileRun(fileRun).size();}
     int getNumParametersInFileRun(FileRun *fileRun) const {return getParametersInFileRun(fileRun).size();}
     int getNumVectorsInFileRun(FileRun *fileRun) const {return getVectorsInFileRun(fileRun).size();}
@@ -274,16 +274,13 @@ class SCAVE_API ResultFileManager
     int getNumHistogramsInFileRun(FileRun *fileRun) const {return getHistogramsInFileRun(fileRun).size();}
 
     // These are the ones that are called from Python. They return (runID, name) pairs (the values are queried later).
-    std::vector< std::pair<std::string, std::string> > getMatchingItervars(const char *pattern) const;
-    std::vector< std::pair<std::string, std::string> > getMatchingRunattrs(const char *pattern) const;
-    std::vector< std::pair<std::string, std::string> > getMatchingConfigEntries(const char *pattern) const;
-    std::vector< std::pair<std::string, std::string> > getMatchingParamAssignments(const char *pattern) const;
-    std::vector< std::pair<std::string, std::string> > getMatchingNonParamAssignmentConfigEntries(const char *pattern) const;
 
     // these are the ones that are called from opp_scavetool
-    std::vector< std::pair<Run *, std::string> > getMatchingItervarsPtr(const char *pattern) const;
-    std::vector< std::pair<Run *, std::string> > getMatchingRunattrsPtr(const char *pattern) const;
-    std::vector< std::pair<Run *, std::string> > getMatchingConfigEntriesPtr(const char *pattern) const;
+    std::vector< std::pair<Run *, std::string> > getMatchingItervarsPtr(const RunList& runs, const char *pattern) const;
+    std::vector< std::pair<Run *, std::string> > getMatchingRunattrsPtr(const RunList& runs, const char *pattern) const;
+    std::vector< std::pair<Run *, std::string> > getMatchingConfigEntriesPtr(const RunList& runs, const char *pattern) const;
+    std::vector< std::pair<Run *, std::string> > getMatchingParamAssignmentsPtr(const RunList& runs, const char *pattern) const;
+    std::vector< std::pair<Run *, std::string> > getMatchingNonParamAssignmentConfigEntriesPtr(const RunList& runs, const char *pattern) const;
 
     /**
      * Get a filtered subset of the input set (of scalars or vectors).

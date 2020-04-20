@@ -673,7 +673,7 @@ std::string ResultsPickler::getRunattrsPickle(const char *filterExpression, cons
     p.startList();
 
     if (!opp_isempty(filterExpression)) {
-        auto runattrs = rfm->getMatchingRunattrsPtr(filterExpression);
+        auto runattrs = rfm->getMatchingRunattrsPtr(rfm->getRuns(), filterExpression);
 
         for (const auto &ra : runattrs) {
             Run *run = ra.first;
@@ -709,7 +709,7 @@ std::string ResultsPickler::getItervarsPickle(const char *filterExpression, cons
     p.startList();
 
     if (!opp_isempty(filterExpression)) {
-        auto itervars = rfm->getMatchingItervarsPtr(filterExpression);
+        auto itervars = rfm->getMatchingItervarsPtr(rfm->getRuns(), filterExpression);
 
         for (const auto &iv : itervars) {
             Run *run = iv.first;
@@ -745,7 +745,7 @@ std::string ResultsPickler::getConfigEntriesPickle(const char *filterExpression,
     p.startList();
 
     if (!opp_isempty(filterExpression)) {
-        auto configentries = rfm->getMatchingConfigEntriesPtr(filterExpression);
+        auto configentries = rfm->getMatchingConfigEntriesPtr(rfm->getRuns(), filterExpression);
 
         for (const auto &ce : configentries) {
             Run *run = ce.first;
@@ -781,10 +781,10 @@ std::string ResultsPickler::getParamAssignmentsPickle(const char *filterExpressi
     p.startList();
 
     if (!opp_isempty(filterExpression)) {
-        auto paramassignments = rfm->getMatchingParamAssignments(filterExpression); // TODO why is there no Ptr equivalent to this?
+        auto paramassignments = rfm->getMatchingParamAssignmentsPtr(rfm->getRuns(), filterExpression);
 
         for (const auto &pa : paramassignments) {
-            Run *run = rfm->getRunByName(pa.first.c_str());
+            Run *run = pa.first;
             const std::string &paName = pa.second;
 
             p.startTuple();

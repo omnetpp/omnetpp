@@ -555,17 +555,17 @@ void ScaveTool::queryCommand(int argc, char **argv)
     }
 #undef L
     case LIST_RUNATTRS: {
-        std::vector< std::pair<Run *, std::string> > filteredRunattrs = resultFileManager.getMatchingRunattrsPtr(opt_filterExpression.c_str());
+        std::vector< std::pair<Run *, std::string> > filteredRunattrs = resultFileManager.getMatchingRunattrsPtr(runs, opt_filterExpression.c_str());
         listRunMetadata(out, filteredRunattrs, [](Run *run, const std::string &name) { return run->getAttribute(name); }, opt_runDisplayMode, opt_grepFriendly);
         break;
     }
     case LIST_ITERVARS: {
-        std::vector< std::pair<Run *, std::string> >  filteredItervars = resultFileManager.getMatchingItervarsPtr(opt_filterExpression.c_str());
+        std::vector< std::pair<Run *, std::string> >  filteredItervars = resultFileManager.getMatchingItervarsPtr(runs, opt_filterExpression.c_str());
         listRunMetadata(out, filteredItervars, [](Run *run, const std::string &name) { return run->getIterationVariable(name); }, opt_runDisplayMode, opt_grepFriendly);
         break;
     }
     case LIST_CONFIGENTRIES: {
-        std::vector< std::pair<Run *, std::string> > filteredConfigEntries = resultFileManager.getMatchingConfigEntriesPtr(opt_filterExpression.c_str());
+        std::vector< std::pair<Run *, std::string> > filteredConfigEntries = resultFileManager.getMatchingConfigEntriesPtr(runs, opt_filterExpression.c_str());
         listRunMetadata(out, filteredConfigEntries, [](Run *run, const std::string &name) { return run->getConfigValue(name); }, opt_runDisplayMode, opt_grepFriendly);
         break;
     }
