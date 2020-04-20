@@ -112,8 +112,7 @@ void OmnetppScalarFileExporter::saveResults(const std::string& fileName, ResultF
     for (Run *run : runList) {
         writer.beginRecordingForRun(run->getRunName(), run->getAttributes(), run->getIterationVariables(), run->getConfigEntries());
         IDList filteredList = manager->filterIDList(idlist, run, nullptr, nullptr);
-        for (int i=0; i<filteredList.size(); i++) {
-            ID id = filteredList.get(i);
+        for (ID id : filteredList) {
             if (ResultFileManager::getTypeOf(id) == ResultFileManager::SCALAR) {
                 const ScalarResult *scalar = manager->getScalar(id);
                 writer.recordScalar(scalar->getModuleName(), scalar->getName(), scalar->getValue(), scalar->getAttributes());

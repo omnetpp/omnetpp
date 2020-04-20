@@ -147,6 +147,8 @@ void OmnetppVectorFileExporter::saveResults(const std::string& fileName, ResultF
         Assert((int)xyArrays.size() == filteredList.size());
 
         for (int i = 0; i < filteredList.size(); i++) {
+            ID id = filteredList.get(i);
+            const VectorResult *vector = manager->getVector(id);
             void *vectorHandle = vectorHandles[i];
             XYArray *array = xyArrays[i];
             int length = array->length();
@@ -156,8 +158,6 @@ void OmnetppVectorFileExporter::saveResults(const std::string& fileName, ResultF
                 if (!time.isSpecial())
                     writer.recordInVector(vectorHandle, array->getEventNumber(j), time.getIntValue(), time.getScale(), array->getY(j));
                 else if (!skipSpecialValues) {
-                    ID id = filteredList.get(i);
-                    const VectorResult *vector = manager->getVector(id);
                     std::string vectorName = vector->getModuleName() + "." + vector->getName();
                     throw opp_runtime_error("Illegal value (NaN of Inf) encountered as time while exporting vector %s; "
                             "use skipSpecialValues=true to turn off this error message", vectorName.c_str());

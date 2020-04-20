@@ -380,7 +380,7 @@ void JsonExporter::saveResults(const std::string& fileName, ResultFileManager *m
 
             // export
             writer.openArray("vectors");
-            for (int i = 0; i < vectors.size(); i++) {
+            for (int i = 0; i < (int)vectors.size(); i++) {
                 ID id = vectors.get(i);
                 const VectorResult *vector = manager->getVector(id);
                 writer.openObject();

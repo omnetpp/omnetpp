@@ -130,7 +130,7 @@ void SqliteVectorFileExporter::saveResults(const std::string& fileName, ResultFi
 
         // register all vectors
         std::vector<void*> vectorHandles(filteredList.size());
-        for (int i=0; i<filteredList.size(); i++) {
+        for (int i = 0; i < filteredList.size(); i++) {
             ID id = filteredList.get(i);
             const VectorResult *vector = manager->getVector(id);
             vectorHandles[i] = writer.registerVector(vector->getModuleName(), vector->getName(), vector->getAttributes(), perVectorMemoryLimit);
@@ -143,6 +143,8 @@ void SqliteVectorFileExporter::saveResults(const std::string& fileName, ResultFi
         //NOTE if there's no event number, order of values belonging to the same t will be undefined...
 
         for (int i = 0; i < filteredList.size(); i++) {
+            ID id = filteredList.get(i);
+            const VectorResult *vector = manager->getVector(id);
             void *vectorHandle = vectorHandles[i];
             XYArray *array = xyArrays[i];
             int length = array->length();
@@ -152,8 +154,6 @@ void SqliteVectorFileExporter::saveResults(const std::string& fileName, ResultFi
                 if (!time.isSpecial())
                     writer.recordInVector(vectorHandle, array->getEventNumber(j), time.getMantissaForScale(simtimeScaleExp), array->getY(j));
                 else if (!skipSpecialValues) {
-                    ID id = filteredList.get(i);
-                    const VectorResult *vector = manager->getVector(id);
                     std::string vectorName = vector->getModuleName() + "." + vector->getName();
                     throw opp_runtime_error("Illegal value (NaN of Inf) encountered as time while exporting vector %s; "
                             "use skipSpecialValues=true to turn off this error message", vectorName.c_str());

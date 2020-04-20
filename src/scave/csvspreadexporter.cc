@@ -246,8 +246,8 @@ void CsvForSpreadsheetExporter::saveScalars(ResultFileManager *manager, const ID
     }
 
     // write data
-    for (int i = 0; i < (int)idlist.size(); ++i) {
-        const ScalarResult *param = manager->getScalar(idlist.get(i));
+    for (ID id : idlist) {
+        const ScalarResult *param = manager->getScalar(id);
         writeRunColumns(param->getRun());
         csv.writeString(param->getModuleName());
         csv.writeString(param->getName());
@@ -271,8 +271,8 @@ void CsvForSpreadsheetExporter::saveParameters(ResultFileManager *manager, const
     }
 
     // write data
-    for (int i = 0; i < (int)idlist.size(); ++i) {
-        const ParameterResult *param = manager->getParameter(idlist.get(i));
+    for (ID id : idlist) {
+        const ParameterResult *param = manager->getParameter(id);
         writeRunColumns(param->getRun());
         csv.writeString(param->getModuleName());
         csv.writeString(param->getName());
@@ -394,8 +394,8 @@ void CsvForSpreadsheetExporter::saveStatistics(ResultFileManager *manager, const
     }
 
     // write statistics
-    for (int i = 0; i < (int)idlist.size(); ++i) {
-        const StatisticsResult *statistics = manager->getStatistics(idlist.get(i));
+    for (ID id : idlist) {
+        const StatisticsResult *statistics = manager->getStatistics(id);
         writeRunColumns(statistics->getRun());
         csv.writeString(statistics->getModuleName());
         csv.writeString(statistics->getName());
@@ -450,8 +450,8 @@ void CsvForSpreadsheetExporter::saveHistograms(ResultFileManager *manager, const
     }
 
     // write histograms, two lines each ("binedges" and "binvalues" lines)
-    for (int i = 0; i < (int)idlist.size(); ++i) {
-        const HistogramResult *histogram = manager->getHistogram(idlist.get(i));
+    for (ID id : idlist) {
+        const HistogramResult *histogram = manager->getHistogram(id);
         writeRunColumns(histogram->getRun());
         csv.writeString(histogram->getModuleName());
         csv.writeString(histogram->getName());

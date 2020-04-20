@@ -220,8 +220,8 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
     // record scalars
     if (haveScalars) {
         IDList scalarIDs = idlist.filterByTypes(ResultFileManager::SCALAR);
-        for (int i = 0; i < (int)scalarIDs.size(); ++i) {
-            const ScalarResult *scalar = manager->getScalar(scalarIDs.get(i));
+        for (ID id : scalarIDs) {
+            const ScalarResult *scalar = manager->getScalar(id);
             writeResultItemBase(scalar, "scalar", numColumns);
             csv.writeDouble(scalar->getValue());
             finishRecord(numColumns);
@@ -232,8 +232,8 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
     // record parameters
     if (haveParameters) {
         IDList paramIDs = idlist.filterByTypes(ResultFileManager::PARAMETER);
-        for (int i = 0; i < (int)paramIDs.size(); ++i) {
-            const ParameterResult *param = manager->getParameter(paramIDs.get(i));
+        for (ID id : paramIDs) {
+            const ParameterResult *param = manager->getParameter(id);
             writeResultItemBase(param, "param", numColumns);
             csv.writeString(param->getValue());
             finishRecord(numColumns);
@@ -244,8 +244,7 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
     // record statistics and histograms
     if (haveStatistics) {
         IDList statisticsIDs = idlist.filterByTypes(ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM);
-        for (int i = 0; i < (int)statisticsIDs.size(); ++i) {
-            ID id = statisticsIDs.get(i);
+        for (ID id : statisticsIDs) {
             bool isHistogram = ResultFileManager::getTypeOf(id) == ResultFileManager::HISTOGRAM;
             const StatisticsResult *statistic = manager->getStatistics(id);
             writeResultItemBase(statistic, isHistogram ? "histogram" : "statistic", numColumns);

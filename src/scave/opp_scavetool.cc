@@ -519,18 +519,18 @@ void ScaveTool::queryCommand(int argc, char **argv)
             IDList runStatistics = resultFileManager.filterIDList(statistics, run, nullptr, nullptr);
             IDList runHistograms = resultFileManager.filterIDList(histograms, run, nullptr, nullptr);
 
-            for (int i = 0; i < runScalars.size(); i++) {
-                const ScalarResult *s = resultFileManager.getScalar(runScalars.get(i));
+            for (ID id : runScalars) {
+                const ScalarResult *s = resultFileManager.getScalar(id);
                 out << maybeRunColumnWithTab << "scalar\t" << s->getModuleName() << "\t" << s->getName() << "\t" << s->getValue() << endl;
             }
 
-            for (int i = 0; i < runParameters.size(); i++) {
-                const ParameterResult *s = resultFileManager.getParameter(runParameters.get(i));
+            for (ID id : runParameters) {
+                const ParameterResult *s = resultFileManager.getParameter(id);
                 out << maybeRunColumnWithTab << "parameter\t" << s->getModuleName() << "\t" << s->getName() << "\t" << s->getValue() << endl;
             }
 
-            for (int i = 0; i < runVectors.size(); i++) {
-                const VectorResult *v = resultFileManager.getVector(runVectors.get(i));
+            for (ID id : runVectors) {
+                const VectorResult *v = resultFileManager.getVector(id);
                 out << maybeRunColumnWithTab << "vector\t" << v->getModuleName() << "\t" << v->getName() << L(vectorId) << v->getVectorId();
                 const Statistics& s = v->getStatistics();
                 if (s.getCount() >= 0) // information is valid, i.e. index file exists
@@ -538,14 +538,14 @@ void ScaveTool::queryCommand(int argc, char **argv)
                 out << endl;
             }
 
-            for (int i = 0; i < runStatistics.size(); i++) {
-                const StatisticsResult *h = resultFileManager.getStatistics(runStatistics.get(i));
+            for (ID id : runStatistics) {
+                const StatisticsResult *h = resultFileManager.getStatistics(id);
                 const Statistics& s = h->getStatistics();
                 out << maybeRunColumnWithTab << "statistics\t" << h->getModuleName() << "\t" << h->getName() << L(count) << s.getCount() << L(mean) << s.getMean() << L(min) << s.getMin() << L(max) << s.getMax() << endl;
             }
 
-            for (int i = 0; i < runHistograms.size(); i++) {
-                const HistogramResult *h = resultFileManager.getHistogram(runHistograms.get(i));
+            for (ID id : runHistograms) {
+                const HistogramResult *h = resultFileManager.getHistogram(id);
                 const Statistics& s = h->getStatistics();
                 out << maybeRunColumnWithTab << "histogram\t" << h->getModuleName() << "\t" << h->getName() << L(count) << s.getCount() << L(mean) << s.getMean() << L(min) << s.getMin() << L(max) << s.getMax() << L(#bins) << h->getHistogram().getNumBins() << endl;
             }

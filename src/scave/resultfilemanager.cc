@@ -1664,11 +1664,9 @@ StringVector ResultFileManager::getParamAssignmentFilterHints(const RunList& run
 bool ResultFileManager::hasStaleID(const IDList& ids) const
 {
     READER_MUTEX
-    for (int i = 0; i < ids.size(); ++i) {
-        ID id = ids.get(i);
+    for (ID id : ids)
         if (isStaleID(id))
             return true;
-    }
     return false;
 }
 
