@@ -168,7 +168,8 @@ public class ResultSelectionFilterGenerator {
     }
 
     public static String getFilter(IDList target, IDList all, ResultFileManager manager, IProgressMonitor monitor) throws InterruptedException {
-        monitor.beginTask("generating filter", 1);
+        if (monitor != null)
+            monitor.beginTask("generating filter", 1);
         return doGetFilter(target, all, manager, monitor);
     }
 
