@@ -45,6 +45,9 @@
 #pragma warning(disable:4800)  // disable "forcing int to bool"
 #endif
 
+// obsolete macro, don't use -- retained because some model code still references it
+#define _OPPDEPRECATED  [[deprecated]]
+
 #if defined __GNUC__
 #  define _OPP_GNU_ATTRIBUTE(x)  __attribute__(x)
 #else
