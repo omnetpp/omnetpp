@@ -19,6 +19,11 @@
 #ifndef __OMNETPP_PLATDEFS_H
 #define __OMNETPP_PLATDEFS_H
 
+
+#if __cplusplus < 201402L
+  #error A C++14 compliant compiler is required! Please update your compiler or add 'CXXFLAGS=-std=c++14' in 'configure.user' and re-configure the project.
+#endif
+
 #include <cstddef>
 
 #ifndef _WIN32
