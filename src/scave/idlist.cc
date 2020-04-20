@@ -130,8 +130,9 @@ IDList IDList::getSubsetByIndices(int *indices, int n) const
 
 void IDList::checkIntegrity(ResultFileManager *mgr) const
 {
+    ScalarResult buffer;
     for (ID id : v)
-        mgr->getItem(id);  // this will throw exception if id is not valid
+        mgr->getItem(id, buffer);  // this will throw exception if id is not valid
 }
 
 void IDList::checkIntegrityAllScalars(ResultFileManager *mgr) const
@@ -165,9 +166,11 @@ void IDList::checkIntegrityAllHistograms(ResultFileManager *mgr) const
 class CmpBase : public std::binary_function<ID, ID, bool> {
     protected:
        ResultFileManager *mgr;
+       ScalarResult bufferA, bufferB;
        bool less(const std::string& a, const std::string& b) {return strdictcmp(a.c_str(), b.c_str()) < 0;}
-       const ResultItem *uncheckedGetItem(ID id) const { return mgr->uncheckedGetItem(id); }
-       const ScalarResult *uncheckedGetScalar(ID id) const { return mgr->uncheckedGetScalar(id); }
+       const FileRun *uncheckedGetFileRun(ID id) const { return mgr->getFileRun(id); }
+       const ResultItem *uncheckedGetItem(ID id, ScalarResult& buffer) const { return mgr->uncheckedGetItem(id,buffer); }
+       const ScalarResult *uncheckedGetScalar(ID id, ScalarResult& buffer) const { return mgr->uncheckedGetScalar(id, buffer); }
        const ParameterResult *uncheckedGetParameter(ID id) const { return mgr->uncheckedGetParameter(id); }
        const VectorResult *uncheckedGetVector(ID id) const { return mgr->uncheckedGetVector(id); }
        const StatisticsResult *uncheckedGetStatistics(ID id) const { return mgr->uncheckedGetStatistics(id); }
@@ -180,8 +183,8 @@ class FileAndRunLess : public CmpBase {
     public:
         FileAndRunLess(ResultFileManager *m) : CmpBase(m) {}
         bool operator()(ID a, ID b) { // implements operator<
-            const FileRun *da = uncheckedGetItem(a)->getFileRun();
-            const FileRun *db = uncheckedGetItem(b)->getFileRun();
+            const FileRun *da = uncheckedGetFileRun(a);
+            const FileRun *db = uncheckedGetFileRun(b);
             if (da==db)
                 return false;
             else if (da->getFile()==db->getFile())
@@ -195,8 +198,8 @@ class RunAndFileLess : public CmpBase {
     public:
         RunAndFileLess(ResultFileManager *m) : CmpBase(m) {}
         bool operator()(ID a, ID b) { // implements operator<
-            const FileRun *da = uncheckedGetItem(a)->getFileRun();
-            const FileRun *db = uncheckedGetItem(b)->getFileRun();
+            const FileRun *da = uncheckedGetFileRun(a);
+            const FileRun *db = uncheckedGetFileRun(b);
             if (da==db)
                 return false;
             else if (da->getRun()==db->getRun())
@@ -213,8 +216,8 @@ class RunAttributeLess : public CmpBase {
         RunAttributeLess(ResultFileManager* m, const char* attrName)
             : CmpBase(m), attrName(attrName) {}
         bool operator()(ID a, ID b) {
-            const std::string& aValue = uncheckedGetItem(a)->getRun()->getAttribute(attrName);
-            const std::string& bValue = uncheckedGetItem(b)->getRun()->getAttribute(attrName);
+            const std::string& aValue = uncheckedGetFileRun(a)->getRun()->getAttribute(attrName);
+            const std::string& bValue = uncheckedGetFileRun(b)->getRun()->getAttribute(attrName);
             return less(aValue, bValue);
         }
 };
@@ -225,12 +228,12 @@ class RunAttributeLess : public CmpBase {
         bool operator()(const ID a, const ID b) {return method;} \
     };
 
-CMP(DirectoryLess, less(uncheckedGetItem(a)->getFile()->getDirectory(), uncheckedGetItem(b)->getFile()->getDirectory()))
-CMP(FileNameLess, less(uncheckedGetItem(a)->getFile()->getFileName(), uncheckedGetItem(b)->getFile()->getFileName()))
-CMP(RunLess, less(uncheckedGetItem(a)->getRun()->getRunName(), uncheckedGetItem(b)->getRun()->getRunName()))
-CMP(ModuleLess, less(uncheckedGetItem(a)->getModuleName(), uncheckedGetItem(b)->getModuleName()))
-CMP(NameLess, less(uncheckedGetItem(a)->getName(), uncheckedGetItem(b)->getName()))
-CMP(ScalarValueLess, uncheckedGetScalar(a)->getValue() < uncheckedGetScalar(b)->getValue())
+CMP(DirectoryLess, less(uncheckedGetFileRun(a)->getFile()->getDirectory(), uncheckedGetFileRun(b)->getFile()->getDirectory()))
+CMP(FileNameLess, less(uncheckedGetFileRun(a)->getFile()->getFileName(), uncheckedGetFileRun(b)->getFile()->getFileName()))
+CMP(RunLess, less(uncheckedGetFileRun(a)->getRun()->getRunName(), uncheckedGetFileRun(b)->getRun()->getRunName()))
+CMP(ModuleLess, less(uncheckedGetItem(a,bufferA)->getModuleName(), uncheckedGetItem(b,bufferB)->getModuleName()))
+CMP(NameLess, less(uncheckedGetItem(a,bufferA)->getName(), uncheckedGetItem(b,bufferB)->getName()))
+CMP(ScalarValueLess, uncheckedGetScalar(a,bufferA)->getValue() < uncheckedGetScalar(b,bufferB)->getValue())
 CMP(ParameterValueLess, less(uncheckedGetParameter(a)->getValue(), uncheckedGetParameter(b)->getValue()))
 
 CMP(VectorIdLess, uncheckedGetVector(a)->getVectorId() < uncheckedGetVector(b)->getVectorId())

@@ -112,9 +112,10 @@ void SqliteScalarFileExporter::saveResults(const std::string& fileName, ResultFi
     for (Run *run : runList) {
         writer.beginRecordingForRun(run->getRunName(), simtimeScaleExp, run->getAttributes(), run->getIterationVariables(), run->getConfigEntries());
         IDList filteredList = manager->filterIDList(idlist, run, nullptr, nullptr);
+        ScalarResult buffer;
         for (ID id : filteredList) {
             if (ResultFileManager::getTypeOf(id) == ResultFileManager::SCALAR) {
-                const ScalarResult * scalar = manager->getScalar(id);
+                const ScalarResult * scalar = manager->getScalar(id, buffer);
                 writer.recordScalar(scalar->getModuleName(), scalar->getName(), scalar->getValue(), scalar->getAttributes());
             }
             else if (ResultFileManager::getTypeOf(id) == ResultFileManager::PARAMETER) {

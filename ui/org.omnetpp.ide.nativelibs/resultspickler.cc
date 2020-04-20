@@ -103,8 +103,9 @@ void ResultsPickler::pickleResultAttrs(Pickler& p, const IDList& resultIDs, cons
 {
     p.startList();
 
+    ScalarResult buffer;
     for (int i = 0; i < resultIDs.size(); ++i) {
-        const ResultItem *result = rfm->getItem(resultIDs.get(i));
+        const ResultItem *result = rfm->getItem(resultIDs.get(i), buffer);
         const StringMap& attrs = result->getAttributes();
         for (const auto & a : attrs) {
             p.startTuple();
@@ -238,8 +239,9 @@ std::string ResultsPickler::getCsvResultsPickle(std::string filterExpression, st
 
         // end of run data pickling
 
+        ScalarResult buffer;
         for (const ID& id : results) {
-            const ResultItem *result = rfm->getItem(id);
+            const ResultItem *result = rfm->getItem(id, buffer);
             auto type = result->getItemType();
 
             if (resultTypesToAdd & type) {
@@ -267,7 +269,7 @@ std::string ResultsPickler::getCsvResultsPickle(std::string filterExpression, st
                         break;
                     }
                     case ResultFileManager::SCALAR: {
-                        const ScalarResult *scalar = rfm->getScalar(id);
+                        const ScalarResult *scalar = rfm->getScalar(id, buffer);
                         p.pushDouble(scalar->getValue());
                         break;
                     }
@@ -375,8 +377,9 @@ std::string ResultsPickler::getScalarsPickle(const char *filterExpression, bool 
         IDList allScalars = rfm->getAllScalars(false);
         scalars = rfm->filterIDList(allScalars, filterExpression, -1, interrupted);
 
+        ScalarResult buffer;
         for (int i = 0; i < scalars.size(); ++i) {
-            const ScalarResult *result = rfm->getScalar(scalars.get(i));
+            const ScalarResult *result = rfm->getScalar(scalars.get(i), buffer);
             p.startTuple();
 
             p.pushString(result->getRun()->getRunName());

@@ -247,11 +247,12 @@ void CsvForSpreadsheetExporter::saveScalars(ResultFileManager *manager, const ID
 
     // write data
     for (ID id : idlist) {
-        const ScalarResult *param = manager->getScalar(id);
-        writeRunColumns(param->getRun());
-        csv.writeString(param->getModuleName());
-        csv.writeString(param->getName());
-        csv.writeDouble(param->getValue());
+        ScalarResult buffer;
+        const ScalarResult *scalar = manager->getScalar(id, buffer);
+        writeRunColumns(scalar->getRun());
+        csv.writeString(scalar->getModuleName());
+        csv.writeString(scalar->getName());
+        csv.writeDouble(scalar->getValue());
         csv.writeNewLine();
     }
 }

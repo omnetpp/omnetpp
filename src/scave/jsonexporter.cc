@@ -302,7 +302,8 @@ void JsonExporter::saveResults(const std::string& fileName, ResultFileManager *m
         if (!scalars.isEmpty()) {
             writer.openArray("scalars");
             for (ID id : scalars) {
-                const ScalarResult *scalar = manager->getScalar(id);
+                ScalarResult buffer;
+                const ScalarResult *scalar = manager->getScalar(id, buffer);
                 writer.openObject();
                 writer.writeString("module", scalar->getModuleName());
                 writer.writeString("name", scalar->getName());

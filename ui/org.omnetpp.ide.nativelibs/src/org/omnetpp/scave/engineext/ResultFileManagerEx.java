@@ -21,6 +21,7 @@ import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.engine.ScalarResult;
+import org.omnetpp.scave.engine.ScaveEngineJNI;
 import org.omnetpp.scave.engine.StringSet;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.VectorResult;
@@ -123,6 +124,12 @@ public class ResultFileManagerEx extends ResultFileManager {
     }
 
     @Override
+    public IDList getAllScalars(boolean includeFields) {
+        checkNotDeleted();
+        return super.getAllScalars(includeFields);
+    }
+
+    @Override
     public IDList getAllVectors() {
         checkNotDeleted();
         return super.getAllVectors();
@@ -138,6 +145,12 @@ public class ResultFileManagerEx extends ResultFileManager {
     public IDList getAllItems() {
         checkNotDeleted();
         return super.getAllItems();
+    }
+
+    @Override
+    public IDList getAllItems(boolean includeFields) {
+        checkNotDeleted();
+        return super.getAllItems(includeFields);
     }
 
     @Override

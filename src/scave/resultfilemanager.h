@@ -157,16 +157,27 @@ class SCAVE_API ResultFileManager
 
   public:
     enum {PARAMETER = 1<<0, SCALAR = 1<<1, STATISTICS = 1<<2, HISTOGRAM = 1<<3, VECTOR = 1<<4}; // must be 1,2,4,8 etc, because of IDList::getItemTypes()
+    enum HostType {HOSTTYPE_STATISTICS = 1, HOSTTYPE_HISTOGRAM = 2, HOSTTYPE_VECTOR = 3};
+    typedef ResultItem::FieldNum FieldNum;
 
   private:
-    // ID: 8 bit type, 24 bit filerunid, 32 bit pos
-    static int _type(ID id)   {return (id >> 56) & 0xffUL;}
-    static int _filerunid(ID id) {return (id >> 32) & 0x00fffffful;}
-    static int _pos(ID id)    {return id & 0xffffffffUL;}
-    static ID _mkID(int type, int fileid, int pos) {
-        assert((type>>8)==0 && (fileid>>24)==0 && ((pos>>31)==0 || (pos>>31)==-1)); // can't shift by 32, and int is 32 bits
-        return ((ID)type << 56) | ((ID)fileid << 32) | (ID)pos;
+    // 6 bit type, 2 bit hosttype, 4 bit fieldid (=0 not field), 20 bit filerunid, 32 bit pos
+    static int _bits(ID id, int bit0, int numBits) {return (id >> bit0) & ((((int64_t)1)<<numBits)-1);}
+    static int _type(ID id)      {return _bits(id,58,6);}
+    static int _hosttype(ID id)  {return _bits(id,56,2);} // a field of what kind of result
+    static int _fieldid(ID id)   {return _bits(id,52,4);} // =0: not a field
+    static int _filerunid(ID id) {return _bits(id,32,20);}
+    static int _pos(ID id)       {return _bits(id,0,32);}
+    static ID _mkID(int type, int filerunid, int pos) {
+        assert((type>>6)==0 && (filerunid>>20)==0 && ((int64_t)pos>>32)==0); // range check
+        return ((int64_t)type << 58) | ((int64_t)filerunid << 32) | (int64_t)pos;
     }
+    static ID _mkID(int hosttype, int filerunid, int pos, int fieldid) {
+        assert((hosttype>>2)==0 && (filerunid>>20)==0 && ((int64_t)pos>>32)==0 && fieldid!=0 && (fieldid>>4)==0); // range check
+        return ((int64_t)SCALAR << 58) | ((int64_t)hosttype << 56) | ((int64_t)fieldid << 52) | ((int64_t)filerunid << 32) | (int64_t)pos;
+    }
+    static ID _containingItemID(ID fieldItemId);
+    static ID _fieldItemID(ID containingItemId, int fieldId);
 
     // utility functions called while loading a result file
     ResultFile *addFile(const char *displayName, const char *fileSystemFileName, ResultFile::FileType fileType);
@@ -180,20 +191,23 @@ class SCAVE_API ResultFileManager
     int addVector(FileRun *fileRunRef, int vectorId, const char *moduleName, const char *vectorName, const StringMap& attrs, const char *columns);
     int addStatistics(FileRun *fileRunRef, const char *moduleName, const char *statisticsName, const Statistics& stat, const StringMap& attrs);
     int addHistogram(FileRun *fileRunRef, const char *moduleName, const char *histogramName, const Statistics& stat, const Histogram& bins, const StringMap& attrs);
-    void addStatisticsFieldsAsScalars(FileRun *fileRunRef, const char *moduleName, const char *statisticsName, const Statistics& stat);
 
     FileRun *getFileRunForID(ID id) const; // checks for nullptr
 
     template <class T>
-    void collectIDs(IDList& result, FileRun *fileRun, std::vector<T> FileRun::* vec, int type, bool includeFields) const;
+    void collectIDs(IDList& result, FileRun *fileRun, std::vector<T> FileRun::* vec, int type) const;
+    template <class T>
+    void collectIDs(IDList& out, FileRun *fileRun, std::vector<T> FileRun::*vec, HostType hosttype, FieldNum *fieldIds) const;
 
     // unchecked getters are only for internal use by CmpBase in idlist.cc
-    const ResultItem *uncheckedGetItem(ID id) const;
-    const ScalarResult *uncheckedGetScalar(ID id) const;
+    const ResultItem *uncheckedGetItem(ID id, ScalarResult& buffer) const;
+    const ScalarResult *uncheckedGetScalar(ID id, ScalarResult& buffer) const;
     const ParameterResult *uncheckedGetParameter(ID id) const;
     const VectorResult *uncheckedGetVector(ID id) const;
     const StatisticsResult *uncheckedGetStatistics(ID id) const;
     const HistogramResult *uncheckedGetHistogram(ID id) const;
+
+    static const char *getNameSuffixForFieldScalar(FieldNum fieldId);
 
   public:
     ResultFileManager();
@@ -219,16 +233,24 @@ class SCAVE_API ResultFileManager
     ResultFileList getFilesForRun(Run *run) const;
     ResultFileList getFilesForInput(const char *inputName) const;
 
-    const ResultItem *getItem(ID id) const;
-    const ScalarResult *getScalar(ID id) const;
+    const ResultItem *getNonfieldItem(ID id) const;
+    const ResultItem *getItem(ID id, ScalarResult& buffer) const; // common interface for getNonfieldItem() and getFieldScalar()
+    ScalarResult getFieldScalar(ID id) const; // returns a temporary
+    const ScalarResult *getNonfieldScalar(ID id) const;
+    const ScalarResult *getScalar(ID id, ScalarResult& buffer) const; // common interface for getNonfieldScalar() and getFieldScalar()
     const ParameterResult *getParameter(ID id) const;
     const VectorResult *getVector(ID id) const;
     const StatisticsResult *getStatistics(ID id) const;
     const HistogramResult *getHistogram(ID id) const;
-    static int getTypeOf(ID id) {return _type(id);} // SCALAR/VECTOR/STATISTICS/HISTOGRAM
+    static int getTypeOf(ID id) {return _type(id);} // PARAMETER/SCALAR/VECTOR/STATISTICS/HISTOGRAM
+    static bool isField(ID id) {return  _fieldid(id) != 0;}
+    static ID getContainingItemID(ID fieldItemId) {return _containingItemID(fieldItemId);}
+    static ID getFieldItemID(ID containingItemId, int fieldId) {return _fieldItemID(containingItemId, fieldId);}
+    const ResultItem *getContainingItem(ID fieldItemId) const {return getNonfieldItem(_containingItemID(fieldItemId));}
 
     bool isStaleID(ID id) const;
     bool hasStaleID(const IDList& ids) const;
+    FileRun *getFileRun(ID id) const {return fileRunList[_filerunid(id)];}
 
     // the following are needed for filter combos
     // Note: their return value is allocated with new and callers should delete them
@@ -254,13 +276,13 @@ class SCAVE_API ResultFileManager
     IDListsByFile getPartitionByFile(const IDList& ids) const;
 
     // getting lists of data items
-    IDList getAllScalars(bool includeFields = true) const;
+    IDList getAllScalars(bool includeFields=false) const;
     IDList getAllParameters() const;
     IDList getAllVectors() const;
     IDList getAllStatistics() const;
     IDList getAllHistograms() const;
-    IDList getAllItems(bool includeFields = true) const;
-    IDList getScalarsInFileRun(FileRun *fileRun) const;
+    IDList getAllItems(bool includeFields=false) const;
+    IDList getScalarsInFileRun(FileRun *fileRun, bool includeFields=false) const;
     IDList getParametersInFileRun(FileRun *fileRun) const;
     IDList getVectorsInFileRun(FileRun *fileRun) const;
     IDList getStatisticsInFileRun(FileRun *fileRun) const;
@@ -357,11 +379,38 @@ class SCAVE_API ResultFileManager
     const char *getRunAttribute(ID id, const char *attribute) const;
 };
 
-inline const ResultItem *ResultFileManager::uncheckedGetItem(ID id) const
+inline ID ResultFileManager::_containingItemID(ID fieldItemId)
+{
+    assert(_type(fieldItemId) == SCALAR);
+    int hosttype = _hosttype(fieldItemId);
+    int type =
+            (hosttype == HOSTTYPE_STATISTICS) ? STATISTICS :
+            (hosttype == HOSTTYPE_HISTOGRAM) ? HISTOGRAM :
+            (hosttype == HOSTTYPE_VECTOR) ? VECTOR : 0;
+    assert(type != 0);
+    int filerunid = _filerunid(fieldItemId);
+    int pos = _pos(fieldItemId);
+    return _mkID(type, filerunid, pos);
+}
+
+inline ID ResultFileManager::_fieldItemID(ID containingItemId, int fieldId)
+{
+    int type = _type(containingItemId);
+    int hosttype =
+            (type == STATISTICS) ? HOSTTYPE_STATISTICS :
+            (type == HISTOGRAM) ? HOSTTYPE_HISTOGRAM :
+            (type == VECTOR) ? HOSTTYPE_VECTOR : -1;
+    assert(hosttype != -1);
+    int filerunid = _filerunid(containingItemId);
+    int pos = _pos(containingItemId);
+    return _mkID(hosttype, filerunid, pos, fieldId);
+}
+
+inline const ResultItem *ResultFileManager::uncheckedGetItem(ID id, ScalarResult& buffer) const
 {
     switch (_type(id))
     {
-        case SCALAR: return &fileRunList[_filerunid(id)]->scalarResults[_pos(id)];
+        case SCALAR: return uncheckedGetScalar(id, buffer);
         case PARAMETER: return &fileRunList[_filerunid(id)]->parameterResults[_pos(id)];
         case VECTOR: return &fileRunList[_filerunid(id)]->vectorResults[_pos(id)];
         case STATISTICS: return &fileRunList[_filerunid(id)]->statisticsResults[_pos(id)];
@@ -370,9 +419,14 @@ inline const ResultItem *ResultFileManager::uncheckedGetItem(ID id) const
     }
 }
 
-inline const ScalarResult *ResultFileManager::uncheckedGetScalar(ID id) const
+inline const ScalarResult *ResultFileManager::uncheckedGetScalar(ID id, ScalarResult& buffer) const
 {
-    return &fileRunList[_filerunid(id)]->scalarResults[_pos(id)];
+    if (_fieldid(id) == 0)
+        return &fileRunList[_filerunid(id)]->scalarResults[_pos(id)];
+    else {
+        fillFieldScalar(buffer, id);
+        return &buffer;
+    }
 }
 
 inline const ParameterResult *ResultFileManager::uncheckedGetParameter(ID id) const

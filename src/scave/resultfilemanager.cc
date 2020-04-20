@@ -136,11 +136,24 @@ ResultFileList ResultFileManager::getFilesForInput(const char *inputName) const
     return out;
 }
 
-const ResultItem *ResultFileManager::getItem(ID id) const
+const ResultItem *ResultFileManager::getItem(ID id, ScalarResult& buffer) const
 {
+    if (_fieldid(id) == 0)
+        return getNonfieldItem(id);
+    else {
+        buffer = getFieldScalar(id);
+        return &buffer;
+    }
+}
+
+const ResultItem *ResultFileManager::getNonfieldItem(ID id) const
+{
+    if (_fieldid(id) != 0 || _hosttype(id) != 0)
+        throw opp_runtime_error("ResultFileManager::getItem(id): use getFieldScalar() for scalars which are a field of a statistic/histogram/vector");
+
     READER_MUTEX
-    try
-    {
+
+    try {
         switch (_type(id)) {
             case SCALAR: return &getFileRunForID(id)->scalarResults.at(_pos(id));
             case PARAMETER: return &getFileRunForID(id)->parameterResults.at(_pos(id));
@@ -218,9 +231,10 @@ StringSet ResultFileManager::getUniqueModuleNames(const IDList& ids) const
 {
     READER_MUTEX
     std::set<const std::string*> set;  // all strings are stringpooled, so we can collect unique *pointers* instead of unique strings
+    ScalarResult buffer;
     const std::string *lastModuleName = nullptr;
     for (ID id : ids) {
-        const std::string *moduleName = &getItem(id)->getModuleName();
+        const std::string *moduleName = &getItem(id, buffer)->getModuleName();
         if (moduleName != lastModuleName) {
             set.insert(moduleName);
             lastModuleName = moduleName;
@@ -236,8 +250,9 @@ StringSet ResultFileManager::getUniqueResultNames(const IDList& ids) const
 {
     READER_MUTEX
     std::set<const std::string*> set;  // all strings are stringpooled, so we can collect unique *pointers* instead of unique strings
+    ScalarResult buffer;
     for (ID id : ids)
-        set.insert(&getItem(id)->getName());
+        set.insert(&getItem(id, buffer)->getName());
 
     StringSet result;
     for (const std::string *e : set)
@@ -249,8 +264,9 @@ StringSet ResultFileManager::getUniqueModuleAndResultNamePairs(const IDList& ids
 {
     READER_MUTEX
     StringSet set;
+    ScalarResult buffer;
     for (ID id : ids) {
-        const ResultItem *result = getItem(id);
+        const ResultItem *result = getItem(id, buffer);
         set.insert(result->getModuleName() + "." + result->getName());
     }
     return set;
@@ -260,8 +276,9 @@ StringSet ResultFileManager::getUniqueResultAttributeNames(const IDList& ids) co
 {
     READER_MUTEX
     StringSet set;
+    ScalarResult buffer;
     for (ID id : ids) {
-        const StringMap& attributes = getItem(id)->getAttributes();
+        const StringMap& attributes = getItem(id, buffer)->getAttributes(); //TODO too much copying!!!!!!!!!!!!!!!!!!!
         for (StringMap::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
             set.insert(it->first);
     }
@@ -272,8 +289,9 @@ StringSet ResultFileManager::getUniqueResultAttributeValues(const IDList& ids, c
 {
     READER_MUTEX
     StringSet values;
+    ScalarResult buffer;
     for (ID id : ids) {
-        const string& value = getItem(id)->getAttribute(attrName);
+        const string& value = getItem(id, buffer)->getAttribute(attrName); //TODO too much copying!!!!!!!!!!!!!!!!!!!
         if (&value != &NULLSTRING)
             values.insert(value);
     }
@@ -374,7 +392,7 @@ IDListsByRun ResultFileManager::getPartitionByRun(const IDList& ids) const
     for (ID id : ids) {
         int fileRunId = _filerunid(id);
         if (fileRunId != lastFileRunId) {
-            Run *run = getItem(id)->getRun();
+            Run *run = fileRunList[fileRunId]->runRef;
             currentRunIDList = &map[run];
             lastFileRunId = fileRunId;
         }
@@ -393,7 +411,7 @@ IDListsByFile ResultFileManager::getPartitionByFile(const IDList& ids) const
     for (ID id : ids) {
         int fileRunId = _filerunid(id);
         if (fileRunId != lastFileRunId) {
-            ResultFile *file = getItem(id)->getFile();
+            ResultFile *file = fileRunList[fileRunId]->fileRef;
             currentFileIDList = &map[file];
             lastFileRunId = fileRunId;
         }
@@ -402,12 +420,55 @@ IDListsByFile ResultFileManager::getPartitionByFile(const IDList& ids) const
     return IDListsByFile(map);
 }
 
-const ScalarResult *ResultFileManager::getScalar(ID id) const
+const ScalarResult *ResultFileManager::getNonfieldScalar(ID id) const
 {
     READER_MUTEX
     if (_type(id) != SCALAR)
         throw opp_runtime_error("ResultFileManager::getScalar(id): This item is not a scalar");
+    if (_fieldid(id) != 0 || _hosttype(id) != 0)
+        throw opp_runtime_error("ResultFileManager::getScalar(id): use getFieldScalar() for scalars which are a field of a statistic/histogram/vector");
     return &getFileRunForID(id)->scalarResults.at(_pos(id));
+}
+
+const char *ResultFileManager::getNameSuffixForFieldScalar(FieldNum fieldId)
+{
+    switch (fieldId) {
+    case FieldNum::COUNT: return Scave::COUNT;
+    case FieldNum::SUM: return Scave::SUM;
+    case FieldNum::SUMWEIGHTS: return Scave::SUMWEIGHTS;
+    case FieldNum::MEAN: return Scave::MEAN;
+    case FieldNum::STDDEV: return Scave::STDDEV;
+    case FieldNum::MIN: return Scave::MIN;
+    case FieldNum::MAX: return Scave::MAX;
+    case FieldNum::NUMBINS: return Scave::NUMBINS;
+    case FieldNum::RANGEMIN: return Scave::RANGEMIN;
+    case FieldNum::RANGEMAX: return Scave::RANGEMAX;
+    case FieldNum::UNDERFLOWS: return Scave::UNDERFLOWS;
+    case FieldNum::OVERFLOWS: return Scave::OVERFLOWS;
+    case FieldNum::STARTTIME: return Scave::STARTTIME;
+    case FieldNum::ENDTIME: return Scave::ENDTIME;
+    default: throw opp_runtime_error("Invalid fieldId");
+    }
+}
+
+ScalarResult ResultFileManager::getFieldScalar(ID id) const
+{
+    READER_MUTEX
+    const ResultItem *container = getContainingItem(id);
+    FieldNum fieldId = (FieldNum) _fieldid(id);
+    const char *suffix = getNameSuffixForFieldScalar(fieldId);
+    double value = container->getScalarField(fieldId);
+    return ScalarResult(container->getFileRun(), container->getModuleName(), container->getName()+":"+suffix, container->getAttributes(), value, id);
+}
+
+const ScalarResult *ResultFileManager::getScalar(ID id, ScalarResult& buffer) const
+{
+    if (_fieldid(id) == 0)
+        return getNonfieldScalar(id);
+    else {
+        buffer = getFieldScalar(id);
+        return &buffer;
+    }
 }
 
 const ParameterResult *ResultFileManager::getParameter(ID id) const
@@ -446,18 +507,28 @@ const HistogramResult *ResultFileManager::getHistogram(ID id) const
 }
 
 template<class T>
-void ResultFileManager::collectIDs(IDList& out, FileRun *fileRun, std::vector<T> FileRun::*vec, int type, bool includeFields) const
+void ResultFileManager::collectIDs(IDList& out, FileRun *fileRun, std::vector<T> FileRun::*vec, int type) const
 {
     // internal method, READER_MUTEX not needed
     std::vector<T>& v = fileRun->*vec;
     int n = v.size();
     int fileRunId = fileRun->id;
-    for (int i = 0; i < n; i++) {
-        bool isField = type == SCALAR ? ((ScalarResult&)v[i]).isField() : false;
-        if (!isField || includeFields)
-            out.append(_mkID(type, fileRunId, i));
-    }
+    for (int pos = 0; pos < n; pos++)
+        out.append(_mkID(type, fileRunId, pos));
 }
+
+template<class T>
+void ResultFileManager::collectIDs(IDList& out, FileRun *fileRun, std::vector<T> FileRun::*vec, HostType hosttype, FieldNum *fieldIds) const
+{
+    // internal method, READER_MUTEX not needed
+    std::vector<T>& v = fileRun->*vec;
+    int n = v.size();
+    int fileRunId = fileRun->id;
+    for (int pos = 0; pos < n; pos++)
+        for (int f = 0; fieldIds[f] != FieldNum::NONE; f++)
+            out.append(_mkID(hosttype, fileRunId, pos, (int)fieldIds[f]));
+}
+
 
 IDList ResultFileManager::getAllItems(bool includeFields) const
 {
@@ -466,11 +537,16 @@ IDList ResultFileManager::getAllItems(bool includeFields) const
     IDList out;
     for (FileRun *fileRun : fileRunList) { // make fileRun the outer loop so that getUnique/getPartition methods are faster
         if (fileRun != nullptr) {
-            collectIDs(out, fileRun, &FileRun::parameterResults, PARAMETER, includeFields);
-            collectIDs(out, fileRun, &FileRun::scalarResults, SCALAR, includeFields);
-            collectIDs(out, fileRun, &FileRun::statisticsResults, STATISTICS, includeFields);
-            collectIDs(out, fileRun, &FileRun::histogramResults, HISTOGRAM, includeFields);
-            collectIDs(out, fileRun, &FileRun::vectorResults, VECTOR, includeFields);
+            collectIDs(out, fileRun, &FileRun::parameterResults, PARAMETER);
+            collectIDs(out, fileRun, &FileRun::scalarResults, SCALAR);
+            if (includeFields) {
+                collectIDs(out, fileRun, &FileRun::statisticsResults, HOSTTYPE_STATISTICS, StatisticsResult::getAvailableFields());
+                collectIDs(out, fileRun, &FileRun::histogramResults, HOSTTYPE_HISTOGRAM, HistogramResult::getAvailableFields());
+                collectIDs(out, fileRun, &FileRun::vectorResults, HOSTTYPE_VECTOR, VectorResult::getAvailableFields());
+            }
+            collectIDs(out, fileRun, &FileRun::statisticsResults, STATISTICS);
+            collectIDs(out, fileRun, &FileRun::histogramResults, HISTOGRAM);
+            collectIDs(out, fileRun, &FileRun::vectorResults, VECTOR);
         }
     }
     return out;
@@ -481,8 +557,14 @@ IDList ResultFileManager::getAllScalars(bool includeFields) const
     READER_MUTEX
     IDList out;
     for (FileRun *fileRun : fileRunList)
-        if (fileRun != nullptr)
-            collectIDs(out, fileRun, &FileRun::scalarResults, SCALAR, includeFields);
+        if (fileRun != nullptr) {
+            collectIDs(out, fileRun, &FileRun::scalarResults, SCALAR);
+            if (includeFields) {
+                collectIDs(out, fileRun, &FileRun::statisticsResults, HOSTTYPE_STATISTICS, StatisticsResult::getAvailableFields());
+                collectIDs(out, fileRun, &FileRun::histogramResults, HOSTTYPE_HISTOGRAM, HistogramResult::getAvailableFields());
+                collectIDs(out, fileRun, &FileRun::vectorResults, HOSTTYPE_VECTOR, VectorResult::getAvailableFields());
+            }
+        }
     return out;
 }
 
@@ -492,7 +574,7 @@ IDList ResultFileManager::getAllParameters() const
     IDList out;
     for (FileRun *fileRun : fileRunList)
         if (fileRun != nullptr)
-            collectIDs(out, fileRun, &FileRun::parameterResults, PARAMETER, true);
+            collectIDs(out, fileRun, &FileRun::parameterResults, PARAMETER);
     return out;
 }
 
@@ -502,7 +584,7 @@ IDList ResultFileManager::getAllVectors() const
     IDList out;
     for (FileRun *fileRun : fileRunList)
         if (fileRun != nullptr)
-            collectIDs(out, fileRun, &FileRun::vectorResults, VECTOR, true);
+            collectIDs(out, fileRun, &FileRun::vectorResults, VECTOR);
     return out;
 }
 
@@ -512,7 +594,7 @@ IDList ResultFileManager::getAllStatistics() const
     IDList out;
     for (FileRun *fileRun : fileRunList)
         if (fileRun != nullptr)
-            collectIDs(out, fileRun, &FileRun::statisticsResults, STATISTICS, true);
+            collectIDs(out, fileRun, &FileRun::statisticsResults, STATISTICS);
     return out;
 }
 
@@ -522,16 +604,21 @@ IDList ResultFileManager::getAllHistograms() const
     IDList out;
     for (FileRun *fileRun : fileRunList)
         if (fileRun != nullptr)
-            collectIDs(out, fileRun, &FileRun::histogramResults, HISTOGRAM, true);
+            collectIDs(out, fileRun, &FileRun::histogramResults, HISTOGRAM);
     return out;
 }
 
-IDList ResultFileManager::getScalarsInFileRun(FileRun *fileRun) const
+IDList ResultFileManager::getScalarsInFileRun(FileRun *fileRun, bool includeFields) const
 {
     READER_MUTEX
 
     IDList out;
-    collectIDs(out, fileRun, &FileRun::scalarResults, SCALAR, true);
+    collectIDs(out, fileRun, &FileRun::scalarResults, SCALAR);
+    if (includeFields) {
+        collectIDs(out, fileRun, &FileRun::statisticsResults, HOSTTYPE_STATISTICS, StatisticsResult::getAvailableFields());
+        collectIDs(out, fileRun, &FileRun::histogramResults, HOSTTYPE_HISTOGRAM, HistogramResult::getAvailableFields());
+        collectIDs(out, fileRun, &FileRun::vectorResults, HOSTTYPE_VECTOR, VectorResult::getAvailableFields());
+    }
     return out;
 }
 
@@ -540,7 +627,7 @@ IDList ResultFileManager::getParametersInFileRun(FileRun *fileRun) const
     READER_MUTEX
 
     IDList out;
-    collectIDs(out, fileRun, &FileRun::parameterResults, PARAMETER, true);
+    collectIDs(out, fileRun, &FileRun::parameterResults, PARAMETER);
     return out;
 }
 
@@ -549,7 +636,7 @@ IDList ResultFileManager::getVectorsInFileRun(FileRun *fileRun) const
     READER_MUTEX
 
     IDList out;
-    collectIDs(out, fileRun, &FileRun::vectorResults, VECTOR, true);
+    collectIDs(out, fileRun, &FileRun::vectorResults, VECTOR);
     return out;
 }
 
@@ -558,7 +645,7 @@ IDList ResultFileManager::getStatisticsInFileRun(FileRun *fileRun) const
     READER_MUTEX
 
     IDList out;
-    collectIDs(out, fileRun, &FileRun::statisticsResults, STATISTICS, true);
+    collectIDs(out, fileRun, &FileRun::statisticsResults, STATISTICS);
     return out;
 }
 
@@ -567,7 +654,7 @@ IDList ResultFileManager::getHistogramsInFileRun(FileRun *fileRun) const
     READER_MUTEX
 
     IDList out;
-    collectIDs(out, fileRun, &FileRun::histogramResults, HISTOGRAM, true);
+    collectIDs(out, fileRun, &FileRun::histogramResults, HISTOGRAM);
     return out;
 }
 
@@ -723,7 +810,6 @@ FileRunList ResultFileManager::getFileRuns(const ResultFileList *fileList, const
     READER_MUTEX
     FileRunList out;
     for (FileRun *fileRun : fileRunList) {
-        //TODO use files and runs maps in fileRun
         if (fileList && std::find(fileList->begin(), fileList->end(), fileRun->fileRef) == fileList->end())
             continue;
         if (runList && std::find(runList->begin(), runList->end(), fileRun->runRef) == runList->end())
@@ -768,19 +854,19 @@ IDList ResultFileManager::filterIDList(const IDList& idlist,
     std::vector<ID> out;
     FileRun *lastFileRunRef = nullptr;
     bool lastFileRunMatched = false;
-    int sz = idlist.size();
-    for (int i = 0; i < sz; i++) {
-        ID id = idlist.get(i);
-        const ResultItem *item = getItem(id);
-
+    ScalarResult buffer;
+    for (ID id : idlist) {
         if (fileRunFilter) {
-            if (lastFileRunRef != item->getFileRun()) {
-                lastFileRunRef = item->getFileRun();
-                lastFileRunMatched = std::find(fileRunFilter->begin(), fileRunFilter->end(), item->getFileRun()) != fileRunFilter->end();
+            FileRun *fileRun = getFileRun(id);
+            if (lastFileRunRef != fileRun) {
+                lastFileRunRef = fileRun;
+                lastFileRunMatched = std::find(fileRunFilter->begin(), fileRunFilter->end(), fileRun) != fileRunFilter->end();
             }
             if (!lastFileRunMatched)
                 continue;
         }
+
+        const ResultItem *item = getItem(id, buffer);
 
         if (moduleFilter && moduleFilter[0] &&
             (patMatchModule ? !modulePattern->matches(item->getModuleName().c_str())
@@ -814,13 +900,12 @@ IDList ResultFileManager::filterIDList(const IDList& idlist, const Run *run, con
     READER_MUTEX
 
     std::vector<ID> result;
-    int sz = idlist.size();
-    for (int i = 0; i < sz; i++) {
-        ID id = idlist.get(i);
-        const ResultItem *item = getItem(id);
-
-        if (run && item->getRun() != run)
+    ScalarResult buffer;
+    for (ID id : idlist) {
+        if (run && getFileRun(id)->runRef != run)
             continue;
+
+        const ResultItem *item = getItem(id, buffer);
 
         if (moduleName && item->getModuleName() != moduleName)
             continue;
@@ -1132,13 +1217,12 @@ IDList ResultFileManager::filterIDList(const IDList& idlist, const char *pattern
 
     READER_MUTEX
     std::vector<ID> out;
-    int sz = idlist.size();
+    ScalarResult buffer;
     int count = 0;
-    for (int i = 0; i < sz; ++i) {
+    for (ID id : idlist) {
         if (interrupted.flag)
             throw InterruptedException("Result filtering interrupted");
-        ID id = idlist.get(i);
-        const ResultItem *item = getItem(id);
+        const ResultItem *item = getItem(id, buffer);
         MatchableResultItem matchable(item);
         if (matchExpr.matches(&matchable)) {
             out.push_back(id);
@@ -1260,8 +1344,6 @@ int ResultFileManager::addStatistics(FileRun *fileRunRef, const char *moduleName
     StatisticsResult statistics(fileRunRef, moduleName, statisticsName, attrs, stat);
     StatisticsResults& statisticsResults = fileRunRef->statisticsResults;
     statisticsResults.push_back(statistics);
-    if (true) //TODO flag
-        addStatisticsFieldsAsScalars(fileRunRef, moduleName, statisticsName, stat);
     return statisticsResults.size() - 1;
 }
 
@@ -1271,51 +1353,8 @@ int ResultFileManager::addHistogram(FileRun *fileRunRef, const char *moduleName,
     HistogramResult histogram(fileRunRef, moduleName, histogramName, attrs, stat, bins);
     HistogramResults& histograms = fileRunRef->histogramResults;
     histograms.push_back(histogram);
-    if (true) //TODO flag
-        addStatisticsFieldsAsScalars(fileRunRef, moduleName, histogramName, stat);
     return histograms.size() - 1;
 }
-
-void ResultFileManager::addStatisticsFieldsAsScalars(FileRun *fileRunRef, const char *moduleName, const char *statisticsName, const Statistics& stat)
-{
-    std::string name = statisticsName;
-    StringMap emptyAttrs;
-    addScalar(fileRunRef, moduleName, (name+":count").c_str(), emptyAttrs, stat.getCount(), true);
-    addScalar(fileRunRef, moduleName, (name+":mean").c_str(), emptyAttrs, stat.getMean(), true);
-    addScalar(fileRunRef, moduleName, (name+":stddev").c_str(), emptyAttrs, stat.getStddev(), true);
-    addScalar(fileRunRef, moduleName, (name+":min").c_str(), emptyAttrs, stat.getMin(), true);
-    addScalar(fileRunRef, moduleName, (name+":max").c_str(), emptyAttrs, stat.getMax(), true);
-    if (!stat.isWeighted())
-        addScalar(fileRunRef, moduleName, (name+":sum").c_str(), emptyAttrs, stat.getSum(), true);  // this one might be useful
-    //TODO sumWeights? isWeighted?
-}
-
-/*
-void ResultFileManager::dump(ResultFile *fileRef, std::ostream& out) const
-{
-    Run *prevRunRef = nullptr;
-    for (ScalarResults::const_iterator i = scalars.begin(); i!=scalars.end(); i++)
-    {
-        const ScalarResult& d = *i;
-        if (d.runRef->fileRef==fileRef)
-        {
-            if (d.runRef!=prevRunRef)
-            {
-                out << "run " << d.runRef->runNumber << " " << d.runRef->networkName
-                    << " \"" << d.runRef->date << "\"\n";
-                prevRunRef = d.runRef;
-            }
-            out << "scalar \"" << *d.moduleNameRef << "\"\t\""
-                << *d.nameRef << "\"\t" << d.value << "\n";   //FIXME use opp_quotestr() here
-        }
-    }
-}
-*/
-
-#ifdef CHECK
-#undef CHECK
-#endif
-#define CHECK(cond,msg) if (!(cond)) throw ResultFileFormatException(msg, ctx.fileName, ctx.lineNo);
 
 static bool isFileReadable(const char *fileName)
 {
@@ -1672,7 +1711,7 @@ bool ResultFileManager::hasStaleID(const IDList& ids) const
 
 const char *ResultFileManager::getRunAttribute(ID id, const char *attribute) const
 {
-    return getItem(id)->getRun()->getAttribute(attribute).c_str();
+    return getFileRun(id)->getRun()->getAttribute(attribute).c_str();
 }
 
 }  // namespace scave

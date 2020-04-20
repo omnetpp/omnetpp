@@ -79,14 +79,15 @@ class SCAVE_API Scave
     static constexpr const char *SUMWEIGHTS = "sumweights";
     static constexpr const char *MEAN = "mean";
     static constexpr const char *STDDEV = "stddev";
-    static constexpr const char *VARIANCE = "var";
     static constexpr const char *MIN = "min";
     static constexpr const char *MAX = "max";
     static constexpr const char *NUMBINS = "numbins";
     static constexpr const char *RANGEMIN = "rangemin";
     static constexpr const char *RANGEMAX = "rangemax";
-    static constexpr const char *MINTIME = "mintime";
-    static constexpr const char *MAXTIME = "maxtime";
+    static constexpr const char *UNDERFLOWS = "underflows";
+    static constexpr const char *OVERFLOWS = "overflows";
+    static constexpr const char *STARTTIME = "starttime";
+    static constexpr const char *ENDTIME = "endtime";
 
     static const StringVector& getRunAttributeNames();
     static bool isRunAttributeName(const std::string& name);

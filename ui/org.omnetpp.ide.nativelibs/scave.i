@@ -294,12 +294,17 @@ namespace omnetpp { namespace scave {
 // because plain ResultItem does not contain the type (VECTOR, SCALAR, etc).
 //
 %ignore ResultFileManager::getItem;
+%ignore ResultFileManager::getScalar;
 %typemap(javacode) ResultFileManager %{
 
   public ResultItem getItem(long id) {
       int type = getTypeOf(id);
-      if (type==SCALAR)
-          return getScalar(id);
+      if (type==SCALAR) {
+          if (ResultFileManager.isField(id))
+              return getFieldScalar(id);
+          else
+              return getNonfieldScalar(id);
+      }
       else if (type==PARAMETER)
           return getParameter(id);
       else if (type==VECTOR)
@@ -310,6 +315,13 @@ namespace omnetpp { namespace scave {
           return getHistogram(id);
       else
           throw new RuntimeException("unknown ID type");
+  }
+
+  public ScalarResult getScalar(long id) {
+      if (ResultFileManager.isField(id))
+          return getFieldScalar(id);
+      else
+          return getNonfieldScalar(id);
   }
 
   public static <T> T callWithReadLock(ResultFileManager manager, java.util.concurrent.Callable<T> callable) {

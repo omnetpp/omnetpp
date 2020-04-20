@@ -32,6 +32,7 @@
 #include "common/statistics.h"
 #include "common/histogram.h"
 #include "common/stlutil.h" // keys() etc
+#include "idlist.h"
 #include "enumtype.h"
 #include "scaveutils.h"
 #include "enums.h"
@@ -71,6 +72,7 @@ class SCAVE_API ResultItem
 
   public:
     enum DataType { TYPE_INT, TYPE_DOUBLE, TYPE_ENUM };
+    enum class FieldNum { NONE=0, COUNT, SUM, SUMWEIGHTS, MEAN, STDDEV, MIN, MAX, NUMBINS, RANGEMIN, RANGEMAX, UNDERFLOWS, OVERFLOWS, STARTTIME, ENDTIME };
 
   protected:
     FileRun *fileRunRef; // backref to containing FileRun
@@ -79,6 +81,7 @@ class SCAVE_API ResultItem
     StringMap attributes; // metadata in key/value form
 
   protected:
+    ResultItem() : fileRunRef(nullptr), moduleNameRef(nullptr), nameRef(nullptr) {} // for ScalarResult default ctor
     ResultItem(FileRun *fileRun, const std::string& moduleName, const std::string& name, const StringMap& attrs);
     void setAttributes(const StringMap& attrs) {attributes = attrs;}
     void setAttribute(const std::string& attrName, const std::string& value) {attributes[attrName] = value;}
@@ -90,7 +93,9 @@ class SCAVE_API ResultItem
     ResultItem& operator=(const ResultItem& rhs);
     virtual ~ResultItem() { }
 
+    ResultFileManager *getResultFileManager() const;
     virtual int getItemType() const = 0;
+    //TODO virtual ID getID() const = 0;
 
     const std::string& getName() const {return *nameRef;}
     const std::string& getModuleName() const {return *moduleNameRef;}
@@ -117,6 +122,8 @@ class SCAVE_API ResultItem
      * or nullptr if no "enum" attribute.
      */
     EnumType *getEnum() const;
+
+    virtual double getScalarField(FieldNum fieldId) const = 0;
 };
 
 /**
@@ -127,14 +134,18 @@ class SCAVE_API ScalarResult : public ResultItem
     friend class ResultFileManager;
   private:
     double value;
-    bool isField_; // whether this scalar was created by exploding a "statistic" to its fields
+    ID ownID; // indicates whether this scalar is a field of a histogram/vector/etc; and if so, which field of which item
   protected:
-    ScalarResult(FileRun *fileRun, const std::string& moduleName, const std::string& name, const StringMap& attrs, double value, bool isField) :
-        ResultItem(fileRun, moduleName, name, attrs), value(value), isField_(isField) {}
+    ScalarResult(FileRun *fileRun, const std::string& moduleName, const std::string& name, const StringMap& attrs, double value, ID ownID) :
+        ResultItem(fileRun, moduleName, name, attrs), value(value), ownID(ownID) {}
   public:
+    ScalarResult() : ResultItem() {} // to be able to create a buffer for ResultFileManager::getScalar()
     virtual int getItemType() const;
+    virtual ID getID() const {return ownID;}
     double getValue() const {return value;}
-    bool isField() const {return isField_;}
+    bool isField() const;
+    const ResultItem *getContainingItem() const; // only if this is a field
+    virtual double getScalarField(FieldNum fieldId) const;
 };
 
 /**
@@ -151,6 +162,7 @@ class SCAVE_API ParameterResult : public ResultItem
   public:
     virtual int getItemType() const;
     const char *getValue() const {return value.c_str();}
+    virtual double getScalarField(FieldNum fieldId) const;
 };
 
 /**
@@ -180,12 +192,9 @@ class SCAVE_API VectorResult : public ResultItem
     eventnumber_t getEndEventNum() const {return endEventNum;}
     simultime_t getStartTime() const {return startTime;}
     simultime_t getEndTime() const {return endTime;}
-
-    /**
-     * Returns the value of the "interpolation-mode" attribute as an InterpolationMode,
-     * defaults to UNSPECIFIED.
-     */
-    InterpolationMode getInterpolationMode() const;
+    InterpolationMode getInterpolationMode() const; // defaults to UNSPECIFIED
+    virtual double getScalarField(FieldNum fieldId) const;
+    static FieldNum *getAvailableFields(); // zero-terminated array
 };
 
 /**
@@ -205,6 +214,8 @@ class SCAVE_API StatisticsResult : public ResultItem
   public:
     virtual int getItemType() const;
     const Statistics& getStatistics() const {return stat;}
+    virtual double getScalarField(FieldNum fieldId) const;
+    static FieldNum *getAvailableFields(); // zero-terminated array
 };
 
 /**
@@ -223,6 +234,8 @@ class SCAVE_API HistogramResult : public StatisticsResult
   public:
     virtual int getItemType() const;
     const Histogram& getHistogram() const {return bins;}
+    virtual double getScalarField(FieldNum fieldId) const;
+    static FieldNum *getAvailableFields(); // zero-terminated array
 };
 
 typedef std::vector<ScalarResult> ScalarResults;

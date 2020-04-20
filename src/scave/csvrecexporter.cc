@@ -220,8 +220,9 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
     // record scalars
     if (haveScalars) {
         IDList scalarIDs = idlist.filterByTypes(ResultFileManager::SCALAR);
+        ScalarResult buffer;
         for (ID id : scalarIDs) {
-            const ScalarResult *scalar = manager->getScalar(id);
+            const ScalarResult *scalar = manager->getScalar(id, buffer);
             writeResultItemBase(scalar, "scalar", numColumns);
             csv.writeDouble(scalar->getValue());
             finishRecord(numColumns);

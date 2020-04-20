@@ -17,6 +17,7 @@
 
 #include "resultitems.h"
 #include "resultfilemanager.h"
+#include "fields.h"  // name constants
 
 using namespace std;
 using namespace omnetpp::common;
@@ -47,9 +48,14 @@ ResultItem& ResultItem::operator=(const ResultItem& rhs)
     return *this;
 }
 
+ResultFileManager *ResultItem::getResultFileManager() const
+{
+    return fileRunRef->getFile()->getResultFileManager();
+}
+
 ResultItem::DataType ResultItem::getDataType() const
 {
-    StringMap::const_iterator it = attributes.find("type");
+    auto it = attributes.find("type");
     if (it == attributes.end()) {
         if (attributes.find("enum") != attributes.end())
             return TYPE_ENUM;
@@ -71,15 +77,12 @@ ResultItem::DataType ResultItem::getDataType() const
 
 EnumType *ResultItem::getEnum() const
 {
-    StringMap::const_iterator it = attributes.find("enum");
-    if (it != attributes.end()) {
-        EnumType *enumPtr = new EnumType();
-        enumPtr->parseFromString(it->second.c_str());
-        return enumPtr;
-    }
-    else {
+   auto it = attributes.find("enum");
+    if (it == attributes.end())
         return nullptr;
-    }
+    EnumType *enumPtr = new EnumType();
+    enumPtr->parseFromString(it->second.c_str());
+    return enumPtr;
 }
 
 int ScalarResult::getItemType() const
@@ -87,9 +90,29 @@ int ScalarResult::getItemType() const
     return ResultFileManager::SCALAR;
 }
 
+bool ScalarResult::isField() const
+{
+    return ResultFileManager::isField(ownID);
+}
+
+const ResultItem *ScalarResult::getContainingItem() const
+{
+    return getResultFileManager()->getContainingItem(ownID);
+}
+
+double ScalarResult::getScalarField(FieldNum fieldId) const
+{
+    throw opp_runtime_error("ScalarResult has no fields");
+}
+
 int ParameterResult::getItemType() const
 {
     return ResultFileManager::PARAMETER;
+}
+
+double ParameterResult::getScalarField(FieldNum fieldId) const
+{
+    throw opp_runtime_error("ParameterResult has no fields");
 }
 
 int VectorResult::getItemType() const
@@ -99,23 +122,45 @@ int VectorResult::getItemType() const
 
 InterpolationMode VectorResult::getInterpolationMode() const
 {
-    StringMap::const_iterator it = attributes.find("interpolationmode");
-    if (it != attributes.end()) {
-        const std::string& mode = it->second;
-        if (mode == "none")
-            return NONE;
-        else if (mode == "sample-hold")
-            return SAMPLE_HOLD;
-        else if (mode == "backward-sample-hold")
-            return BACKWARD_SAMPLE_HOLD;
-        else if (mode == "linear")
-            return LINEAR;
-        else
-            throw opp_runtime_error("Unknown interpolation mode: %s", mode.c_str());
-    }
-    else {
+    auto it = attributes.find("interpolationmode");
+    if (it == attributes.end())
         return UNSPECIFIED;
+    const std::string& mode = it->second;
+    if (mode == "none")
+        return NONE;
+    else if (mode == "sample-hold")
+        return SAMPLE_HOLD;
+    else if (mode == "backward-sample-hold")
+        return BACKWARD_SAMPLE_HOLD;
+    else if (mode == "linear")
+        return LINEAR;
+    else
+        throw opp_runtime_error("Unknown interpolation mode: %s", mode.c_str());
+}
+
+double VectorResult::getScalarField(FieldNum fieldId) const
+{
+    switch (fieldId) {
+    case FieldNum::COUNT:  return stat.getCount();
+    case FieldNum::SUM:  return stat.getSum();
+    case FieldNum::SUMWEIGHTS:  return stat.getSumWeights();
+    case FieldNum::MEAN:  return stat.getMean();
+    case FieldNum::STDDEV:  return stat.getStddev();
+    case FieldNum::MIN:  return stat.getMin();
+    case FieldNum::MAX:  return stat.getMax();
+    case FieldNum::STARTTIME:  return startTime.dbl();
+    case FieldNum::ENDTIME:  return endTime.dbl();
+    default: throw opp_runtime_error("Invalid fieldID");
     }
+}
+
+ResultItem::FieldNum *VectorResult::getAvailableFields()
+{
+    static FieldNum array[] = {
+            FieldNum::COUNT, FieldNum::SUM, FieldNum::SUMWEIGHTS, FieldNum::MEAN, FieldNum::STDDEV,
+            FieldNum::MIN, FieldNum::MAX, FieldNum::STARTTIME, FieldNum::ENDTIME, FieldNum::NONE
+    };
+    return array;
 }
 
 int StatisticsResult::getItemType() const
@@ -123,9 +168,62 @@ int StatisticsResult::getItemType() const
     return ResultFileManager::STATISTICS;
 }
 
+double StatisticsResult::getScalarField(FieldNum fieldId) const
+{
+    switch (fieldId) {
+    case FieldNum::COUNT:  return stat.getCount();
+    case FieldNum::SUM:  return stat.getSum();
+    case FieldNum::SUMWEIGHTS:  return stat.getSumWeights();
+    case FieldNum::MEAN:  return stat.getMean();
+    case FieldNum::STDDEV:  return stat.getStddev();
+    case FieldNum::MIN:  return stat.getMin();
+    case FieldNum::MAX:  return stat.getMax();
+    case FieldNum::NUMBINS:  return 0;
+    default: throw opp_runtime_error("Invalid fieldID");
+    }
+}
+
+ResultItem::FieldNum *StatisticsResult::getAvailableFields()
+{
+    static FieldNum array[] = {
+            FieldNum::COUNT, FieldNum::SUM, FieldNum::SUMWEIGHTS, FieldNum::MEAN, FieldNum::STDDEV,
+            FieldNum::MIN, FieldNum::MAX, FieldNum::NUMBINS, FieldNum::NONE
+    };
+    return array;
+}
+
 int HistogramResult::getItemType() const
 {
     return ResultFileManager::HISTOGRAM;
+}
+
+double HistogramResult::getScalarField(FieldNum fieldId) const
+{
+    switch (fieldId) {
+    case FieldNum::COUNT:
+    case FieldNum::SUM:
+    case FieldNum::SUMWEIGHTS:
+    case FieldNum::MEAN:
+    case FieldNum::STDDEV:
+    case FieldNum::MIN:
+    case FieldNum::MAX: return StatisticsResult::getScalarField(fieldId);
+
+    case FieldNum::NUMBINS: return bins.getNumBins();
+    case FieldNum::RANGEMIN: return bins.getBinEdge(0);
+    case FieldNum::RANGEMAX: return bins.getBinEdge(bins.getNumBins());
+    case FieldNum::UNDERFLOWS: return bins.getUnderflows();
+    case FieldNum::OVERFLOWS: return bins.getOverflows();
+    default: throw opp_runtime_error("Invalid fieldID");
+    }
+}
+
+ResultItem::FieldNum *HistogramResult::getAvailableFields()
+{
+    static FieldNum array[] = {
+            FieldNum::COUNT, FieldNum::SUM, FieldNum::SUMWEIGHTS, FieldNum::MEAN, FieldNum::STDDEV, FieldNum::MIN, FieldNum::MAX,
+            FieldNum::NUMBINS, FieldNum::RANGEMIN, FieldNum::RANGEMAX, FieldNum::UNDERFLOWS, FieldNum::OVERFLOWS, FieldNum::NONE
+    };
+    return array;
 }
 
 const std::string& Run::getAttribute(const std::string& attrName) const

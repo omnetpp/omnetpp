@@ -519,8 +519,9 @@ void ScaveTool::queryCommand(int argc, char **argv)
             IDList runStatistics = resultFileManager.filterIDList(statistics, run, nullptr, nullptr);
             IDList runHistograms = resultFileManager.filterIDList(histograms, run, nullptr, nullptr);
 
+            ScalarResult buffer;
             for (ID id : runScalars) {
-                const ScalarResult *s = resultFileManager.getScalar(id);
+                const ScalarResult *s = resultFileManager.getScalar(id, buffer);
                 out << maybeRunColumnWithTab << "scalar\t" << s->getModuleName() << "\t" << s->getName() << "\t" << s->getValue() << endl;
             }
 
