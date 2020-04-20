@@ -29,6 +29,7 @@ output-scalar-file = ${resultdir}/${configname}.sca
 
 %subst: /^run General-(\d)-.*/run General-$1-xxx/m
 %subst: /^attr datetime [0-9:-]+/attr datetime xxx/m
+%subst: /^attr datetimef [0-9:-]+/attr datetimef xxx/m
 %subst: /^attr processid \d+/attr processid xxx/m
 
 %contains: results/General.sca
@@ -36,6 +37,7 @@ version 3
 run General-0-xxx
 attr configname General
 attr datetime xxx
+attr datetimef xxx
 attr experiment General
 attr inifile _defaults.ini
 attr iterationvars "$foovar=1, $barvar=one"
@@ -50,6 +52,7 @@ attr runnumber 0
 attr seedset 0
 itervar barvar one
 itervar foovar 1
+itervar iterationvarsd foovar=1/barvar=one
 config network Test
 config Test.**.foo 1
 config Test.**.bar one
@@ -71,6 +74,7 @@ par Test typename "\"Test\""
 run General-1-xxx
 attr configname General
 attr datetime xxx
+attr datetimef xxx
 attr experiment General
 attr inifile _defaults.ini
 attr iterationvars "$foovar=1, $barvar=one"
@@ -85,6 +89,7 @@ attr runnumber 1
 attr seedset 1
 itervar barvar one
 itervar foovar 1
+itervar iterationvarsd foovar=1/barvar=one
 config network Test
 config Test.**.foo 1
 config Test.**.bar one
@@ -106,6 +111,7 @@ par Test typename "\"Test\""
 run General-2-xxx
 attr configname General
 attr datetime xxx
+attr datetimef xxx
 attr experiment General
 attr inifile _defaults.ini
 attr iterationvars "$foovar=1, $barvar=two"
@@ -120,6 +126,7 @@ attr runnumber 2
 attr seedset 2
 itervar barvar two
 itervar foovar 1
+itervar iterationvarsd foovar=1/barvar=two
 config network Test
 config Test.**.foo 1
 config Test.**.bar two
@@ -141,6 +148,7 @@ par Test typename "\"Test\""
 run General-3-xxx
 attr configname General
 attr datetime xxx
+attr datetimef xxx
 attr experiment General
 attr inifile _defaults.ini
 attr iterationvars "$foovar=1, $barvar=two"
@@ -155,6 +163,7 @@ attr runnumber 3
 attr seedset 3
 itervar barvar two
 itervar foovar 1
+itervar iterationvarsd foovar=1/barvar=two
 config network Test
 config Test.**.foo 1
 config Test.**.bar two
@@ -176,6 +185,7 @@ par Test typename "\"Test\""
 run General-4-xxx
 attr configname General
 attr datetime xxx
+attr datetimef xxx
 attr experiment General
 attr inifile _defaults.ini
 attr iterationvars "$foovar=2, $barvar=one"
@@ -190,6 +200,7 @@ attr runnumber 4
 attr seedset 4
 itervar barvar one
 itervar foovar 2
+itervar iterationvarsd foovar=2/barvar=one
 config network Test
 config Test.**.foo 2
 config Test.**.bar one
@@ -211,6 +222,7 @@ par Test typename "\"Test\""
 run General-5-xxx
 attr configname General
 attr datetime xxx
+attr datetimef xxx
 attr experiment General
 attr inifile _defaults.ini
 attr iterationvars "$foovar=2, $barvar=one"
@@ -225,6 +237,7 @@ attr runnumber 5
 attr seedset 5
 itervar barvar one
 itervar foovar 2
+itervar iterationvarsd foovar=2/barvar=one
 config network Test
 config Test.**.foo 2
 config Test.**.bar one
@@ -246,6 +259,7 @@ par Test typename "\"Test\""
 run General-6-xxx
 attr configname General
 attr datetime xxx
+attr datetimef xxx
 attr experiment General
 attr inifile _defaults.ini
 attr iterationvars "$foovar=2, $barvar=two"
@@ -260,6 +274,7 @@ attr runnumber 6
 attr seedset 6
 itervar barvar two
 itervar foovar 2
+itervar iterationvarsd foovar=2/barvar=two
 config network Test
 config Test.**.foo 2
 config Test.**.bar two
@@ -281,6 +296,7 @@ par Test typename "\"Test\""
 run General-7-xxx
 attr configname General
 attr datetime xxx
+attr datetimef xxx
 attr experiment General
 attr inifile _defaults.ini
 attr iterationvars "$foovar=2, $barvar=two"
@@ -295,6 +311,7 @@ attr runnumber 7
 attr seedset 7
 itervar barvar two
 itervar foovar 2
+itervar iterationvarsd foovar=2/barvar=two
 config network Test
 config Test.**.foo 2
 config Test.**.bar two

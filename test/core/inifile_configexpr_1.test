@@ -24,6 +24,7 @@ measurement-label = "Measurement " + "${iterationvars}"
 
 %subst: /run General-000-.*/run General-000-xxx/
 %subst: /attr datetime .*/attr datetime xxx/
+%subst: /attr datetimef .*/attr datetimef xxx/
 %subst: /attr processid .*/attr processid xxx/
 
 %contains: dir5/General-a=st,i=5-#0.sca
@@ -31,6 +32,7 @@ version 3
 run General-000-xxx
 attr configname General
 attr datetime xxx
+attr datetimef xxx
 attr experiment "Experiment One"
 attr inifile _defaults.ini
 attr iterationvars "$a=st, $i=5"
@@ -45,6 +47,7 @@ attr runnumber 000
 attr seedset 6
 itervar a st
 itervar i 5
+itervar iterationvarsd a=st/i=5
 config **.dummy1 st
 config **.dummy2 5
 config network "\"Te\" + \"st\""

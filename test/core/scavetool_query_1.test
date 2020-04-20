@@ -30,6 +30,7 @@ repeat = 2
 for f in results/*; do
     perl -i -pe 's/(run General-.)-.*/\1-xxxx/' $f
     perl -i -pe 's/(attr datetime ).*/\1 xxxx/' $f
+    perl -i -pe 's/(attr datetimef ).*/\1 xxxx/' $f
     perl -i -pe 's/(attr processid ).*/\1 xxxx/' $f
 done
 
@@ -221,6 +222,7 @@ General-0-xxxx:
 
 configname      General
 datetime        xxxx
+datetimef       xxxx
 experiment      General
 inifile         _defaults.ini
 iterationvars
@@ -238,6 +240,7 @@ General-1-xxxx:
 
 configname      General
 datetime        xxxx
+datetimef       xxxx
 experiment      General
 inifile         _defaults.ini
 iterationvars
@@ -310,6 +313,7 @@ General-0-xxxx:
 
 configname      General
 datetime        xxxx
+datetimef       xxxx
 experiment      General
 inifile         _defaults.ini
 iterationvars
@@ -327,6 +331,7 @@ General-1-xxxx:
 
 configname      General
 datetime        xxxx
+datetimef       xxxx
 experiment      General
 inifile         _defaults.ini
 iterationvars
@@ -478,6 +483,7 @@ General-0-xxxx:
 
 configname      General
 datetime        xxxx
+datetimef       xxxx
 experiment      General
 inifile         _defaults.ini
 iterationvars
@@ -495,6 +501,7 @@ General-1-xxxx:
 
 configname      General
 datetime        xxxx
+datetimef       xxxx
 experiment      General
 inifile         _defaults.ini
 iterationvars
@@ -851,18 +858,18 @@ $ opp_scavetool --no-indexing <files>
 runs: 2   scalars: 4  parameters: 4  vectors: 2  statistics: 2  histograms: 2
 ------------------------
 $ opp_scavetool -v <files>
-reading results/General-#0.sca... done
-reading results/General-#1.sca... done
-reading results/General-#0.vec... done
-reading results/General-#1.vec... done
+reading results/General-#0.sca... General-0-xxxx done
+reading results/General-#1.sca... General-1-xxxx done
+reading results/General-#0.vci... done
+reading results/General-#1.vci... done
 4 file(s) loaded
 runs: 2   scalars: 4  parameters: 4  vectors: 2  statistics: 2  histograms: 2
 ------------------------
 $ opp_scavetool --verbose <files>
-reading results/General-#0.sca... done
-reading results/General-#1.sca... done
-reading results/General-#0.vec... done
-reading results/General-#1.vec... done
+reading results/General-#0.sca... General-0-xxxx done
+reading results/General-#1.sca... General-1-xxxx done
+reading results/General-#0.vci... done
+reading results/General-#1.vci... done
 4 file(s) loaded
 runs: 2   scalars: 4  parameters: 4  vectors: 2  statistics: 2  histograms: 2
 .
