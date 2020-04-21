@@ -60,6 +60,7 @@ public class ScaveImages {
     public static final String IMG_ETOOL16_SETFILTER = "icons/full/etool16/setfilter.png";
     public static final String IMG_ETOOL16_SHOWBOTH = "icons/full/etool16/showboth.png";
     public static final String IMG_ETOOL16_SHOWCHART = "icons/full/etool16/showchart.png";
+    public static final String IMG_ETOOL16_SHOWFIELDS = "icons/full/etool16/showfields.png";
     public static final String IMG_ETOOL16_SHOWSCRIPT = "icons/full/etool16/showscript.png";
     public static final String IMG_ETOOL16_SPLITTER2 = "icons/full/etool16/splitter2.png";
     public static final String IMG_ETOOL16_SPLITTERLEFT = "icons/full/etool16/splitterleft.png";

@@ -164,7 +164,7 @@ std::string ResultsPickler::getCsvResultsPickle(std::string filterExpression, st
     p.startList();
 
     if (!opp_trim(filterExpression).empty()) {
-        IDList results = rfm->getAllItems(false);
+        IDList results = rfm->getAllItems(true); // filter may match field scalars as well
         results = rfm->filterIDList(results, filterExpression.c_str());
 
         // pickle runs of results
@@ -374,7 +374,7 @@ std::string ResultsPickler::getScalarsPickle(const char *filterExpression, bool 
 
     IDList scalars;
     if (!opp_isempty(filterExpression)) {
-        IDList allScalars = rfm->getAllScalars(false);
+        IDList allScalars = rfm->getAllScalars(true); // filter may match field scalars as well
         scalars = rfm->filterIDList(allScalars, filterExpression, -1, interrupted);
 
         ScalarResult buffer;

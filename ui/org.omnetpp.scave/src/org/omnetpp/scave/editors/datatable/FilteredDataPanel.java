@@ -53,7 +53,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
 
     private FilterBar filterBar;
     private IDataControl dataControl;
-    private IDList idlist; // the unfiltered data list
+    private IDList idlist = new IDList(); // the unfiltered data list
     private ResultType type;
     private FocusManager focusManager;
     private int itemLimit = 100_000_000; // some sensible limit to the number of data items displayed, may be important with DataTree which isn't O(1)
@@ -76,9 +76,13 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
     }
 
     public void setIDList(IDList idlist) {
+        boolean changed = !idlist.equals(this.idlist);
         this.idlist = idlist;
-        filterBar.getFilterExpressionProposalProvider().setIDList(dataControl.getResultFileManager(), idlist);
-        runFilter();
+        if (changed) {
+            filterCache.clear();
+            filterBar.getFilterExpressionProposalProvider().setIDList(dataControl.getResultFileManager(), idlist);
+            runFilter();
+        }
     }
 
     public IDList getIDList() {

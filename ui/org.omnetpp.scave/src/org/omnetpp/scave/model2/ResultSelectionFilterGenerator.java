@@ -13,7 +13,6 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunList;
-import org.omnetpp.scave.model.ResultType;
 
 /**
  * Given a set of selected results (an IDList of selected items, out of an IDList
@@ -169,7 +168,11 @@ public class ResultSelectionFilterGenerator {
 
     public static String getFilter(IDList target, IDList all, ResultFileManager manager, IProgressMonitor monitor) throws InterruptedException {
         if (monitor != null)
-            monitor.beginTask("generating filter", 1);
+            monitor.beginTask("Generating filter", 1);
+
+        if (!target.isSubsetOf(all))
+            throw new IllegalArgumentException("IDs to be selected must be a subset of all IDs");
+
         return doGetFilter(target, all, manager, monitor);
     }
 
@@ -256,18 +259,6 @@ public class ResultSelectionFilterGenerator {
         }
     }
 
-
-    // filtering for the given result type will not be part of the returned expression!!!
-    public static String getIDListAsFilterExpression(IDList ids, String[] runidFields, ResultType resultType, String viewFilter, ResultFileManager manager, IProgressMonitor monitor) throws InterruptedException {
-        IDList allIDs = manager.getAllItems(false).filterByTypes(resultType.getValue());
-        return getIDListAsFilterExpression(allIDs, ids, runidFields, viewFilter, manager, monitor);
-    }
-
-    public static String getIDListAsFilterExpression(IDList ids, String[] runidFields, String viewFilter, ResultFileManager manager, IProgressMonitor monitor) throws InterruptedException {
-        IDList allIDs = manager.getAllItems(false);
-        return getIDListAsFilterExpression(allIDs, ids, runidFields, viewFilter, manager, monitor);
-    }
-
     public static String getIDListAsFilterExpression(IDList allIDs, IDList ids, String[] runidFields, String viewFilter, ResultFileManager manager, IProgressMonitor monitor) throws InterruptedException {
         IDList allItemsOfType = allIDs;
         IDList itemsMatchingViewFilter = manager.filterIDList(allItemsOfType, viewFilter);
@@ -287,6 +278,8 @@ public class ResultSelectionFilterGenerator {
             return StringUtils.defaultIfEmpty(viewFilter, "*");
         }
 
+        if (!ids.isSubsetOf(allIDs))
+            throw new IllegalArgumentException("IDs to be selected must be a subset of all IDs");
 
         if (viewFilter.equals("*"))
             return getFilter(ids, itemsMatchingViewFilter, manager, monitor);

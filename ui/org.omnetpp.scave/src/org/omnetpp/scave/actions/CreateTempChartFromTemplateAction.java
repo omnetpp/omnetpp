@@ -59,7 +59,10 @@ public class CreateTempChartFromTemplateAction extends AbstractScaveAction {
         String[] filterFields = new String[] { Scave.EXPERIMENT, Scave.MEASUREMENT, Scave.REPLICATION,
                 Scave.MODULE, Scave.NAME };
         String viewFilter = editor.getBrowseDataPage().getActivePanel().getFilter();
-        String filter = ResultFileManager.callWithReadLock(manager, () -> { return ResultSelectionFilterGenerator.getIDListAsFilterExpression(idList, filterFields, viewFilter, manager, null); });
+        IDList allIds = manager.getAllItems(true);
+        String filter = ResultFileManager.callWithReadLock(manager, () -> {
+            return ResultSelectionFilterGenerator.getIDListAsFilterExpression(allIds, idList, filterFields, viewFilter, manager, null);
+        });
 
         Property filterProperty = chart.lookupProperty("filter");
         if (filterProperty != null)

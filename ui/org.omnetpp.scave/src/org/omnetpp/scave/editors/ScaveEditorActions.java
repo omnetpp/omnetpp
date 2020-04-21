@@ -58,6 +58,7 @@ import org.omnetpp.scave.actions.SaveImageAction;
 import org.omnetpp.scave.actions.SaveTempChartAction;
 import org.omnetpp.scave.actions.SelectAllAction;
 import org.omnetpp.scave.actions.SetItemWidthAction;
+import org.omnetpp.scave.actions.ShowFieldsAsScalarsAction;
 import org.omnetpp.scave.actions.ShowOutputVectorViewAction;
 import org.omnetpp.scave.actions.UndoAction;
 import org.omnetpp.scave.actions.ViewModeAction;
@@ -83,6 +84,7 @@ public class ScaveEditorActions {
     public final RemoveAction removeAction = registerAction(new RemoveAction());
     public final RefreshResultFilesAction refreshResultFilesAction = registerAction(new RefreshResultFilesAction());
     public final ReloadResultFilesAction reloadResultFilesAction = registerAction(new ReloadResultFilesAction());
+    public final ShowFieldsAsScalarsAction showFieldsAsScalarsAction = registerAction(new ShowFieldsAsScalarsAction());
 
     public final ViewModeAction viewIconsAction = registerAction(new ViewModeAction(IconGridViewer.ViewMode.ICONS, "Icons", ScaveImages.IMG_ETOOL16_VIEW_ICONS));
     public final ViewModeAction viewListAction = registerAction(new ViewModeAction(IconGridViewer.ViewMode.LIST, "List", ScaveImages.IMG_ETOOL16_VIEW_LIST));

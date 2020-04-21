@@ -38,6 +38,7 @@ import org.omnetpp.scave.actions.FlatModuleTreeAction;
 import org.omnetpp.scave.actions.IncreaseDecimalPlacesAction;
 import org.omnetpp.scave.actions.SetChartFilterAction;
 import org.omnetpp.scave.actions.SetFilterBySelectedCellAction;
+import org.omnetpp.scave.actions.ShowFieldsAsScalarsAction;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ScaveEditorActions;
@@ -61,15 +62,13 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 /**
  * This is the "Browse Data" page of Scave Editor
  */
-//TODO Statistics result items should be added to the histogram page
 //TODO remove page description; display "empty-table message" instead (stacklayout?)
 //TODO save filter bar sash positions
 //TODO focus issue (currently a toolbar icon gets the focus by default?)
-//TODO showStatisticsFieldsAsScalars: make configurable
 public class BrowseDataPage extends FormEditorPage {
-    public static final int PROGRESSDIALOG_DELAY_MILLIS = 1000;
+    public static final int PROGRESSDIALOG_DELAY_MILLIS = 5000;
 
-    private boolean showStatisticsFieldsAsScalars = false;
+    private boolean showFieldsAsScalars = false;
 
     // UI elements
     private Label label;
@@ -179,6 +178,8 @@ public class BrowseDataPage extends FormEditorPage {
         chooseTableColumnsAction = new ChooseTableColumnsAction(null);
         addToToolbar(chooseTableColumnsAction);
 
+        addToToolbar(actions.showFieldsAsScalarsAction);
+
         addSeparatorToToolbar();
 
         addToToolbar(new IncreaseDecimalPlacesAction());
@@ -221,6 +222,8 @@ public class BrowseDataPage extends FormEditorPage {
                 contextMenuManager.add(new Separator());
             }
 
+            if (panel == getScalarsPanel())
+                contextMenuManager.add(actions.showFieldsAsScalarsAction);
             contextMenuManager.add(new CopyChartFilterAction());
             MenuManager setFilterSubmenu = new MenuManager("Set Filter of Chart", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_SETFILTER), null);
 
@@ -366,9 +369,9 @@ public class BrowseDataPage extends FormEditorPage {
 
         monitor.subTask("Collecting data");
         while (Display.getCurrent().readAndDispatch());
-        IDList items = manager.getAllItems(false);
+        IDList items = manager.getAllItems(showFieldsAsScalars);
         IDList vectors = manager.getAllVectors();
-        IDList scalars = manager.getAllScalars(showStatisticsFieldsAsScalars);
+        IDList scalars = manager.getAllScalars(showFieldsAsScalars);
         IDList parameters = manager.getAllParameters();
         IDList statisticsAndHistograms = manager.getAllStatistics().unionWith(manager.getAllHistograms());
 
@@ -438,5 +441,14 @@ public class BrowseDataPage extends FormEditorPage {
 
     public int getNumericPrecision() {
         return numericPrecision;
+    }
+
+    public boolean getShowFieldsAsScalars() {
+        return showFieldsAsScalars;
+    }
+
+    public void setShowFieldsAsScalars(boolean show) {
+        showFieldsAsScalars = show;
+        refreshPage(scaveEditor.getResultFileManager());
     }
 }
