@@ -160,6 +160,8 @@ class SCAVE_API ResultFileManager
     ScaveStringPool names;
     ScaveStringPool classNames; // currently not used
 
+    mutable std::unordered_map<std::pair<const std::string *, ResultItem::FieldNum>,const std::string *, common::pair_hash> namesWithSuffixCache;
+
 #ifdef THREADED
     omnetpp::common::ReentrantReadWriteLock lock;
 #endif
@@ -216,6 +218,8 @@ class SCAVE_API ResultFileManager
     const StatisticsResult *uncheckedGetStatistics(ID id) const;
     const HistogramResult *uncheckedGetHistogram(ID id) const;
 
+    void fillFieldScalar(ScalarResult& scalar, ID id) const;
+    const std::string *getPooledNameWithSuffix(const std::string *name, FieldNum fieldId) const;
     static const char *getNameSuffixForFieldScalar(FieldNum fieldId);
 
   public:

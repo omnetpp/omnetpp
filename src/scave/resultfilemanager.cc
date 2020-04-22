@@ -468,12 +468,35 @@ const char *ResultFileManager::getNameSuffixForFieldScalar(FieldNum fieldId)
 
 ScalarResult ResultFileManager::getFieldScalar(ID id) const
 {
+    ScalarResult result;
+    fillFieldScalar(result, id);
+    return result;
+}
+
+void ResultFileManager::fillFieldScalar(ScalarResult& scalar, ID id) const
+{
     READER_MUTEX
     const ResultItem *container = getContainingItem(id);
     FieldNum fieldId = (FieldNum) _fieldid(id);
-    const char *suffix = getNameSuffixForFieldScalar(fieldId);
-    double value = container->getScalarField(fieldId);
-    return ScalarResult(container->getFileRun(), container->getModuleName(), container->getName()+":"+suffix, StringMap(), value, id);
+    scalar.fileRunRef = container->fileRunRef;
+    scalar.moduleNameRef = container->moduleNameRef;
+    scalar.nameRef = getPooledNameWithSuffix(container->nameRef,fieldId);
+    scalar.attributes = container->attributes;
+    scalar.value = container->getScalarField(fieldId);
+    scalar.ownID = id;
+}
+
+const std::string *ResultFileManager::getPooledNameWithSuffix(const std::string *name, FieldNum fieldId) const
+{
+    auto key = std::make_pair(name, fieldId);
+    auto it = namesWithSuffixCache.find(key);
+    if (it != namesWithSuffixCache.end())
+        return it->second;
+    else {
+        const std::string *value = const_cast<ResultFileManager*>(this)->names.insert(*name+":"+getNameSuffixForFieldScalar(fieldId));
+        namesWithSuffixCache[key] = value;
+        return value;
+    }
 }
 
 const ScalarResult *ResultFileManager::getScalar(ID id, ScalarResult& buffer) const
@@ -481,7 +504,7 @@ const ScalarResult *ResultFileManager::getScalar(ID id, ScalarResult& buffer) co
     if (_fieldid(id) == 0)
         return getNonfieldScalar(id);
     else {
-        buffer = getFieldScalar(id);
+        fillFieldScalar(buffer, id);
         return &buffer;
     }
 }
