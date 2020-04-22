@@ -59,6 +59,21 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace scave {
 
+size_t StringMapPtrHash::operator() (const StringMap *map) const
+{
+    size_t seed = 0;
+    for (auto pair : *map) {
+        hash_combine(seed, pair.first);
+        hash_combine(seed, pair.second);
+    }
+    return seed;
+}
+
+bool StringMapPtrEq::operator () (const StringMap *lhs, const StringMap *rhs) const
+{
+    return *lhs == *rhs;
+}
+
 ResultFileManager::ResultFileManager()
 {
 
@@ -458,7 +473,7 @@ ScalarResult ResultFileManager::getFieldScalar(ID id) const
     FieldNum fieldId = (FieldNum) _fieldid(id);
     const char *suffix = getNameSuffixForFieldScalar(fieldId);
     double value = container->getScalarField(fieldId);
-    return ScalarResult(container->getFileRun(), container->getModuleName(), container->getName()+":"+suffix, container->getAttributes(), value, id);
+    return ScalarResult(container->getFileRun(), container->getModuleName(), container->getName()+":"+suffix, StringMap(), value, id);
 }
 
 const ScalarResult *ResultFileManager::getScalar(ID id, ScalarResult& buffer) const

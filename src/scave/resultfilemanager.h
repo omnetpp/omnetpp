@@ -58,6 +58,13 @@ typedef std::set<std::string> StringSet;
 typedef std::map<std::string, std::string> StringMap;
 typedef std::vector< std::pair<std::string, std::string> > OrderedKeyValueList;
 
+struct StringMapPtrHash {
+   size_t operator() (const StringMap *stringmap) const;
+};
+struct StringMapPtrEq {
+    bool operator () (const StringMap *lhs, const StringMap *rhs) const;
+};
+
 using omnetpp::common::Statistics;
 using omnetpp::common::Histogram;
 
@@ -140,6 +147,8 @@ class SCAVE_API ResultFileManager
   private:
     std::unordered_set<ResultFile*> fileList;
     std::unordered_set<Run*> runList;
+
+    std::unordered_set<const StringMap*,StringMapPtrHash,StringMapPtrEq> attrsPool;
 
     FileRunList fileRunList; // contains nullptr for unloaded entries
 

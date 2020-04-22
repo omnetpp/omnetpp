@@ -78,13 +78,13 @@ class SCAVE_API ResultItem
     FileRun *fileRunRef; // backref to containing FileRun
     const std::string *moduleNameRef; // points into ResultFileManager's StringSet
     const std::string *nameRef; // scalarname or vectorname; points into ResultFileManager's StringSet
-    StringMap attributes; // metadata in key/value form
+    const StringMap *attributes; // metadata in key/value form; pooled (points into ResultFileManager)
 
   protected:
-    ResultItem() : fileRunRef(nullptr), moduleNameRef(nullptr), nameRef(nullptr) {} // for ScalarResult default ctor
+    ResultItem() : fileRunRef(nullptr), moduleNameRef(nullptr), nameRef(nullptr), attributes(nullptr) {} // for ScalarResult default ctor
     ResultItem(FileRun *fileRun, const std::string& moduleName, const std::string& name, const StringMap& attrs);
-    void setAttributes(const StringMap& attrs) {attributes = attrs;}
-    void setAttribute(const std::string& attrName, const std::string& value) {attributes[attrName] = value;}
+    void setAttributes(const StringMap& attrs);
+    void setAttribute(const std::string& attrName, const std::string& value);
 
   public:
     ResultItem(const ResultItem& o)
@@ -104,11 +104,11 @@ class SCAVE_API ResultItem
     ResultFile *getFile() const;
     Run *getRun() const;
 
-    const StringMap& getAttributes() const {return attributes;}
+    const StringMap& getAttributes() const {return *attributes;}
 
     const std::string& getAttribute(const std::string& attrName) const {
-        StringMap::const_iterator it = attributes.find(attrName);
-        return it==attributes.end() ? NULLSTRING : it->second;
+        StringMap::const_iterator it = attributes->find(attrName);
+        return it==attributes->end() ? NULLSTRING : it->second;
     }
 
     /**

@@ -28,11 +28,30 @@ namespace scave {
 const std::string NULLSTRING = "";
 
 ResultItem::ResultItem(FileRun *fileRun, const std::string& moduleName, const std::string& name, const StringMap& attrs) :
-        fileRunRef(fileRun), moduleNameRef(nullptr), nameRef(nullptr), attributes(attrs)
+        fileRunRef(fileRun), moduleNameRef(nullptr), nameRef(nullptr), attributes(nullptr)
 {
     ResultFileManager *resultFileManager = fileRun->fileRef->getResultFileManager();
     moduleNameRef = resultFileManager->moduleNames.insert(moduleName);
     nameRef = resultFileManager->names.insert(name);
+    setAttributes(attrs);
+}
+
+void ResultItem::setAttributes(const StringMap& attrs)
+{
+    ResultFileManager *resultFileManager = fileRunRef->fileRef->getResultFileManager();
+    auto it = resultFileManager->attrsPool.find(&attrs);
+    if (it != resultFileManager->attrsPool.end())
+        attributes = *it;
+    else
+        resultFileManager->attrsPool.insert(attributes = new StringMap(attrs));
+}
+
+void ResultItem::setAttribute(const std::string& attrName, const std::string& value)
+{
+    // TODO this is not terribly effective; it would be better to eliminate the need for this function altogether
+    StringMap tmp = *attributes; // make a copy
+    tmp[attrName] = value;
+    setAttributes(tmp);
 }
 
 ResultItem& ResultItem::operator=(const ResultItem& rhs)
@@ -55,9 +74,9 @@ ResultFileManager *ResultItem::getResultFileManager() const
 
 ResultItem::DataType ResultItem::getDataType() const
 {
-    auto it = attributes.find("type");
-    if (it == attributes.end()) {
-        if (attributes.find("enum") != attributes.end())
+    auto it = attributes->find("type");
+    if (it == attributes->end()) {
+        if (attributes->find("enum") != attributes->end())
             return TYPE_ENUM;
         else
             return TYPE_DOUBLE;
@@ -77,8 +96,8 @@ ResultItem::DataType ResultItem::getDataType() const
 
 EnumType *ResultItem::getEnum() const
 {
-   auto it = attributes.find("enum");
-    if (it == attributes.end())
+   auto it = attributes->find("enum");
+    if (it == attributes->end())
         return nullptr;
     EnumType *enumPtr = new EnumType();
     enumPtr->parseFromString(it->second.c_str());
@@ -122,8 +141,8 @@ int VectorResult::getItemType() const
 
 InterpolationMode VectorResult::getInterpolationMode() const
 {
-    auto it = attributes.find("interpolationmode");
-    if (it == attributes.end())
+    auto it = attributes->find("interpolationmode");
+    if (it == attributes->end())
         return UNSPECIFIED;
     const std::string& mode = it->second;
     if (mode == "none")
