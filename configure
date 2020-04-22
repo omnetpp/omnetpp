@@ -2191,6 +2191,7 @@ EXE_SUFFIX=
 SHARED_LIB_SUFFIX='$(SO_LIB_SUFFIX)'
 LIB_PREFIX="lib"
 
+
 #----------------------
 # Default flags for values for other variables that come from configure.user.
 #----------------------
@@ -2204,7 +2205,7 @@ CFLAGS_DEBUG=${CFLAGS_DEBUG:- -g -Wall}
 CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O3 -DNDEBUG=1}
 CFLAGS=${CFLAGS:-}
 DEPENDFLAGS=${DEPENDFLAGS:- -MMD -MP -MF \$@.d}
-CXXFLAGS=${CXXFLAGS:- -std=c++14}
+CXXFLAGS=${CXXFLAGS:-}
 DEFINES=${DEFINES:-}
 PREFER_CLANG=${PREFER_CLANG:-yes}
 USE_MS_ABI=${USE_MS_ABI:-no}
@@ -3149,6 +3150,59 @@ if test "$tmp_CXX" = "not found"; then
    as_fn_error $? "No C++ compiler found -- one is required to build OMNeT++/OMNEST, and also for model development." "$LINENO" 5
 fi
 
+
+#------------------------------------
+# check whether compiler supports c++14 mode by default and try to enforce if it does not
+#------------------------------------
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for c++14 support" >&5
+$as_echo_n "checking for c++14 support... " >&6; }
+
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+      #if __cplusplus < 201402L
+      #error
+      #endif
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_compile "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+else
+  CXXFLAGS="-std=c++14 $CXXFLAGS";
+      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+          #if __cplusplus < 201402L
+          #error
+          #endif
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_compile "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes (forced by -std=c++14)" >&5
+$as_echo "yes (forced by -std=c++14)" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }; as_fn_error $? "Please install a c++14 conformant compiler (e.g. clang 3.4+ or gcc 6.1+) and/or check CXXFLAGS in configure.user!" "$LINENO" 5
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
+
 if test "$TOOLCHAIN" = "mingw"; then
     AS=${AS:-i586-mingw32msvc-as}
     AR=${AR:-i586-mingw32msvc-ar cr}
@@ -3407,7 +3461,6 @@ fi
 #----------------------
 # check and disable frame pointer omission for better debugging support
 #----------------------
-
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports -fno-omit-frame-pointer" >&5
 $as_echo_n "checking whether $CXX supports -fno-omit-frame-pointer... " >&6; }

@@ -149,8 +149,8 @@ AC_MSG_NOTICE(-----------------------------------------------)
 
 # force MS-ABI / x64 compatible target if requested by the user
 if test "$USE_MS_ABI" = "yes"; then
-  CFLAGS="$CFLAGS --target=x86_64-windows-msvc" 
-  CXXFLAGS="$CXXFLAGS --target=x86_64-windows-msvc" 
+  CFLAGS="$CFLAGS --target=x86_64-windows-msvc"
+  CXXFLAGS="$CXXFLAGS --target=x86_64-windows-msvc"
   LDFLAGS="$LDFLAGS --target=x86_64-windows-msvc"
 fi
 
@@ -180,6 +180,7 @@ EXE_SUFFIX=
 SHARED_LIB_SUFFIX='$(SO_LIB_SUFFIX)'
 LIB_PREFIX="lib"
 
+
 #----------------------
 # Default flags for values for other variables that come from configure.user.
 #----------------------
@@ -193,7 +194,7 @@ CFLAGS_DEBUG=${CFLAGS_DEBUG:- -g -Wall}
 CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O3 -DNDEBUG=1}
 CFLAGS=${CFLAGS:-}
 DEPENDFLAGS=${DEPENDFLAGS:- -MMD -MP -MF \$@.d}
-CXXFLAGS=${CXXFLAGS:- -std=c++14}
+CXXFLAGS=${CXXFLAGS:-}
 DEFINES=${DEFINES:-}
 PREFER_CLANG=${PREFER_CLANG:-yes}
 USE_MS_ABI=${USE_MS_ABI:-no}
@@ -248,6 +249,28 @@ if test "$tmp_CXX" = "not found"; then
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES g++"
    AC_MSG_ERROR([No C++ compiler found -- one is required to build OMNeT++/OMNEST, and also for model development.])
 fi
+
+
+#------------------------------------
+# check whether compiler supports c++14 mode by default and try to enforce if it does not
+#------------------------------------
+AC_MSG_CHECKING([for c++14 support])
+AC_COMPILE_IFELSE(
+     [AC_LANG_PROGRAM([[
+      #if __cplusplus < 201402L
+      #error
+      #endif]])],
+     [AC_MSG_RESULT(yes)],
+     [CXXFLAGS="-std=c++14 $CXXFLAGS";
+      AC_COMPILE_IFELSE(
+         [AC_LANG_PROGRAM([[
+          #if __cplusplus < 201402L
+          #error
+          #endif]])],
+         AC_MSG_RESULT(yes (forced by -std=c++14)),
+         AC_MSG_RESULT(no); AC_MSG_ERROR([Please install a c++14 conformant compiler (e.g. clang 3.4+ or gcc 6.1+) and/or check CXXFLAGS in configure.user!]))]
+)
+
 
 if test "$TOOLCHAIN" = "mingw"; then
     AS=${AS:-i586-mingw32msvc-as}
