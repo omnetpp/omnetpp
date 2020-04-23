@@ -268,7 +268,7 @@ AC_COMPILE_IFELSE(
           #error
           #endif]])],
          AC_MSG_RESULT(yes (forced by -std=c++14)),
-         AC_MSG_RESULT(no); AC_MSG_ERROR([Please install a c++14 conformant compiler (e.g. clang 3.4+ or gcc 6.1+) and/or check CXXFLAGS in configure.user!]))]
+         AC_MSG_RESULT(no); AC_MSG_ERROR([Please adjust CXXFLAGS in configure.user to enable C++14 compilation, or install a C++14-capable compiler (e.g. clang 3.4+ or gcc 6.1+)]))]
 )
 
 

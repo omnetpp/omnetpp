@@ -36,9 +36,10 @@ PREFER_CLANG=yes
 #CFLAGS_RELEASE='-O3 -DNDEBUG=1'
 
 #
-# C++ specific compiler flags. OMNeT++ requires at least -std=c++14 (default), but -std=c++17 should work, too.
-# Setting a compiler conformance mode here will force OMNeT++ to use that mode for all compilations (including compiling models).
-# Do NOT specify -std=c++11 or anything below that!
+# C++ specific compiler options. As OMNeT++ requires C++14 or later, this is
+# the place to specify -std=c++14 or a similar option if your compiler's
+# default language compliance level is lower than C++14. These options will be
+# used when compiling OMNeT++ and also when compiling simulation models.
 #
 #CXXFLAGS=-std=c++17
 
@@ -69,7 +70,7 @@ WITH_NETBUILDER=yes
 
 #
 # Set to "yes" to allow the use of LibXML2. OMNeT++ will only use LibXML for loading
-# XML files that have a DOCTYPE declaration such as an associated DTD. All other XML files 
+# XML files that have a DOCTYPE declaration such as an associated DTD. All other XML files
 # are loaded using an embedded XML parser, which is both faster and more memory-efficient.
 #
 WITH_LIBXML=no
