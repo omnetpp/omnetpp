@@ -10,6 +10,10 @@ hists = results.get_histograms(props["filter"], include_attrs=True, include_runa
 
 df = pd.concat([stats, hists], sort=False)
 
+if df.empty:
+    plot.set_warning("The result filter returned no data.")
+    exit(1)
+
 title, legend = utils.extract_label_columns(df)
 
 df.sort_values(by=[l for i, l in legend], axis='index', inplace=True)

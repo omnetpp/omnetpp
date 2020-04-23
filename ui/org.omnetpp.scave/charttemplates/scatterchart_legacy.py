@@ -55,6 +55,11 @@ iv = results.get_itervars("(" + filter_expression + ") AND NOT name =~ " + x_run
 iv['module'] = ""
 
 df = pd.concat([sc]) # , iv ?
+
+if df.empty:
+    plot.set_warning("The result filter returned no data.")
+    exit(1)
+
 df['value'] = pd.to_numeric(df['value'])
 
 if x_runattr and iso_runattr:

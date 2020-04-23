@@ -14,6 +14,10 @@ iso_itervar = props["iso_itervar"]
 # query data into a data frame
 df = results.get_scalars(filter_expression, include_attrs=True, include_itervars=True)
 
+if df.empty:
+    plot.set_warning("The result filter returned no data.")
+    exit(1)
+
 if not xaxis_itervar and not iso_itervar:
     print("The X Axis and Iso Line options were not set in the dialog, inferring them from the data..")
     xaxis_itervar, iso_itervar = utils.pick_two_columns(df)

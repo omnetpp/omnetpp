@@ -11,6 +11,10 @@ filter_expression = props["filter"]
 # query scalar data into dataframe
 df = results.get_scalars(filter_expression, include_attrs=True, include_itervars=True, include_runattrs=True)
 
+if df.empty:
+    plot.set_warning("The result filter returned no data.")
+    exit(1)
+
 groups = props["groups"].split(",")
 series = props["series"].split(",")
 
