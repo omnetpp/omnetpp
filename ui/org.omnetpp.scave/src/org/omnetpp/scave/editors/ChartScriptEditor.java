@@ -708,6 +708,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
 
             ExceptionHandler errorHandler = (proc, e) -> {
                 Display.getDefault().syncExec(() -> {
+                    updateActions();
                     if (!proc.isKilledByUs()) {
                         try {
                             errorStream.write(tweakStacktrace(e.getMessage()));
@@ -717,11 +718,13 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
                         annotatePythonException(e);
                         revealErrorAnnotation();
                     }
+                    proc.kill();
                 });
             };
 
             File anfFileDirectory = scaveEditor.getAnfFile().getLocation().removeLastSegments(1).toFile();
             getChartViewer().runPythonScript(getDocument().get(), anfFileDirectory, afterRun, errorHandler);
+            updateActions();
         });
     }
 
