@@ -67,11 +67,13 @@ public class PythonProcess {
 
         if (!ok) {
             entryPoint = null;
+            String output = "STDOUT:\n\n" + outputMonitoringThread.getOutputSoFar() +
+                    "\n\nSTDERR:\n\n" + errorMonitoringThread.getOutputSoFar();
             if (debug) {
                 Debug.println("Couldn't get the entry point to the Python process... :(");
-                Debug.println("Python said:" + outputMonitoringThread.outputSoFar + errorMonitoringThread.outputSoFar);
+                Debug.println("Python said:\n" + output);
             }
-            throw new RuntimeException("Couldn't get the entry point to the Python process.\nIts output so far:\n" + outputMonitoringThread.getOutputSoFar() + errorMonitoringThread.getOutputSoFar());
+            throw new RuntimeException("Couldn't get the entry point to the Python process.\nIts output so far:\n" + output);
         }
 
         return entryPoint;

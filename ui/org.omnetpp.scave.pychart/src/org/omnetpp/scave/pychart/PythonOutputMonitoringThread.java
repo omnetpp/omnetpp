@@ -5,14 +5,17 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.omnetpp.common.Debug;
+
 public class PythonOutputMonitoringThread extends Thread {
     public Process process;
     public boolean monitorStdErr;
 
     // has to be here to be "effectively final"...
-    Integer numBytesRead = 0;
+    private Integer numBytesRead = 0;
 
-    String outputSoFar = "";
+    private StringBuffer outputSoFar = new StringBuffer();
+    private static final int OUTPUT_BUFFER_SIZE_MAX = 4096;
 
     public interface IOutputListener {
         void outputReceived(String content, boolean stdErr);
@@ -46,7 +49,10 @@ public class PythonOutputMonitoringThread extends Thread {
                     String content = new String(readBuffer, 0, numBytesRead);
                     for (IOutputListener l : outputListeners)
                         l.outputReceived(content, monitorStdErr);
-                    outputSoFar += content;
+
+                    if (outputSoFar.length() < OUTPUT_BUFFER_SIZE_MAX)
+                        outputSoFar.append(content);
+
                 }
             }
         }
@@ -59,6 +65,6 @@ public class PythonOutputMonitoringThread extends Thread {
     }
 
     public String getOutputSoFar() {
-        return outputSoFar;
+        return outputSoFar.toString() + ((outputSoFar.length() > OUTPUT_BUFFER_SIZE_MAX) ? " (truncated)" : "");
     }
 }
