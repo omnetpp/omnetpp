@@ -258,7 +258,15 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
                 public void pythonProcessLivenessChanged(PythonProcess proc) {
                     Display.getDefault().syncExec(() -> {
                         if (!isDisposed()) {
-                            if (!proc.isAlive()) {
+                            if (!proc.getProcess().isAlive()) {
+                                if (!proc.isKilledByUs() && proc.getProcess().exitValue() != 0) {
+                                    try {
+                                        errorStream.write("Python process exited with: " + proc.getProcess().exitValue() + "\n");
+                                    }
+                                    catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
                                 updateActions();
                                 if (nativeChartViewer != null)
                                     nativeChartViewer.getPlot().setStatusText(null);
