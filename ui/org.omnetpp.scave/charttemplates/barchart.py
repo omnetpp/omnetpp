@@ -20,7 +20,7 @@ series = props["series"].split(",")
 
 if not groups[0] and not series[0]:
     print("The Groups and Series options were not set in the dialog, inferring them from the data.")
-    g, s = utils.pick_two_columns(df)
+    g, s = ("module", "name") if len(df) == 1 else utils.pick_two_columns(df)
     if not g or not s:
         plot.set_warning("Please set the Groups and Series options in the dialog!")
         exit(1)
