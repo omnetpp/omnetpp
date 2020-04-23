@@ -222,7 +222,9 @@ int ModuleOutputContentProvider::getIndexOfEntryAt(int lineIndex)
                 entryStartLineNumbers.begin(),
                 entryStartLineNumbers.end(),
                 lineIndex) - entryStartLineNumbers.begin() - 1;
-
+    
+    if(entryIndex < 0)
+        return entryIndex;
     // entryStartLineNumber[] contains one slot for ALL event entries, even those that
     // don't match the filter; so we have to find the LAST slot with the same line number,
     // and that will be the matching entry
