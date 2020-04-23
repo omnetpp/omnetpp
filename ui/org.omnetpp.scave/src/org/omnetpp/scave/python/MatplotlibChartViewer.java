@@ -27,6 +27,7 @@ import org.omnetpp.scave.pychart.IMatplotlibWidget;
 import org.omnetpp.scave.pychart.IPlotWidgetProvider;
 import org.omnetpp.scave.pychart.MatplotlibWidget;
 import org.omnetpp.scave.pychart.PythonCallerThread.ExceptionHandler;
+import org.omnetpp.scave.pychart.PythonProcess;
 import org.omnetpp.scave.pychart.PythonProcessPool;
 
 /**
@@ -40,7 +41,7 @@ public class MatplotlibChartViewer extends ChartViewerBase {
 
     public interface IStateChangeListener {
         void activeActionChanged(String action);
-        void pythonProcessLivenessChanged(boolean alive);
+        void pythonProcessLivenessChanged(PythonProcess proc);
     }
 
     IPlotWidgetProvider widgetProvider = new IPlotWidgetProvider() {

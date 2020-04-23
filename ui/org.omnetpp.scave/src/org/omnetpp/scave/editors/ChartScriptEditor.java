@@ -93,6 +93,7 @@ import org.omnetpp.scave.model.commands.CommandStack;
 import org.omnetpp.scave.pychart.MatplotlibWidget;
 import org.omnetpp.scave.pychart.PythonCallerThread.ExceptionHandler;
 import org.omnetpp.scave.pychart.PythonOutputMonitoringThread.IOutputListener;
+import org.omnetpp.scave.pychart.PythonProcess;
 import org.omnetpp.scave.python.ChartViewerBase;
 import org.omnetpp.scave.python.MatplotlibChartViewer;
 import org.omnetpp.scave.python.MatplotlibChartViewer.IStateChangeListener;
@@ -254,10 +255,15 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
 
             IStateChangeListener stateChangeListener = new IStateChangeListener() {
                 @Override
-                public void pythonProcessLivenessChanged(boolean alive) {
+                public void pythonProcessLivenessChanged(PythonProcess proc) {
                     Display.getDefault().syncExec(() -> {
-                        if (!isDisposed())
-                            updateActions();
+                        if (!isDisposed()) {
+                            if (!proc.isAlive()) {
+                                updateActions();
+                                if (nativeChartViewer != null)
+                                    nativeChartViewer.getPlot().setStatusText(null);
+                            }
+                        }
                     });
                 }
 

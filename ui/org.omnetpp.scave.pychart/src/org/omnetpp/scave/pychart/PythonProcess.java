@@ -24,15 +24,19 @@ public class PythonProcess {
         this.process = process;
         this.clientServer = clientServer;
 
-        outputMonitoringThread = new PythonOutputMonitoringThread(process, false);
+        outputMonitoringThread = new PythonOutputMonitoringThread(this, false);
         outputMonitoringThread.start();
-        errorMonitoringThread = new PythonOutputMonitoringThread(process, true);
+        errorMonitoringThread = new PythonOutputMonitoringThread(this, true);
         errorMonitoringThread.start();
 
         // this does not have any references to anything, the Runnable
         // instances passed to it later do
         pythonCallerThread = new PythonCallerThread(this);
         pythonCallerThread.start();
+    }
+
+    public Process getProcess() {
+        return process;
     }
 
     public IPythonEntryPoint getEntryPoint() {

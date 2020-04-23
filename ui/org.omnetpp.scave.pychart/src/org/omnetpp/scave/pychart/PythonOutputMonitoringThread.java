@@ -8,7 +8,7 @@ import java.util.List;
 import org.omnetpp.common.Debug;
 
 public class PythonOutputMonitoringThread extends Thread {
-    public Process process;
+    public PythonProcess process;
     public boolean monitorStdErr;
 
     // has to be here to be "effectively final"...
@@ -22,16 +22,11 @@ public class PythonOutputMonitoringThread extends Thread {
     }
 
     List<IOutputListener> outputListeners = new ArrayList<IOutputListener>();
-    List<Runnable> deathListeners = new ArrayList<Runnable>();
 
-    public PythonOutputMonitoringThread(Process process, boolean monitorStdErr) {
+    public PythonOutputMonitoringThread(PythonProcess process, boolean monitorStdErr) {
         super("Python output monitoring");
         this.process = process;
         this.monitorStdErr = monitorStdErr;
-    }
-
-    public void addDeathListener(Runnable listener) {
-        deathListeners.add(listener);
     }
 
     public void addOutputListener(IOutputListener listener) {
@@ -42,7 +37,7 @@ public class PythonOutputMonitoringThread extends Thread {
     public void run() {
         byte[] readBuffer = new byte[4096];
 
-        try (InputStream inputStream = monitorStdErr ? process.getErrorStream() : process.getInputStream()) {
+        try (InputStream inputStream = monitorStdErr ? process.getProcess().getErrorStream() : process.getProcess().getInputStream()) {
             while (numBytesRead != -1) {
                 numBytesRead = inputStream.read(readBuffer);
                 if (numBytesRead >= 0) {
@@ -60,8 +55,7 @@ public class PythonOutputMonitoringThread extends Thread {
             PyChartPlugin.logError(e);
         }
 
-        for (Runnable l : deathListeners)
-            l.run();
+        Debug.println((monitorStdErr ? "stderr" : "stdout") + " stream of PID " + process.getProcess().pid() + " was closed");
     }
 
     public String getOutputSoFar() {

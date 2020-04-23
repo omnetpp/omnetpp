@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Control;
+import org.omnetpp.common.Debug;
 import org.omnetpp.scave.editors.ChartProvider;
 import org.omnetpp.scave.editors.ResultsProvider;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -59,13 +60,14 @@ public abstract class ChartViewerBase {
         killPythonProcess();
 
         proc = processPool.getProcess();
+        Debug.println("acquired new python process for chartviewerbase: PID " + proc.getProcess().pid());
 
         for (MatplotlibChartViewer.IStateChangeListener l : stateChangeListeners)
-            l.pythonProcessLivenessChanged(true);
+            l.pythonProcessLivenessChanged(proc);
 
-        proc.outputMonitoringThread.addDeathListener(() -> {
+        proc.getProcess().onExit().thenRun(() -> {
             for (MatplotlibChartViewer.IStateChangeListener l : stateChangeListeners)
-                l.pythonProcessLivenessChanged(false);
+                l.pythonProcessLivenessChanged(proc);
         });
 
         for (IOutputListener l : outputListeners) {
