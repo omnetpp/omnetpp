@@ -41,7 +41,6 @@ if len(unique_names) != 1:
 scalar_name = unique_names[0]
 
 df = pd.pivot_table(df, values="value", columns=iso_itervar, index=xaxis_itervar)
-print(df)
 legend_cols, _ = utils.extract_label_columns(df)
 
 p = plot if chart.is_native_chart() else plt

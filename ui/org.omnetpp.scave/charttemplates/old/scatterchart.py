@@ -21,11 +21,9 @@ def get_data(filter):
     ra = results.get_runattrs(filter)
 
     df = pd.concat([sc, iv, ra])
-    # print(df)
 
     df["value"] = pd.to_numeric(df["value"], errors="ignore")
     df = pd.pivot_table(df, columns="name", index="runID", dropna=False, aggfunc=aggfunc)
-    # print(df)
 
     return df
 
@@ -58,7 +56,6 @@ try:
 except:
     import traceback
     traceback.print_exc()
-print(df)
 
 values = df["value"]
 titles = df["title"] if "title" in df else None
