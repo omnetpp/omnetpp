@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 from omnetpp.scave import results, chart, utils, plot
 
 # get chart properties
