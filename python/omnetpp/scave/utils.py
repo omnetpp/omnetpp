@@ -134,6 +134,13 @@ def pick_two_columns(df):
         return label_cols[0], label_cols[1]
 
 
+def assert_columns_exist(df, cols):
+    for c in cols:
+        if c not in df:
+            plot.set_warning("Expected column missing from DataFrame: " + c)
+            exit(1)
+
+
 def parse_rcparams(rc_content):
     rc_temp = {}
     for line_no, line in enumerate(rc_content.split("\n"), 1):

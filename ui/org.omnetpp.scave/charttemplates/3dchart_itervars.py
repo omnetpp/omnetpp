@@ -27,6 +27,8 @@ if not xaxis_itervar and not yaxis_itervar:
         plot.set_warning("Please set the X Axis and Y Axis options in the dialog!")
         exit(1)
 
+utils.assert_columns_exist(df, [xaxis_itervar, yaxis_itervar])
+
 df[xaxis_itervar] = pd.to_numeric(df[xaxis_itervar], errors="ignore")
 df[yaxis_itervar] = pd.to_numeric(df[yaxis_itervar], errors="ignore")
 

@@ -60,13 +60,16 @@ if df.empty:
     plot.set_warning("The result filter returned no data.")
     exit(1)
 
+utils.assert_columns_exist(df, ["value"])
 df['value'] = pd.to_numeric(df['value'])
 
 if x_runattr and iso_runattr:
+    utils.assert_columns_exist(df, [x_runattr, iso_runattr])
     df = pd.pivot_table(df, index=[x_runattr], columns=[iso_runattr], values="value")
     df.reset_index(inplace=True)
     x_column = x_runattr
 elif iso_runattr and x_module and x_name:
+    utils.assert_columns_exist(df, [iso_runattr, x_module, x_name])
     cols = ["experiment", "measurement"] if avg_repls else ["runID", "experiment", "measurement", "replication"]
 
     df = pd.pivot_table(df, columns=["module", "name"], index=cols, values="value")

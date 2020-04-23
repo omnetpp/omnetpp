@@ -26,6 +26,8 @@ if not groups[0] and not series[0]:
         exit(1)
     groups, series = [g], [s]
 
+utils.assert_columns_exist(df, groups + series)
+
 for c in groups + series:
     df[c] = pd.to_numeric(df[c], errors="ignore")
 

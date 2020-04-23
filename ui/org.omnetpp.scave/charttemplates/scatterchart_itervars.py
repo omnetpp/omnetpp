@@ -25,6 +25,8 @@ if not xaxis_itervar and not iso_itervar:
         plot.set_warning("Please set the X Axis and Iso Lines options in the dialog!")
         exit(1)
 
+utils.assert_columns_exist(df, [xaxis_itervar, iso_itervar])
+
 df[xaxis_itervar] = pd.to_numeric(df[xaxis_itervar], errors="ignore")
 df[iso_itervar] = pd.to_numeric(df[iso_itervar], errors="ignore")
 
