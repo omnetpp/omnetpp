@@ -39,9 +39,7 @@ public class PythonOutputMonitoringThread extends Thread {
     public void run() {
         byte[] readBuffer = new byte[4096];
 
-        try {
-            InputStream inputStream = monitorStdErr ? process.getErrorStream() : process.getInputStream();
-
+        try (InputStream inputStream = monitorStdErr ? process.getErrorStream() : process.getInputStream()) {
             while (numBytesRead != -1) {
                 numBytesRead = inputStream.read(readBuffer);
                 if (numBytesRead >= 0) {
