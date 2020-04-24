@@ -51,7 +51,7 @@ public class DataTree extends Tree implements IDataControl {
     protected MenuManager contextMenuManager = new MenuManager("#PopupMenu");
     protected ListenerList<IDataListener> listeners;
     protected ResultFileManagerEx manager;
-    protected IDList idList;
+    protected IDList idList = new IDList();
     protected DataTreeContentProvider contentProvider;
     protected IPreferenceStore preferenceStore = ScavePlugin.getDefault().getPreferenceStore();
     private FlatModuleTreeAction flatModuleTreeAction;

@@ -168,7 +168,7 @@ public class DataTable extends LargeTable implements IDataControl {
 
     private ResultType type;
     private ResultFileManagerEx manager;
-    private IDList idList;
+    private IDList idList = new IDList();
     private int numericPrecision = 6;
     private ListenerList<IDataListener> listeners;
     private int minColumnWidth = 5; // for usability
