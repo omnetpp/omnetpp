@@ -6,6 +6,7 @@ import org.eclipse.ui.views.properties.IPropertySource;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.engine.DoubleVector;
 import org.omnetpp.scave.engine.HistogramResult;
+import org.omnetpp.scave.engine.ParameterResult;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ScalarResult;
@@ -156,12 +157,18 @@ public class ResultItemPropertySource implements IPropertySource {
 
             if (propertyId.equals(PROP_MODULE)) return resultItem.getModuleName();
             if (propertyId.equals(PROP_NAME)) return resultItem.getName();
-            if (propertyId.equals(PROP_TYPE)) return resultItem.getDataType().toString().replaceAll("TYPE_", "").toLowerCase();
 
+            if (resultItem instanceof ParameterResult) {
+                ParameterResult parameter = (ParameterResult)resultItem;
+                if (propertyId.equals(PROP_KIND)) return "parameter";
+                if (propertyId.equals(PROP_VALUE)) return parameter.getValue();
+                if (propertyId.equals(PROP_TYPE)) return "n/a"; //TODO
+            }
             if (resultItem instanceof ScalarResult) {
                 ScalarResult scalar = (ScalarResult)resultItem;
                 if (propertyId.equals(PROP_KIND)) return "scalar";
                 if (propertyId.equals(PROP_VALUE)) return scalar.getValue();
+                if (propertyId.equals(PROP_TYPE)) return resultItem.getDataType().toString().replaceAll("TYPE_", "").toLowerCase();
             }
             else if (resultItem instanceof VectorResult) {
                 VectorResult vector = (VectorResult)resultItem;
@@ -176,6 +183,7 @@ public class ResultItemPropertySource implements IPropertySource {
                 if (propertyId.equals(PROP_START_TIME)) return vector.getStartTime();
                 if (propertyId.equals(PROP_END_TIME)) return vector.getEndTime();
                 if (propertyId.equals(PROP_VECTOR_ID)) return vector.getVectorId();
+                if (propertyId.equals(PROP_TYPE)) return resultItem.getDataType().toString().replaceAll("TYPE_", "").toLowerCase();
             }
             else if (resultItem instanceof StatisticsResult) {
                 StatisticsResult statistics = (StatisticsResult)resultItem;
@@ -188,6 +196,7 @@ public class ResultItemPropertySource implements IPropertySource {
                 if (propertyId.equals(PROP_MEAN)) return statistics.getStatistics().getMean();
                 if (propertyId.equals(PROP_STDDEV)) return statistics.getStatistics().getStddev();
                 if (propertyId.equals(PROP_NUMBINS)) return statistics instanceof HistogramResult ? ((HistogramResult)resultItem).getHistogram().getNumBins() : "n/a";
+                if (propertyId.equals(PROP_TYPE)) return resultItem.getDataType().toString().replaceAll("TYPE_", "").toLowerCase();
             }
             else {
                 if (propertyId.equals(PROP_KIND)) return "other";
