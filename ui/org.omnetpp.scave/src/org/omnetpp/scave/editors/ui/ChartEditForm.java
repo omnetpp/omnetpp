@@ -9,10 +9,10 @@ package org.omnetpp.scave.editors.ui;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -54,6 +54,7 @@ import org.omnetpp.scave.assist.NativePlotPropertiesContentProposalProvider;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.Run;
+import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Chart.DialogPage;
 import org.omnetpp.scave.model.ChartTemplate;
@@ -148,8 +149,8 @@ public class ChartEditForm {
         return section;
     }
 
-    List<String> getComboContents(String contentString) {
-        List<String> result = new ArrayList<String>();
+    protected String[] getComboContents(String contentString) {
+        Set<String> items = new HashSet<String>();
 
         ResultFileManager.runWithReadLock(manager, () -> {
 
@@ -157,51 +158,44 @@ public class ChartEditForm {
                 if (part.startsWith("$")) {
                     switch (part) {
                     case "$scalarnames":
-                        for (String name : manager.getUniqueResultNames(manager.getAllScalars(false)).keys().toArray())
-                            result.add(name);
+                        addAll(items, manager.getUniqueResultNames(manager.getAllScalars(true)).keys());
                         break;
                     case "$vectornames":
-                        for (String name : manager.getUniqueResultNames(manager.getAllVectors()).keys().toArray())
-                            result.add(name);
+                        addAll(items, manager.getUniqueResultNames(manager.getAllVectors()).keys());
                         break;
                     case "$histogramnames":
-                        for (String name : manager.getUniqueResultNames(manager.getAllHistograms()).keys().toArray())
-                            result.add(name);
+                        addAll(items, manager.getUniqueResultNames(manager.getAllHistograms()).keys());
                         break;
                     case "$statisticnames":
-                        for (String name : manager.getUniqueResultNames(manager.getAllStatistics()).keys().toArray())
-                            result.add(name);
+                        addAll(items, manager.getUniqueResultNames(manager.getAllStatistics()).keys());
                         break;
                     case "$itervarnames":
-                        Set<String> itervars = new HashSet<String>();
-
                         for (Run run : manager.getRuns().toArray())
-                            for (String itervar : run.getIterationVariables().keys().toArray())
-                                itervars.add(itervar);
-
-                        result.addAll(itervars);
+                            addAll(items, run.getIterationVariables().keys());
                         break;
                     case "$runattrnames":
-                        Set<String> runattrs = new HashSet<String>();
-
                         for (Run run : manager.getRuns().toArray())
-                            for (String runattr : run.getAttributes().keys().toArray())
-                                runattrs.add(runattr);
-
-                        result.addAll(runattrs);
+                            addAll(items, run.getAttributes().keys());
                         break;
                     default:
-                        result.add("Unknown: " + part);
+                        items.add("Unknown: " + part);
                         break;
                     }
                 }
                 else {
-                    result.add(part);
+                    items.add(part);
                 }
             }
         });
 
+        String[] result = items.toArray(new String[]{});
+        Arrays.sort(result);
         return result;
+    }
+
+    private static void addAll(Collection<String> result, StringVector items) {
+        for (String name : items.toArray())
+            result.add(name);
     }
 
     protected void populateControls() {
