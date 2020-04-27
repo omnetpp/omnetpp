@@ -407,6 +407,8 @@ public class ScaveEditor extends MultiPageEditorPartExt
         if (contentOutlinePage != null)
             contentOutlinePage.dispose();
 
+        getSite().setSelectionProvider(null);
+
         super.dispose();
 
     }
