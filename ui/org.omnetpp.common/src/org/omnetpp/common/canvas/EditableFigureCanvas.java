@@ -19,6 +19,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.common.image.ImageUtils;
 import org.omnetpp.common.ui.FigureCanvas;
 
 /**
