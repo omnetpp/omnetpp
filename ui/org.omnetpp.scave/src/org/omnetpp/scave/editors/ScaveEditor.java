@@ -379,24 +379,8 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
         processPool.dispose();
 
-        if (tracker != null) {
+        if (tracker != null)
             analysis.removeListener(tracker);
-        }
-
-        if (manager != null) {
-            // deactivate the tracker explicitly, because it might receive a notification
-            // in case of the ScaveEditor.dispose() was called from a notification.
-            boolean trackerInactive = true;
-            if (tracker != null) {
-                trackerInactive = tracker.deactivate();
-                tracker = null;
-            }
-            // it would get garbage-collected anyway, but the sooner the better because it
-            // may have allocated large amounts of data
-            if (trackerInactive)
-                manager.dispose();
-            manager = null;
-        }
 
         if (getSite() != null && getSite().getPage() != null)
             getSite().getPage().removePartListener(partListener);
@@ -408,6 +392,11 @@ public class ScaveEditor extends MultiPageEditorPartExt
             contentOutlinePage.dispose();
 
         getSite().setSelectionProvider(null);
+
+        if (manager != null) {
+            manager.delete(); // ensure that memory is freed even if the ScaveEditor object or parts of it are leaked
+            manager = null;
+        }
 
         super.dispose();
 

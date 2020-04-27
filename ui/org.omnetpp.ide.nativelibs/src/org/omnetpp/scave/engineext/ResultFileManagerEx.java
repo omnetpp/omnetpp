@@ -7,7 +7,6 @@
 
 package org.omnetpp.scave.engineext;
 
-import org.eclipse.core.runtime.ListenerList;
 import org.omnetpp.common.engine.ILock;
 import org.omnetpp.scave.engine.FileRun;
 import org.omnetpp.scave.engine.FileRunList;
@@ -21,7 +20,6 @@ import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.engine.ScalarResult;
-import org.omnetpp.scave.engine.ScaveEngineJNI;
 import org.omnetpp.scave.engine.StringSet;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.VectorResult;
@@ -45,29 +43,9 @@ public class ResultFileManagerEx extends ResultFileManager {
     public static int IGNORE_LOCK_FILE = ResultFileManager.LoadFlags.IGNORE_LOCK_FILE.swigValue(); // pretend lock file doesn't exist
     public static int VERBOSE = ResultFileManager.LoadFlags.VERBOSE.swigValue(); // print on stdout what it's doing
 
-    private ListenerList<IResultFileManagerDisposeListener> disposeListeners = new ListenerList<>();
-
-    public void addDisposeListener(IResultFileManagerDisposeListener listener) {
-        disposeListeners.add(listener);
-    }
-
-    public void removeDisposeListener(IResultFileManagerDisposeListener listener) {
-        disposeListeners.remove(listener);
-    }
-
-    protected void notifyDisposeListeners() {
-        for (IResultFileManagerDisposeListener listener : disposeListeners)
-            listener.resultFileManagerDisposed(this);
-    }
-
     /*-------------------------------------------
      *               Writer methods
      *-------------------------------------------*/
-    public void dispose() {
-        delete();
-        notifyDisposeListeners();
-    }
-
     @Override
     public void clear() {
         checkNotDeleted();

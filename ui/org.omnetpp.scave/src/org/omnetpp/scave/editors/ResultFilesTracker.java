@@ -74,11 +74,6 @@ public class ResultFilesTracker implements IModelChangeListener {
         this.anfFolder = anfFolder;
     }
 
-    public boolean deactivate() {
-        manager = null;
-        return false;
-    }
-
     public void addChangeListener(IResultFilesChangeListener listener) {
         listeners.add(listener);
     }
