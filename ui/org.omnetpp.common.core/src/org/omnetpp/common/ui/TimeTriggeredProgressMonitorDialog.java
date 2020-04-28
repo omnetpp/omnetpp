@@ -16,9 +16,12 @@ import org.omnetpp.common.CommonCorePlugin;
  * The TimeTriggeredProgressMonitorDialog is a progress monitor dialog that only
  * opens if the runnable provided exceeds the specified long operation time.
  *
- * Copied from org.eclipse.ui.internal.operations.TimeTriggeredProgressMonitorDialog
+ * Copied from org.eclipse.ui.internal.operations.TimeTriggeredProgressMonitorDialog.
+ *
+ * The runWithDialog() methods were added afterwards.
  */
 public class TimeTriggeredProgressMonitorDialog extends ProgressMonitorDialog {
+    public static final int DEFAULT_DELAY_MILLIS = 5000;
 
     /**
      * The time considered to be the long operation time.
@@ -213,12 +216,40 @@ public class TimeTriggeredProgressMonitorDialog extends ProgressMonitorDialog {
         }
      }
 
-    public static boolean runWithDialog(String what, int thresholdMillis, IRunnableWithProgress runnable) {
-        Shell shell = Display.getCurrent().getActiveShell();
+    /**
+     * Utility function to run UI code in the given runnable, with a delayed
+     * progress dialog. Returns true on success, and false on error and
+     * cancellation.
+     *
+     * For the dialog to paint and stay responsive, the runnable needs to
+     * periodically do the following:
+     *
+     * <code>while (Display.getCurrent().readAndDispatch());</code>
+     */
+    public static boolean runWithDialogInUIThread(String what, IRunnableWithProgress runnable) {
+        return runWithDialog(what, Display.getCurrent().getActiveShell(), DEFAULT_DELAY_MILLIS, false, runnable);
+    }
 
+    /**
+     * Utility function to run the given runnable in a background thread, with a
+     * delayed progress dialog. Returns true on success, and false on error and
+     * cancellation.
+     *
+     * This method cannot be used with UI code which needs to run in the UI thread;
+     * use runWithDialogInUIThread() for that.
+     */
+    public static boolean runWithDialog(String what, IRunnableWithProgress runnable) {
+        return runWithDialog(what, Display.getCurrent().getActiveShell(), DEFAULT_DELAY_MILLIS, true, runnable);
+    }
+
+    /**
+     * Utility function to run the given runnable with a delayed progress dialog.
+     * Returns true on success, and false on error and cancellation.
+     */
+    public static boolean runWithDialog(String what, Shell parent, int thresholdMillis, boolean fork, IRunnableWithProgress runnable) {
         try {
-            TimeTriggeredProgressMonitorDialog dialog = new TimeTriggeredProgressMonitorDialog(shell, thresholdMillis);
-            dialog.run(true, true, (monitor) -> {
+            TimeTriggeredProgressMonitorDialog dialog = new TimeTriggeredProgressMonitorDialog(parent, thresholdMillis);
+            dialog.run(fork, true, (monitor) -> {
                 runnable.run(monitor);
             });
             return true;
@@ -231,7 +262,7 @@ public class TimeTriggeredProgressMonitorDialog extends ProgressMonitorDialog {
             if (ee.getCause() instanceof InterruptedException)
                 return false;
             CommonCorePlugin.logError(ee);
-            MessageDialog.openError(shell, "Error", what + " failed: " + ee.getMessage());
+            MessageDialog.openError(parent, "Error", what + " failed: " + ee.getMessage());
             return false;
         }
     }

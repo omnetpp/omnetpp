@@ -165,19 +165,7 @@ public class DataTree extends Tree implements IDataControl {
     public void copySelectionToClipboard() {
         if (manager == null)
             return;
-
-        try {
-            TimeTriggeredProgressMonitorDialog dialog = new TimeTriggeredProgressMonitorDialog(getShell(), 1000);
-            dialog.run(false, true, (monitor) -> doCopySelectionToClipboard(monitor));
-        }
-        catch (InterruptedException e) {
-            // void
-        }
-        catch (InvocationTargetException e) {
-            Throwable ee = e.getCause();
-            MessageDialog.openError(getShell(), "Error", "Copying failed: " + ee.getMessage());
-            ScavePlugin.logError("Copy to clipboard failed", ee);
-        }
+        TimeTriggeredProgressMonitorDialog.runWithDialog("Copy to clipboard", (monitor) -> doCopySelectionToClipboard(monitor));
     }
 
     public void doCopySelectionToClipboard(IProgressMonitor monitor) throws InterruptedException {

@@ -37,7 +37,7 @@ public class CopyChartFilterAction extends AbstractScaveAction {
         IDList target = ((IDListSelection)selection).getIDList();
         ResultFileManager rfm = editor.getResultFileManager();
 
-        TimeTriggeredProgressMonitorDialog.runWithDialog("Generating filter expression", 2000, (monitor) -> {
+        TimeTriggeredProgressMonitorDialog.runWithDialog("Generating filter expression", (monitor) -> {
             String filter = ResultFileManager.callWithReadLock(rfm, () -> {
                 return ResultSelectionFilterGenerator.getFilter(target, all, rfm, monitor);
             });

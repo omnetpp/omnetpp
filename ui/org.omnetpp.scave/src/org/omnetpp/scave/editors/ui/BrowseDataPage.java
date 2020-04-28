@@ -340,16 +340,7 @@ public class BrowseDataPage extends FormEditorPage {
      */
     protected void refreshPage(ResultFileManager manager) {
         if (isActivePage()) {
-            try {
-                TimeTriggeredProgressMonitorDialog dialog = new TimeTriggeredProgressMonitorDialog(Display.getCurrent().getActiveShell(), PROGRESSDIALOG_DELAY_MILLIS);
-                dialog.run(false, true, (monitor) -> doRefreshPage(manager, monitor));
-                isContentValid = true;
-            }
-            catch (InvocationTargetException e) {
-                ScavePlugin.logError(e);
-            }
-            catch (InterruptedException e) {}
-
+            isContentValid = TimeTriggeredProgressMonitorDialog.runWithDialogInUIThread("Refreshing page", (monitor) -> doRefreshPage(manager, monitor));
         }
         else {
             isContentValid = false;
