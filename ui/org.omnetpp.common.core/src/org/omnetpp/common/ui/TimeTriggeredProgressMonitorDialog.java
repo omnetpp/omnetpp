@@ -16,6 +16,9 @@ import org.omnetpp.common.CommonCorePlugin;
  * The TimeTriggeredProgressMonitorDialog is a progress monitor dialog that only
  * opens if the runnable provided exceeds the specified long operation time.
  *
+ * IMPORTANT: IT CURRENTLY *ONLY* CHECKS THE TIME WHEN PROGRESSMONITOR METHODS
+ * ARE CALLED. IF THE TASK IGNORES PROGRESSMONITOR, THE DIALOG NEVER COMES UP.
+ *
  * Copied from org.eclipse.ui.internal.operations.TimeTriggeredProgressMonitorDialog.
  *
  * The runWithDialog() methods were added afterwards.
