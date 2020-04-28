@@ -10,6 +10,7 @@ package org.omnetpp.scave.actions;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
+import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.IDListSelection;
@@ -19,7 +20,6 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.Scave;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartTemplate;
-import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model2.ResultSelectionFilterGenerator;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
@@ -60,15 +60,12 @@ public class CreateTempChartFromTemplateAction extends AbstractScaveAction {
                 Scave.MODULE, Scave.NAME };
         String viewFilter = editor.getBrowseDataPage().getActivePanel().getFilter();
         IDList allIds = manager.getAllItems(true);
-        String filter = ResultFileManager.callWithReadLock(manager, () -> {
-            return ResultSelectionFilterGenerator.getIDListAsFilterExpression(allIds, idList, filterFields, viewFilter, manager, null);
+        boolean ok = TimeTriggeredProgressMonitorDialog.runWithDialog("Generating filter expression", (monitor) -> {
+            String filter = ResultSelectionFilterGenerator.getIDListAsFilterExpression(allIds, idList, filterFields, viewFilter, manager, null);
+            chart.setPropertyValue("filter", filter);
         });
-
-        Property filterProperty = chart.getProperty("filter");
-        if (filterProperty != null)
-            filterProperty.setValue(filter);
-        else
-            chart.addProperty(new Property("filter", filter));
+        if (!ok)
+            return;
 
         editor.getChartTemplateRegistry().markTemplateUsage(template);
 

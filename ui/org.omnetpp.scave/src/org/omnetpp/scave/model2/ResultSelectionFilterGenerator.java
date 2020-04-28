@@ -167,13 +167,15 @@ public class ResultSelectionFilterGenerator {
     }
 
     public static String getFilter(IDList target, IDList all, ResultFileManager manager, IProgressMonitor monitor) throws InterruptedException {
-        if (monitor != null)
-            monitor.beginTask("Generating filter", 1);
+        return ResultFileManager.callWithReadLock(manager, () -> {
+            if (monitor != null)
+                monitor.beginTask("Generating filter", 1);
 
-        if (!target.isSubsetOf(all))
-            throw new IllegalArgumentException("IDs to be selected must be a subset of all IDs");
+            if (!target.isSubsetOf(all))
+                throw new IllegalArgumentException("IDs to be selected must be a subset of all IDs");
 
-        return doGetFilter(target, all, manager, monitor);
+            return doGetFilter(target, all, manager, monitor);
+        });
     }
 
     protected static String doGetFilter(IDList target, IDList all, ResultFileManager manager, IProgressMonitor monitor) throws InterruptedException {
@@ -260,6 +262,12 @@ public class ResultSelectionFilterGenerator {
     }
 
     public static String getIDListAsFilterExpression(IDList allIDs, IDList ids, String[] runidFields, String viewFilter, ResultFileManager manager, IProgressMonitor monitor) throws InterruptedException {
+        return ResultFileManager.callWithReadLock(manager,
+                () -> doGetIDListAsFilterExpression(allIDs, ids, runidFields, viewFilter, manager, monitor)
+        );
+    }
+
+    protected static String doGetIDListAsFilterExpression(IDList allIDs, IDList ids, String[] runidFields, String viewFilter, ResultFileManager manager, IProgressMonitor monitor) throws InterruptedException {
         IDList allItemsOfType = allIDs;
         IDList itemsMatchingViewFilter = manager.filterIDList(allItemsOfType, viewFilter);
 
