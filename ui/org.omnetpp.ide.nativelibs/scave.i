@@ -13,6 +13,7 @@
 #include "common/stringutil.h"   // strdictcmp
 #include "scave/scavedefs.h"
 #include "scave/enumtype.h"
+#include "scave/interruptedflag.h"
 #include "scave/idlist.h"
 #include "scave/resultitems.h"
 #include "scave/resultfilemanager.h"
@@ -281,6 +282,9 @@ namespace omnetpp { namespace common {
 } } // namespaces
 
 %include "common/histogram.h"
+
+/* ------------- interruptedflag.h  ----------------- */
+%include "scave/interruptedflag.h"
 
 /* ------------- idlist.h  ----------------- */
 %include "idlist.i"

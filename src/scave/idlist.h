@@ -26,6 +26,7 @@ namespace omnetpp {
 namespace scave {
 
 class ResultFileManager;
+class InterruptedFlag;
 
 /**
  * Result ID -- identifies a scalar or a vector in a ResultFileManager
@@ -116,31 +117,31 @@ class SCAVE_API IDList
         // sorting
         // TODO: there's a duplication between vector and histogram sorting due to not having a proper superclass with the statistics inside
         void sort() {std::sort(v.begin(), v.end());}  // sort numerically; getUniqueFileRuns() etc are faster on sorted IDLists
-        void sortByFileAndRun(ResultFileManager *mgr, bool ascending);
-        void sortByRunAndFile(ResultFileManager *mgr, bool ascending);
-        void sortByDirectory(ResultFileManager *mgr, bool ascending);
-        void sortByFileName(ResultFileManager *mgr, bool ascending);
-        void sortByRun(ResultFileManager *mgr, bool ascending);
-        void sortByModule(ResultFileManager *mgr, bool ascending);
-        void sortByName(ResultFileManager *mgr, bool ascending);
-        void sortScalarsByValue(ResultFileManager *mgr, bool ascending);
-        void sortParametersByValue(ResultFileManager *mgr, bool ascending);
-        void sortVectorsByVectorId(ResultFileManager *mgr, bool ascending);
-        void sortVectorsByLength(ResultFileManager *mgr, bool ascending);
-        void sortVectorsByMean(ResultFileManager *mgr, bool ascending);
-        void sortVectorsByStdDev(ResultFileManager *mgr, bool ascending);
-        void sortVectorsByMin(ResultFileManager *mgr, bool ascending);
-        void sortVectorsByMax(ResultFileManager *mgr, bool ascending);
-        void sortVectorsByVariance(ResultFileManager *mgr, bool ascending);
-        void sortVectorsByStartTime(ResultFileManager *mgr, bool ascending);
-        void sortVectorsByEndTime(ResultFileManager *mgr, bool ascending);
-        void sortHistogramsByLength(ResultFileManager *mgr, bool ascending);
-        void sortHistogramsByMean(ResultFileManager *mgr, bool ascending);
-        void sortHistogramsByStdDev(ResultFileManager *mgr, bool ascending);
-        void sortHistogramsByMin(ResultFileManager *mgr, bool ascending);
-        void sortHistogramsByMax(ResultFileManager *mgr, bool ascending);
-        void sortHistogramsByVariance(ResultFileManager *mgr, bool ascending);
-        void sortByRunAttribute(ResultFileManager *mgr, const char* runAttr, bool ascending);
+        void sortByFileAndRun(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortByRunAndFile(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortByDirectory(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortByFileName(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortByRun(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortByModule(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortByName(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortScalarsByValue(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortParametersByValue(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortVectorsByVectorId(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortVectorsByLength(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortVectorsByMean(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortVectorsByStdDev(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortVectorsByMin(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortVectorsByMax(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortVectorsByVariance(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortVectorsByStartTime(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortVectorsByEndTime(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortHistogramsByLength(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortHistogramsByMean(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortHistogramsByStdDev(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortHistogramsByMin(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortHistogramsByMax(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortHistogramsByVariance(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortByRunAttribute(ResultFileManager *mgr, const char* runAttr, bool ascending, InterruptedFlag *interrupted);
         void reverse();
 };
 

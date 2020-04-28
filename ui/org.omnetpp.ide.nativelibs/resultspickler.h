@@ -19,6 +19,7 @@
 #define __OMNETPP_RESULTSPICKLER_H
 
 #include "scave/resultfilemanager.h"
+#include "scave/interruptedflag.h"
 #include "pickler.h"
 
 namespace omnetpp {

@@ -60,7 +60,7 @@ std::pair<ShmSendBuffer*, ShmSendBuffer*> ResultsPickler::readVectorIntoShm(cons
 
     IDList vectorList(id);
 
-    std::vector<XYArray *> vectorData = readVectorsIntoArrays(rfm, vectorList, false, false, memoryLimitBytes, simTimeStart, simTimeEnd, *interrupted);
+    std::vector<XYArray *> vectorData = readVectorsIntoArrays(rfm, vectorList, false, false, memoryLimitBytes, simTimeStart, simTimeEnd, interrupted);
     // ASSERT(vectorData.size() == 1);
     auto array = std::unique_ptr<XYArray>(vectorData[0]);
     size_t size = array->length() * sizeof(double);
@@ -358,7 +358,7 @@ ShmSendBuffer *ResultsPickler::getScalarsPickle(const char *filterExpression, bo
     IDList scalars;
     if (!opp_isempty(filterExpression)) {
         IDList allScalars = rfm->getAllScalars(true); // filter may match field scalars as well
-        scalars = rfm->filterIDList(allScalars, filterExpression, -1, *interrupted);
+        scalars = rfm->filterIDList(allScalars, filterExpression, -1, interrupted);
 
         ScalarResult buffer;
         for (int i = 0; i < scalars.size(); ++i) {
@@ -406,7 +406,7 @@ ShmSendBuffer *ResultsPickler::getVectorsPickle(const char *filterExpression, bo
     IDList vectors;
     if (!opp_isempty(filterExpression)) {
         IDList allVectors = rfm->getAllVectors();
-        vectors = rfm->filterIDList(allVectors, filterExpression, -1, *interrupted);
+        vectors = rfm->filterIDList(allVectors, filterExpression, -1, interrupted);
 
         for (int i = 0; i < vectors.size(); ++i) {
             const VectorResult *result = rfm->getVector(vectors.get(i));
@@ -458,7 +458,7 @@ ShmSendBuffer *ResultsPickler::getParamValuesPickle(const char *filterExpression
     IDList params;
     if (!opp_isempty(filterExpression)) {
         IDList allParams = rfm->getAllParameters();
-        params = rfm->filterIDList(allParams, filterExpression, -1, *interrupted);
+        params = rfm->filterIDList(allParams, filterExpression, -1, interrupted);
 
         for (int i = 0; i < params.size(); ++i) {
             const ParameterResult *result = rfm->getParameter(params.get(i));
@@ -505,7 +505,7 @@ ShmSendBuffer *ResultsPickler::getStatisticsPickle(const char *filterExpression,
     IDList statistics;
     if (!opp_isempty(filterExpression)) {
         IDList allStatistics = rfm->getAllStatistics();
-        statistics = rfm->filterIDList(allStatistics, filterExpression, -1, *interrupted);
+        statistics = rfm->filterIDList(allStatistics, filterExpression, -1, interrupted);
 
         for (int i = 0; i < statistics.size(); ++i) {
             const StatisticsResult *result = rfm->getStatistics(statistics.get(i));
@@ -561,7 +561,7 @@ ShmSendBuffer *ResultsPickler::getHistogramsPickle(const char *filterExpression,
     IDList histograms;
     if (!opp_isempty(filterExpression)) {
         IDList allHistograms = rfm->getAllHistograms();
-        histograms = rfm->filterIDList(allHistograms, filterExpression, -1, *interrupted);
+        histograms = rfm->filterIDList(allHistograms, filterExpression, -1, interrupted);
 
         for (int i = 0; i < histograms.size(); ++i) {
             const HistogramResult *result = rfm->getHistogram(histograms.get(i));

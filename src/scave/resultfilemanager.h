@@ -49,6 +49,7 @@ namespace scave {
 extern const std::string NULLSTRING;
 
 class ResultFileManager;
+class InterruptedFlag;
 class CmpBase;
 class OmnetppResultFileLoader;
 class SqliteResultFileLoader;
@@ -67,16 +68,6 @@ struct StringMapPtrEq {
 
 using omnetpp::common::Statistics;
 using omnetpp::common::Histogram;
-
-class SCAVE_API InterruptedFlag {
-  public:
-    bool flag = false;
-};
-
-class SCAVE_API InterruptedException : public opp_runtime_error {
-  public:
-    InterruptedException(const char *msg="Interrupted") : opp_runtime_error(msg) {}
-};
 
 class SCAVE_API IDListsByRun
 {
@@ -328,7 +319,7 @@ class SCAVE_API ResultFileManager
                         const char *moduleFilter,
                         const char *nameFilter) const;
 
-    IDList filterIDList(const IDList& idlist, const char *pattern, int limit=-1, const InterruptedFlag& interrupted=InterruptedFlag()) const;
+    IDList filterIDList(const IDList& idlist, const char *pattern, int limit=-1, InterruptedFlag *interrupted = nullptr) const;
 
     /**
      * Get a filtered subset of the input set.

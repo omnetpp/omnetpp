@@ -21,6 +21,7 @@
 #include "common/histogram.h"
 #include "common/stlutil.h"
 #include "sqliteresultfileloader.h"
+#include "interruptedflag.h"
 
 using namespace omnetpp::common;
 

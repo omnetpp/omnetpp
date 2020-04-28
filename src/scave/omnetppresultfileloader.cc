@@ -44,6 +44,7 @@
 #include "scaveexception.h"
 #include "vectorfileindex.h"
 #include "vectorfileindexer.h"
+#include "interruptedflag.h"
 
 #ifdef THREADED
 #define READER_MUTEX    Mutex __reader_mutex_(getReadLock());

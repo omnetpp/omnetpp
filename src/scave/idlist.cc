@@ -24,6 +24,7 @@
 #include <functional>
 #include "common/stringutil.h"
 #include "idlist.h"
+#include "interruptedflag.h"
 #include "resultfilemanager.h"
 #include "scaveutils.h"
 
@@ -166,6 +167,7 @@ void IDList::checkIntegrityAllHistograms(ResultFileManager *mgr) const
 class CmpBase : public std::binary_function<ID, ID, bool> {
     protected:
        ResultFileManager *mgr;
+       InterruptedFlag *interrupted;
        ScalarResult bufferA, bufferB;
        bool less(const std::string& a, const std::string& b) {return strdictcmp(a.c_str(), b.c_str()) < 0;}
        const FileRun *uncheckedGetFileRun(ID id) const { return mgr->getFileRun(id); }
@@ -176,13 +178,15 @@ class CmpBase : public std::binary_function<ID, ID, bool> {
        const StatisticsResult *uncheckedGetStatistics(ID id) const { return mgr->uncheckedGetStatistics(id); }
        const HistogramResult *uncheckedGetHistogram(ID id) const { return mgr->uncheckedGetHistogram(id); }
     public:
-        CmpBase(ResultFileManager *m) {mgr = m;}
+        CmpBase(ResultFileManager *m, InterruptedFlag *interrupted) : mgr(m), interrupted(interrupted) {}
 };
 
 class FileAndRunLess : public CmpBase {
     public:
-        FileAndRunLess(ResultFileManager *m) : CmpBase(m) {}
+        FileAndRunLess(ResultFileManager *m, InterruptedFlag *interrupted) : CmpBase(m, interrupted) {}
         bool operator()(ID a, ID b) { // implements operator<
+            if (interrupted->flag)
+                throw InterruptedException();
             const FileRun *da = uncheckedGetFileRun(a);
             const FileRun *db = uncheckedGetFileRun(b);
             if (da==db)
@@ -196,8 +200,10 @@ class FileAndRunLess : public CmpBase {
 
 class RunAndFileLess : public CmpBase {
     public:
-        RunAndFileLess(ResultFileManager *m) : CmpBase(m) {}
+        RunAndFileLess(ResultFileManager *m, InterruptedFlag *interrupted) : CmpBase(m, interrupted) {}
         bool operator()(ID a, ID b) { // implements operator<
+            if (interrupted->flag)
+                throw InterruptedException();
             const FileRun *da = uncheckedGetFileRun(a);
             const FileRun *db = uncheckedGetFileRun(b);
             if (da==db)
@@ -213,9 +219,11 @@ class RunAttributeLess : public CmpBase {
     private:
         const char* attrName;
     public:
-        RunAttributeLess(ResultFileManager* m, const char* attrName)
-            : CmpBase(m), attrName(attrName) {}
+        RunAttributeLess(ResultFileManager* m, const char* attrName, InterruptedFlag *interrupted)
+            : CmpBase(m, interrupted), attrName(attrName) {}
         bool operator()(ID a, ID b) {
+            if (interrupted->flag)
+                throw InterruptedException();
             const std::string& aValue = uncheckedGetFileRun(a)->getRun()->getAttribute(attrName);
             const std::string& bValue = uncheckedGetFileRun(b)->getRun()->getAttribute(attrName);
             return less(aValue, bValue);
@@ -224,8 +232,12 @@ class RunAttributeLess : public CmpBase {
 
 #define CMP(clazz,method) class clazz : public CmpBase { \
     public: \
-        clazz(ResultFileManager *m) : CmpBase(m) {} \
-        bool operator()(const ID a, const ID b) {return method;} \
+        clazz(ResultFileManager *m, InterruptedFlag *interrupted) : CmpBase(m, interrupted) {} \
+        bool operator()(const ID a, const ID b) { \
+            if (interrupted->flag) \
+                throw InterruptedException(); \
+            return method; \
+        } \
     };
 
 CMP(DirectoryLess, less(uncheckedGetFileRun(a)->getFile()->getDirectory(), uncheckedGetFileRun(b)->getFile()->getDirectory()))
@@ -330,153 +342,153 @@ void IDList::sortHistogramsBy(ResultFileManager *mgr, bool ascending, T& compara
         std::sort(v.begin(), v.end(), flipArgs(comparator));
 }
 
-void IDList::sortByFileAndRun(ResultFileManager *mgr, bool ascending)
+void IDList::sortByFileAndRun(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    FileAndRunLess compare(mgr);
+    FileAndRunLess compare(mgr, interrupted);
     sortBy(mgr, ascending, compare);
 }
 
-void IDList::sortByRunAndFile(ResultFileManager *mgr, bool ascending)
+void IDList::sortByRunAndFile(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    RunAndFileLess compare(mgr);
+    RunAndFileLess compare(mgr, interrupted);
     sortBy(mgr, ascending, compare);
 }
 
-void IDList::sortByDirectory(ResultFileManager *mgr, bool ascending)
+void IDList::sortByDirectory(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    DirectoryLess compare(mgr);
+    DirectoryLess compare(mgr, interrupted);
     sortBy(mgr, ascending, compare);
 }
 
-void IDList::sortByFileName(ResultFileManager *mgr, bool ascending)
+void IDList::sortByFileName(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    FileNameLess compare(mgr);
+    FileNameLess compare(mgr, interrupted);
     sortBy(mgr, ascending, compare);
 }
 
-void IDList::sortByRun(ResultFileManager *mgr, bool ascending)
+void IDList::sortByRun(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    RunLess compare(mgr);
+    RunLess compare(mgr, interrupted);
     sortBy(mgr, ascending, compare);
 }
 
-void IDList::sortByModule(ResultFileManager *mgr, bool ascending)
+void IDList::sortByModule(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    ModuleLess compare(mgr);
+    ModuleLess compare(mgr, interrupted);
     sortBy(mgr, ascending, compare);
 }
 
-void IDList::sortByName(ResultFileManager *mgr, bool ascending)
+void IDList::sortByName(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    NameLess compare(mgr);
+    NameLess compare(mgr, interrupted);
     sortBy(mgr, ascending, compare);
 }
 
-void IDList::sortScalarsByValue(ResultFileManager *mgr, bool ascending)
+void IDList::sortScalarsByValue(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    ScalarValueLess compare(mgr);
+    ScalarValueLess compare(mgr, interrupted);
     sortScalarsBy(mgr, ascending, compare);
 }
 
-void IDList::sortParametersByValue(ResultFileManager *mgr, bool ascending)
+void IDList::sortParametersByValue(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    ParameterValueLess compare(mgr);
+    ParameterValueLess compare(mgr, interrupted);
     sortParametersBy(mgr, ascending, compare);
 }
 
-void IDList::sortVectorsByVectorId(ResultFileManager *mgr, bool ascending)
+void IDList::sortVectorsByVectorId(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    VectorIdLess compare(mgr);
+    VectorIdLess compare(mgr, interrupted);
     sortVectorsBy(mgr, ascending, compare);
 }
 
-void IDList::sortVectorsByLength(ResultFileManager *mgr, bool ascending)
+void IDList::sortVectorsByLength(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    VectorCountLess compare(mgr);
+    VectorCountLess compare(mgr, interrupted);
     sortVectorsBy(mgr, ascending, compare);
 }
 
-void IDList::sortVectorsByMean(ResultFileManager *mgr, bool ascending)
+void IDList::sortVectorsByMean(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    VectorMeanLess compare(mgr);
+    VectorMeanLess compare(mgr, interrupted);
     sortVectorsBy(mgr, ascending, compare);
 }
 
-void IDList::sortVectorsByStdDev(ResultFileManager *mgr, bool ascending)
+void IDList::sortVectorsByStdDev(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    VectorStddevLess compare(mgr);
+    VectorStddevLess compare(mgr, interrupted);
     sortVectorsBy(mgr, ascending, compare);
 }
 
-void IDList::sortVectorsByMin(ResultFileManager *mgr, bool ascending)
+void IDList::sortVectorsByMin(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    VectorMinLess compare(mgr);
+    VectorMinLess compare(mgr, interrupted);
     sortVectorsBy(mgr, ascending, compare);
 }
 
-void IDList::sortVectorsByMax(ResultFileManager *mgr, bool ascending)
+void IDList::sortVectorsByMax(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    VectorMaxLess compare(mgr);
+    VectorMaxLess compare(mgr, interrupted);
     sortVectorsBy(mgr, ascending, compare);
 }
 
-void IDList::sortVectorsByVariance(ResultFileManager *mgr, bool ascending)
+void IDList::sortVectorsByVariance(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    VectorVarianceLess compare(mgr);
+    VectorVarianceLess compare(mgr, interrupted);
     sortVectorsBy(mgr, ascending, compare);
 }
 
-void IDList::sortVectorsByStartTime(ResultFileManager *mgr, bool ascending)
+void IDList::sortVectorsByStartTime(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    StartTimeLess compare(mgr);
+    StartTimeLess compare(mgr, interrupted);
     sortVectorsBy(mgr, ascending, compare);
 }
 
-void IDList::sortVectorsByEndTime(ResultFileManager *mgr, bool ascending)
+void IDList::sortVectorsByEndTime(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    EndTimeLess compare(mgr);
+    EndTimeLess compare(mgr, interrupted);
     sortVectorsBy(mgr, ascending, compare);
 }
 
-void IDList::sortHistogramsByLength(ResultFileManager *mgr, bool ascending)
+void IDList::sortHistogramsByLength(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    HistogramCountLess compare(mgr);
+    HistogramCountLess compare(mgr, interrupted);
     sortHistogramsBy(mgr, ascending, compare);
 }
 
-void IDList::sortHistogramsByMean(ResultFileManager *mgr, bool ascending)
+void IDList::sortHistogramsByMean(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    HistogramMeanLess compare(mgr);
+    HistogramMeanLess compare(mgr, interrupted);
     sortHistogramsBy(mgr, ascending, compare);
 }
 
-void IDList::sortHistogramsByStdDev(ResultFileManager *mgr, bool ascending)
+void IDList::sortHistogramsByStdDev(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    HistogramStddevLess compare(mgr);
+    HistogramStddevLess compare(mgr, interrupted);
     sortHistogramsBy(mgr, ascending, compare);
 }
 
-void IDList::sortHistogramsByMin(ResultFileManager *mgr, bool ascending)
+void IDList::sortHistogramsByMin(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    HistogramMinLess compare(mgr);
+    HistogramMinLess compare(mgr, interrupted);
     sortHistogramsBy(mgr, ascending, compare);
 }
 
-void IDList::sortHistogramsByMax(ResultFileManager *mgr, bool ascending)
+void IDList::sortHistogramsByMax(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    HistogramMaxLess compare(mgr);
+    HistogramMaxLess compare(mgr, interrupted);
     sortHistogramsBy(mgr, ascending, compare);
 }
 
-void IDList::sortHistogramsByVariance(ResultFileManager *mgr, bool ascending)
+void IDList::sortHistogramsByVariance(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    HistogramVarianceLess compare(mgr);
+    HistogramVarianceLess compare(mgr, interrupted);
     sortHistogramsBy(mgr, ascending, compare);
 }
 
-void IDList::sortByRunAttribute(ResultFileManager *mgr, const char *runAttribute, bool ascending)
+void IDList::sortByRunAttribute(ResultFileManager *mgr, const char *runAttribute, bool ascending, InterruptedFlag *interrupted)
 {
-    RunAttributeLess compare(mgr, runAttribute);
+    RunAttributeLess compare(mgr, runAttribute, interrupted);
     sortBy(mgr, ascending, compare);
 }
 

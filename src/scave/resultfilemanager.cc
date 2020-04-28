@@ -43,6 +43,7 @@
 #include "omnetppresultfileloader.h"
 #include "sqliteresultfileloader.h"
 #include "vectorfileindex.h"
+#include "interruptedflag.h"
 
 
 #ifdef THREADED
@@ -1246,19 +1247,23 @@ RunAndValueList ResultFileManager::getMatchingNonParamAssignmentConfigEntries(co
     return out;
 }
 
-IDList ResultFileManager::filterIDList(const IDList& idlist, const char *pattern, int limit, const InterruptedFlag& interrupted) const
+IDList ResultFileManager::filterIDList(const IDList& idlist, const char *pattern, int limit, InterruptedFlag *interrupted) const
 {
     if (opp_isblank(pattern))  // no filter
         throw opp_runtime_error("Empty filter expression is not allowed");
 
     MatchExpression matchExpr(pattern, false  /*dottedpath*/, true  /*fullstring*/, true  /*casesensitive*/);
 
+    InterruptedFlag dummy;
+    if (interrupted == nullptr)
+        interrupted = &dummy;
+
     READER_MUTEX
     std::vector<ID> out;
     ScalarResult buffer;
     int count = 0;
     for (ID id : idlist) {
-        if (interrupted.flag)
+        if (interrupted->flag)
             throw InterruptedException("Result filtering interrupted");
         const ResultItem *item = getItem(id, buffer);
         MatchableResultItem matchable(item);

@@ -29,6 +29,7 @@
 #include "indexedvectorfilereader.h"
 #include "sqliteresultfileutils.h"
 #include "sqlitevectordatareader.h"
+#include "interruptedflag.h"
 
 using namespace std;
 
@@ -36,7 +37,7 @@ namespace omnetpp {
 using namespace common;
 namespace scave {
 
-vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList& idlist, bool includePreciseX, bool includeEventNumbers, size_t memoryLimitBytes, double simTimeStart, double simTimeEnd, const InterruptedFlag& interrupted)
+vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList& idlist, bool includePreciseX, bool includeEventNumbers, size_t memoryLimitBytes, double simTimeStart, double simTimeEnd, InterruptedFlag *interrupted)
 {
     std::vector<XYArray *> result;
     result.resize(idlist.size());
@@ -88,7 +89,7 @@ vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList
                     array->ens.push_back(vd.eventNumber);
             }
 
-            if (interrupted.flag)
+            if (interrupted->flag)
                 throw InterruptedException("Vector loading interrupted");
         };
 
@@ -121,7 +122,7 @@ vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList
     return result;
 }
 
-XYArrayVector *readVectorsIntoArrays2(ResultFileManager *manager, const IDList& idlist, bool includePreciseX, bool includeEventNumbers, size_t memoryLimitBytes, double simTimeStart, double simTimeEnd, const InterruptedFlag& interrupted) {
+XYArrayVector *readVectorsIntoArrays2(ResultFileManager *manager, const IDList& idlist, bool includePreciseX, bool includeEventNumbers, size_t memoryLimitBytes, double simTimeStart, double simTimeEnd, InterruptedFlag *interrupted) {
     return new XYArrayVector(readVectorsIntoArrays(manager, idlist, includePreciseX, includeEventNumbers, memoryLimitBytes, simTimeStart, simTimeEnd, interrupted));
 }
 

@@ -54,7 +54,6 @@ using omnetpp::common::NEGATIVE_INFINITY;
 typedef BigDecimal simultime_t;
 typedef int64_t eventnumber_t;
 
-
 } // namespace scave
 }  // namespace omnetpp
 
