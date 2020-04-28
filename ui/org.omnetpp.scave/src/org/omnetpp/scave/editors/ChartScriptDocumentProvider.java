@@ -9,7 +9,7 @@ import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.projection.ProjectionAnnotationModel;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.texteditor.AbstractDocumentProvider;
-import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog;
+import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 import org.omnetpp.scave.model.Chart;
 
 class ChartScriptDocumentProvider extends AbstractDocumentProvider {
@@ -19,7 +19,7 @@ class ChartScriptDocumentProvider extends AbstractDocumentProvider {
 
     @Override
     protected IRunnableContext getOperationRunner(IProgressMonitor monitor) {
-        return new TimeTriggeredProgressMonitorDialog(Display.getCurrent().getActiveShell(), 1000);
+        return new TimeTriggeredProgressMonitorDialog2(Display.getCurrent().getActiveShell(), 1000);
     }
 
     @Override

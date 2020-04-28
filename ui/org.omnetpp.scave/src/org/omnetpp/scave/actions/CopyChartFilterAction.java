@@ -14,7 +14,7 @@ import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Display;
-import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog;
+import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.IDListSelection;
@@ -37,7 +37,7 @@ public class CopyChartFilterAction extends AbstractScaveAction {
         IDList target = ((IDListSelection)selection).getIDList();
         ResultFileManager rfm = editor.getResultFileManager();
 
-        TimeTriggeredProgressMonitorDialog.runWithDialog("Generating filter expression", (monitor) -> {
+        TimeTriggeredProgressMonitorDialog2.runWithDialog("Generating filter expression", (monitor) -> {
             String filter = ResultSelectionFilterGenerator.getFilter(target, all, rfm, monitor);
             Display.getDefault().syncExec(() -> {
                 new Clipboard(Display.getCurrent()).setContents(new Object[] {filter}, new Transfer[] {TextTransfer.getInstance()});

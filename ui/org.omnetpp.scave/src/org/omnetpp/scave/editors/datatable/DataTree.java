@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.common.Debug;
-import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog;
+import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 import org.omnetpp.common.util.CsvWriter;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.CustomTreeLevelsAction;
@@ -163,7 +163,7 @@ public class DataTree extends Tree implements IDataControl {
     public void copySelectionToClipboard() {
         if (manager == null)
             return;
-        TimeTriggeredProgressMonitorDialog.runWithDialog("Copy to clipboard", (monitor) -> doCopySelectionToClipboard(monitor));
+        TimeTriggeredProgressMonitorDialog2.runWithDialog("Copy to clipboard", (monitor) -> doCopySelectionToClipboard(monitor));
     }
 
     public void doCopySelectionToClipboard(IProgressMonitor monitor) throws InterruptedException {

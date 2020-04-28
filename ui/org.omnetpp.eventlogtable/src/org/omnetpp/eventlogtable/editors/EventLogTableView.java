@@ -23,7 +23,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.contexts.IContextService;
 import org.omnetpp.common.eventlog.EventLogView;
 import org.omnetpp.common.eventlog.IEventLogSelection;
-import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog;
+import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
 
@@ -116,7 +116,7 @@ public class EventLogTableView extends EventLogView implements IEventLogTablePro
         eventLogTable.setRunnableContextForLongRunningOperations(new IRunnableContext() {
             @Override
             public void run(boolean fork, boolean cancelable, IRunnableWithProgress runnable) throws InvocationTargetException, InterruptedException {
-                TimeTriggeredProgressMonitorDialog dialog = new TimeTriggeredProgressMonitorDialog(parent.getShell(), 1000);
+                TimeTriggeredProgressMonitorDialog2 dialog = new TimeTriggeredProgressMonitorDialog2(parent.getShell(), 1000);
                 dialog.setCancelable(cancelable);
                 dialog.run(fork, cancelable, runnable);
             }

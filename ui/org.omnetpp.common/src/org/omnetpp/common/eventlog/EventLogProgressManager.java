@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 
 /**
  * Manages potentially long running event log operations.
@@ -36,7 +37,7 @@ public class EventLogProgressManager {
 
     public void runWithProgressMonitor(final Runnable runnable) throws InvocationTargetException, InterruptedException {
         try {
-            progressDialog = new ProgressMonitorDialog(Display.getCurrent().getActiveShell());
+            progressDialog = new TimeTriggeredProgressMonitorDialog2(Display.getCurrent().getActiveShell(), 1000);
             progressDialog.setOpenOnRun(false);
             progressDialog.run(false, true, new IRunnableWithProgress() {
                 public void run(IProgressMonitor progressMonitor)

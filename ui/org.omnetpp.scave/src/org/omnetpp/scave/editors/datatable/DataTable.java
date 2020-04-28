@@ -35,7 +35,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.largetable.AbstractLargeTableRowRenderer;
 import org.omnetpp.common.largetable.LargeTable;
-import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog;
+import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 import org.omnetpp.common.util.CsvWriter;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ui.ScaveUtil;
@@ -703,7 +703,7 @@ public class DataTable extends LargeTable implements IDataControl {
         if (manager == null)
             return;
 
-        TimeTriggeredProgressMonitorDialog.runWithDialog("Copy to clipboard", (monitor) -> doCopySelectionToClipboard(monitor));
+        TimeTriggeredProgressMonitorDialog2.runWithDialog("Copy to clipboard", (monitor) -> doCopySelectionToClipboard(monitor));
     }
 
     protected void doCopySelectionToClipboard(IProgressMonitor monitor) throws InterruptedException {

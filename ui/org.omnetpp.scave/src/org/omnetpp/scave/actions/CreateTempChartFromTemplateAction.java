@@ -10,7 +10,7 @@ package org.omnetpp.scave.actions;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
-import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog;
+import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.IDListSelection;
@@ -56,21 +56,19 @@ public class CreateTempChartFromTemplateAction extends AbstractScaveAction {
         IDList idList = idListSelection.getIDList();
 
         Chart chart = ScaveModelUtil.createChartFromTemplate(template);
-        String[] filterFields = new String[] { Scave.EXPERIMENT, Scave.MEASUREMENT, Scave.REPLICATION,
-                Scave.MODULE, Scave.NAME };
-        String viewFilter = editor.getBrowseDataPage().getActivePanel().getFilter();
-        IDList allIds = manager.getAllItems(true);
-        boolean ok = TimeTriggeredProgressMonitorDialog.runWithDialog("Generating filter expression", (monitor) -> {
-            String filter = ResultSelectionFilterGenerator.getIDListAsFilterExpression(allIds, idList, filterFields, viewFilter, manager, null);
-            chart.setPropertyValue("filter", filter);
-        });
-        if (!ok)
-            return;
-
         editor.getChartTemplateRegistry().markTemplateUsage(template);
 
-        chart.setTemporary(true);
-        editor.openPage(chart);
+        String[] filterFields = new String[] { Scave.EXPERIMENT, Scave.MEASUREMENT, Scave.REPLICATION, Scave.MODULE, Scave.NAME };
+        String viewFilter = editor.getBrowseDataPage().getActivePanel().getFilter();
+        IDList allIds = manager.getAllItems(true);
+
+        boolean ok = TimeTriggeredProgressMonitorDialog2.runWithDialog("Generating filter expression", (monitor) -> {
+            String filter = ResultSelectionFilterGenerator.getIDListAsFilterExpression(allIds, idList, filterFields, viewFilter, manager, monitor);
+            chart.setPropertyValue("filter", filter);
+            chart.setTemporary(true);
+        });
+        if (ok)
+            editor.openPage(chart);
     }
 
 

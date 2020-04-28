@@ -13,6 +13,7 @@ import java.util.List;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
+import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
@@ -23,7 +24,6 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.Scave;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartTemplate;
-import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model2.ResultSelectionFilterGenerator;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
@@ -47,24 +47,21 @@ public class PlotAction extends AbstractScaveAction {
         List<ChartTemplate> templates = templateRegistry.getChartTemplatesForResultTypes(idList.getItemTypes());
         Assert.isTrue(!templates.isEmpty());
 
-        Chart chart = ScaveModelUtil.createChartFromTemplate(templates.get(0));
+        ChartTemplate template = templates.get(0);
+        Chart chart = ScaveModelUtil.createChartFromTemplate(template);
+        editor.getChartTemplateRegistry().markTemplateUsage(template);
 
-        String[] filterFields = new String[] { Scave.EXPERIMENT, Scave.MEASUREMENT, Scave.REPLICATION,
-                Scave.MODULE, Scave.NAME };
+        String[] filterFields = new String[] { Scave.EXPERIMENT, Scave.MEASUREMENT, Scave.REPLICATION, Scave.MODULE, Scave.NAME };
         String viewFilter = editor.getBrowseDataPage().getActivePanel().getFilter();
         IDList allIds = manager.getAllItems(true);
-        String filter = ResultFileManager.callWithReadLock(manager, () -> {
-            return ResultSelectionFilterGenerator.getIDListAsFilterExpression(allIds, idList, filterFields, viewFilter, manager, null);
+
+        boolean ok = TimeTriggeredProgressMonitorDialog2.runWithDialog("Generating filter expression", (monitor) -> {
+            String filter = ResultSelectionFilterGenerator.getIDListAsFilterExpression(allIds, idList, filterFields, viewFilter, manager, monitor);
+            chart.setPropertyValue("filter", filter);
+            chart.setTemporary(true);
         });
-
-        Property filterProperty = chart.getProperty("filter");
-        if (filterProperty != null)
-            filterProperty.setValue(filter);
-        else
-            chart.addProperty(new Property("filter", filter));
-
-        chart.setTemporary(true);
-        editor.openPage(chart);
+        if (ok)
+            editor.openPage(chart);
     }
 
     ChartTemplate getTemplateForResults(ScaveEditor editor, ISelection selection) {

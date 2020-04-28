@@ -36,7 +36,7 @@ import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.engine.BigDecimal;
-import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog;
+import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.common.virtualtable.VirtualTable;
 import org.omnetpp.scave.ScavePlugin;
@@ -91,7 +91,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
         viewer.setRunnableContextForLongRunningOperations(new IRunnableContext() {
             @Override
             public void run(boolean fork, boolean cancelable, IRunnableWithProgress runnable) throws InvocationTargetException, InterruptedException {
-                TimeTriggeredProgressMonitorDialog dialog = new TimeTriggeredProgressMonitorDialog(parent.getShell(), 1000);
+                TimeTriggeredProgressMonitorDialog2 dialog = new TimeTriggeredProgressMonitorDialog2(parent.getShell(), 1000);
                 dialog.setCancelable(cancelable);
                 dialog.run(fork, cancelable, runnable);
             }

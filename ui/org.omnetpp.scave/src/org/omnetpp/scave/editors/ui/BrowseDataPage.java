@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.ui.DropdownAction;
 import org.omnetpp.common.ui.FocusManager;
-import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog;
+import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.CopyChartFilterAction;
@@ -336,7 +336,7 @@ public class BrowseDataPage extends FormEditorPage {
      */
     protected void refreshPage(ResultFileManager manager) {
         if (isActivePage()) {
-            isContentValid = TimeTriggeredProgressMonitorDialog.runWithDialogInUIThread("Refreshing page", (monitor) -> doRefreshPage(manager, monitor));
+            isContentValid = TimeTriggeredProgressMonitorDialog2.runWithDialogInUIThread("Refreshing page", (monitor) -> doRefreshPage(manager, monitor));
         }
         else {
             isContentValid = false;

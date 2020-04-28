@@ -12,7 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
-import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog;
+import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.IDListSelection;
@@ -48,7 +48,7 @@ public class SetChartFilterAction extends AbstractScaveAction {
         IDList all = editor.getBrowseDataPage().getActivePanel().getIDList();
         IDList target = ((IDListSelection)selection).getIDList();
         ResultFileManager rfm = editor.getResultFileManager();
-        TimeTriggeredProgressMonitorDialog.runWithDialog("Generating filter expression", (monitor) -> {
+        TimeTriggeredProgressMonitorDialog2.runWithDialog("Generating filter expression", (monitor) -> {
             String filter = ResultSelectionFilterGenerator.getFilter(target, all, rfm, monitor);
             SetChartPropertyCommand command = new SetChartPropertyCommand(c, "filter", filter);
             editor.getChartsPage().getCommandStack().execute(command);
