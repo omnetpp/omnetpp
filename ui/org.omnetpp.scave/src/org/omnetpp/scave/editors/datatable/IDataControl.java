@@ -6,6 +6,7 @@ import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Event;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.InterruptedFlag;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 
@@ -57,7 +58,7 @@ public interface IDataControl {
 
     public void setSelectedID(long id);
 
-    public void setSelectedIDs(IDList idList);
+    public void setSelectedIDs(IDList idList, InterruptedFlag interrupted) throws InterruptedException;
 
     public void copySelectionToClipboard(IProgressMonitor monitor) throws InterruptedException;
 

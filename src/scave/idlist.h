@@ -17,6 +17,7 @@
 #ifndef __OMNETPP_SCAVE_IDLIST_H
 #define __OMNETPP_SCAVE_IDLIST_H
 
+#include <functional>
 #include <vector>
 #include <exception>
 #include <stdexcept>
@@ -60,11 +61,8 @@ class SCAVE_API IDList
 
         static void sort(/*non-*/const V& cv) {V& v = const_cast<V&>(cv); std::sort(v.begin(), v.end());}
 
-        template <class T> void sortBy(ResultFileManager *mgr, bool ascending, T& comparator);
-        template <class T> void sortScalarsBy(ResultFileManager *mgr, bool ascending, T& comparator);
-        template <class T> void sortParametersBy(ResultFileManager *mgr, bool ascending, T& comparator);
-        template <class T> void sortVectorsBy(ResultFileManager *mgr, bool ascending, T& comparator);
-        template <class T> void sortHistogramsBy(ResultFileManager *mgr, bool ascending, T& comparator);
+        template <typename T>
+        void doSort(const std::function<T(ID)>& getter, ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
 
         void append(ID id) {v.push_back(id);} // no uniqueness check, use of discardDuplicates() recommended
         void discardDuplicates();
@@ -115,13 +113,15 @@ class SCAVE_API IDList
         int countByTypes(int typeMask) const;
 
         // sorting
-        // TODO: there's a duplication between vector and histogram sorting due to not having a proper superclass with the statistics inside
         void sort() {std::sort(v.begin(), v.end());}  // sort numerically; getUniqueFileRuns() etc are faster on sorted IDLists
-        void sortByFileAndRun(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortByRunAndFile(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortByFilePath(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
         void sortByDirectory(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
         void sortByFileName(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
         void sortByRun(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortByRunAttribute(ResultFileManager *mgr, const char *attrName, bool ascending, InterruptedFlag *interrupted);
+        void sortByRunIterationVariable(ResultFileManager *mgr, const char *itervarName, bool ascending, InterruptedFlag *interrupted);
+        void sortByRunConfigValue(ResultFileManager *mgr, const char *configKey, bool ascending, InterruptedFlag *interrupted);
+        void sortByRunParamValue(ResultFileManager *mgr, const char *paramFullPath, bool ascending, InterruptedFlag *interrupted);
         void sortByModule(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
         void sortByName(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
         void sortScalarsByValue(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
@@ -141,7 +141,6 @@ class SCAVE_API IDList
         void sortHistogramsByMin(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
         void sortHistogramsByMax(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
         void sortHistogramsByVariance(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortByRunAttribute(ResultFileManager *mgr, const char* runAttr, bool ascending, InterruptedFlag *interrupted);
         void reverse();
 };
 

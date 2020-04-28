@@ -32,6 +32,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableColumn;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.largetable.AbstractLargeTableRowRenderer;
 import org.omnetpp.common.largetable.LargeTable;
@@ -42,6 +43,7 @@ import org.omnetpp.scave.editors.ui.ScaveUtil;
 import org.omnetpp.scave.engine.Histogram;
 import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.InterruptedFlag;
 import org.omnetpp.scave.engine.ParameterResult;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ScalarResult;
@@ -253,14 +255,10 @@ public class DataTable extends LargeTable implements IDataControl {
     }
 
     public void setIDList(IDList idlist) {
-        IDList selectedIDs = null;
-        if (this.idList != null)
-            selectedIDs = getSelectedIDs();
+        //TODO reset selection!!!!
         this.idList = idlist;
         restoreSortOrder();
         refresh();
-        if (selectedIDs != null)
-            setSelectedIDs(selectedIDs);
         fireContentChangedEvent();
     }
 
@@ -394,18 +392,8 @@ public class DataTable extends LargeTable implements IDataControl {
             public void widgetSelected(SelectionEvent e) {
                 TableColumn tableColumn = (TableColumn)e.widget;
                 if (!tableColumn.isDisposed()) {
-                    IDList selectedIDs = null;
-                    if (idList != null)
-                        selectedIDs = getSelectedIDs();
-                    Column column = (Column)tableColumn.getData(COLUMN_KEY);
                     int sortDirection = (getSortColumn() == tableColumn && getSortDirection() == SWT.UP ? SWT.DOWN : SWT.UP);
-                    setSortColumn(tableColumn);
-                    setSortDirection(sortDirection);
-                    sortBy(column, sortDirection);
-                    refresh();
-                    if (selectedIDs != null)
-                        setSelectedIDs(selectedIDs);
-                    fireContentChangedEvent();
+                    setSorting(tableColumn, sortDirection);
                 }
             }
         });
@@ -427,96 +415,114 @@ public class DataTable extends LargeTable implements IDataControl {
     }
 
     private void restoreSortOrder() {
+        //TODO try to restore selection???
         TableColumn sortColumn = getSortColumn();
         int sortDirection = getSortDirection();
         if (sortColumn != null && sortDirection != SWT.NONE) {
             Column column = (Column)sortColumn.getData(COLUMN_KEY);
-            if (column != null)
-                sortBy(column, sortDirection);
+            if (column != null) {
+                TimeTriggeredProgressMonitorDialog2.runWithDialog("Sorting", (monitor) -> {
+                    InterruptedFlag interrupted = TimeTriggeredProgressMonitorDialog2.getActiveInstance().getInterruptedFlag();
+                    Debug.time("sorting", 1, () -> sortBy(column, sortDirection, interrupted));
+                });
+            }
         }
     }
 
-    private void sortBy(Column column, int direction) {
+    public void setSorting(TableColumn tableColumn, int sortDirection) {
+        //TODO restore first selected ID !!!   final IDList selectedIDs = (idList == null) ? null : getSelectedIDs();
+        setSortColumn(tableColumn);
+        setSortDirection(sortDirection);
+        Column column = (Column)tableColumn.getData(COLUMN_KEY);
+        TimeTriggeredProgressMonitorDialog2.runWithDialog("Sorting", (monitor) -> {
+            InterruptedFlag interrupted = TimeTriggeredProgressMonitorDialog2.getActiveInstance().getInterruptedFlag();
+            Debug.time("sorting", 1, () -> sortBy(column, sortDirection, interrupted));
+        });
+        refresh();
+        fireContentChangedEvent();
+    }
+
+    private void sortBy(Column column, int direction, InterruptedFlag interrupted) {
         if (manager == null)
             return;
 
         boolean ascending = direction == SWT.UP;
         if (COL_DIRECTORY.equals(column))
-            idList.sortByDirectory(manager, ascending);
+            idList.sortByDirectory(manager, ascending, interrupted);
         else if (COL_FILE.equals(column))
-            idList.sortByFileName(manager, ascending);
+            idList.sortByFileName(manager, ascending, interrupted);
         else if (COL_CONFIG.equals(column))
-            idList.sortByRunAttribute(manager, Scave.CONFIGNAME, ascending);
+            idList.sortByRunAttribute(manager, Scave.CONFIGNAME, ascending, interrupted);
         else if (COL_RUNNUMBER.equals(column))
-            idList.sortByRunAttribute(manager, Scave.RUNNUMBER, ascending);
+            idList.sortByRunAttribute(manager, Scave.RUNNUMBER, ascending, interrupted);
         else if (COL_RUN_ID.equals(column))
-            idList.sortByRun(manager, ascending);
+            idList.sortByRun(manager, ascending, interrupted);
         else if (COL_MODULE.equals(column))
-            idList.sortByModule(manager, ascending);
+            idList.sortByModule(manager, ascending, interrupted);
         else if (COL_NAME.equals(column))
-            idList.sortByName(manager, ascending);
+            idList.sortByName(manager, ascending, interrupted);
         else if (COL_VALUE.equals(column)) {
             if (idList.areAllScalars())
-                idList.sortScalarsByValue(manager, ascending);
+                idList.sortScalarsByValue(manager, ascending, interrupted);
             else if (idList.areAllParameters())
-                idList.sortParametersByValue(manager, ascending);
+                idList.sortParametersByValue(manager, ascending, interrupted);
         }
         else if (COL_VECTOR_ID.equals(column))
-            idList.sortVectorsByVectorId(manager, ascending);
+            idList.sortVectorsByVectorId(manager, ascending, interrupted);
         else if (COL_KIND.equals(column))
             ; //TODO
         else if (COL_COUNT.equals(column)) {
             if (idList.areAllHistograms())
-                idList.sortHistogramsByLength(manager, ascending);
+                idList.sortHistogramsByLength(manager, ascending, interrupted);
             else if (idList.areAllVectors())
-                idList.sortVectorsByLength(manager, ascending);
+                idList.sortVectorsByLength(manager, ascending, interrupted);
         }
         else if (COL_SUMWEIGHTS.equals(column))
             ; //TODO
         else if (COL_MEAN.equals(column)) {
             if (idList.areAllHistograms()) //TODO
-                idList.sortHistogramsByMean(manager, ascending);
+                idList.sortHistogramsByMean(manager, ascending, interrupted);
             else if (idList.areAllVectors())
-                idList.sortVectorsByMean(manager, ascending);
+                idList.sortVectorsByMean(manager, ascending, interrupted);
         }
         else if (COL_STDDEV.equals(column)) {
             if (idList.areAllHistograms()) //TODO
-                idList.sortHistogramsByStdDev(manager, ascending);
+                idList.sortHistogramsByStdDev(manager, ascending, interrupted);
             else if (idList.areAllVectors())
-                idList.sortVectorsByStdDev(manager, ascending);
+                idList.sortVectorsByStdDev(manager, ascending, interrupted);
         }
         else if (COL_MIN.equals(column)) {
             if (idList.areAllHistograms()) //TODO
-                idList.sortHistogramsByMin(manager, ascending);
+                idList.sortHistogramsByMin(manager, ascending, interrupted);
             else if (idList.areAllVectors())
-                idList.sortVectorsByMin(manager, ascending);
+                idList.sortVectorsByMin(manager, ascending, interrupted);
         }
         else if (COL_MAX.equals(column)) {
             if (idList.areAllHistograms()) //TODO
-                idList.sortHistogramsByMax(manager, ascending);
+                idList.sortHistogramsByMax(manager, ascending, interrupted);
             else if (idList.areAllVectors())
-                idList.sortVectorsByMax(manager, ascending);
+                idList.sortVectorsByMax(manager, ascending, interrupted);
         }
         else if (COL_VARIANCE.equals(column)) {
             if (idList.areAllHistograms()) //TODO
-                idList.sortHistogramsByVariance(manager, ascending);
+                idList.sortHistogramsByVariance(manager, ascending, interrupted);
             else if (idList.areAllVectors())
-                idList.sortVectorsByVariance(manager, ascending);
+                idList.sortVectorsByVariance(manager, ascending, interrupted);
         }
         else if (COL_NUMBINS.equals(column))
             ; //TODO
         else if (COL_HISTOGRAMRANGE.equals(column))
             ; //TODO
         else if (COL_EXPERIMENT.equals(column))
-            idList.sortByRunAttribute(manager, Scave.EXPERIMENT, ascending);
+            idList.sortByRunAttribute(manager, Scave.EXPERIMENT, ascending, interrupted);
         else if (COL_MEASUREMENT.equals(column))
-            idList.sortByRunAttribute(manager, Scave.MEASUREMENT, ascending);
+            idList.sortByRunAttribute(manager, Scave.MEASUREMENT, ascending, interrupted);
         else if (COL_REPLICATION.equals(column))
-            idList.sortByRunAttribute(manager, Scave.REPLICATION, ascending);
+            idList.sortByRunAttribute(manager, Scave.REPLICATION, ascending, interrupted);
         else if (COL_MIN_TIME.equals(column))
-            idList.sortVectorsByStartTime(manager, ascending);
+            idList.sortVectorsByStartTime(manager, ascending, interrupted);
         else if (COL_MAX_TIME.equals(column))
-            idList.sortVectorsByEndTime(manager, ascending);
+            idList.sortVectorsByEndTime(manager, ascending, interrupted);
     }
 
     protected String getCellValue(int rowIndex, int columnIndex) {
@@ -829,16 +835,24 @@ public class DataTable extends LargeTable implements IDataControl {
             setSelectionIndex(index);
     }
 
-    public void setSelectedIDs(IDList selectedIDList) {
+    public void setSelectedIDs(IDList selectedIDList, InterruptedFlag interrupted) throws InterruptedException {
+            int[] indices = getIndices(selectedIDList, interrupted);
+            setSelectionIndices(indices);
+    }
+
+    public int[] getIndices(IDList selectedIDList, InterruptedFlag interrupted) throws InterruptedException {
+        // note: this method is O(n^2) which can be prohibitive for large input+selection pairs!
         ArrayList<Integer> indicesList = new ArrayList<>();
         for (int i = 0; i < selectedIDList.size(); i++) {
-            int index = idList.indexOf(selectedIDList.get(i));
+            int index = idList.indexOf(selectedIDList.get(i)); // note: linear search
             if (index != -1)
                 indicesList.add(index);
+            if ((i & 1023) == 0 && interrupted.getFlag())
+                throw new InterruptedException();
         }
         int[] indices = new int[indicesList.size()];
         for (int i = 0; i < indices.length; i++)
             indices[i] = indicesList.get(i);
-        setSelectionIndices(indices);
+        return indices;
     }
 }

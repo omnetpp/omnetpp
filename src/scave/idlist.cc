@@ -164,332 +164,182 @@ void IDList::checkIntegrityAllHistograms(ResultFileManager *mgr) const
         throw opp_runtime_error("These items are not all histograms");
 }
 
-class CmpBase : public std::binary_function<ID, ID, bool> {
-    protected:
-       ResultFileManager *mgr;
-       InterruptedFlag *interrupted;
-       ScalarResult bufferA, bufferB;
-       bool less(const std::string& a, const std::string& b) {return strdictcmp(a.c_str(), b.c_str()) < 0;}
-       const FileRun *uncheckedGetFileRun(ID id) const { return mgr->getFileRun(id); }
-       const ResultItem *uncheckedGetItem(ID id, ScalarResult& buffer) const { return mgr->uncheckedGetItem(id,buffer); }
-       const ScalarResult *uncheckedGetScalar(ID id, ScalarResult& buffer) const { return mgr->uncheckedGetScalar(id, buffer); }
-       const ParameterResult *uncheckedGetParameter(ID id) const { return mgr->uncheckedGetParameter(id); }
-       const VectorResult *uncheckedGetVector(ID id) const { return mgr->uncheckedGetVector(id); }
-       const StatisticsResult *uncheckedGetStatistics(ID id) const { return mgr->uncheckedGetStatistics(id); }
-       const HistogramResult *uncheckedGetHistogram(ID id) const { return mgr->uncheckedGetHistogram(id); }
-    public:
-        CmpBase(ResultFileManager *m, InterruptedFlag *interrupted) : mgr(m), interrupted(interrupted) {}
-};
+inline void check(InterruptedFlag *interrupted) {if (interrupted->flag) throw InterruptedException();}
 
-class FileAndRunLess : public CmpBase {
-    public:
-        FileAndRunLess(ResultFileManager *m, InterruptedFlag *interrupted) : CmpBase(m, interrupted) {}
-        bool operator()(ID a, ID b) { // implements operator<
-            if (interrupted->flag)
-                throw InterruptedException();
-            const FileRun *da = uncheckedGetFileRun(a);
-            const FileRun *db = uncheckedGetFileRun(b);
-            if (da==db)
-                return false;
-            else if (da->getFile()==db->getFile())
-                return da->getRun()->getRunName() < db->getRun()->getRunName();
-            else
-                return da->getFile()->getFilePath() < db->getFile()->getFilePath();
-        }
-};
-
-class RunAndFileLess : public CmpBase {
-    public:
-        RunAndFileLess(ResultFileManager *m, InterruptedFlag *interrupted) : CmpBase(m, interrupted) {}
-        bool operator()(ID a, ID b) { // implements operator<
-            if (interrupted->flag)
-                throw InterruptedException();
-            const FileRun *da = uncheckedGetFileRun(a);
-            const FileRun *db = uncheckedGetFileRun(b);
-            if (da==db)
-                return false;
-            else if (da->getRun()==db->getRun())
-                return da->getFile()->getFilePath() < db->getFile()->getFilePath();
-            else
-                return da->getRun()->getRunName() < db->getRun()->getRunName();
-        }
-};
-
-class RunAttributeLess : public CmpBase {
-    private:
-        const char* attrName;
-    public:
-        RunAttributeLess(ResultFileManager* m, const char* attrName, InterruptedFlag *interrupted)
-            : CmpBase(m, interrupted), attrName(attrName) {}
-        bool operator()(ID a, ID b) {
-            if (interrupted->flag)
-                throw InterruptedException();
-            const std::string& aValue = uncheckedGetFileRun(a)->getRun()->getAttribute(attrName);
-            const std::string& bValue = uncheckedGetFileRun(b)->getRun()->getAttribute(attrName);
-            return less(aValue, bValue);
-        }
-};
-
-#define CMP(clazz,method) class clazz : public CmpBase { \
-    public: \
-        clazz(ResultFileManager *m, InterruptedFlag *interrupted) : CmpBase(m, interrupted) {} \
-        bool operator()(const ID a, const ID b) { \
-            if (interrupted->flag) \
-                throw InterruptedException(); \
-            return method; \
-        } \
-    };
-
-CMP(DirectoryLess, less(uncheckedGetFileRun(a)->getFile()->getDirectory(), uncheckedGetFileRun(b)->getFile()->getDirectory()))
-CMP(FileNameLess, less(uncheckedGetFileRun(a)->getFile()->getFileName(), uncheckedGetFileRun(b)->getFile()->getFileName()))
-CMP(RunLess, less(uncheckedGetFileRun(a)->getRun()->getRunName(), uncheckedGetFileRun(b)->getRun()->getRunName()))
-CMP(ModuleLess, less(uncheckedGetItem(a,bufferA)->getModuleName(), uncheckedGetItem(b,bufferB)->getModuleName()))
-CMP(NameLess, less(uncheckedGetItem(a,bufferA)->getName(), uncheckedGetItem(b,bufferB)->getName()))
-CMP(ScalarValueLess, uncheckedGetScalar(a,bufferA)->getValue() < uncheckedGetScalar(b,bufferB)->getValue())
-CMP(ParameterValueLess, less(uncheckedGetParameter(a)->getValue(), uncheckedGetParameter(b)->getValue()))
-
-CMP(VectorIdLess, uncheckedGetVector(a)->getVectorId() < uncheckedGetVector(b)->getVectorId())
-CMP(VectorCountLess, uncheckedGetVector(a)->getStatistics().getCount() < uncheckedGetVector(b)->getStatistics().getCount())
-CMP(VectorMeanLess, uncheckedGetVector(a)->getStatistics().getMean() < uncheckedGetVector(b)->getStatistics().getMean())
-CMP(VectorStddevLess, uncheckedGetVector(a)->getStatistics().getStddev() < uncheckedGetVector(b)->getStatistics().getStddev())
-CMP(VectorMinLess, uncheckedGetVector(a)->getStatistics().getMin() < uncheckedGetVector(b)->getStatistics().getMin())
-CMP(VectorMaxLess, uncheckedGetVector(a)->getStatistics().getMax() < uncheckedGetVector(b)->getStatistics().getMax())
-CMP(VectorVarianceLess, uncheckedGetVector(a)->getStatistics().getVariance() < uncheckedGetVector(b)->getStatistics().getVariance())
-CMP(StartTimeLess, uncheckedGetVector(a)->getStartTime() < uncheckedGetVector(b)->getStartTime())
-CMP(EndTimeLess, uncheckedGetVector(a)->getEndTime() < uncheckedGetVector(b)->getEndTime())
-
-CMP(StatisticsCountLess, uncheckedGetStatistics(a)->getStatistics().getCount() < uncheckedGetStatistics(b)->getStatistics().getCount())
-CMP(StatisticsMeanLess, uncheckedGetStatistics(a)->getStatistics().getMean() < uncheckedGetStatistics(b)->getStatistics().getMean())
-CMP(StatisticsStddevLess, uncheckedGetStatistics(a)->getStatistics().getStddev() < uncheckedGetStatistics(b)->getStatistics().getStddev())
-CMP(StatisticsMinLess, uncheckedGetStatistics(a)->getStatistics().getMin() < uncheckedGetStatistics(b)->getStatistics().getMin())
-CMP(StatisticsMaxLess, uncheckedGetStatistics(a)->getStatistics().getMax() < uncheckedGetStatistics(b)->getStatistics().getMax())
-CMP(StatisticsVarianceLess, uncheckedGetStatistics(a)->getStatistics().getVariance() < uncheckedGetStatistics(b)->getStatistics().getVariance())
-
-CMP(HistogramCountLess, uncheckedGetHistogram(a)->getStatistics().getCount() < uncheckedGetHistogram(b)->getStatistics().getCount())
-CMP(HistogramMeanLess, uncheckedGetHistogram(a)->getStatistics().getMean() < uncheckedGetHistogram(b)->getStatistics().getMean())
-CMP(HistogramStddevLess, uncheckedGetHistogram(a)->getStatistics().getStddev() < uncheckedGetHistogram(b)->getStatistics().getStddev())
-CMP(HistogramMinLess, uncheckedGetHistogram(a)->getStatistics().getMin() < uncheckedGetHistogram(b)->getStatistics().getMin())
-CMP(HistogramMaxLess, uncheckedGetHistogram(a)->getStatistics().getMax() < uncheckedGetHistogram(b)->getStatistics().getMax())
-CMP(HistogramVarianceLess, uncheckedGetHistogram(a)->getStatistics().getVariance() < uncheckedGetHistogram(b)->getStatistics().getVariance())
-
-template<class T>
-void IDList::sortBy(ResultFileManager *mgr, bool ascending, T& comparator)
+template <typename T>
+void IDList::doSort(const std::function<T(ID)>& getter, ResultFileManager *mgr, bool ascending, InterruptedFlag *intrpt)
 {
     READER_MUTEX
-        checkIntegrity(mgr);
-    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
-    if (v.size() >= 2 && comparator(v.at(0), v.at(v.size()-1)) != ascending)
-        reverse();
+    size_t n = v.size();
+    std::vector<std::pair<T,ID>> a(n);
+    for (int i = 0; i < n; i++)
+        a[i] = std::make_pair(getter(v[i]), v[i]);
+
     if (ascending)
-        std::sort(v.begin(), v.end(), comparator);
+        std::stable_sort(a.begin(), a.end(), [intrpt](const auto& lhs, const auto& rhs) {check(intrpt); return lhs.first < rhs.first;});
     else
-        std::sort(v.begin(), v.end(), flipArgs(comparator));
+        std::stable_sort(a.begin(), a.end(), [intrpt](const auto& lhs, const auto& rhs) {check(intrpt); return lhs.first > rhs.first;});
+
+    for (int i = 0; i < n; i++)
+        v[i] = a[i].second;
 }
 
-template<class T>
-void IDList::sortScalarsBy(ResultFileManager *mgr, bool ascending, T& comparator)
+
+template <>
+void IDList::doSort<const char *>(const std::function<const char *(ID)>& getter, ResultFileManager *mgr, bool ascending, InterruptedFlag *intrpt)
 {
     READER_MUTEX
-        checkIntegrityAllScalars(mgr);
-    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
-    if (v.size() >= 2 && comparator(v.at(0), v.at(v.size()-1)) != ascending)
-        reverse();
+    size_t n = v.size();
+    std::vector<std::pair<const char *,ID>> a(n);
+    for (int i = 0; i < n; i++)
+        a[i] = std::make_pair(getter(v[i]), v[i]);
+
+    // sorting. note: in debug mode, strdictcmp() is significantly slower than str(case)cmp(), but in release mode the difference is smaller
     if (ascending)
-        std::sort(v.begin(), v.end(), comparator);
+        std::stable_sort(a.begin(), a.end(), [intrpt](const auto& lhs, const auto& rhs) {check(intrpt); return strdictcmp(lhs.first, rhs.first) < 0;});
     else
-        std::sort(v.begin(), v.end(), flipArgs(comparator));
+        std::stable_sort(a.begin(), a.end(), [intrpt](const auto& lhs, const auto& rhs) {check(intrpt); return strdictcmp(lhs.first, rhs.first) > 0;});
+
+    for (int i = 0; i < n; i++)
+        v[i] = a[i].second;
 }
 
-template<class T>
-void IDList::sortParametersBy(ResultFileManager *mgr, bool ascending, T& comparator)
+void IDList::sortByFilePath(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    READER_MUTEX
-        checkIntegrityAllParameters(mgr);
-    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
-    if (v.size() >= 2 && comparator(v.at(0), v.at(v.size()-1)) != ascending)
-        reverse();
-    if (ascending)
-        std::sort(v.begin(), v.end(), comparator);
-    else
-        std::sort(v.begin(), v.end(), flipArgs(comparator));
-}
-
-template<class T>
-void IDList::sortVectorsBy(ResultFileManager *mgr, bool ascending, T& comparator)
-{
-    READER_MUTEX
-        checkIntegrityAllVectors(mgr);
-    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
-    if (v.size() >= 2 && comparator(v.at(0), v.at(v.size()-1)) != ascending)
-        reverse();
-    if (ascending)
-        std::sort(v.begin(), v.end(), comparator);
-    else
-        std::sort(v.begin(), v.end(), flipArgs(comparator));
-}
-
-template<class T>
-void IDList::sortHistogramsBy(ResultFileManager *mgr, bool ascending, T& comparator)
-{
-    READER_MUTEX
-        checkIntegrityAllHistograms(mgr);
-    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
-    if (v.size() >= 2 && comparator(v.at(0), v.at(v.size()-1)) != ascending)
-        reverse();
-    if (ascending)
-        std::sort(v.begin(), v.end(), comparator);
-    else
-        std::sort(v.begin(), v.end(), flipArgs(comparator));
-}
-
-void IDList::sortByFileAndRun(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
-{
-    FileAndRunLess compare(mgr, interrupted);
-    sortBy(mgr, ascending, compare);
-}
-
-void IDList::sortByRunAndFile(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
-{
-    RunAndFileLess compare(mgr, interrupted);
-    sortBy(mgr, ascending, compare);
+    doSort<const char *>([mgr](ID id) {return mgr->getFileRun(id)->getFile()->getFilePath().c_str();}, mgr, ascending, interrupted);
 }
 
 void IDList::sortByDirectory(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    DirectoryLess compare(mgr, interrupted);
-    sortBy(mgr, ascending, compare);
+    doSort<const char *>([mgr](ID id) {return mgr->getFileRun(id)->getFile()->getDirectory().c_str();}, mgr, ascending, interrupted);
 }
 
 void IDList::sortByFileName(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    FileNameLess compare(mgr, interrupted);
-    sortBy(mgr, ascending, compare);
+    doSort<const char *>([mgr](ID id) {return mgr->getFileRun(id)->getFile()->getFileName().c_str();}, mgr, ascending, interrupted);
 }
 
 void IDList::sortByRun(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    RunLess compare(mgr, interrupted);
-    sortBy(mgr, ascending, compare);
+    doSort<const char *>([mgr](ID id) {return mgr->getFileRun(id)->getRun()->getRunName().c_str();}, mgr, ascending, interrupted);
+}
+
+void IDList::sortByRunAttribute(ResultFileManager *mgr, const char *attrName, bool ascending, InterruptedFlag *interrupted)
+{
+    doSort<const char *>([mgr,attrName](ID id) {return mgr->getFileRun(id)->getRun()->getAttribute(attrName).c_str();}, mgr, ascending, interrupted);
+}
+
+void IDList::sortByRunIterationVariable(ResultFileManager *mgr, const char *itervarName, bool ascending, InterruptedFlag *interrupted)
+{
+    doSort<const char *>([mgr,itervarName](ID id) {return mgr->getFileRun(id)->getRun()->getIterationVariable(itervarName).c_str();}, mgr, ascending, interrupted);
+}
+
+void IDList::sortByRunConfigValue(ResultFileManager *mgr, const char *configKey, bool ascending, InterruptedFlag *interrupted)
+{
+    doSort<const char *>([mgr,configKey](ID id) {return mgr->getFileRun(id)->getRun()->getConfigValue(configKey).c_str();}, mgr, ascending, interrupted);
+}
+
+void IDList::sortByRunParamValue(ResultFileManager *mgr, const char *paramFullPath, bool ascending, InterruptedFlag *interrupted)
+{
+    doSort<const char *>([mgr,paramFullPath](ID id) {return mgr->getFileRun(id)->getRun()->getParamAssignment(paramFullPath).c_str();}, mgr, ascending, interrupted);
 }
 
 void IDList::sortByModule(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    ModuleLess compare(mgr, interrupted);
-    sortBy(mgr, ascending, compare);
+    ScalarResult tmp;
+    doSort<const char *>([mgr,&tmp](ID id) {return mgr->uncheckedGetItem(id, tmp)->getModuleName().c_str();}, mgr, ascending, interrupted);
 }
 
 void IDList::sortByName(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    NameLess compare(mgr, interrupted);
-    sortBy(mgr, ascending, compare);
+    ScalarResult tmp;
+    doSort<const char *>([mgr,&tmp](ID id) {return mgr->uncheckedGetItem(id, tmp)->getName().c_str();}, mgr, ascending, interrupted);
 }
 
 void IDList::sortScalarsByValue(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    ScalarValueLess compare(mgr, interrupted);
-    sortScalarsBy(mgr, ascending, compare);
+    ScalarResult tmp;
+    doSort<double>([mgr,&tmp](ID id) {return mgr->uncheckedGetScalar(id, tmp)->getValue();}, mgr, ascending, interrupted);
 }
 
 void IDList::sortParametersByValue(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    ParameterValueLess compare(mgr, interrupted);
-    sortParametersBy(mgr, ascending, compare);
+    doSort<const char *>([mgr](ID id) {return mgr->uncheckedGetParameter(id)->getValue().c_str();}, mgr, ascending, interrupted);
 }
 
 void IDList::sortVectorsByVectorId(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    VectorIdLess compare(mgr, interrupted);
-    sortVectorsBy(mgr, ascending, compare);
+    doSort<int>([mgr](ID id) {return mgr->uncheckedGetVector(id)->getVectorId();}, mgr, ascending, interrupted);
 }
 
 void IDList::sortVectorsByLength(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    VectorCountLess compare(mgr, interrupted);
-    sortVectorsBy(mgr, ascending, compare);
+    doSort<int64_t>([mgr](ID id) {return mgr->uncheckedGetVector(id)->getStatistics().getCount();}, mgr, ascending, interrupted);
 }
 
 void IDList::sortVectorsByMean(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    VectorMeanLess compare(mgr, interrupted);
-    sortVectorsBy(mgr, ascending, compare);
+    doSort<double>([mgr](ID id) {return mgr->uncheckedGetVector(id)->getStatistics().getMean();}, mgr, ascending, interrupted);
 }
 
 void IDList::sortVectorsByStdDev(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    VectorStddevLess compare(mgr, interrupted);
-    sortVectorsBy(mgr, ascending, compare);
+    doSort<double>([mgr](ID id) {return mgr->uncheckedGetVector(id)->getStatistics().getStddev();}, mgr, ascending, interrupted);
 }
 
 void IDList::sortVectorsByMin(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    VectorMinLess compare(mgr, interrupted);
-    sortVectorsBy(mgr, ascending, compare);
+    doSort<double>([mgr](ID id) {return mgr->uncheckedGetVector(id)->getStatistics().getMin();}, mgr, ascending, interrupted);
 }
 
 void IDList::sortVectorsByMax(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    VectorMaxLess compare(mgr, interrupted);
-    sortVectorsBy(mgr, ascending, compare);
+    doSort<double>([mgr](ID id) {return mgr->uncheckedGetVector(id)->getStatistics().getMax();}, mgr, ascending, interrupted);
 }
 
 void IDList::sortVectorsByVariance(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    VectorVarianceLess compare(mgr, interrupted);
-    sortVectorsBy(mgr, ascending, compare);
+    doSort<double>([mgr](ID id) {return mgr->uncheckedGetVector(id)->getStatistics().getVariance();}, mgr, ascending, interrupted);
 }
 
 void IDList::sortVectorsByStartTime(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    StartTimeLess compare(mgr, interrupted);
-    sortVectorsBy(mgr, ascending, compare);
+    doSort<simultime_t>([mgr](ID id) {return mgr->uncheckedGetVector(id)->getStartTime();}, mgr, ascending, interrupted);
 }
 
 void IDList::sortVectorsByEndTime(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    EndTimeLess compare(mgr, interrupted);
-    sortVectorsBy(mgr, ascending, compare);
+    doSort<simultime_t>([mgr](ID id) {return mgr->uncheckedGetVector(id)->getEndTime();}, mgr, ascending, interrupted);
 }
 
 void IDList::sortHistogramsByLength(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    HistogramCountLess compare(mgr, interrupted);
-    sortHistogramsBy(mgr, ascending, compare);
+    doSort<int64_t>([mgr](ID id) {return mgr->uncheckedGetHistogram(id)->getStatistics().getCount();}, mgr, ascending, interrupted);
 }
 
 void IDList::sortHistogramsByMean(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    HistogramMeanLess compare(mgr, interrupted);
-    sortHistogramsBy(mgr, ascending, compare);
+    doSort<double>([mgr](ID id) {return mgr->uncheckedGetHistogram(id)->getStatistics().getMean();}, mgr, ascending, interrupted);
 }
 
 void IDList::sortHistogramsByStdDev(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    HistogramStddevLess compare(mgr, interrupted);
-    sortHistogramsBy(mgr, ascending, compare);
+    doSort<double>([mgr](ID id) {return mgr->uncheckedGetHistogram(id)->getStatistics().getStddev();}, mgr, ascending, interrupted);
 }
 
 void IDList::sortHistogramsByMin(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    HistogramMinLess compare(mgr, interrupted);
-    sortHistogramsBy(mgr, ascending, compare);
+    doSort<double>([mgr](ID id) {return mgr->uncheckedGetHistogram(id)->getStatistics().getMin();}, mgr, ascending, interrupted);
 }
 
 void IDList::sortHistogramsByMax(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    HistogramMaxLess compare(mgr, interrupted);
-    sortHistogramsBy(mgr, ascending, compare);
+    doSort<double>([mgr](ID id) {return mgr->uncheckedGetHistogram(id)->getStatistics().getMax();}, mgr, ascending, interrupted);
 }
 
 void IDList::sortHistogramsByVariance(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    HistogramVarianceLess compare(mgr, interrupted);
-    sortHistogramsBy(mgr, ascending, compare);
-}
-
-void IDList::sortByRunAttribute(ResultFileManager *mgr, const char *runAttribute, bool ascending, InterruptedFlag *interrupted)
-{
-    RunAttributeLess compare(mgr, runAttribute, interrupted);
-    sortBy(mgr, ascending, compare);
+    doSort<double>([mgr](ID id) {return mgr->uncheckedGetHistogram(id)->getStatistics().getVariance();}, mgr, ascending, interrupted);
 }
 
 void IDList::reverse()

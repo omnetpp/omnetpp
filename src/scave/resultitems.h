@@ -161,7 +161,7 @@ class SCAVE_API ParameterResult : public ResultItem
         ResultItem(fileRun, moduleName, name, attrs), value(value) {}
   public:
     virtual int getItemType() const;
-    const char *getValue() const {return value.c_str();}
+    const std::string& getValue() const {return value;}
     virtual double getScalarField(FieldNum fieldId) const;
 };
 

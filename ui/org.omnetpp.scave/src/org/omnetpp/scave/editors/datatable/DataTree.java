@@ -33,6 +33,7 @@ import org.omnetpp.scave.actions.PredefinedLevelsAction;
 import org.omnetpp.scave.editors.datatable.DataTreeContentProvider.Node;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.IDListBuffer;
+import org.omnetpp.scave.engine.InterruptedFlag;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
@@ -203,13 +204,12 @@ public class DataTree extends Tree implements IDataControl {
             setSelection(new TreeItem[0]);
     }
 
-    public void setSelectedIDs(IDList ids) {
+    public void setSelectedIDs(IDList ids, InterruptedFlag interrupted) throws InterruptedException {
         //
         // NOTE: THIS FUNCTION HAS VERY POOR RUNTIME PERFORMANCE -- DO *NOT* USE IT IF POSSIBLE!
         //
-        int timeLimitMillis = 1000;
         ArrayList<TreeItem> treeItems = new ArrayList<TreeItem>();
-        long begin = System.currentTimeMillis();
+
         // find the topmost tree items that cover the whole idList set, but not more
         while (ids.size() > 0) {
             TreeItem treeItem = getTreeItem(ids);
@@ -222,9 +222,8 @@ public class DataTree extends Tree implements IDataControl {
                 if (node != null)
                     ids = ids.subtract(node.ids);
             }
-            // don't spend to much time on it, because the gui becomes unresponsive and it's not worth it
-            if (System.currentTimeMillis() - begin > timeLimitMillis)
-                break;
+            if (interrupted.getFlag())
+                throw new InterruptedException();
         }
         setSelection(treeItems.toArray(new TreeItem[0]));
     }
