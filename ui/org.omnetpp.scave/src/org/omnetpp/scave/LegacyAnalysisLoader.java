@@ -205,7 +205,7 @@ public class LegacyAnalysisLoader {
     }
 
     private void setProperty(Chart chart, String name, String value) {
-        Property prop = ScaveModelUtil.getChartProperty(chart, name);
+        Property prop = chart.lookupProperty(name);
         if (prop == null) {
             prop = new Property(name, value);
             chart.addProperty(prop);

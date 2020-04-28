@@ -195,15 +195,6 @@ public class ScaveModelUtil {
         return subject instanceof Inputs || subject instanceof InputFile;
     }
 
-    public static Property getChartProperty(Chart chart, String propertyName) {
-        for (Object object : chart.getProperties()) {
-            Property property = (Property)object;
-            if (property.getName().equals(propertyName))
-                return property;
-        }
-        return null;
-    }
-
     public static IDList getAllIDs(ResultFileManager manager, ResultType type) {
         if (type == null)
             return manager.getAllItems(true);

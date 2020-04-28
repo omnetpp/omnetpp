@@ -48,7 +48,7 @@ public class AddVectorOperationAction extends AbstractScaveAction {
 
         Chart chart = scriptEditor.getChart();
 
-        Property chartProperty = ScaveModelUtil.getChartProperty(chart, "vector_operations");
+        Property chartProperty = chart.lookupProperty("vector_operations");
 
         String operations = "";
         if (chartProperty != null)
@@ -74,7 +74,7 @@ public class AddVectorOperationAction extends AbstractScaveAction {
             return false;
 
         Chart chart = editor.getActiveChartScriptEditor().getChart();
-        Property operationsProperty = ScaveModelUtil.getChartProperty(chart, "vector_operations");
+        Property operationsProperty = chart.lookupProperty("vector_operations");
 
         if (operationsProperty != null)
             return true;
