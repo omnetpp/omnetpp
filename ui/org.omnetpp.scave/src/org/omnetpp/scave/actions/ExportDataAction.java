@@ -20,7 +20,6 @@ import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
-import org.omnetpp.scave.model2.ScaveModelUtil;
 import org.omnetpp.scave.wizard.ScaveExportWizard;
 
 /**

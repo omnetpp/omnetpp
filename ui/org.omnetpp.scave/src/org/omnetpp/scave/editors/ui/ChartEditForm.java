@@ -58,7 +58,6 @@ import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Chart.DialogPage;
 import org.omnetpp.scave.model.ChartTemplate;
-import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model2.FilterHintsCache;
 import org.xml.sax.SAXException;
 

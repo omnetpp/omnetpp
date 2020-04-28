@@ -8,7 +8,6 @@
 package org.omnetpp.scave.editors.ui;
 
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -28,7 +27,6 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.ui.DropdownAction;
 import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog;
-import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.CopyChartFilterAction;
@@ -38,7 +36,6 @@ import org.omnetpp.scave.actions.FlatModuleTreeAction;
 import org.omnetpp.scave.actions.IncreaseDecimalPlacesAction;
 import org.omnetpp.scave.actions.SetChartFilterAction;
 import org.omnetpp.scave.actions.SetFilterBySelectedCellAction;
-import org.omnetpp.scave.actions.ShowFieldsAsScalarsAction;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ScaveEditorActions;
@@ -57,7 +54,6 @@ import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartTemplate;
 import org.omnetpp.scave.model.ResultType;
-import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * This is the "Browse Data" page of Scave Editor

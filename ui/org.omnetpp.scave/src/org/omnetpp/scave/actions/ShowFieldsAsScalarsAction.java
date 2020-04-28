@@ -13,7 +13,6 @@ import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.editors.ui.BrowseDataPage;
 
 
 /**

@@ -18,7 +18,6 @@ import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartTemplate;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.commands.SetChartPropertyCommand;
-import org.omnetpp.scave.model2.ScaveModelUtil;
 
 public class AddVectorOperationAction extends AbstractScaveAction {
     String operation;
