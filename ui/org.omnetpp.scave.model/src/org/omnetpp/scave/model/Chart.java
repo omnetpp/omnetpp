@@ -88,14 +88,6 @@ public class Chart extends AnalysisItem {
         return Collections.unmodifiableList(properties);
     }
 
-    public Property lookupProperty(String name) {
-        for (Property p : properties) {
-            if (name.equals(p.getName()))
-                return p;
-        }
-        return null;
-    }
-
     public void setProperties(List<Property> properties) {
         for (Property p : this.properties)
             p.parent = null;
@@ -105,8 +97,15 @@ public class Chart extends AnalysisItem {
         notifyListeners();
     }
 
+    public Property getProperty(String name) {
+        for (Property p : properties)
+            if (name.equals(p.getName()))
+                return p;
+        return null;
+    }
+
     public void addProperty(Property property) {
-        Assert.isTrue(lookupProperty(property.getName()) == null,
+        Assert.isTrue(getProperty(property.getName()) == null,
                 "Duplicate property key: " + property.getName() + " on chart " + getName());
         property.parent = this;
         properties.add(property);
@@ -117,6 +116,21 @@ public class Chart extends AnalysisItem {
         property.parent = null;
         properties.remove(property);
         notifyListeners();
+    }
+
+    public String getPropertyValue(String name) {
+        for (Property p : properties)
+            if (name.equals(p.getName()))
+                return p.getValue();
+        return null;
+    }
+
+    public void setPropertyValue(String name, String value) {
+        Property property = getProperty(name);
+        if (property != null)
+            property.setValue(value);
+        else
+            addProperty(new Property(name, value));
     }
 
     public boolean isTemporary() {

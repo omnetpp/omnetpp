@@ -29,7 +29,7 @@ public class SetChartPropertyCommand implements ICommand {
 
     @Override
     public void execute() {
-        Property property = chart.lookupProperty(propertyName);
+        Property property = chart.getProperty(propertyName);
         isNewProperty = (property == null);
         if (isNewProperty)
             chart.addProperty(new Property(propertyName, newValue));
@@ -41,7 +41,7 @@ public class SetChartPropertyCommand implements ICommand {
 
     @Override
     public void undo() {
-        Property property = chart.lookupProperty(propertyName);
+        Property property = chart.getProperty(propertyName);
         if (isNewProperty)
             chart.removeProperty(property);
         else

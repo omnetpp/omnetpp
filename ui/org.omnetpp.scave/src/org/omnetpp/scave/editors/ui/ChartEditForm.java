@@ -200,16 +200,13 @@ public class ChartEditForm {
 
     protected void populateControls() {
         for (String propId : xswtWidgetMap.keySet()) {
-            Property prop = chart.lookupProperty(propId);
-            if (prop != null) {
-                String value = prop.getValue();
-                if (value != null) {
-                    Control control = xswtWidgetMap.get(propId);
-                    try {
-                        XSWTDataBinding.putValueIntoControl(control, value, null);
-                    } catch (Exception e) {
-                        MessageDialog.openError(null, "Error", String.format("Error populating dialog field '%s' (%s) with value '%s': ", propId, control.getClass().getSimpleName(), value) + e.getMessage());
-                    }
+            String value = chart.getPropertyValue(propId);
+            if (value != null) {
+                Control control = xswtWidgetMap.get(propId);
+                try {
+                    XSWTDataBinding.putValueIntoControl(control, value, null);
+                } catch (Exception e) {
+                    MessageDialog.openError(null, "Error", String.format("Error populating dialog field '%s' (%s) with value '%s': ", propId, control.getClass().getSimpleName(), value) + e.getMessage());
                 }
             }
         }
@@ -331,8 +328,7 @@ public class ChartEditForm {
             Control control = xswtWidgetMap.get(k);
             Object value = XSWTDataBinding.getValueFromControl(control, null);
 
-            Property chartProperty = chart.lookupProperty(k);
-            String chartValueString = chartProperty == null ? null : chartProperty.getValue();
+            String chartValueString = chart.getPropertyValue(k);
             String formValueString = Converter.objectToString(value);
 
             if (!formValueString.equals(chartValueString))

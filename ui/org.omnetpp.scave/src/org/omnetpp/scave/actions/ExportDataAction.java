@@ -53,7 +53,7 @@ public class ExportDataAction extends AbstractScaveAction {
                 Object selected = ((IStructuredSelection)selection).getFirstElement();
                 if (scaveEditor != null && selected instanceof Chart) {
                     Chart chart = (Chart)selected;
-                    Property filterProperty = chart.lookupProperty("filter");
+                    Property filterProperty = chart.getProperty("filter");
                     if (filterProperty == null) {
                         MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "Error",
                                 "Selected chart does not have a 'filter' property which would define "

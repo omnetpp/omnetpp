@@ -205,7 +205,7 @@ public class LegacyAnalysisLoader {
     }
 
     private void setProperty(Chart chart, String name, String value) {
-        Property prop = chart.lookupProperty(name);
+        Property prop = chart.getProperty(name);
         if (prop == null) {
             prop = new Property(name, value);
             chart.addProperty(prop);

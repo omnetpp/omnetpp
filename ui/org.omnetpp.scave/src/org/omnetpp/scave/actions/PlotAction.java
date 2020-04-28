@@ -57,7 +57,7 @@ public class PlotAction extends AbstractScaveAction {
             return ResultSelectionFilterGenerator.getIDListAsFilterExpression(allIds, idList, filterFields, viewFilter, manager, null);
         });
 
-        Property filterProperty = chart.lookupProperty("filter");
+        Property filterProperty = chart.getProperty("filter");
         if (filterProperty != null)
             filterProperty.setValue(filter);
         else

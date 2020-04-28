@@ -25,7 +25,7 @@ public class ResetChartToTemplateCommand extends CompoundCommand {
                 append(new RemoveChartPropertyCommand(chart, p));
 
         for (String pn : template.getProperties().keySet())
-            if (chart.lookupProperty(pn) == null)
+            if (chart.getProperty(pn) == null)
                 append(new AddChartPropertyCommand(chart, new Property(pn, template.getPropertyDefault(pn))));
     }
 
