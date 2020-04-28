@@ -329,7 +329,7 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
     public void setMessage(String s) {
         if (message == null || !message.equals(s)) {
             message = s;
-            Display.getDefault().asyncExec(() -> redraw());
+            Display.getDefault().asyncExec(() -> { if (!isDisposed()) redraw(); } );
         }
     }
 
@@ -337,7 +337,7 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
     public void setWarning(String s) {
         if (warning == null || !warning.equals(s)) {
             warning = s;
-            Display.getDefault().asyncExec(() -> redraw());
+            Display.getDefault().asyncExec(() -> { if (!isDisposed()) redraw(); } );
         }
     }
 
