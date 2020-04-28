@@ -1233,12 +1233,8 @@ void cModule::doBuildInside()
 
 void cModule::deleteModule()
 {
-    if (getSimulation()->getSimulationStage() != CTX_CLEANUP) {
-        if (getSystemModule() == this)
-            throw cRuntimeError(this, "deleteModule(): It is not allowed to delete the system module during simulation");
-        if (!initialized())
-            throw cRuntimeError(this, "deleteModule(): A module cannot be deleted before it has been initialized");
-    }
+    if (getSystemModule() == this && getSimulation()->getSimulationStage() != CTX_CLEANUP)
+        throw cRuntimeError(this, "deleteModule(): It is not allowed to delete the system module during simulation");
 
     // If a coroutine wants to delete itself (maybe as part of a module subtree),
     // that has to be handled from another coroutine, e.g. from the main one.
@@ -1416,12 +1412,19 @@ bool cModule::initializeModules(int stage)
 
     // call initialize(stage) for this module, provided it has not been been initialized yet
     int numStages = numInitStages();
+    int ownId = getId();
     if (!initialized() && stage < numStages) {
-        // switch context for the duration of the call
-        Enter_Method_Silent("initialize(%d)", stage);
-        getEnvir()->componentInitBegin(this, stage);
         try {
+            // switch context for the duration of the call
+            Enter_Method_Silent("initialize(%d)", stage);
+            getEnvir()->componentInitBegin(this, stage);
+
+            // call user code
             initialize(stage);
+
+            // bail out if this module was deleted by user code
+            if (getSimulation()->getComponent(ownId) == nullptr)
+                return false;
         }
         catch (cException&) {
             throw;
@@ -1432,10 +1435,47 @@ bool cModule::initializeModules(int stage)
     }
 
     // then recursively initialize submodules
+    //
+    // This is supposed to be simple: just call initializeModules(stage) on
+    // all submodules, and report if any of them want more stages. What makes
+    // it complicated is that while doing this, user code is allowed
+    // to delete *any* submodule, and/or create new submodules.
+    // One fact we can exploit is that newly created submodules are inserted at
+    // the end of the list, so it's not possible to accidentally skip them.
+    // The strategy is to iterate normally until the current submodule is deleted;
+    // if that happens, we start over (we have to start from the beginning, because
+    // any previous submodule might have been deleted since!), and skip the ones
+    // we already initialized.
     bool moreStages = stage < numStages-1;
     for (SubmoduleIterator it(this); !it.end(); ++it)
-        if ((*it)->initializeModules(stage))
-            moreStages = true;
+        (*it)->setFlag(FL_CURRENTSTAGEDONE, false); // mark as not yet done
+    bool again;
+    do {
+        again = false;
+        for (SubmoduleIterator it(this); !it.end(); ++it) {
+            cModule *submodule = *it;
+            if (submodule->getFlag(FL_CURRENTSTAGEDONE))
+                continue; // already done, skip
+
+            // recurse
+            int submoduleId = submodule->getId();
+            if (submodule->initializeModules(stage))
+                moreStages = true;
+
+            // start again if current submodule was deleted
+            if (getSimulation()->getComponent(submoduleId) == nullptr) {
+                again = true;
+                break;
+            }
+
+            // still exists: mark as done
+            submodule->setFlag(FL_CURRENTSTAGEDONE, true);
+        }
+
+        // bail out if this whole module got deleted
+        if (getSimulation()->getComponent(ownId) == nullptr)
+            return false;
+    } while (again);
 
     // a few more things to do when initialization is complete
     if (!moreStages) {

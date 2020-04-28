@@ -1,0 +1,115 @@
+%description:
+Test that deleting modules during initialization is allowed.
+Check that deletion is performed, there is no crash, and no module is 
+initialized twice or left out from initialization.
+
+%file: test.ned
+import testlib.Dump;
+
+simple Tester {
+    parameters:
+        string deleteTarget = default("");
+}
+
+module Node {
+    submodules:
+        testers[3]: Tester;
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+        testers[10]: Tester;
+        dump: Dump;
+}
+
+%file: test.cc
+
+#include <string.h>
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Tester : public cSimpleModule
+{
+  public:
+    virtual void initialize() override;
+};
+
+Define_Module(Tester);
+
+void Tester::initialize()
+{
+    EV << "INITIALIZING " << getFullPath() << endl;
+    cModule *targetModule = getModuleByPath(par("deleteTarget"));
+    if (targetModule) {
+        EV << "Deleting " << targetModule->getFullPath() << endl;
+        targetModule->deleteModule();
+    }
+}
+
+}; //namespace
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+cmdenv-event-banners = false
+
+*.node.testers[0].deleteTarget = "."  # delete self
+*.node.testers[1].deleteTarget = "^" # delete parent
+*.testers[1].deleteTarget = "^.testers[0]" # delete prev / first
+*.testers[8].deleteTarget = "^.testers[9]" # delete next / last
+*.testers[5].deleteTarget = "^.testers[5]" # delete self
+*.testers[3].deleteTarget = "^.testers[1]" # delete some before
+*.testers[4].deleteTarget = "^.testers[7]" # delete some after
+
+%contains: stdout
+INITIALIZING Test.node.testers[0]
+Deleting Test.node.testers[0]
+INITIALIZING Test.node.testers[1]
+Deleting Test.node
+INITIALIZING Test.testers[0]
+INITIALIZING Test.testers[1]
+Deleting Test.testers[0]
+INITIALIZING Test.testers[2]
+INITIALIZING Test.testers[3]
+Deleting Test.testers[1]
+INITIALIZING Test.testers[4]
+Deleting Test.testers[7]
+INITIALIZING Test.testers[5]
+Deleting Test.testers[5]
+INITIALIZING Test.testers[6]
+INITIALIZING Test.testers[8]
+Deleting Test.testers[9]
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.testers[2]: Tester {
+            parameters:
+                deleteTarget = ""
+        }
+        module Test.testers[3]: Tester {
+            parameters:
+                deleteTarget = "^.testers[1]"
+        }
+        module Test.testers[4]: Tester {
+            parameters:
+                deleteTarget = "^.testers[7]"
+        }
+        module Test.testers[6]: Tester {
+            parameters:
+                deleteTarget = ""
+        }
+        module Test.testers[8]: Tester {
+            parameters:
+                deleteTarget = "^.testers[9]"
+        }
+}
+
