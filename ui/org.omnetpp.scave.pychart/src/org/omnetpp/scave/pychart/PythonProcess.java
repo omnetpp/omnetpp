@@ -32,7 +32,6 @@ public class PythonProcess {
         errorMonitoringThread.start();
 
         shmSendBufferManager = new ShmSendBufferManager((int)process.pid());
-        process.onExit().thenRun(() -> shmSendBufferManager.clear());
 
         // this does not have any references to anything, the Runnable
         // instances passed to it later do
@@ -47,6 +46,11 @@ public class PythonProcess {
         }, "ShmSendBufferManager garbage collector");
         collectorThread.setDaemon(true);
         collectorThread.start();
+
+        process.onExit().thenRun(() -> {
+            shmSendBufferManager.clear();
+            pythonCallerThread.interrupt();
+        });
     }
 
     public Process getProcess() {

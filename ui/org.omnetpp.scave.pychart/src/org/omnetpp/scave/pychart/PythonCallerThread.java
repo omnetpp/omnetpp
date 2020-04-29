@@ -109,7 +109,7 @@ public class PythonCallerThread extends Thread {
 
     @Override
     public void run() {
-        outer: while (true) {
+        outer: while (proc.isAlive()) {
             synchronized (queue) {
                 try {
                     // There is nothing to do, wait until a Runnable is submitted...
@@ -121,7 +121,7 @@ public class PythonCallerThread extends Thread {
                 }
             }
 
-            while (!queue.isEmpty()) {
+            while (!queue.isEmpty() && proc.isAlive()) {
                 Runnable r = null;
                 synchronized (queue) {
                     // double-check to avoid race condition if a submission to an event stream just emptied the queue
