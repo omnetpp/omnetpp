@@ -135,7 +135,7 @@ cXMLElement *cIntParImpl::xmlValue(cComponent *) const
 
 cExpression *cIntParImpl::getExpression() const
 {
-    return (flags | FL_ISEXPR) ? expr : nullptr;
+    return (flags & FL_ISEXPR) ? expr : nullptr;
 }
 
 void cIntParImpl::deleteOld()

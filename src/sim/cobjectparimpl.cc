@@ -160,7 +160,7 @@ cXMLElement *cObjectParImpl::xmlValue(cComponent *) const
 
 cExpression *cObjectParImpl::getExpression() const
 {
-    return (flags | FL_ISEXPR) ? expr : nullptr;
+    return (flags & FL_ISEXPR) ? expr : nullptr;
 }
 
 void cObjectParImpl::deleteExpression()
