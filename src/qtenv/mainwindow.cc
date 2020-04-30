@@ -1054,14 +1054,14 @@ void MainWindow::configureNetwork()
         if (t && t->isNetwork())
             networks.push_back(t);
     }
-    const char *localPackage = getQtenv()->getLocalPackage().c_str();
+    std::string localPackage = getQtenv()->getLocalPackage();
     QStringList networkNames;
     QStringList localNetworkNames;
     for (cModuleType *net : networks) {
         const char *networkName = net->getName();
         const char *networkQName = net->getFullName();
         char result[100];
-        strcpy(result, localPackage);
+        strcpy(result, localPackage.c_str());
         strcat(result, ".");
         strcat(result, networkName);
         if (strcmp(result, networkQName) == 0)
