@@ -160,13 +160,7 @@ public class DataTree extends Tree implements IDataControl {
         });
     }
 
-    public void copySelectionToClipboard() {
-        if (manager == null)
-            return;
-        TimeTriggeredProgressMonitorDialog2.runWithDialog("Copy to clipboard", (monitor) -> doCopySelectionToClipboard(monitor));
-    }
-
-    public void doCopySelectionToClipboard(IProgressMonitor monitor) throws InterruptedException {
+    public void copySelectionToClipboard(IProgressMonitor monitor) throws InterruptedException {
         CsvWriter writer = new CsvWriter('\t');
         writer.addField("Name");
         writer.addField("Value");

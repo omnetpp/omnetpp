@@ -37,12 +37,14 @@ public class CopyChartFilterAction extends AbstractScaveAction {
         IDList target = ((IDListSelection)selection).getIDList();
         ResultFileManager rfm = editor.getResultFileManager();
 
+        String[] result = new String[1];
         TimeTriggeredProgressMonitorDialog2.runWithDialog("Generating filter expression", (monitor) -> {
-            String filter = ResultSelectionFilterGenerator.getFilter(target, all, rfm, monitor);
-            Display.getDefault().syncExec(() -> {
-                new Clipboard(Display.getCurrent()).setContents(new Object[] {filter}, new Transfer[] {TextTransfer.getInstance()});
-            });
+            result[0] = ResultSelectionFilterGenerator.getFilter(target, all, rfm, monitor);
         });
+        if (result[0] != null) {
+            String filter = result[0];
+            new Clipboard(Display.getCurrent()).setContents(new Object[] {filter}, new Transfer[] {TextTransfer.getInstance()});
+        }
     }
 
     @Override

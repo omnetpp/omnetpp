@@ -24,10 +24,10 @@ import org.omnetpp.scave.model.commands.SetChartPropertyCommand;
 import org.omnetpp.scave.model2.ResultSelectionFilterGenerator;
 
 public class SetChartFilterAction extends AbstractScaveAction {
-    Chart c;
+    private Chart chart;
 
     public SetChartFilterAction(Chart c) {
-        this.c = c;
+        this.chart = c;
 
         setText(StringUtils.defaultIfEmpty(c.getName(), "<Unnamed>"));
 
@@ -48,11 +48,15 @@ public class SetChartFilterAction extends AbstractScaveAction {
         IDList all = editor.getBrowseDataPage().getActivePanel().getIDList();
         IDList target = ((IDListSelection)selection).getIDList();
         ResultFileManager rfm = editor.getResultFileManager();
+        String[] result = new String[1];
         TimeTriggeredProgressMonitorDialog2.runWithDialog("Generating filter expression", (monitor) -> {
-            String filter = ResultSelectionFilterGenerator.getFilter(target, all, rfm, monitor);
-            SetChartPropertyCommand command = new SetChartPropertyCommand(c, "filter", filter);
-            editor.getChartsPage().getCommandStack().execute(command);
+            result[0] = ResultSelectionFilterGenerator.getFilter(target, all, rfm, monitor);
         });
+        if (result[0] != null) {
+            String filter = result[0];
+            SetChartPropertyCommand command = new SetChartPropertyCommand(chart, "filter", filter);
+            editor.getChartsPage().getCommandStack().execute(command);
+        }
     }
 
     @Override

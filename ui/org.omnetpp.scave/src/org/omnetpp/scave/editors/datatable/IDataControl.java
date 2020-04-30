@@ -1,5 +1,6 @@
 package org.omnetpp.scave.editors.datatable;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionListener;
@@ -58,7 +59,7 @@ public interface IDataControl {
 
     public void setSelectedIDs(IDList idList);
 
-    public void copySelectionToClipboard();
+    public void copySelectionToClipboard(IProgressMonitor monitor) throws InterruptedException;
 
     /* listeners */
 

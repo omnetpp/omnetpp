@@ -14,13 +14,13 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.ISharedImages;
 import org.omnetpp.common.ui.LocalTransfer;
+import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.editors.ui.ChartPage;
 import org.omnetpp.scave.editors.ui.FormEditorPage;
-import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ModelObject;
 
@@ -37,12 +37,10 @@ public class CopyAction extends AbstractScaveAction {
     protected void doRun(ScaveEditor editor, ISelection selection) throws CoreException {
 
         if (selection instanceof IDListSelection) {
-            // TODO this is not the proper way
-            final FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
+            FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
             if (activePanel != null) {
-                ResultFileManager.runWithReadLock(activePanel.getResultFileManager(), () -> {
-                    activePanel.getDataControl().copySelectionToClipboard();
-                });
+                TimeTriggeredProgressMonitorDialog2.runWithDialogInUIThread("Copying to clipboard",
+                        (monitor) -> activePanel.getDataControl().copySelectionToClipboard(monitor));
             }
         }
         else {

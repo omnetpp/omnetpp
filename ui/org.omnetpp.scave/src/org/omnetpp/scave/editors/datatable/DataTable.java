@@ -699,22 +699,18 @@ public class DataTable extends LargeTable implements IDataControl {
         return ScaveUtil.formatNumber(d, getNumericPrecision()) + " s";
     }
 
-    public void copySelectionToClipboard() {
+    public void copySelectionToClipboard(IProgressMonitor monitor) throws InterruptedException {
         if (manager == null)
             return;
 
-        TimeTriggeredProgressMonitorDialog2.runWithDialog("Copy to clipboard", (monitor) -> doCopySelectionToClipboard(monitor));
-    }
+        ResultFileManagerEx.runWithReadLock(manager, () -> {
+            CsvWriter writer = new CsvWriter('\t');
 
-    protected void doCopySelectionToClipboard(IProgressMonitor monitor) throws InterruptedException {
-        CsvWriter writer = new CsvWriter('\t');
+            // add header
+            for (Column column : visibleColumns)
+                writer.addField(column.text);
+            writer.endRecord();
 
-        // add header
-        for (Column column : visibleColumns)
-            writer.addField(column.text);
-        writer.endRecord();
-
-        if (manager != null) {
             // add selected lines
             int[] selection = getSelectionIndices().toArray();
             int batchSize = 100_000;
@@ -731,15 +727,18 @@ public class DataTable extends LargeTable implements IDataControl {
                     monitor.worked(1);
                     while (Display.getCurrent().readAndDispatch());
                     if (monitor.isCanceled())
-                        throw new InterruptedException();
+                        return;  // cannot throw checked exception InterruptedException :(
                 }
             }
-        }
 
-        // copy to clipboard
-        Clipboard clipboard = new Clipboard(getDisplay());
-        clipboard.setContents(new Object[] {writer.toString()}, new Transfer[] {TextTransfer.getInstance()});
-        clipboard.dispose();
+            // copy to clipboard
+            Clipboard clipboard = new Clipboard(getDisplay());
+            clipboard.setContents(new Object[] {writer.toString()}, new Transfer[] {TextTransfer.getInstance()});
+            clipboard.dispose();
+        });
+        if (monitor.isCanceled())
+            throw new InterruptedException();
+
     }
 
     public void addDataListener(IDataListener listener) {
