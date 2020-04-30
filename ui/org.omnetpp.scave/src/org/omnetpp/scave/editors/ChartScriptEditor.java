@@ -39,6 +39,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IMemento;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.console.ConsolePlugin;
@@ -51,6 +53,7 @@ import org.eclipse.ui.console.IPatternMatchListener;
 import org.eclipse.ui.console.PatternMatchEvent;
 import org.eclipse.ui.console.TextConsole;
 import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.internal.console.ConsoleView;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.MarkerAnnotation;
 import org.omnetpp.common.Debug;
@@ -1003,7 +1006,14 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         if (scriptNotYetExecuted)
             runChartScript();
         scaveEditor.setSelection(new StructuredSelection(chart));
-        console.activate(); // TODO: also do this when the editor tab is activated
+
+        // TODO: also do this when the editor tab is activated
+        for (IViewReference viewRef : getEditorSite().getWorkbenchWindow().getActivePage().getViewReferences()) {
+            IViewPart view = viewRef.getView(false);
+            if (view instanceof ConsoleView)
+                ((ConsoleView)view).display(console);
+        }
+
         getChartViewer().getWidget().setFocus();
     }
 
