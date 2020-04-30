@@ -78,6 +78,7 @@ static struct ConfigVarDescription { const char *name, *description; } configVar
     { CFGVAR_SEEDSET,          "Value of the `seed-set` configuration option" },
     { CFGVAR_ITERATIONVARS,    "Concatenation of all user-defined iteration variables in `name=value` form" },
     { CFGVAR_ITERATIONVARSF,   "Like ${iterationvars}, but sanitized for use as part of a file name" },
+    { CFGVAR_ITERATIONVARSD,   "Like ${iterationvars}, but for use as hierarchical folder name (it contains slashes where ${iterationvarsf} has commas)" },
     { nullptr,                 nullptr }
 };
 

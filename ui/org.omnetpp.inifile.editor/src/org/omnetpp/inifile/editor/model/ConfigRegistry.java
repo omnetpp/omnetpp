@@ -907,7 +907,8 @@ public class ConfigRegistry {
     public static final String CFGVAR_REPETITION = addConfigVariable("repetition", "The iteration number in `0..N-1`, where `N` is the value of the `repeat` configuration option");
     public static final String CFGVAR_SEEDSET = addConfigVariable("seedset", "Value of the `seed-set` configuration option");
     public static final String CFGVAR_ITERATIONVARS = addConfigVariable("iterationvars", "Concatenation of all user-defined iteration variables in `name=value` form");
-    public static final String CFGVAR_ITERATIONVARSF = addConfigVariable("iterationvarsf", "Like ${iterationvars}, but sanitized for use as part of a file name");
+    public static final String CFGVAR_ITERATIONVARSF = addConfigVariable("iterationvarsf", "Like ${iterationvars}, but sanitized for use as part of file names");
+    public static final String CFGVAR_ITERATIONVARSD = addConfigVariable("iterationvarsd", "Like ${iterationvars}, but for use as hierarchical folder name (it contains slashes where ${iterationvarsf} has commas)");
 
     static {
         EXTENDS = CFGID_EXTENDS.getName();
