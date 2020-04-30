@@ -254,14 +254,12 @@ int64_t BigDecimal::getMantissaForScale(int reqScale) const
 double BigDecimal::dbl() const
 {
     if (isSpecial()) {
-        if (isNaN())
-            return omnetpp::common::NaN;
-        else if (*this == PositiveInfinity)
+        if (*this == PositiveInfinity)
             return POSITIVE_INFINITY;
         else if (*this == NegativeInfinity)
             return NEGATIVE_INFINITY;
-        else  // Nil
-            throw opp_runtime_error("BigDecimal: Cannot convert Nil to double");  // XXX should return NaN?
+        else  // NaN or Nil
+            return omnetpp::common::NaN;
     }
 
     return (double)intVal * negativePowersOfTen[-scale];
