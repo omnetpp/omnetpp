@@ -49,6 +49,7 @@ public class Chart extends AnalysisItem {
     protected List<DialogPage> dialogPages = new ArrayList<>();
     protected ChartType type;
     protected String iconPath = "";
+    protected int supportedResultTypes; // a bitwise OR of the constants in ResultFileManager
 
     public Chart() {
     }
@@ -181,6 +182,15 @@ public class Chart extends AnalysisItem {
 
     public void setIconPath(String iconPath) {
         this.iconPath = iconPath;
+        notifyListeners();
+    }
+
+    public int getSupportedResultTypes() {
+        return supportedResultTypes;
+    }
+
+    public void setSupportedResultTypes(int supportedResultTypes) {
+        this.supportedResultTypes = supportedResultTypes;
         notifyListeners();
     }
 

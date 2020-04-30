@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -60,7 +61,6 @@ public class ScaveModelUtil {
         return input;
     }
 
-
     public static Chart createChartFromTemplate(ChartTemplateRegistry chartTemplateRegistry, String templateId) {
         return createChartFromTemplate(chartTemplateRegistry.getTemplateByID(templateId));
     }
@@ -68,6 +68,7 @@ public class ScaveModelUtil {
     public static Chart createChartFromTemplate(ChartTemplate template) {
         Chart chart = new Chart(template.getChartType());
         chart.setTemplateID(template.getId());
+        chart.setSupportedResultTypes(template.getSupportedResultTypes());
 
         chart.setScript(template.getPythonScript());
 
@@ -91,20 +92,25 @@ public class ScaveModelUtil {
         return chart;
     }
 
-    public static List<String> getTemplateSupportedResultTypesAsString(ChartTemplate template) {
+    public static List<String> getResultTypesAsStringList(int resultTypes) {
         List<String> names = new ArrayList<>();
-        int resultTypes = template.getSupportedResultTypes();
+
         if ((resultTypes & ResultFileManager.PARAMETER) != 0)
-            names.add("parameters");
+            names.add(Scave.PARAMETER);
         if ((resultTypes & ResultFileManager.SCALAR) != 0)
-            names.add("scalars");
+            names.add(Scave.SCALAR);
         if ((resultTypes & ResultFileManager.VECTOR) != 0)
-            names.add("vectors");
+            names.add(Scave.VECTOR);
         if ((resultTypes & ResultFileManager.STATISTICS) != 0)
-            names.add("statistics");
+            names.add(Scave.STATISTICS);
         if ((resultTypes & ResultFileManager.HISTOGRAM) != 0)
-            names.add("histograms");
+            names.add(Scave.HISTOGRAM);
+
         return names;
+    }
+
+    public static String getResultTypesAsString(int resultTypes) {
+        return StringUtils.join(getResultTypesAsStringList(resultTypes), ",");
     }
 
     public static void addInputFiles(CommandStack commandStack, Analysis analysis, List<String> list) {
@@ -282,6 +288,8 @@ public class ScaveModelUtil {
         buf.append("type = " + chart.getType().toString() + "\n");
         buf.append("scriptFile = " + scriptFileName + "\n");
         buf.append("icon = " + chart.getIconPath() + "\n");
+        buf.append("resultTypes = " + ScaveModelUtil.getResultTypesAsString(chart.getSupportedResultTypes()) + "\n");
+
         // omitting toolbarOrder and resultTypes
         buf.append("\n");
 

@@ -175,8 +175,8 @@ public class NewChartFromTemplateDialog extends TitleAreaDialog {
         html += "<p><small>";
         html += "Template ID: " + template.getId() + " / ";
         html += "type: " + template.getChartType() + " / ";
-        List<String> supportedResultTypes = ScaveModelUtil.getTemplateSupportedResultTypesAsString(template);
-        html += "supports: " + StringUtils.defaultIfEmpty(StringUtils.join(supportedResultTypes, ","), "-");
+        String supportedResultTypes = ScaveModelUtil.getResultTypesAsString(template.getSupportedResultTypes());
+        html += "supports: " + StringUtils.defaultIfEmpty(supportedResultTypes, "-");
         html += "</small></p>\n";
 
         html += "<h2>" + template.getName() + "</h2>\n";
