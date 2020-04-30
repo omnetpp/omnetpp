@@ -320,7 +320,8 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
 
     @Override
     public void setCursorType(int cursor) {
-        int[] cursors = new int[] { SWT.CURSOR_HAND, SWT.CURSOR_ARROW, SWT.CURSOR_CROSS, SWT.CURSOR_SIZEALL };
+        // in matplotlib/backend_tools.py: HAND, POINTER, SELECT_REGION, MOVE, WAIT = range(5)
+        int[] cursors = new int[] { SWT.CURSOR_HAND, SWT.CURSOR_ARROW, SWT.CURSOR_CROSS, SWT.CURSOR_SIZEALL, SWT.CURSOR_WAIT };
         cursorType = cursors[cursor];
         Display.getDefault().asyncExec(() -> setCursor(new Cursor(getDisplay(), cursorType)));
     }

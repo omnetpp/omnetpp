@@ -296,7 +296,7 @@ class FigureCanvasSWT(FigureCanvasBase):
             self.draw_idle()
 
     def setCursor(self, cursor):
-        self.widget.setCursorType(cursor)
+        self.widget.setCursorType(int(cursor))
 
     def drawRectangle(self, rect):
         if rect is None:
