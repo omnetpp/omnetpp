@@ -42,8 +42,9 @@ def extract_label_columns(df, preferred_legend_column="title"):
     blacklist = ["runID", "value", "attrvalue", "vectime", "vecvalue",
                  "binedges", "binvalues", "underflows", "overflows",
                  "count", "sumweights", "mean", "stddev", "min", "max",
-                 "processid", "iterationvars", "iterationvarsf", "datetime",
-                 "source", "interpolationmode", "enum", "title", "unit", 'runnumber', 'seedset']
+                 "processid", "datetime", "datetimef", "runnumber", "seedset",
+                 "iterationvars", "iterationvarsf", "iterationvarsd",
+                 "source", "interpolationmode", "enum", "title", "unit"]
 
     title_col = None
 
