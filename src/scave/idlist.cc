@@ -272,7 +272,7 @@ void IDList::sortVectorsByVectorId(ResultFileManager *mgr, bool ascending, Inter
     doSort<int>([mgr](ID id) {return mgr->uncheckedGetVector(id)->getVectorId();}, mgr, ascending, interrupted);
 }
 
-void IDList::sortVectorsByLength(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
+void IDList::sortVectorsByCount(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
     doSort<int64_t>([mgr](ID id) {return mgr->uncheckedGetVector(id)->getStatistics().getCount();}, mgr, ascending, interrupted);
 }
@@ -302,6 +302,16 @@ void IDList::sortVectorsByVariance(ResultFileManager *mgr, bool ascending, Inter
     doSort<double>([mgr](ID id) {return mgr->uncheckedGetVector(id)->getStatistics().getVariance();}, mgr, ascending, interrupted);
 }
 
+void IDList::sortVectorsBySum(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
+{
+    doSort<double>([mgr](ID id) {return mgr->uncheckedGetVector(id)->getStatistics().getSum();}, mgr, ascending, interrupted);
+}
+
+void IDList::sortVectorsBySumWeights(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
+{
+    doSort<double>([mgr](ID id) {return mgr->uncheckedGetVector(id)->getStatistics().getSumWeights();}, mgr, ascending, interrupted);
+}
+
 void IDList::sortVectorsByStartTime(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
     doSort<simultime_t>([mgr](ID id) {return mgr->uncheckedGetVector(id)->getStartTime();}, mgr, ascending, interrupted);
@@ -312,34 +322,54 @@ void IDList::sortVectorsByEndTime(ResultFileManager *mgr, bool ascending, Interr
     doSort<simultime_t>([mgr](ID id) {return mgr->uncheckedGetVector(id)->getEndTime();}, mgr, ascending, interrupted);
 }
 
-void IDList::sortHistogramsByLength(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
+void IDList::sortStatisticsByCount(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    doSort<int64_t>([mgr](ID id) {return mgr->uncheckedGetHistogram(id)->getStatistics().getCount();}, mgr, ascending, interrupted);
+    doSort<int64_t>([mgr](ID id) {return mgr->uncheckedGetStatistics(id)->getStatistics().getCount();}, mgr, ascending, interrupted);
 }
 
-void IDList::sortHistogramsByMean(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
+void IDList::sortStatisticsByMean(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    doSort<double>([mgr](ID id) {return mgr->uncheckedGetHistogram(id)->getStatistics().getMean();}, mgr, ascending, interrupted);
+    doSort<double>([mgr](ID id) {return mgr->uncheckedGetStatistics(id)->getStatistics().getMean();}, mgr, ascending, interrupted);
 }
 
-void IDList::sortHistogramsByStdDev(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
+void IDList::sortStatisticsByStdDev(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    doSort<double>([mgr](ID id) {return mgr->uncheckedGetHistogram(id)->getStatistics().getStddev();}, mgr, ascending, interrupted);
+    doSort<double>([mgr](ID id) {return mgr->uncheckedGetStatistics(id)->getStatistics().getStddev();}, mgr, ascending, interrupted);
 }
 
-void IDList::sortHistogramsByMin(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
+void IDList::sortStatisticsByMin(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    doSort<double>([mgr](ID id) {return mgr->uncheckedGetHistogram(id)->getStatistics().getMin();}, mgr, ascending, interrupted);
+    doSort<double>([mgr](ID id) {return mgr->uncheckedGetStatistics(id)->getStatistics().getMin();}, mgr, ascending, interrupted);
 }
 
-void IDList::sortHistogramsByMax(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
+void IDList::sortStatisticsByMax(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    doSort<double>([mgr](ID id) {return mgr->uncheckedGetHistogram(id)->getStatistics().getMax();}, mgr, ascending, interrupted);
+    doSort<double>([mgr](ID id) {return mgr->uncheckedGetStatistics(id)->getStatistics().getMax();}, mgr, ascending, interrupted);
 }
 
-void IDList::sortHistogramsByVariance(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
+void IDList::sortStatisticsByVariance(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
 {
-    doSort<double>([mgr](ID id) {return mgr->uncheckedGetHistogram(id)->getStatistics().getVariance();}, mgr, ascending, interrupted);
+    doSort<double>([mgr](ID id) {return mgr->uncheckedGetStatistics(id)->getStatistics().getVariance();}, mgr, ascending, interrupted);
+}
+
+void IDList::sortStatisticsBySum(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
+{
+    doSort<double>([mgr](ID id) {return mgr->uncheckedGetStatistics(id)->getStatistics().getSum();}, mgr, ascending, interrupted);
+}
+
+void IDList::sortStatisticsBySumWeights(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
+{
+    doSort<double>([mgr](ID id) {return mgr->uncheckedGetStatistics(id)->getStatistics().getSumWeights();}, mgr, ascending, interrupted);
+}
+
+void IDList::sortHistogramsByNumBins(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
+{
+    doSort<int>([mgr](ID id) {return mgr->uncheckedGetHistogram(id)->getHistogram().getNumBins();}, mgr, ascending, interrupted);
+}
+
+void IDList::sortHistogramsByHistogramRange(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted)
+{
+    doSort<int>([mgr](ID id) {return mgr->uncheckedGetHistogram(id)->getHistogram().getBinEdge(0);}, mgr, ascending, interrupted); // actually, lower edge of histogram range
 }
 
 void IDList::reverse()

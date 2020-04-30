@@ -127,20 +127,27 @@ class SCAVE_API IDList
         void sortScalarsByValue(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
         void sortParametersByValue(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
         void sortVectorsByVectorId(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortVectorsByLength(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortVectorsByCount(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
         void sortVectorsByMean(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
         void sortVectorsByStdDev(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
         void sortVectorsByMin(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
         void sortVectorsByMax(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
         void sortVectorsByVariance(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortVectorsBySum(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortVectorsBySumWeights(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
         void sortVectorsByStartTime(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
         void sortVectorsByEndTime(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortHistogramsByLength(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortHistogramsByMean(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortHistogramsByStdDev(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortHistogramsByMin(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortHistogramsByMax(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortHistogramsByVariance(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortStatisticsByCount(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortStatisticsByMean(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortStatisticsByStdDev(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortStatisticsByMin(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortStatisticsByMax(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortStatisticsByVariance(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortStatisticsBySum(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortStatisticsBySumWeights(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortHistogramsByNumBins(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortHistogramsByHistogramRange(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+
         void reverse();
 };
 

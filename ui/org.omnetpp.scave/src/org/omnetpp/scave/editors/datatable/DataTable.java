@@ -472,47 +472,51 @@ public class DataTable extends LargeTable implements IDataControl {
         else if (COL_KIND.equals(column))
             ; //TODO
         else if (COL_COUNT.equals(column)) {
-            if (idList.areAllHistograms())
-                idList.sortHistogramsByLength(manager, ascending, interrupted);
+            if (idList.areAllStatistics())
+                idList.sortStatisticsByCount(manager, ascending, interrupted);
             else if (idList.areAllVectors())
-                idList.sortVectorsByLength(manager, ascending, interrupted);
+                idList.sortVectorsByCount(manager, ascending, interrupted);
         }
         else if (COL_SUMWEIGHTS.equals(column))
             ; //TODO
         else if (COL_MEAN.equals(column)) {
-            if (idList.areAllHistograms()) //TODO
-                idList.sortHistogramsByMean(manager, ascending, interrupted);
+            if (idList.areAllStatistics()) //TODO
+                idList.sortStatisticsByMean(manager, ascending, interrupted);
             else if (idList.areAllVectors())
                 idList.sortVectorsByMean(manager, ascending, interrupted);
         }
         else if (COL_STDDEV.equals(column)) {
-            if (idList.areAllHistograms()) //TODO
-                idList.sortHistogramsByStdDev(manager, ascending, interrupted);
+            if (idList.areAllStatistics()) //TODO
+                idList.sortStatisticsByStdDev(manager, ascending, interrupted);
             else if (idList.areAllVectors())
                 idList.sortVectorsByStdDev(manager, ascending, interrupted);
         }
         else if (COL_MIN.equals(column)) {
-            if (idList.areAllHistograms()) //TODO
-                idList.sortHistogramsByMin(manager, ascending, interrupted);
+            if (idList.areAllStatistics()) //TODO
+                idList.sortStatisticsByMin(manager, ascending, interrupted);
             else if (idList.areAllVectors())
                 idList.sortVectorsByMin(manager, ascending, interrupted);
         }
         else if (COL_MAX.equals(column)) {
-            if (idList.areAllHistograms()) //TODO
-                idList.sortHistogramsByMax(manager, ascending, interrupted);
+            if (idList.areAllStatistics()) //TODO
+                idList.sortStatisticsByMax(manager, ascending, interrupted);
             else if (idList.areAllVectors())
                 idList.sortVectorsByMax(manager, ascending, interrupted);
         }
         else if (COL_VARIANCE.equals(column)) {
-            if (idList.areAllHistograms()) //TODO
-                idList.sortHistogramsByVariance(manager, ascending, interrupted);
+            if (idList.areAllStatistics()) //TODO
+                idList.sortStatisticsByVariance(manager, ascending, interrupted);
             else if (idList.areAllVectors())
                 idList.sortVectorsByVariance(manager, ascending, interrupted);
         }
-        else if (COL_NUMBINS.equals(column))
-            ; //TODO
-        else if (COL_HISTOGRAMRANGE.equals(column))
-            ; //TODO
+        else if (COL_NUMBINS.equals(column)) {
+            if (idList.areAllHistograms()) //TODO
+                idList.sortHistogramsByNumBins(manager, ascending, interrupted);
+        }
+        else if (COL_HISTOGRAMRANGE.equals(column)) {
+            if (idList.areAllHistograms()) //TODO
+                idList.sortHistogramsByHistogramRange(manager, ascending, interrupted);
+        }
         else if (COL_EXPERIMENT.equals(column))
             idList.sortByRunAttribute(manager, Scave.EXPERIMENT, ascending, interrupted);
         else if (COL_MEASUREMENT.equals(column))
