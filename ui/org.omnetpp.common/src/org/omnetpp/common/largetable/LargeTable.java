@@ -552,6 +552,9 @@ public class LargeTable extends Composite
         redraw();
     }
 
+    /**
+     * Set the selection. The selection indices array MUST be sorted.
+     */
     public void setSelectionIndices(int[] selectionIndices) {
         setSelectionIndices(new IntRangeSet(selectionIndices));
     }

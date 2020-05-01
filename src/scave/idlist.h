@@ -62,7 +62,7 @@ class SCAVE_API IDList
         static void sort(/*non-*/const V& cv) {V& v = const_cast<V&>(cv); std::sort(v.begin(), v.end());}
 
         template <typename T>
-        void doSort(const std::function<T(ID)>& getter, ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void doSort(const std::function<T(ID)>& getter, ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
 
         void append(ID id) {v.push_back(id);} // no uniqueness check, use of discardDuplicates() recommended
         void discardDuplicates();
@@ -114,39 +114,39 @@ class SCAVE_API IDList
 
         // sorting
         void sort() {std::sort(v.begin(), v.end());}  // sort numerically; getUniqueFileRuns() etc are faster on sorted IDLists
-        void sortByFilePath(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortByDirectory(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortByFileName(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortByRun(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortByRunAttribute(ResultFileManager *mgr, const char *attrName, bool ascending, InterruptedFlag *interrupted);
-        void sortByRunIterationVariable(ResultFileManager *mgr, const char *itervarName, bool ascending, InterruptedFlag *interrupted);
-        void sortByRunConfigValue(ResultFileManager *mgr, const char *configKey, bool ascending, InterruptedFlag *interrupted);
-        void sortByRunParamValue(ResultFileManager *mgr, const char *paramFullPath, bool ascending, InterruptedFlag *interrupted);
-        void sortByModule(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortByName(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortScalarsByValue(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortParametersByValue(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortVectorsByVectorId(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortVectorsByCount(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortVectorsByMean(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortVectorsByStdDev(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortVectorsByMin(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortVectorsByMax(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortVectorsByVariance(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortVectorsBySum(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortVectorsBySumWeights(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortVectorsByStartTime(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortVectorsByEndTime(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortStatisticsByCount(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortStatisticsByMean(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortStatisticsByStdDev(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortStatisticsByMin(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortStatisticsByMax(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortStatisticsByVariance(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortStatisticsBySum(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortStatisticsBySumWeights(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortHistogramsByNumBins(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
-        void sortHistogramsByHistogramRange(ResultFileManager *mgr, bool ascending, InterruptedFlag *interrupted);
+        void sortByFilePath(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortByDirectory(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortByFileName(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortByRun(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortByRunAttribute(ResultFileManager *mgr, const char *attrName, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortByRunIterationVariable(ResultFileManager *mgr, const char *itervarName, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortByRunConfigValue(ResultFileManager *mgr, const char *configKey, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortByRunParamValue(ResultFileManager *mgr, const char *paramFullPath, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortByModule(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortByName(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortScalarsByValue(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortParametersByValue(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortVectorsByVectorId(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortVectorsByCount(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortVectorsByMean(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortVectorsByStdDev(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortVectorsByMin(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortVectorsByMax(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortVectorsByVariance(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortVectorsBySum(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortVectorsBySumWeights(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortVectorsByStartTime(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortVectorsByEndTime(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortStatisticsByCount(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortStatisticsByMean(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortStatisticsByStdDev(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortStatisticsByMin(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortStatisticsByMax(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortStatisticsByVariance(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortStatisticsBySum(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortStatisticsBySumWeights(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortHistogramsByNumBins(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
+        void sortHistogramsByHistogramRange(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
 
         void reverse();
 };

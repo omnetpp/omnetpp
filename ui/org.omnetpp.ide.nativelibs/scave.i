@@ -99,18 +99,22 @@ namespace std {
                vector.add(array[i]);
            return vector;
        }
-
    %}
 
-   %typemap(javacode) vector<double> %{
-       public double[] toArray() {
+   %typemap(javacode) vector<int> %{
+       public int[] toArray() {
            int sz = (int) size();
-           double[] array = new double[sz];
+           int[] array = new int[sz];
            for (int i=0; i<sz; i++)
                array[i] = get(i);
            return array;
        }
-
+       public static IntVector fromArray(int[] array) {
+           IntVector vector = new IntVector();
+           for (int i=0; i<array.length; i++)
+               vector.add(array[i]);
+           return vector;
+       }
    %}
 
    %typemap(javacode) vector<omnetpp::scave::Run*> %{
@@ -187,8 +191,8 @@ namespace std {
 
    %template(StringSet) set<string>;
    %template(StringVector) vector<string>;
-   //specialize_std_map_on_both(string,,,,string,,,);
    %template(StringMap) map<string,string>;
+   %template(IntVector) vector<int>;
 
    //TODO take the following stuff out of namepace std{}!!!
 

@@ -163,9 +163,10 @@ class SCAVE_API ResultFileManager
     typedef ResultItem::FieldNum FieldNum;
 
   private:
-    // 6 bit type, 2 bit hosttype, 4 bit fieldid (=0 not field), 20 bit filerunid, 32 bit pos
+    // 1 bit reserved, 5 bit type, 2 bit hosttype, 4 bit fieldid (=0 not field), 20 bit filerunid, 32 bit pos
     static int _bits(ID id, int bit0, int numBits) {return (id >> bit0) & ((((int64_t)1)<<numBits)-1);}
-    static int _type(ID id)      {return _bits(id,58,6);}
+    static int _reservedbit(ID id) {return _bits(id,63,1);}
+    static int _type(ID id)      {return _bits(id,58,5);}
     static int _hosttype(ID id)  {return _bits(id,56,2);} // a field of what kind of result
     static int _fieldid(ID id)   {return _bits(id,52,4);} // =0: not a field
     static int _filerunid(ID id) {return _bits(id,32,20);}
@@ -178,6 +179,8 @@ class SCAVE_API ResultFileManager
         assert((hosttype>>2)==0 && (filerunid>>20)==0 && ((int64_t)pos>>32)==0 && fieldid!=0 && (fieldid>>4)==0); // range check
         return ((int64_t)SCALAR << 58) | ((int64_t)hosttype << 56) | ((int64_t)fieldid << 52) | ((int64_t)filerunid << 32) | (int64_t)pos;
     }
+    static void _setreservedbit(ID& id) {id |= (((int64_t)1)<<63);}
+    static void _clearreservedbit(ID& id) {id &= ~(((int64_t)1)<<63);}
     static ID _containingItemID(ID fieldItemId);
     static ID _fieldItemID(ID containingItemId, int fieldId);
 

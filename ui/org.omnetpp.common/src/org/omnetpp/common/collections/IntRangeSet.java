@@ -20,8 +20,26 @@ public class IntRangeSet {
         addRange(first, last);
     }
 
-    public IntRangeSet(int[] vs) {
-        addAll(vs);
+    public IntRangeSet(int[] vs) { // note: numbers MUST be sorted
+        if (vs.length == 0)
+            return;
+        int rangeStart, previous;
+        rangeStart = previous = vs[0];
+        for (int i = 1; i < vs.length; i++) {
+            int current = vs[i];
+            if (current < previous)
+                throw new IllegalArgumentException("Sorted array expected");
+            else if (current == previous || current == previous+1)
+                /*keep going*/;
+            else {
+                ranges.add(new IntRange(rangeStart, previous));
+                size += previous - rangeStart + 1;
+                rangeStart = current;
+            }
+            previous = current;
+        }
+        ranges.add(new IntRange(rangeStart, previous));
+        size += previous - rangeStart + 1;
     }
 
     public IntRangeSet(IntRangeSet other) {
