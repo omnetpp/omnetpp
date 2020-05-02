@@ -233,6 +233,7 @@ class SCAVE_API ResultFileManager
     // navigation
     ResultFileList getFiles() const;
     RunList getRuns() const;
+    FileRunList getFileRuns() const {return fileRunList;}
     const FileRunList& getFileRunsInFile(ResultFile *file) const {return file->fileRuns;}
     const FileRunList& getFileRunsForRun(Run *run) const {return run->fileRuns;}
     RunList getRunsInFile(ResultFile *file) const;
@@ -283,24 +284,26 @@ class SCAVE_API ResultFileManager
     IDListsByFile getPartitionByFile(const IDList& ids) const;
 
     // getting lists of data items
-    IDList getAllScalars(bool includeFields=false) const;
-    IDList getAllParameters() const;
-    IDList getAllVectors() const;
-    IDList getAllStatistics() const;
-    IDList getAllHistograms() const;
-    IDList getAllItems(bool includeFields=false) const;
-    IDList getScalarsInFileRun(FileRun *fileRun, bool includeFields=false) const;
-    IDList getParametersInFileRun(FileRun *fileRun) const;
-    IDList getVectorsInFileRun(FileRun *fileRun) const;
-    IDList getStatisticsInFileRun(FileRun *fileRun) const;
-    IDList getHistogramsInFileRun(FileRun *fileRun) const;
+    IDList getItems(const FileRunList& fileRuns, int types, bool includeFields=false) const;
+    IDList getAllItems(bool includeFields=false) const  {return getItems(fileRunList, ~0, includeFields);}
+    IDList getAllParameters() const {return getItems(fileRunList, PARAMETER);}
+    IDList getAllScalars(bool includeFields=false) const {return getItems(fileRunList, SCALAR, includeFields);}
+    IDList getAllVectors() const {return getItems(fileRunList, VECTOR);}
+    IDList getAllStatistics() const {return getItems(fileRunList, STATISTICS);}
+    IDList getAllHistograms() const {return getItems(fileRunList, HISTOGRAM);}
+    IDList getItemsInFileRun(FileRun *fileRun, bool includeFields=false) const {return getItems(FileRunList(1,fileRun), ~0, includeFields);}
+    IDList getParametersInFileRun(FileRun *fileRun) const {return getItems(FileRunList(1,fileRun), PARAMETER);}
+    IDList getScalarsInFileRun(FileRun *fileRun, bool includeFields=false) const {return getItems(FileRunList(1,fileRun), SCALAR, includeFields);}
+    IDList getVectorsInFileRun(FileRun *fileRun) const {return getItems(FileRunList(1,fileRun), VECTOR);}
+    IDList getStatisticsInFileRun(FileRun *fileRun) const {return getItems(FileRunList(1,fileRun), STATISTICS);}
+    IDList getHistogramsInFileRun(FileRun *fileRun) const {return getItems(FileRunList(1,fileRun), HISTOGRAM);}
 
-    // these ones are called from InputsTree; TODO would be nice to make them constant-cost
-    int getNumScalarsInFileRun(FileRun *fileRun) const {return getScalarsInFileRun(fileRun).size();}
-    int getNumParametersInFileRun(FileRun *fileRun) const {return getParametersInFileRun(fileRun).size();}
-    int getNumVectorsInFileRun(FileRun *fileRun) const {return getVectorsInFileRun(fileRun).size();}
-    int getNumStatisticsInFileRun(FileRun *fileRun) const {return getStatisticsInFileRun(fileRun).size();}
-    int getNumHistogramsInFileRun(FileRun *fileRun) const {return getHistogramsInFileRun(fileRun).size();}
+    // these ones are called from InputsTree
+    int getNumScalarsInFileRun(FileRun *fileRun) const {return fileRun->scalarResults.size();}
+    int getNumParametersInFileRun(FileRun *fileRun) const {return fileRun->parameterResults.size();}
+    int getNumVectorsInFileRun(FileRun *fileRun) const {return fileRun->vectorResults.size();}
+    int getNumStatisticsInFileRun(FileRun *fileRun) const {return fileRun->statisticsResults.size();}
+    int getNumHistogramsInFileRun(FileRun *fileRun) const {return fileRun->histogramResults.size();}
 
     // These are the ones that are called from Python. They return (runID, name) pairs (the values are queried later).
 

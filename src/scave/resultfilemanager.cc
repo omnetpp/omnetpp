@@ -568,132 +568,31 @@ void ResultFileManager::collectIDs(IDList& out, FileRun *fileRun, std::vector<T>
             out.append(_mkID(hosttype, fileRunId, pos, (int)fieldIds[f]));
 }
 
-
-IDList ResultFileManager::getAllItems(bool includeFields) const
+IDList ResultFileManager::getItems(const FileRunList& fileRuns, int types, bool includeFields) const
 {
     READER_MUTEX
 
     IDList out;
-    for (FileRun *fileRun : fileRunList) { // make fileRun the outer loop so that getUnique/getPartition methods are faster
+    for (FileRun *fileRun : fileRuns) { // make fileRun the outer loop so that getUnique/getPartition methods are faster
         if (fileRun != nullptr) {
-            collectIDs(out, fileRun, &FileRun::parameterResults, PARAMETER);
-            collectIDs(out, fileRun, &FileRun::scalarResults, SCALAR);
-            if (includeFields) {
-                collectIDs(out, fileRun, &FileRun::statisticsResults, HOSTTYPE_STATISTICS, StatisticsResult::getAvailableFields());
-                collectIDs(out, fileRun, &FileRun::histogramResults, HOSTTYPE_HISTOGRAM, HistogramResult::getAvailableFields());
-                collectIDs(out, fileRun, &FileRun::vectorResults, HOSTTYPE_VECTOR, VectorResult::getAvailableFields());
+            if (types & PARAMETER)
+                collectIDs(out, fileRun, &FileRun::parameterResults, PARAMETER);
+            if (types & SCALAR) {
+                collectIDs(out, fileRun, &FileRun::scalarResults, SCALAR);
+                if (includeFields) {
+                    collectIDs(out, fileRun, &FileRun::statisticsResults, HOSTTYPE_STATISTICS, StatisticsResult::getAvailableFields());
+                    collectIDs(out, fileRun, &FileRun::histogramResults, HOSTTYPE_HISTOGRAM, HistogramResult::getAvailableFields());
+                    collectIDs(out, fileRun, &FileRun::vectorResults, HOSTTYPE_VECTOR, VectorResult::getAvailableFields());
+                }
             }
-            collectIDs(out, fileRun, &FileRun::statisticsResults, STATISTICS);
-            collectIDs(out, fileRun, &FileRun::histogramResults, HISTOGRAM);
-            collectIDs(out, fileRun, &FileRun::vectorResults, VECTOR);
+            if (types & STATISTICS)
+                collectIDs(out, fileRun, &FileRun::statisticsResults, STATISTICS);
+            if (types & HISTOGRAM)
+                collectIDs(out, fileRun, &FileRun::histogramResults, HISTOGRAM);
+            if (types & VECTOR)
+                collectIDs(out, fileRun, &FileRun::vectorResults, VECTOR);
         }
     }
-    return out;
-}
-
-IDList ResultFileManager::getAllScalars(bool includeFields) const
-{
-    READER_MUTEX
-    IDList out;
-    for (FileRun *fileRun : fileRunList)
-        if (fileRun != nullptr) {
-            collectIDs(out, fileRun, &FileRun::scalarResults, SCALAR);
-            if (includeFields) {
-                collectIDs(out, fileRun, &FileRun::statisticsResults, HOSTTYPE_STATISTICS, StatisticsResult::getAvailableFields());
-                collectIDs(out, fileRun, &FileRun::histogramResults, HOSTTYPE_HISTOGRAM, HistogramResult::getAvailableFields());
-                collectIDs(out, fileRun, &FileRun::vectorResults, HOSTTYPE_VECTOR, VectorResult::getAvailableFields());
-            }
-        }
-    return out;
-}
-
-IDList ResultFileManager::getAllParameters() const
-{
-    READER_MUTEX
-    IDList out;
-    for (FileRun *fileRun : fileRunList)
-        if (fileRun != nullptr)
-            collectIDs(out, fileRun, &FileRun::parameterResults, PARAMETER);
-    return out;
-}
-
-IDList ResultFileManager::getAllVectors() const
-{
-    READER_MUTEX
-    IDList out;
-    for (FileRun *fileRun : fileRunList)
-        if (fileRun != nullptr)
-            collectIDs(out, fileRun, &FileRun::vectorResults, VECTOR);
-    return out;
-}
-
-IDList ResultFileManager::getAllStatistics() const
-{
-    READER_MUTEX
-    IDList out;
-    for (FileRun *fileRun : fileRunList)
-        if (fileRun != nullptr)
-            collectIDs(out, fileRun, &FileRun::statisticsResults, STATISTICS);
-    return out;
-}
-
-IDList ResultFileManager::getAllHistograms() const
-{
-    READER_MUTEX
-    IDList out;
-    for (FileRun *fileRun : fileRunList)
-        if (fileRun != nullptr)
-            collectIDs(out, fileRun, &FileRun::histogramResults, HISTOGRAM);
-    return out;
-}
-
-IDList ResultFileManager::getScalarsInFileRun(FileRun *fileRun, bool includeFields) const
-{
-    READER_MUTEX
-
-    IDList out;
-    collectIDs(out, fileRun, &FileRun::scalarResults, SCALAR);
-    if (includeFields) {
-        collectIDs(out, fileRun, &FileRun::statisticsResults, HOSTTYPE_STATISTICS, StatisticsResult::getAvailableFields());
-        collectIDs(out, fileRun, &FileRun::histogramResults, HOSTTYPE_HISTOGRAM, HistogramResult::getAvailableFields());
-        collectIDs(out, fileRun, &FileRun::vectorResults, HOSTTYPE_VECTOR, VectorResult::getAvailableFields());
-    }
-    return out;
-}
-
-IDList ResultFileManager::getParametersInFileRun(FileRun *fileRun) const
-{
-    READER_MUTEX
-
-    IDList out;
-    collectIDs(out, fileRun, &FileRun::parameterResults, PARAMETER);
-    return out;
-}
-
-IDList ResultFileManager::getVectorsInFileRun(FileRun *fileRun) const
-{
-    READER_MUTEX
-
-    IDList out;
-    collectIDs(out, fileRun, &FileRun::vectorResults, VECTOR);
-    return out;
-}
-
-IDList ResultFileManager::getStatisticsInFileRun(FileRun *fileRun) const
-{
-    READER_MUTEX
-
-    IDList out;
-    collectIDs(out, fileRun, &FileRun::statisticsResults, STATISTICS);
-    return out;
-}
-
-IDList ResultFileManager::getHistogramsInFileRun(FileRun *fileRun) const
-{
-    READER_MUTEX
-
-    IDList out;
-    collectIDs(out, fileRun, &FileRun::histogramResults, HISTOGRAM);
     return out;
 }
 
