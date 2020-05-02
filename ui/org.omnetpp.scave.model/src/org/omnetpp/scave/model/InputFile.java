@@ -20,4 +20,9 @@ public class InputFile extends ModelObject {
     protected InputFile clone() throws CloneNotSupportedException {
         return (InputFile)super.clone();
     }
+
+    @Override
+    public String toString() {
+        return "Input \"" + name + "\"";
+    }
 }

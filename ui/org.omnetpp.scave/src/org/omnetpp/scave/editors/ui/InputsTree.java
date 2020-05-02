@@ -33,16 +33,25 @@ import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.treeproviders.Sorter;
 import org.omnetpp.scave.engine.FileRun;
+import org.omnetpp.scave.engine.FileRunList;
+import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.OrderedKeyValueList;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileList;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.engine.StringMap;
+import org.omnetpp.scave.engine.StringPair;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.InputFile;
 
+/**
+ * The main tree viewer on the "Inputs" page of the Analysis editor.
+ *
+ * @author andras
+ */
 public class InputsTree extends TreeViewer {
     private Analysis analysis;
     private ResultFileManager manager;
@@ -53,6 +62,7 @@ public class InputsTree extends TreeViewer {
     class FileGroupNode {
         String label;
         List<FileNode> files = new ArrayList<>();
+        public String toString() {return "Group " + q(label);}
     }
 
     class FileNode {
@@ -61,32 +71,36 @@ public class InputsTree extends TreeViewer {
         List<RunNode> runs = null;
         int numRuns;
         long fileSize = -1;
+        public String toString() {return "File " + q(filePath);}
     }
 
     class RunNode {
         String runId;
         List<AttrGroup> attrGroups = null;
-        List<AttrNode> attrs = null;
+        List<LeafNode> attrs = null;
         int numParameters;
         int numScalars;
         int numVectors;
         int numStatistics;
         int numHistograms;
+        public String toString() {return "Run " + q(runId);}
     }
 
     class AttrGroup {
         String name;
-        List<AttrNode> attrs;
-        AttrGroup(String name, List<AttrNode> attrs) {this.name = name; this.attrs = attrs;}
+        List<LeafNode> attrs;
+        AttrGroup(String name, List<LeafNode> attrs) {this.name = name; this.attrs = attrs;}
+        public String toString() {return "Group " + q(name);}
     }
 
-    enum AttrType { ATTR, ITERVAR, PARAMASSIGNMENT, CONFIGENTRY };
+    enum LeafType { ATTR, ITERVAR, CONFIGENTRY, PARAMCONFIGENTRY, RESULT, INFO };
 
-    class AttrNode {
-        AttrType type;
+    class LeafNode {
+        LeafType type;
         String name;
         String value;
-        AttrNode(AttrType type, String name, String value) {this.type=type; this.name=name; this.value = value;}
+        LeafNode(LeafType type, String name, String value) {this.type=type; this.name=name; this.value = value;}
+        public String toString() {return q(name);}
     }
 
     public InputsTree(Composite parent, Analysis analysis, ResultFileManager manager) {
@@ -96,6 +110,10 @@ public class InputsTree extends TreeViewer {
         setContentProvider(new InputsViewContentProvider());
         setLabelProvider(new InputsTreeLabelProvider());
         setInput(analysis);
+    }
+
+    private static String q(String s) {
+        return "\"" + s + "\"";
     }
 
     public void refresh() {
@@ -142,20 +160,6 @@ public class InputsTree extends TreeViewer {
         });
     }
 
-    private List<AttrNode> convert(StringMap attrs, AttrType type) {
-        List<AttrNode> result = new ArrayList<>();
-        for (String name : attrs.keys().toArray())
-            result.add(new AttrNode(type, name, attrs.get(name)));
-        return result;
-    }
-
-    private List<AttrNode> convert(OrderedKeyValueList list, AttrType type) {
-        List<AttrNode> result = new ArrayList<>();
-        for (int i = 0; i < list.size(); i++)
-            result.add(new AttrNode(type, list.get(i).getFirst(), list.get(i).getSecond()));
-        return result;
-    }
-
     /**
      * Content provider
      */
@@ -200,10 +204,14 @@ public class InputsTree extends TreeViewer {
                         ResultFileManager.runWithReadLock(manager, () -> {
                             Run run = manager.getRunByName(runNode.runId);
                             runNode.attrGroups = new ArrayList<>();
-                            runNode.attrGroups.add(new AttrGroup("Iteration Variables", convert(run.getIterationVariables(), AttrType.ITERVAR)));
-                            runNode.attrGroups.add(new AttrGroup("Run Attributes", convert(run.getAttributes(), AttrType.ATTR)));
-                            runNode.attrGroups.add(new AttrGroup("Parameter Assignments", convert(run.getParamAssignments(), AttrType.PARAMASSIGNMENT)));
-                            runNode.attrGroups.add(new AttrGroup("Configuration", convert(run.getNonParamAssignmentConfigEntries(), AttrType.CONFIGENTRY)));
+                            addGroup(runNode, "Iteration Variables", makeAttrNodes(run.getIterationVariables(), LeafType.ITERVAR));
+                            addGroup(runNode, "Run Attributes", makeAttrNodes(run.getAttributes(), LeafType.ATTR));
+                            addGroup(runNode, "Configuration", makeConfigEntryNodes(run));
+                            addGroup(runNode, "Saved Parameters", runNode.numParameters, makeFirstResultsNodes(run, ResultFileManager.PARAMETER));
+                            addGroup(runNode, "Scalars", runNode.numScalars, makeFirstResultsNodes(run, ResultFileManager.SCALAR));
+                            addGroup(runNode, "Statistics", runNode.numStatistics, makeFirstResultsNodes(run, ResultFileManager.STATISTICS));
+                            addGroup(runNode, "Histograms", runNode.numHistograms, makeFirstResultsNodes(run, ResultFileManager.HISTOGRAM));
+                            addGroup(runNode, "Vectors", runNode.numVectors, makeFirstResultsNodes(run, ResultFileManager.VECTOR));
                         });
                     }
                     return ((RunNode) element).attrGroups.toArray();
@@ -236,6 +244,51 @@ public class InputsTree extends TreeViewer {
         }
     }
 
+    private void addGroup(RunNode runNode, String label, List<LeafNode> children) {
+        addGroup(runNode, label, children == null ? 0 : children.size(), children);
+    }
+
+    private void addGroup(RunNode runNode, String label, int numChildren, List<LeafNode> children) {
+        if (numChildren > 0)
+            runNode.attrGroups.add(new AttrGroup(label+" ("+numChildren+")", children));
+    }
+
+    private List<LeafNode> makeAttrNodes(StringMap attrs, LeafType type) {
+        List<LeafNode> result = new ArrayList<>();
+        for (String name : attrs.keys().toArray())
+            result.add(new LeafNode(type, name, attrs.get(name)));
+        return result;
+    }
+
+    private List<LeafNode> makeConfigEntryNodes(Run run) {
+        OrderedKeyValueList configEntries = run.getConfigEntries();
+        List<LeafNode> result = new ArrayList<>();
+        for (int i = 0; i < configEntries.size(); i++) {
+            StringPair keyValue = configEntries.get(i);
+            LeafType type = Run.isParamAssignmentConfigKey(keyValue.getFirst()) ? LeafType.PARAMCONFIGENTRY : LeafType.CONFIGENTRY;
+            result.add(new LeafNode(type, keyValue.getFirst(), keyValue.getSecond()));
+        }
+        return result;
+    }
+
+    private List<LeafNode> makeFirstResultsNodes(Run run, int type) {
+        List<LeafNode> nodes = new ArrayList<>();
+        FileRunList fileRuns = run.getFileRuns();
+        IDList itemIDs = manager.getItems(fileRuns, type, false);
+        int count = itemIDs.size();
+        if (count > 10)
+            itemIDs = itemIDs.getRange(0, 9);
+        for (int i = 0; i < itemIDs.size(); i++) {
+            ResultItem item = manager.getItem(itemIDs.get(i));
+            String value = null; // or String.valueOf(item.getValue())) or something
+            nodes.add(new LeafNode(LeafType.RESULT, item.getModuleName() + "." + item.getName(), value));
+        }
+        if (itemIDs.size() < count)
+            nodes.add(new LeafNode(LeafType.ATTR, "... and " + (count-itemIDs.size()) + " more", null));
+        return nodes;
+    }
+
+
     /**
      * Label provider
      */
@@ -260,8 +313,13 @@ public class InputsTree extends TreeViewer {
                 }
                 else if (element instanceof AttrGroup)
                     return ((AttrGroup)element).name;
-                else if (element instanceof AttrNode)
-                    return ((AttrNode)element).name + " = " + ((AttrNode)element).value;
+                else if (element instanceof LeafNode) {
+                    LeafNode leafNode = (LeafNode)element;
+                    if (leafNode.value == null)
+                        return leafNode.name;
+                    else
+                        return leafNode.name + " = " + leafNode.value;
+                }
                 return null;
             });
         }
@@ -312,12 +370,14 @@ public class InputsTree extends TreeViewer {
                 return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_RUN);
             else if (element instanceof AttrGroup)
                 return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_FOLDER);
-            else if (element instanceof AttrNode) {
-                switch (((AttrNode) element).type) {
+            else if (element instanceof LeafNode) {
+                switch (((LeafNode) element).type) {
                     case ATTR: return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_RUNATTR);
                     case ITERVAR: return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_ITERVAR);
-                    case PARAMASSIGNMENT: return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_PARAMASSIGNMENT);
                     case CONFIGENTRY: return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_CONFIGENTRY);
+                    case PARAMCONFIGENTRY: return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_PARAMASSIGNMENT);
+                    case RESULT: return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_PARAMASSIGNMENT); //TODO
+                    case INFO: return null;
                 }
             }
             return null;
