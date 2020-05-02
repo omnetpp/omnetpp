@@ -46,7 +46,6 @@ import org.omnetpp.scave.model.InputFile;
 public class InputsTree extends TreeViewer {
     private Analysis analysis;
     private ResultFileManager manager;
-    private boolean groupRunFields;
 
     private Map<InputFile,Integer> numFilesPerInput = new HashMap<>();
     private Map<InputFile,List<Object>> inputChildren = new HashMap<>();
@@ -90,11 +89,10 @@ public class InputsTree extends TreeViewer {
         AttrNode(AttrType type, String name, String value) {this.type=type; this.name=name; this.value = value;}
     }
 
-    public InputsTree(Composite parent, Analysis analysis, ResultFileManager manager, boolean groupRunFields) {
+    public InputsTree(Composite parent, Analysis analysis, ResultFileManager manager) {
         super(parent, SWT.BORDER | SWT.MULTI);
         this.analysis = analysis;
         this.manager = manager;
-        this.groupRunFields = groupRunFields;
         setContentProvider(new InputsViewContentProvider());
         setLabelProvider(new InputsTreeLabelProvider());
         setInput(analysis);
@@ -199,29 +197,16 @@ public class InputsTree extends TreeViewer {
                 else if (element instanceof RunNode) {
                     RunNode runNode = (RunNode)element;
                     if (runNode.attrGroups == null && runNode.attrs == null) {
-                        ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
-                            @Override
-                            public Object call() {
-                                Run run = manager.getRunByName(runNode.runId);
-                                if (groupRunFields) {
-                                    runNode.attrGroups = new ArrayList<>();
-                                    runNode.attrGroups.add(new AttrGroup("Iteration Variables", convert(run.getIterationVariables(), AttrType.ITERVAR)));
-                                    runNode.attrGroups.add(new AttrGroup("Run Attributes", convert(run.getAttributes(), AttrType.ATTR)));
-                                    runNode.attrGroups.add(new AttrGroup("Parameter Assignments", convert(run.getParamAssignments(), AttrType.PARAMASSIGNMENT)));
-                                    runNode.attrGroups.add(new AttrGroup("Configuration", convert(run.getNonParamAssignmentConfigEntries(), AttrType.CONFIGENTRY)));
-                                }
-                                else {
-                                    runNode.attrs = new ArrayList<>();
-                                    runNode.attrs.addAll(convert(run.getIterationVariables(), AttrType.ITERVAR));
-                                    runNode.attrs.addAll(convert(run.getAttributes(), AttrType.ATTR));
-                                    runNode.attrs.addAll(convert(run.getParamAssignments(), AttrType.PARAMASSIGNMENT));
-                                    runNode.attrs.addAll(convert(run.getNonParamAssignmentConfigEntries(), AttrType.CONFIGENTRY));
-                                }
-                                return null;
-                            }
+                        ResultFileManager.runWithReadLock(manager, () -> {
+                            Run run = manager.getRunByName(runNode.runId);
+                            runNode.attrGroups = new ArrayList<>();
+                            runNode.attrGroups.add(new AttrGroup("Iteration Variables", convert(run.getIterationVariables(), AttrType.ITERVAR)));
+                            runNode.attrGroups.add(new AttrGroup("Run Attributes", convert(run.getAttributes(), AttrType.ATTR)));
+                            runNode.attrGroups.add(new AttrGroup("Parameter Assignments", convert(run.getParamAssignments(), AttrType.PARAMASSIGNMENT)));
+                            runNode.attrGroups.add(new AttrGroup("Configuration", convert(run.getNonParamAssignmentConfigEntries(), AttrType.CONFIGENTRY)));
                         });
                     }
-                    return groupRunFields ? ((RunNode) element).attrGroups.toArray() : ((RunNode) element).attrs.toArray();
+                    return ((RunNode) element).attrGroups.toArray();
                 }
                 else if (element instanceof AttrGroup)
                     return ((AttrGroup) element).attrs.toArray();
