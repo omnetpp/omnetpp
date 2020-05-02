@@ -316,9 +316,9 @@ public class ResultFileManagerEx extends ResultFileManager {
     }
 
     @Override
-    public StringSet getUniqueParamAssignmentKeys(RunList runList) {
+    public StringSet getUniqueParamAssignmentConfigKeys(RunList runList) {
         checkNotDeleted();
-        return super.getUniqueParamAssignmentKeys(runList);
+        return super.getUniqueParamAssignmentConfigKeys(runList);
     }
 
     @Override

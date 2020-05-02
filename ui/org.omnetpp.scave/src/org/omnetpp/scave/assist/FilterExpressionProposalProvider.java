@@ -32,7 +32,6 @@ public class FilterExpressionProposalProvider extends MatchExpressionContentProp
         new ContentProposalEx("runattr:"),
         new ContentProposalEx("attr:"),
         new ContentProposalEx("itervar:"),
-        new ContentProposalEx("param:"),
         new ContentProposalEx("config:")
     };
 

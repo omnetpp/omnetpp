@@ -278,7 +278,7 @@ class SCAVE_API ResultFileManager
     StringSet getUniqueIterationVariableValues(const RunList& runList, const char *itervarName) const;
     StringSet getUniqueConfigKeys(const RunList& runList) const;
     StringSet getUniqueConfigValues(const RunList& runList, const char *key) const;
-    StringSet getUniqueParamAssignmentKeys(const RunList& runList) const;
+    StringSet getUniqueParamAssignmentConfigKeys(const RunList& runList) const;
     IDListsByRun getPartitionByRun(const IDList& ids) const;
     IDListsByFile getPartitionByFile(const IDList& ids) const;
 

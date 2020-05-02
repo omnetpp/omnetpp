@@ -270,11 +270,6 @@ void IDList::sortByRunConfigValue(ResultFileManager *mgr, const char *configKey,
     doSort<const char *>([mgr,configKey](ID id) {return mgr->getFileRun(id)->getRun()->getConfigValue(configKey).c_str();}, mgr, ascending, selectionIndices, interrupted);
 }
 
-void IDList::sortByRunParamValue(ResultFileManager *mgr, const char *paramFullPath, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted)
-{
-    doSort<const char *>([mgr,paramFullPath](ID id) {return mgr->getFileRun(id)->getRun()->getParamAssignment(paramFullPath).c_str();}, mgr, ascending, selectionIndices, interrupted);
-}
-
 void IDList::sortByModule(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted)
 {
     ScalarResult tmp;

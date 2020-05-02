@@ -281,6 +281,7 @@ class SCAVE_API ResultFile
     const int64_t getFileSize() const {return fingerprint.fileSize;}
     const int64_t getModificationTime() const {return fingerprint.lastModified;}
     FileType getFileType() const {return fileType;}
+    const FileRunList& getFileRuns() const {return fileRuns;}
 };
 
 /**
@@ -311,23 +312,20 @@ class SCAVE_API Run
   public:
     ResultFileManager *getResultFileManager() const {return resultFileManager;}
     const std::string& getRunName() const {return runName;}
+    const FileRunList& getFileRuns() const {return fileRuns;}
+
     const StringMap& getAttributes() const {return attributes;}
     const std::string& getAttribute(const std::string& attrName) const;
+
     const StringMap& getIterationVariables() const {return itervars;}
     const std::string& getIterationVariable(const std::string& name) const;
 
     const OrderedKeyValueList& getConfigEntries() const {return configEntries;}
-    const std::string& getConfigValue(const std::string& key) const;
-
-    static bool isKeyParamAssignment(const std::string& key);
-    static bool isKeyGlobalConfigOption(const std::string& key);
-
-    // a subset of the ones above
-    const OrderedKeyValueList getParamAssignments() const;
-    const std::string& getParamAssignment(const std::string& key) const;
-    // the other subset of all config entries (global and per-object options, not param assignments)
-    const OrderedKeyValueList getNonParamAssignmentConfigEntries() const;
-    const std::string& getNonParamAssignmentConfigEntry(const std::string& key) const;
+    const std::string& getConfigValue(const std::string& configKey) const;
+    static bool isParamAssignmentConfigKey(const std::string& key);
+    static bool isGlobalOptionConfigKey(const std::string& key);
+    const OrderedKeyValueList getParamAssignmentConfigEntries() const; // a subset of getConfigEntries()
+    const OrderedKeyValueList getNonParamAssignmentConfigEntries() const; // a subset of getConfigEntries()
 };
 
 /**

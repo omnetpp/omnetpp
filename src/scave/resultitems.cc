@@ -259,13 +259,13 @@ const std::string& Run::getIterationVariable(const std::string& name) const
 
 const std::string& Run::getConfigValue(const std::string& key) const
 {
-    for (auto& p : configEntries)  // TODO some kind of ordered map would be better (e.g. std::map plus an std::vector<string> to store the order)
+    for (auto& p : configEntries)  // linear search -- this method is not used much (not too useful), so it should be OK
         if (p.first == key)
             return p.second;
     return NULLSTRING;
 }
 
-bool Run::isKeyParamAssignment(const std::string& key)
+bool Run::isParamAssignmentConfigKey(const std::string& key)
 {
     size_t dotIndex = key.rfind(".");
     if (dotIndex == std::string::npos)
@@ -274,37 +274,27 @@ bool Run::isKeyParamAssignment(const std::string& key)
     return afterDot != "typename" && afterDot.find("-") == std::string::npos;
 }
 
-bool Run::isKeyGlobalConfigOption(const std::string& key)
+bool Run::isGlobalOptionConfigKey(const std::string& key)
 {
     return key.find(".") == std::string::npos;
 }
 
-const OrderedKeyValueList Run::getParamAssignments() const
+const OrderedKeyValueList Run::getParamAssignmentConfigEntries() const
 {
     OrderedKeyValueList result;
     for (auto& p : configEntries)
-        if (isKeyParamAssignment(p.first))
+        if (isParamAssignmentConfigKey(p.first))
             result.push_back(p);
     return result;
-}
-
-const std::string& Run::getParamAssignment(const std::string& key) const
-{
-    return isKeyParamAssignment(key) ? getConfigValue(key) : NULLSTRING;
 }
 
 const OrderedKeyValueList Run::getNonParamAssignmentConfigEntries() const
 {
     OrderedKeyValueList result;
     for (auto& p : configEntries)
-        if (!isKeyParamAssignment(p.first))
+        if (!isParamAssignmentConfigKey(p.first))
             result.push_back(p);
     return result;
-}
-
-const std::string& Run::getNonParamAssignmentConfigEntry(const std::string& key) const
-{
-    return !isKeyParamAssignment(key) ? getConfigValue(key) : NULLSTRING;
 }
 
 }  // namespace scave

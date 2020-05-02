@@ -49,7 +49,6 @@ class SCAVE_API Scave
     static constexpr const char *ATTR_PREFIX = "attr:";
     static constexpr const char *ITERVAR_PREFIX = "itervar:";
     static constexpr const char *CONFIG_PREFIX = "config:";
-    static constexpr const char *PARAM_PREFIX = "param:";
 
     // run attributes
     static constexpr const char *INIFILE     = "inifile";

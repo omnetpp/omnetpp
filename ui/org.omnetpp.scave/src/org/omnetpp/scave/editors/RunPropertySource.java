@@ -35,18 +35,18 @@ public class RunPropertySource implements IPropertySource {
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
-        IPropertyDescriptor[] attrs = makeDescriptors(run.getAttributes().keys().toArray(), "@", "Attributes");
-        IPropertyDescriptor[] itervars = makeDescriptors(run.getIterationVariables().keys().toArray(), "$", "Iteration Variables");
-        IPropertyDescriptor[] moduleParams = makeDescriptors(getParamAssignmentKeys(run), "%", "Parameter Assignments");
-        return ArrayUtils.addAll(MAIN_PROPERTY_DESCS, ArrayUtils.addAll(attrs, ArrayUtils.addAll(itervars, moduleParams)));
+        IPropertyDescriptor[] runAttrs = makeDescriptors(run.getAttributes().keys().toArray(), "@", "Attributes");
+        IPropertyDescriptor[] iterVars = makeDescriptors(run.getIterationVariables().keys().toArray(), "$", "Iteration Variables");
+        IPropertyDescriptor[] configEntryKeys = makeDescriptors(getConfigEntryKeys(run), "%", "Configuration");
+        return ArrayUtils.addAll(MAIN_PROPERTY_DESCS, ArrayUtils.addAll(runAttrs, ArrayUtils.addAll(iterVars, configEntryKeys)));
     }
 
-    private static String[] getParamAssignmentKeys(Run run) {
-        OrderedKeyValueList paramAssignments = run.getParamAssignments();
-        int n = (int)paramAssignments.size();
+    private static String[] getConfigEntryKeys(Run run) {
+        OrderedKeyValueList configEntries = run.getConfigEntries();
+        int n = (int)configEntries.size();
         String[] result = new String[n];
         for (int i = 0; i < n; i++)
-            result[i] = paramAssignments.get(i).getFirst();
+            result[i] = configEntries.get(i).getFirst();
         return result;
     }
 
@@ -57,7 +57,7 @@ public class RunPropertySource implements IPropertySource {
         if (propertyId instanceof String && propertyId.toString().charAt(0)=='$')
             return run.getIterationVariable(propertyId.toString().substring(1));
         if (propertyId instanceof String && propertyId.toString().charAt(0)=='%')
-            return run.getParamAssignment(propertyId.toString().substring(1));
+            return run.getConfigValue(propertyId.toString().substring(1));
         if (propertyId.equals(PROP_RUN_NAME))
             return run.getRunName();
         return null;

@@ -21,7 +21,6 @@ public class FilterField implements Comparable<FilterField> {
         RunAttribute,
         IterationVariable,
         Config,
-        ParamAssignment,
         ItemField,
         ResultAttribute,
     }
@@ -71,7 +70,6 @@ public class FilterField implements Comparable<FilterField> {
         case RunAttribute:  return "runattr:" ;
         case IterationVariable:  return "itervar:";
         case Config:  return "config:";
-        case ParamAssignment:   return "param:";
         case ResultAttribute:  return "attr:";
         default: throw new IllegalArgumentException();
         }
@@ -84,7 +82,6 @@ public class FilterField implements Comparable<FilterField> {
         case "runattr:": return Kind.RunAttribute;
         case "itervar:": return Kind.IterationVariable;
         case "config:": return Kind.Config;
-        case "param:": return Kind.ParamAssignment;
         case "attr:": return Kind.ResultAttribute;
         default: throw new IllegalArgumentException();
         }

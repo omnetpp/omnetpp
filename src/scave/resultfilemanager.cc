@@ -387,13 +387,13 @@ StringSet ResultFileManager::getUniqueConfigValues(const RunList& runList, const
     return values;
 }
 
-StringSet ResultFileManager::getUniqueParamAssignmentKeys(const RunList& runList) const
+StringSet ResultFileManager::getUniqueParamAssignmentConfigKeys(const RunList& runList) const
 {
     READER_MUTEX
     StringSet set;
     for (const Run *run : runList)
         for (auto& p : run->getConfigEntries())
-            if (Run::isKeyParamAssignment(p.first))
+            if (Run::isParamAssignmentConfigKey(p.first))
                 set.insert(p.first);
     return set;
 }
@@ -1130,7 +1130,7 @@ class MatchableConfigEntry : public MatchExpression::Matchable
         const char *getRunName() const { return run->getRunName().c_str(); }
         const char *getRunAttribute(const char *attrName) const { return run->getAttribute(attrName).c_str(); }
         const char *getIterationVariable(const char *name) const { return run->getIterationVariable(name).c_str(); }
-        const char *getParamAssignment(const char *key) const { return run->getParamAssignment(key).c_str(); }
+        const char *getConfigValue(const char *key) const { return run->getConfigValue(key).c_str(); }
 };
 
 const char *MatchableConfigEntry::getAsString(const char *attribute) const
@@ -1140,14 +1140,14 @@ const char *MatchableConfigEntry::getAsString(const char *attribute) const
     else if (strcasecmp(Scave::RUN, attribute) == 0)
         return getRunName();
     else if (strcasecmp(Scave::TYPE, attribute) == 0)
-        return Run::isKeyParamAssignment(key) ? "param-assignment"
-            : Run::isKeyGlobalConfigOption(key) ? "global-config" : "per-object-config";
+        return Run::isParamAssignmentConfigKey(key) ? "param-assignment"
+            : Run::isGlobalOptionConfigKey(key) ? "global-config" : "per-object-config";
     else if (strncasecmp(Scave::RUNATTR_PREFIX, attribute, 8) == 0)
         return getRunAttribute(attribute+8);
     else if (strncasecmp(Scave::ITERVAR_PREFIX, attribute, 8) == 0)
         return getIterationVariable(attribute+8);
-    else if (strncasecmp(Scave::PARAM_PREFIX, attribute, 6) == 0) // TODO or config?
-        return getParamAssignment(attribute+6);
+    else if (strncasecmp(Scave::CONFIG_PREFIX, attribute, 7) == 0)
+        return getConfigValue(attribute+7);
     else
         return getName();
 }
@@ -1219,7 +1219,7 @@ RunAndValueList ResultFileManager::getMatchingParamAssignments(const RunList& ru
     READER_MUTEX
     RunAndValueList out;
     for (Run *run : runs) {
-        for (auto &param : run->getParamAssignments()) {
+        for (auto &param : run->getParamAssignmentConfigEntries()) {
             MatchableConfigEntry matchable(run, param.first);
             if (matchExpr.matches(&matchable))
                 out.push_back({run, param.first});
@@ -1737,7 +1737,7 @@ StringVector ResultFileManager::getConfigEntryFilterHints(const RunList& runList
 
 StringVector ResultFileManager::getParamAssignmentFilterHints(const RunList& runList, const char *key) const
 {
-    if (!Run::isKeyParamAssignment(key))
+    if (!Run::isParamAssignmentConfigKey(key))
         return StringVector();
     return getConfigEntryFilterHints(runList, key);
 }

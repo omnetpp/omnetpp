@@ -104,10 +104,6 @@ public class FilterHintsCache {
             RunList runList = manager.getUniqueRuns(idlist);
             return manager.getIterationVariableFilterHints(runList, field.getName()).toArray();
         }
-        else if (field.getKind() == Kind.ParamAssignment) {
-            RunList runList = manager.getUniqueRuns(idlist);
-            return manager.getParamAssignmentFilterHints(runList, field.getName()).toArray();
-        }
         else if (field.getKind() == Kind.Config) {
             RunList runList = manager.getUniqueRuns(idlist);
             return manager.getConfigEntryFilterHints(runList, field.getName()).toArray();
@@ -126,7 +122,6 @@ public class FilterHintsCache {
         case ItemField: return Scave.getResultItemFieldNames().toArray();
         case RunAttribute: return manager.getUniqueRunAttributeNames(runList).keys().toArray();
         case IterationVariable: return manager.getUniqueIterationVariableNames(runList).keys().toArray();
-        case ParamAssignment: return manager.getUniqueParamAssignmentKeys(runList).keys().toArray();
         case ResultAttribute: return manager.getUniqueResultAttributeNames(idlist).keys().toArray();
         case Config: return manager.getUniqueConfigKeys(runList).keys().toArray();
         default: throw new IllegalArgumentException();

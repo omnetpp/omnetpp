@@ -121,7 +121,6 @@ class SCAVE_API IDList
         void sortByRunAttribute(ResultFileManager *mgr, const char *attrName, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
         void sortByRunIterationVariable(ResultFileManager *mgr, const char *itervarName, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
         void sortByRunConfigValue(ResultFileManager *mgr, const char *configKey, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
-        void sortByRunParamValue(ResultFileManager *mgr, const char *paramFullPath, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
         void sortByModule(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
         void sortByName(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
         void sortScalarsByValue(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted);
