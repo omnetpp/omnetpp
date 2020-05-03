@@ -546,33 +546,33 @@ const HistogramResult *ResultFileManager::getHistogram(ID id) const
 }
 
 template<class T>
-void ResultFileManager::collectIDs(IDList& out, FileRun *fileRun, std::vector<T> FileRun::*vec, int type) const
+void ResultFileManager::collectIDs(std::vector<ID>& out, FileRun *fileRun, std::vector<T> FileRun::*vec, int type) const
 {
     // internal method, READER_MUTEX not needed
-    std::vector<T>& v = fileRun->*vec;
-    int n = v.size();
+    std::vector<T>& resultItems = fileRun->*vec;
+    int n = resultItems.size();
     int fileRunId = fileRun->id;
     for (int pos = 0; pos < n; pos++)
-        out.append(_mkID(type, fileRunId, pos));
+        out.push_back(_mkID(type, fileRunId, pos));
 }
 
 template<class T>
-void ResultFileManager::collectIDs(IDList& out, FileRun *fileRun, std::vector<T> FileRun::*vec, HostType hosttype, FieldNum *fieldIds) const
+void ResultFileManager::collectIDs(std::vector<ID>& out, FileRun *fileRun, std::vector<T> FileRun::*vec, HostType hosttype, FieldNum *fieldIds) const
 {
     // internal method, READER_MUTEX not needed
-    std::vector<T>& v = fileRun->*vec;
-    int n = v.size();
+    std::vector<T>& resultItems = fileRun->*vec;
+    int n = resultItems.size();
     int fileRunId = fileRun->id;
     for (int pos = 0; pos < n; pos++)
         for (int f = 0; fieldIds[f] != FieldNum::NONE; f++)
-            out.append(_mkID(hosttype, fileRunId, pos, (int)fieldIds[f]));
+            out.push_back(_mkID(hosttype, fileRunId, pos, (int)fieldIds[f]));
 }
 
 IDList ResultFileManager::getItems(const FileRunList& fileRuns, int types, bool includeFields) const
 {
     READER_MUTEX
 
-    IDList out;
+    std::vector<ID> out;
     for (FileRun *fileRun : fileRuns) { // make fileRun the outer loop so that getUnique/getPartition methods are faster
         if (fileRun != nullptr) {
             if (types & PARAMETER)
@@ -593,7 +593,7 @@ IDList ResultFileManager::getItems(const FileRunList& fileRuns, int types, bool 
                 collectIDs(out, fileRun, &FileRun::vectorResults, VECTOR);
         }
     }
-    return out;
+    return IDList(std::move(out));
 }
 
 bool ResultFileManager::isFileLoaded(const char *displayName) const
