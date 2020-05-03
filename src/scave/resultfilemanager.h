@@ -199,10 +199,8 @@ class SCAVE_API ResultFileManager
 
     FileRun *getFileRunForID(ID id) const; // checks for nullptr
 
-    template <class T>
-    void collectIDs(std::vector<ID>& result, FileRun *fileRun, std::vector<T> FileRun::* vec, int type) const;
-    template <class T>
-    void collectIDs(std::vector<ID>& out, FileRun *fileRun, std::vector<T> FileRun::*vec, HostType hosttype, FieldNum *fieldIds) const;
+    void makeIDs(std::vector<ID>& out, FileRun *fileRun, int numItems, int type) const;
+    void makeFieldScalarIDs(std::vector<ID>& out, FileRun *fileRun, int numItems, HostType hosttype, FieldNum *fieldIds) const;
 
     // unchecked getters are only for internal use by CmpBase in idlist.cc
     const ResultItem *uncheckedGetItem(ID id, ScalarResult& buffer) const;

@@ -545,25 +545,19 @@ const HistogramResult *ResultFileManager::getHistogram(ID id) const
     return &getFileRunForID(id)->histogramResults.at(_pos(id));
 }
 
-template<class T>
-void ResultFileManager::collectIDs(std::vector<ID>& out, FileRun *fileRun, std::vector<T> FileRun::*vec, int type) const
+void ResultFileManager::makeIDs(std::vector<ID>& out, FileRun *fileRun, int numItems, int type) const
 {
     // internal method, READER_MUTEX not needed
-    std::vector<T>& resultItems = fileRun->*vec;
-    int n = resultItems.size();
     int fileRunId = fileRun->id;
-    for (int pos = 0; pos < n; pos++)
+    for (int pos = 0; pos < numItems; pos++)
         out.push_back(_mkID(type, fileRunId, pos));
 }
 
-template<class T>
-void ResultFileManager::collectIDs(std::vector<ID>& out, FileRun *fileRun, std::vector<T> FileRun::*vec, HostType hosttype, FieldNum *fieldIds) const
+void ResultFileManager::makeFieldScalarIDs(std::vector<ID>& out, FileRun *fileRun, int numItems, HostType hosttype, FieldNum *fieldIds) const
 {
     // internal method, READER_MUTEX not needed
-    std::vector<T>& resultItems = fileRun->*vec;
-    int n = resultItems.size();
     int fileRunId = fileRun->id;
-    for (int pos = 0; pos < n; pos++)
+    for (int pos = 0; pos < numItems; pos++)
         for (int f = 0; fieldIds[f] != FieldNum::NONE; f++)
             out.push_back(_mkID(hosttype, fileRunId, pos, (int)fieldIds[f]));
 }
@@ -576,21 +570,21 @@ IDList ResultFileManager::getItems(const FileRunList& fileRuns, int types, bool 
     for (FileRun *fileRun : fileRuns) { // make fileRun the outer loop so that getUnique/getPartition methods are faster
         if (fileRun != nullptr) {
             if (types & PARAMETER)
-                collectIDs(out, fileRun, &FileRun::parameterResults, PARAMETER);
+                makeIDs(out, fileRun, fileRun->parameterResults.size(), PARAMETER);
             if (types & SCALAR) {
-                collectIDs(out, fileRun, &FileRun::scalarResults, SCALAR);
+                makeIDs(out, fileRun, fileRun->scalarResults.size(), SCALAR);
                 if (includeFields) {
-                    collectIDs(out, fileRun, &FileRun::statisticsResults, HOSTTYPE_STATISTICS, StatisticsResult::getAvailableFields());
-                    collectIDs(out, fileRun, &FileRun::histogramResults, HOSTTYPE_HISTOGRAM, HistogramResult::getAvailableFields());
-                    collectIDs(out, fileRun, &FileRun::vectorResults, HOSTTYPE_VECTOR, VectorResult::getAvailableFields());
+                    makeFieldScalarIDs(out, fileRun, fileRun->statisticsResults.size(), HOSTTYPE_STATISTICS, StatisticsResult::getAvailableFields());
+                    makeFieldScalarIDs(out, fileRun, fileRun->histogramResults.size(), HOSTTYPE_HISTOGRAM, HistogramResult::getAvailableFields());
+                    makeFieldScalarIDs(out, fileRun, fileRun->vectorResults.size(), HOSTTYPE_VECTOR, VectorResult::getAvailableFields());
                 }
             }
             if (types & STATISTICS)
-                collectIDs(out, fileRun, &FileRun::statisticsResults, STATISTICS);
+                makeIDs(out, fileRun, fileRun->statisticsResults.size(), STATISTICS);
             if (types & HISTOGRAM)
-                collectIDs(out, fileRun, &FileRun::histogramResults, HISTOGRAM);
+                makeIDs(out, fileRun, fileRun->histogramResults.size(), HISTOGRAM);
             if (types & VECTOR)
-                collectIDs(out, fileRun, &FileRun::vectorResults, VECTOR);
+                makeIDs(out, fileRun, fileRun->vectorResults.size(), VECTOR);
         }
     }
     return IDList(std::move(out));
