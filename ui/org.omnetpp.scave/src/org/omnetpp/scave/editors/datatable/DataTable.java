@@ -626,7 +626,7 @@ public class DataTable extends LargeTable implements IDataControl {
                     double variance = vector.getStatistics().getVariance();
                     String unitSquared = unit;
                     if (!unit.isEmpty())
-                        unitSquared = unit + "²";
+                        unitSquared = unit + "\u00B2"; // "Superscript Two"
                     return Double.isNaN(variance) ? NA : formatNumber(variance, unitSquared);
                 }
                 else if (COL_MIN.equals(column)) {
@@ -675,7 +675,7 @@ public class DataTable extends LargeTable implements IDataControl {
                     double variance = stats.getStatistics().getVariance();
                     String unitSquared = unit;
                     if (!unit.isEmpty())
-                        unitSquared = unit + "²";
+                        unitSquared = unit + "\u00B2"; // "Superscript Two"
                     return Double.isNaN(variance) ? NA : formatNumber(variance, unitSquared);
                 }
                 else if (COL_MIN.equals(column)) {
