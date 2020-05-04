@@ -65,12 +65,6 @@ checkfile() {
 
 checkfile configure.in 'Must be called in top-level omnetpp dir!'
 
-if file include/omnetpp.h | grep CRLF >/dev/null; then
-        # Note: on a DOS-mode Cygwin filesystem, "file" won't notice CRLFs :-(((
-        echo "Seems like files are in DOS mode (CRLF), we need Unix files!!!" 1>&2
-        exit 1
-fi
-
 if mount | grep textmode >/dev/null; then
         echo "Text-mode Cygwin drives won't do, use binary mounts!!!" 1>&2
         exit 1
@@ -90,7 +84,7 @@ echo $RELEASE >Version
 cp configure.user.dist configure.user
 
 # do some edition specific preprocessing
-source $OMNETPP_ROOT/releng/makedist-${what}.sh
+. $OMNETPP_ROOT/releng/makedist-${what}.sh
 
 # tweak the version and buildid
 $TWEAKCONFIG set configure.in    OMNETPP_PRODUCT "\"$WHAT\"" || exit 1
