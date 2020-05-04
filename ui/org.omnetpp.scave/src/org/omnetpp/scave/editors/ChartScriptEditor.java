@@ -690,6 +690,10 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
     public void runChartScript() {
         scriptNotYetExecuted = false;
 
+        // the delayed updater job might call us too late
+        if (isDisposed())
+            return;
+
         Display.getDefault().syncExec(() -> {
             console.clearConsole();
             documentProvider.annotationModel.removeAnnotation(errorMarkerAnnotation);
