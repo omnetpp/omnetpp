@@ -96,7 +96,7 @@ public class StyledTextUndoRedoManager implements KeyListener, ExtendedModifyLis
     @Override
     public void keyPressed(KeyEvent e) {
         // Listen to CTRL+Z for Undo, to CTRL+Y or CTRL+SHIFT+Z for Redo
-        boolean isCtrl = (e.stateMask & SWT.CTRL) > 0;
+        boolean isCtrl = (e.stateMask & SWT.MOD1) > 0;
         boolean isAlt = (e.stateMask & SWT.ALT) > 0;
         if (isCtrl && !isAlt) {
             boolean isShift = (e.stateMask & SWT.SHIFT) > 0;

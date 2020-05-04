@@ -74,7 +74,6 @@ import org.omnetpp.common.color.ColorFactory;
  *
  * @author andras
  */
-//TODO use SWT.MOD1 instead of SWT.CTRL? (Mac!)
 //TODO keyboard: proper up/down, pngup/pgdn
 //TODO fix shift+cursor keys
 public class IconGridViewer extends ContentViewer {
@@ -138,8 +137,8 @@ public class IconGridViewer extends ContentViewer {
             mouseDownPos = new Point(e.x, e.y);
             wasDragDrop = false;
             boolean withModifier = (e.stateMask & SWT.MODIFIER_MASK) != 0;
-            boolean shift = (e.stateMask & SWT.SHIFT) != 0;
-            boolean ctrl = (e.stateMask & SWT.CTRL) != 0;
+            boolean shift = (e.stateMask & SWT.MOD2) != 0;
+            boolean ctrl = (e.stateMask & SWT.MOD1) != 0;
             Object element = getElementAt(e.x, e.y);
             if (e.button == 1 && selectedElements.size() == 1 && selectedElements.get(0) == element && !withModifier) {
                 // initiate direct rename, but only after a delay (otherwise it interferes with double-clicks)
@@ -193,7 +192,7 @@ public class IconGridViewer extends ContentViewer {
 
             // update the drag selection rectangle
             if (dragSelectionRectangle != null) {
-                boolean ctrl = (e.stateMask & SWT.CTRL) != 0;
+                boolean ctrl = (e.stateMask & SWT.MOD1) != 0;
                 Rectangle bounds = new Rectangle(Math.min(e.x, mouseDownPos.x), Math.min(e.y, mouseDownPos.y), Math.abs(e.x - mouseDownPos.x), Math.abs(e.y - mouseDownPos.y));
                 dragSelectionRectangle.setBounds(bounds);
                 selectByRectangle(bounds, ctrl);
@@ -209,8 +208,8 @@ public class IconGridViewer extends ContentViewer {
 
         @Override
         public void mouseUp(MouseEvent e) {
-            boolean ctrl = (e.stateMask & SWT.CTRL) != 0;
-            boolean shift = (e.stateMask & SWT.SHIFT) != 0;
+            boolean ctrl = (e.stateMask & SWT.MOD1) != 0;
+            boolean shift = (e.stateMask & SWT.MOD2) != 0;
             if (dragSelectionRectangle == null && !ctrl && !shift && !wasDragDrop) {
                 Object element = getElementAt(mouseDownPos.x, mouseDownPos.y);
                     if (element == null)
@@ -334,8 +333,8 @@ public class IconGridViewer extends ContentViewer {
         canvas.addKeyListener(new KeyListener() {
             @Override
             public void keyPressed(KeyEvent ke) {
-                boolean shift = (ke.stateMask & SWT.SHIFT) != 0;
-                boolean ctrl = (ke.stateMask & SWT.CTRL) != 0;
+                boolean shift = (ke.stateMask & SWT.MOD2) != 0;
+                boolean ctrl = (ke.stateMask & SWT.MOD1) != 0;
                 if (ke.keyCode == SWT.ARROW_LEFT)
                     moveLeft(ctrl || shift);
                 else if (ke.keyCode == SWT.ARROW_RIGHT)
