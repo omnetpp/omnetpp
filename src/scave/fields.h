@@ -95,28 +95,9 @@ class SCAVE_API Scave
     static constexpr const char *STARTTIME = "starttime";
     static constexpr const char *ENDTIME = "endtime";
 
-    static const StringVector& getRunAttributeNames();
-    static bool isRunAttributeName(const std::string& name);
-    static const StringVector& getResultItemFieldNames();
-    static const StringVector& getResultItemAttributeNames();
-    static bool isResultItemAttributeName(const std::string& name);
 };
 
 
-class SCAVE_API ResultItemField
-{
-    private:
-        enum { FILE_ID, RUN_ID, MODULE_ID, NAME_ID, ATTR_ID, RUN_ATTR_ID, RUN_ITERVAR_ID, RUN_CONFIG_ID };
-    private:
-        int id;
-        std::string name; // constant names above + attribute/param names
-        static int getFieldID(const std::string& fieldName);
-    public:
-        explicit ResultItemField(const std::string& fieldName);
-        const std::string& getName() const { return name; };
-        const std::string& getFieldValue(const ResultItem& d) const;
-        int getID() const {return id;}
-};
 
 } // namespace scave
 }  // namespace omnetpp

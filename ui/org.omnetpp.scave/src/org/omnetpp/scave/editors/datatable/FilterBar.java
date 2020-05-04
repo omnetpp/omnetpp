@@ -151,11 +151,11 @@ public class FilterBar extends Composite {
         }
         else if (isSuitableForSimpleFilter(filterExpression)) {
             FilterUtil filterUtil = new FilterUtil(filterExpression, true);
-            experimentCombo.setText(asteriskToEmpty(filterUtil.getField(EXPERIMENT.getName())));
-            measurementCombo.setText(asteriskToEmpty(filterUtil.getField(MEASUREMENT.getName())));
-            replicationCombo.setText(asteriskToEmpty(filterUtil.getField(REPLICATION.getName())));
-            moduleCombo.setText(asteriskToEmpty(filterUtil.getField(MODULE.getName())));
-            nameCombo.setText(asteriskToEmpty(filterUtil.getField(NAME.getName())));
+            experimentCombo.setText(asteriskToEmpty(filterUtil.getFieldValue(EXPERIMENT.getName())));
+            measurementCombo.setText(asteriskToEmpty(filterUtil.getFieldValue(MEASUREMENT.getName())));
+            replicationCombo.setText(asteriskToEmpty(filterUtil.getFieldValue(REPLICATION.getName())));
+            moduleCombo.setText(asteriskToEmpty(filterUtil.getFieldValue(MODULE.getName())));
+            nameCombo.setText(asteriskToEmpty(filterUtil.getFieldValue(NAME.getName())));
         }
         else {
             showFilterExpression();
@@ -200,11 +200,11 @@ public class FilterBar extends Composite {
                 return false;  // user cancelled
         }
 
-        experimentCombo.setText(asteriskToEmpty(filterUtil.getField(EXPERIMENT.getName())));
-        measurementCombo.setText(asteriskToEmpty(filterUtil.getField(MEASUREMENT.getName())));
-        replicationCombo.setText(asteriskToEmpty(filterUtil.getField(REPLICATION.getName())));
-        moduleCombo.setText(asteriskToEmpty(filterUtil.getField(MODULE.getName())));
-        nameCombo.setText(asteriskToEmpty(filterUtil.getField(NAME.getName())));
+        experimentCombo.setText(asteriskToEmpty(filterUtil.getFieldValue(EXPERIMENT.getName())));
+        measurementCombo.setText(asteriskToEmpty(filterUtil.getFieldValue(MEASUREMENT.getName())));
+        replicationCombo.setText(asteriskToEmpty(filterUtil.getFieldValue(REPLICATION.getName())));
+        moduleCombo.setText(asteriskToEmpty(filterUtil.getFieldValue(MODULE.getName())));
+        nameCombo.setText(asteriskToEmpty(filterUtil.getFieldValue(NAME.getName())));
 
         showSimpleFilter();
         return true;
@@ -265,15 +265,16 @@ public class FilterBar extends Composite {
         FilterUtil filter = new FilterUtil();
         for (FilterField field : simpleFilterFields)
             if (includedFields.contains(field))
-                filter.setField(field.getName(), getFilterCombo(field).getText());
-        return filter.getFilterPattern();
+                filter.setFieldValue(field.getFullName(), getFilterCombo(field).getText());
+        String filterExpression = filter.getFilterPattern();
+        return filterExpression;
     }
 
     private String assembleFilterPatternExcluding(List<FilterField> excludedFields) {
         FilterUtil filter = new FilterUtil();
         for (FilterField field : simpleFilterFields)
             if (!excludedFields.contains(field))
-                filter.setField(field.getName(), getFilterCombo(field).getText());
+                filter.setFieldValue(field.getFullName(), getFilterCombo(field).getText());
         return filter.getFilterPattern();
     }
 

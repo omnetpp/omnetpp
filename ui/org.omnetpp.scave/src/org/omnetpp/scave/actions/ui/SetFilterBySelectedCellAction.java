@@ -14,11 +14,9 @@ import org.omnetpp.scave.actions.AbstractScaveAction;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.DataTable;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
-import org.omnetpp.scave.editors.datatable.IDataControl;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
-import org.omnetpp.scave.engine.ResultItemField;
 import org.omnetpp.scave.model2.FilterUtil;
 
 /**
@@ -50,17 +48,13 @@ public class SetFilterBySelectedCellAction extends AbstractScaveAction
             return;
         ResultFileManager manager = panel.getResultFileManager();
         ResultFileManager.runWithReadLock(manager, () -> {
-            ResultItem item = manager.getItem(focusedID);
-            ResultItemField field = new ResultItemField(selectedField);
             Debug.println("selectedField: " + selectedField);
-            String fieldName = field.getName();
-            String fieldValue = field.getFieldValue(item);
+            ResultItem item = manager.getItem(focusedID);
+            String fieldValue = item.getProperty(selectedField);
 
-            if (fieldName != null && fieldValue != null) {
-                FilterUtil filter = new FilterUtil();
-                filter.setField(fieldName, fieldValue);
-                panel.setFilter(filter.getFilterPattern());
-            }
+            FilterUtil filter = new FilterUtil();
+            filter.setFieldValue(selectedField, fieldValue);
+            panel.setFilter(filter.getFilterPattern());
         });
     }
 

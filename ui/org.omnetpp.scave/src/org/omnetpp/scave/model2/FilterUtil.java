@@ -21,10 +21,8 @@ import org.omnetpp.common.util.MatchExpressionSyntax.INodeVisitor;
 import org.omnetpp.common.util.MatchExpressionSyntax.Node;
 import org.omnetpp.common.util.MatchExpressionSyntax.Token;
 import org.omnetpp.common.util.MatchExpressionSyntax.TokenType;
-import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
-import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.Scave;
 
 /**
@@ -61,29 +59,11 @@ public class FilterUtil {
         parseFields(filterPattern);
     }
 
-    //TODO doesn't support itervars, configs, result attrs....
     public FilterUtil(ResultItem item, String[] filterFields) {
         Assert.isNotNull(item);
         Assert.isNotNull(filterFields);
-
-        ResultFile file = item.getFileRun().getFile();
-        Run run = item.getFileRun().getRun();
-        for (String field : filterFields) {
-            if (field.equals(Scave.FILE))
-                setField(field, file.getFilePath());
-            else if (field.equals(Scave.RUN))
-                setField(field, run.getRunName());
-            else if (field.equals(Scave.MODULE))
-                setField(Scave.MODULE, item.getModuleName());
-            else if (field.equals(Scave.NAME))
-                setField(Scave.NAME, item.getName());
-            else if (Scave.isRunAttributeName(field))
-                setField(field, run.getAttribute(field));
-            else if (field.equals(Scave.TYPE))
-                setField(field, item.getItemTypeString());
-            else
-                throw new IllegalArgumentException("Unsupported field '" + field + "'");
-        }
+        for (String field : filterFields)
+            setFieldValue(field, item.getProperty(field));
     }
 
     public static String getDefaultField() {
@@ -100,13 +80,13 @@ public class FilterUtil {
         return lossy;
     }
 
-    public String getField(String name) {
-        String value = fields.get(name);
+    public String getFieldValue(String field) {
+        String value = fields.get(field);
         return value != null ? value : "";
     }
 
-    public void setField(String name, String value) {
-        fields.put(name, value);
+    public void setFieldValue(String field, String value) {
+        fields.put(field, value);
     }
 
     public Set<String> getFieldNames() {
@@ -123,19 +103,17 @@ public class FilterUtil {
 
     private String buildPattern() {
         StringBuffer sb = new StringBuffer();
-        for (String name : fields.keySet()) {
-            String f = getField(name);
+        for (String field : fields.keySet()) {
+            String f = getFieldValue(field);
             if (!f.equals("*"))
-                appendField(sb, name, f);
+                appendField(sb, field, f);
         }
         if (sb.length() == 0) sb.append("*");
         return sb.toString();
     }
 
     private void appendField(StringBuffer sb, String attrName, String attrPattern) {
-        if (Scave.isRunAttributeName(attrName))
-            attrName = "runattr:" + attrName;
-        if (attrPattern != null && attrPattern.length() > 0) {
+        if (attrPattern != null && !attrPattern.isEmpty()) {
             if (sb.length() > 0)
                 sb.append(" AND ");
             sb.append(quoteStringIfNeeded(attrName)).append(" =~ ").append(quoteStringIfNeeded(attrPattern));
@@ -178,13 +156,7 @@ public class FilterUtil {
         for (Map.Entry<String,String> entry : visitor.fields.entrySet()) {
             String name = entry.getKey();
             String value = entry.getValue();
-            if (name.startsWith("runattr:"))
-                name = name.substring(8);
-            if (name.startsWith("itervar:"))
-                name = name.substring(8);
-            else if (name.startsWith("param:"))
-                name = name.substring(6);
-            setField(name, value);
+            setFieldValue(name, value);
         }
     }
 

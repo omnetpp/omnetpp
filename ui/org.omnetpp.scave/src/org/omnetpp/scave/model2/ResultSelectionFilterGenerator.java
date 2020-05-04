@@ -388,9 +388,9 @@ public class ResultSelectionFilterGenerator {
         List<String> factorFields_ = new ArrayList<>();
         List<String> itemFields_ = new ArrayList<>();
         (sameType ? factorFields_ : itemFields_).add(Scave.TYPE);
-        (sameExperiment  ? factorFields_ : itemFields_).add(Scave.EXPERIMENT);
-        (sameMeasurement ? factorFields_ : itemFields_).add(Scave.MEASUREMENT);
-        (sameReplication ? factorFields_ : itemFields_).add(Scave.REPLICATION);
+        (sameExperiment  ? factorFields_ : itemFields_).add(Scave.RUNATTR_PREFIX+Scave.EXPERIMENT);
+        (sameMeasurement ? factorFields_ : itemFields_).add(Scave.RUNATTR_PREFIX+Scave.MEASUREMENT);
+        (sameReplication ? factorFields_ : itemFields_).add(Scave.RUNATTR_PREFIX+Scave.REPLICATION);
         (sameModule ? factorFields_ : itemFields_).add(Scave.MODULE);
         (sameName   ? factorFields_ : itemFields_).add(Scave.NAME);
         String[] factorFields = factorFields_.toArray(new String[0]);

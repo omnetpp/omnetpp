@@ -7,6 +7,8 @@
 
 package org.omnetpp.scave.model2;
 
+import java.util.List;
+
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.scave.engine.Scave;
 
@@ -43,6 +45,7 @@ public class FilterField implements Comparable<FilterField> {
         String prefix = colonPos == -1 ? null : fullName.substring(0, colonPos+1);
         this.kind = getKind(prefix);
         this.name = fullName.substring(colonPos+1);
+        Assert.isTrue(kind != Kind.ItemField || List.of(Scave.FILE, Scave.RUN, Scave.TYPE, Scave.MODULE, Scave.NAME).contains(name));
     }
 
     public FilterField(Kind kind, String name) {

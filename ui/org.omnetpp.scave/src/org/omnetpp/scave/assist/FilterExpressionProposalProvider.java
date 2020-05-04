@@ -15,6 +15,7 @@ import org.omnetpp.common.util.MatchExpressionContentProposalProvider;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engine.Scave;
 import org.omnetpp.scave.model2.FilterField;
 import org.omnetpp.scave.model2.FilterHintsCache;
 
@@ -56,7 +57,7 @@ public class FilterExpressionProposalProvider extends MatchExpressionContentProp
     }
 
     protected List<IContentProposal> getDefaultFieldValueProposals(String prefix) {
-        return getFieldValueProposals("", prefix);
+        return getFieldValueProposals(Scave.NAME, prefix);
     }
 
     protected List<IContentProposal> getFieldValueProposals(String fieldName, String prefix) {

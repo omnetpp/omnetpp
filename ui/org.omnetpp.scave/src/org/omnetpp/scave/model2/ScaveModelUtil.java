@@ -12,9 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
@@ -22,12 +20,10 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.FileUtils;
-import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
-import org.omnetpp.scave.engine.ResultItemField;
 import org.omnetpp.scave.engine.Scave;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.model.Analysis;
@@ -217,25 +213,6 @@ public class ScaveModelUtil {
             items[i] = manager.getItem(idlist.get(i));
         return items;
     }
-
-    /**
-     * Returns an ordered array of distinct values of the {@code field} attribute
-     * of the result items found in {@code idlist}.
-     */
-    public static String[] getFieldValues(IDList idlist, ResultItemField field, ResultFileManager manager) {
-        Set<String> values = new HashSet<>();
-        for (int i = 0; i < idlist.size(); ++i) {
-            long id = idlist.get(i);
-            ResultItem item = manager.getItem(id);
-            String value = field.getFieldValue(item);
-            if (!StringUtils.isEmpty(value))
-                values.add(value);
-        }
-        String[] result = values.toArray(new String[values.size()]);
-        Arrays.sort(result);
-        return result;
-    }
-
 
     public static List<String> getResultItemFields(IDList idlist, ResultFileManager manager) {
         List<String> fields = new ArrayList<>();

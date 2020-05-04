@@ -125,7 +125,7 @@ public class FilterHintsCache {
     public static String[] computeNameHints(ResultFileManager manager, IDList idlist, FilterField.Kind kind) {
         RunList runList = manager.getUniqueRuns(idlist);
         switch (kind) {
-        case ItemField: return Scave.getResultItemFieldNames().toArray();
+        case ItemField: return new String[] {Scave.TYPE, Scave.FILE, Scave.RUN, Scave.MODULE, Scave.NAME};
         case RunAttribute: return manager.getUniqueRunAttributeNames(runList).keys().toArray();
         case IterationVariable: return manager.getUniqueIterationVariableNames(runList).keys().toArray();
         case ResultAttribute: return manager.getUniqueResultAttributeNames(idlist).keys().toArray();
