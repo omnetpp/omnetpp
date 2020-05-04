@@ -1102,7 +1102,7 @@ RunAndValueList ResultFileManager::getMatchingConfigEntries(const RunList& runs,
     return out;
 }
 
-RunAndValueList ResultFileManager::getMatchingParamAssignments(const RunList& runs, const char *pattern) const
+RunAndValueList ResultFileManager::getMatchingParamAssignmentConfigEntries(const RunList& runs, const char *pattern) const
 {
     if (opp_isblank(pattern))  // no filter
         throw opp_runtime_error("Empty filter expression is not allowed");

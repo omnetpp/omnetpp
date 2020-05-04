@@ -309,7 +309,7 @@ class SCAVE_API ResultFileManager
     RunAndValueList getMatchingItervars(const RunList& runs, const char *pattern) const;
     RunAndValueList getMatchingRunattrs(const RunList& runs, const char *pattern) const;
     RunAndValueList getMatchingConfigEntries(const RunList& runs, const char *pattern) const;
-    RunAndValueList getMatchingParamAssignments(const RunList& runs, const char *pattern) const;
+    RunAndValueList getMatchingParamAssignmentConfigEntries(const RunList& runs, const char *pattern) const;
     RunAndValueList getMatchingNonParamAssignmentConfigEntries(const RunList& runs, const char *pattern) const;
 
     /**

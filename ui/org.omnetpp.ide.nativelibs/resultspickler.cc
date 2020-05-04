@@ -748,7 +748,7 @@ ShmSendBuffer *ResultsPickler::getParamAssignmentsPickle(const char *filterExpre
     p.startList();
 
     if (!opp_isempty(filterExpression)) {
-        auto paramassignments = rfm->getMatchingParamAssignments(rfm->getRuns(), filterExpression);
+        auto paramassignments = rfm->getMatchingParamAssignmentConfigEntries(rfm->getRuns(), filterExpression);
 
         for (const auto &pa : paramassignments) {
             Run *run = pa.first;
@@ -758,7 +758,7 @@ ShmSendBuffer *ResultsPickler::getParamAssignmentsPickle(const char *filterExpre
 
             p.pushString(run->getRunName());
             p.pushString(paName);
-            p.pushString(run->getParamAssignment(paName));
+            p.pushString(run->getConfigValue(paName));
 
             p.endTuple();
         }
@@ -879,7 +879,7 @@ ShmSendBuffer *ResultsPickler::getParamAssignmentsForRunsPickle(const std::vecto
 
     for (const std::string &runId : runIds) {
         Run *run = rfm->getRunByName(runId.c_str());
-        const OrderedKeyValueList& paramassignments = run->getParamAssignments();
+        const OrderedKeyValueList& paramassignments = run->getParamAssignmentConfigEntries();
 
         for (const auto &pa : paramassignments) {
             p.startTuple();
