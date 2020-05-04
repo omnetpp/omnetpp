@@ -64,11 +64,9 @@ public class NativeChartViewer extends ChartViewerBase {
         public void plotHistograms(byte[] pickledData, Map<String, String> props) {
             List<String> histKeys = histogramDataset.addValues(pickledData);
 
-            Display.getDefault().asyncExec(() -> {
-                for (String histKey : histKeys)
-                    for (String propKey : props.keySet())
-                        pendingPropertyChanges.put(propKey + "/" + histKey, props.get(propKey));
-            });
+            for (String histKey : histKeys)
+                for (String propKey : props.keySet())
+                    pendingPropertyChanges.put(propKey + "/" + histKey, props.get(propKey));
         }
 
         @Override
@@ -119,7 +117,7 @@ public class NativeChartViewer extends ChartViewerBase {
 
         @Override
         public void setProperty(String key, String value) {
-           pendingPropertyChanges.put(key, value);
+            pendingPropertyChanges.put(key, value);
         }
 
         @Override
