@@ -37,7 +37,6 @@ ShmSendBuffer::ShmSendBuffer(ShmSendBufferManager *owner, const std::string& ful
 
 ShmSendBuffer::~ShmSendBuffer()
 {
-    std::cout << "ShmSendBuffer:TRYING TO CLEAN " << name << std::endl;
     unmapSharedMemory(mappedStart, reservedSize + HEADERSIZE);
     closeSharedMemory(handle);
     removeSharedMemory(name.c_str());
