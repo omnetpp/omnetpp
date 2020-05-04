@@ -1559,7 +1559,7 @@ public class SequenceChart
                 sequenceChartState.showHairlines = getShowHairlines();
 
                 Font font = getFont();
-                sequenceChartState.fontName = font.getFontData()[0].name;
+                sequenceChartState.fontName = font.getFontData()[0].getName();
                 sequenceChartState.fontHeight = font.getFontData()[0].getHeight();
 
                 manager.setProperty(resource, STATE_PROPERTY, sequenceChartState);
