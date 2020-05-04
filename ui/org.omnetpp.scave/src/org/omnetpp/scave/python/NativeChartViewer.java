@@ -95,8 +95,10 @@ public class NativeChartViewer extends ChartViewerBase {
             final RuntimeException exc[] = new RuntimeException[] { null };
             Display.getDefault().syncExec(() -> {
                 try {
-                    for (String k : props.keySet())
-                        plot.setProperty(k, props.get(k));
+                    plot.runBatchedUpdates(() -> {
+                        for (String k : props.keySet())
+                            plot.setProperty(k, props.get(k));
+                    });
                 }
                 catch (RuntimeException e) {
                     exc[0] = e;

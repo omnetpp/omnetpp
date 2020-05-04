@@ -113,6 +113,9 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
     private int layoutDepth = 0; // how many layoutChart() calls are on the stack
     private IDataset dataset;
 
+    protected int batchedUpdateDepth = 0; // if >0, suppress change notifications until the batch is done
+    protected int batchChangeCount = 0; // how many times chartChanged was called in the current (top-level) batch
+
     public PlotBase(Composite parent, int style) {
         super(parent, style);
         setToolTipText(null); // prevents "Close" tooltip of the TabItem from coming up (Linux only)
@@ -601,9 +604,29 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
         }
     }
 
+    public void runBatchedUpdates(Runnable updater) {
+        batchedUpdateDepth++;
+        try {
+            updater.run();
+        }
+        finally {
+            batchedUpdateDepth--;
+            if (batchedUpdateDepth == 0) {
+                if (batchChangeCount > 0)
+                    chartChanged();
+                batchChangeCount = 0;
+            }
+        }
+    }
+
     protected void chartChanged() {
-        layoutChart();
-        clearCanvasCacheAndRedraw();
+        if (batchedUpdateDepth > 0) {
+            batchChangeCount++;
+        }
+        else {
+            layoutChart();
+            clearCanvasCacheAndRedraw();
+        }
     }
 
     protected void paintInsets(Graphics graphics) {
