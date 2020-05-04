@@ -17,7 +17,7 @@ REGEXPREPLACE="perl -i -pe"
 cd `dirname $0`/..
 OMNETPP_ROOT=`pwd`
 
-if [ test -z "$what" ]; then
+if test -z "$what"; then
     export what="omnetpp"
 fi
 
