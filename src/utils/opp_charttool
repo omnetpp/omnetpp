@@ -8,6 +8,7 @@ import os
 import sys
 import glob
 import argparse
+from argparse import RawTextHelpFormatter
 import traceback
 import subprocess
 import numpy as np
@@ -126,7 +127,15 @@ def run_chart(wd, c, export):
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description='Tool for working with OMNeT++ analysis files.')
+    parser = argparse.ArgumentParser(description=
+        "Export images from OMNeT++ Analysis files (*.anf) and perform "
+        "other tasks on them, without starting the IDE.\n"
+        "This program can read and list the contents (input patterns and charts) "
+        "of such files, and even execute the chart scripts.\n"
+        "The native charts are 'emulated' using matplotlib.\n"
+        "Use the -e flag to export all charts, or if specified, the selected chart, as image.\n"
+        "NOTE: Exporting the charts this way does not (yet) take into account the exporting "
+        "preferences configured in the IDE.", formatter_class=RawTextHelpFormatter)
     parser.add_argument('anf_file', type=str, nargs=1, help='The Analysis (.anf) file')
     parser.add_argument('-i', metavar='chart_index', type=int, nargs=1, help='The index of the chart to run (conflicts with -n)')
     parser.add_argument('-n', metavar='chart_name', type=str, nargs=1, help='The name of the chart to run (conflicts with -i, the first chart is selected when ambiguous)')
