@@ -4,11 +4,11 @@
 #
 # in: what - whether to build "omnetpp" (default) or "omnest"
 # in: BUILD_CORE_DISTRO, BUILD_LINUX_DISTRO, BUILD_WIN64_DISTRO, BUILD_MACOSX_DISTRO
-#     if "yes", the repsective platform distro will be built
+#     if "true", the repsective platform distro will be built
 # in: Build identifier can be passed as BUILDID variable (optional)
-# in: If BUILD_IDE=yes (default) - it tries to build the native and java part of the IDE
-# in: If BUILD_IDE_NATIVE=yes (default) - it tries to build the native part of the IDE
-# in: If BUILD_DOC=yes (default) - it tries to build the documentation
+# in: If BUILD_IDE=true (default) - it tries to build the native and java part of the IDE
+# in: If BUILD_IDE_NATIVE=true (default) - it tries to build the native part of the IDE
+# in: If BUILD_DOC=true (default) - it tries to build the documentation
 # out: SOURCE_DISTRIBUTION_NAME contains the created archivename
 
 TWEAKCONFIG="perl releng/tweakconfigfile.pl"
@@ -22,15 +22,15 @@ if test -z "$what"; then
 fi
 
 if test -z "$BUILD_DOC"; then
-  BUILD_DOC="yes"
+  BUILD_DOC="true"
 fi
 
 if test -z "$BUILD_IDE"; then
-  BUILD_IDE="yes"
+  BUILD_IDE="true"
 fi
 
 if test -z "$BUILD_IDE_NATIVE"; then
-  BUILD_IDE_NATIVE="yes"
+  BUILD_IDE_NATIVE="true"
 fi
 
 export BUILD_CORE_DISTRO
@@ -129,13 +129,13 @@ export PATH=$OMNETPP_ROOT/bin:$PATH
 ./configure || { echo --- error during running configure ---; exit 1;}
 
 # Generating PDF documentation
-if [ "$BUILD_DOC" = "yes" ]; then
+if [ "$BUILD_DOC" = "true" ]; then
   echo Generating documentation
   (cd doc/src && make clean)
   make doc || { echo --- error generating documentation ---; exit 1;}
 fi
 
-if [ "$BUILD_IDE_NATIVE" = "yes" ]; then
+if [ "$BUILD_IDE_NATIVE" = "true" ]; then
   echo --- Building native parts of the IDE ---
   $OMNETPP_ROOT/releng/ide/native/build-ide-native || { echo --- error during compiling native IDE parts ---; exit 1;}
 fi
@@ -144,8 +144,8 @@ fi
 ./configure || { echo --- error during running configure ---; exit 1;}
 
 # create the ide package
-if [ "$BUILD_IDE" = "yes" ]; then
-  if [ "$BUILD_DOC" = "yes" ]; then
+if [ "$BUILD_IDE" = "true" ]; then
+  if [ "$BUILD_DOC" = "true" ]; then
     echo --- Copying documatation to the IDE doc plugin
     make copy-ui-doc || { echo --- error copyig documentation ---; exit 1;}
   fi
@@ -170,7 +170,7 @@ git reset
 
 ###############################
 # copy the generated documentation
-if test -z "$BUILD_DOC"; then
+if [ "$BUILD_DOC" = "true" ]; then
 
   echo Copying generated documentation
 
