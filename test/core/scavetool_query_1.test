@@ -225,9 +225,9 @@ datetime        xxxx
 datetimef       xxxx
 experiment      General
 inifile         _defaults.ini
-iterationvars
-iterationvarsf
-measurement
+iterationvars   
+iterationvarsf  
+measurement     
 network         Test
 processid       xxxx
 repetition      0
@@ -243,9 +243,9 @@ datetime        xxxx
 datetimef       xxxx
 experiment      General
 inifile         _defaults.ini
-iterationvars
-iterationvarsf
-measurement
+iterationvars   
+iterationvarsf  
+measurement     
 network         Test
 processid       xxxx
 repetition      1
@@ -316,9 +316,9 @@ datetime        xxxx
 datetimef       xxxx
 experiment      General
 inifile         _defaults.ini
-iterationvars
-iterationvarsf
-measurement
+iterationvars   
+iterationvarsf  
+measurement     
 network         Test
 processid       xxxx
 repetition      0
@@ -334,9 +334,9 @@ datetime        xxxx
 datetimef       xxxx
 experiment      General
 inifile         _defaults.ini
-iterationvars
-iterationvarsf
-measurement
+iterationvars   
+iterationvarsf  
+measurement     
 network         Test
 processid       xxxx
 repetition      1
@@ -486,9 +486,9 @@ datetime        xxxx
 datetimef       xxxx
 experiment      General
 inifile         _defaults.ini
-iterationvars
-iterationvarsf
-measurement
+iterationvars   
+iterationvarsf  
+measurement     
 network         Test
 processid       xxxx
 repetition      0
@@ -504,9 +504,9 @@ datetime        xxxx
 datetimef       xxxx
 experiment      General
 inifile         _defaults.ini
-iterationvars
-iterationvarsf
-measurement
+iterationvars   
+iterationvarsf  
+measurement     
 network         Test
 processid       xxxx
 repetition      1
@@ -742,93 +742,161 @@ General-1-xxxx	histogram	Test.node	foo:histogram	count=100	mean=19.65	min=13	max
 $ opp_scavetool -l --add-fields-as-scalars <files>
 General-0-xxxx:
 
-scalar      Test.node  foo:mean              19.84
-scalar      Test.node  foo:last              17
-scalar      Test.node  foo:stats:count       100
-scalar      Test.node  foo:stats:mean        19.84
-scalar      Test.node  foo:stats:stddev      3.15499
-scalar      Test.node  foo:stats:min         12
-scalar      Test.node  foo:stats:max         28
-scalar      Test.node  foo:stats:sum         1984
-scalar      Test.node  foo:histogram:count   100
-scalar      Test.node  foo:histogram:mean    19.84
-scalar      Test.node  foo:histogram:stddev  3.15499
-scalar      Test.node  foo:histogram:min     12
-scalar      Test.node  foo:histogram:max     28
-scalar      Test.node  foo:histogram:sum     1984
-parameter   Test.node  typename              Node
-parameter   Test       typename              Test
-vector      Test.node  foo:vector            vectorId=0  count=100   mean=19.84  min=12  max=28
-statistics  Test.node  foo:stats             count=100   mean=19.84  min=12      max=28
-histogram   Test.node  foo:histogram         count=100   mean=19.84  min=12      max=28  #bins=24
+scalar      Test.node  foo:mean                  19.84
+scalar      Test.node  foo:last                  17
+scalar      Test.node  foo:stats:count           100
+scalar      Test.node  foo:stats:sum             1984
+scalar      Test.node  foo:stats:sumweights      100
+scalar      Test.node  foo:stats:mean            19.84
+scalar      Test.node  foo:stats:stddev          3.15499
+scalar      Test.node  foo:stats:min             12
+scalar      Test.node  foo:stats:max             28
+scalar      Test.node  foo:stats:numbins         0
+scalar      Test.node  foo:histogram:count       100
+scalar      Test.node  foo:histogram:sum         1984
+scalar      Test.node  foo:histogram:sumweights  100
+scalar      Test.node  foo:histogram:mean        19.84
+scalar      Test.node  foo:histogram:stddev      3.15499
+scalar      Test.node  foo:histogram:min         12
+scalar      Test.node  foo:histogram:max         28
+scalar      Test.node  foo:histogram:numbins     24
+scalar      Test.node  foo:histogram:rangemin    8
+scalar      Test.node  foo:histogram:rangemax    32
+scalar      Test.node  foo:histogram:underflows  0
+scalar      Test.node  foo:histogram:overflows   0
+scalar      Test.node  foo:vector:count          100
+scalar      Test.node  foo:vector:sum            1984
+scalar      Test.node  foo:vector:sumweights     100
+scalar      Test.node  foo:vector:mean           19.84
+scalar      Test.node  foo:vector:stddev         3.15499
+scalar      Test.node  foo:vector:min            12
+scalar      Test.node  foo:vector:max            28
+scalar      Test.node  foo:vector:starttime      0
+scalar      Test.node  foo:vector:endtime        0
+parameter   Test.node  typename                  Node
+parameter   Test       typename                  Test
+vector      Test.node  foo:vector                vectorId=0  count=100   mean=19.84  min=12  max=28
+statistics  Test.node  foo:stats                 count=100   mean=19.84  min=12      max=28
+histogram   Test.node  foo:histogram             count=100   mean=19.84  min=12      max=28  #bins=24
 
 General-1-xxxx:
 
-scalar      Test.node  foo:mean              19.65
-scalar      Test.node  foo:last              19
-scalar      Test.node  foo:stats:count       100
-scalar      Test.node  foo:stats:mean        19.65
-scalar      Test.node  foo:stats:stddev      3.33447
-scalar      Test.node  foo:stats:min         13
-scalar      Test.node  foo:stats:max         27
-scalar      Test.node  foo:stats:sum         1965
-scalar      Test.node  foo:histogram:count   100
-scalar      Test.node  foo:histogram:mean    19.65
-scalar      Test.node  foo:histogram:stddev  3.33447
-scalar      Test.node  foo:histogram:min     13
-scalar      Test.node  foo:histogram:max     27
-scalar      Test.node  foo:histogram:sum     1965
-parameter   Test.node  typename              Node
-parameter   Test       typename              Test
-vector      Test.node  foo:vector            vectorId=0  count=100   mean=19.65  min=13  max=27
-statistics  Test.node  foo:stats             count=100   mean=19.65  min=13      max=27
-histogram   Test.node  foo:histogram         count=100   mean=19.65  min=13      max=27  #bins=22
+scalar      Test.node  foo:mean                  19.65
+scalar      Test.node  foo:last                  19
+scalar      Test.node  foo:stats:count           100
+scalar      Test.node  foo:stats:sum             1965
+scalar      Test.node  foo:stats:sumweights      100
+scalar      Test.node  foo:stats:mean            19.65
+scalar      Test.node  foo:stats:stddev          3.33447
+scalar      Test.node  foo:stats:min             13
+scalar      Test.node  foo:stats:max             27
+scalar      Test.node  foo:stats:numbins         0
+scalar      Test.node  foo:histogram:count       100
+scalar      Test.node  foo:histogram:sum         1965
+scalar      Test.node  foo:histogram:sumweights  100
+scalar      Test.node  foo:histogram:mean        19.65
+scalar      Test.node  foo:histogram:stddev      3.33447
+scalar      Test.node  foo:histogram:min         13
+scalar      Test.node  foo:histogram:max         27
+scalar      Test.node  foo:histogram:numbins     22
+scalar      Test.node  foo:histogram:rangemin    9
+scalar      Test.node  foo:histogram:rangemax    31
+scalar      Test.node  foo:histogram:underflows  0
+scalar      Test.node  foo:histogram:overflows   0
+scalar      Test.node  foo:vector:count          100
+scalar      Test.node  foo:vector:sum            1965
+scalar      Test.node  foo:vector:sumweights     100
+scalar      Test.node  foo:vector:mean           19.65
+scalar      Test.node  foo:vector:stddev         3.33447
+scalar      Test.node  foo:vector:min            13
+scalar      Test.node  foo:vector:max            27
+scalar      Test.node  foo:vector:starttime      0
+scalar      Test.node  foo:vector:endtime        0
+parameter   Test.node  typename                  Node
+parameter   Test       typename                  Test
+vector      Test.node  foo:vector                vectorId=0  count=100   mean=19.65  min=13  max=27
+statistics  Test.node  foo:stats                 count=100   mean=19.65  min=13      max=27
+histogram   Test.node  foo:histogram             count=100   mean=19.65  min=13      max=27  #bins=22
 
 ------------------------
 $ opp_scavetool -l -w <files>
 General-0-xxxx:
 
-scalar      Test.node  foo:mean              19.84
-scalar      Test.node  foo:last              17
-scalar      Test.node  foo:stats:count       100
-scalar      Test.node  foo:stats:mean        19.84
-scalar      Test.node  foo:stats:stddev      3.15499
-scalar      Test.node  foo:stats:min         12
-scalar      Test.node  foo:stats:max         28
-scalar      Test.node  foo:stats:sum         1984
-scalar      Test.node  foo:histogram:count   100
-scalar      Test.node  foo:histogram:mean    19.84
-scalar      Test.node  foo:histogram:stddev  3.15499
-scalar      Test.node  foo:histogram:min     12
-scalar      Test.node  foo:histogram:max     28
-scalar      Test.node  foo:histogram:sum     1984
-parameter   Test.node  typename              Node
-parameter   Test       typename              Test
-vector      Test.node  foo:vector            vectorId=0  count=100   mean=19.84  min=12  max=28
-statistics  Test.node  foo:stats             count=100   mean=19.84  min=12      max=28
-histogram   Test.node  foo:histogram         count=100   mean=19.84  min=12      max=28  #bins=24
+scalar      Test.node  foo:mean                  19.84
+scalar      Test.node  foo:last                  17
+scalar      Test.node  foo:stats:count           100
+scalar      Test.node  foo:stats:sum             1984
+scalar      Test.node  foo:stats:sumweights      100
+scalar      Test.node  foo:stats:mean            19.84
+scalar      Test.node  foo:stats:stddev          3.15499
+scalar      Test.node  foo:stats:min             12
+scalar      Test.node  foo:stats:max             28
+scalar      Test.node  foo:stats:numbins         0
+scalar      Test.node  foo:histogram:count       100
+scalar      Test.node  foo:histogram:sum         1984
+scalar      Test.node  foo:histogram:sumweights  100
+scalar      Test.node  foo:histogram:mean        19.84
+scalar      Test.node  foo:histogram:stddev      3.15499
+scalar      Test.node  foo:histogram:min         12
+scalar      Test.node  foo:histogram:max         28
+scalar      Test.node  foo:histogram:numbins     24
+scalar      Test.node  foo:histogram:rangemin    8
+scalar      Test.node  foo:histogram:rangemax    32
+scalar      Test.node  foo:histogram:underflows  0
+scalar      Test.node  foo:histogram:overflows   0
+scalar      Test.node  foo:vector:count          100
+scalar      Test.node  foo:vector:sum            1984
+scalar      Test.node  foo:vector:sumweights     100
+scalar      Test.node  foo:vector:mean           19.84
+scalar      Test.node  foo:vector:stddev         3.15499
+scalar      Test.node  foo:vector:min            12
+scalar      Test.node  foo:vector:max            28
+scalar      Test.node  foo:vector:starttime      0
+scalar      Test.node  foo:vector:endtime        0
+parameter   Test.node  typename                  Node
+parameter   Test       typename                  Test
+vector      Test.node  foo:vector                vectorId=0  count=100   mean=19.84  min=12  max=28
+statistics  Test.node  foo:stats                 count=100   mean=19.84  min=12      max=28
+histogram   Test.node  foo:histogram             count=100   mean=19.84  min=12      max=28  #bins=24
 
 General-1-xxxx:
 
-scalar      Test.node  foo:mean              19.65
-scalar      Test.node  foo:last              19
-scalar      Test.node  foo:stats:count       100
-scalar      Test.node  foo:stats:mean        19.65
-scalar      Test.node  foo:stats:stddev      3.33447
-scalar      Test.node  foo:stats:min         13
-scalar      Test.node  foo:stats:max         27
-scalar      Test.node  foo:stats:sum         1965
-scalar      Test.node  foo:histogram:count   100
-scalar      Test.node  foo:histogram:mean    19.65
-scalar      Test.node  foo:histogram:stddev  3.33447
-scalar      Test.node  foo:histogram:min     13
-scalar      Test.node  foo:histogram:max     27
-scalar      Test.node  foo:histogram:sum     1965
-parameter   Test.node  typename              Node
-parameter   Test       typename              Test
-vector      Test.node  foo:vector            vectorId=0  count=100   mean=19.65  min=13  max=27
-statistics  Test.node  foo:stats             count=100   mean=19.65  min=13      max=27
-histogram   Test.node  foo:histogram         count=100   mean=19.65  min=13      max=27  #bins=22
+scalar      Test.node  foo:mean                  19.65
+scalar      Test.node  foo:last                  19
+scalar      Test.node  foo:stats:count           100
+scalar      Test.node  foo:stats:sum             1965
+scalar      Test.node  foo:stats:sumweights      100
+scalar      Test.node  foo:stats:mean            19.65
+scalar      Test.node  foo:stats:stddev          3.33447
+scalar      Test.node  foo:stats:min             13
+scalar      Test.node  foo:stats:max             27
+scalar      Test.node  foo:stats:numbins         0
+scalar      Test.node  foo:histogram:count       100
+scalar      Test.node  foo:histogram:sum         1965
+scalar      Test.node  foo:histogram:sumweights  100
+scalar      Test.node  foo:histogram:mean        19.65
+scalar      Test.node  foo:histogram:stddev      3.33447
+scalar      Test.node  foo:histogram:min         13
+scalar      Test.node  foo:histogram:max         27
+scalar      Test.node  foo:histogram:numbins     22
+scalar      Test.node  foo:histogram:rangemin    9
+scalar      Test.node  foo:histogram:rangemax    31
+scalar      Test.node  foo:histogram:underflows  0
+scalar      Test.node  foo:histogram:overflows   0
+scalar      Test.node  foo:vector:count          100
+scalar      Test.node  foo:vector:sum            1965
+scalar      Test.node  foo:vector:sumweights     100
+scalar      Test.node  foo:vector:mean           19.65
+scalar      Test.node  foo:vector:stddev         3.33447
+scalar      Test.node  foo:vector:min            13
+scalar      Test.node  foo:vector:max            27
+scalar      Test.node  foo:vector:starttime      0
+scalar      Test.node  foo:vector:endtime        0
+parameter   Test.node  typename                  Node
+parameter   Test       typename                  Test
+vector      Test.node  foo:vector                vectorId=0  count=100   mean=19.65  min=13  max=27
+statistics  Test.node  foo:stats                 count=100   mean=19.65  min=13      max=27
+histogram   Test.node  foo:histogram             count=100   mean=19.65  min=13      max=27  #bins=22
 
 ------------------------
 $ opp_scavetool -r --rundisplay runnumber <files>
