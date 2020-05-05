@@ -854,22 +854,26 @@ IDList ResultFileManager::filterIDList(const IDList& idlist, const Run *run, con
 
 class MatchableResultItem : public MatchExpression::Matchable
 {
-    const ResultItem *item;
-
+    private:
+        const ResultFileManager *manager;
+        ID id;
+        ScalarResult& buffer;
+        mutable const ResultItem *item = nullptr; //note: producing field scalars is expensive, so we delay it as long as possible
     public:
-        MatchableResultItem(const ResultItem *item) : item(item) {}
+        MatchableResultItem(const ResultFileManager *manager, ID id, ScalarResult& buffer) : manager(manager), id(id), buffer(buffer) {}
         virtual const char *getAsString() const override { return getName(); }
         virtual const char *getAsString(const char *attribute) const override;
     private:
+        const ResultItem *getItem() const {if (!item) item = manager->getItem(id, buffer); return item;}
         const char *getItemType() const;
-        const char *getName() const { return item->getName().c_str(); }
-        const char *getModuleName() const { return item->getModuleName().c_str(); }
-        const char *getFileName() const { return item->getFile()->getFilePath().c_str(); }
-        const char *getRunName() const { return item->getRun()->getRunName().c_str(); }
-        const char *getResultItemAttribute(const char *attrName) const { return item->getAttribute(attrName).c_str(); }
-        const char *getRunAttribute(const char *attrName) const { return item->getRun()->getAttribute(attrName).c_str(); }
-        const char *getIterationVariable(const char *name) const { return item->getRun()->getIterationVariable(name).c_str(); }
-        const char *getConfigValue(const char *key) const { return item->getRun()->getConfigValue(key).c_str(); }
+        const char *getName() const { return getItem()->getName().c_str(); }
+        const char *getModuleName() const { return getItem()->getModuleName().c_str(); }
+        const char *getFileName() const { return manager->getFileRun(id)->getFile()->getFilePath().c_str(); }
+        const char *getRunName() const { return manager->getFileRun(id)->getRun()->getRunName().c_str(); }
+        const char *getResultAttribute(const char *attrName) const { return item->getAttribute(attrName).c_str(); }
+        const char *getRunAttribute(const char *attrName) const { return manager->getFileRun(id)->getRun()->getAttribute(attrName).c_str(); }
+        const char *getIterationVariable(const char *name) const { return manager->getFileRun(id)->getRun()->getIterationVariable(name).c_str(); }
+        const char *getConfigValue(const char *key) const { return manager->getFileRun(id)->getRun()->getConfigValue(key).c_str(); }
 };
 
 const char *MatchableResultItem::getAsString(const char *attribute) const
@@ -885,7 +889,7 @@ const char *MatchableResultItem::getAsString(const char *attribute) const
     else if (strcasecmp(Scave::FILE, attribute) == 0)
         return getFileName();
     else if (strncasecmp(Scave::ATTR_PREFIX, attribute, 5) == 0)
-        return getResultItemAttribute(attribute+5);
+        return getResultAttribute(attribute+5);
     // TODO: add back param: but as par: -module parameter value, not parameter assignment
     else if (strncasecmp(Scave::RUNATTR_PREFIX, attribute, 8) == 0)
         return getRunAttribute(attribute+8);
@@ -894,12 +898,12 @@ const char *MatchableResultItem::getAsString(const char *attribute) const
     else if (strncasecmp(Scave::CONFIG_PREFIX, attribute, 7) == 0)
         return getConfigValue(attribute+7);
     else
-        return getResultItemAttribute(attribute);
+        return getResultAttribute(attribute);
 }
 
 const char *MatchableResultItem::getItemType() const
 {
-    return item->getItemTypeString();
+    return ResultItem::itemTypeToString(ResultFileManager::getTypeOf(id));
 }
 
 class MatchableRun : public MatchExpression::Matchable
@@ -1151,8 +1155,7 @@ IDList ResultFileManager::filterIDList(const IDList& idlist, const char *pattern
     for (ID id : idlist) {
         if (interrupted->flag)
             throw InterruptedException("Result filtering interrupted");
-        const ResultItem *item = getItem(id, buffer);
-        MatchableResultItem matchable(item);
+        MatchableResultItem matchable(this, id, buffer);
         if (matchExpr.matches(&matchable)) {
             out.push_back(id);
             count++;
