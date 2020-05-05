@@ -89,7 +89,7 @@ vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList
                     array->ens.push_back(vd.eventNumber);
             }
 
-            if (interrupted->flag)
+            if (interrupted != nullptr && interrupted->flag)
                 throw InterruptedException("Vector loading interrupted");
         };
 
