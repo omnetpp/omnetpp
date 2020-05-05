@@ -226,6 +226,8 @@ public class IconGridViewer extends ContentViewer {
 
         @Override
         public void mouseDoubleClick(MouseEvent e) {
+            Display.getCurrent().timerExec(-1,  this); // cancel pending direct rename
+            elementToRename = null;
             if (e.button != 1)
                 return;
             Object element = getElementAt(e.x, e.y);
@@ -236,6 +238,7 @@ public class IconGridViewer extends ContentViewer {
         public void dragDropInProgress() {
             wasDragDrop = true;
             Display.getCurrent().timerExec(-1, this); // cancel pending direct rename
+            elementToRename = null;
         }
 
         public void dragDropFinished() {
