@@ -30,6 +30,10 @@ public class ResultsProvider implements IScaveResultsPickleProvider {
         this.rp = new ResultsPickler(rfm, proc.getShmSendBufferManager(), proc.getInterruptedFlag());
     }
 
+    public int getSerial() {
+        return rfm.getSerial();
+    }
+
     public String getRunsPickle(String filterExpression) throws PickleException, IOException {
         return rp.getRunsPickle(filterExpression).getNameAndSize();
     }

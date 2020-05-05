@@ -164,6 +164,10 @@ def _append_additional_data(df, attrs, include_runattrs, include_itervars, inclu
     return df
 
 
+def get_serial():
+    return Gateway.results_provider.getSerial()
+
+
 def get_runs(filter_expression="", include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
     shmname = Gateway.results_provider.getRunsPickle(filter_expression)
     runs = _load_pickle_from_shm(shmname)

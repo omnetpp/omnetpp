@@ -30,6 +30,10 @@ def _parse_ndarray(s):
     return np.fromstring(s, sep=' ') if s else None
 
 
+def get_serial():
+    # return an (arbitrary) constant, as the set of loaded results doesn't change during a run of opp_charttool. 
+    return 1
+
 def _get_results(filter_expression, file_extensions, result_type, *additional_args):
 
     filelist = [i for i in inputfiles if any([i.endswith(e) for e in file_extensions])]

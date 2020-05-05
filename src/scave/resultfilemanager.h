@@ -136,6 +136,8 @@ class SCAVE_API ResultFileManager
     friend class OmnetppResultFileLoader;
     friend class SqliteResultFileLoader;
   private:
+    int serial = 0; // incremented at each results change
+
     std::unordered_set<ResultFile*> fileList;
     std::unordered_set<Run*> runList;
 
@@ -227,6 +229,7 @@ class SCAVE_API ResultFileManager
     ILock& getWriteLock() const { return const_cast<ResultFileManager*>(this)->lock.writeLock(); }
 #endif
 
+    int getSerial() const {return serial;}
 
     // navigation
     ResultFileList getFiles() const;

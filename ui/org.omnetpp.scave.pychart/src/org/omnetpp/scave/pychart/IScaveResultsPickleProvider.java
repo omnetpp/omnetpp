@@ -20,6 +20,8 @@ import net.razorvine.pickle.PickleException;
  *  shared memory name and its size in bytes (written in decimal form).
  */
 public interface IScaveResultsPickleProvider {
+    int getSerial();
+
     // metadata about runs
     String getRunsPickle(String filter) throws PickleException, IOException;
 

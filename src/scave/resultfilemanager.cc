@@ -77,7 +77,6 @@ bool StringMapPtrEq::operator () (const StringMap *lhs, const StringMap *rhs) co
 
 ResultFileManager::ResultFileManager()
 {
-
 }
 
 ResultFileManager::~ResultFileManager()
@@ -88,6 +87,8 @@ ResultFileManager::~ResultFileManager()
 void ResultFileManager::clear()
 {
     WRITER_MUTEX
+
+    serial++;
 
     for (FileRun *fileRun : fileRunList)
         delete fileRun;
@@ -1362,6 +1363,7 @@ ResultFile *ResultFileManager::loadFile(const char *displayName, const char *fil
         throw opp_runtime_error("Cannot open '%s' for read", fileSystemFileName);
 
     try {
+        serial++;
         ResultFile *file = SqliteResultFileUtils::isSqliteFile(fileSystemFileName) ?
                 SqliteResultFileLoader(this, flags, interrupted).loadFile(displayName, fileSystemFileName) :
                 OmnetppResultFileLoader(this, flags, interrupted).loadFile(displayName, fileSystemFileName);
@@ -1395,6 +1397,8 @@ void ResultFileManager::unloadFile(const char *displayName)
 void ResultFileManager::unloadFile(ResultFile *file)
 {
     WRITER_MUTEX
+
+    serial++;
 
     // delete FileRuns
     set<Run *> affectedRuns;

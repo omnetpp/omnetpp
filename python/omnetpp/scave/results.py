@@ -38,6 +38,10 @@ else:
 
 from math import inf
 
+def get_serial():
+    # TODO documentation
+    return impl.get_serial()
+
 def get_results(filter_expression="", row_types=['runattr', 'itervar', 'config', 'scalar', 'vector', 'statistic', 'histogram', 'param', 'attr'], omit_unused_columns=True, start_time=-inf, end_time=inf):
     """
     Returns a filtered set of results and metadata in CSV-like format.
