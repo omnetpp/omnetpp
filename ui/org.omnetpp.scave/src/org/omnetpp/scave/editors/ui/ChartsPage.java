@@ -151,7 +151,7 @@ public class ChartsPage extends FormEditorPage {
         return false;
     }
 
-    public void updatePage(ModelChangeEvent event) {
+    public void modelChanged(ModelChangeEvent event) {
         viewer.refresh();
     }
 

@@ -223,7 +223,7 @@ public class InputsPage extends FormEditorPage {
     }
 
     @Override
-    public void updatePage(ModelChangeEvent event) {
+    public void modelChanged(ModelChangeEvent event) {
         if (ScaveModelUtil.isInputsChange(event))
             getTreeViewer().refresh();
     }

@@ -151,7 +151,7 @@ import org.xml.sax.SAXException;
  * @author andras, tomi
  */
 public class ScaveEditor extends MultiPageEditorPartExt
-        implements ISelectionProvider, IGotoMarker, INavigationLocationProvider {
+        implements ISelectionProvider, IGotoMarker, INavigationLocationProvider, IModelChangeListener {
     public static final String ACTIVE_PAGE = "ActivePage", PAGE = "Page",
             PAGE_ID = "PageId", TEMPLATE_TIMESTAMPS = "TemplateTimestamps";
 
@@ -306,25 +306,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
      * in the workspace.
      */
     private ResultFilesTracker tracker;
-
-    /**
-     * Updates pages when the model changed.
-     */
-    private IModelChangeListener modelChangeListener = new IModelChangeListener() {
-
-        @Override
-        public void modelChanged(ModelChangeEvent event) {
-            firePropertyChange(ScaveEditor.PROP_DIRTY);
-
-            updatePages(event);
-            // strictly speaking, some actions (undo, redo) should be updated when the
-            // command stack changes, but there are more of those.
-            actions.updateActions();
-
-            if (contentOutlinePage != null)
-                contentOutlinePage.refresh();
-        }
-    };
 
     /**
      * The constructor.
@@ -529,7 +510,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
         IFile inputFile = ((IFileEditorInput) getEditorInput()).getFile();
         tracker = new ResultFilesTracker(manager, analysis.getInputs(), inputFile.getParent());
-        analysis.addListener(modelChangeListener);
+        analysis.addListener(this);
         analysis.addListener(tracker);
     }
 
@@ -1163,8 +1144,11 @@ public class ScaveEditor extends MultiPageEditorPartExt
         return selectionChangedListener;
     }
 
-    //TODO temp chart name changes currently do not propagate to the tabitem text, as we do not receive model change notification about their change!
-    private void updatePages(ModelChangeEvent event) {
+    @Override
+    public void modelChanged(ModelChangeEvent event) {
+        firePropertyChange(ScaveEditor.PROP_DIRTY);
+
+        //TODO temp chart name changes currently do not propagate to the tabitem text, as we do not receive model change notification about their change!
 
         // close pages whose content was deleted, except temporary charts
         for (AnalysisItem item : closablePages.keySet().toArray(new AnalysisItem[0])) { // toArray() is for preventing ConcurrentModificationException
@@ -1177,8 +1161,15 @@ public class ScaveEditor extends MultiPageEditorPartExt
         int pageCount = getPageCount();
         for (int pageIndex = 0; pageIndex < pageCount; ++pageIndex) {
             FormEditorPage editorPage = getEditorPage(pageIndex);
-            editorPage.updatePage(event);
+            editorPage.modelChanged(event);
         }
+
+        // strictly speaking, some actions (undo, redo) should be updated when the
+        // command stack changes, but there are more of those.
+        actions.updateActions();
+
+        if (contentOutlinePage != null)
+            contentOutlinePage.refresh();
     }
 
     @Override

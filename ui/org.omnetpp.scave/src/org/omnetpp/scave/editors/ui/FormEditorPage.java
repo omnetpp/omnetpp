@@ -127,7 +127,7 @@ public class FormEditorPage extends Composite {
      * Updates the page title, etc.
      * Called when the model changed.
      */
-    public void updatePage(ModelChangeEvent event) {
+    public void modelChanged(ModelChangeEvent event) {
     }
 
     public void addToToolbar(IAction action) {
