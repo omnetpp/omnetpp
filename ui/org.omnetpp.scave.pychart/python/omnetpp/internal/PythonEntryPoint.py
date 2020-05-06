@@ -17,6 +17,8 @@ import pickle as pl
 import functools
 print = functools.partial(print, flush=True)
 
+from py4j.java_collections import MapConverter
+
 from omnetpp.internal.TimeAndGuard import TimeAndGuard
 from omnetpp.internal import Gateway
 
@@ -67,6 +69,14 @@ class PythonEntryPoint(object):
     # @TimeAndGuard(measureTime=False)
     def execute(self, chartInput):
         exec(chartInput, self.execContext)
+
+    # @TimeAndGuard(measureTime=False)
+    def evaluate(self, expression):
+        global execContext
+        return eval(expression, execContext)
+
+    def getRcParams(self):
+        return MapConverter().convert({str(k) : str(v) for k,v in mpl.rcParams.items()}, Gateway.gateway._gateway_client)
 
     def setGlobalObjectPickle(self, name, pickle):
         self.execContext[name] = pl.loads(pickle)

@@ -7,6 +7,9 @@
 
 package org.omnetpp.scave.pychart;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import py4j.Py4JException;
 
 /**
@@ -65,4 +68,8 @@ public interface IPythonEntryPoint {
      * Executes any Python code given in command, using exec()
      */
     void execute(String command) throws Py4JException;
+
+    Object evaluate(String expression) throws Py4JException;
+
+    HashMap<String, String> getRcParams();
 }

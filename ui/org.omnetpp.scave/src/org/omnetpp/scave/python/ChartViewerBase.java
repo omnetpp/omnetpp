@@ -9,10 +9,13 @@ package org.omnetpp.scave.python;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.Debug;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ChartProvider;
 import org.omnetpp.scave.editors.MemoizationCache;
 import org.omnetpp.scave.editors.ResultsProvider;
@@ -93,6 +96,17 @@ public abstract class ChartViewerBase {
     protected void changePythonIntoDirectory(File workingDir) {
         proc.getEntryPoint().execute("import os; os.chdir(r\"\"\"" + workingDir.getAbsolutePath() + "\"\"\"); del os;");
         proc.getEntryPoint().execute("import site; site.addsitedir(r\"\"\"" + workingDir.getAbsolutePath() + "\"\"\"); del site;");
+
+        if (PythonProcess.getMatplotlibRcParams() == null) {
+            try {
+                Map<String, String> rcParams = ((Map<String, String>)proc.getEntryPoint().getRcParams());
+                PythonProcess.setMatplotlibParams(rcParams);
+            }
+            catch (Exception e) {
+                ScavePlugin.logError("Could not query rcParams from Python, content assist for it won't be available", e);
+                PythonProcess.setMatplotlibParams(new HashMap<String,String>()); // don't try again next time
+            }
+        }
     }
 
     public PythonProcess getPythonProcess() {

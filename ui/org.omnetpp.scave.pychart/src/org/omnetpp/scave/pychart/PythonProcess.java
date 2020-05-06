@@ -7,6 +7,8 @@
 
 package org.omnetpp.scave.pychart;
 
+import java.util.Map;
+
 import org.omnetpp.common.Debug;
 import org.omnetpp.scave.engine.InterruptedFlag;
 import org.omnetpp.scave.engine.ShmSendBufferManager;
@@ -36,6 +38,8 @@ public class PythonProcess {
 
     protected IPythonEntryPoint entryPoint = null;
     protected ShmSendBufferManager shmSendBufferManager;
+
+    private static Map<String, String> matplotlibRcParams; // stored result of a Matplotlib rcParams() call, mainly for content assist
 
     public PythonProcess(Process process, ClientServer clientServer) {
         this.process = process;
@@ -145,4 +149,13 @@ public class PythonProcess {
     public ShmSendBufferManager getShmSendBufferManager() {
         return shmSendBufferManager;
     }
+
+    public static Map<String, String> getMatplotlibRcParams() {
+        return matplotlibRcParams;
+    }
+
+    public static void setMatplotlibParams(Map<String, String> rcParams) {
+        matplotlibRcParams = rcParams;
+    }
+
 }
