@@ -546,8 +546,6 @@ ShmSendBuffer *ResultsPickler::getStatisticsPickle(const char *filterExpression,
 
 ShmSendBuffer *ResultsPickler::getHistogramsPickle(const char *filterExpression, bool includeAttrs)
 {
-    std::cout << "c++: getHistogramsPickle start" << std::endl;
-
     size_t sizeLimit = getSizeLimit();
     ShmPickler p(shmManager->create("histograms", 0, true), sizeLimit);
 
@@ -603,7 +601,6 @@ ShmSendBuffer *ResultsPickler::getHistogramsPickle(const char *filterExpression,
 
     p.stop();
 
-    std::cout << "c++: getHistogramsPickle end" << std::endl;
     return p.get();
 }
 
