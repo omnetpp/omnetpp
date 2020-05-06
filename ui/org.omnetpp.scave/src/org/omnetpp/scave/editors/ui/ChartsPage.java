@@ -110,7 +110,7 @@ public class ChartsPage extends FormEditorPage {
         viewer.setFocus();
 
         // configure viewers
-        configureViewer(viewer);
+        configureViewer();
 
         // set contents
         Analysis analysis = scaveEditor.getAnalysis();
@@ -155,7 +155,7 @@ public class ChartsPage extends FormEditorPage {
         viewer.refresh();
     }
 
-    protected void configureViewer(IconGridViewer modelViewer) {
+    protected void configureViewer() {
 
         ILabelProvider labelProvider = new LabelProvider() {
             @Override
@@ -180,7 +180,7 @@ public class ChartsPage extends FormEditorPage {
             }
         };
 
-        modelViewer.setContentProvider(new IStructuredContentProvider() {
+        viewer.setContentProvider(new IStructuredContentProvider() {
             @Override
             public Object[] getElements(Object inputElement) {
                 if (inputElement instanceof Charts) {
@@ -190,7 +190,7 @@ public class ChartsPage extends FormEditorPage {
                 return new Object[0];
             }
         });
-        modelViewer.setLabelProvider(labelProvider);
+        viewer.setLabelProvider(labelProvider);
 
         viewer.addDropListener(new IconGridViewer.IDropListener() {
             @Override
@@ -228,20 +228,20 @@ public class ChartsPage extends FormEditorPage {
             }
         });
 
-        modelViewer.addSelectionChangedListener(scaveEditor.getSelectionChangedListener());
+        viewer.addSelectionChangedListener(scaveEditor.getSelectionChangedListener());
 
         IMenuListener menuListener = new IMenuListener() {
             @Override
             public void menuAboutToShow(IMenuManager menuManager) {
-                boolean emptyAreaClicked = modelViewer.getSelection().isEmpty();
+                boolean emptyAreaClicked = viewer.getSelection().isEmpty();
                 scaveEditor.getActions().populateContextMenu(menuManager, emptyAreaClicked);
             }
         };
 
-        UIUtils.createContextMenuFor(modelViewer.getCanvas(), true, menuListener);
+        UIUtils.createContextMenuFor(viewer.getCanvas(), true, menuListener);
 
         // on double-click, open (the dataset or chart), or bring up the Properties dialog
-        modelViewer.addDoubleClickListener(new IDoubleClickListener() {
+        viewer.addDoubleClickListener(new IDoubleClickListener() {
             @Override
             public void doubleClick(DoubleClickEvent event) {
                 ScaveEditorActions actions = scaveEditor.getActions();
@@ -252,22 +252,6 @@ public class ChartsPage extends FormEditorPage {
                     actions.editAction.run();
             }
         });
-
-//        new HoverSupport().adapt(modelViewer.getTree(), new IHoverInfoProvider() {
-//            @Override
-//            public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
-//                Item item = modelViewer.getTree().getItem(new Point(x,y));
-//                Object element = item==null ? null : item.getData();
-//                if (element != null && modelViewer.getLabelProvider() instanceof DecoratingLabelProvider) {
-//                    ILabelProvider labelProvider = ((DecoratingLabelProvider)modelViewer.getLabelProvider()).getLabelProvider();
-//                    if (labelProvider instanceof ScaveModelLabelProvider) {
-//                        ScaveModelLabelProvider scaveLabelProvider = (ScaveModelLabelProvider)labelProvider;
-//                        return new HtmlHoverInfo(HoverSupport.addHTMLStyleSheet(scaveLabelProvider.getTooltipText(element)));
-//                    }
-//                }
-//                return null;
-//            }
-//        });
     }
 }
 
