@@ -222,20 +222,7 @@ public class ChartEditForm {
 
             String contentAssist = (String)control.getData("contentAssist");
             if (contentAssist != null)  {
-                IContentProposalProvider proposalProvider = null;
-                if (contentAssist.equalsIgnoreCase("filter")) {
-                    FilterExpressionProposalProvider expressionProposalProvider = new FilterExpressionProposalProvider();
-                    expressionProposalProvider.setFilterHintsCache(filterHintsCache);
-                    expressionProposalProvider.setIDList(manager, manager.getAllItems());
-
-                    proposalProvider = expressionProposalProvider;
-                }
-                else if (contentAssist.equalsIgnoreCase("plotproperties"))
-                    proposalProvider = new NativePlotPropertiesContentProposalProvider();
-                else if (contentAssist.equalsIgnoreCase("matplotlibrc"))
-                    proposalProvider = new MatplotlibrcContentProposalProvider();
-                else
-                    ScavePlugin.getDefault().getLog().warn("Invalid value for 'contentAssist' attribute in XSWT file: '" + contentAssist + "'");
+                IContentProposalProvider proposalProvider = makeProposalProvider(contentAssist);
 
                 if (proposalProvider != null) {
                     if (control instanceof Text)
@@ -265,6 +252,23 @@ public class ChartEditForm {
                     if (sibling != control)
                         sibling.setEnabled(button.getSelection());
             }
+        }
+    }
+
+    protected IContentProposalProvider makeProposalProvider(String contentAssist) {
+        switch (contentAssist.toLowerCase()) {
+        case "filter":
+            FilterExpressionProposalProvider expressionProposalProvider = new FilterExpressionProposalProvider();
+            expressionProposalProvider.setFilterHintsCache(filterHintsCache);
+            expressionProposalProvider.setIDList(manager, manager.getAllItems());
+            return expressionProposalProvider;
+        case "plotproperties":
+            return new NativePlotPropertiesContentProposalProvider();
+        case "matplotlibrc":
+            return new MatplotlibrcContentProposalProvider();
+        default:
+            ScavePlugin.getDefault().getLog().warn("Invalid value for 'contentAssist' attribute in XSWT file: '" + contentAssist + "'");
+            return null;
         }
     }
 
