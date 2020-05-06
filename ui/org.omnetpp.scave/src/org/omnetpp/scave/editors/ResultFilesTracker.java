@@ -7,7 +7,6 @@
 
 package org.omnetpp.scave.editors;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -29,11 +28,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SubMonitor;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.engine.StringVector;
+import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
@@ -112,26 +110,16 @@ public class ResultFilesTracker implements IModelChangeListener {
             return;
 
         DisplayUtils.runNowOrAsyncInUIThread(() -> {
-            try {
-                InterruptedFlag interruptedFlag = new InterruptedFlag();
-                ProgressMonitorDialog dialog = new ProgressMonitorDialog(Display.getCurrent().getActiveShell()) {
-                    @Override
-                    protected void cancelPressed() {
-                        super.cancelPressed();
-                        interruptedFlag.setFlag(true);
-                    }
-                };
-                dialog.run(true, true, (monitor)-> ResultFileManager.runWithWriteLock(manager, () -> doSynchronize(reload, monitor, interruptedFlag)));
-            }
-            catch (InvocationTargetException e) {
-                ScavePlugin.logError(e);
-            }
-            catch (InterruptedException e) {}
-
+            TimeTriggeredProgressMonitorDialog2.runWithDialog("Loading result files", (monitor)-> {
+                ResultFileManager.runWithWriteLock(manager, () -> {
+                    InterruptedFlag interruptedFlag = TimeTriggeredProgressMonitorDialog2.getActiveInstance().getInterruptedFlag();
+                    doSynchronize(reload, monitor, interruptedFlag);
+                });
+            });
         });
     }
 
-    public void doSynchronize(boolean reload, IProgressMonitor monitor, InterruptedFlag interruptedFlag) {
+    protected void doSynchronize(boolean reload, IProgressMonitor monitor, InterruptedFlag interruptedFlag) {
         manager.checkWriteLock(); // must run with write lock
 
         if (reload)
