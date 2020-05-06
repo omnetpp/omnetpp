@@ -253,6 +253,12 @@ public class ChartsPage extends FormEditorPage {
             }
         });
     }
+
+    @Override
+    public void pageActivated() {
+        super.pageActivated();
+        scaveEditor.setSelection(viewer.getSelection());
+    }
 }
 
 

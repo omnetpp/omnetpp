@@ -228,6 +228,12 @@ public class InputsPage extends FormEditorPage {
             getTreeViewer().refresh();
     }
 
+    @Override
+    public void pageActivated() {
+        super.pageActivated();
+        scaveEditor.setSelection(getTreeViewer().getSelection());
+    }
+
     protected void handleDrop(IStructuredSelection droppedItems) {
         // extract list of patterns to add
         List<String> list = new ArrayList<>();
