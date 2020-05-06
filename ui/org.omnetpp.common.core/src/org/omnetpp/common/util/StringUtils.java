@@ -7,6 +7,7 @@
 
 package org.omnetpp.common.util;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -320,8 +321,13 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
             return "0 " + noun;
         else if (count == 1)
             return "1 " + noun;
-        else
+        else if (count < 1000)
             return String.valueOf(count) + " " + plural(noun);
+        else {
+            NumberFormat format = NumberFormat.getIntegerInstance();
+            format.setGroupingUsed(true);
+            return format.format(count) + " " + plural(noun);
+        }
     }
 
     /**
@@ -834,11 +840,11 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     public static String escapeBash(String str) {
         return str.replace("$", "$$").replace("(", "\\(").replace(")", "\\)");
     }
-    
+
     public static String removeOptionalPrefix(String str, String prefix) {
         if (str.startsWith(prefix))
             str = str.substring(prefix.length());
         return str;
     }
-    
+
 }
