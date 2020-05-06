@@ -51,8 +51,6 @@ class ShmCleaner {
 
 std::pair<ShmSendBuffer*, ShmSendBuffer*> ResultsPickler::readVectorIntoShm(const ID& id, double simTimeStart, double simTimeEnd)
 {
-    std::cout << "C++: readVectorIntoShm begin" << std::endl;
-
     size_t memoryLimitBytes = getSizeLimit();
 
     static int counter = 0;
@@ -74,7 +72,6 @@ std::pair<ShmSendBuffer*, ShmSendBuffer*> ResultsPickler::readVectorIntoShm(cons
     array.release();
     malloc_trim(); // so the std::vector buffers (in array) are released to the operating system
 
-    std::cout << "C++: readVectorIntoShm end" << std::endl;
     return {xBuffer,yBuffer};
 }
 
