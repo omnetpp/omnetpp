@@ -40,7 +40,7 @@ title = str(list(df[title_col])[0]) if title_col else None
 unique_names = df["name"].unique()
 
 if len(unique_names) != 1:
-    plot.set_warning("Scalar names should be unique")
+    plot.set_warning("Selected scalars must share the same name.")
     exit(1)
 
 scalar_name = unique_names[0]
