@@ -568,16 +568,21 @@ public class ScaveEditor extends MultiPageEditorPartExt
         if (MessageDialogWithToggle.ALWAYS.equals(pref))
             return; // "always don't show" -> never show... ha!
 
-        Display.getCurrent().asyncExec(() -> {
-            MessageDialogWithToggle.openWarning(Display.getCurrent().getActiveShell(),
-                    "Security Warning",
-                    "The Analysis you've just opened contains charts which employ user-editable Python code to produce the content when they are opened. "
-                        + "These Python scripts, in addition to being extremely useful, can also be a potential hazard, since they "
-                        + "have as much access to your computer as any user program. There is no sandboxing.\n\n"
-                        + "Be sure to only open ANF files from trusted sources.",
-                    "Don't show this message again", false,
-                    preferences, PREF_DONT_SHOW_PYTHON_EXECUTION_WARNING_DIALOG);
-        });
+//TODO temporarily commented out, because it could interfere with the "Loading files" progress dialog (also modal), and cause the UI to lock.
+// Probably asyncExec() is not a good idea (that's what causes this dialog to come up while another modal is already active.)
+// Currently, asyncExec() is there to prevent the dialog from coming up too early, while the workbench
+// is loading (splash screen is visible but workbench window not yet) -- but then some other solution need to be found for that?
+//
+//        Display.getCurrent().asyncExec(() -> {
+//            MessageDialogWithToggle.openWarning(Display.getCurrent().getActiveShell(),
+//                    "Security Warning",
+//                    "The Analysis you've just opened contains charts which employ user-editable Python code to produce the content when they are opened. "
+//                        + "These Python scripts, in addition to being extremely useful, can also be a potential hazard, since they "
+//                        + "have as much access to your computer as any user program. There is no sandboxing.\n\n"
+//                        + "Be sure to only open ANF files from trusted sources.",
+//                    "Don't show this message again", false,
+//                    preferences, PREF_DONT_SHOW_PYTHON_EXECUTION_WARNING_DIALOG);
+//        });
     }
 
     public IPropertySheetPage getPropertySheetPage() {
