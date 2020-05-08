@@ -15,8 +15,11 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.CommonCorePlugin;
 import org.omnetpp.scave.engine.InterruptedFlag;
@@ -101,7 +104,8 @@ public class TimeTriggeredProgressMonitorDialog2 extends ProgressMonitorDialog {
 
     @Override
     public void run(boolean fork, final boolean cancelable, final IRunnableWithProgress runnable) throws InvocationTargetException, InterruptedException {
-        Assert.isTrue(activeInstance == null); // no nesting
+        Assert.isTrue(activeInstance == null); // recursive invocations are not allowed
+
         try {
             activeInstance = this;
 
@@ -111,7 +115,24 @@ public class TimeTriggeredProgressMonitorDialog2 extends ProgressMonitorDialog {
                 return;
             }
 
-            Runnable openDialogRunnable = () -> open();
+            // Since, despite its name, ModalContext.run() used inside ProgressMonitorDialog.run()
+            // is NOT actually modal (all UI events are still processes normally, as the code
+            // contains Display.readAndDispatch()!), we need to manually ensure that the user
+            // cannot initiate actions even before the dialog comes up.
+            //
+            // Ideally, we would block Display.readAndDispatch() somehow until the dialog comes up.
+            // However, that's not possible without having a custom version of the ModalContext class.
+            // Instead, we install an event filter that discards events initiated by the user via
+            // mouse/keyboard: mouse events, keyboard events, and ALSO higher-level derived events like
+            // "selection", tree expand/collapse, "menu detection", etc; we cannot discard all events
+            // because there are important ones like Dispose etc.
+
+            disableUIInteractions();
+
+            Runnable openDialogRunnable = () -> {
+                enableUIInteractions();
+                open();
+            };
             display.timerExec(delayMillis, openDialogRunnable);
 
             InvocationTargetException[] invokes = new InvocationTargetException[1];
@@ -137,8 +158,30 @@ public class TimeTriggeredProgressMonitorDialog2 extends ProgressMonitorDialog {
         }
         finally {
             activeInstance = null;
+            enableUIInteractions();
         }
      }
+
+    private static Listener eventKiller = event -> { event.type = SWT.None; };
+
+    private static int[] eventTypesToKill = new int[] {
+            SWT.MouseDown, SWT.MouseUp, SWT.MouseDoubleClick, SWT.MouseWheel,
+            SWT.MouseVerticalWheel, SWT.MouseHorizontalWheel, SWT.MouseHover,
+            SWT.KeyDown, SWT.KeyUp, SWT.HardKeyDown, SWT.HardKeyUp,
+            SWT.Selection, SWT.DefaultSelection, SWT.Expand, SWT.Collapse, SWT.MenuDetect
+    };
+
+    private static void disableUIInteractions() {
+        Display display = Display.getCurrent();
+        for (int eventType : eventTypesToKill)
+            display.addFilter(eventType, eventKiller);
+    }
+
+    private static void enableUIInteractions() {
+        Display display = Display.getCurrent();
+        for (int eventType : eventTypesToKill)
+            display.removeFilter(eventType, eventKiller);
+    }
 
     /**
      * Utility function to run UI code in the given runnable, with a delayed
