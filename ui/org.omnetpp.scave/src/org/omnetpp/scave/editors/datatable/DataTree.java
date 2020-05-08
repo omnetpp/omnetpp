@@ -1,3 +1,10 @@
+/*--------------------------------------------------------------*
+  Copyright (C) 2006-2020 OpenSim Ltd.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  'License' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
 package org.omnetpp.scave.editors.datatable;
 
 import java.util.ArrayList;
@@ -24,7 +31,6 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.common.Debug;
-import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 import org.omnetpp.common.util.CsvWriter;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.CustomTreeLevelsAction;
