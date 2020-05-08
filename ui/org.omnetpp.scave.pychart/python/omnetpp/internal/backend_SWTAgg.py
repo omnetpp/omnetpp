@@ -1,150 +1,49 @@
 """
-This is a fully functional do nothing backend to provide a SWTAgg to
-backend writers.  It is fully functional in that you can select it as
-a backend with
+A custom backend for matplotlib that uses the matplotlib.backends.backend_agg
+module for rasterization, and communicates with the OMNeT++ IDE through a Py4J
+connection for display and interaction.
 
-  import matplotlib
-  matplotlib.use('SWTAgg')
-
-and your matplotlib scripts will (should!) run without error, though
-no output is produced.  This provides a nice starting point for
-backend writers because you can selectively implement methods
-(draw_rectangle, draw_lines, etc...) and slowly see your figure come
-to life w/o having to have a full blown implementation before getting
-any results.
-
-Copy this to backend_xxx.py and replace all instances of 'SWTAgg'
-with 'xxx'.  Then implement the class methods and functions below, and
-add 'xxx' to the switchyard in matplotlib/backends/__init__.py and
-'xxx' to the backends list in the validate_backend methon in
-matplotlib/__init__.py and you're off.  You can use your backend with::
-
-  import matplotlib
-  matplotlib.use('xxx')
-  from pylab import *
-  plot([1,2,3])
-  show()
-
-matplotlib also supports external backends, so you can place you can
-use any module in your PYTHONPATH with the syntax::
-
-  import matplotlib
-  matplotlib.use('module://my_backend')
-
-where my_backend.py is your module name.  This syntax is also
-recognized in the rc file and in the -d argument in pylab, e.g.,::
-
-  python simple_plot.py -dmodule://my_backend
-
-If your backend implements support for saving figures (i.e. has a print_xyz()
-method) you can register it as the default handler for a given file type
-
-  from matplotlib.backend_bases import register_backend
-  register_backend('xyz', 'my_backend', 'XYZ File Format')
-  ...
-  plt.savefig("figure.xyz")
-
-The files that are most relevant to backend_writers are
-
-  matplotlib/backends/backend_your_backend.py
-  matplotlib/backend_bases.py
-  matplotlib/backends/__init__.py
-  matplotlib/__init__.py
-  matplotlib/_pylab_helpers.py
-
-Naming Conventions
-
-  * classes Upper or MixedUpperCase
-
-  * varables lower or lowerUpper
-
-  * functions lower or underscore_separated
-
+This file is based on:
+ - matplotlib.backends.backend_template
+ - matplotlib.backends.backend_qt5
+ - matplotlib.backends.backend_qt5agg
 """
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
-import matplotlib
-from matplotlib._pylab_helpers import Gcf
-from matplotlib.backend_bases import RendererBase, GraphicsContextBase, \
-     FigureManagerBase, FigureCanvasBase, NavigationToolbar2
-from matplotlib.figure import Figure
-from matplotlib.transforms import Bbox
-
-from matplotlib.cbook import CallbackRegistry
-
-from matplotlib.backends.backend_agg import FigureCanvasAgg
-
-from matplotlib.backend_bases import cursors
+__copyright__ = "Copyright 2016-2020, OpenSim Ltd"
+__license__ = """
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  'License' for details on this and other legal matters.
+"""
 
 import os
-import sys
-import time
-import traceback
-
 # posix_ipc is required for POSIX shm on Linux and Mac
 # Although on Python >=3.8 we could do without it.
 if os.name != 'nt':
     import posix_ipc
 import mmap
+import functools
+
+from matplotlib.figure import Figure
+from matplotlib.backend_bases import FigureManagerBase, FigureCanvasBase, NavigationToolbar2
+from matplotlib.backends.backend_agg import FigureCanvasAgg
 
 from omnetpp.internal import Gateway
-from omnetpp.internal.TimeAndGuard import TimeAndGuard, for_all_methods
-
-import functools
-print = functools.partial(print, flush=True)
+# from omnetpp.internal.TimeAndGuard import TimeAndGuard, for_all_methods
 
 # autoConvert doesn't seem to work with containers returned from Python
 from py4j.java_collections import MapConverter, ListConverter
 
-########################################################################
-#
-# The following functions and classes are for pylab and implement
-# window/figure managers, etc...
-#
-########################################################################
 
-
-def draw_if_interactive():
-    """
-    For image backends - is not required
-    For GUI backends - this should be overriden if drawing should be done in
-    interactive python mode
-    """
-
-    # for manager in Gcf.get_all_fig_managers():
-    #    # do something to display the GUI
-    #    manager.canvas.draw()
-
-
-def show():
-    """
-    For image backends - is not required
-    For GUI backends - show() is usually the last line of a pylab script and
-    tells the backend that it is time to draw.  In interactive mode, this may
-    be a do nothing func.  See the GTK backend for an example of how to handle
-    interactive versus batch mode
-    """
-    # for manager in Gcf.get_all_fig_managers():
-    #    # do something to display the GUI
-    #    manager.canvas.draw()
-    #
+print = functools.partial(print, flush=True)
 
 
 def new_figure_manager(num, *args, **kwargs):
     """
     Create a new figure manager instance
     """
-    # if a main-level app must be created, this (and
-    # new_figure_manager_given_figure) is the usual place to
-    # do it -- see backend_wx, backend_wxagg and backend_tkagg for
-    # examples.  Not all GUIs require explicit instantiation of a
-    # main-level app (egg backend_gtk, backend_gtkagg) for pylab
     FigureClass = kwargs.pop('FigureClass', Figure)
     thisFig = FigureClass(*args, **kwargs)
     return new_figure_manager_given_figure(num, thisFig)
-
 
 def new_figure_manager_given_figure(num, figure):
     """
@@ -172,10 +71,7 @@ class NavigationToolbar2SWT(NavigationToolbar2):
                 text, tooltip_text, image_file, method_name)
             descs.append(desc)
 
-        Gateway.widget_provider.setPlotActions(self.canvas.num, descs);
-
-    def edit_parameters(self):
-        allaxes = self.canvas.figure.get_axes()
+        Gateway.widget_provider.setPlotActions(self.canvas.num, descs)
 
     def dynamic_update(self):
         self.canvas.dynamic_update()
@@ -232,14 +128,9 @@ class FigureCanvasSWT(FigureCanvasBase):
         super().__init__(figure)
         self.figure = figure
 
-        w, h = self.get_width_height()
-
-        self.widget = None
+        w, h = self.get_width_height() # TODO pass these in as well, as initial size?
 
         self.widget = Gateway.widget_provider.getWidget(self.num, self)
-
-    def setWidget(self, w):
-        self.widget = w
 
     def enterEvent(self, x, y):
         FigureCanvasBase.enter_notify_event(self, xy=(x, y))
@@ -308,12 +199,7 @@ class FigureCanvasSWT(FigureCanvasBase):
         self.toolbar.callback(action)
 
     def exportFigure(self, filename):
-        try:
-            self.print_figure(filename)
-        except Exception as e:
-            print("EXC:" + str(e))
-            return str(e)
-        return ""
+        self.print_figure(filename)
 
     def getSupportedFiletypes(self):
         types = self.get_supported_filetypes_grouped()
@@ -335,8 +221,7 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
     Note GUI SWTAggs will want to connect events for button presses,
     mouse movements and key presses to functions that call the base
     class methods button_press_event, button_release_event,
-    motion_notify_event, key_press_event, and key_release_event.  See,
-    e.g., backend_gtk.py, backend_wx.py and backend_tkagg.py
+    motion_notify_event, key_press_event, and key_release_event.
 
     Attributes
     ----------
@@ -345,11 +230,13 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
 
     """
 
+    class Java:
+        implements = ["org.omnetpp.scave.pychart.IMatplotlibFigureCanvas"]
+
+
     def __init__(self, figure, num):
         self.num = num
-
         self.useSharedMemory = True
-
         self.shmMmap = None
 
         super().__init__(figure)
@@ -360,9 +247,6 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
     def __del__(self):
         if self.shmMmap:
             self.shmMmap.close()
-
-    class Java:
-        implements = ["org.omnetpp.scave.pychart.IMatplotlibFigureCanvas"]
 
     def getAxisLimits(self):
         limits = list()

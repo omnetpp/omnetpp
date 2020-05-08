@@ -1,3 +1,10 @@
+/*--------------------------------------------------------------*
+  Copyright (C) 2006-2020 OpenSim Ltd.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  'License' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
 package org.omnetpp.scave.pychart;
 
 import java.util.ArrayList;
@@ -5,9 +12,12 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * This is an interface to the our custom FigureCanvas, implemented in Python.
+ * This is an interface to the Python half our custom matplotlib FigureCanvas.
  *
- * @author attila
+ * The SWT Canvas (MatplotlibWidget) passes the input events back to matplotlib
+ * through this interface.
+ *
+ * performing actions, figure export, (filetype query), axis limit get-set
  */
 public interface IMatplotlibFigureCanvas {
 
@@ -44,14 +54,13 @@ public interface IMatplotlibFigureCanvas {
      *
      */
 
-    void setWidget(IMatplotlibWidget w);
 
     void performAction(String action);
 
     /**
      * Save image on canvas into the the given file.
      */
-    String exportFigure(String filename);
+    void exportFigure(String filename);
 
     /**
      * Returns a map with Matplotlib's supported graphical image format,

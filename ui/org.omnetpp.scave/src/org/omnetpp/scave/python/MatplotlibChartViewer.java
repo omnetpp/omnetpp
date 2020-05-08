@@ -193,11 +193,8 @@ public class MatplotlibChartViewer extends ChartViewerBase {
     @Override
     public void saveImage(String filename) {
         IMatplotlibFigureCanvas canvas = plotWidget.getCanvas();
-        if (canvas != null) {
-            String err = canvas.exportFigure(filename); //TODO should throw instead
-            if (!err.isEmpty())
-                throw new RuntimeException(err);
-        }
+        if (canvas != null)
+            canvas.exportFigure(filename);
     }
 
     public Map<String, ArrayList<String>> getSupportedFiletypes() {

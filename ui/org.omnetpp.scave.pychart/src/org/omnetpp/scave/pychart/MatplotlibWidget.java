@@ -1,3 +1,10 @@
+/*--------------------------------------------------------------*
+  Copyright (C) 2006-2020 OpenSim Ltd.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  'License' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
 package org.omnetpp.scave.pychart;
 
 import java.nio.Buffer;
@@ -24,41 +31,155 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.omnetpp.scave.engine.ScaveEngine;
 
+/**
+ * This is an SWT Control which is "one half" of a matplotlib FigureCanvas,
+ * as a part of our matplotlib backend - in backend_SWTAgg.py.
+ *
+ * Displays the rendered image coming from the Python process, and forwards
+ * the input events (mouse move, click, resize...) back to matplotlib in Python.
+ *
+ * Also takes care of setting the appropriate cursor type, and drawing the
+ * tool "rectangle" (for the rectangle zoom tool).
+ *
+ * See also: https://matplotlib.org/3.2.1/api/backend_bases_api.html#matplotlib.backend_bases.FigureCanvasBase
+ *
+ * Implementation details:
+ *
+ * - The pixels of the image are transferred in a
+ *   shared memory buffer for improved performance. This shared memory region
+ *   is reused across frames, and only recreated when it becomes too small -
+ *   when the user sized the control bigger.
+ *
+ * - The mouse move and resize events are categorized into so-called
+ *   "event streams". The point of these is to cancel the delivery of all
+ *   previous events in a stream, when a newer one belonging to the same stream
+ *   arrives. This reduces input lag on resize and navigation considerably.
+ *
+ * - Aside from full frame renders, matplotlib also supports blitting a smaller
+ *   portion of the canvas image, which can potentially increase performance
+ *   when only a small part of it changes, for example with some animations,
+ *   custom cursor lines, interactively showing-hiding annotations, etc..
+ *   At the moment, these "subimage" pixels are transferred as byte[] objects
+ *   straight through the Py4J connection, without using shared memory.
+ *
+ * - It seems that SWT has to internally convert our pixels into a different
+ *   format - at least when using Cairo. (Maybe even twice: when we submit them,
+ *   and then when they are drawn on the screen.) This seems unavoidable, and
+ *   most likely really hurts interactive performance. Sad. :(
+ *   See: https://www.eclipse.org/lists/platform-swt-dev/msg07533.html
+ *
+ */
 public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
-    ByteBuffer buf;
-    ImageData imageData;
-    Image image;
 
-    // this seems to improve responsiveness by "cheating", but can sometimes
-    // draw ugly glitches for a short time when resizing is too quick
-    boolean stretchOnResize = true;
+    /** This is backed by the shared memory used to receive the image to show.
+     * Contains raw RGBA pixels - in "some" channel ordering.
+     */
+    private ByteBuffer buf;
 
+    /**
+     * The last received image, plus the since blitted regions applied to it.
+     * This might not always be the same size as this Control itself,
+     * either because we are using the (internal) halfRes option; or because
+     * a resize event is "in-flight": the Control has been resized, but the
+     * new pixel data from Python has not arrived yet.
+     */
+    private ImageData imageData;
+
+    /**
+     * Used to draw the contents of imageData on screen.
+     * The imageData is submitted to the SWT Display (and automatically
+     * converted to the appropriate pixel format) through this.
+     */
+    private Image image;
+
+    /**
+     * Whether to draw the last received frame stretched during resizing,
+     * until the new image with correct size arrives.
+     * This seems to improve responsiveness by "cheating", but can sometimes
+     * draw ugly glitches for a short time when resizing is too quick.
+     * If set to false, the last frame will always be aligned on the top-left
+     * corner without changing its size at all.
+     */
+    private boolean stretchOnResize = true;
+
+    /**
+     * Which matplotlib figure this canvas belongs to.
+     */
     public int figureNumber = 0;
 
-    IMatplotlibFigureCanvas pyCanvas = null;
-    PythonProcess pythonProcess;
+    /**
+     * A reference to the "other half" (in Python) of this FigureCanvas.
+     */
+    private IMatplotlibFigureCanvas pyCanvas = null;
 
-    boolean mouseIsOverMe;
-    boolean isRefreshing = false;
-    String message;
-    String warning;
+    /**
+     * The Python process which hosts the other half of this FigureCanvas.
+     */
+    private PythonProcess pythonProcess;
 
-    int cursorType = SWT.CURSOR_ARROW;
-    Menu contextMenu;
+    /**
+     * Is true when the mouse pointer is currently within the area of this Canvas.
+     * Controls whether the message is drawn on top of the image.
+     */
+    private boolean mouseIsOverMe;
 
-    ArrayList<Integer> rect = new ArrayList<Integer>();
 
-    // Event stream identifiers to pass to PythonCallerThread.asyncExec from SWT event handlers.
-    static final int EVENTSTREAM_MOUSEMOVE = 1;
-    static final int EVENTSTREAM_RESIZE = 2;
+    private boolean isRefreshing = false;
 
+    /**
+     * Stores the last received message (intended for the user).
+     * This "message" is a standard part of any matplotlib backend.
+     */
+    private String message;
+
+    /**
+     * Stores the last received warning (intended for the user).
+     * This is our custom addition, it has nothing to do with matplotlib.
+     */
+    private String warning;
+
+    /**
+     * Stores the cursor type last set by matplotlib.
+     * Used to control whether the context menu should be shown on right-click,
+     * so it does not interfere with the zoom actions, which use the right button.
+     */
+    private int cursorType = SWT.CURSOR_ARROW;
+
+    /**
+     * The context menu to show when requested. Set up externally and passed in.
+     */
+    private Menu contextMenu;
+
+    /**
+     * The currently drawn "tool rectangle" - used by rectangle zoom for example.
+     */
+    private ArrayList<Integer> rect = new ArrayList<Integer>();
+
+    /**
+     * Event stream identifier for mouse move events.
+     * Passed to PythonCallerThread.asyncExec from SWT event handlers.
+     */
+    private static final int EVENTSTREAM_MOUSEMOVE = 1;
+
+    /**
+     * Event stream identifier for mouse move events.
+     * Passed to PythonCallerThread.asyncExec from SWT event handlers.
+     */
+    private static final int EVENTSTREAM_RESIZE = 2;
+
+    /**
+     * Creates a new MatplotlibWidget in the given parent Control, with the
+     * given style. The other half of this FigureCanvas, canvas, is in the
+     * Python process proc. Mostly just sets up a bunch of event listeners.
+     */
     public MatplotlibWidget(Composite parent, int style, PythonProcess proc, IMatplotlibFigureCanvas canvas) {
         super(parent, style);
 
-        pyCanvas = canvas;
+        this.pyCanvas = canvas;
         this.pythonProcess = proc;
 
         addPaintListener(e -> {
+            // draw the last stored frame (including blitted parts), stretching it if enabled and needed
             if (image != null) {
                 int width = image.getImageData().width;
                 int height = image.getImageData().height;
@@ -73,6 +194,7 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
                     e.gc.drawImage(image, 0, 0);
             }
 
+            // draw the message, if any, only if the mouse is over the canvas
             if ((isRefreshing || mouseIsOverMe) && message != null && !message.isEmpty()) {
                 e.gc.setFont(JFaceResources.getTextFont());
                 Point textSize = e.gc.textExtent(message);
@@ -80,6 +202,7 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
                 e.gc.drawText(message, 16, getSize().y - 10 - textSize.y, true);
             }
 
+            // draw the warning if there is one
             if (warning != null && !warning.isEmpty()) {
                 e.gc.setFont(JFaceResources.getTextFont());
                 e.gc.setForeground(new Color(e.gc.getDevice(), 255, 31, 0));
@@ -87,6 +210,7 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
                 e.gc.drawText(warning, 16, 14, true);
             }
 
+            // draw the tool rectangle if needed
             if (!rect.isEmpty()) {
                 Color rectColor = getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION);
 
@@ -100,6 +224,7 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
             }
         });
 
+        // forward mouse move events to Python, in an "event stream"
         addMouseMoveListener(e -> {
             int sy = getSize().y;
             if (pythonProcess != null && pythonProcess.isAlive()) {
@@ -240,6 +365,9 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
         super.dispose();
     }
 
+    /**
+     * This is not used by default at the moment.
+     */
     @Override
     public void setPixels(byte[] pixels, int w, int h) {
         if (isRefreshing)
@@ -365,10 +493,10 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
 
     @Override
     public Point computeSize(int wHint, int hHint) {
-        return new Point(800, 600);
+        return imageData == null ? new Point(800, 600) : new Point(imageData.width, imageData.height);
     }
     @Override
     public Point computeSize(int wHint, int hHint, boolean changed) {
-        return new Point(800, 600);
+        return imageData == null ? new Point(800, 600) : new Point(imageData.width, imageData.height);
     }
 }
