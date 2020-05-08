@@ -160,12 +160,8 @@ public class ScaveModelLabelDecorator extends BaseLabelProvider implements ILabe
             }
 
             if (someMarkerChanged[0])
-                PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-                    @Override
-                    public void run() {
-                        fireLabelProviderChanged(new LabelProviderChangedEvent(ScaveModelLabelDecorator.this));
-                    }
-                });
+                PlatformUI.getWorkbench().getDisplay().asyncExec(
+                        () -> fireLabelProviderChanged(new LabelProviderChangedEvent(ScaveModelLabelDecorator.this)));
         }
     }
 }

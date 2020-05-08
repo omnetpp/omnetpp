@@ -27,7 +27,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.TableColumn;
@@ -38,6 +37,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 import org.omnetpp.common.ui.ViewWithMessagePart;
+import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.virtualtable.VirtualTable;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.common.IndexFileUtils;
@@ -267,20 +267,12 @@ public class VectorBrowserView extends ViewWithMessagePart {
         final ResultItemRef finalSelectedVector = selectedVector;
         final int finalDataPointIndex = dataPointIndex;
 
-        runInUIThread(new Runnable() {
-            public void run() {
-                ResultFileManager.runWithReadLock(manager, () -> {
+        DisplayUtils.runNowOrAsyncInUIThread(() -> {
+            ResultFileManager.runWithReadLock(manager, () -> {
+                if (!viewer.isDisposed())
                     setViewerInputOrMessage(finalSelectedVector, finalDataPointIndex, new Status(IStatus.OK, ScavePlugin.PLUGIN_ID, ""));
-                });
-            }
+                            });
         });
-    }
-
-    private static void runInUIThread(Runnable runnable) {
-        if (Display.getCurrent() == null)
-            Display.getDefault().asyncExec(runnable);
-        else
-            runnable.run();
     }
 
     public void setViewerInputOrMessage(ResultItemRef input, int serial, IStatus status) {

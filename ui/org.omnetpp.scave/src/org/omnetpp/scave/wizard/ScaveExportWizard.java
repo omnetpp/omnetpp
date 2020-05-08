@@ -284,8 +284,10 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
                     widgetMap = XSWT.create(xswtHolder, new ByteArrayInputStream(xswtDoc.getBytes()));
 
                 Display.getCurrent().asyncExec(() -> {  // when done synchronously, dialog height will be smaller than desired (?)
+                    if (!parent.isDisposed()) {
                         Shell shell = parent.getShell();
                         shell.setSize(shell.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+                    }
                 });
             }
             catch (Exception e) {

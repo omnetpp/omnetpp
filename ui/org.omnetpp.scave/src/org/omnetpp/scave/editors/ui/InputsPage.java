@@ -176,6 +176,8 @@ public class InputsPage extends FormEditorPage {
         scaveEditor.getResultFilesTracker().addChangeListener(new IResultFilesChangeListener() {
             @Override
             public void resultFileManagerChanged(ResultFileManagerChangeEvent event) {
+                if (isDisposed())
+                    return;
                 final ResultFileManager manager = event.getResultFileManager();
                 if (scheduledUpdate == null) {
                     scheduledUpdate = new Runnable() {

@@ -250,7 +250,10 @@ public class ExportChartsDialog extends TitleAreaDialog {
             SWTFactory.setEnabled(jobGroup, false, null);
         }
 
-        Display.getCurrent().asyncExec(()-> setErrorMessage(null)); // don't open with an error message displayed
+        Display.getCurrent().asyncExec(() -> {
+            if (!getShell().isDisposed())
+                setErrorMessage(null); // don't open with an error message displayed
+        });
 
         return dialogArea;
     }

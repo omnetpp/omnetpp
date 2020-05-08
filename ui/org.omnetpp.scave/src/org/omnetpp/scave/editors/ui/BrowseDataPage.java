@@ -271,6 +271,8 @@ public class BrowseDataPage extends FormEditorPage {
             fileChangeListener = new IResultFilesChangeListener() {
                 @Override
                 public void resultFileManagerChanged(ResultFileManagerChangeEvent event) {
+                    if (isDisposed())
+                        return;
                     final ResultFileManager manager = event.getResultFileManager();
                     if (scheduledUpdate == null) {
                         scheduledUpdate = new Runnable() {

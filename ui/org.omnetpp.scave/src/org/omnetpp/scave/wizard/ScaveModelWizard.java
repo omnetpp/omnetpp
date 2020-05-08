@@ -181,11 +181,9 @@ public class ScaveModelWizard extends Wizard implements INewWizard {
             final IWorkbenchPart activePart = page.getActivePart();
             if (activePart instanceof ISetSelectionTarget) {
                 final ISelection targetSelection = new StructuredSelection(modelFile);
-                getShell().getDisplay().asyncExec(new Runnable() {
-                         public void run() {
-                             ((ISetSelectionTarget)activePart).selectReveal(targetSelection);
-                         }
-                     });
+                getShell().getDisplay().asyncExec(() -> {
+                    ((ISetSelectionTarget)activePart).selectReveal(targetSelection);
+                });
             }
 
             // Open an editor on the new file.
