@@ -117,6 +117,7 @@ import org.python.pydev.shared_core.callbacks.ICallbackListener;
 import org.python.pydev.shared_ui.editor_input.PydevFileEditorInput;
 
 
+@SuppressWarnings("restriction")
 public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
     private Chart chart;
     private Chart originalChart;
@@ -291,7 +292,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
             };
 
             if (chart.getType() == ChartType.MATPLOTLIB) {
-                matplotlibChartViewer = new MatplotlibChartViewer(sashForm, chart, scaveEditor.getPythonProcessPool(), scaveEditor.getResultFileManager());
+                matplotlibChartViewer = new MatplotlibChartViewer(sashForm, chart, scaveEditor.getPythonProcessPool(), scaveEditor.getResultFileManager(), scaveEditor.getMemoizationCache());
 
                 matplotlibChartViewer.addOutputListener(outputListener);
                 matplotlibChartViewer.addStateChangeListener(stateChangeListener);
@@ -300,7 +301,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
                 plotWidget.setMenu(createMenuManager().createContextMenu(plotWidget));
             }
             else {
-                nativeChartViewer = new NativeChartViewer(sashForm, chart, scaveEditor.getPythonProcessPool(), scaveEditor.getResultFileManager());
+                nativeChartViewer = new NativeChartViewer(sashForm, chart, scaveEditor.getPythonProcessPool(), scaveEditor.getResultFileManager(), scaveEditor.getMemoizationCache());
 
                 nativeChartViewer.addOutputListener(outputListener);
                 nativeChartViewer.addStateChangeListener(stateChangeListener);

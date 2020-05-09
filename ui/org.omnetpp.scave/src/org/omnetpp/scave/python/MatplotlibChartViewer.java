@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.omnetpp.common.image.ImageUtils;
+import org.omnetpp.scave.editors.MemoizationCache;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.pychart.ActionDescription;
@@ -84,8 +85,8 @@ public class MatplotlibChartViewer extends ChartViewerBase {
         }
     };
 
-    public MatplotlibChartViewer(Composite parent, Chart chart, PythonProcessPool processPool, ResultFileManager rfm) {
-        super(chart, processPool, rfm);
+    public MatplotlibChartViewer(Composite parent, Chart chart, PythonProcessPool processPool, ResultFileManager rfm, MemoizationCache memoizationCache) {
+        super(chart, processPool, rfm, memoizationCache);
         plotWidget = new MatplotlibWidget(parent, SWT.DOUBLE_BUFFERED, proc, null);
     }
 

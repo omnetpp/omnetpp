@@ -33,6 +33,7 @@ import org.omnetpp.common.util.CollectionUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ChartProvider;
+import org.omnetpp.scave.editors.MemoizationCache;
 import org.omnetpp.scave.editors.ResultsProvider;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
@@ -51,16 +52,18 @@ public class ChartExport {
     private static final String CONSOLE_MARKER_ATTRIBUTE_KEY = "FOR_CHART_EXPORT";
 
     private static class Context {
-        public Context(Map<String, String> extraProperties, File chartsDir, ResultFileManager manager, boolean stopOnError, int numConcurrentProcesses) {
+        public Context(Map<String, String> extraProperties, File chartsDir, ResultFileManager manager, MemoizationCache memoizationCache, boolean stopOnError, int numConcurrentProcesses) {
             this.extraProperties = extraProperties;
             this.chartsDir = chartsDir;
             this.manager = manager;
+            this.memoizationCache = memoizationCache;
             this.stopOnError = stopOnError;
             this.numConcurrentProcesses = numConcurrentProcesses;
         }
         final Map<String, String> extraProperties;
         final File chartsDir;
         final ResultFileManager manager;
+        final MemoizationCache memoizationCache;
         final boolean stopOnError;
         final int numConcurrentProcesses;
     }
@@ -166,9 +169,9 @@ public class ChartExport {
         return map;
     }
 
-    public static void exportCharts(List<Chart> charts, Map<String, String> extraProperties, File chartsDir, ResultFileManager manager, boolean stopOnError, int numConcurrentProcesses) {
+    public static void exportCharts(List<Chart> charts, Map<String, String> extraProperties, File chartsDir, ResultFileManager manager, MemoizationCache memoizationCache, boolean stopOnError, int numConcurrentProcesses) {
         clearPreviousConsoles();
-        Context context = new Context(extraProperties, chartsDir, manager, stopOnError, numConcurrentProcesses);
+        Context context = new Context(extraProperties, chartsDir, manager, memoizationCache, stopOnError, numConcurrentProcesses);
         if (charts.size() == 1)
             startExportJob(charts.get(0), context);
         else if (charts.size() >= 2)
@@ -178,7 +181,7 @@ public class ChartExport {
 
     public static void exportChart(Chart chart, Map<String, String> extraProperties, File chartsDir, ResultFileManager manager) {
         clearPreviousConsoles();
-        Context context = new Context(extraProperties, chartsDir, manager, false, 1);
+        Context context = new Context(extraProperties, chartsDir, manager, new MemoizationCache(manager), false, 1);
         startExportJob(chart, context);
         //TODO folder.refreshLocal(IResource.DEPTH_INFINITE, monitor); // because we're creating the file behind Eclipse's back
     }
@@ -222,7 +225,7 @@ public class ChartExport {
         proc.outputMonitoringThread.addOutputListener(outputListener);
         proc.errorMonitoringThread.addOutputListener(outputListener);
 
-        proc.getEntryPoint().setResultsProvider(new ResultsProvider(context.manager, proc));
+        proc.getEntryPoint().setResultsProvider(new ResultsProvider(context.manager, proc, context.memoizationCache));
         proc.getEntryPoint().setChartProvider(new ChartProvider(chart, context.extraProperties));
 
         final Thread waitingThread = Thread.currentThread();
