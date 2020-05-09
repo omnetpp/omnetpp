@@ -71,6 +71,7 @@ public:
     std::string getNameAndSize() const;
     void extendTo(size_t newSize); // excluding header
     bool isConsumed() const;
+    std::vector<int8_t> getContentCopy() const;
 };
 
 /**
@@ -93,6 +94,9 @@ public:
 
     // create and map send buffer
     ShmSendBuffer *create(const char *label, size_t commitSize, bool extendable);
+
+    // create with preexisting content
+    ShmSendBuffer *create(const char *label, const std::vector<int8_t>& content);
 
     // unmaps and releases all send buffers
     void clear();

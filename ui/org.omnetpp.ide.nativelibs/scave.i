@@ -193,6 +193,7 @@ namespace std {
    %template(StringVector) vector<string>;
    %template(StringMap) map<string,string>;
    %template(IntVector) vector<int>;
+   %template(ByteVector) vector<int8_t>;
 
    //TODO take the following stuff out of namepace std{}!!!
 

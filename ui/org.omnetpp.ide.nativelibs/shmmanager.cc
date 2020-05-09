@@ -68,6 +68,13 @@ bool ShmSendBuffer::isConsumed() const
     return *(char *)mappedStart != 0;  // target process changed it from zero
 }
 
+std::vector<int8_t> ShmSendBuffer::getContentCopy() const
+{
+    std::vector<int8_t> result(committedSize);
+    memcpy(result.data(), getAddress(), committedSize);
+    return result;
+}
+
 //----
 
 ShmSendBufferManager::~ShmSendBufferManager()
@@ -93,6 +100,13 @@ ShmSendBuffer *ShmSendBufferManager::create(const char *label, size_t commitSize
 
     buffers.push_back(result);
     return result;
+}
+
+ShmSendBuffer *ShmSendBufferManager::create(const char *label, const std::vector<int8_t>& content)
+{
+    ShmSendBuffer *buffer = create(label, content.size(), false);
+    memcpy(buffer->getAddress(), content.data(), content.size());
+    return buffer;
 }
 
 void ShmSendBufferManager::deleted(ShmSendBuffer *p)
