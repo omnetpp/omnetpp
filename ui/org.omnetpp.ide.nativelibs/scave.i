@@ -203,6 +203,7 @@ namespace std {
    %template(DoubleVector) vector<double>;
    %template(StringPair) pair<string,string>;
    %template(OrderedKeyValueList) vector< pair<string,string> >;
+   %template(RunAndValueList) vector< pair<omnetpp::scave::Run*,string> >;
 };
 
 //

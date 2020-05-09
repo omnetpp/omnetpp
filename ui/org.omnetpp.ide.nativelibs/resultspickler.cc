@@ -108,8 +108,19 @@ void ResultsPickler::pickleResultAttrs(Pickler& p, const IDList& resultIDs)
     p.endList();
 }
 
+ShmSendBuffer *ResultsPickler::getCsvResultsPickle(const char *filterExpression, std::vector<std::string> rowTypes, bool omitUnusedColumns, double simTimeStart, double simTimeEnd)
+{
+    if (opp_isempty(filterExpression))
+        return getCsvResultsPickle(IDList(), rowTypes, omitUnusedColumns, simTimeStart, simTimeEnd);
+    else {
+        IDList allResults = rfm->getAllItems(true); // filter may match field scalars as well
+        IDList results = rfm->filterIDList(allResults, filterExpression);
+        return getCsvResultsPickle(IDList(), rowTypes, omitUnusedColumns, simTimeStart, simTimeEnd);
+    }
+}
 
-ShmSendBuffer *ResultsPickler::getCsvResultsPickle(std::string filterExpression, std::vector<std::string> rowTypes, bool omitUnusedColumns, double simTimeStart, double simTimeEnd)
+
+ShmSendBuffer *ResultsPickler::getCsvResultsPickle(const IDList& results, std::vector<std::string> rowTypes, bool omitUnusedColumns, double simTimeStart, double simTimeEnd)
 {
     bool addRunAttrs, addIterVars, addConfigEntries, addScalars, addVectors, addStatistics, addHistograms, addParams, addAttrs;
 
@@ -145,193 +156,188 @@ ShmSendBuffer *ResultsPickler::getCsvResultsPickle(std::string filterExpression,
     // so all data falls into the right column, but the rest will be filled in by numpy after unpickling
     p.startList();
 
-    if (!opp_trim(filterExpression).empty()) {
-        IDList results = rfm->getAllItems(true); // filter may match field scalars as well
-        results = rfm->filterIDList(results, filterExpression.c_str());
+    // pickle runs of results
 
-        // pickle runs of results
+    RunList runs = rfm->getUniqueRuns(results);
 
-        RunList runs = rfm->getUniqueRuns(results);
+    // is the order of this right, or should we sort the rows by type?
+    for (Run *r : runs) {
+        if (addRunAttrs) {
+            // Run attributes
+            const StringMap& attrs = r->getAttributes();
 
-        // is the order of this right, or should we sort the rows by type?
-        for (Run *r : runs) {
-            if (addRunAttrs) {
-                // Run attributes
-                const StringMap& attrs = r->getAttributes();
-
-                for (auto a : attrs) {
-                    p.startTuple();
-
-                    p.pushString(r->getRunName());
-                    p.pushString("runattr");
-                    p.pushNone(); // module
-                    p.pushNone(); // name
-                    p.pushString(a.first); // attrname
-                    p.pushString(a.second); // attrvalue
-
-                    p.endTuple();
-                }
-            }
-
-            if (addIterVars) {
-                // Iteration variables
-                const StringMap &itervars = r->getIterationVariables();
-
-                for (auto iv : itervars) {
-                    p.startTuple();
-
-                    p.pushString(r->getRunName());
-                    p.pushString("itervar");
-                    p.pushNone(); // module
-                    p.pushNone(); // name
-                    p.pushString(iv.first); // attrname
-                    p.pushString(iv.second); // attrvalue
-
-                    //for (int j = 0; j < 13; ++j)
-                    //    p.pushNone();
-
-                    p.endTuple();
-                }
-            }
-
-            if (addConfigEntries) {
-                // Config entries
-                const OrderedKeyValueList &entries = r->getConfigEntries();
-                for (auto e : entries) {
-
-                    p.startTuple();
-
-                    p.pushString(r->getRunName());
-                    p.pushString("config");
-                    p.pushNone(); // module
-                    p.pushNone(); // name
-                    p.pushString(e.first); // attrname
-                    p.pushString(e.second); // attrvalue
-
-                    //for (int j = 0; j < 13; ++j)
-                    //    p.pushNone();
-
-                    p.endTuple();
-                }
-            }
-
-            if (interrupted->flag)
-                throw std::runtime_error("Result pickling interrupted");
-        }
-
-        // end of run data pickling
-
-        ScalarResult buffer;
-        for (const ID& id : results) {
-            const ResultItem *result = rfm->getItem(id, buffer);
-            auto type = result->getItemType();
-
-            if (resultTypesToAdd & type) {
-
+            for (auto a : attrs) {
                 p.startTuple();
 
-                p.pushString(result->getRun()->getRunName());
-                switch (type) {
-                    case ResultFileManager::PARAMETER:  p.pushString("param");     break; // parameter?
-                    case ResultFileManager::SCALAR:     p.pushString("scalar");    break;
-                    case ResultFileManager::VECTOR:     p.pushString("vector");    break;
-                    case ResultFileManager::STATISTICS: p.pushString("statistic"); break; // statistics?
-                    case ResultFileManager::HISTOGRAM:  p.pushString("histogram"); break;
-                }
-
-                p.pushString(result->getModuleName());
-                p.pushString(result->getName());
-                p.pushNone(); // attrname
-                p.pushNone(); // attrvalue
-
-                switch (type) {
-                    case ResultFileManager::PARAMETER: {
-                        const ParameterResult *parameter = rfm->getParameter(id);
-                        p.pushString(parameter->getValue());
-                        break;
-                    }
-                    case ResultFileManager::SCALAR: {
-                        const ScalarResult *scalar = rfm->getScalar(id, buffer);
-                        p.pushDouble(scalar->getValue());
-                        break;
-                    }
-                    case ResultFileManager::VECTOR: {
-                        // value, count, sumweights, mean, stddev, min, max, underflows, overflows, binedges, binvalues,
-                        for (int j = 0; j < 11; ++j)
-                            p.pushNone();
-
-                        auto shmBuffers = readVectorIntoShm(id, simTimeStart, simTimeEnd);
-
-                        shmCleaner.add(shmBuffers);
-
-                        p.pushString(shmBuffers.first->getNameAndSize()); // vectime
-                        p.pushString(shmBuffers.second->getNameAndSize()); // vecvalue
-
-                        break;
-                    }
-                    case ResultFileManager::STATISTICS: {
-                        const Statistics& statistics = rfm->getStatistics(id)->getStatistics();
-
-                        p.pushNone(); // value column (for scalars/parameters)
-
-                        p.pushDouble(statistics.getCount());
-                        p.pushDouble(statistics.getSumWeights());
-                        p.pushDouble(statistics.getMean());
-                        p.pushDouble(statistics.getStddev());
-                        p.pushDouble(statistics.getMin());
-                        p.pushDouble(statistics.getMax());
-
-                        break;
-                    }
-                    case ResultFileManager::HISTOGRAM: {
-                        const HistogramResult *histogramResult = rfm->getHistogram(id);
-
-                        const Statistics& statistics = histogramResult->getStatistics();
-                        const Histogram& histogram = histogramResult->getHistogram();
-
-                        p.pushNone(); // value column (for scalars/parameters)
-
-                        p.pushDouble(statistics.getCount());
-                        p.pushDouble(statistics.getSumWeights());
-                        p.pushDouble(statistics.getMean());
-                        p.pushDouble(statistics.getStddev());
-                        p.pushDouble(statistics.getMin());
-                        p.pushDouble(statistics.getMax());
-
-                        p.pushDouble(histogram.getUnderflows());
-                        p.pushDouble(histogram.getOverflows());
-
-                        p.pushDoublesAsRawBytes(histogram.getBinEdges());
-                        p.pushDoublesAsRawBytes(histogram.getBinValues());
-
-                        break;
-                    }
-                }
+                p.pushString(r->getRunName());
+                p.pushString("runattr");
+                p.pushNone(); // module
+                p.pushNone(); // name
+                p.pushString(a.first); // attrname
+                p.pushString(a.second); // attrvalue
 
                 p.endTuple();
             }
+        }
 
+        if (addIterVars) {
+            // Iteration variables
+            const StringMap &itervars = r->getIterationVariables();
 
-            if (addAttrs) {
-                const StringMap &attrs = result->getAttributes();
+            for (auto iv : itervars) {
+                p.startTuple();
 
-                for (const auto& a : attrs) {
-                    p.startTuple();
+                p.pushString(r->getRunName());
+                p.pushString("itervar");
+                p.pushNone(); // module
+                p.pushNone(); // name
+                p.pushString(iv.first); // attrname
+                p.pushString(iv.second); // attrvalue
 
-                    p.pushString(result->getRun()->getRunName());
-                    p.pushString("attr");
-                    p.pushString(result->getModuleName());
-                    p.pushString(result->getName());
-                    p.pushString(a.first); // attrname
-                    p.pushString(a.second); // attrvalue
+                //for (int j = 0; j < 13; ++j)
+                //    p.pushNone();
 
-                    p.endTuple();
+                p.endTuple();
+            }
+        }
+
+        if (addConfigEntries) {
+            // Config entries
+            const OrderedKeyValueList &entries = r->getConfigEntries();
+            for (auto e : entries) {
+
+                p.startTuple();
+
+                p.pushString(r->getRunName());
+                p.pushString("config");
+                p.pushNone(); // module
+                p.pushNone(); // name
+                p.pushString(e.first); // attrname
+                p.pushString(e.second); // attrvalue
+
+                //for (int j = 0; j < 13; ++j)
+                //    p.pushNone();
+
+                p.endTuple();
+            }
+        }
+
+        if (interrupted->flag)
+            throw std::runtime_error("Result pickling interrupted");
+    }
+
+    // end of run data pickling
+
+    ScalarResult buffer;
+    for (const ID& id : results) {
+        const ResultItem *result = rfm->getItem(id, buffer);
+        auto type = result->getItemType();
+
+        if (resultTypesToAdd & type) {
+
+            p.startTuple();
+
+            p.pushString(result->getRun()->getRunName());
+            switch (type) {
+                case ResultFileManager::PARAMETER:  p.pushString("param");     break; // parameter?
+                case ResultFileManager::SCALAR:     p.pushString("scalar");    break;
+                case ResultFileManager::VECTOR:     p.pushString("vector");    break;
+                case ResultFileManager::STATISTICS: p.pushString("statistic"); break; // statistics?
+                case ResultFileManager::HISTOGRAM:  p.pushString("histogram"); break;
+            }
+
+            p.pushString(result->getModuleName());
+            p.pushString(result->getName());
+            p.pushNone(); // attrname
+            p.pushNone(); // attrvalue
+
+            switch (type) {
+                case ResultFileManager::PARAMETER: {
+                    const ParameterResult *parameter = rfm->getParameter(id);
+                    p.pushString(parameter->getValue());
+                    break;
+                }
+                case ResultFileManager::SCALAR: {
+                    const ScalarResult *scalar = rfm->getScalar(id, buffer);
+                    p.pushDouble(scalar->getValue());
+                    break;
+                }
+                case ResultFileManager::VECTOR: {
+                    // value, count, sumweights, mean, stddev, min, max, underflows, overflows, binedges, binvalues,
+                    for (int j = 0; j < 11; ++j)
+                        p.pushNone();
+
+                    auto shmBuffers = readVectorIntoShm(id, simTimeStart, simTimeEnd);
+
+                    shmCleaner.add(shmBuffers);
+
+                    p.pushString(shmBuffers.first->getNameAndSize()); // vectime
+                    p.pushString(shmBuffers.second->getNameAndSize()); // vecvalue
+
+                    break;
+                }
+                case ResultFileManager::STATISTICS: {
+                    const Statistics& statistics = rfm->getStatistics(id)->getStatistics();
+
+                    p.pushNone(); // value column (for scalars/parameters)
+
+                    p.pushDouble(statistics.getCount());
+                    p.pushDouble(statistics.getSumWeights());
+                    p.pushDouble(statistics.getMean());
+                    p.pushDouble(statistics.getStddev());
+                    p.pushDouble(statistics.getMin());
+                    p.pushDouble(statistics.getMax());
+
+                    break;
+                }
+                case ResultFileManager::HISTOGRAM: {
+                    const HistogramResult *histogramResult = rfm->getHistogram(id);
+
+                    const Statistics& statistics = histogramResult->getStatistics();
+                    const Histogram& histogram = histogramResult->getHistogram();
+
+                    p.pushNone(); // value column (for scalars/parameters)
+
+                    p.pushDouble(statistics.getCount());
+                    p.pushDouble(statistics.getSumWeights());
+                    p.pushDouble(statistics.getMean());
+                    p.pushDouble(statistics.getStddev());
+                    p.pushDouble(statistics.getMin());
+                    p.pushDouble(statistics.getMax());
+
+                    p.pushDouble(histogram.getUnderflows());
+                    p.pushDouble(histogram.getOverflows());
+
+                    p.pushDoublesAsRawBytes(histogram.getBinEdges());
+                    p.pushDoublesAsRawBytes(histogram.getBinValues());
+
+                    break;
                 }
             }
 
-            if (interrupted->flag)
-                throw std::runtime_error("Result pickling interrupted");
+            p.endTuple();
         }
+
+
+        if (addAttrs) {
+            const StringMap &attrs = result->getAttributes();
+
+            for (const auto& a : attrs) {
+                p.startTuple();
+
+                p.pushString(result->getRun()->getRunName());
+                p.pushString("attr");
+                p.pushString(result->getModuleName());
+                p.pushString(result->getName());
+                p.pushString(a.first); // attrname
+                p.pushString(a.second); // attrvalue
+
+                p.endTuple();
+            }
+        }
+
+        if (interrupted->flag)
+            throw std::runtime_error("Result pickling interrupted");
     }
 
     p.endList();
@@ -342,8 +348,62 @@ ShmSendBuffer *ResultsPickler::getCsvResultsPickle(std::string filterExpression,
     return p.get();
 }
 
-
 ShmSendBuffer *ResultsPickler::getScalarsPickle(const char *filterExpression, bool includeAttrs)
+{
+    if (opp_isempty(filterExpression))
+        return getScalarsPickle(IDList(), includeAttrs);
+    else {
+        IDList allScalars = rfm->getAllScalars(true); // filter may match field scalars as well
+        IDList scalars = rfm->filterIDList(allScalars, filterExpression, -1, interrupted);
+        return getScalarsPickle(scalars, includeAttrs);
+    }
+}
+
+ShmSendBuffer *ResultsPickler::getVectorsPickle(const char *filterExpression, bool includeAttrs, double simTimeStart, double simTimeEnd)
+{
+    if (opp_isempty(filterExpression))
+        return getVectorsPickle(IDList(), includeAttrs, simTimeStart, simTimeEnd);
+    else {
+        IDList allVectors = rfm->getAllVectors();
+        IDList vectors = rfm->filterIDList(allVectors, filterExpression, -1, interrupted);
+        return getVectorsPickle(vectors, includeAttrs, simTimeStart, simTimeEnd);
+    }
+}
+
+ShmSendBuffer *ResultsPickler::getStatisticsPickle(const char *filterExpression, bool includeAttrs)
+{
+    if (opp_isempty(filterExpression))
+        return getStatisticsPickle(IDList(), includeAttrs);
+    else {
+        IDList allStatistics = rfm->getAllStatistics();
+        IDList statistics = rfm->filterIDList(allStatistics, filterExpression, -1, interrupted);
+        return getStatisticsPickle(statistics, includeAttrs);
+    }
+}
+
+ShmSendBuffer *ResultsPickler::getHistogramsPickle(const char *filterExpression, bool includeAttrs)
+{
+    if (opp_isempty(filterExpression))
+        return getHistogramsPickle(IDList(), includeAttrs);
+    else {
+        IDList allHistograms = rfm->getAllHistograms();
+        IDList histograms = rfm->filterIDList(allHistograms, filterExpression, -1, interrupted);
+        return getHistogramsPickle(histograms, includeAttrs);
+    }
+}
+
+ShmSendBuffer *ResultsPickler::getParamValuesPickle(const char *filterExpression, bool includeAttrs)
+{
+    if (opp_isempty(filterExpression))
+        return getParamValuesPickle(IDList(), includeAttrs);
+    else {
+        IDList allParamValues = rfm->getAllParameters();
+        IDList paramValues = rfm->filterIDList(allParamValues, filterExpression, -1, interrupted);
+        return getParamValuesPickle(paramValues, includeAttrs);
+    }
+}
+
+ShmSendBuffer *ResultsPickler::getScalarsPickle(const IDList& scalars, bool includeAttrs)
 {
     size_t sizeLimit = getSizeLimit();
     ShmPickler p(shmManager->create("scalars", 0, true), sizeLimit);
@@ -352,26 +412,20 @@ ShmSendBuffer *ResultsPickler::getScalarsPickle(const char *filterExpression, bo
 
     p.startList();
 
-    IDList scalars;
-    if (!opp_isempty(filterExpression)) {
-        IDList allScalars = rfm->getAllScalars(true); // filter may match field scalars as well
-        scalars = rfm->filterIDList(allScalars, filterExpression, -1, interrupted);
+    ScalarResult buffer;
+    for (int i = 0; i < scalars.size(); ++i) {
+        const ScalarResult *result = rfm->getScalar(scalars.get(i), buffer);
+        p.startTuple();
 
-        ScalarResult buffer;
-        for (int i = 0; i < scalars.size(); ++i) {
-            const ScalarResult *result = rfm->getScalar(scalars.get(i), buffer);
-            p.startTuple();
+        p.pushString(result->getRun()->getRunName());
+        p.pushString(result->getModuleName());
+        p.pushString(result->getName());
+        p.pushDouble(result->getValue());
 
-            p.pushString(result->getRun()->getRunName());
-            p.pushString(result->getModuleName());
-            p.pushString(result->getName());
-            p.pushDouble(result->getValue());
+        p.endTuple();
 
-            p.endTuple();
-
-            if ((i & 0xFF) == 0 && interrupted->flag)
-                throw std::runtime_error("Result pickling interrupted");
-        }
+        if ((i & 0xFF) == 0 && interrupted->flag)
+            throw std::runtime_error("Result pickling interrupted");
     }
 
     p.endList();
@@ -389,7 +443,7 @@ ShmSendBuffer *ResultsPickler::getScalarsPickle(const char *filterExpression, bo
 }
 
 
-ShmSendBuffer *ResultsPickler::getVectorsPickle(const char *filterExpression, bool includeAttrs, double simTimeStart, double simTimeEnd)
+ShmSendBuffer *ResultsPickler::getVectorsPickle(const IDList& vectors, bool includeAttrs, double simTimeStart, double simTimeEnd)
 {
     size_t sizeLimit = getSizeLimit();
     ShmPickler p(shmManager->create("vectors", 0, true), sizeLimit);
@@ -400,31 +454,25 @@ ShmSendBuffer *ResultsPickler::getVectorsPickle(const char *filterExpression, bo
 
     p.startList();
 
-    IDList vectors;
-    if (!opp_isempty(filterExpression)) {
-        IDList allVectors = rfm->getAllVectors();
-        vectors = rfm->filterIDList(allVectors, filterExpression, -1, interrupted);
+    for (int i = 0; i < vectors.size(); ++i) {
+        const VectorResult *result = rfm->getVector(vectors.get(i));
+        p.startTuple();
 
-        for (int i = 0; i < vectors.size(); ++i) {
-            const VectorResult *result = rfm->getVector(vectors.get(i));
-            p.startTuple();
+        p.pushString(result->getRun()->getRunName());
+        p.pushString(result->getModuleName());
+        p.pushString(result->getName());
 
-            p.pushString(result->getRun()->getRunName());
-            p.pushString(result->getModuleName());
-            p.pushString(result->getName());
+        auto shmBuffers = readVectorIntoShm(vectors.get(i), simTimeStart, simTimeEnd);
 
-            auto shmBuffers = readVectorIntoShm(vectors.get(i), simTimeStart, simTimeEnd);
+        shmCleaner.add(shmBuffers);
 
-            shmCleaner.add(shmBuffers);
+        p.pushString(shmBuffers.first->getNameAndSize()); // vectime
+        p.pushString(shmBuffers.second->getNameAndSize()); // vecvalue
 
-            p.pushString(shmBuffers.first->getNameAndSize()); // vectime
-            p.pushString(shmBuffers.second->getNameAndSize()); // vecvalue
+        p.endTuple();
 
-            p.endTuple();
-
-            if ((i & 0xFF) == 0 && interrupted->flag)
-                throw std::runtime_error("Result pickling interrupted");
-        }
+        if ((i & 0xFF) == 0 && interrupted->flag)
+            throw std::runtime_error("Result pickling interrupted");
     }
 
     p.endList();
@@ -443,7 +491,7 @@ ShmSendBuffer *ResultsPickler::getVectorsPickle(const char *filterExpression, bo
 }
 
 
-ShmSendBuffer *ResultsPickler::getParamValuesPickle(const char *filterExpression, bool includeAttrs)
+ShmSendBuffer *ResultsPickler::getParamValuesPickle(const IDList& params, bool includeAttrs)
 {
     size_t sizeLimit = getSizeLimit();
     ShmPickler p(shmManager->create("paramvalues", 0, true), sizeLimit);
@@ -452,25 +500,19 @@ ShmSendBuffer *ResultsPickler::getParamValuesPickle(const char *filterExpression
 
     p.startList();
 
-    IDList params;
-    if (!opp_isempty(filterExpression)) {
-        IDList allParams = rfm->getAllParameters();
-        params = rfm->filterIDList(allParams, filterExpression, -1, interrupted);
+    for (int i = 0; i < params.size(); ++i) {
+        const ParameterResult *result = rfm->getParameter(params.get(i));
+        p.startTuple();
 
-        for (int i = 0; i < params.size(); ++i) {
-            const ParameterResult *result = rfm->getParameter(params.get(i));
-            p.startTuple();
+        p.pushString(result->getRun()->getRunName());
+        p.pushString(result->getModuleName());
+        p.pushString(result->getName());
+        p.pushString(result->getValue());
 
-            p.pushString(result->getRun()->getRunName());
-            p.pushString(result->getModuleName());
-            p.pushString(result->getName());
-            p.pushString(result->getValue());
+        p.endTuple();
 
-            p.endTuple();
-
-            if ((i & 0xFF) == 0 && interrupted->flag)
-                throw std::runtime_error("Result pickling interrupted");
-        }
+        if ((i & 0xFF) == 0 && interrupted->flag)
+            throw std::runtime_error("Result pickling interrupted");
     }
 
     p.endList();
@@ -480,7 +522,6 @@ ShmSendBuffer *ResultsPickler::getParamValuesPickle(const char *filterExpression
     else
         p.pushNone();
 
-
     p.tuple2();
 
     p.stop();
@@ -489,7 +530,7 @@ ShmSendBuffer *ResultsPickler::getParamValuesPickle(const char *filterExpression
 }
 
 
-ShmSendBuffer *ResultsPickler::getStatisticsPickle(const char *filterExpression, bool includeAttrs)
+ShmSendBuffer *ResultsPickler::getStatisticsPickle(const IDList& statistics, bool includeAttrs)
 {
     size_t sizeLimit = getSizeLimit();
 
@@ -499,34 +540,28 @@ ShmSendBuffer *ResultsPickler::getStatisticsPickle(const char *filterExpression,
 
     p.startList();
 
-    IDList statistics;
-    if (!opp_isempty(filterExpression)) {
-        IDList allStatistics = rfm->getAllStatistics();
-        statistics = rfm->filterIDList(allStatistics, filterExpression, -1, interrupted);
+    for (int i = 0; i < statistics.size(); ++i) {
+        const StatisticsResult *result = rfm->getStatistics(statistics.get(i));
 
-        for (int i = 0; i < statistics.size(); ++i) {
-            const StatisticsResult *result = rfm->getStatistics(statistics.get(i));
+        const Statistics& statistics = result->getStatistics();
 
-            const Statistics& statistics = result->getStatistics();
+        p.startTuple();
 
-            p.startTuple();
+        p.pushString(result->getRun()->getRunName());
+        p.pushString(result->getModuleName());
+        p.pushString(result->getName());
 
-            p.pushString(result->getRun()->getRunName());
-            p.pushString(result->getModuleName());
-            p.pushString(result->getName());
+        p.pushDouble(statistics.getCount());
+        p.pushDouble(statistics.getSumWeights());
+        p.pushDouble(statistics.getMean());
+        p.pushDouble(statistics.getStddev());
+        p.pushDouble(statistics.getMin());
+        p.pushDouble(statistics.getMax());
 
-            p.pushDouble(statistics.getCount());
-            p.pushDouble(statistics.getSumWeights());
-            p.pushDouble(statistics.getMean());
-            p.pushDouble(statistics.getStddev());
-            p.pushDouble(statistics.getMin());
-            p.pushDouble(statistics.getMax());
+        p.endTuple();
 
-            p.endTuple();
-
-            if ((i & 0xFF) == 0 && interrupted->flag)
-                throw std::runtime_error("Result pickling interrupted");
-        }
+        if ((i & 0xFF) == 0 && interrupted->flag)
+            throw std::runtime_error("Result pickling interrupted");
     }
 
     p.endList();
@@ -544,7 +579,7 @@ ShmSendBuffer *ResultsPickler::getStatisticsPickle(const char *filterExpression,
 }
 
 
-ShmSendBuffer *ResultsPickler::getHistogramsPickle(const char *filterExpression, bool includeAttrs)
+ShmSendBuffer *ResultsPickler::getHistogramsPickle(const IDList& histograms, bool includeAttrs)
 {
     size_t sizeLimit = getSizeLimit();
     ShmPickler p(shmManager->create("histograms", 0, true), sizeLimit);
@@ -553,41 +588,35 @@ ShmSendBuffer *ResultsPickler::getHistogramsPickle(const char *filterExpression,
 
     p.startList();
 
-    IDList histograms;
-    if (!opp_isempty(filterExpression)) {
-        IDList allHistograms = rfm->getAllHistograms();
-        histograms = rfm->filterIDList(allHistograms, filterExpression, -1, interrupted);
+    for (int i = 0; i < histograms.size(); ++i) {
+        const HistogramResult *result = rfm->getHistogram(histograms.get(i));
 
-        for (int i = 0; i < histograms.size(); ++i) {
-            const HistogramResult *result = rfm->getHistogram(histograms.get(i));
+        const Statistics& statistics = result->getStatistics();
+        const Histogram& histogram = result->getHistogram();
 
-            const Statistics& statistics = result->getStatistics();
-            const Histogram& histogram = result->getHistogram();
+        p.startTuple();
 
-            p.startTuple();
+        p.pushString(result->getRun()->getRunName());
+        p.pushString(result->getModuleName());
+        p.pushString(result->getName());
 
-            p.pushString(result->getRun()->getRunName());
-            p.pushString(result->getModuleName());
-            p.pushString(result->getName());
+        p.pushDouble(statistics.getCount());
+        p.pushDouble(statistics.getSumWeights());
+        p.pushDouble(statistics.getMean());
+        p.pushDouble(statistics.getStddev());
+        p.pushDouble(statistics.getMin());
+        p.pushDouble(statistics.getMax());
 
-            p.pushDouble(statistics.getCount());
-            p.pushDouble(statistics.getSumWeights());
-            p.pushDouble(statistics.getMean());
-            p.pushDouble(statistics.getStddev());
-            p.pushDouble(statistics.getMin());
-            p.pushDouble(statistics.getMax());
+        p.pushDouble(histogram.getUnderflows());
+        p.pushDouble(histogram.getOverflows());
 
-            p.pushDouble(histogram.getUnderflows());
-            p.pushDouble(histogram.getOverflows());
+        p.pushDoublesAsRawBytes(histogram.getBinEdges());
+        p.pushDoublesAsRawBytes(histogram.getBinValues());
 
-            p.pushDoublesAsRawBytes(histogram.getBinEdges());
-            p.pushDoublesAsRawBytes(histogram.getBinValues());
+        p.endTuple();
 
-            p.endTuple();
-
-            if ((i & 0xFF) == 0 && interrupted->flag)
-                throw std::runtime_error("Result pickling interrupted");
-        }
+        if ((i & 0xFF) == 0 && interrupted->flag)
+            throw std::runtime_error("Result pickling interrupted");
     }
 
     p.endList();
@@ -604,8 +633,37 @@ ShmSendBuffer *ResultsPickler::getHistogramsPickle(const char *filterExpression,
     return p.get();
 }
 
-
 ShmSendBuffer *ResultsPickler::getRunsPickle(const char *filterExpression)
+{
+    RunList runs = opp_isempty(filterExpression) ? RunList() : rfm->filterRunList(rfm->getRuns(), filterExpression);
+    return getRunsPickle(runs);
+}
+
+ShmSendBuffer *ResultsPickler::getRunattrsPickle(const char *filterExpression)
+{
+    RunAndValueList runAttrs = opp_isempty(filterExpression) ? RunAndValueList() : rfm->getMatchingRunattrs(rfm->getRuns(), filterExpression);
+    return getRunattrsPickle(runAttrs);
+}
+
+ShmSendBuffer *ResultsPickler::getItervarsPickle(const char *filterExpression)
+{
+    RunAndValueList itervars = opp_isempty(filterExpression) ? RunAndValueList() : rfm->getMatchingItervars(rfm->getRuns(), filterExpression);
+    return getItervarsPickle(itervars);
+}
+
+ShmSendBuffer *ResultsPickler::getConfigEntriesPickle(const char *filterExpression)
+{
+    RunAndValueList configEntries = opp_isempty(filterExpression) ? RunAndValueList() : rfm->getMatchingConfigEntries(rfm->getRuns(), filterExpression);
+    return getConfigEntriesPickle(configEntries);
+}
+
+ShmSendBuffer *ResultsPickler::getParamAssignmentsPickle(const char *filterExpression)
+{
+    RunAndValueList paramAssignments = opp_isempty(filterExpression) ? RunAndValueList() : rfm->getMatchingConfigEntries(rfm->getRuns(), filterExpression);
+    return getParamAssignmentsPickle(paramAssignments);
+}
+
+ShmSendBuffer *ResultsPickler::getRunsPickle(const RunList& runs)
 {
     size_t sizeLimit = getSizeLimit();
     ShmPickler p(shmManager->create("runs", 0, true), sizeLimit);
@@ -614,13 +672,8 @@ ShmSendBuffer *ResultsPickler::getRunsPickle(const char *filterExpression)
 
     p.startList();
 
-    if (!opp_isempty(filterExpression)) {
-        RunList runs = rfm->getRuns();
-        runs = rfm->filterRunList(runs, filterExpression);
-
-        for (const auto &r : runs)
-            p.pushString(r->getRunName());
-    }
+    for (const auto &r : runs)
+        p.pushString(r->getRunName());
 
     p.endList();
 
@@ -630,7 +683,7 @@ ShmSendBuffer *ResultsPickler::getRunsPickle(const char *filterExpression)
 }
 
 
-ShmSendBuffer *ResultsPickler::getRunattrsPickle(const char *filterExpression)
+ShmSendBuffer *ResultsPickler::getRunattrsPickle(const RunAndValueList& runAttrs)
 {
     size_t sizeLimit = getSizeLimit();
     ShmPickler p(shmManager->create("runattrs", 0, true), sizeLimit);
@@ -639,21 +692,17 @@ ShmSendBuffer *ResultsPickler::getRunattrsPickle(const char *filterExpression)
 
     p.startList();
 
-    if (!opp_isempty(filterExpression)) {
-        auto runattrs = rfm->getMatchingRunattrs(rfm->getRuns(), filterExpression);
+    for (const auto &ra : runAttrs) {
+        Run *run = ra.first;
+        const std::string &raName = ra.second;
 
-        for (const auto &ra : runattrs) {
-            Run *run = ra.first;
-            const std::string &raName = ra.second;
+        p.startTuple();
 
-            p.startTuple();
+        p.pushString(run->getRunName());
+        p.pushString(raName);
+        p.pushString(run->getAttribute(raName));
 
-            p.pushString(run->getRunName());
-            p.pushString(raName);
-            p.pushString(run->getAttribute(raName));
-
-            p.endTuple();
-        }
+        p.endTuple();
     }
 
     p.endList();
@@ -664,7 +713,7 @@ ShmSendBuffer *ResultsPickler::getRunattrsPickle(const char *filterExpression)
 }
 
 
-ShmSendBuffer *ResultsPickler::getItervarsPickle(const char *filterExpression)
+ShmSendBuffer *ResultsPickler::getItervarsPickle(const RunAndValueList& itervars)
 {
     size_t sizeLimit = getSizeLimit();
     ShmPickler p(shmManager->create("itervars", 0, true), sizeLimit);
@@ -673,21 +722,17 @@ ShmSendBuffer *ResultsPickler::getItervarsPickle(const char *filterExpression)
 
     p.startList();
 
-    if (!opp_isempty(filterExpression)) {
-        auto itervars = rfm->getMatchingItervars(rfm->getRuns(), filterExpression);
+    for (const auto &iv : itervars) {
+        Run *run = iv.first;
+        const std::string &ivName = iv.second;
 
-        for (const auto &iv : itervars) {
-            Run *run = iv.first;
-            const std::string &ivName = iv.second;
+        p.startTuple();
 
-            p.startTuple();
+        p.pushString(run->getRunName());
+        p.pushString(ivName);
+        p.pushString(run->getIterationVariable(ivName));
 
-            p.pushString(run->getRunName());
-            p.pushString(ivName);
-            p.pushString(run->getIterationVariable(ivName));
-
-            p.endTuple();
-        }
+        p.endTuple();
     }
 
     p.endList();
@@ -698,7 +743,7 @@ ShmSendBuffer *ResultsPickler::getItervarsPickle(const char *filterExpression)
 }
 
 
-ShmSendBuffer *ResultsPickler::getConfigEntriesPickle(const char *filterExpression)
+ShmSendBuffer *ResultsPickler::getConfigEntriesPickle(const RunAndValueList& configEntries)
 {
     size_t sizeLimit = getSizeLimit();
     ShmPickler p(shmManager->create("configentries", 0, true), sizeLimit);
@@ -707,21 +752,17 @@ ShmSendBuffer *ResultsPickler::getConfigEntriesPickle(const char *filterExpressi
 
     p.startList();
 
-    if (!opp_isempty(filterExpression)) {
-        auto configentries = rfm->getMatchingConfigEntries(rfm->getRuns(), filterExpression);
+    for (const auto &ce : configEntries) {
+        Run *run = ce.first;
+        const std::string &ceName = ce.second;
 
-        for (const auto &ce : configentries) {
-            Run *run = ce.first;
-            const std::string &ceName = ce.second;
+        p.startTuple();
 
-            p.startTuple();
+        p.pushString(run->getRunName());
+        p.pushString(ceName);
+        p.pushString(run->getConfigValue(ceName));
 
-            p.pushString(run->getRunName());
-            p.pushString(ceName);
-            p.pushString(run->getConfigValue(ceName));
-
-            p.endTuple();
-        }
+        p.endTuple();
     }
 
     p.endList();
@@ -732,7 +773,7 @@ ShmSendBuffer *ResultsPickler::getConfigEntriesPickle(const char *filterExpressi
 }
 
 
-ShmSendBuffer *ResultsPickler::getParamAssignmentsPickle(const char *filterExpression)
+ShmSendBuffer *ResultsPickler::getParamAssignmentsPickle(const RunAndValueList& paramAssignments)
 {
     size_t sizeLimit = getSizeLimit();
     ShmPickler p(shmManager->create("paramassignments", 0, true), sizeLimit);
@@ -741,21 +782,17 @@ ShmSendBuffer *ResultsPickler::getParamAssignmentsPickle(const char *filterExpre
 
     p.startList();
 
-    if (!opp_isempty(filterExpression)) {
-        auto paramassignments = rfm->getMatchingParamAssignmentConfigEntries(rfm->getRuns(), filterExpression);
+    for (const auto &pa : paramAssignments) {
+        Run *run = pa.first;
+        const std::string &paName = pa.second;
 
-        for (const auto &pa : paramassignments) {
-            Run *run = pa.first;
-            const std::string &paName = pa.second;
+        p.startTuple();
 
-            p.startTuple();
+        p.pushString(run->getRunName());
+        p.pushString(paName);
+        p.pushString(run->getConfigValue(paName));
 
-            p.pushString(run->getRunName());
-            p.pushString(paName);
-            p.pushString(run->getConfigValue(paName));
-
-            p.endTuple();
-        }
+        p.endTuple();
     }
 
     p.endList();

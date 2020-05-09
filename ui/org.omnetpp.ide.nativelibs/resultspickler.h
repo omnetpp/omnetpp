@@ -51,7 +51,8 @@ protected:
 public:
     ResultsPickler(ResultFileManager *rfm, ShmSendBufferManager *shmManager, InterruptedFlag *interrupted=nullptr) : rfm(rfm), shmManager(shmManager), interrupted(interrupted?interrupted:&dummy) {}
 
-    ShmSendBuffer *getCsvResultsPickle(std::string filterExpression, std::vector<std::string> rowTypes, bool omitUnusedColumns, double simTimeStart, double simTimeEnd);
+    ShmSendBuffer *getCsvResultsPickle(const char *filterExpression, std::vector<std::string> rowTypes, bool omitUnusedColumns, double simTimeStart, double simTimeEnd);
+    ShmSendBuffer *getCsvResultsPickle(const IDList& results, std::vector<std::string> rowTypes, bool omitUnusedColumns, double simTimeStart, double simTimeEnd);
 
     ShmSendBuffer *getScalarsPickle(const char *filterExpression, bool includeAttrs);
     ShmSendBuffer *getVectorsPickle(const char *filterExpression, bool includeAttrs, double simTimeStart, double simTimeEnd);
@@ -59,11 +60,24 @@ public:
     ShmSendBuffer *getHistogramsPickle(const char *filterExpression, bool includeAttrs);
     ShmSendBuffer *getParamValuesPickle(const char *filterExpression, bool includeAttrs);
 
+    ShmSendBuffer *getScalarsPickle(const IDList& scalars, bool includeAttrs);
+    ShmSendBuffer *getVectorsPickle(const IDList& vectors, bool includeAttrs, double simTimeStart, double simTimeEnd);
+    ShmSendBuffer *getStatisticsPickle(const IDList& statistics, bool includeAttrs);
+    ShmSendBuffer *getHistogramsPickle(const IDList& histograms, bool includeAttrs);
+    ShmSendBuffer *getParamValuesPickle(const IDList& params, bool includeAttrs);
+
+
     ShmSendBuffer *getRunsPickle(const char *filterExpression);
     ShmSendBuffer *getRunattrsPickle(const char *filterExpression);
     ShmSendBuffer *getItervarsPickle(const char *filterExpression);
     ShmSendBuffer *getConfigEntriesPickle(const char *filterExpression);
-    ShmSendBuffer *getParamAssignmentsPickle(const char *filterExpression);
+    ShmSendBuffer *getParamAssignmentsPickle(const char *filterExpression); //TODO eliminate? same as previous
+
+    ShmSendBuffer *getRunsPickle(const RunList& runs);
+    ShmSendBuffer *getRunattrsPickle(const RunAndValueList& runAttrs);
+    ShmSendBuffer *getItervarsPickle(const RunAndValueList& itervars);
+    ShmSendBuffer *getConfigEntriesPickle(const RunAndValueList& configEntries);
+    ShmSendBuffer *getParamAssignmentsPickle(const RunAndValueList& paramAssignments); //TODO eliminate? same as previous
 
     ShmSendBuffer *getRunattrsForRunsPickle(const std::vector<std::string>& runIds);
     ShmSendBuffer *getItervarsForRunsPickle(const std::vector<std::string>& runIds);
