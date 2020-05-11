@@ -22,7 +22,6 @@ import net.razorvine.pickle.PickleException;
 import net.razorvine.pickle.Unpickler;
 
 public class XYDataset implements IXYDataset {
-    String title;
 
     class SeriesData {
         String key;
@@ -59,10 +58,6 @@ public class XYDataset implements IXYDataset {
         for (SeriesData sd : series)
             sd.dispose();
         series.clear();
-    }
-
-    public XYDataset(String title) {
-        this.title = title;
     }
 
     private ByteBuffer map(String nameAndSize) {
@@ -116,11 +111,6 @@ public class XYDataset implements IXYDataset {
         }
 
         return keys;
-    }
-
-    @Override
-    public String getTitle(String format) {
-        return title;
     }
 
     @Override

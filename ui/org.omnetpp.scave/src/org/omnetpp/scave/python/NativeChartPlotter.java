@@ -30,9 +30,9 @@ class NativeChartPlotter implements INativeChartPlotter {
     private PlotBase plot;
 
     /** The native plot widget on which to set the visual properties. */
-    private GroupsSeriesDataset scalarDataset = new GroupsSeriesDataset(null);
-    private XYDataset xyDataset = new XYDataset(null);
-    private HistogramDataset histogramDataset = new HistogramDataset(null);
+    private GroupsSeriesDataset scalarDataset = new GroupsSeriesDataset();
+    private XYDataset xyDataset = new XYDataset();
+    private HistogramDataset histogramDataset = new HistogramDataset();
 
     private Map<String, String> pendingPropertyChanges = new HashMap<>();
 
@@ -154,9 +154,9 @@ class NativeChartPlotter implements INativeChartPlotter {
         if (xyDataset != null)
             xyDataset.dispose();
 
-        scalarDataset = new GroupsSeriesDataset(null);
-        xyDataset = new XYDataset(null);
-        histogramDataset = new HistogramDataset(null);
+        scalarDataset = new GroupsSeriesDataset();
+        xyDataset = new XYDataset();
+        histogramDataset = new HistogramDataset();
     }
 
     public void dispose() {

@@ -20,7 +20,6 @@ import net.razorvine.pickle.Unpickler;
 
 // ??? rather, SeriesGroups?
 public class GroupsSeriesDataset implements IGroupsSeriesDataset {
-    String title;
 
     class Series {
         String key;
@@ -33,11 +32,6 @@ public class GroupsSeriesDataset implements IGroupsSeriesDataset {
 
     // X axis labels, group names, df index
     ArrayList<String> groupTitles = new ArrayList<String>();
-
-
-    public GroupsSeriesDataset(String title) {
-        this.title = title;
-    }
 
     protected String generateUniqueKey() {
         int maxKey = 0;
@@ -90,11 +84,6 @@ public class GroupsSeriesDataset implements IGroupsSeriesDataset {
         }
 
         return keys;
-    }
-
-    @Override
-    public String getTitle(String format) {
-        return title;
     }
 
     @Override

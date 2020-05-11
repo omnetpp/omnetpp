@@ -192,7 +192,7 @@ public class HistogramPlot extends PlotBase {
     public void clear() {
         super.clear();
         histogramProperties.clear();
-        setDataset(new HistogramDataset(null));
+        setDataset(new HistogramDataset());
     }
 
     public void setXAxisTitle(String value) {

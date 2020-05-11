@@ -433,11 +433,8 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
     }
 
     private void updateTitle() {
-        String newTitle = titleText;
-        if (dataset != null)
-            newTitle = StringUtils.defaultString(dataset.getTitle(titleText), newTitle);
-        if (!ObjectUtils.equals(newTitle, title.getText())) {
-            title.setText(newTitle);
+        if (!ObjectUtils.equals(titleText, title.getText())) {
+            title.setText(titleText);
             chartChanged();
         }
     }

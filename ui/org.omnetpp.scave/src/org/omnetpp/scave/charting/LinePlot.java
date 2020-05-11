@@ -405,7 +405,7 @@ public class LinePlot extends PlotBase {
     public void clear() {
         super.clear();
         lineProperties.clear();
-        setDataset(new XYDataset(null));
+        setDataset(new XYDataset());
     }
 
     public void setXAxisTitle(String value) {

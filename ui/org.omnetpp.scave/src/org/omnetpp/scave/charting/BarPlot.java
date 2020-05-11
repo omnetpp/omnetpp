@@ -221,7 +221,7 @@ public class BarPlot extends PlotBase {
     public void clear() {
         super.clear();
         barProperties.clear();
-        setDataset(new GroupsSeriesDataset(null));
+        setDataset(new GroupsSeriesDataset());
     }
 
     public String getTitle() {

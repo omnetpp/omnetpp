@@ -19,7 +19,6 @@ import net.razorvine.pickle.PickleException;
 import net.razorvine.pickle.Unpickler;
 
 public class HistogramDataset implements IHistogramDataset {
-    String title;
 
     class HistogramData {
         String key;
@@ -34,10 +33,6 @@ public class HistogramDataset implements IHistogramDataset {
     }
 
     ArrayList<HistogramData> histograms = new ArrayList<HistogramData>();
-
-    public HistogramDataset(String title) {
-        this.title = title;
-    }
 
     protected String generateUniqueKey() {
         int maxKey = 0;
@@ -98,11 +93,6 @@ public class HistogramDataset implements IHistogramDataset {
         }
 
         return keys;
-    }
-
-    @Override
-    public String getTitle(String format) {
-        return title;
     }
 
     @Override
