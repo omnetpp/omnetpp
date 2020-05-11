@@ -11,8 +11,10 @@ print = functools.partial(print, flush=True)
 from omnetpp.internal.TimeAndGuard import TimeAndGuard
 from omnetpp.internal import Gateway
 
-from omnetpp.scave import results
-from omnetpp.scave import chart, plot
+from omnetpp.scave import results, chart, plot
+
+from py4j.java_gateway import DEFAULT_PORT
+from py4j.clientserver import ClientServer, JavaParameters, PythonParameters
 
 try:
     import matplotlib as mpl
@@ -60,6 +62,27 @@ class PythonEntryPoint(object):
         execContext[name] = pl.loads(pickle)
 
 
+def connect_to_IDE():
+    java_port = int(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_PORT
+    # print("initiating Python ClientServer, connecting to port " + str(java_port))
+
+    entry_point = PythonEntryPoint()
+
+    gateway = ClientServer(
+        java_parameters=JavaParameters(port=java_port, auto_field=True, auto_convert=True, auto_close=True),
+        python_parameters=PythonParameters(port=0, daemonize=True, daemonize_connections=True),
+        python_server_entry_point=entry_point)
+
+    Gateway.gateway = gateway
+
+    python_port = gateway.get_callback_server().get_listening_port()
+
+    # telling Java which port we listen on
+    address = gateway.java_gateway_server.getCallbackClient().getAddress()
+    gateway.java_gateway_server.resetCallbackClient(address, python_port)
+
+    # print("Python ClientServer done, listening on port " + str(python_port))
+
 if __name__ == "__main__":
     # I believe the purpose of the following piece of code is entirely achieved by the "-u" command line argument.
     # But just to be sure, let's leave this in here, I don't think it will cause harm.
@@ -84,7 +107,7 @@ if __name__ == "__main__":
     pd.set_option("display.max_colwidth", 50)
     pd.set_option("display.max_rows", 500)
 
-    Gateway.connect_to_IDE()
+    connect_to_IDE()
 
     for line in sys.stdin:
         # We don't actually expect any input, this is just a simple way to wait
