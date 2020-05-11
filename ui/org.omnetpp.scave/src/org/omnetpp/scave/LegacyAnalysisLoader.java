@@ -25,15 +25,39 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * Loads a legacy Analysis file - created with OMNeT++ IDE older than 6.0.
+ *
+ * Turns each Chart "Dataset operation" in the old format into an independent
+ * Chart object, using one of a fixed set of chart templates.
+ *
+ * It tries to reconstruct many aspects of the old Chart, including proper
+ * data (result item) filtering, vector operations, data arrangement (grouping,
+ * iso lines, etc.), and visual properties.
+ *
+ * However, it is far from complete, so it might fail in many non-trivial cases.
+ *
+ * It also discards Chart Sheets, as they are not supported by the current
+ * version of the Analysis Tool.
+ */
 public class LegacyAnalysisLoader {
+
+    /** Thje used Chart Templates are looked up from this registry */
+    private ChartTemplateRegistry chartTemplateRegistry;
+    /** Conversion errors are appended to this list */
+    private ArrayList<String> errors;
 
     public static final String BARCHART_ID = "barchart_native";
     public static final String LINECHART_ID = "linechart_native";
     public static final String HISTOGRAMCHART_ID = "histogramchart_native";
     public static final String SCATTERCHART_ID = "scatterchart_legacy";
 
-
-    static class DataOp {
+    /**
+     * Represents an "add" or "discard" operation of the legacy Analysis,
+     * for selecting results into (or dropping out of) a legacy Dataset.
+     * Used to construct a corresponding filter expression for the new Charts.
+     */
+    private static class DataOp {
         String op;
         String filter;
         String type;
@@ -45,7 +69,11 @@ public class LegacyAnalysisLoader {
         }
     }
 
-    static class DataVecOp {
+    /**
+     * Represents an "apply" or "compute" vector operation of the legacy Analysis.
+     * Used to construct a corresponding vector_operations property for the new Charts.
+     */
+    private static class DataVecOp {
         String type; // apply or compute
         String operation; // winavg, movingavg, mean, etc...
         Map<String, String> params; // often empty, casting to double might be necessary
@@ -60,6 +88,10 @@ public class LegacyAnalysisLoader {
             this.params = params;
         }
 
+        /**
+         * Turns the represented vector operation into a String, in a format
+         * that is used in the vector_operations Chart property.
+         */
         public String toString() {
             StringBuilder sb = new StringBuilder();
             sb.append(type);
@@ -76,7 +108,13 @@ public class LegacyAnalysisLoader {
         }
     }
 
-    static class DataFilter {
+    /**
+     * Represents an old-style result filter expression ("module(Aloha.*)" syntax)
+     * plus a result item type (scalar, vector, etc.), used to select which
+     * result items should be a part of a following chart operation. Is used for
+     * reconstructing the corresponding filter expression for the new Charts.
+     */
+    private static class DataFilter {
         String type;
         String filter;
 
@@ -86,14 +124,20 @@ public class LegacyAnalysisLoader {
         }
     }
 
-    private ChartTemplateRegistry chartTemplateRegistry;
-    private ArrayList<String> errors;
-
+    /**
+     * Constructs a LegacyAnalysisLoader that will look up the used chart
+     * templates in chartTemplateRegistry, and will append the conversion errors
+     * into the given errors list.
+     */
     public LegacyAnalysisLoader(ChartTemplateRegistry chartTemplateRegistry, ArrayList<String> errors) {
         this.chartTemplateRegistry = chartTemplateRegistry;
         this.errors = errors;
     }
 
+    /**
+     * Combines a collected list of DataOps and DataFilters to construct a single,
+     * complete, new style (module =~ *Aloha*) filter expression for new Charts.
+     */
     private String makeFilterString(ArrayList<DataOp> ops, ArrayList<DataFilter> filters) {
         String opsExpr = "";
         for (DataOp o : ops) {
@@ -129,6 +173,11 @@ public class LegacyAnalysisLoader {
             return "(" + opsExpr + ")  AND  (" + filtersExpr + ")";
     }
 
+    /**
+     * Turns a legacy Chart of the given type, from the given legacy Dataset item
+     * ("operation") node, into a new Chart, taking into account all the preceding
+     * Data selection and vector operation operations, given in ops and vecOps.
+     */
     private Chart makeLegacyChart(ArrayList<DataOp> ops, ArrayList<DataVecOp> vecOps, Node chartNode, String chartType) {
         Chart chart = null;
 
@@ -165,20 +214,20 @@ public class LegacyAnalysisLoader {
 
 
         if ("scave:BarChart".equals(chartType)) {
-            setProperty(chart, "Plot.Title", chart.getName());
-            setProperty(chart, "filter", makeFilterString(ops, filters));
+            chart.setPropertyValue("Plot.Title", chart.getName());
+            chart.setPropertyValue("filter", makeFilterString(ops, filters));
 
             ArrayList<String> bars = XmlUtils.collectChildTextsFromElementsWithTag(chartNode, "barFields");
-            setProperty(chart, "series", bars.isEmpty() ? "name,measurement" : StringUtils.join(bars, ","));
+            chart.setPropertyValue("series", bars.isEmpty() ? "name,measurement" : StringUtils.join(bars, ","));
 
             ArrayList<String> groups = XmlUtils.collectChildTextsFromElementsWithTag(chartNode, "groupByFields");
-            setProperty(chart, "groups", groups.isEmpty() ? "module,experiment" : StringUtils.join(groups, ","));
+            chart.setPropertyValue("groups", groups.isEmpty() ? "module,experiment" : StringUtils.join(groups, ","));
 
             // NOTE: averagedFields elements are not used, because they belong "to the rest"
         }
         else if ("scave:HistogramChart".equals(chartType)) {
-            setProperty(chart, "Plot.Title", chart.getName());
-            setProperty(chart, "filter", makeFilterString(ops, filters));
+            chart.setPropertyValue("Plot.Title", chart.getName());
+            chart.setPropertyValue("filter", makeFilterString(ops, filters));
         }
         else if ("scave:ScatterChart".equals(chartType)) {
             String xDataPattern = chartNode.getAttributes().getNamedItem("xDataPattern").getNodeValue();
@@ -189,21 +238,21 @@ public class LegacyAnalysisLoader {
             for (int i = 0; i < isoDataPatterns.size(); ++i)
                 isoDataPatterns.set(i, FilterUtil.translateLegacyFilterExpression(isoDataPatterns.get(i)));
 
-            setProperty(chart, "Plot.Title", chart.getName());
-            setProperty(chart, "filter", makeFilterString(ops, filters));
-            setProperty(chart, "x_pattern", xDataPattern);
-            setProperty(chart, "iso_patterns", StringUtils.join(isoDataPatterns, ";"));
-            setProperty(chart, "average_replications", averageReplications);
+            chart.setPropertyValue("Plot.Title", chart.getName());
+            chart.setPropertyValue("filter", makeFilterString(ops, filters));
+            chart.setPropertyValue("x_pattern", xDataPattern);
+            chart.setPropertyValue("iso_patterns", StringUtils.join(isoDataPatterns, ";"));
+            chart.setPropertyValue("average_replications", averageReplications);
         }
         else if ("scave:LineChart".equals(chartType)) {
-            setProperty(chart, "Plot.Title", chart.getName());
-            setProperty(chart, "filter", makeFilterString(ops, filters));
+            chart.setPropertyValue("Plot.Title", chart.getName());
+            chart.setPropertyValue("filter", makeFilterString(ops, filters));
 
             ArrayList<String> vecOpStrings = new ArrayList<String>();
             for (DataVecOp vo : vecOps)
                 vecOpStrings.add(vo.toString());
 
-            setProperty(chart, "vector_operations", StringUtils.join(vecOps, "\n"));
+            chart.setPropertyValue("vector_operations", StringUtils.join(vecOps, "\n"));
         }
         else
             throw new RuntimeException("unknown chart type: " + chartType);
@@ -211,15 +260,10 @@ public class LegacyAnalysisLoader {
         return chart;
     }
 
-    private void setProperty(Chart chart, String name, String value) {
-        Property prop = chart.getProperty(name);
-        if (prop == null) {
-            prop = new Property(name, value);
-            chart.addProperty(prop);
-        } else
-            prop.setValue(value);
-    }
-
+    /**
+     * Helper function to easily collect the vector operation parameters
+     * (window length, moving average factor, etc.) from a legacy item node.
+     */
     private Map<String, String> extractVectorOpParams(Node operationNode) {
         Map<String, String> result = new HashMap<String, String>();
 
@@ -236,10 +280,20 @@ public class LegacyAnalysisLoader {
         return result;
     }
 
+    /**
+     * Loads all items from the given root DOM node, adding the converted
+     * contents into the given Analysis.
+     */
     private void loadItems(Node parentNode, Analysis analysis) {
         loadItems(parentNode, analysis, new ArrayList<DataOp>(), new ArrayList<DataVecOp>());
     }
 
+    /**
+     * Loads all items from the given child DOM node, adding the converted
+     * contents into the given Analysis. Only differs from the root-level
+     * overload in that this also takes a list of preceding data selection and
+     * vector operation items as lists. Used recursively for legacy Group items.
+     */
     private void loadItems(Node parentNode, Analysis analysis, ArrayList<DataOp> startingOps, ArrayList<DataVecOp> startingVecOps) {
         NodeList itemNodes = parentNode.getChildNodes();
 
@@ -290,13 +344,15 @@ public class LegacyAnalysisLoader {
         }
     }
 
+    /**
+     * Loads the contents (input patterns and charts) from a legacy root DOM
+     * node, and returns a converted Analysis model. Conversion errors are
+     * reported into the array passed to the LegacyAnalysisLoader constructor.
+     */
     public Analysis loadLegacyAnalysis(Node rootNode) {
 
         Analysis analysis = new Analysis();
-
         NodeList topLevelNodes = rootNode.getChildNodes();
-
-        // TODO: add proper error reporting
 
         for (int i = 0; i < topLevelNodes.getLength(); ++i) {
             Node node = topLevelNodes.item(i);

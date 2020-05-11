@@ -29,11 +29,28 @@ import org.omnetpp.scave.model.Property;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+/**
+ * Save the Analysis models into an Eclipse IFile, as an XML-based .anf file.
+ */
 public class AnalysisSaver {
+
+    /**
+     * Serializes and writes an analysis model into a file.
+     */
     public static void saveAnalysis(Analysis analysis, IFile file) throws CoreException {
         saveAnalysis(analysis, file, new HashMap<Chart, String>());
     }
 
+    /**
+     * Serializes and writes an analysis model into a file, replacing the scripts
+     * of some Charts with the contents given in editedChartScripts.
+     *
+     * This is used when the Analysis is open in a ScaveEditor, and there
+     * are some Charts open in ChartScriptEditors, with edited script contents.
+     * These ChartSctriptEditors are not marked as "dirty", but the script
+     * in them is not yet written back into the Chart object itself, to avoid
+     * spamming the "main" (model) CommandStack of the ScaveEditor.
+     */
     public static void saveAnalysis(Analysis analysis, IFile file, Map<Chart, String> editedChartScripts) throws CoreException {
 
         DocumentBuilder db;

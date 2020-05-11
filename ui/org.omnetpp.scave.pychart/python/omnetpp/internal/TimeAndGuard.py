@@ -1,3 +1,14 @@
+"""
+A utility decorator to measure the execution time of, and catch and report
+any exceptions raised by, any method.
+And another (meta)decorator to apply any decorator to all methods of a class.
+"""
+
+__copyright__ = "Copyright 2016-2020, OpenSim Ltd"
+__license__ = """
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  'License' for details on this and other legal matters.
+"""
 
 import time
 import traceback
@@ -25,6 +36,7 @@ class TimeAndGuard:
                 print("!!!!\n")
         return wrapper
 
+# use on a class for example: @TimeAndGuard(measureTime=False)
 
 def for_all_methods(decorator):
     def decorate(cls):
@@ -33,6 +45,5 @@ def for_all_methods(decorator):
                 setattr(cls, attr, decorator(getattr(cls, attr)))
         return cls
     return decorate
-
 
 # Use on a class for example: @for_all_methods(TimeAndGuard()))

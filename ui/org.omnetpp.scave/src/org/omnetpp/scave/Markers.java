@@ -7,6 +7,9 @@
 
 package org.omnetpp.scave;
 
+/**
+ * String constants to be used as error marker IDs.
+ */
 public class Markers {
     public static final String ANALYSISFILE_PROBLEMMARKER_ID = "org.omnetpp.scave.analysisfileproblem";
     public static final String CHARTTEMPLATE_PROBLEMMARKER_ID = "org.omnetpp.scave.charttemplateproblem";

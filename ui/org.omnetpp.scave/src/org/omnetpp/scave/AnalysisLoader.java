@@ -24,8 +24,23 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * Loads an Analysis model (object hierarchy) from an analysis (.anf) file.
+ *
+ * Uses hand-written logic to extract the model from the XML DOM of
+ * the analysis file, to understand not only the latest file format,
+ * but also some slightly different, development variants of it.
+ *
+ * For loading legacy analysis files (saved by OMNeT++ versions older than 6.0),
+ * see LegacyAnalysisLoader.
+ */
 public class AnalysisLoader {
 
+    /**
+     * Helper method to extract the text content of an element - excluding
+     * any indentation around a CDATA section in it, if present. If there
+     * is no CDATA section in the element, return the entire text contents.
+     */
     private static String extractCdataOrTextContent(Element scriptElement) {
         int n = scriptElement.getChildNodes().getLength();
         for (int k = 0; k < n; ++k) {
@@ -39,6 +54,10 @@ public class AnalysisLoader {
         return scriptElement.getTextContent();
     }
 
+    /**
+     * Loads an Analysis model from the given XML DOM root node, resolving
+     * chart tempalate IDs to references in the given registry.
+     */
     public static Analysis loadNewAnalysis(Node rootNode, ChartTemplateRegistry chartTemplateRegistry) {
 
         if (!rootNode.getNodeName().equals("analysis"))
