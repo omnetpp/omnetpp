@@ -8,12 +8,6 @@
 package org.omnetpp.scave.python;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -27,7 +21,6 @@ import org.omnetpp.scave.charting.LinePlot;
 import org.omnetpp.scave.charting.PlotBase;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.pychart.INativeChartPlotter;
 import org.omnetpp.scave.pychart.PythonCallerThread.ExceptionHandler;
 import org.omnetpp.scave.pychart.PythonProcessPool;
 
@@ -39,134 +32,7 @@ public class NativeChartViewer extends ChartViewerBase {
     public static boolean debug = Debug.isChannelEnabled("nativechartviewer");
 
     private PlotBase plot;
-    private ChartPlotter chartPlotter = new ChartPlotter();
-    Map<String, String> pendingPropertyChanges = new HashMap<>();
-
-    class ChartPlotter implements INativeChartPlotter {
-        GroupsSeriesDataset scalarDataset = new GroupsSeriesDataset(null);
-        XYDataset xyDataset = new XYDataset(null);
-        HistogramDataset histogramDataset = new HistogramDataset(null);
-
-
-        @Override
-        public void plotScalars(byte[] pickledData, Map<String, String> props) {
-            List<String> seriesKeys = scalarDataset.addValues(pickledData);
-
-            pendingPropertyChanges.putAll(props);
-            for (String seriesKey : seriesKeys)
-                for (String propKey : props.keySet())
-                    pendingPropertyChanges.put(propKey + "/" + seriesKey, props.get(propKey));
-        }
-
-        @Override
-        public void plotVectors(byte[] pickledData, Map<String, String> props) {
-            List<String> lineKeys = xyDataset.addVectors(pickledData);
-
-            for (String lineKey : lineKeys)
-                for (String propKey : props.keySet())
-                    pendingPropertyChanges.put(propKey + "/" + lineKey, props.get(propKey));
-        }
-
-        @Override
-        public void plotHistograms(byte[] pickledData, Map<String, String> props) {
-            List<String> histKeys = histogramDataset.addValues(pickledData);
-
-            for (String histKey : histKeys)
-                for (String propKey : props.keySet())
-                    pendingPropertyChanges.put(propKey + "/" + histKey, props.get(propKey));
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return scalarDataset.getSeriesCount() == 0
-                    && scalarDataset.getGroupCount() == 0
-                    && xyDataset.getSeriesCount() == 0
-                    && histogramDataset.getSeriesCount() == 0;
-        }
-
-        protected void doSetProperty(String key, String value) {
-            final RuntimeException exc[] = new RuntimeException[] { null };
-            Display.getDefault().syncExec(() -> {
-                try {
-                    plot.setProperty(key, value);
-                }
-                catch (RuntimeException e) {
-                    exc[0] = e;
-                }
-            });
-            if (exc[0] != null)
-                throw exc[0];
-        }
-
-        protected void doSetProperties(Map<String, String> props) {
-            final RuntimeException exc[] = new RuntimeException[] { null };
-            Display.getDefault().syncExec(() -> {
-                try {
-                    plot.runBatchedUpdates(() -> {
-                        for (String k : props.keySet())
-                            plot.setProperty(k, props.get(k));
-                    });
-                }
-                catch (RuntimeException e) {
-                    exc[0] = e;
-                }
-            });
-            if (exc[0] != null)
-                throw exc[0];
-        }
-
-        public void applyPendingPropertyChanges() {
-            try {
-                doSetProperties(pendingPropertyChanges);
-            }
-            finally {
-                pendingPropertyChanges.clear();
-            }
-        }
-
-        @Override
-        public void setProperty(String key, String value) {
-            pendingPropertyChanges.put(key, value);
-        }
-
-        @Override
-        public void setProperties(Map<String, String> properties) {
-            pendingPropertyChanges.putAll(properties);
-        }
-
-        @Override
-        public void setGroupTitles(List<String> titles) {
-             scalarDataset.setGroupTitles(titles);
-        }
-
-        @Override
-        public void setWarning(String warning) {
-            Display.getDefault().syncExec(() -> {
-                plot.setWarningText(warning);
-            });
-        }
-
-        public void reset() {
-            if (xyDataset != null)
-                xyDataset.dispose();
-
-            scalarDataset = new GroupsSeriesDataset(null);
-            xyDataset = new XYDataset(null);
-            histogramDataset = new HistogramDataset(null);
-        }
-
-        public void dispose() {
-            if (xyDataset != null)
-                xyDataset.dispose();
-        }
-
-        @Override
-        public Set<String> getSupportedPropertyKeys() {
-            Set<String> result = new HashSet<String>();
-            result.addAll(Arrays.asList(plot.getPropertyNames()));
-            return result;
-        }
-    }
+    private NativeChartPlotter chartPlotter;
 
     public NativeChartViewer(Composite parent, Chart chart, PythonProcessPool pool, ResultFileManager rfm) {
         super(chart, pool, rfm);
@@ -185,6 +51,8 @@ public class NativeChartViewer extends ChartViewerBase {
         default:
             throw new RuntimeException("invalid chart type");
         }
+
+        chartPlotter = new NativeChartPlotter(plot);
     }
 
     public void runPythonScript(String script, File workingDir, Runnable runAfterDone, ExceptionHandler runAfterError) {
@@ -237,9 +105,9 @@ public class NativeChartViewer extends ChartViewerBase {
                     Debug.println("status text updated");
 
                 switch (chart.getType()) {
-                case BAR: plot.setDataset(chartPlotter.scalarDataset); break;
-                case HISTOGRAM: plot.setDataset(chartPlotter.histogramDataset); break;
-                case LINE: plot.setDataset(chartPlotter.xyDataset); break;
+                case BAR: plot.setDataset(chartPlotter.getScalarDataset()); break;
+                case HISTOGRAM: plot.setDataset(chartPlotter.getHistogramDataset()); break;
+                case LINE: plot.setDataset(chartPlotter.getXyDataset()); break;
                 case MATPLOTLIB: // fallthrough
                 default: throw new RuntimeException("Wrong chart type.");
                 }
