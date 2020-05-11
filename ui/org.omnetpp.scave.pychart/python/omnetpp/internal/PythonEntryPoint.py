@@ -1,7 +1,19 @@
+"""
+The initial Python module that sets up the Py4J connection between the
+IDE (Java), and a python3 process spawned by it (Python).
+"""
+
+__copyright__ = "Copyright 2016-2020, OpenSim Ltd"
+__license__ = """
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  'License' for details on this and other legal matters.
+"""
+
 import sys
 import os
 import pickle as pl
 
+# the print function is replaced so it will flush after each line
 import functools
 print = functools.partial(print, flush=True)
 
@@ -20,16 +32,22 @@ except ImportError as e:
     print("can't import " + e.name)
     sys.exit(1)
 
-# the print function is replaced so it will flush after each line
-execContext = {
-    "print": print
-}
-
 
 class PythonEntryPoint(object):
+    """
+    An implementation of the Java interface org.omnetpp.scave.pychart.IPythonEntryPoint
+    through Py4J. Provides an initial point to set up additional object references between
+    Java and Python, and to execute arbitrary Python code from the IDE.
+    """
 
     class Java:
         implements = ["org.omnetpp.scave.pychart.IPythonEntryPoint"]
+
+    def __init__(self):
+        """ The execution context of the scripts submitted to execute() """
+        self.execContext = {
+            "print": print
+        }
 
     def check(self):
         return True
@@ -48,12 +66,10 @@ class PythonEntryPoint(object):
 
     # @TimeAndGuard(measureTime=False)
     def execute(self, chartInput):
-        global execContext
-        exec(chartInput, execContext)
+        exec(chartInput, self.execContext)
 
     def setGlobalObjectPickle(self, name, pickle):
-        global execContext
-        execContext[name] = pl.loads(pickle)
+        self.execContext[name] = pl.loads(pickle)
 
 
 def connect_to_IDE():
@@ -77,7 +93,8 @@ def connect_to_IDE():
 
     # print("Python ClientServer done, listening on port " + str(python_port))
 
-if __name__ == "__main__":
+
+def setup_unbuffered_output():
     # I believe the purpose of the following piece of code is entirely achieved by the "-u" command line argument.
     # But just to be sure, let's leave this in here, I don't think it will cause harm.
     # We're just trying to make the stdout and stderr streams unbuffered, so all output is sure(r) to reach the Console.
@@ -96,13 +113,22 @@ if __name__ == "__main__":
         msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
         msvcrt.setmode(sys.stderr.fileno(), os.O_BINARY)
 
+
+def setup_pandas_display_parameters():
     pd.set_option("display.width", 500)
     pd.set_option("display.max_columns", 50)
     pd.set_option("display.max_colwidth", 50)
     pd.set_option("display.max_rows", 500)
 
+
+if __name__ == "__main__":
+
+    setup_unbuffered_output()
+    setup_pandas_display_parameters()
     connect_to_IDE()
 
+    # block the main Python thread while the host process is running
+    # (our stdin is connected to it via a pipe, so stdin will be closed when it exists)
     for line in sys.stdin:
         # We don't actually expect any input, this is just a simple way to wait
         # for the parent process (Java) to die.
