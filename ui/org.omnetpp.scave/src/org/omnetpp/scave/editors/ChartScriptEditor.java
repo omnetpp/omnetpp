@@ -292,7 +292,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
             };
 
             if (chart.getType() == ChartType.MATPLOTLIB) {
-                matplotlibChartViewer = new MatplotlibChartViewer(sashForm, chart, scaveEditor.processPool, scaveEditor.getResultFileManager());
+                matplotlibChartViewer = new MatplotlibChartViewer(sashForm, chart, scaveEditor.getPythonProcessPool(), scaveEditor.getResultFileManager());
 
                 matplotlibChartViewer.addOutputListener(outputListener);
                 matplotlibChartViewer.addStateChangeListener(stateChangeListener);

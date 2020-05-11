@@ -163,9 +163,8 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
     private Map<AnalysisItem, Control> closablePages = new LinkedHashMap<AnalysisItem, Control>();
 
-    PythonProcessPool processPool = new PythonProcessPool(2);
-
-    ChartTemplateRegistry chartTemplateRegistry = new ChartTemplateRegistry();
+    private PythonProcessPool processPool = new PythonProcessPool(2);
+    private ChartTemplateRegistry chartTemplateRegistry = new ChartTemplateRegistry();
 
     /**
      * This is the content outline page.
