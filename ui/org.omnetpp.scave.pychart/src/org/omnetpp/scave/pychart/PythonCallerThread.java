@@ -15,7 +15,8 @@ import py4j.Py4JException;
 
 public class PythonCallerThread extends Thread {
 
-    PythonProcess proc;
+    private PythonProcess proc;
+    private ConcurrentLinkedQueue<CustomRunnable> queue = new ConcurrentLinkedQueue<CustomRunnable>();
 
     public interface ExceptionHandler {
         void handle(PythonProcess proc, Exception e);
@@ -25,8 +26,6 @@ public class PythonCallerThread extends Thread {
         super("Python executor");
         this.proc = proc;
     }
-
-    ConcurrentLinkedQueue<CustomRunnable> queue = new ConcurrentLinkedQueue<CustomRunnable>();
 
     class CustomRunnable implements Runnable {
         Runnable wrapped;
