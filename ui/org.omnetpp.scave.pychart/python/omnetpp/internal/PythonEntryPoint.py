@@ -1,8 +1,5 @@
-import time
 import sys
 import os
-import math
-import traceback
 import pickle as pl
 
 import functools
@@ -10,8 +7,6 @@ print = functools.partial(print, flush=True)
 
 from omnetpp.internal.TimeAndGuard import TimeAndGuard
 from omnetpp.internal import Gateway
-
-from omnetpp.scave import results, chart, plot
 
 from py4j.java_gateway import DEFAULT_PORT
 from py4j.clientserver import ClientServer, JavaParameters, PythonParameters
@@ -41,7 +36,6 @@ class PythonEntryPoint(object):
 
     def setResultsProvider(self, results_provider):
         Gateway.results_provider = results_provider
-        chart.results_provider = results_provider
 
     def setChartProvider(self, chart_provider):
         Gateway.chart_provider = chart_provider
