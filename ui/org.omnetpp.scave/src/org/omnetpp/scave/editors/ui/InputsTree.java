@@ -31,7 +31,6 @@ import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.editors.treeproviders.Sorter;
 import org.omnetpp.scave.engine.FileRun;
 import org.omnetpp.scave.engine.FileRunList;
 import org.omnetpp.scave.engine.IDList;
@@ -181,7 +180,7 @@ public class InputsTree extends TreeViewer {
                                 fileNode.runs = new ArrayList<>();
                                 ResultFile resultFile = manager.getFile(fileNode.filePath);
                                 RunList runlist = manager.getRunsInFile(resultFile);
-                                for (Run run : Sorter.sort(runlist)) {
+                                for (Run run : runlist.toArray()) {
                                     RunNode runNode = new RunNode();
                                     runNode.runId = run.getRunName();
                                     FileRun fileRun = manager.getFileRun(resultFile, run);
