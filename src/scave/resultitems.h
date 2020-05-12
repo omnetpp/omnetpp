@@ -95,6 +95,8 @@ class SCAVE_API ResultItem
 
     ResultFileManager *getResultFileManager() const;
     virtual int getItemType() const = 0;
+    const char *getItemTypeString() const {return itemTypeToString(getItemType());}
+    static const char *itemTypeToString(int type);
     //TODO virtual ID getID() const = 0;
 
     const std::string& getName() const {return *nameRef;}

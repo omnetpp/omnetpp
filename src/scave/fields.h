@@ -66,6 +66,13 @@ class SCAVE_API Scave
     static constexpr const char *ITERATIONVARS = "iterationvars";
     static constexpr const char *ITERATIONVARSF = "iterationvarsf";
 
+    // item type names
+    static constexpr const char *PARAMETER = "parameter";
+    static constexpr const char *SCALAR = "scalar";
+    static constexpr const char *VECTOR = "vector";
+    static constexpr const char *STATISTICS = "statistics";
+    static constexpr const char *HISTOGRAM = "histogram";
+
     // frequently used result attributes
     static constexpr const char *TYPE = "type";
     static constexpr const char *ENUM = "enum";

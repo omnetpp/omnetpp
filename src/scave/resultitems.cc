@@ -72,6 +72,18 @@ ResultFileManager *ResultItem::getResultFileManager() const
     return fileRunRef->getFile()->getResultFileManager();
 }
 
+const char *ResultItem::itemTypeToString(int type)
+{
+    switch (type) {
+        case ResultFileManager::PARAMETER: return Scave::PARAMETER;
+        case ResultFileManager::SCALAR: return Scave::SCALAR;
+        case ResultFileManager::VECTOR: return Scave::VECTOR;
+        case ResultFileManager::STATISTICS: return Scave::STATISTICS;
+        case ResultFileManager::HISTOGRAM: return Scave::HISTOGRAM;
+        default: return "?";
+    }
+}
+
 ResultItem::DataType ResultItem::getDataType() const
 {
     auto it = attributes->find("type");
