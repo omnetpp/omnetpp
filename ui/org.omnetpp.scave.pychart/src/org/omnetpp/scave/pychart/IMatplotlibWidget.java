@@ -10,28 +10,40 @@ package org.omnetpp.scave.pychart;
 import java.util.ArrayList;
 
 /**
- * This is the interface that Matplotlib expects from a MatplotlibWidget.
- *
- * @author attila
- *
+ * The Python part of our custom FigureCanvas communicates with the Java (SWT)
+ * part through this interface. It has methods to put image content (pixels)
+ * on the screen in various ways, to set or clear the tool rectangle, to set
+ * the mouse cursor type, and to pass a regular message (used by matplotlib
+ * tools) or a warning text to the user.
  */
 public interface IMatplotlibWidget {
 
     /**
-     * This is the main drawing method. Calling it will replace
-     * the entire contents of the PlotWidget canvas.
-     *
-     * Note that this is not used at the moment, as we utilize SHM.
-     * */
+     * Replaces he entire contents of the canvas with the raw pixels stored in
+     * the passed buffer. Each pixel is an RGBA quartet.
+     */
     void setPixels(byte[] pixels, int w, int h);
 
+    /**
+     * Asks the canvas implementation to map a shared memory object with the
+     * given name and size as "pixel backing storage". Pixels for subsequent
+     * frames data should be read from this SHM object.
+     */
     void setSharedMemoryNameAndSize(String name, long size);
+
+    /**
+     * Signals to the implementation that a new frame was written into the
+     * previously selected shared memory region, and that it should be presented
+     * to the user. The actual size of the frame might be smaller than the size
+     * of the SHM region, because that is recreated only if it is too small, but
+     * is usually not shrunk.
+     */
     void setPixelsShared(int w, int h);
 
     /**
      * This is used for updating the canvas partially.
-     * It paints on top of the already existing canvas contents.
-     * Can be used by MPL cursors, and animations.
+     * It paints on top of (replacing) the already existing canvas contents.
+     * Might be used by custom MPL cursors, and animations.
      * */
     void blit(byte[] pixels, int x, int y, int w, int h);
 
@@ -46,8 +58,21 @@ public interface IMatplotlibWidget {
      */
     void clearRect();
 
+    /**
+     * Sets the mouse cursor type. The cursors are encoded as:
+     * HAND = 0, POINTER = 1, SELECT_REGION = 2, MOVE = 3, WAIT = 4
+     */
     void setCursorType(int cursor);
 
+    /**
+     * Sets the tool message to show to the user. This commonly contains
+     * the current navigation mode and data coordinates of the mouse pointer.
+     */
     void setMessage(String s);
+
+    /**
+     * Sets the warning text to show to the user. This is used usually when
+     * the chart was not configured correctly.
+     */
     void setWarning(String s);
 }

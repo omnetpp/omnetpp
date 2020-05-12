@@ -13,6 +13,28 @@ import org.omnetpp.common.Debug;
 
 import py4j.Py4JException;
 
+/**
+ * A thread that queues and executes blocking function calls to a
+ * PythonProcess (running Python code), in an asynchronous way. This makes it
+ * impossible to halt the main IDE thread if something gets stuck, or takes too
+ * long on the Python side.
+ *
+ * It also has support for so-called "event streams". This is useful for passing
+ * down UI event notifications to our matplotlib backend - or for any other task
+ * that might be triggered quite frequently, might take some time to execute,
+ * but only the latest execution is important.
+ * Each event stream is identified by an integer (of arbitrary value).
+ * When a Runnable is submitted for async execution in an event stream, any
+ * previously submitted Runnables in the queue that belong to the same event
+ * stream will be cancelled - removed from the queue; effectively replaced by
+ * the newly submitted runnable (which is still put at the end of the queue).
+ *
+ * For each submitted Runnable, an optional "done" notification callback and an
+ * also optional error handler can be attached. If the Runnable throws an
+ * exception, it will be passed to the error handler. The "done" notification
+ * runnable is called after the Runnable finished, or if it threw an exception,
+ * after the errorHandler is executed.
+ */
 public class PythonCallerThread extends Thread {
 
     private PythonProcess proc;

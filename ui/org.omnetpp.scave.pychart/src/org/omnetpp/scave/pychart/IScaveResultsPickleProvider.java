@@ -12,6 +12,13 @@ import java.util.List;
 
 import net.razorvine.pickle.PickleException;
 
+/**
+ * Used by the omnetpp.scave.results Python module (through Py4J) to
+ * gain access to the results items loaded into a ResultFileManager.
+ *
+ *  Every method returns a string which is a space-separated pair of a
+ *  shared memory name and its size in bytes (written in decimal form).
+ */
 public interface IScaveResultsPickleProvider {
     // metadata about runs
     String getRunsPickle(String filter) throws PickleException, IOException;

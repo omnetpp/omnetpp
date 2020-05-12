@@ -13,6 +13,14 @@ import org.omnetpp.scave.engine.ShmSendBufferManager;
 
 import py4j.ClientServer;
 
+/**
+ * Encapsulates a python3 interpreter (running in a Process); a reference to an
+ * IPythonEntryPoint implementation in it (through a Py4J connection -
+ * ClientServer); and some more related machinery: A thread to make blocking
+ * calls running Python code asynchronously, a thread to monitor output from the
+ * python3 process' stdout and stderr (each), and an SHM SendBufferManager to
+ * easily transfer bulk data from the native parts to Python - with its GC Thread.
+ */
 public class PythonProcess {
     public static boolean debug = Debug.isChannelEnabled("pythonprocess");
 

@@ -11,6 +11,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * This is the interface used internally by the omnetpp.scave.impl_ide.plot
+ * Python module, to be implemented in Java.
+ *
+ *  Has methods to receive pickled data to show on native plots, and to set
+ *  its visual properties, and other miscellaneous info.
+ */
 public interface INativeChartPlotter {
     void plotScalars(byte[] pickledData, Map<String, String> props);
     void plotVectors(byte[] pickledData, Map<String, String> props);

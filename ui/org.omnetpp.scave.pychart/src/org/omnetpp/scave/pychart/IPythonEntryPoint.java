@@ -41,11 +41,18 @@ public interface IPythonEntryPoint {
     void setChartProvider(IChartProvider chartProvider);
 
     /**
-     * Sets the provider of the associated Python process to
-     * chartProvider. A chart provider is needed by the omnetpp.scave.chart
-     * Python module to access a Chart object.
+     * Sets the widget provider of the associated Python process to
+     * widgetProvider. A widget provider is needed by our matplotlib backend
+     * to construct the Java half of the FigureCanvas implementation.
      */
     void setPlotWidgetProvider(IPlotWidgetProvider widgetProvider);
+
+    /**
+     * Sets the chart plotter of the associated Python process to
+     * chartPlotter. A chart plotter is needed by the omnetpp.scave.plot
+     * Python module to access the native plot widgets - pass data to them and
+     * change their visual properties.
+     */
     void setNativeChartPlotter(INativeChartPlotter chartPlotter);
 
     /**

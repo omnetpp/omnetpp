@@ -17,8 +17,14 @@ import java.util.List;
  * The SWT Canvas (MatplotlibWidget) passes the input events back to matplotlib
  * through this interface.
  *
- * performing actions, figure export, (filetype query), axis limit get-set
+ * Performing actions (as described by ActionDescription - tool selection and
+ * nacigation history: zoom, pan, back, forward, home, etc.); exporting the
+ * figure (by matplotlib, in any format supported by it); querying the supported
+ * export file formats (png, svg, ps, etc.); and querying and restoring the axis
+ * limits (to keep the navigation state the same across subsequent script
+ * executions); also happens through this interface.
  */
+// TODO implement scroll and keypress event handlers
 public interface IMatplotlibFigureCanvas {
 
     // Declaration of event handlers:
@@ -26,40 +32,46 @@ public interface IMatplotlibFigureCanvas {
     // These are normally called by the SWT event handlers of a PlotWidget,
     // and are passed over to the Python side, to Matplotlib, which then does
     // however it pleases (redraws, calls user-defined handlers, and so on).
+
+
+    /** Notifies matplotlib that the mouse pointer entered the canvas area at the
+     * given (canvas-local) coordinates, with the origin in the lower left corner. */
     void enterEvent(int x, int y);
 
+    /** Notifies matplotlib that the mouse pointer left the canvas area. */
     void leaveEvent();
 
+    /** Notifies matplotlib that the mouse pointer moved to the given (canvas-local)
+     * coordinates (with the origin in the lower left corner) inside the canvas area. */
     void mouseMoveEvent(int x, int y);
 
+    /** Notifies matplotlib that the given mouse button was pressed down at the
+     * given (canvas-local) coordinates (with the origin in the lower left corner)
+     * inside the canvas area. The button is encoded as: LEFT = 1, MIDDLE = 2,
+     * RIGHT = 3, BACK = 8, FORWARD = 9. */
     void mousePressEvent(int x, int y, int button);
 
+    /** Notifies matplotlib that the given mouse button was released at the
+     * given (canvas-local) coordinates (with the origin in the lower left corner)
+     * inside the canvas area. The button is encoded as: LEFT = 1, MIDDLE = 2,
+     * RIGHT = 3, BACK = 8, FORWARD = 9. */
     void mouseReleaseEvent(int x, int y, int button);
 
+    /** Notifies matplotlib that the given mouse button was double-clicked at
+     * the given (canvas-local) coordinates (with the origin in the lower left corner)
+     * inside the canvas area. The button is encoded as: LEFT = 1, MIDDLE = 2,
+     * RIGHT = 3, BACK = 8, FORWARD = 9. */
     void mouseDoubleClickEvent(int x, int y, int button);
 
+    /** Notifies matplotlib that the canvas was resized to the given size. */
     void resizeEvent(int width, int height);
 
-    /*
-     * // TODO implement scroll and keypress event handlers def wheelEvent(self,
-     * event): x, y = self.mouseEventCoords(event) # from QWheelEvent::delta doc if
-     * event.pixelDelta().x() == 0 and event.pixelDelta().y() == 0: steps =
-     * event.angleDelta().y() / 120 else: steps = event.pixelDelta().y() if steps:
-     * FigureCanvasBase.scroll_event(self, x, y, steps, guiEvent=event)
-     *
-     * def keyPressEvent(self, event): FigureCanvasBase.key_press_event(self, key)
-     *
-     * def keyReleaseEvent(self, event): FigureCanvasBase.key_release_event(self,
-     * key)
-     *
-     */
-
-
+    /** Notifies matplotlib that the canvas was resized to the given size. */
     void performAction(String action);
 
-    /**
-     * Save image on canvas into the the given file.
-     */
+    /** Save the image currently on the canvas into the the given file. The
+     * format to use will be automatically detected by matplotlib from the
+     * extension in the filename. */
     void exportFigure(String filename);
 
     /**
@@ -69,6 +81,7 @@ public interface IMatplotlibFigureCanvas {
      */
     HashMap<String, ArrayList<String>> getSupportedFiletypes();
 
+    /** Returns the extension of the default filetype when exporting figures. */
     String getDefaultFiletype();
 
     /**
