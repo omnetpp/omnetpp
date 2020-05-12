@@ -38,7 +38,7 @@ import py4j.Py4JException;
 public class PythonCallerThread extends Thread {
 
     private PythonProcess proc;
-    private ConcurrentLinkedQueue<CustomRunnable> queue = new ConcurrentLinkedQueue<CustomRunnable>();
+    private ConcurrentLinkedQueue<EventStreamRunnable> queue = new ConcurrentLinkedQueue<EventStreamRunnable>();
 
     public interface ExceptionHandler {
         void handle(PythonProcess proc, Exception e);
@@ -49,18 +49,13 @@ public class PythonCallerThread extends Thread {
         this.proc = proc;
     }
 
-    class CustomRunnable implements Runnable {
-        Runnable wrapped;
-        boolean done = false;
-        int eventStream;
+    private static class EventStreamRunnable implements Runnable {
+        private Runnable wrapped;
+        private int eventStream;
 
-        public CustomRunnable(Runnable wrapped, int eventStream) {
+        public EventStreamRunnable(Runnable wrapped, int eventStream) {
             this.wrapped = wrapped;
             this.eventStream = eventStream;
-        }
-
-        public boolean isDone() {
-            return done;
         }
 
         public int getEventStream() {
@@ -73,9 +68,6 @@ public class PythonCallerThread extends Thread {
                 wrapped.run();
             } catch (Exception e) {
                 PyChartPlugin.logError(e);
-            }
-            finally {
-                done = true;
             }
         }
     }
@@ -104,7 +96,7 @@ public class PythonCallerThread extends Thread {
      * one arrived.
      */
     public void asyncExec(Runnable runnable, int eventStream) {
-        CustomRunnable cr = new CustomRunnable(runnable, eventStream);
+        EventStreamRunnable cr = new EventStreamRunnable(runnable, eventStream);
 
         synchronized (queue) {
             if (eventStream >= 0)
