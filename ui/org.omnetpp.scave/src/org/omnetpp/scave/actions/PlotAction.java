@@ -50,12 +50,9 @@ public class PlotAction extends AbstractScaveAction {
         Chart chart = ScaveModelUtil.createChartFromTemplate(template);
         editor.getChartTemplateRegistry().markTemplateUsage(template);
 
-        String[] filterFields = new String[] { Scave.EXPERIMENT, Scave.MEASUREMENT, Scave.REPLICATION, Scave.MODULE, Scave.NAME };
-        String viewFilter = editor.getBrowseDataPage().getActivePanel().getFilter();
-        IDList allIds = manager.getAllItems(true);
-
         boolean ok = TimeTriggeredProgressMonitorDialog2.runWithDialog("Generating filter expression", (monitor) -> {
-            String filter = ResultSelectionFilterGenerator.getIDListAsFilterExpression(allIds, idList, filterFields, viewFilter, manager, monitor);
+            String filter = ResultSelectionFilterGenerator.makeQuickFilter(idList, manager);
+            editor.getMemoizationCache().putCachedFilterResult(filter, idList);
             chart.setPropertyValue("filter", filter);
             chart.setTemporary(true);
         });

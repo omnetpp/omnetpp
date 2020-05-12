@@ -13,7 +13,6 @@ import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Display;
-import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.IDListSelection;
@@ -32,18 +31,11 @@ public class CopyChartFilterAction extends AbstractScaveAction {
 
     @Override
     protected void doRun(ScaveEditor editor, ISelection selection) throws CoreException {
-        IDList all = editor.getBrowseDataPage().getActivePanel().getIDList();
-        IDList target = ((IDListSelection)selection).getIDList();
-        ResultFileManager rfm = editor.getResultFileManager();
-
-        String[] result = new String[1];
-        TimeTriggeredProgressMonitorDialog2.runWithDialog("Generating filter expression", (monitor) -> {
-            result[0] = ResultSelectionFilterGenerator.getFilter(target, all, rfm, monitor);
-        });
-        if (result[0] != null) {
-            String filter = result[0];
-            new Clipboard(Display.getCurrent()).setContents(new Object[] {filter}, new Transfer[] {TextTransfer.getInstance()});
-        }
+        ResultFileManager manager = editor.getResultFileManager();
+        IDList idList = ((IDListSelection)selection).getIDList();
+        String filter = ResultSelectionFilterGenerator.makeQuickFilter(idList, manager);
+        editor.getMemoizationCache().putCachedFilterResult(filter, idList);
+        new Clipboard(Display.getCurrent()).setContents(new Object[] {filter}, new Transfer[] {TextTransfer.getInstance()});
     }
 
     @Override

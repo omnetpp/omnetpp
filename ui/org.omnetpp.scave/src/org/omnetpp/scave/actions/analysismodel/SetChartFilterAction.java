@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
-import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.AbstractScaveAction;
@@ -45,18 +44,12 @@ public class SetChartFilterAction extends AbstractScaveAction {
 
     @Override
     protected void doRun(ScaveEditor editor, ISelection selection) throws CoreException {
-        IDList all = editor.getBrowseDataPage().getActivePanel().getIDList();
-        IDList target = ((IDListSelection)selection).getIDList();
-        ResultFileManager rfm = editor.getResultFileManager();
-        String[] result = new String[1];
-        TimeTriggeredProgressMonitorDialog2.runWithDialog("Generating filter expression", (monitor) -> {
-            result[0] = ResultSelectionFilterGenerator.getFilter(target, all, rfm, monitor);
-        });
-        if (result[0] != null) {
-            String filter = result[0];
-            SetChartPropertyCommand command = new SetChartPropertyCommand(chart, "filter", filter);
-            editor.getChartsPage().getCommandStack().execute(command);
-        }
+        ResultFileManager manager = editor.getResultFileManager();
+        IDList idList = ((IDListSelection)selection).getIDList();
+        String filter = ResultSelectionFilterGenerator.makeQuickFilter(idList, manager);
+        editor.getMemoizationCache().putCachedFilterResult(filter, idList);
+        SetChartPropertyCommand command = new SetChartPropertyCommand(chart, "filter", filter);
+        editor.getChartsPage().getCommandStack().execute(command);
     }
 
     @Override
