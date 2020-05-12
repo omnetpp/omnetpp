@@ -83,7 +83,10 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
                 int modifiedCursorPosition = candidate.getCursorPosition() + modifiedContent.length() - content.length();
                 String description = (StringUtils.isEmpty(candidate.getDescription()) && descriptionSeen) ? "(no description)" : candidate.getDescription();
                 Image image = candidate instanceof ContentProposalEx ? ((ContentProposalEx)candidate).getImage() : null;
-                result.add(new ContentProposalEx(modifiedContent, candidate.getLabel(), description, modifiedCursorPosition, image));
+                ContentProposalEx proposal = new ContentProposalEx(modifiedContent, candidate.getLabel(), description, modifiedCursorPosition, image);
+                proposal.setStartIndex(position);
+                proposal.setEndIndex(position);
+                result.add(proposal);
             }
         }
 
