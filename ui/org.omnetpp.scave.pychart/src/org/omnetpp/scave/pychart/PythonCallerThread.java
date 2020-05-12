@@ -45,7 +45,7 @@ public class PythonCallerThread extends Thread {
     }
 
     public PythonCallerThread(PythonProcess proc) {
-        super("Python executor");
+        super("Python executor for PythonProcess " + proc.getProcess().pid());
         this.proc = proc;
     }
 

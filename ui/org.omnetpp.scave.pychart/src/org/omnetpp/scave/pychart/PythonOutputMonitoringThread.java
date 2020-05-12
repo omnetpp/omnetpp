@@ -31,7 +31,7 @@ public class PythonOutputMonitoringThread extends Thread {
     List<IOutputListener> outputListeners = new ArrayList<IOutputListener>();
 
     public PythonOutputMonitoringThread(PythonProcess process, boolean monitorStdErr) {
-        super("Python output monitoring");
+        super("Python output monitoring for " + (monitorStdErr ? "stderr" : "stdout") + " of PythonProcess " + process.getProcess().pid());
         this.process = process;
         this.monitorStdErr = monitorStdErr;
     }
