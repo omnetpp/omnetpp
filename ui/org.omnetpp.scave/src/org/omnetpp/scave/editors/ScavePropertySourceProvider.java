@@ -13,9 +13,7 @@ import org.omnetpp.common.properties.PropertySource;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model2.ChartLine;
-import org.omnetpp.scave.model2.ResultFilePayload;
 import org.omnetpp.scave.model2.ResultItemRef;
-import org.omnetpp.scave.model2.RunPayload;
 
 /**
  * Provides properties of scave model objects and charts.
@@ -32,12 +30,10 @@ public class ScavePropertySourceProvider implements IPropertySourceProvider {
 
     @Override
     public IPropertySource getPropertySource(final Object object) {
-        if (object instanceof GenericTreeNode)
-            return getPropertySource(((GenericTreeNode)object).getPayload());
+        if (object instanceof PropertySource)
+            return (PropertySource)object;
 //        else if (object instanceof Chart)
 //            return nuPlotProperties.createPropertySource((Chart)object, ScaveEditor.getActiveScaveCommandStack());
-        else if (object instanceof PropertySource)
-            return (PropertySource)object;
         else if (object instanceof ChartLine) {
             ChartLine lineID = (ChartLine)object;
             // TODO
@@ -47,13 +43,6 @@ public class ScavePropertySourceProvider implements IPropertySourceProvider {
         }
         else if (object instanceof ResultItemRef)
             return new ResultItemPropertySource((ResultItemRef)object);
-        else if (object instanceof ResultFilePayload)
-            return new ResultFilePropertySource(manager.getFile(((ResultFilePayload)object).getFilePath()));
-        else if (object instanceof RunPayload)
-            return ResultFileManager.callWithReadLock(manager, () -> {
-                return new RunPropertySource(manager.getRunByName(((RunPayload)object).getRunName()));
-            });
-
         return null; // TODO ?
     }
 }

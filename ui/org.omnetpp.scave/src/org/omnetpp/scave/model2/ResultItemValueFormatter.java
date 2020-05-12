@@ -12,6 +12,7 @@ import org.omnetpp.scave.engine.EnumType;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ResultItem.DataType;
 
+//TODO this class is either superfluous, or not used at enough places
 public class ResultItemValueFormatter {
     private DataType type;
     private EnumType enumType;
