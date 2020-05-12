@@ -159,6 +159,8 @@ public class PythonCallerThread extends Thread {
                 }
             }
         }
-        Debug.println("Python executor thread exiting.");
+
+        if (PythonProcess.debug)
+            Debug.println("Python executor thread exiting.");
     }
 }
