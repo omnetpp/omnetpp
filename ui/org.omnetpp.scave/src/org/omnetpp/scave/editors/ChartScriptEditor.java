@@ -116,7 +116,6 @@ import org.python.pydev.plugin.PyDevUiPrefs;
 import org.python.pydev.shared_core.callbacks.ICallbackListener;
 import org.python.pydev.shared_ui.editor_input.PydevFileEditorInput;
 
-//TODO @title not used by chart
 
 public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
     private Chart chart;
