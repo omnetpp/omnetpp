@@ -47,8 +47,7 @@ public class MatchExpressionSyntax {
         return tree;
     }
 
-    public enum TokenType
-    {
+    public enum TokenType {
         AND,
         OR,
         NOT,
@@ -62,8 +61,7 @@ public class MatchExpressionSyntax {
     /**
      * Leaf nodes of the parse tree.
      */
-    public static class Token
-    {
+    public static class Token {
         TokenType type;
         String value;
         int startPos, endPos;
@@ -128,8 +126,8 @@ public class MatchExpressionSyntax {
     /**
      * Internal nodes of the parse tree.
      */
-    public static class Node
-    {
+    public static class Node {
+
         public static final int ROOT = 0;
         public static final int FIELDPATTERN = 1; // fieldName =~ pattern
         public static final int PATTERN = 2;      // pattern
@@ -185,12 +183,12 @@ public class MatchExpressionSyntax {
             addChild(2, close);
         }
 
-        private void addChild(int index, Node child) {
+        protected void addChild(int index, Node child) {
             child.parent = this;
             content[index] = child;
         }
 
-        private void addChild(int index, Token child) {
+        protected void addChild(int index, Token child) {
             child.parent = this;
             content[index] = child;
         }
@@ -293,7 +291,7 @@ public class MatchExpressionSyntax {
             return sb.toString();
         }
 
-        private void format(StringBuffer sb, int level) {
+        protected void format(StringBuffer sb, int level) {
             // indent
             sb.append(StringUtils.repeat("  ", level));
 
@@ -334,8 +332,7 @@ public class MatchExpressionSyntax {
      *
      * TODO: \\ and \" within patterns
      */
-    static class Lexer
-    {
+    public static class Lexer {
         public static final int EOF = -1;
         public static final Map<String, TokenType> keywords = new HashMap<String, TokenType>(6);
 
@@ -430,7 +427,7 @@ public class MatchExpressionSyntax {
             }
         }
 
-        private int getChar() {
+        protected int getChar() {
             try {
                 int ch = input.read();
                 if (ch == EOF)
@@ -443,7 +440,7 @@ public class MatchExpressionSyntax {
             }
         }
 
-        private void ungetChar(int ch) {
+        protected void ungetChar(int ch) {
             try {
                 input.unread(ch);
                 pos--;
@@ -460,12 +457,11 @@ public class MatchExpressionSyntax {
      * Parser for filter expressions.
      *
      */
-    static class Parser
-    {
-        Lexer lexer;
+    public static class Parser {
+        protected Lexer lexer;
 
-        Token lookAhead1;
-        Token lookAhead2;
+        protected Token lookAhead1;
+        protected Token lookAhead2;
 
         public Parser(Lexer lexer) {
             this.lexer = lexer;
@@ -495,7 +491,7 @@ public class MatchExpressionSyntax {
             return expression();
         }
 
-        public Node expression() {
+        protected Node expression() {
             Node expr = expr();
             // when there is something extra at the end,
             // if it is a prefix for OR or AND try to continue, otherwise ignore
@@ -514,11 +510,11 @@ public class MatchExpressionSyntax {
             return new Node(expr, end);
         }
 
-        private Node expr() {
+        protected Node expr() {
             return orExpr();
         }
 
-        private Node orExpr() {
+        protected Node orExpr() {
             Node first = andExpr();
             if (lookAhead1.type == TokenType.OR) {
                 Token operator = match(TokenType.OR);
@@ -529,7 +525,7 @@ public class MatchExpressionSyntax {
                 return first;
         }
 
-        private Node andExpr() {
+        protected Node andExpr() {
             Node first = notExpr();
             if (lookAhead1.type == TokenType.AND) {
                 Token operator = match(TokenType.AND);
@@ -540,7 +536,7 @@ public class MatchExpressionSyntax {
                 return first;
         }
 
-        private Node notExpr() {
+        protected Node notExpr() {
             if (lookAhead1.type == TokenType.NOT) {
                 Token operator = match(TokenType.NOT);
                 Node expr = primaryExpr();
@@ -550,7 +546,7 @@ public class MatchExpressionSyntax {
                 return primaryExpr();
         }
 
-        private Node primaryExpr() {
+        protected Node primaryExpr() {
 
             if (lookAhead1.type == TokenType.OP) {
                 Token open = match(TokenType.OP);
@@ -581,11 +577,11 @@ public class MatchExpressionSyntax {
             }
         }
 
-        private Token match(TokenType token) {
+        protected Token match(TokenType token) {
             return match(token, false);
         }
 
-        private Token match(TokenType tokenExpected, boolean create) {
+        protected Token match(TokenType tokenExpected, boolean create) {
 
             if (tokenExpected != lookAhead1.type && !create) {
                 while (lookAhead1.type != TokenType.END && lookAhead1.type != tokenExpected) {
@@ -601,7 +597,7 @@ public class MatchExpressionSyntax {
             }
         }
 
-        private Token getNextToken() {
+        protected Token getNextToken() {
             Token token = lookAhead1;
             lookAhead1 = lookAhead2;
             lookAhead2 = lexer.getNextToken();
