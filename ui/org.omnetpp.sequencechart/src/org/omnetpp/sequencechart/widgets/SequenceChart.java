@@ -2763,7 +2763,8 @@ public class SequenceChart
 
         if (showEventNumbers) {
             graphics.setFont(getFont());
-            drawText(graphics, "#" + sequenceChartFacade.IEvent_getEventNumber(eventPtr), x + 5, y + 1 + getAxisRenderers()[axisModuleIndex].getHeight() / 2);
+            if (axisModuleIndex != -1)
+                drawText(graphics, "#" + sequenceChartFacade.IEvent_getEventNumber(eventPtr), x + 5, y + 1 + getAxisRenderers()[axisModuleIndex].getHeight() / 2);
         }
     }
 
@@ -2861,9 +2862,10 @@ public class SequenceChart
                 long startEventPtr = eventPtrRange[0];
                 long endEventPtr = eventPtrRange[1];
                 int moduleIndex = getAxisModuleIndexByModuleId(axisModule.getModuleId());
-                Assert.isTrue(moduleIndex != -1);
-                drawAxisLabel(graphics, moduleIndex, axisModule);
-                drawAxis(graphics, startEventPtr, endEventPtr, moduleIndex, axisModule);
+                if (moduleIndex != -1) {
+                    drawAxisLabel(graphics, moduleIndex, axisModule);
+                    drawAxis(graphics, startEventPtr, endEventPtr, moduleIndex, axisModule);
+                }
             }
         }
     }
@@ -3673,7 +3675,7 @@ public class SequenceChart
     }
 
     private int getModuleYViewportCoordinateByModuleIndex(int index) {
-        return getAxisModuleYs()[index] + getAxisRenderers()[index].getHeight() / 2 - (int)getViewportTop();
+        return index != -1 ? getAxisModuleYs()[index] + getAxisRenderers()[index].getHeight() / 2 - (int)getViewportTop() : 0;
     }
 
     private int getEventAxisModuleIndex(long eventPtr) {
@@ -3695,7 +3697,7 @@ public class SequenceChart
     private int getInitializationEventYViewportCoordinate(long messageDependencyPtr) {
         int contextModuleId = getInitializationEventContextModuleId(messageDependencyPtr);
         int moduleIndex = getAxisModuleIndexByModuleId(contextModuleId);
-        return getModuleYViewportCoordinateByModuleIndex(moduleIndex);
+        return moduleIndex != -1 ? getModuleYViewportCoordinateByModuleIndex(moduleIndex) : 0;
     }
 
     private int getInitializationEventContextModuleId(long messageDependencyPtr) {
