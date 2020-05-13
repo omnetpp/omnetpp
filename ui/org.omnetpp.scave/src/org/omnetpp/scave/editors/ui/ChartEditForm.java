@@ -230,9 +230,9 @@ public class ChartEditForm {
 
                 if (proposalProvider != null) {
                     if (control instanceof Text)
-                        ContentAssistUtil.configureText((Text)control, proposalProvider);
+                        ContentAssistUtil.configureText((Text)control, proposalProvider, " ~:().");
                     else if (control instanceof StyledText)
-                        ContentAssistUtil.configureStyledText((StyledText)control, proposalProvider);
+                        ContentAssistUtil.configureStyledText((StyledText)control, proposalProvider, " ~:().");
                     else
                         ScavePlugin.getDefault().getLog().warn("'contentAssist' attribute in XSWT file is ignored for widget of type '" + control.getClass().getSimpleName() + "', it is only valid for Text and StyledText widgets");
                 }

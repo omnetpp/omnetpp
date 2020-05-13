@@ -315,7 +315,7 @@ public class FilterBar extends Composite {
         filterExpressionText.setMessage("type filter expression");
         filterExpressionText.setToolTipText("Filter Expression (Ctrl+Space for Content Assist)");
         filterExpressionProposalProvider = new FilterExpressionProposalProvider();
-        ContentAssistUtil.configureText(filterExpressionText, filterExpressionProposalProvider);
+        ContentAssistUtil.configureText(filterExpressionText, filterExpressionProposalProvider, " :~().");
 
         // the "Basic" view with a series of combo boxes
         simpleFilterPanel = new Composite(filterFieldsContainer, SWT.NONE);

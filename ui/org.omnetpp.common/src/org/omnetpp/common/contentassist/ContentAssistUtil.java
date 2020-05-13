@@ -47,7 +47,7 @@ public class ContentAssistUtil {
      *
      * IMPORTANT: This one assumes that proposals are instances of IContentProposalEx.
      */
-    public static void configureText(Text text, IContentProposalProvider proposalProvider) {
+    public static void configureText(Text text, IContentProposalProvider proposalProvider, String autoactivationChars) {
         FieldDecoration contentAssistDecoration = FieldDecorationRegistry.getDefault().getFieldDecoration(FieldDecorationRegistry.DEC_CONTENT_PROPOSAL);
         ControlDecoration decorator = new ControlDecoration(text, SWT.TOP | SWT.LEFT, text.getParent());
         decorator.setImage(contentAssistDecoration.getImage());
@@ -56,7 +56,7 @@ public class ContentAssistUtil {
                 new TextContentAdapterEx(),
                 proposalProvider,
                 ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS,   /*commandId. "null" works equally well. XXX no binding is found for the default command "org.eclipse.ui.edit.text.contentAssist.proposals", that's why it says "null" in the bubble. how to fix it? */
-                "( ".toCharArray() /*auto-activation*/);
+                autoactivationChars.toCharArray());
 
 
         final IControlContentAdapterEx contentAdapter = (IControlContentAdapterEx)commandAdapter.getControlContentAdapter();
@@ -75,7 +75,7 @@ public class ContentAssistUtil {
         });
     }
 
-    public static void configureStyledText(StyledText styledText, IContentProposalProvider proposalProvider) {
+    public static void configureStyledText(StyledText styledText, IContentProposalProvider proposalProvider, String autoactivationChars) {
         FieldDecoration contentAssistDecoration = FieldDecorationRegistry.getDefault().getFieldDecoration(FieldDecorationRegistry.DEC_CONTENT_PROPOSAL);
         ControlDecoration decorator = new ControlDecoration(styledText, SWT.TOP | SWT.LEFT, styledText.getParent());
         decorator.setImage(contentAssistDecoration.getImage());
@@ -84,7 +84,7 @@ public class ContentAssistUtil {
                 new StyledTextContentAdapter(),
                 proposalProvider,
                 ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS,   /*commandId. "null" works equally well. XXX no binding is found for the default command "org.eclipse.ui.edit.text.contentAssist.proposals", that's why it says "null" in the bubble. how to fix it? */
-                "( ".toCharArray() /*auto-activation*/);
+                autoactivationChars.toCharArray());
 
         commandAdapter.setPropagateKeys(false);
         commandAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_IGNORE);
