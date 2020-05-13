@@ -1776,7 +1776,7 @@ public class SequenceChart
         if (showAxesWithoutEvents) {
             eventLogInput.getModuleTreeRoot().visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
                 public void visit(ModuleTreeItem moduleTreeItem) {
-                    if (isSelectedAxisModule(moduleTreeItem) && !axisModules.contains(moduleTreeItem))
+                    if (isSelectedAxisModule(moduleTreeItem, -1) && !axisModules.contains(moduleTreeItem))
                         axisModules.add(moduleTreeItem);
                 }
             });
@@ -1804,7 +1804,7 @@ public class SequenceChart
 
                 // find the selected module axis and add it
                 while (moduleTreeItem != null) {
-                    if (isSelectedAxisModule(moduleTreeItem) && !axisModules.contains(moduleTreeItem)) {
+                    if (isSelectedAxisModule(moduleTreeItem, moduleId) && !axisModules.contains(moduleTreeItem)) {
                         axisModules.add(moduleTreeItem);
                         break;
                     }
@@ -1823,14 +1823,14 @@ public class SequenceChart
      * True means the module is selected to have an axis. Even if a module is selected it
      * might still be excluded depending on the showAxesWithoutEvents flag.
      */
-    private boolean isSelectedAxisModule(ModuleTreeItem moduleTreeItem) {
+    private boolean isSelectedAxisModule(ModuleTreeItem moduleTreeItem, int moduleId) {
         if (eventLog instanceof FilteredEventLog && eventLogInput.getFilterParameters().enableModuleFilter) {
             ModuleCreatedEntry moduleCreatedEntry = eventLog.getModuleCreatedEntry(moduleTreeItem.getModuleId());
             Assert.isTrue(moduleCreatedEntry != null);
             return ((FilteredEventLog)eventLog).matchesModuleCreatedEntry(moduleCreatedEntry);
         }
         else
-            return !moduleTreeItem.isCompoundModule();
+            return !moduleTreeItem.isCompoundModule() || moduleId == moduleTreeItem.getModuleId();
     }
 
     /*************************************************************************************
