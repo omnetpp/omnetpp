@@ -1347,6 +1347,7 @@ ResultFile *ResultFileManager::loadFile(const char *displayName, const char *fil
                 else {
                     LOG << "already loaded but changed since, unloading previous content: " << displayName << std::endl;
                     unloadFile(fileRef);
+                    break;
                 }
             }
             case NEVER_RELOAD: {
