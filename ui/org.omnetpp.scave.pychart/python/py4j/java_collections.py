@@ -10,9 +10,19 @@ Created on Jan 22, 2010
 """
 from __future__ import unicode_literals, absolute_import
 
-from collections import (
-    MutableMapping, Sequence, MutableSequence,
-    MutableSet, Set)
+# As of Python 3.3, the abstract base classes in the collections module have
+# been moved to collections.abc.
+# (see https://docs.python.org/3.3/library/collections.abc.html)
+try:
+    # Python >=3.3
+    from collections.abc import (
+        MutableMapping, Sequence, MutableSequence,
+        MutableSet, Set)
+except ImportError:
+    # Python <=3.2
+    from collections import (
+        MutableMapping, Sequence, MutableSequence,
+        MutableSet, Set)
 import sys
 
 from py4j.compat import (
@@ -98,8 +108,8 @@ class JavaSet(JavaObject, MutableSet):
 
     All operations possible on a Python set are implemented."""
 
-    __EMPTY_SET = "set([])" if sys.version_info[0] < 3 else "set()"
-    __SET_TEMPLATE = "set([{0}])" if sys.version_info[0] < 3 else "{{{0}}}"
+    __EMPTY_SET = "set([])" if sys.version_info.major < 3 else "set()"
+    __SET_TEMPLATE = "set([{0}])" if sys.version_info.major < 3 else "{{{0}}}"
 
     def __init__(self, target_id, gateway_client):
         JavaObject.__init__(self, target_id, gateway_client)
@@ -512,6 +522,7 @@ class MapConverter(object):
         for key in object.keys():
             java_map[key] = object[key]
         return java_map
+
 
 register_input_converter(SetConverter())
 register_input_converter(MapConverter())
