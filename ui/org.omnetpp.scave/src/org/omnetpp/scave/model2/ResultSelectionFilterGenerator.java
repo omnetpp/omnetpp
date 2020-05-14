@@ -1,7 +1,9 @@
 package org.omnetpp.scave.model2;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,6 +15,7 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunList;
+import org.omnetpp.scave.engine.Scave;
 
 /**
  * Given a set of selected results (an IDList of selected items, out of an IDList
@@ -161,9 +164,7 @@ public class ResultSelectionFilterGenerator {
             }
         }
 
-
-        String[] dumbFields = new String[] {"experiment", "measurement", "replication", "module", "name"};
-        return getIDListAsDumbFilter(target, manager, dumbFields);
+        return doMakeQuickFilter(target, manager);
     }
 
     public static String getFilter(IDList target, IDList all, ResultFileManager manager, IProgressMonitor monitor) throws InterruptedException {
@@ -363,16 +364,71 @@ public class ResultSelectionFilterGenerator {
         return sb.toString();
     }
 
-    private static String getIDListAsDumbFilter(IDList ids, ResultFileManager manager, String[] filterFields) {
+    /**
+     * Creates a filter that identifies the given result items, with their type, run,
+     * module and result name. Runtime only depends on (and is linear with) the number
+     * of IDs passed. Simple optimization is done by factoring out the fields that
+     * is the same in all items.
+     */
+    public static String makeQuickFilter(IDList ids, ResultFileManager manager) {
+        return Debug.timed("makeQuickFilter() for IDList of len=" + ids.size(), 10,
+                () -> ResultFileManager.callWithReadLock(manager, () -> doMakeQuickFilter(ids, manager)));
+    }
+
+    private static String doMakeQuickFilter(IDList ids, ResultFileManager manager) {
+        // identify which fields can be factored out
+        int types = ids.getItemTypes();
+        RunList runs = manager.getUniqueRuns(ids);
+        boolean sameType = types==ResultFileManager.PARAMETER || types==ResultFileManager.SCALAR || types==ResultFileManager.VECTOR || types==ResultFileManager.STATISTICS || types==ResultFileManager.HISTOGRAM;
+        boolean sameExperiment = manager.getUniqueRunAttributeValues(runs, Scave.EXPERIMENT).size() == 1;
+        boolean sameMeasurement = manager.getUniqueRunAttributeValues(runs, Scave.MEASUREMENT).size() == 1;
+        boolean sameReplication = manager.getUniqueRunAttributeValues(runs, Scave.REPLICATION).size() == 1;
+        boolean sameModule = manager.getUniqueModuleNames(ids).size() == 1;
+        boolean sameName = manager.getUniqueResultNames(ids).size() == 1;
+
+        List<String> factorFields_ = new ArrayList<>();
+        List<String> itemFields_ = new ArrayList<>();
+        (sameType ? factorFields_ : itemFields_).add(Scave.TYPE);
+        (sameExperiment  ? factorFields_ : itemFields_).add(Scave.EXPERIMENT);
+        (sameMeasurement ? factorFields_ : itemFields_).add(Scave.MEASUREMENT);
+        (sameReplication ? factorFields_ : itemFields_).add(Scave.REPLICATION);
+        (sameModule ? factorFields_ : itemFields_).add(Scave.MODULE);
+        (sameName   ? factorFields_ : itemFields_).add(Scave.NAME);
+        String[] factorFields = factorFields_.toArray(new String[0]);
+        String[] itemFields = itemFields_.toArray(new String[0]);
+
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < ids.size(); ++i) {
-            long id = ids.get(i);
-            ResultItem item = manager.getItem(id);
-            String filter = new FilterUtil(item, filterFields).getFilterPattern();
-            if (i > 0)
-                sb.append(" OR \n");
-            sb.append(filter);
+        String itemIndent = "";
+
+        // generate factored-out part
+        if (factorFields.length != 0) {
+            ResultItem item0 = manager.getItem(ids.get(0));
+            String factorsFilter = new FilterUtil(item0, factorFields).getFilterPattern();
+            sb.append(factorsFilter);
+            itemIndent = "  ";
         }
+
+        if (factorFields.length != 0 && itemFields.length != 0)
+            sb.append(" AND (\n");
+
+        // generate per-item filters
+        if (itemFields.length != 0) {
+            for (int i = 0; i < ids.size(); ++i) {
+                long id = ids.get(i);
+                ResultItem item = manager.getItem(id);
+                String filter = new FilterUtil(item, itemFields).getFilterPattern();
+                if (i > 0)
+                    sb.append(" OR\n");
+                sb.append(itemIndent);
+                sb.append("  (");
+                sb.append(filter);
+                sb.append(")");
+            }
+        }
+
+        if (factorFields.length != 0 && itemFields.length != 0)
+            sb.append("\n)");
+
         return sb.toString();
     }
 

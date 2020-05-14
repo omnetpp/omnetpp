@@ -61,13 +61,7 @@ public class FilterUtil {
         parseFields(filterPattern);
     }
 
-//TODO unused
-//    public FilterUtil(String runName, String moduleName, String dataName) {
-//        setField(RUN, runName);
-//        setField(MODULE, moduleName);
-//        setField(NAME, dataName);
-//    }
-
+    //TODO doesn't support itervars, configs, result attrs....
     public FilterUtil(ResultItem item, String[] filterFields) {
         Assert.isNotNull(item);
         Assert.isNotNull(filterFields);
@@ -85,6 +79,10 @@ public class FilterUtil {
                 setField(Scave.NAME, item.getName());
             else if (Scave.isRunAttributeName(field))
                 setField(field, run.getAttribute(field));
+            else if (field.equals(Scave.TYPE))
+                setField(field, item.getItemTypeString());
+            else
+                throw new IllegalArgumentException("Unsupported field '" + field + "'");
         }
     }
 
