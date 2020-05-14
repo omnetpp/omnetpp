@@ -214,7 +214,7 @@ public class DataTable extends LargeTable implements IDataControl {
 
         setMenu(contextMenuManager.createContextMenu(this));
 
-        addMouseListener(new MouseAdapter() {
+        getCanvas().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseDown(MouseEvent event) {
                 handleMouseDown(event);
@@ -827,6 +827,7 @@ public class DataTable extends LargeTable implements IDataControl {
             return;
         int columnIndex = getColumnIndexAt(event.x);
         selectedColumn = columnIndex < 0 ? null : getColumn(columnIndex);
+        Debug.println("DataTable: selected column " + columnIndex);
     }
 
     public String getSelectedField() {

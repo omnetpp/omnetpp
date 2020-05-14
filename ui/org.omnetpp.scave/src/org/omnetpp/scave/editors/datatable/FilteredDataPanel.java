@@ -136,7 +136,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
         filterBar.getToggleFilterTypeButton().addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (filterBar.isFilterExpression())
+                if (filterBar.isShowingFilterExpression())
                     trySwitchToSimpleFilter();
                 else
                     switchToAdvancedFilter();
@@ -246,11 +246,8 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
         return filterBar.getFilter();
     }
 
-    public void setFilterParams(String filter) {
-        // an arbitrary pattern can only be shown in advanced view -- switch there
-        if (!filterBar.isFilterExpression())
-            filterBar.showFilterExpression();
-        filterBar.getFilterExpressionText().setText(filter);
+    public void setFilter(String filterExpression) {
+        filterBar.setFilter(filterExpression);
         runFilter();
     }
 

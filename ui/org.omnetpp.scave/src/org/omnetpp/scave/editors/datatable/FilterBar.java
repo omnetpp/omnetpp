@@ -145,6 +145,34 @@ public class FilterBar extends Composite {
         return filter.trim().equals("*") ? "" : filter;
     }
 
+    public void setFilter(String filterExpression) {
+        if (isShowingFilterExpression()) {
+            filterExpressionText.setText(filterExpression);
+        }
+        else if (isSuitableForSimpleFilter(filterExpression)) {
+            FilterUtil filterUtil = new FilterUtil(filterExpression, true);
+            experimentCombo.setText(asteriskToEmpty(filterUtil.getField(EXPERIMENT.getName())));
+            measurementCombo.setText(asteriskToEmpty(filterUtil.getField(MEASUREMENT.getName())));
+            replicationCombo.setText(asteriskToEmpty(filterUtil.getField(REPLICATION.getName())));
+            moduleCombo.setText(asteriskToEmpty(filterUtil.getField(MODULE.getName())));
+            nameCombo.setText(asteriskToEmpty(filterUtil.getField(NAME.getName())));
+        }
+        else {
+            showFilterExpression();
+            filterExpressionText.setText(filterExpression);
+        }
+    }
+
+    public boolean isSuitableForSimpleFilter(String filterPattern) {
+        if (!isValidFilter(filterPattern))
+            return false;
+        FilterUtil filterUtil = new FilterUtil(filterPattern, true);
+        if (filterUtil.isLossy())
+            return false;
+        String[] supportedFields = new String[] {EXPERIMENT.getName(), MEASUREMENT.getName(), REPLICATION.getName(), MODULE.getName(), NAME.getName()};
+        return filterUtil.containsOnly(supportedFields);
+    }
+
     /**
      * Switches the filter from "Expression" to "Basic" mode. If this cannot be done
      * (filter string invalid or too complex), the user is prompted with a dialog,
@@ -187,7 +215,7 @@ public class FilterBar extends Composite {
         showFilterExpression();
     }
 
-    public boolean isFilterExpression() {
+    public boolean isShowingFilterExpression() {
         return showingFilterExpression;
     }
 
@@ -196,7 +224,7 @@ public class FilterBar extends Composite {
     }
 
     public String getFilter() {
-        if (isFilterExpression())
+        if (isShowingFilterExpression())
             return StringUtils.defaultIfBlank(getFilterExpressionText().getText(), "*");
         else
             return assembleFilterPattern(getSimpleFilterFields());
