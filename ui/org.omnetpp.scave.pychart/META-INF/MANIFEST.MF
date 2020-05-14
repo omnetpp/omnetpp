@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.omnetpp.scave.pychart;singleton:=true
 Bundle-Version: 6.0.0.qualifier
 Bundle-ClassPath: .,
  lib/py4j-0.10.9.jar,
- lib/pickle4.23.jar
+ lib/pickle-1.0.jar
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.omnetpp.scave.pychart.PyChartPlugin
