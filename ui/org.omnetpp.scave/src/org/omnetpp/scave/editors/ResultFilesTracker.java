@@ -28,6 +28,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.internal.IWorkbenchConstants;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.engine.StringVector;
@@ -52,8 +58,8 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 /**
  * This class is responsible for loading/unloading result files
  * (scalar and vector files), based on changes in the model
- * (the Inputs object) and in the workspace. Thus it should be
- * hooked up to listen to model and workspace changes.
+ * (the Inputs object). Thus it should be hooked up to listen to
+ * model changes.
  *
  * @author andras, tomi
  */
@@ -109,17 +115,29 @@ public class ResultFilesTracker implements IModelChangeListener {
         if (manager == null)
             return;
 
-        DisplayUtils.runNowOrAsyncInUIThread(() -> {
+        DisplayUtils.runNowOrSyncInUIThread(() -> {
+            List<String> filesThatFailedToLoad = new ArrayList<>();
             TimeTriggeredProgressMonitorDialog2.runWithDialog("Loading result files", (monitor)-> {
                 ResultFileManager.runWithWriteLock(manager, () -> {
                     InterruptedFlag interruptedFlag = TimeTriggeredProgressMonitorDialog2.getActiveInstance().getInterruptedFlag();
-                    doSynchronize(reload, monitor, interruptedFlag);
+                    doSynchronize(reload, monitor, interruptedFlag, filesThatFailedToLoad);
                 });
             });
+
+            if (!filesThatFailedToLoad.isEmpty()) {
+                MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error",
+                        "There were files that could not be loaded. Check the Problems view for details.");
+                try {
+                    PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(IPageLayout.ID_PROBLEM_VIEW);
+                } catch (PartInitException e) {
+                    // ignore
+                }
+
+            }
         });
     }
 
-    protected void doSynchronize(boolean reload, IProgressMonitor monitor, InterruptedFlag interruptedFlag) {
+    protected void doSynchronize(boolean reload, IProgressMonitor monitor, InterruptedFlag interruptedFlag, List<String> filesThatFailedToLoad) {
         manager.checkWriteLock(); // must run with write lock
 
         if (reload)
@@ -155,6 +173,7 @@ public class ResultFilesTracker implements IModelChangeListener {
                             manager.setFileInput(file, inputName);
                     }
                     catch (Exception e) {
+                        filesThatFailedToLoad.add(filePath);
                         ScavePlugin.logError("Could not load result file: " + fileLocation, e);
                         IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(filePath);
                         if (resource instanceof IFile) // better be
