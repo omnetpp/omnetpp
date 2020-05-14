@@ -19,9 +19,19 @@ import org.eclipse.ui.texteditor.AbstractDocumentProvider;
 import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 import org.omnetpp.scave.model.Chart;
 
+/**
+ * Provides the Python script of a Chart object as a Document for text editors.
+ * Is used to open Charts in ChartScriptEditor, which is based on PyEdit.
+ *
+ * Also has a basic AnnotationModel so PyDev can mark syntax errors, and we can
+ * put error markers on lines of the script when catching runtime exceptions.
+ */
 class ChartScriptDocumentProvider extends AbstractDocumentProvider {
+
+    /** The document containing the edited version of the chart script */
     private IDocument doc = null;
 
+    /** Stores the error markers put on the script */
     public ProjectionAnnotationModel annotationModel = new ProjectionAnnotationModel();
 
     @Override

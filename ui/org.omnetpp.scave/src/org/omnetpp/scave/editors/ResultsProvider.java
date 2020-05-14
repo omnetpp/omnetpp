@@ -22,11 +22,12 @@ import net.razorvine.pickle.PickleException;
  * Implements the internal parts needed for the functionality of the
  * omnetpp.scave.results Python module provided to chart scripts.
  *
- * But really, this is just a proxy for the _actual_ implementation
- * in C++, in the nativelibs package, through SWIG.
+ * It takes advantage of a MemoizationCache to make both result filtering
+ * (mostly after the user plotted a set of selected result items),
+ * and result pickling faster by reusing previous pickles.
  *
- * It also takes care of storing the SHM object names (and sizes)
- * created by the C++ part into the associated PythonProcess.
+ * If no cached result is found, the pickled data is generated using
+ * the ResultsPickler (implemented in C++) from the nativelibs package.
  *
  * @author attila, andras
  */

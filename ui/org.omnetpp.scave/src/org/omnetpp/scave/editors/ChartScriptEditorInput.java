@@ -14,13 +14,17 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.model.Chart;
 
 /**
- * IEditorInput for ChartScriptEditor.
+ * IEditorInput for ChartScriptEditor. Simple wrapper for a Chart.
  */
 class ChartScriptEditorInput implements IEditorInput {
     private Chart chart;
 
     public ChartScriptEditorInput(Chart chart) {
         this.chart = chart;
+    }
+
+    public Chart getChart() {
+        return chart;
     }
 
     @Override
@@ -31,10 +35,6 @@ class ChartScriptEditorInput implements IEditorInput {
     @Override
     public boolean exists() {
         return true;
-    }
-
-    public Chart getChart() {
-        return chart;
     }
 
     @Override

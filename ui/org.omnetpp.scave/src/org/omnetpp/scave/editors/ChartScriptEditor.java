@@ -117,20 +117,64 @@ import org.python.pydev.shared_core.callbacks.ICallbackListener;
 import org.python.pydev.shared_ui.editor_input.PydevFileEditorInput;
 
 
+/**
+ * A TextEditor that can open a Chart, show its script in an editable way,
+ * execute the chart script in a PythonProcess, and show an embedded plot as
+ * its output, in the form of either a matplotlib or a native plot widget.
+ *
+ * An extension of the main PyDev Python code editor, so it has Python syntax
+ * highlighting and checking, and content assist support built in.
+ */
 @SuppressWarnings("restriction")
 public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
+
+    /** The Chart being shown, edited, and executed */
     private Chart chart;
+
+    /**
+     * A copy of the edited Chart as it was when it was opened.
+     * Is never modified. Kept around just so all changes made to the chart
+     * while this editor is open can be undone later in a single step.
+     */
     private Chart originalChart;
+
+    /** Reference to the ScaveEditor this EditorPart is embedded into. */
     private ScaveEditor scaveEditor;
 
-    private FormEditorPage formEditor;
+    /** The (closable) page of the parent ScaveEditor this editor is on. */
+    private ChartPage chartPage;
+
+    /**
+     * The movable "splitter" widget that contains the Python source editor
+     * on one side, and the plot viewer widget on the other.
+     */
     private SashForm sashForm;
+
+    /**
+     * The outermost Container of the PyEdit Control tree, a direct child of
+     * sashForm, is shown/hidden as requested by the user.
+     */
     private Composite sourceEditorContainer;
 
+
+    /**
+     * The ChartViewer used for native Charts. Puts the native plot widget
+     * into sashForm. Is null if the Chart is of type MATPLOTLIB.
+     */
     private NativeChartViewer nativeChartViewer;
+
+    /**
+     * The ChartViewer used for matplotlib Charts. Puts the MatplotlibWidget
+     * into sashForm. Is null if the Chart is not of type MATPLOTLIB.
+     */
     private MatplotlibChartViewer matplotlibChartViewer;
 
+    /** Listens for changes on both the Chart object (for property edits)
+     * and the Document (for script edits), and triggers a delayed refresh.
+     */
     private ChangeListener changeListener;
+
+    /** Wraps chart, so it can be passed to a ChartScriptDocumentProvider. */
     private ChartScriptEditorInput editorInput;
 
     private IOConsole console;
@@ -213,12 +257,12 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
     private final class CreatePartControlListener implements ICallbackListener<Composite> {
         @Override
         public Object call(Composite parent) {
-            formEditor = new ChartPage(parent, SWT.NONE, scaveEditor, ChartScriptEditor.this);
-            Composite content = formEditor.getContent();
+            chartPage = new ChartPage(parent, SWT.NONE, scaveEditor, ChartScriptEditor.this);
+            Composite content = chartPage.getContent();
 
             addToolbarActions();
 
-            formEditor.setFormTitle(getChartDisplayName());
+            chartPage.setFormTitle(getChartDisplayName());
             GridLayout layout = new GridLayout(1, true);
             layout.marginWidth = 0;
             layout.marginHeight = 0;
@@ -227,8 +271,8 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
             sashForm = new SashForm(content, SWT.NONE);
             sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-            formEditor.getToolbar().layout();
-            formEditor.layout();
+            chartPage.getToolbar().layout();
+            chartPage.layout();
             content.layout();
             parent.layout();
 
@@ -585,52 +629,52 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         toggleAutoUpdateAction = new ToggleAutoUpdateAction();
         toggleAutoUpdateAction.setChecked(true);
 
-        formEditor.addToToolbar(saveTempChartAction);
-        formEditor.addToToolbar(gotoChartDefinitionAction);
+        chartPage.addToToolbar(saveTempChartAction);
+        chartPage.addToToolbar(gotoChartDefinitionAction);
 
-        formEditor.setToolbarActionVisible(saveTempChartAction, chart.isTemporary());
-        formEditor.setToolbarActionVisible(gotoChartDefinitionAction, !chart.isTemporary());
+        chartPage.setToolbarActionVisible(saveTempChartAction, chart.isTemporary());
+        chartPage.setToolbarActionVisible(gotoChartDefinitionAction, !chart.isTemporary());
 
-        formEditor.addSeparatorToToolbar();
+        chartPage.addSeparatorToToolbar();
 
-        formEditor.addToToolbar(new EditChartPropertiesAction());
-        formEditor.addToToolbar(toggleShowSourceAction);
+        chartPage.addToToolbar(new EditChartPropertiesAction());
+        chartPage.addToToolbar(toggleShowSourceAction);
 
         if (chart.getType() == ChartType.MATPLOTLIB) {
-            formEditor.addSeparatorToToolbar();
+            chartPage.addSeparatorToToolbar();
             interactAction.setChecked(true);
-            formEditor.addToToolbar(interactAction);
-            formEditor.addToToolbar(panAction);
-            formEditor.addToToolbar(zoomAction);
-            formEditor.addSeparatorToToolbar();
-            formEditor.addToToolbar(homeAction);
-            formEditor.addToToolbar(backAction);
-            formEditor.addToToolbar(forwardAction);
+            chartPage.addToToolbar(interactAction);
+            chartPage.addToToolbar(panAction);
+            chartPage.addToToolbar(zoomAction);
+            chartPage.addSeparatorToToolbar();
+            chartPage.addToToolbar(homeAction);
+            chartPage.addToToolbar(backAction);
+            chartPage.addToToolbar(forwardAction);
         }
         else {
-            formEditor.addSeparatorToToolbar();
+            chartPage.addSeparatorToToolbar();
             ChartMouseModeAction panAction = new ChartMouseModeAction(ZoomableCanvasMouseSupport.PAN_MODE);
-            formEditor.addToToolbar(panAction);
+            chartPage.addToToolbar(panAction);
             panAction.setChecked(true);
-            formEditor.addToToolbar(new ChartMouseModeAction(ZoomableCanvasMouseSupport.ZOOM_MODE));
-            formEditor.addSeparatorToToolbar();
-            formEditor.addToToolbar(zoomToFitAction);
-            formEditor.addToToolbar(zoomInHorizAction);
-            formEditor.addToToolbar(zoomOutHorizAction);
-            formEditor.addToToolbar(zoomInVertAction);
-            formEditor.addToToolbar(zoomOutVertAction);
+            chartPage.addToToolbar(new ChartMouseModeAction(ZoomableCanvasMouseSupport.ZOOM_MODE));
+            chartPage.addSeparatorToToolbar();
+            chartPage.addToToolbar(zoomToFitAction);
+            chartPage.addToToolbar(zoomInHorizAction);
+            chartPage.addToToolbar(zoomOutHorizAction);
+            chartPage.addToToolbar(zoomInVertAction);
+            chartPage.addToToolbar(zoomOutVertAction);
         }
 
-        formEditor.addSeparatorToToolbar();
-        formEditor.addToToolbar(toggleAutoUpdateAction);
-        formEditor.addToToolbar(new RefreshChartAction());
-        formEditor.addToToolbar(killAction = new KillPythonProcessAction());
-        formEditor.addSeparatorToToolbar();
-        formEditor.addToToolbar(new CopyImageToClipboardAction());
-        formEditor.addToToolbar(saveImageAction);
-        formEditor.addToToolbar(exportChartAction);
-        formEditor.addSeparatorToToolbar();
-        formEditor.addToToolbar(new ClosePageAction());
+        chartPage.addSeparatorToToolbar();
+        chartPage.addToToolbar(toggleAutoUpdateAction);
+        chartPage.addToToolbar(new RefreshChartAction());
+        chartPage.addToToolbar(killAction = new KillPythonProcessAction());
+        chartPage.addSeparatorToToolbar();
+        chartPage.addToToolbar(new CopyImageToClipboardAction());
+        chartPage.addToToolbar(saveImageAction);
+        chartPage.addToToolbar(exportChartAction);
+        chartPage.addSeparatorToToolbar();
+        chartPage.addToToolbar(new ClosePageAction());
     }
 
     // Overriding this is only necessary because we are replacing the SourceViewerConfiguration,
@@ -819,8 +863,8 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
     }
 
     public void updateActions() {
-        formEditor.setToolbarActionVisible(saveTempChartAction, chart.isTemporary());
-        formEditor.setToolbarActionVisible(gotoChartDefinitionAction, !chart.isTemporary());
+        chartPage.setToolbarActionVisible(saveTempChartAction, chart.isTemporary());
+        chartPage.setToolbarActionVisible(gotoChartDefinitionAction, !chart.isTemporary());
 
         saveTempChartAction.update();
         gotoChartDefinitionAction.update();
@@ -1037,7 +1081,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         try {
             if (filename.equals("<string>")) {
                 getEditorSite().getPage().activate(scaveEditor);
-                scaveEditor.showPage(formEditor);
+                scaveEditor.showPage(chartPage);
                 gotoLine(this, lineNumber);
             }
             else {

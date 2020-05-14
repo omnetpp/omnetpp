@@ -21,17 +21,17 @@ import net.razorvine.pickle.Unpickler;
 // ??? rather, SeriesGroups?
 public class GroupsSeriesDataset implements IGroupsSeriesDataset {
 
-    class Series {
+    private static class Series {
         String key;
         String title;
         double[] values;
     }
 
     // "columns", set of bars of the same color
-    ArrayList<Series> serieses = new ArrayList<Series>();
+    private ArrayList<Series> serieses = new ArrayList<Series>();
 
     // X axis labels, group names, df index
-    ArrayList<String> groupTitles = new ArrayList<String>();
+    private ArrayList<String> groupTitles = new ArrayList<String>();
 
     protected String generateUniqueKey() {
         int maxKey = 0;
