@@ -167,7 +167,7 @@ public class DataTree extends Tree implements IDataControl {
         });
     }
 
-    public void copySelectionToClipboard(IProgressMonitor monitor) throws InterruptedException {
+    public void copyRowsToClipboard(IProgressMonitor monitor) throws InterruptedException {
         CsvWriter writer = new CsvWriter('\t');
         writer.addField("Name");
         writer.addField("Value");

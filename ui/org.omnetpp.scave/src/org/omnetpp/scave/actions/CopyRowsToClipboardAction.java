@@ -17,11 +17,11 @@ import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
 
 /**
- * Copy data from the Browse Data page to the clipboard.
+ * Copy rows from the active panel of the Browse Data page to the clipboard.
  */
-public class CopyDataToClipboardAction extends AbstractScaveAction {
-    public CopyDataToClipboardAction() {
-        setText("Copy Data");
+public class CopyRowsToClipboardAction extends AbstractScaveAction {
+    public CopyRowsToClipboardAction() {
+        setText("Copy Rows");
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_COPYDATA));
     }
 
@@ -30,7 +30,7 @@ public class CopyDataToClipboardAction extends AbstractScaveAction {
         final FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
         if (activePanel != null) {
             TimeTriggeredProgressMonitorDialog2.runWithDialogInUIThread("Copying to clipboard",
-                    (monitor) -> activePanel.getDataControl().copySelectionToClipboard(monitor));
+                    (monitor) -> activePanel.getDataControl().copyRowsToClipboard(monitor));
         }
     }
 

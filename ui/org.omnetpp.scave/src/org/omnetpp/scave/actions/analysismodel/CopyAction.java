@@ -41,7 +41,7 @@ public class CopyAction extends AbstractScaveAction {
             FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
             if (activePanel != null) {
                 TimeTriggeredProgressMonitorDialog2.runWithDialogInUIThread("Copying to clipboard",
-                        (monitor) -> activePanel.getDataControl().copySelectionToClipboard(monitor));
+                        (monitor) -> activePanel.getDataControl().copyRowsToClipboard(monitor));
             }
         }
         else {

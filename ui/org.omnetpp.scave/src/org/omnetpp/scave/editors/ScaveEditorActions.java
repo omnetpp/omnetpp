@@ -30,7 +30,7 @@ import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.common.ui.IconGridViewer;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.actions.CopyDataToClipboardAction;
+import org.omnetpp.scave.actions.CopyRowsToClipboardAction;
 import org.omnetpp.scave.actions.CopyImageToClipboardAction;
 import org.omnetpp.scave.actions.EditChartPropertiesAction;
 import org.omnetpp.scave.actions.ExportChartsAction;
@@ -111,7 +111,7 @@ public class ScaveEditorActions {
     // generic actions
     public final OpenChartAction openAction = registerAction(new OpenChartAction());
 
-    public final CopyDataToClipboardAction copyDataToClipboardAction = registerAction(new CopyDataToClipboardAction());
+    public final CopyRowsToClipboardAction copyDataToClipboardAction = registerAction(new CopyRowsToClipboardAction());
     public final SaveImageAction saveImageAction = registerAction(new SaveImageAction());
 
     public final PlotAction plotAction = registerAction(new PlotAction());

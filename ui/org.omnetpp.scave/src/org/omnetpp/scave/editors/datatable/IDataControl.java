@@ -60,7 +60,7 @@ public interface IDataControl {
 
     public void setSelectedIDs(IDList idList, InterruptedFlag interrupted) throws InterruptedException;
 
-    public void copySelectionToClipboard(IProgressMonitor monitor) throws InterruptedException;
+    public void copyRowsToClipboard(IProgressMonitor monitor) throws InterruptedException;
 
     /* listeners */
 

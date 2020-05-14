@@ -725,7 +725,7 @@ public class DataTable extends LargeTable implements IDataControl {
         return ScaveUtil.formatNumber(d, getNumericPrecision()) + " s";
     }
 
-    public void copySelectionToClipboard(IProgressMonitor monitor) throws InterruptedException {
+    public void copyRowsToClipboard(IProgressMonitor monitor) throws InterruptedException {
         if (manager == null)
             return;
 
