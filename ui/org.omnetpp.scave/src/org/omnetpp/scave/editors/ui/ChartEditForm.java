@@ -30,6 +30,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -44,6 +45,7 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.contentassist.ContentAssistUtil;
 import org.omnetpp.common.ui.SWTFactory;
 import org.omnetpp.common.ui.StyledTextUndoRedoManager;
+import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.common.wizard.XSWTDataBinding;
@@ -52,6 +54,7 @@ import org.omnetpp.scave.assist.FilterExpressionProposalProvider;
 import org.omnetpp.scave.assist.MatplotlibrcContentProposalProvider;
 import org.omnetpp.scave.assist.NativePlotPropertiesContentProposalProvider;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
+import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.StringVector;
@@ -59,6 +62,7 @@ import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Chart.DialogPage;
 import org.omnetpp.scave.model.ChartTemplate;
 import org.omnetpp.scave.model2.FilterHintsCache;
+import org.omnetpp.scave.model2.ResultSelectionFilterGenerator;
 import org.xml.sax.SAXException;
 
 import com.swtworkbench.community.xswt.XSWT;
@@ -234,6 +238,14 @@ public class ChartEditForm {
                 }
             }
 
+            String role = (String)control.getData("role");
+            if (role != null) {
+                if (role.equals("simplify") && control instanceof Button)
+                    configureSimplifyButton((Button)control);
+                else
+                    ScavePlugin.getDefault().getLog().warn("'role' attribute in XSWT file is ignored for widget of type '" + control.getClass().getSimpleName() + "', only role='Simplify' is supported for Button widgets");
+            }
+
             String isEnabler = (String)control.getData("isEnabler");
             if (control instanceof Button && isEnabler != null && isEnabler.equalsIgnoreCase("true")) {
                 Button button = (Button)control;
@@ -270,6 +282,44 @@ public class ChartEditForm {
             ScavePlugin.getDefault().getLog().warn("Invalid value for 'contentAssist' attribute in XSWT file: '" + contentAssist + "'");
             return null;
         }
+    }
+
+    private void configureSimplifyButton(Button button) {
+        // figure out parameters: filter control, result types
+        String targetControlAttr = (String)button.getData("targetControl");
+        if (targetControlAttr == null)
+            targetControlAttr = "filter";
+        Control filterControl = xswtWidgetMap.get(targetControlAttr);
+        if (!(filterControl instanceof Text) && !(filterControl instanceof StyledText)) {
+            ScavePlugin.getDefault().getLog().warn("Cannot configure 'simplify' button: no control of type Text or StyledText named '"+ targetControlAttr + "'");
+            return;
+        }
+        String resultTypeAttr = (String)filterControl.getData("resultType");
+        int tmpResultTypes = ~0; // alles
+        if (resultTypeAttr != null) {
+            switch (resultTypeAttr) {
+            case "parameter": tmpResultTypes = ResultFileManager.PARAMETER; break;
+            case "scalar": tmpResultTypes = ResultFileManager.SCALAR; break;
+            case "vector": tmpResultTypes = ResultFileManager.VECTOR; break;
+            case "statistics": tmpResultTypes = ResultFileManager.STATISTICS; break;
+            case "histogram": tmpResultTypes = ResultFileManager.HISTOGRAM; break;
+            default: ScavePlugin.getDefault().getLog().warn("Cannot configure 'simplify' button: invalid value for 'resultType'");
+            }
+        }
+        final int resultTypes = tmpResultTypes;
+
+        // configure button
+        button.addSelectionListener(SelectionListener.widgetSelectedAdapter((e) -> {
+            String filter = XSWTDataBinding.getValueFromControl(filterControl, null).toString();
+            String[] result = new String[1];
+            boolean ok = TimeTriggeredProgressMonitorDialog2.runWithDialog("Simplifying filter", (monitor) -> {
+                IDList all = manager.getItems(resultTypes, true);
+                IDList target = manager.filterIDList(all, filter);
+                result[0] = ResultSelectionFilterGenerator.getFilter(target, all, manager, monitor);
+            });
+            if (ok)
+                XSWTDataBinding.putValueIntoControl(filterControl, result[0], null);
+        }));
     }
 
     protected void fillComboBoxes() {

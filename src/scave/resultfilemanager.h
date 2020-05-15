@@ -286,6 +286,7 @@ class SCAVE_API ResultFileManager
 
     // getting lists of data items
     IDList getItems(const FileRunList& fileRuns, int types, bool includeFields=false) const;
+    IDList getItems(int types, bool includeFields=false) const {return getItems(fileRunList, types, includeFields);};
     IDList getAllItems(bool includeFields=false) const  {return getItems(fileRunList, ~0, includeFields);}
     IDList getAllParameters() const {return getItems(fileRunList, PARAMETER);}
     IDList getAllScalars(bool includeFields=false) const {return getItems(fileRunList, SCALAR, includeFields);}
