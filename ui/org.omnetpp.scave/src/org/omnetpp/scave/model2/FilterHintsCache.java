@@ -13,10 +13,12 @@ import static org.omnetpp.scave.model2.FilterField.NAME;
 import static org.omnetpp.scave.model2.FilterField.RUN;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileList;
@@ -131,6 +133,16 @@ public class FilterHintsCache {
     public static String[] filter(String[] v, String prefix) {
         if (prefix == null || prefix.isEmpty())
             return v;
+
+        // if prefix is a complete value: return all values, but make prefix the first
+        int index = ArrayUtils.indexOf(v, prefix);
+        if (index >= 0) {
+            String[] result = Arrays.copyOf(v, v.length);
+            for (int i = index; i > 0; --i)
+                result[i] = result[i-1];
+            result[0] = prefix;
+            return result;
+        }
 
         PatternMatcher prefixAsPattern = new PatternMatcher(prefix, true, false /*=substring*/, false /*=ignorecase*/);
         List<String> tmp = new ArrayList<>();
