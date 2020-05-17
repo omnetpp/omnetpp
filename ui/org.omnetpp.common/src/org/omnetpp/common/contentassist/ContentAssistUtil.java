@@ -73,6 +73,22 @@ public class ContentAssistUtil {
                         filterProposal.getCursorPosition());
             }
         });
+
+        // When using proposalAcceptanceStyle == PROPOSAL_IGNORE, ContentProposalAdapter
+        // places the popup alongside the bottom edge of the text widget, not near the cursor.
+        // Workaround: move the popup to the right place from the proposalPopupOpened() callback.
+        commandAdapter.addContentProposalListener(new IContentProposalListener2() {
+            @Override
+            public void proposalPopupOpened(ContentProposalAdapter adapter) {
+                PopupDialog popup = (PopupDialog)ReflectionUtils.getFieldValue(adapter, "popup");  // Khmm... Cause there's no getPopup().
+                adjustPopupBounds(popup, text, commandAdapter);
+            }
+
+            @Override
+            public void proposalPopupClosed(ContentProposalAdapter adapter) {
+            }
+        });
+
     }
 
     public static void configureStyledText(StyledText styledText, IContentProposalProvider proposalProvider, String autoactivationChars) {
