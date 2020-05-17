@@ -9,9 +9,6 @@ package org.omnetpp.common.contentassist;
 
 import org.eclipse.jface.dialogs.PopupDialog;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
-import org.eclipse.jface.fieldassist.ControlDecoration;
-import org.eclipse.jface.fieldassist.FieldDecoration;
-import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalListener;
 import org.eclipse.jface.fieldassist.IContentProposalListener2;
@@ -19,7 +16,6 @@ import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.jface.util.Geometry;
 import org.eclipse.jface.viewers.ColumnViewer;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ExtendedModifyEvent;
 import org.eclipse.swt.custom.ExtendedModifyListener;
 import org.eclipse.swt.custom.StyledText;
@@ -48,16 +44,13 @@ public class ContentAssistUtil {
      * IMPORTANT: This one assumes that proposals are instances of IContentProposalEx.
      */
     public static void configureText(Text text, IContentProposalProvider proposalProvider, String autoactivationChars) {
-        FieldDecoration contentAssistDecoration = FieldDecorationRegistry.getDefault().getFieldDecoration(FieldDecorationRegistry.DEC_CONTENT_PROPOSAL);
-        ControlDecoration decorator = new ControlDecoration(text, SWT.TOP | SWT.LEFT, text.getParent());
-        decorator.setImage(contentAssistDecoration.getImage());
-        decorator.setDescriptionText(contentAssistDecoration.getDescription());
+        // note: if we wanted to keep things simple, we could use the plain ContentProposalAdapter, as its subclass ContentAssistCommandAdapter only adds the command support
         ContentAssistCommandAdapter commandAdapter = new ContentAssistCommandAdapter(text,
                 new TextContentAdapterEx(),
                 proposalProvider,
-                ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS,   /*commandId. "null" works equally well. XXX no binding is found for the default command "org.eclipse.ui.edit.text.contentAssist.proposals", that's why it says "null" in the bubble. how to fix it? */
-                autoactivationChars.toCharArray());
-
+                null /* use the default Content Assist command */,
+                autoactivationChars.toCharArray(),
+                true /* install decoration */);
 
         final IControlContentAdapterEx contentAdapter = (IControlContentAdapterEx)commandAdapter.getControlContentAdapter();
 
@@ -92,15 +85,12 @@ public class ContentAssistUtil {
     }
 
     public static void configureStyledText(StyledText styledText, IContentProposalProvider proposalProvider, String autoactivationChars) {
-        FieldDecoration contentAssistDecoration = FieldDecorationRegistry.getDefault().getFieldDecoration(FieldDecorationRegistry.DEC_CONTENT_PROPOSAL);
-        ControlDecoration decorator = new ControlDecoration(styledText, SWT.TOP | SWT.LEFT, styledText.getParent());
-        decorator.setImage(contentAssistDecoration.getImage());
-        decorator.setDescriptionText(contentAssistDecoration.getDescription());
         ContentAssistCommandAdapter commandAdapter = new ContentAssistCommandAdapter(styledText,
                 new StyledTextContentAdapter(),
                 proposalProvider,
-                ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS,   /*commandId. "null" works equally well. XXX no binding is found for the default command "org.eclipse.ui.edit.text.contentAssist.proposals", that's why it says "null" in the bubble. how to fix it? */
-                autoactivationChars.toCharArray());
+                null /* use the default Content Assist command */,
+                autoactivationChars.toCharArray(),
+                true /* install decoration */);
 
         commandAdapter.setPropagateKeys(false);
         commandAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_IGNORE);
