@@ -66,21 +66,34 @@ public class ContentAssistUtil {
      * IMPORTANT: This function assumes that proposals are instances of IContentProposalEx.
      */
     public static void configureStyledText(StyledText styledText, IContentProposalProvider proposalProvider, String autoactivationChars) {
-        ContentProposalAdapter adapter = configureTextOrStyledText(styledText, new StyledTextContentAdapter(), proposalProvider, autoactivationChars);
 
-        // TODO fix occasional content assist failure:
-        //
         // Issue: Under some circumstances, e.g. in an empty StyledText, accepting the proposal
         // with the Enter key doesn't work properly: it inserts a newline instead of the
         // proposal text. Accepting the proposal with the mouse is OK.
         //
         // Apparently it works wrong if the StyledText contents doesn't include any of the
         // autoactivation characters anywhere. If it contains an autoactivation character
-        // (in our case: space,dot,paren,...) either before the cursor or after it, anywhere,
-        // content assist works just fine... Weird.
+        // (in our case: space,dot,paren,etc.) either before the cursor or after it,
+        // content assist works just fine.
         //
         // Background: apparently proposalAccepted() is not called, apparently because the popup
-        // somehow closes too early (???). Why/how is unclear.
+        // closes too early. The culprit seem to be ContentProposalAdapter.shouldPopupRemainOpen()
+        // which checks exactly that (whether the control's content contains any autoactivation
+        // characters, and returns true/false based on that), and is used in an event listener as:
+        //
+        //     if (!shouldPopupRemainOpen())
+        //         closeProposalPopup();
+        //
+        // The implementation of ContentProposalAdapter.shouldPopupRemainOpen() is probably misguided, but oh well.
+        //
+        // Workaround: we add "\n" to the autoactivation characters. This seems to completely solve
+        // the problem (strangely even in the single-line content case, probably due to another bug
+        // of superfluous "\n" insertion, for which the workaround is the ModifyListener below.)
+        //
+
+        String NEWLINE_AS_WORKAROUND = "\n"; // don't remove -- it fixes a bug that prevents accepted proposals from being inserted into a nearly-empty StyledText widget, see above comment
+
+        ContentProposalAdapter adapter = configureTextOrStyledText(styledText, new StyledTextContentAdapter(), proposalProvider, autoactivationChars + NEWLINE_AS_WORKAROUND);
 
         // When accepting the proposal with the Enter key, the text widget will also inserts
         // the newline, as if the content proposal popup wasn't there. It it because the text
@@ -92,7 +105,7 @@ public class ContentAssistUtil {
             public void modifyText(ExtendedModifyEvent event) {
                 if (adapter.isProposalPopupOpen()) {
                     String insertedText = styledText.getTextRange(event.start,  event.length);
-                    if (insertedText.equals("\n"))
+                    if (insertedText.equals(NEWLINE_AS_WORKAROUND))
                         StyledTextUndoRedoManager.getOrCreateManagerOf(styledText).undo();  // or: styledText.replaceTextRange(event.start, event.length, event.replacedText), but that pollutes the undo stack
                 }
             }
