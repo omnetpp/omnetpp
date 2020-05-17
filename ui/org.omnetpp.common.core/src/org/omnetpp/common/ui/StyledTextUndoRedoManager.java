@@ -13,6 +13,12 @@ import org.eclipse.swt.events.KeyListener;
  * Adds the Undo-Redo functionality (working Ctrl+Z and Ctrl+Y) to an instance of {@link StyledText}.
  * Source: https://sourceforge.net/p/etinyplugins/blog/2013/02/add-undoredo-support-to-your-swt-styledtext-s/
  *
+ * Note: An alternative is to wrap StyledText with a TextViewer and use the JFace TextViewerUndoManager.
+ * However, then "Clients are supposed to instantiate a text viewer and subsequently to communicate with it
+ * exclusively using the ITextViewer interface or any of the implemented extension interfaces." (from ITextViewer javadoc).
+ *
+ * Note2: Not trivial to port this to Text, as it doesn't support ExtendedModifyListeners.
+ *
  * @author Petr Bodnar
  *
  * @see {@linkplain http://www.java2s.com/Code/Java/SWT-JFace-Eclipse/SWTUndoRedo.htm} -
