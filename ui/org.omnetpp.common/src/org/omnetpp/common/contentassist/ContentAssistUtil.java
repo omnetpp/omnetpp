@@ -39,23 +39,52 @@ import org.omnetpp.common.util.ReflectionUtils;
 //TODO in an empty StyledText, content assist does not work properly. proposalAccepted() is not called, apparently because the popup somehow closes too early 
 public class ContentAssistUtil {
     /**
-     * Setup content assist on a Text.
-     *
-     * IMPORTANT: This one assumes that proposals are instances of IContentProposalEx.
+     * Set up content assist on a (possibly multi-line) Text control.
+     * IMPORTANT: This function assumes that proposals are instances of IContentProposalEx.
      */
     public static void configureText(Text text, IContentProposalProvider proposalProvider, String autoactivationChars) {
+        configureTextOrStyledText(text, new TextContentAdapterEx(), proposalProvider, autoactivationChars);
+    }
+
+    /**
+     * Set up content assist on a StyledText control. IMPORTANT: This function assumes that proposals are instances of IContentProposalEx.
+     */
+    public static void configureStyledText(StyledText styledText, IContentProposalProvider proposalProvider, String autoactivationChars) {
+        ContentProposalAdapter adapter = configureTextOrStyledText(styledText, new StyledTextContentAdapter(), proposalProvider, autoactivationChars);
+
+        // When accepting the proposal with the Enter key, the text widget will also inserts
+        // the newline, as if the content proposal popup wasn't there. It it because the text
+        // widget owns the focus, not the popup.
+        // Workaround: we detect the insertion of the newline from ExtendedModifyListener,
+        // and remove it.
+        styledText.addExtendedModifyListener(new ExtendedModifyListener() {
+            @Override
+            public void modifyText(ExtendedModifyEvent event) {
+                if (adapter.isProposalPopupOpen()) {
+                    String insertedText = styledText.getTextRange(event.start,  event.length);
+                    if (insertedText.equals("\n"))
+                        StyledTextUndoRedoManager.getOrCreateManagerOf(styledText).undo();  // or: styledText.replaceTextRange(event.start, event.length, event.replacedText), but this pollutes the undo stack
+                }
+            }
+        });
+
+        //TODO in empty StyledText, content assist does not work properly
+        //TODO hide '\n' insertion / deletion from Undo
+    }
+
+    public static ContentProposalAdapter configureTextOrStyledText(Control text, IControlContentAdapterEx contentAdapter, IContentProposalProvider proposalProvider, String autoactivationChars) {
         // note: if we wanted to keep things simple, we could use the plain ContentProposalAdapter, as its subclass ContentAssistCommandAdapter only adds the command support
-        ContentAssistCommandAdapter commandAdapter = new ContentAssistCommandAdapter(text,
-                new TextContentAdapterEx(),
+        ContentAssistCommandAdapter adapter = new ContentAssistCommandAdapter(text,
+                contentAdapter,
                 proposalProvider,
                 null /* use the default Content Assist command */,
                 autoactivationChars.toCharArray(),
                 true /* install decoration */);
 
-        final IControlContentAdapterEx contentAdapter = (IControlContentAdapterEx)commandAdapter.getControlContentAdapter();
+        adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_IGNORE);
+        //adapter.setPropagateKeys(false);
 
-        commandAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_IGNORE);
-        commandAdapter.addContentProposalListener(new IContentProposalListener() {
+        adapter.addContentProposalListener(new IContentProposalListener() {
             public void proposalAccepted(IContentProposal proposal) {
                 IContentProposalEx filterProposal = (IContentProposalEx)proposal;
                 contentAdapter.replaceControlContents(
@@ -70,11 +99,11 @@ public class ContentAssistUtil {
         // When using proposalAcceptanceStyle == PROPOSAL_IGNORE, ContentProposalAdapter
         // places the popup alongside the bottom edge of the text widget, not near the cursor.
         // Workaround: move the popup to the right place from the proposalPopupOpened() callback.
-        commandAdapter.addContentProposalListener(new IContentProposalListener2() {
+        adapter.addContentProposalListener(new IContentProposalListener2() {
             @Override
             public void proposalPopupOpened(ContentProposalAdapter adapter) {
                 PopupDialog popup = (PopupDialog)ReflectionUtils.getFieldValue(adapter, "popup");  // Khmm... Cause there's no getPopup().
-                adjustPopupBounds(popup, text, commandAdapter);
+                adjustPopupBounds(popup, text, adapter);
             }
 
             @Override
@@ -82,74 +111,14 @@ public class ContentAssistUtil {
             }
         });
 
+        return adapter;
     }
 
-    public static void configureStyledText(StyledText styledText, IContentProposalProvider proposalProvider, String autoactivationChars) {
-        ContentAssistCommandAdapter commandAdapter = new ContentAssistCommandAdapter(styledText,
-                new StyledTextContentAdapter(),
-                proposalProvider,
-                null /* use the default Content Assist command */,
-                autoactivationChars.toCharArray(),
-                true /* install decoration */);
-
-        commandAdapter.setPropagateKeys(false);
-        commandAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_IGNORE);
-
-        commandAdapter.addContentProposalListener(new IContentProposalListener() {
-            @Override
-            public void proposalAccepted(IContentProposal proposal) {
-                IContentProposalEx filterProposal = (IContentProposalEx)proposal;
-                final IControlContentAdapterEx contentAdapter = (IControlContentAdapterEx)commandAdapter.getControlContentAdapter();
-                contentAdapter.replaceControlContents(
-                        styledText,
-                        filterProposal.getStartIndex(),
-                        filterProposal.getEndIndex(),
-                        filterProposal.getContent(),
-                        filterProposal.getCursorPosition());
-            }
-        });
-
-        // When using proposalAcceptanceStyle == PROPOSAL_IGNORE, ContentProposalAdapter
-        // places the popup alongside the bottom edge of the text widget, not near the cursor.
-        // Workaround: move the popup to the right place from the proposalPopupOpened() callback.
-        commandAdapter.addContentProposalListener(new IContentProposalListener2() {
-            @Override
-            public void proposalPopupOpened(ContentProposalAdapter adapter) {
-                PopupDialog popup = (PopupDialog)ReflectionUtils.getFieldValue(adapter, "popup");  // Khmm... Cause there's no getPopup().
-                adjustPopupBounds(popup, styledText, commandAdapter);
-            }
-
-            @Override
-            public void proposalPopupClosed(ContentProposalAdapter adapter) {
-            }
-        });
-
-        // When accepting the proposal with the Enter key, the text widget will also inserts
-        // the newline, as if the content proposal popup wasn't there. It it because the text
-        // widget owns the focus, not the popup.
-        // Workaround: we detect the insertion of the newline from ExtendedModifyListener,
-        // and remove it.
-        styledText.addExtendedModifyListener(new ExtendedModifyListener() {
-            @Override
-            public void modifyText(ExtendedModifyEvent event) {
-                if (commandAdapter.isProposalPopupOpen()) {
-                    StyledText styledText = (StyledText)event.widget;
-                    String insertedText = styledText.getTextRange(event.start,  event.length);
-                    if (insertedText.equals("\n"))
-                        StyledTextUndoRedoManager.getOrCreateManagerOf(styledText).undo();  // or: styledText.replaceTextRange(event.start, event.length, event.replacedText), but this pollutes the undo stack
-                }
-            }
-        });
-
-        //TODO in empty StyledText, content assist does not work properly
-        //TODO hide '\n' insertion / deletion from Undo
-    }
-
-    protected static void adjustPopupBounds(PopupDialog popup, Control control, ContentAssistCommandAdapter commandAdapter) {
+    protected static void adjustPopupBounds(PopupDialog popup, Control control, ContentProposalAdapter adapter) {
         int POPUP_OFFSET = 3;
         int MAX_POPUP_WIDTH = 800; // practical upper limit
         Point controlLocation = control.getDisplay().map(control.getParent(), null, control.getLocation());
-        Rectangle insertionBounds = commandAdapter.getControlContentAdapter().getInsertionBounds(control);
+        Rectangle insertionBounds = adapter.getControlContentAdapter().getInsertionBounds(control);
         int initialX = controlLocation.x + insertionBounds.x + POPUP_OFFSET;
         int initialY = controlLocation.y + insertionBounds.y + insertionBounds.height;
         Rectangle popupBounds = popup.getShell().getBounds();
