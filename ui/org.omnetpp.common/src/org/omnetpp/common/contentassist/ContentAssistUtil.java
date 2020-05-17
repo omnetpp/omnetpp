@@ -34,9 +34,24 @@ import org.omnetpp.common.util.ReflectionUtils;
 /**
  * Utility functions for setting up content assist on controls.
  *
+ * Content Assist concepts 101 (what is what):
+ *
+ * - IContentProposalProvider is what gives the proposals, based on content.
+ *
+ * - ContentProposalAdapter is what orchestrates the UI: opens and closes the
+ *   proposal popup, juggles keypresses between the popup and the text widget, etc.
+ *   This is the tricky part, with lots of hacks.
+ *
+ * - ContentAssistCommandAdapter subclasses ContentProposalAdapter, and adds the feature
+ *   of reacting to the platform standard Content Assist command instead of an explicitly
+ *   specified keystroke.
+ *
+ * - IControlContentAdapter, i.e. TextContentAdapterEx and StyledTextContentAdapter, provide
+ *   widget abstraction. They know how to get the cursor position, the content etc
+ *   out of the control, and how to insert the accepted proposal back to it.
+ *
  * @author Andras
  */
-//TODO in an empty StyledText, content assist does not work properly. proposalAccepted() is not called, apparently because the popup somehow closes too early 
 public class ContentAssistUtil {
     /**
      * Set up content assist on a (possibly multi-line) Text control.
@@ -47,10 +62,25 @@ public class ContentAssistUtil {
     }
 
     /**
-     * Set up content assist on a StyledText control. IMPORTANT: This function assumes that proposals are instances of IContentProposalEx.
+     * Set up content assist on a StyledText control. It currently doesn't work perfectly, see comment inside.
+     * IMPORTANT: This function assumes that proposals are instances of IContentProposalEx.
      */
     public static void configureStyledText(StyledText styledText, IContentProposalProvider proposalProvider, String autoactivationChars) {
         ContentProposalAdapter adapter = configureTextOrStyledText(styledText, new StyledTextContentAdapter(), proposalProvider, autoactivationChars);
+
+        // TODO fix occasional content assist failure:
+        //
+        // Issue: Under some circumstances, e.g. in an empty StyledText, accepting the proposal
+        // with the Enter key doesn't work properly: it inserts a newline instead of the
+        // proposal text. Accepting the proposal with the mouse is OK.
+        //
+        // Apparently it works wrong if the StyledText contents doesn't include any of the
+        // autoactivation characters anywhere. If it contains an autoactivation character
+        // (in our case: space,dot,paren,...) either before the cursor or after it, anywhere,
+        // content assist works just fine... Weird.
+        //
+        // Background: apparently proposalAccepted() is not called, apparently because the popup
+        // somehow closes too early (???). Why/how is unclear.
 
         // When accepting the proposal with the Enter key, the text widget will also inserts
         // the newline, as if the content proposal popup wasn't there. It it because the text
@@ -63,18 +93,15 @@ public class ContentAssistUtil {
                 if (adapter.isProposalPopupOpen()) {
                     String insertedText = styledText.getTextRange(event.start,  event.length);
                     if (insertedText.equals("\n"))
-                        StyledTextUndoRedoManager.getOrCreateManagerOf(styledText).undo();  // or: styledText.replaceTextRange(event.start, event.length, event.replacedText), but this pollutes the undo stack
+                        StyledTextUndoRedoManager.getOrCreateManagerOf(styledText).undo();  // or: styledText.replaceTextRange(event.start, event.length, event.replacedText), but that pollutes the undo stack
                 }
             }
         });
-
-        //TODO in empty StyledText, content assist does not work properly
-        //TODO hide '\n' insertion / deletion from Undo
     }
 
     public static ContentProposalAdapter configureTextOrStyledText(Control text, IControlContentAdapterEx contentAdapter, IContentProposalProvider proposalProvider, String autoactivationChars) {
         // note: if we wanted to keep things simple, we could use the plain ContentProposalAdapter, as its subclass ContentAssistCommandAdapter only adds the command support
-        ContentAssistCommandAdapter adapter = new ContentAssistCommandAdapter(text,
+        ContentProposalAdapter adapter = new ContentAssistCommandAdapter(text,
                 contentAdapter,
                 proposalProvider,
                 null /* use the default Content Assist command */,
