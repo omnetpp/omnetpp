@@ -56,7 +56,6 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
      * @see org.eclipse.jface.fieldassist.IContentProposalProvider#getProposals(java.lang.String, int)
      */
     public IContentProposal[] getProposals(String contents, int position) {
-        ArrayList<IContentProposal> result = new ArrayList<IContentProposal>();
 
         String prefix = contents.substring(0, position);
 
@@ -66,6 +65,12 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
 
         List<IContentProposal> candidates = getProposalCandidates(prefix);
 
+        ArrayList<IContentProposal> result = filterAndWrapProposals(candidates, prefixToMatch, position);
+
+        return result.toArray(new IContentProposal[] {});
+    }
+
+    protected ArrayList<IContentProposal> filterAndWrapProposals(List<IContentProposal> candidates, String prefixToMatch, int position) {
         // check if any of the proposals has description. If they do, we set "(no description)"
         // on the others as well. Reason: if left at null, previous tooltip will be shown,
         // which is very confusing.
@@ -75,6 +80,7 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
                 descriptionSeen = true;
 
         // collect those candidates that match the last incomplete word in the editor
+        ArrayList<IContentProposal> result = new ArrayList<IContentProposal>();
         for (IContentProposal candidate : candidates) {
             String content = candidate.getContent();
             if (content.startsWith(prefixToMatch) && content.length()!= prefixToMatch.length()) {
@@ -89,8 +95,7 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
                 result.add(proposal);
             }
         }
-
-        return result.toArray(new IContentProposal[] {});
+        return result;
     }
 
     /**
