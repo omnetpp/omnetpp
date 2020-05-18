@@ -7,30 +7,17 @@
 
 package org.omnetpp.common.contentassist;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.fieldassist.IContentProposal;
-import org.eclipse.jface.fieldassist.IContentProposalProvider;
-import org.eclipse.swt.graphics.Image;
-import org.omnetpp.common.util.StringUtils;
 
 /**
- * A basic content proposal provider. Performs filtering by prefix the proposal candidates
- * returned by the abstract getProposalCandidates() method. Sorting the proposals should
- * be done within getProposalCandidates() too.
- *
- * Note: although IContentProposalProvider is for field editors, we use this class
- * in the text editor content assist too; we just re-wrap IContentProposals to
- * ICompletionProposal.
+ * Deprecated. Use its base class ContentProposalProvider instead.
  *
  * @author Andras
  */
-public abstract class ContentProposalProvider implements IContentProposalProvider {
+//TODO this class doesn't add much to its base class, should be removed (and existing users moved to the base class)
+public abstract class ContentProposalProvider extends ContentProposalProviderBase {
     private boolean useWholePrefix = false;
     private boolean dropPrefix = false;
 
@@ -51,51 +38,17 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
         this.dropPrefix = dropPrefix;
     }
 
-
-    /* (non-Javadoc)
-     * @see org.eclipse.jface.fieldassist.IContentProposalProvider#getProposals(java.lang.String, int)
-     */
+    @Override
     public IContentProposal[] getProposals(String contents, int position) {
-
-        String prefix = contents.substring(0, position);
+        String contentsPrefix = contents.substring(0, position);
 
         // calculate the last word that the user started to type. This is the basis of
         // proposal filtering: they have to start with this prefix.
-        String prefixToMatch = useWholePrefix ? prefix : getCompletionPrefix(prefix);
+        String completionPrefix = useWholePrefix ? contentsPrefix : getCompletionPrefix(contentsPrefix);
 
-        List<IContentProposal> candidates = getProposalCandidates(prefix);
+        List<IContentProposal> candidates = getProposalCandidates(contentsPrefix);
 
-        ArrayList<IContentProposal> result = filterAndWrapProposals(candidates, prefixToMatch, position);
-
-        return result.toArray(new IContentProposal[] {});
-    }
-
-    protected ArrayList<IContentProposal> filterAndWrapProposals(List<IContentProposal> candidates, String prefixToMatch, int position) {
-        // check if any of the proposals has description. If they do, we set "(no description)"
-        // on the others as well. Reason: if left at null, previous tooltip will be shown,
-        // which is very confusing.
-        boolean descriptionSeen = false;
-        for (IContentProposal p : candidates)
-            if (!StringUtils.isEmpty(p.getDescription()))
-                descriptionSeen = true;
-
-        // collect those candidates that match the last incomplete word in the editor
-        ArrayList<IContentProposal> result = new ArrayList<IContentProposal>();
-        for (IContentProposal candidate : candidates) {
-            String content = candidate.getContent();
-            if (content.startsWith(prefixToMatch) && content.length()!= prefixToMatch.length()) {
-                // from the content, drop the prefix that has already been typed by the user
-                String modifiedContent = dropPrefix ? content.substring(prefixToMatch.length(), content.length()) : content;
-                int modifiedCursorPosition = candidate.getCursorPosition() + modifiedContent.length() - content.length();
-                String description = (StringUtils.isEmpty(candidate.getDescription()) && descriptionSeen) ? "(no description)" : candidate.getDescription();
-                Image image = candidate instanceof ContentProposalEx ? ((ContentProposalEx)candidate).getImage() : null;
-                ContentProposalEx proposal = new ContentProposalEx(modifiedContent, candidate.getLabel(), description, modifiedCursorPosition, image);
-                proposal.setStartIndex(position);
-                proposal.setEndIndex(position);
-                result.add(proposal);
-            }
-        }
-        return result;
+        return filterAndWrapProposals(candidates, completionPrefix, dropPrefix, position);
     }
 
     /**
@@ -116,60 +69,4 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
      * before presenting them to the user.
      */
     abstract protected List<IContentProposal> getProposalCandidates(String prefix);
-
-    /**
-     * Utility function.
-     */
-    protected static IContentProposal[] sort(IContentProposal[] proposals) {
-        Arrays.sort(proposals);
-        return proposals;
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected static List<IContentProposal> sort(List<IContentProposal> proposals) {
-        Collections.sort((List)proposals);
-        return proposals;
-    }
-
-    /**
-     * Utility function: Turn strings into proposals.
-     */
-    protected static List<IContentProposal> toProposals(String[] strings) {
-        return toProposals(strings, (String)null);
-    }
-
-    /**
-     * Utility function: Turn strings into proposals.
-     */
-    protected static List<IContentProposal> toProposals(String[] strings, String labelSuffix) {
-        IContentProposal[] p = new IContentProposal[strings.length];
-        if (labelSuffix==null)
-            for (int i=0; i<p.length; i++)
-                p[i] = new ContentProposalEx(strings[i], strings[i].trim(), null);
-        else
-            for (int i=0; i<p.length; i++)
-                p[i] = new ContentProposalEx(strings[i], strings[i].trim()+" -- "+labelSuffix, null);
-        return Arrays.asList(p);
-    }
-
-    /**
-     * Utility function: Turn strings-and-labels into proposals.
-     */
-    protected static List<IContentProposal> toProposals(String[] strings, String[] labels) {
-        Assert.isTrue(strings.length == labels.length);
-        List<IContentProposal> result = new ArrayList<IContentProposal>();
-        for (int i=0; i<strings.length; i++)
-            result.add(new ContentProposalEx(strings[i], labels[i], null));
-        return result;
-    }
-
-    /**
-     * Utility function: Turn strings-and-labels into proposals.
-     */
-    protected static List<IContentProposal> toProposals(Map<String,String> proposalsWithLabels) {
-        List<IContentProposal> result = new ArrayList<IContentProposal>();
-        for (String proposal : proposalsWithLabels.keySet())
-            result.add(new ContentProposalEx(proposal, proposalsWithLabels.get(proposal), null));
-        return result;
-    }
 }
