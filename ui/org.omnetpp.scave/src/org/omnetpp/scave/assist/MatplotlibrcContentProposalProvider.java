@@ -6,8 +6,7 @@ import java.util.Map;
 
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.omnetpp.common.contentassist.ContentProposalEx;
-import org.omnetpp.common.contentassist.ContentProposalProvider;
-import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.contentassist.ContentProposalProviderBase;
 import org.omnetpp.scave.pychart.PythonProcess;
 
 /**
@@ -15,22 +14,18 @@ import org.omnetpp.scave.pychart.PythonProcess;
  *
  * @author andras
  */
-public class MatplotlibrcContentProposalProvider extends ContentProposalProvider {
-
-    public MatplotlibrcContentProposalProvider() {
-        super(false, true);
-    }
+public class MatplotlibrcContentProposalProvider extends ContentProposalProviderBase {
 
     @Override
-    protected List<IContentProposal> getProposalCandidates(String text) {
+    public IContentProposal[] getProposals(String contents, int position) {
         Map<String, String> rcParams = PythonProcess.getMatplotlibRcParams();
         if (rcParams == null)
-            return new ArrayList<IContentProposal>();
+            return new IContentProposal[0];
 
-        String prefix = getCompletionPrefix(text);
+        String completionPrefix = getLinePrefix(contents, position).stripLeading();
 
         List<IContentProposal> proposals = new ArrayList<>();
-        if (!prefix.contains(":")) {
+        if (!completionPrefix.contains(":")) {
             // propose keys
             for (String key : rcParams.keySet())
                 proposals.add(new ContentProposalEx(key + " : ", key + " : ", key + "\nDefault: " + rcParams.get(key)));
@@ -41,14 +36,8 @@ public class MatplotlibrcContentProposalProvider extends ContentProposalProvider
             // ...
         }
 
-        return sort(proposals);
-    }
+        sort(proposals);
 
-    @Override
-    protected String getCompletionPrefix(String text) {
-      text = text.replace("\\\n", ""); // join continued lines
-      if (text.contains("\n"))
-          text =  StringUtils.substringAfterLast(text, "\n"); // take last line
-      return text.stripLeading();
+        return filterAndWrapProposals(proposals, completionPrefix, false, position);
     }
 }

@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.contentassist.ContentProposalProvider;
+import org.omnetpp.common.contentassist.ContentProposalProviderBase;
 
 /**
  * A cell editor that manages a color field. Uses ColorFactory.
@@ -31,14 +31,12 @@ import org.omnetpp.common.contentassist.ContentProposalProvider;
  */
 public class ColorCellEditorEx extends TextCellEditorEx {
 
-    public static class ColorContentProposalProvider extends ContentProposalProvider {
-        public ColorContentProposalProvider() {
-            super(true);
-        }
-
+    public static class ColorContentProposalProvider extends ContentProposalProviderBase {
         @Override
-        protected List<IContentProposal> getProposalCandidates(String prefix) {
-            return sort(toProposals(ColorFactory.getColorNames()));
+        public IContentProposal[] getProposals(String contents, int position) {
+            String prefix = contents.substring(0, position);
+            List<IContentProposal> candidates = sort(toProposals(ColorFactory.getColorNames()));
+            return filterAndWrapProposals(candidates, prefix, true, position);
         }
     }
 

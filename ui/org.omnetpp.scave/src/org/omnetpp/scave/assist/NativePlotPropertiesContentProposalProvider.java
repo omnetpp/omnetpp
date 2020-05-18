@@ -5,8 +5,7 @@ import java.util.List;
 
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.omnetpp.common.contentassist.ContentProposalEx;
-import org.omnetpp.common.contentassist.ContentProposalProvider;
-import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.contentassist.ContentProposalProviderBase;
 import org.omnetpp.scave.charting.properties.PlotProperty;
 
 /**
@@ -14,18 +13,14 @@ import org.omnetpp.scave.charting.properties.PlotProperty;
  *
  * @author andras
  */
-public class NativePlotPropertiesContentProposalProvider extends ContentProposalProvider {
-
-    public NativePlotPropertiesContentProposalProvider() {
-        super(false, true);
-    }
+public class NativePlotPropertiesContentProposalProvider extends ContentProposalProviderBase {
 
     @Override
-    protected List<IContentProposal> getProposalCandidates(String text) {
-        String prefix = getCompletionPrefix(text);
+    public IContentProposal[] getProposals(String contents, int position) {
+        String completionPrefix = getLinePrefix(contents, position).stripLeading();
 
         List<IContentProposal> proposals = new ArrayList<>();
-        if (!prefix.contains(":")) {
+        if (!completionPrefix.contains(":")) {
             // propose keys
             for (PlotProperty p : PlotProperty.values())
                 proposals.add(new ContentProposalEx(p.getName() + " : ", p.getName() + " : ", p.getName() + "\nDefault: " + p.getDefaultValueAsString()));
@@ -36,14 +31,7 @@ public class NativePlotPropertiesContentProposalProvider extends ContentProposal
             // ...
         }
 
-        return sort(proposals);
-    }
-
-    @Override
-    protected String getCompletionPrefix(String text) {
-      text = text.replace("\\\n", ""); // join continued lines
-      if (text.contains("\n"))
-          text =  StringUtils.substringAfterLast(text, "\n"); // take last line
-      return text.stripLeading();
+        sort(proposals);
+        return filterAndWrapProposals(proposals, completionPrefix, false, position);
     }
 }

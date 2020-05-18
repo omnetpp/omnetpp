@@ -18,26 +18,25 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
-import org.omnetpp.common.contentassist.ContentProposalProvider;
+import org.omnetpp.common.contentassist.ContentProposalProviderBase;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.image.ImageSelectionDialog;
 
 public class ImageCellEditor extends TextCellEditorEx {
 
-    public static class ImageContentProposalProvider extends ContentProposalProvider {
+    public static class ImageContentProposalProvider extends ContentProposalProviderBase {
         private IProject project;
 
         public ImageContentProposalProvider(IProject project) {
-            super(true);
             this.project = project;
         }
 
         @Override
-        protected List<IContentProposal> getProposalCandidates(String prefix) {
-            if (prefix.contains("/"))
-                return sort(toProposals(ImageFactory.of(project).getImageNameList().toArray(new String[]{})));
-            else
-                return sort(toProposals(ImageFactory.of(project).getCategories().toArray(new String[]{})));
+        public IContentProposal[] getProposals(String contents, int position) {
+            String prefix = contents.substring(0, position);
+            List<String> stringList = prefix.contains("/") ? ImageFactory.of(project).getImageNameList() : ImageFactory.of(project).getCategories();
+            List<IContentProposal> candidates = sort(toProposals(stringList.toArray(new String[0])));
+            return filterAndWrapProposals(candidates, prefix, true, position);
         }
     }
 
