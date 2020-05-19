@@ -163,13 +163,13 @@ public class HTMLUtils {
                     if (image == null)
                         image = CommonCorePlugin.getCachedImage("icons/unknown.png");
                     final Image finalImage = image;
-                    Rectangle rectangle = image.getBounds();
+                    Rectangle imageBounds = image.getBounds();
                     // images are recognized in the text flow by this special unicode character
                     styledText.append("\uFFFC");
                     StyleRange styleRange = new StyleRange();
                     styleRange.start = startOffset;
                     styleRange.length = 1;
-                    styleRange.metrics = new GlyphMetrics(rectangle.height, 0, rectangle.width);
+                    styleRange.metrics = new GlyphMetrics(imageBounds.height, 0, imageBounds.width);
                     styledText.setStyleRange(styleRange);
                     // add a separate listener for each image to paint it
                     styledText.addPaintObjectListener(new PaintObjectListener() {
