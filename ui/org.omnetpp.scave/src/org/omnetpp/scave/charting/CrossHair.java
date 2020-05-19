@@ -317,16 +317,19 @@ class CrossHair {
                 try {
                     double xx = parent.transformX(dataset.getX(series, i));
                     double yy = parent.transformY(dataset.getY(series, i));
-                    int dx = (int)coordsMapping.toCanvasX(xx) - x;
-                    int dy = (int)coordsMapping.toCanvasY(yy) - y;
-                    if (addAndCheck(mulAndCheck(dx, dx), mulAndCheck(dy, dy)) <= d * d)
+                    int dx = Math.abs((int)coordsMapping.toCanvasX(xx) - x);
+                    int dy = Math.abs((int)coordsMapping.toCanvasY(yy) - y);
+
+                    if (dx > d)
+                        break;
+
+                    if (dy <= d && addAndCheck(mulAndCheck(dx, dx), mulAndCheck(dy, dy)) <= d * d)
                     {
                         totalFound++;
                         if (result.size() < maxCount)  //XXX add at least one point for each series
                             result.add(new DataPoint(series, i));
                     }
-                    if (Math.abs(dx) > d)
-                        break;
+
                 }
                 catch (ArithmeticException e) {}
             }
@@ -334,16 +337,18 @@ class CrossHair {
                 try {
                     double xx = parent.transformX(dataset.getX(series, i));
                     double yy = parent.transformY(dataset.getY(series, i));
-                    int dx = (int)coordsMapping.toCanvasX(xx) - x;
-                    int dy = (int)coordsMapping.toCanvasY(yy) - y;
-                    if (addAndCheck(mulAndCheck(dx, dx), mulAndCheck(dy, dy)) <= d * d)
+                    int dx = Math.abs((int)coordsMapping.toCanvasX(xx) - x);
+                    int dy = Math.abs((int)coordsMapping.toCanvasY(yy) - y);
+
+                    if (dx > d)
+                        break;
+
+                    if (dy <= d && addAndCheck(mulAndCheck(dx, dx), mulAndCheck(dy, dy)) <= d * d)
                     {
                         totalFound++;
                         if (result.size() < maxCount)
                             result.add(new DataPoint(series, i));
                     }
-                    if (Math.abs(dx) > d)
-                        break;
                 }
                 catch (ArithmeticException e) {}
             }
