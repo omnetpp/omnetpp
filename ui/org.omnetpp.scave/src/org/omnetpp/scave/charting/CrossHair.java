@@ -292,8 +292,8 @@ class CrossHair {
         String xStr = dataset.getXAsString(series, index);
         String yStr = dataset.getYAsString(series, index);
 
-        String seriesStr = dataset.getSeriesKey(series);
-        //seriesStr = StringUtils.abbreviate(series, series.length(), 25);
+        String seriesStr = dataset.getSeriesTitle(series);
+
         return String.format("%s, %s - %s", xStr, yStr, seriesStr);
     }
 
