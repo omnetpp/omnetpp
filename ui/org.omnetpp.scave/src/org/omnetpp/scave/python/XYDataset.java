@@ -150,7 +150,7 @@ public class XYDataset implements IXYDataset {
 
     @Override
     public BigDecimal getPreciseX(int series, int item) {
-        return new BigDecimal(getX(series, item));
+        return null;
     }
 
     @Override
@@ -188,7 +188,7 @@ public class XYDataset implements IXYDataset {
 
     @Override
     public BigDecimal getPreciseY(int series, int item) {
-        return new BigDecimal(getY(series, item));
+        return null;
     }
 
     @Override
@@ -221,16 +221,14 @@ public class XYDataset implements IXYDataset {
 
     @Override
     public String getXAsString(int series, int item) {
-        BigDecimal xp = getPreciseX(series, item);
         double x = getX(series, item);
-        return xp != null ? xp.toString() : String.format("%g", x);
+        return String.format("%g", x);
     }
 
     @Override
     public String getYAsString(int series, int item) {
-        BigDecimal yp = getPreciseY(series, item);
         double y = getY(series, item);
-        return yp != null ? yp.toString() : String.format("%g", y);
+        return String.format("%g", y);
     }
 
 }
