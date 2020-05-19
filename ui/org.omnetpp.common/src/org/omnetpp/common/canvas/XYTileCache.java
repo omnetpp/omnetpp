@@ -69,7 +69,7 @@ public class XYTileCache implements ITileCache {
                     cache.put(key, tile);
                     memoryUsage += TILE_SIZE_BYTES;
                     if (memoryUsage > memoryUsageLimit)
-                        break;
+                        discardOldTiles();
                 }
             }
             if (memoryUsage > memoryUsageLimit)
