@@ -569,13 +569,6 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
         return y;
     }
 
-
-    // make public
-    @Override
-    public ICoordsMapping getOptimizedCoordinateMapper() {
-        return super.getOptimizedCoordinateMapper();
-    }
-
     /**
      * Resets all graphics settings except clipping and transform.
      */

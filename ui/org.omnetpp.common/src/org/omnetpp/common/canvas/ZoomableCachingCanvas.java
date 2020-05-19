@@ -338,7 +338,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
      * at the end of the paint() method, because it captures chart geometry in "final"
      * variables which become obsolete once the user scrolls/resizes the chart.
      */
-    protected ICoordsMapping getOptimizedCoordinateMapper() {
+    public ICoordsMapping getOptimizedCoordinateMapper() {
         // Unoptimized version (for testing):
         // return this;
 
