@@ -10,13 +10,11 @@ package org.omnetpp.scave.charting;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.collections.keyvalue.MultiKey;
 import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.plotter.IPlotSymbol;
 
@@ -28,41 +26,38 @@ import org.omnetpp.scave.charting.plotter.IPlotSymbol;
  */
 public class SymbolImageFactory {
 
-    static Map<MultiKey,String> imageFileMap = new HashMap<MultiKey,String>();
+    private static Map<String,Image> imageMap = new HashMap<String,Image>();
 
-    /**
-     * Returns the file name of the image containing the given symbol
-     * in the given color.
-     */
-    public static String getImageFile(Color color, IPlotSymbol symbol, boolean drawLine) {
-        MultiKey key = new MultiKey(color, symbol == null ? null : symbol.getClass(), drawLine);
-        String fileName = imageFileMap.get(key);
-        if (fileName == null) {
-            fileName = createImageFile(color, symbol, drawLine);
-            imageFileMap.put(key, fileName);
-        }
-        return fileName;
+    public static Image getImage(String imageName) {
+        return imageMap.get(imageName);
     }
 
-    private static String createImageFile(Color color, IPlotSymbol symbol, boolean drawLine) {
-        Image image = null;
-        try {
-            image = createSymbolImage(symbol, color, drawLine);
-            String symbolName = symbol == null ? "NoneSymbol" : StringUtils.removeStart(symbol.getClass().getName(), symbol.getClass().getPackage().getName()+".");
-            String imageName = String.format("%s_%02X%02X%02X%s",
-                    symbolName, color.getRed(), color.getGreen(), color.getBlue(),
-                    drawLine ? "_l" : "");
-            return ImageFactory.createTemporaryImageFile(imageName+".png", image, SWT.IMAGE_PNG);
-        } catch (Exception e) {
-            return null;
-        }
-        finally {
-            if (image != null)
-                image.dispose();
-        }
+    public static Image getOrCreateImage(IPlotSymbol symbol, Color color, boolean drawLine) {
+        String imageName = prepareImage(symbol, color, drawLine);
+        return getImage(imageName);
     }
 
-    public static Image createSymbolImage(IPlotSymbol symbol, Color color, boolean drawLine) {
+    public static String prepareImage(IPlotSymbol symbol, Color color, boolean drawLine) {
+        String imageName = makeImageName(symbol, color, drawLine);
+
+        if (!imageMap.containsKey(imageName)) {
+            Image image = createImage(symbol, color, drawLine);
+            imageMap.put(imageName, image);
+        }
+
+        return imageName;
+    }
+
+    public static String makeImageName(IPlotSymbol symbol, Color color, boolean drawLine) {
+        String symbolName = symbol == null ? "NoneSymbol" : StringUtils.removeStart(symbol.getClass().getName(), symbol.getClass().getPackage().getName()+".");
+        String imageName = String.format("%s_%02X%02X%02X%s",
+                symbolName, color.getRed(), color.getGreen(), color.getBlue(),
+                drawLine ? "_l" : "");
+
+        return imageName;
+    }
+
+    private static Image createImage(IPlotSymbol symbol, Color color, boolean drawLine) {
         int size = symbol != null ? symbol.getSizeHint() : 0;
         Image image = null;
         GC gc = null;
@@ -72,7 +67,7 @@ public class SymbolImageFactory {
             gc.setAntialias(SWT.ON);
             gc.setForeground(color);
             if (drawLine) {
-                gc.setLineWidth(1);
+                gc.setLineWidth(2);
                 gc.setLineStyle(SWT.LINE_SOLID);
                 gc.drawLine(0, 4, 14, 4);
             }

@@ -3,6 +3,7 @@ package org.omnetpp.common.ui;
 import java.util.Map;
 
 import org.eclipse.swt.graphics.Image;
+import org.omnetpp.common.util.HTMLUtils.IImageProvider;
 
 /**
  * An HTML page containing images to be displayed as a hover.
@@ -11,18 +12,18 @@ import org.eclipse.swt.graphics.Image;
  */
 public class HtmlInput {
     private String content;
-    private Map<String, Image> imageMap;
+    private IImageProvider imageProvider;
 
-    public HtmlInput(String content, Map<String, Image> imageMap) {
+    public HtmlInput(String content, IImageProvider imageProvider) {
         this.content = content;
-        this.imageMap = imageMap;
+        this.imageProvider = imageProvider;
     }
 
     public String getContent() {
         return content;
     }
 
-    public Map<String, Image> getImageMap() {
-        return imageMap;
+    public IImageProvider getImageProvider() {
+        return imageProvider;
     }
 }

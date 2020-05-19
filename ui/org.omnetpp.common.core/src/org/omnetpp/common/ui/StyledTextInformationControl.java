@@ -78,7 +78,7 @@ public class StyledTextInformationControl extends AbstractInformationControl imp
             HTMLUtils.htmlToStyledText((String)input, styledText);
         else {
             HtmlInput htmlInput = (HtmlInput)input;
-            HTMLUtils.htmlToStyledText(htmlInput.getContent(), styledText, htmlInput.getImageMap());
+            HTMLUtils.htmlToStyledText(htmlInput.getContent(), styledText, htmlInput.getImageProvider());
         }
     }
 

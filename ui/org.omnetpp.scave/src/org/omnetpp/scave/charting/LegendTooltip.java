@@ -45,7 +45,7 @@ class LegendTooltip implements ILegend
         public Item(Color color, String label, IPlotSymbol symbol, boolean drawLine) {
             this.color = color;
             this.label = label;
-            this.image = SymbolImageFactory.createSymbolImage(symbol, color, drawLine);
+            this.image = SymbolImageFactory.getOrCreateImage(symbol, color, drawLine);
         }
     }
 

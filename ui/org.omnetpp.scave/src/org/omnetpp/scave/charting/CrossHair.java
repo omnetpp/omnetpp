@@ -43,6 +43,8 @@ import org.omnetpp.scave.charting.LinePlot.LineProperties;
 import org.omnetpp.scave.charting.dataset.DatasetUtils;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.plotter.IPlotSymbol;
+import org.omnetpp.scave.charting.properties.PlotProperty.DrawStyle;
+import org.omnetpp.scave.charting.properties.PlotProperty.LineStyle;
 
 /**
  * Displays crosshair mouse cursor for VectorChart.
@@ -161,7 +163,7 @@ class CrossHair {
         hoverSupport.adapt(parent, new IHoverInfoProvider() {
             @Override
             public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
-                return new HtmlHoverInfo(getHoverText(x, y, finalParent.getOptimizedCoordinateMapper()));
+                return new HtmlHoverInfo(getHoverText(x, y, finalParent.getOptimizedCoordinateMapper()), (imageName) -> SymbolImageFactory.getImage(imageName));
             }
         });
     }
@@ -246,32 +248,29 @@ class CrossHair {
             StringBuilder htmlText = new StringBuilder();
             StringBuilder plainText  = new StringBuilder();
             int maxTextLength = 0;
-            htmlText.append("<table>");
+
             int lineNo = 0;
             for (DataPoint dp : dataPoints) {
                 LineProperties props = parent.getLineProperties(dp.series);
                 Color color = props.getEffectiveLineColor();
                 String text = getText(dp);
                 IPlotSymbol symbol = props.getSymbolPlotter();
-                String imageFile = SymbolImageFactory.getImageFile(color, symbol, true);
-                htmlText.append("<tr>");
-                htmlText.append("<td>");
-                if (imageFile != null)
-                    htmlText.append(String.format("<img src='%s'>", imageFile));
-                htmlText.append("</td>");
-                htmlText.append("<td>");
+                boolean hasLine = props.getEffectiveLineStyle() != LineStyle.None && props.getEffectiveDrawStyle() != DrawStyle.None;
+                String imageName = SymbolImageFactory.prepareImage(symbol, color, hasLine);
+
+                if (imageName != null)
+                    htmlText.append(String.format("<img src='%s'>", imageName));
+
                 htmlText.append(StringEscapeUtils.escapeHtml4(text));
                 if (lineNo > 0)
                     plainText.append("\n");
                 plainText.append(text);
-                htmlText.append("</td>");
-                htmlText.append("</tr>");
+                htmlText.append("<br/>");
                 maxTextLength = Math.max(maxTextLength, text.length());
                 ++lineNo;
             }
             if (totalFound > dataPoints.size())
-                htmlText.append(String.format("<tr><td></td><td>... and %d more</td></tr>", totalFound - dataPoints.size()));
-            htmlText.append("</table>");
+                htmlText.append(String.format("... and %d more", totalFound - dataPoints.size()));
 
             TextLayout textLayout = new TextLayout(parent.getDisplay());
             textLayout.setText(plainText.toString());

@@ -501,29 +501,6 @@ public class ImageFactory {
     }
 
     /**
-     * Creates an image file containing {@code image} in
-     * the given {@code format} in the tmp directory.
-     *
-     * @param imageName the name of image file (without directory)
-     * @param image the image to be saved
-     * @param format see {@link ImageLoader} for supported values
-     * @return the absolute path of the created image file
-     * @throws IOException if the temp directory cannot be read or the file cannot be written
-     */
-    // XXX clean up
-    public static String createTemporaryImageFile(String imageName, Image image, int format)
-        throws IOException {
-
-        String tempDir = System.getProperty("java.io.tmpdir");
-        File tempFile = new File(tempDir, imageName);
-        ImageLoader loader = new ImageLoader();
-        loader.data = new ImageData[] { image.getImageData() };
-        loader.save(tempFile.getCanonicalPath(), format);
-        return tempFile.getCanonicalPath();
-    }
-
-
-    /**
      * Returns an image key with a given id, with preferred size. The method also
      * caches the image for future reuse.
      *
