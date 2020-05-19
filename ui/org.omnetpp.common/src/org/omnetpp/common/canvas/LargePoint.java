@@ -59,4 +59,9 @@ public final class LargePoint {
         final LargePoint other = (LargePoint) obj;
         return (x == other.x) && (y == other.y);
     }
+
+    @Override
+    public String toString() {
+        return "LargePoint {" + x + ", " + y + "}";
+    }
 }
