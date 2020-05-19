@@ -138,20 +138,49 @@ public abstract class MatchExpressionContentProposalProvider extends ContentProp
         return contentsArg.substring(0, positionArg);
     }
 
+    /**
+     * Helper: Return the last n tokens in reverse order, that is [0] is the last one.
+     */
     private Token[] getLastFewTokens(String text, int n) {
-        //TODO only parse last 200 chars or so (but MUST NOT start inside a quoted string constant)
+        // The text can be very long, so we only tokenize the end of it, a part that's
+        // long enough to likely to contain as many tokens as we need to return.
+        // However, we must not start inside a quoted string constant, so we need to pre-scan
+        // the string from the beginning to know what is is quotes and what isn't.
+        int numCharsToScan = 1000;
+        int tailStartPos = text.length() < numCharsToScan ? 0 : findGoodStartingPoint(text, text.length()-numCharsToScan);
+        String tail = text.substring(tailStartPos);
 
-        // return last 'n' tokens in reverse order ([0] is the last one)
-        MatchExpressionSyntax.Lexer lexer = new MatchExpressionSyntax.Lexer(text);
+        // Use lexer to enumerate the tokens
+        MatchExpressionSyntax.Lexer lexer = new MatchExpressionSyntax.Lexer(tail, tailStartPos);
         List<Token> lastTokens = new LinkedList<>();
         while (true) {
             Token token = lexer.getNextToken();
             if (token.getType() == TokenType.END)
                 break;
+            //System.out.println(token.getValue() + "  should correspond to: " + text.substring(token.getStartPos(), token.getEndPos()));
             lastTokens.add(0, token);
             if (lastTokens.size() == n+1)
                 lastTokens.remove(lastTokens.size()-1);
         }
         return lastTokens.toArray(new Token[0]);
+    }
+
+    /**
+     * Helper: Find the position of the first space or newline after the given position
+     * which is not part of a quoted string literal.
+     */
+    private int findGoodStartingPoint(String text, int nearPos) {
+        boolean insideQuotes = false;
+        int length = text.length();
+        for (int pos = 0; pos < length; pos++) {
+            char ch = text.charAt(pos);
+            if (pos >= nearPos && (ch==' ' || ch=='\n') && !insideQuotes)
+                return pos;
+            if (ch == '"')
+                insideQuotes = !insideQuotes;
+            if (ch == '\\')
+                pos++;
+        }
+        return 0; // start from the beginning
     }
 }

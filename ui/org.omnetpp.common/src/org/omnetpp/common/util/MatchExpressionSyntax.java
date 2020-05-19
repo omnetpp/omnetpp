@@ -118,6 +118,7 @@ public class MatchExpressionSyntax {
             else
                 return String.format("%s(%s)<%d,%d>", type.name(), value, startPos, endPos);
         }
+
     }
 
     public static interface INodeVisitor {
@@ -356,12 +357,16 @@ public class MatchExpressionSyntax {
         boolean finished;
 
         public Lexer(String input) {
-            this(new StringReader(input));
+            this(input, 0);
         }
 
-        public Lexer(Reader input) {
+        public Lexer(String input, int startPos) {
+            this(new StringReader(input), startPos);
+        }
+
+        public Lexer(Reader input, int startPos) {
             this.input = new PushbackReader(input, 1);
-            this.pos = 0;
+            this.pos = startPos;
         }
 
         public TokenType getKeywordByPrefix(String prefix) { // XXX assumes that keyword prefixes are unique
