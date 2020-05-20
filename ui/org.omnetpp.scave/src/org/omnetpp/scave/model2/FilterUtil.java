@@ -166,7 +166,7 @@ public class FilterUtil {
         Node node = MatchExpressionSyntax.parseFilter(pattern);
         FilterNodeVisitor visitor = new FilterNodeVisitor();
         node.accept(visitor);
-        return visitor.isANDPattern;
+        return visitor.isANDPattern;  //TODO why not just tokenize it, and if it doesn't contain OR and NOT tokens, it's an AND pattern...
     }
 
     private void parseFields(String pattern) {
