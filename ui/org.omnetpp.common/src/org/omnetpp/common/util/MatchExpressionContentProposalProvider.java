@@ -1,130 +1,157 @@
-/*--------------------------------------------------------------*
-  Copyright (C) 2006-2015 OpenSim Ltd.
-
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  'License' for details on this and other legal matters.
-*--------------------------------------------------------------*/
-
 package org.omnetpp.common.util;
 
+import static org.omnetpp.common.util.MatchExpressionSyntax.TokenType.AND;
+import static org.omnetpp.common.util.MatchExpressionSyntax.TokenType.CP;
+import static org.omnetpp.common.util.MatchExpressionSyntax.TokenType.MATCHES;
+import static org.omnetpp.common.util.MatchExpressionSyntax.TokenType.NOT;
+import static org.omnetpp.common.util.MatchExpressionSyntax.TokenType.OP;
+import static org.omnetpp.common.util.MatchExpressionSyntax.TokenType.OR;
+import static org.omnetpp.common.util.MatchExpressionSyntax.TokenType.STRING_LITERAL;
+
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.fieldassist.IContentProposal;
-import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.contentassist.ContentProposalEx;
-import org.omnetpp.common.contentassist.IContentProposalEx;
-import org.omnetpp.common.util.MatchExpressionSyntax.INodeVisitor;
-import org.omnetpp.common.util.MatchExpressionSyntax.Node;
+import org.omnetpp.common.contentassist.ContentProposalProviderBase;
+import org.omnetpp.common.util.MatchExpressionSyntax;
 import org.omnetpp.common.util.MatchExpressionSyntax.Token;
+import org.omnetpp.common.util.MatchExpressionSyntax.TokenType;
 
-public abstract class MatchExpressionContentProposalProvider implements IContentProposalProvider {
-    protected static final boolean debug = Debug.isChannelEnabled("matchexpression_contentassist");
+/**
+ * Base class for content proposal providers for OMNeT++ match expressions,
+ * see the MatchExpression C++ class (src/common/matchexpression.h).
+ *
+ * Subclasses only need to provide the list of possible field names and values via
+ * method, and the rest is done within this class.
+ *
+ * @author andras
+ */
+public abstract class MatchExpressionContentProposalProvider extends ContentProposalProviderBase {
+    private static final ContentProposalEx P_AND = new ContentProposalEx("AND ");
+    private static final ContentProposalEx P_OR = new ContentProposalEx("OR ");
+    private static final ContentProposalEx P_NOT = new ContentProposalEx("NOT ");
+    private static final ContentProposalEx P_MATCHES = new ContentProposalEx("=~ ");
 
-    protected static ContentProposalEx noProposal = new ContentProposalEx("", "No proposal", null);
+    // save the arg list of the current getProposals() call, in case subclasses need it
+    private String contentsArg;
+    private int positionArg;
 
-    protected static ContentProposalEx[] binaryOperatorProposals = new ContentProposalEx[] {
-        new ContentProposalEx("OR"),
-        new ContentProposalEx("AND")
-    };
+    public IContentProposal[] getProposals(String contents, int position) {
+        contentsArg = contents;
+        positionArg = position;
 
-    protected static ContentProposalEx[] unaryOperatorProposals = new ContentProposalEx[] {
-        new ContentProposalEx("NOT")
-    };
+        Token[] tokens = getLastFewTokens(contents.substring(0, position), 4);
 
-    public IContentProposalEx[] getProposals(String contents, int position) {
-        List<IContentProposalEx> proposals = new ArrayList<>();
-        Token token = getContainingOrPrecedingToken(contents, position);
+        TokenType lastTokenType = tokens.length == 0 ? null : tokens[0].getType();
+        boolean lastTokenPossiblyIncomplete = tokens.length > 0 && tokens[0].getEndPos() == position && (lastTokenType==STRING_LITERAL || lastTokenType==AND || lastTokenType==OR || lastTokenType==NOT);
+        String prefix = "";
+        if (lastTokenPossiblyIncomplete) {
+            // remove incomplete last token at index 0
+            prefix = contents.substring(tokens[0].getStartPos(), tokens[0].getEndPos()); // contains opening quote
+            tokens = Arrays.copyOfRange(tokens, 1, tokens.length);
+            lastTokenType = tokens.length == 0 ? null : tokens[0].getType();
+        }
 
-        System.out.println("MatchExpressionContentProposalProvider.getProposals(): token=" + token);
-        if (token != null)
-            addProposalsForToken(contents, position, token, proposals);
+        Debug.print("Last tokens (reverse order):");
+        for (Token token : tokens)
+            Debug.print("  " + token.toString());
+        Debug.println();
 
-//        if (proposals.isEmpty())
-//            proposals.add(noProposal);
+        List<IContentProposal> proposals = new ArrayList<>();
 
-        if (debug)
-            for (IContentProposal proposal : proposals)
-                Debug.println("Proposal: " + proposal.getContent());
+        // empty, ... AND|OR|( -> propose field name, default-field values
+        if (lastTokenType == null || lastTokenType == AND || lastTokenType == OR || lastTokenType == OP) {
+            Debug.println(" --> offer field names, default-field values, NOT");
+            proposals.addAll(getFieldNameProposals(prefix));
+            proposals.addAll(getDefaultFieldValueProposals(prefix));
+            proposals.add(P_NOT);
+        }
 
-        return proposals.toArray(new IContentProposalEx[proposals.size()]);
-    }
+        if (lastTokenType == NOT) {
+            Debug.println(" --> offer field names, default-field values");
+            proposals.addAll(getFieldNameProposals(prefix));
+            proposals.addAll(getDefaultFieldValueProposals(prefix));
+        }
 
-    protected abstract void addProposalsForToken(String contents, int position, Token token, List<IContentProposalEx> proposals);
+        // ... ) -> propose AND, OR
+        if (lastTokenType == CP) {
+            Debug.println(" --> offer AND, OR");
+            proposals.add(P_AND);
+            proposals.add(P_OR);
+        }
 
-    /**
-     * Finds the leaf node (token) in the parse tree that contains the {@code position}
-     * either in the middle or at the right end.
-     *
-     * @param contents the content of the filter field
-     * @param position a position within the {@code contents}
-     * @return the token containing the position or null if no such token
-     */
-    protected Token getContainingOrPrecedingToken(String contents, final int position) {
-        // Visitor for the parse tree which remembers the last visited node
-        // before position
-        class Visitor implements INodeVisitor
+        // field =~ -> propose field value
+        if (lastTokenType == MATCHES && tokens.length >= 2 && tokens[1].getType()==STRING_LITERAL) {
+            String fieldName = tokens[1].getValue();
+            Debug.println(" --> offer values for " + fieldName);
+            proposals.addAll(getFieldValueProposals(fieldName, prefix));
+        }
+
+        // field =~ value -> propose AND, OR
+        if (lastTokenType == STRING_LITERAL)
         {
-            boolean found;
-            Token token;
-
-            public boolean visit(Node node) {
-                return !found;
+            if (tokens.length >= 3 && tokens[1].getType()==MATCHES && tokens[2].getType()==STRING_LITERAL) {
+                Debug.println(" --> offer AND, OR");
+                proposals.add(P_AND);
+                proposals.add(P_OR);
             }
-
-            public void visit(Token token) {
-                if (debug)
-                    Debug.println("Visiting: " + token);
-                if (!found) {
-                    if (token.getStartPos() >= position && this.token != null)
-                        found = true;
-                    else
-                        this.token = token;
-                }
+            else {
+                Debug.println(" --> offer MATCHES, AND, OR");
+                proposals.add(P_MATCHES);
+                proposals.add(P_AND);
+                proposals.add(P_OR);
             }
         }
 
-        if (debug) {
-            Debug.println("Position: " + position);
-            Debug.println("Parsing: " + contents);
-        }
+        contentsArg = null; // allow gc
 
-        Node root = MatchExpressionSyntax.parseFilter(contents);
-
-        if (debug)
-            Debug.println("Parse tree:\n" + root);
-
-        Visitor visitor = new Visitor();
-        root.accept(visitor);
-
-        if (debug)
-            Debug.println("Found: " + visitor.token);
-
-        return visitor.token;
+        return filterAndWrapProposals(proposals, prefix, false, position);
     }
 
     /**
-     * Collects the items from {@code proposals} starting with {@code prefix} into {@result}.
-     * The proposals are modified according to the other parameters.
-     *
-     * @param result the list of the collected proposals
-     * @param proposals the list of proposals to be filtered
-     * @param prefix the required prefix of the proposals
-     * @param startIndex the start index of the range to be replaced
-     * @param endIndex the end index of the range to be replaced
-     * @param decorators various decoration options
+     * Return field name proposals.
      */
-    protected void collectFilteredProposals(List<IContentProposalEx> result, ContentProposalEx[] proposals, String prefix, int startIndex, int endIndex, int decorators) {
-        if (proposals != null) {
-            for (ContentProposalEx proposal : proposals) {
-                if (proposal.startsWith(prefix)) {
-                    proposal.setStartIndex(startIndex);
-                    proposal.setEndIndex(endIndex);
-                    proposal.setDecorators(decorators);
-                    result.add(proposal);
-                }
-            }
+    abstract protected List<IContentProposal> getFieldNameProposals(String prefix);
+
+    /**
+     * Return value proposals for the default field.
+     */
+    abstract protected List<IContentProposal> getDefaultFieldValueProposals(String prefix);
+
+    /**
+     * Return value proposals for the given field.
+     */
+    abstract protected List<IContentProposal> getFieldValueProposals(String fieldName, String prefix);
+
+    protected String getFullContent() {
+        Assert.isTrue(contentsArg != null, "not inside a getProposal call");
+        return contentsArg;
+    }
+
+    protected String getFullContentPrefix() {
+        Assert.isTrue(contentsArg != null, "not inside a getProposal call");
+        return contentsArg.substring(0, positionArg);
+    }
+
+    private Token[] getLastFewTokens(String text, int n) {
+        //TODO only parse last 200 chars or so (but MUST NOT start inside a quoted string constant)
+
+        // return last 'n' tokens in reverse order ([0] is the last one)
+        MatchExpressionSyntax.Lexer lexer = new MatchExpressionSyntax.Lexer(text);
+        List<Token> lastTokens = new LinkedList<>();
+        while (true) {
+            Token token = lexer.getNextToken();
+            if (token.getType() == TokenType.END)
+                break;
+            lastTokens.add(0, token);
+            if (lastTokens.size() == n+1)
+                lastTokens.remove(lastTokens.size()-1);
         }
+        return lastTokens.toArray(new Token[0]);
     }
 }

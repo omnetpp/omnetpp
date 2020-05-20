@@ -30,6 +30,11 @@ import org.omnetpp.common.Debug;
  * Therefore the language it accepts is an extension of the language that can be used
  * as a filter in {@link ScaveModelUtil.filterIDList}.
  *
+ * DEPRECATED. We probably don't need the parser any more. The problem with it is that
+ * it doesn't scale to very long expressions we have in Scave: it fails with
+ * StackOverflowException due to recursive descent parsing. Tokenizer is OK and still
+ * very much used. --Andras
+ *
  * @author tomi
  */
 public class MatchExpressionSyntax {
