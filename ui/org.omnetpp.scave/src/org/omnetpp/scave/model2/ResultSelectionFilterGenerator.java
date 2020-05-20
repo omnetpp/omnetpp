@@ -26,19 +26,6 @@ public class ResultSelectionFilterGenerator {
 
     protected static boolean debug = false; // TODO initialize from OMNETPP_DEBUG envvar, like elsewhere
 
-    // TODO better fitting name
-    protected static String getResultItemAttribute(ResultItem item, String attrName) {
-        if (attrName.startsWith("runattr:"))
-            return item.getRun().getAttribute(attrName.substring("runattr:".length()));
-
-        switch (attrName) {
-        case "module": return item.getModuleName();
-        case "name": return item.getName();
-        default: throw new RuntimeException("Unhandled result item attribute queried: " + attrName);
-        }
-    }
-
-
     static class AttributeValueCounts {
         int targetCount;
         int nonTargetCount;
@@ -56,7 +43,7 @@ public class ResultSelectionFilterGenerator {
         Map<String, AttributeValueCounts> valueCounts = new HashMap<String, AttributeValueCounts>();
 
         for (int i = 0; i < target.size(); ++i) {
-            String value = getResultItemAttribute(manager.getItem(target.get(i)), attrName);
+            String value = manager.getItemProperty(target.get(i), attrName);
             if (!valueCounts.containsKey(value))
                 valueCounts.put(value, new AttributeValueCounts());
 
@@ -64,7 +51,7 @@ public class ResultSelectionFilterGenerator {
         }
 
         for (int i = 0; i < nonTarget.size(); ++i) {
-            String value = getResultItemAttribute(manager.getItem(nonTarget.get(i)), attrName);
+            String value = manager.getItemProperty(nonTarget.get(i), attrName);
             if (!valueCounts.containsKey(value))
                 valueCounts.put(value, new AttributeValueCounts());
 
@@ -94,7 +81,7 @@ public class ResultSelectionFilterGenerator {
         Map<String, ColumnValueCounts> columnData = new HashMap<String, ColumnValueCounts>();
 
         for (String f : fields) {
-            columnData.put(f, computeColumnData(target, all, f, manager));
+            Debug.time("computeColumnData(" + f + ")", 10, () -> columnData.put(f, computeColumnData(target, all, f, manager)));
             checkMonitor(monitor);
         }
 
@@ -262,12 +249,14 @@ public class ResultSelectionFilterGenerator {
         }
     }
 
+    //TODO currently unused
     public static String getIDListAsFilterExpression(IDList allIDs, IDList ids, String[] runidFields, String viewFilter, ResultFileManager manager, IProgressMonitor monitor) throws InterruptedException {
         return ResultFileManager.callWithReadLock(manager,
                 () -> doGetIDListAsFilterExpression(allIDs, ids, runidFields, viewFilter, manager, monitor)
         );
     }
 
+    //TODO currently unused
     protected static String doGetIDListAsFilterExpression(IDList allIDs, IDList ids, String[] runidFields, String viewFilter, ResultFileManager manager, IProgressMonitor monitor) throws InterruptedException {
         IDList allItemsOfType = allIDs;
         IDList itemsMatchingViewFilter = manager.filterIDList(allItemsOfType, viewFilter);
@@ -338,7 +327,8 @@ public class ResultSelectionFilterGenerator {
 //        return result;
     }
 
-    private static String getIDListAsRunGroupedFilter(IDList ids, ResultFileManager manager, String[] filterFields) { //TODO this method is never used.
+    //TODO currently unused
+    private static String getIDListAsRunGroupedFilter(IDList ids, ResultFileManager manager, String[] filterFields) {
 
         RunList runs = manager.getUniqueRuns(ids);
         StringBuilder sb = new StringBuilder();
