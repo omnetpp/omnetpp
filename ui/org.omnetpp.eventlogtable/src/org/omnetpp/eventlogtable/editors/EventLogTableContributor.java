@@ -934,12 +934,12 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
                                         return;
 
                                     if (menuItem.getSelection()) {
-                                        InputDialog dialog = new InputDialog(null, "Search pattern", "Please enter the search pattern such as: (BS and c(MyMessage))\nSee Event Log Table Raw Mode for other fields and entry types.", null, null) {
+                                        InputDialog dialog = new InputDialog(null, "Search pattern", "Please enter the search pattern such as: (BS and c =~ MyMessage)\nSee Event Log Table Raw Mode for other fields and entry types.", null, null) {
                                             @Override
                                             protected Control createDialogArea(Composite parent) {
                                                 Control control = super.createDialogArea(parent);
                                                 final Text text = getText();
-                                                ContentAssistCommandAdapter commandAdapter = new ContentAssistCommandAdapter(text, new TextContentAdapter(), new EventLogEntryProposalProvider(EventLogEntry.class),
+                                                ContentAssistCommandAdapter commandAdapter = new ContentAssistCommandAdapter(text, new TextContentAdapter(), new EventLogEntryProposalProvider(),
                                                     ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, "( ".toCharArray(), true);
                                                 commandAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_IGNORE);
                                                 commandAdapter.addContentProposalListener(new IContentProposalListener() {

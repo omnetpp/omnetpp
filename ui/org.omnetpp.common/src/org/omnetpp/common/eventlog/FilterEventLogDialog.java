@@ -67,6 +67,7 @@ import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
+import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntryList;
@@ -824,7 +825,7 @@ public class FilterEventLogDialog
 
         // event number filter
         Object[] values = createPanelWithEditableList(parent, "Filter by event number", "When enabled, events with the selected event numbers will not be considered.", "event number");
-        enableExcludedEventNumberFilter = (FilterDialogTreeNode)values[0]; 
+        enableExcludedEventNumberFilter = (FilterDialogTreeNode)values[0];
         excludedEventNumbers = (AbstractEditableList)values[1];
         enableEventFilter.addChild(enableExcludedEventNumberFilter);
 
@@ -849,7 +850,7 @@ public class FilterEventLogDialog
         });
 
         Label label = createLabel(panel, "Expression:", null, 1);
-        moduleFilterExpression = createTextWithProposals(panel, "A Match Expression for the Raw data present in the eventlog lines (MC) where modules are created", 1, ModuleCreatedEntry.class);
+        moduleFilterExpression = createTextWithProposals(panel, "A Match Expression for the Raw data present in the eventlog lines (MC) where modules are created", 1, new ModuleCreatedEntry());
 
         // module class name filter
         IEventLog eventLog = eventLogInput.getEventLog();
@@ -946,7 +947,7 @@ public class FilterEventLogDialog
         });
 
         Label label = createLabel(panel, "Expression:", null, 1);
-        messageFilterExpression = createTextWithProposals(panel, "A Match Expression for the Raw data present in the eventlog lines (BS) where messages are sent", 1, BeginSendEntry.class);
+        messageFilterExpression = createTextWithProposals(panel, "A Match Expression for the Raw data present in the eventlog lines (BS) where messages are sent", 1, new BeginSendEntry());
 
         // message class name filter
         IEventLog eventLog = eventLogInput.getEventLog();
@@ -1177,9 +1178,9 @@ public class FilterEventLogDialog
         return text;
     }
 
-    protected Text createTextWithProposals(Composite parent, String tooltip, int hspan, Class<?> clazz) {
+    protected Text createTextWithProposals(Composite parent, String tooltip, int hspan, EventLogEntry prototype) {
         final Text text = createText(parent, tooltip, hspan);
-        ContentAssistCommandAdapter commandAdapter = new ContentAssistCommandAdapter(text, new TextContentAdapter(), new EventLogEntryProposalProvider(clazz),
+        ContentAssistCommandAdapter commandAdapter = new ContentAssistCommandAdapter(text, new TextContentAdapter(), new EventLogEntryProposalProvider(prototype),
             ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, "( ".toCharArray(), true);
         commandAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_IGNORE);
         commandAdapter.addContentProposalListener(new IContentProposalListener() {
