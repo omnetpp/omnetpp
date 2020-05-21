@@ -255,7 +255,8 @@ class SCAVE_API ResultFileManager
     static bool isField(ID id) {return  _fieldid(id) != 0;}
     static ID getContainingItemID(ID fieldItemId) {return _containingItemID(fieldItemId);}
     static ID getFieldItemID(ID containingItemId, int fieldId) {return _fieldItemID(containingItemId, fieldId);}
-    const ResultItem *getContainingItem(ID fieldItemId) const {return getNonfieldItem(_containingItemID(fieldItemId));}
+    const ResultItem *getContainingItem(ID fieldScalarId) const {return getNonfieldItem(_containingItemID(fieldScalarId));}
+    const char *getItemProperty(ID id, const char *propertyName) const; //"module", "itervar:numHosts", etc.
 
     bool isStaleID(ID id) const;
     bool hasStaleID(const IDList& ids) const;

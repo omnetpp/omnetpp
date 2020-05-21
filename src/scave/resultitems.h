@@ -113,6 +113,8 @@ class SCAVE_API ResultItem
         return it==attributes->end() ? NULLSTRING : it->second;
     }
 
+    const char *getProperty(const char *propertyName) const; // propertyName: "name", "module", "itervar:numHosts", etc
+
     /**
      * Returns the data type of this result item (INT,DOUBLE,ENUM).
      * If neither "type" nor "enum" attribute is given it returns DOUBLE.
@@ -328,6 +330,8 @@ class SCAVE_API Run
     static bool isGlobalOptionConfigKey(const std::string& key);
     const OrderedKeyValueList getParamAssignmentConfigEntries() const; // a subset of getConfigEntries()
     const OrderedKeyValueList getNonParamAssignmentConfigEntries() const; // a subset of getConfigEntries()
+
+    const char *getProperty(const char *propertyName) const; // propertyName: "name", "module", "itervar:numHosts", etc
 };
 
 /**

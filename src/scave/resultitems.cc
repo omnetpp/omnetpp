@@ -84,6 +84,56 @@ const char *ResultItem::itemTypeToString(int type)
     }
 }
 
+const char *ResultItem::getProperty(const char *propertyName) const
+{
+    switch (propertyName[0]) {
+        case Scave::TYPE[0]: {
+            if (strcmp(propertyName, Scave::TYPE) == 0)
+                return itemTypeToString(getItemType());
+            break;
+        }
+        case Scave::MODULE[0]: {
+            if (strcmp(propertyName, Scave::MODULE) == 0)
+                return getModuleName().c_str();
+            break;
+        }
+        case Scave::NAME[0]: {
+            if (strcmp(propertyName, Scave::NAME) == 0)
+                return getName().c_str();
+            break;
+        }
+        case Scave::FILE[0]: {
+            if (strcmp(propertyName, Scave::FILE) == 0)
+                return getFileRun()->getFile()->getFileName().c_str();
+            break;
+        }
+        case Scave::RUN[0]: { // and RUNATTR_PREFIX
+            STATIC_ASSERT(Scave::RUN[0] == Scave::RUNATTR_PREFIX[0]);
+            if (strcmp(propertyName, Scave::RUN) == 0)
+                return getFileRun()->getRun()->getRunName().c_str();
+            if (strncmp(propertyName, Scave::RUNATTR_PREFIX, strlen(Scave::RUNATTR_PREFIX)) == 0)
+                return getFileRun()->getRun()->getAttribute(propertyName + strlen(Scave::RUNATTR_PREFIX)).c_str();
+            break;
+        }
+        case Scave::ITERVAR_PREFIX[0]: {
+            if (strncmp(propertyName, Scave::ITERVAR_PREFIX, strlen(Scave::ITERVAR_PREFIX)) == 0)
+                return getFileRun()->getRun()->getIterationVariable(propertyName + strlen(Scave::ITERVAR_PREFIX)).c_str();
+            break;
+        }
+        case Scave::CONFIG_PREFIX[0]: {
+            if (strncmp(propertyName, Scave::CONFIG_PREFIX, strlen(Scave::CONFIG_PREFIX)) == 0)
+                return getFileRun()->getRun()->getConfigValue(propertyName + strlen(Scave::CONFIG_PREFIX)).c_str();
+            break;
+        }
+        case Scave::ATTR_PREFIX[0]: {
+            if (strncmp(propertyName, Scave::ATTR_PREFIX, strlen(Scave::ATTR_PREFIX)) == 0)
+                return getAttribute(propertyName + strlen(Scave::ATTR_PREFIX)).c_str();
+            break;
+        }
+    }
+    throw opp_runtime_error("ResultItem::getProperty(): unrecognized property name '%s'", propertyName);
+}
+
 ResultItem::DataType ResultItem::getDataType() const
 {
     auto it = attributes->find("type");
@@ -308,6 +358,32 @@ const OrderedKeyValueList Run::getNonParamAssignmentConfigEntries() const
             result.push_back(p);
     return result;
 }
+
+const char *Run::getProperty(const char *propertyName) const
+{
+    switch (propertyName[0]) {
+        case Scave::RUN[0]: { // and RUNATTR_PREFIX
+            STATIC_ASSERT(Scave::RUN[0] == Scave::RUNATTR_PREFIX[0]);
+            if (strcmp(propertyName, Scave::RUN) == 0)
+                return getRunName().c_str();
+            if (strcmp(propertyName, Scave::RUNATTR_PREFIX) == 0)
+                return getAttribute(propertyName + strlen(Scave::RUNATTR_PREFIX)).c_str();
+            break;
+        }
+        case Scave::ITERVAR_PREFIX[0]: {
+            if (strcmp(propertyName, Scave::ITERVAR_PREFIX) == 0)
+                return getIterationVariable(propertyName + strlen(Scave::ITERVAR_PREFIX)).c_str();
+            break;
+        }
+        case Scave::CONFIG_PREFIX[0]: {
+            if (strcmp(propertyName, Scave::CONFIG_PREFIX) == 0)
+                return getConfigValue(propertyName + strlen(Scave::CONFIG_PREFIX)).c_str();
+            break;
+        }
+    }
+    throw opp_runtime_error("Run::getProperty(): unrecognized property name '%s'", propertyName);
+}
+
 
 }  // namespace scave
 }  // namespace omnetpp

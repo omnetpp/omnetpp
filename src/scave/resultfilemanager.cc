@@ -563,6 +563,66 @@ void ResultFileManager::makeFieldScalarIDs(std::vector<ID>& out, FileRun *fileRu
             out.push_back(_mkID(hosttype, fileRunId, pos, (int)fieldIds[f]));
 }
 
+const char *ResultFileManager::getItemProperty(ID id, const char *propertyName) const
+{
+    switch (propertyName[0]) {
+        case Scave::TYPE[0]: {
+            if (strcmp(propertyName, Scave::TYPE) == 0)
+                return ResultItem::itemTypeToString(_type(id));
+            break;
+        }
+        case Scave::MODULE[0]: {
+            if (strcmp(propertyName, Scave::MODULE) == 0) {
+                if (isField(id))
+                    return getContainingItem(id)->getModuleName().c_str(); // field scalar has the same module as its containing result item
+                else
+                    return getNonfieldItem(id)->getModuleName().c_str();
+            }
+            break;
+        }
+        case Scave::NAME[0]: {
+            if (strcmp(propertyName, Scave::NAME) == 0) {
+                if (isField(id))
+                    return getPooledNameWithSuffix(&getContainingItem(id)->getName(), (FieldNum)_fieldid(id))->c_str();
+                else
+                    return getNonfieldItem(id)->getName().c_str();
+            }
+            break;
+        }
+        case Scave::FILE[0]: {
+            if (strcmp(propertyName, Scave::FILE) == 0)
+                return getFileRun(id)->getFile()->getFileName().c_str();
+            break;
+        }
+        case Scave::RUN[0]: { // and RUNATTR_PREFIX
+            STATIC_ASSERT(Scave::RUN[0] == Scave::RUNATTR_PREFIX[0]);
+            if (strcmp(propertyName, Scave::RUN) == 0)
+                return getFileRun(id)->getRun()->getRunName().c_str();
+            if (strncmp(propertyName, Scave::RUNATTR_PREFIX, strlen(Scave::RUNATTR_PREFIX)) == 0)
+                return getFileRun(id)->getRun()->getAttribute(propertyName + strlen(Scave::RUNATTR_PREFIX)).c_str();
+            break;
+        }
+        case Scave::ITERVAR_PREFIX[0]: {
+            if (strncmp(propertyName, Scave::ITERVAR_PREFIX, strlen(Scave::ITERVAR_PREFIX)) == 0)
+                return getFileRun(id)->getRun()->getIterationVariable(propertyName + strlen(Scave::ITERVAR_PREFIX)).c_str();
+            break;
+        }
+        case Scave::CONFIG_PREFIX[0]: {
+            if (strncmp(propertyName, Scave::CONFIG_PREFIX, strlen(Scave::CONFIG_PREFIX)) == 0)
+                return getFileRun(id)->getRun()->getConfigValue(propertyName + strlen(Scave::CONFIG_PREFIX)).c_str();
+            break;
+        }
+        case Scave::ATTR_PREFIX[0]: {
+            if (strncmp(propertyName, Scave::ATTR_PREFIX, strlen(Scave::ATTR_PREFIX)) == 0) {
+                ScalarResult buffer;
+                return getItem(id, buffer)->getAttribute(propertyName + strlen(Scave::ATTR_PREFIX)).c_str();
+            }
+            break;
+        }
+    }
+    throw opp_runtime_error("ResultFileManager::getItemProperty(): unrecognized property name '%s'", propertyName);
+}
+
 IDList ResultFileManager::getItems(const FileRunList& fileRuns, int types, bool includeFields) const
 {
     READER_MUTEX
@@ -857,189 +917,77 @@ class MatchableResultItem : public MatchExpression::Matchable
     private:
         const ResultFileManager *manager;
         ID id;
-        ScalarResult& buffer;
-        mutable const ResultItem *item = nullptr; //note: producing field scalars is expensive, so we delay it as long as possible
     public:
-        MatchableResultItem(const ResultFileManager *manager, ID id, ScalarResult& buffer) : manager(manager), id(id), buffer(buffer) {}
-        virtual const char *getAsString() const override { return getName(); }
-        virtual const char *getAsString(const char *attribute) const override;
-    private:
-        const ResultItem *getItem() const {if (!item) item = manager->getItem(id, buffer); return item;}
-        const char *getItemType() const;
-        const char *getName() const { return getItem()->getName().c_str(); }
-        const char *getModuleName() const { return getItem()->getModuleName().c_str(); }
-        const char *getFileName() const { return manager->getFileRun(id)->getFile()->getFilePath().c_str(); }
-        const char *getRunName() const { return manager->getFileRun(id)->getRun()->getRunName().c_str(); }
-        const char *getResultAttribute(const char *attrName) const { return item->getAttribute(attrName).c_str(); }
-        const char *getRunAttribute(const char *attrName) const { return manager->getFileRun(id)->getRun()->getAttribute(attrName).c_str(); }
-        const char *getIterationVariable(const char *name) const { return manager->getFileRun(id)->getRun()->getIterationVariable(name).c_str(); }
-        const char *getConfigValue(const char *key) const { return manager->getFileRun(id)->getRun()->getConfigValue(key).c_str(); }
+        MatchableResultItem(const ResultFileManager *manager, ID id) : manager(manager), id(id) {}
+        virtual const char *getAsString() const override { return manager->getItemProperty(id, "name"); }
+        virtual const char *getAsString(const char *attribute) const override { return manager->getItemProperty(id, attribute); }
 };
-
-const char *MatchableResultItem::getAsString(const char *attribute) const
-{
-    if (strcasecmp(Scave::NAME, attribute) == 0)
-        return getName();
-    else if (strcasecmp(Scave::MODULE, attribute) == 0)
-        return getModuleName();
-    else if (strcasecmp(Scave::TYPE, attribute) == 0)
-        return getItemType();
-    else if (strcasecmp(Scave::RUN, attribute) == 0)
-        return getRunName();
-    else if (strcasecmp(Scave::FILE, attribute) == 0)
-        return getFileName();
-    else if (strncasecmp(Scave::ATTR_PREFIX, attribute, 5) == 0)
-        return getResultAttribute(attribute+5);
-    // TODO: add back param: but as par: -module parameter value, not parameter assignment
-    else if (strncasecmp(Scave::RUNATTR_PREFIX, attribute, 8) == 0)
-        return getRunAttribute(attribute+8);
-    else if (strncasecmp(Scave::ITERVAR_PREFIX, attribute, 8) == 0)
-        return getIterationVariable(attribute+8);
-    else if (strncasecmp(Scave::CONFIG_PREFIX, attribute, 7) == 0)
-        return getConfigValue(attribute+7);
-    else
-        return getResultAttribute(attribute);
-}
-
-const char *MatchableResultItem::getItemType() const
-{
-    return ResultItem::itemTypeToString(ResultFileManager::getTypeOf(id));
-}
 
 class MatchableRun : public MatchExpression::Matchable
 {
-    const Run *run;
-
+    private:
+        const Run *run;
     public:
         MatchableRun(const Run *run) : run(run) {}
-        virtual const char *getAsString() const override { return getName(); }
-        virtual const char *getAsString(const char *attribute) const override;
-    private:
-        const char *getName() const { return run->getRunName().c_str(); }
-        const char *getRunAttribute(const char *attrName) const { return run->getAttribute(attrName).c_str(); }
-        const char *getIterationVariable(const char *name) const { return run->getIterationVariable(name).c_str(); }
-        const char *getConfigValue(const char *key) const { return run->getConfigValue(key).c_str(); }
+        virtual const char *getAsString() const override { return run->getRunName().c_str(); }
+        virtual const char *getAsString(const char *attribute) const override { return run->getProperty(attribute); }
 };
-
-const char *MatchableRun::getAsString(const char *attribute) const
-{
-    if (strcasecmp(Scave::NAME, attribute) == 0)
-        return getName();
-    else if (strncasecmp(Scave::ATTR_PREFIX, attribute, 5) == 0)
-        return getRunAttribute(attribute+5);
-    else if (strncasecmp(Scave::RUNATTR_PREFIX, attribute, 8) == 0)
-        return getRunAttribute(attribute+8);
-    else if (strncasecmp(Scave::ITERVAR_PREFIX, attribute, 8) == 0)
-        return getIterationVariable(attribute+8);
-    else if (strncasecmp(Scave::CONFIG_PREFIX, attribute, 7) == 0)
-        return getConfigValue(attribute+7); // TODO: add param: as well? (also update the docs, if/when done)
-    else
-        return getRunAttribute(attribute);
-}
-
 
 class MatchableItervar : public MatchExpression::Matchable
 {
-    const Run *run;
-    const std::string& itervar;
-
+    private:
+        const Run *run;
+        const std::string& itervar;
     public:
         MatchableItervar(const Run *run, const std::string &itervar) : run(run), itervar(itervar) {}
-        virtual const char *getAsString() const override { return getName(); }
+        virtual const char *getAsString() const override { return itervar.c_str(); }
         virtual const char *getAsString(const char *attribute) const override;
-    private:
-        const char *getName() const { return itervar.c_str(); }
-        const char *getRunName() const { return run->getRunName().c_str(); }
-        const char *getRunAttribute(const char *attrName) const { return run->getAttribute(attrName).c_str(); }
-        const char *getIterationVariable(const char *name) const { return run->getIterationVariable(name).c_str(); }
-        const char *getConfigValue(const char *key) const { return run->getConfigValue(key).c_str(); }
 };
 
 const char *MatchableItervar::getAsString(const char *attribute) const
 {
-    if (strcasecmp(Scave::NAME, attribute) == 0)
-        return getName();
-    else if (strcasecmp(Scave::RUN, attribute) == 0)
-        return getRunName();
-    else if (strncasecmp(Scave::RUNATTR_PREFIX, attribute, 8) == 0)
-        return getRunAttribute(attribute+8);
-    else if (strncasecmp(Scave::ITERVAR_PREFIX, attribute, 8) == 0)
-        return getIterationVariable(attribute+8);
-    else if (strncasecmp(Scave::CONFIG_PREFIX, attribute, 7) == 0)
-        return getConfigValue(attribute+7);
+    if (strcmp(Scave::NAME, attribute) == 0)
+        return itervar.c_str();
     else
-        return getName();
+        return run->getProperty(attribute);
 }
 
 class MatchableRunattr : public MatchExpression::Matchable
 {
-    const Run *run;
-    const std::string& runattr;
-
+    private:
+        const Run *run;
+        const std::string& runattr;
     public:
         MatchableRunattr(const Run *run, const std::string &runattr) : run(run), runattr(runattr) {}
-        virtual const char *getAsString() const override { return getName(); }
+        virtual const char *getAsString() const override { return runattr.c_str(); }
         virtual const char *getAsString(const char *attribute) const override;
-    private:
-        const char *getName() const { return runattr.c_str(); }
-        const char *getRunName() const { return run->getRunName().c_str(); }
-        const char *getRunAttribute(const char *attrName) const { return run->getAttribute(attrName).c_str(); }
-        const char *getIterationVariable(const char *name) const { return run->getIterationVariable(name).c_str(); }
-        const char *getConfigValue(const char *key) const { return run->getConfigValue(key).c_str(); }
 };
 
 const char *MatchableRunattr::getAsString(const char *attribute) const
 {
-    if (strcasecmp(Scave::NAME, attribute) == 0)
-        return getName();
-    else if (strcasecmp(Scave::RUN, attribute) == 0)
-        return getRunName();
-    else if (strncasecmp(Scave::RUNATTR_PREFIX, attribute, 8) == 0)
-        return getRunAttribute(attribute+8);
-    else if (strncasecmp(Scave::ITERVAR_PREFIX, attribute, 8) == 0)
-        return getIterationVariable(attribute+8);
-    else if (strncasecmp(Scave::CONFIG_PREFIX, attribute, 7) == 0)
-        return getConfigValue(attribute+7);
+    if (strcmp(Scave::NAME, attribute) == 0)
+        return runattr.c_str();
     else
-        return getName();
+        return run->getProperty(attribute);
 }
-
-
 
 class MatchableConfigEntry : public MatchExpression::Matchable
 {
-    const Run *run;
-    const std::string& key;
-
+    private:
+        const Run *run;
+        const std::string& key;
     public:
         MatchableConfigEntry(const Run *run, const std::string &key) : run(run), key(key) {}
-        virtual const char *getAsString() const override { return getName(); }
+        virtual const char *getAsString() const override { return key.c_str(); }
         virtual const char *getAsString(const char *attribute) const override;
-    private:
-        const char *getName() const { return key.c_str(); }
-        const char *getRunName() const { return run->getRunName().c_str(); }
-        const char *getRunAttribute(const char *attrName) const { return run->getAttribute(attrName).c_str(); }
-        const char *getIterationVariable(const char *name) const { return run->getIterationVariable(name).c_str(); }
-        const char *getConfigValue(const char *key) const { return run->getConfigValue(key).c_str(); }
 };
 
 const char *MatchableConfigEntry::getAsString(const char *attribute) const
 {
-    if (strcasecmp(Scave::NAME, attribute) == 0)
-        return getName();
-    else if (strcasecmp(Scave::RUN, attribute) == 0)
-        return getRunName();
-    else if (strcasecmp(Scave::TYPE, attribute) == 0)
-        return Run::isParamAssignmentConfigKey(key) ? "param-assignment"
-            : Run::isGlobalOptionConfigKey(key) ? "global-config" : "per-object-config";
-    else if (strncasecmp(Scave::RUNATTR_PREFIX, attribute, 8) == 0)
-        return getRunAttribute(attribute+8);
-    else if (strncasecmp(Scave::ITERVAR_PREFIX, attribute, 8) == 0)
-        return getIterationVariable(attribute+8);
-    else if (strncasecmp(Scave::CONFIG_PREFIX, attribute, 7) == 0)
-        return getConfigValue(attribute+7);
+    if (strcmp(Scave::NAME, attribute) == 0)
+        return key.c_str();
     else
-        return getName();
+        return run->getProperty(attribute);
 }
 
 RunAndValueList ResultFileManager::getMatchingItervars(const RunList& runs, const char *pattern) const
@@ -1150,12 +1098,11 @@ IDList ResultFileManager::filterIDList(const IDList& idlist, const char *pattern
 
     READER_MUTEX
     std::vector<ID> out;
-    ScalarResult buffer;
     int count = 0;
     for (ID id : idlist) {
         if (interrupted->flag)
             throw InterruptedException("Result filtering interrupted");
-        MatchableResultItem matchable(this, id, buffer);
+        MatchableResultItem matchable(this, id);
         if (matchExpr.matches(&matchable)) {
             out.push_back(id);
             count++;
