@@ -55,6 +55,7 @@ import org.omnetpp.scave.assist.MatplotlibrcContentProposalProvider;
 import org.omnetpp.scave.assist.NativePlotPropertiesContentProposalProvider;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.InterruptedFlag;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.StringVector;
@@ -315,7 +316,8 @@ public class ChartEditForm {
             boolean ok = TimeTriggeredProgressMonitorDialog2.runWithDialog("Simplifying filter", (monitor) -> {
                 IDList all = manager.getItems(resultTypes, true);
                 IDList target = manager.filterIDList(all, filter);
-                result[0] = ResultSelectionFilterGenerator.getFilter(target, all, manager, monitor);
+                InterruptedFlag interrupted = TimeTriggeredProgressMonitorDialog2.getActiveInstance().getInterruptedFlag();
+                result[0] = ResultSelectionFilterGenerator.getFilter(target, all, manager, monitor, interrupted);
             });
             if (ok)
                 XSWTDataBinding.putValueIntoControl(filterControl, result[0], null);

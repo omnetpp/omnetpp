@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.InterruptedFlag;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.Run;
@@ -36,7 +37,7 @@ public class ResultSelectionFilterGenerator {
     }
 
     // TODO reasonable name
-    protected static ColumnValueCounts computeColumnData(IDList target, IDList all, String attrName, ResultFileManager manager) {
+    protected static ColumnValueCounts computeColumnData(IDList target, IDList all, String attrName, ResultFileManager manager, InterruptedFlag interrupted) throws InterruptedException {
 
         IDList nonTarget = all.subtract(target);
 
@@ -48,6 +49,9 @@ public class ResultSelectionFilterGenerator {
                 valueCounts.put(value, new AttributeValueCounts());
 
             valueCounts.get(value).targetCount += 1;
+
+            if ((i & 0xffff) == 0)
+                checkInterruptedFlag(interrupted);
         }
 
         for (int i = 0; i < nonTarget.size(); ++i) {
@@ -56,6 +60,9 @@ public class ResultSelectionFilterGenerator {
                 valueCounts.put(value, new AttributeValueCounts());
 
             valueCounts.get(value).nonTargetCount += 1;
+
+            if ((i & 0xffff) == 0)
+                checkInterruptedFlag(interrupted);
         }
 
         if (debug)
@@ -71,7 +78,7 @@ public class ResultSelectionFilterGenerator {
         return result;
     }
 
-    protected static String getApproximateFilter(IDList target, IDList all, ResultFileManager manager, IProgressMonitor monitor) throws InterruptedException {
+    protected static String getApproximateFilter(IDList target, IDList all, ResultFileManager manager, InterruptedFlag interrupted) throws InterruptedException {
 
         if (target.size() >= all.size() * 0.9)
             return "*";
@@ -81,8 +88,8 @@ public class ResultSelectionFilterGenerator {
         Map<String, ColumnValueCounts> columnData = new HashMap<String, ColumnValueCounts>();
 
         for (String f : fields) {
-            Debug.time("computeColumnData(" + f + ")", 10, () -> columnData.put(f, computeColumnData(target, all, f, manager)));
-            checkMonitor(monitor);
+            columnData.put(f, computeColumnData(target, all, f, manager, interrupted));
+            checkInterruptedFlag(interrupted);
         }
 
         String bestAttr = null;
@@ -154,7 +161,7 @@ public class ResultSelectionFilterGenerator {
         return doMakeQuickFilter(target, manager);
     }
 
-    public static String getFilter(IDList target, IDList all, ResultFileManager manager, IProgressMonitor monitor) throws InterruptedException {
+    public static String getFilter(IDList target, IDList all, ResultFileManager manager, IProgressMonitor monitor, InterruptedFlag interrupted) throws InterruptedException {
         return ResultFileManager.callWithReadLock(manager, () -> {
             if (monitor != null)
                 monitor.beginTask("Generating filter", 1);
@@ -162,15 +169,15 @@ public class ResultSelectionFilterGenerator {
             if (!target.isSubsetOf(all))
                 throw new IllegalArgumentException("IDs to be selected must be a subset of all IDs");
 
-            return doGetFilter(target, all, manager, monitor);
+            return doGetFilter(target, all, manager, monitor, interrupted);
         });
     }
 
-    protected static String doGetFilter(IDList target, IDList all, ResultFileManager manager, IProgressMonitor monitor) throws InterruptedException {
+    protected static String doGetFilter(IDList target, IDList all, ResultFileManager manager, IProgressMonitor monitor, InterruptedFlag interrupted) throws InterruptedException {
 
         checkMonitor(monitor);
 
-        String approxFilter = getApproximateFilter(target, all, manager, monitor);
+        String approxFilter = getApproximateFilter(target, all, manager, interrupted);
 
         checkMonitor(monitor);
 
@@ -180,7 +187,7 @@ public class ResultSelectionFilterGenerator {
         }
 
 
-        IDList approxMatching = Debug.timed("approxfilter", 1, () -> manager.filterIDList(all, approxFilter));
+        IDList approxMatching = Debug.timed("approxfilter", 1, () -> manager.filterIDList(all, approxFilter, -1, interrupted));
 
         checkMonitor(monitor);
 
@@ -196,7 +203,7 @@ public class ResultSelectionFilterGenerator {
         if (!toBeIncluded.isEmpty()) {
             if (debug)
                 Debug.println("computing include filter...");
-            includeFilter = doGetFilter(toBeIncluded, approxNotMatching,  manager, monitor);
+            includeFilter = doGetFilter(toBeIncluded, approxNotMatching,  manager, monitor, interrupted);
             if (debug)
                 Debug.println("include filter: " + includeFilter);
         }
@@ -205,7 +212,7 @@ public class ResultSelectionFilterGenerator {
         if (!toBeExcluded.isEmpty()) {
             if (debug)
                 Debug.println("computing exclude filter...");
-            excludeFilter = doGetFilter(toBeExcluded, approxMatching, manager, monitor);
+            excludeFilter = doGetFilter(toBeExcluded, approxMatching, manager, monitor, interrupted);
             if (debug)
                 Debug.println("exclude filter: " + excludeFilter);
         }
@@ -249,15 +256,17 @@ public class ResultSelectionFilterGenerator {
         }
     }
 
+    //--------------- basically unused code from here on -------------------
+
     //TODO currently unused
-    public static String getIDListAsFilterExpression(IDList allIDs, IDList ids, String[] runidFields, String viewFilter, ResultFileManager manager, IProgressMonitor monitor) throws InterruptedException {
+    public static String getIDListAsFilterExpression(IDList allIDs, IDList ids, String[] runidFields, String viewFilter, ResultFileManager manager, IProgressMonitor monitor, InterruptedFlag interrupted) throws InterruptedException {
         return ResultFileManager.callWithReadLock(manager,
-                () -> doGetIDListAsFilterExpression(allIDs, ids, runidFields, viewFilter, manager, monitor)
+                () -> doGetIDListAsFilterExpression(allIDs, ids, runidFields, viewFilter, manager, monitor, interrupted)
         );
     }
 
     //TODO currently unused
-    protected static String doGetIDListAsFilterExpression(IDList allIDs, IDList ids, String[] runidFields, String viewFilter, ResultFileManager manager, IProgressMonitor monitor) throws InterruptedException {
+    protected static String doGetIDListAsFilterExpression(IDList allIDs, IDList ids, String[] runidFields, String viewFilter, ResultFileManager manager, IProgressMonitor monitor, InterruptedFlag interrupted) throws InterruptedException {
         IDList allItemsOfType = allIDs;
         IDList itemsMatchingViewFilter = manager.filterIDList(allItemsOfType, viewFilter);
 
@@ -280,9 +289,9 @@ public class ResultSelectionFilterGenerator {
             throw new IllegalArgumentException("IDs to be selected must be a subset of all IDs");
 
         if (viewFilter.equals("*"))
-            return getFilter(ids, itemsMatchingViewFilter, manager, monitor);
+            return getFilter(ids, itemsMatchingViewFilter, manager, monitor, interrupted);
         else
-            return viewFilter + " AND (" + getFilter(ids, itemsMatchingViewFilter, manager, monitor) + ")";
+            return viewFilter + " AND (" + getFilter(ids, itemsMatchingViewFilter, manager, monitor, interrupted) + ")";
 
 //TODO integrate or delete:
 //
@@ -428,6 +437,11 @@ public class ResultSelectionFilterGenerator {
             if (monitor.isCanceled())
                 throw new InterruptedException();
         }
+    }
+
+    private static void checkInterruptedFlag(InterruptedFlag interrupted) throws InterruptedException {
+        if (interrupted != null && interrupted.getFlag())
+            throw new InterruptedException();
     }
 
 
