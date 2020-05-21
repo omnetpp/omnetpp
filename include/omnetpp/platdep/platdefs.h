@@ -48,6 +48,13 @@
 // obsolete macro, don't use -- retained because some model code still references it
 #define _OPPDEPRECATED  [[deprecated]]
 
+// static_assert is C++17
+#if __cplusplus >= 201703L
+#define STATIC_ASSERT(x) static_assert(x)
+#else
+#define STATIC_ASSERT(x)
+#endif
+
 #if defined __GNUC__
 #  define _OPP_GNU_ATTRIBUTE(x)  __attribute__(x)
 #else
