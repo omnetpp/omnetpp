@@ -104,6 +104,10 @@ public class LinearAxis {
         return (!drawTitle || title.equals("")) ? new Point(0,0) : GraphicsUtils.getTextExtent(graphics, title);
     }
 
+    private String getTickLabel(BigDecimal tick) {
+        return tick.scale() < 0 ? tick.setScale(0).toString() : tick.toString();
+    }
+
     private int calculateTickLabelHeight(Graphics graphics) {
         if (!drawTickLabels)
             return 0;
@@ -121,9 +125,8 @@ public class LinearAxis {
         if (ticks != null) {
             graphics.setFont(tickFont);
             for (BigDecimal tick : ticks) {
-                if (ticks.isMajorTick(tick)) {
-                    labelWidth = Math.max(labelWidth, GraphicsUtils.getTextExtent(graphics, tick.toPlainString()).x);
-                }
+                if (ticks.isMajorTick(tick))
+                    labelWidth = Math.max(labelWidth, GraphicsUtils.getTextExtent(graphics, getTickLabel(tick)).x);
             }
         }
         return labelWidth;
@@ -201,7 +204,7 @@ public class LinearAxis {
         if (ticks != null) {
             graphics.setFont(tickFont);
             for (BigDecimal tick : ticks) {
-                String label = tick.scale() < 0 ? tick.setScale(0).toString() : tick.toString();
+                String label = getTickLabel(tick);
                 Point size = GraphicsUtils.getTextExtent(graphics, label);
                 int tickLen = ticks.isMajorTick(tick) ? majorTickLength : minorTickLength;
                 if (vertical) {
