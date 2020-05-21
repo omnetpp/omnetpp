@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.engine.ScaveEngine;
@@ -149,11 +148,6 @@ public class XYDataset implements IXYDataset {
     }
 
     @Override
-    public BigDecimal getPreciseX(int series, int item) {
-        return null;
-    }
-
-    @Override
     public double getMinX() {
         double min = Double.POSITIVE_INFINITY;
 
@@ -184,11 +178,6 @@ public class XYDataset implements IXYDataset {
     @Override
     public double getY(int series, int item) {
         return this.series.get(series).ys.getDouble(item*8);
-    }
-
-    @Override
-    public BigDecimal getPreciseY(int series, int item) {
-        return null;
     }
 
     @Override

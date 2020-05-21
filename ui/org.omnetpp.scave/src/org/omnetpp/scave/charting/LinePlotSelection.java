@@ -36,7 +36,6 @@ public class LinePlotSelection implements IPlotSelection {
     // attributes of the selected data point
     private int index;
     private long eventNum;
-    private BigDecimal preciseX;
     private double x,y;
 
 
@@ -47,7 +46,6 @@ public class LinePlotSelection implements IPlotSelection {
         this.key = dataset.getSeriesKey(series);
         this.index = point.index;
         this.eventNum = -1L; // TODO set eventNum
-        this.preciseX = dataset.getPreciseX(series, index);
         this.x = dataset.getX(series, index);
         this.y = dataset.getY(series, index);
     }
@@ -66,10 +64,6 @@ public class LinePlotSelection implements IPlotSelection {
 
     public long getEventNum() {
         return eventNum;
-    }
-
-    public BigDecimal getPreciseX() {
-        return preciseX;
     }
 
     public double getX() {
