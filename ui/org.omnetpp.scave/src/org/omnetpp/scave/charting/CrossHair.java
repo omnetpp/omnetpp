@@ -294,7 +294,7 @@ class CrossHair {
 
         String seriesStr = dataset.getSeriesTitle(series);
 
-        return String.format("%s, %s - %s", xStr, yStr, seriesStr);
+        return String.format("(%s; %s) - %s", xStr, yStr, seriesStr);
     }
 
     // XXX move this method into a VectorPlot class
