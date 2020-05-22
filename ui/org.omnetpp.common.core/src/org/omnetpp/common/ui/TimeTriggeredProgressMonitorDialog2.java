@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.CommonCorePlugin;
+import org.omnetpp.common.Debug;
 import org.omnetpp.scave.engine.InterruptedFlag;
 
 /**
@@ -104,7 +105,11 @@ public class TimeTriggeredProgressMonitorDialog2 extends ProgressMonitorDialog {
 
     @Override
     public void run(boolean fork, final boolean cancelable, final IRunnableWithProgress runnable) throws InvocationTargetException, InterruptedException {
-        Assert.isTrue(activeInstance == null); // recursive invocations are not allowed
+        if (activeInstance != null) {
+            Debug.println("Note: Nested invocation of TimeTriggeredProgressMonitorDialog2 detected. Nested runnable will be run without progressmonitor but will be interruptible");
+            runnable.run(null);
+            return;
+        }
 
         try {
             activeInstance = this;
