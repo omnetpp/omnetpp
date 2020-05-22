@@ -90,7 +90,7 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
     protected Color insetsLineColor;
     protected Title title = new Title();
     protected String titleText;
-    protected Legend legend = new Legend();
+    protected Legend legend = new Legend(this);
     protected LegendTooltip legendTooltip;
 
     private String statusText = "No data available."; // displayed when there's no dataset

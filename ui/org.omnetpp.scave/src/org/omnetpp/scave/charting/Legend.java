@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------*
-  Copyright (C) 2006-2015 OpenSim Ltd.
+  Copyright (C) 2006-2020 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
@@ -10,12 +10,15 @@ package org.omnetpp.scave.charting;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.draw2d.Cursors;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Listener;
+import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.scave.charting.plotter.IPlotSymbol;
@@ -23,7 +26,7 @@ import org.omnetpp.scave.charting.properties.PlotProperty.LegendAnchor;
 import org.omnetpp.scave.charting.properties.PlotProperty.LegendPosition;
 
 /**
- * This class layouts and draws the legend on a vector chart.
+ * This class layouts and draws the legend on a native plot.
  *
  * @author tomi
  */
@@ -36,6 +39,7 @@ public class Legend implements ILegend {
         boolean drawLine;
         int x, y;   // location relative to the legend top-left
         int width, height;
+        boolean enabled = true;
 
         public Item(Color color, String text, IPlotSymbol symbol, boolean drawLine) {
             this.color = color;
@@ -52,24 +56,27 @@ public class Legend implements ILegend {
 
         public void draw(Graphics graphics, int x, int y) {
             graphics.setAntialias(SWT.ON);
-            graphics.setForegroundColor(color);
-            graphics.setBackgroundColor(color);
 
-            // draw line
-            if (drawLine) {
-                graphics.setLineWidth(2);
-                graphics.setLineStyle(SWT.LINE_SOLID);
-                graphics.drawLine(x+1, y+height/2, x+15, y+height/2);
-            }
-            // draw symbol
-            if (symbol != null) {
-                int size = symbol.getSizeHint();
-                try {
-                    symbol.setSizeHint(6);
-                    symbol.drawSymbol(graphics, x+8, y+height/2);
+            if (enabled) {
+                graphics.setForegroundColor(color);
+                graphics.setBackgroundColor(color);
+
+                // draw line
+                if (drawLine) {
+                    graphics.setLineWidth(2);
+                    graphics.setLineStyle(SWT.LINE_SOLID);
+                    graphics.drawLine(x+1, y+height/2, x+15, y+height/2);
                 }
-                finally {
-                    symbol.setSizeHint(size);
+                // draw symbol
+                if (symbol != null) {
+                    int size = symbol.getSizeHint();
+                    try {
+                        symbol.setSizeHint(6);
+                        symbol.drawSymbol(graphics, x+8, y+height/2);
+                    }
+                    finally {
+                        symbol.setSizeHint(size);
+                    }
                 }
             }
 
@@ -77,6 +84,15 @@ public class Legend implements ILegend {
             if (font != null) graphics.setFont(font);
             graphics.setForegroundColor(ColorFactory.BLACK);
             graphics.drawText(text, x + 17, y);
+
+            if (!enabled) {
+                graphics.setLineWidth(1);
+                graphics.drawLine(x+17, y+height/2, x+width, y+height/2);
+            }
+        }
+
+        Rectangle getBounds() {
+            return new Rectangle(x, y, width, height);
         }
     }
 
@@ -95,15 +111,73 @@ public class Legend implements ILegend {
     private Rectangle bounds; // rectangle of the legend in canvas coordinates
     int visibleItemCount;
 
-    public Legend() {
-    }
+    int highlightedItem = -2;
 
-    public Legend(boolean visible, boolean drawBorder, Font font, LegendPosition position, LegendAnchor anchor) {
-        this.visible = visible;
-        this.drawBorder = drawBorder;
-        this.font = font;
-        this.position = position;
-        this.anchor = anchor;
+    public Legend(PlotBase parent) {
+
+        // KeyUp and KeyDown events don't have x and y...
+        Integer[] lastXY = new Integer[2];
+
+        parent.addListener(SWT.MouseMove, (e) -> {
+            int highlighted = -2;
+
+            if (bounds.contains(e.x, e.y)) {
+                highlighted = getItemIndexAt(e.x - bounds.x(), e.y - bounds.y());
+
+                parent.setCursor(highlighted >= 0 ? Cursors.HAND : Cursors.ARROW);
+
+                e.doit = false;
+            }
+
+            if (highlighted != highlightedItem) {
+                highlightedItem = highlighted;
+                parent.redraw();
+            }
+
+            lastXY[0] = e.x;
+            lastXY[1] = e.y;
+        });
+
+        parent.addListener(SWT.MouseDown, (e) -> {
+            if (bounds.contains(e.x, e.y)) {
+                int itemIndex = getItemIndexAt(e.x - bounds.x(), e.y - bounds.y());
+                if (itemIndex >= 0 && itemIndex < items.size()) {
+                    Item item = items.get(itemIndex);
+                    item.enabled = !item.enabled ;
+                    parent.chartChanged();
+                    parent.chartArea = parent.calculatePlotArea();
+
+                    // TODO: keep the current area, but update the "data bounds"...
+                    parent.setArea(parent.chartArea);
+                    parent.zoomToFit();
+
+
+                    /*
+
+                    // preserve zoomed-out state while resizing
+                    boolean shouldZoomOutX = parent.getZoomX()==0 || parent.isZoomedOutX();
+                    boolean shouldZoomOutY = parent.getZoomY()==0 || parent.isZoomedOutY();
+
+                    if (shouldZoomOutX)
+                        parent.zoomToFitX();
+                    if (shouldZoomOutY)
+                        parent.zoomToFitY();
+                    */
+
+                }
+                e.doit = false;
+            }
+        });
+
+
+        Listener canceler = (e) -> {
+            if (bounds.contains(lastXY[0], lastXY[1]))
+                e.doit = false;
+        };
+
+        parent.addListener(SWT.KeyDown, canceler);
+        parent.addListener(SWT.KeyUp, canceler);
+        parent.addListener(SWT.MouseWheel, canceler); // actually this one has x and y but oh well
     }
 
     public void clearItems() {
@@ -112,6 +186,23 @@ public class Legend implements ILegend {
 
     public void addItem(Color color, String text, IPlotSymbol symbol, boolean drawLine) {
         items.add(new Item(color, text, symbol, drawLine));
+    }
+
+    // local coordinates, relative to legend corner. returns -1 if not found
+    public int getItemIndexAt(int x, int y) {
+
+        int count = getVisibleRealItemCount();
+
+        // could be optimized, the items are fairly regularly placed.
+        for (int i = 0; i < count; ++i)
+            if (items.get(i).getBounds().contains(x, y))
+                return i;
+
+        return -1;
+    }
+
+    public boolean isItemEnabled(int index) {
+        return items.get(index).enabled;
     }
 
     public boolean isVisible() {
@@ -154,8 +245,8 @@ public class Legend implements ILegend {
         this.anchor = anchor;
     }
 
-    public Rectangle getBounds() {
-        return bounds;
+    public org.eclipse.swt.graphics.Rectangle getBounds() {
+        return new org.eclipse.swt.graphics.Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
     }
 
     /**
@@ -390,6 +481,11 @@ public class Legend implements ILegend {
         }
     }
 
+    /** Excluding the potential "... and # more" at the bottom */
+    int getVisibleRealItemCount() {
+        return visibleItemCount == items.size() ? visibleItemCount : visibleItemCount - 1;
+    }
+
     /**
      * Draws the legend to the canvas.
      */
@@ -410,11 +506,20 @@ public class Legend implements ILegend {
             // draw items
             int left = bounds.x;
             int top = bounds.y;
-            int count = visibleItemCount == items.size() ? visibleItemCount : visibleItemCount - 1;
+            int count = getVisibleRealItemCount();
+
             for (int i = 0; i < count; i++) {
                 Item item = items.get(i);
+                if (highlightedItem == -2)
+                    graphics.setAlpha(255);
+                else if (highlightedItem == -1)
+                    graphics.setAlpha(127);
+                else if (highlightedItem >= 0)
+                    graphics.setAlpha(i == highlightedItem ? 255 : 127);
                 item.draw(graphics, left+item.x, top + item.y);
             }
+
+            graphics.setAlpha(highlightedItem == -2 ? 255 : 127);
             // draw "... and X more" text in place of the last visible item
             if (visibleItemCount < items.size()) {
                 int x=left, y = top;
@@ -425,9 +530,14 @@ public class Legend implements ILegend {
                 }
                 graphics.drawText(String.format("... and %d more", items.size() - visibleItemCount + 1), x, y);
             }
+            graphics.setAlpha(255);
         }
         finally {
             graphics.popState();
         }
+    }
+
+    public int getHighlightedItem() {
+        return highlightedItem;
     }
 }
