@@ -39,7 +39,7 @@ public class LinePlotSelection implements IPlotSelection {
     private double x,y;
 
 
-    public LinePlotSelection(LinePlot viewer, CrossHair.DataPoint point) {
+    public LinePlotSelection(LinePlot viewer, LinePlot.DataPoint point) {
         IXYDataset dataset = viewer.getDataset();
         this.viewer = viewer;
         this.series = point.series;

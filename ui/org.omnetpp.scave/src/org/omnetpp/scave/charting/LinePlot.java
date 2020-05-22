@@ -7,6 +7,8 @@
 
 package org.omnetpp.scave.charting;
 
+import static org.apache.commons.math.util.MathUtils.addAndCheck;
+import static org.apache.commons.math.util.MathUtils.mulAndCheck;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_AXIS_LABEL_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_AXIS_TITLE_FONT;
 import static org.omnetpp.scave.charting.properties.PlotProperty.PROP_DISPLAY_LINE;
@@ -55,6 +57,7 @@ import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.charting.dataset.DatasetUtils;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.plotter.ChartSymbolFactory;
@@ -194,6 +197,18 @@ public class LinePlot extends PlotBase {
         }
     }
 
+    // This is just a handle to one point of one series, so we can reference it.
+    protected static class DataPoint {
+        int series;
+        int index;
+        // int multiplicity;
+
+        public DataPoint(int series, int index) {
+            this.series = series;
+            this.index = index;
+        }
+    }
+
     public LinePlot(Composite parent, int style) {
         super(parent, style);
         // important: add the CrossHair to the chart AFTER the ZoomableCanvasMouseSupport added
@@ -203,10 +218,10 @@ public class LinePlot extends PlotBase {
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseDown(MouseEvent e) {
-                List<CrossHair.DataPoint> points = new ArrayList<CrossHair.DataPoint>();
-                int count = crosshair.dataPointsNear(e.x, e.y, 3, points, 1, getOptimizedCoordinateMapper());
+                List<DataPoint> points = new ArrayList<DataPoint>();
+                int count = dataPointsNear(e.x, e.y, 3, points, 1, getOptimizedCoordinateMapper());
                 if (count > 0) {
-                    CrossHair.DataPoint point = points.get(0);
+                    DataPoint point = points.get(0);
                     setSelection(new LinePlotSelection(LinePlot.this, point));
                 }
                 else
@@ -670,5 +685,61 @@ public class LinePlot extends PlotBase {
         yAxis.setDrawTickLabels(value);
         yAxis.setDrawTitle(value);
         chartChanged();
+    }
+
+    public int dataPointsNear(int x, int y, int d, List<DataPoint> result, int maxCount, ICoordsMapping coordsMapping) {
+        IXYDataset dataset = getDataset();
+        if (dataset == null)
+            return 0;
+
+        // for each series, collect data points close to (x,y), at most maxCount of them
+        int totalFound = 0;
+        for (int series = 0; series < dataset.getSeriesCount(); ++series) {
+            LineProperties props = getLineProperties(series);
+            if (!props.getEffectiveDisplayLine())
+                continue;
+            // find data point nearest to cursor x, using binary search
+            int mid = DatasetUtils.findXLowerLimit(dataset, series, inverseTransformX(coordsMapping.fromCanvasX(x)));
+
+            // then search downwards and upwards for data points close to (x,y)
+            for (int i = mid; i >= 0; --i) {
+                try {
+                    double xx = transformX(dataset.getX(series, i));
+                    double yy = transformY(dataset.getY(series, i));
+                    int dx = Math.abs((int)coordsMapping.toCanvasX(xx) - x);
+                    int dy = Math.abs((int)coordsMapping.toCanvasY(yy) - y);
+
+                    if (dx > d)
+                        break;
+
+                    if (dy <= d && addAndCheck(mulAndCheck(dx, dx), mulAndCheck(dy, dy)) <= d * d) {
+                        totalFound++;
+                        if (result.size() < maxCount)  //XXX add at least one point for each series
+                            result.add(new DataPoint(series, i));
+                    }
+                }
+                catch (ArithmeticException e) {}
+            }
+
+            for (int i = mid + 1; i < dataset.getItemCount(series); ++i) {
+                try {
+                    double xx = transformX(dataset.getX(series, i));
+                    double yy = transformY(dataset.getY(series, i));
+                    int dx = Math.abs((int)coordsMapping.toCanvasX(xx) - x);
+                    int dy = Math.abs((int)coordsMapping.toCanvasY(yy) - y);
+
+                    if (dx > d)
+                        break;
+
+                    if (dy <= d && addAndCheck(mulAndCheck(dx, dx), mulAndCheck(dy, dy)) <= d * d) {
+                        totalFound++;
+                        if (result.size() < maxCount)
+                            result.add(new DataPoint(series, i));
+                    }
+                }
+                catch (ArithmeticException e) {}
+            }
+        }
+        return totalFound;
     }
 }
