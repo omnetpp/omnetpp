@@ -330,21 +330,21 @@ public class LargeTable extends Composite
                 else if (e.keyCode == SWT.ARROW_RIGHT)
                     scrollHorizontal(10);
                 else if (e.keyCode == SWT.ARROW_UP)
-                    moveFocusBy(-1, withShift, withCtrl, false);
+                    moveFocusBy(-1, withShift, withCtrl, 0);
                 else if (e.keyCode == SWT.ARROW_DOWN)
-                    moveFocusBy(1, withShift, withCtrl, false);
+                    moveFocusBy(1, withShift, withCtrl, 0);
                 else if (e.keyCode == SWT.PAGE_UP)
-                    moveFocusBy(-getPageJumpCount(), withShift, withCtrl, false);
+                    moveFocusBy(-getPageJumpCount(), withShift, withCtrl, 0);
                 else if (e.keyCode == SWT.PAGE_DOWN)
-                    moveFocusBy(getPageJumpCount(), withShift, withCtrl, false);
+                    moveFocusBy(getPageJumpCount(), withShift, withCtrl, 0);
                 else if (e.keyCode == SWT.HOME)
-                    moveFocusTo(0, withShift, withCtrl, false);
+                    moveFocusTo(0, withShift, withCtrl, 0);
                 else if (e.keyCode == SWT.END)
-                    moveFocusTo(itemCount-1, withShift, withCtrl, false);
+                    moveFocusTo(itemCount-1, withShift, withCtrl, 0);
                 else if (e.keyCode == SWT.CR)
                     fireDefaultSelection();
                 else if (e.keyCode == SWT.SPACE && withCtrl)
-                    moveFocusBy(0, false, true, true);
+                    moveFocusBy(0, false, true, 0);
                 else if (e.keyCode == 'a' && withCtrl)
                     selectAll();
                 else if (e.keyCode == 'c' && withCtrl)
@@ -360,10 +360,10 @@ public class LargeTable extends Composite
             public void mouseDown(MouseEvent e) {
                 int rowIndex = topIndex + e.y / getRowHeight();
 
-                if (e.button == 1 && rowIndex < itemCount) {
+                if (rowIndex < itemCount) { // note: all buttons select but with slightly different rules
                     boolean withCtrl = (e.stateMask & SWT.MOD1) != 0;
                     boolean withShift = (e.stateMask & SWT.MOD2) != 0;
-                    moveFocusTo(rowIndex, withShift, withCtrl, true);
+                    moveFocusTo(rowIndex, withShift, withCtrl, e.button);
                 }
             }
             @Override
@@ -695,7 +695,7 @@ public class LargeTable extends Composite
     }
 
     public void moveFocus(int numberOfElements) {
-        moveFocusBy(numberOfElements, false, false, false);
+        moveFocusBy(numberOfElements, false, false, 0);
     }
 
     private int clamp(int rowIndex) {
@@ -707,20 +707,25 @@ public class LargeTable extends Composite
         return rowIndex < 0 ? 0 : rowIndex < maxTopRowIndex ? rowIndex : maxTopRowIndex;
     }
 
-    protected void moveFocusBy(int delta, boolean withShift, boolean withCtrl, boolean click) {
+    protected void moveFocusBy(int delta, boolean withShift, boolean withCtrl, int mouseButton) {
         int rowIndex = clamp(focusIndex + delta);
-        moveFocusTo(rowIndex, withShift, withCtrl, click);
+        moveFocusTo(rowIndex, withShift, withCtrl, mouseButton);
     }
 
-    protected void moveFocusTo(int rowIndex, boolean withShift, boolean withCtrl, boolean click) {
+    protected void moveFocusTo(int rowIndex, boolean withShift, boolean withCtrl, int mouseButton) {
         focusIndex = rowIndex;
+
+        boolean byMouse = mouseButton > 0;
 
         if (!withCtrl) {
             if (!withShift) {
-                // no shift or ctrl: overwrite selection and anchor
-                anchorIndex = rowIndex;
-                selectionIndices = new IntRangeSet();
-                selectionIndices.add(rowIndex);
+                // no shift or ctrl: overwrite selection and anchor (unless calling up context menu)
+                boolean rightClickOnExistingSelection = (mouseButton == 3) && selectionIndices.contains(rowIndex);
+                if (!rightClickOnExistingSelection) {
+                    anchorIndex = rowIndex;
+                    selectionIndices = new IntRangeSet();
+                    selectionIndices.add(rowIndex);
+                }
             }
             else {
                 // shift only: overwrite selection with this range selection
@@ -735,7 +740,7 @@ public class LargeTable extends Composite
             if (!withShift) {
                 // ctrl only, by keyboard: move focus without affecting selection or anchor (so nothing to do here)
                 // ctrl only, by mouse (or Space button): toggle selection of the given element, and move anchor
-                if (click) {
+                if (byMouse) {
                     anchorIndex = focusIndex;
                     if (selectionIndices.contains(rowIndex))
                         selectionIndices.remove(rowIndex);
