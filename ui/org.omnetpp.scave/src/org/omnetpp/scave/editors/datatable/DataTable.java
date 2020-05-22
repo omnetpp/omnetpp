@@ -255,16 +255,42 @@ public class DataTable extends LargeTable implements IDataControl {
         return numericPrecision;
     }
 
-    public void setIDList(IDList idlist) {
-        //TODO reset selection!!!!
-        this.idList = idlist;
+    public void setIDList(IDList newIdList) {
+        if (newIdList.equals(this.idList))
+            return;
+
+        // save old focus. note: saving the selection is not done because:
+        // (1) it's likely not too useful or missed by users, and at the
+        // same time (2) difficult due to listener hell
+        long focusID = getFocusedID();
+        clearSelection();
+
+        // set new input
+        setItemCount(newIdList.size());
+        this.idList = newIdList;
         restoreSortOrder();
+
+        // try restoring old focus
+        setFocusedID(focusID);
+
+        // refresh display, notify listeners
         refresh();
         fireContentChangedEvent();
     }
 
     public IDList getIDList() {
         return idList;
+    }
+
+    public long getFocusedID() {
+        int index = getFocusIndex();
+        return (index >= 0 && index < idList.size()) ? idList.get(index) : -1;
+    }
+
+    public void setFocusedID(long id) {
+        int index = idList.indexOf(id); // index=-1 if not found
+        if (index != -1)
+            gotoIndex(index);
     }
 
     public IMenuManager getContextMenuManager() {
@@ -431,7 +457,7 @@ public class DataTable extends LargeTable implements IDataControl {
     }
 
     protected void sortRows(TableColumn sortColumn, int sortDirection) {
-        if (manager == null) // no input set
+        if (manager == null || idList.isEmpty()) // no/empty input
             return;
 
         Column column = (Column)sortColumn.getData(COLUMN_KEY);
@@ -440,7 +466,7 @@ public class DataTable extends LargeTable implements IDataControl {
 
         boolean allSelected = getSelectionCount() == idList.size();
         IntVector tmpSelectionIndices = allSelected ? new IntVector() : IntVector.fromArray(getSelectionIndices().toArray()); // optimize the common & expensive case when all items are selected
-        long focusID = idList.get(focusIndex);
+        long focusID = getFocusedID();
 
         TimeTriggeredProgressMonitorDialog2.runWithDialog("Sorting", (monitor) -> {
             InterruptedFlag interrupted = TimeTriggeredProgressMonitorDialog2.getActiveInstance().getInterruptedFlag();
@@ -453,8 +479,7 @@ public class DataTable extends LargeTable implements IDataControl {
             setSelectionIndices(array);
         }
 
-        focusIndex = idList.indexOf(focusID);
-        reveal(focusIndex);
+        setFocusedID(focusID);
     }
 
     protected void sortBy(IDList idList, IntVector selectionIndices, Column column, int direction, InterruptedFlag interrupted) {
@@ -837,13 +862,6 @@ public class DataTable extends LargeTable implements IDataControl {
                 return column.fieldName;
         }
         return null;
-    }
-
-    public ResultItem getSelectedItem() {
-        if (selectionIndices.size() != 1)
-            return null;
-        int index = selectionIndices.toArray()[0];
-        return manager.getItem(idList.get(index));
     }
 
     public void setSelectedID(long id) {

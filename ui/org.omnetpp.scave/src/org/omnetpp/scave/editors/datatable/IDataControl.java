@@ -46,8 +46,6 @@ public interface IDataControl {
 
     public int getSelectionCount();
 
-    public ResultItem getSelectedItem();
-
     public ResultItem[] getSelectedItems();
 
     public String getSelectedField();

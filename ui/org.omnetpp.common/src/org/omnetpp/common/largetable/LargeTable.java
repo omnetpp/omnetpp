@@ -502,8 +502,15 @@ public class LargeTable extends Composite
         }
     }
 
+    /**
+     * Sets the number of items in the table. It also clears the selection because
+     * it's likely not valid with the new input, and to prevent out-of-bounds indices
+     * from remaining in it.
+     */
     public void setItemCount(int itemCount) {
         this.itemCount = itemCount;
+        focusIndex = clamp(focusIndex);
+        clearSelection();
         configureVerticalScrollBar();
         redraw();
     }
@@ -513,7 +520,7 @@ public class LargeTable extends Composite
     }
 
     /**
-     * Returns the focused element. Note: there's no setFocusElement(), use gotoElement() instead!
+     * Returns the focused element. Note: there's no setFocusIndex(), use gotoIndex() instead!
      */
     public int getFocusIndex() {
         return focusIndex;

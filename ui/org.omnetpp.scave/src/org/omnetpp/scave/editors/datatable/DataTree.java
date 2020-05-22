@@ -137,13 +137,6 @@ public class DataTree extends Tree implements IDataControl {
         return null;
     }
 
-    public ResultItem getSelectedItem() {
-        IDList idList = getSelectedIDs();
-        if (idList.size() != 1)
-            return null;
-        return manager.getItem(idList.get(0));
-    }
-
     public ResultItem[] getSelectedItems() {
         IDList idList = getSelectedIDs();
         ArrayList<ResultItem> resultItems = new ArrayList<ResultItem>();
