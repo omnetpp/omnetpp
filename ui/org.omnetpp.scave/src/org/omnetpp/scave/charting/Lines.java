@@ -90,34 +90,36 @@ class Lines implements ILinePlot {
                 area.maxY = Double.NEGATIVE_INFINITY;
 
                 for (int series = 0; series < dataset.getSeriesCount(); series++) {
-                    int n = dataset.getItemCount(series);
-                    if (n > 0) {
-                        // X must be increasing
-                        for (int i = 0; i < n; i++) {
-                            double x = parent.transformX(dataset.getX(series,i));
-                            if (!Double.isNaN(x) && !Double.isInfinite(x))
-                            {
-                                area.minX = Math.min(area.minX, x);
-                                break;
+                    if (parent.legend.isItemEnabled(series)) {
+                        int n = dataset.getItemCount(series);
+                        if (n > 0) {
+                            // X must be increasing
+                            for (int i = 0; i < n; i++) {
+                                double x = parent.transformX(dataset.getX(series,i));
+                                if (!Double.isNaN(x) && !Double.isInfinite(x))
+                                {
+                                    area.minX = Math.min(area.minX, x);
+                                    break;
+                                }
                             }
-                        }
-                        for (int i = n-1; i >= 0; i--) {
-                            double x = parent.transformX(dataset.getX(series,i));
-                            if (!Double.isNaN(x) && !Double.isInfinite(x))
-                            {
-                                area.maxX = Math.max(area.maxX, x);
-                                break;
+                            for (int i = n-1; i >= 0; i--) {
+                                double x = parent.transformX(dataset.getX(series,i));
+                                if (!Double.isNaN(x) && !Double.isInfinite(x))
+                                {
+                                    area.maxX = Math.max(area.maxX, x);
+                                    break;
+                                }
                             }
-                        }
-                        for (int i = 0; i < n; i++) {
-                            double y = parent.transformY(dataset.getY(series, i));
-                            if (!Double.isNaN(y) && !Double.isInfinite(y)) {
-                                area.minY = Math.min(area.minY, y);
-                                area.maxY = Math.max(area.maxY, y);
+                            for (int i = 0; i < n; i++) {
+                                double y = parent.transformY(dataset.getY(series, i));
+                                if (!Double.isNaN(y) && !Double.isInfinite(y)) {
+                                    area.minY = Math.min(area.minY, y);
+                                    area.maxY = Math.max(area.maxY, y);
+                                }
                             }
-                        }
 
-                        numOfPoints += n;
+                            numOfPoints += n;
+                        }
                     }
                 }
                 if (debug) {
@@ -188,8 +190,10 @@ class Lines implements ILinePlot {
             boolean ok = true;
 
             for (int series = 0; series < dataset.getSeriesCount(); series++) {
-                boolean lineOk = drawSingle(graphics, coordsMapping, series, startTime, totalTimeLimitMillis, perLineTimeLimitMillis);
-                ok = ok && lineOk; // do not merge with the previous line, shortcutting would prevent successive lines from being drawn...
+                if (parent.legend.isItemEnabled(series)) {
+                    boolean lineOk = drawSingle(graphics, coordsMapping, series, startTime, totalTimeLimitMillis, perLineTimeLimitMillis);
+                    ok = ok && lineOk; // do not merge with the previous line, shortcutting would prevent successive lines from being drawn...
+                }
             }
             parent.getShell().setCursor(null);
             if (debug) Debug.println("plotting: "+(System.currentTimeMillis()-startTime)+" ms");

@@ -69,7 +69,8 @@ class Bars {
             // The series have to be drawn in reverse order so they appear
             // correctly in "Overlap" mode.
             for (int series = numSeries-1; series >= 0; --series)
-                drawSingle(graphics, coordsMapping, series);
+                if (parent.legend.isItemEnabled(series))
+                    drawSingle(graphics, coordsMapping, series);
         }
     }
 
@@ -121,7 +122,7 @@ class Bars {
         for (int group = 0; group < numGroups; ++group)
             // search seriess in Z-order
             for (int series = 0; series < numSeries; ++series)
-                if (bars[group][series].contains(x, y))
+                if (parent.legend.isItemEnabled(series) && bars[group][series].contains(x, y))
                     return group * numSeries + series;
 
         return -1;
@@ -176,12 +177,14 @@ class Bars {
             double newBaseline = baseline < 0.0 ? Double.POSITIVE_INFINITY : Double.NEGATIVE_INFINITY;
             for (int group = 0; group < numGroups; ++group)
                 for (int series = 0; series < numSeries; ++series) {
-                    double value = transformValue(dataset.getValue(series, group));
-                    if (!Double.isNaN(value) && !Double.isInfinite(value)) {
-                        if (baseline < 0.0)
-                            newBaseline = Math.min(newBaseline, value);
-                        else
-                            newBaseline = Math.max(newBaseline, value);
+                    if (parent.legend.isItemEnabled(series)) {
+                        double value = transformValue(dataset.getValue(series, group));
+                        if (!Double.isNaN(value) && !Double.isInfinite(value)) {
+                            if (baseline < 0.0)
+                                newBaseline = Math.min(newBaseline, value);
+                            else
+                                newBaseline = Math.max(newBaseline, value);
+                        }
                     }
                 }
             baseline = newBaseline;
@@ -246,6 +249,8 @@ class Bars {
                     break;
                 case Stacked:
                     value = Math.abs(value);
+                    if (!parent.legend.isItemEnabled(series))
+                        value = 0;
                     bar.minY = transformValue(y);
                     bar.maxY = transformValue(y + value);
                     y += value;
@@ -253,7 +258,7 @@ class Bars {
                 }
 
                 // extend plot area with the new bar
-                addRectangle(plotArea, bar);
+                addRectangle(plotArea, bar, !parent.legend.isItemEnabled(series));
             }
         }
 
@@ -275,14 +280,14 @@ class Bars {
         return plotArea;
     }
 
-    private void addRectangle(RectangularArea area, RectangularArea rect) {
+    private void addRectangle(RectangularArea area, RectangularArea rect, boolean onlyX) {
         if (!Double.isNaN(rect.minX) && !Double.isInfinite(rect.minX))
             area.minX = Math.min(area.minX, rect.minX);
-        if (!Double.isNaN(rect.minY) && !Double.isInfinite(rect.minY))
+        if (!onlyX && !Double.isNaN(rect.minY) && !Double.isInfinite(rect.minY))
             area.minY = Math.min(area.minY, rect.minY);
         if (!Double.isNaN(rect.maxX) && !Double.isInfinite(rect.maxX))
             area.maxX = Math.max(area.maxX, rect.maxX);
-        if (!Double.isNaN(rect.maxY) && !Double.isInfinite(rect.maxY))
+        if (!onlyX && !Double.isNaN(rect.maxY) && !Double.isInfinite(rect.maxY))
             area.maxY = Math.max(area.maxY, rect.maxY);
     }
 
