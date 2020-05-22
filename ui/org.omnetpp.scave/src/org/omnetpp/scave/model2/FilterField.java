@@ -31,6 +31,7 @@ public class FilterField implements Comparable<FilterField> {
         EXPERIMENT = new FilterField(Kind.RunAttribute, Scave.EXPERIMENT),
         MEASUREMENT = new FilterField(Kind.RunAttribute, Scave.MEASUREMENT),
         REPLICATION = new FilterField(Kind.RunAttribute, Scave.REPLICATION),
+        TYPE = new FilterField(Kind.ItemField, Scave.TYPE),
         MODULE = new FilterField(Kind.ItemField, Scave.MODULE),
         NAME = new FilterField(Kind.ItemField, Scave.NAME);
 

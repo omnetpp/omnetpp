@@ -11,6 +11,7 @@ import static org.omnetpp.scave.model2.FilterField.FILE;
 import static org.omnetpp.scave.model2.FilterField.MODULE;
 import static org.omnetpp.scave.model2.FilterField.NAME;
 import static org.omnetpp.scave.model2.FilterField.RUN;
+import static org.omnetpp.scave.model2.FilterField.TYPE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -91,6 +92,9 @@ public class FilterHintsCache {
         }
         else if (field.equals(MODULE)) {
             return manager.getModuleFilterHints(idlist).toArray();
+        }
+        else if (field.equals(TYPE)) {
+            return new String [] {Scave.PARAMETER, Scave.SCALAR, Scave.VECTOR, Scave.STATISTICS, Scave.HISTOGRAM };
         }
         else if (field.equals(NAME)) {
             return manager.getResultNameFilterHints(idlist).toArray();
