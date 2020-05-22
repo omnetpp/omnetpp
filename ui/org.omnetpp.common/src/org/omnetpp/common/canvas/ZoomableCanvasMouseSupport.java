@@ -128,104 +128,107 @@ public class ZoomableCanvasMouseSupport {
 
     protected void setupMouseHandling() {
         // ctrl/shift key
-        canvas.addKeyListener(new KeyListener() {
-            public void keyPressed(KeyEvent e) {
-                if ((e.keyCode & (SWT.MOD1 | SWT.SHIFT)) != 0) {
-                    // e.stateMask contains the state of the modifier keys before shift/ctrl pressed
-                    int stateMask = e.stateMask | e.keyCode;
-                    updateCursor(mouseMode, activeMouseButton, stateMask);
-                }
-            }
-
-            public void keyReleased(KeyEvent e) {
-                if ((e.keyCode & (SWT.MOD1 | SWT.SHIFT)) != 0) {
-                    // e.stateMask contains the state of the modifier keys before shift/ctrl released
-                    int stateMask = e.stateMask & (~e.keyCode);
-                    updateCursor(mouseMode, activeMouseButton, stateMask);
-                }
+        canvas.addListener(SWT.KeyDown, (e) ->  {
+            if (e.doit && (e.keyCode & (SWT.MOD1 | SWT.SHIFT)) != 0) {
+                // e.stateMask contains the state of the modifier keys before shift/ctrl pressed
+                int stateMask = e.stateMask | e.keyCode;
+                updateCursor(mouseMode, activeMouseButton, stateMask);
             }
         });
+
+        canvas.addListener(SWT.KeyUp, (e) ->  {
+            if (e.doit && (e.keyCode & (SWT.MOD1 | SWT.SHIFT)) != 0) {
+                // e.stateMask contains the state of the modifier keys before shift/ctrl released
+                int stateMask = e.stateMask & (~e.keyCode);
+                updateCursor(mouseMode, activeMouseButton, stateMask);
+            }
+        });
+
         // wheel
-        canvas.addListener(SWT.MouseWheel, new Listener() {
-            public void handleEvent(Event event) {
-                int modifier = event.stateMask & SWT.MODIFIER_MASK;
-                if ((mouseMode==ZOOM_MODE && modifier==SWT.NONE) || (mouseMode==PAN_MODE && modifier==SWT.MOD1)) {
-                    // zoom in/out
-                    for (int i = 0; i < event.count; i++)
-                        canvas.zoomBy(1.1);
-                    for (int i = 0; i < -event.count; i++)
-                        canvas.zoomBy(1.0 / 1.1);
-                }
-                else if (modifier==SWT.SHIFT) {
-                    // if not zooming: shift+wheel does horizontal scroll
-                    // XXX on the gtk platform the vertical scroll bar
-                    //     is scrolled even if the SHIFT button is pressed.
-                    //     do not scroll horizontally to avoid diagonal scrolling
-                    if (!"gtk".equals(SWT.getPlatform()))
-                        canvas.scrollHorizontalTo(canvas.getViewportLeft() - canvas.getViewportWidth() * event.count / 20);
-                }
+        canvas.addListener(SWT.MouseWheel, (event) -> {
+            if (!event.doit)
+                return;
+
+            int modifier = event.stateMask & SWT.MODIFIER_MASK;
+            if ((mouseMode==ZOOM_MODE && modifier==SWT.NONE) || (mouseMode==PAN_MODE && modifier==SWT.MOD1)) {
+                // zoom in/out
+                for (int i = 0; i < event.count; i++)
+                    canvas.zoomBy(1.1);
+                for (int i = 0; i < -event.count; i++)
+                    canvas.zoomBy(1.0 / 1.1);
+            }
+            else if (modifier==SWT.SHIFT) {
+                // if not zooming: shift+wheel does horizontal scroll
+                // XXX on the gtk platform the vertical scroll bar
+                //     is scrolled even if the SHIFT button is pressed.
+                //     do not scroll horizontally to avoid diagonal scrolling
+                if (!"gtk".equals(SWT.getPlatform()))
+                    canvas.scrollHorizontalTo(canvas.getViewportLeft() - canvas.getViewportWidth() * event.count / 20);
             }
         });
 
         // mouse button down / up
-        canvas.addMouseListener(new MouseListener() {
-            public void mouseDoubleClick(MouseEvent event) {}
-            public void mouseDown(MouseEvent event) {
-                canvas.setFocus();
-                activeMouseButton = event.button;
-                if (event.button == 1) {
-                    int modifier = event.stateMask & SWT.MODIFIER_MASK;
-                    updateCursor(mouseMode, activeMouseButton, modifier);
-                    dragPrevX = event.x;
-                    dragPrevY = event.y;
-                    mousedMoved = false;
-                }
-            }
-            public void mouseUp(MouseEvent event) {
-                dragPrevX = dragPrevY = -1;
-                activeMouseButton = 0;
+        canvas.addListener(SWT.MouseDown, (event) -> {
+            if (!event.doit)
+                return;
+            canvas.setFocus();
+            activeMouseButton = event.button;
+            if (event.button == 1) {
                 int modifier = event.stateMask & SWT.MODIFIER_MASK;
                 updateCursor(mouseMode, activeMouseButton, modifier);
-                if (!mousedMoved) {  // just a click
-                    if (event.button==1) {
-                        if ((mouseMode==ZOOM_MODE && modifier==SWT.NONE) || (mouseMode==PAN_MODE && modifier==SWT.MOD1))
-                            canvas.zoomBy(2.0, event.x, event.y); // zoom in around mouse
-                        if ((mouseMode==ZOOM_MODE && modifier==SWT.SHIFT) || (mouseMode==PAN_MODE && modifier==(SWT.MOD1|SWT.SHIFT)))
-                            canvas.zoomBy(1/2.0, event.x, event.y); // zoom out around mouse
-                    }
+                dragPrevX = event.x;
+                dragPrevY = event.y;
+                mousedMoved = false;
+            }
+        });
+
+        canvas.addListener(SWT.MouseUp, (event) -> {
+            if (!event.doit)
+                return;
+            dragPrevX = dragPrevY = -1;
+            activeMouseButton = 0;
+            int modifier = event.stateMask & SWT.MODIFIER_MASK;
+            updateCursor(mouseMode, activeMouseButton, modifier);
+            if (!mousedMoved) {  // just a click
+                if (event.button==1) {
+                    if ((mouseMode==ZOOM_MODE && modifier==SWT.NONE) || (mouseMode==PAN_MODE && modifier==SWT.MOD1))
+                        canvas.zoomBy(2.0, event.x, event.y); // zoom in around mouse
+                    if ((mouseMode==ZOOM_MODE && modifier==SWT.SHIFT) || (mouseMode==PAN_MODE && modifier==(SWT.MOD1|SWT.SHIFT)))
+                        canvas.zoomBy(1/2.0, event.x, event.y); // zoom out around mouse
                 }
             }
         });
 
-        // dragging ("hand" cursor)
-        canvas.addMouseMoveListener(new MouseMoveListener() {
-            public void mouseMove(MouseEvent event) {
-                int modifier = event.stateMask & SWT.MODIFIER_MASK;
-                if (activeMouseButton==1) { // drag with left mouse button being held down
-                    if ((mouseMode==PAN_MODE && modifier==SWT.NONE) || (mouseMode==ZOOM_MODE && modifier==SWT.MOD1)) {
-                        doPanning(event);
-                    }
-                    mousedMoved = true;
-                }
-                else if (activeMouseButton==0) { // plain mouse move (no mouse button pressed)
-                    // restore cursor at end of drag. (It is not enough to do it in the
-                    // "mouse released" event, because we don't receive it if user
-                    // releases mouse outside the canvas!)
-                    updateCursor(mouseMode, activeMouseButton, modifier);
-                }
-            }
 
-            private void doPanning(MouseEvent e) {
-                // drag the chart
-                if (dragPrevX!=-1 && dragPrevY!=-1) {
-                    // scroll by the amount moved since last drag call
-                    int dx = e.x - dragPrevX;
-                    int dy = e.y - dragPrevY;
-                    canvas.scrollHorizontalTo(canvas.getViewportLeft() - dx);
-                    canvas.scrollVerticalTo(canvas.getViewportTop() - dy);
-                    dragPrevX = e.x;
-                    dragPrevY = e.y;
+
+        // dragging ("hand" cursor)
+        canvas.addListener(SWT.MouseMove, (event) -> {
+            if (!event.doit)
+                return;
+
+            int modifier = event.stateMask & SWT.MODIFIER_MASK;
+            if (activeMouseButton==1) { // drag with left mouse button being held down
+                if ((mouseMode==PAN_MODE && modifier==SWT.NONE) || (mouseMode==ZOOM_MODE && modifier==SWT.MOD1)) {
+
+                    // drag the chart
+                    if (dragPrevX!=-1 && dragPrevY!=-1) {
+                        // scroll by the amount moved since last drag call
+                        int dx = event.x - dragPrevX;
+                        int dy = event.y - dragPrevY;
+                        canvas.scrollHorizontalTo(canvas.getViewportLeft() - dx);
+                        canvas.scrollVerticalTo(canvas.getViewportTop() - dy);
+                        dragPrevX = event.x;
+                        dragPrevY = event.y;
+                    }
+
                 }
+                mousedMoved = true;
+            }
+            else if (activeMouseButton==0) { // plain mouse move (no mouse button pressed)
+                // restore cursor at end of drag. (It is not enough to do it in the
+                // "mouse released" event, because we don't receive it if user
+                // releases mouse outside the canvas!)
+                updateCursor(mouseMode, activeMouseButton, modifier);
             }
         });
     }
