@@ -74,8 +74,6 @@ public class NativeChartViewer extends ChartViewerBase {
         }
 
         plot.setStatusText("Running Python script...");
-        plot.clear();
-        chartPlotter.applyPendingPropertyChanges();
 
 
         try {
@@ -132,6 +130,10 @@ public class NativeChartViewer extends ChartViewerBase {
 
         ExceptionHandler ownRunAfterError = (proc, e) -> {
             runAfterError.handle(proc, e);
+            Display.getDefault().syncExec(() -> {
+                plot.clear();
+                chartPlotter.applyPendingPropertyChanges();
+            });
             if (!proc.isKilledByUs()) {
                 Display.getDefault().syncExec(() -> {
                     plot.setStatusText(null);
