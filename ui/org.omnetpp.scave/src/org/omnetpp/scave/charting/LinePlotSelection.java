@@ -15,7 +15,6 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.LargeGraphics;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.scave.charting.LinePlot.LineProperties;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
