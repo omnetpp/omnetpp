@@ -13,7 +13,6 @@ import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.VectorResult;
-import org.omnetpp.scave.model.ResultType;
 
 /**
  * Represents a selection of result item IDs in the editor.
@@ -22,9 +21,8 @@ import org.omnetpp.scave.model.ResultType;
  * can cause serious performance issues when IDList contains many thousands of IDs.
  */
 public class IDListSelection implements ISelection {
-    IDList idlist;
-    ResultFileManager manager;
-    ResultType type;
+    private IDList idlist;
+    private ResultFileManager manager;
 
     public IDListSelection(IDList idlist, ResultFileManager manager) {
         Assert.isNotNull(idlist);
@@ -32,16 +30,6 @@ public class IDListSelection implements ISelection {
 
         this.idlist = idlist;
         this.manager = manager;
-        if (idlist.areAllScalars())
-            type = ResultType.SCALAR;
-        if (idlist.areAllParameters())
-            type = ResultType.PARAMETER;
-        else if (idlist.areAllVectors())
-            type = ResultType.VECTOR;
-        else if (idlist.areAllHistograms())
-            type = ResultType.HISTOGRAM;
-        else
-            type = null;
     }
 
     public IDListSelection(long id, ResultFileManager manager) {
@@ -49,26 +37,23 @@ public class IDListSelection implements ISelection {
 
         this.idlist = new IDList(id);
         this.manager = manager;
+    }
 
-        int internalType = ResultFileManager.getTypeOf(id);
-        if (internalType == ResultFileManager.SCALAR)
-            type = ResultType.SCALAR;
-        if (internalType == ResultFileManager.PARAMETER)
-            type = ResultType.PARAMETER;
-        else if (internalType == ResultFileManager.VECTOR)
-            type = ResultType.VECTOR;
-        else if (internalType == ResultFileManager.STATISTICS)
-            type = ResultType.STATISTICS;
-        else if (internalType == ResultFileManager.HISTOGRAM)
-            type = ResultType.HISTOGRAM;
+    public IDList getIDList() {
+        return idlist;
     }
 
     public ResultFileManager getResultFileManager() {
         return manager;
     }
 
-    public ResultType getResultType() {
-        return type;
+
+    public int size() {
+        return idlist.size();
+    }
+
+    public boolean isEmpty() {
+        return idlist.isEmpty();
     }
 
     public VectorResult getFirstAsVector() {
@@ -80,28 +65,8 @@ public class IDListSelection implements ISelection {
         return null;
     }
 
-    public IDList getScalarIDs() {
-        return idlist.filterByTypes(ResultFileManager.SCALAR); //TODO or self, if it's all scalars!
-    }
-
-    public IDList getParameterIDs() {
-        return idlist.filterByTypes(ResultFileManager.PARAMETER); //TODO or self, if it's all scalars!
-    }
-
-    public IDList getVectorIDs() {
-        return idlist.filterByTypes(ResultFileManager.VECTOR);
-    }
-
-    public IDList getStatisticIDs() {
-        return idlist.filterByTypes(ResultFileManager.STATISTICS);
-    }
-
-    public IDList getHistogramIDs() {
-        return idlist.filterByTypes(ResultFileManager.HISTOGRAM);
-    }
-
     public int getScalarsCount() {
-        return idlist.countByTypes(ResultFileManager.SCALAR);  //TODO or size() if it's all scalars, or 0 if it contains no scalar!
+        return idlist.countByTypes(ResultFileManager.SCALAR);
     }
 
     public int getParametersCount() {
@@ -118,18 +83,6 @@ public class IDListSelection implements ISelection {
 
     public int getHistogramsCount() {
         return idlist.countByTypes(ResultFileManager.HISTOGRAM);
-    }
-
-    public int size() {
-        return idlist.size();
-    }
-
-    public IDList getIDList() {
-        return idlist;
-    }
-
-    public boolean isEmpty() {
-        return idlist.isEmpty();
     }
 
     public boolean equals(Object other) {
