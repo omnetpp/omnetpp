@@ -344,7 +344,7 @@ public class LargeTable extends Composite
                 else if (e.keyCode == SWT.CR)
                     fireDefaultSelection();
                 else if (e.keyCode == SWT.SPACE && withCtrl)
-                    moveFocusBy(0, false, true, 0);
+                    toggleSelectionOfFocusItem();
                 else if (e.keyCode == 'a' && withCtrl)
                     selectAll();
                 else if (e.keyCode == 'c' && withCtrl)
@@ -739,7 +739,7 @@ public class LargeTable extends Composite
         else {
             if (!withShift) {
                 // ctrl only, by keyboard: move focus without affecting selection or anchor (so nothing to do here)
-                // ctrl only, by mouse (or Space button): toggle selection of the given element, and move anchor
+                // ctrl only, by mouse: toggle selection of the given element, and move anchor
                 if (byMouse) {
                     anchorIndex = focusIndex;
                     if (selectionIndices.contains(rowIndex))
@@ -759,6 +759,15 @@ public class LargeTable extends Composite
 
         fireSelectionChanged();
         reveal(rowIndex);
+    }
+
+    protected void toggleSelectionOfFocusItem() {
+        if (selectionIndices.contains(focusIndex))
+            selectionIndices.remove(focusIndex);
+        else
+            selectionIndices.add(focusIndex);
+        fireSelectionChanged();
+        refresh();
     }
 
     /**
