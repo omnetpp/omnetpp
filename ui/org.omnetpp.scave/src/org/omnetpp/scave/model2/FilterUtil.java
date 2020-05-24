@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.engine.Common;
@@ -120,9 +121,11 @@ public class FilterUtil {
         }
     }
 
+    // whitespace, parens, $, #, [], -, = and whatnot are forbidden -- stay safe and only allow alnum plus a few safe chars.
+    private static final Pattern IDENTIFIER_REGEX = Pattern.compile("[a-zA-Z0-9:_]+");
+
     public static boolean needsQuotes(String pattern) {
-        // whitespace, parens, $, #, [], -, = and whatnot are forbidden -- stay safe and only allow alnum plus a few safe chars.
-        return !pattern.matches("[a-zA-Z0-9:_]+");
+        return !IDENTIFIER_REGEX.matcher(pattern).matches();
     }
 
     public static String quoteStringIfNeeded(String str) {
