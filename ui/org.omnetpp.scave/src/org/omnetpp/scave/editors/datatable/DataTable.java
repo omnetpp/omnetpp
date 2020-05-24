@@ -370,12 +370,6 @@ public class DataTable extends LargeTable implements IDataControl {
         return items;
     }
 
-    public void refresh() {
-        int n = idList.size();
-        setItemCount(n);
-        super.refresh();
-    }
-
     protected void initColumns() {
         // add a last, blank column, otherwise the right edge of the last column sticks to the table's right border which is often inconvenient
         TableColumn blankColumn = createColumn(SWT.NONE);
