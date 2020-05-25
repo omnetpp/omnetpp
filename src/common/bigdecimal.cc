@@ -37,8 +37,9 @@ BigDecimal BigDecimal::PositiveInfinity(1, INT_MAX);
 BigDecimal BigDecimal::NegativeInfinity(-1, INT_MAX);
 BigDecimal BigDecimal::Nil;
 
-static int64_t powersOfTen[21];
-static double negativePowersOfTen[21];
+#define MAX_POWER_OF_TEN  18
+static int64_t powersOfTen[MAX_POWER_OF_TEN+1];
+static double negativePowersOfTen[MAX_POWER_OF_TEN+1];
 
 class PowersOfTenInitializer
 {
@@ -51,13 +52,16 @@ PowersOfTenInitializer initializer;
 PowersOfTenInitializer::PowersOfTenInitializer()
 {
     int64_t power = 1;
-    for (unsigned int i = 0; i < sizeof(powersOfTen) / sizeof(*powersOfTen); i++) {
+    for (unsigned int i = 0; i <= MAX_POWER_OF_TEN; i++) {
         powersOfTen[i] = power;
-        power *= 10;
+        // prevent signed integer overflow
+        if (i < MAX_POWER_OF_TEN) {
+            power *= 10;
+        }
     }
 
     double negativePower = 1;
-    for (unsigned int i = 0; i < sizeof(negativePowersOfTen) / sizeof(*negativePowersOfTen); i++) {
+    for (unsigned int i = 0; i <= MAX_POWER_OF_TEN; i++) {
         negativePowersOfTen[i] = negativePower;
         negativePower /= 10.0;
     }
@@ -216,8 +220,7 @@ bool BigDecimal::operator<(const BigDecimal& x) const
     int minScale = std::min(scale, x.scale);
     int m = scale - minScale;
     int xm = x.scale - minScale;
-    const int NUMPOWERS = sizeof(powersOfTen) / sizeof(*powersOfTen);
-    assert(m < NUMPOWERS && xm < NUMPOWERS);
+    assert(m <= MAX_POWER_OF_TEN && xm <= MAX_POWER_OF_TEN);
     int64_t v = intVal;
     if (m != 0) {
         int64_t mp = powersOfTen[m];
@@ -438,9 +441,7 @@ const BigDecimal operator+(const BigDecimal& x, const BigDecimal& y)
     int xm = x.scale - scale;
     int ym = y.scale - scale;
 
-    const int NUMPOWERS = sizeof(powersOfTen) / sizeof(*powersOfTen);
-
-    if (!x.isSpecial() && !y.isSpecial() && 0 <= xm && xm < NUMPOWERS && 0 <= ym && ym < NUMPOWERS) {
+    if (!x.isSpecial() && !y.isSpecial() && 0 <= xm && xm <= MAX_POWER_OF_TEN && 0 <= ym && ym <= MAX_POWER_OF_TEN) {
         int64_t xmp = powersOfTen[xm];
         int64_t xv = x.intVal * xmp;
 
@@ -469,9 +470,7 @@ const BigDecimal operator-(const BigDecimal& x, const BigDecimal& y)
     int xm = x.scale - scale;
     int ym = y.scale - scale;
 
-    const int NUMPOWERS = sizeof(powersOfTen) / sizeof(*powersOfTen);
-
-    if (!x.isSpecial() && !y.isSpecial() && 0 <= xm && xm < NUMPOWERS && 0 <= ym && ym < NUMPOWERS) {
+    if (!x.isSpecial() && !y.isSpecial() && 0 <= xm && xm <= MAX_POWER_OF_TEN && 0 <= ym && ym <= MAX_POWER_OF_TEN) {
         int64_t xmp = powersOfTen[xm];
         int64_t xv = x.intVal * xmp;
 
