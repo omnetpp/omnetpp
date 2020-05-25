@@ -87,6 +87,9 @@ public class NativeChartViewer extends ChartViewerBase {
             return;
         }
 
+        // This will simply replace the references of the internal Datasets
+        // with freshly allocated, empty ones, but WILL NOT dispose the old
+        // ones - that will be done a bit later, in the setDataset() calls below.
         chartPlotter.reset();
 
         Runnable ownRunAfterDone = () -> {
@@ -103,12 +106,14 @@ public class NativeChartViewer extends ChartViewerBase {
                 if(debug)
                     Debug.println("status text updated");
 
+                // The old datasets still held by the plot widget will be disposed here,
+                // before being replaced by the new ones.
                 switch (chart.getType()) {
-                case BAR: plot.setDataset(chartPlotter.getScalarDataset()); break;
-                case HISTOGRAM: plot.setDataset(chartPlotter.getHistogramDataset()); break;
-                case LINE: plot.setDataset(chartPlotter.getXyDataset()); break;
-                case MATPLOTLIB: // fallthrough
-                default: throw new RuntimeException("Wrong chart type.");
+                    case BAR: plot.setDataset(chartPlotter.getScalarDataset()); break;
+                    case HISTOGRAM: plot.setDataset(chartPlotter.getHistogramDataset()); break;
+                    case LINE: plot.setDataset(chartPlotter.getXyDataset()); break;
+                    case MATPLOTLIB: // fallthrough
+                    default: throw new RuntimeException("Wrong chart type.");
                 }
 
                 plot.setStatusText("");

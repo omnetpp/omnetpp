@@ -313,6 +313,11 @@ public class LinePlot extends PlotBase {
     public void doSetDataset(IDataset dataset) {
         if (dataset != null && !(dataset instanceof IXYDataset))
             throw new IllegalArgumentException("must be an IXYDataset");
+
+        // We have to do this here because NativeChartPlotter can't do it in its reset().
+        if (this.dataset != null)
+            ((XYDataset)this.dataset).dispose();
+
         this.dataset = (IXYDataset)dataset;
         this.selection = null;
         updateLineProperties();

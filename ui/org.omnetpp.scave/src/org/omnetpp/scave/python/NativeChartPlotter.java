@@ -151,9 +151,8 @@ class NativeChartPlotter implements INativeChartPlotter {
     }
 
     public void reset() {
-        if (xyDataset != null)
-            xyDataset.dispose();
-
+        // The old datasets are not disposed of here, because NativeChartPlotter will
+        // need them for just a bit longer to avoid flicker upon refreshing the chart.
         scalarDataset = new GroupsSeriesDataset();
         xyDataset = new XYDataset();
         histogramDataset = new HistogramDataset();
