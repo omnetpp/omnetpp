@@ -140,7 +140,7 @@ public class ResultSelectionFilterGenerator {
             String newTerm = "";
             if (!selectedValues.isEmpty()) {
                 if (selectedValues.size() == 1)
-                    newTerm = bestAttr + " =~ " + FilterUtil.quoteStringIfNeeded(selectedValues.iterator().next());
+                    newTerm = bestAttr + " =~ " + AndFilter.quoteStringIfNeeded(selectedValues.iterator().next());
                 else {
                     newTerm += "(";
                     String[] vals = selectedValues.toArray(new String[]{});
@@ -148,7 +148,7 @@ public class ResultSelectionFilterGenerator {
                     for (String v : vals) {
                         if (!first)
                             newTerm += " OR ";
-                        newTerm += bestAttr + " =~ " + FilterUtil.quoteStringIfNeeded(v);
+                        newTerm += bestAttr + " =~ " + AndFilter.quoteStringIfNeeded(v);
                         first = false;
                     }
                     newTerm += ")";
@@ -346,14 +346,14 @@ public class ResultSelectionFilterGenerator {
         for (Run r :runs.toArray()) {
             if (!first)
                 sb.append("\n OR \n");
-            sb.append("( run =~ " + FilterUtil.quoteStringIfNeeded(r.getRunName()) + " AND (\n");
+            sb.append("( run =~ " + AndFilter.quoteStringIfNeeded(r.getRunName()) + " AND (\n");
 
             IDList idsInRun = manager.filterIDList(ids, r, null, null);
 
             for (int i = 0; i < idsInRun.size(); ++i) {
                 long id = ids.get(i);
                 ResultItem item = manager.getItem(id);
-                String filter = new FilterUtil(item, filterFields).getFilterPattern();
+                String filter = new AndFilter(item, filterFields).getFilterPattern();
                 sb.append("    " + filter + " \n");
             }
             sb.append(") )");
@@ -402,7 +402,7 @@ public class ResultSelectionFilterGenerator {
         // generate factored-out part
         if (factorFields.length != 0) {
             ResultItem item0 = manager.getItem(ids.get(0));
-            String factorsFilter = new FilterUtil(item0, factorFields).getFilterPattern();
+            String factorsFilter = new AndFilter(item0, factorFields).getFilterPattern();
             sb.append(factorsFilter);
             itemIndent = "  ";
         }
@@ -415,7 +415,7 @@ public class ResultSelectionFilterGenerator {
             for (int i = 0; i < ids.size(); ++i) {
                 long id = ids.get(i);
                 ResultItem item = manager.getItem(id);
-                String filter = new FilterUtil(item, itemFields).getFilterPattern();
+                String filter = new AndFilter(item, itemFields).getFilterPattern();
                 if (i > 0)
                     sb.append(" OR\n");
                 sb.append(itemIndent);

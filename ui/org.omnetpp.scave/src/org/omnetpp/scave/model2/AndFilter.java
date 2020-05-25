@@ -31,8 +31,7 @@ import org.omnetpp.scave.engine.Scave;
  * parentheses cannot be represented, only ones that contain terms connected with AND.
  * Whether a pattern is in a representable form can be determined by calling isANDPattern().
  */
-// XXX attr: and param: prefixes should be used in field names everywhere!
-public class FilterUtil {
+public class AndFilter {
 
     // separate fields connected with AND operator. The full string is NOT STORED.
     private Map<String, String> fields = new LinkedHashMap<String, String>();
@@ -41,14 +40,14 @@ public class FilterUtil {
     // reconstructed from fields[].
     private boolean lossy = false;
 
-    public FilterUtil() {
+    public AndFilter() {
     }
 
-    public FilterUtil(String filterPattern) {
+    public AndFilter(String filterPattern) {
         this(filterPattern, false);
     }
 
-    public FilterUtil(String filterPattern, boolean lossyAllowed) {
+    public AndFilter(String filterPattern, boolean lossyAllowed) {
         if (filterPattern == null || filterPattern.trim().isEmpty())
             filterPattern = "*";
 
@@ -60,7 +59,7 @@ public class FilterUtil {
         parseFields(filterPattern);
     }
 
-    public FilterUtil(ResultItem item, String[] filterFields) {
+    public AndFilter(ResultItem item, String[] filterFields) {
         Assert.isNotNull(item);
         Assert.isNotNull(filterFields);
         for (String field : filterFields)
@@ -181,7 +180,7 @@ public class FilterUtil {
                 break;
             case Node.PATTERN:
                 if (!node.getPattern().isEmpty())
-                    fields.put(FilterUtil.getDefaultField(), node.getPatternString());
+                    fields.put(AndFilter.getDefaultField(), node.getPatternString());
                 break;
             case Node.FIELDPATTERN:
                 if (!node.getPattern().isEmpty())

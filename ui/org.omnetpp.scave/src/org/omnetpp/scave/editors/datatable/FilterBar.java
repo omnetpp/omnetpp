@@ -35,7 +35,7 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.assist.FilterExpressionProposalProvider;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model2.FilterField;
-import org.omnetpp.scave.model2.FilterUtil;
+import org.omnetpp.scave.model2.AndFilter;
 
 /**
  * A composite with UI elements to filter a data table.
@@ -150,7 +150,7 @@ public class FilterBar extends Composite {
             filterExpressionText.setText(filterExpression);
         }
         else if (isSuitableForSimpleFilter(filterExpression)) {
-            FilterUtil filterUtil = new FilterUtil(filterExpression, true);
+            AndFilter filterUtil = new AndFilter(filterExpression, true);
             experimentCombo.setText(asteriskToEmpty(filterUtil.getFieldValue(EXPERIMENT.getName())));
             measurementCombo.setText(asteriskToEmpty(filterUtil.getFieldValue(MEASUREMENT.getName())));
             replicationCombo.setText(asteriskToEmpty(filterUtil.getFieldValue(REPLICATION.getName())));
@@ -166,7 +166,7 @@ public class FilterBar extends Composite {
     public boolean isSuitableForSimpleFilter(String filterPattern) {
         if (!isValidFilter(filterPattern))
             return false;
-        FilterUtil filterUtil = new FilterUtil(filterPattern, true);
+        AndFilter filterUtil = new AndFilter(filterPattern, true);
         if (filterUtil.isLossy())
             return false;
         String[] supportedFields = new String[] {EXPERIMENT.getName(), MEASUREMENT.getName(), REPLICATION.getName(), MODULE.getName(), NAME.getName()};
@@ -186,7 +186,7 @@ public class FilterBar extends Composite {
         }
 
         String filterPattern = getFilterExpressionText().getText();
-        FilterUtil filterUtil = new FilterUtil(filterPattern, true);
+        AndFilter filterUtil = new AndFilter(filterPattern, true);
         if (filterUtil.isLossy()) {
             boolean ok = MessageDialog.openConfirm(getShell(), "Filter Too Complex", "The current filter cannot be represented in Basic view without losing some of its details.");
             if (!ok)
@@ -262,7 +262,7 @@ public class FilterBar extends Composite {
     }
 
     private String assembleFilterPattern(List<FilterField> includedFields) {
-        FilterUtil filter = new FilterUtil();
+        AndFilter filter = new AndFilter();
         for (FilterField field : simpleFilterFields)
             if (includedFields.contains(field))
                 filter.setFieldValue(field.getFullName(), getFilterCombo(field).getText());
@@ -271,7 +271,7 @@ public class FilterBar extends Composite {
     }
 
     private String assembleFilterPatternExcluding(List<FilterField> excludedFields) {
-        FilterUtil filter = new FilterUtil();
+        AndFilter filter = new AndFilter();
         for (FilterField field : simpleFilterFields)
             if (!excludedFields.contains(field))
                 filter.setFieldValue(field.getFullName(), getFilterCombo(field).getText());

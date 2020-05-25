@@ -17,7 +17,7 @@ import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
-import org.omnetpp.scave.model2.FilterUtil;
+import org.omnetpp.scave.model2.AndFilter;
 
 /**
  * Sets the filter of a filtered data panel.
@@ -52,7 +52,7 @@ public class SetFilterBySelectedCellAction extends AbstractScaveAction
             ResultItem item = manager.getItem(focusedID);
             String fieldValue = item.getProperty(selectedField);
 
-            FilterUtil filter = new FilterUtil();
+            AndFilter filter = new AndFilter();
             filter.setFieldValue(selectedField, fieldValue);
             panel.setFilter(filter.getFilterPattern());
         });
