@@ -7,16 +7,16 @@
 
 package org.omnetpp.scave.actions;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
-import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.engine.Scave;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartTemplate;
 import org.omnetpp.scave.model2.ResultSelectionFilterGenerator;
@@ -51,20 +51,15 @@ public class CreateTempChartFromTemplateAction extends AbstractScaveAction {
     @Override
     protected void doRun(ScaveEditor editor, ISelection selection) throws CoreException {
         IDListSelection idListSelection = (IDListSelection)selection;
-        ResultFileManager manager = idListSelection.getResultFileManager();
-        IDList idList = idListSelection.getIDList();
 
         Chart chart = ScaveModelUtil.createChartFromTemplate(template);
         editor.getChartTemplateRegistry().markTemplateUsage(template);
 
-        boolean ok = TimeTriggeredProgressMonitorDialog2.runWithDialog("Generating filter expression", (monitor) -> {
-            String filter = ResultSelectionFilterGenerator.makeQuickFilter(idList, manager);
-            editor.getMemoizationCache().putCachedFilterResult(filter, idList);
-            chart.setPropertyValue("filter", filter);
-            chart.setTemporary(true);
-        });
-        if (ok)
-            editor.openPage(chart);
+        String filter = ResultSelectionFilterGenerator.makeFilterForIDListSelection(idListSelection);
+        editor.getMemoizationCache().putCachedFilterResult(filter, idListSelection.getIDList());
+        chart.setPropertyValue("filter", filter);
+        chart.setTemporary(true);
+        editor.openPage(chart);
     }
 
 

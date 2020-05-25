@@ -17,8 +17,6 @@ import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.engine.IDList;
-import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model2.ResultSelectionFilterGenerator;
 
 public class CopyChartFilterAction extends AbstractScaveAction {
@@ -31,10 +29,9 @@ public class CopyChartFilterAction extends AbstractScaveAction {
 
     @Override
     protected void doRun(ScaveEditor editor, ISelection selection) throws CoreException {
-        ResultFileManager manager = editor.getResultFileManager();
-        IDList idList = ((IDListSelection)selection).getIDList();
-        String filter = ResultSelectionFilterGenerator.makeQuickFilter(idList, manager);
-        editor.getMemoizationCache().putCachedFilterResult(filter, idList);
+        IDListSelection idListSelection = (IDListSelection)selection;
+        String filter = ResultSelectionFilterGenerator.makeFilterForIDListSelection(idListSelection);
+        editor.getMemoizationCache().putCachedFilterResult(filter, idListSelection.getIDList());
         new Clipboard(Display.getCurrent()).setContents(new Object[] {filter}, new Transfer[] {TextTransfer.getInstance()});
     }
 

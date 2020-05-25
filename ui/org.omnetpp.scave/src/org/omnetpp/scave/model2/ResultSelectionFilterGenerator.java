@@ -7,9 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.scave.editors.IDListSelection;
+import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.InterruptedFlag;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -237,7 +240,7 @@ public class ResultSelectionFilterGenerator {
                 result += "NOT (\n" + StringUtils.indentLines(excludeFilter, "    ") + "\n)";
             }
 
-            return result;
+            return result.isEmpty() ? "*" : result;
         }
         else {
             if (!haveInclude && !haveExclude)
@@ -361,6 +364,46 @@ public class ResultSelectionFilterGenerator {
             first = false;
         }
         return sb.toString();
+    }
+
+    /**
+     * Generate a filter string that produces the selected elements on a panel in the
+     * Browse Data page.
+     *
+     * IMPORTANT: This method MUST complete under ~1 sec because it is used in such places.
+     * Therefore it does not, and MUST NOT, call filterIDList(), or do anything else that
+     * might blow up runtime.
+     */
+    public static String makeFilterForIDListSelection(IDListSelection idListSelection) {
+        FilteredDataPanel dataPanel = idListSelection.getSource();
+        IDList idList = idListSelection.getIDList();
+        if (!dataPanel.getDataControl().getSelectedIDs().equals(idList))
+            throw new RuntimeException("Selection is obsolete");
+
+        ResultFileManager manager = idListSelection.getResultFileManager();
+        IDList shown = dataPanel.getDataControl().getIDList();
+        IDList selection = dataPanel.getDataControl().getSelectedIDs();
+
+        if (selection.size() < shown.size() / 2) {
+            // user has manually selected a few items
+            return makeQuickFilter(selection, manager);
+        }
+        else {
+            // user hit Ctrl+A, then manually unselected a few items
+            ResultType type = dataPanel.getType();
+            String filter = type!=ResultType.HISTOGRAM ? "type =~ " + ResultItem.itemTypeToString(type.getValue()) :
+                "(type =~ " + Scave.STATISTICS + " OR type=~ " +  Scave.HISTOGRAM + ")";
+
+            String panelFilter = dataPanel.getFilter();
+            if (!panelFilter.equals("*"))
+                filter += " AND " + dataPanel.getFilter();
+
+            if (selection.size() < shown.size()) {
+                IDList unselected = shown.subtract(selection);
+                filter += "\nAND NOT (" + makeQuickFilter(unselected, manager) + ")";
+            }
+            return filter;
+        }
     }
 
     /**

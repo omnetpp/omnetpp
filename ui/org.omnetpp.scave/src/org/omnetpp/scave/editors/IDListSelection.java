@@ -9,6 +9,7 @@ package org.omnetpp.scave.editors;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ISelection;
+import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
@@ -23,13 +24,15 @@ import org.omnetpp.scave.engine.VectorResult;
 public class IDListSelection implements ISelection {
     private IDList idlist;
     private ResultFileManager manager;
+    private FilteredDataPanel source; // may be null
 
-    public IDListSelection(IDList idlist, ResultFileManager manager) {
+    public IDListSelection(IDList idlist, ResultFileManager manager, FilteredDataPanel source) {
         Assert.isNotNull(idlist);
         Assert.isNotNull(manager);
 
         this.idlist = idlist;
         this.manager = manager;
+        this.source = source;
     }
 
     public IDListSelection(long id, ResultFileManager manager) {
@@ -47,6 +50,9 @@ public class IDListSelection implements ISelection {
         return manager;
     }
 
+    public FilteredDataPanel getSource() {
+        return source;
+    }
 
     public int size() {
         return idlist.size();

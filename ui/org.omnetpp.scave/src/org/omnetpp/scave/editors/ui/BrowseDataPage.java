@@ -402,7 +402,7 @@ public class BrowseDataPage extends FormEditorPage {
             IDList idList = Debug.timed("Getting selected IDs", 1, () -> control.getSelectedIDs());
             if (idList == null)
                 idList = new IDList();
-            scaveEditor.setSelection(new IDListSelection(idList, control.getResultFileManager()));
+            scaveEditor.setSelection(new IDListSelection(idList, control.getResultFileManager(), panel));
 
             Debug.time("Browse Data page configureContextMenus", 1, () -> {
                 // TODO FIXME HACK this is just to make the "available templates" actually update when the selection changes,
