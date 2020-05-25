@@ -316,7 +316,10 @@ int cSimulation::registerComponent(cComponent *component)
     if (lastComponentId >= size) {
         // vector full, grow by delta
         cComponent **v = new cComponent *[size + delta];
-        memcpy(v, componentv, sizeof(cComponent *) * size);
+        // source for memcpy can't be nullptr
+        if (componentv) {
+            memcpy(v, componentv, sizeof(cComponent *) * size);
+        }
         for (int i = size; i < size + delta; i++)
             v[i] = nullptr;
         delete[] componentv;
