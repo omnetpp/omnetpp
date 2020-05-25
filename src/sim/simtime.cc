@@ -45,7 +45,10 @@ static void fillPowersOfTen()
     int64_t power = 1;
     for (int i = 0; i <= MAX_POWER_OF_TEN; i++) {
         powersOfTen[i] = power;
-        power *= 10;
+        // prevent signed integer overflow
+        if (i < MAX_POWER_OF_TEN) {
+            power *= 10;
+        }
     }
 }
 
