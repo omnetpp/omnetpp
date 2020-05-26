@@ -323,27 +323,21 @@ public class DataTable extends LargeTable implements IDataControl {
     }
 
     public void setVisibleColumns(String[] columnTexts) {
-        for (Column column : getAllColumns()) {
-            TableColumn tableColumn = getTableColumn(column);
-            boolean currentlyVisible = tableColumn != null;
-            boolean requestedVisible = ArrayUtils.indexOf(columnTexts, column.text) != -1;
+        for (TableColumn c : getColumnsExceptLastBlank())
+            c.dispose();
+        visibleColumns.clear();
 
-            if (requestedVisible && !currentlyVisible)
+        for (Column column : getAllColumns()) {
+            boolean requestedVisible = ArrayUtils.indexOf(columnTexts, column.text) != -1;
+            if (requestedVisible)
                 addColumn(column);
-            else if (!requestedVisible && currentlyVisible) {
-                visibleColumns.remove(column);
-                tableColumn.dispose();
-            }
         }
 
-        int position = 0;
         int[] columnOrder = new int[getColumnCount()];
-        for (Column column : getAllColumns())
-            if (visibleColumns.indexOf(column) != -1)
-                columnOrder[position++] = getTableColumnIndex(column);
-        columnOrder[position] = getColumnCount()-1; // the last, blank column
+        for (int i = 0; i < columnOrder.length; ++i)
+            columnOrder[i] = i;
 
-        setColumnOrder(columnOrder);
+        table.setColumnOrder(columnOrder);
 
         saveState();
         refresh();
