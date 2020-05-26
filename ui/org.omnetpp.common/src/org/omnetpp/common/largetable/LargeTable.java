@@ -809,7 +809,7 @@ public class LargeTable extends Composite
     protected void recomputeTableSize() {
         int size = 0;
         for (int i = 0; i < table.getColumnCount(); i++)
-            size += table.getColumn(i).getWidth();
+            size += table.getColumn(i).getWidth(); // columnOrder doesn't matter
 
         table.setSize(size, table.getSize().y);
         composite.setSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
@@ -995,16 +995,20 @@ public class LargeTable extends Composite
 
     /**
      * Return the column index under the specified LargeTable-relative x coordinate,
-     * or -1 if none.
+     * or -1 if none. The returned index is not necessarily in the current visual
+     * order of the table, but in the creation order of the columns (consult
+     * Table.getColumnOrder()), so it can be passed directly to getColumn().
      */
     public int getColumnIndexAt(int x) {
         if (x < 0)
             return -1;
         int columnCount = getColumnCount();
+        int[] columnOrder = table.getColumnOrder();
         for (int index = 0; index < columnCount; index++) {
-            int columnWidth = table.getColumn(index).getWidth();
+            int mappedIndex = columnOrder[index];
+            int columnWidth = table.getColumn(mappedIndex).getWidth();
             if (x < columnWidth)
-                return index;
+                return mappedIndex;
             x -= columnWidth;
         }
         return -1;
@@ -1038,7 +1042,7 @@ class ScalableTableCompositeLayout extends Layout {
 
             int sumColumnWidth = 0;
             for (int i = 0; i < table.getColumnCount(); i++)
-                sumColumnWidth += table.getColumn(i).getWidth();
+                sumColumnWidth += table.getColumn(i).getWidth(); // columnOrder doesn't matter
 
             if (r.width > sumColumnWidth)
                 table.setSize(r.width, table.getSize().y);

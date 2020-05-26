@@ -846,7 +846,7 @@ public class DataTable extends LargeTable implements IDataControl {
             return;
         int columnIndex = getColumnIndexAt(event.x);
         selectedColumn = columnIndex < 0 ? null : getColumn(columnIndex);
-        Debug.println("DataTable: selected column " + columnIndex);
+        Debug.println("DataTable: selected column " + columnIndex + " which is " + selectedColumn.getText());
     }
 
     public String getSelectedField() {
