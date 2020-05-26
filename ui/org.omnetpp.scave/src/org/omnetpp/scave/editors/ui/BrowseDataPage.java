@@ -155,7 +155,7 @@ public class BrowseDataPage extends FormEditorPage {
 
         // add actions to the toolbar
         ScaveEditorActions actions = scaveEditor.getActions();
-        addToToolbar(actions.copyDataToClipboardAction);
+        addToToolbar(actions.copyRowsToClipboardAction);
 
         DropdownAction exportDataAction = new DropdownAction("Export Data", "Export In: ", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_EXPORT), false);
         actions.createExportDataMenu(exportDataAction.getMenuManager());
@@ -229,7 +229,7 @@ public class BrowseDataPage extends FormEditorPage {
             contextMenuManager.add(setFilterSubmenu);
             contextMenuManager.add(new Separator());
 
-            contextMenuManager.add(actions.copyDataToClipboardAction);
+            contextMenuManager.add(actions.copyRowsToClipboardAction);
             contextMenuManager.add(actions.createExportDataMenu("Export Data"));
             contextMenuManager.add(new Separator());
 
