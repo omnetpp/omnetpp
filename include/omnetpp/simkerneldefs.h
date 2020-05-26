@@ -22,6 +22,8 @@
 #include <cstdint>
 #include "platdep/platdefs.h"
 
+namespace omnetpp {
+
 // OMNeT++ version, (major<<8)|minor
 #define OMNETPP_VERSION  0x0600
 
@@ -68,7 +70,6 @@
 #define ASSERT2(expr,text)  ((void)0)
 #endif
 
-
 /**
  * @brief Sequence number of events during the simulation. Events are numbered from one.
  * (Event number zero is reserved for network setup and initialization.)
@@ -100,6 +101,8 @@ typedef uint64_t uintval_t;
  * @ingroup SimSupport
  */
 [[deprecated]] typedef intval_t intpar_t;
+
+} // namespace
 
 #endif
 
