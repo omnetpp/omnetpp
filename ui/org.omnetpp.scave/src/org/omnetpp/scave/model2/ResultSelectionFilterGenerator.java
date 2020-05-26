@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
@@ -17,9 +16,9 @@ import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.InterruptedFlag;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
-import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.engine.Scave;
+import org.omnetpp.scave.model.ResultType;
 
 /**
  * Given a set of selected results (an IDList of selected items, out of an IDList
@@ -37,6 +36,106 @@ public class ResultSelectionFilterGenerator {
 
     static class ColumnValueCounts {
         Map<String, AttributeValueCounts> valueCounts;
+    }
+
+    /**
+     * Given a set of selected results (an IDList of selected items, out of an IDList
+     * of "all" items), generates a filter expression that results in the "target" IDList,
+     * when used to filter the second one. Tries to keep the expression short and reasonable.
+     */
+    public static String getFilter(IDList target, IDList all, ResultFileManager manager, IProgressMonitor monitor, InterruptedFlag interrupted) throws InterruptedException {
+        return ResultFileManager.callWithReadLock(manager, () -> {
+            if (monitor != null)
+                monitor.beginTask("Generating filter", 1);
+
+            if (!target.isSubsetOf(all))
+                throw new IllegalArgumentException("IDs to be selected must be a subset of all IDs");
+
+            return doGetFilter(target, all, manager, monitor, interrupted);
+        });
+    }
+
+    protected static String doGetFilter(IDList target, IDList all, ResultFileManager manager, IProgressMonitor monitor, InterruptedFlag interrupted) throws InterruptedException {
+
+        checkMonitor(monitor);
+
+        String approxFilter = getApproximateFilter(target, all, manager, interrupted);
+
+        checkMonitor(monitor);
+
+        if (debug) {
+            Debug.println("getFilter, trying to reduce " + all.size() + " IDs to " + target.size());
+            Debug.println("approx filter is: " + approxFilter);
+        }
+
+
+        IDList approxMatching = Debug.timed("approxfilter", 1, () -> manager.filterIDList(all, approxFilter, -1, interrupted));
+
+        checkMonitor(monitor);
+
+        if (debug)
+            Debug.println("approx matching count: " + approxMatching.size());
+
+        IDList approxNotMatching = all.subtract(approxMatching);
+
+        IDList toBeExcluded = approxMatching.subtract(target);
+        IDList toBeIncluded = target.subtract(approxMatching);
+
+        String includeFilter = null;
+        if (!toBeIncluded.isEmpty()) {
+            if (debug)
+                Debug.println("computing include filter...");
+            includeFilter = doGetFilter(toBeIncluded, approxNotMatching,  manager, monitor, interrupted);
+            if (debug)
+                Debug.println("include filter: " + includeFilter);
+        }
+
+        String excludeFilter = null;
+        if (!toBeExcluded.isEmpty()) {
+            if (debug)
+                Debug.println("computing exclude filter...");
+            excludeFilter = doGetFilter(toBeExcluded, approxMatching, manager, monitor, interrupted);
+            if (debug)
+                Debug.println("exclude filter: " + excludeFilter);
+        }
+
+        boolean haveInclude = includeFilter != null && !includeFilter.equals("(\n    *\n)");
+        boolean haveExclude = excludeFilter != null && !excludeFilter.equals("(\n    *\n)");
+
+        if (approxFilter.equals("*")) {
+            String result = "";
+
+            if (haveInclude) {
+                if (haveExclude)
+                    result += " (\n" + StringUtils.indentLines(includeFilter, "    ") + "\n)";
+                else
+                    result += includeFilter;
+            }
+
+            if (haveExclude) {
+                if (haveInclude)
+                    result += "\n AND \n";
+
+                result += "NOT (\n" + StringUtils.indentLines(excludeFilter, "    ") + "\n)";
+            }
+
+            return result.isEmpty() ? "*" : result;
+        }
+        else {
+            if (!haveInclude && !haveExclude)
+                return approxFilter;
+            else {
+                String result = "(\n" + StringUtils.indentLines(approxFilter, "    ") + "\n)";
+
+                if (haveInclude)
+                    result += " OR (\n" + StringUtils.indentLines(includeFilter, "    ") + "\n)";
+
+                if (haveExclude)
+                    result += " AND NOT (\n" + StringUtils.indentLines(excludeFilter, "    ") + "\n)";
+
+                return result;
+            }
+        }
     }
 
     // TODO reasonable name
@@ -164,111 +263,14 @@ public class ResultSelectionFilterGenerator {
         return doMakeQuickFilter(target, manager);
     }
 
-    public static String getFilter(IDList target, IDList all, ResultFileManager manager, IProgressMonitor monitor, InterruptedFlag interrupted) throws InterruptedException {
-        return ResultFileManager.callWithReadLock(manager, () -> {
-            if (monitor != null)
-                monitor.beginTask("Generating filter", 1);
-
-            if (!target.isSubsetOf(all))
-                throw new IllegalArgumentException("IDs to be selected must be a subset of all IDs");
-
-            return doGetFilter(target, all, manager, monitor, interrupted);
-        });
-    }
-
-    protected static String doGetFilter(IDList target, IDList all, ResultFileManager manager, IProgressMonitor monitor, InterruptedFlag interrupted) throws InterruptedException {
-
-        checkMonitor(monitor);
-
-        String approxFilter = getApproximateFilter(target, all, manager, interrupted);
-
-        checkMonitor(monitor);
-
-        if (debug) {
-            Debug.println("getFilter, trying to reduce " + all.size() + " IDs to " + target.size());
-            Debug.println("approx filter is: " + approxFilter);
-        }
-
-
-        IDList approxMatching = Debug.timed("approxfilter", 1, () -> manager.filterIDList(all, approxFilter, -1, interrupted));
-
-        checkMonitor(monitor);
-
-        if (debug)
-            Debug.println("approx matching count: " + approxMatching.size());
-
-        IDList approxNotMatching = all.subtract(approxMatching);
-
-        IDList toBeExcluded = approxMatching.subtract(target);
-        IDList toBeIncluded = target.subtract(approxMatching);
-
-        String includeFilter = null;
-        if (!toBeIncluded.isEmpty()) {
-            if (debug)
-                Debug.println("computing include filter...");
-            includeFilter = doGetFilter(toBeIncluded, approxNotMatching,  manager, monitor, interrupted);
-            if (debug)
-                Debug.println("include filter: " + includeFilter);
-        }
-
-        String excludeFilter = null;
-        if (!toBeExcluded.isEmpty()) {
-            if (debug)
-                Debug.println("computing exclude filter...");
-            excludeFilter = doGetFilter(toBeExcluded, approxMatching, manager, monitor, interrupted);
-            if (debug)
-                Debug.println("exclude filter: " + excludeFilter);
-        }
-
-        boolean haveInclude = includeFilter != null && !includeFilter.equals("(\n    *\n)");
-        boolean haveExclude = excludeFilter != null && !excludeFilter.equals("(\n    *\n)");
-
-        if (approxFilter.equals("*")) {
-            String result = "";
-
-            if (haveInclude) {
-                if (haveExclude)
-                    result += " (\n" + StringUtils.indentLines(includeFilter, "    ") + "\n)";
-                else
-                    result += includeFilter;
-            }
-
-            if (haveExclude) {
-                if (haveInclude)
-                    result += "\n AND \n";
-
-                result += "NOT (\n" + StringUtils.indentLines(excludeFilter, "    ") + "\n)";
-            }
-
-            return result.isEmpty() ? "*" : result;
-        }
-        else {
-            if (!haveInclude && !haveExclude)
-                return approxFilter;
-            else {
-                String result = "(\n" + StringUtils.indentLines(approxFilter, "    ") + "\n)";
-
-                if (haveInclude)
-                    result += " OR (\n" + StringUtils.indentLines(includeFilter, "    ") + "\n)";
-
-                if (haveExclude)
-                    result += " AND NOT (\n" + StringUtils.indentLines(excludeFilter, "    ") + "\n)";
-
-                return result;
-            }
-        }
-    }
-
-    //--------------- basically unused code from here on -------------------
-
-    //TODO currently unused
+/*
     public static String getIDListAsFilterExpression(IDList allIDs, IDList ids, String[] runidFields, String viewFilter, ResultFileManager manager, IProgressMonitor monitor, InterruptedFlag interrupted) throws InterruptedException {
         return ResultFileManager.callWithReadLock(manager,
                 () -> doGetIDListAsFilterExpression(allIDs, ids, runidFields, viewFilter, manager, monitor, interrupted)
         );
     }
 
-    //TODO currently unused
+
     protected static String doGetIDListAsFilterExpression(IDList allIDs, IDList ids, String[] runidFields, String viewFilter, ResultFileManager manager, IProgressMonitor monitor, InterruptedFlag interrupted) throws InterruptedException {
         IDList allItemsOfType = allIDs;
         IDList itemsMatchingViewFilter = manager.filterIDList(allItemsOfType, viewFilter);
@@ -365,6 +367,7 @@ public class ResultSelectionFilterGenerator {
         }
         return sb.toString();
     }
+*/
 
     /**
      * Generate a filter string that produces the selected elements on a panel in the
