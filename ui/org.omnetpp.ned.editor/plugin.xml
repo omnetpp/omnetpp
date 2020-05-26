@@ -68,7 +68,7 @@
             name="Network"
             preferredPerspectives="org.omnetpp.main.OmnetppPerspective, org.eclipse.cdt.ui.CPerspective">
          <description>
-            Create a new simulation (NED and ini files)
+            Create a new Network
          </description>
       </wizard>
       <wizard
@@ -80,7 +80,7 @@
             name="Simulation"
             preferredPerspectives="org.omnetpp.main.OmnetppPerspective, org.eclipse.cdt.ui.CPerspective">
          <description>
-            Create a new Network
+            Create a new simulation (NED and ini files)
          </description>
       </wizard>
    </extension>
