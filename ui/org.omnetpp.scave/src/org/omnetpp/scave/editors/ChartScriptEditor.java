@@ -582,6 +582,8 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
     private void addToolbarActions() {
         saveTempChartAction = new SaveTempChartAction();
         gotoChartDefinitionAction = new GotoChartDefinitionAction();
+        toggleAutoUpdateAction = new ToggleAutoUpdateAction();
+        toggleAutoUpdateAction.setChecked(true);
 
         formEditor.addToToolbar(saveTempChartAction);
         formEditor.addToToolbar(gotoChartDefinitionAction);
@@ -592,9 +594,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         formEditor.addSeparatorToToolbar();
 
         formEditor.addToToolbar(new EditChartPropertiesAction());
-
-        toggleAutoUpdateAction = new ToggleAutoUpdateAction();
-        toggleAutoUpdateAction.setChecked(true);
+        formEditor.addToToolbar(toggleShowSourceAction);
 
         if (chart.getType() == ChartType.MATPLOTLIB) {
             formEditor.addSeparatorToToolbar();
@@ -622,7 +622,6 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         }
 
         formEditor.addSeparatorToToolbar();
-        formEditor.addToToolbar(toggleShowSourceAction);
         formEditor.addToToolbar(toggleAutoUpdateAction);
         formEditor.addToToolbar(new RefreshChartAction());
         formEditor.addToToolbar(killAction = new KillPythonProcessAction());
