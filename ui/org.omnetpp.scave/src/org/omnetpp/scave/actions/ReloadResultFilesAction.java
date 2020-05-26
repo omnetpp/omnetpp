@@ -21,8 +21,7 @@ import org.omnetpp.scave.editors.ScaveEditor;
 public class ReloadResultFilesAction extends AbstractScaveAction {
 
     public ReloadResultFilesAction() {
-        setText("Reload");
-        setDescription("Reload results files");
+        setText("Reload All Files");
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_RELOADFILES));
     }
 

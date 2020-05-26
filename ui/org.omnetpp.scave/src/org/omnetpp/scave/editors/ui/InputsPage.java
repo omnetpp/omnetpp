@@ -86,13 +86,13 @@ public class InputsPage extends FormEditorPage {
 
         // toolbar
         ScaveEditorActions actions = scaveEditor.getActions();
+        addToToolbar(new CollapseTreeAction(treeViewer));
+        addSeparatorToToolbar();
         addToToolbar(new NewInputFileAction());
         addToToolbar(actions.editInputFileAction);
         addToToolbar(actions.removeAction);
-        addToToolbar(actions.refreshResultFilesAction);
-        addToToolbar(actions.reloadResultFilesAction);
         addSeparatorToToolbar();
-        addToToolbar(new CollapseTreeAction(treeViewer));
+        addToToolbar(actions.refreshResultFilesAction);
 
         treeViewer.getTree().setFocus();
 

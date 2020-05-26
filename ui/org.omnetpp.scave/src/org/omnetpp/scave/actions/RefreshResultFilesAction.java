@@ -22,8 +22,7 @@ import org.omnetpp.scave.editors.ScaveEditor;
 public class RefreshResultFilesAction extends AbstractScaveAction {
 
     public RefreshResultFilesAction() {
-        setText("Refresh");
-        setDescription("Refresh results files");
+        setText("Refresh Files");
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_REFRESHFILES));
     }
 

@@ -175,12 +175,15 @@ public class BrowseDataPage extends FormEditorPage {
         addToToolbar(chooseTableColumnsAction);
 
         addToToolbar(actions.showFieldsAsScalarsAction);
-
         addSeparatorToToolbar();
 
         addToToolbar(new IncreaseDecimalPlacesAction());
         addToToolbar(new DecreaseDecimalPlacesAction());  //TODO get these refreshed when min/max precision is reached
         addSeparatorToToolbar();
+
+        addToToolbar(actions.refreshResultFilesAction);
+        addSeparatorToToolbar();
+
         addToToolbar(actions.plotAction);
 
         // show/hide actions that are specific to tab pages
