@@ -22,7 +22,7 @@ import org.omnetpp.scave.editors.ui.BrowseDataPage;
 public class CopyRowsToClipboardAction extends AbstractScaveAction {
     public CopyRowsToClipboardAction() {
         setText("Copy Rows");
-        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_COPYDATA));
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_COPY));
     }
 
     @Override
