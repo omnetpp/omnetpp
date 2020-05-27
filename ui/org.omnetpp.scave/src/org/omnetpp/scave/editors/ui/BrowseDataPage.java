@@ -223,18 +223,21 @@ public class BrowseDataPage extends FormEditorPage {
 
             if (panel == getScalarsPanel())
                 contextMenuManager.add(actions.showFieldsAsScalarsAction);
+            contextMenuManager.add(actions.copyRowsToClipboardAction);
+            if (panel != getAllPanel())
+                contextMenuManager.add(new CopySelectedCellAction());
             contextMenuManager.add(new CopySelectionAsFilterAction());
-            MenuManager setFilterSubmenu = new MenuManager("Set Filter of Chart", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_SETFILTER), null);
+            contextMenuManager.add(new Separator());
 
+            if (panel != getAllPanel())
+                contextMenuManager.add(new SetFilterBySelectedCellAction());
+            MenuManager setFilterSubmenu = new MenuManager("Set Filter of Chart", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_SETFILTER), null);
             for (AnalysisItem i : scaveEditor.getAnalysis().getCharts().getCharts())
                 if (i instanceof Chart && ((Chart)i).getProperty("filter") != null)
                     setFilterSubmenu.add(new SetChartFilterAction((Chart)i));
             contextMenuManager.add(setFilterSubmenu);
             contextMenuManager.add(new Separator());
 
-            contextMenuManager.add(actions.copyRowsToClipboardAction);
-            contextMenuManager.add(new CopySelectedCellAction());
-            contextMenuManager.add(new SetFilterBySelectedCellAction());
             contextMenuManager.add(actions.createExportDataMenu("Export Data"));
             contextMenuManager.add(new Separator());
 
