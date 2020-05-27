@@ -58,15 +58,7 @@ public class ScaveImages {
     public static final String IMG_ETOOL16_REFRESH2 = "icons/full/etool16/refresh2.png";
     public static final String IMG_ETOOL16_SETWIDTH = "icons/full/etool16/setwidth.png";
     public static final String IMG_ETOOL16_SETFILTER = "icons/full/etool16/setfilter.png";
-    public static final String IMG_ETOOL16_SHOWBOTH = "icons/full/etool16/showboth.png";
-    public static final String IMG_ETOOL16_SHOWCHART = "icons/full/etool16/showchart.png";
     public static final String IMG_ETOOL16_SHOWFIELDS = "icons/full/etool16/showfields.png";
-    public static final String IMG_ETOOL16_SHOWSCRIPT = "icons/full/etool16/showscript.png";
-    public static final String IMG_ETOOL16_SPLITTER2 = "icons/full/etool16/splitter2.png";
-    public static final String IMG_ETOOL16_SPLITTERLEFT = "icons/full/etool16/splitterleft.png";
-    public static final String IMG_ETOOL16_SPLITTER = "icons/full/etool16/splitter.png";
-    public static final String IMG_ETOOL16_SPLITTERRIGHT = "icons/full/etool16/splitterright.png";
-    public static final String IMG_ETOOL16_SPLITVIEW = "icons/full/etool16/splitview.png";
     public static final String IMG_ETOOL16_TRASHCAN = "icons/full/etool16/trashcan.png";
     public static final String IMG_ETOOL16_TREELEVELS = "icons/full/etool16/treelevels.png";
     public static final String IMG_ETOOL16_VIEW_ICONS = "icons/full/etool16/view_icons.png";
@@ -79,7 +71,6 @@ public class ScaveImages {
     public static final String IMG_ETOOL16_ZOOM = "icons/full/etool16/zoom.png";
     public static final String IMG_ETOOL16_ZOOMTOFIT_OLD = "icons/full/etool16/zoomtofit_old.png";
     public static final String IMG_ETOOL16_ZOOMTOFIT = "icons/full/etool16/zoomtofit.png";
-    public static final String IMG_EVIEW16_DATASET = "icons/full/eview16/dataset.gif";
     public static final String IMG_EVIEW16_OUTVECTOR = "icons/full/eview16/outvector.png";
     public static final String IMG_OBJ16_ADVANCEDFILTER = "icons/full/obj16/advancedfilter.png";
     public static final String IMG_OBJ16_BASICFILTER = "icons/full/obj16/basicfilter.png";
