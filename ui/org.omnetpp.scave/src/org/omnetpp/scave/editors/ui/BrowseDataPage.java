@@ -32,6 +32,7 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.CopySelectionAsFilterAction;
 import org.omnetpp.scave.actions.CreateTempChartFromTemplateAction;
 import org.omnetpp.scave.actions.analysismodel.SetChartFilterAction;
+import org.omnetpp.scave.actions.ui.CopySelectedCellAction;
 import org.omnetpp.scave.actions.ui.DecreaseDecimalPlacesAction;
 import org.omnetpp.scave.actions.ui.FlatModuleTreeAction;
 import org.omnetpp.scave.actions.ui.IncreaseDecimalPlacesAction;
@@ -74,7 +75,6 @@ public class BrowseDataPage extends FormEditorPage {
     private Runnable scheduledUpdate;
     private boolean isContentValid = false;
 
-    private SetFilterBySelectedCellAction setFilterAction = new SetFilterBySelectedCellAction();
     private int numericPrecision = 6;
 
     private DropdownAction treeLevelsAction;
@@ -233,10 +233,11 @@ public class BrowseDataPage extends FormEditorPage {
             contextMenuManager.add(new Separator());
 
             contextMenuManager.add(actions.copyRowsToClipboardAction);
+            contextMenuManager.add(new CopySelectedCellAction());
+            contextMenuManager.add(new SetFilterBySelectedCellAction());
             contextMenuManager.add(actions.createExportDataMenu("Export Data"));
             contextMenuManager.add(new Separator());
 
-            contextMenuManager.add(setFilterAction);
             if (panel.getDataControl() instanceof DataTable)
                 contextMenuManager.add(new ChooseTableColumnsAction((DataTable)panel.getDataControl()));
             if (panel.getDataControl() instanceof DataTree)

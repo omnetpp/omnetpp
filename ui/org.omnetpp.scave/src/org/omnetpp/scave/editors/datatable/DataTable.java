@@ -858,6 +858,13 @@ public class DataTable extends LargeTable implements IDataControl {
         return null;
     }
 
+    public String getSelectedCell() {
+        if (getItemCount() == 0 || selectedColumn == null || selectedColumn.isDisposed())
+            return null;
+        Column column = (Column)selectedColumn.getData(COLUMN_KEY);
+        return column == null ? null : getCellValue(getFocusIndex(), column);
+    }
+
     public void setSelectedID(long id) {
         int index = idList.indexOf(id);
         if (index != -1)
