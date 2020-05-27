@@ -10,6 +10,8 @@ package org.omnetpp.scave.actions.ui;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.common.Debug;
+import org.omnetpp.scave.ScaveImages;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.AbstractScaveAction;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.DataTable;
@@ -28,8 +30,9 @@ import org.omnetpp.scave.model2.AndFilter;
 public class SetFilterBySelectedCellAction extends AbstractScaveAction
 {
     public SetFilterBySelectedCellAction() {
-        setText("Set Cell Value As Filter");
-        setDescription("Sets the filter according to the clicked cell.");
+        setText("Filter Rows by Cell Value");
+        setDescription("Sets the panel filter according to the clicked cell.");
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_SETFILTER));
     }
 
     @Override
