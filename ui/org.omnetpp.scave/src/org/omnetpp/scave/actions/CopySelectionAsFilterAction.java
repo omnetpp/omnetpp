@@ -19,11 +19,11 @@ import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model2.ResultSelectionFilterGenerator;
 
-public class CopyChartFilterAction extends AbstractScaveAction {
+public class CopySelectionAsFilterAction extends AbstractScaveAction {
 
-    public CopyChartFilterAction() {
-        setText("Copy Filter Expression");
-        setToolTipText("Generate and copy result filter expression to clipboard");
+    public CopySelectionAsFilterAction() {
+        setText("Copy Selection As Filter Expression");
+        setToolTipText("Generate filter expression that matches the selected items");
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_COPY));
     }
 

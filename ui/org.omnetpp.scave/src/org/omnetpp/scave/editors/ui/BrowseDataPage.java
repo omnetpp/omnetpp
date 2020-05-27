@@ -29,7 +29,7 @@ import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog2;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.actions.CopyChartFilterAction;
+import org.omnetpp.scave.actions.CopySelectionAsFilterAction;
 import org.omnetpp.scave.actions.CreateTempChartFromTemplateAction;
 import org.omnetpp.scave.actions.analysismodel.SetChartFilterAction;
 import org.omnetpp.scave.actions.ui.DecreaseDecimalPlacesAction;
@@ -223,7 +223,7 @@ public class BrowseDataPage extends FormEditorPage {
 
             if (panel == getScalarsPanel())
                 contextMenuManager.add(actions.showFieldsAsScalarsAction);
-            contextMenuManager.add(new CopyChartFilterAction());
+            contextMenuManager.add(new CopySelectionAsFilterAction());
             MenuManager setFilterSubmenu = new MenuManager("Set Filter of Chart", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_SETFILTER), null);
 
             for (AnalysisItem i : scaveEditor.getAnalysis().getCharts().getCharts())
