@@ -14,6 +14,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.views.VectorBrowserView;
@@ -22,7 +23,7 @@ import org.omnetpp.scave.views.VectorBrowserView;
 public class ShowOutputVectorViewAction extends AbstractScaveAction {
     public ShowOutputVectorViewAction() {
         setText("Show Output Vector View");
-        setToolTipText("Show Output Vector View");
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_EVIEW16_OUTVECTOR));
     }
 
     @Override
