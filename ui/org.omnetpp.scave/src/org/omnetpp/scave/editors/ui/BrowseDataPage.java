@@ -65,8 +65,6 @@ import org.omnetpp.scave.model.ResultType;
 public class BrowseDataPage extends FormEditorPage {
     public static final int PROGRESSDIALOG_DELAY_MILLIS = 5000;
 
-    private boolean showFieldsAsScalars = false;
-
     // UI elements
     private Label label;
     private FilteredDataTabFolder tabFolder;
@@ -363,33 +361,30 @@ public class BrowseDataPage extends FormEditorPage {
         monitor.setTaskName("Refreshing Browse Data Page");
         monitor.beginTask("Refreshing content", 7);
 
-        monitor.subTask("Collecting data");
-        while (Display.getCurrent().readAndDispatch());
-        IDList items = manager.getAllItems(showFieldsAsScalars);
-        IDList vectors = manager.getAllVectors();
-        IDList scalars = manager.getAllScalars(showFieldsAsScalars);
-        IDList parameters = manager.getAllParameters();
-        IDList statisticsAndHistograms = manager.getAllStatistics().unionWith(manager.getAllHistograms());
-
         monitor.subTask("Refreshing All panel");
         while (Display.getCurrent().readAndDispatch());
+        IDList items = manager.getAllItems(tabFolder.getAllPanel().getShowFieldsAsScalars());
         tabFolder.getAllPanel().setIDList(items);
 
         monitor.subTask("Refreshing Scalars panel");
         while (Display.getCurrent().readAndDispatch());
+        IDList scalars = manager.getAllScalars(tabFolder.getScalarsPanel().getShowFieldsAsScalars());
         tabFolder.getScalarsPanel().setIDList(scalars);
 
         monitor.subTask("Refreshing Parameters panel");
         while (Display.getCurrent().readAndDispatch());
+        IDList parameters = manager.getAllParameters();
         tabFolder.getParametersPanel().setIDList(parameters);
 
         monitor.subTask("Refreshing Vectors panel");
         while (Display.getCurrent().readAndDispatch());
+        IDList vectors = manager.getAllVectors();
         tabFolder.getVectorsPanel().setIDList(vectors);
 
         monitor.subTask("Refreshing Histograms panel");
-        tabFolder.getHistogramsPanel().setIDList(statisticsAndHistograms);
         while (Display.getCurrent().readAndDispatch());
+        IDList statisticsAndHistograms = manager.getAllStatistics().unionWith(manager.getAllHistograms());
+        tabFolder.getHistogramsPanel().setIDList(statisticsAndHistograms);
 
         monitor.subTask("Refreshing tab titles");
         tabFolder.refreshPanelTitles();
@@ -437,12 +432,9 @@ public class BrowseDataPage extends FormEditorPage {
         return numericPrecision;
     }
 
-    public boolean getShowFieldsAsScalars() {
-        return showFieldsAsScalars;
-    }
-
     public void setShowFieldsAsScalars(boolean show) {
-        showFieldsAsScalars = show;
+        getAllPanel().setShowFieldsAsScalars(show);
+        getScalarsPanel().setShowFieldsAsScalars(show);
         refreshPage(scaveEditor.getResultFileManager());
     }
 }

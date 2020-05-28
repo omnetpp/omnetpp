@@ -394,8 +394,12 @@ public class ResultSelectionFilterGenerator {
         else {
             // user hit Ctrl+A, then manually unselected a few items
             ResultType type = dataPanel.getType();
-            String filter = type!=ResultType.HISTOGRAM ? "type =~ " + ResultItem.itemTypeToString(type.getValue()) :
+            String filter = type != ResultType.HISTOGRAM ? "type =~ " + ResultItem.itemTypeToString(type.getValue()) :
                 "(type =~ " + Scave.STATISTICS + " OR type=~ " +  Scave.HISTOGRAM + ")";
+
+            boolean fieldsShownAsScalars = dataPanel.getShowFieldsAsScalars();
+            if (type == ResultType.SCALAR && !fieldsShownAsScalars)
+                filter += " AND isfield =~ false";
 
             String panelFilter = dataPanel.getFilter();
             if (!panelFilter.equals("*"))

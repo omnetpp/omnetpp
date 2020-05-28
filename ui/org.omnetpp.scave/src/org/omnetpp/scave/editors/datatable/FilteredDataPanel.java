@@ -55,6 +55,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
     private IDataControl dataControl;
     private IDList idlist = new IDList(); // the unfiltered data list
     private ResultType type;
+    private boolean showFieldsAsScalars = false;
     private FocusManager focusManager;
     private int itemLimit = 100_000_000; // some sensible limit to the number of data items displayed, may be important with DataTree which isn't O(1)
     private Map<String,IDList> filterCache = new LinkedHashMap<>(); // keep order so we can discard oldest entries
@@ -116,6 +117,14 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
 
     public ResultType getType() {
         return type;
+    }
+
+    public void setShowFieldsAsScalars(boolean value) {
+        showFieldsAsScalars = value;
+    }
+
+    public boolean getShowFieldsAsScalars() {
+        return showFieldsAsScalars;
     }
 
     protected void initialize(ResultType type) {
