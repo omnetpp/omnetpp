@@ -36,14 +36,16 @@ public class ResultsProvider implements IScaveResultsPickleProvider {
     private ShmSendBufferManager sendBufferManager;
     private ResultsPickler pickler;
     private MemoizationCache memoizationCache;
+    private FilterCache filterCache;
     private InterruptedFlag interrupted;
 
-    public ResultsProvider(ResultFileManager rfm, PythonProcess proc, MemoizationCache mc) {
+    public ResultsProvider(ResultFileManager rfm, PythonProcess proc, MemoizationCache mc, FilterCache fc) {
         this.manager = rfm;
         this.sendBufferManager = proc.getShmSendBufferManager();
         this.interrupted = proc.getInterruptedFlag();
         this.pickler = new ResultsPickler(rfm, proc.getShmSendBufferManager(), interrupted);
         this.memoizationCache = mc;
+        this.filterCache = fc;
     }
 
     private interface PicklerFunction {
@@ -121,11 +123,13 @@ public class ResultsProvider implements IScaveResultsPickleProvider {
     }
 
     public String getResultsPickle(String filterExpression, List<String> rowTypes, boolean omitUnusedColumns, double simTimeStart, double simTimeEnd) throws PickleException, IOException {
+        int allTypes = ResultFileManager.PARAMETER | ResultFileManager.SCALAR | ResultFileManager.VECTOR | ResultFileManager.STATISTICS | ResultFileManager.HISTOGRAM;
         //TODO: cannot memoize due to the embedded vecx/vecy shmems (as we don't know about them)
-        IDList idList = memoizationCache.getCachedFilterResult(filterExpression);
+        IDList idList = filterCache.getFilterResult(allTypes, filterExpression);
         if (idList == null) {
-            idList = manager.filterIDList(manager.getAllParameters(), filterExpression);
-            memoizationCache.putCachedFilterResult(filterExpression, idList);
+            // TODO: should the GUI switch for including fields matter here? is that handled elsewhere?
+            idList = manager.filterIDList(manager.getAllItems(true), filterExpression);
+            filterCache.putFilterResult(allTypes, filterExpression, idList);
         }
         return pickler.getCsvResultsPickle(idList, toStringVector(rowTypes), omitUnusedColumns, simTimeStart, simTimeEnd).getNameAndSize();
     }
@@ -134,7 +138,7 @@ public class ResultsProvider implements IScaveResultsPickleProvider {
     public String getParamValuesPickle(String filterExpression, boolean includeAttrs) throws PickleException, IOException {
         Key key = new Key("getParamValuesPickle", filterExpression, includeAttrs);
         return memoize(key, () -> {
-            IDList idList = memoizationCache.getCachedFilterResult(filterExpression);
+            IDList idList = filterCache.getFilterResult(ResultFileManager.PARAMETER, filterExpression);
             if (idList == null)
                 idList = manager.filterIDList(manager.getAllParameters(), filterExpression); // no need to cache, as result will be (likely) memoized
             return pickler.getParamValuesPickle(idList, includeAttrs);
@@ -145,8 +149,9 @@ public class ResultsProvider implements IScaveResultsPickleProvider {
     public String getScalarsPickle(String filterExpression, boolean includeAttrs) throws PickleException, IOException {
         Key key = new Key("getScalarsPickle", filterExpression, includeAttrs);
         return memoize(key, () -> {
-            IDList idList = memoizationCache.getCachedFilterResult(filterExpression);
+            IDList idList = filterCache.getFilterResult(ResultFileManager.SCALAR, filterExpression);
             if (idList == null)
+                // TODO: should the GUI switch for including fields matter here? is that handled elsewhere?
                 idList = manager.filterIDList(manager.getAllScalars(true), filterExpression, -1, interrupted); // no need to cache, as result will be (likely) memoized
             return pickler.getScalarsPickle(idList, includeAttrs);
         });
@@ -155,10 +160,10 @@ public class ResultsProvider implements IScaveResultsPickleProvider {
     @Override
     public String getVectorsPickle(String filterExpression, boolean includeAttrs, double simTimeStart, double simTimeEnd) throws PickleException, IOException {
         //TODO: cannot memoize due to the embedded vecx/vecy shmems (as we don't know about them)
-        IDList idList = memoizationCache.getCachedFilterResult(filterExpression);
+        IDList idList = filterCache.getFilterResult(ResultFileManager.VECTOR, filterExpression);
         if (idList == null) {
-            idList = manager.filterIDList(manager.getAllParameters(), filterExpression, -1, interrupted);
-            memoizationCache.putCachedFilterResult(filterExpression, idList);
+            idList = manager.filterIDList(manager.getAllVectors(), filterExpression, -1, interrupted);
+            filterCache.putFilterResult(ResultFileManager.VECTOR, filterExpression, idList);
         }
         return pickler.getVectorsPickle(filterExpression, includeAttrs, simTimeStart, simTimeEnd).getNameAndSize();
     }
@@ -167,7 +172,9 @@ public class ResultsProvider implements IScaveResultsPickleProvider {
     public String getStatisticsPickle(String filterExpression, boolean includeAttrs) throws PickleException, IOException {
         Key key = new Key("getStatisticsPickle", filterExpression, includeAttrs);
         return memoize(key, () -> {
-            IDList idList = memoizationCache.getCachedFilterResult(filterExpression);
+            IDList idList = filterCache.getFilterResult(ResultFileManager.STATISTICS | ResultFileManager.HISTOGRAM, filterExpression);
+            if (idList != null)
+                    idList = idList.filterByTypes(ResultFileManager.STATISTICS);
             if (idList == null)
                 idList = manager.filterIDList(manager.getAllStatistics(), filterExpression, -1, interrupted); // no need to cache, as result will be (likely) memoized
             return pickler.getStatisticsPickle(idList, includeAttrs);
@@ -178,7 +185,9 @@ public class ResultsProvider implements IScaveResultsPickleProvider {
     public String getHistogramsPickle(String filterExpression, boolean includeAttrs) throws PickleException, IOException {
         Key key = new Key("getHistogramsPickle", filterExpression, includeAttrs);
         return memoize(key, () -> {
-            IDList idList = memoizationCache.getCachedFilterResult(filterExpression);
+            IDList idList = filterCache.getFilterResult(ResultFileManager.HISTOGRAM | ResultFileManager.HISTOGRAM, filterExpression);
+            if (idList != null)
+                idList = idList.filterByTypes(ResultFileManager.HISTOGRAM);
             if (idList == null)
                 idList = manager.filterIDList(manager.getAllHistograms(), filterExpression, -1, interrupted); // no need to cache, as result will be (likely) memoized
             return pickler.getHistogramsPickle(idList, includeAttrs);

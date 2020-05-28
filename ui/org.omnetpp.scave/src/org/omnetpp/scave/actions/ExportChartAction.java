@@ -54,7 +54,7 @@ public class ExportChartAction extends AbstractScaveAction {
                         extraProperties.putAll(ChartExport.makeExtraPropertiesForImageExport(result.imageTargetFolder, result.imageFormat, result.imageDpi));
                     if (result.exportData)
                         extraProperties.putAll(ChartExport.makeExtraPropertiesForDataExport(result.dataTargetFolder));
-                    ChartExport.exportChart(chart, extraProperties, chartsDir, editor.getResultFileManager());
+                    ChartExport.exportChart(chart, extraProperties, chartsDir, editor.getResultFileManager(), editor.getMemoizationCache(), editor.getFilterCache());
                 }
             }
             catch (OperationCanceledException e) {

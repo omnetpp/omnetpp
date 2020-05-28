@@ -1,14 +1,12 @@
 package org.omnetpp.scave.editors;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.engine.ByteVector;
-import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 
 /**
@@ -52,13 +50,11 @@ public class MemoizationCache {
 
         @Override
         public String toString() {
-            return "Key(" + method + ": " + StringUtils.join(args, ",") + ")";
+            return "PickleKey(" + method + ": " + StringUtils.join(args, ",") + ")";
         }
     }
 
     private Map<Key,ByteVector> cache = new LinkedHashMap<>(); // for FIFO order
-
-    private Map<String,IDList> filterCache = new HashMap<>();
 
     public MemoizationCache(ResultFileManager rfm) {
         this(rfm, Long.MAX_VALUE);
@@ -108,20 +104,9 @@ public class MemoizationCache {
         cache.remove(entry.getKey());
     }
 
-    public IDList getCachedFilterResult(String filterExpression) {
-        checkSerial();
-        return filterCache.get(filterExpression);
-    }
-
-    public void putCachedFilterResult(String filterExpression, IDList result) {
-        checkSerial();
-        filterCache.put(filterExpression, result);
-    }
-
     public void clear() {
         cache.clear();
         memoryUsed = 0;
-        filterCache.clear();
     }
 
 }

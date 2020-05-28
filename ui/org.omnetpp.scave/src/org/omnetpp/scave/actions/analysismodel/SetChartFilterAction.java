@@ -8,7 +8,6 @@
 package org.omnetpp.scave.actions.analysismodel;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
@@ -17,9 +16,6 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.AbstractScaveAction;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
-import org.omnetpp.scave.engine.IDList;
-import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.commands.SetChartPropertyCommand;
 import org.omnetpp.scave.model2.ResultSelectionFilterGenerator;
@@ -48,7 +44,8 @@ public class SetChartFilterAction extends AbstractScaveAction {
     protected void doRun(ScaveEditor editor, ISelection selection) throws CoreException {
         IDListSelection idListSelection = (IDListSelection)selection;
         String filter = ResultSelectionFilterGenerator.makeFilterForIDListSelection(idListSelection);
-        editor.getMemoizationCache().putCachedFilterResult(filter, idListSelection.getIDList());
+        int types = idListSelection.getSource().getType().getItemTypes();
+        editor.getFilterCache().putFilterResult(types, filter, idListSelection.getIDList());
 
         SetChartPropertyCommand command = new SetChartPropertyCommand(chart, "filter", filter);
         editor.getChartsPage().getCommandStack().execute(command);

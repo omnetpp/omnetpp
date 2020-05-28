@@ -7,16 +7,12 @@
 
 package org.omnetpp.scave.actions;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
-import org.omnetpp.scave.engine.IDList;
-import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartTemplate;
 import org.omnetpp.scave.model2.ResultSelectionFilterGenerator;
@@ -56,7 +52,8 @@ public class CreateTempChartFromTemplateAction extends AbstractScaveAction {
         editor.getChartTemplateRegistry().markTemplateUsage(template);
 
         String filter = ResultSelectionFilterGenerator.makeFilterForIDListSelection(idListSelection);
-        editor.getMemoizationCache().putCachedFilterResult(filter, idListSelection.getIDList());
+        int types = idListSelection.getSource().getType().getItemTypes();
+        editor.getFilterCache().putFilterResult(types, filter, idListSelection.getIDList());
         chart.setPropertyValue("filter", filter);
         chart.setTemporary(true);
         editor.openPage(chart);
@@ -65,6 +62,6 @@ public class CreateTempChartFromTemplateAction extends AbstractScaveAction {
 
     @Override
     protected boolean isApplicable(ScaveEditor editor, ISelection selection) {
-        return selection instanceof IDListSelection && !selection.isEmpty() && ((IDListSelection)selection).getStatisticsCount() == 0;
+        return selection instanceof IDListSelection && !selection.isEmpty();
     }
 }

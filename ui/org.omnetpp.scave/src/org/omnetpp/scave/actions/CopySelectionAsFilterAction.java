@@ -31,7 +31,8 @@ public class CopySelectionAsFilterAction extends AbstractScaveAction {
     protected void doRun(ScaveEditor editor, ISelection selection) throws CoreException {
         IDListSelection idListSelection = (IDListSelection)selection;
         String filter = ResultSelectionFilterGenerator.makeFilterForIDListSelection(idListSelection);
-        editor.getMemoizationCache().putCachedFilterResult(filter, idListSelection.getIDList());
+        int types = idListSelection.getSource().getType().getItemTypes();
+        editor.getFilterCache().putFilterResult(types, filter, idListSelection.getIDList());
         new Clipboard(Display.getCurrent()).setContents(new Object[] {filter}, new Transfer[] {TextTransfer.getInstance()});
     }
 

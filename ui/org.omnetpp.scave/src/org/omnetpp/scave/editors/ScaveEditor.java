@@ -312,6 +312,11 @@ public class ScaveEditor extends MultiPageEditorPartExt
     private MemoizationCache memoizationCache;
 
     /**
+     * Caches filter results
+     */
+    private FilterCache filterCache;
+
+    /**
      * The constructor.
      */
     public ScaveEditor() {
@@ -327,6 +332,10 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
     public MemoizationCache getMemoizationCache() {
         return memoizationCache;
+    }
+
+    public FilterCache getFilterCache() {
+        return filterCache;
     }
 
     public InputsPage getInputsPage() {
@@ -390,6 +399,11 @@ public class ScaveEditor extends MultiPageEditorPartExt
         if (memoizationCache != null) {
             memoizationCache.clear(); // ditto: ensure that memory is freed even if the ScaveEditor object or parts of it are leaked
             memoizationCache = null;
+        }
+
+        if (filterCache != null) {
+            filterCache.clear();
+            filterCache = null;
         }
 
         super.dispose();
@@ -524,6 +538,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
         IFile inputFile = ((IFileEditorInput) getEditorInput()).getFile();
         tracker = new ResultFilesTracker(manager, analysis.getInputs(), inputFile.getParent());
         memoizationCache = new MemoizationCache(manager);
+        filterCache = new FilterCache(manager);
         analysis.addListener(this);
         analysis.addListener(tracker);
     }

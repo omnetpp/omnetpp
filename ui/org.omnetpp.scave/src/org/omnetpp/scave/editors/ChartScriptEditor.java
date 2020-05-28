@@ -94,7 +94,6 @@ import org.omnetpp.scave.actions.ui.GotoChartDefinitionAction;
 import org.omnetpp.scave.actions.ui.ToggleShowSourceAction;
 import org.omnetpp.scave.charting.PlotBase;
 import org.omnetpp.scave.editors.ui.ChartPage;
-import org.omnetpp.scave.editors.ui.FormEditorPage;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Chart.ChartType;
 import org.omnetpp.scave.model.IModelChangeListener;
@@ -336,7 +335,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
             };
 
             if (chart.getType() == ChartType.MATPLOTLIB) {
-                matplotlibChartViewer = new MatplotlibChartViewer(sashForm, chart, scaveEditor.getPythonProcessPool(), scaveEditor.getResultFileManager(), scaveEditor.getMemoizationCache());
+                matplotlibChartViewer = new MatplotlibChartViewer(sashForm, chart, scaveEditor.getPythonProcessPool(), scaveEditor.getResultFileManager(), scaveEditor.getMemoizationCache(), scaveEditor.getFilterCache());
 
                 matplotlibChartViewer.addOutputListener(outputListener);
                 matplotlibChartViewer.addStateChangeListener(stateChangeListener);
@@ -345,7 +344,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
                 plotWidget.setMenu(createMenuManager().createContextMenu(plotWidget));
             }
             else {
-                nativeChartViewer = new NativeChartViewer(sashForm, chart, scaveEditor.getPythonProcessPool(), scaveEditor.getResultFileManager(), scaveEditor.getMemoizationCache());
+                nativeChartViewer = new NativeChartViewer(sashForm, chart, scaveEditor.getPythonProcessPool(), scaveEditor.getResultFileManager(), scaveEditor.getMemoizationCache(), scaveEditor.getFilterCache());
 
                 nativeChartViewer.addOutputListener(outputListener);
                 nativeChartViewer.addStateChangeListener(stateChangeListener);

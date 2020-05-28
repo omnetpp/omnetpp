@@ -19,6 +19,7 @@ import org.omnetpp.scave.charting.BarPlot;
 import org.omnetpp.scave.charting.HistogramPlot;
 import org.omnetpp.scave.charting.LinePlot;
 import org.omnetpp.scave.charting.PlotBase;
+import org.omnetpp.scave.editors.FilterCache;
 import org.omnetpp.scave.editors.MemoizationCache;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
@@ -35,8 +36,8 @@ public class NativeChartViewer extends ChartViewerBase {
     private PlotBase plot;
     private NativeChartPlotter chartPlotter;
 
-    public NativeChartViewer(Composite parent, Chart chart, PythonProcessPool pool, ResultFileManager rfm, MemoizationCache memoizationCache) {
-        super(chart, pool, rfm, memoizationCache);
+    public NativeChartViewer(Composite parent, Chart chart, PythonProcessPool pool, ResultFileManager rfm, MemoizationCache memoizationCache, FilterCache filterCache) {
+        super(chart, pool, rfm, memoizationCache, filterCache);
 
         switch (chart.getType()) {
         case BAR:

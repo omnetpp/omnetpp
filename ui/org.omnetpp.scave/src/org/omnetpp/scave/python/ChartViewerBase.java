@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.Debug;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ChartProvider;
+import org.omnetpp.scave.editors.FilterCache;
 import org.omnetpp.scave.editors.MemoizationCache;
 import org.omnetpp.scave.editors.ResultsProvider;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -35,17 +36,19 @@ public abstract class ChartViewerBase {
     protected PythonProcess proc = null;
     protected PythonProcessPool processPool;
     protected MemoizationCache memoizationCache;
+    protected FilterCache filterCache;
 
     protected List<IOutputListener> outputListeners = new ArrayList<IOutputListener>();
     protected List<IStateChangeListener> stateChangeListeners = new ArrayList<IStateChangeListener>();
 
     private ChartProvider chartProvider;
 
-    public ChartViewerBase(Chart chart, PythonProcessPool processPool, ResultFileManager rfm, MemoizationCache memoizationCache) {
+    public ChartViewerBase(Chart chart, PythonProcessPool processPool, ResultFileManager rfm, MemoizationCache memoizationCache, FilterCache filterCache) {
         this.processPool = processPool;
         this.chart = chart;
         this.rfm = rfm;
         this.memoizationCache = memoizationCache;
+        this.filterCache = filterCache;
     }
 
     public Chart getChart() {
@@ -83,7 +86,7 @@ public abstract class ChartViewerBase {
             proc.errorMonitoringThread.addOutputListener(l);
         }
 
-        proc.getEntryPoint().setResultsProvider(new ResultsProvider(rfm, proc, memoizationCache));
+        proc.getEntryPoint().setResultsProvider(new ResultsProvider(rfm, proc, memoizationCache, filterCache));
         proc.getEntryPoint().setChartProvider(chartProvider = new ChartProvider(chart));
 
         proc.getProcess().onExit().thenRun(() -> {

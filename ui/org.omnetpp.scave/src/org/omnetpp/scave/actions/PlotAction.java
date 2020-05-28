@@ -17,9 +17,7 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.engine.IDList;
-import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartTemplate;
 import org.omnetpp.scave.model2.ResultSelectionFilterGenerator;
@@ -50,7 +48,8 @@ public class PlotAction extends AbstractScaveAction {
         editor.getChartTemplateRegistry().markTemplateUsage(template);
 
         String filter = ResultSelectionFilterGenerator.makeFilterForIDListSelection(idListSelection);
-        editor.getMemoizationCache().putCachedFilterResult(filter, idList);
+        int type = idListSelection.getSource().getType().getItemTypes();
+        editor.getFilterCache().putFilterResult(type, filter, idList);
         chart.setPropertyValue("filter", filter);
         chart.setTemporary(true);
         editor.openPage(chart);
