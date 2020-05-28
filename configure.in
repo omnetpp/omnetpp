@@ -859,7 +859,7 @@ if test "$WITH_QTENV" = "yes"; then
     AC_PATH_PROGS(QMAKE, qmake qmake-qt5 qmake5, nope, path = $QT_PATH$PATH_SEPARATOR$PATH )
 
     if test "$QMAKE" = nope; then
-        AC_MSG_ERROR([Qtenv cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake qmake-qt5 qmake5) - disabling Qtenv. You can try setting the QT_PATH variable in configure.user to a valid location.]) # XXX maybe we should ask the user the QMAKE binary including name, not just path?
+        AC_MSG_ERROR([Qtenv cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake qmake-qt5 qmake5) - You can disable Qtenv by setting the WITH_QTENV variable to "no" in configure.user, or try setting the QT_PATH variable to a valid location.])
     else
         AC_PATH_PROGS(MOC, moc moc-qt5 moc5, nope, path = $QT_PATH$PATH_SEPARATOR$PATH )
         AC_PATH_PROGS(UIC, uic uic-qt5 uic5, nope, path = $QT_PATH$PATH_SEPARATOR$PATH )
@@ -868,7 +868,7 @@ if test "$WITH_QTENV" = "yes"; then
         QT_INSTALL_LIBS=`$QMAKE -query QT_INSTALL_LIBS`
         QT_CFLAGS=${QT_CFLAGS:-"-isystem $QT_INSTALL_HEADERS -isystem $QT_INSTALL_HEADERS/QtCore -isystem $QT_INSTALL_HEADERS/QtGui -isystem $QT_INSTALL_HEADERS/QtWidgets -isystem $QT_INSTALL_HEADERS/QtOpenGL -isystem $QT_INSTALL_HEADERS/QtPrintSupport"}
         QT_LIBS=${QT_LIBS:-"-lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL $LDFLAG_LIBPATH$QT_INSTALL_LIBS -Wl,-rpath=$QT_INSTALL_LIBS"}
-	if test -z "$RPATH_UNSUPPORTED"; then
+        if test -z "$RPATH_UNSUPPORTED"; then
             QTENV_LDFLAGS="-Wl,-rpath-link=$QT_INSTALL_LIBS"
         fi
 
@@ -888,7 +888,7 @@ EOT
             OPP_CHECK_LIB(Qt5, QtGlobal, $QT_VERSIONCHECK_CODE, $CXXFLAGS $CFLAGS $QT_CFLAGS, $QT_LIBS, qt_ok)
         fi
 
-        # Test on Mac OS X using the local QT framework
+        # Test on Mac OS X using the local Qt framework
         if test $qt_ok = no; then
             QT_LIBS="-framework QtGui -framework QtCore -framework QtWidgets -framework QtPrintSupport -framework QtOpenGL"
             QTENV_LDFLAGS=""
@@ -896,7 +896,7 @@ EOT
         fi
 
         if test $qt_ok = no; then
-            AC_MSG_ERROR([Cannot build Qt apps, probably due to missing or too old Qt packages. Make sure Qt development packages are installed and newer than Qt 5.4. You can disable Qtenv by setting the WITH_QTENV variable to "no" in configure.user.])
+            AC_MSG_ERROR([Cannot build Qt apps, probably due to missing or too old Qt packages. Make sure Qt development packages are installed and newer than Qt 5.4. You can disable Qtenv by setting the WITH_QTENV variable to "no" in configure.user, or try setting the QT_PATH variable to a valid location.])
         fi
     fi
 fi # WITH_QTENV
