@@ -35,7 +35,8 @@ public class FilterField implements Comparable<FilterField> {
         REPLICATION = new FilterField(Kind.RunAttribute, Scave.REPLICATION),
         TYPE = new FilterField(Kind.ItemField, Scave.TYPE),
         MODULE = new FilterField(Kind.ItemField, Scave.MODULE),
-        NAME = new FilterField(Kind.ItemField, Scave.NAME);
+        NAME = new FilterField(Kind.ItemField, Scave.NAME),
+        ISFIELD = new FilterField(Kind.ItemField, Scave.ISFIELD);
 
     private Kind kind;
     private String name;
@@ -45,7 +46,7 @@ public class FilterField implements Comparable<FilterField> {
         String prefix = colonPos == -1 ? null : fullName.substring(0, colonPos+1);
         this.kind = getKind(prefix);
         this.name = fullName.substring(colonPos+1);
-        Assert.isTrue(kind != Kind.ItemField || List.of(Scave.FILE, Scave.RUN, Scave.TYPE, Scave.MODULE, Scave.NAME).contains(name));
+        Assert.isTrue(kind != Kind.ItemField || List.of(Scave.FILE, Scave.RUN, Scave.TYPE, Scave.MODULE, Scave.NAME, Scave.ISFIELD).contains(name));
     }
 
     public FilterField(Kind kind, String name) {

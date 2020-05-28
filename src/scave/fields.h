@@ -79,6 +79,10 @@ class SCAVE_API Scave
     static constexpr const char *UNIT = "unit";
     static constexpr const char *INTERPOLATIONMODE = "interpolationmode";
 
+    static constexpr const char *ISFIELD = "isfield";
+    static constexpr const char *TRUE = "true";
+    static constexpr const char *FALSE = "false";
+
     // derived scalar suffixes
     static constexpr const char *COUNT = "count";
     static constexpr const char *SUM = "sum";

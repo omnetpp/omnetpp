@@ -115,7 +115,10 @@ const char *ResultItem::getProperty(const char *propertyName) const
                 return getFileRun()->getRun()->getAttribute(propertyName + strlen(Scave::RUNATTR_PREFIX)).c_str();
             break;
         }
-        case Scave::ITERVAR_PREFIX[0]: {
+        case Scave::ISFIELD[0]: { // and ITERVAR_PREFIX
+            STATIC_ASSERT(Scave::ISFIELD[0] == Scave::ITERVAR_PREFIX[0]);
+            if (strcmp(propertyName, Scave::ISFIELD) == 0)
+                return (getItemType() == ResultFileManager::SCALAR && static_cast<const ScalarResult *>(this)->isField()) ? Scave::TRUE : Scave::FALSE;
             if (strncmp(propertyName, Scave::ITERVAR_PREFIX, strlen(Scave::ITERVAR_PREFIX)) == 0)
                 return getFileRun()->getRun()->getIterationVariable(propertyName + strlen(Scave::ITERVAR_PREFIX)).c_str();
             break;

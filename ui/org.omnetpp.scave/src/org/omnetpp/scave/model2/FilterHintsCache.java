@@ -8,6 +8,7 @@
 package org.omnetpp.scave.model2;
 
 import static org.omnetpp.scave.model2.FilterField.FILE;
+import static org.omnetpp.scave.model2.FilterField.ISFIELD;
 import static org.omnetpp.scave.model2.FilterField.MODULE;
 import static org.omnetpp.scave.model2.FilterField.NAME;
 import static org.omnetpp.scave.model2.FilterField.RUN;
@@ -99,6 +100,9 @@ public class FilterHintsCache {
         else if (field.equals(NAME)) {
             return manager.getResultNameFilterHints(idlist).toArray();
         }
+        else if (field.equals(ISFIELD)) {
+            return new String [] { Scave.TRUE, Scave.FALSE };
+        }
         else if (field.getKind() == Kind.ItemField) {
             return manager.getResultItemAttributeFilterHints(idlist, field.getName()).toArray();
         }
@@ -125,7 +129,7 @@ public class FilterHintsCache {
     public static String[] computeNameHints(ResultFileManager manager, IDList idlist, FilterField.Kind kind) {
         RunList runList = manager.getUniqueRuns(idlist);
         switch (kind) {
-        case ItemField: return new String[] {Scave.TYPE, Scave.FILE, Scave.RUN, Scave.MODULE, Scave.NAME};
+        case ItemField: return new String[] {Scave.TYPE, Scave.FILE, Scave.RUN, Scave.MODULE, Scave.NAME, Scave.ISFIELD};
         case RunAttribute: return manager.getUniqueRunAttributeNames(runList).keys().toArray();
         case IterationVariable: return manager.getUniqueIterationVariableNames(runList).keys().toArray();
         case ResultAttribute: return manager.getUniqueResultAttributeNames(idlist).keys().toArray();
