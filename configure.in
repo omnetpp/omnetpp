@@ -939,18 +939,6 @@ if test "$WITH_OSG" = "yes"; then
 fi # WITH_OSG
 
 #----------------------
-# Check for JRE
-#----------------------
-AC_CHECK_PROGS(JRE, $JRE java, nope)
-if test "$JRE" = nope; then
-    AC_CHECK_PROGS(PRIVATE_JRE, $PRIVATE_JRE java, nope, [`pwd`/ide/jre/bin])
-    if test "$PRIVATE_JRE" = nope; then
-        OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  JRE (recommended)"
-        AC_MSG_WARN([Cannot find a suitable Java Runtime Environment - The IDE requires JRE 1.8 or later. Please install it before configuring])
-    fi
-fi
-
-#----------------------
 # Check for JDK
 #----------------------
 
