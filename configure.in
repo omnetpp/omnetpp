@@ -736,7 +736,7 @@ AC_ARG_VAR(PERL, The Perl interpreter)
 AC_CHECK_PROG(PERL, perl, perl, not found)
 if test "$PERL" = "not found"; then
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  perl"
-   AC_MSG_WARN(Perl not found -- please install it! Perl is required by opp_makemake and some other programs.)
+   AC_MSG_ERROR(Perl not found -- please install it! Perl is required by opp_makemake and some other programs.)
 fi
 
 # swig is used for building the ui support libs
