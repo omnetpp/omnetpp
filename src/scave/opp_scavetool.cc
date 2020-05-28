@@ -163,30 +163,38 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.para("Several commands have a -f <filter> option that accepts a match expression "
                   "for filtering result items. This page describes the syntax available for "
                   "match expressions.");
-        help.para("A match expression consist of '<pattern>' and '<fieldname>(<pattern>)' "
+        help.para("A match expression consist of '<pattern>' and '<fieldname> =~ <pattern>' "
                   "elements, combined with AND, OR, and NOT operators. A plain '<pattern>' is "
-                  "equivalent to 'name(<pattern>)'.");
+                  "equivalent to 'name =~ <pattern>'. Patterns need to be enclosed in "
+                  "quotation marks if they contain space or other characters that make "
+                  "their parsing ambiguous.");
         help.line("<fieldname> is one of:");
-        help.para(
-                "    file              Full path of the result file\n"
-                "    run               Unique run Id\n"
-                "    module            Module full path\n"
-                "    name              Name of the result item (vector, scalar, etc)\n"
-                "    attr:<runattr>    The value of a run attribute, e.g. of attr:configname");
-        help.para("<runattr> may be the name of a standard run attribute ('runid', 'inifile', 'configname', 'runnumber', 'network', 'experiment', 'measurement', 'replication', 'iterationvarsf').");
-        help.para("Inifile iteration variables (e.g. 'numHosts') can also be used for <runattr>, as they are also saved as run attributes.");
-        help.para("<pattern> is a glob-like pattern:");
-        help.para(
-                "    ?             Matches any character except '.'\n"
-                "    *             Matches zero or more characters, except '.'\n"
-                "    **            Matches zero or more characters (any character)\n"
-                "    {a-z}         Matches a character in range a-z\n"
-                "    {^a-z}        Matches a character NOT in range a-z\n"
-                "    {250..300}    Matches an embedded integer number in the given range\n"
-                "    [250..300]    Matches an integer number in the given range in square brackets\n"
-                "    \\ (backslash) Takes away the special meaning of the subsequent character");
-        help.line("Match expression example:");
-        help.indentPara("module(\"**.sink\") AND (name(\"queueing time\") OR name(\"transmission time\"))");
+        help.option("file",   "Full path of the result file");
+        help.option("run",    "Name (unique ID string) of the result's simulation run");
+        help.option("type",   "Type of the result item: scalar, vector, statistics, histogram, or parameter");
+        help.option("module", "Full path of the result item's module");
+        help.option("name",   "Name of the result item");
+        help.option("runattr:<name>", "Value of a run attribute in the result item's run");
+        help.option("itervar:<name>", "Value of an iteration variable in the result item's run");
+        help.option("config:<name>",  "Value of a configuration entry in the result item's run");
+        help.option("attr:<name>",    "Value of a result attribute");
+        help.line();
+        help.line("<pattern> is a glob-like pattern:");
+        help.option("?", "Matches any character except '.'");
+        help.option("*", "Matches zero or more characters, except '.'");
+        help.option("**", "Matches zero or more characters (any character)");
+        help.option("{a-z}", "Matches a character in range a-z");
+        help.option("{^a-z}", "Matches a character NOT in range a-z");
+        help.option("{250..300}", "Matches an integer number in the given range");
+        help.option("[250..300]", "Matches an integer inside brackets in the given range'");
+        help.option("\\ (backslash)", "Takes away the special meaning of the subsequent character");
+        help.line();
+        help.line("Examples:");
+        help.line("  module=~\"**.sink\" AND (name=~\"queueing time\" OR name=~\"transmission time\")");
+        help.line("  runattr:experiment=~Aloha AND itervar:numHosts=~{1..10} AND channelUtilization");
+        help.line("  config:network =~ Mesh AND type =~ scalar AND module=~ \"*[5..8]\"");
+        help.line("  type =~ scalar AND attr:unit =~ \"s\"");
+        help.line();
     }
     else if (page == "operations") {
         help.para("Scalar operations:");
