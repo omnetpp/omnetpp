@@ -751,8 +751,7 @@ AC_CHECK_PROG(SWIG, swig, swig, not found)
 AC_ARG_VAR(PYTHON3, The Python 3 interpreter)
 AC_CHECK_PROG(PYTHON3, python3, python3, not found)
 if test "$PYTHON3" = "not found"; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  python3"
-   AC_MSG_WARN(Python (python3) not found -- please install it! Python is required by many command-line tools and by the Analysis Tool in the IDE.)
+   AC_MSG_ERROR(Python (python3) not found -- please install it! Python is required by many command-line tools and by the Analysis Tool in the IDE.)
 fi
 
 AC_MSG_CHECKING(if all necessary Python modules are available)
@@ -798,7 +797,12 @@ if output=$(python3 -c "$PYTHON_PACKAGE_CHECK_CODE") ; then
     AC_MSG_RESULT(yes)
 else
     AC_MSG_RESULT(no)
-    AC_MSG_WARN([Some Python modules required by the IDE were not found: $output])
+    if test -d ide; then
+      AC_MSG_ERROR([Some Python modules required by the IDE were not found: $output])
+    else
+      OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Python modules ($output)"
+      AC_MSG_WARN([Some Python modules required by the IDE were not found: $output])
+    fi
 fi
 
 # The following ones are optional, and are used only by some sample ANF scripts:
@@ -938,9 +942,9 @@ if test "$WITH_OSG" = "yes"; then
   fi
 fi # WITH_OSG
 
-#----------------------
-# Check for JDK
-#----------------------
+#--------------------------------------------------
+# Check for JDK - needed for building the IDE only.
+#--------------------------------------------------
 
 if test "$JAVA_CFLAGS" = ""; then
    if test "$JDK" = ""; then
