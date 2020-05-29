@@ -48,20 +48,28 @@ class Bars {
         return rect;
     }
 
-    public void draw(Graphics graphics, ICoordsMapping coordsMapping) {
+    public void drawSingle(Graphics graphics, ICoordsMapping coordsMapping, int series) {
+        graphics.pushState();
 
-        if (bars != null && bars.length > 0 && bars[0].length > 0) {
-            graphics.pushState();
-
-            Rectangle clip = graphics.getClip(new Rectangle());
-            int numSeries = bars[0].length;
-            int[] indices = getGroupSeriessInRectangle(clip);
-            for (int i = indices[1]; i >= indices[0]; --i) {
-                int group = i / numSeries;
-                int series = i % numSeries;
+        Rectangle clip = graphics.getClip(new Rectangle());
+        int numSeries = bars[0].length;
+        int[] indices = getGroupSeriessInRectangle(clip);
+        for (int i = indices[0]; i <= indices[1]; ++i) {
+            int group = i / numSeries;
+            if (series == i % numSeries)
                 drawBar(graphics, group, series, coordsMapping);
-            }
-            graphics.popState();
+        }
+
+        graphics.popState();
+    }
+
+    public void draw(Graphics graphics, ICoordsMapping coordsMapping) {
+        if (bars != null && bars.length > 0 && bars[0].length > 0) {
+            int numSeries = bars[0].length;
+            // The series have to be drawn in reverse order so they appear
+            // correctly in "Overlap" mode.
+            for (int series = numSeries-1; series >= 0; --series)
+                drawSingle(graphics, coordsMapping, series);
         }
     }
 

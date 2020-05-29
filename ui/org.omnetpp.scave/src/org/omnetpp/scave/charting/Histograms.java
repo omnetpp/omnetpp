@@ -213,145 +213,146 @@ class Histograms {
         }
     }
 
-    void draw(Graphics graphics, ICoordsMapping coordsMapping) {
+
+    public void drawSingle(Graphics graphics, ICoordsMapping coordsMapping, int series) {
         graphics.setLineStyle(SWT.LINE_SOLID);
 
-        for (int series = 0; series < binBars.length; ++series) {
-            String key = parent.getDataset().getSeriesKey(series);
-            PlotProperty.HistogramBar barType = parent.getBarType(key);
-            switch (barType) {
-            case Solid:
-                graphics.setLineWidth(1);
-                graphics.setForegroundColor(ColorFactory.BLACK);
-                graphics.setBackgroundColor(getHistogramColor(series));
+        String key = parent.getDataset().getSeriesKey(series);
+        PlotProperty.HistogramBar barType = parent.getBarType(key);
+        Color histogramColor = getHistogramColor(series);
+        switch (barType) {
+        case Solid:
+            graphics.setLineWidth(1);
+            graphics.setForegroundColor(ColorFactory.BLACK);
+            graphics.setBackgroundColor(histogramColor);
 
-                graphics.setAlpha(128);
-                graphics.setLineStyle(SWT.LINE_DOT);
+            graphics.setAlpha(128);
+            graphics.setLineStyle(SWT.LINE_DOT);
 
-                if (underflowBars[series] != null)
-                    drawRect(graphics, coordsMapping, underflowBars[series]);
+            if (underflowBars[series] != null)
+                drawRect(graphics, coordsMapping, underflowBars[series]);
 
-                graphics.setAlpha(255);
-                graphics.setLineStyle(SWT.LINE_SOLID);
-                for (int index = 0; index < binBars[series].length; ++index)
-                    drawRect(graphics, coordsMapping, binBars[series][index]);
+            graphics.setAlpha(255);
+            graphics.setLineStyle(SWT.LINE_SOLID);
+            for (int index = 0; index < binBars[series].length; ++index)
+                drawRect(graphics, coordsMapping, binBars[series][index]);
 
-                graphics.setAlpha(128);
-                graphics.setLineStyle(SWT.LINE_DOT);
+            graphics.setAlpha(128);
+            graphics.setLineStyle(SWT.LINE_DOT);
 
-                if (overflowBars[series] != null)
-                    drawRect(graphics, coordsMapping, overflowBars[series]);
+            if (overflowBars[series] != null)
+                drawRect(graphics, coordsMapping, overflowBars[series]);
 
-                break;
-            case Outline:
-                graphics.setLineWidth(2);
-                graphics.setForegroundColor(getHistogramColor(series));
-                graphics.setAlpha(192);
+            break;
+        case Outline:
+            graphics.setLineWidth(2);
+            graphics.setForegroundColor(histogramColor);
+            graphics.setAlpha(192);
 
-                long baselineY = coordsMapping.toCanvasY(transformedBaseline);
-                long prevY = baselineY;
+            long baselineY = coordsMapping.toCanvasY(transformedBaseline);
+            long prevY = baselineY;
 
-                if (underflowBars[series] != null ) {
-                    double xl = underflowBars[series].minX;
-                    double xr = underflowBars[series].maxX;
-                    double yt = underflowBars[series].maxY;
-                    double yb = underflowBars[series].minY;
-                    double y1 = transformedBaseline;
-                    double y2 = yt > transformedBaseline ? yt : yb;
+            if (underflowBars[series] != null ) {
+                double xl = underflowBars[series].minX;
+                double xr = underflowBars[series].maxX;
+                double yt = underflowBars[series].maxY;
+                double yb = underflowBars[series].minY;
+                double y1 = transformedBaseline;
+                double y2 = yt > transformedBaseline ? yt : yb;
 
-                    double nextYt = binBars[series][0].maxY;
-                    double nextYb = binBars[series][0].minY;
-                    long nextY = coordsMapping.toCanvasY(nextYt > transformedBaseline ? nextYt : nextYb);
+                double nextYt = binBars[series][0].maxY;
+                double nextYb = binBars[series][0].minY;
+                long nextY = coordsMapping.toCanvasY(nextYt > transformedBaseline ? nextYt : nextYb);
 
-                    long left = coordsMapping.toCanvasX(xl);
-                    long right = coordsMapping.toCanvasX(xr);
-                    graphics.setLineStyle(Graphics.LINE_DASH);
+                long left = coordsMapping.toCanvasX(xl);
+                long right = coordsMapping.toCanvasX(xr);
+                graphics.setLineStyle(Graphics.LINE_DASH);
 
-                    long cy1 = coordsMapping.toCanvasY(y1);
-                    long cy2 = coordsMapping.toCanvasY(y2);
+                long cy1 = coordsMapping.toCanvasY(y1);
+                long cy2 = coordsMapping.toCanvasY(y2);
 
-                    prevY = cy2;
+                prevY = cy2;
 
-                    LargeGraphics.drawPolyline(graphics, new long[] {
-                            left, cy1,
-                            left, cy2,
-                            right, cy2,
-                            right, nextY,
-                            });
+                LargeGraphics.drawPolyline(graphics, new long[] {
+                        left, cy1,
+                        left, cy2,
+                        right, cy2,
+                        right, nextY,
+                        });
+            }
 
-                }
+            graphics.setLineStyle(Graphics.LINE_SOLID);
 
+            int cellCount = binBars[series].length;
+            ArrayList<Long> points = new ArrayList<Long>(3*cellCount);
+            for (int index = 0 ; index < cellCount; ++index) {
+                double xl = binBars[series][index].minX;
+                double xr = binBars[series][index].maxX;
+                double yt = binBars[series][index].maxY;
+                double yb = binBars[series][index].minY;
+                double y = yt > transformedBaseline ? yt : yb;
 
-                graphics.setLineStyle(Graphics.LINE_SOLID);
-
-                int cellCount = binBars[series].length;
-                ArrayList<Long> points = new ArrayList<Long>(3*cellCount);
-                for (int index = 0 ; index < cellCount; ++index) {
-                    double xl = binBars[series][index].minX;
-                    double xr = binBars[series][index].maxX;
-                    double yt = binBars[series][index].maxY;
-                    double yb = binBars[series][index].minY;
-                    double y = yt > transformedBaseline ? yt : yb;
-
-                    long left = coordsMapping.toCanvasX(xl);
-                    long right = coordsMapping.toCanvasX(xr);
-                    long yy;
-                    if (Double.isInfinite(y)) {
-                        yy = baselineY;
-                        if (yy != prevY) {
-                            if (index != 0) {
-                                points.add(left);
-                                points.add(prevY);
-                            }
-                            points.add(left);
-                            points.add(yy);
-                        }
-                        LargeGraphics.drawPolyline(graphics, ArrayUtils.toPrimitive(points.toArray(new Long[0])));
-                        points.clear();
-                    }
-                    else {
-                        yy = coordsMapping.toCanvasY(y);
+                long left = coordsMapping.toCanvasX(xl);
+                long right = coordsMapping.toCanvasX(xr);
+                long yy;
+                if (Double.isInfinite(y)) {
+                    yy = baselineY;
+                    if (yy != prevY) {
                         if (index != 0) {
                             points.add(left);
                             points.add(prevY);
                         }
                         points.add(left);
                         points.add(yy);
-                        points.add(right);
-                        points.add(yy);
                     }
-                    prevY = yy;
-                }
-                if (points.size() > 0)
                     LargeGraphics.drawPolyline(graphics, ArrayUtils.toPrimitive(points.toArray(new Long[0])));
-
-
-                if (overflowBars[series] != null ) {
-                    double xl = overflowBars[series].minX;
-                    double xr = overflowBars[series].maxX;
-                    double yt = overflowBars[series].maxY;
-                    double yb = overflowBars[series].minY;
-                    double y1 = yt > transformedBaseline ? yt : yb;
-                    double y2 = transformedBaseline;
-
-                    long left = coordsMapping.toCanvasX(xl);
-                    long right = coordsMapping.toCanvasX(xr);
-                    long cy1 = coordsMapping.toCanvasY(y1);
-                    long cy2 = coordsMapping.toCanvasY(y2);
-                    graphics.setLineStyle(Graphics.LINE_DASH);
-                    LargeGraphics.drawPolyline(graphics, new long[] {
-                            left, prevY,
-                            left, cy1,
-                            right, cy1,
-                            right, cy2,
-                            });
-
+                    points.clear();
                 }
-
-
-                break;
+                else {
+                    yy = coordsMapping.toCanvasY(y);
+                    if (index != 0) {
+                        points.add(left);
+                        points.add(prevY);
+                    }
+                    points.add(left);
+                    points.add(yy);
+                    points.add(right);
+                    points.add(yy);
+                }
+                prevY = yy;
             }
+            if (points.size() > 0)
+                LargeGraphics.drawPolyline(graphics, ArrayUtils.toPrimitive(points.toArray(new Long[0])));
+
+
+            if (overflowBars[series] != null ) {
+                double xl = overflowBars[series].minX;
+                double xr = overflowBars[series].maxX;
+                double yt = overflowBars[series].maxY;
+                double yb = overflowBars[series].minY;
+                double y1 = yt > transformedBaseline ? yt : yb;
+                double y2 = transformedBaseline;
+
+                long left = coordsMapping.toCanvasX(xl);
+                long right = coordsMapping.toCanvasX(xr);
+                long cy1 = coordsMapping.toCanvasY(y1);
+                long cy2 = coordsMapping.toCanvasY(y2);
+                graphics.setLineStyle(Graphics.LINE_DASH);
+                LargeGraphics.drawPolyline(graphics, new long[] {
+                        left, prevY,
+                        left, cy1,
+                        right, cy1,
+                        right, cy2,
+                        });
+            }
+
+            break;
         }
+    }
+
+    public void draw(Graphics graphics, ICoordsMapping coordsMapping) {
+        for (int series = 0; series < binBars.length; ++series)
+            drawSingle(graphics, coordsMapping, series);
     }
 
     void updateLegend(ILegend legend) {

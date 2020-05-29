@@ -149,6 +149,37 @@ class Lines implements ILinePlot {
         return area;
     }
 
+    public boolean drawSingle(Graphics graphics, ICoordsMapping coordsMapping, int series, long startTime, int totalTimeLimitMillis, int perLineTimeLimitMillis) {
+        LineProperties props = parent.getLineProperties(series);
+        if (props.getEffectiveDisplayLine()) {
+
+            ILinePlotter plotter = props.getLinePlotter();
+            IPlotSymbol symbol = props.getSymbolPlotter();
+            Color color = props.getEffectiveLineColor();
+            parent.resetDrawingStylesAndColors(graphics);
+            graphics.setAntialias(parent.antialias ? SWT.ON : SWT.OFF);
+            graphics.setForegroundColor(color);
+            graphics.setBackgroundColor(color);
+            graphics.setLineStyle(props.getEffectiveLineStyle().getDraw2DConstant());
+            graphics.setLineWidthFloat(props.getEffectiveLineWidth());
+
+            int remainingTime = totalTimeLimitMillis - (int)(System.currentTimeMillis() - startTime);
+            int lineTimeout = Math.min(Math.max(100, remainingTime), perLineTimeLimitMillis); // give it at least 100ms, even if time is over
+
+            boolean lineOK = plotter.plot(this, series, graphics, coordsMapping, symbol, lineTimeout);
+
+            // if drawing is taking too long, display busy cursor
+            if (System.currentTimeMillis() - startTime > 1000) {
+                Cursor cursor = Display.getCurrent().getSystemCursor(SWT.CURSOR_WAIT);
+                parent.getShell().setCursor(cursor);
+                parent.setCursor(null); // crosshair cursor would override shell's busy cursor
+            }
+
+            return lineOK;
+        }
+        return true;
+    }
+
     protected boolean draw(Graphics graphics, ICoordsMapping coordsMapping, int totalTimeLimitMillis, int perLineTimeLimitMillis) {
         if (getDataset() != null) {
             IXYDataset dataset = getDataset();
@@ -157,32 +188,8 @@ class Lines implements ILinePlot {
             boolean ok = true;
 
             for (int series = 0; series < dataset.getSeriesCount(); series++) {
-                LineProperties props = parent.getLineProperties(series);
-                if (props.getEffectiveDisplayLine()) {
-
-                    ILinePlotter plotter = props.getLinePlotter();
-                    IPlotSymbol symbol = props.getSymbolPlotter();
-                    Color color = props.getEffectiveLineColor();
-                    parent.resetDrawingStylesAndColors(graphics);
-                    graphics.setAntialias(parent.antialias ? SWT.ON : SWT.OFF);
-                    graphics.setForegroundColor(color);
-                    graphics.setBackgroundColor(color);
-                    graphics.setLineStyle(props.getEffectiveLineStyle().getDraw2DConstant());
-                    graphics.setLineWidthFloat(props.getEffectiveLineWidth());
-
-                    int remainingTime = totalTimeLimitMillis - (int)(System.currentTimeMillis() - startTime);
-                    int lineTimeout = Math.min(Math.max(100, remainingTime), perLineTimeLimitMillis); // give it at least 100ms, even if time is over
-
-                    boolean lineOK = plotter.plot(this, series, graphics, coordsMapping, symbol, lineTimeout);
-                    ok = ok && lineOK; // do NOT merge with previous line! shortcutting would prevent lines after 1st timeout to be drawn
-
-                    // if drawing is taking too long, display busy cursor
-                    if (System.currentTimeMillis() - startTime > 1000) {
-                        Cursor cursor = Display.getCurrent().getSystemCursor(SWT.CURSOR_WAIT);
-                        parent.getShell().setCursor(cursor);
-                        parent.setCursor(null); // crosshair cursor would override shell's busy cursor
-                    }
-                }
+                boolean lineOk = drawSingle(graphics, coordsMapping, series, startTime, totalTimeLimitMillis, perLineTimeLimitMillis);
+                ok = ok && lineOk; // do not merge with the previous line, shortcutting would prevent successive lines from being drawn...
             }
             parent.getShell().setCursor(null);
             if (debug) Debug.println("plotting: "+(System.currentTimeMillis()-startTime)+" ms");
