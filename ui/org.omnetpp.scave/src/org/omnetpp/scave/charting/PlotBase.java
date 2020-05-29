@@ -56,7 +56,7 @@ import org.omnetpp.scave.charting.properties.PlotProperty.LegendAnchor;
 import org.omnetpp.scave.charting.properties.PlotProperty.LegendPosition;
 
 /**
- * Base class for all plot widgets.
+ * Base class for all native plot widgets.
  *
  * @author tomi, andras
  */
@@ -524,18 +524,23 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
      * </ul>
      */
     protected void updateArea() {
-        if (chartArea == null)
-            return;
+        if (batchedUpdateDepth > 0) {
+            batchChangeCount++;
+        }
+        else {
+            if (chartArea == null)
+                return;
 
-        RectangularArea area = transformArea(userDefinedArea);
-        area.minX = Double.isInfinite(area.minX) ? chartArea.minX : area.minX;
-        area.minY = Double.isInfinite(area.minY) ? chartArea.minY : area.minY;
-        area.maxX = Double.isInfinite(area.maxX) ? chartArea.maxX : area.maxX;
-        area.maxY = Double.isInfinite(area.maxY) ? chartArea.maxY : area.maxY;
+            RectangularArea area = transformArea(userDefinedArea);
+            area.minX = Double.isInfinite(area.minX) ? chartArea.minX : area.minX;
+            area.minY = Double.isInfinite(area.minY) ? chartArea.minY : area.minY;
+            area.maxX = Double.isInfinite(area.maxX) ? chartArea.maxX : area.maxX;
+            area.maxY = Double.isInfinite(area.maxY) ? chartArea.maxY : area.maxY;
 
-        if (!area.equals(getArea())) {
-            if (debug) Debug.format("Update area: %s --> %s%n", getArea(), area);
-            setArea(area);
+            if (!area.equals(getArea())) {
+                if (debug) Debug.format("Update area: %s --> %s%n", getArea(), area);
+                setArea(area);
+            }
         }
     }
 
@@ -602,10 +607,42 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
         finally {
             batchedUpdateDepth--;
             if (batchedUpdateDepth == 0) {
-                if (batchChangeCount > 0)
+                if (batchChangeCount > 0) {
+                    updateLegends();
+                    chartArea = calculatePlotArea();
+                    updateArea();
                     chartChanged();
+                }
                 batchChangeCount = 0;
             }
+        }
+    }
+
+    protected abstract void updateLegend(ILegend legend);
+
+    protected void updateLegends() {
+        if (batchedUpdateDepth > 0) {
+            batchChangeCount++;
+        }
+        else {
+            updateLegend(legendTooltip);
+            updateLegend(legend);
+
+            Image image = new Image(getDisplay(), 1, 1);
+            GC gc = new GC(image);
+            Graphics graphics = new SWTGraphics(gc);
+
+            // Calculate space occupied by title and legend and set insets accordingly
+
+            Rectangle area = new Rectangle(getClientArea());
+            legendTooltip.layout(graphics, area);
+
+            // XXX: this is not really nice (we shouldn't touch the title, only need the
+            // "remaining" rect), but this is how the layout procedure was originally weaved
+            Rectangle remaining = title.layout(graphics, area);
+
+            legend.layout(graphics, remaining, 1);
+            legend.layout(graphics, getViewportRectangle(), 2);
         }
     }
 

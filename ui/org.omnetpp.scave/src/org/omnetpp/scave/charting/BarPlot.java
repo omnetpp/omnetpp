@@ -157,12 +157,8 @@ public class BarPlot extends PlotBase {
         return bars.calculatePlotArea();
     }
 
-    private void updateLegends() {
-        updateLegend(legend);
-        updateLegend(legendTooltip);
-    }
-
-    private void updateLegend(ILegend legend) {
+    @Override
+    protected void updateLegend(ILegend legend) {
         legend.clearItems();
         IPlotSymbol symbol = new SquareSymbol(6);
         if (dataset != null) {

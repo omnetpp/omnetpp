@@ -342,12 +342,8 @@ public class LinePlot extends PlotBase {
         chartChanged();
     }
 
-    private void updateLegends() {
-        updateLegend(legend);
-        updateLegend(legendTooltip);
-    }
-
-    private void updateLegend(ILegend legend) {
+    @Override
+    protected void updateLegend(ILegend legend) {
         legend.clearItems();
         if (dataset != null) {
             String[] keys = new String[dataset.getSeriesCount()];

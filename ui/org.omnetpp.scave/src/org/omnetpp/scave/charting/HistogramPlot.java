@@ -381,13 +381,13 @@ public class HistogramPlot extends PlotBase {
         chartChanged();
     }
 
-    IHistogramDataset getDataset() {
-        return dataset;
+    @Override
+    protected void updateLegend(ILegend legend) {
+        histograms.updateLegend(legend);
     }
 
-    private void updateLegends() {
-        histograms.updateLegend(legendTooltip);
-        histograms.updateLegend(legend);
+    IHistogramDataset getDataset() {
+        return dataset;
     }
 
     @Override
