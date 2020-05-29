@@ -202,6 +202,14 @@ public class Legend implements ILegend {
         return -1; // should match HIGHLIGHT_NONE
     }
 
+    public List<Integer> getEnabledItemIndices() {
+        ArrayList<Integer> result = new ArrayList<Integer>();
+        for (int i = 0; i < items.size(); ++i)
+            if (isItemEnabled(i))
+                result.add(i);
+        return result;
+    }
+
     public boolean isItemEnabled(int index) {
         return items.get(index).enabled;
     }

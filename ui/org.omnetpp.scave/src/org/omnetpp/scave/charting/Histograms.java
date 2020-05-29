@@ -65,14 +65,13 @@ class Histograms {
 
         transformedBaseline = calculateBaseline();
 
-        for (int series = 0; series < histCount; ++series) {
+        for (int series : parent.legend.getEnabledItemIndices()) {
             ICellValueTransform valueTransform = getEffectiveValueTransform(series);
             int barCount = dataset.getCellsCount(series);
             double minValue = dataset.getMinValue(series);
             double maxValue = dataset.getMaxValue(series);
             boolean hasUnderflow = barCount > 0 && (valueTransform.getUnderflowsValue(series) > 0 || minValue < dataset.getCellLowerBound(series, 0));
             boolean hasOverflow = barCount > 0 && (valueTransform.getOverflowsValue(series) > 0 || maxValue >= dataset.getCellUpperBound(series, barCount-1));
-            boolean seriesEnabled = parent.legend.isItemEnabled(series);
 
             // underflow cell
             if (showOverflowCell && hasUnderflow) {
@@ -83,15 +82,13 @@ class Histograms {
                 double xRight = dataset.getCellLowerBound(series, 0);
                 underflowBars[series] = new RectangularArea(xLeft, yBottom, xRight, yTop);
 
-                if (seriesEnabled) {
-                    // TODO factor out
-                    minX = Math.min(minX, xLeft);
-                    maxX = Math.max(maxX, xRight);
-                    if (!Double.isNaN(yTop))
-                        maxY = Math.max(maxY, yTop);
-                    if (!Double.isNaN(yBottom) && !Double.isInfinite(yBottom))
-                        minY = Math.min(minY, yBottom);
-                }
+                // TODO factor out
+                minX = Math.min(minX, xLeft);
+                maxX = Math.max(maxX, xRight);
+                if (!Double.isNaN(yTop))
+                    maxY = Math.max(maxY, yTop);
+                if (!Double.isNaN(yBottom) && !Double.isInfinite(yBottom))
+                    minY = Math.min(minY, yBottom);
             }
 
             // regular bins
@@ -108,15 +105,13 @@ class Histograms {
 
                 binBars[series][index] = new RectangularArea(xLeft, yBottom, xRight, yTop);
 
-                if (seriesEnabled) {
-                    // TODO factor out
-                    minX = Math.min(minX, xLeft);
-                    maxX = Math.max(maxX, xRight);
-                    if (!Double.isNaN(yTop))
-                        maxY = Math.max(maxY, yTop);
-                    if (!Double.isNaN(yBottom) && !Double.isInfinite(yBottom))
-                        minY = Math.min(minY, yBottom);
-                }
+                // TODO factor out
+                minX = Math.min(minX, xLeft);
+                maxX = Math.max(maxX, xRight);
+                if (!Double.isNaN(yTop))
+                    maxY = Math.max(maxY, yTop);
+                if (!Double.isNaN(yBottom) && !Double.isInfinite(yBottom))
+                    minY = Math.min(minY, yBottom);
             }
 
             // overflow cell
@@ -128,15 +123,13 @@ class Histograms {
                 double xRight = dataset.getMaxValue(series);
                 overflowBars[series] = new RectangularArea(xLeft, yBottom, xRight, yTop);
 
-                if (seriesEnabled) {
-                    // TODO factor out
-                    minX = Math.min(minX, xLeft);
-                    maxX = Math.max(maxX, xRight);
-                    if (!Double.isNaN(yTop))
-                        maxY = Math.max(maxY, yTop);
-                    if (!Double.isNaN(yBottom) && !Double.isInfinite(yBottom))
-                        minY = Math.min(minY, yBottom);
-                }
+                // TODO factor out
+                minX = Math.min(minX, xLeft);
+                maxX = Math.max(maxX, xRight);
+                if (!Double.isNaN(yTop))
+                    maxY = Math.max(maxY, yTop);
+                if (!Double.isNaN(yBottom) && !Double.isInfinite(yBottom))
+                    minY = Math.min(minY, yBottom);
             }
         }
 
@@ -362,9 +355,8 @@ class Histograms {
     }
 
     public void draw(Graphics graphics, ICoordsMapping coordsMapping) {
-        for (int series = 0; series < binBars.length; ++series)
-            if (parent.legend.isItemEnabled(series))
-                drawSingle(graphics, coordsMapping, series);
+        for (int series : parent.legend.getEnabledItemIndices())
+            drawSingle(graphics, coordsMapping, series);
     }
 
     void updateLegend(ILegend legend) {
@@ -424,9 +416,7 @@ class Histograms {
         double yy = parent.fromCanvasY(y);
         IHistogramDataset dataset = parent.getDataset();
         List<Integer> result = new ArrayList<Integer>();
-        for (int series = 0; series < dataset.getSeriesCount(); ++series) {
-            if (!parent.legend.isItemEnabled(series))
-                continue;
+        for (int series : parent.legend.getEnabledItemIndices()) {
             String key = parent.getDataset().getSeriesKey(series);
             PlotProperty.HistogramBar barType = parent.getBarType(key);
             int index = findBin(binBars[series], series, xx);

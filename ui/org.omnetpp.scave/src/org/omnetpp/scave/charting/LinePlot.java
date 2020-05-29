@@ -709,10 +709,7 @@ public class LinePlot extends PlotBase {
 
         // for each series, collect data points close to (x,y), at most maxCount of them
         int totalFound = 0;
-        for (int series = 0; series < dataset.getSeriesCount(); ++series) {
-            if (!legend.isItemEnabled(series))
-                continue;
-
+        for (int series : legend.getEnabledItemIndices()) {
             LineProperties props = getLineProperties(series);
             if (!props.getEffectiveDisplayLine())
                 continue;

@@ -7,6 +7,8 @@
 
 package org.omnetpp.scave.charting;
 
+import java.util.List;
+
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
@@ -64,13 +66,12 @@ class Bars {
     }
 
     public void draw(Graphics graphics, ICoordsMapping coordsMapping) {
-        if (bars != null && bars.length > 0 && bars[0].length > 0) {
-            int numSeries = bars[0].length;
+        if (bars != null) {
             // The series have to be drawn in reverse order so they appear
             // correctly in "Overlap" mode.
-            for (int series = numSeries-1; series >= 0; --series)
-                if (parent.legend.isItemEnabled(series))
-                    drawSingle(graphics, coordsMapping, series);
+            List<Integer> enabledIndices = parent.legend.getEnabledItemIndices();
+            for (int i = enabledIndices.size()-1; i >= 0; --i)
+                drawSingle(graphics, coordsMapping, enabledIndices.get(i));
         }
     }
 
@@ -121,8 +122,8 @@ class Bars {
 
         for (int group = 0; group < numGroups; ++group)
             // search seriess in Z-order
-            for (int series = 0; series < numSeries; ++series)
-                if (parent.legend.isItemEnabled(series) && bars[group][series].contains(x, y))
+            for (int series : parent.legend.getEnabledItemIndices())
+                if (bars[group][series].contains(x, y))
                     return group * numSeries + series;
 
         return -1;
@@ -176,15 +177,13 @@ class Bars {
         if (Double.isInfinite(baseline)) {
             double newBaseline = baseline < 0.0 ? Double.POSITIVE_INFINITY : Double.NEGATIVE_INFINITY;
             for (int group = 0; group < numGroups; ++group)
-                for (int series = 0; series < numSeries; ++series) {
-                    if (parent.legend.isItemEnabled(series)) {
-                        double value = transformValue(dataset.getValue(series, group));
-                        if (!Double.isNaN(value) && !Double.isInfinite(value)) {
-                            if (baseline < 0.0)
-                                newBaseline = Math.min(newBaseline, value);
-                            else
-                                newBaseline = Math.max(newBaseline, value);
-                        }
+                for (int series : parent.legend.getEnabledItemIndices()) {
+                    double value = transformValue(dataset.getValue(series, group));
+                    if (!Double.isNaN(value) && !Double.isInfinite(value)) {
+                        if (baseline < 0.0)
+                            newBaseline = Math.min(newBaseline, value);
+                        else
+                            newBaseline = Math.max(newBaseline, value);
                     }
                 }
             baseline = newBaseline;
