@@ -61,8 +61,8 @@ public class NativeChartViewer extends ChartViewerBase {
         if (plot.isDisposed())
             return;
 
-        final double zx = chartPlotter.isEmpty() || !plot.getHorizontalBar().isVisible() ? Double.NaN : plot.getZoomX();
-        final double zy = chartPlotter.isEmpty() || !plot.getVerticalBar().isVisible()? Double.NaN : plot.getZoomY();
+        final double zx = chartPlotter.isEmpty() || !plot.isZoomedOutX() ? Double.NaN : plot.getZoomX();
+        final double zy = chartPlotter.isEmpty() || !plot.isZoomedOutY() ? Double.NaN : plot.getZoomY();
         final long vt = plot.getViewportTop();
         final long vl = plot.getViewportLeft();
 
