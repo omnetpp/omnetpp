@@ -95,6 +95,16 @@ public interface IXYDataset extends IDataset {
     public double getMaxX();
 
     /**
+     * Returns the minimum value of the x coordinates in the given series
+     */
+    public double getMinX(int series);
+
+    /**
+     * Returns the maximum value of the x coordinates in the given series.
+     */
+    public double getMaxX(int series);
+
+    /**
      * Returns the y-value for an item within a series.
      * It may return NaN if the corresponding x does not
      * have a y.
@@ -119,4 +129,14 @@ public interface IXYDataset extends IDataset {
      * Returns the maximum value of the y coordinates.
      */
     public double getMaxY();
+
+    /**
+     * Returns the minimum value of the y coordinates in the given series.
+     */
+    public double getMinY(int series);
+
+    /**
+     * Returns the maximum value of the y coordinates in the given series.
+     */
+    public double getMaxY(int series);
 }

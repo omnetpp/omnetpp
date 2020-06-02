@@ -152,12 +152,8 @@ public class XYDataset implements IXYDataset {
     public double getMinX() {
         double min = Double.POSITIVE_INFINITY;
 
-        for (SeriesData sd : series)
-            for (int i = 0; i < sd.xs.capacity() / 8; ++i) {
-                double x = sd.xs.getDouble(i*8);
-                if (x < min)
-                    min = x;
-            }
+        for (int i = 0; i < series.size(); ++i)
+            min = Double.min(min, getMinX(i));
 
         return min;
     }
@@ -166,12 +162,30 @@ public class XYDataset implements IXYDataset {
     public double getMaxX() {
         double max = Double.NEGATIVE_INFINITY;
 
-        for (SeriesData sd : series)
-            for (int i = 0; i < sd.xs.capacity() / 8; ++i) {
-                double x = sd.xs.getDouble(i*8);
-                if (x > max)
-                    max = x;
-            }
+        for (int i = 0; i < series.size(); ++i)
+            max = Double.max(max, getMaxX(i));
+
+        return max;
+    }
+
+    @Override
+    public double getMinX(int series) {
+        double min = Double.POSITIVE_INFINITY;
+
+        SeriesData sd = this.series.get(series);
+        for (int i = 0; i < sd.xs.capacity() / 8; ++i)
+            min = Double.min(min, sd.xs.getDouble(i*8));
+
+        return min;
+    }
+
+    @Override
+    public double getMaxX(int series) {
+        double max = Double.NEGATIVE_INFINITY;
+
+        SeriesData sd = this.series.get(series);
+        for (int i = 0; i < sd.xs.capacity() / 8; ++i)
+            max = Double.max(max, sd.xs.getDouble(i*8));
 
         return max;
     }
@@ -185,12 +199,8 @@ public class XYDataset implements IXYDataset {
     public double getMinY() {
         double min = Double.POSITIVE_INFINITY;
 
-        for (SeriesData sd : series)
-            for (int i = 0; i < sd.ys.capacity() / 8; ++i) {
-                double y = sd.ys.getDouble(i*8);
-                if (y < min)
-                    min = y;
-            }
+        for (int i = 0; i < series.size(); ++i)
+            min = Double.min(min, getMinY(i));
 
         return min;
     }
@@ -199,12 +209,30 @@ public class XYDataset implements IXYDataset {
     public double getMaxY() {
         double max = Double.NEGATIVE_INFINITY;
 
-        for (SeriesData sd : series)
-            for (int i = 0; i < sd.ys.capacity() / 8; ++i) {
-                double y = sd.ys.getDouble(i*8);
-                if (y > max)
-                    max = y;
-            }
+        for (int i = 0; i < series.size(); ++i)
+            max = Double.max(max, getMaxY(i));
+
+        return max;
+    }
+
+    @Override
+    public double getMinY(int series) {
+        double min = Double.POSITIVE_INFINITY;
+
+        SeriesData sd = this.series.get(series);
+        for (int i = 0; i < sd.ys.capacity() / 8; ++i)
+            min = Double.min(min, sd.ys.getDouble(i*8));
+
+        return min;
+    }
+
+    @Override
+    public double getMaxY(int series) {
+        double max = Double.NEGATIVE_INFINITY;
+
+        SeriesData sd = this.series.get(series);
+        for (int i = 0; i < sd.ys.capacity() / 8; ++i)
+            max = Double.max(max, sd.ys.getDouble(i*8));
 
         return max;
     }

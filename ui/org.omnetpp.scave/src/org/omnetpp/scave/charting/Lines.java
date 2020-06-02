@@ -69,10 +69,12 @@ class Lines implements ILinePlot {
 
         if (dataset!=null && dataset.getSeriesCount() > 0) {
 
-            area.minX = dataset.getMinX();
-            area.minY = dataset.getMinY();
-            area.maxX = dataset.getMaxX();
-            area.maxY = dataset.getMaxY();
+            for (int i : parent.legend.getEnabledItemIndices()) {
+                area.minX = Double.min(area.minX, dataset.getMinX(i));
+                area.minY = Double.min(area.minY, dataset.getMinY(i));
+                area.maxX = Double.max(area.maxX, dataset.getMaxX(i));
+                area.maxY = Double.max(area.maxY, dataset.getMaxY(i));
+            }
 
             // try to find the area by transforming the dataset range
             area = parent.transformArea(area);
