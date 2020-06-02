@@ -657,6 +657,34 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
         }
     }
 
+    public void legendItemEnablementChanged() {
+        double zx = getZoomX();
+        double zy = getZoomY();
+        long vt = getViewportTop();
+        long vl = getViewportLeft();
+
+        boolean shouldZoomOutX = getZoomX()==0 || isZoomedOutX();
+        boolean shouldZoomOutY = getZoomY()==0 || isZoomedOutY();
+
+        chartChanged();
+        chartArea = calculatePlotArea();
+        setArea(chartArea);
+
+        if (shouldZoomOutX)
+            zoomToFitX();
+        else {
+            setZoomX(zx);
+            scrollHorizontalTo(vl);
+        }
+
+        if (shouldZoomOutY)
+            zoomToFitY();
+        else {
+            setZoomY(zy);
+            scrollVerticalTo(vt);
+        }
+    }
+
     protected void paintInsets(Graphics graphics) {
         Insets insets = getInsets();
         // do not draw insets border when exporting to SVG

@@ -143,26 +143,7 @@ public class Legend implements ILegend {
                 if (itemIndex >= 0 && itemIndex < items.size()) {
                     Item item = items.get(itemIndex);
                     item.enabled = !item.enabled ;
-                    parent.chartChanged();
-                    parent.chartArea = parent.calculatePlotArea();
-
-                    // TODO: keep the current area, but update the "data bounds"...
-                    parent.setArea(parent.chartArea);
-                    parent.zoomToFit();
-
-
-                    /*
-
-                    // preserve zoomed-out state while resizing
-                    boolean shouldZoomOutX = parent.getZoomX()==0 || parent.isZoomedOutX();
-                    boolean shouldZoomOutY = parent.getZoomY()==0 || parent.isZoomedOutY();
-
-                    if (shouldZoomOutX)
-                        parent.zoomToFitX();
-                    if (shouldZoomOutY)
-                        parent.zoomToFitY();
-                    */
-
+                    parent.legendItemEnablementChanged();
                 }
                 e.doit = false;
             }
