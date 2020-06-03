@@ -1,0 +1,33 @@
+#! /bin/sh
+#
+# Run an OMNeT++ parallel simulation using named pipes for communication.
+#
+
+# check args, print help
+if test -z "$*" ; then
+  echo "Run an OMNeT++ parallel simulation using named pipes for communication."
+  echo "Usage: $0 <simulation-command>"
+  exit 1
+fi
+
+# get number of partitions
+N=$($* -s -e parsim-num-partitions) || exit 1
+if test -z "$N" ; then
+  echo "$0: No \"parsim-num-partitions\" option in the simulation configuration"
+  exit 1
+fi
+
+# clean up files left from previous run
+rm -rf comm
+mkdir comm comm/read
+
+# start simulations
+parsim_opts="--parallel-simulation=true --parsim-communications-class=cNamedPipeCommunications"
+for i in $(seq 0 $(expr $N - 1)); do
+  echo "\$ $* -p$i $parsim_opts &"
+  $* -p$i $parsim_opts &
+done
+
+# wait for the simulations to exit, kill them when interrupted
+trap 'pkill -P $$' INT
+wait

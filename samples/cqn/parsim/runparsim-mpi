@@ -1,8 +1,20 @@
 #! /bin/sh
+#
+# Run an OMNeT++ parallel simulation using MPI for communication.
+#
 
-# make sure HOSTNAME is exported as some distros no longer export it by default
-if test "$HOSTNAME" = ""; then
-  export HOSTNAME=`hostname`
+# check args, print help
+if test -z "$*" ; then
+  echo "Run an OMNeT++ parallel simulation using MPI for communication."
+  echo "Usage: $0 <simulation-command>"
+  exit 1
 fi
 
-mpiexec -n 3 ../cqn -n .. -c LargeLookahead -u Cmdenv --parsim-communications-class=cMPICommunications
+# get number of partitions
+N=$($* -s -e parsim-num-partitions) || exit 1
+if test -z "$N" ; then
+  echo "$0: No \"parsim-num-partitions\" option in the simulation configuration"
+  exit 1
+fi
+
+mpiexec -n $N $* --parallel-simulation=true --parsim-communications-class=cMPICommunications

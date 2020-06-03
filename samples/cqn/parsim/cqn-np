@@ -1,0 +1,2 @@
+#! /bin/sh
+./runparsim-np ../cqn -n.. -u Cmdenv -c LargeLookahead omnetpp.ini partitioning.ini $*
