@@ -400,11 +400,8 @@ bool EnvirBase::simulationRequired()
 
     // process -q
     if (query) {
-        if (!configName) {
-            err() << "-c option must be present when -q is specified" << endl;
-            exitCode = 1;
-            return false;
-        }
+        if (!configName)
+            configName = "General";
         printRunInfo(configName, runFilter, query);
         return false;
     }
