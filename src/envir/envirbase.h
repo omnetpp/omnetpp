@@ -73,7 +73,7 @@ enum class DebuggerPresence {
     CANT_DETECT
 };
 
-#define ARGSPEC "h?f:u:l:c:r:n:x:i:p:q:avwsm"
+#define ARGSPEC "h?f:u:l:c:r:n:x:i:p:q:e:avwsm"
 
 struct ENVIR_API EnvirOptions
 {
@@ -185,6 +185,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     static void crashHandler(int signum);
     virtual std::vector<int> resolveRunFilter(const char *configName, const char *runFilter);
     virtual void printRunInfo(const char *configName, const char *runFilter, const char *query);
+    virtual void printConfigValue(const char *configName, const char *runFilter, const char *optionName);
 
   public:
     EnvirBase();

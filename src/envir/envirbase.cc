@@ -396,6 +396,7 @@ bool EnvirBase::simulationRequired()
     const char *configName = args->optionValue('c');
     const char *runFilter = args->optionValue('r');
     const char *query = args->optionValue('q');
+    const char *configOptionToEcho = args->optionValue('e');
 
     // process -q
     if (query) {
@@ -405,6 +406,14 @@ bool EnvirBase::simulationRequired()
             return false;
         }
         printRunInfo(configName, runFilter, query);
+        return false;
+    }
+
+    // process -e
+    if (configOptionToEcho) {
+        if (!configName)
+            configName = "General";
+        printConfigValue(configName, runFilter, configOptionToEcho);
         return false;
     }
 
@@ -506,6 +515,23 @@ void EnvirBase::printRunInfo(const char *configName, const char *runFilter, cons
         err() << "Unrecognized -q argument '" << q << "'" << endl;
         exitCode = 1;
     }
+}
+
+void EnvirBase::printConfigValue(const char *configName, const char *runFilter, const char *optionName)
+{
+    // activate the selected configuration
+    std::vector<int> runNumbers = resolveRunFilter(configName, runFilter);
+    if (runNumbers.size() == 0)
+        throw cRuntimeError("Run filter does not match any run");
+    if (runNumbers.size() > 1)
+        throw cRuntimeError("Run filter matches more than one run (%d)", (int)runNumbers.size());
+    int runNumber = runNumbers[0];
+    cfg->activateConfig(configName, runNumber);
+
+    // query option
+    cConfigOption *option = cConfigOption::get(optionName);
+    const char *value = cfg->getConfigValue(option, "");
+    out << value << endl;
 }
 
 bool EnvirBase::setup()
@@ -694,6 +720,9 @@ void EnvirBase::printHelp()
     out << "                variables and the full configuration for each matching run.\n";
     out << "    -q sectioninheritance\n";
     out << "                Print the section fallback chain of the specified configuration.\n";
+    out << "  -e <option>   Prints the value of the given configuration option in the\n";
+    out << "                simulation run denoted by the -c and -r options. (The run filter\n";
+    out << "                should match exactly one simulation run.)\n";
     out << "  -h            Print this help and exit.\n";
     out << "  -h <category> Lists registered components:\n";
     out << "    -h config         Prints the list of available configuration options\n";
