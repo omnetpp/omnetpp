@@ -47,15 +47,9 @@ class SIM_API cParsimCommunications : public cObject
     /** @name Lifecycle of communications library */
     //@{
     /**
-     * Init the library -- parameters (if there are any) should have
-     * been passed in constructor.
-     *
-     * This process may also include starting the program on all
-     * processors needed for the current simulation run, if
-     * it is not handled by the parallel runtime system (e.g. MPI
-     * handles it via mpirun).
+     * Initialize the communications library.
      */
-    virtual void init() = 0;
+    virtual void init(int numPartitions) = 0;
 
     /**
      * Shutdown the communications library.

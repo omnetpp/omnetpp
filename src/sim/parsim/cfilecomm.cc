@@ -61,10 +61,14 @@ cFileCommunications::~cFileCommunications()
 {
 }
 
-void cFileCommunications::init()
+void cFileCommunications::init(int np)
 {
-    // get numPartitions and myProcId from "-p" command-line option
-    getProcIdFromCommandLineArgs(myProcId, numPartitions, "cFileCommunications");
+    // store parameter
+    numPartitions = np;
+
+    // get myProcId from "-p" command-line option
+    myProcId = getProcIdFromCommandLineArgs(numPartitions, "cFileCommunications");
+
     EV << "cFileCommunications: started as process " << myProcId << " out of " << numPartitions << ".\n";
 
     // We cannot check here that the communications directory is empty, because

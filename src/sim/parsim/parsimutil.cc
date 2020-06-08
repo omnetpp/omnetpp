@@ -22,11 +22,12 @@
 #include "omnetpp/cenvir.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cexception.h"
+#include "common/stringutil.h"
 #include "parsimutil.h"
 
 namespace omnetpp {
 
-void getProcIdFromCommandLineArgs(int& myProcId, int& numPartitions, const char *caller)
+int getProcIdFromCommandLineArgs(int numPartitions, const char *caller)
 {
     int argc = getEnvir()->getArgCount();
     char **argv = getEnvir()->getArgVector();
@@ -36,17 +37,16 @@ void getProcIdFromCommandLineArgs(int& myProcId, int& numPartitions, const char 
             break;
 
     if (i == argc)
-        throw cRuntimeError("%s: Missing -p<procId>,<numPartitions> switch on the command line", caller);
+        throw cRuntimeError("%s: Missing -p<procId> switch on the command line", caller);
 
-    char *parg = argv[i];
-    myProcId = atoi(parg+2);
-    char *s = parg;
-    while (*s != ',' && *s)
-        s++;
-    numPartitions = (*s) ? atoi(s+1) : 0;
-    if (myProcId < 0 || numPartitions <= 0 || myProcId >= numPartitions)
-        throw cRuntimeError("%s: Invalid switch '%s' -- should have the format -p<procId>,<numPartitions>",
-                caller, parg);
+    const char *s = argv[i] + 2;
+    char *endp;
+    int result = common::opp_strtol(s, &endp);
+    if (s==endp || *endp || result < 0)
+        throw cRuntimeError("%s: Invalid -p<procId> switch on the command line: \"%s\"", caller, argv[i]);
+    if (result >= numPartitions)
+        throw cRuntimeError("%s: Invalid -p<procId> switch on the command line: procId=%d is out of range 0..%d", caller, result, numPartitions-1);
+    return result;
 }
 
 }  // namespace omnetpp

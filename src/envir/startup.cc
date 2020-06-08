@@ -183,12 +183,15 @@ int setupUserInterface(int argc, char *argv[])
         }
 
         // validate the configuration, but make sure we don't report cmdenv-* keys
-        // as errors if Cmdenv is absent; same for other UIs.
+        // as errors if Cmdenv is absent; same for other optional features.
         std::string ignorableKeys;
         if (omnetapps.getInstance()->lookup("Cmdenv") == nullptr)
             ignorableKeys += " cmdenv-*";
         if (omnetapps.getInstance()->lookup("Qtenv")==NULL)
             ignorableKeys += " qtenv-*";
+#ifndef WITH_PARSIM
+        ignorableKeys += " parsim-*";
+#endif
         config->validate(ignorableKeys.c_str());
 
         //

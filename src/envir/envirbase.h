@@ -99,6 +99,7 @@ struct ENVIR_API EnvirOptions
     std::string snapshotmanagerClass;
     std::string futureeventsetClass;
 #ifdef WITH_PARSIM
+    int parsimNumPartitions = 0;
     std::string parsimcommClass; // if parsim: cParsimCommunications class to use
     std::string parsimsynchClass; // if parsim: cParsimSynchronizer class to use
 #endif

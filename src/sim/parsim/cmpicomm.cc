@@ -53,8 +53,11 @@ cMPICommunications::~cMPICommunications()
     delete recycledBuffer;
 }
 
-void cMPICommunications::init()
+void cMPICommunications::init(int np)
 {
+    // store parameter
+    numPartitions = np;
+
     // sanity check
     int argc = getEnvir()->getArgCount();
     char **argv = getEnvir()->getArgVector();
@@ -65,13 +68,16 @@ void cMPICommunications::init()
     // init MPI
     MPI_Init(&argc, &argv);
 
-    // get numPartitions and myRank from MPI
-    MPI_Comm_size(MPI_COMM_WORLD, &numPartitions);
+    // get group size and myRank from MPI
+    int mpiGroupSize;
+    MPI_Comm_size(MPI_COMM_WORLD, &mpiGroupSize);
     MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
 
-    EV << "cMPICommunications: started as process " << myRank << " out of " << numPartitions << ".\n";
-    if (numPartitions == 1)
+    EV << "cMPICommunications: started as process " << myRank << " out of " << mpiGroupSize << ".\n";
+    if (mpiGroupSize == 1)
         EV_WARN << "MPI thinks this process is the only one in the session (did you use mpirun to start this program?)\n";
+    if (numPartitions != mpiGroupSize)
+        throw cRuntimeError("cMPICommunications: The number of partitions configured (%d) differs from the number of instances started by MPI (%d)", numPartitions, mpiGroupSize);
 
     // set up MPI send buffer (+16K prevents MPI_Buffer_attach() error if numPartitions==1)
     int defaultBufSize = MPI_SEND_BUFFER_PER_PARTITION * (numPartitions-1) + 16384;

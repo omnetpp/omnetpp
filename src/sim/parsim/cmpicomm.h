@@ -63,7 +63,7 @@ class SIM_API cMPICommunications : public cParsimCommunications
     /**
      * Init the library.
      */
-    virtual void init() override;
+    virtual void init(int numPartitions) override;
 
     /**
      * Shutdown the communications library.
