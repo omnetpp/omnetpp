@@ -21,7 +21,7 @@ else
     if [ `uname` = "Darwin" ]; then
       export DYLD_LIBRARY_PATH=$omnetpp_root/lib:$DYLD_LIBRARY_PATH
       if [ ! -d $omnetpp_root/tools/macosx ]; then
-          echo "WARNING! We are on Mac OS X, but it seems that you have downloaded the Linux version of the installation package!"
+          echo "WARNING! We are on macOS, but you seem to have downloaded the Linux version of the installation package!"
       else
           cd $omnetpp_root/tools/macosx && source setenv ; cd - >/dev/null
       fi
