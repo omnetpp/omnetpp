@@ -190,10 +190,28 @@ void cNamedPipeCommunications::send(cCommBuffer *buffer, int tag, int destinatio
 
 bool cNamedPipeCommunications::receive(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking)
 {
+    // return one from the previously buffered ones, if exist
+    for (auto it = receivedBuffers.begin(); it != receivedBuffers.end(); ++it) {
+        if (it->receivedTag == filtTag || filtTag == PARSIM_ANY_TAG) {
+            receivedTag = it->receivedTag;
+            sourceProcId = it->sourceProcId;
+            ((cMemCommBuffer*)buffer)->swap(it->buffer);
+            delete it->buffer;
+            receivedBuffers.erase(it);
+            return true;
+        }
+    }
+
+    // receive from pipe
     bool recv = doReceive(buffer, receivedTag, sourceProcId, blocking);
-    // TBD implement tag filtering
-    if (recv && filtTag != PARSIM_ANY_TAG && filtTag != receivedTag)
-        throw cRuntimeError("cNamedPipeCommunications: Tag filtering not implemented");
+
+    // if received one with a wrong tag, store it for later and return false
+    if (recv && filtTag != PARSIM_ANY_TAG && filtTag != receivedTag) {
+        cMemCommBuffer *copy = new cMemCommBuffer();
+        ((cMemCommBuffer*)buffer)->swap(copy);
+        receivedBuffers.push_back({receivedTag, sourceProcId, copy});
+        return false;
+    }
     return recv;
 }
 
@@ -202,7 +220,7 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
     cMemCommBuffer *b = (cMemCommBuffer *)buffer;
     b->reset();
 
-    // TBD may be refined to handle blocking=true (right now just returns immediately)
+    // TODO should block for some time in the blocking=true case (right now just returns immediately)
 
     // select pipe to read
     int i, k;

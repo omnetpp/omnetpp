@@ -119,5 +119,14 @@ void cCommBufferBase::assertBufferEmpty()
     }
 }
 
+void cCommBufferBase::swap(cCommBufferBase *other)
+{
+    std::swap(mBuffer, other->mBuffer);
+    std::swap(mBufferSize, other->mBufferSize);
+    std::swap(mMsgSize, other->mMsgSize);
+    std::swap(mPosition, other->mPosition);
+}
+
+
 }  // namespace omnetpp
 

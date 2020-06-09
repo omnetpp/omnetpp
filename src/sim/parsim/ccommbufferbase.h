@@ -27,7 +27,7 @@ namespace omnetpp {
 
 /**
  * @brief Adds buffer (re)allocation functions to cCommBuffer. This functionality
- * is not always needed, e.g. PVM manages its pack/unpack buffers internally.
+ * is not always needed, as some libraries manage their pack/unpack buffers internally.
  */
 class SIM_API cCommBufferBase : public cCommBuffer
 {
@@ -98,6 +98,12 @@ class SIM_API cCommBufferBase : public cCommBuffer
      * or overflow occurred), an exception is thrown.
      */
     virtual void assertBufferEmpty() override;
+
+    /**
+     * Utility method: swap the contents of the two buffers
+     */
+    virtual void swap(cCommBufferBase *other);
+
     //@}
 };
 

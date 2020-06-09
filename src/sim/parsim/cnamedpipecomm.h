@@ -26,7 +26,7 @@
 
 
 #include <cstdio>
-#include <deque>
+#include <list>
 #include "omnetpp/simutil.h"
 #include "omnetpp/opp_string.h"
 #include "omnetpp/cparsimcomm.h"
@@ -45,6 +45,7 @@ typedef HANDLE PIPE;
 typedef int PIPE;
 #endif
 
+class cMemCommBuffer;
 
 /**
  * @brief Implementation of the communications layer which uses named pipes.
@@ -67,7 +68,8 @@ class SIM_API cNamedPipeCommunications : public cParsimCommunications
     int rrBase;
 
     // reordering buffer needed because of tag filtering support (filtTag)
-    std::deque<cCommBuffer*> storedBuffers;
+    struct ReceivedBuffer {int receivedTag; int sourceProcId; cMemCommBuffer *buffer;};
+    std::list<ReceivedBuffer> receivedBuffers;
 
   protected:
     // common impl. for receiveBlocking() and receiveNonblocking()
