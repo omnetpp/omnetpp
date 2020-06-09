@@ -595,10 +595,11 @@ bool cGate::isConnected() const
 {
     // for compound modules, both inside and outside must be non-nullptr,
     // for simple modules, only check outside.
-    if (!getOwnerModule()->isSimple())
-        return prevGate != nullptr && nextGate != nullptr;
-    else
+    cModule *module = getOwnerModule();
+    if (module->isSimple() || module->isPlaceholder())
         return isConnectedOutside();
+    else
+        return prevGate != nullptr && nextGate != nullptr;
 }
 
 bool cGate::isPathOK() const
