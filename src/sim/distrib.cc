@@ -23,7 +23,7 @@
 #include "omnetpp/cenvir.h"
 #include "omnetpp/ccomponent.h"
 #include "omnetpp/cexception.h"
-#include "omnetpp/platdep/platmisc.h"
+#include "omnetpp/platdep/platmisc.h" // M_PI
 
 #ifndef M_E
 #define M_E     2.7182818284590452353602874713527
@@ -51,14 +51,14 @@ double unit_normal(cRNG *rng)
 {
     double U = 1.0 - rng->doubleRand();
     double V = 1.0 - rng->doubleRand();
-    return sqrt(-2.0*log(U)) * cos(PI*2*V);
+    return sqrt(-2.0*log(U)) * cos(M_PI*2*V);
 }
 
 double normal(cRNG *rng, double m, double d)
 {
     double U = 1.0 - rng->doubleRand();
     double V = 1.0 - rng->doubleRand();
-    return m + d * sqrt(-2.0*log(U)) * cos(PI*2*V);
+    return m + d * sqrt(-2.0*log(U)) * cos(M_PI*2*V);
 }
 
 double truncnormal(cRNG *rng, double m, double d)

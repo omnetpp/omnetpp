@@ -67,10 +67,6 @@ using omnetpp::common::opp_runtime_error;
 typedef BigDecimal simtime_t;
 #define simtime_nil BigDecimal::MinusOne
 
-#ifndef PI
-#define PI        3.141592653589793
-#endif
-
 } // namespace eventlog
 }  // namespace omnetpp
 

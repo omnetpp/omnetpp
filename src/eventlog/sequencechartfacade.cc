@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <set>
 #include <cmath>
+#include "omnetpp/platdep/platmisc.h"  // M_PI
 #include "common/lcgrandom.h"
 #include "ievent.h"
 #include "ieventlog.h"
@@ -176,7 +177,7 @@ double SequenceChartFacade::getTimelineCoordinateDelta(double simulationTimeDelt
     if (timelineMode == STEP)
         return 1;
     else
-        return nonLinearMinimumTimelineCoordinateDelta + (1 - nonLinearMinimumTimelineCoordinateDelta) * atan(fabs(simulationTimeDelta) / getNonLinearFocus()) / PI * 2;
+        return nonLinearMinimumTimelineCoordinateDelta + (1 - nonLinearMinimumTimelineCoordinateDelta) * atan(fabs(simulationTimeDelta) / getNonLinearFocus()) / M_PI * 2;
 }
 
 double SequenceChartFacade::getTimelineCoordinateDelta(IEvent *event)

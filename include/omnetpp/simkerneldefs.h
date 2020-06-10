@@ -45,10 +45,6 @@ namespace omnetpp {
 // other common defines
 //
 
-#ifndef PI
-#define PI        3.141592653589793
-#endif
-
 #ifndef NDEBUG
 /**
  * @brief The \opp version of C's assert() macro. If expr evaluates to false, an exception

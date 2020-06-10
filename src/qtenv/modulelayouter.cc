@@ -179,8 +179,8 @@ void ModuleLayouter::getSubmoduleCoords(cModule *submod, bool &explicitcoords, b
         double rx = resolveDoubleDispStrArg(ds.getTagArg("p", 3), submod, (sx+sy)*vectorSize/4);
         double ry = resolveDoubleDispStrArg(ds.getTagArg("p", 4), submod, rx);
 
-        x += rx - rx*sin(submod->getIndex()*2*PI/vectorSize);
-        y += ry - ry*cos(submod->getIndex()*2*PI/vectorSize);
+        x += rx - rx*sin(submod->getIndex()*2*M_PI/vectorSize);
+        y += ry - ry*cos(submod->getIndex()*2*M_PI/vectorSize);
     }
     else {
         throw cRuntimeError("Invalid layout '%s' in 'p' tag of display string \"%s\"", layout, ds.str());
