@@ -1236,8 +1236,8 @@ void EnvirBase::processFileName(std::string& fname)
 
         const char *hostname = opp_gethostname();
         if (!hostname)
-            throw cRuntimeError("Cannot append hostname to file name '%s': No HOST, HOSTNAME "
-                                "or COMPUTERNAME (Windows) environment variable", fname.c_str());
+            throw cRuntimeError("Cannot append hostname to file name '%s': no host name configured, and no HOST, HOSTNAME "
+                                "or COMPUTERNAME (Windows) environment variable set", fname.c_str());
         int pid = getpid();
 
         // append

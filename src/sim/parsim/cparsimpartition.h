@@ -38,7 +38,7 @@ class cTerminationException;
 
 /**
  * @brief Represents one partition in a parallel simulation. Knows about
- * partitions and the links between this partition and its neighbours.
+ * partitions and the links between this partition and its neighbors.
  *
  * Interconnections are stored not directly inside this object,
  * but in cProxyGate's of cPlaceholderModule's. The remote address fields
@@ -53,8 +53,8 @@ class cTerminationException;
  * - incoming messages are processed at here by processReceivedBuffer()
  *   (invoked from the synchronization layer, cParsimSynchronizer)
  *
- * This layer is communication library independent (i.e it contains
- * no MPI, PVM, etc. calls) -- it builds on the abstraction layer provided
+ * This layer is communication library independent (e.g. it contains
+ * no MPI calls) -- it builds on the abstraction layer provided
  * by cParsimCommunications.
  *
  * @ingroup Parsim
