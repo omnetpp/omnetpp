@@ -135,6 +135,11 @@ static void assertType(cConfigOption *option, bool isPerObject, cConfigOption::T
                 option->getName(), cConfigOption::getTypeName(requiredType), cConfigOption::getTypeName(option->getType()));
 }
 
+const char *cConfiguration::getConfigValue(cConfigOption *option, const char *fallbackValue) const
+{
+    TRY(return fallback(getConfigValue(option->getName()), substituteVariables(option->getDefaultValue()), fallbackValue));
+}
+
 const char *cConfiguration::getAsCustom(cConfigOption *option, const char *fallbackValue) const
 {
     assertType(option, false, cConfigOption::CFG_CUSTOM);
@@ -187,6 +192,11 @@ std::string cConfiguration::getAsPath(cConfigOption *option) const
 }
 
 //----
+
+const char *cConfiguration::getPerObjectConfigValue(const char *objectFullPath, cConfigOption *option, const char *fallbackValue) const
+{
+    TRY(return fallback(getPerObjectConfigValue(objectFullPath, option->getName()), substituteVariables(option->getDefaultValue()), fallbackValue));
+}
 
 const char *cConfiguration::getAsCustom(const char *objectFullPath, cConfigOption *option, const char *fallbackValue) const
 {
