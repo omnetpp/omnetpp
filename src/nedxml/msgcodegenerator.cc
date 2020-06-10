@@ -1601,6 +1601,9 @@ void MsgCodeGenerator::generateEnum(const EnumInfo& enumInfo)
     }
     H << "};\n\n";
 
+    H << "inline void doParsimPacking(omnetpp::cCommBuffer *b, const " << enumInfo.enumName << "& e) { b->pack(static_cast<int>(e)); }\n";
+    H << "inline void doParsimUnpacking(omnetpp::cCommBuffer *b, " << enumInfo.enumName << "& e) { int n; b->unpack(n); e = static_cast<" << enumInfo.enumName << ">(n); }\n\n";
+
     // TODO generate a Register_Enum() macro call instead
     // TODO why generating the enum and registering its descriptor (cEnum) aren't separate, independently usable operations as with classes?
     CC << "EXECUTE_ON_STARTUP(\n";
