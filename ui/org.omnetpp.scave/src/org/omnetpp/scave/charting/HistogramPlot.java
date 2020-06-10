@@ -449,7 +449,7 @@ public class HistogramPlot extends PlotBase {
     protected void doPaintNoncachableLayer(Graphics graphics, ICoordsMapping coordsMapping) {
         int highlightedItem = legend.getHighlightedItem();
 
-        if (highlightedItem != -2) {
+        if (highlightedItem != Legend.HIGHLIGHT_OFF) {
             graphics.setAlpha(180);
             graphics.setBackgroundColor(backgroundColor);
             graphics.fillRectangle(getViewportRectangle());

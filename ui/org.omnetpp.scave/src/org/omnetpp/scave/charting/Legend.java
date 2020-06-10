@@ -18,7 +18,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Listener;
-import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.scave.charting.plotter.IPlotSymbol;
@@ -111,7 +110,10 @@ public class Legend implements ILegend {
     private Rectangle bounds; // rectangle of the legend in canvas coordinates
     int visibleItemCount;
 
-    int highlightedItem = -2;
+    public static final int HIGHLIGHT_OFF = -2; // -> there is no veil, nor highlighted item
+    public static final int HIGHLIGHT_NONE = -1; // -> there is a veil, but no highlighted item
+
+    private int highlightedItem = HIGHLIGHT_OFF;
 
     public Legend(PlotBase parent) {
 
@@ -119,7 +121,7 @@ public class Legend implements ILegend {
         Integer[] lastXY = new Integer[2];
 
         parent.addListener(SWT.MouseMove, (e) -> {
-            int highlighted = -2;
+            int highlighted = HIGHLIGHT_OFF;
 
             if (bounds.contains(e.x, e.y)) {
                 highlighted = getItemIndexAt(e.x - bounds.x(), e.y - bounds.y());
@@ -190,7 +192,6 @@ public class Legend implements ILegend {
 
     // local coordinates, relative to legend corner. returns -1 if not found
     public int getItemIndexAt(int x, int y) {
-
         int count = getVisibleRealItemCount();
 
         // could be optimized, the items are fairly regularly placed.
@@ -198,7 +199,7 @@ public class Legend implements ILegend {
             if (items.get(i).getBounds().contains(x, y))
                 return i;
 
-        return -1;
+        return -1; // should match HIGHLIGHT_NONE
     }
 
     public boolean isItemEnabled(int index) {
@@ -510,16 +511,16 @@ public class Legend implements ILegend {
 
             for (int i = 0; i < count; i++) {
                 Item item = items.get(i);
-                if (highlightedItem == -2)
+                if (highlightedItem == HIGHLIGHT_OFF)
                     graphics.setAlpha(255);
-                else if (highlightedItem == -1)
+                else if (highlightedItem == HIGHLIGHT_NONE)
                     graphics.setAlpha(127);
                 else if (highlightedItem >= 0)
                     graphics.setAlpha(i == highlightedItem ? 255 : 127);
                 item.draw(graphics, left+item.x, top + item.y);
             }
 
-            graphics.setAlpha(highlightedItem == -2 ? 255 : 127);
+            graphics.setAlpha(highlightedItem == HIGHLIGHT_OFF ? 255 : 127);
             // draw "... and X more" text in place of the last visible item
             if (visibleItemCount < items.size()) {
                 int x=left, y = top;
