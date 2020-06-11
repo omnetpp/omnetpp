@@ -21,3 +21,5 @@ skippedstdcxxheaders = True
 end
 end
 
+maint set worker-threads unlimited
+set index-cache on
