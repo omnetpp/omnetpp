@@ -465,6 +465,7 @@ public class BarPlot extends PlotBase {
             graphics.setAlpha(180);
             graphics.setBackgroundColor(backgroundColor);
             graphics.fillRectangle(getViewportRectangle());
+            graphics.setAlpha(255);
             valueAxis.drawGrid(graphics, coordsMapping);
 
             if (legend.isItemEnabled(highlightedItem))

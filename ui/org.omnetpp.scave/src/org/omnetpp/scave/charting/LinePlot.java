@@ -662,6 +662,7 @@ public class LinePlot extends PlotBase {
             graphics.setAlpha(180);
             graphics.setBackgroundColor(backgroundColor);
             graphics.fillRectangle(getViewportRectangle());
+            graphics.setAlpha(255);
             xAxis.drawGrid(graphics, coordsMapping);
             yAxis.drawGrid(graphics, coordsMapping);
 

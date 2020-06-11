@@ -453,6 +453,7 @@ public class HistogramPlot extends PlotBase {
             graphics.setAlpha(180);
             graphics.setBackgroundColor(backgroundColor);
             graphics.fillRectangle(getViewportRectangle());
+            graphics.setAlpha(255);
             yAxis.drawGrid(graphics, coordsMapping);
 
             if (legend.isItemEnabled(highlightedItem))
