@@ -449,14 +449,15 @@ public class HistogramPlot extends PlotBase {
     protected void doPaintNoncachableLayer(Graphics graphics, ICoordsMapping coordsMapping) {
         int highlightedItem = legend.getHighlightedItem();
 
-        if (highlightedItem != Legend.HIGHLIGHT_OFF) {
+        if (highlightedItem >= 0) {
             graphics.setAlpha(180);
             graphics.setBackgroundColor(backgroundColor);
             graphics.fillRectangle(getViewportRectangle());
             yAxis.drawGrid(graphics, coordsMapping);
+
+            if (legend.isItemEnabled(highlightedItem))
+                histograms.drawSingle(graphics, coordsMapping, highlightedItem);
         }
-        if (highlightedItem >= 0 && legend.isItemEnabled(highlightedItem))
-            histograms.drawSingle(graphics, coordsMapping, highlightedItem);
 
         graphics.setAlpha(255);
         graphics.setLineWidth(1);

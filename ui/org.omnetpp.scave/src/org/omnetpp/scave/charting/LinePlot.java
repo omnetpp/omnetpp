@@ -658,18 +658,19 @@ public class LinePlot extends PlotBase {
     protected void doPaintNoncachableLayer(Graphics graphics, ICoordsMapping coordsMapping) {
         int highlightedItem = legend.getHighlightedItem();
 
-        if (highlightedItem != Legend.HIGHLIGHT_OFF) {
+        if (highlightedItem >= 0) {
             graphics.setAlpha(180);
             graphics.setBackgroundColor(backgroundColor);
             graphics.fillRectangle(getViewportRectangle());
             xAxis.drawGrid(graphics, coordsMapping);
             yAxis.drawGrid(graphics, coordsMapping);
-        }
 
-        IPreferenceStore store = ScavePlugin.getDefault().getPreferenceStore();
-        int perLineTimeLimitMillis = store.getInt(ScavePreferenceConstants.PER_LINE_DRAW_TIME_LIMIT_MILLIS);
-        if (highlightedItem >= 0 && legend.isItemEnabled(highlightedItem))
-            lines.drawSingle(graphics, coordsMapping, highlightedItem, System.currentTimeMillis(), perLineTimeLimitMillis, perLineTimeLimitMillis);
+            if (legend.isItemEnabled(highlightedItem)) {
+                IPreferenceStore store = ScavePlugin.getDefault().getPreferenceStore();
+                int perLineTimeLimitMillis = store.getInt(ScavePreferenceConstants.PER_LINE_DRAW_TIME_LIMIT_MILLIS);
+                lines.drawSingle(graphics, coordsMapping, highlightedItem, System.currentTimeMillis(), perLineTimeLimitMillis, perLineTimeLimitMillis);
+            }
+        }
 
         graphics.setAlpha(255);
         graphics.setLineWidth(1);
