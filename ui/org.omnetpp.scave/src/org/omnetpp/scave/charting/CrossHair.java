@@ -164,8 +164,12 @@ class CrossHair {
         return rect;
     }
 
+    public Point getCrosshairPosition() {
+        return new Point(canvasX, canvasY);
+    }
+
     public void draw(Graphics graphics, ICoordsMapping coordsMapping) {
-        if (plotArea != null && plotArea.contains(canvasX, canvasY)) {
+        if (plotArea != null) {
             graphics.pushState();
             // collect points close to cursor (x,y)
             ArrayList<DataPoint> dataPoints = new ArrayList<DataPoint>();

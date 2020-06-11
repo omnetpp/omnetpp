@@ -47,6 +47,7 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.common.Debug;
@@ -111,6 +112,10 @@ public class LinePlot extends PlotBase {
     private LinearAxis yAxis = new LinearAxis(true, false, true);
     private CrossHair crosshair;
     private Lines lines;
+
+    private Rectangle mainArea; // containing plots and axes
+    private Insets axesInsets; // space occupied by axes
+    private Rectangle innerPlotArea; // the area inside of the axes and lines
 
     // plot-wide line properties, individual line may override
     private boolean defaultDisplayLine;
@@ -598,9 +603,6 @@ public class LinePlot extends PlotBase {
         return lines.calculatePlotArea();
     }
 
-    Rectangle mainArea; // containing plots and axes
-    Insets axesInsets; // space occupied by axes
-
     @Override
     protected Rectangle doLayoutChart(Graphics graphics, int pass) {
         ICoordsMapping coordsMapping = getOptimizedCoordinateMapper();
@@ -625,11 +627,11 @@ public class LinePlot extends PlotBase {
             // will appear, and can calculate the occupied space from the longest tick label.
             yAxis.layout(graphics, mainArea, axesInsets, coordsMapping, pass);
             xAxis.layout(graphics, mainArea, axesInsets, coordsMapping, pass);
-            Rectangle plotArea = lines.layout(graphics, mainArea.getCopy().shrink(axesInsets));
-            crosshair.layout(graphics, plotArea);
-            legend.layout(graphics, plotArea, pass);
-            //FIXME how to handle it when plotArea.height/width comes out negative??
-            return plotArea;
+            innerPlotArea = lines.layout(graphics, mainArea.getCopy().shrink(axesInsets));
+            crosshair.layout(graphics, innerPlotArea);
+            legend.layout(graphics, innerPlotArea, pass);
+            //FIXME how to handle it when innerPlotArea.height/width comes out negative??
+            return innerPlotArea;
         }
         else
             return null;
@@ -686,7 +688,8 @@ public class LinePlot extends PlotBase {
         if (getSelection() != null)
             getSelection().draw(graphics, coordsMapping);
         drawRubberband(graphics);
-        if (highlightedItem == -2)
+        Point crosshairPosition = crosshair.getCrosshairPosition();
+        if (innerPlotArea.contains(crosshairPosition.x, crosshairPosition.y) && !legend.getBounds().contains(crosshairPosition))
             crosshair.draw(graphics, coordsMapping);
     }
 
