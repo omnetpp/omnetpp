@@ -450,7 +450,7 @@ public class HistogramPlot extends PlotBase {
         int highlightedItem = legend.getHighlightedItem();
 
         if (highlightedItem >= 0) {
-            graphics.setAlpha(180);
+            graphics.setAlpha(veilAlpha);
             graphics.setBackgroundColor(backgroundColor);
             graphics.fillRectangle(getViewportRectangle());
             graphics.setAlpha(255);

@@ -88,6 +88,7 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
     protected Color backgroundColor;
     protected Color insetsBackgroundColor;
     protected Color insetsLineColor;
+    protected int veilAlpha = 180;
     protected Title title = new Title();
     protected String titleText;
     protected Legend legend = new Legend(this);
