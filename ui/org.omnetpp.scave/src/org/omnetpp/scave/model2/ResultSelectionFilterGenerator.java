@@ -12,13 +12,13 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
+import org.omnetpp.scave.editors.datatable.PanelType;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.InterruptedFlag;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.engine.Scave;
-import org.omnetpp.scave.model.ResultType;
 
 /**
  * Given a set of selected results (an IDList of selected items, out of an IDList
@@ -393,12 +393,12 @@ public class ResultSelectionFilterGenerator {
         }
         else {
             // user hit Ctrl+A, then manually unselected a few items
-            ResultType type = dataPanel.getType();
-            String filter = type != ResultType.HISTOGRAM ? "type =~ " + ResultItem.itemTypeToString(type.getValue()) :
+            PanelType type = dataPanel.getType();
+            String filter = type != PanelType.HISTOGRAMS ? "type =~ " + ResultItem.itemTypeToString(type.getItemTypes()) :
                 "(type =~ " + Scave.STATISTICS + " OR type=~ " +  Scave.HISTOGRAM + ")";
 
             boolean fieldsShownAsScalars = dataPanel.getShowFieldsAsScalars();
-            if (type == ResultType.SCALAR && !fieldsShownAsScalars)
+            if (type == PanelType.SCALARS && !fieldsShownAsScalars)
                 filter += " AND isfield =~ false";
 
             String panelFilter = dataPanel.getFilter();

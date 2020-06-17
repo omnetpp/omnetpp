@@ -52,7 +52,6 @@ import org.omnetpp.scave.engine.Scave;
 import org.omnetpp.scave.engine.StatisticsResult;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
-import org.omnetpp.scave.model.ResultType;
 
 /**
  * This is a preconfigured VIRTUAL table, which displays a list of
@@ -167,7 +166,7 @@ public class DataTable extends LargeTable implements IDataControl {
         COL_NUMBINS, COL_HISTOGRAMRANGE
     };
 
-    private ResultType type;
+    private PanelType type;
     private ResultFileManagerEx manager;
     private IDList idList = new IDList();
     private int numericPrecision = 6;
@@ -183,9 +182,9 @@ public class DataTable extends LargeTable implements IDataControl {
 
     private TableColumn selectedColumn; // the last column selected by a mouse click
 
-    public DataTable(Composite parent, int style, ResultType type) {
+    public DataTable(Composite parent, int style, PanelType type) {
         super(parent, style | SWT.VIRTUAL | SWT.FULL_SELECTION);
-        Assert.isTrue(type==ResultType.SCALAR || type==ResultType.PARAMETER || type==ResultType.VECTOR || type==ResultType.HISTOGRAM);
+        Assert.isTrue(type==PanelType.SCALARS || type==PanelType.PARAMETERS || type==PanelType.VECTORS || type==PanelType.HISTOGRAMS);
         this.type = type;
         setLinesVisible(true);
         initDefaultState();
@@ -232,7 +231,7 @@ public class DataTable extends LargeTable implements IDataControl {
     protected void checkSubclass() {
     }
 
-    public ResultType getType() {
+    public PanelType getType() {
         return type;
     }
 
@@ -299,10 +298,10 @@ public class DataTable extends LargeTable implements IDataControl {
 
     protected Column[] getAllColumns() {
         switch (type) {
-        case SCALAR:     return allScalarColumns;
-        case PARAMETER:  return allParameterColumns;
-        case VECTOR:     return allVectorColumns;
-        case HISTOGRAM:  return allHistogramColumns;
+        case SCALARS:     return allScalarColumns;
+        case PARAMETERS:  return allParameterColumns;
+        case VECTORS:     return allVectorColumns;
+        case HISTOGRAMS:  return allHistogramColumns;
         default: return null;
         }
     }
@@ -608,17 +607,17 @@ public class DataTable extends LargeTable implements IDataControl {
                 String replication = result.getFileRun().getRun().getAttribute(Scave.REPLICATION);
                 return replication != null ? replication : NA;
             }
-            else if (type == ResultType.SCALAR) {
+            else if (type == PanelType.SCALARS) {
                 ScalarResult scalar = (ScalarResult)result;
                 if (COL_VALUE.equals(column))
                     return formatNumber(scalar.getValue(), unit);
             }
-            else if (type == ResultType.PARAMETER) {
+            else if (type == PanelType.PARAMETERS) {
                 ParameterResult parameter = (ParameterResult)result;
                 if (COL_VALUE.equals(column))
                     return parameter.getValue();
             }
-            else if (type == ResultType.VECTOR) {
+            else if (type == PanelType.VECTORS) {
                 VectorResult vector = (VectorResult)result;
                 if (COL_VECTOR_ID.equals(column)) {
                     return String.valueOf(vector.getVectorId());
@@ -659,7 +658,7 @@ public class DataTable extends LargeTable implements IDataControl {
                     return maxTime == null || maxTime.isNaN() ? NA : formatNumber(maxTime);
                 }
             }
-            else if (type == ResultType.HISTOGRAM) {
+            else if (type == PanelType.HISTOGRAMS) {
                 StatisticsResult stats = (StatisticsResult)result;
                 if (COL_KIND.equals(column)) {
                     boolean isHistogram = result instanceof HistogramResult;

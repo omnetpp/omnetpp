@@ -10,9 +10,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.omnetpp.scave.engine.IDList;
-import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
-import org.omnetpp.scave.model.ResultType;
 
 /**
  * A TabFolder that contains All, Vectors, Scalars, Histograms tabs with
@@ -53,11 +51,11 @@ public class FilteredDataTabFolder extends TabFolder {
 
     protected void initialize() {
         // create pages
-        allPanel = new FilteredDataPanel(this, SWT.NONE, null);
-        parametersPanel = new FilteredDataPanel(this, SWT.NONE, ResultType.PARAMETER);
-        scalarsPanel = new FilteredDataPanel(this, SWT.NONE, ResultType.SCALAR);
-        vectorsPanel = new FilteredDataPanel(this, SWT.NONE, ResultType.VECTOR);
-        histogramsPanel = new FilteredDataPanel(this, SWT.NONE, ResultType.HISTOGRAM);
+        allPanel = new FilteredDataPanel(this, SWT.NONE, PanelType.ALL);
+        parametersPanel = new FilteredDataPanel(this, SWT.NONE, PanelType.PARAMETERS);
+        scalarsPanel = new FilteredDataPanel(this, SWT.NONE, PanelType.SCALARS);
+        vectorsPanel = new FilteredDataPanel(this, SWT.NONE, PanelType.VECTORS);
+        histogramsPanel = new FilteredDataPanel(this, SWT.NONE, PanelType.HISTOGRAMS);
 
         // create tabs (note: tab labels will be refreshed from initialize())
         allTab = addItem(allPanel);
@@ -123,28 +121,9 @@ public class FilteredDataTabFolder extends TabFolder {
         return histogramsPanel;
     }
 
-    public FilteredDataPanel getFilteredDataPanel(long id) {
-        int type = ResultFileManager.getTypeOf(id);
-
-        if (type == ResultFileManager.SCALAR)
-            return scalarsPanel;
-        if (type == ResultFileManager.PARAMETER)
-            return parametersPanel;
-        else if (type == ResultFileManager.VECTOR)
-            return vectorsPanel;
-        else if (type == ResultFileManager.HISTOGRAM)
-            return histogramsPanel;
-        else
-            return allPanel;
-    }
-
     public FilteredDataPanel getActivePanel() {
         int index = getSelectionIndex();
-
-        if (index >= 0)
-            return (FilteredDataPanel)getItem(index).getControl();
-        else
-            return null;
+        return index < 0 ? null : (FilteredDataPanel)getItem(index).getControl();
     }
 
     public void setActivePanel(Control control) {
@@ -159,37 +138,18 @@ public class FilteredDataTabFolder extends TabFolder {
             }
         }
 
-        throw new IllegalStateException();
+        throw new IllegalArgumentException();
     }
 
-    public void setActivePanel(ResultType type) {
-        if (type == ResultType.VECTOR)
-            setActivePanel(vectorsPanel);
-        else if (type == ResultType.SCALAR)
-            setActivePanel(scalarsPanel);
-        else if (type == ResultType.PARAMETER)
-            setActivePanel(parametersPanel);
-        else if (type == ResultType.HISTOGRAM)
-            setActivePanel(histogramsPanel);
-        else
-            setActivePanel(allPanel);
-    }
-
-    public ResultType getActivePanelType() {
-        FilteredDataPanel activePanel = getActivePanel();
-
-        if (activePanel == allPanel)
-            return null;
-        else if (activePanel == vectorsPanel)
-            return ResultType.VECTOR;
-        else if (activePanel == scalarsPanel)
-            return ResultType.SCALAR;
-        else if (activePanel == parametersPanel)
-            return ResultType.PARAMETER;
-        else if (activePanel == histogramsPanel)
-            return ResultType.HISTOGRAM;
-        else
-            throw new IllegalStateException();
+    public FilteredDataPanel getPanel(PanelType type) {
+        switch (type) {
+        case ALL: return allPanel;
+        case PARAMETERS: return parametersPanel;
+        case SCALARS: return scalarsPanel;
+        case VECTORS: return vectorsPanel;
+        case HISTOGRAMS: return histogramsPanel;
+        default: throw new IllegalArgumentException();
+        }
     }
 
     public void switchToNonEmptyPanel() {

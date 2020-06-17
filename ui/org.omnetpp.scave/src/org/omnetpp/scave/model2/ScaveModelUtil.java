@@ -22,6 +22,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
+import org.omnetpp.scave.editors.datatable.PanelType;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
@@ -38,7 +39,6 @@ import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.ModelChangeEvent;
 import org.omnetpp.scave.model.ModelObject;
 import org.omnetpp.scave.model.Property;
-import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.commands.AddChartCommand;
 import org.omnetpp.scave.model.commands.AddInputFileCommand;
 import org.omnetpp.scave.model.commands.CommandStack;
@@ -195,21 +195,6 @@ public class ScaveModelUtil {
     public static boolean isInputsChange(ModelChangeEvent event) {
         ModelObject subject = event.getSubject();
         return subject instanceof Inputs || subject instanceof InputFile;
-    }
-
-    public static IDList getAllIDs(ResultFileManager manager, ResultType type) {
-        if (type == null)
-            return manager.getAllItems(true);
-
-        switch (type) {
-        case PARAMETER: return manager.getAllParameters();
-        case SCALAR: return manager.getAllScalars(true);
-        case VECTOR: return manager.getAllVectors();
-        case STATISTICS: return manager.getAllStatistics();
-        case HISTOGRAM: return manager.getAllHistograms();
-        }
-        Assert.isTrue(false, "Unknown dataset type: " + type);
-        return null;
     }
 
     public static ResultItem[] getResultItems(IDList idlist, ResultFileManager manager) {

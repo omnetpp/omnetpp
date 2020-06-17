@@ -47,6 +47,7 @@ import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.editors.datatable.FilteredDataTabFolder;
 import org.omnetpp.scave.editors.datatable.IDataControl;
 import org.omnetpp.scave.editors.datatable.IDataListener;
+import org.omnetpp.scave.editors.datatable.PanelType;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
@@ -54,7 +55,6 @@ import org.omnetpp.scave.engineext.ResultFileManagerChangeEvent;
 import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartTemplate;
-import org.omnetpp.scave.model.ResultType;
 
 /**
  * This is the "Browse Data" page of Scave Editor
@@ -115,8 +115,16 @@ public class BrowseDataPage extends FormEditorPage {
         return tabFolder.getActivePanel();
     }
 
-    public ResultType getActivePanelType() {
-        return tabFolder.getActivePanelType();
+    public PanelType getActivePanelType() {
+        return tabFolder.getActivePanel().getType();
+    }
+
+    public void setActivePanel(FilteredDataPanel panel) {
+        tabFolder.setActivePanel(panel);
+    }
+
+    public void setActivePanel(PanelType type) {
+        tabFolder.setActivePanel(tabFolder.getPanel(type));
     }
 
     private void initialize() {
@@ -243,7 +251,7 @@ public class BrowseDataPage extends FormEditorPage {
                 contextMenuManager.add(new ChooseTableColumnsAction((DataTable)panel.getDataControl()));
             if (panel.getDataControl() instanceof DataTree)
                 ((DataTree)panel.getDataControl()).contributeToContextMenu(contextMenuManager);
-            if (ResultType.VECTOR.equals(panel.getType())) {
+            if (PanelType.VECTORS.equals(panel.getType())) {
                 contextMenuManager.add(new Separator());
                 contextMenuManager.add(actions.showOutputVectorViewAction);
             }

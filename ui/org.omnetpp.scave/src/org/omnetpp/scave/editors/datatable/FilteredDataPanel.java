@@ -30,7 +30,6 @@ import org.omnetpp.common.ui.IHasFocusManager;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
-import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model2.FilterField;
 import org.omnetpp.scave.model2.FilterHintsCache;
 
@@ -54,14 +53,14 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
     private FilterBar filterBar;
     private IDataControl dataControl;
     private IDList idlist = new IDList(); // the unfiltered data list
-    private ResultType type;
+    private PanelType type;
     private boolean showFieldsAsScalars = false;
     private FocusManager focusManager;
     private int itemLimit = 100_000_000; // some sensible limit to the number of data items displayed, may be important with DataTree which isn't O(1)
     private Map<String,IDList> filterCache = new LinkedHashMap<>(); // keep order so we can discard oldest entries
     private FilterHintsCache filterHintsCache = new FilterHintsCache();
 
-    public FilteredDataPanel(Composite parent, int style, ResultType type) {
+    public FilteredDataPanel(Composite parent, int style, PanelType type) {
         super(parent, style);
         this.type = type;
         initialize(type);
@@ -115,7 +114,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
         return filterHintsCache;
     }
 
-    public ResultType getType() {
+    public PanelType getType() {
         return type;
     }
 
@@ -127,7 +126,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
         return showFieldsAsScalars;
     }
 
-    protected void initialize(ResultType type) {
+    protected void initialize(PanelType type) {
         GridLayout gridLayout = new GridLayout(1, false);
         gridLayout.marginHeight = 0;
         gridLayout.marginWidth = 0;
@@ -135,7 +134,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
         filterBar = new FilterBar(this, SWT.NONE);
         filterBar.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 
-        if (type == null)
+        if (type == PanelType.ALL)
             dataControl = new DataTree(this, SWT.MULTI);
         else
             dataControl = new DataTable(this, SWT.MULTI, type);
