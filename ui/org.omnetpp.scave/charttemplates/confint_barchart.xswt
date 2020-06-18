@@ -31,38 +31,11 @@
       <add x:p0="99.9%"/>
     </combo>
 
-    <label text="Display style:"/>
-    <combo x:id="error_style" x:id.default="Error bars" x:style="BORDER|READ_ONLY">
-      <add x:p0="Error bars"/>
-      <add x:p0="Error band"/>
-    </combo>
+    <label text="Cap size:"/>
+    <spinner x:id="cap_size" x:id.default="4" selection="4" minimum="0" maximum="10" x:style="BORDER"/>
 
       </x:children>
     </group>
-
-    <group text="Error Bar Visual Properties">
-      <layoutData x:class="GridData" horizontalSpan="1" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
-      <layout x:class="GridLayout" numColumns="2"/>
-      <x:children>
-
-        <label text="Cap size:"/>
-        <spinner x:id="cap_size" x:id.default="4" selection="4" minimum="0" maximum="10" x:style="BORDER"/>
-
-      </x:children>
-    </group>
-
-
-    <group text="Error Band Visual Properties">
-      <layoutData x:class="GridData" horizontalSpan="1" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
-      <layout x:class="GridLayout" numColumns="2"/>
-      <x:children>
-
-        <label text="Alpha:"/>
-        <spinner x:id="band_alpha" x:id.default="0.2" minimum="0" digits="2" selection="20" maximum="100" x:style="BORDER"/>
-        
-      </x:children>
-    </group>
-
 
   </x:children>
 </xswt>

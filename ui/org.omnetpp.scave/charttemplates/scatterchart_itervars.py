@@ -43,7 +43,19 @@ if len(unique_names) != 1:
 
 scalar_name = unique_names[0]
 
-df = pd.pivot_table(df, values="value", columns=iso_itervar, index=xaxis_itervar, aggfunc=[np.mean, lambda l : np.std(l) if len(l) > 0 else 0, len])
+confidence_level_str = props["confidence_level"] if "confidence_level" in props else "none"
+
+if confidence_level_str == "none":
+    df = pd.pivot_table(df, values="value", columns=iso_itervar, index=xaxis_itervar)
+    errors_df = None
+else:
+    confidence_level = float(confidence_level_str[:-1])/100
+    conf_int = lambda values: utils.confidence_interval(confidence_level, values)
+
+    pivoted = pd.pivot_table(df, values="value", columns=iso_itervar, index=xaxis_itervar, aggfunc=[np.mean, conf_int])
+    df = pivoted["mean"]
+    errors_df = pivoted["<lambda>"]
+
 legend_cols, _ = utils.extract_label_columns(df)
 
 p = plot if chart.is_native_chart() else plt
@@ -58,33 +70,19 @@ except:
     plot.set_warning("The X axis itervar is not purely numeric, this is not supported yet.")
     exit(1)
 
-
-Zs = {
-    "none":  None,
-    "80%":   1.282,
-    "85%":   1.440,
-    "90%":   1.645,
-    "95%":   1.960,
-    "99%":   2.576,
-    "99.5%": 2.807,
-    "99.9%": 3.291,
-}
-
-Z = Zs[props["confidence_interval"]]
-
-for c in df["mean"].columns:
+for c in df.columns:
     style = utils._make_line_args(props, c, df)
-    ys = df["mean"][c].values
-    p.plot(xs, ys, label=iso_itervar + "=" + str(df["mean"][c].name), **style)
+    ys = df[c].values
+    p.plot(xs, ys, label=iso_itervar + "=" + str(df[c].name), **style)
 
-    if Z is not None and not chart.is_native_chart():
+    if errors_df is not None and not chart.is_native_chart():
         style["linewidth"] = float(style["linewidth"])
         style["linestyle"] = "none"
-        yerr = df["<lambda>"][c].values * Z / np.sqrt(df["len"][c].values)
+        yerr = errors_df[c].values
         if props["error_style"] == "Error bars":
             p.errorbar(xs, ys, yerr=yerr, capsize=float(props["cap_size"]), **style)
         elif props["error_style"] == "Error band":
-            plt.fill_between(xs, ys-yerr/2, ys+yerr/2, alpha=float(props["band_alpha"]))
+            plt.fill_between(xs, ys-yerr, ys+yerr, alpha=float(props["band_alpha"]))
 
 utils.set_plot_title(scalar_name + " vs. " + xaxis_itervar)
 

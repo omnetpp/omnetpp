@@ -1,4 +1,6 @@
+import numpy as np
 import pandas as pd
+import math
 from omnetpp.scave import results, chart, plot, utils
 
 # get chart properties
@@ -35,9 +37,17 @@ df.sort_values(by=groups+series, axis='index', inplace=True)
 
 names = utils.get_names_for_title(df, props)
 
-df = pd.pivot_table(df, index=groups, columns=series, values='value')
+confidence_level_str = props["confidence_level"] if "confidence_level" in props else "none"
 
-utils.plot_bars(df, props, names)
+if confidence_level_str == "none":
+    df = pd.pivot_table(df, index=groups, columns=series, values='value')
+    utils.plot_bars(df, props, names)
+else:
+    confidence_level = float(confidence_level_str[:-1])/100
+    conf_int = lambda values: utils.confidence_interval(confidence_level, values)
+
+    df = pd.pivot_table(df, index=groups, columns=series, values='value', aggfunc=[np.mean, conf_int])
+    utils.plot_bars(df["mean"], props, names, df["<lambda>"])
 
 utils.postconfigure_plot(props)
 

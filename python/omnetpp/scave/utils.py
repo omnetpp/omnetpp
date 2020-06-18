@@ -1,5 +1,6 @@
 from omnetpp.scave import chart, plot
 import numpy as np
+import scipy.stats as st
 import pandas as pd
 import random, sys, os, string
 import matplotlib as mpl
@@ -8,6 +9,16 @@ from itertools import cycle
 
 _marker_cycle = None
 _color_cycle = None
+
+
+def confidence_interval(alpha, data):
+    """
+    Returns the half-length of the confidence interval of the mean of `data`, assuming
+    normal distribution, for the given confidence level `alpha`.
+    `alpha` must be in the [0..1] range.
+    """
+    return st.norm.interval(alpha, loc=0, scale=st.sem(data))[1]
+
 
 def extract_label_columns(df, preferred_legend_column="title"):
 
@@ -418,7 +429,7 @@ def _to_label(x):
         return str(x)
 
 
-def plot_bars(df, props, names=None):
+def plot_bars(df, props, names=None, errors_df=None):
     p = plot if chart.is_native_chart() else plt
 
     def get_prop(k):
@@ -471,7 +482,12 @@ def plot_bars(df, props, names=None):
             extra_args['zorder'] = 1 - (i / len(df.columns) / 10)
 
         label = df.columns.name + "=" + _to_label(column) if df.columns.name else _to_label(column)
-        p.bar(xs, df[column], width, label=label, **extra_args, **style)
+        ys = df[column].values
+        p.bar(xs, ys, width, label=label, **extra_args, **style)
+
+        if not chart.is_native_chart() and errors_df is not None:
+            plt.errorbar(xs, ys, yerr=errors_df[column], capsize=float(get_prop("cap_size") or 4), **style, linestyle="none", ecolor=mpl.rcParams["axes.edgecolor"])
+
         xs += group_increment
         if placement == "Stacked":
             bottoms += df[column].values
