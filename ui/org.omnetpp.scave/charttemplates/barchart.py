@@ -1,6 +1,6 @@
+import math
 import numpy as np
 import pandas as pd
-import math
 from omnetpp.scave import results, chart, plot, utils
 
 # get chart properties
@@ -44,9 +44,8 @@ if confidence_level_str == "none":
     utils.plot_bars(df, props, names)
 else:
     confidence_level = float(confidence_level_str[:-1])/100
-    conf_int = lambda values: utils.confidence_interval(confidence_level, values)
-
-    df = pd.pivot_table(df, index=groups, columns=series, values='value', aggfunc=[np.mean, conf_int])
+    conf_int = lambda values: utils.confidence_interval(confidence_level, values) if len(values) > 1 else math.nan
+    df = pd.pivot_table(df, index=groups, columns=series, values='value', aggfunc=[np.mean, conf_int], dropna=False)
     utils.plot_bars(df["mean"], props, names, df["<lambda>"])
 
 utils.postconfigure_plot(props)
