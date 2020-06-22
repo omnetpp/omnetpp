@@ -1108,9 +1108,19 @@ inline char *nextToken(char *& rest)
     return token;
 }
 
+cModule *cModule::getModuleByPath(const char *path) const
+{
+    if (!path || !path[0])
+        return nullptr;
+    cModule *module = findModuleByPath(path);
+    if (!module)
+        throw cRuntimeError(this, "getModuleByPath(): Module '%s' not found (Note: Operation of getModuleByPath() has changed in OMNeT++ version 6.0, use findModuleByPath() if you want the original behavior)", path);
+    return module;
+}
+
 #define ROOTNAME "<root>"
 
-cModule *cModule::getModuleByPath(const char *path) const
+cModule *cModule::findModuleByPath(const char *path) const
 {
     if (!path || !path[0])
         return nullptr;
@@ -1135,23 +1145,23 @@ cModule *cModule::getModuleByPath(const char *path) const
             module = module->getParentModule();  // if module is the root, we'll return nullptr
         else if ((lbracket = strchr(token, '[')) == nullptr) {
             if (token[0] == '<' && strcmp(token, ROOTNAME) == 0)
-                throw cRuntimeError(this, "getModuleByPath(): Wrong path '%s', '" ROOTNAME "' may only occur as the first component", path);
+                throw cRuntimeError(this, "find/getModuleByPath(): Wrong path '%s', '" ROOTNAME "' may only occur as the first component", path);
             module = module->getSubmodule(token);
         }
         else {
             if (token[strlen(token)-1] != ']')
-                throw cRuntimeError(this, "getModuleByPath(): Syntax error (unmatched bracket?) in path '%s'", path);
+                throw cRuntimeError(this, "find/getModuleByPath(): Syntax error (unmatched bracket?) in path '%s'", path);
             int index = atoi(lbracket+1);
             *lbracket = '\0';  // cut off [index]
             if (token[0] == '<' && strcmp(token, ROOTNAME) == 0)
-                throw cRuntimeError(this, "getModuleByPath(): Wrong path '%s', '" ROOTNAME "' may only occur as the first component", path);
+                throw cRuntimeError(this, "find/getModuleByPath(): Wrong path '%s', '" ROOTNAME "' may only occur as the first component", path);
             module = module->getSubmodule(token, index);
         }
         token = nextToken(rest);
         isFirst = false;
     }
 
-    return const_cast<cModule*>(module);  // nullptr if not found
+    return const_cast<cModule*>(module);
 }
 
 bool cModule::containsModule(cModule *module) const

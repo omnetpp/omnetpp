@@ -1,5 +1,5 @@
 %description:
-Test cModule::getModuleByPath()
+Test cModule::findModuleByPath()
 
 %file: test.ned
 simple Tester {
@@ -50,7 +50,7 @@ void Tester::test(cModule *base, const char *path)
 {
     EV << base->getFullPath() << " + " << (path ? path : "nullptr") << " = ";
     try {
-        cModule *result = base->getModuleByPath(path);
+        cModule *result = base->findModuleByPath(path);
         EV << (result ? result->getFullPath() : "nullptr") << endl;
     } catch (std::exception& e) {
         EV << "ERROR: " << e.what() << endl;
@@ -227,12 +227,12 @@ Test.host[0] + Test. = Test
 Test.host[0] + .^. = Test
 Test.host[0] + ^...host[1]...tcp.. = Test.host[1].tcp
 ---
-Test.host[0] + ^.host[1.tcp = ERROR: (omnetpp::cModule)Test.host[0]: getModuleByPath(): Syntax error (unmatched bracket?) in path '^.host[1.tcp'
-Test.host[0] + ^.host[1.]tcp = ERROR: (omnetpp::cModule)Test.host[0]: getModuleByPath(): Syntax error (unmatched bracket?) in path '^.host[1.]tcp'
+Test.host[0] + ^.host[1.tcp = ERROR: (omnetpp::cModule)Test.host[0]: find/getModuleByPath(): Syntax error (unmatched bracket?) in path '^.host[1.tcp'
+Test.host[0] + ^.host[1.]tcp = ERROR: (omnetpp::cModule)Test.host[0]: find/getModuleByPath(): Syntax error (unmatched bracket?) in path '^.host[1.]tcp'
 Test.host[0] + ^.host.[1].tcp = nullptr
-Test.host[0] + .<root> = ERROR: (omnetpp::cModule)Test.host[0]: getModuleByPath(): Wrong path '.<root>', '<root>' may only occur as the first component
-Test.host[0] + .<root>.host[0] = ERROR: (omnetpp::cModule)Test.host[0]: getModuleByPath(): Wrong path '.<root>.host[0]', '<root>' may only occur as the first component
-Test.host[0] + .<root>[3] = ERROR: (omnetpp::cModule)Test.host[0]: getModuleByPath(): Wrong path '.<root>[3]', '<root>' may only occur as the first component
-Test.host[0] + .<root>[3].host[0] = ERROR: (omnetpp::cModule)Test.host[0]: getModuleByPath(): Wrong path '.<root>[3].host[0]', '<root>' may only occur as the first component
+Test.host[0] + .<root> = ERROR: (omnetpp::cModule)Test.host[0]: find/getModuleByPath(): Wrong path '.<root>', '<root>' may only occur as the first component
+Test.host[0] + .<root>.host[0] = ERROR: (omnetpp::cModule)Test.host[0]: find/getModuleByPath(): Wrong path '.<root>.host[0]', '<root>' may only occur as the first component
+Test.host[0] + .<root>[3] = ERROR: (omnetpp::cModule)Test.host[0]: find/getModuleByPath(): Wrong path '.<root>[3]', '<root>' may only occur as the first component
+Test.host[0] + .<root>[3].host[0] = ERROR: (omnetpp::cModule)Test.host[0]: find/getModuleByPath(): Wrong path '.<root>[3].host[0]', '<root>' may only occur as the first component
 ---
 

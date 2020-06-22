@@ -351,13 +351,24 @@ void cSimulation::setSystemModule(cModule *module)
     systemModule = module;
     take(module);
 }
-
 cModule *cSimulation::getModuleByPath(const char *path) const
 {
-    cModule *module = getSystemModule();
-    if (!module || !path || !path[0] || path[0] == '.' || path[0] == '^')
+    if (!path || !path[0])
         return nullptr;
-    return module->getModuleByPath(path);
+    cModule *module = findModuleByPath(path);
+    if (!module)
+        throw cRuntimeError("cSimulation::getModuleByPath(): Module at '%s' not found (Note: operation of getModuleByPath() has changed in OMNeT++ version 6.0, use findModuleByPath() in you want the original behavior)", path);
+    return module;
+}
+
+cModule *cSimulation::findModuleByPath(const char *path) const
+{
+    cModule *root = getSystemModule();
+    if (!root || !path || !path[0])
+        return nullptr;
+    if (path[0] == '.' || path[0] == '^')
+        throw cRuntimeError(this, "cSimulation::getModuleByPath(): Path cannot be relative, i.e. start with '.' or '^' (path='%s')", path);
+    return root->findModuleByPath(path);
 }
 
 void cSimulation::setupNetwork(cModuleType *network)

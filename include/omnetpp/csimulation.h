@@ -197,10 +197,29 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Finds a module by its path. The path is a string of module names
      * separated by dots. Inclusion of the toplevel module's name in the
      * path is optional. The toplevel module's name may also be written
-     * as "<root>". Returns nullptr if the module was not found or the
-     * empty string was given as input.
+     * as "<root>". Note that this method, unlike its counterpart in cModule,
+     * does not accept relative paths (those that start with '.' or '^'.)
+     *
+     * Returns nullptr if the empty string was given as input. If the module was
+     * not found, this methods throws an exception.
+     *
+     * @see findModuleByPath(), cModule::getModuleByPath()
      */
     cModule *getModuleByPath(const char *modulePath) const;
+
+    /**
+     * Finds a module by its path. The path is a string of module names
+     * separated by dots. Inclusion of the toplevel module's name in the
+     * path is optional. The toplevel module's name may also be written
+     * as "<root>". Note that this method, unlike its counterpart in cModule,
+     * does not accept relative paths (those that start with '.' or '^'.)
+     *
+     * If the module was not found or the empty string was given as input,
+     * this method returns nullptr.
+     *
+     * @see getModuleByPath(), cModule::findModuleByPath()
+     */
+    cModule *findModuleByPath(const char *modulePath) const;
 
     /**
      * Looks up a component (module or channel) by ID. If the ID does not identify

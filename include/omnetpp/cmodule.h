@@ -617,12 +617,13 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * with a dot or caret, it is understood as relative to this module,
      * otherwise it is taken to mean an absolute path. For absolute paths,
      * inclusion of the toplevel module's name in the path is optional.
-     * The toplevel module may also be referred to as "<root>". Returns
-     * nullptr if the module was not found or the empty string was given as
-     * input.
+     * The toplevel module may also be referred to as "<root>".
+     *
+     * Returns nullptr if the empty string was given as input. If the module was
+     * not found, this methods throws an exception.
      *
      * Examples:
-     *   "" means nullptr.
+     *   "" means nullptr;
      *   "." means this module;
      *   "<root>" means the toplevel module;
      *   ".sink" means the sink submodule of this module;
@@ -632,9 +633,19 @@ class SIM_API cModule : public cComponent //implies noncopyable
      *   "Net.src" also means the src submodule of the toplevel module, provided
      *   it is called Net.
      *
-     *  @see cSimulation::getModuleByPath()
+     * @see findModuleByPath(), cSimulation::getModuleByPath()
      */
     virtual cModule *getModuleByPath(const char *path) const;
+
+    /**
+     * Finds a module in the module tree, given by its absolute or relative path.
+     * This method is similar to getModuleByPath(); the only difference is that
+     * while getModuleByPath() throws an exception if the module was not found,
+     * this method returns nullptr in that case.
+     *
+     * @see getModuleByPath(), cSimulation::findModuleByPath()
+     */
+    virtual cModule *findModuleByPath(const char *path) const;
 
     /**
      * Returns true of the given module has this module as an ancestor, and
