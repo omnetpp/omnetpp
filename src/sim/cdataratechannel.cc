@@ -55,7 +55,7 @@ cDatarateChannel::~cDatarateChannel()
 void cDatarateChannel::finish()
 {
     if (txFinishTime != -1 && mayHaveListeners(channelBusySignal)) {
-        cTimestampedValue tmp(txFinishTime, (intval_t)0);
+        cTimestampedValue tmp(std::min(txFinishTime, simTime()), (intval_t)0);
         emit(channelBusySignal, &tmp);
     }
 }
