@@ -151,9 +151,10 @@ void cDatarateChannel::processMessage(cMessage *msg, simtime_t t, result_t& resu
                             "and possibly a cQueue for storing messages waiting to be transmitted",
                 msg->getClassName(), msg->getFullName(), getFullPath().c_str());
 
-    // message must not have its duration set already
     bool isPacket = msg->isPacket();
-    if (isPacket && ((cPacket *)msg)->getDuration() != SIMTIME_ZERO)
+    cPacket *pkt = isPacket ? static_cast<cPacket *>(msg) : nullptr;
+    // message must not have its duration set already
+    if (isPacket && pkt->getDuration() != SIMTIME_ZERO)
         throw cRuntimeError(this, "Packet (%s)%s already has a duration set; there "
                                   "may be more than one channel with data rate in the connection path, or "
                                   "it was sent with a sendDirect() call that specified duration as well",
@@ -173,8 +174,7 @@ void cDatarateChannel::processMessage(cMessage *msg, simtime_t t, result_t& resu
     }
 
     // datarate modeling
-    if ((flags & FL_DATARATE_NONZERO) && msg->isPacket()) {
-        cPacket *pkt = (cPacket *)msg;
+    if (isPacket && (flags & FL_DATARATE_NONZERO)) {
         simtime_t duration = pkt->getBitLength() / datarate;
         result.duration = duration;
         txFinishTime = t + duration;
@@ -188,8 +188,7 @@ void cDatarateChannel::processMessage(cMessage *msg, simtime_t t, result_t& resu
     result.delay = delay;
 
     // bit error modeling
-    if ((flags & (FL_BER_NONZERO | FL_PER_NONZERO)) && msg->isPacket()) {
-        cPacket *pkt = (cPacket *)msg;
+    if (isPacket && (flags & (FL_BER_NONZERO | FL_PER_NONZERO))) {
         if (flags & FL_BER_NONZERO)
             if (dblrand() < 1.0 - pow(1.0 - ber, (double)pkt->getBitLength()))
                 pkt->setBitError(true);
