@@ -20,6 +20,9 @@
 
 namespace omnetpp {
 
+class cMessage;
+class cPacket;
+class cEventHeap;
 
 /**
  * @brief Represents an event in the discrete event simulator.
@@ -178,10 +181,14 @@ class SIM_API cEvent : public cOwnedObject
     /** @name Methods to be used by the simulation kernel and the scheduler. */
     //@{
     /**
-     * A fast way (that is, faster than dynamic_cast) to determine whether this
-     * event is a cMessage.
+     * Returns true if the object is a subclass of cMessage. This method is a more efficient alternative of dynamic_cast.
      */
     virtual bool isMessage() const {return false;}
+
+    /**
+     * Return true if the object is a subclass of cPacket. This method is a more efficient alternative of dynamic_cast.
+     */
+    virtual bool isPacket() const {return false;}
 
     /**
      * Returns true if this event is stale. An event might go stale while

@@ -171,7 +171,7 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
      * This method is equivalent to reading the "disabled" parameter, via par("disabled").
      * A disabled channel discards all messages sent on it.
      */
-    virtual bool isDisabled() const  {checkState(); return flags & FL_ISDISABLED;}
+    virtual bool isDisabled() const override  {checkState(); return flags & FL_ISDISABLED;}
     //@}
 
     /** @name Transmission state. */

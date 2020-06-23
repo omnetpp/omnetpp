@@ -191,10 +191,10 @@ class SIM_API cMessage : public cEvent
     //@}
 
     /**
-     * Returns whether the current class is subclass of cPacket.
+     * Returns true if the current class is a subclass of cPacket.
      * The cMessage implementation returns false.
      */
-    virtual bool isPacket() const {return false;}
+    virtual bool isPacket() const override {return false;}
 
     /** @name Redefined cObject member functions. */
     //@{
