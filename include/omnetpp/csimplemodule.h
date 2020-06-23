@@ -195,18 +195,18 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     /**
      * Sends a message through the gate given with its ID.
      */
-    virtual void send(cMessage *msg, int gateid)  {return sendDelayed(msg, SIMTIME_ZERO, gateid);}
+    virtual void send(cMessage *msg, int gateid)  {sendDelayed(msg, SIMTIME_ZERO, gateid);}
 
     /**
      * Sends a message through the gate given with its name and index
      * (if multiple gate).
      */
-    virtual void send(cMessage *msg, const char *gatename, int gateindex=-1)  {return sendDelayed(msg, SIMTIME_ZERO, gatename, gateindex);}
+    virtual void send(cMessage *msg, const char *gatename, int gateindex=-1)  {sendDelayed(msg, SIMTIME_ZERO, gatename, gateindex);}
 
     /**
      * Sends a message through the gate given with its pointer.
      */
-    virtual void send(cMessage *msg, cGate *outputgate)  {return sendDelayed(msg, SIMTIME_ZERO, outputgate);}
+    virtual void send(cMessage *msg, cGate *outputgate)  {sendDelayed(msg, SIMTIME_ZERO, outputgate);}
 
     /**
      * Delayed sending. Sends a message through the gate given with
