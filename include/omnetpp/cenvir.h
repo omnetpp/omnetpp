@@ -47,6 +47,8 @@ class cXMLElement;
 class cEnvir;
 class cConfiguration;
 class cConfigurationEx;
+struct SendOptions;
+struct ChannelResult;
 
 using std::endl;
 
@@ -150,16 +152,16 @@ class SIM_API cEnvir
      * or messageSendHop() must occur between corresponding
      * beginSend()/endSend() pairs.
      */
-    virtual void beginSend(cMessage *msg) = 0;
+    virtual void beginSend(cMessage *msg, const SendOptions& options) = 0;
 
     /** Part of the beginSend() sequence. @see beginSend() */
-    virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay) = 0;
+    virtual void messageSendDirect(cMessage *msg, cGate *toGate, const ChannelResult& result) = 0;
 
     /** Part of the beginSend() sequence. @see beginSend() */
     virtual void messageSendHop(cMessage *msg, cGate *srcGate) = 0;
 
     /** Part of the beginSend() sequence. @see beginSend() */
-    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool discard) = 0;
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate, const ChannelResult& result) = 0;
 
     /** Closes a beginSend() sequence. @see beginSend() */
     virtual void endSend(cMessage *msg) = 0;

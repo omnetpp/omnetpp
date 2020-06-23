@@ -45,8 +45,10 @@ cPacket::cPacket(const char *name, short k, int64_t l) : cMessage(name, k)
 {
     bitLength = l;
     encapsulatedPacket = nullptr;
-    duration = 0;
+    duration = SimTime::ZERO;
     shareCount = 0;
+    origPacketId = -1;
+    remainingDuration = SimTime::ZERO;
 }
 
 cPacket::~cPacket()
@@ -70,6 +72,8 @@ inline void printLen(std::stringstream &out, int64_t bits)
 std::string cPacket::str() const
 {
     std::stringstream out;
+    if (isUpdate())
+        out << "update w/ remainingDuration=" << remainingDuration.ustr() << ", ";
     out << "len="; printLen(out, getBitLength());
     if (duration != SimTime::ZERO)
         out << " duration=" << duration.ustr();
@@ -79,8 +83,9 @@ std::string cPacket::str() const
         // or: << encapsulatedPacket->getClassName() << ")" << encapsulatedPacket->getFullName() << ")"; -- but that might be too long
         out << ")";
     }
-    out << " ";
-    out << cMessage::str();
+    std::string msgStr = cMessage::str();
+    if (!msgStr.empty())
+        out << "; " << msgStr;
     return out.str();
 }
 
@@ -106,6 +111,8 @@ void cPacket::parsimPack(cCommBuffer *buffer) const
     buffer->pack(duration);
     if (buffer->packFlag(encapsulatedPacket != nullptr))
         buffer->packObject(encapsulatedPacket);
+    buffer->pack(origPacketId);
+    buffer->pack(remainingDuration);
 #endif
 }
 
@@ -120,6 +127,8 @@ void cPacket::parsimUnpack(cCommBuffer *buffer)
     buffer->unpack(duration);
     if (buffer->checkFlag())
         take(encapsulatedPacket = (cPacket *)buffer->unpackObject());
+    buffer->unpack(origPacketId);
+    buffer->unpack(remainingDuration);
 #endif
 }
 
@@ -158,6 +167,9 @@ void cPacket::copy(const cPacket& msg)
         take(encapsulatedPacket = (cPacket *)encapsulatedPacket->dup());
     }
 #endif
+
+    origPacketId = msg.origPacketId;
+    remainingDuration = msg.remainingDuration;
 }
 
 #ifdef REFCOUNTING

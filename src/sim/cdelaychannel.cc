@@ -73,14 +73,16 @@ void cDelayChannel::setDisabled(bool d)
     par("disabled").setBoolValue(d);
 }
 
-void cDelayChannel::processMessage(cMessage *msg, simtime_t t, result_t& result)
+cChannel::Result cDelayChannel::processMessage(cMessage *msg, const SendOptions& options, simtime_t t)
 {
+    Result result;
+
     // if channel is disabled, signal that message should be deleted
     if (flags & FL_ISDISABLED) {
         result.discard = true;
         cTimestampedValue tmp(t, msg);
         emit(messageDiscardedSignal, &tmp);
-        return;
+        return result;
     }
 
     // propagation delay modeling
@@ -91,6 +93,8 @@ void cDelayChannel::processMessage(cMessage *msg, simtime_t t, result_t& result)
         MessageSentSignalValue tmp(t, msg, &result);
         emit(messageSentSignal, &tmp);
     }
+
+    return result;
 }
 
 }  // namespace omnetpp

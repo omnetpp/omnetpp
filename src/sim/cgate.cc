@@ -461,12 +461,12 @@ cGate *cGate::getPathEndGate() const
     return const_cast<cGate *>(g);
 }
 
-void cGate::setDeliverOnReceptionStart(bool d)
+void cGate::setDeliverImmediately(bool d)
 {
     if (!getOwnerModule()->isSimple())
-        throw cRuntimeError(this, "setDeliverOnReceptionStart() may only be invoked on a simple module gate");
+        throw cRuntimeError(this, "setDeliverImmediately() may only be invoked on a simple module gate");
     if (getType() != INPUT)
-        throw cRuntimeError(this, "setDeliverOnReceptionStart() may only be invoked on an input gate");
+        throw cRuntimeError(this, "setDeliverImmediately() may only be invoked on an input gate");
 
     // set b1 on pos
     if (d)
@@ -475,15 +475,15 @@ void cGate::setDeliverOnReceptionStart(bool d)
         pos &= ~2;
 }
 
-bool cGate::deliver(cMessage *msg, simtime_t t)
+bool cGate::deliver(cMessage *msg, const SendOptions& options, simtime_t t)
 {
     if (!nextGate) {
-        getOwnerModule()->arrived(msg, this, t);
+        getOwnerModule()->arrived(msg, this, options, t);
         return true;
     }
     else if (!channel) {
         EVCB.messageSendHop(msg, this);
-        return nextGate->deliver(msg, t);
+        return nextGate->deliver(msg, options, t);
     }
     else {
         if (!channel->initialized())
@@ -492,12 +492,11 @@ bool cGate::deliver(cMessage *msg, simtime_t t)
                                          "a dynamically created compound module that contains it?)");
 
         // let the channel process the message
-        cChannel::result_t tmp;
-        channel->processMessage(msg, t, tmp);
-        EVCB.messageSendHop(msg, this, tmp.delay, tmp.duration, tmp.discard);
-        if (tmp.discard)
+        cChannel::Result result = channel->processMessage(msg, options, t);
+        EVCB.messageSendHop(msg, this, result);
+        if (result.discard)
             return false;
-        return nextGate->deliver(msg, t + tmp.delay);
+        return nextGate->deliver(msg, options, t + result.delay);
     }
 }
 

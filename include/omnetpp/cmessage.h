@@ -547,11 +547,11 @@ class SIM_API cMessage : public cEvent
      * is currently scheduled or is underway), or 0 if the message
      * has not been sent/scheduled yet.
      *
-     * When the message has nonzero length and it travelled though a
-     * channel with nonzero data rate, arrival time may represent either
+     * If the message is a packet that has nonzero length and traveled through
+     * a channel with nonzero data rate, arrival time may represent either
      * the start or the end of the reception, as returned by the
      * isReceptionStart() method. By default it is the end of the reception;
-     * it can be changed by calling setDeliverOnReceptionStart(true) on the
+     * it can be changed by calling setDeliverImmediately(true) on the
      * gate at receiving end of the channel that has the nonzero data rate.
      *
      * @see getDuration()

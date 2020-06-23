@@ -1087,10 +1087,10 @@ void EnvirBase::simulationEvent(cEvent *event)
         eventlogManager->simulationEvent(event);
 }
 
-void EnvirBase::beginSend(cMessage *msg)
+void EnvirBase::beginSend(cMessage *msg, const SendOptions& options)
 {
     if (recordEventlog)
-        eventlogManager->beginSend(msg);
+        eventlogManager->beginSend(msg, options);
 }
 
 void EnvirBase::messageScheduled(cMessage *msg)
@@ -1105,10 +1105,10 @@ void EnvirBase::messageCancelled(cMessage *msg)
         eventlogManager->messageCancelled(msg);
 }
 
-void EnvirBase::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+void EnvirBase::messageSendDirect(cMessage *msg, cGate *toGate, const ChannelResult& result)
 {
     if (recordEventlog)
-        eventlogManager->messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
+        eventlogManager->messageSendDirect(msg, toGate, result);
 }
 
 void EnvirBase::messageSendHop(cMessage *msg, cGate *srcGate)
@@ -1117,10 +1117,10 @@ void EnvirBase::messageSendHop(cMessage *msg, cGate *srcGate)
         eventlogManager->messageSendHop(msg, srcGate);
 }
 
-void EnvirBase::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool discard)
+void EnvirBase::messageSendHop(cMessage *msg, cGate *srcGate, const cChannel::Result& result)
 {
     if (recordEventlog)
-        eventlogManager->messageSendHop(msg, srcGate, propagationDelay, transmissionDelay, discard);
+        eventlogManager->messageSendHop(msg, srcGate, result);
 }
 
 void EnvirBase::endSend(cMessage *msg)

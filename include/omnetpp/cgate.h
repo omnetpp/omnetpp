@@ -35,7 +35,7 @@ class cProperties;
 class cDisplayString;
 class cIdealChannel;
 class cDatarateChannel;
-
+struct SendOptions;
 
 //
 // internal: gateId bitfield macros.
@@ -196,7 +196,7 @@ class SIM_API cGate : public cObject, noncopyable
      * by the caller. (This is used e.g. with parallel simulation, for
      * messages leaving the partition.)
      */
-    virtual bool deliver(cMessage *msg, simtime_t at);
+    virtual bool deliver(cMessage *msg, const SendOptions& options, simtime_t at);
 
     /** @name Connecting the gate. */
     //@{
@@ -344,25 +344,54 @@ class SIM_API cGate : public cObject, noncopyable
     cChannel *getChannel() const  {return channel;}
 
     /**
-     * This method may only be invoked on input gates of simple modules.
-     * Messages with nonzero length then have a nonzero
-     * transmission duration (and thus, reception duration on the other
-     * side of the connection). By default, the delivery of the message
-     * to the module marks the end of the reception. Setting this bit will cause
-     * the channel to deliver the message to the module at the start of the
-     * reception. The duration that the reception will take can be extracted
-     * from the message object, by its getDuration() method.
+     * This method may only be invoked on input gates of simple modules,
+     * and sets the packet reception mode. The two packet reception modes are
+     * the default a.k.a. at-end mode (arg=false), and immediate mode (arg=true).
+     * See getDeliverImmediately() for the description of their operations.
+     *
+     * @see getDeliverImmediately()
      */
-    void setDeliverOnReceptionStart(bool d);
+    void setDeliverImmediately(bool d);
 
     /**
-     * Returns whether messages delivered through this gate will mark the
-     * start or the end of the reception process (assuming nonzero message length
-     * and data rate on the channel.)
+     * Indicates reception mode for messages with nonzero transmission duration,
+     * i.e. packets. The default setting is false.
      *
-     * @see setDeliverOnReceptionStart()
+     * In the default a.k.a. at-end mode (retval=false), packets delivered to
+     * this gate are handed to the module when they are completely received.
+     * That is, the arrival time of the message time will include both the
+     * propagation delay and the transmission duration. For transmission
+     * update packets (where cPacket::isUpdate()==true), this mode ensures
+     * that the module only receives the final transmission update
+     * (the original packet and intermediate transmission updates will
+     * be swallowed by the simulation kernel). The duration of the packet
+     * can be obtained from the cPacket::getDuration() method. The
+     * cPacket::getRemainingDuration() method will return zero.
+     *
+     * In immediate mode (retval=true), packets and transmission updates
+     * will be delivered to the module "immediately", after applying the
+     * propagation delay only, and excluding the transmission duration.
+     * The remaining transmission duration can be obtained from the
+     * cPacket::getRemainingDuration() method. The total transmission duration
+     * of the packet can be obtained from the cPacket::getDuration() method.
+     * For non-update packets (cPacket::isUpdate()==false), the two methods
+     * will return the same value.
+     *
+     * @see setDeliverImmediately()
      */
-    bool getDeliverOnReceptionStart() const  {return pos&2;}
+    bool getDeliverImmediately() const  {return pos&2;}
+
+    /**
+     * Renamed to setDeliverImmediately() -- please use the new name.
+     */
+    [[deprecated("Renamed to setDeliverImmediately() -- please use the new name")]]
+    void setDeliverOnReceptionStart(bool d) {setDeliverImmediately(d);}
+
+    /**
+     * Renamed to getDeliverImmediately() -- please use the new name.
+     */
+    [[deprecated("Renamed to getDeliverImmediately() -- please use the new name")]]
+    bool getDeliverOnReceptionStart() const  {return getDeliverImmediately();}
     //@}
 
     /** @name Transmission state. */

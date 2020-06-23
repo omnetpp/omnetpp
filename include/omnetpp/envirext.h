@@ -27,12 +27,13 @@
 
 namespace omnetpp {
 
-
 class cModule;
 class cStatistic;
 class cEvent;
 class cMessage;
 class cGate;
+struct SendOptions;
+struct ChannelResult;
 
 /**
  * @brief Abstract base class for output vector managers for cEnvir.
@@ -388,10 +389,10 @@ class SIM_API cIEventlogManager : public cObject, noncopyable
     virtual void bubble(cComponent *component, const char *text) = 0;
     virtual void messageScheduled(cMessage *msg) = 0;
     virtual void messageCancelled(cMessage *msg) = 0;
-    virtual void beginSend(cMessage *msg) = 0;
-    virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay) = 0;
+    virtual void beginSend(cMessage *msg, const SendOptions& options) = 0;
+    virtual void messageSendDirect(cMessage *msg, cGate *toGate, const ChannelResult& result) = 0;
     virtual void messageSendHop(cMessage *msg, cGate *srcGate) = 0;
-    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool discard) = 0;
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate, const ChannelResult& result) = 0;
     virtual void endSend(cMessage *msg) = 0;
     virtual void messageCreated(cMessage *msg) = 0;
     virtual void messageCloned(cMessage *msg, cMessage *clone) = 0;

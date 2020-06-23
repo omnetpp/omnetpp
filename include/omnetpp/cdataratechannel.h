@@ -23,7 +23,41 @@ namespace omnetpp {
 
 
 /**
- * @brief Channel that models delay, bit error rate and data rate.
+ * @brief A transmission channel model that supports propagation delay,
+ * transmission duration computed from a data rate or given explicitly,
+ * and a simple error model with based on bit error rate (BER) and
+ * packet error rate (PER). The above parameters can be supplied via
+ * NED or explicit setter methods.
+ *
+ * This class is a transmission channel, i.e. its isTransmissionChannel()
+ * method returns true. There can be at most one transmission channel
+ * in a connection path.
+ *
+ * It supports a single channel, meaning that at most one transmission
+ * can be active at any given time. Overlapping transmissions are not permitted.
+ *
+ * Non-packet messages are let through at any time, after applying propagation
+ * delay only. They do not interfere with ongoing transmissions in any way.
+ *
+ * By default, transmission duration is computed from the packet bit length
+ * and the channel datarate. The channel datarate is optional; if it is missing,
+ * the packet duration needs to be specified explicitly in the send() call
+ * (see SendOptions). If both datarate and explicit duration are present,
+ * the explicit duration takes precedence.
+ *
+ * allowing to override the duration is useful for a few cases: account for
+ * artifacts in packets (preamble, padding, PHY-layer header with different
+ * datarate, etc) and for aborting at arbitrary time (i.e. at a fractional bit time).
+ *
+ * The channel supports updating transmissions transmission update packets (see SendOptions). The
+ * remainingDuration can be automatic (computed as duration minus elapsed transmission time),
+ * or explicit.
+ *
+ * sanity checks exists (duration/remainingDuration cannot be negative, duration >= remainingDuration, etc)
+ *
+ * how bit errors/packet errors are computed
+ *
+ * how to override duration computation
  *
  * @ingroup SimCore
  */
@@ -38,7 +72,7 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
     enum {
       FL_ISDISABLED =       1 << 11,
       FL_DELAY_NONZERO =    1 << 12,
-      FL_DATARATE_NONZERO = 1 << 13,
+      FL_DATARATE_PRESENT = 1 << 13,
       FL_BER_NONZERO =      1 << 14,
       FL_PER_NONZERO =      1 << 15,
     };
@@ -49,8 +83,10 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
     double ber;      // bit error rate
     double per;      // packet error rate
 
-    // stores the end of the last transmission; used if there is a datarate
+    // data of the last/ongoing transmission
+    simtime_t txStartTime;
     simtime_t txFinishTime;
+    long lastOrigPacketId = -1;
 
   private:
     // internal: checks whether parameters have been set up
@@ -205,14 +241,6 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
      * transmissionFinishTime() is greater than the current simulation time.
      */
     virtual bool isBusy() const override {return simTime() < txFinishTime;}
-
-    /**
-     * Forcibly overwrites the finish time of the current transmission in the
-     * channel (see getTransmissionFinishTime()). This method can be used for
-     * implementing transmission abortion; see declaration in base class
-     * (cChannel::forceTransmissionFinishTime()) for more information.
-     */
-    virtual void forceTransmissionFinishTime(simtime_t t) override;
     //@}
 
     /** @name Implementation methods */
@@ -225,7 +253,7 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
     /**
      * Performs bit error rate, delay and transmission time modelling.
      */
-    virtual void processMessage(cMessage *msg, simtime_t t, result_t& result) override;
+    virtual Result processMessage(cMessage *msg, const SendOptions& options, simtime_t t) override;
     //@}
 };
 

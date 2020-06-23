@@ -53,8 +53,8 @@ class SIM_API cPacket : public cMessage
 {
   private:
     enum {
-        FL_ISRECEPTIONSTART = 8,
-        FL_BITERROR = 16,
+        FL_BITERROR = 8, // has bit errors
+        FL_TXCHANNELSEEN = 16, // encountered a transmission channel during its last send
     };
 
     int64_t bitLength;    // length of the packet in bits -- used for bit error and transmission delay modeling
@@ -65,16 +65,23 @@ class SIM_API cPacket : public cMessage
                                // 1: shared once (shared among two messages);
                                // 2: shared twice (shared among three messages); etc.
                                // on reaching max sharecount a new packet gets created
+    long origPacketId;    // if >=0: this is a transmission update; this field identifies the transmission it modifies
+    simtime_t remainingDuration; // if transmission update: remaining duration (otherwise it must be equal to the duration)
 
   private:
     void copy(const cPacket& packet);
 
   public:
-    // internal: sets the message duration; called by channel objects and sendDirect
+    // internal: setters used from within send()/sendDirect() and channel code
     void setDuration(simtime_t d) {duration = d;}
+    void setRemainingDuration(simtime_t d) {remainingDuration = d;}
+    void setOrigPacketId(long id) {origPacketId = id;}
+    void setTxChannelEncountered(bool b) {setFlag(FL_TXCHANNELSEEN, b);}
+    void clearTxChannelEncountered() {flags &= ~FL_TXCHANNELSEEN;}
+    void setTxChannelEncountered() {flags |= FL_TXCHANNELSEEN;}
 
-    // internal: sets the isReceptionStart() flag
-    void setReceptionStart(bool b) {setFlag(FL_ISRECEPTIONSTART, b);}
+    // internal (for now)
+    bool getTxChannelEncountered() const {return flags&FL_TXCHANNELSEEN;}
 
     // internal convenience method: returns the getId() of the innermost encapsulated message,
     // or itself if there is no encapsulated message
@@ -279,23 +286,72 @@ class SIM_API cPacket : public cMessage
     /** @name Transmission state */
     //@{
     /**
-     * Returns the transmission duration after the packet was sent through
-     * a channel with data rate.
+     * Returns true if this packet is a transmission update, and false otherwise.
+     * Transmission updates are packets sent with the SendOptions::updateTx()
+     * or SendOptions::finishTx() option.
      *
-     * @see isReceptionStart(), getArrivalTime(), cDatarateChannel
+     * @see getRemainingDuration(), cSimpleModule::send(), cSimpleModule::sendDirect(),
+     * SendOptions
+     */
+    bool isUpdate() const {return origPacketId >= 0;}
+
+    /**
+     * If the packet is a transmission update (isUpdate() would return true),
+     * this method returns the original packet ID supplied in the send call.
+     *
+     * @see cSimpleModule::send(), cSimpleModule::sendDirect(), SendOptions
+     */
+    long getOrigPacketId() const {return origPacketId;}
+
+    /**
+     * Returns the transmission duration of the whole packet after the packet
+     * was sent through a transmission channel such as cDatarateChannel.
+     *
+     * Contrast that with getRemainingDuration() which, when called on
+     * transmission update packets, returns the remaining transmission time
+     * for the packet. Naturally, remainingDuration <= duration.
+     *
+     * After a sending not involving a transmission channel, the duration
+     * is set to zero.
+     *
+     * @see getRemainingDuration(), isReceptionStart(), getArrivalTime(),
+     * cDatarateChannel
      */
     simtime_t_cref getDuration() const {return duration;}
 
     /**
-     * Tells whether this packet represents the start or the end of the
-     * reception, provided the packet has nonzero length and it travelled
-     * through a channel with nonzero data rate. This can be configured
-     * on the receiving gate (see cGate::setDeliverOnReceptionStart()).
+     * Returns the remaining transmission time for the packet after the packet
+     * was sent through a transmission channel such as cDatarateChannel.
      *
-     * @see getArrivalTime(), getDuration(), cDatarateChannel
+     * For packets delivered to a gate with the default (at-end) delivery
+     * mode, the remaining transmission time is zero.
+     *
+     * For packets delivered to a gate with the immediate delivery mode,
+     * the remaining duration is the full transmission duration if the packet
+     * is a normal (i.e. non-update) packet. If the packet is a transmission
+     * update (isUpdate() would return true), the remaining transmission time
+     * is determined by the send options passed the send call.
+     *
+     * After a sending not involving a transmission channel, the remaining
+     * duration will be zero.
+     *
+     * @see isUpdate(), getDuration(), getArrivalTime(), cDatarateChannel,
+     * cGate::setDeliverImmediately(), cSimpleModule::send(),
+     * cSimpleModule::sendDirect(), SendOptions
      */
-    bool isReceptionStart() const {return flags & FL_ISRECEPTIONSTART;}
-    //@}
+    simtime_t_cref getRemainingDuration() const {return remainingDuration;}
+
+    /**
+     * Returns true if getRemainingDuration() and getDuration() would return
+     * the same value, and false otherwise.
+     */
+    bool isReceptionStart() const {return duration == remainingDuration;}
+
+    /**
+     * Returns true if getRemainingDuration() would return zero, and false otherwise.
+     */
+    bool isReceptionEnd() const {return remainingDuration.isZero();}
+//@}
 };
 
 }  // namespace omnetpp

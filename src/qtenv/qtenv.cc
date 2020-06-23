@@ -1814,26 +1814,26 @@ void Qtenv::messageCancelled(cMessage *msg)
     EnvirBase::messageCancelled(msg);
 }
 
-void Qtenv::beginSend(cMessage *msg)
+void Qtenv::beginSend(cMessage *msg, const SendOptions& options)
 {
-    EnvirBase::beginSend(msg);
+    EnvirBase::beginSend(msg, options);
 
     if (loggingEnabled)
-        logBuffer.beginSend(msg);
+        logBuffer.beginSend(msg, options);
 
     if (animating && opt->animationEnabled && !isSilentEvent(msg))
-        messageAnimator->beginSend(msg);
+        messageAnimator->beginSend(msg, options);
 }
 
-void Qtenv::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+void Qtenv::messageSendDirect(cMessage *msg, cGate *toGate, const ChannelResult& result)
 {
-    EnvirBase::messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
+    EnvirBase::messageSendDirect(msg, toGate, result);
 
     if (loggingEnabled)
-        logBuffer.messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
+        logBuffer.messageSendDirect(msg, toGate, result);
 
     if (animating && opt->animationEnabled && !isSilentEvent(msg))
-        messageAnimator->sendDirect(msg, msg->getSenderModule(), toGate, propagationDelay, transmissionDelay);
+        messageAnimator->sendDirect(msg, msg->getSenderModule(), toGate, result);
 }
 
 void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate)
@@ -1849,16 +1849,16 @@ void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate)
     }
 }
 
-void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool discard)
+void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate, const cChannel::Result& result)
 {
-    EnvirBase::messageSendHop(msg, srcGate, propagationDelay, transmissionDelay, discard);
+    EnvirBase::messageSendHop(msg, srcGate, result);
 
     if (loggingEnabled)
-        logBuffer.messageSendHop(msg, srcGate, propagationDelay, transmissionDelay, discard);
+        logBuffer.messageSendHop(msg, srcGate, result);
 
     if (animating && opt->animationEnabled && !isSilentEvent(msg)) {
         bool isLastHop = srcGate->getNextGate() == msg->getArrivalGate();
-        messageAnimator->sendHop(msg, srcGate, isLastHop, propagationDelay, transmissionDelay, discard);
+        messageAnimator->sendHop(msg, srcGate, isLastHop, result);
     }
 }
 

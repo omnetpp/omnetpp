@@ -109,7 +109,7 @@ void LogBuffer::addInfo(const char *text, int len)
     emit logEntryAdded();
 }
 
-void LogBuffer::beginSend(cMessage *msg)
+void LogBuffer::beginSend(cMessage *msg, const SendOptions& options)
 {
     if (entries.empty()) {
         // this is likely the initialize() phase -- hence no banner
@@ -127,7 +127,7 @@ void LogBuffer::beginSend(cMessage *msg)
     msgsend.hopModuleIds.push_back(msg->getSenderModuleId());
 }
 
-void LogBuffer::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+void LogBuffer::messageSendDirect(cMessage *msg, cGate *toGate, const ChannelResult& result)
 {
     ASSERT(!entries.empty());
     Entry *entry = entries.back();
@@ -150,14 +150,14 @@ void LogBuffer::messageSendHop(cMessage *msg, cGate *srcGate)
     msgsend.hopModuleIds.push_back(srcGate->getNextGate()->getOwnerModule()->getId());
 }
 
-void LogBuffer::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool discard)
+void LogBuffer::messageSendHop(cMessage *msg, cGate *srcGate, const cChannel::Result& result)
 {
     ASSERT(!entries.empty());
     Entry *entry = entries.back();
     MessageSend& msgsend = entry->msgs.back();
     ASSERT(!msgsend.msg || msgsend.msg->getId() == msg->getId());
 
-    if (discard) {
+    if (result.discard) {
         // the message was discarded, so it will not arrive, endSend() will not be called,
         // but we have to make a copy anyway
         msgsend.msg = msg->privateDup();

@@ -24,12 +24,13 @@
 
 namespace omnetpp {
 
-class  cMessage;
-class  cGate;
-class  cSimulation;
-class  cModuleType;
-class  cCanvas;
-class  cOsgCanvas;
+class cMessage;
+class cGate;
+class cSimulation;
+class cModuleType;
+class cCanvas;
+class cOsgCanvas;
+struct SendOptions;
 
 /**
  * @brief This class represents modules in the simulation.
@@ -802,7 +803,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * ("message arrived at a compound module"), and the cSimpleModule
      * implementation inserts the message into the FES after some processing.
      */
-    virtual void arrived(cMessage *msg, cGate *ongate, simtime_t t);
+    virtual void arrived(cMessage *msg, cGate *ongate, const SendOptions& options, simtime_t t);
     //@}
 
     /** @name Utilities. */

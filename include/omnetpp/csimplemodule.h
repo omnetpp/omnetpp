@@ -24,6 +24,134 @@ class cQueue;
 class cCoroutine;
 
 /**
+ * @brief Options for the cSimpleModule::send() and cSimpleModule::sendDirect() calls.
+ *
+ * This class currently allows specifying send delay, propagation delay, duration,
+ * and sending a transmission update.
+ *
+ * A convenient way to produce an appropriately configured instance for a send() call
+ * is by creating a default instance, and chaining mutator methods:
+ *
+ * <pre>
+ * send(msg, SendOptions().updateTx(origPacketId, remainingDuration).duration(duration), "out");
+ * </pre>
+ *
+ * Transmission updates:
+ *
+ * A transmission update is needed when the transmission of a packet (sending
+ * a cPacket over a connection path that contains a transmission channel,
+ * i.e. a channel whose isTransmissionChannel() method returns true) needs
+ * to be aborted or preempted, extended, or modified in other unforeseen ways
+ * while the transmission is in progress.
+ *
+ * Transmission updates are normal packets (cPacket) sent with with the
+ * updateTx() or finishTx() options. These methods expect the id of the
+ * original packet transmission in the origPacketId argument. A transmission
+ * can be updated several times, using always the same origPacketId.
+ * The packet in each transmission update conceptually replaces the
+ * packet that the peer is going to receive. Updates may be sent
+ * while transmission is still ongoing, and, in certain cases,
+ * also at the time the packet transmission ends, but not later.
+ *
+ * As an example, aborting a transmission is done by sending a
+ * packet with a truncated content and a remaining duration of zero.
+ *
+ * Receivers that receive the packet at the end of the reception (default)
+ * will only receive the final update, the original packet and
+ * intermediate updates are absorbed by the simulation kernel.
+ *
+ * Receivers that receive the packet at the start of the reception (see
+ * cGate::setDeliverImmediately()) should be prepared to receive the
+ * original packet and all its updates, and handle them appropriately
+ * (i.e. only keep the packet in last update). Transmission updates
+ * can be recognized at the receiver end by the cPacket::isUpdate()
+ * method returning true. In order to reduce the chance of unprepared
+ * modules receiving transmission updates and interpreting them as
+ * independent packets leading to erroneous operation, modules will
+ * only receive transmission updates if they explicitly declare that
+ * they are prepared to handle them by calling
+ * cSimpleModule::setTxUpdateSupport(true) beforehand. (If this flag
+ * is not set in a module, sending a transmission update to it will
+ * result in a runtime error.
+ *
+ * @see cSimpleModule::send(), cSimpleModule::sendDirect
+ * @ingroup SimCore
+ */
+struct SIM_API SendOptions {
+    simtime_t sendDelay = SIMTIME_ZERO; // for after()
+    simtime_t propagationDelay_ = SIMTIME_ZERO; // for sendDirect()
+    simtime_t duration_ = DURATION_UNSPEC; // for packets not using channel datarate
+    long origPacketId = -1; // if >=0, this updates an earlier transmission
+    simtime_t remainingDuration = DURATION_UNSPEC; // when updating an earlier transmission
+
+    static const simtime_t DURATION_UNSPEC;
+    static const SendOptions DEFAULT;
+
+    /**
+     * Creates an instance with the default settings.
+     */
+    SendOptions() {}
+
+    /**
+     * Specifies delay for the send operation. Conceptually, this would cause
+     * timer to start, and the actual send operation would take place when
+     * the timer expires. In practice, for the sake of efficiency, the explicit
+     * timer is omitted, and delay is simply applied to the message before
+     * it enters the connection path that leads to the destination module.
+     * Note that this simplified modeling does not account for changes in the
+     * connection path during the delay period, so if modeling those changes are
+     * important, you have to use an explicit timer followed by a regular send.
+     */
+    SendOptions& after(simtime_t delay) {this->sendDelay = delay; return *this;}
+
+    /**
+     * Specifies the propagation delay for sendDirect(). It is an error to use
+     * this option with send() or sendDelayed().
+     */
+    SendOptions& propagationDelay(simtime_t delay) {this->propagationDelay_ = delay; return *this;}
+
+    /**
+     * Specifies an explicit transmission duration. This is only allowed if the
+     * connection path contains a transmission channel (a cChannel whose
+     * isTransmissionChannel() method returns true). cDatarateChannel,
+     * which is the only built-in transmission channel model in OMNeT++,
+     * can compute transmission duration from the packet length in bits and
+     * the datarate, but allows it to be overridden with this option.
+     */
+    SendOptions& duration(simtime_t duration) {this->duration_ = duration; return *this;}
+
+    /**
+     * Specifies that this is a transmission update, where the remaining duration
+     * is zero. See the comment of this class for an explanation of transmission
+     * updates.
+     *
+     * @see cPacket::isUpdate(), cPacket::getRemainingDuration()
+     */
+    SendOptions& finishTx(long origPacketId) {this->origPacketId = origPacketId; remainingDuration = SIMTIME_ZERO; return *this;}
+
+    /**
+     * Specifies that this is a transmission update, where the remaining duration should be
+     * computed by the channel (as packet duration minus elapsed transmission time).
+     * See the comment of this class for an explanation of transmission updates.
+     *
+     * @see cPacket::isUpdate(), cPacket::getRemainingDuration()
+     */
+    SendOptions& updateTx(long origPacketId) {this->origPacketId = origPacketId; remainingDuration = DURATION_UNSPEC; return *this;}
+
+    /**
+     * Specifies that this is a transmission update, with the given remaining duration.
+     * See the comment of this class for an explanation of transmission
+     * updates.@see cPacket::isUpdate(), cPacket::getRemainingDuration()
+     */
+    SendOptions& updateTx(long origPacketId, simtime_t remainingDuration) {this->origPacketId = origPacketId; this->remainingDuration = remainingDuration; return *this;}
+
+    /**
+     * Returns the options in a string form.
+     */
+    std::string str() const;
+};
+
+/**
  * @brief Base class for all simple module classes.
  *
  * cSimpleModule, although packed with simulation-related functionality,
@@ -69,6 +197,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
         FL_USESACTIVITY        = 1 << 14, // uses activity() or handleMessage()
         FL_ISTERMINATED        = 1 << 15, // for both activity and handleMessage modules
         FL_STACKALREADYUNWOUND = 1 << 16, // only for activity modules
+        FL_SUPPORTSTXUPDATES   = 1 << 17, // whether module is prepared to receive tx updates (see SendOptions)
     };
 
     cMessage *timeoutMessage;   // msg used in wait() and receive() with timeout
@@ -81,9 +210,12 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     // internal use
     static void activate(void *p);
 
-  protected:
-    // internal use
-    virtual void arrived(cMessage *msg, cGate *ongate, simtime_t t) override;
+    // internal utility methods
+    cGate *resolveSendDirectGate(cModule *mod, int gateId);
+    cGate *resolveSendDirectGate(cModule *mod, const char *gateName, int gateIndex);
+    static SendOptions resolveSendDirectOptions(simtime_t propagationDelay, simtime_t duration);
+    void deleteObsoletedTransmissionFromFES(long origPacketId, cPacket *updatePkt);
+    void throwNotOwnerOfMessage(const char *sendOp, cMessage *msg);
 
   protected:
     /** @name Hooks for defining module behavior.
@@ -151,6 +283,13 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * Creates a starting message for the module.
      */
     virtual void scheduleStart(simtime_t t) override;
+
+    /**
+     * This method is invoked on the module at the end of the connection path,
+     * as part of the send()/sendDirect() protocol. This implementation
+     * inserts the message into the FES after some processing.
+     */
+    virtual void arrived(cMessage *msg, cGate *ongate, const SendOptions& options, simtime_t t) override;
     //@}
 
     /** @name Information about the module. */
@@ -160,6 +299,30 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * Returns the event handling scheme: activity() or handleMessage().
      */
     bool usesActivity() const  {return flags&FL_USESACTIVITY;}
+
+    /**
+     * Calling this method with the argument of true indicates that this module
+     * is prepared to receive transmission updates, and can handle them properly.
+     *
+     * This method (and the underlying flag) exists to reduce the chance of
+     * unprepared modules receiving transmission updates and interpreting
+     * them as independent packets, leading to subtle errors in the simulation.
+     * If this flag is not set on a module, then sending a transmission update
+     * to it will result in a runtime error.
+     *
+     * Modules that set the flag are supposed to check whether a received packet
+     * is a transmission update by calling cPacket::isUpdate(), and act accordingly.
+     *
+     * @see supportsTxUpdates(), cPacket::isUpdate(), SendOptions::updateTx()
+     */
+    void setTxUpdateSupport(bool b) {setFlag(FL_SUPPORTSTXUPDATES, b);}
+
+    /**
+     * Returns true if this module is prepared to receive transmission updates.
+     *
+     * @see setTxUpdateSupport(), cPacket::isUpdate(), SendOptions::updateTx()
+     */
+    bool supportsTxUpdates() const  {return flags&FL_SUPPORTSTXUPDATES;}
 
     /**
      * Returns true if the module has already terminated, by having called end()
@@ -195,78 +358,91 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     /**
      * Sends a message through the gate given with its ID.
      */
-    virtual void send(cMessage *msg, int gateid)  {sendDelayed(msg, SIMTIME_ZERO, gateid);}
+    virtual void send(cMessage *msg, int gateid)  {send(msg, gate(gateid));}
 
     /**
-     * Sends a message through the gate given with its name and index
-     * (if multiple gate).
+     * Sends a message through the gate given with its name and index.
+     * The index argument is only required if the gate is part of a gate vector.
      */
-    virtual void send(cMessage *msg, const char *gatename, int gateindex=-1)  {sendDelayed(msg, SIMTIME_ZERO, gatename, gateindex);}
+    virtual void send(cMessage *msg, const char *gatename, int gateindex=-1)  {send(msg, gate(gatename, gateindex));}
 
     /**
      * Sends a message through the gate given with its pointer.
      */
-    virtual void send(cMessage *msg, cGate *outputgate)  {sendDelayed(msg, SIMTIME_ZERO, outputgate);}
+    virtual void send(cMessage *msg, cGate *outputgate)  {send(msg, SendOptions::DEFAULT, outputgate);}
 
     /**
-     * Delayed sending. Sends a message through the gate given with
-     * its index as if it was sent delay seconds later.
+     * Sends a message with the given options through the gate given with its ID.
      */
-    virtual void sendDelayed(cMessage *msg, simtime_t delay, int gateid);
+    virtual void send(cMessage *msg, const SendOptions& options, int gateid)  {send(msg, options, gate(gateid));}
 
     /**
-     * Delayed sending. Sends a message through the gate given with
-     * its name and index (if multiple gate) as if it was sent delay
-     * seconds later.
+     * Sends a message with the given options through the gate given with its name and index.
+     * The index argument is only required if the gate is part of a gate vector.
      */
-    virtual void sendDelayed(cMessage *msg, simtime_t delay, const char *gatename, int gateindex=-1);
+    virtual void send(cMessage *msg, const SendOptions& options, const char *gatename, int gateindex=-1)  {send(msg, options, gate(gatename, gateindex));}
 
     /**
-     * Sends a message through the gate given with its pointer as if
-     * it was sent delay seconds later.
+     * Sends a message with the given options through the gate given with its pointer.
      */
-    virtual void sendDelayed(cMessage *msg, simtime_t delay, cGate *outputgate);
+    virtual void send(cMessage *msg, const SendOptions& options, cGate *outputgate);
+
+    /**
+     * Utility function, equivalent to send(msg, SendOptions().after(delay), gateid).
+     */
+    virtual void sendDelayed(cMessage *msg, simtime_t delay, int gateid)  {send(msg, SendOptions().after(delay), gate(gateid));}
+
+    /**
+     * Utility function, equivalent to send(msg, SendOptions().after(delay), gatename, gateindex).
+     */
+    virtual void sendDelayed(cMessage *msg, simtime_t delay, const char *gatename, int gateindex=-1)  {send(msg, SendOptions().after(delay), gate(gatename, gateindex));}
+
+    /**
+     * Utility function, equivalent to send(msg, SendOptions().after(delay), outputgate).
+     */
+    virtual void sendDelayed(cMessage *msg, simtime_t delay, cGate *outputgate)  {send(msg, SendOptions().after(delay), outputgate);}
 
     /**
      * Sends a message directly to another module, with zero propagation delay
-     * and duration. See sendDirect(cMessage *, simtime_t, simtime_t, cGate *)
+     * and duration. See sendDirect(cMessage *, const SendOptions&, cGate *)
      * for a more detailed description.
      */
-    virtual void sendDirect(cMessage *msg, cModule *mod, const char *inputGateName, int gateIndex=-1);
+    virtual void sendDirect(cMessage *msg, cModule *mod, const char *inputGateName, int gateIndex=-1)  {sendDirect(msg, SendOptions::DEFAULT, resolveSendDirectGate(mod, inputGateName, gateIndex));}
 
     /**
      * Sends a message directly to another module, with zero propagation delay
-     * and duration. See sendDirect(cMessage *, simtime_t, simtime_t, cGate *)
+     * and duration. See sendDirect(cMessage *, const SendOptions&, cGate *)
      * for a more detailed description.
      */
-    virtual void sendDirect(cMessage *msg, cModule *mod, int inputGateId);
+    virtual void sendDirect(cMessage *msg, cModule *mod, int inputGateId) {sendDirect(msg, SendOptions::DEFAULT, resolveSendDirectGate(mod, inputGateId));}
 
     /**
      * Sends a message directly to another module, with zero propagation delay
-     * and duration. See sendDirect(cMessage *, simtime_t, simtime_t, cGate *)
+     * and duration. See sendDirect(cMessage *, const SendOptions&, cGate *)
      * for a more detailed description.
      */
-    virtual void sendDirect(cMessage *msg, cGate *inputGate);
+    virtual void sendDirect(cMessage *msg, cGate *inputGate) {sendDirect(msg, SendOptions::DEFAULT, inputGate);}
 
     /**
-     * Sends a message directly to another module.
-     * See sendDirect(cMessage *, simtime_t, simtime_t, cGate *) for a more
+     * Sends a message directly to another module, with the given options.
+     * See sendDirect(cMessage *, const SendOptions&, cGate *) for a more
      * detailed description.
      */
-    virtual void sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cModule *mod, const char *inputGateName, int gateIndex=-1);
+    virtual void sendDirect(cMessage *msg, const SendOptions& options, cModule *mod, const char *inputGateName, int gateIndex=-1) {sendDirect(msg, options, resolveSendDirectGate(mod, inputGateName, gateIndex));}
 
     /**
-     * See sendDirect(cMessage *, simtime_t, simtime_t, cGate *) for a more
+     * Sends a message directly to another module, with the given options.
+     * See sendDirect(cMessage *, const SendOptions&, cGate *) for a more
      * detailed description.
      */
-    virtual void sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cModule *mod, int inputGateId);
+    virtual void sendDirect(cMessage *msg, const SendOptions& options, cModule *mod, int inputGateId) {sendDirect(msg, options, resolveSendDirectGate(mod, inputGateId));}
 
     /**
-     * Send a message directly to another module.
+     * Send a message directly to another module, with the given options.
      *
      * If the target gate is further connected (i.e. getNextGate()!=nullptr),
-     * the message will follow the connections that start at that gate.
-     * For example, when sending to an input gate of a compound module,
+     * the message will follow the connection path that starts at that gate.
+     * Notably, when sending to an input gate of a compound module,
      * the message will follow the connections inside the compound module.
      *
      * It is permitted to send to an output gate, which will also cause
@@ -275,32 +451,30 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * to a single output gate of their parent module.
      *
      * It is not permitted to send to a gate of a compound module which is not
-     * further connected (i.e. getNextGate()==nullptr), as this would cause the message
-     * to arrive at a compound module.
+     * further connected (i.e. getNextGate()==nullptr), as this would cause the
+     * message to arrive at a compound module.
      *
      * Also, it is not permitted to send to a gate which is otherwise connected
      * i.e. where getPreviousGate()!=nullptr. This means that modules MUST have
      * dedicated gates for receiving via sendDirect(). You cannot have a gate
      * which receives messages via both connections and sendDirect().
-     *
-     * When a nonzero duration is given, that signifies the duration of the packet
-     * transmission, that is, the time difference between the transmission (or
-     * reception) of the start of the packet and that of the end of the packet.
-     * The destination module can choose whether it wants the simulation kernel
-     * to deliver the packet object to it at the start or at the end of the
-     * reception. The default is the latter; the module can change it by calling
-     * setDeliverOnReceptionStart() on the final input gate (that is, on
-     * inputGate->getPathEndGate()). setDeliverOnReceptionStart() needs to be
-     * called in advance, for example in the initialize() method of the module.
-     * When a module receives a packet, it can call the isReceptionStart() and
-     * getDuration() methods on the packet to find out whether it represents
-     * the start or the end of the reception, and the duration of the
-     * transmission.
-     *
-     * For messages that are not packets (i.e. not subclassed from cPacket),
-     * the duration parameter must be zero.
      */
-    virtual void sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cGate *inputGate);
+    virtual void sendDirect(cMessage *msg, const SendOptions& options, cGate *inputGate);
+
+    /**
+     * Utility function, roughly equivalent to sendDirect(msg, SendOptions().propagationDelay(delay).duration(duration), mod, inputGateName, gateIndex).
+     */
+    virtual void sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cModule *mod, const char *inputGateName, int gateIndex=-1) {sendDirect(msg, resolveSendDirectOptions(propagationDelay, duration), resolveSendDirectGate(mod, inputGateName, gateIndex));}
+
+    /**
+     * Utility function, roughly equivalent to sendDirect(msg, SendOptions().propagationDelay(delay).duration(duration), mod, inputGateId).
+     */
+    virtual void sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cModule *mod, int inputGateId) {sendDirect(msg, resolveSendDirectOptions(propagationDelay, duration), resolveSendDirectGate(mod, inputGateId));}
+
+    /**
+     * Utility function, roughly equivalent to sendDirect(msg, SendOptions().propagationDelay(delay).duration(duration), inputGate).
+     */
+    virtual void sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cGate *inputGate) {sendDirect(msg, resolveSendDirectOptions(propagationDelay, duration), inputGate);}
     //@}
 
     /** @name Self-messages. */

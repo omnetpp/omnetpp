@@ -1556,7 +1556,7 @@ void cModule::callRefreshDisplay()
     }
 }
 
-void cModule::arrived(cMessage *msg, cGate *ongate, simtime_t)
+void cModule::arrived(cMessage *msg, cGate *ongate, const SendOptions& options, simtime_t)
 {
     // by default, cModule acts as compound module (cSimpleModule overrides this)
     throw cRuntimeError("Gate '%s' of compound module (%s)%s is not connected on the %s, "

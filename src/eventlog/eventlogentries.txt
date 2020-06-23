@@ -129,6 +129,8 @@ CE CancelEventEntry : MessageEntry // canceling an event caused by a self messag
 
 BS BeginSendEntry : MessageEntry // beginning to send a message
 {
+   sd simtime_t sendDelay         0 // send after this delay 
+   op long origPacketId          -1 // if >=0, this sending updates an earlier transmission
 }
 
 ES EndSendEntry // prediction of the arrival of a message
@@ -144,6 +146,7 @@ SD SendDirectEntry // sending a message directly to a destination gate
    dg int destGateId                // id of the gate at the destination module to which the message is being sent
    pd simtime_t propagationDelay  0 // propagation delay as the message is propagated through the connection
    td simtime_t transmissionDelay 0 // transmission duration as the whole message is sent from the source gate
+   rd simtime_t remainingDuration 0 // remaining transmission time (if packet is a tx update)
 }
 
 SH SendHopEntry // sending a message through a connection identified by its source module and gate id
@@ -152,6 +155,7 @@ SH SendHopEntry // sending a message through a connection identified by its sour
    sg int senderGateId              // id of the gate at the source module from which the message is being sent
    pd simtime_t propagationDelay  0 // propagation delay as the message is propagated through the connection
    td simtime_t transmissionDelay 0 // transmission duration as the whole message is sent from the source gate
+   rd simtime_t remainingDuration 0 // remaining transmission time (if packet is a tx update)
    del bool discard false           // whether the channel has discarded the message
 }
 

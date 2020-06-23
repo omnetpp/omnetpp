@@ -395,8 +395,13 @@ class cPacket extends cMessage
     int64_t byteLength @group("packet") @editable @hint("Length in bytes, i.e. length in bits divided by eight");
     bool hasBitError @getter(hasBitError) @group("packet") @setter(setBitError) @editable @hint("Indicates that a bit error occurred when the message was sent through a channel with nonzero bit error rate");
     cPacket *encapsulatedPacket @packetData @hint("Used with protocol stacks: stores an encapsulated higher-layer packet");
-    bool isReceptionStart @getter(isReceptionStart) @group(sending) @hint("When duration is nonzero: whether this message represents the start or the end of the frame reception");
+    bool txChannelEncountered @group(sending) @hint("If true, the packet has encountered a transmission channel during its last send");
+    bool isUpdate @group(sending) @hint("If true, this is not a separate packet but a modification to a previous packet transmission (see remainingDuration too)");
+    long origPacketId @group(sending) @editable @hint("When isUpdate=true: identifies the original packet transmission by its packet ID");
     simtime_t duration @group(sending) @hint("Transmission time over a channel with datarate");
+    simtime_t remainingDuration @group(sending) @hint("Remaining transmission time over a channel with datarate (see isUpdate=true)");
+    bool isReceptionStart @getter(isReceptionStart) @group(sending) @hint("True if duration==remainingDuration");
+    bool isReceptionEnd @getter(isReceptionEnd) @group(sending) @hint("True if remainingDuration is zero");
 }
 
 //----

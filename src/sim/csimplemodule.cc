@@ -28,6 +28,7 @@
 #include "omnetpp/cgate.h"
 #include "omnetpp/cpacket.h"
 #include "omnetpp/ccoroutine.h"
+#include "omnetpp/cchannel.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/ccontextswitcher.h"
 #include "omnetpp/cfutureeventset.h"
@@ -48,8 +49,36 @@ namespace omnetpp {
 #define DEBUG_TRAP_IF_REQUESTED    { if (getSimulation()->trapOnNextEvent) { getSimulation()->trapOnNextEvent = false; if (getEnvir()->ensureDebugger()) DEBUG_TRAP; } }
 #endif
 
+// Note: order of next 2 definitions is important, as SendOptions::DEFAULT uses DURATION_UNSPEC in its ctor call
+const simtime_t SendOptions::DURATION_UNSPEC = SimTime::fromRaw(-1);
+const SendOptions SendOptions::DEFAULT;
+
+auto& DURATION_UNSPEC = SendOptions::DURATION_UNSPEC; // shorthand for local use
+
 bool cSimpleModule::stackCleanupRequested;
 cSimpleModule *cSimpleModule::afterCleanupTransferTo;
+
+
+std::string SendOptions::str() const
+{
+    std::stringstream os;
+    if (sendDelay != SIMTIME_ZERO)
+        os << "sendDelay=" << sendDelay.ustr() << " ";
+    if (propagationDelay_ != SIMTIME_ZERO)
+        os << "propagationDelay=" << propagationDelay_.ustr() << " ";
+    if (duration_ != DURATION_UNSPEC)
+        os << "duration=" << duration_.ustr() << " ";
+    if (origPacketId != -1)
+        os << "origPacketId=" << origPacketId << " ";
+    if (remainingDuration != DURATION_UNSPEC)
+        os << "remainingDuration=" << remainingDuration.ustr() << " ";
+    std::string res = os.str();
+    if (!res.empty())
+        res.resize(res.length()-1); // trim trailing space
+    else
+        res = "default";
+    return res;
+}
 
 void cSimpleModule::activate(void *p)
 {
@@ -172,12 +201,11 @@ cSimpleModule::cSimpleModule(unsigned stackSize)
     setFlag(FL_ISTERMINATED, false);
     setFlag(FL_STACKALREADYUNWOUND, false);
 
-    // for an activity() module, timeoutmsg will be created in scheduleStart()
+    // for an activity() module, timeout msg will be created in scheduleStart()
     // which must always be called
     timeoutMessage = nullptr;
 
-    if (usesActivity())
-    {
+    if (usesActivity()) {
        // setup coroutine, allocate stack for it
        coroutine = new cCoroutine;
        if (!coroutine->setup(cSimpleModule::activate, this, stackSize+getEnvir()->getExtraStackForEnvir()))
@@ -186,6 +214,9 @@ cSimpleModule::cSimpleModule(unsigned stackSize)
                                "or rewrite modules to use handleMessage() instead of activity()",
                                stackSize, getEnvir()->getExtraStackForEnvir(), getFullPath().c_str());
     }
+
+    ASSERT(SendOptions::DEFAULT.duration_ == SendOptions::DURATION_UNSPEC); // catch errors from wrong initialization order
+    ASSERT(SendOptions::DEFAULT.remainingDuration == SendOptions::DURATION_UNSPEC);
 }
 
 cSimpleModule::~cSimpleModule()
@@ -291,23 +322,12 @@ void cSimpleModule::scheduleStart(simtime_t t)
 
 #define TRY(code, msgprefix)    try { code; } catch (cRuntimeError& e) { e.prependMessage(msgprefix); throw; }
 
-void cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, const char *gateName, int gateIndex)
+void cSimpleModule::send(cMessage *msg, const SendOptions& options, cGate *outGate)
 {
-    cGate *outGate;
-    TRY(outGate = gate(gateName, gateIndex), "send()/sendDelayed()");
-    sendDelayed(msg, delay, outGate);
-}
-
-void cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, int gateId)
-{
-    cGate *outGate;
-    TRY(outGate = gate(gateId), "send()/sendDelayed()");
-    sendDelayed(msg, delay, outGate);
-}
-
-void cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outGate)
-{
-    // error checking:
+    if (msg == nullptr)
+        throw cRuntimeError("send()/sendDelayed(): Message pointer is nullptr");
+    if (msg->getOwner() != this)
+        throwNotOwnerOfMessage("send()/sendDelayed()", msg);
     if (outGate == nullptr)
         throw cRuntimeError("send()/sendDelayed(): Gate pointer is nullptr");
     if (outGate->getType() == cGate::INPUT)
@@ -317,149 +337,160 @@ void cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outGate)
     if (outGate->getPreviousGate())
         throw cRuntimeError("send()/sendDelayed(): Gate '%s' is not the start of a connection path (path starts at gate %s)",
                 outGate->getFullName(), outGate->getPathStartGate()->getFullPath().c_str());
-    if (msg == nullptr)
-        throw cRuntimeError("send()/sendDelayed(): Message pointer is nullptr");
-    if (msg->getOwner() != this) {
-        bool inFES = msg->getOwner() == getSimulation()->getFES();
-        if (this != getSimulation()->getContextModule() && getSimulation()->getContextModule() != nullptr)
-            throw cRuntimeError("send()/sendDelayed() of module (%s)%s called in the context of "
-                                "module (%s)%s: method called from the latter module "
-                                "lacks Enter_Method() or Enter_Method_Silent()? "
-                                "Also, if message to be sent is passed from that module, "
-                                "you'll need to call take(msg) after Enter_Method() as well",
-                                getClassName(), getFullPath().c_str(),
-                                getSimulation()->getContextModule()->getClassName(),
-                                getSimulation()->getContextModule()->getFullPath().c_str());
-        else if (inFES && msg->isSelfMessage() && msg->getArrivalModuleId() == getId())
-            throw cRuntimeError("send()/sendDelayed(): Cannot send message (%s)%s, it is "
-                                "currently scheduled as a self-message for this module",
-                                msg->getClassName(), msg->getName());
-        else if (inFES && msg->isSelfMessage())
-            throw cRuntimeError("send()/sendDelayed(): Cannot send message (%s)%s, it is "
-                                "currently scheduled as a self-message for ANOTHER module",
-                                msg->getClassName(), msg->getName());
-        else if (inFES)
-            throw cRuntimeError("send()/sendDelayed(): Cannot send message (%s)%s, it is "
-                                "currently in scheduled-events, being underway between two modules",
-                                msg->getClassName(), msg->getName());
-        else
-            throw cRuntimeError("send()/sendDelayed(): Cannot send message (%s)%s, "
-                                "it is currently contained/owned by (%s)%s",
-                                msg->getClassName(), msg->getName(), msg->getOwner()->getClassName(),
-                                msg->getOwner()->getFullPath().c_str());
-    }
-    if (delay < SIMTIME_ZERO)
-        throw cRuntimeError("sendDelayed(): Negative delay %s", SIMTIME_STR(delay));
+    if (options.sendDelay < SIMTIME_ZERO)
+        throw cRuntimeError("send()/sendDelayed(): Negative delay %s", SIMTIME_STR(options.sendDelay));
+    if (!options.propagationDelay_.isZero())
+        throw cRuntimeError("send()/sendDelayed(): Specifying a propagation delay in the options is only allowed for sendDirect()");
 
     // set message parameters and send it
-    simtime_t delayEndTime = simTime() + delay;
+    simtime_t delayEndTime = simTime() + options.sendDelay;
     msg->setSentFrom(this, outGate->getId(), delayEndTime);
-    if (msg->isPacket())
-        ((cPacket *)msg)->setDuration(SIMTIME_ZERO);
-
-    EVCB.beginSend(msg);
-    bool keepMsg = outGate->deliver(msg, delayEndTime);
-    if (!keepMsg) {
-        delete msg;  // event log for this sending will end with "DM" (DeleteMessage) instead of "ES" (EndSend)
+    if (msg->isPacket()) {
+        cPacket *pkt = (cPacket *)msg;
+        pkt->setOrigPacketId(options.origPacketId);
+        pkt->setDuration(SIMTIME_ZERO);
+        pkt->setRemainingDuration(SIMTIME_ZERO);
+        pkt->clearTxChannelEncountered();
     }
     else {
-        EVCB.endSend(msg);
+        if (&options != &SendOptions::DEFAULT && (options.duration_ != DURATION_UNSPEC || options.remainingDuration != DURATION_UNSPEC || options.origPacketId != -1))
+            throw cRuntimeError("send(): (%s)%s is a message, and the duration, remainingDuration "
+                                "and origPacketId send options are only allowed on packets",
+                                msg->getClassName(), msg->getName());
     }
+
+    EVCB.beginSend(msg, options);
+    bool keepMsg = outGate->deliver(msg, options, delayEndTime);
+    if (!keepMsg)
+        delete msg;  // event log for this sending will end with "DM" (DeleteMessage) instead of "ES" (EndSend)
+    else
+        EVCB.endSend(msg);
 }
 
-void cSimpleModule::sendDirect(cMessage *msg, cModule *mod, const char *gateName, int gateIndex)
-{
-    sendDirect(msg, SIMTIME_ZERO, SIMTIME_ZERO, mod, gateName, gateIndex);
-}
-
-void cSimpleModule::sendDirect(cMessage *msg, cModule *mod, int gateId)
-{
-    sendDirect(msg, SIMTIME_ZERO, SIMTIME_ZERO, mod, gateId);
-}
-
-void cSimpleModule::sendDirect(cMessage *msg, cGate *toGate)
-{
-    sendDirect(msg, SIMTIME_ZERO, SIMTIME_ZERO, toGate);
-}
-
-void cSimpleModule::sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration,
-        cModule *mod, const char *gateName, int gateIndex)
+cGate *cSimpleModule::resolveSendDirectGate(cModule *mod, int gateId)
 {
     if (!mod)
         throw cRuntimeError("sendDirect(): Destination module pointer is nullptr");
-    cGate *toGate;
-    TRY(toGate = mod->gate(gateName, gateIndex), "sendDirect()");
-    sendDirect(msg, propagationDelay, duration, toGate);
+    TRY(return mod->gate(gateId), "sendDirect()");
 }
 
-void cSimpleModule::sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cModule *mod, int gateId)
+cGate *cSimpleModule::resolveSendDirectGate(cModule *mod, const char *gateName, int gateIndex)
 {
     if (!mod)
         throw cRuntimeError("sendDirect(): Destination module pointer is nullptr");
-    cGate *toGate;
-    TRY(toGate = mod->gate(gateId), "sendDirect()");
-    sendDirect(msg, propagationDelay, duration, toGate);
+    TRY(return mod->gate(gateName, gateIndex), "sendDirect()");
 }
 
-void cSimpleModule::sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cGate *toGate)
+SendOptions cSimpleModule::resolveSendDirectOptions(simtime_t propagationDelay, simtime_t duration)
+{
+    SendOptions options;
+    options.propagationDelay(propagationDelay);
+    if (!duration.isZero())
+        options.duration(duration);
+    return options;
+}
+
+void cSimpleModule::sendDirect(cMessage *msg, const SendOptions& options, cGate *toGate)
 {
     // Note: it is permitted to send to an output gate. It is especially useful
     // with several submodules sending to a single output gate of their parent module.
+    if (msg == nullptr)
+        throw cRuntimeError("sendDirect(): Message pointer is nullptr");
+    if (msg->getOwner() != this)
+        throwNotOwnerOfMessage("sendDirect()", msg);
     if (toGate == nullptr)
         throw cRuntimeError("sendDirect(): Destination gate pointer is nullptr");
     if (toGate->getPreviousGate())
         throw cRuntimeError("sendDirect(): Module must have dedicated gate(s) for receiving via sendDirect()"
                             " (\"from\" side of dest. gate '%s' should NOT be connected)", toGate->getFullPath().c_str());
-    if (propagationDelay < SIMTIME_ZERO || duration < SIMTIME_ZERO)
-        throw cRuntimeError("sendDirect(): The propagation time and duration parameters cannot be negative");
-    if (msg == nullptr)
-        throw cRuntimeError("sendDirect(): Message pointer is nullptr");
-    if (msg->getOwner() != this) {
-        // try to give a meaningful error message
-        bool inFES = msg->getOwner() == getSimulation()->getFES();
-        if (this != getSimulation()->getContextModule() && getSimulation()->getContextModule() != nullptr)
-            throw cRuntimeError("sendDirect() of module (%s)%s called in the context of "
-                                "module (%s)%s: method called from the latter module "
-                                "lacks Enter_Method() or Enter_Method_Silent()? "
-                                "Also, if message to be sent is passed from that module, "
-                                "you'll need to call take(msg) after Enter_Method() as well",
-                                getClassName(), getFullPath().c_str(),
-                                getSimulation()->getContextModule()->getClassName(),
-                                getSimulation()->getContextModule()->getFullPath().c_str());
-        else if (inFES && msg->isSelfMessage() && msg->getArrivalModuleId()==getId())
-            throw cRuntimeError("sendDirect(): Cannot send message (%s)%s, it is "
-                                "currently scheduled as a self-message for this module",
-                                msg->getClassName(), msg->getName());
-        else if (inFES && msg->isSelfMessage())
-            throw cRuntimeError("sendDirect(): Cannot send message (%s)%s, it is "
-                                "currently scheduled as a self-message for ANOTHER module",
-                                msg->getClassName(), msg->getName());
-        else if (inFES)
-            throw cRuntimeError("sendDirect(): Cannot send message (%s)%s, it is "
-                                "currently in scheduled-events, being underway between two modules",
-                                msg->getClassName(), msg->getName());
-        else
-            throw cRuntimeError("sendDirect(): Cannot send message (%s)%s, "
-                                "it is currently contained/owned by (%s)%s",
-                                msg->getClassName(), msg->getName(), msg->getOwner()->getClassName(),
-                                msg->getOwner()->getFullPath().c_str());
-    }
+    if (options.sendDelay < SIMTIME_ZERO)
+        throw cRuntimeError("sendDirect(): Negative send delay %s", options.sendDelay.ustr().c_str());
+    if (options.propagationDelay_ < SIMTIME_ZERO)
+        throw cRuntimeError("sendDirect(): Negative propagation delay %s", options.propagationDelay_.ustr().c_str());
 
     // set message parameters and send it
     msg->setSentFrom(this, -1, simTime());
 
-    EVCB.beginSend(msg);
-    if (msg->isPacket())
-        ((cPacket *)msg)->setDuration(duration);
-    else if (duration != SIMTIME_ZERO)
-        throw cRuntimeError("sendDirect(): Cannot send non-packet message (%s)%s when nonzero duration is specified",
-                            msg->getClassName(), msg->getName());
-    EVCB.messageSendDirect(msg, toGate, propagationDelay, duration);
-    bool keepit = toGate->deliver(msg, simTime() + propagationDelay);
+    EVCB.beginSend(msg, options); // note: records sendDelay and origPacketId
+
+    cChannel::Result result;
+    if (msg->isPacket()) {
+        cPacket *pkt = (cPacket *)msg;
+        pkt->setOrigPacketId(options.origPacketId);
+        bool isUpdate = options.origPacketId != -1;
+
+        // duration, remainingDuration
+        simtime_t duration = (options.duration_ == DURATION_UNSPEC) ? SimTime::ZERO : options.duration_;
+        if (duration < SIMTIME_ZERO)
+            throw cRuntimeError("sendDirect(): Negative duration %s", duration.ustr().c_str());
+
+        simtime_t remainingDuration;
+        if (!isUpdate) {
+            if (options.remainingDuration != DURATION_UNSPEC)
+                throw cRuntimeError("sendDirect(): remainingDuration may only be specified for transmission update packets");
+            remainingDuration = duration;
+        }
+        else {
+            if (options.remainingDuration < SIMTIME_ZERO) {
+                if (options.remainingDuration == DURATION_UNSPEC)
+                    throw cRuntimeError("sendDirect(): remainingDuration is mandatory for sendDirect transmission updates");
+                throw cRuntimeError("sendDirect(): Negative remainingDuration %s", options.remainingDuration.ustr().c_str());
+            }
+            remainingDuration = options.remainingDuration;
+        }
+
+        pkt->setDuration(duration);
+        pkt->setRemainingDuration(remainingDuration);
+        pkt->setTxChannelEncountered(duration != SIMTIME_ZERO);
+
+        result.duration = duration;
+        result.remainingDuration = remainingDuration;
+    }
+    else {
+        if (&options != &SendOptions::DEFAULT && (options.duration_ != DURATION_UNSPEC || options.remainingDuration != DURATION_UNSPEC || options.origPacketId != -1))
+            throw cRuntimeError("sendDirect(): (%s)%s is a message, and the duration, remainingDuration "
+                                "and origPacketId send options are only allowed on packets",
+                                msg->getClassName(), msg->getName());
+    }
+    result.delay = options.propagationDelay_;
+
+    EVCB.messageSendDirect(msg, toGate, result);
+    bool keepit = toGate->deliver(msg, options, simTime() + options.sendDelay + result.delay);
     if (!keepit)
-        delete msg;  //TODO: tell Qtenv somehow that msg has been deleted, otherwise animation will crash
+        delete msg;  // event log for this sending will end with "DM" (DeleteMessage) instead of "ES" (EndSend)
     else
         EVCB.endSend(msg);
+}
+
+void cSimpleModule::throwNotOwnerOfMessage(const char *sendOp, cMessage *msg)
+{
+    // try to give a meaningful error message
+    bool inFES = msg->getOwner() == getSimulation()->getFES();
+    if (this != getSimulation()->getContextModule() && getSimulation()->getContextModule() != nullptr)
+        throw cRuntimeError("%s of module (%s)%s called in the context of "
+                            "module (%s)%s: method called from the latter module "
+                            "lacks Enter_Method() or Enter_Method_Silent()? "
+                            "Also, if message to be sent is passed from that module, "
+                            "you'll need to call take(msg) after Enter_Method() as well",
+                            sendOp, getClassName(), getFullPath().c_str(),
+                            getSimulation()->getContextModule()->getClassName(),
+                            getSimulation()->getContextModule()->getFullPath().c_str());
+    else if (inFES && msg->isSelfMessage() && msg->getArrivalModuleId()==getId())
+        throw cRuntimeError("%s: Cannot send message (%s)%s, it is currently scheduled "
+                            "as a self-message for this module",
+                            sendOp, msg->getClassName(), msg->getName());
+    else if (inFES && msg->isSelfMessage())
+        throw cRuntimeError("%s: Cannot send message (%s)%s, it is currently scheduled "
+                            "as a self-message for ANOTHER module",
+                            sendOp, msg->getClassName(), msg->getName());
+    else if (inFES)
+        throw cRuntimeError("%s: Cannot send message (%s)%s, it is currently in scheduled-events, "
+                            "in transit between two modules",
+                            sendOp, msg->getClassName(), msg->getName());
+    else
+        throw cRuntimeError("%s: Cannot send message (%s)%s, it is currently contained/owned by (%s)%s",
+                            sendOp, msg->getClassName(), msg->getName(), msg->getOwner()->getClassName(),
+                            msg->getOwner()->getFullPath().c_str());
 }
 
 void cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
@@ -531,7 +562,7 @@ void cSimpleModule::cancelAndDelete(cMessage *msg)
         delete cancelEvent(msg);
 }
 
-void cSimpleModule::arrived(cMessage *msg, cGate *ongate, simtime_t t)
+void cSimpleModule::arrived(cMessage *msg, cGate *ongate, const SendOptions& options, simtime_t t)
 {
     if (isTerminated())
         throw cRuntimeError(E_MODFIN, getFullPath().c_str());
@@ -540,16 +571,75 @@ void cSimpleModule::arrived(cMessage *msg, cGate *ongate, simtime_t t)
                             "is earlier than current simulation time",
                             msg->getName(), SIMTIME_STR(t), getFullPath().c_str());
     msg->setArrival(getId(), ongate->getId());
-    bool isStart = ongate->getDeliverOnReceptionStart();
     if (msg->isPacket()) {
         cPacket *pkt = (cPacket *)msg;
-        pkt->setReceptionStart(isStart);
-        pkt->setArrivalTime(isStart ? t : t + pkt->getDuration());
+        bool isUpdate = pkt->isUpdate();
+        bool deliverImmediately = ongate->getDeliverImmediately();
+        bool isTransmission = pkt->getTxChannelEncountered();
+
+        if (!isTransmission && &options != &SendOptions::DEFAULT && (options.duration_ != DURATION_UNSPEC || options.remainingDuration != DURATION_UNSPEC))
+            throw cRuntimeError("Error sending (%s)%s: The duration and remainingDuration send options are only allowed when "
+                                "sending through a transmission channel",
+                                msg->getClassName(), msg->getName());
+
+        if (deliverImmediately || !isTransmission)
+            pkt->setArrivalTime(t);
+        else {
+            pkt->setArrivalTime(t + pkt->getRemainingDuration());
+            pkt->setRemainingDuration(SimTime::ZERO);
+        }
+
+        if (isUpdate) {
+            if (deliverImmediately) {
+                if (!supportsTxUpdates())
+                    throw cRuntimeError("Transmission update message (%s)%s delivered to a module which is "
+                            "not prepared to handle transmission updates ((%s)%s); "
+                            "call setSupportsTxUpdates(true) in the initialization code of the module "
+                            "to turn off this check",
+                            msg->getClassName(), msg->getName(), getClassName(), getFullPath().c_str());
+            }
+            else {
+                // Original transmission (or last, now-obsolete update) must still be in the FES, remove it.
+                deleteObsoletedTransmissionFromFES(pkt->getOrigPacketId(), pkt);
+            }
+        }
     }
     else {
         msg->setArrivalTime(t);
     }
     getSimulation()->insertEvent(msg);
+}
+
+void cSimpleModule::deleteObsoletedTransmissionFromFES(long origPacketId, cPacket *updatePkt)
+{
+    // Linear search might seem like a poor choice, but alternatives (like maintaining
+    // an index) would also affect (slow down) simulations which don't use the updateTx
+    // feature at all, and also, deliver-at-end plus updates is a relatively rare combination
+    // so it doesn't need to be super optimal.
+    cPacket *obsoletedPacket = nullptr;
+    cFutureEventSet *fes = getSimulation()->getFES();
+    int n = fes->getLength();
+    for (int i = 0; i < n; i++) {
+        cEvent *event = fes->get(i);
+        if (event->isPacket()) {
+            cPacket *pkt = (cPacket *)event;
+            if (pkt && (pkt->getId() == origPacketId || pkt->getOrigPacketId() == origPacketId)) {
+                obsoletedPacket = pkt;
+                break;
+            }
+        }
+    }
+    if (!obsoletedPacket)
+        throw cRuntimeError("Cannot send transmission update packet (%s)%s with origPacketId=%ld "
+                            "to a gate with the default (=false) deliverImmediately setting: "
+                            "The original packet (or obsoleted update) identified by origPacketId "
+                            "was not found in the FES, so it is not possible to replace it with the "
+                            "update packet. Perhaps it has already been delivered to the target module. "
+                            "Possible solutions include sending the update earlier than the transmission end time, "
+                            "adding a propagation delay to the channel, and playing with event priorities "
+                            "to force a different event execution order",
+                            updatePkt->getClassName(), updatePkt->getName(), origPacketId);
+    delete fes->remove(obsoletedPacket);
 }
 
 void cSimpleModule::wait(simtime_t t)

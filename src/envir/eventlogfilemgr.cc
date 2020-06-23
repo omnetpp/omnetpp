@@ -267,18 +267,19 @@ void EventlogFileManager::recordMessages()
         if (msg->isSelfMessage())
             messageScheduled(msg);
         else if (!msg->getSenderGate()) {
-            beginSend(msg);
+            beginSend(msg, SendOptions::DEFAULT);
             if (msg->isPacket()) {
+                //TODO obey isUpdate etc
                 cPacket *packet = (cPacket *)msg;
                 simtime_t propagationDelay = packet->getArrivalTime() - packet->getSendingTime() - (packet->isReceptionStart() ? 0 : packet->getDuration());
-                messageSendDirect(msg, msg->getArrivalGate(), propagationDelay, packet->getDuration());
+                messageSendDirect(msg, msg->getArrivalGate(), cChannel::Result(propagationDelay, packet->getDuration()));
             }
             else
-                messageSendDirect(msg, msg->getArrivalGate(), 0, 0);
+                messageSendDirect(msg, msg->getArrivalGate(), cChannel::Result());
             endSend(msg);
         }
         else {
-            beginSend(msg);
+            beginSend(msg, SendOptions::DEFAULT);
             messageSendHop(msg, msg->getSenderGate());
             endSend(msg);
         }
@@ -390,26 +391,28 @@ void EventlogFileManager::bubble(cComponent *component, const char *text)
     }
 }
 
-void EventlogFileManager::beginSend(cMessage *msg)
+void EventlogFileManager::beginSend(cMessage *msg, const SendOptions& options)
 {
     if (isCombinedRecordingEnabled) {
         // TODO: record message display string as well?
         if (msg->isPacket()) {
             cPacket *pkt = (cPacket *)msg;
-            EventLogWriter::recordBeginSendEntry_id_tid_eid_etid_c_n_k_p_l_er_d_pe(feventlog,
+            EventLogWriter::recordBeginSendEntry_id_tid_eid_etid_c_n_k_p_l_er_d_pe_sd_op(feventlog,
                     pkt->getId(), pkt->getTreeId(), pkt->getEncapsulationId(), pkt->getEncapsulationTreeId(),
                     pkt->getClassName(), pkt->getFullName(),
                     pkt->getKind(), pkt->getSchedulingPriority(), pkt->getBitLength(), pkt->hasBitError(),
                     objectPrinter ? objectPrinter->printObjectToString(pkt).c_str() : nullptr,
-                    pkt->getPreviousEventNumber());
+                    pkt->getPreviousEventNumber(),
+                    options.sendDelay, options.origPacketId);
         }
         else {
-            EventLogWriter::recordBeginSendEntry_id_tid_eid_etid_c_n_k_p_l_er_d_pe(feventlog,
+            EventLogWriter::recordBeginSendEntry_id_tid_eid_etid_c_n_k_p_l_er_d_pe_sd_op(feventlog,
                     msg->getId(), msg->getTreeId(), msg->getId(), msg->getTreeId(),
                     msg->getClassName(), msg->getFullName(),
                     msg->getKind(), msg->getSchedulingPriority(), 0, false,
                     objectPrinter ? objectPrinter->printObjectToString(msg).c_str() : nullptr,
-                    msg->getPreviousEventNumber());
+                    msg->getPreviousEventNumber(),
+                    options.sendDelay, options.origPacketId);
         }
         entryIndex++;
         addPreviousEventNumber(msg->getPreviousEventNumber());
@@ -421,7 +424,7 @@ void EventlogFileManager::beginSend(cMessage *msg)
 void EventlogFileManager::messageScheduled(cMessage *msg)
 {
     if (isCombinedRecordingEnabled) {
-        EventlogFileManager::beginSend(msg);
+        EventlogFileManager::beginSend(msg, SendOptions::DEFAULT);
         EventlogFileManager::endSend(msg);
     }
 }
@@ -452,10 +455,11 @@ void EventlogFileManager::messageCancelled(cMessage *msg)
     }
 }
 
-void EventlogFileManager::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+void EventlogFileManager::messageSendDirect(cMessage *msg, cGate *toGate, const ChannelResult& result)
 {
     if (isCombinedRecordingEnabled) {
-        EventLogWriter::recordSendDirectEntry_sm_dm_dg_pd_td(feventlog, msg->getSenderModuleId(), toGate->getOwnerModule()->getId(), toGate->getId(), propagationDelay, transmissionDelay);
+        simtime_t remainingDuration = (msg->isPacket() && ((cPacket*)msg)->isUpdate()) ? result.remainingDuration : SimTime::ZERO; // suppress recording remainingDuration unless msg is tx update packet
+        EventLogWriter::recordSendDirectEntry_sm_dm_dg_pd_td_rd(feventlog, msg->getSenderModuleId(), toGate->getOwnerModule()->getId(), toGate->getId(), result.delay, result.duration, remainingDuration);
         entryIndex++;
     }
 }
@@ -468,10 +472,11 @@ void EventlogFileManager::messageSendHop(cMessage *msg, cGate *srcGate)
     }
 }
 
-void EventlogFileManager::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool discard)
+void EventlogFileManager::messageSendHop(cMessage *msg, cGate *srcGate, const cChannel::Result& result)
 {
     if (isCombinedRecordingEnabled) {
-        EventLogWriter::recordSendHopEntry_sm_sg_pd_td_del(feventlog, srcGate->getOwnerModule()->getId(), srcGate->getId(), propagationDelay, transmissionDelay, discard);
+        simtime_t remainingDuration = (msg->isPacket() && ((cPacket*)msg)->isUpdate()) ? result.remainingDuration : SimTime::ZERO; // suppress recording remainingDuration unless msg is tx update packet
+        EventLogWriter::recordSendHopEntry_sm_sg_pd_td_rd_del(feventlog, srcGate->getOwnerModule()->getId(), srcGate->getId(), result.delay, result.duration, remainingDuration, result.discard);
         entryIndex++;
     }
 }

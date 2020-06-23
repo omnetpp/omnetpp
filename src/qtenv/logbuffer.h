@@ -20,6 +20,7 @@
 #include <vector>
 #include <map>
 #include "omnetpp/simtime_t.h"
+#include "omnetpp/cchannel.h"
 #include "circularbuffer.h"
 #include "qtenvdefs.h"
 #include <QObject>
@@ -86,10 +87,10 @@ class QTENV_API LogBuffer : public QObject
     void addInfo(const char *text) { addInfo(text, strlen(text)); }
     void addInfo(const char *text, int len);
 
-    void beginSend(cMessage *msg);
-    void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay);
+    void beginSend(cMessage *msg, const SendOptions& options);
+    void messageSendDirect(cMessage *msg, cGate *toGate, const ChannelResult& result);
     void messageSendHop(cMessage *msg, cGate *srcGate);
-    void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool discard);
+    void messageSendHop(cMessage *msg, cGate *srcGate, const cChannel::Result& result);
     void endSend(cMessage *msg);
 
     void delivery(cMessage *msg); // doesn't matter if direct or not

@@ -17,6 +17,7 @@
 *--------------------------------------------------------------*/
 
 #include <algorithm>
+#include "omnetpp/cchannel.h"
 #include "omnetpp/cnullenvir.h"
 
 using namespace omnetpp;

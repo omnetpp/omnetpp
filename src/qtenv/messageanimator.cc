@@ -142,7 +142,7 @@ void MessageAnimator::methodcallEnd()
     updateAnimations();
 }
 
-void MessageAnimator::beginSend(cMessage *msg)
+void MessageAnimator::beginSend(cMessage *msg, const SendOptions& options)
 {
     ASSERT(!currentMessageSend);
     currentMessageSend = new AnimationSequence();
@@ -151,16 +151,16 @@ void MessageAnimator::beginSend(cMessage *msg)
     lastHopTime = msg->getSendingTime();
 }
 
-void MessageAnimator::sendDirect(cMessage *msg, cModule *srcModule, cGate *destGate, simtime_t prop, simtime_t trans)
+void MessageAnimator::sendDirect(cMessage *msg, cModule *srcModule, cGate *destGate, const cChannel::Result& result)
 {
     ASSERT(currentMessageSend);
     currentMessageSend->addAnimation(
-        (prop + trans).isZero()
+        (result.delay + result.duration).isZero()
             ? new SendDirectAnimation(srcModule, msg, destGate)
-            : new SendDirectAnimation(srcModule, msg, destGate, lastHopTime, prop, trans));
+            : new SendDirectAnimation(srcModule, msg, destGate, lastHopTime, result.delay, result.duration));
 
-    lastHopTime += prop;
-    lastHopTime += trans;
+    lastHopTime += result.delay;
+    lastHopTime += result.duration;
 }
 
 void MessageAnimator::sendHop(cMessage *msg, cGate *srcGate, bool isLastHop)
@@ -169,16 +169,16 @@ void MessageAnimator::sendHop(cMessage *msg, cGate *srcGate, bool isLastHop)
     currentMessageSend->addAnimation(new SendOnConnAnimation(srcGate, msg));
 }
 
-void MessageAnimator::sendHop(cMessage *msg, cGate *srcGate, bool isLastHop, simtime_t prop, simtime_t trans, bool discard)
+void MessageAnimator::sendHop(cMessage *msg, cGate *srcGate, bool isLastHop, const cChannel::Result& result)
 {
     ASSERT(currentMessageSend);
-    if ((prop + trans).isZero())
+    if ((result.delay + result.duration).isZero())
         sendHop(msg, srcGate, isLastHop);
     else
-        currentMessageSend->addAnimation(new SendOnConnAnimation(srcGate, msg, lastHopTime, prop, trans, discard));
+        currentMessageSend->addAnimation(new SendOnConnAnimation(srcGate, msg, lastHopTime, result.delay, result.duration, result.discard));
 
-    lastHopTime += prop;
-    lastHopTime += trans;
+    lastHopTime += result.delay;
+    lastHopTime += result.duration;
 }
 
 void MessageAnimator::endSend(cMessage *msg)

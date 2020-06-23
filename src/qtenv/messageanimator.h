@@ -24,6 +24,7 @@
 #include <utility>
 #include <functional>
 #include <QGraphicsRectItem>
+#include "omnetpp/cchannel.h"
 #include "omnetpp/simtime_t.h"
 #include "qtutil.h"
 
@@ -109,10 +110,10 @@ public:
     void methodcallBegin(cComponent *fromComp, cComponent *toComp, const char *methodText, bool silent);
     void methodcallEnd();
 
-    void beginSend(cMessage *msg);
-    void sendDirect(cMessage *msg, cModule *srcModule, cGate *destGate, simtime_t prop, simtime_t trans);
+    void beginSend(cMessage *msg, const SendOptions& options);
+    void sendDirect(cMessage *msg, cModule *srcModule, cGate *destGate, const cChannel::Result& result);
     void sendHop(cMessage *msg, cGate *srcGate, bool isLastHop);
-    void sendHop(cMessage *msg, cGate *srcGate, bool isLastHop, simtime_t prop, simtime_t trans, bool discard);
+    void sendHop(cMessage *msg, cGate *srcGate, bool isLastHop, const cChannel::Result& result);
     void endSend(cMessage *msg);
 
     void deliveryDirect(cMessage *msg);

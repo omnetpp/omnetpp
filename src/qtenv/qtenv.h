@@ -220,10 +220,10 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       virtual void simulationEvent(cEvent *event) override;
       virtual void messageScheduled(cMessage *msg) override;
       virtual void messageCancelled(cMessage *msg) override;
-      virtual void beginSend(cMessage *msg) override;
-      virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay) override;
+      virtual void beginSend(cMessage *msg, const SendOptions& options) override;
+      virtual void messageSendDirect(cMessage *msg, cGate *toGate, const ChannelResult& result) override;
       virtual void messageSendHop(cMessage *msg, cGate *srcGate) override;
-      virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool discard) override;
+      virtual void messageSendHop(cMessage *msg, cGate *srcGate, const cChannel::Result& result) override;
       virtual void endSend(cMessage *msg) override;
       virtual void messageDeleted(cMessage *msg) override;
       virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va, bool silent) override;

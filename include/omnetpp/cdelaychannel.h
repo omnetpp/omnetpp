@@ -101,11 +101,6 @@ class SIM_API cDelayChannel : public cChannel //implies noncopyable
      * The cDelayChannel implementation of this method always returns false.
      */
     virtual bool isBusy() const override {return false;}
-
-    /**
-     * The cDelayChannel implementation of this method does nothing.
-     */
-    virtual void forceTransmissionFinishTime(simtime_t t) override {}
     //@}
 
     /** @name Setting and getting channel parameters. */
@@ -145,7 +140,7 @@ class SIM_API cDelayChannel : public cChannel //implies noncopyable
      * This implementation delivers the message to the opposite gate
      * with a delay.
      */
-    virtual void processMessage(cMessage *msg, simtime_t t, result_t& result) override;
+    virtual Result processMessage(cMessage *msg, const SendOptions& options, simtime_t t) override;
     //@}
 };
 

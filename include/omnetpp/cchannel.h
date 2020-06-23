@@ -25,7 +25,20 @@ namespace omnetpp {
 
 class cGate;
 class cModule;
+struct SendOptions;
 
+/**
+ * @brief Allows returning multiple values from the processMessage() method.
+ */
+struct SIM_API ChannelResult
+{
+    bool discard = false;              ///< Whether the channel has lost the message
+    simtime_t delay = SIMTIME_ZERO;    ///< Propagation delay
+    simtime_t duration = SIMTIME_ZERO; ///< Transmission duration
+    simtime_t remainingDuration = SIMTIME_ZERO; ///< Remaining transmission duration (for tx update)
+    ChannelResult() {}
+    ChannelResult(simtime_t delay, simtime_t duration) : delay(delay), duration(duration) {}
+};
 
 /**
  * @brief Base class for channels.
@@ -65,18 +78,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     cChannel *getNextSibling() const {return nextSibling;}
 
   public:
-    /**
-     * @brief Allows returning multiple values from the processMessage() method.
-     *
-     * The constructor initializes all fields to zero.
-     */
-    struct result_t
-    {
-        result_t() : delay(SIMTIME_ZERO), duration(SIMTIME_ZERO), discard(false) {}
-        simtime_t delay;     ///< Propagation delay
-        simtime_t duration;  ///< Transmission duration
-        bool discard;        ///< Whether the channel has lost the message
-    };
+    typedef ChannelResult Result;
 
     /**
      * @brief Signal value that accompanies the "messageSent" signal.
@@ -86,12 +88,12 @@ class SIM_API cChannel : public cComponent //implies noncopyable
       public:
         simtime_t timestamp;
         cMessage *msg;
-        result_t *result;
+        Result *result;
       private:
         void error() const;
       public:
         /** Constructor. */
-        MessageSentSignalValue(simtime_t_cref t, cMessage *m, result_t *r) {timestamp=t; msg=m; result=r;}
+        MessageSentSignalValue(simtime_t_cref t, cMessage *m, Result *r) {timestamp=t; msg=m; result=r;}
 
         /** @name cITimestampedValue methods */
         //@{
@@ -109,7 +111,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
         cMessage *getMessage() const {return msg;}
 
         /** Returns the channel result. */
-        result_t *getChannelResult() const {return result;}
+        Result *getChannelResult() const {return result;}
 
         /** @name Other (non-cObject) getters throw an exception. */
         //@{
@@ -247,7 +249,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
      * or if the packet's duration field is already set; these checks are
      * done by the simulation kernel before processMessage() is called.
      */
-    virtual void processMessage(cMessage *msg, simtime_t t, result_t& result) = 0;
+    virtual Result processMessage(cMessage *msg, const SendOptions& options, simtime_t t) = 0;
 
     /**
      * For transmission channels: Returns the nominal data rate of the channel.
@@ -305,26 +307,6 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     virtual bool isBusy() const;
 
     /**
-     * For transmission channels: Forcibly overwrites the finish time of the
-     * current transmission in the channel (see getTransmissionFinishTime()).
-     *
-     * This method is a crude device that allows for implementing aborting
-     * transmissions; it is not needed for normal packet transmissions.
-     * Calling this method with the current simulation time will allow
-     * you to immediately send another packet on the channel without the
-     * channel reporting error due to its being busy.
-     *
-     * Note that this call does NOT affect the delivery of the packet being
-     * transmitted: the packet object is delivered to the target module
-     * at the time it would without the call to this method. The sender
-     * needs to inform the target module in some other way that the
-     * transmission was aborted and the packet should be treated accordingly
-     * (i.e. discarded as incomplete); for example by sending an out-of-band
-     * cMessage that the receiver has to understand.
-     */
-    virtual void forceTransmissionFinishTime(simtime_t t) = 0;
-
-    /**
      * Returns whether the channel is disabled.
      * A disabled channel discards all messages sent on it.
      */
@@ -368,7 +350,7 @@ class SIM_API cIdealChannel : public cChannel //implies noncopyable
     /**
      * The cIdealChannel implementation of this method does nothing.
      */
-    virtual void processMessage(cMessage *msg, simtime_t t, result_t& result) override {}
+    virtual Result processMessage(cMessage *msg, const SendOptions& options, simtime_t t) override {return Result();}
 
     /**
      * The cIdealChannel implementation of this method does nothing.
@@ -394,11 +376,6 @@ class SIM_API cIdealChannel : public cChannel //implies noncopyable
      * The cIdealChannel implementation of this method always returns false.
      */
     virtual bool isBusy() const override {return false;}
-
-    /**
-     * The cIdealChannel implementation of this method does nothing.
-     */
-    virtual void forceTransmissionFinishTime(simtime_t t) override {}
     //@}
 };
 
