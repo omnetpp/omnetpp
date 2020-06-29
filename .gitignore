@@ -31,8 +31,6 @@
 .tkenvlog
 *.cmdenv-log
 .qtenvrc
-.project
-.cproject
 lex.*yy.cc
 /tools
 /msys
