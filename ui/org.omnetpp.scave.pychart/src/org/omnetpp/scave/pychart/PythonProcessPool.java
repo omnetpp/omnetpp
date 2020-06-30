@@ -70,7 +70,9 @@ public class PythonProcessPool {
         if (PythonProcess.debug)
             Debug.println("connecting...");
 
-        ClientServer clientServer = new ClientServer.ClientServerBuilder().javaPort(0).pythonPort(0).readTimeout(1000).build();
+        // readTimeout must be >1 sec, because the default FinalizerWorker sleep duration is 1 sec (on the Python side),
+        // and in some cases that delays a reply, and we must not time out until the next iteration of that thread.
+        ClientServer clientServer = new ClientServer.ClientServerBuilder().javaPort(0).pythonPort(0).readTimeout(1500).build();
 
         int javaPort = clientServer.getJavaServer().getListeningPort();
         if (PythonProcess.debug)
