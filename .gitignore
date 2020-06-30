@@ -22,6 +22,7 @@
 *.pyc
 *.out
 .ccls-cache
+.clangd
 .vscode/ipch
 */__pycache__/*
 *.gdb_history
