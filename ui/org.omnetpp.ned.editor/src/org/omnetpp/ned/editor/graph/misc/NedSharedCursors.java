@@ -1,6 +1,7 @@
 package org.omnetpp.ned.editor.graph.misc;
 
 import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.Image;
 import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.eclipse.jface.resource.ImageDescriptor;
 
@@ -31,20 +32,14 @@ public class NedSharedCursors extends Cursors {
     public static final Cursor CURSOR_TREE_MOVE;
 
     static {
-        CURSOR_PLUG = createCursor("cursors/plug.bmp", //$NON-NLS-1$
-                "cursors/plugmask.gif"); //$NON-NLS-1$
-        CURSOR_PLUG_NOT = createCursor("cursors/plugnot.bmp", //$NON-NLS-1$
-                "cursors/plugmasknot.gif"); //$NON-NLS-1$
-        CURSOR_TREE_ADD = createCursor("cursors/Tree_Add.gif", //$NON-NLS-1$
-                "cursors/Tree_Add_Mask.gif"); //$NON-NLS-1$
-        CURSOR_TREE_MOVE = createCursor("cursors/Tree_Move.gif", //$NON-NLS-1$
-                "cursors/Tree_Move_Mask.gif"); //$NON-NLS-1$
+        CURSOR_PLUG = createCursor("cursors/plug.gif"); //$NON-NLS-1$
+        CURSOR_PLUG_NOT = createCursor("cursors/plug_not.gif"); //$NON-NLS-1$
+        CURSOR_TREE_ADD = createCursor("cursors/tree_add.gif"); //$NON-NLS-1$
+        CURSOR_TREE_MOVE = createCursor("cursors/tree_move.gif"); //$NON-NLS-1$
     }
 
-    private static Cursor createCursor(String sourceName, String maskName) {
-        ImageDescriptor src = NedEditorPlugin.getImageDescriptor(sourceName);
-        ImageDescriptor mask = NedEditorPlugin.getImageDescriptor(maskName);
-        return new Cursor(null, src.getImageData(100), mask.getImageData(100), 0, 0);
+    private static Cursor createCursor(String sourceName) {
+        Image src = NedEditorPlugin.getImage(sourceName);
+        return new Cursor(null, src.getImageData(), 0, 0);
     }
-
 }
