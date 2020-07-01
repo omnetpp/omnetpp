@@ -382,7 +382,7 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
 
             // compound fields
             case EVENT_OBJECT: {
-                if (ev->getCurrentEventName())
+                if (ev->getCurrentEventName() && ev->getCurrentEventClassName())
                     stream << "(" << ev->getCurrentEventClassName() << ")" << ev->getCurrentEventName();
                 else
                     lastPartEmpty = true;
