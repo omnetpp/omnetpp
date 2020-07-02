@@ -1108,7 +1108,9 @@ void TextViewerWidget::drawLine(QPainter& painter, int lineIndex, int x, int y, 
             // background if needed
             if (curBgColor.isValid()) {
                 QRect bgRect(x+1, y, sectionPosition - x, lineSpacing);
-                painter.fillRect(bgRect, asSelected ? selectionBackgroundColor : curBgColor);
+                // width might be negative if the text in the preceding section pushed the text in this section a bit to the right
+                if (bgRect.isValid())
+                    painter.fillRect(bgRect, asSelected ? selectionBackgroundColor : curBgColor);
             }
 
             if (x < sectionPosition)
