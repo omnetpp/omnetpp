@@ -147,6 +147,7 @@ public:
     virtual ~Animation();
 };
 
+// A composite animation that plays several child animations (parts) one-by-one, in a sequence.
 class QTENV_API AnimationSequence : public Animation
 {
 protected:
@@ -202,6 +203,52 @@ public:
 
     ~AnimationSequence() override;
 };
+
+// A composite animation that plays several child animations (parts) concurrently;
+// beginning them all at once, and letting them finish in their own pace.
+class QTENV_API AnimationGroup : public Animation
+{
+protected:
+    std::vector<Animation *> parts;
+
+public:
+    explicit AnimationGroup() : Animation() { }
+
+    const std::vector<Animation *>& getParts() const { return parts; }
+
+    virtual void addAnimation(Animation *a);
+
+    // Returns true if any holding parts are still playing.
+    bool isHolding() const override;
+
+    void init() override;
+    void begin() override;
+    void update() override;
+    void end() override;
+    void cleanup() override;
+
+    // These are applied to the parts.
+    void addToInspector(Inspector *insp) override;
+    void updateInInspector(Inspector *insp) override;
+    void removeFromInspector(Inspector *insp) override;
+
+    bool isEmpty() const override { return parts.empty(); }
+
+    bool willAnimate(cMessage *msg) override;
+
+    void messageDuplicated(cMessage *msg, cMessage *dup) override;
+    void removeMessagePointer(cMessage *msg) override;
+
+    QString str() const override;
+
+    // This is cheating a bit, since the order of parts shouldn't have any significance
+    // in AnimationGroup; but as it is only used for broadcast animation, and the parts
+    // will happen to be in the "right" order anyways, it should be good enough.
+    int getSourceModuleId() override { return parts.empty() ? -1 : parts[0]->getSourceModuleId(); }
+
+    ~AnimationGroup() override;
+};
+
 
 class QTENV_API MethodcallAnimation : public Animation
 {

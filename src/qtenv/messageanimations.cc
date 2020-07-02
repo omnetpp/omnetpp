@@ -370,6 +370,110 @@ AnimationSequence::~AnimationSequence()
         delete p;
 }
 
+//  -------- AnimationGroup functions  --------
+
+void AnimationGroup::addAnimation(Animation *a)
+{
+    ASSERT2(state == PENDING, "modifying the AnimationGroup after it was started is not supported");
+    parts.push_back(a);
+}
+
+bool AnimationGroup::isHolding() const
+{
+    for (Animation *p : parts)
+        if (p->getState() == PLAYING && p->isHolding())
+            return true;
+    return false;
+}
+
+void AnimationGroup::init()
+{
+    Animation::init();
+    for (Animation *p : parts)
+        p->init();
+}
+
+void AnimationGroup::begin()
+{
+    Animation::begin();
+    for (Animation *p : parts)
+        p->begin();
+}
+
+void AnimationGroup::update()
+{
+    Animation::update();
+    for (Animation *p : parts)
+        if (p->getState() == PLAYING) // some may have ended on their own already
+            p->update();
+}
+
+void AnimationGroup::end()
+{
+    Animation::end();
+    for (Animation *p : parts)
+        p->end();
+}
+
+void AnimationGroup::cleanup()
+{
+    Animation::cleanup();
+    for (Animation *p : parts)
+        p->cleanup();
+}
+
+void AnimationGroup::addToInspector(Inspector *insp)
+{
+    for (Animation *p : parts)
+        p->addToInspector(insp);
+}
+
+void AnimationGroup::updateInInspector(Inspector *insp)
+{
+    for (Animation *p : parts)
+        p->updateInInspector(insp);
+}
+
+void AnimationGroup::removeFromInspector(Inspector *insp)
+{
+    for (Animation *p : parts)
+        p->removeFromInspector(insp);
+}
+
+bool AnimationGroup::willAnimate(cMessage *msg)
+{
+    for (Animation *p : parts)
+        if (p->willAnimate(msg))
+            return true;
+    return false;
+}
+
+void AnimationGroup::messageDuplicated(cMessage *msg, cMessage *dup)
+{
+    for (Animation *p : parts)
+        p->messageDuplicated(msg, dup);
+}
+
+void AnimationGroup::removeMessagePointer(cMessage *msg)
+{
+    for (Animation *p : parts)
+        p->removeMessagePointer(msg);
+}
+
+QString AnimationGroup::str() const
+{
+    QString result = QString("Animation Group of ") + QString::number(parts.size()) + " parts:\n";
+    for (const auto &p : parts)
+        result += "   " + p->str() + "\n";
+    return result;
+}
+
+AnimationGroup::~AnimationGroup()
+{
+    for (Animation *p : parts)
+        delete p;
+}
+
 //  -------- MethodcallAnimation functions  --------
 
 MethodcallAnimation::MethodcallAnimation(cComponent *src, cComponent *dest, const char *text, bool silent)
