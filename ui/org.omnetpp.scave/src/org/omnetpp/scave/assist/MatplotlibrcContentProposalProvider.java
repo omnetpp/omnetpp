@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.omnetpp.common.contentassist.ContentProposalEx;
 import org.omnetpp.common.contentassist.ContentProposalProviderBase;
@@ -22,7 +23,9 @@ public class MatplotlibrcContentProposalProvider extends ContentProposalProvider
         if (rcParams == null)
             return new IContentProposal[0];
 
-        String completionPrefix = getLinePrefix(contents, position).stripLeading();
+        String completionPrefix = getLinePrefix(contents, position);
+        // XXX: could just use .stripLeading() instead, in Java 11
+        completionPrefix = StringUtils.stripStart(completionPrefix, " \t\n\r");
 
         List<IContentProposal> proposals = new ArrayList<>();
         if (!completionPrefix.contains(":")) {
