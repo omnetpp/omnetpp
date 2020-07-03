@@ -102,6 +102,8 @@ typedef int pid_t;
 #undef max
 #undef ERROR
 #undef SEVERITY_ERROR
+#undef TRUE
+#undef FALSE
 
 // use Windows.h Sleep() on visualc compiler
 #if defined(_MSC_VER)
