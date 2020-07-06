@@ -51,17 +51,17 @@ protected:
 public:
     ResultsPickler(ResultFileManager *rfm, ShmSendBufferManager *shmManager, InterruptedFlag *interrupted=nullptr) : rfm(rfm), shmManager(shmManager), interrupted(interrupted?interrupted:&dummy) {}
 
-    ShmSendBuffer *getCsvResultsPickle(const char *filterExpression, std::vector<std::string> rowTypes, bool omitUnusedColumns, double simTimeStart, double simTimeEnd);
-    ShmSendBuffer *getCsvResultsPickle(const IDList& results, std::vector<std::string> rowTypes, bool omitUnusedColumns, double simTimeStart, double simTimeEnd);
+    std::vector<ShmSendBuffer *> getCsvResultsPickle(const char *filterExpression, std::vector<std::string> rowTypes, bool omitUnusedColumns, double simTimeStart, double simTimeEnd);
+    std::vector<ShmSendBuffer *> getCsvResultsPickle(const IDList& results, std::vector<std::string> rowTypes, bool omitUnusedColumns, double simTimeStart, double simTimeEnd);
 
     ShmSendBuffer *getScalarsPickle(const char *filterExpression, bool includeAttrs);
-    ShmSendBuffer *getVectorsPickle(const char *filterExpression, bool includeAttrs, double simTimeStart, double simTimeEnd);
+    std::vector<ShmSendBuffer *> getVectorsPickle(const char *filterExpression, bool includeAttrs, double simTimeStart, double simTimeEnd);
     ShmSendBuffer *getStatisticsPickle(const char *filterExpression, bool includeAttrs);
     ShmSendBuffer *getHistogramsPickle(const char *filterExpression, bool includeAttrs);
     ShmSendBuffer *getParamValuesPickle(const char *filterExpression, bool includeAttrs);
 
     ShmSendBuffer *getScalarsPickle(const IDList& scalars, bool includeAttrs);
-    ShmSendBuffer *getVectorsPickle(const IDList& vectors, bool includeAttrs, double simTimeStart, double simTimeEnd);
+    std::vector<ShmSendBuffer *> getVectorsPickle(const IDList& vectors, bool includeAttrs, double simTimeStart, double simTimeEnd);
     ShmSendBuffer *getStatisticsPickle(const IDList& statistics, bool includeAttrs);
     ShmSendBuffer *getHistogramsPickle(const IDList& histograms, bool includeAttrs);
     ShmSendBuffer *getParamValuesPickle(const IDList& params, bool includeAttrs);

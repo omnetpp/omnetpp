@@ -1,8 +1,10 @@
 package org.omnetpp.scave.editors;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.Debug;
 import org.omnetpp.scave.editors.MemoizationCache.Key;
 import org.omnetpp.scave.engine.ByteVector;
@@ -12,6 +14,7 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultsPickler;
 import org.omnetpp.scave.engine.ShmSendBuffer;
 import org.omnetpp.scave.engine.ShmSendBufferManager;
+import org.omnetpp.scave.engine.ShmSendBufferVector;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.pychart.IScaveResultsPickleProvider;
 import org.omnetpp.scave.pychart.PythonProcess;
@@ -52,11 +55,17 @@ public class ResultsProvider implements IScaveResultsPickleProvider {
         ShmSendBuffer call() throws PickleException, IOException;
     };
 
+    private interface PicklerFunctionVec {
+        ShmSendBufferVector call() throws PickleException, IOException;
+    };
+
     private String memoize(Key key, PicklerFunction pickler) throws PickleException, IOException {
-        ByteVector cachedReply = memoizationCache.get(key);
+        List<ByteVector> cachedReply = memoizationCache.get(key);
+
         if (cachedReply != null) {
+            Assert.isTrue(cachedReply.size() == 1);
             Debug.println("ResultsProvider." + key.getMethodName() + ": returning memoized reply");
-            return sendBufferManager.create("memoized", cachedReply).getNameAndSize();
+            return sendBufferManager.create("memoized", cachedReply.get(0)).getNameAndSize();
         }
         else {
             Debug.println("ResultsProvider." + key.getMethodName() + ": computing and memoizing reply");
@@ -64,6 +73,28 @@ public class ResultsProvider implements IScaveResultsPickleProvider {
             memoizationCache.put(key, pickle.getContentCopy());
             return pickle.getNameAndSize();
         }
+    }
+
+    private List<String> memoize(Key key, PicklerFunctionVec pickler) throws PickleException, IOException {
+        List<ByteVector> cachedReply = memoizationCache.get(key);
+        List<String> result = new ArrayList<String>();
+        if (cachedReply != null) {
+            Debug.println("ResultsProvider." + key.getMethodName() + ": returning memoized reply");
+            for (int i = 0; i < cachedReply.size(); ++i)
+                result.add(sendBufferManager.create("memoized", cachedReply.get(i)).getNameAndSize());
+        }
+        else {
+            Debug.println("ResultsProvider." + key.getMethodName() + ": computing and memoizing reply");
+            ShmSendBufferVector pickles = Debug.timed("ResultsProvider." + key.getMethodName(), 100, () -> pickler.call());
+            List<ByteVector> intoCache = new ArrayList<>();
+            for (int i = 0; i < pickles.size(); ++i) {
+                ShmSendBuffer buf = pickles.get(i);
+                result.add(buf.getNameAndSize());
+                intoCache.add(buf.getContentCopy());
+            }
+            memoizationCache.put(key, intoCache);
+        }
+        return result;
     }
 
     public int getSerial() {
@@ -122,16 +153,18 @@ public class ResultsProvider implements IScaveResultsPickleProvider {
         return memoize(key, () -> pickler.getConfigEntriesForRunsPickle(toStringVector(runIDs)));
     }
 
-    public String getResultsPickle(String filterExpression, List<String> rowTypes, boolean omitUnusedColumns, double simTimeStart, double simTimeEnd) throws PickleException, IOException {
-        int allTypes = ResultFileManager.PARAMETER | ResultFileManager.SCALAR | ResultFileManager.VECTOR | ResultFileManager.STATISTICS | ResultFileManager.HISTOGRAM;
-        //TODO: cannot memoize due to the embedded vecx/vecy shmems (as we don't know about them)
-        IDList idList = filterCache.getFilterResult(allTypes, filterExpression);
-        if (idList == null) {
-            // TODO: should the GUI switch for including fields matter here? is that handled elsewhere?
-            idList = manager.filterIDList(manager.getAllItems(true), filterExpression);
-            filterCache.putFilterResult(allTypes, filterExpression, idList);
-        }
-        return pickler.getCsvResultsPickle(idList, toStringVector(rowTypes), omitUnusedColumns, simTimeStart, simTimeEnd).getNameAndSize();
+    public List<String> getResultsPickle(String filterExpression, List<String> rowTypes, boolean omitUnusedColumns, double simTimeStart, double simTimeEnd) throws PickleException, IOException {
+        Key key = new Key("getResultsPickle", filterExpression, rowTypes, omitUnusedColumns, simTimeStart, simTimeEnd);
+        List<String> names = memoize(key, (PicklerFunctionVec) () -> {
+            int allTypes = ResultFileManager.PARAMETER | ResultFileManager.SCALAR | ResultFileManager.VECTOR | ResultFileManager.STATISTICS | ResultFileManager.HISTOGRAM;
+            IDList idList = filterCache.getFilterResult(allTypes, filterExpression);
+            if (idList == null) {
+                // TODO: should the GUI switch for including fields matter here? is that handled elsewhere?
+                idList = manager.filterIDList(manager.getAllItems(true), filterExpression); // no need to cache, as result will be (likely) memoized
+            }
+            return pickler.getCsvResultsPickle(idList, toStringVector(rowTypes), omitUnusedColumns, simTimeStart, simTimeEnd);
+        });
+        return names;
     }
 
     @Override
@@ -158,14 +191,15 @@ public class ResultsProvider implements IScaveResultsPickleProvider {
     }
 
     @Override
-    public String getVectorsPickle(String filterExpression, boolean includeAttrs, double simTimeStart, double simTimeEnd) throws PickleException, IOException {
-        //TODO: cannot memoize due to the embedded vecx/vecy shmems (as we don't know about them)
-        IDList idList = filterCache.getFilterResult(ResultFileManager.VECTOR, filterExpression);
-        if (idList == null) {
-            idList = manager.filterIDList(manager.getAllVectors(), filterExpression, -1, interrupted);
-            filterCache.putFilterResult(ResultFileManager.VECTOR, filterExpression, idList);
-        }
-        return pickler.getVectorsPickle(filterExpression, includeAttrs, simTimeStart, simTimeEnd).getNameAndSize();
+    public List<String> getVectorsPickle(String filterExpression, boolean includeAttrs, double simTimeStart, double simTimeEnd) throws PickleException, IOException {
+        Key key = new Key("getVectorsPickle", filterExpression, includeAttrs, simTimeStart, simTimeEnd);
+        List<String> names = memoize(key, (PicklerFunctionVec) () -> {
+            IDList idList = filterCache.getFilterResult(ResultFileManager.VECTOR, filterExpression);
+            if (idList == null)
+                idList = manager.filterIDList(manager.getAllVectors(), filterExpression, -1, interrupted); // no need to cache, as result will be (likely) memoized
+            return pickler.getVectorsPickle(filterExpression, includeAttrs, simTimeStart, simTimeEnd);
+        });
+        return names;
     }
 
     @Override

@@ -108,7 +108,7 @@ void ResultsPickler::pickleResultAttrs(Pickler& p, const IDList& resultIDs)
     p.endList();
 }
 
-ShmSendBuffer *ResultsPickler::getCsvResultsPickle(const char *filterExpression, std::vector<std::string> rowTypes, bool omitUnusedColumns, double simTimeStart, double simTimeEnd)
+std::vector<ShmSendBuffer *> ResultsPickler::getCsvResultsPickle(const char *filterExpression, std::vector<std::string> rowTypes, bool omitUnusedColumns, double simTimeStart, double simTimeEnd)
 {
     if (opp_isempty(filterExpression))
         return getCsvResultsPickle(IDList(), rowTypes, omitUnusedColumns, simTimeStart, simTimeEnd);
@@ -120,7 +120,7 @@ ShmSendBuffer *ResultsPickler::getCsvResultsPickle(const char *filterExpression,
 }
 
 
-ShmSendBuffer *ResultsPickler::getCsvResultsPickle(const IDList& results, std::vector<std::string> rowTypes, bool omitUnusedColumns, double simTimeStart, double simTimeEnd)
+std::vector<ShmSendBuffer *> ResultsPickler::getCsvResultsPickle(const IDList& results, std::vector<std::string> rowTypes, bool omitUnusedColumns, double simTimeStart, double simTimeEnd)
 {
     bool addRunAttrs, addIterVars, addConfigEntries, addScalars, addVectors, addStatistics, addHistograms, addParams, addAttrs;
 
@@ -144,6 +144,8 @@ ShmSendBuffer *ResultsPickler::getCsvResultsPickle(const IDList& results, std::v
         (addParams     ? ResultFileManager::PARAMETER  : 0);
 
 
+    std::vector<ShmSendBuffer *> buffers; // to store the vector data buffers
+    buffers.push_back(nullptr); // to be overwritten by the pickle itself
     ShmPickler p(shmManager->create("results", 0, true), getSizeLimit());
     ShmCleaner shmCleaner;
 
@@ -271,8 +273,10 @@ ShmSendBuffer *ResultsPickler::getCsvResultsPickle(const IDList& results, std::v
 
                     shmCleaner.add(shmBuffers);
 
-                    p.pushString(shmBuffers.first->getNameAndSize()); // vectime
-                    p.pushString(shmBuffers.second->getNameAndSize()); // vecvalue
+                    p.pushInt(buffers.size());
+                    buffers.push_back(shmBuffers.first); // vectime
+                    p.pushInt(buffers.size());
+                    buffers.push_back(shmBuffers.second); // vecvalue
 
                     break;
                 }
@@ -345,7 +349,8 @@ ShmSendBuffer *ResultsPickler::getCsvResultsPickle(const IDList& results, std::v
     p.stop();
 
     shmCleaner.releaseAll();
-    return p.get();
+    buffers[0] = p.get();
+    return buffers;
 }
 
 ShmSendBuffer *ResultsPickler::getScalarsPickle(const char *filterExpression, bool includeAttrs)
@@ -359,7 +364,7 @@ ShmSendBuffer *ResultsPickler::getScalarsPickle(const char *filterExpression, bo
     }
 }
 
-ShmSendBuffer *ResultsPickler::getVectorsPickle(const char *filterExpression, bool includeAttrs, double simTimeStart, double simTimeEnd)
+std::vector<ShmSendBuffer *> ResultsPickler::getVectorsPickle(const char *filterExpression, bool includeAttrs, double simTimeStart, double simTimeEnd)
 {
     if (opp_isempty(filterExpression))
         return getVectorsPickle(IDList(), includeAttrs, simTimeStart, simTimeEnd);
@@ -443,11 +448,13 @@ ShmSendBuffer *ResultsPickler::getScalarsPickle(const IDList& scalars, bool incl
 }
 
 
-ShmSendBuffer *ResultsPickler::getVectorsPickle(const IDList& vectors, bool includeAttrs, double simTimeStart, double simTimeEnd)
+std::vector<ShmSendBuffer *> ResultsPickler::getVectorsPickle(const IDList& vectors, bool includeAttrs, double simTimeStart, double simTimeEnd)
 {
     size_t sizeLimit = getSizeLimit();
     ShmPickler p(shmManager->create("vectors", 0, true), sizeLimit);
 
+    std::vector<ShmSendBuffer *> buffers; // to store the vector data buffers
+    buffers.push_back(nullptr); // to be overwritten by the pickle itself
     ShmCleaner shmCleaner;
 
     p.protocol();
@@ -466,8 +473,10 @@ ShmSendBuffer *ResultsPickler::getVectorsPickle(const IDList& vectors, bool incl
 
         shmCleaner.add(shmBuffers);
 
-        p.pushString(shmBuffers.first->getNameAndSize()); // vectime
-        p.pushString(shmBuffers.second->getNameAndSize()); // vecvalue
+        p.pushInt(buffers.size());
+        buffers.push_back(shmBuffers.first); // vectime
+        p.pushInt(buffers.size());
+        buffers.push_back(shmBuffers.second); // vecvalue
 
         p.endTuple();
 
@@ -487,7 +496,8 @@ ShmSendBuffer *ResultsPickler::getVectorsPickle(const IDList& vectors, bool incl
     p.stop();
 
     shmCleaner.releaseAll();
-    return p.get();
+    buffers[0] = p.get();
+    return buffers;
 }
 
 

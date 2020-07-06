@@ -2,6 +2,7 @@ package org.omnetpp.scave.editors;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
@@ -54,7 +55,7 @@ public class MemoizationCache {
         }
     }
 
-    private Map<Key,ByteVector> cache = new LinkedHashMap<>(); // for FIFO order
+    private Map<Key,List<ByteVector>> cache = new LinkedHashMap<>(); // for FIFO order
 
     public MemoizationCache(ResultFileManager rfm) {
         this(rfm, Long.MAX_VALUE);
@@ -79,7 +80,7 @@ public class MemoizationCache {
         return cache.containsKey(key);
     }
 
-    public ByteVector get(Key key) {
+    public List<ByteVector> get(Key key) {
         checkSerial();
         return cache.get(key);
     }
@@ -93,13 +94,26 @@ public class MemoizationCache {
         checkSerial();
         Assert.isTrue(reply.size() <= memoryLimit);
         memoryUsed += reply.size();
+        cache.put(key, List.of(reply));
+        while (memoryUsed > memoryLimit)
+            discardFirst();
+    }
+
+    public void put(Key key, List<ByteVector> reply) {
+        // note: using this API, memory consumption can temporarily exceed memoryLimit
+        checkSerial();
+        long totalSize = 0;
+        for (ByteVector v : reply)
+            totalSize += v.size();
+        memoryUsed += totalSize;
+        Assert.isTrue(totalSize <= memoryLimit);
         cache.put(key, reply);
         while (memoryUsed > memoryLimit)
             discardFirst();
     }
 
     private void discardFirst() {
-        Map.Entry<Key,ByteVector> entry = cache.entrySet().iterator().next();
+        Map.Entry<Key,List<ByteVector>> entry = cache.entrySet().iterator().next();
         memoryUsed -= entry.getValue().size();
         cache.remove(entry.getKey());
     }

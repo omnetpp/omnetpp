@@ -1,6 +1,6 @@
+import math
 import pandas as pd
 import numpy as np
-from math import inf
 import platform
 import pickle
 
@@ -98,11 +98,11 @@ def _get_array_from_shm(name_and_size : str):
     return arr
 
 
-def get_results(filter_expression="", row_types=['runattr', 'itervar', 'config', 'scalar', 'vector', 'statistic', 'histogram', 'param', 'attr'], omit_unused_columns=True, start_time=-inf, end_time=inf):
-    shmname = Gateway.results_provider.getResultsPickle(filter_expression, list(row_types), bool(omit_unused_columns), float(start_time), float(end_time))
-    results = _load_pickle_from_shm(shmname)
+def get_results(filter_expression="", row_types=['runattr', 'itervar', 'config', 'scalar', 'vector', 'statistic', 'histogram', 'param', 'attr'], omit_unused_columns=True, start_time=-math.inf, end_time=math.inf):
+    shmnames = Gateway.results_provider.getResultsPickle(filter_expression, list(row_types), bool(omit_unused_columns), float(start_time), float(end_time))
+    results = _load_pickle_from_shm(shmnames[0])
 
-    df = pd.DataFrame(results, columns=[
+    df = pd.DataFrame.from_records(results, columns=[
         "runID", "type", "module", "name", "attrname", "attrvalue",
         "value", "count", "sumweights", "mean", "stddev", "min", "max",
         "underflows", "overflows", "binedges", "binvalues", "vectime", "vecvalue"])
@@ -110,8 +110,14 @@ def get_results(filter_expression="", row_types=['runattr', 'itervar', 'config',
     df["binedges"] = df["binedges"].map(lambda v: np.frombuffer(v, dtype=np.double), na_action='ignore')
     df["binvalues"] = df["binvalues"].map(lambda v: np.frombuffer(v, dtype=np.double), na_action='ignore')
 
-    df["vectime"] = df["vectime"].map(_get_array_from_shm)
-    df["vecvalue"] = df["vecvalue"].map(_get_array_from_shm)
+    def getter(v):
+        # skip lines that aren't vectors
+        if v is None or math.isnan(v):
+            return v
+        return _get_array_from_shm(shmnames[int(v)])
+
+    df["vectime"] = df["vectime"].map(getter)
+    df["vecvalue"] = df["vecvalue"].map(getter)
 
     if omit_unused_columns:  # maybe do this in Java?
         df.dropna(axis='columns', how='all', inplace=True)
@@ -228,13 +234,16 @@ def get_parameters(filter_expression="", include_attrs=False, include_runattrs=F
     return df
 
 
-def get_vectors(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False, start_time=-inf, end_time=inf):
-    shmname = Gateway.results_provider.getVectorsPickle(filter_expression, include_attrs, start_time, end_time)
-    vectors, attrs = _load_pickle_from_shm(shmname)
+def get_vectors(filter_expression="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, merge_module_and_name=False, start_time=-math.inf, end_time=math.inf):
+    shmnames = Gateway.results_provider.getVectorsPickle(filter_expression, include_attrs, start_time, end_time)
+    vectors, attrs = _load_pickle_from_shm(shmnames[0])
     df = pd.DataFrame(vectors, columns=["runID", "module", "name", "vectime", "vecvalue"])
 
-    df["vectime"] = df["vectime"].map(_get_array_from_shm)
-    df["vecvalue"] = df["vecvalue"].map(_get_array_from_shm)
+    def getter(v):
+        return _get_array_from_shm(shmnames[int(v)])
+
+    df["vectime"] = df["vectime"].map(getter)
+    df["vecvalue"] = df["vecvalue"].map(getter)
 
     df = _append_additional_data(df, attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
     if merge_module_and_name:
