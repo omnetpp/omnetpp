@@ -351,7 +351,7 @@ void TimeLineGraphicsView::paintMessages(QVector<cMessage *> messages, bool want
 
         // draw label
         if (enableMessageLabels && numRows > 0) {
-            QString label = msg->getName();
+            QString label = msg->getFullName();
             QGraphicsSimpleTextItem simpleText(label);
             simpleText.setFont(tickLabelFont);
             int labelWidth = simpleText.boundingRect().width();

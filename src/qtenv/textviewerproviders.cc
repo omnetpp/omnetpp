@@ -541,7 +541,7 @@ QString EventEntryMessageLinesProvider::getLineText(LogBuffer::Entry *entry, int
                 "\x1b[0m" // reset
                 ).arg(
                 eventNumber, entry->simtime.str().c_str(),
-                getRelevantHopsString(messageSend), msg->getName());
+                getRelevantHopsString(messageSend), msg->getFullName());
 
     cMessagePrinter *printer = chooseMessagePrinter(msg);
     std::stringstream os;

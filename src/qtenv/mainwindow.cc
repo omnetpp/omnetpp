@@ -682,7 +682,7 @@ void MainWindow::updateNextEventDisplay()
         long objId = getObjectId(msgptr);
         simtime_t nextTime = getSimulation()->guessNextEvent()->getArrivalTime();
         simtime_t diff = nextTime - getSimulation()->getSimTime();
-        ui->nextEventLabel->setText(QString("Next: ") + msgptr->getName() + " (" + msgptr->getClassName()
+        ui->nextEventLabel->setText(QString("Next: ") + msgptr->getFullName() + " (" + msgptr->getClassName()
                 +", id=" + (objId == -1 ? "" : QString::number(objId)) + ")");
         ui->nextTimeLabel->setText(QString("At: ") + nextTime.str().c_str() + "s (now+" + diff.str().c_str() + "s)");
     }

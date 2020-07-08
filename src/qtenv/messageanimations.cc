@@ -957,7 +957,7 @@ void SendDirectAnimation::removeFromInspector(Inspector *insp)
 QString SendDirectAnimation::str() const
 {
     cModule *src = getSimulation()->getModule(srcModuleId);
-    return QString("SendDirect ") + (msgToUse() ? msgToUse()->getName() : "nullptr") +
+    return QString("SendDirect ") + (msgToUse() ? msgToUse()->getFullName() : "nullptr") +
             + "from: " + (src ? src->getFullPath().c_str() : "<deleted>") + " to: " + dest->getFullPath().c_str()
             + " state: " + stateText[state];
 }

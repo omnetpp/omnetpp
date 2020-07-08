@@ -1859,7 +1859,7 @@ void Qtenv::messageCancelled(cMessage *msg)
 {
     if (msg == runUntil.msg && runUntil.stopOnMsgCancel) {
         if (simulationState == SIM_RUNNING || simulationState == SIM_BUSY)
-            confirm(INFO, opp_stringf("Run-until message '%s' got cancelled.", msg->getName()).c_str());
+            confirm(INFO, opp_stringf("Run-until message '%s' got cancelled.", msg->getFullName()).c_str());
         runUntil.msg = nullptr;
         runUntil.eventNumber = getSimulation()->getEventNumber();  // stop the simulation using the event number limit
     }

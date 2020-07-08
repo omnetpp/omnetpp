@@ -74,7 +74,7 @@ void WatchInspector::refresh()
 
     editor->setEnabled(watch->supportsAssignment());
     editor->setText(watch ? watch->str().c_str() : "n/a");
-    label->setText(watch ? (std::string(watch->getClassName())+" "+watch->getName()).c_str() : "n/a");
+    label->setText(watch ? (std::string(watch->getClassName())+" "+watch->getFullName()).c_str() : "n/a");
 }
 
 void WatchInspector::commit()
