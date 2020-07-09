@@ -116,7 +116,7 @@ class SIM_API cPrecollectionBasedDensityEst : public cAbstractHistogram
     virtual ~cPrecollectionBasedDensityEst();
 
     /**
-     * Assignment operator. The name member is not copied; see cNamedObject's operator=() for more details.
+     * Assignment operator. The name member is not copied; see cNamedObject::operator=() for details.
      */
     cPrecollectionBasedDensityEst& operator=(const cPrecollectionBasedDensityEst& res);
     //@}

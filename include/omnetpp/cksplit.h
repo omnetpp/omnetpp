@@ -211,7 +211,7 @@ class SIM_API cKSplit : public cPrecollectionBasedDensityEst
     virtual ~cKSplit();
 
     /**
-     * Assignment operator. The name member is not copied; see cNamedObject's operator=() for more details.
+     * Assignment operator. The name member is not copied; see cNamedObject::operator=() for details.
      */
     cKSplit& operator=(const cKSplit& res);
     //@}

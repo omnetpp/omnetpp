@@ -118,14 +118,14 @@ class SIM_API cException : public std::exception
     cException(const cObject *where, const char *msg,...);
 
     /**
-     * We unfortunately need to copy exception objects when handing them back
-     * from an activity().
+     * Copy constructor. We unfortunately need to copy exception objects when
+     * handing them back from an activity() method.
      */
     cException(const cException&);
 
     /**
-     * Virtual copy constructor. We unfortunately need to copy exception objects
-     * when handing them back from an activity().
+     * Creates and returns an exact copy of this object. We unfortunately need
+     * to copy exception objects when handing them back from an activity() method.
      */
     virtual cException *dup() const {return new cException(*this);}
 
@@ -252,14 +252,14 @@ class SIM_API cTerminationException : public cException
     cTerminationException(const char *msg,...);
 
     /**
-     * We unfortunately need to copy exception objects when handing them back
-     * from an activity().
+     * Copy constructor. We unfortunately need to copy exception objects
+     * when handing them back from an activity() method.
      */
     cTerminationException(const cTerminationException& e) : cException(e) {}
 
     /**
-     * Virtual copy constructor. We unfortunately need to copy exception objects
-     * when handing them back from an activity().
+     * Creates and returns an exact copy of this object. We unfortunately need
+     * to copy exception objects when handing them back from an activity() method.
      */
     virtual cTerminationException *dup() const override {return new cTerminationException(*this);}
 
@@ -320,14 +320,14 @@ class SIM_API cRuntimeError : public cException
     cRuntimeError(const cObject *where, const char *msg,...);
 
     /**
-     * We unfortunately need to copy exception objects when handing them back
-     * from an activity().
+     * Copy constructor. We unfortunately need to copy exception objects when
+     * handing them back from an activity() method.
      */
     cRuntimeError(const cRuntimeError& e) : cException(e) {}
 
     /**
-     * Virtual copy constructor. We unfortunately need to copy exception objects
-     * when handing them back from an activity().
+     * Creates and returns an exact copy of this object. We unfortunately need to copy
+     * exception objects when handing them back from an activity() method.
      */
     virtual cRuntimeError *dup() const override {return new cRuntimeError(*this);}
 };
@@ -350,14 +350,14 @@ class SIM_API cDeleteModuleException : public cException
     cDeleteModuleException(cModule *toDelete) : cException(), toDelete(toDelete) {}
 
     /**
-     * We unfortunately need to copy exception objects when handing them back
-     * from an activity().
+     * Copy constructor. We unfortunately need to copy exception objects when
+     * handing them back from an activity() method.
      */
     cDeleteModuleException(const cDeleteModuleException& e) : cException(e), toDelete(e.toDelete) {}
 
     /**
-     * Virtual copy constructor. We unfortunately need to copy exception objects
-     * when handing them back from an activity().
+     * Creates and returns an exact copy of this object. We unfortunately need to copy
+     * exception objects when handing them back from an activity() method.
      */
     virtual cDeleteModuleException *dup() const override {return new cDeleteModuleException(*this);}
 
@@ -390,14 +390,14 @@ class SIM_API cStackCleanupException : public cException
     cStackCleanupException() : cException() {}
 
     /**
-     * We unfortunately need to copy exception objects when handing them back
-     * from an activity().
+     * Copy constructor. We unfortunately need to copy exception objects when
+     * handing them back from an activity() method.
      */
     cStackCleanupException(const cStackCleanupException& e) : cException(e) {}
 
     /**
-     * Virtual copy constructor. We unfortunately need to copy exception objects
-     * when handing them back from an activity().
+     * Creates and returns an exact copy of this object. We unfortunately need to
+     * copy exception objects when handing them back from an activity() method.
      */
     virtual cStackCleanupException *dup() const override {return new cStackCleanupException(*this);}
 

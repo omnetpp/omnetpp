@@ -183,7 +183,7 @@ class SIM_API cMessage : public cEvent
 
     /**
      * Assignment operator. The data members NOT copied are: object name
-     * (see cNamedObject's operator=() for more details) and message ID.
+     * (see cNamedObject::operator=() for more details) and message ID.
      * All other members, including creation time and message tree ID,
      * are copied.
      */

@@ -180,11 +180,10 @@ class SIM_API cQueue : public cOwnedObject
     virtual ~cQueue();
 
     /**
-     * Assignment operator. Duplication and assignment work all right with cQueue.
-     * Contained objects that are owned by the queue will be duplicated
-     * so that the new queue will have its own copy of them.
-     *
-     * The name member is not copied; see cNamedObject's operator=() for more details.
+     * Assignment operator. The name member is not copied; see
+     * cNamedObject::operator=() for details. Contained objects that are
+     * owned by the queue will be duplicated so that the new queue will have
+     * its own copy of them.
      */
     cQueue& operator=(const cQueue& queue);
     //@}
@@ -193,7 +192,7 @@ class SIM_API cQueue : public cOwnedObject
     //@{
 
     /**
-     * Duplication and assignment are supported by cQueue.
+     * Creates and returns an exact copy of this object.
      * Contained objects that are owned by the queue will be duplicated
      * so that the new queue will have its own copy of them.
      */

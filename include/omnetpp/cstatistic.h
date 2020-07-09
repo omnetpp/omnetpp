@@ -63,7 +63,7 @@ class SIM_API cStatistic : public cRandom
 
     /**
      * Assignment operator. It is present since descendants may refer to it.
-     * The name member is not copied; see cNamedObject's operator=() for more details.
+     * The name member is not copied; see cNamedObject::operator=() for details.
      */
     cStatistic& operator=(const cStatistic& res);
     //@}

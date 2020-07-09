@@ -66,7 +66,7 @@ class SIM_API cPSquare : public cAbstractHistogram
     virtual ~cPSquare();
 
     /**
-     * Assignment operator. The name member is not copied; see cNamedObject's operator=() for more details.
+     * Assignment operator. The name member is not copied; see cNamedObject::operator=() for details.
      */
     cPSquare& operator=(const cPSquare& res);
     //@}

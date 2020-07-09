@@ -93,8 +93,8 @@ class SIM_API cEvent : public cOwnedObject
     virtual ~cEvent();
 
     /**
-     * Assignment operator. Duplication and the assignment operator work all right with cEvent.
-     * The name member doesn't get copied; see cNamedObject's operator=() for more details.
+     * Assignment operator. The name member is not copied;
+     * see cNamedObject::operator=() for details.
      */
     cEvent& operator=(const cEvent& event);
     //@}

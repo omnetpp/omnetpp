@@ -66,7 +66,7 @@ class SIM_API cAbstractHistogram : public cStdDev
     virtual ~cAbstractHistogram() {};
 
     /**
-     * Assignment operator. The name member is not copied; see cNamedObject's operator=() for more details.
+     * Assignment operator. The name member is not copied; see cNamedObject::operator=() for details.
      */
     cAbstractHistogram& operator=(const cAbstractHistogram& res) {
         if (this == &res)

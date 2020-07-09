@@ -364,7 +364,7 @@ class SIM_API cTopology : public cOwnedObject
     virtual ~cTopology();
 
     /**
-     * Assignment operator. The name member is not copied; see cNamedObject's operator=() for more details.
+     * Assignment operator. The name member is not copied; see cNamedObject::operator=() for details.
      */
     cTopology& operator=(const cTopology& topo);
     //@}

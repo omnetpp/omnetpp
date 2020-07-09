@@ -69,11 +69,10 @@ class SIM_API cPacketQueue : public cQueue
     cPacketQueue(const cPacketQueue& queue);
 
     /**
-     * Assignment operator. Duplication and assignment work all right with cPacketQueue.
-     * Contained objects that are owned by the queue will be duplicated
-     * so that the new queue will have its own copy of them.
+     * Assignment operator. Contained objects that are owned by the queue
+     * will be duplicated so that the new queue will have its own copy of them.
      *
-     * The name member is not copied; see cNamedObject's operator=() for more details.
+     * The name member is not copied; see cNamedObject::operator=() for details.
      */
     cPacketQueue& operator=(const cPacketQueue& queue);
     //@}
@@ -82,7 +81,7 @@ class SIM_API cPacketQueue : public cQueue
     //@{
 
     /**
-     * Duplication and assignment work all right with cPacketQueue.
+     * Creates and returns an exact copy of this object.
      * Contained objects that are owned by the queue will be duplicated
      * so that the new queue will have its own copy of them.
      */

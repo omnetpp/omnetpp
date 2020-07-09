@@ -64,7 +64,7 @@ class SIM_API cStdDev : public cStatistic
     virtual ~cStdDev() {}
 
     /**
-     * Assignment operator. The name member is not copied; see cNamedObject's operator=() for more details.
+     * Assignment operator. The name member is not copied; see cNamedObject::operator=() for details.
      */
     cStdDev& operator=(const cStdDev& res);
     //@}

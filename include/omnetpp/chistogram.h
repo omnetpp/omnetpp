@@ -143,7 +143,7 @@ class SIM_API cHistogram : public cAbstractHistogram
 
     /**
      * Assignment operator. The name member is not copied;
-     * see cNamedObject's operator=() for more details.
+     * see cNamedObject::operator=() for details.
      */
     cHistogram& operator=(const cHistogram& other);
 

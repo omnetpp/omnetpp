@@ -406,7 +406,7 @@ class SIM_API cFigure : public cOwnedObject
 
         /**
          * Assignment operator. It copies all data members except the object
-         * name, figure ID and child figures. (See cNamedObject's operator=()
+         * name, figure ID and child figures. (See cNamedObject::operator=()
          * for details.)
          */
         cFigure& operator=(const cFigure& other);

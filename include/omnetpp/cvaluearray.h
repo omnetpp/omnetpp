@@ -69,8 +69,7 @@ class SIM_API cValueArray : public cOwnedObject
 
     /**
      * Assignment operator. The name member is not copied;
-     * see cNamedObject's operator=() for more details.
-     * Duplication and assignment work all right with cValueArray.
+     * see cNamedObject::operator=() for details.
      * Contained objects that are owned by cValueArray will be duplicated
      * so that the new cValueArray will have its own copy of them.
      */
@@ -81,7 +80,7 @@ class SIM_API cValueArray : public cOwnedObject
     //@{
 
     /**
-     * Duplication and assignment are supported by cValueArray.
+     * Creates and returns an exact copy of this object.
      * Contained objects that are owned by cValueArray will be duplicated
      * so that the new cValueArray will have its own copy of them.
      */
