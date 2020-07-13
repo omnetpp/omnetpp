@@ -99,47 +99,48 @@ cMessage::~cMessage()
         liveMsgCount--;
 }
 
+#define MODNAME(modp)    ((modp) ? (modp)->getFullPath().c_str() : "<deleted module>")
+
 std::string cMessage::str() const
 {
     if (targetModuleId < 0)
         return std::string("(new msg)");
 
     std::stringstream out;
-    const char *deletedstr = "<deleted module>";
 
-    simtime_t t = getArrivalTime();
-    if (t > getSimulation()->getSimTime()) {
-        // if it arrived in the past, dt is usually unimportant, don't print it
+    if (isScheduled()) {
+        simtime_t t = getArrivalTime();
         simtime_t dt = t - getSimulation()->getSimTime();
-        out << "at t=" << t << ", in dt=" << dt.ustr() << "; ";
-    }
+        if (getKind() == MK_STARTER) {
+            cModule *tomodp = getSimulation()->getModule(targetModuleId);
+            out << "starter for " << MODNAME(tomodp) << " for t=" << t.ustr() << " (now+" << dt.ustr() << ")";
+        }
+        else if (getKind() == MK_TIMEOUT) {
+            cModule *tomodp = getSimulation()->getModule(targetModuleId);
+            out << "timeoutmsg for " << MODNAME(tomodp) << " for t=" << t.ustr() << " (now+" << dt.ustr() << ")";
+        }
+        else if (senderModuleId == targetModuleId) {
+            cModule *tomodp = getSimulation()->getModule(targetModuleId);
+            out << "selfmsg for " << MODNAME(tomodp) << " for t=" << t.ustr() << " (now+" << dt.ustr() << ")";
+        }
+        else {
+            cModule *frommodp = getSimulation()->getModule(senderModuleId);
+            cModule *tomodp = getSimulation()->getModule(targetModuleId);
+            out << "in transit from " << MODNAME(frommodp) << " to " << MODNAME(tomodp);
+            out << ", arrival at t=" << t.ustr() << " (now+" << dt.ustr() << ")";
+        }
 
-#define MODNAME(modp)    ((modp) ? (modp)->getFullPath().c_str() : deletedstr)
-    if (getKind() == MK_STARTER) {
-        cModule *tomodp = getSimulation()->getModule(targetModuleId);
-        out << "starter for " << MODNAME(tomodp) << " (id=" << targetModuleId << ") ";
+        if (controlInfo)
+           out << "; ";
     }
-    else if (getKind() == MK_TIMEOUT) {
-        cModule *tomodp = getSimulation()->getModule(targetModuleId);
-        out << "timeoutmsg for " << MODNAME(tomodp) << " (id=" << targetModuleId << ") ";
-    }
-    else if (senderModuleId == targetModuleId) {
-        cModule *tomodp = getSimulation()->getModule(targetModuleId);
-        out << "selfmsg for " << MODNAME(tomodp) << " (id=" << targetModuleId << ") ";
-    }
-    else {
-        cModule *frommodp = getSimulation()->getModule(senderModuleId);
-        cModule *tomodp = getSimulation()->getModule(targetModuleId);
-        out << "src=" << MODNAME(frommodp) << " (id=" << senderModuleId << ") ";
-        out << " dest=" << MODNAME(tomodp) << " (id=" << targetModuleId << ") ";
-    }
-#undef MODNAME
 
     if (controlInfo)
-        out << "  control info: (" << controlInfo->getClassName() << ") " << controlInfo->getFullName() << "\n";
+        out << "ctrlInfo: " << controlInfo->getClassName();
 
     return out.str();
 }
+
+#undef MODNAME
 
 void cMessage::forEachChild(cVisitor *v)
 {

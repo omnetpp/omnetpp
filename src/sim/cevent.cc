@@ -56,17 +56,17 @@ cEvent::~cEvent()
 
 std::string cEvent::str() const
 {
-    if (arrivalTime == getSimulation()->getSimTime())
-        return "(now)";
-    if (arrivalTime < getSimulation()->getSimTime())
-        return "(in the past)";
+    if (!isScheduled())
+        return "";
+    else {
+        std::stringstream out;
+        simtime_t dt = arrivalTime - getSimulation()->getSimTime();
+        out << "for t=" << arrivalTime.ustr() << " (now+" << dt.ustr() << ")";
+        if (getTargetObject())
+            out << ", target=" << getTargetObject()->getFullPath();
+        return out.str();
+    }
 
-    std::stringstream out;
-    simtime_t dt = arrivalTime - getSimulation()->getSimTime();
-    out << "at t=" << arrivalTime << ", in dt=" << dt.ustr();
-    if (getTargetObject())
-        out << ", for " << getTargetObject()->getFullPath();
-    return out.str();
 }
 
 void cEvent::forEachChild(cVisitor *v)
