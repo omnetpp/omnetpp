@@ -172,7 +172,7 @@ cModule *StatisticSourceAstTranslator::resolveSubscriptionModule(const char *mod
     if (!module)
         throw cRuntimeError("Signal names qualified with module path may only be used in a @statistic declared on a module");
     std::string relativePath = std::string(".") + modulePath;
-    cModule *sourceModule = module->getModuleByPath(relativePath.c_str());
+    cModule *sourceModule = module->findModuleByPath(relativePath.c_str());
     if (!sourceModule)
         throw cRuntimeError("No module '%s' under '%s'", modulePath, component->getFullPath().c_str());
     return sourceModule;

@@ -158,7 +158,7 @@ void cParsimPartition::connectRemoteGates()
 
             // find corresponding output gate (if we have it) and set remote
             // gate address to the received one
-            cModule *m = sim->getModuleByPath(moduleFullPath);
+            cModule *m = sim->findModuleByPath(moduleFullPath);
             cGate *g = !m ? nullptr : gateIndex == -1 ? m->gate(gateName) : m->gate(gateName, gateIndex);
             cProxyGate *pg = dynamic_cast<cProxyGate *>(g);
 

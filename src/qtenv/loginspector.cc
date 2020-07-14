@@ -402,7 +402,7 @@ void LogInspector::restoreExcludedModules()
 {
     QStringList excludedModules = getPref(PREF_EXCLUDED_MODULES, QStringList()).toStringList();
     for (auto path : excludedModules)
-        if (auto mod = getSimulation()->getModuleByPath(path.toUtf8()))
+        if (auto mod = getSimulation()->findModuleByPath(path.toUtf8()))
             excludedModuleIds.insert(mod->getId());
     contentProvider->setExcludedModuleIds(excludedModuleIds);
 }
