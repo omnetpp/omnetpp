@@ -36,11 +36,11 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
 
   private:
     enum {
-      FL_ISDISABLED = 1 << 10,
-      FL_DELAY_NONZERO = 1 << 11,
-      FL_DATARATE_NONZERO = 1 << 12,
-      FL_BER_NONZERO = 1 << 13,
-      FL_PER_NONZERO = 1 << 14,
+      FL_ISDISABLED =       1 << 11,
+      FL_DELAY_NONZERO =    1 << 12,
+      FL_DATARATE_NONZERO = 1 << 13,
+      FL_BER_NONZERO =      1 << 14,
+      FL_PER_NONZERO =      1 << 15,
     };
 
     // cached values of parameters (note: parameters are non-volatile)

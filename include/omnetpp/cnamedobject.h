@@ -48,6 +48,7 @@ class SIM_API cNamedObject : public cObject
   protected:
     // internal: set a bit in flags; flag is one of the FL_xxx constants
     void setFlag(int flag, bool value) {if (value) flags|=flag; else flags&=~flag;}
+    int getFlag(int flag) {return flags & flag;}
 
   private:
     // pool for shared storage of object names
