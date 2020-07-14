@@ -70,6 +70,7 @@ EXECUTE_ON_SHUTDOWN(cComponent::invalidateCachedResultRecorderLists())
 cComponent::cComponent(const char *name) : cDefaultOwner(name)
 {
     componentType = nullptr;
+    simulation = nullptr;
     componentId = -1;
     rngMapSize = 0;
     rngMap = nullptr;
@@ -87,7 +88,7 @@ cComponent::cComponent(const char *name) : cDefaultOwner(name)
 cComponent::~cComponent()
 {
     if (componentId != -1)
-        getSimulation()->deregisterComponent(this);
+        simulation->deregisterComponent(this);
 
     ASSERT(signalTable == nullptr);  // note: releaseLocalListeners() gets called in subclasses, ~cModule and ~cChannel
     delete[] rngMap;
@@ -155,11 +156,6 @@ cComponentType *cComponent::getComponentType() const
     return componentType;
 }
 
-cSimulation *cComponent::getSimulation() const
-{
-    return cSimulation::getActiveSimulation();  //TODO store per-component cSimulation* ptrs and return that?
-}
-
 const char *cComponent::getNedTypeName() const
 {
     return getComponentType()->getFullName();
@@ -167,7 +163,7 @@ const char *cComponent::getNedTypeName() const
 
 cModule *cComponent::getSystemModule() const
 {
-    return getSimulation()->getSystemModule();
+    return simulation->getSystemModule();
 }
 
 cRNG *cComponent::getRNG(int k) const
@@ -262,7 +258,7 @@ void cComponent::finalizeParameters()
 
 bool cComponent::hasGUI() const
 {
-    return cSimulation::getActiveEnvir()->isGUI();
+    return simulation->getEnvir()->isGUI();
 }
 
 bool cComponent::hasDisplayString()

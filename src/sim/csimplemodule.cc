@@ -64,7 +64,7 @@ void cSimpleModule::activate(void *p)
             simulation->transferTo(afterCleanupTransferTo);
         else
             simulation->transferToMain();
-        fprintf(stderr, "INTERNAL ERROR: switch to the fiber of a module already terminated");
+        fprintf(stderr, "INTERNAL ERROR: Switch to the fiber of a module already terminated, line %d\n", __LINE__);
         abort();
     }
 
@@ -77,7 +77,7 @@ void cSimpleModule::activate(void *p)
         mod->setFlag(FL_STACKALREADYUNWOUND, true);
         simulation->exception = new cRuntimeError("scheduleStart() should have been called for dynamically created module '%s'", mod->getFullPath().c_str());
         simulation->transferToMain();
-        fprintf(stderr, "INTERNAL ERROR: switch to the fiber of a module already terminated");
+        fprintf(stderr, "INTERNAL ERROR: Switch to the fiber of a module already terminated, line %d\n", __LINE__);
         abort();
     }
 
@@ -137,7 +137,7 @@ void cSimpleModule::activate(void *p)
         // Module function terminated normally, without exception. Just mark
         // the module as finished, and transfer to the main coroutine (fiber).
         simulation->transferToMain();
-        fprintf(stderr, "INTERNAL ERROR: switch to the fiber of a module already terminated");
+        fprintf(stderr, "INTERNAL ERROR: Switch to the fiber of a module already terminated, line %d\n", __LINE__);
         abort();
     }
     else if (dynamic_cast<cStackCleanupException *>(exception)) {
@@ -150,7 +150,7 @@ void cSimpleModule::activate(void *p)
             simulation->transferTo(afterCleanupTransferTo);
         else
             simulation->transferToMain();
-        fprintf(stderr, "INTERNAL ERROR: switch to the fiber of a module already terminated");
+        fprintf(stderr, "INTERNAL ERROR: Switch to the fiber of a module already terminated, line %d\n", __LINE__);
         abort();
     }
     else {
@@ -160,7 +160,7 @@ void cSimpleModule::activate(void *p)
         // an error dialog or the like.
         simulation->exception = exception;
         simulation->transferToMain();
-        fprintf(stderr, "INTERNAL ERROR: switch to the fiber of a module already terminated");
+        fprintf(stderr, "INTERNAL ERROR: Switch to the fiber of a module already terminated, line %d\n", __LINE__);
         abort();
     }
 }

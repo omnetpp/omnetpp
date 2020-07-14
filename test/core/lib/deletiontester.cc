@@ -25,11 +25,12 @@ void DeletionTesterBase::deleteTargetModule()
     if (strlen(targetPath) > 0) {
         cModule *target = getModuleByPath(targetPath);
         if (target == nullptr)
-            throw cRuntimeError("'%s' not found", targetPath);
+            return; // target path is empty
         EV << "t=" << simTime() << "s: " << getFullPath() << ": deleting " << target->getFullPath() << endl;
         int targetModuleId = target->getId();
+	cSimulation *simulation = getSimulation(); // save it in case we delete ourselves
         target->deleteModule();
-        ASSERT(getSimulation()->getModule(targetModuleId) == nullptr); // actually deleted
+        ASSERT(simulation->getModule(targetModuleId) == nullptr); // actually deleted
     }
 }
 

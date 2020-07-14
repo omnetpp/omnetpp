@@ -326,6 +326,7 @@ int cSimulation::registerComponent(cComponent *component)
 
     int id = lastComponentId;
     componentv[id] = component;
+    component->simulation = this;
     component->componentId = id;
 #ifdef USE_OMNETPP4x_FINGERPRINTS
     if (component->isModule())
@@ -337,6 +338,7 @@ int cSimulation::registerComponent(cComponent *component)
 void cSimulation::deregisterComponent(cComponent *component)
 {
     int id = component->componentId;
+    component->simulation = nullptr;
     component->componentId = -1;
     componentv[id] = nullptr;
 

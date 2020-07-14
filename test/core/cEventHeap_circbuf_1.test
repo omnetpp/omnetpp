@@ -26,7 +26,6 @@ class Test : public cSimpleModule
     std::vector<cMessage*> shadow;  // t==simTime() events
     std::vector<cMessage*> future;  // future events
   public:
-    Test() : fes(getSimulation()->getFES()) {}
     virtual void initialize() override;
     void verifyFES();
     void insertMessages(int n);
@@ -50,8 +49,7 @@ void Test::verifyFES()
     ASSERT(fes->isEmpty()==expected.empty());
     ASSERT(fes->peekFirst()==(expected.empty() ? nullptr : expected[0]));
 
-    for (i=0; i<fes->getLength(); i++)
-    {
+    for (i=0; i<fes->getLength(); i++) {
         ASSERT(fes->get(i)==expected[i]);
         ASSERT(expected[i]->getOwner()==fes);
     }
@@ -61,8 +59,7 @@ void Test::insertMessages(int n)
 {
     EV << "len=" << fes->getLength() << "; adding " << n << " events\n";
     verifyFES();
-    for (int i=0; i<n; i++)
-    {
+    for (int i=0; i<n; i++) {
         cMessage *msg = new cMessage();
         scheduleAt(simTime(), msg);
         shadow.push_back(msg);
@@ -74,8 +71,7 @@ void Test::removeRandomMessages(int n)
 {
     EV << "len=" << fes->getLength() << "; randomly removing max " << n << " events\n";
     verifyFES();
-    for (int i=0; i<n && !shadow.empty(); i++)
-    {
+    for (int i=0; i<n && !shadow.empty(); i++) {
         int k = intuniform(0, shadow.size()-1);
         cMessage *msg = shadow[k];
         if (k==0 && intuniform(0,1)==0) {
@@ -94,13 +90,12 @@ void Test::initialize()
 {
     // we'll directly exercise the FES (this is something that normal
     // simulation models are NOT supposed to do...)
+    fes = getSimulation()->getFES();
 
     // fill up FES to a varying degree (n=1..20 events), and empty them;
     // this will exercise the circbuf reallocation code in cEventHeap
-    for (int n=1; n<20; n++)
-    {
-        for (int rep=0; rep<3; rep++)
-        {
+    for (int n=1; n<20; n++) {
+        for (int rep=0; rep<3; rep++) {
             insertMessages(n);
             removeRandomMessages(n);
         }
@@ -113,8 +108,7 @@ void Test::initialize()
     verifyFES();
 
     // randomly add/remove events for the current simtime
-    for (int i=0; i<5000; i++)
-    {
+    for (int i=0; i<5000; i++) {
         insertMessages(intuniform(0,9));
         removeRandomMessages(intuniform(0,10));
     }

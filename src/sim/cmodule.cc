@@ -1410,7 +1410,8 @@ bool cModule::initializeChannels(int stage)
 
 bool cModule::initializeModules(int stage)
 {
-    if (getSimulation()->getContextType() != CTX_INITIALIZE)
+    cSimulation *simulation = getSimulation();
+    if (simulation->getContextType() != CTX_INITIALIZE)
         throw cRuntimeError("Internal function initializeModules() may only be called via callInitialize()");
 
     if (stage == 0) {
@@ -1433,7 +1434,7 @@ bool cModule::initializeModules(int stage)
             initialize(stage);
 
             // bail out if this module was deleted by user code
-            if (getSimulation()->getComponent(ownId) == nullptr)
+            if (simulation->getComponent(ownId) == nullptr)
                 return false;
         }
         catch (cException&) {
@@ -1472,8 +1473,8 @@ bool cModule::initializeModules(int stage)
             if (submodule->initializeModules(stage))
                 moreStages = true;
 
-            // start again if current submodule was deleted
-            if (getSimulation()->getComponent(submoduleId) == nullptr) {
+            // start again if current submodule was deleted (possibly as part of its parent)
+            if (simulation->getComponent(submoduleId) == nullptr) {
                 again = true;
                 break;
             }
@@ -1483,7 +1484,7 @@ bool cModule::initializeModules(int stage)
         }
 
         // bail out if this whole module got deleted
-        if (getSimulation()->getComponent(ownId) == nullptr)
+        if (again && simulation->getComponent(ownId) == nullptr)
             return false;
     } while (again);
 

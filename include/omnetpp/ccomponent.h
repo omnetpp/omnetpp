@@ -72,6 +72,7 @@ class SIM_API cComponent : public cDefaultOwner //implies noncopyable
 
   private:
     cComponentType *componentType;  // component type object
+    cSimulation *simulation; // the simulation it belongs to
     int componentId;   // id in cSimulation
 
     short rngMapSize;  // size of the rngMap array (RNGs with index >= rngMapSize are mapped one-to-one to global RNGs)
@@ -351,18 +352,16 @@ class SIM_API cComponent : public cDefaultOwner //implies noncopyable
     virtual cComponentType *getComponentType() const;
 
     /**
-     * Returns the simulation the component is part of. Currently may only
-     * be invoked if the component's simulation is the active one (see
-     * cSimulation::getActiveSimulation()).
+     * Returns the simulation the component is part of.
      */
-    cSimulation *getSimulation() const;
+    cSimulation *getSimulation() const {return simulation;}
 
     /**
      * Returns the component's ID in the simulation object (cSimulation).
      * Component IDs are guaranteed to be unique during a simulation run
      * (that is, IDs of deleted components are not reused for new components.)
      *
-     * @see cSimulation::getComponent(), cSimulation::getModule(), cSimulation::getChannel()
+     * @see getSimulation(), cSimulation::getComponent(), cSimulation::getModule(), cSimulation::getChannel()
      */
     int getId() const  {return componentId;}
 
