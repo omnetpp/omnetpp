@@ -38,8 +38,7 @@ class SIM_API cNamedObject : public cObject
     const char *name;  // object name (stringpooled if flags&FL_NAMEPOOLING!=0)
 
   protected:
-    unsigned short flags;  // FL_NAMEPOOLING flag; other bits used by derived classes
-    unsigned short unused; // space lost to due to word aligment; one may make use of it in subclasses (cModule, cSimpleModule, cGate)
+    uint32_t flags;  // FL_NAMEPOOLING flag; other bits used by derived classes
     enum {FL_NAMEPOOLING = 1};
 
   private:
