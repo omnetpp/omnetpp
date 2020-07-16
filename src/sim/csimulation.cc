@@ -460,9 +460,14 @@ void cSimulation::deleteNetwork()
     // delete all modules recursively
     systemModule->deleteModule();
 
-    // make sure it was successful
-    for (int i = 1; i < size; i++)
-        ASSERT(componentv[i] == nullptr);
+    // remove stray channel objects (created by cChannelType::create() but not inserted into the network)
+    for (int i = 1; i < size; i++) {
+        if (componentv[i]) {
+            ASSERT(componentv[i]->isChannel() && componentv[i]->getParentModule()==nullptr);
+            componentv[i]->setFlag(cComponent::FL_DELETING, true);
+            delete componentv[i];
+        }
+    }
 
     // and clean up
     delete[] componentv;
