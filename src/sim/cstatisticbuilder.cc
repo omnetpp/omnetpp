@@ -31,6 +31,7 @@ using namespace omnetpp::common;
 const char *PROPKEY_STATISTIC_SOURCE = "source";
 const char *PROPKEY_STATISTIC_RECORD = "record";
 const char *PROPKEY_STATISTIC_CHECKSIGNALS = "checkSignals";
+const char *PROPKEY_STATISTIC_AUTOWARMUPFILTER = "autoWarmupFilter";
 
 Register_PerObjectConfigOption(CFGID_STATISTIC_RECORDING, "statistic-recording", KIND_STATISTIC, CFG_BOOL, "true", "Whether the matching `@statistic` should be recorded. This option lets one completely disable all recording from a @statistic. Disabling a `@statistic` this way is more efficient than specifying `**.scalar-recording=false` and `**.vector-recording=false` together.\nUsage: `<module-full-path>.<statistic-name>.statistic-recording=true/false`.\nExample: `**.ping.roundTripTime.statistic-recording=false`");
 Register_PerObjectConfigOption(CFGID_RESULT_RECORDING_MODES, "result-recording-modes", KIND_STATISTIC, CFG_STRING, "default", "Defines how to calculate results from the matching `@statistic`.\nUsage: `<module-full-path>.<statistic-name>.result-recording-modes=<modes>`. Special values: `default`, `all`: they select the modes listed in the `record` key of `@statistic`; all selects all of them, default selects the non-optional ones (i.e. excludes the ones that end in a question mark). Example values: `vector`, `count`, `last`, `sum`, `mean`, `min`, `max`, `timeavg`, `stats`, `histogram`. More than one values are accepted, separated by commas. Expressions are allowed. Items prefixed with `-` get removed from the list. Example: `**.queueLength.result-recording-modes=default,-vector,+timeavg`");
@@ -120,7 +121,9 @@ void cStatisticBuilder::doAddResultRecorders(cComponent *component, std::string&
         if (signal == SIMSIGNAL_NULL) {
             const char *sourceSpec = opp_emptytodefault(statisticProperty->getValue(PROPKEY_STATISTIC_SOURCE, 0), statisticName);
             bool hasWarmupPeriod = getSimulation()->getWarmupPeriod() != SIMTIME_ZERO;
-            source = doStatisticSource(component, statisticProperty, statisticName, sourceSpec, checkSignalDecl, hasWarmupPeriod);
+            TristateBool warmupAttr = parseTristateBool(statisticProperty->getValue(PROPKEY_STATISTIC_AUTOWARMUPFILTER), "warmup attribute");
+            bool needWarmupFilter = hasWarmupPeriod && warmupAttr != TRISTATE_FALSE;
+            source = doStatisticSource(component, statisticProperty, statisticName, sourceSpec, checkSignalDecl, needWarmupFilter);
         }
         else {
             source = SignalSource(component, signal);
