@@ -1,0 +1,82 @@
+%description:
+Tests autoWarmupFilter=false in @statistic().
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Node
+{
+    @statistic[a1](record=mean);
+    @statistic[a2](record=mean;autoWarmupFilter=true); // no-op
+    @statistic[a3](record=mean;autoWarmupFilter=false);
+    @statistic[a4](record=warmup(mean);autoWarmupFilter=false);
+
+    @statistic[b1](record=min+max);
+    @statistic[b2](record=min+max;autoWarmupFilter=false);
+    @statistic[b3](record=min+warmup(max);autoWarmupFilter=false);
+    @statistic[b4](record=warmup(min+max);autoWarmupFilter=false);
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%inifile: test.ini
+[General]
+network = Test
+debug-statistics-recording = true
+warmup-period = 10s
+
+%subst: /omnetpp:://
+%subst: /signalID=\d+/signalID=_/
+
+%contains: stdout
+Test.node (Node):
+    "b4" (signalID=_):
+        MinFilter
+            $0 + $1 (ExpressionFilter)
+                WarmupPeriodFilter
+                    LastValueRecorder ==> b4:warmup(min+max)
+        MaxFilter
+            $0 + $1 (ExpressionFilter)
+                WarmupPeriodFilter
+                    LastValueRecorder ==> b4:warmup(min+max)
+    "b3" (signalID=_):
+        MinFilter
+            $0 + $1 (ExpressionFilter)
+                LastValueRecorder ==> b3:min+warmup(max)
+        MaxFilter
+            WarmupPeriodFilter
+                $0 + $1 (ExpressionFilter)
+                    LastValueRecorder ==> b3:min+warmup(max)
+    "b2" (signalID=_):
+        MinFilter
+            $0 + $1 (ExpressionFilter)
+                LastValueRecorder ==> b2:min+max
+        MaxFilter
+            $0 + $1 (ExpressionFilter)
+                LastValueRecorder ==> b2:min+max
+    "b1" (signalID=_):
+        WarmupPeriodFilter
+            MinFilter
+                $0 + $1 (ExpressionFilter)
+                    LastValueRecorder ==> b1:min+max
+            MaxFilter
+                $0 + $1 (ExpressionFilter)
+                    LastValueRecorder ==> b1:min+max
+    "a4" (signalID=_):
+        MeanFilter
+            WarmupPeriodFilter
+                LastValueRecorder ==> a4:warmup(mean)
+    "a3" (signalID=_):
+        MeanRecorder ==> a3:mean
+    "a2" (signalID=_):
+        WarmupPeriodFilter
+            MeanRecorder ==> a2:mean
+    "a1" (signalID=_):
+        WarmupPeriodFilter
+            MeanRecorder ==> a1:mean
+
