@@ -41,6 +41,7 @@ void Source::handleMessage(cMessage *message)
         std::string name = "data-" + std::to_string(seqNum);
         cPacket *packet = new cPacket(name.c_str(), seqNum % 8);
         packet->setBitLength(par("length"));
+        packet->setKind(intuniform(0, 7));
         send(packet, gate("out"));
         scheduleTimer();
         seqNum++;
