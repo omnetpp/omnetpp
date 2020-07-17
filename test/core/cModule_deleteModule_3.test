@@ -44,8 +44,9 @@ Define_Module(Tester);
 void Tester::initialize()
 {
     EV << "INITIALIZING " << getFullPath() << endl;
-    cModule *targetModule = getModuleByPath(par("deleteTarget"));
-    if (targetModule) {
+    std::string deleteTarget = par("deleteTarget");
+    if (deleteTarget != "") {
+        cModule *targetModule = getModuleByPath(deleteTarget.c_str());
         EV << "Deleting " << targetModule->getFullPath() << endl;
         targetModule->deleteModule();
     }

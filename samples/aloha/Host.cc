@@ -30,8 +30,6 @@ void Host::initialize()
 {
     stateSignal = registerSignal("state");
     server = getModuleByPath("server");
-    if (!server)
-        throw cRuntimeError("server not found");
 
     txRate = par("txRate");
     iaTime = &par("iaTime");

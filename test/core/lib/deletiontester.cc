@@ -24,8 +24,6 @@ void DeletionTesterBase::deleteTargetModule()
     const char *targetPath = par("moduleToDelete").stringValue();
     if (strlen(targetPath) > 0) {
         cModule *target = getModuleByPath(targetPath);
-        if (target == nullptr)
-            return; // target path is empty
         EV << "t=" << simTime() << "s: " << getFullPath() << ": deleting " << target->getFullPath() << endl;
         int targetModuleId = target->getId();
 	cSimulation *simulation = getSimulation(); // save it in case we delete ourselves

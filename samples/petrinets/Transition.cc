@@ -21,7 +21,7 @@ Transition::Transition()
 
 Transition::~Transition()
 {
-    transitionScheduler = dynamic_cast<TransitionScheduler*>(getModuleByPath(par("transitionSchedulerModule").stringValue()));
+    transitionScheduler = dynamic_cast<TransitionScheduler*>(findModuleByPath(par("transitionSchedulerModule").stringValue()));
     if (transitionScheduler) // still exists
         transitionScheduler->deregisterTransition(this);
     cancelAndDelete(fireEvent);

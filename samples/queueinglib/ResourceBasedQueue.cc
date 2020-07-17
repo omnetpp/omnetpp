@@ -46,9 +46,10 @@ void ResourceBasedQueue::initialize()
     resourcePool = nullptr;
 
     const char *resourceName = par("resourceModuleName");
-    cModule *tmpModule = getParentModule()->getModuleByPath(resourceName);
-    if (strlen(resourceName) > 0)
+    if (strlen(resourceName) > 0) {
+        cModule *tmpModule = getParentModule()->getModuleByPath(resourceName);
         resourcePool = check_and_cast<IResourcePool *>(tmpModule);
+    }
 }
 
 void ResourceBasedQueue::handleMessage(cMessage *msg)

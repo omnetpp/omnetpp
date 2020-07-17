@@ -25,8 +25,6 @@ Host::~Host()
 void Host::initialize()
 {
     server = getModuleByPath("server");
-    if (!server)
-        throw cRuntimeError("server not found");
 
     txRate = par("txRate");
     radioDelay = par("radioDelay");
