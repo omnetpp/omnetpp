@@ -355,8 +355,6 @@ void cSimulation::setSystemModule(cModule *module)
 }
 cModule *cSimulation::getModuleByPath(const char *path) const
 {
-    if (!path || !path[0])
-        return nullptr;
     cModule *module = findModuleByPath(path);
     if (!module)
         throw cRuntimeError("cSimulation::getModuleByPath(): Module at '%s' not found (Note: operation of getModuleByPath() has changed in OMNeT++ version 6.0, use findModuleByPath() in you want the original behavior)", path);

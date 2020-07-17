@@ -619,11 +619,10 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * inclusion of the toplevel module's name in the path is optional.
      * The toplevel module may also be referred to as "<root>".
      *
-     * Returns nullptr if the empty string was given as input. If the module was
-     * not found, this methods throws an exception.
+     * This method never returns nullptr. If the module was not found,
+     * an exception is thrown.
      *
      * Examples:
-     *   "" means nullptr;
      *   "." means this module;
      *   "<root>" means the toplevel module;
      *   ".sink" means the sink submodule of this module;

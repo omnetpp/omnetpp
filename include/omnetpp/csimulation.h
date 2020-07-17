@@ -200,8 +200,8 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * as "<root>". Note that this method, unlike its counterpart in cModule,
      * does not accept relative paths (those that start with '.' or '^'.)
      *
-     * Returns nullptr if the empty string was given as input. If the module was
-     * not found, this methods throws an exception.
+     * This method never returns nullptr. If the module was not found,
+     * an exception is thrown.
      *
      * @see findModuleByPath(), cModule::getModuleByPath()
      */
