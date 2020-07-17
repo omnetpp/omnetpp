@@ -360,7 +360,7 @@ int TextViewerWidget::getLineColumnOffset(const QFontMetrics& metrics, int lineI
             ++inColumn;
             int sectionPosition = header->sectionPosition(inColumn); // TODO range check
 
-            x = std::max(sectionPosition, x);
+            x = std::max(sectionPosition, x + metrics.width(" "));
 
             ++textPointer;
         }
@@ -381,8 +381,7 @@ int TextViewerWidget::getLineColumnOffset(const QFontMetrics& metrics, int lineI
             }
 
             QString text(start, textPointer - start);
-            if (*textPointer == '\t')
-                text += ' '; // print the tab as a space
+
             x += metrics.width(text);
         }
     }
@@ -420,8 +419,11 @@ Pos TextViewerWidget::getColumnInLineAt(int x, int lineIndex)
             // this is a tab, so let's jump forward to the next header segment position
             ++inColumn;
             int sectionPosition = header->sectionPosition(inColumn) - horizontalScrollOffset; // TODO range check
-            if (curX < sectionPosition)
-                curX = sectionPosition;
+
+            int gap = std::max(sectionPosition - curX, metrics.width(" "));
+            if (gap > 0)
+                curX += gap;
+
             ++textPointer;
 
             ++numVisibleChars;
@@ -438,9 +440,6 @@ Pos TextViewerWidget::getColumnInLineAt(int x, int lineIndex)
 
             int len = textPointer - start;
             QString text(start, len);
-
-            if (*textPointer == '\t')
-                text += ' ';
 
             int width = metrics.width(text);
 
@@ -1084,14 +1083,14 @@ int TextViewerWidget::paintText(const QString& text, QPainter& painter, const QF
 void TextViewerWidget::drawLine(QPainter& painter, int lineIndex, int x, int y, bool asSelected)
 {
     // draw the line in the specified color
-    QString line = content->getLineText(lineIndex).trimmed();  // removing the new line character
+    QString line = content->getLineText(lineIndex);
 
     QFont curFont = font;
 
     painter.setFont(curFont);
     QFontMetrics metrics = painter.fontMetrics();
 
-    QString lineText = content->getLineText(lineIndex).trimmed();
+    QString lineText = content->getLineText(lineIndex);
 
     const QChar *textPointer = lineText.unicode();
 
@@ -1099,22 +1098,33 @@ void TextViewerWidget::drawLine(QPainter& painter, int lineIndex, int x, int y, 
 
     QColor curBgColor = QColor(), curFgColor = foregroundColor;
 
+    // TODO: the data returned by unicode() is not necessarily 0-terminated!
     while (*textPointer != 0) {
-        if (*textPointer == '\t') {
+        if (*textPointer == '\n') {
+            break;
+        }
+        else if (*textPointer == '\t') {
+
             // this is a tab, so let's jump forward to the next header segment position
             ++inColumn;
             int sectionPosition = header->sectionPosition(inColumn) - horizontalScrollOffset; // TODO range check
 
-            // background if needed
-            if (curBgColor.isValid()) {
-                QRect bgRect(x+1, y, sectionPosition - x, lineSpacing);
-                // width might be negative if the text in the preceding section pushed the text in this section a bit to the right
-                if (bgRect.isValid())
-                    painter.fillRect(bgRect, asSelected ? selectionBackgroundColor : curBgColor);
+            int width = std::max(sectionPosition - x, metrics.width(" ")); // treat the tab as at least a space wide
+
+            // we might already be past the section position
+            if (width > 0) {
+                QRect bgRect(x+1, y, width, lineSpacing);
+
+                // fill background if needed
+                if (asSelected)
+                    painter.fillRect(bgRect, selectionBackgroundColor);
+                else if (curBgColor.isValid())
+                    painter.fillRect(bgRect, curBgColor);
+                // else: not painting
+
+                x += width;
             }
 
-            if (x < sectionPosition)
-                x = sectionPosition;
             ++textPointer;
         }
         else if (*textPointer == '\x1b') {
@@ -1141,9 +1151,6 @@ void TextViewerWidget::drawLine(QPainter& painter, int lineIndex, int x, int y, 
             }
 
             QString text(start, textPointer - start);
-
-            if (*textPointer == '\t')
-                text += ' '; // draw the tab as one space
 
             int width = paintText(text, painter, metrics, x, y, curFgColor, curBgColor, curFont);
 
