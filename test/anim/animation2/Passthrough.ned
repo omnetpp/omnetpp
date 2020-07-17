@@ -21,5 +21,5 @@ module Passthrough
         input in;
         output out;
     connections:
-        in --> Delay --> out;
+        in --> out;
 }
