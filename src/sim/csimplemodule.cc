@@ -536,6 +536,11 @@ void cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
     getSimulation()->insertEvent(msg);
 }
 
+void cSimpleModule::scheduleAfter(simtime_t delay, cMessage *msg)
+{
+    scheduleAt(simTime() + delay, msg);
+}
+
 cMessage *cSimpleModule::cancelEvent(cMessage *msg)
 {
     // make sure we really have the message and it is scheduled

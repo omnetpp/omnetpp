@@ -511,8 +511,19 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * However, after the message was delivered to the module or cancelled,
      * you can schedule it again -- so you can reuse the same message
      * object for timeouts over and over during the whole simulation.
+     *
+     * @see scheduleAfter()
      */
     virtual void scheduleAt(simtime_t t, cMessage *msg);
+
+    /**
+     * Schedules a self-message for the given time delta after the current
+     * simulation time. This method is equivalent to scheduleAt(simTime()+delay, msg);
+     * See scheduleAt() for more information.
+     *
+     * @see scheduleAt()
+     */
+    virtual void scheduleAfter(simtime_t delay, cMessage *msg);
 
     /**
      * Removes the given message from the future events. The message
