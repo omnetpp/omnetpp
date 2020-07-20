@@ -55,7 +55,7 @@ void Source::handleMessage(cMessage *msg)
         return;
     }
 
-    int packetByteLength = 4096;
+    int packetByteLength = intuniform(4, 65536);
 
     EV << "Performing operation " << operation << " out of [0.." << numOperations-1 << "]...\n";
 

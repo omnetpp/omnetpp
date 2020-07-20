@@ -29,7 +29,7 @@ void SimpleSource::handleMessage(cMessage *msg)
     delete msg;
 
     cPacket *jobA = new cPacket("cake");
-    jobA->setByteLength(64000);
+    jobA->setByteLength(intuniform(4, 65536));
     send(jobA, "out");
 
     scheduleAt(simTime() + 1, new cMessage("tick"));
