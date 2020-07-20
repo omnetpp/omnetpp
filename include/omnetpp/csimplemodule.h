@@ -191,6 +191,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
 {
     friend class cModule;
     friend class cSimulation;
+    friend class cMessage;
 
   private:
     enum {
@@ -216,6 +217,10 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     static SendOptions resolveSendDirectOptions(simtime_t propagationDelay, simtime_t duration);
     void deleteObsoletedTransmissionFromFES(long origPacketId, cPacket *updatePkt);
     void throwNotOwnerOfMessage(const char *sendOp, cMessage *msg);
+
+  protected:
+    // internal: handle a message event, basically dispatch to handleMessage() or activity(); not supposed to be overridden by models
+    virtual void doMessageEvent(cMessage *msg);
 
   protected:
     /** @name Hooks for defining module behavior.

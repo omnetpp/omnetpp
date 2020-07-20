@@ -65,11 +65,6 @@ extern std::set<cOwnedObject *> objectlist;
 void printAllObjects();
 #endif
 
-#ifdef NDEBUG
-#define DEBUG_TRAP_IF_REQUESTED    /*no-op*/
-#else
-#define DEBUG_TRAP_IF_REQUESTED    { if (trapOnNextEvent) { trapOnNextEvent = false; if (getEnvir()->ensureDebugger()) DEBUG_TRAP; } }
-#endif
 
 /**
  * Stops the simulation at the time it is scheduled for.
@@ -610,6 +605,13 @@ void cSimulation::transferTo(cSimpleModule *module)
     }
 }
 
+
+#ifdef NDEBUG
+#define DEBUG_TRAP_IF_REQUESTED    /*no-op*/
+#else
+#define DEBUG_TRAP_IF_REQUESTED    { if (trapOnNextEvent) { trapOnNextEvent = false; if (getEnvir()->ensureDebugger()) DEBUG_TRAP; } }
+#endif
+
 void cSimulation::executeEvent(cEvent *event)
 {
 #ifndef NDEBUG
@@ -632,17 +634,14 @@ void cSimulation::executeEvent(cEvent *event)
     // sent out again
     event->setPreviousEventNumber(currentEventNumber);
 
-    cSimpleModule *module = nullptr;
+    // ignore fingerprint of plain events, as they tend to be internal (like cEndSimulationEvent)
+    if (getFingerprintCalculator() && event->isMessage())
+        getFingerprintCalculator()->addEvent(event);
+
     try {
-        if (event->isMessage()) {
-            cMessage *msg = static_cast<cMessage *>(event);
-            module = static_cast<cSimpleModule *>(msg->getArrivalModule());  // existence and simpleness is asserted in cMessage::isStale()
-            doMessageEvent(msg, module);
-        }
-        else {
+        if (!event->isMessage())
             DEBUG_TRAP_IF_REQUESTED;  // ABOUT TO PROCESS THE EVENT YOU REQUESTED TO DEBUG -- SELECT "STEP INTO" IN YOUR DEBUGGER
-            event->execute();
-        }
+        event->execute();
     }
     catch (cDeleteModuleException& e) {
         setGlobalContext();
@@ -670,34 +669,7 @@ void cSimulation::executeEvent(cEvent *event)
     // the time of the next event, it should call guessNextSimtime().
 }
 
-void cSimulation::doMessageEvent(cMessage *msg, cSimpleModule *module)
-{
-    // switch to the module's context
-    setContext(module);
-
-    // give msg to module (set ownership)
-    module->take(msg);
-
-    if (getFingerprintCalculator())
-        getFingerprintCalculator()->addEvent(msg);
-
-    if (!module->initialized())
-        throw cRuntimeError(module, "Module not initialized (did you forget to invoke "
-                                    "callInitialize() for a dynamically created module?)");
-
-    if (module->usesActivity()) {
-        // switch to the coroutine of the module's activity(). We'll get back control
-        // when the module executes a receive() or wait() call.
-        // If there was an error during simulation, the call will throw an exception
-        // (which originally occurred inside activity()).
-        msgForActivity = msg;
-        transferTo(module);
-    }
-    else {
-        DEBUG_TRAP_IF_REQUESTED;  // YOU ARE ABOUT TO ENTER THE handleMessage() CALL YOU REQUESTED -- SELECT "STEP INTO" IN YOUR DEBUGGER
-        module->handleMessage(msg);
-    }
-}
+#undef DEBUG_TRAP_IF_REQUESTED
 
 void cSimulation::transferToMain()
 {

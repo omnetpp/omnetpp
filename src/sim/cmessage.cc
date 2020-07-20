@@ -350,9 +350,16 @@ bool cMessage::isStale()
     return !module || module->isTerminated();
 }
 
+#ifdef NDEBUG
+#define DEBUG_TRAP_IF_REQUESTED    /*no-op*/
+#else
+#define DEBUG_TRAP_IF_REQUESTED    { if (simulation->trapOnNextEvent) { simulation->trapOnNextEvent = false; if (getEnvir()->ensureDebugger()) DEBUG_TRAP; } }
+#endif
+
 void cMessage::execute()
 {
-    throw new cRuntimeError("Illegal call to cMessage::execute()");
+    cSimpleModule *module = static_cast<cSimpleModule *>(getArrivalModule());
+    module->doMessageEvent(this);
 }
 
 }  // namespace omnetpp

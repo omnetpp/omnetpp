@@ -159,6 +159,7 @@ class SIM_API cMessage : public cEvent
     // overridden from cEvent: return the arrival module
     virtual cObject *getTargetObject() const override;
 
+  protected:
     // overridden from cEvent
     virtual void execute() override;
 

@@ -743,6 +743,34 @@ cMessage *cSimpleModule::receive(simtime_t t)
 
 //-------------
 
+void cSimpleModule::doMessageEvent(cMessage *msg)
+{
+    cSimulation *simulation = module->getSimulation();
+
+    // switch to the module's context
+    simulation->setContext(this);
+
+    // get ownership
+    take(msg);
+
+    if (!initialized())
+        throw cRuntimeError(this, "Module not initialized (did you forget to invoke "
+                                  "callInitialize() for a dynamically created module?)");
+
+    if (usesActivity()) {
+        // switch to the coroutine of the module's activity(). We'll get back control
+        // when the module executes a receive() or wait() call.
+        // If there was an error during simulation, the call will throw an exception
+        // (which originally occurred inside activity()).
+        simulation->msgForActivity = msg;
+        simulation->transferTo(this);
+    }
+    else {
+        DEBUG_TRAP_IF_REQUESTED;  // YOU ARE ABOUT TO ENTER THE handleMessage() CALL YOU REQUESTED -- SELECT "STEP INTO" IN YOUR DEBUGGER
+        handleMessage(msg);
+    }
+}
+
 void cSimpleModule::activity()
 {
     // default thread function
