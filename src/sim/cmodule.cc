@@ -435,8 +435,7 @@ cGate::Desc *cModule::addGateDesc(const char *gatename, cGate::Type type, bool i
     }
 
     // allocate new array
-    //TODO preallocate a larger descv[] in advance?
-    cGate::Desc *newv = new cGate::Desc[gateDescArraySize+1];
+    cGate::Desc *newv = new cGate::Desc[gateDescArraySize + 1];
     memcpy(newv, gateDescArray, gateDescArraySize * sizeof(cGate::Desc));
 
     // adjust desc pointers in already existing gates
@@ -874,15 +873,6 @@ bool cModule::isGateVector(const char *gatename) const
     return desc->isVector();
 }
 
-//XXX test code:
-//    bool operator()(cGate *a, cGate *b) {
-//        printf("   comparing %s, %s ==> ", (a?a->getFullName():nullptr), (b?b->getFullName():nullptr) );
-//        bool x = (a && a->isConnectedInside()) > (b && b->isConnectedInside());
-//        printf("%d > %d : ", (a && a->isConnectedInside()), (b && b->isConnectedInside()));
-//        printf("%d\n", x);
-//        return x;
-//    }
-
 struct less_gateConnectedInside
 {
     bool operator()(cGate *a, cGate *b) { return (a && a->isConnectedInside()) > (b && b->isConnectedInside()); }
@@ -958,7 +948,7 @@ cGate *cModule::getOrCreateFirstUnconnectedGate(const char *gatename, char suffi
 
     // no unconnected gate: expand gate vector
     if (expand) {
-        setGateSize(desc->name->name.c_str(), oldSize+1);  //FIXME spare extra name lookup!!!
+        setGateSize(desc->name->name.c_str(), oldSize + 1);
         return inputSide ? desc->input.gatev[oldSize] : desc->output.gatev[oldSize];
     }
     else {
@@ -1001,7 +991,7 @@ void cModule::getOrCreateFirstUnconnectedGatePair(const char *gatename,
 
     // no unconnected gate: expand gate vector
     if (expand) {
-        setGateSize(desc->name->name.c_str(), oldSize+1);  //FIXME spare extra name lookup!!!
+        setGateSize(desc->name->name.c_str(), oldSize + 1);
         gatein = desc->input.gatev[oldSize];
         gateout = desc->output.gatev[oldSize];
         return;
