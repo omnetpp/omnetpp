@@ -526,6 +526,24 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     virtual void scheduleAfter(simtime_t delay, cMessage *msg);
 
     /**
+     * Equivalent to scheduleAt(simtime_t t, cMessage *msg), except that
+     * if the message is currently scheduled, the method cancels it before
+     * scheduling it again.
+     *
+     * @see scheduleAt(), cancelEvent(), cMessage::isScheduled()
+     */
+    virtual void rescheduleAt(simtime_t t, cMessage *msg);
+
+    /**
+     * Equivalent to scheduleAfter(simtime_t t, cMessage *msg), except that
+     * if the message is currently scheduled, the method cancels it before
+     * scheduling it again.
+     *
+     * @see scheduleAfter(), cancelEvent(), cMessage::isScheduled()
+     */
+    virtual void rescheduleAfter(simtime_t delay, cMessage *msg);
+
+    /**
      * Removes the given message from the future events. The message
      * needs to have been sent using the scheduleAt() function.
      * This function can be used to cancel a timer implemented with scheduleAt().

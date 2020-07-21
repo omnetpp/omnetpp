@@ -541,6 +541,18 @@ void cSimpleModule::scheduleAfter(simtime_t delay, cMessage *msg)
     scheduleAt(simTime() + delay, msg);
 }
 
+void cSimpleModule::rescheduleAt(simtime_t t, cMessage *msg)
+{
+    cancelEvent(msg);
+    scheduleAt(t, msg);
+}
+
+void cSimpleModule::rescheduleAfter(simtime_t delay, cMessage *msg)
+{
+    cancelEvent(msg);
+    scheduleAt(delay, msg);
+}
+
 cMessage *cSimpleModule::cancelEvent(cMessage *msg)
 {
     // make sure we really have the message and it is scheduled
