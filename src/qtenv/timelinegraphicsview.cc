@@ -363,7 +363,7 @@ void TimeLineGraphicsView::paintMessages(QVector<cMessage *> messages, bool want
 
             if (row < numRows) {
                 QBrush brush(Qt::SolidPattern);
-                QColor color = palette().color(QPalette::Text);
+                QColor color = palette().color(QPalette::Active, QPalette::WindowText);
                 color.setAlpha(isHighlighted ? 255 : 40);
                 brush.setColor(color);
 
@@ -503,7 +503,7 @@ void TimeLineGraphicsView::rebuildScene()
 
     // draw axis
     QPen pen;
-    pen.setColor(Qt::GlobalColor::black);
+    pen.setColor(palette().color(QPalette::Active, QPalette::WindowText));
     pen.setStyle(Qt::DotLine);
     scene()->addLine(arrowStartX, axisY, minExponentX, axisY, pen);
     scene()->addLine(maxExponentX, axisY, arrowEndX, axisY, pen);
@@ -513,7 +513,7 @@ void TimeLineGraphicsView::rebuildScene()
     scene()->addLine(arrowEndX-7, axisY+2, arrowEndX, axisY, pen);
 
     // draw zero delta tray
-    scene()->setBackgroundBrush(QPalette().background());
+    scene()->setBackgroundBrush(palette().color(QPalette::Active, QPalette::Window));
     int h = 5;
     scene()->addLine(zeroStartX-3, axisY-h, zeroStartX-3, axisY+h, pen);
     scene()->addLine(zeroEndX+3, axisY-h, zeroEndX+3, axisY+h, pen);
@@ -538,7 +538,7 @@ void TimeLineGraphicsView::rebuildScene()
                 int labelWidth = simpleText.boundingRect().width();
 
                 QGraphicsSimpleTextItem *simpleTextItem = new QGraphicsSimpleTextItem(label);
-                simpleTextItem->setBrush(QPalette().text());
+                simpleTextItem->setBrush(palette().color(QPalette::Active, QPalette::WindowText));
                 simpleTextItem->setFont(tickLabelFont);
                 simpleTextItem->setPos(x - labelWidth/2, axisY+5);
                 scene()->addItem(simpleTextItem);
@@ -548,7 +548,7 @@ void TimeLineGraphicsView::rebuildScene()
         if (drawMinorTicks)
             for (int i = 2; i <= 9; i++) {
                 int x = getXForTimeDelta(SimTime(i, (SimTimeUnit)exp));
-                scene()->addLine(x, axisY-2, x, axisY+2);
+                scene()->addLine(x, axisY-2, x, axisY+2, pen);
             }
     }
 
@@ -558,7 +558,7 @@ void TimeLineGraphicsView::rebuildScene()
         int labelWidth = simpleText.boundingRect().width();
 
         QGraphicsSimpleTextItem *simpleTextItem = new QGraphicsSimpleTextItem(label);
-        simpleTextItem->setBrush(QPalette().text());
+        simpleTextItem->setBrush(palette().color(QPalette::Active, QPalette::WindowText));
         simpleTextItem->setFont(tickLabelFont);
         simpleTextItem->setPos((zeroEndX+zeroStartX)/2 - labelWidth/2, axisY+5);
         scene()->addItem(simpleTextItem);
