@@ -2,3 +2,5 @@ qtenv.pri
 moc_*.cpp
 ui_*.h
 qrc_*.cpp
+icons_dark.qrc
+icons/**/*_dark.svg
