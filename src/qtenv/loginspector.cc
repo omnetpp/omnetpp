@@ -190,7 +190,7 @@ void LogInspector::addOwnActions(QToolBar *toolBar)
     toolBar->addAction(QIcon(":/tools/filter"), "Filter window contents (Ctrl+H)",
                        this, SLOT(onFilterButton()))->setShortcut(Qt::ControlModifier + Qt::Key_H);
     configureMessagePrinterAction
-            = toolBar->addAction(QIcon(":/tools/config"), "Configure message display",
+            = toolBar->addAction(QIcon(":/tools/winconfig"), "Configure message display",
                                  this, SLOT(onMessagePrinterTagsButton()));
 
     toolBar->addSeparator();

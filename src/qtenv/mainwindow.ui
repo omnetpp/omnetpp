@@ -673,7 +673,7 @@ Total number of messages created since start of the simulation</string>
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/objects/fes</normaloff>:/objects/fes</iconset>
+     <normaloff>:/tools/fes</normaloff>:/tools/fes</iconset>
    </property>
    <property name="text">
     <string>&amp;Timeline</string>

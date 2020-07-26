@@ -38,10 +38,14 @@
 #include "omnetpp/cregistrationlist.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/csimplemodule.h"
+#include "omnetpp/cpacket.h"
 #include "omnetpp/cchannel.h"
 #include "omnetpp/cgate.h"
 #include "omnetpp/cpar.h"
+#include "omnetpp/cresultlistener.h"
+#include "omnetpp/cresultfilter.h"
 #include "omnetpp/cstatistic.h"
+#include "omnetpp/cresultrecorder.h"
 #include "omnetpp/coutvector.h"
 #include "omnetpp/ccanvas.h"
 #include "omnetpp/cqueue.h"
@@ -244,43 +248,53 @@ const char *getObjectIconName(cObject *object)
 {
     const char *iconName;
     if (object == nullptr)
-        iconName = "none_vs";
+        iconName = "none";
     else if (dynamic_cast<cModule *>(object) && ((cModule *)object)->isPlaceholder())
-        iconName = "placeholder_vs";
+        iconName = "placeholder";
     else if (dynamic_cast<cSimpleModule *>(object))
-        iconName = "simple_vs";
+        iconName = "simple";
     else if (dynamic_cast<cModule *>(object))
-        iconName = "compound_vs";
+        iconName = "compound";
     else if (dynamic_cast<cWatchBase *>(object))
-        iconName = "cogwheel_vs";
+        iconName = "watch";
+    else if (dynamic_cast<cPacket *>(object))
+        iconName = "packet";
     else if (dynamic_cast<cMessage *>(object))
-        iconName = "message_vs";
+        iconName = "message";
+    else if (dynamic_cast<cEvent *>(object))
+        iconName = "event";
     else if (dynamic_cast<cArray *>(object))
-        iconName = "container_vs";
+        iconName = "container";
     else if (dynamic_cast<cQueue *>(object))
-        iconName = "queue_vs";
+        iconName = "queue";
     else if (dynamic_cast<cGate *>(object))
-        iconName = "gate_vs";
+        iconName = "gate";
     else if (dynamic_cast<cPar *>(object))
-        iconName = "param_vs";
+        iconName = "param";
     else if (dynamic_cast<cChannel *>(object))
-        iconName = "chan_vs";
+        iconName = "chan";
+    else if (dynamic_cast<cResultFilter *>(object))
+        iconName = "filter";
     else if (dynamic_cast<cOutVector *>(object))
-        iconName = "outvect_vs";
+        iconName = "outvect";
     else if (dynamic_cast<cStatistic *>(object))
-        iconName = "stat_vs";
+        iconName = "stat";
+    else if (dynamic_cast<cResultRecorder *>(object))
+        iconName = "stat";
+    else if (dynamic_cast<cResultListener *>(object))
+        iconName = "listener";
     else if (dynamic_cast<cFigure *>(object))
-        iconName = "figure_vs";
+        iconName = "figure";
     else if (dynamic_cast<cCanvas *>(object))
-        iconName = "canvas_vs";
+        iconName = "canvas";
     else if (dynamic_cast<cSimulation *>(object))
-        iconName = "container_vs";
+        iconName = "container";
     else if (dynamic_cast<cFutureEventSet *>(object))
-        iconName = "container_vs";
+        iconName = "fes";
     else if (dynamic_cast<cRegistrationList *>(object))
-        iconName = "container_vs";
+        iconName = "list";
     else
-        iconName = "cogwheel_vs";
+        iconName = "cogwheel";
 
     return iconName;
 }
