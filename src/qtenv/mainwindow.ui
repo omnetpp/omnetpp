@@ -21,7 +21,7 @@
    <bool>false</bool>
   </property>
   <property name="styleSheet">
-   <string notr="true"/>
+   <string notr="true">this is overwritten by Qtenv after instantiation</string>
   </property>
   <property name="unifiedTitleAndToolBarOnMac">
    <bool>false</bool>
@@ -390,12 +390,6 @@ Total number of messages created since start of the simulation</string>
    </property>
    <property name="allowedAreas">
     <set>Qt::TopToolBarArea</set>
-   </property>
-   <property name="iconSize">
-    <size>
-     <width>30</width>
-     <height>19</height>
-    </size>
    </property>
    <property name="floatable">
     <bool>false</bool>
