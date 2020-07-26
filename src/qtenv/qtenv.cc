@@ -2591,9 +2591,9 @@ void Qtenv::updateQtFonts()
                 "QLabel#simTimeLabel, QLabel#eventNumLabel { font: " + QString::number(timeFont.pointSize()) + "pt " + timeFont.family() + ";"
                 "background-color: palette(base); border: 1px solid palette(mid); }"
                 // avoids too tall toolbars on Mac
-                "QToolButton { height: 19px; margin: 0px; }"
+                "QToolButton { width: 24px; height: 24px; margin: 0px; }"
                 // makes tool buttons tighty packed, background explicitly painted, frame disabled
-                "QToolBar { spacing: 0px; background: palette(window); border-style: none; }"
+                "QToolBar { spacing: 0px; background: palette(window); border-style: none; icon-size: 24px; }"
           #ifdef Q_WS_MAC // Mac-specific workarounds
                 // replacing the ugly default gradient
                 "QToolBar::separator { background: palette(window); }"
