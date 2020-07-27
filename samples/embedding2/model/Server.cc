@@ -28,7 +28,7 @@ void Server::initialize()
     endRxEvent = new cMessage("end-reception");
     channelBusy = false;
 
-    gate("in")->setDeliverOnReceptionStart(true);
+    gate("in")->setDeliverImmediately(true);
 
     currentCollisionNumFrames = 0;
     totalFrames = 0;

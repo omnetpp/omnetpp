@@ -30,7 +30,7 @@ void Server::initialize()
     channelBusy = false;
     emit(channelStateSignal, IDLE);
 
-    gate("in")->setDeliverOnReceptionStart(true);
+    gate("in")->setDeliverImmediately(true);
 
     currentCollisionNumFrames = 0;
     receiveCounter = 0;
