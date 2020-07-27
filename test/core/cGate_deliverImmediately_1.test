@@ -1,5 +1,5 @@
 %description:
-Basic test for cGate::deliverOnReceptionStart().
+Basic test for cGate::deliverImmediately().
 
 
 %activity:
@@ -15,9 +15,9 @@ channel->setDelay(0.1);  // 100ms
 gate("out")->connectTo(gate("in"), channel);
 
 //
-// Experiment 1: sending with deliverOnStart set
+// Experiment 1: sending with deliverImmediately set
 //
-gate("in")->setDeliverOnReceptionStart(true);
+gate("in")->setDeliverImmediately(true);
 
 {
     cPacket *pkt = new cPacket();
@@ -37,9 +37,9 @@ gate("in")->setDeliverOnReceptionStart(true);
 wait(gate("out")->getTransmissionChannel()->getTransmissionFinishTime() - simTime());
 
 //
-// Experiment 2: sending with deliverOnStart flag cleared
+// Experiment 2: sending with deliverImmediately flag cleared
 //
-gate("in")->setDeliverOnReceptionStart(false);
+gate("in")->setDeliverImmediately(false);
 
 // (block copied from above)
 {

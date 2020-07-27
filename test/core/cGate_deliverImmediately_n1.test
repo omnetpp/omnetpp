@@ -1,0 +1,12 @@
+%description:
+Test that cGate::setDeliverImmediately() may NOT be invoked on an output gate
+
+%activity:
+addGate("out", cGate::OUTPUT);
+gate("out")->setDeliverImmediately(true);
+
+%exitcode: 1
+
+%contains: stderr
+setDeliverImmediately() may only be invoked on an input gate
+
