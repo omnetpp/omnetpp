@@ -1,0 +1,186 @@
+%description:
+Test cSimpleModule.send() with SendOptions and no channel, IdealChannel and DelayChannel.
+
+%file: test.ned
+
+simple Sender
+{
+    gates:
+        output out;
+}
+
+simple Receiver
+{
+    gates:
+        input in;
+}
+
+network Test
+{
+    submodules:
+        sender : Sender;
+        receiver : Receiver;
+    connections allowunconnected:
+}
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+cmdenv-event-banners = false
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Sender : public cSimpleModule
+{
+  public:
+    Sender() : cSimpleModule(32768) { }
+    virtual void activity() override;
+    void testWithCurrentChannel(const char *channelDesc);
+    void trySend(cMessage *msg, const SendOptions& options);
+};
+
+Define_Module(Sender);
+
+void Sender::trySend(cMessage *msg, const SendOptions& options)
+{
+    try {
+        EV << "at t=" << simTime().ustr() << " send " << (msg->isPacket() ? "packet" : "message") << " with " << options.str() << " --> ";
+        send(msg, options, "out");
+        EV << " arrival=" << msg->getArrivalTime().ustr() << endl;
+    }
+    catch (const cRuntimeError& e) {
+        EV << "ERROR: " << e.getFormattedMessage() << endl;
+        delete msg;
+    }
+}
+
+void Sender::testWithCurrentChannel(const char *channelDesc)
+{
+    EV << "\nTESTING WITH " << channelDesc << ":\n\n";
+
+    trySend(new cMessage(), SendOptions::DEFAULT);
+    trySend(new cMessage(), SendOptions().after(0.2));
+    trySend(new cMessage(), SendOptions().propagationDelay(0.1));
+
+    trySend(new cMessage(), SendOptions().duration(0));
+    trySend(new cMessage(), SendOptions().duration(0.1));
+    trySend(new cPacket(), SendOptions().duration(0));
+    trySend(new cPacket(), SendOptions().duration(0.1));
+
+    trySend(new cMessage(), SendOptions().updateTx(99));
+    trySend(new cPacket(), SendOptions().updateTx(99));
+
+    cPacket *origPkt = new cPacket();
+    long origPktId = origPkt->getId();
+    trySend(origPkt, SendOptions::DEFAULT);
+    trySend(new cPacket(), SendOptions().updateTx(origPktId));
+    trySend(new cPacket(), SendOptions().updateTx(origPktId, 1));
+    trySend(new cPacket(), SendOptions().finishTx(origPktId));
+}
+
+void Sender::activity()
+{
+    cGate *other = getParentModule()->getSubmodule("receiver")->gate("in");
+    gate("out")->connectTo(other);
+
+    testWithCurrentChannel("no channel");
+
+    gate("out")->disconnect();
+    gate("out")->connectTo(other, cChannelType::createIdealChannel("c"));
+
+    testWithCurrentChannel("IdealChannel");
+
+    gate("out")->disconnect();
+    gate("out")->connectTo(other, cChannelType::createDelayChannel("c"));
+
+    testWithCurrentChannel("DelayChannel with delay=0");
+
+    cDelayChannel *delayChannel = check_and_cast<cDelayChannel*>(gate("out")->getChannel());
+    delayChannel->setDelay(0.5);
+
+    testWithCurrentChannel("DelayChannel with delay=0.5");
+}
+
+class Receiver : public cSimpleModule
+{
+  public:
+    Receiver() { }
+    virtual void handleMessage(cMessage *msg) override {delete msg;}
+};
+
+Define_Module(Receiver);
+
+}; //namespace
+
+%contains: stdout
+TESTING WITH no channel:
+
+at t=0s send message with default -->  arrival=0s
+at t=0s send message with sendDelay=200ms -->  arrival=200ms
+at t=0s send message with propagationDelay=100ms --> ERROR: send()/sendDelayed(): Specifying a propagation delay in the options is only allowed for sendDirect() -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send message with duration=0s --> ERROR: send(): (omnetpp::cMessage) is a message, and the duration, remainingDuration and origPacketId send options are only allowed on packets -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send message with duration=100ms --> ERROR: send(): (omnetpp::cMessage) is a message, and the duration, remainingDuration and origPacketId send options are only allowed on packets -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send packet with duration=0s --> ERROR: Error sending (omnetpp::cPacket): The duration and remainingDuration send options are only allowed when sending through a transmission channel -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send packet with duration=100ms --> ERROR: Error sending (omnetpp::cPacket): The duration and remainingDuration send options are only allowed when sending through a transmission channel -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send message with origPacketId=99 --> ERROR: send(): (omnetpp::cMessage) is a message, and the duration, remainingDuration and origPacketId send options are only allowed on packets -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send packet with origPacketId=99 --> ERROR: Cannot send transmission update packet (omnetpp::cPacket) with origPacketId=99 to a gate with the default (=false) deliverImmediately setting: The original packet (or obsoleted update) identified by origPacketId was not found in the FES, so it is not possible to replace it with the update packet. Perhaps it has already been delivered to the target module. Possible solutions include sending the update earlier than the transmission end time, adding a propagation delay to the channel, and playing with event priorities to force a different event execution order -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send packet with default -->  arrival=0s
+at t=0s send packet with origPacketId=10 -->  arrival=0s
+at t=0s send packet with origPacketId=10 remainingDuration=1s --> ERROR: Error sending (omnetpp::cPacket): The duration and remainingDuration send options are only allowed when sending through a transmission channel -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send packet with origPacketId=10 remainingDuration=0s --> ERROR: Error sending (omnetpp::cPacket): The duration and remainingDuration send options are only allowed when sending through a transmission channel -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+
+TESTING WITH IdealChannel:
+
+at t=0s send message with default -->  arrival=0s
+at t=0s send message with sendDelay=200ms -->  arrival=200ms
+at t=0s send message with propagationDelay=100ms --> ERROR: send()/sendDelayed(): Specifying a propagation delay in the options is only allowed for sendDirect() -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send message with duration=0s --> ERROR: send(): (omnetpp::cMessage) is a message, and the duration, remainingDuration and origPacketId send options are only allowed on packets -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send message with duration=100ms --> ERROR: send(): (omnetpp::cMessage) is a message, and the duration, remainingDuration and origPacketId send options are only allowed on packets -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send packet with duration=0s --> ERROR: Error sending (omnetpp::cPacket): The duration and remainingDuration send options are only allowed when sending through a transmission channel -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send packet with duration=100ms --> ERROR: Error sending (omnetpp::cPacket): The duration and remainingDuration send options are only allowed when sending through a transmission channel -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send message with origPacketId=99 --> ERROR: send(): (omnetpp::cMessage) is a message, and the duration, remainingDuration and origPacketId send options are only allowed on packets -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send packet with origPacketId=99 --> ERROR: Cannot send transmission update packet (omnetpp::cPacket) with origPacketId=99 to a gate with the default (=false) deliverImmediately setting: The original packet (or obsoleted update) identified by origPacketId was not found in the FES, so it is not possible to replace it with the update packet. Perhaps it has already been delivered to the target module. Possible solutions include sending the update earlier than the transmission end time, adding a propagation delay to the channel, and playing with event priorities to force a different event execution order -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send packet with default -->  arrival=0s
+at t=0s send packet with origPacketId=23 -->  arrival=0s
+at t=0s send packet with origPacketId=23 remainingDuration=1s --> ERROR: Error sending (omnetpp::cPacket): The duration and remainingDuration send options are only allowed when sending through a transmission channel -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send packet with origPacketId=23 remainingDuration=0s --> ERROR: Error sending (omnetpp::cPacket): The duration and remainingDuration send options are only allowed when sending through a transmission channel -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+
+TESTING WITH DelayChannel with delay=0:
+
+at t=0s send message with default -->  arrival=0s
+at t=0s send message with sendDelay=200ms -->  arrival=200ms
+at t=0s send message with propagationDelay=100ms --> ERROR: send()/sendDelayed(): Specifying a propagation delay in the options is only allowed for sendDirect() -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send message with duration=0s --> ERROR: send(): (omnetpp::cMessage) is a message, and the duration, remainingDuration and origPacketId send options are only allowed on packets -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send message with duration=100ms --> ERROR: send(): (omnetpp::cMessage) is a message, and the duration, remainingDuration and origPacketId send options are only allowed on packets -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send packet with duration=0s --> ERROR: Error sending (omnetpp::cPacket): The duration and remainingDuration send options are only allowed when sending through a transmission channel -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send packet with duration=100ms --> ERROR: Error sending (omnetpp::cPacket): The duration and remainingDuration send options are only allowed when sending through a transmission channel -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send message with origPacketId=99 --> ERROR: send(): (omnetpp::cMessage) is a message, and the duration, remainingDuration and origPacketId send options are only allowed on packets -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send packet with origPacketId=99 --> ERROR: Cannot send transmission update packet (omnetpp::cPacket) with origPacketId=99 to a gate with the default (=false) deliverImmediately setting: The original packet (or obsoleted update) identified by origPacketId was not found in the FES, so it is not possible to replace it with the update packet. Perhaps it has already been delivered to the target module. Possible solutions include sending the update earlier than the transmission end time, adding a propagation delay to the channel, and playing with event priorities to force a different event execution order -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send packet with default -->  arrival=0s
+at t=0s send packet with origPacketId=36 -->  arrival=0s
+at t=0s send packet with origPacketId=36 remainingDuration=1s --> ERROR: Error sending (omnetpp::cPacket): The duration and remainingDuration send options are only allowed when sending through a transmission channel -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send packet with origPacketId=36 remainingDuration=0s --> ERROR: Error sending (omnetpp::cPacket): The duration and remainingDuration send options are only allowed when sending through a transmission channel -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+
+TESTING WITH DelayChannel with delay=0.5:
+
+at t=0s send message with default -->  arrival=500ms
+at t=0s send message with sendDelay=200ms -->  arrival=700ms
+at t=0s send message with propagationDelay=100ms --> ERROR: send()/sendDelayed(): Specifying a propagation delay in the options is only allowed for sendDirect() -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send message with duration=0s --> ERROR: send(): (omnetpp::cMessage) is a message, and the duration, remainingDuration and origPacketId send options are only allowed on packets -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send message with duration=100ms --> ERROR: send(): (omnetpp::cMessage) is a message, and the duration, remainingDuration and origPacketId send options are only allowed on packets -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send packet with duration=0s --> ERROR: Error sending (omnetpp::cPacket): The duration and remainingDuration send options are only allowed when sending through a transmission channel -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send packet with duration=100ms --> ERROR: Error sending (omnetpp::cPacket): The duration and remainingDuration send options are only allowed when sending through a transmission channel -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send message with origPacketId=99 --> ERROR: send(): (omnetpp::cMessage) is a message, and the duration, remainingDuration and origPacketId send options are only allowed on packets -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send packet with origPacketId=99 --> ERROR: Cannot send transmission update packet (omnetpp::cPacket) with origPacketId=99 to a gate with the default (=false) deliverImmediately setting: The original packet (or obsoleted update) identified by origPacketId was not found in the FES, so it is not possible to replace it with the update packet. Perhaps it has already been delivered to the target module. Possible solutions include sending the update earlier than the transmission end time, adding a propagation delay to the channel, and playing with event priorities to force a different event execution order -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send packet with default -->  arrival=500ms
+at t=0s send packet with origPacketId=49 -->  arrival=500ms
+at t=0s send packet with origPacketId=49 remainingDuration=1s --> ERROR: Error sending (omnetpp::cPacket): The duration and remainingDuration send options are only allowed when sending through a transmission channel -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+at t=0s send packet with origPacketId=49 remainingDuration=0s --> ERROR: Error sending (omnetpp::cPacket): The duration and remainingDuration send options are only allowed when sending through a transmission channel -- in module (cSimpleModule_sendOptions_1::Sender) Test.sender (id=2), at t=0s, event #1
+
