@@ -57,19 +57,19 @@ void cISPEventLogger::endRun()
     fclose(fout);
 }
 
-void cISPEventLogger::processReceivedMessage(cMessage *msg, int destModuleId, int destGateId, int sourceProcId)
+void cISPEventLogger::processReceivedMessage(cMessage *msg, const SendOptions& options, int destModuleId, int destGateId, int sourceProcId)
 {
     msg->setSchedulingPriority(sourceProcId);
-    cParsimProtocolBase::processReceivedMessage(msg, destModuleId, destGateId, sourceProcId);
+    cParsimProtocolBase::processReceivedMessage(msg, options, destModuleId, destGateId, sourceProcId);
 }
 
-void cISPEventLogger::processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data)
+void cISPEventLogger::processOutgoingMessage(cMessage *msg, const SendOptions& options, int procId, int moduleId, int gateId, void *data)
 {
     if (msg->getSchedulingPriority() != 0)
         throw cRuntimeError("cISPEventLogger: Outgoing message (%s)%s has nonzero priority set -- "
                             "this conflicts with ISP which uses priority for its own purposes",
                             msg->getClassName(), msg->getName());
-    cParsimProtocolBase::processOutgoingMessage(msg, procId, moduleId, gateId, data);
+    cParsimProtocolBase::processOutgoingMessage(msg, options, procId, moduleId, gateId, data);
 }
 
 cEvent *cISPEventLogger::takeNextEvent()

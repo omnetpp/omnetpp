@@ -134,7 +134,7 @@ class SIM_API cNullMessageProtocol : public cParsimProtocolBase
      * given partition), it also does lookahead calculation and optional
      * piggybacking of null message on the cMessage.
      */
-    virtual void processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data) override;
+    virtual void processOutgoingMessage(cMessage *msg, const SendOptions& options, int procId, int moduleId, int gateId, void *data) override;
 };
 
 }  // namespace omnetpp

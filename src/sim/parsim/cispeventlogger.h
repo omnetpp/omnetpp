@@ -46,7 +46,7 @@ class SIM_API cISPEventLogger : public cNullMessageProtocol
     // cIdealSimulationProtocol. This ensures that messages with equal
     // timestamps will get processed in the same order in both protocols,
     // whatever the concrete timing conditions.
-    void processReceivedMessage(cMessage *msg, int destModuleId, int destGateId, int sourceProcId) override;
+    void processReceivedMessage(cMessage *msg, const SendOptions& options, int destModuleId, int destGateId, int sourceProcId) override;
 
   public:
     /**
@@ -75,7 +75,7 @@ class SIM_API cISPEventLogger : public cNullMessageProtocol
      * Overridden to check that the model doesn't set message priority which
      * we need for our own purposes.
      */
-    void processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data) override;
+    void processOutgoingMessage(cMessage *msg, const SendOptions& options, int procId, int moduleId, int gateId, void *data) override;
 
     /**
      * Scheduler function. The addition to the base class is

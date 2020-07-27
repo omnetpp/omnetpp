@@ -24,6 +24,7 @@
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cparsimcomm.h"
 #include "omnetpp/ccommbuffer.h"
+#include "omnetpp/csimplemodule.h" // SendOptions
 #include "cparsimpartition.h"
 #include "messagetags.h"
 #include "cparsimprotocolbase.h"
@@ -38,12 +39,33 @@ cParsimProtocolBase::~cParsimProtocolBase()
 {
 }
 
-void cParsimProtocolBase::processOutgoingMessage(cMessage *msg, int destProcId, int destModuleId, int destGateId, void *)
+SendOptions cParsimProtocolBase::unpackOptions(cCommBuffer *buffer)
+{
+    SendOptions options;
+    buffer->unpack(options.sendDelay);
+    buffer->unpack(options.propagationDelay_);
+    buffer->unpack(options.duration_);
+    buffer->unpack(options.origPacketId);
+    buffer->unpack(options.remainingDuration);
+    return options;
+}
+
+void cParsimProtocolBase::packOptions(cCommBuffer *buffer, const SendOptions& options)
+{
+    buffer->pack(options.sendDelay);
+    buffer->pack(options.propagationDelay_);
+    buffer->pack(options.duration_);
+    buffer->pack(options.origPacketId);
+    buffer->pack(options.remainingDuration);
+}
+
+void cParsimProtocolBase::processOutgoingMessage(cMessage *msg, const SendOptions& options, int destProcId, int destModuleId, int destGateId, void *)
 {
     cCommBuffer *buffer = comm->createCommBuffer();
 
     buffer->pack(destModuleId);
     buffer->pack(destGateId);
+    packOptions(buffer, options);
     buffer->packObject(msg);
     comm->send(buffer, TAG_CMESSAGE, destProcId);
 
@@ -52,28 +74,29 @@ void cParsimProtocolBase::processOutgoingMessage(cMessage *msg, int destProcId, 
 
 void cParsimProtocolBase::processReceivedBuffer(cCommBuffer *buffer, int tag, int sourceProcId)
 {
-    int destModuleId;
-    int destGateId;
-    cMessage *msg;
-
     switch (tag) {
-        case TAG_CMESSAGE:
+        case TAG_CMESSAGE: {
+            int destModuleId;
+            int destGateId;
             buffer->unpack(destModuleId);
             buffer->unpack(destGateId);
-            msg = (cMessage *)buffer->unpackObject();
-            processReceivedMessage(msg, destModuleId, destGateId, sourceProcId);
+            SendOptions options = unpackOptions(buffer);
+            cMessage *msg = (cMessage *)buffer->unpackObject();
+            processReceivedMessage(msg, options, destModuleId, destGateId, sourceProcId);
             break;
+        }
 
-        default:
+        default: {
             partition->processReceivedBuffer(buffer, tag, sourceProcId);
             break;
+        }
     }
     buffer->assertBufferEmpty();
 }
 
-void cParsimProtocolBase::processReceivedMessage(cMessage *msg, int destModuleId, int destGateId, int sourceProcId)
+void cParsimProtocolBase::processReceivedMessage(cMessage *msg, const SendOptions& options, int destModuleId, int destGateId, int sourceProcId)
 {
-    partition->processReceivedMessage(msg, destModuleId, destGateId, sourceProcId);
+    partition->processReceivedMessage(msg, options, destModuleId, destGateId, sourceProcId);
 }
 
 void cParsimProtocolBase::receiveNonblocking()

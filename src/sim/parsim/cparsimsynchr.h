@@ -105,7 +105,7 @@ class SIM_API cParsimSynchronizer : public cScheduler
      * perform optimizations, such as piggybacking null messages
      * (see null message algorithm) on outgoing messages.
      */
-    virtual void processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data) = 0;
+    virtual void processOutgoingMessage(cMessage *msg, const SendOptions& options, int procId, int moduleId, int gateId, void *data) = 0;
 };
 
 }  // namespace omnetpp

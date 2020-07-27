@@ -77,7 +77,7 @@ class SIM_API cPlaceholderModule : public cModule // so, noncopyable
     /**
      * Not implemented: throws an exception when called.
      */
-    virtual void arrived(cMessage *msg, cGate *ongate, simtime_t t) override;
+    virtual void arrived(cMessage *msg, cGate *ongate, const SendOptions& options, simtime_t t) override;
 
     /**
      * Does nothing.

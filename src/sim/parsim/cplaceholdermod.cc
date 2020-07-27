@@ -48,7 +48,7 @@ std::string cPlaceholderModule::str() const
     return out.str();
 }
 
-void cPlaceholderModule::arrived(cMessage *msg, cGate *ongate, simtime_t t)
+void cPlaceholderModule::arrived(cMessage *msg, cGate *ongate, const SendOptions& options, simtime_t t)
 {
     throw cRuntimeError(this, "Internal error: arrived() called");
 }

@@ -47,7 +47,11 @@ class SIM_API cParsimProtocolBase : public cParsimSynchronizer
     virtual void processReceivedBuffer(cCommBuffer *buffer, int tag, int sourceProcId);
 
     // process cMessages received from other partitions
-    virtual void processReceivedMessage(cMessage *msg, int destModuleId, int destGateId, int sourceProcId);
+    virtual void processReceivedMessage(cMessage *msg, const SendOptions& options, int destModuleId, int destGateId, int sourceProcId);
+
+    // utility
+    SendOptions unpackOptions(cCommBuffer *buffer);
+    void packOptions(cCommBuffer *buffer, const SendOptions& options);
 
   public:
     /**
@@ -63,7 +67,7 @@ class SIM_API cParsimProtocolBase : public cParsimSynchronizer
     /**
      * Performs no optimization, just sends out the cMessage to the given partition.
      */
-    virtual void processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data) override;
+    virtual void processOutgoingMessage(cMessage *msg, const SendOptions& options, int procId, int moduleId, int gateId, void *data) override;
 };
 
 }  // namespace omnetpp

@@ -30,6 +30,7 @@
 #include "omnetpp/regmacros.h"
 #include "omnetpp/cchannel.h"
 #include "omnetpp/cfutureeventset.h"
+#include "omnetpp/csimplemodule.h" // SendOptions
 #include "cnullmessageprot.h"
 #include "clinkdelaylookahead.h"
 #include "cparsimpartition.h"
@@ -130,7 +131,7 @@ void cNullMessageProtocol::endRun()
     lookaheadcalc->endRun();
 }
 
-void cNullMessageProtocol::processOutgoingMessage(cMessage *msg, int destProcId, int destModuleId, int destGateId, void *data)
+void cNullMessageProtocol::processOutgoingMessage(cMessage *msg, const SendOptions& options, int destProcId, int destModuleId, int destGateId, void *data)
 {
     // calculate lookahead
     simtime_t lookahead = lookaheadcalc->getCurrentLookahead(msg, destProcId, data);
@@ -155,6 +156,7 @@ void cNullMessageProtocol::processOutgoingMessage(cMessage *msg, int destProcId,
         buffer->pack(eot);
         buffer->pack(destModuleId);
         buffer->pack(destGateId);
+        packOptions(buffer, options);
         buffer->packObject(msg);
         comm->send(buffer, TAG_CMESSAGE_WITH_NULLMESSAGE, destProcId);
     }
@@ -165,6 +167,7 @@ void cNullMessageProtocol::processOutgoingMessage(cMessage *msg, int destProcId,
         // send cMessage
         buffer->pack(destModuleId);
         buffer->pack(destGateId);
+        packOptions(buffer, options);
         buffer->packObject(msg);
         comm->send(buffer, TAG_CMESSAGE, destProcId);
     }
@@ -175,34 +178,39 @@ void cNullMessageProtocol::processReceivedBuffer(cCommBuffer *buffer, int tag, i
 {
     int destModuleId;
     int destGateId;
-    cMessage *msg;
     simtime_t eit;
 
     switch (tag) {
-        case TAG_CMESSAGE_WITH_NULLMESSAGE:
+        case TAG_CMESSAGE_WITH_NULLMESSAGE: {
             buffer->unpack(eit);
             processReceivedEIT(sourceProcId, eit);
             buffer->unpack(destModuleId);
             buffer->unpack(destGateId);
-            msg = (cMessage *)buffer->unpackObject();
-            processReceivedMessage(msg, destModuleId, destGateId, sourceProcId);
+            SendOptions options = unpackOptions(buffer);
+            cMessage *msg = (cMessage *)buffer->unpackObject();
+            processReceivedMessage(msg, options, destModuleId, destGateId, sourceProcId);
             break;
+        }
 
-        case TAG_CMESSAGE:
+        case TAG_CMESSAGE: {
             buffer->unpack(destModuleId);
             buffer->unpack(destGateId);
-            msg = (cMessage *)buffer->unpackObject();
-            processReceivedMessage(msg, destModuleId, destGateId, sourceProcId);
+            SendOptions options = unpackOptions(buffer);
+            cMessage *msg = (cMessage *)buffer->unpackObject();
+            processReceivedMessage(msg, options, destModuleId, destGateId, sourceProcId);
             break;
+        }
 
-        case TAG_NULLMESSAGE:
+        case TAG_NULLMESSAGE: {
             buffer->unpack(eit);
             processReceivedEIT(sourceProcId, eit);
             break;
+        }
 
-        default:
+        default: {
             partition->processReceivedBuffer(buffer, tag, sourceProcId);
             break;
+        }
     }
     buffer->assertBufferEmpty();
 }

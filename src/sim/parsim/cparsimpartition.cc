@@ -29,6 +29,7 @@
 #include "omnetpp/globals.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/regmacros.h"
+#include "omnetpp/csimplemodule.h" // SendOptions
 #include "cplaceholdermod.h"
 #include "cproxygate.h"
 #include "cparsimpartition.h"
@@ -199,13 +200,13 @@ void cParsimPartition::connectRemoteGates()
     }
 }
 
-void cParsimPartition::processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data)
+void cParsimPartition::processOutgoingMessage(cMessage *msg, const SendOptions& options, int procId, int moduleId, int gateId, void *data)
 {
     if (debug)
         EV << "sending message '" << msg->getFullName() << "' (for T="
            << msg->getArrivalTime() << " to procId=" << procId << ")\n";
 
-    synch->processOutgoingMessage(msg, procId, moduleId, gateId, data);
+    synch->processOutgoingMessage(msg, options, procId, moduleId, gateId, data);
 }
 
 void cParsimPartition::processReceivedBuffer(cCommBuffer *buffer, int tag, int sourceProcId)
@@ -227,7 +228,7 @@ void cParsimPartition::processReceivedBuffer(cCommBuffer *buffer, int tag, int s
     buffer->assertBufferEmpty();
 }
 
-void cParsimPartition::processReceivedMessage(cMessage *msg, int destModuleId, int destGateId, int sourceProcId)
+void cParsimPartition::processReceivedMessage(cMessage *msg, const SendOptions& options, int destModuleId, int destGateId, int sourceProcId)
 {
     msg->setSrcProcId(sourceProcId);
     cModule *mod = sim->getModule(destModuleId);
@@ -248,9 +249,9 @@ void cParsimPartition::processReceivedMessage(cMessage *msg, int destModuleId, i
     // deliver it to the "destination" gate of the connection -- the channel
     // has already been simulated in the originating partition. The following
     // portion of code is analogous to the code in cSimpleModule::sendDelayed().
-    EVCB.beginSend(msg);
+    EVCB.beginSend(msg, options);
     EVCB.messageSendHop(msg, srcg);  // TODO store approx propagationDelay, transmissionDelay (they were already simulated remotely)
-    bool keepit = g->deliver(msg, msg->getArrivalTime());
+    bool keepit = g->deliver(msg, options, msg->getArrivalTime());
     if (!keepit)
         delete msg;
     else

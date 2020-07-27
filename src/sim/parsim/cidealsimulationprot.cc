@@ -76,10 +76,10 @@ void cIdealSimulationProtocol::endRun()
     fclose(fin);
 }
 
-void cIdealSimulationProtocol::processReceivedMessage(cMessage *msg, int destModuleId, int destGateId, int sourceProcId)
+void cIdealSimulationProtocol::processReceivedMessage(cMessage *msg, const SendOptions& options, int destModuleId, int destGateId, int sourceProcId)
 {
     msg->setSchedulingPriority(sourceProcId);
-    cParsimProtocolBase::processReceivedMessage(msg, destModuleId, destGateId, sourceProcId);
+    cParsimProtocolBase::processReceivedMessage(msg, options, destModuleId, destGateId, sourceProcId);
 }
 
 cEvent *cIdealSimulationProtocol::takeNextEvent()

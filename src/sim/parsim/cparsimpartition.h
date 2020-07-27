@@ -34,7 +34,7 @@ class cParsimCommunications;
 class cCommBuffer;
 class cException;
 class cTerminationException;
-
+struct SendOptions;
 
 /**
  * @brief Represents one partition in a parallel simulation. Knows about
@@ -114,7 +114,7 @@ class SIM_API cParsimPartition : public cObject, public cISimulationLifecycleLis
      * arrives at partition boundary. We just pass it up to the synchronization
      * layer (see similar method in cParsimSynchronizer).
      */
-    virtual void processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data);
+    virtual void processOutgoingMessage(cMessage *msg, const SendOptions& options, int procId, int moduleId, int gateId, void *data);
 
     /**
      * Process messages coming from other partitions. This method is called from
@@ -131,7 +131,7 @@ class SIM_API cParsimPartition : public cObject, public cISimulationLifecycleLis
      * module/gate still exists, sets the source module/gate to the appropriate
      * placeholder module, and inserts the message into the FES.
      */
-    virtual void processReceivedMessage(cMessage *msg, int destModuleId, int destGateId, int sourceProcId);
+    virtual void processReceivedMessage(cMessage *msg, const SendOptions& options, int destModuleId, int destGateId, int sourceProcId);
 
     /**
      * Called when a cTerminationException occurs (i.e. the simulation is
