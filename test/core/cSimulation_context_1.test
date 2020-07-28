@@ -42,11 +42,11 @@ class TestChannel: public cIdealChannel
         EV << "- " << getFullPath() << " initialize\n";
     }
 
-    virtual void processMessage(cMessage *msg, simtime_t t, result_t& result) override {
+    virtual Result processMessage(cMessage *msg, const SendOptions& options, simtime_t t) override {
         //FIXME this fails: ASSERT(getSimulation()->getContext() == this);
         ASSERT(getSimulation()->getContextType() == CTX_EVENT);
         EV << "- " << getFullPath() << " process: \"" << msg->getName() << "\"\n";
-        cIdealChannel::processMessage(msg, t, result);
+        return cIdealChannel::processMessage(msg, options, t);
     }
 
     virtual void finish() override {

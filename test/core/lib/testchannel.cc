@@ -11,7 +11,7 @@ class TestChannel : public cIdealChannel
 
   protected:
     virtual void initialize() override;
-    virtual void processMessage(cMessage *msg, simtime_t at, result_t& result) override;
+    virtual Result processMessage(cMessage *msg, const SendOptions& options, simtime_t at) override;
     virtual void finish() override;
 };
 
@@ -23,11 +23,11 @@ void TestChannel::initialize()
     numPackets = 0;
 }
 
-void TestChannel::processMessage(cMessage *msg, simtime_t at, result_t& result)
+cChannel::Result TestChannel::processMessage(cMessage *msg, const SendOptions& options, simtime_t at)
 {
     numPackets++;
     EV << "TestChannel delivering msg: " << msg->getName() << "\n";
-    cIdealChannel::processMessage(msg, at, result);
+    return cIdealChannel::processMessage(msg, options, at);
 }
 
 void TestChannel::finish()

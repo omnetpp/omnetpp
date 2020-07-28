@@ -42,15 +42,15 @@ class ChannelWithNamespace: public cIdealChannel
 {
   public:
     ChannelWithNamespace() { }
-    virtual void processMessage(cMessage *msg, simtime_t t, result_t& result) override;
+    virtual Result processMessage(cMessage *msg, const SendOptions& options, simtime_t t) override;
 };
 
 Define_Channel(ChannelWithNamespace);
 
-void ChannelWithNamespace::processMessage(cMessage *msg, simtime_t t, result_t& result)
+cChannel::Result ChannelWithNamespace::processMessage(cMessage *msg, const SendOptions& options, simtime_t t)
 {
     EV << "ChannelWithNamespace\n";
-    cIdealChannel::processMessage(msg, t, result);
+    return cIdealChannel::processMessage(msg, options, t);
 }
 
 class Simple : public cSimpleModule

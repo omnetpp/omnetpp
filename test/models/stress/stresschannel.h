@@ -20,7 +20,7 @@ class StressChannel : public cDatarateChannel
         StressChannel();
 
     protected:
-        virtual bool deliver(cMessage *msg, simtime_t at);
+        virtual Result processMessage(cMessage *msg, const SendOptions& options, simtime_t t) override;
 };
 
 #endif

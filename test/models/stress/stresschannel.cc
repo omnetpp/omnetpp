@@ -17,17 +17,16 @@ StressChannel::StressChannel()
 {
 }
 
-bool StressChannel::deliver(cMessage *msg, simtime_t at)
+cChannel::Result StressChannel::processMessage(cMessage *msg, const SendOptions& options, simtime_t t)
 {
     // drop if ongoing transmission
-    if (getTransmissionFinishTime() > at) {
+    if (getTransmissionFinishTime() > t) {
         EV << "Deleting message in channel due to ongoing transmission: " << msg << "\n";
-        return false;
+        Result result;
+        result.discard = true;
+        return result;
     }
-    else {
-        result_t result;
-        cDatarateChannel::processMessage(msg, at, result);
-        return result.discard;
-    }
+
+    return cDatarateChannel::processMessage(msg, options, t);
 }
 
