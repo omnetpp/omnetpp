@@ -46,6 +46,7 @@ void Sender::activity()
    // create and set channel
    cDatarateChannel *ch = cDatarateChannel::create("chan");
    ch->setDelay(0.1);
+   ch->setDatarate(1000);
    gate("out")->reconnectWith(ch);
 
    // send message

@@ -8,6 +8,7 @@ channel MyConn extends ned.DatarateChannel
     parameters:
         delay = 0.004s;
         ber = 0.1;
+        datarate = 1bps;
 }
 
 simple Node1
@@ -61,7 +62,7 @@ void Node1::activity()
             cPacket *pkt = new cPacket();
             pkt->setBitLength(len);
             send(pkt, "out");
-            wait(exponential(1.0));
+            wait(10+exponential(1.0));
         }
     }
 }
