@@ -318,7 +318,7 @@ class cGate extends cObject
     int id @group(fields) @hint("Gate id, unique within this module");
     bool isVector @getter(isVector) @group(fields) @hint("Whether this gate is part of a gate vector");
     int index @group(fields) @hint("If vector: index of this gate within its gate vector");
-    bool deliverOnReceptionStart @group(fields) @hint("Only for simple module input gates, and if message transmission duration is nonzero: whether messages arriving on this gate will be given to the module at the start or the end of the reception");
+    bool deliverImmediately @group(fields) @hint("Only for simple module input gates, and if transmission duration is nonzero: whether packets arriving on this gate will be given to the module immediately, or at the end of the reception");
 
     cChannel *channel @group(connection) @hint("Channel object associated with the connection");
     cGate *previousGate @group(connection) @hint("The gate this one is connected to -- for output gates this points out of this module, and for input gates it points inside");
