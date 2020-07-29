@@ -235,6 +235,12 @@ void EventlogFileManager::recordInitialize()
     recordKeyframe();
 }
 
+inline bool isDefaults(const cChannel::Result& x)
+{
+    cChannel::Result d;
+    return x.delay == d.delay && x.discard == d.discard && x.duration == d.duration && x.remainingDuration == d.remainingDuration;
+}
+
 void EventlogFileManager::recordMessages()
 {
     std::vector<cMessage *> messages;
@@ -264,23 +270,32 @@ void EventlogFileManager::recordMessages()
         msg->setPreviousEventNumber(-1);
         messageCreated(msg);
         msg->setPreviousEventNumber(previousEventNumber);
+        bool isPacket = msg->isPacket();
+        cPacket *packet = isPacket ? (cPacket *)msg : nullptr;
         if (msg->isSelfMessage())
             messageScheduled(msg);
-        else if (!msg->getSenderGate()) {
-            beginSend(msg, SendOptions::DEFAULT);
-            if (msg->isPacket()) {
-                //TODO obey isUpdate etc
-                cPacket *packet = (cPacket *)msg;
-                simtime_t propagationDelay = packet->getArrivalTime() - packet->getSendingTime() - (packet->isReceptionStart() ? 0 : packet->getDuration());
-                messageSendDirect(msg, msg->getArrivalGate(), cChannel::Result(propagationDelay, packet->getDuration()));
-            }
-            else
-                messageSendDirect(msg, msg->getArrivalGate(), cChannel::Result());
-            endSend(msg);
-        }
         else {
-            beginSend(msg, SendOptions::DEFAULT);
-            messageSendHop(msg, msg->getSenderGate());
+            SendOptions options;
+            cChannel::Result result;
+            result.delay = msg->getArrivalTime() - msg->getSendingTime();
+            if (isPacket) {
+                options.origPacketId = packet->getOrigPacketId();
+                result.duration = packet->getDuration();
+                result.remainingDuration = packet->getRemainingDuration();
+                if (packet->isReceptionEnd())
+                    result.delay -= packet->getRemainingDuration();
+            }
+            beginSend(msg, options);
+            bool recordResult = isDefaults(result);
+            if (!msg->getSenderGate()) {
+                messageSendDirect(msg, msg->getArrivalGate(), result); //TODO make result-less version too?
+            }
+            else {
+                if (recordResult)
+                    messageSendHop(msg, msg->getSenderGate(), result);
+                else
+                    messageSendHop(msg, msg->getSenderGate());
+            }
             endSend(msg);
         }
         if (eventNumber == 0)

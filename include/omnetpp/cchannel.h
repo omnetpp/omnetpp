@@ -36,8 +36,6 @@ struct SIM_API ChannelResult
     simtime_t delay = SIMTIME_ZERO;    ///< Propagation delay
     simtime_t duration = SIMTIME_ZERO; ///< Transmission duration
     simtime_t remainingDuration = SIMTIME_ZERO; ///< Remaining transmission duration (for tx update)
-    ChannelResult() {}
-    ChannelResult(simtime_t delay, simtime_t duration) : delay(delay), duration(duration) {}
 };
 
 /**
