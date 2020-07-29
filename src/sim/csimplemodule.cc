@@ -100,8 +100,8 @@ void cSimpleModule::activate(void *p)
 
     // The starter message should be the same as the timeoutmsg member of
     // cSimpleModule. If not, then something is wrong...
-    cMessage *starter = msgForActivity;
-    if (starter != mod->timeoutMessage) {
+    cMessage *starterMessage = msgForActivity;
+    if (starterMessage != mod->timeoutMessage) {
         // hand exception to cSimulation::transferTo() and switch back
         mod->setFlag(FL_ISTERMINATED, true);
         mod->setFlag(FL_STACKALREADYUNWOUND, true);
@@ -112,10 +112,10 @@ void cSimpleModule::activate(void *p)
     }
 
     // rename message
-    starter->setKind(MK_TIMEOUT);
+    starterMessage->setKind(MK_TIMEOUT);
     char buf[24];
     sprintf(buf, "timeout-%d", mod->getId());
-    starter->setName(buf);
+    starterMessage->setName(buf);
 
     cException *exception = nullptr;
     try {
@@ -658,12 +658,12 @@ void cSimpleModule::wait(simtime_t t)
     if (stackCleanupRequested)
         throw cStackCleanupException();
 
-    cMessage *newMsg = msgForActivity;
+    cMessage *receivedMessage = msgForActivity;
 
-    if (newMsg != timeoutMessage)
+    if (receivedMessage != timeoutMessage)
         throw cRuntimeError("Message arrived during wait() call ((%s)%s); if this "
                             "should be allowed, use waitAndEnqueue() instead of wait()",
-                newMsg->getClassName(), newMsg->getFullName());
+                receivedMessage->getClassName(), receivedMessage->getFullName());
 
     DEBUG_TRAP_IF_REQUESTED;  // MODULE IS ABOUT TO PROCESS THE EVENT YOU REQUESTED TO DEBUG -- SELECT "STEP" IN YOUR DEBUGGER
 }
@@ -686,12 +686,11 @@ void cSimpleModule::waitAndEnqueue(simtime_t t, cQueue *queue)
         if (stackCleanupRequested)
             throw cStackCleanupException();
 
-        cMessage *newMsg = msgForActivity;
-
-        if (newMsg == timeoutMessage)
+        cMessage *receivedMessage = msgForActivity;
+        if (receivedMessage == timeoutMessage)
             break;
-        else
-            queue->insert(newMsg);
+
+        queue->insert(receivedMessage);
     }
 
     DEBUG_TRAP_IF_REQUESTED;  // MODULE IS ABOUT TO PROCESS THE EVENT YOU REQUESTED TO DEBUG -- SELECT "STEP" IN YOUR DEBUGGER
@@ -708,9 +707,9 @@ cMessage *cSimpleModule::receive()
     if (stackCleanupRequested)
         throw cStackCleanupException();
 
-    cMessage *newMsg = msgForActivity;
+    cMessage *receivedMessage = msgForActivity;
     DEBUG_TRAP_IF_REQUESTED;  // MODULE IS ABOUT TO PROCESS THE EVENT YOU REQUESTED TO DEBUG -- SELECT "STEP" IN YOUR DEBUGGER
-    return newMsg;
+    return receivedMessage;
 }
 
 cMessage *cSimpleModule::receive(simtime_t t)
@@ -728,9 +727,9 @@ cMessage *cSimpleModule::receive(simtime_t t)
     if (stackCleanupRequested)
         throw cStackCleanupException();
 
-    cMessage *newMsg = msgForActivity;
+    cMessage *receivedMessage = msgForActivity;
 
-    if (newMsg == timeoutMessage) {  // timeout expired
+    if (receivedMessage == timeoutMessage) {  // timeout expired
         take(timeoutMessage);
         DEBUG_TRAP_IF_REQUESTED;  // MODULE IS ABOUT TO PROCESS THE EVENT YOU REQUESTED TO DEBUG -- SELECT "STEP" IN YOUR DEBUGGER
         return nullptr;
@@ -738,7 +737,7 @@ cMessage *cSimpleModule::receive(simtime_t t)
     else {  // message received OK
         take(cancelEvent(timeoutMessage));
         DEBUG_TRAP_IF_REQUESTED;  // MODULE IS ABOUT TO PROCESS THE EVENT YOU REQUESTED TO DEBUG -- SELECT "STEP" IN YOUR DEBUGGER
-        return newMsg;
+        return receivedMessage;
     }
 }
 
