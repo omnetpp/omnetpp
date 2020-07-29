@@ -1,0 +1,137 @@
+%description:
+Verify that with tx updates and receiveImmediately=false,
+only the last (final) update arrives at the receiver.
+
+%file: test.ned
+
+simple Sender
+{
+    gates:
+        output out;
+}
+
+simple Receiver
+{
+    gates:
+        input in;
+}
+
+network Test
+{
+    submodules:
+        sender : Sender;
+        receiver : Receiver;
+    connections:
+        sender.out --> ned.DatarateChannel {delay=0.1s; datarate=1Mbps;}--> receiver.in;
+}
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+cmdenv-event-banners = false
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Sender : public cSimpleModule
+{
+  private:
+    long origPacketId;
+  public:
+    Sender() : cSimpleModule(32768) { }
+    virtual void activity() override;
+
+    void sendOrigPk(const char *name, int64_t length) {
+        cPacket *pk = new cPacket(name, 0, length);
+        origPacketId = pk->getId();
+        send(pk, "out");
+    }
+    void sendTxUpdate(const char *name, int64_t length) {
+        cPacket *pk = new cPacket(name, 0, length);
+        send(pk, SendOptions().updateTx(origPacketId), "out"); // duration and remainingDuration autocomputed
+    }
+    simtime_t getTxEndTime() {
+        return gate("out")->getTransmissionChannel()->getTransmissionFinishTime();
+    }
+
+    void waitUntil(simtime_t t) {wait(t-simTime());}
+    void waitCeil() {waitUntil(simTime().trunc(SIMTIME_S)+1.0);}
+};
+
+Define_Module(Sender);
+
+void Sender::activity()
+{
+    sendOrigPk("pk1", 1000); // no update
+
+    // immediate extend
+    waitCeil();
+    sendOrigPk("pk2", 1000);
+    sendTxUpdate("pk2ext", 2000);
+
+    // immediate shorten
+    waitCeil();
+    sendOrigPk("pk3", 1000);
+    sendTxUpdate("pk3sht", 900);
+
+    // last-minute extend
+    waitCeil();
+    sendOrigPk("pk4", 1000);
+    waitUntil(getTxEndTime());
+    sendTxUpdate("pk4ext", 2000);
+
+    // multiple updates
+    waitCeil();
+    sendOrigPk("pk5", 1000);
+    sendTxUpdate("pk5ext1", 900);
+    wait(0.0001); sendTxUpdate("pk5ext2", 1200);
+    wait(0.0001); sendTxUpdate("pk5ext3", 1500);
+
+    // immediate truncate
+    waitCeil();
+    sendOrigPk("pk6", 1000);
+    sendTxUpdate("pk6trunc", 0);
+
+}
+
+class Receiver : public cSimpleModule
+{
+  public:
+    Receiver() { }
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
+};
+
+Define_Module(Receiver);
+
+void Receiver::initialize()
+{
+    setTxUpdateSupport(true);
+    gate("in")->setDeliverImmediately(false);
+}
+
+void Receiver::handleMessage(cMessage *msg)
+{
+    cPacket *pkt = check_and_cast<cPacket *>(msg);
+    ASSERT(pkt->getRemainingDuration().isZero());
+    EV << "at t=" << simTime() << " received " << msg->getName()
+       << " len=" << pkt->getBitLength()
+       << ", computed rxStart=" << (simTime() - pkt->getDuration()) << endl;
+    delete msg;
+}
+
+}; //namespace
+
+%contains: stdout
+at t=0.101 received pk1 len=1000, computed rxStart=0.1
+at t=1.102 received pk2ext len=2000, computed rxStart=1.1
+at t=2.1009 received pk3sht len=900, computed rxStart=2.1
+at t=3.102 received pk4ext len=2000, computed rxStart=3.1
+at t=4.1015 received pk5ext3 len=1500, computed rxStart=4.1
+at t=5.1 received pk6trunc len=0, computed rxStart=5.1

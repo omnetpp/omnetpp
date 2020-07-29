@@ -51,6 +51,7 @@ class Sender : public cSimpleModule
 
     // utilities
     void setDatarate(double d);
+    void setChannelDisabled(bool b);
     void setDeliverImmediately(bool b);
     void setReceiverTxUpdateSupport(bool b);
     void waitUntil(simtime_t t) {wait(t-simTime());}
@@ -76,6 +77,12 @@ void Sender::setDatarate(double d)
 {
     EV << "setting channel datarate=" << d << endl;
     datarateChannel->setDatarate(d);
+}
+
+void Sender::setChannelDisabled(bool b)
+{
+    EV << "setting channel disabled=" << (b ? "true" : "false") << endl;
+    datarateChannel->setDisabled(b);
 }
 
 void Sender::setDeliverImmediately(bool b)
@@ -191,6 +198,15 @@ void Sender::testTxUpdates()
     wait(0.01); trySend(makePacket(1000), SendOptions().updateTx(origPktId, 0.1)); // error: elapsed+remaining != computed duration
     wait(0.01); trySend(makePacket(1000), SendOptions().finishTx(origPktId)); // error: elapsed+remaining(=0) != computed duration
 
+    EV << "\nTX UPDATE: disabling the channel mid-transmission\n";
+    setDatarate(0); // none
+    setDeliverImmediately(true);
+    setReceiverTxUpdateSupport(true);
+    waitCeil();
+    sendOrigPkt(makePacket(1000), SendOptions().duration(0.1)); // original transmission
+    wait(0.05);
+    setChannelDisabled(true); // disable channel
+    trySend(makePacket(500), SendOptions().finishTx(origPktId)); // send packet truncation update
     EV << ".\n";
 }
 
@@ -265,4 +281,13 @@ at t=403.05s send packet(len=1000) with origPacketId=25 --> ok, update with rema
 at t=403.06s send packet(len=2000) with origPacketId=25 --> ok, update with remainingDuration=140ms, duration=200ms, arrival=403.16s; channel busy until t=403.2s
 at t=403.07s send packet(len=1000) with origPacketId=25 remainingDuration=100ms --> ERROR: (omnetpp::cDatarateChannel)Test.sender.out.channel: Cannot send transmission update packet (omnetpp::cPacket): Both duration and remainingDuration are specified, and duration (100ms) != elapsedTxTime (70ms) + remainingDuration (100ms) -- in module (cSimpleModule_sendOptions_2::Sender) Test.sender (id=2), at t=403.07s, event #40
 at t=403.08s send packet(len=1000) with origPacketId=25 remainingDuration=0s --> ERROR: (omnetpp::cDatarateChannel)Test.sender.out.channel: Cannot send transmission update packet (omnetpp::cPacket): Both duration and remainingDuration are specified, and duration (100ms) != elapsedTxTime (80ms) + remainingDuration (0s) -- in module (cSimpleModule_sendOptions_2::Sender) Test.sender (id=2), at t=403.08s, event #41
+
+TX UPDATE: disabling the channel mid-transmission
+setting channel datarate=0
+setting deliverImmediately=true
+setting txUpdateSupport=true
+at t=404s send packet(len=1000) with duration=100ms --> ok, duration=100ms, arrival=404.1s; channel busy until t=404.1s
+setting channel disabled=true
+at t=404.05s send packet(len=500) with origPacketId=30 remainingDuration=0s --> ok, update with remainingDuration=0s, duration=50ms, arrival=404.15s; channel idle
 .
+
