@@ -92,7 +92,6 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     simtime_t currentSimtime; // simulation time (time of current event)
     eventnumber_t currentEventNumber; // sequence number of current event
 
-    cMessage *msgForActivity; // helper variable to pass the received message into activity()
     cException *exception;    // helper variable to get exceptions back from activity()
     bool trapOnNextEvent;  // when set, next handleMessage or activity() will execute debugger interrupt
 

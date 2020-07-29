@@ -55,6 +55,7 @@ const SendOptions SendOptions::DEFAULT;
 
 auto& DURATION_UNSPEC = SendOptions::DURATION_UNSPEC; // shorthand for local use
 
+cMessage *cSimpleModule::msgForActivity;
 bool cSimpleModule::stackCleanupRequested;
 cSimpleModule *cSimpleModule::afterCleanupTransferTo;
 
@@ -99,7 +100,7 @@ void cSimpleModule::activate(void *p)
 
     // The starter message should be the same as the timeoutmsg member of
     // cSimpleModule. If not, then something is wrong...
-    cMessage *starter = simulation->msgForActivity;
+    cMessage *starter = msgForActivity;
     if (starter != mod->timeoutMessage) {
         // hand exception to cSimulation::transferTo() and switch back
         mod->setFlag(FL_ISTERMINATED, true);
@@ -657,7 +658,7 @@ void cSimpleModule::wait(simtime_t t)
     if (stackCleanupRequested)
         throw cStackCleanupException();
 
-    cMessage *newMsg = getSimulation()->msgForActivity;
+    cMessage *newMsg = msgForActivity;
 
     if (newMsg != timeoutMessage)
         throw cRuntimeError("Message arrived during wait() call ((%s)%s); if this "
@@ -685,7 +686,7 @@ void cSimpleModule::waitAndEnqueue(simtime_t t, cQueue *queue)
         if (stackCleanupRequested)
             throw cStackCleanupException();
 
-        cMessage *newMsg = getSimulation()->msgForActivity;
+        cMessage *newMsg = msgForActivity;
 
         if (newMsg == timeoutMessage)
             break;
@@ -707,9 +708,9 @@ cMessage *cSimpleModule::receive()
     if (stackCleanupRequested)
         throw cStackCleanupException();
 
-    cMessage *newmsg = getSimulation()->msgForActivity;
+    cMessage *newMsg = msgForActivity;
     DEBUG_TRAP_IF_REQUESTED;  // MODULE IS ABOUT TO PROCESS THE EVENT YOU REQUESTED TO DEBUG -- SELECT "STEP" IN YOUR DEBUGGER
-    return newmsg;
+    return newMsg;
 }
 
 cMessage *cSimpleModule::receive(simtime_t t)
@@ -727,7 +728,7 @@ cMessage *cSimpleModule::receive(simtime_t t)
     if (stackCleanupRequested)
         throw cStackCleanupException();
 
-    cMessage *newMsg = getSimulation()->msgForActivity;
+    cMessage *newMsg = msgForActivity;
 
     if (newMsg == timeoutMessage) {  // timeout expired
         take(timeoutMessage);
@@ -745,8 +746,6 @@ cMessage *cSimpleModule::receive(simtime_t t)
 
 void cSimpleModule::doMessageEvent(cMessage *msg)
 {
-    cSimulation *simulation = module->getSimulation();
-
     // switch to the module's context
     simulation->setContext(this);
 
@@ -762,7 +761,7 @@ void cSimpleModule::doMessageEvent(cMessage *msg)
         // when the module executes a receive() or wait() call.
         // If there was an error during simulation, the call will throw an exception
         // (which originally occurred inside activity()).
-        simulation->msgForActivity = msg;
+        msgForActivity = msg;
         simulation->transferTo(this);
     }
     else {
