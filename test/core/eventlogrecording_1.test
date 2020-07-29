@@ -79,12 +79,11 @@ Define_Module(Node);
 void Node::initialize()
 {
     EV << "initializing...\n";
-    if (par("isActive"))
-    {
+    if (par("isActive")) {
         scheduleAt(simTime()+1, new cMessage("send", Send));
-//        scheduleAt(simTime()+1.05, new cMessage("sendUpdate", SendUpdate));
+        scheduleAt(simTime()+1.05, new cMessage("sendUpdate", SendUpdate));
         scheduleAt(simTime()+2, new cMessage("sendDirect", SendDirect));
-//        scheduleAt(simTime()+2.05, new cMessage("sendDirectUpdate", SendDirectUpdate));
+        scheduleAt(simTime()+2.05, new cMessage("sendDirectUpdate", SendDirectUpdate));
         scheduleAt(simTime()+3, new cMessage("schedule", Schedule));
         scheduleAt(simTime()+4, new cMessage("cancel", Cancel));
         scheduleAt(simTime()+5, new cMessage("bubble", Bubble));
@@ -265,123 +264,148 @@ MB sm 1 tm 3 m initialize(0)
 CM id 0 tid 0 eid 0 etid 0 c cMessage n send k 1 pe -1
 BS id 0 tid 0 eid 0 etid 0 c cMessage n send k 1 pe 0
 ES t 1
-CM id 1 tid 1 eid 1 etid 1 c cMessage n sendDirect k 3 pe -1
-BS id 1 tid 1 eid 1 etid 1 c cMessage n sendDirect k 3 pe 0
+CM id 1 tid 1 eid 1 etid 1 c cMessage n sendUpdate k 2 pe -1
+BS id 1 tid 1 eid 1 etid 1 c cMessage n sendUpdate k 2 pe 0
+ES t 1.05
+CM id 2 tid 2 eid 2 etid 2 c cMessage n sendDirect k 3 pe -1
+BS id 2 tid 2 eid 2 etid 2 c cMessage n sendDirect k 3 pe 0
 ES t 2
-CM id 2 tid 2 eid 2 etid 2 c cMessage n schedule k 5 pe -1
-BS id 2 tid 2 eid 2 etid 2 c cMessage n schedule k 5 pe 0
+CM id 3 tid 3 eid 3 etid 3 c cMessage n sendDirectUpdate k 4 pe -1
+BS id 3 tid 3 eid 3 etid 3 c cMessage n sendDirectUpdate k 4 pe 0
+ES t 2.05
+CM id 4 tid 4 eid 4 etid 4 c cMessage n schedule k 5 pe -1
+BS id 4 tid 4 eid 4 etid 4 c cMessage n schedule k 5 pe 0
 ES t 3
-CM id 3 tid 3 eid 3 etid 3 c cMessage n cancel k 6 pe -1
-BS id 3 tid 3 eid 3 etid 3 c cMessage n cancel k 6 pe 0
+CM id 5 tid 5 eid 5 etid 5 c cMessage n cancel k 6 pe -1
+BS id 5 tid 5 eid 5 etid 5 c cMessage n cancel k 6 pe 0
 ES t 4
-CM id 4 tid 4 eid 4 etid 4 c cMessage n bubble k 7 pe -1
-BS id 4 tid 4 eid 4 etid 4 c cMessage n bubble k 7 pe 0
+CM id 6 tid 6 eid 6 etid 6 c cMessage n bubble k 7 pe -1
+BS id 6 tid 6 eid 6 etid 6 c cMessage n bubble k 7 pe 0
 ES t 5
-CM id 5 tid 5 eid 5 etid 5 c cMessage n methodCalls k 8 pe -1
-BS id 5 tid 5 eid 5 etid 5 c cMessage n methodCalls k 8 pe 0
+CM id 7 tid 7 eid 7 etid 7 c cMessage n methodCalls k 8 pe -1
+BS id 7 tid 7 eid 7 etid 7 c cMessage n methodCalls k 8 pe 0
 ES t 6
-CM id 6 tid 6 eid 6 etid 6 c cMessage n createModule k 9 pe -1
-BS id 6 tid 6 eid 6 etid 6 c cMessage n createModule k 9 pe 0
+CM id 8 tid 8 eid 8 etid 8 c cMessage n createModule k 9 pe -1
+BS id 8 tid 8 eid 8 etid 8 c cMessage n createModule k 9 pe 0
 ES t 7
-CM id 7 tid 7 eid 7 etid 7 c cMessage n deleteModule k 10 pe -1
-BS id 7 tid 7 eid 7 etid 7 c cMessage n deleteModule k 10 pe 0
+CM id 9 tid 9 eid 9 etid 9 c cMessage n deleteModule k 10 pe -1
+BS id 9 tid 9 eid 9 etid 9 c cMessage n deleteModule k 10 pe 0
 ES t 8
 ME
 
 E # 1 t 1 m 3 ce 0 msg 0
 - sending pk
-CM id 8 tid 8 eid 8 etid 8 c cMessage n pk k 99 pe -1
-BS id 8 tid 8 eid 8 etid 8 c cPacket n pk k 99 l 100000 pe 1
+CM id 10 tid 10 eid 10 etid 10 c cMessage n pk k 99 pe -1
+BS id 10 tid 10 eid 10 etid 10 c cPacket n pk k 99 l 100000 pe 1
 SH sm 3 sg 1 pd 0.001 td 0.1
 SH sm 2 sg 1048576 pd 0.001
 ES t 1.102
 DM id 0 tid 0 eid 0 etid 0 c cMessage n send k 1 pe 1
 
-E # 2 t 1.102 m 5 ce 1 msg 8
-- message received: pk
-DM id 8 tid 8 eid 8 etid 8 c cMessage n pk k 99 pe 2
+E # 2 t 1.05 m 3 ce 0 msg 1
+- sending pk update
+CM id 11 tid 11 eid 11 etid 11 c cMessage n pkUpdate k 99 pe -1
+BS id 11 tid 11 eid 11 etid 11 c cPacket n pkUpdate k 99 l 200000 pe 2 op 10
+SH sm 3 sg 1 pd 0.001 td 0.2 rd 0.15
+SH sm 2 sg 1048576 pd 0.001
+DM id 10 tid 10 eid 10 etid 10 c cMessage n pk k 99 pe 1
+ES t 1.202
+DM id 1 tid 1 eid 1 etid 1 c cMessage n sendUpdate k 2 pe 2
 
-E # 3 t 2 m 3 ce 0 msg 1
+E # 3 t 1.202 m 5 ce 2 msg 11
+- message received: pkUpdate
+DM id 11 tid 11 eid 11 etid 11 c cMessage n pkUpdate k 99 pe 3
+
+E # 4 t 2 m 3 ce 0 msg 2
 - sending msg directly
-CM id 9 tid 9 eid 9 etid 9 c cMessage n directMsg pe -1
-BS id 9 tid 9 eid 9 etid 9 c cMessage n directMsg pe 3
+CM id 12 tid 12 eid 12 etid 12 c cMessage n directMsg pe -1
+BS id 12 tid 12 eid 12 etid 12 c cMessage n directMsg pe 4
 SD sm 3 dm 5 dg 6
 ES t 2
 - sending pk directly
-CM id 10 tid 10 eid 10 etid 10 c cMessage n directPk k 99 pe -1
-BS id 10 tid 10 eid 10 etid 10 c cPacket n directPk k 99 l 100000 pe 3
+CM id 13 tid 13 eid 13 etid 13 c cMessage n directPk k 99 pe -1
+BS id 13 tid 13 eid 13 etid 13 c cPacket n directPk k 99 l 100000 pe 4
 SD sm 3 dm 5 dg 6 pd 0.001 td 0.1
 ES t 2.101
-DM id 1 tid 1 eid 1 etid 1 c cMessage n sendDirect k 3 pe 3
+DM id 2 tid 2 eid 2 etid 2 c cMessage n sendDirect k 3 pe 4
 
-E # 4 t 2 m 5 ce 3 msg 9
+E # 5 t 2 m 5 ce 4 msg 12
 - message received: directMsg
-DM id 9 tid 9 eid 9 etid 9 c cMessage n directMsg pe 4
+DM id 12 tid 12 eid 12 etid 12 c cMessage n directMsg pe 5
 
-E # 5 t 2.101 m 5 ce 3 msg 10
-- message received: directPk
-DM id 10 tid 10 eid 10 etid 10 c cMessage n directPk k 99 pe 5
+E # 6 t 2.05 m 3 ce 0 msg 3
+- sending pk update directly
+CM id 14 tid 14 eid 14 etid 14 c cMessage n directPkUpdate k 99 pe -1
+BS id 14 tid 14 eid 14 etid 14 c cPacket n directPkUpdate k 99 l 200000 pe 6 op 13
+SD sm 3 dm 5 dg 6 pd 0.001 td 0.2 rd 0.15
+DM id 13 tid 13 eid 13 etid 13 c cMessage n directPk k 99 pe 4
+ES t 2.201
+DM id 3 tid 3 eid 3 etid 3 c cMessage n sendDirectUpdate k 4 pe 6
 
-E # 6 t 3 m 3 ce 0 msg 2
+E # 7 t 2.201 m 5 ce 6 msg 14
+- message received: directPkUpdate
+DM id 14 tid 14 eid 14 etid 14 c cMessage n directPkUpdate k 99 pe 7
+
+E # 8 t 3 m 3 ce 0 msg 4
 - scheduling timer
-CM id 11 tid 11 eid 11 etid 11 c cMessage n timer pe -1
-BS id 11 tid 11 eid 11 etid 11 c cMessage n timer pe 6
+CM id 15 tid 15 eid 15 etid 15 c cMessage n timer pe -1
+BS id 15 tid 15 eid 15 etid 15 c cMessage n timer pe 8
 ES t 103
-DM id 2 tid 2 eid 2 etid 2 c cMessage n schedule k 5 pe 6
+DM id 4 tid 4 eid 4 etid 4 c cMessage n schedule k 5 pe 8
 
-E # 7 t 4 m 3 ce 0 msg 3
+E # 9 t 4 m 3 ce 0 msg 5
 - canceling timer
-CE id 11 tid 11 eid 11 etid 11 c cMessage n timer pe 6
-DM id 11 tid 11 eid 11 etid 11 c cMessage n timer pe 7
-DM id 3 tid 3 eid 3 etid 3 c cMessage n cancel k 6 pe 7
+CE id 15 tid 15 eid 15 etid 15 c cMessage n timer pe 8
+DM id 15 tid 15 eid 15 etid 15 c cMessage n timer pe 9
+DM id 5 tid 5 eid 5 etid 5 c cMessage n cancel k 6 pe 9
 
-E # 8 t 5 m 3 ce 0 msg 4
+E # 10 t 5 m 3 ce 0 msg 6
 - displaying bubbles
 BU id 3 txt "this is the bubble text"
 BU id 5 txt "this is the peer's bubble text"
-DM id 4 tid 4 eid 4 etid 4 c cMessage n bubble k 7 pe 8
+DM id 6 tid 6 eid 6 etid 6 c cMessage n bubble k 7 pe 10
 
-E # 9 t 6 m 3 ce 0 msg 5
+E # 11 t 6 m 3 ce 0 msg 7
 - making three method calls
 MB sm 3 tm 5 m "publicMethod(\"dummy\", 42)"
 - sending a message from the called method
-CM id 12 tid 12 eid 12 etid 12 c cMessage n msg1 pe -1
-BS id 12 tid 12 eid 12 etid 12 c cMessage n msg1 pe 9
+CM id 16 tid 16 eid 16 etid 16 c cMessage n msg1 pe -1
+BS id 16 tid 16 eid 16 etid 16 c cMessage n msg1 pe 11
 SH sm 5 sg 1
 SH sm 2 sg 3
 ES t 6
 ME
 MB sm 3 tm 5 m ""
 - sending a message from the called method
-CM id 13 tid 13 eid 13 etid 13 c cMessage n msg2 pe -1
-BS id 13 tid 13 eid 13 etid 13 c cMessage n msg2 pe 9
+CM id 17 tid 17 eid 17 etid 17 c cMessage n msg2 pe -1
+BS id 17 tid 17 eid 17 etid 17 c cMessage n msg2 pe 11
 SH sm 5 sg 1
 SH sm 2 sg 3
 ES t 6
 ME
 MB sm 3 tm 5 m "publicMethod(\"dummy\", 42)"
 - sending a message from the called method
-CM id 14 tid 14 eid 14 etid 14 c cMessage n msg3 pe -1
-BS id 14 tid 14 eid 14 etid 14 c cMessage n msg3 pe 9
+CM id 18 tid 18 eid 18 etid 18 c cMessage n msg3 pe -1
+BS id 18 tid 18 eid 18 etid 18 c cMessage n msg3 pe 11
 SH sm 5 sg 1
 SH sm 2 sg 3
 ES t 6
 ME
-DM id 5 tid 5 eid 5 etid 5 c cMessage n methodCalls k 8 pe 9
+DM id 7 tid 7 eid 7 etid 7 c cMessage n methodCalls k 8 pe 11
 
-E # 10 t 6 m 3 ce 9 msg 12
+E # 12 t 6 m 3 ce 11 msg 16
 - message received: msg1
-DM id 12 tid 12 eid 12 etid 12 c cMessage n msg1 pe 10
+DM id 16 tid 16 eid 16 etid 16 c cMessage n msg1 pe 12
 
-E # 11 t 6 m 3 ce 9 msg 13
+E # 13 t 6 m 3 ce 11 msg 17
 - message received: msg2
-DM id 13 tid 13 eid 13 etid 13 c cMessage n msg2 pe 11
+DM id 17 tid 17 eid 17 etid 17 c cMessage n msg2 pe 13
 
-E # 12 t 6 m 3 ce 9 msg 14
+E # 14 t 6 m 3 ce 11 msg 18
 - message received: msg3
-DM id 14 tid 14 eid 14 etid 14 c cMessage n msg3 pe 12
+DM id 18 tid 18 eid 18 etid 18 c cMessage n msg3 pe 14
 
-E # 13 t 7 m 3 ce 0 msg 6
+E # 15 t 7 m 3 ce 0 msg 8
 - creating and connecting a module
 MC id 7 c eventlogrecording_1::Node t Node pid 1 n dy
 GC m 7 g 1 n out o 1
@@ -390,15 +414,14 @@ MS id 7 d ""
 MB sm 3 tm 7 m initialize(0)
 - initializing...
 ME
-DM id 6 tid 6 eid 6 etid 6 c cMessage n createModule k 9 pe 13
+DM id 8 tid 8 eid 8 etid 8 c cMessage n createModule k 9 pe 15
 
-E # 14 t 8 m 3 ce 0 msg 7
+E # 16 t 8 m 3 ce 0 msg 9
 - deleting a module
 MD id 7
 GD m 7 g 1
 GD m 7 g 6
-DM id 7 tid 7 eid 7 etid 7 c cMessage n deleteModule k 10 pe 14
-SE e 0 c 13 m "No more events, simulation completed -- at t=8s, event #14"
+DM id 9 tid 9 eid 9 etid 9 c cMessage n deleteModule k 10 pe 16
+SE e 0 c 13 m "No more events, simulation completed -- at t=8s, event #16"
 - finishing...
 - finishing...
-
