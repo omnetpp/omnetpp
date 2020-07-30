@@ -419,30 +419,35 @@ void cSimpleModule::sendDirect(cMessage *msg, const SendOptions& options, cGate 
         cPacket *pkt = (cPacket *)msg;
         pkt->setOrigPacketId(options.origPacketId);
         bool isUpdate = options.origPacketId != -1;
+        bool haveDuration = (options.duration_ != DURATION_UNSPEC);
+        bool haveRemainingDuration = (options.remainingDuration != DURATION_UNSPEC);
+        simtime_t duration, remainingDuration;
 
-        // duration, remainingDuration
-        simtime_t duration = (options.duration_ == DURATION_UNSPEC) ? SimTime::ZERO : options.duration_;
-        if (duration < SIMTIME_ZERO)
-            throw cRuntimeError("sendDirect(): Negative duration %s", duration.ustr().c_str());
-
-        simtime_t remainingDuration;
-        if (!isUpdate) {
-            if (options.remainingDuration != DURATION_UNSPEC)
-                throw cRuntimeError("sendDirect(): remainingDuration may only be specified for transmission update packets");
-            remainingDuration = duration;
+        if (isUpdate) {
+            if (haveDuration != haveRemainingDuration)
+                throw cRuntimeError("sendDirect(): For transmission update packets, the duration and remainingDuration options may only occur together");
+            if (haveDuration) {
+                duration = options.duration_;
+                remainingDuration = options.remainingDuration;
+                if (duration < SIMTIME_ZERO)
+                    throw cRuntimeError("sendDirect(): Negative duration %s", duration.ustr().c_str());
+                if (remainingDuration < SIMTIME_ZERO || remainingDuration > duration)
+                    throw cRuntimeError("sendDirect(): remainingDuration (%s) is negative or larger than duration (%s)", remainingDuration.ustr().c_str(), duration.ustr().c_str());
+            }
         }
         else {
-            if (options.remainingDuration < SIMTIME_ZERO) {
-                if (options.remainingDuration == DURATION_UNSPEC)
-                    throw cRuntimeError("sendDirect(): remainingDuration is mandatory for sendDirect transmission updates");
-                throw cRuntimeError("sendDirect(): Negative remainingDuration %s", options.remainingDuration.ustr().c_str());
+            if (haveRemainingDuration)
+                throw cRuntimeError("sendDirect(): remainingDuration may only be specified for transmission update packets");
+            if (haveDuration) {
+                duration = remainingDuration = options.duration_;
+                if (duration < SIMTIME_ZERO)
+                    throw cRuntimeError("sendDirect(): Negative duration %s", duration.ustr().c_str());
             }
-            remainingDuration = options.remainingDuration;
         }
 
         pkt->setDuration(duration);
         pkt->setRemainingDuration(remainingDuration);
-        pkt->setTxChannelEncountered(duration != SIMTIME_ZERO);
+        pkt->setTxChannelEncountered(haveDuration);
 
         result.duration = duration;
         result.remainingDuration = remainingDuration;
