@@ -555,7 +555,7 @@ void cSimpleModule::rescheduleAt(simtime_t t, cMessage *msg)
 void cSimpleModule::rescheduleAfter(simtime_t delay, cMessage *msg)
 {
     cancelEvent(msg);
-    scheduleAt(delay, msg);
+    scheduleAfter(delay, msg);
 }
 
 cMessage *cSimpleModule::cancelEvent(cMessage *msg)
