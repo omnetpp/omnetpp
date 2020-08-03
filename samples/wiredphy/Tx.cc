@@ -50,7 +50,7 @@ void Tx::handleMessage(cMessage *message)
 {
     if (message->arrivedOn("upperLayerIn"))
         receiveFromUpperLayer(check_and_cast<cPacket *>(message));
-    else if( message->arrivedOn("cutthroughIn"))
+    else if (message->arrivedOn("cutthroughIn"))
         receiveFromCutthrough(check_and_cast<cPacket *>(message));
     else if (message == txEndTimer)
         endTx();
