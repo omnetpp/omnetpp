@@ -617,7 +617,7 @@ void cSimpleModule::arrived(cMessage *msg, cGate *ongate, const SendOptions& opt
                 if (!supportsTxUpdates())
                     throw cRuntimeError("Transmission update message (%s)%s delivered to a module which is "
                             "not prepared to handle transmission updates ((%s)%s); "
-                            "call setSupportsTxUpdates(true) in the initialization code of the module "
+                            "call setTxUpdateSupport(true) in the initialization code of the module "
                             "to turn off this check",
                             msg->getClassName(), msg->getName(), getClassName(), getFullPath().c_str());
             }
