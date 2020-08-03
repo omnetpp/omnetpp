@@ -25,6 +25,7 @@
 #include <string>
 
 #include <QApplication>
+#include <QProxyStyle>
 #include <QTreeView>
 #include <QDir>
 #include <QDebug>
@@ -132,6 +133,36 @@ extern "C" QTENV_API void _qtenv_lib() {}
 Register_GlobalConfigOptionU(CFGID_QTENV_EXTRA_STACK, "qtenv-extra-stack", "B", "80KiB", "Specifies the extra amount of stack that is reserved for each `activity()` simple module when the simulation is run under Qtenv.");
 Register_GlobalConfigOption(CFGID_QTENV_DEFAULT_CONFIG, "qtenv-default-config", CFG_STRING, nullptr, "Specifies which config Qtenv should set up automatically on startup. The default is to ask the user.");
 Register_GlobalConfigOption(CFGID_QTENV_DEFAULT_RUN, "qtenv-default-run", CFG_STRING, nullptr, "Specifies which run (of the default config, see `qtenv-default-config`) Qtenv should set up automatically on startup. A run filter is also accepted. The default is to ask the user.");
+
+
+// According to: https://doc.qt.io/qt-5/qproxystyle.html#details
+class QtenvProxyStyle : public QProxyStyle
+{
+  public:
+    QPixmap generatedIconPixmap(QIcon::Mode iconMode, const QPixmap &pixmap, const QStyleOption *opt) const override {
+        // Override the disabled tool icon pixmap generator to make it simpler; dividing its alpha channel by 4 to
+        // (hopefully) make it blend into the background better. Alternatively, we could keep the alpha as is, and
+        // instead adjust the colors to be 1/4 part the pixel color and 3/4 parts the Active Window color of the Palette.
+        // The original generator is at:
+        // https://github.com/qt/qtbase/blob/ba3b53cb501a77144aa6259e48a8e0edc3d1481d/src/widgets/styles/qcommonstyle.cpp#L6402
+
+        if (iconMode == QIcon::Disabled) {
+            QImage im = pixmap.toImage().convertToFormat(QImage::Format_ARGB32);
+            for (int y = 0; y < im.height(); ++y) {
+                QRgb *scanLine = (QRgb*)im.scanLine(y);
+                for (int x = 0; x < im.width(); ++x) {
+                    QRgb pixel = *scanLine;
+                    *scanLine = qRgba(qRed(pixel), qGreen(pixel), qBlue(pixel), qAlpha(pixel) / 4);
+                    ++scanLine;
+                }
+            }
+            return QPixmap::fromImage(im);
+        }
+        else
+            return QProxyStyle::generatedIconPixmap(iconMode, pixmap, opt);
+    }
+};
+
 
 // utility function
 static bool moduleContains(cModule *potentialparent, cModule *mod)
@@ -572,10 +603,13 @@ void Qtenv::doRun()
 
         app = new QApplication(argc, argv);
 
-        if (app->palette().window().color().lightnessF() < 0.5)
+        // our icon color levels are #40 and #F0, halfway between those is 152, which is close to 0.6 * 255
+        if (app->palette().window().color().lightnessF() < 0.6)
             selectDarkThemeIcons();
         else
             selectLightThemeIcons();
+
+        app->setStyle(new QtenvProxyStyle());
 
 #ifdef Q_OS_MAC
         ProcessSerialNumber psn;
