@@ -84,7 +84,7 @@ public:
     void runUntilMsg(cMessage *msg, RunMode runMode);
     void excludeMessageFromAnimation(cObject *msg);
 
-    void reflectRecordEventlog();
+    void reflectConfigOnUi();
     void configureNetwork();
 
     // the slider value is an integer, we divide it by 100 to get a double value, then raise it to 10's exponent

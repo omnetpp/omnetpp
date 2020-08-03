@@ -527,7 +527,7 @@ void MainWindow::on_actionSetUpConfiguration_triggered()
         emit setNewNetwork();
         env->newRun(dialog.getConfigName().c_str(), dialog.getRunNumber());
         busy();
-        reflectRecordEventlog();
+        reflectConfigOnUi();
     }
 }
 
@@ -947,7 +947,7 @@ void MainWindow::on_actionRebuildNetwork_triggered()
     busy("Rebuilding network...");
     // TODO inspectorList:addAll 1
     env->rebuildSim();
-    reflectRecordEventlog();
+    reflectConfigOnUi();
     busy();
 }
 
@@ -1035,9 +1035,10 @@ void MainWindow::on_actionEventlogRecording_triggered()
     getQtenv()->setEventlogRecording(!getQtenv()->getEventlogRecording());
 }
 
-void MainWindow::reflectRecordEventlog()
+void MainWindow::reflectConfigOnUi()
 {
     ui->actionEventlogRecording->setChecked(getQtenv()->getEventlogRecording());
+    ui->actionDebugOnErrors->setChecked(getQtenv()->debugOnErrors);
 }
 
 // XXX why is this in MainWindow, and not in Qtenv?
@@ -1088,7 +1089,7 @@ void MainWindow::configureNetwork()
         //TODO
         //inspectorList:addAll 1
         getQtenv()->newNetwork(comboDialog.getSelectedNetName().toStdString().c_str());
-        reflectRecordEventlog();
+        reflectConfigOnUi();
         busy();
     }
 }

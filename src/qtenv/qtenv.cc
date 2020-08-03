@@ -1661,7 +1661,7 @@ void Qtenv::initialSetUpConfiguration()
     mainWindow->busy("Setting up run...");
     newRun(config.c_str(), run);
     mainWindow->busy();
-    mainWindow->reflectRecordEventlog();
+    mainWindow->reflectConfigOnUi();
 
     QTimer::singleShot(0, mainWindow, &MainWindow::activateWindow);
 }
