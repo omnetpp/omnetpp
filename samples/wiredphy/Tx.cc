@@ -23,7 +23,7 @@ Define_Module(Tx);
 static std::ostream& operator<<(std::ostream& os, cPacket *pk)
 {
     os << pk->getName() << " (" << pk->str() << ")";
-    ProgressInfo *progressInfo = dynamic_cast<ProgressInfo*>(pk->removeControlInfo());
+    ProgressInfo *progressInfo = dynamic_cast<ProgressInfo*>(pk->getControlInfo());
     if (progressInfo) {
         int64_t availableBits = progressInfo->getAvailableBitLength();
         bool isEnd = progressInfo->isEnd();
