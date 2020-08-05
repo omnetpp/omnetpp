@@ -11,7 +11,7 @@
     <tycho.extras.version>1.6.0</tycho.extras.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <repo.url>https://download.eclipse.org/releases/latest</repo.url>
-    <update-repo.url>https://download.eclipse.org/eclipse/updates/4.15</update-repo.url>
+    <update-repo.url>https://download.eclipse.org/eclipse/updates/4.16</update-repo.url>
     <cdt-repo.url>https://download.eclipse.org/tools/cdt/releases/9.11</cdt-repo.url>
     <pydev-repo.url>https://www.pydev.org/updates</pydev-repo.url>
 <!--    <cdt-repo.url>https://download.eclipse.org/tools/cdt/builds/photon/milestones</cdt-repo.url> -->
