@@ -545,7 +545,8 @@ void TimeLineGraphicsView::rebuildScene()
             }
         }
 
-        if (drawMinorTicks)
+        // exp < maxExponent, because there is no need to draw minor ticks past the last major tick
+        if (drawMinorTicks && exp < maxExponent)
             for (int i = 2; i <= 9; i++) {
                 int x = getXForTimeDelta(SimTime(i, (SimTimeUnit)exp));
                 scene()->addLine(x, axisY-2, x, axisY+2, pen);
