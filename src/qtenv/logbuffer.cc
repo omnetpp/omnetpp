@@ -262,6 +262,11 @@ void LogBuffer::dump() const
         printf("[%d] #%" PRId64 " t=%s componentId=%d: %s", i, entry->eventNumber, SIMTIME_STR(entry->simtime), entry->componentId, entry->banner);
         for (const auto & line : entry->lines)
             printf("\t[l%d]:%s%s", i, line.prefix, line.line);
+        for (const auto & msg : entry->msgs) {
+            printf("\t[l%d]:%s\n", i, msg.msg->str().c_str());
+            for (auto id : msg.hopModuleIds)
+                printf("\t\t[l%d]:%s\n", i, getSimulation()->getComponent(id)->getFullPath().c_str());
+        }
     }
 }
 

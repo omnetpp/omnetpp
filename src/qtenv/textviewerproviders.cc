@@ -188,7 +188,7 @@ void *ModuleOutputContentProvider::getUserData(int lineIndex)
     LogBuffer::Entry *eventEntry = logBuffer->getEntries()[entryIndex];
     Q_ASSERT(!filter || filter->matches(eventEntry));
 
-    return eventEntry->msgs[lineIndex - entryStartLineNumbers[entryIndex]].msg;
+    return linesProvider->getMessageForLine(eventEntry, lineIndex - entryStartLineNumbers[entryIndex]);
 }
 
 eventnumber_t ModuleOutputContentProvider::getEventNumberAtLine(int lineIndex)
@@ -559,6 +559,11 @@ QString EventEntryMessageLinesProvider::getLineText(LogBuffer::Entry *entry, int
     text += QString(os.str().c_str());
 
     return text;
+}
+
+cMessage *EventEntryMessageLinesProvider::getMessageForLine(LogBuffer::Entry *entry, int lineIndex)
+{
+    return messageSendForLineIndex(entry, lineIndex).msg;
 }
 
 ModulePathsEventEntryFilter::ModulePathsEventEntryFilter(const QStringList& moduleFullPaths, ComponentHistory *componentHistory)

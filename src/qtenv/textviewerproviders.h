@@ -122,6 +122,9 @@ public:
 
     virtual int getNumLines(LogBuffer::Entry *entry) = 0;
     virtual QString getLineText(LogBuffer::Entry *entry, int lineIndex) = 0;
+
+    // Optional.
+    virtual cMessage *getMessageForLine(LogBuffer::Entry *entry, int lineIndex) { ASSERT2(false, "Unimplemented."); };
 };
 
 
@@ -158,6 +161,8 @@ public:
 
     int getNumLines(LogBuffer::Entry *entry) override;
     QString getLineText(LogBuffer::Entry *entry, int lineIndex) override;
+
+    cMessage *getMessageForLine(LogBuffer::Entry *entry, int lineIndex) override;
 };
 
 
