@@ -225,8 +225,8 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
 
 
     struct timeval tv;
-    tv.tv_sec = blocking ? 1 : 0;  // if blocking, wait 1 sec
-    tv.tv_usec = 0;
+    tv.tv_sec = 0;
+    tv.tv_usec = blocking ? 100000 : 0;  // if blocking, wait 0.1 sec
 
     int ret = select(maxFdPlus1, &fdset, nullptr, nullptr, &tv);
     if (ret > 0) {
