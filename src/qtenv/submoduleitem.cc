@@ -152,6 +152,8 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
         si->addRangeItem(r, rangeOutlineWidth, rangeFillColor, rangeOutlineColor);
     }
 
+    si->setOpacity(mod->isPlaceholder() ? 0.5 : 1.0);
+
     updateQueueSizeLabel(si, mod);
 }
 
