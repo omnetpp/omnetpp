@@ -37,8 +37,8 @@ class SIM_API cResultListener : public cObject, public cIListener
     protected:
         static const char *getPooled(const char *s);
 
-    protected:
-        // simplified API that better supports chaining:
+    public:
+        // simplified API that better supports chaining (needs to be public due to DemuxFilter)
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) = 0;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, intval_t l, cObject *details) = 0;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, uintval_t l, cObject *details) = 0;
@@ -63,6 +63,8 @@ class SIM_API cResultListener : public cObject, public cIListener
         virtual void unsubscribedFrom(cComponent *component, simsignal_t signalID) override;
         virtual void finish(cComponent *component, simsignal_t signalID) override;
 
+        // make a "clean" copy which inherits configuration but not result collection state
+        virtual cResultListener *clone() const = 0;
 };
 
 }  // namespace omnetpp

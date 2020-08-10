@@ -18,6 +18,7 @@
 #include "common/commonutil.h"
 #include "common/stringutil.h"
 #include "omnetpp/cresultfilter.h"
+#include "omnetpp/checkandcast.h"
 
 using namespace omnetpp::common;
 
@@ -27,6 +28,20 @@ cResultFilter::cResultFilter()
 {
     delegates = new cResultListener *[1];
     delegates[0] = nullptr;
+}
+
+void cResultFilter::init(cComponent *comp, cProperty *attrs)
+{
+    component = comp;
+    attrsProperty = attrs;
+}
+
+cResultFilter *cResultFilter::clone() const
+{
+    cResultFilter *copy = (cResultFilter *) createOne(getClassName());
+    copy->component = component;
+    copy->attrsProperty = attrsProperty;
+    return copy;
 }
 
 void cResultFilter::addDelegate(cResultListener *delegate)
@@ -226,8 +241,8 @@ void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, c
 
 //---
 
-cResultFilterType::cResultFilterType(const char *name, cResultFilter *(*f)(), const char *description)
-: cNoncopyableOwnedObject(name, false), description(opp_nulltoempty(description)), factory(f)
+cResultFilterType::cResultFilterType(const char *name, const char *className, const char *description)
+: cNoncopyableOwnedObject(name, false), description(opp_nulltoempty(description)), className(className)
 {
 }
 
@@ -243,6 +258,11 @@ cResultFilterType *cResultFilterType::get(const char *name)
         throw cRuntimeError("Result filter \"%s\" not found -- perhaps the name is wrong, "
                             "or the filter was not registered with Register_ResultFilter()", name);
     return p;
+}
+
+cResultFilter *cResultFilterType::create() const
+{
+    return check_and_cast<cResultFilter*>(createOne(className.c_str()));
 }
 
 }  // namespace omnetpp

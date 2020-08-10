@@ -39,8 +39,7 @@ class cProperty;
  * @hideinitializer
  */
 #define Register_ResultFilter(NAME, CLASSNAME) \
-  static omnetpp::cResultFilter *__FILEUNIQUENAME__() {return new CLASSNAME;} \
-  EXECUTE_ON_STARTUP(omnetpp::resultFilters.getInstance()->add(new omnetpp::cResultFilterType(NAME,__FILEUNIQUENAME__));)
+  __REGISTER_CLASS_X(CLASSNAME, omnetpp::cResultFilter, "result filter", omnetpp::resultFilters.getInstance()->add(new omnetpp::cResultFilterType(NAME,#CLASSNAME)) )
 
 
 /**
@@ -55,8 +54,7 @@ class cProperty;
  * @hideinitializer
  */
 #define Register_ResultFilter2(NAME, CLASSNAME, DESCRIPTION) \
-  static omnetpp::cResultFilter *__FILEUNIQUENAME__() {return new CLASSNAME;} \
-  EXECUTE_ON_STARTUP(omnetpp::resultFilters.getInstance()->add(new omnetpp::cResultFilterType(NAME,__FILEUNIQUENAME__,DESCRIPTION));)
+  __REGISTER_CLASS_X(CLASSNAME, omnetpp::cResultFilter, "result filter", omnetpp::resultFilters.getInstance()->add(new omnetpp::cResultFilterType(NAME,#CLASSNAME,DESCRIPTION)) )
 
 /**
  * @brief Base class for result filters.
@@ -72,6 +70,8 @@ class cProperty;
 class SIM_API cResultFilter : public cResultListener
 {
     private:
+        cComponent *component = nullptr;
+        cProperty *attrsProperty = nullptr;
         cResultListener **delegates; // nullptr-terminated array
     protected:
         // methods for invoking the delegates
@@ -87,7 +87,8 @@ class SIM_API cResultFilter : public cResultListener
     public:
         cResultFilter();
         ~cResultFilter();
-        virtual void init(cComponent *component, cProperty *attrsProperty) {}
+        virtual void init(cComponent *component, cProperty *attrsProperty);
+        virtual cResultFilter *clone() const override;
         virtual double getInitialDoubleValue() const {return NAN;}
         virtual void addDelegate(cResultListener *delegate);
         virtual bool hasDelegate(cResultListener *delegate);
@@ -149,19 +150,18 @@ class SIM_API cResultFilterType : public cNoncopyableOwnedObject
 {
   private:
     std::string description;
-    cResultFilter *(*factory)();
+    std::string className;
 
   public:
     /**
      * Constructor.
      */
-    cResultFilterType(const char *name, cResultFilter *(*f)(), const char *description=nullptr);
+    cResultFilterType(const char *name, const char *className, const char *description=nullptr);
 
     /**
-     * Creates an instance of a particular class by calling the creator
-     * function.
+     * Creates an instance of this result filter type.
      */
-    cResultFilter *create() const  {return factory();}
+    cResultFilter *create() const;
 
     /**
      * Returns the documentation of this result filter.

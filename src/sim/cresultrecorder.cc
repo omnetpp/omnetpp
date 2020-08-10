@@ -20,6 +20,7 @@
 #include "omnetpp/cresultrecorder.h"
 #include "omnetpp/cproperty.h"
 #include "omnetpp/cstringtokenizer.h"
+#include "omnetpp/checkandcast.h"
 
 using namespace omnetpp::common;
 
@@ -32,9 +33,20 @@ void cResultRecorder::init(cComponent *comp, const char *statsName, const char *
     recordingMode = getPooled(recMode);
     attrsProperty = property;
     manualAttrs = attrs;
-    finishCalled = false;
     if ((!attrsProperty) == (!manualAttrs))
         throw cRuntimeError("cResultRecorder::init(): Exactly one of attrsProperty and manualAttrs must be specified");
+}
+
+cResultRecorder *cResultRecorder::clone() const
+{
+    cResultRecorder *copy = (cResultRecorder *)createOne(getClassName());
+    copy->component = component;
+    copy->statisticName = statisticName;
+    copy->recordingMode = recordingMode;
+    copy->attrsProperty = attrsProperty;
+    copy->manualAttrs = manualAttrs ? new opp_string_map(*manualAttrs) : nullptr;
+    copy->finishCalled = finishCalled;
+    return copy;
 }
 
 void cResultRecorder::callFinish(cResultFilter *prev)
@@ -43,6 +55,14 @@ void cResultRecorder::callFinish(cResultFilter *prev)
         finishCalled = true;
         finish(prev);
     }
+}
+
+std::string cResultRecorder::getResultName() const
+{
+    if (getDemuxLabel() == nullptr)
+        return std::string(getStatisticName()) + ":" + getRecordingMode();
+    else
+        return std::string(getStatisticName()) + ":" + getRecordingMode() + ":" + getDemuxLabel();
 }
 
 opp_string_map cResultRecorder::getStatisticAttributes()
@@ -171,8 +191,8 @@ void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t
 
 //----
 
-cResultRecorderType::cResultRecorderType(const char *name, cResultRecorder *(*f)(), const char *description)
-    : cNoncopyableOwnedObject(name, false), description(opp_nulltoempty(description)), factory(f)
+cResultRecorderType::cResultRecorderType(const char *name, const char *className, const char *description)
+    : cNoncopyableOwnedObject(name, false), description(opp_nulltoempty(description)), className(className)
 {
 }
 
@@ -188,6 +208,11 @@ cResultRecorderType *cResultRecorderType::get(const char *name)
         throw cRuntimeError("Result recorder \"%s\" not found -- perhaps the name is wrong, "
                             "or the recorder was not registered with Register_ResultRecorder()", name);
     return p;
+}
+
+cResultRecorder *cResultRecorderType::create() const
+{
+    return check_and_cast<cResultRecorder *>(createOne(className.c_str()));
 }
 
 }  // namespace omnetpp

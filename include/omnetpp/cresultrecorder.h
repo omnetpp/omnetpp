@@ -39,8 +39,7 @@ class cProperty;
  * @hideinitializer
  */
 #define Register_ResultRecorder(NAME, CLASSNAME) \
-  static omnetpp::cResultRecorder *__FILEUNIQUENAME__() {return new CLASSNAME;} \
-  EXECUTE_ON_STARTUP(omnetpp::resultRecorders.getInstance()->add(new omnetpp::cResultRecorderType(NAME,__FILEUNIQUENAME__));)
+  __REGISTER_CLASS_X(CLASSNAME, omnetpp::cResultRecorder, "result recorder", omnetpp::resultRecorders.getInstance()->add(new omnetpp::cResultRecorderType(NAME,#CLASSNAME)) )
 
 /**
  * @brief Registers a result recorder class with a description string.
@@ -55,8 +54,7 @@ class cProperty;
  * @hideinitializer
  */
 #define Register_ResultRecorder2(NAME, CLASSNAME, DESCRIPTION) \
-  static omnetpp::cResultRecorder *__FILEUNIQUENAME__() {return new CLASSNAME;} \
-  EXECUTE_ON_STARTUP(omnetpp::resultRecorders.getInstance()->add(new omnetpp::cResultRecorderType(NAME,__FILEUNIQUENAME__,DESCRIPTION));)
+  __REGISTER_CLASS_X(CLASSNAME, omnetpp::cResultRecorder, "result recorder", omnetpp::resultRecorders.getInstance()->add(new omnetpp::cResultRecorderType(NAME,#CLASSNAME,DESCRIPTION)) )
 
 
 /**
@@ -69,12 +67,13 @@ class cProperty;
 class SIM_API cResultRecorder : public cResultListener
 {
     private:
-        cComponent *component;
-        const char *statisticName;
-        const char *recordingMode;
-        cProperty *attrsProperty;  // property to take result attributes from (normally @statistic[statisticName])
-        opp_string_map *manualAttrs; // if non-null, overrides attrsProperty
-        bool finishCalled; // to prevent double-recording of scalar results based on multiple signals
+        cComponent *component = nullptr;
+        const char *statisticName = nullptr;
+        const char *recordingMode = nullptr;
+        const char *demuxLabel = nullptr;
+        cProperty *attrsProperty = nullptr;  // property to take result attributes from (normally @statistic[statisticName])
+        opp_string_map *manualAttrs = nullptr; // if non-null, overrides attrsProperty
+        bool finishCalled = false; // to prevent double-recording of scalar results based on multiple signals
 
     protected:
         virtual opp_string_map getStatisticAttributes(); // order: manualAttrs, then attrsProperty
@@ -83,6 +82,8 @@ class SIM_API cResultRecorder : public cResultListener
         virtual void callFinish(cResultFilter *prev) override;
 
     public:
+        cResultRecorder() {}
+        virtual ~cResultRecorder() {delete manualAttrs;}
         /**
          * Sets contextual information on the result recorder: it will record a (scalar, vector, etc)
          * result for the given component, with a name composed of statisticName and recordingMode,
@@ -91,13 +92,15 @@ class SIM_API cResultRecorder : public cResultListener
          * when specified, will be owned (i.e. deleted) by the result recorder object.
          */
         virtual void init(cComponent *component, const char *statisticName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs=nullptr);
-        virtual ~cResultRecorder() {delete manualAttrs;}
+        virtual cResultRecorder *clone() const override;
         virtual const char *getName() const override {return getStatisticName();}
         virtual std::string getFullPath() const override {return getComponent()->getFullPath() + "." + getResultName();}
         virtual cComponent *getComponent() const {return component;}
         virtual const char *getStatisticName() const {return statisticName;}
         virtual const char *getRecordingMode() const {return recordingMode;}
-        virtual std::string getResultName() const {return std::string(getStatisticName())+":"+getRecordingMode();}
+        virtual const char *getDemuxLabel() const {return demuxLabel;}
+        virtual void setDemuxLabel(const char *s) {demuxLabel = getPooled(s);}
+        virtual std::string getResultName() const;
 };
 
 /**
@@ -132,19 +135,18 @@ class SIM_API cResultRecorderType : public cNoncopyableOwnedObject
 {
   private:
     std::string description;
-    cResultRecorder *(*factory)();
+    std::string className;
 
   public:
     /**
      * Constructor.
      */
-    cResultRecorderType(const char *name, cResultRecorder *(*f)(), const char *description=nullptr);
+    cResultRecorderType(const char *name, const char *className, const char *description=nullptr);
 
     /**
-     * Creates an instance of a particular class by calling the creator
-     * function.
+     * Creates an instance of this result recorder type.
      */
-    cResultRecorder *create() const  {return factory();}
+    cResultRecorder *create() const;
 
     /**
      * Returns the documentation of this result recorder.

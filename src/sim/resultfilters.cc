@@ -19,6 +19,7 @@
 #include "omnetpp/cproperty.h"
 #include "omnetpp/checkandcast.h"
 #include "omnetpp/resultfilters.h"
+#include "omnetpp/cresultrecorder.h"
 
 namespace omnetpp {
 
@@ -37,10 +38,17 @@ namespace omnetpp {
 // note: we don't register ExpressionFilter
 
 Register_ResultFilter2("warmup", WarmupPeriodFilter,
-        "Ignores all values in the input during the warmup period, "
+        "Ignores all values in the input during the warm-up period, "
         "and lets everything through unchanged afterwards. "
-        "This filter is inserted automatically whenever a warmup period "
+        "This filter is inserted automatically whenever a warm-up period "
         "is specified in the configuration."
+);
+
+Register_ResultFilter2("demux", DemuxFilter,
+        "Demultiplexes its input to several outputs. The selector (a.ka. demux label) "
+        "is the name string of the details object emitted with the value. "
+        "Results recorded on the various outputs are tagged with the demux label "
+        "(i.e. the demux label appears as part of their names)."
 );
 
 Register_ResultFilter2("totalCount", TotalCountFilter,
@@ -180,6 +188,103 @@ std::string WarmupPeriodFilter::str() const
 {
     std::stringstream os;
     os << "warmupPeriod = " << getEndWarmupPeriod();
+    return os.str();
+}
+
+//---
+
+void DemuxFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details)
+{
+    int startIndex = getDelegateStartIndexByLabel(details);
+    for (int i = 0; i < fanOut; i++)
+        getDelegate(startIndex + i)->receiveSignal(this, t, b, details);
+}
+
+void DemuxFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, intval_t l, cObject *details)
+{
+    int startIndex = getDelegateStartIndexByLabel(details);
+    for (int i = 0; i < fanOut; i++)
+        getDelegate(startIndex + i)->receiveSignal(this, t, l, details);
+}
+
+void DemuxFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, uintval_t l, cObject *details)
+{
+    int startIndex = getDelegateStartIndexByLabel(details);
+    for (int i = 0; i < fanOut; i++)
+        getDelegate(startIndex + i)->receiveSignal(this, t, l, details);
+}
+
+void DemuxFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, double d, cObject *details)
+{
+    int startIndex = getDelegateStartIndexByLabel(details);
+    for (int i = 0; i < fanOut; i++)
+        getDelegate(startIndex + i)->receiveSignal(this, t, d, details);
+}
+
+void DemuxFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v, cObject *details)
+{
+    int startIndex = getDelegateStartIndexByLabel(details);
+    for (int i = 0; i < fanOut; i++)
+        getDelegate(startIndex + i)->receiveSignal(this, t, v, details);
+}
+
+void DemuxFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details)
+{
+    int startIndex = getDelegateStartIndexByLabel(details);
+    for (int i = 0; i < fanOut; i++)
+        getDelegate(startIndex + i)->receiveSignal(this, t, s, details);
+}
+
+void DemuxFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details)
+{
+    int startIndex = getDelegateStartIndexByLabel(details);
+    for (int i = 0; i < fanOut; i++)
+        getDelegate(startIndex + i)->receiveSignal(this, t, obj, details);
+}
+
+int DemuxFilter::getDelegateStartIndexByLabel(cObject *details)
+{
+    if (fanOut == -1)
+        fanOut = getNumDelegates();
+
+    if (details == nullptr)
+        return 0;
+    const char *label = details->getFullName();
+    if (!*label)
+        return 0;
+
+    auto it = labelToDelegateStartIndexMap.find(label);
+    if (it != labelToDelegateStartIndexMap.end())
+        return it->second;
+    else {
+        ASSERT(getNumDelegates() == fanOut * (labelToDelegateStartIndexMap.size()+1));
+        int startIndex = getNumDelegates();
+        labelToDelegateStartIndexMap[label] = startIndex;
+        for (int i = 0; i < fanOut; i++) {
+            cResultListener *delegate = copyChain(getDelegate(i), label);
+            addDelegate(delegate); // placed at position startIndex+i
+        }
+        return startIndex;
+    }
+}
+
+cResultListener *DemuxFilter::copyChain(cResultListener *root, const char *label)
+{
+    cResultListener *copy = root->clone();
+    if (dynamic_cast<cResultFilter*>(copy)) {
+        for (cResultListener *delegate : ((cResultFilter *)root)->getDelegates())
+            ((cResultFilter *)copy)->addDelegate(copyChain(delegate, label));
+    }
+    else if (dynamic_cast<cResultRecorder*>(copy)) {
+        ((cResultRecorder *)copy)->setDemuxLabel(label);
+    }
+    return copy;
+}
+
+std::string DemuxFilter::str() const
+{
+    std::stringstream os;
+    os << "#outputs = " << getNumDelegates();
     return os.str();
 }
 

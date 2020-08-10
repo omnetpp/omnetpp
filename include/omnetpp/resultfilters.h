@@ -26,6 +26,13 @@
 
 namespace omnetpp {
 
+/**
+ * @brief Result filter that absorbs input values during the configured warm-up
+ * period (see warmup-period configuration option), and lets everything through
+ * once the warm-up period is over.
+ *
+ * @see cSimulation::getWarmupPeriod()
+ */
 class SIM_API WarmupPeriodFilter : public cResultFilter
 {
     protected:
@@ -38,6 +45,36 @@ class SIM_API WarmupPeriodFilter : public cResultFilter
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details) override;
     public:
         virtual simtime_t_cref getEndWarmupPeriod() const {return getSimulation()->getWarmupPeriod();}
+        virtual std::string str() const override;
+};
+
+/**
+ * @brief Result filter that demultiplexes its input to several outputs. The
+ * selector (a.ka. demux label) is the name string of the details object emitted
+ * with the value, <tt>details->getFullName()</tt>. Results recorded on the various
+ * outputs are tagged with the demux label (i.e. the demux label appears as part
+ * of their names).
+ *
+ * New outputs are created on demand, by cloning the result filter/recorder chain(s)
+ * initially attached as output to the demux filter (i.e. before the first emitted signal).
+ */
+class SIM_API DemuxFilter : public cResultFilter
+{
+    private:
+        int fanOut = -1; // number of initial outputs; #outputs is a multiple of fanOut
+        std::map<std::string, int> labelToDelegateStartIndexMap;
+    private:
+        int getDelegateStartIndexByLabel(cObject *details);
+        cResultListener *copyChain(cResultListener *templateChain, const char *label);
+    protected:
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) override;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, intval_t, cObject *details) override;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, uintval_t, cObject *details) override;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d, cObject *details) override;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v, cObject *details) override;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details) override;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details) override;
+    public:
         virtual std::string str() const override;
 };
 
