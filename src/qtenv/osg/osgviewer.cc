@@ -190,7 +190,7 @@ public:
         setDefaultFboId(viewer->defaultFramebufferObject());
 
         GraphicsWindowEmbedded::resizedImplementation(x, y, width, height); // ?
-        viewer->resize(width, height);
+        viewer->resize(width / viewer->scaleFactor(), height / viewer->scaleFactor());
         viewer->update();
     }
 
@@ -347,8 +347,9 @@ OsgViewer::OsgViewer(QWidget *parent): IOsgViewer(parent)
     auto traits = new osg::GraphicsContext::Traits;
     traits->x = x();
     traits->y = y();
-    traits->width = width();
-    traits->height = height();
+
+    traits->width = width() * scaleFactor();
+    traits->height = height() * scaleFactor();
     traits->samples = 4; // XXX make this configurable?
 
     graphicsWindow = new GraphicsWindow(this, traits);
@@ -387,7 +388,7 @@ OsgViewer::OsgViewer(QWidget *parent): IOsgViewer(parent)
     view->getDatabasePager()->setUnrefImageDataAfterApplyPolicy(true,false);
 
     camera = view->getCamera();
-    camera->setViewport(0, 0, width(), height());
+    camera->setViewport(0, 0, width() * scaleFactor(), height() * scaleFactor());
     camera->setClearColor(osg::Vec4(0, 0, 1, 1));
     camera->setProjectionMatrixAsPerspective(30.f, widgetAspectRatio(), 1.0f, 1000.0f);
     camera->setGraphicsContext(graphicsWindow);
@@ -453,11 +454,6 @@ bool OsgViewer::event(QEvent *event)
     return handled;
 }
 
-float OsgViewer::widgetAspectRatio() const
-{
-    return width() / (float)height();
-}
-
 void OsgViewer::setOsgCanvas(cOsgCanvas *canvas)
 {
     if (osgCanvas != canvas) {
@@ -490,6 +486,20 @@ void OsgViewer::disable()
     viewer->getViews(views, false);
     if (contains(views, view.get()))
         viewer->removeView(view);
+}
+
+float OsgViewer::scaleFactor() const
+{
+    #if QT_VERSION >= QT_VERSION_CHECK(5,6,0)
+        return devicePixelRatioF();
+    #else
+        return devicePixelRatio();
+    #endif
+}
+
+float OsgViewer::widgetAspectRatio() const
+{
+    return width() / (float)height();
 }
 
 void OsgViewer::refresh()
@@ -553,7 +563,8 @@ void OsgViewer::uninit()
 std::vector<cObject *> OsgViewer::objectsAt(const QPoint &pos)
 {
     osgUtil::LineSegmentIntersector::Intersections intersections;
-    view->computeIntersections(view->getCamera(), osgUtil::Intersector::WINDOW, pos.x(), height() - pos.y(), intersections);
+    view->computeIntersections(view->getCamera(), osgUtil::Intersector::WINDOW,
+        pos.x() * scaleFactor(), height() * scaleFactor() - pos.y() * scaleFactor(), intersections);
 
     std::vector<cObject *> objects;
     for (osgUtil::LineSegmentIntersector::Intersections::iterator hitr = intersections.begin(); hitr != intersections.end(); ++hitr) {
@@ -765,9 +776,11 @@ void OsgViewer::setCameraManipulator(QAction *sender)
 
 void OsgViewer::resizeGL(int width, int height)
 {
-    getEventQueue()->windowResize(x(), y(), width, height);
-    graphicsWindow->resized(x(), y(), width, height);
-    camera->setViewport(0, 0, width, height);
+    float scaleFactor = this->scaleFactor();
+
+    graphicsWindow->resized(x(), y(), width * scaleFactor, height * scaleFactor);
+    getEventQueue()->windowResize(x(), y(), width * scaleFactor, height * scaleFactor);
+    camera->setViewport(0, 0, width * scaleFactor, height * scaleFactor);
 }
 
 osgGA::EventQueue* OsgViewer::getEventQueue() const
@@ -790,7 +803,7 @@ void OsgViewer::mouseMoveEvent(QMouseEvent *event)
     // The multiplication by the aspect ratio is a HACK, but this makes the cursor "stick to the surface"
     // when dragging the camera with the Earth manipulator, and normalizes rotation speed in all directions.
     // However, it causes some issues with doubleclick zooming, which we want to avoid, see a few lines down.
-    getEventQueue()->mouseMotion(event->x() * widgetAspectRatio(), event->y(), getTimestamp(event));
+    getEventQueue()->mouseMotion(event->x() * widgetAspectRatio() * scaleFactor(), event->y() * scaleFactor(), getTimestamp(event));
 }
 
 void OsgViewer::mousePressEvent(QMouseEvent *event)
@@ -798,9 +811,9 @@ void OsgViewer::mousePressEvent(QMouseEvent *event)
     int osgButton = mouseButtonQtToOsg(event->button());
     if (event->type() == QEvent::MouseButtonDblClick)
         // not multiplying the x coordinate with the aspect ratio in this one place is a DOUBLE HACK, but oh well...
-        getEventQueue()->mouseDoubleButtonPress(event->x() /* * widgetAspectRatio() */, event->y(), osgButton, getTimestamp(event));
+        getEventQueue()->mouseDoubleButtonPress(event->x() /* * widgetAspectRatio() */ * scaleFactor(), event->y() * scaleFactor(), osgButton, getTimestamp(event));
     else
-        getEventQueue()->mouseButtonPress(event->x() * widgetAspectRatio(), event->y(), osgButton, getTimestamp(event));
+        getEventQueue()->mouseButtonPress(event->x() * widgetAspectRatio() * scaleFactor(), event->y() * scaleFactor(), osgButton, getTimestamp(event));
 
     if (event->button() == Qt::LeftButton) {
         auto objects = objectsAt(event->pos());
@@ -822,7 +835,7 @@ void OsgViewer::mousePressEvent(QMouseEvent *event)
 
 void OsgViewer::mouseReleaseEvent(QMouseEvent *event)
 {
-    getEventQueue()->mouseButtonRelease(event->x() * widgetAspectRatio(), event->y(), mouseButtonQtToOsg(event->button()), getTimestamp(event));
+    getEventQueue()->mouseButtonRelease(event->x() * widgetAspectRatio() * scaleFactor(), event->y() * scaleFactor(), mouseButtonQtToOsg(event->button()), getTimestamp(event));
 
     if (event->button() == Qt::RightButton
             && (lastRightClick - event->pos()).manhattanLength() < 3) {

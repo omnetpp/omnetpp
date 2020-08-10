@@ -123,7 +123,6 @@ class OsgViewer : public IOsgViewer
 
     bool event(QEvent *event) override;
 
-    float widgetAspectRatio() const;
 
     osgGA::EventQueue *getEventQueue() const;
 
@@ -141,6 +140,9 @@ class OsgViewer : public IOsgViewer
 
     void enable() override;
     void disable() override;
+
+    float scaleFactor() const;
+    float widgetAspectRatio() const;
 
     void refresh() override;
     void resetViewer() override;
