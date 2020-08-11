@@ -124,10 +124,17 @@ QString VideoRecordingDialog::makeEncodingCommand()
 {
     QString cropArg = "";
 
+    float scaleFactor;
+    #if QT_VERSION >= QT_VERSION_CHECK(5,6,0)
+        scaleFactor = getQtenv()->getMainWindow()->devicePixelRatioF();
+    #else
+        scaleFactor = getQtenv()->getMainWindow()->devicePixelRatio();
+    #endif
+
     if (!cropArea.isNull())
         cropArg = QString("-filter:v \"crop=%1:%2:%3:%4\" ")
-                .arg(cropArea.width()).arg(cropArea.height())
-                .arg(cropArea.x()).arg(cropArea.y());
+                .arg(cropArea.width()*scaleFactor).arg(cropArea.height()*scaleFactor)
+                .arg(cropArea.x()*scaleFactor).arg(cropArea.y()*scaleFactor);
 
     // not using QString::arg here, because it has % in it
     return "ffmpeg -r 30 -f image2 -i \"frames/" + configRun + "_%04d.png\" "
