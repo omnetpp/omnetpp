@@ -107,7 +107,6 @@ Register_ResultFilter2("max", MaxFilter,
 Register_ResultFilter2("last", IdentityFilter,
         "This is actually the identity filter that lets through all input unchanged. "
         "It is useful for expressions like: record=last+5. "
-        SIGNALTYPE_TO_NUMERIC_CONVERSIONS
 );
 
 Register_ResultFilter2("avg", AverageFilter,

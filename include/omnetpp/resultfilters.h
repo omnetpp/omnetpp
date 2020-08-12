@@ -177,10 +177,18 @@ class SIM_API TimeFilter : public cResultFilter
 /**
  * @brief This class is a no-op filter.
  */
-class SIM_API IdentityFilter : public cNumericResultFilter
+class SIM_API IdentityFilter : public cResultFilter
 {
     protected:
-        virtual bool process(simtime_t& t, double& value, cObject *details) override {return true;}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) override {fire(this,t,b,details);}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, intval_t l, cObject *details) override {fire(this,t,l,details);}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, uintval_t l, cObject *details) override {fire(this,t,l,details);}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d, cObject *details) override {fire(this,t,d,details);}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v, cObject *details) override {fire(this,t,v,details);}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details) override {fire(this,t,s,details);}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details) override {fire(this,t,obj,details);}
+    public:
+        IdentityFilter() {}
 };
 
 /**
