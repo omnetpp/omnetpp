@@ -148,7 +148,7 @@ class SIM_API cMessage : public cEvent
     // internal: returns the parameter list object, or nullptr if it hasn't been used yet
     cArray *getParListPtr()  {return parList;}
 
-  private: // hide cEvent methods from the cMessage API
+  protected: // hide cEvent methods from the cMessage API
 
     // overridden from cEvent: return true
     virtual bool isMessage() const override {return true;}
@@ -159,7 +159,6 @@ class SIM_API cMessage : public cEvent
     // overridden from cEvent: return the arrival module
     virtual cObject *getTargetObject() const override;
 
-  protected:
     // overridden from cEvent
     virtual void execute() override;
 
