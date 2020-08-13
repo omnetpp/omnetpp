@@ -1,0 +1,42 @@
+%description:
+Basic test for Register_ResultRecorder()/Register_ResultFilter() with namespaces
+
+%file: test.ned
+
+network Test
+{
+    @signal[foo];
+    @statistic[foo](record=last(customfilter),customrecorder);
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class CustomFilter : public IdentityFilter {};
+
+Register_ResultFilter("customfilter", CustomFilter);
+
+class CustomRecorder : public LastValueRecorder {};
+
+Register_ResultRecorder("customrecorder", CustomRecorder);
+
+}; //namespace
+
+%inifile: test.ini
+[General]
+network = Test
+debug-statistics-recording = true
+
+%subst: /signalID=\d+/signalID=_/
+
+%contains: stdout
+Test (Test):
+    "foo" (signalID=_):
+        @TESTNAME@::CustomFilter
+            omnetpp::LastValueRecorder ==> foo:last(customfilter)
+        @TESTNAME@::CustomRecorder ==> foo:customrecorder
