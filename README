@@ -2,7 +2,7 @@ OMNeT++
 ~~~~~~~
 
 OMNeT++ is a public-source, component-based, modular and open-architecture
-simulation environment with strong GUI support and an embeddable simulation
+simulation environment with strong GUI (Graphical User Interface) support and an embeddable simulation
 kernel. Its primary application area is the simulation of communication
 networks, but it has been successfully used in other areas like the simulation
 of IT systems, queueing networks, hardware architectures and business processes
