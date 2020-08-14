@@ -115,11 +115,6 @@ void CanvasInspector::refresh()
 {
     Inspector::refresh();
 
-    if (!object) {
-        //TCLKILL CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
-        return;
-    }
-
     canvasViewer->refresh();
 }
 
