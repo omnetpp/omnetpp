@@ -167,6 +167,7 @@ Calling finish() at end of Run #0...
 FINISH on module "Test", signal "POST_MODEL_CHANGE"
 FINISH on module "Test", signal "PRE_MODEL_CHANGE"
 SIGNAL from module "Test", signal "PRE_MODEL_CHANGE", class cPreModuleDeleteNotification, info:
+SIGNAL from module "Test.tester", signal "PRE_MODEL_CHANGE", class cPreModuleDeleteNotification, info:
 UNSUBSCRIBED from module "Test", signal "POST_MODEL_CHANGE"
 UNSUBSCRIBED from module "Test", signal "PRE_MODEL_CHANGE"
 NOISYLISTENER DESTRUCTOR

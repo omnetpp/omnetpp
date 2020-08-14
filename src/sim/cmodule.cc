@@ -88,10 +88,6 @@ cModule::~cModule()
         abort();
     }
 
-    // release listeners in the whole subtree first. This mostly eliminates
-    // the need for explicit unsubscribe() calls in module destructors.
-    releaseListeners();
-
     // notify envir while module object (or rather, its remains) still exist
     EVCB.moduleDeleted(this);
 
@@ -113,6 +109,10 @@ cModule::~cModule()
 
     // delete all gates
     clearGates();
+
+    // releasing listeners must be after deleting submodules etc, because our local listeners
+    // may be interested in getting notified about submodule deletions
+    releaseLocalListeners();
 
     // deregister ourselves
     if (getParentModule())

@@ -1,0 +1,114 @@
+%description:
+Test that the module to be deleted also receives the pre-module-deletion notifications
+
+%file: test.ned
+
+module Node
+{
+    parameters:
+        @display("i=block/rxtx");
+        int x;
+    gates:
+        inout g[];
+    connections allowunconnected:
+}
+
+module TwoNodes
+{
+    types:
+        channel Ch extends ned.DatarateChannel {
+            parameters:
+                datarate = 100Mbps;
+                delay = 0.1s;
+        }
+    submodules:
+        node1: Node {
+            x = 1;
+            @display("p=100,100");
+        }
+        node2: Node {
+            x = 2;
+            @display("p=200,100");
+        }
+    connections:
+        node1.g++ <--> Ch {ber=1e-9;} <--> node2.g++;
+}
+
+simple Tester
+{
+}
+
+network Test
+{
+    submodules:
+        twoNodes: TwoNodes;
+        tester: Tester;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+#include "../lib/noisylistener.h"
+using namespace testlib;
+
+namespace @TESTNAME@ {
+
+class Tester : public cSimpleModule, public NoisyListener
+{
+  public:
+    Tester() : cSimpleModule(16384) { }
+    virtual void activity() override;
+};
+
+Define_Module(Tester);
+
+void Tester::activity()
+{
+    cModule *twoNodes = getModuleByPath("^.twoNodes");
+    twoNodes->subscribe(PRE_MODEL_CHANGE, this);
+    twoNodes->subscribe(POST_MODEL_CHANGE, this);
+    EV << "\n";
+    twoNodes->deleteModule();
+    EV << ".\n";
+}
+
+}; //namespace
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+cmdenv-event-banners = false
+
+%subst: /omnetpp:://
+%contains: stdout
+SUBSCRIBED at module "Test.twoNodes", signal "PRE_MODEL_CHANGE"
+SUBSCRIBED at module "Test.twoNodes", signal "POST_MODEL_CHANGE"
+
+SIGNAL from module "Test.twoNodes", signal "PRE_MODEL_CHANGE", class cPreModuleDeleteNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE", class cPreModuleDeleteNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE", class cPreGateDisconnectNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE", class cPrePathCutNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE", class cPrePathCutNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE", class cPostGateDisconnectNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE", class cPostPathCutNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE", class cPostPathCutNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE", class cPreGateDisconnectNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE", class cPrePathCutNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE", class cPrePathCutNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE", class cPostGateDisconnectNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE", class cPostPathCutNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE", class cPostPathCutNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE", class cPreGateDeleteNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE", class cPostGateDeleteNotification, info:
+SIGNAL from module "Test.twoNodes", signal "POST_MODEL_CHANGE", class cPostModuleDeleteNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE", class cPreModuleDeleteNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE", class cPreGateDeleteNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE", class cPostGateDeleteNotification, info:
+SIGNAL from module "Test.twoNodes", signal "POST_MODEL_CHANGE", class cPostModuleDeleteNotification, info:
+UNSUBSCRIBED from module "Test.twoNodes", signal "POST_MODEL_CHANGE"
+UNSUBSCRIBED from module "Test.twoNodes", signal "PRE_MODEL_CHANGE"
+.
+
