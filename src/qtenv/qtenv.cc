@@ -64,7 +64,6 @@
 #include "inspectorutil.h"
 #include "moduleinspector.h"
 #include "loginspector.h"
-#include "gateinspector.h"
 #include "genericobjectinspector.h"
 #include "figurerenderers.h"
 #include "watchinspector.h"
@@ -2231,14 +2230,6 @@ void Qtenv::channelDisplayStringChanged(cChannel *channel)
         if (insp)
             insp->displayStringChanged(gate);
     }
-
-    // graphical gate inspector windows: normally a user doesn't have many such windows open
-    // (typically, none at all), so we can afford simply refreshing all of them
-    for (auto insp : inspectors) {
-        GateInspector *gateinsp = dynamic_cast<GateInspector *>(insp);
-        if (gateinsp)
-            gateinsp->displayStringChanged(gate);
-    }
 }
 
 void Qtenv::moduleDisplayStringChanged(cModule *module)
@@ -2661,7 +2652,6 @@ void _dummy_for_genericobjectinspector();
 void _dummy_for_watchinspector();
 void _dummy_for_moduleinspector();
 void _dummy_for_loginspector();
-void _dummy_for_gateinspector();
 void _dummy_for_histograminspector();
 void _dummy_for_outputvectorinspector();
 void _dummy_for_objecttreeinspector();
@@ -2672,7 +2662,6 @@ void _dummy_func()
     _dummy_for_watchinspector();
     _dummy_for_moduleinspector();
     _dummy_for_loginspector();
-    _dummy_for_gateinspector();
     _dummy_for_histograminspector();
     _dummy_for_outputvectorinspector();
     _dummy_for_objecttreeinspector();

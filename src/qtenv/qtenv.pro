@@ -62,7 +62,6 @@ SOURCES += mainwindow.cc \
     logbuffer.cc \
     outputvectorinspector.cc \
     canvasinspector.cc \
-    gateinspector.cc \
     inspector.cc \
     loginspector.cc \
     qtenv.cc \
@@ -136,7 +135,6 @@ HEADERS += mainwindow.h \
     logbuffer.h \
     outputvectorinspector.h \
     canvasrenderer.h \
-    gateinspector.h \
     inspectorfactory.h \
     loginspector.h \
     circularbuffer.h \
@@ -194,7 +192,7 @@ HEADERS += mainwindow.h \
     videorecordingdialog.h
 
 # include path is relative to the current build directory (e.g. out/src/gcc-debug/qtenv)
-INCLUDEPATH += ../../../../src ../../../../include 
+INCLUDEPATH += ../../../../src ../../../../include
 
 # next line is for the QtCreator only to be able to show the OMNeT++ sources (not needed for the actual build process)
 INCLUDEPATH += .. ../../include
