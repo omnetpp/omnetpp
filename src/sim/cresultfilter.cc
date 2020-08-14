@@ -39,8 +39,7 @@ void cResultFilter::init(cComponent *comp, cProperty *attrs)
 cResultFilter *cResultFilter::clone() const
 {
     cResultFilter *copy = (cResultFilter *) createOne(getClassName());
-    copy->component = component;
-    copy->attrsProperty = attrsProperty;
+    copy->init(component, attrsProperty);
     return copy;
 }
 

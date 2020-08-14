@@ -39,13 +39,9 @@ void cResultRecorder::init(cComponent *comp, const char *statsName, const char *
 
 cResultRecorder *cResultRecorder::clone() const
 {
+    ASSERT(!finishCalled);
     cResultRecorder *copy = (cResultRecorder *)createOne(getClassName());
-    copy->component = component;
-    copy->statisticName = statisticName;
-    copy->recordingMode = recordingMode;
-    copy->attrsProperty = attrsProperty;
-    copy->manualAttrs = manualAttrs ? new opp_string_map(*manualAttrs) : nullptr;
-    copy->finishCalled = finishCalled;
+    copy->init(component, statisticName, recordingMode, attrsProperty, manualAttrs ? new opp_string_map(*manualAttrs) : nullptr);
     return copy;
 }
 
