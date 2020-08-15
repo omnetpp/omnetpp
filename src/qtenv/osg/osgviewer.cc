@@ -781,6 +781,8 @@ void OsgViewer::resizeGL(int width, int height)
     graphicsWindow->resized(x(), y(), width * scaleFactor, height * scaleFactor);
     getEventQueue()->windowResize(x(), y(), width * scaleFactor, height * scaleFactor);
     camera->setViewport(0, 0, width * scaleFactor, height * scaleFactor);
+
+    setAspectRatio(widgetAspectRatio());
 }
 
 osgGA::EventQueue* OsgViewer::getEventQueue() const
