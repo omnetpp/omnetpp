@@ -89,10 +89,14 @@ cNamedPipeCommunications::~cNamedPipeCommunications()
     delete[] wpipes;
 }
 
-void cNamedPipeCommunications::init()
+void cNamedPipeCommunications::init(int np)
 {
-    // get numPartitions and myProcId from "-p" command-line option
-    getProcIdFromCommandLineArgs(myProcId, numPartitions, "cNamedPipeCommunications");
+    // store parameter
+    numPartitions = np;
+
+    // get myProcId from "-p" command-line option
+    myProcId = getProcIdFromCommandLineArgs(numPartitions, "cNamedPipeCommunications");
+
     EV << "cNamedPipeCommunications: started as process " << myProcId << " out of " << numPartitions << ".\n";
 
     // create and open pipes for read
