@@ -190,7 +190,7 @@ LIB_PREFIX="lib"
 # Note: ${VAR:-defaultvalue} used below appears to be a POSIX syntax.
 #----------------------
 SANITIZE_FLAGS=${SANITIZE_FLAGS:- -fsanitize=leak,address,undefined}
-CFLAGS_DEBUG=${CFLAGS_DEBUG:- -g -Wall}
+CFLAGS_DEBUG=${CFLAGS_DEBUG:- -O0 -Wall}
 CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O3 -DNDEBUG=1}
 CFLAGS=${CFLAGS:-}
 DEPENDFLAGS=${DEPENDFLAGS:- -MMD -MP -MF \$@.d}
@@ -440,6 +440,18 @@ fi
 # check and disable frame pointer omission for better debugging support
 #----------------------
 AC_PROG_CXX_OPTION(-fno-omit-frame-pointer, CFLAGS_ARCH="$CFLAGS_ARCH -fno-omit-frame-pointer")
+
+#----------------------
+# check for debugger specific debug info generation for better debugging support
+#----------------------
+AC_PROG_CXX_OPTION(-glldb, CFLAGS_DEBUG="$CFLAGS_DEBUG -glldb",
+   AC_PROG_CXX_OPTION(-ggdb3, CFLAGS_DEBUG="$CFLAGS_DEBUG -gdb3", CFLAGS_DEBUG="$CFLAGS_DEBUG -g")
+)
+
+# if supported, generate debug info for standallone debugging (i.e. typeinfo for std:: classes)
+AC_PROG_CXX_OPTION(-fstandalone-debug, CFLAGS_DEBUG="$CFLAGS_DEBUG -fstandalone-debug",
+   AC_PROG_CXX_OPTION(-fno-limit-debug-info, CFLAGS_DEBUG="$CFLAGS_DEBUG -fno-limit-debug-info")
+)
 
 #----------------------
 # check for support of --no-as-needed  linker option. GCC 4.6 has changed not to link with a shared lib

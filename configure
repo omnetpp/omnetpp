@@ -2199,7 +2199,7 @@ LIB_PREFIX="lib"
 # Note: ${VAR:-defaultvalue} used below appears to be a POSIX syntax.
 #----------------------
 SANITIZE_FLAGS=${SANITIZE_FLAGS:- -fsanitize=leak,address,undefined}
-CFLAGS_DEBUG=${CFLAGS_DEBUG:- -g -Wall}
+CFLAGS_DEBUG=${CFLAGS_DEBUG:- -O0 -Wall}
 CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O3 -DNDEBUG=1}
 CFLAGS=${CFLAGS:-}
 DEPENDFLAGS=${DEPENDFLAGS:- -MMD -MP -MF \$@.d}
@@ -3487,6 +3487,148 @@ else
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
         CXX="$ac_save_CXX"
+
+
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+
+
+#----------------------
+# check for debugger specific debug info generation for better debugging support
+#----------------------
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports -glldb" >&5
+$as_echo_n "checking whether $CXX supports -glldb... " >&6; }
+    ac_save_CXX="$CXX"
+    CXX="$CXX -glldb"
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+        CXX="$ac_save_CXX"
+        CFLAGS_DEBUG="$CFLAGS_DEBUG -glldb"
+
+else
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+        CXX="$ac_save_CXX"
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports -ggdb3" >&5
+$as_echo_n "checking whether $CXX supports -ggdb3... " >&6; }
+    ac_save_CXX="$CXX"
+    CXX="$CXX -ggdb3"
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+        CXX="$ac_save_CXX"
+        CFLAGS_DEBUG="$CFLAGS_DEBUG -gdb3"
+
+else
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+        CXX="$ac_save_CXX"
+        CFLAGS_DEBUG="$CFLAGS_DEBUG -g"
+
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+
+
+
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+
+
+# if supported, generate debug info for standallone debugging (i.e. typeinfo for std:: classes)
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports -fstandalone-debug" >&5
+$as_echo_n "checking whether $CXX supports -fstandalone-debug... " >&6; }
+    ac_save_CXX="$CXX"
+    CXX="$CXX -fstandalone-debug"
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+        CXX="$ac_save_CXX"
+        CFLAGS_DEBUG="$CFLAGS_DEBUG -fstandalone-debug"
+
+else
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+        CXX="$ac_save_CXX"
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports -fno-limit-debug-info" >&5
+$as_echo_n "checking whether $CXX supports -fno-limit-debug-info... " >&6; }
+    ac_save_CXX="$CXX"
+    CXX="$CXX -fno-limit-debug-info"
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+        CXX="$ac_save_CXX"
+        CFLAGS_DEBUG="$CFLAGS_DEBUG -fno-limit-debug-info"
+
+else
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+        CXX="$ac_save_CXX"
+
+
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+
 
 
 fi
