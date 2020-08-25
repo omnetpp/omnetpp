@@ -990,7 +990,7 @@ static void readColor(const QChar *&textPointer, QColor& color)
     }
 }
 
-static void performSgrControlSequence(const QChar *&textPointer, const QFont &defaultFont, QColor &fgColor, QColor &bgColor, QFont &font)
+static void performSgrControlSequence(const QChar *&textPointer, const QFont &defaultFont, QColor &fgColor, QColor &bgColor, QFont &font, bool &faint)
 {
     // "\x1b[m"
     // "\x1b[34m"
@@ -1031,9 +1031,11 @@ static void performSgrControlSequence(const QChar *&textPointer, const QFont &de
         else if (action >= 100 && action <= 107)
             bgColor = terminalPalette[action-100 + 8];
         else if (action == 0) {
+            // reset
             bgColor = QColor();
             fgColor = QColor();
             font = defaultFont;
+            faint = false;
         }
         else if (action == 1)
             // Here 1 only sets "bold", but not "high intensity" (or "light color")
@@ -1041,16 +1043,21 @@ static void performSgrControlSequence(const QChar *&textPointer, const QFont &de
             // codes 90..97 and 100..107, but there is no other way to set "bold".
             // And we prefer to keep bold and light independent.
             font.setBold(true);
+        else if (action == 2)
+            // Here 2 only sets "faint", but not "low intensity" or "thin"
+            faint = true;
         else if (action == 3)
             font.setItalic(true);
         else if (action == 4)
             font.setUnderline(true);
-        else if (action == 22)
+        else if (action == 22) { // "regular" - not bold, not faint
             // The "bold off" code would be more consistent if it was 21,
             // but xterm interprets it as underlined (supposed to be double
             // underline), but 22 works as bold off there as well.
-            // To remain a but more compatible, we follow xterm.
+            // To remain a bit more compatible, we follow xterm.
             font.setBold(false);
+            faint = false;
+        }
         else if (action == 23)
             font.setItalic(false);
         else if (action == 24)
@@ -1097,6 +1104,9 @@ void TextViewerWidget::drawLine(QPainter& painter, int lineIndex, int x, int y, 
     int inColumn = 0;
 
     QColor curBgColor = QColor(), curFgColor = foregroundColor;
+    // This is the "opposite of bold" - although they can be enabled at the same time.
+    // Not using the alpha component of fgColor because color and faintness are supposed to be independent.
+    bool faint = false;
 
     // TODO: the data returned by unicode() is not necessarily 0-terminated!
     while (*textPointer != 0) {
@@ -1129,7 +1139,7 @@ void TextViewerWidget::drawLine(QPainter& painter, int lineIndex, int x, int y, 
         }
         else if (*textPointer == '\x1b') {
             // this is an escape sequence, handled separately
-            performSgrControlSequence(textPointer, font, curFgColor, curBgColor, curFont);
+            performSgrControlSequence(textPointer, font, curFgColor, curBgColor, curFont, faint);
 
             if (!curFgColor.isValid())
                 curFgColor = foregroundColor;
@@ -1152,7 +1162,9 @@ void TextViewerWidget::drawLine(QPainter& painter, int lineIndex, int x, int y, 
 
             QString text(start, textPointer - start);
 
-            int width = paintText(text, painter, metrics, x, y, curFgColor, curBgColor, curFont);
+            QColor actualTextColor = curFgColor;
+            actualTextColor.setAlpha(faint ? 128 : 255);
+            int width = paintText(text, painter, metrics, x, y, actualTextColor, curBgColor, curFont);
 
             x += width;
         }

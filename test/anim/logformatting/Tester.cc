@@ -45,6 +45,25 @@ void Tester::initialize()
     EV_INFO << "\x1b[0m" << std::endl;
 
 
+    EV_INFO << "Testing the normal and bright foreground palette, with faint option:" << std::endl;
+
+    for (int i = 30; i <= 37; ++i)
+        EV_INFO << "\x1b[" << i << "m\x1b[2m " << std::setw(3) << i << " \x1b[39m";
+    EV_INFO << std::endl;
+    for (int i = 90; i <= 97; ++i)
+        EV_INFO << "\x1b[" << i << "m\x1b[2m " << std::setw(3) << i << " \x1b[39m";
+
+    EV_INFO << std::endl << "With black background:" << std::endl;
+
+    EV_INFO << "\x1b[40m";
+    for (int i = 30; i <= 37; ++i)
+        EV_INFO << "\x1b[" << i << "m\x1b[2m " << std::setw(3) << i << " \x1b[39m";
+    EV_INFO << "\x1b[0m" << std::endl << "\x1b[40m";
+    for (int i = 90; i <= 97; ++i)
+        EV_INFO << "\x1b[" << i << "m\x1b[2m " << std::setw(3) << i << " \x1b[39m";
+    EV_INFO << "\x1b[0m" << std::endl;
+
+
     EV_INFO << "Testing the normal and bright background palette:" << std::endl;
 
     for (int i = 40; i <= 47; ++i)
@@ -67,6 +86,7 @@ void Tester::initialize()
     EV_INFO << "Testing font styles:" << std::endl;
 
     EV_INFO << "bold: \x1b[1mAaBbCcEeIiMmWwXxYyZz\x1b[0m" << std::endl;
+    EV_INFO << "faint: \x1b[2mAaBbCcEeIiMmWwXxYyZz\x1b[0m" << std::endl;
     EV_INFO << "italic: \x1b[3mAaBbCcEeIiMmWwXxYyZz\x1b[0m" << std::endl;
     EV_INFO << "underlined: \x1b[4mAaBbCcEeIiMmWwXxYyZz\x1b[0m" << std::endl;
 
