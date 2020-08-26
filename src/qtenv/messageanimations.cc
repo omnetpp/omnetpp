@@ -796,8 +796,29 @@ void SendOnConnAnimation::update()
             return;
         }
 
-        double t1 = progr / prop;
-        double t2 = (progr - trans) / prop;
+        // the "forward", and "backward" end of the message line on the given (connection) line, range is 0.0 .. 1.0
+        double t1, t2; // typically t1 >= t2, otherwise the message would travel "backward"
+
+        if (prop.isZero()) {
+            // either the entire line is visible, or none of it
+            if (simTime() < start) {
+                t1 = 0.0;
+                t2 = 0.0;
+            }
+            else if (simTime() <= (start + trans)) {
+                t1 = 1.0;
+                t2 = 0.0;
+            }
+            else {
+                t1 = 1.0;
+                t2 = 1.0;
+            }
+        }
+        else {
+            // the message line "slides" over the (connection) line
+            t1 = progr / prop;
+            t2 = (progr - trans) / prop;
+        }
 
         double animSpeed = (trans < prop)
                 ? (trans.dbl() + prop.dbl())
@@ -813,7 +834,9 @@ void SendOnConnAnimation::update()
 
         for (auto p : messageItems) {
             QLineF line = p.first->getConnectionLine(gate);
-            p.second->setLine(QLineF(line.pointAt(t1), line.pointAt(t2)), !trans.isZero());
+            bool showAsLine = !trans.isZero();
+            p.second->setVisible(!(showAsLine && t1 == t2));
+            p.second->setLine(QLineF(line.pointAt(t1), line.pointAt(t2)), showAsLine);
             p.second->setArrowheadEnabled(t1 < 1.0);
         }
     }
@@ -869,6 +892,7 @@ QString SendOnConnAnimation::str() const {
             + (holding ? " holding" : "")
             + " state: " + stateText[state]
             + " visible in " + QString::number(messageItems.size()) + " inspectors"
+            + " start: " + start.str().c_str() + " prop: " + prop.str().c_str() + " trans: " + trans.str().c_str()
           //  + " (" + QString::number(100 * (getQtenv()->getAnimationTime() - holdStarted) / holdDuration) + "%)"
             ;
 }
@@ -927,8 +951,29 @@ void SendDirectAnimation::update()
             return;
         }
 
-        t1 = progr / prop;
-        t2 = (progr - trans) / prop;
+        // the "forward", and "backward" end of the message line on the given (connection) line, range is 0.0 .. 1.0
+        double t1, t2; // typically t1 >= t2, otherwise the message would travel "backward"
+
+        if (prop.isZero()) {
+            // either the entire line is visible, or none of it
+            if (simTime() < start) {
+                t1 = 0.0;
+                t2 = 0.0;
+            }
+            else if (simTime() <= (start + trans)) {
+                t1 = 1.0;
+                t2 = 0.0;
+            }
+            else {
+                t1 = 1.0;
+                t2 = 1.0;
+            }
+        }
+        else {
+            // the message line "slides" over the (connection) line
+            t1 = progr / prop;
+            t2 = (progr - trans) / prop;
+        }
 
         double animSpeed = (trans < prop)
                 ? (trans.dbl() + prop.dbl())
@@ -968,7 +1013,9 @@ void SendDirectAnimation::update()
                     dest = QPointF(src.x() + src.y() / 4 + 4, -16);
 
                 QLineF line(src, dest);
-                m.second->setLine(QLineF(line.pointAt(t1), line.pointAt(t2)), !trans.isZero());
+                bool showAsLine = !trans.isZero();
+                m.second->setLine(QLineF(line.pointAt(t1), line.pointAt(t2)), showAsLine);
+                m.second->setVisible(!(showAsLine && t1 == t2));
                 m.second->setArrowheadEnabled(t1 < 1.0);
             }
     }
