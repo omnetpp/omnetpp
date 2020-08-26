@@ -125,6 +125,56 @@ cModule::~cModule()
     delete[] fullPath;
 }
 
+void cModule::deleteModule()
+{
+    if (getSystemModule() == this && getSimulation()->getSimulationStage() != CTX_CLEANUP)
+        throw cRuntimeError(this, "deleteModule(): It is not allowed to delete the system module during simulation");
+
+    // If a coroutine wants to delete itself (maybe as part of a module subtree),
+    // that has to be handled from another coroutine, e.g. from the main one.
+    // Control is passed there by throwing an exception that gets transferred
+    // to the main coroutine by activate(), and handled in cSimulation.
+    cSimpleModule *activeModule = getSimulation()->getActivityModule();
+    if (activeModule != nullptr && this->containsModule(activeModule))
+        throw cDeleteModuleException(this);
+
+    doDeleteModule();
+}
+
+void cModule::doDeleteModule()
+{
+    // notify pre-change listeners
+    if (hasListeners(PRE_MODEL_CHANGE)) {
+        cPreModuleDeleteNotification tmp;
+        tmp.module = this;
+        emit(PRE_MODEL_CHANGE, &tmp);
+    }
+
+    cModule *parent = getParentModule();
+    if (!parent || !parent->hasListeners(POST_MODEL_CHANGE)) {
+        // no listeners, just do it
+        setFlag(cComponent::FL_DELETING, true);
+        delete this;
+    }
+    else {
+        // need to fill in notification data before deleting the module
+        cPostModuleDeleteNotification tmp;
+        tmp.module = this;
+        tmp.moduleId = getId();
+        tmp.moduleType = getModuleType();
+        std::string tmpname = getName();
+        tmp.moduleName = tmpname.c_str();
+        tmp.parentModule = getParentModule();
+        tmp.vectorSize = getVectorSize();
+        tmp.index = getIndex();
+
+        setFlag(cComponent::FL_DELETING, true);
+        delete this;
+
+        parent->emit(POST_MODEL_CHANGE, &tmp);
+    }
+}
+
 void cModule::releaseListeners()
 {
     releaseLocalListeners();
@@ -1227,56 +1277,6 @@ void cModule::doBuildInside()
 {
     // ask module type to create submodules and internal connections
     getModuleType()->buildInside(this);
-}
-
-void cModule::deleteModule()
-{
-    if (getSystemModule() == this && getSimulation()->getSimulationStage() != CTX_CLEANUP)
-        throw cRuntimeError(this, "deleteModule(): It is not allowed to delete the system module during simulation");
-
-    // If a coroutine wants to delete itself (maybe as part of a module subtree),
-    // that has to be handled from another coroutine, e.g. from the main one.
-    // Control is passed there by throwing an exception that gets transferred
-    // to the main coroutine by activate(), and handled in cSimulation.
-    cSimpleModule *activeModule = getSimulation()->getActivityModule();
-    if (activeModule != nullptr && this->containsModule(activeModule))
-        throw cDeleteModuleException(this);
-
-    doDeleteModule();
-}
-
-void cModule::doDeleteModule()
-{
-    // notify pre-change listeners
-    if (hasListeners(PRE_MODEL_CHANGE)) {
-        cPreModuleDeleteNotification tmp;
-        tmp.module = this;
-        emit(PRE_MODEL_CHANGE, &tmp);
-    }
-
-    cModule *parent = getParentModule();
-    if (!parent || !parent->hasListeners(POST_MODEL_CHANGE)) {
-        // no listeners, just do it
-        setFlag(cComponent::FL_DELETING, true);
-        delete this;
-    }
-    else {
-        // need to fill in notification data before deleting the module
-        cPostModuleDeleteNotification tmp;
-        tmp.module = this;
-        tmp.moduleId = getId();
-        tmp.moduleType = getModuleType();
-        std::string tmpname = getName();
-        tmp.moduleName = tmpname.c_str();
-        tmp.parentModule = getParentModule();
-        tmp.vectorSize = getVectorSize();
-        tmp.index = getIndex();
-
-        setFlag(cComponent::FL_DELETING, true);
-        delete this;
-
-        parent->emit(POST_MODEL_CHANGE, &tmp);
-    }
 }
 
 void cModule::changeParentTo(cModule *module)
