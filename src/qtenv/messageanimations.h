@@ -329,6 +329,9 @@ public:
     void removeMessagePointer(cMessage *msg) override;
     void messageDuplicated(cMessage *msg, cMessage *dup) override;
 
+    virtual SimTime getTransmissionDuration() const = 0;
+    virtual void setTransmissionDuration(SimTime duration) = 0;
+
     // call this from subclasses!
     void removeFromInspector(Inspector *insp) override;
 
@@ -358,6 +361,9 @@ public:
     void begin() override;
     void update() override;
 
+    SimTime getTransmissionDuration() const override { return trans; }
+    void setTransmissionDuration(SimTime duration) override { trans = duration; }
+
     void addToInspector(Inspector *insp) override;
     void updateInInspector(Inspector *insp) override;
 
@@ -385,6 +391,9 @@ public:
     void update() override;
     void end() override;
 
+    SimTime getTransmissionDuration() const override { return trans; }
+    void setTransmissionDuration(SimTime duration) override { trans = duration; }
+
     void addToInspector(Inspector *insp) override;
     void updateInInspector(Inspector *insp) override;
     void removeFromInspector(Inspector *insp) override;
@@ -411,6 +420,9 @@ public:
 
     void begin() override;
     void update() override;
+
+    SimTime getTransmissionDuration() const override { ASSERT(false); return SimTime::ZERO; }
+    void setTransmissionDuration(SimTime duration) override { ASSERT(false); (void)duration; }
 
     void addToInspector(Inspector *insp) override;
     void updateInInspector(Inspector *insp) override;
